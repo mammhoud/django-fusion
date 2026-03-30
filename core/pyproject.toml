@@ -1,0 +1,157 @@
+
+[project]
+name = "xellent"
+version = "1.0.3"
+description = "Xellent Learning Management System"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Mahmoud Ezzat", email = "mahmoud.ezat@outlook.com"}
+]
+dependencies = [
+    "bumpver",
+    "django-rq",
+    "click",
+    "colorlog",
+    "django",
+    "django-allauth[socialaccount]",
+    "django-bird",
+    "django-browser-reload>=1.21.0",
+    "django-colorfield",
+    "django-crispy-forms",
+    "django-debug-toolbar",
+    "django-embed-video",
+    "django-environ",
+    "django-extensions>=4.1",
+    "django-heroicons",
+    "django-htmx",
+    "django-import-export",
+    "django-ninja",
+    "django-ninja-extra>=0.18.4",
+    "django-ninja-jwt",
+    "django-prometheus>=2.4.0",
+    "django-redis>=6.0.0",
+    "django-silk>=5.4.3",
+    "django-simple-history",
+    "django-structlog",
+    "django-stubs>=5.2.8",
+    "django-tables2",
+    "django-unfold",
+    "django-webpack-loader",
+    "draftjs-exporter",
+    "dynaconf[vault]",
+    "environ",
+    "fido2",
+    "fire>=0.7.1",
+    "gunicorn>=23.0.0",
+    "jwt",
+    "livereload>=2.7.1",
+    "marshmallow",
+    "ninja",
+    "psycopg",
+    # "psycopg2",
+    "psycopg-binary>=3.3.2",
+    "pydantic",
+    "pydantic-settings>=2.12.0",
+    "pyrefly>=0.45.2",
+    "python-json-logger>=4.0.0",
+    "sentry-sdk[django]>=2.46.0",
+    "structlog",
+    "twilio>=9.8.7",
+    "uvicorn",
+    "virtualenv>=20.35.4",
+    "wagtail",
+    "wagtail-font-awesome-svg>=2.0",
+    "wagtail-newsletter[mailchimp]",
+    "wagtail-transfer>=0.11",
+    "wagtailfontawesome>=1.2.1",
+    "watchfiles",
+    "whitenoise",
+    "yml>=0.0.1",
+    "jinja2>=3.1.6",
+    "stripe>=14.3.0",
+    "django-paypal>=2.1",
+    "hypothesis>=6.151.6",
+    "django-grep",
+    "django-storages[boto3]>=1.14.6",
+]
+
+[tool.uv.sources]
+django-grep = { path = "/libs/django-grep", editable = true }
+
+[tool.bumpver]
+current_version = "1.0.3"
+version_pattern = "MAJOR.MINOR.PATCH[-TAG]"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"',
+]
+"__about__.py" = [
+    '^__version__ = "{version}"$',
+]
+"package.json" = [
+    '"version": "{version}"',
+]
+
+# ======================
+# pytest configuration
+# ======================
+[tool.pytest.ini_options]
+minversion = "7.0"
+addopts = [
+    "--strict-markers",
+    "--strict-config",
+    "-v",
+    "--tb=short",
+    "--no-header",
+]
+testpaths = ["tests"]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "slow: marks tests as slow (deselect with '-m \"not slow\"')",
+    "integration: integration tests",
+    "unit: unit tests",
+]
+
+# ======================
+# mypy configuration (optional)
+# ======================
+[tool.mypy]
+python_version = "3.11"
+warn_return_any = true
+warn_unused_configs = true
+disallow_untyped_defs = true
+disallow_incomplete_defs = true
+check_untyped_defs = true
+disallow_untyped_decorators = true
+no_implicit_optional = true
+warn_redundant_casts = true
+warn_unused_ignores = true
+warn_no_return = true
+warn_unreachable = true
+strict_equality = true
+
+[[tool.mypy.overrides]]
+module = [
+    "django.*",
+    "wagtail.*",
+]
+ignore_missing_imports = true
+
+
+
+
+

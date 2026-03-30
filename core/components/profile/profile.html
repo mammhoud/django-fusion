@@ -1,0 +1,186 @@
+{% load static i18n %}
+<div class="profiled-panel profiled-panel--profile">
+    <div class="profiled-panel__header">
+        <h3 class="profiled-panel__title profiled-panel__title--profile">
+            <i class="fas fa-user-circle me-2"></i>{% trans "Profile Information" %}
+        </h3>
+        <button class="btn btn-sm btn-outline-primary" id="editProfileBtn">
+            <i class="fas fa-edit me-1"></i>{% trans "Edit Profile" %}
+        </button>
+    </div>
+
+    <div class="profiled-panel__content">
+        <!-- Profile Header -->
+        <div class="row align-items-center mb-4">
+            <div class="col-auto">
+                <div class="profile-avatar position-relative">
+                    {% if user.profile.avatar %}
+                        <img src="{{ user.profile.avatar.url }}" alt="{{ user.get_full_name }}"
+                             class="rounded-circle" width="100" height="100">
+                    {% else %}
+                        <div class="bg-primary bg-opacity-10 rounded-circle d-flex align-items-center justify-content-center"
+                             style="width: 100px; height: 100px;">
+                            <i class="fas fa-user fa-3x text-primary"></i>
+                        </div>
+                    {% endif %}
+                    <button class="btn btn-sm btn-secondary position-absolute bottom-0 end-0 rounded-circle"
+                            style="width: 32px; height: 32px;">
+                        <i class="fas fa-camera"></i>
+                    </button>
+                </div>
+            </div>
+            <div class="col">
+                <h4 class="mb-1">{{ user.get_full_name|default:user.username }}</h4>
+                <p class="text-muted mb-2">{{ user.email }}</p>
+                <div class="d-flex gap-2">
+                    <span class="badge bg-primary">{{ user.profile.user_type|default:"Member" }}</span>
+                    {% if user.is_staff %}
+                        <span class="badge bg-warning">{% trans "Staff" %}</span>
+                    {% endif %}
+                    {% if user.is_superuser %}
+                        <span class="badge bg-danger">{% trans "Admin" %}</span>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Profile Details -->
+        <div class="row">
+            <div class="col-md-6">
+                <div class="profile-section mb-4">
+                    <h6 class="profile-section__title">
+                        <i class="fas fa-id-card me-2"></i>{% trans "Personal Details" %}
+                    </h6>
+                    <div class="profile-section__content">
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Full Name" %}</span>
+                            <span class="profile-detail-value">{{ user.get_full_name|default:"Not set" }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Username" %}</span>
+                            <span class="profile-detail-value">{{ user.username }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Email" %}</span>
+                            <span class="profile-detail-value">{{ user.email }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Phone" %}</span>
+                            <span class="profile-detail-value">{{ user.profile.phone|default:"Not set" }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Location" %}</span>
+                            <span class="profile-detail-value">{{ user.profile.location|default:"Not set" }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="profile-section mb-4">
+                    <h6 class="profile-section__title">
+                        <i class="fas fa-graduation-cap me-2"></i>{% trans "Education & Career" %}
+                    </h6>
+                    <div class="profile-section__content">
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Profession" %}</span>
+                            <span class="profile-detail-value">{{ user.profile.profession|default:"Not set" }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Company" %}</span>
+                            <span class="profile-detail-value">{{ user.profile.company|default:"Not set" }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Education" %}</span>
+                            <span class="profile-detail-value">{{ user.profile.education|default:"Not set" }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Experience" %}</span>
+                            <span class="profile-detail-value">{{ user.profile.experience|default:"0" }} {% trans "years" %}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bio Section -->
+        <div class="profile-section mb-4">
+            <h6 class="profile-section__title">
+                <i class="fas fa-edit me-2"></i>{% trans "Bio" %}
+            </h6>
+            <div class="profile-section__content">
+                <div class="profile-bio">
+                    {% if user.profile.bio %}
+                        <p class="mb-0">{{ user.profile.bio }}</p>
+                    {% else %}
+                        <p class="text-muted mb-0">{% trans 'No bio added yet. Click "Edit Profile" to add one.' %}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Account Status -->
+        <div class="profile-section mb-4">
+            <h6 class="profile-section__title">
+                <i class="fas fa-shield-alt me-2"></i>{% trans "Account Status" %}
+            </h6>
+            <div class="profile-section__content">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Member Since" %}</span>
+                            <span class="profile-detail-value">{{ user.date_joined|date:"F d, Y" }}</span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Last Login" %}</span>
+                            <span class="profile-detail-value">{{ user.last_login|date:"F d, Y H:i" }}</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Email Verified" %}</span>
+                            <span class="profile-detail-value">
+                                {% if user.profile.email_verified %}
+                                    <i class="fas fa-check-circle text-success me-1"></i>{% trans "Verified" %}
+                                {% else %}
+                                    <i class="fas fa-times-circle text-danger me-1"></i>{% trans "Not Verified" %}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <div class="profile-detail-item">
+                            <span class="profile-detail-label">{% trans "Account Status" %}</span>
+                            <span class="profile-detail-value">
+                                {% if user.is_active %}
+                                    <span class="badge bg-success">{% trans "Active" %}</span>
+                                {% else %}
+                                    <span class="badge bg-danger">{% trans "Inactive" %}</span>
+                                {% endif %}
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Skills Section -->
+        <div class="profile-section">
+            <h6 class="profile-section__title">
+                <i class="fas fa-star me-2"></i>{% trans "Skills & Expertise" %}
+            </h6>
+            <div class="profile-section__content">
+                {% if user.profile.skills %}
+                    <div class="d-flex flex-wrap gap-2">
+                        {% for skill in user.profile.skills.all %}
+                            <span class="badge bg-primary bg-opacity-10 text-primary border border-primary">
+                                {{ skill.name }}
+                            </span>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">{% trans "No skills added yet." %}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+

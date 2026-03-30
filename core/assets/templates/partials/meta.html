@@ -1,0 +1,36 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+
+
+
+{# Simple logo logic #}
+{% if brand_settings and brand_settings.favicon %}
+{% image brand_settings.favicon max-96x96 as favicon %}
+{% endif %}
+
+
+<meta charset="utf-8" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+<meta name="description" content="{{ brand_settings.meta_description }}" />
+
+<meta name="keywords" content="{{ brand_settings.meta_keywords }}" />
+
+<meta name="author" content="{{ brand_settings.meta_author }}" />
+
+<meta name="robots" content="index, follow, max-image-preview:large, max-snippet:-1, max-video-preview:-1">
+<title>
+
+    {{ page_title }}{{ brand_settings.title_suffix }}
+</title>
+
+<!-- Favicon -->
+{% if favicon %}
+<link href="{{ favicon.url }}" rel="shortcut icon">
+{% else %}
+<link href="{% static 'images/favicon.png' %}" rel="shortcut icon">
+{% endif %}

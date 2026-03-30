@@ -1,0 +1,22 @@
+/* apps/pages/static/css/custom_admin.css */
+
+:root {
+    /* Xellent Hub Primary Branding Colors */
+    --w-color-primary: #8a2be2; /* Violet/Purple theme */
+    --w-color-primary-200: #7b1fa2;
+}
+
+/* Custom Sidebar Styling */
+.sidebar-main {
+    border-right: 1px solid var(--w-color-grey-150);
+}
+
+/* Custom Header Branding */
+.wagtail-logo {
+    padding: 10px;
+}
+
+/* Optional: Smooth transitions for a premium feel */
+* {
+    transition: background-color 0.2s ease, border-color 0.2s ease;
+}

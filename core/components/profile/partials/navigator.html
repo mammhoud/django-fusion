@@ -1,0 +1,20 @@
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+<!-- Offcanvas for mobile -->
+<div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="offcanvasNavigator">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title">{% trans "Profile Menu" %}</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+    </div>
+    <div class="offcanvas-body">
+        {% include "profile/partials/nav-menu.html" %}
+    </div>
+</div>
+
+<!-- Desktop navigation -->
+<div class="profile__nav d-lg-block">
+    <div class="profile__nav-card card">
+        <div class="card-body p-0">
+            {% include "profile/partials/nav-menu.html" %}
+        </div>
+    </div>
+</div>

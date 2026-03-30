@@ -1,0 +1,84 @@
+{% extends layout_path|default:'base.html' %}
+{% load i18n %}
+{% block title %}{% trans "Error" %} {{ status_code|default:"500" }}{% endblock %}
+
+{% block styles %}
+    {% load render_bundle from webpack_loader %}
+    {% render_bundle 'static' 'css' %}
+    <style>
+        .template-error { background-color: #f8f9fa; }
+        .error-code { font-size: 8rem; font-weight: 800; color: #dc3545; line-height: 1; margin-bottom: 0; }
+        .error-code-shadow { position: absolute; top: 0; left: 50%; transform: translateX(-50%); opacity: 0.1; font-size: 15rem; z-index: -1; }
+        .error-container { display: flex; align-items: center; justify-content: center; min-height: 70vh; text-align: center; position: relative; z-index: 1; }
+        .error-title { font-size: 2rem; margin-bottom: 20px; font-weight: 700; color: #343a40; }
+        .error-description { font-size: 1.1rem; color: #6c757d; max-width: 600px; margin: 0 auto 30px; }
+        .technical-details { margin-top: 30px; text-align: left; max-width: 800px; margin-left: auto; margin-right: auto; }
+        .technical-content {
+            background-color: #1e1e1e; color: #00ff00; padding: 15px; border-radius: 8px; font-family: 'Courier New', monospace; overflow-x: auto; font-size: 13px; margin-top: 15px; max-height: 400px; overflow-y: auto; display: none;
+        }
+    </style>
+{% endblock styles %}
+
+{% block body_class %}template-error{% endblock %}
+
+{% block body %}
+<div class="error-page">
+    <div class="error-container">
+        <div class="error-content">
+            <div class="error-code-wrapper" style="position:relative;">
+                <h1 class="error-code">{{ status_code|default:"500" }}</h1>
+                <div class="error-code-shadow">{{ status_code|default:"500" }}</div>
+            </div>
+
+            <div class="error-message-wrapper mt-5">
+                <h2 class="error-title">{{ error_title|default:"An Error Occurred" }}</h2>
+                <p class="error-description">
+                    {{ error_message|default:"We encountered an unexpected condition. Our technical team has been notified." }}
+                </p>
+
+                <div class="error-info mb-4 text-muted">
+                    <div class="info-item">
+                        <i class="fas fa-link"></i>
+                        <span>{% trans "Requested Path:" %} <strong>{{ request.path }}</strong></span>
+                    </div>
+                </div>
+
+                <div class="error-actions d-flex justify-content-center gap-3">
+                    <a href="/" class="btn btn-primary px-4 py-2">
+                        <i class="fas fa-home me-2"></i>{% trans "Return Home" %}
+                    </a>
+                    <button onclick="window.history.back()" class="btn btn-outline-secondary px-4 py-2">
+                        <i class="fas fa-arrow-left me-2"></i>{% trans "Go Back" %}
+                    </button>
+                    {% if debug or error_logs or exception %}
+                    <button class="technical-toggle btn btn-dark px-4 py-2" onclick="toggleTechnicalDetails()">
+                        <i class="fas fa-code me-2"></i>{% trans "View Stack Trace" %}
+                    </button>
+                    {% endif %}
+                </div>
+
+                {% if debug or error_logs or exception %}
+                <div class="technical-details">
+                    <div class="technical-content" id="techLogs">
+<pre style="margin: 0; white-space: pre-wrap;">{{ error_logs|default:exception|default:"No technical traceback / logs recorded." }}</pre>
+                    </div>
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    function toggleTechnicalDetails() {
+        const content = document.getElementById('techLogs');
+        if (content.style.display === 'none' || content.style.display === '') {
+            content.style.display = 'block';
+        } else {
+            content.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,102 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+
+<!-- Course Curriculum section -->
+<div class="section bg-light">
+	<div class="container">
+
+		<!-- Section Header -->
+		<div class="text-center mb-5">
+			<h2>{% trans "Course Curriculum" %}</h2>
+			<p class="mx-auto" style="max-width: 600px;">
+				{% trans "Step-by-step learning path with comprehensive modules and lessons" %}
+			</p>
+		</div>
+
+		<div class="accordion" id="courseCurriculum">
+			{% for module in course.modules.all %}
+			<div class="accordion-item border-0 mb-3 shadow-sm">
+
+				<!-- Module Header -->
+				<h3 class="accordion-header">
+					<button class="accordion-button {% if not forloop.first %}collapsed{% endif %} fw-bold"
+					        type="button"
+					        data-bs-toggle="collapse"
+					        data-bs-target="#module{{ module.id }}">
+
+						<div class="d-flex justify-content-between align-items-center w-100 me-3">
+
+							<!-- Module Title -->
+							<span>
+								{% blocktrans with num=forloop.counter title=module.title %}
+									Module {{ num }}: {{ title }}
+								{% endblocktrans %}
+							</span>
+
+							<!-- Lesson Count & Duration -->
+							<span class="badge bg-primary">
+								{% blocktrans with count=module.lessons.count duration=module.duration %}
+									{{ count }} lessons • {{ duration }} min
+								{% endblocktrans %}
+							</span>
+
+						</div>
+					</button>
+				</h3>
+
+				<!-- Module Collapse -->
+				<div id="module{{ module.id }}"
+				     class="accordion-collapse collapse {% if forloop.first %}show{% endif %}"
+				     data-bs-parent="#courseCurriculum">
+
+					<div class="accordion-body">
+
+						<!-- Module Description -->
+						<p class="text-muted mb-3">{{ module.description }}</p>
+
+						<ul class="list-group list-group-flush">
+
+							{% for lesson in module.lessons.all %}
+							<li class="list-group-item d-flex justify-content-between align-items-center border-0 py-3">
+
+								<!-- Lesson Info -->
+								<div class="d-flex align-items-center">
+									<i class="bi bi-play-circle text-color-theme me-3"></i>
+
+									<div>
+										<h6 class="mb-1">{{ lesson.title }}</h6>
+
+										{% if lesson.description %}
+										<p class="text-muted small mb-0">{{ lesson.description }}</p>
+										{% endif %}
+									</div>
+								</div>
+
+								<!-- Lesson Duration + Preview -->
+								<div class="text-end">
+									<span class="text-muted small">
+										{% blocktrans with minutes=lesson.duration %}
+											{{ minutes }} min
+										{% endblocktrans %}
+									</span>
+
+									{% if lesson.is_preview %}
+									<span class="badge bg-success ms-2">
+										{% trans "Preview" %}
+									</span>
+									{% endif %}
+								</div>
+
+							</li>
+							{% endfor %}
+
+						</ul>
+					</div>
+				</div>
+
+			</div>
+			{% endfor %}
+		</div>
+
+	</div><!-- end container -->
+</div>
+<!-- end Course Curriculum section -->

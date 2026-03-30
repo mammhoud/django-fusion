@@ -1,0 +1,87 @@
+#!/bin/bash
+set -euo pipefail
+
+###############################################################################
+# GIT CONFIGURATION
+###############################################################################
+echo "🔐 Configuring Git environment..."
+
+if [ -n "${GIT_USERNAME:-}" ]; then
+    git config --global user.name "$GIT_USERNAME" || echo "⚠️ Failed to set Git username"
+    echo "   ✔ Username set"
+fi
+
+if [ -n "${GIT_EMAIL:-}" ]; then
+    git config --global user.email "$GIT_EMAIL" || echo "⚠️ Failed to set Git email"
+    echo "   ✔ Email set"
+fi
+
+if [ -n "${GIT_TOKEN:-}" ] && [ -n "${GIT_USERNAME:-}" ] && [ -n "${GIT_REPO:-}" ]; then
+    SAFE_TOKEN="***${GIT_TOKEN: -4}"
+    echo "🔗 Updating Git remote with token (hidden: $SAFE_TOKEN)..."
+
+    git remote set-url origin \
+        "https://${GIT_TOKEN}@github.com/${GIT_USERNAME}/${GIT_REPO}.git" \
+        || echo "⚠️ Could not update Git remote URL"
+else
+    echo "ℹ️ Git token or repo info missing — skipping secure remote setup"
+fi
+
+echo "🚀 Django Entrypoint: Booting container..."
+
+# ###############################################################################
+# # PERMISSIONS
+# ###############################################################################
+# echo "📁 Ensuring correct file permissions..."
+
+# if id django &>/dev/null; then
+#     chown -R django:django /app || true
+# else
+#     echo "⚠️ User 'django' not found — skipping permission fixes."
+# fi
+
+
+###############################################################################
+# INSTALL uv (if missing)
+###############################################################################
+if ! command -v uv &>/dev/null; then
+    echo "🧩 Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+else
+    echo "✅ uv already installed: $(uv --version)"
+fi
+
+###############################################################################
+# DJANGO INITIALIZATION
+###############################################################################
+if [ "${RUN_SETUP:-false}" = "true" ]; then
+    echo "🛠️ Running Django setup..."
+
+    echo "📦 Collecting static files..."
+    uv run python com collectstatic --noinput || echo "⚠️ Failed to collect static files."
+
+    echo "🗃️ Applying database migrations..."
+    uv run python com migrate --noinput || echo "⚠️ Migrations failed."
+
+    if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
+        echo "👑 Ensuring superuser exists..."
+        uv run python -m django_grep.scripts.superuser
+    fi
+fi
+
+###############################################################################
+# NODE BUILD
+###############################################################################
+echo "📦 Checking Node.js dependencies..."
+if [ -f "package.json" ]; then
+    echo "ℹ️ skipping Node build (managed by host or start script)."
+else
+    echo "ℹ️ No package.json found."
+fi
+
+###############################################################################
+# START APPLICATION
+###############################################################################
+echo "🎯 Launching command: $*"
+exec "$@"
