@@ -175,7 +175,7 @@ class EmailService:
         """Send a test email using standard configuration."""
         return self.send_simple(
             to=to,
-            subject="AllianceCore Test Email",
+            subject="Alliance Test Email",
             body="If you received this, your email configuration is working correctly.",
         )
 

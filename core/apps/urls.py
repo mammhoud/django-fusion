@@ -14,6 +14,6 @@ from wagtail.documents import urls as wagtaildocs_urls
 
 urlpatterns = [
     # Your custom apps with i18n support
-    path("lms/", include("apps.LMS.urls")),
+
     path("", include("apps.handlers.urls")),
 ]

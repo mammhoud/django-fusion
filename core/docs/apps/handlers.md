@@ -1,4 +1,4 @@
-# ⚙️ AllianceCore Handlers — Profile & Security Plugin
+# ⚙️ Alliance Handlers — Profile & Security Plugin
 
 ## 🏗️ Product Description
 
@@ -31,7 +31,7 @@ apps/handlers/
 ├── views.py
 ├── management/
 │   └── commands/
-│       └── sync_alliancecore.py   # AllianceCore sync management command
+│       └── sync_alliancecore.py   # Alliance sync management command
 └── templates/
 ```
 
@@ -41,4 +41,4 @@ apps/handlers/
 
 - [MCP Integration](../integrations/mcp.md)
 - [Profile Banner Options](./profile-banner.md)
-- [AllianceCore PRODUCT.md](../PRODUCT.md)
+- [Alliance PRODUCT.md](../PRODUCT.md)

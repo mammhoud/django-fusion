@@ -1,6 +1,6 @@
-# AllianceCore Documentation
+# Alliance Documentation
 
-Welcome to the AllianceCore platform documentation. This directory is the single source of truth for all technical documentation, architecture guides, and product references.
+Welcome to the Alliance platform documentation. This directory is the single source of truth for all technical documentation, architecture guides, and product references.
 
 ## 📚 Table of Contents
 
@@ -50,5 +50,5 @@ Welcome to the AllianceCore platform documentation. This directory is the single
 When adding new documentation:
 1. Place it in the appropriate subdirectory (`architecture/`, `frontend/`, `apps/`, `integrations/`, `config/`)
 2. Add an entry to this index table
-3. Use the `AllianceCore` brand name consistently (not `Xellent`, `CTC`, or `prj`)
+3. Use the `Alliance` brand name consistently (not `Xellent`, `CTC`, or `prj`)
 4. Update cross-references if renaming or moving files

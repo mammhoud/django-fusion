@@ -359,8 +359,8 @@ class BaseFormPage(BasePage):
         Send an automated email notification for a new submission.
         Also sends confirmation email to submitter if email is provided.
         """
-        site_name = getattr(settings, 'SITE_NAME', 'AllianceCore')
-        subject = f"{getattr(settings, 'EMAIL_SUBJECT_PREFIX', '[AllianceCore] ')} New Submission: {submission.page_title}"
+        site_name = getattr(settings, 'SITE_NAME', 'Alliance')
+        subject = f"{getattr(settings, 'EMAIL_SUBJECT_PREFIX', '[Alliance] ')} New Submission: {submission.page_title}"
         from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@structa.cloud')
         recipient_list = [getattr(settings, 'CONTACT_FORM_RECIPIENT', from_email)]
 
@@ -399,7 +399,7 @@ class BaseFormPage(BasePage):
                 }
                 confirm_html = render_to_string("emails/contact_confirmation.html", confirm_context)
                 confirm_text = strip_tags(confirm_html)
-                confirm_subject = f"{getattr(settings, 'EMAIL_SUBJECT_PREFIX', '[AllianceCore] ')} We received your message"
+                confirm_subject = f"{getattr(settings, 'EMAIL_SUBJECT_PREFIX', '[Alliance] ')} We received your message"
 
                 confirm_msg = EmailMultiAlternatives(confirm_subject, confirm_text, from_email, [submitter_email])
                 confirm_msg.attach_alternative(confirm_html, "text/html")

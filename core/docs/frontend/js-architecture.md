@@ -2,7 +2,7 @@
 
 ## Overview
 
-This document describes the JavaScript module architecture for AllianceCore. The architecture is designed for modularity, dynamic loading, and centralized configuration.
+This document describes the JavaScript module architecture for Alliance. The architecture is designed for modularity, dynamic loading, and centralized configuration.
 
 ## Directory Structure
 

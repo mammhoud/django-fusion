@@ -93,8 +93,8 @@ OVERRIDE_APPS = [
 
 
 LOCAL_APPS = [
-    "core.CI",
-    "alliance_core",
+    "alliance.CI",
+    "alliance",
 ]
 
 # COMBINED
@@ -124,10 +124,4 @@ INSTALLED_APPS: list[str] = OVERRIDE_APPS + APPS + WAGTAIL_APPS + THIRD_PARTY_AP
 # "crispy_tailwind",
 # "widget_tweaks",
 
-# Auto-detect LMS
-import os
-from pathlib import Path
-BASE_DIR = Path(__file__).resolve().parent.parent.parent
-if os.path.exists(os.path.join(BASE_DIR, "apps", "LMS")):
-    if "apps.LMS" not in INSTALLED_APPS:
-        INSTALLED_APPS.append("apps.LMS")
+

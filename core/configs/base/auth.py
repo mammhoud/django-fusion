@@ -54,7 +54,7 @@ USER_MODEL_CONFIG = {
 # Custom adapters allow fine-grained control over login/signup behavior.
 
 ACCOUNT_ADAPTER = settings.get(
-    "AUTH_ACCOUNT_ADAPTER", "core.CI.adapters.account.AccountAdapter"
+    "AUTH_ACCOUNT_ADAPTER", "alliance.CI.adapters.account.AccountAdapter"
 )
 SOCIALACCOUNT_ADAPTER = settings.get(
     "AUTH_SOCIALACCOUNT_ADAPTER",

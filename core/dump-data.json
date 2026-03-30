@@ -54,15 +54,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "AllianceCore",
-            "draft_title": "AllianceCore",
+            "title": "Alliance",
+            "draft_title": "Alliance",
             "slug": "home-page",
             "content_type": 31,
             "url_path": "/home-page/",
             "owner": 1,
-            "seo_title": "AllianceCore | Strategic Technology Partnerships & AI Innovation",
+            "seo_title": "Alliance | Strategic Technology Partnerships & AI Innovation",
             "show_in_menus": false,
-            "search_description": "AllianceCore helps tech companies scale through strategic alliances. We design, build, and manage ecosystems of partners to drive co‑innovation, accelerate go‑to‑market, and unlock new revenue streams.",
+            "search_description": "Alliance helps tech companies scale through strategic alliances. We design, build, and manage ecosystems of partners to drive co‑innovation, accelerate go‑to‑market, and unlock new revenue streams.",
             "latest_revision_created_at": "2026-02-23T06:28:49.112Z",
             "alias_of": null
         }
@@ -88,15 +88,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "About AllianceCore",
-            "draft_title": "About AllianceCore",
+            "title": "About Alliance",
+            "draft_title": "About Alliance",
             "slug": "about-page",
             "content_type": 29,
             "url_path": "/home-page/about-page/",
             "owner": 1,
-            "seo_title": "About AllianceCore | Technology Partnership Experts",
+            "seo_title": "About Alliance | Technology Partnership Experts",
             "show_in_menus": true,
-            "search_description": "AllianceCore builds and manages technology partnerships that deliver measurable business outcomes. Learn how we help companies navigate the complex landscape of strategic alliances.",
+            "search_description": "Alliance builds and manages technology partnerships that deliver measurable business outcomes. Learn how we help companies navigate the complex landscape of strategic alliances.",
             "latest_revision_created_at": "2026-02-23T06:28:52.831Z",
             "alias_of": null
         }
@@ -128,9 +128,9 @@
             "content_type": 30,
             "url_path": "/home-page/contact-page/",
             "owner": 1,
-            "seo_title": "Contact AllianceCore | Start a Strategic Partnership",
+            "seo_title": "Contact Alliance | Start a Strategic Partnership",
             "show_in_menus": false,
-            "search_description": "Ready to explore a technology alliance? Reach out to AllianceCore. We'll help you design a partnership strategy that drives growth and innovation.",
+            "search_description": "Ready to explore a technology alliance? Reach out to Alliance. We'll help you design a partnership strategy that drives growth and innovation.",
             "latest_revision_created_at": "2026-02-23T06:28:54.634Z",
             "alias_of": null
         }
@@ -162,9 +162,9 @@
             "content_type": 32,
             "url_path": "/home-page/team-page/",
             "owner": 1,
-            "seo_title": "AllianceCore Team | Partnership Architects & Tech Strategists",
+            "seo_title": "Alliance Team | Partnership Architects & Tech Strategists",
             "show_in_menus": true,
-            "search_description": "Meet the experts behind AllianceCore. Our team brings decades of experience in technology alliances, ecosystem development, and partner program management.",
+            "search_description": "Meet the experts behind Alliance. Our team brings decades of experience in technology alliances, ecosystem development, and partner program management.",
             "latest_revision_created_at": "2026-02-23T06:28:56.391Z",
             "alias_of": null
         }
@@ -198,7 +198,7 @@
             "owner": 1,
             "seo_title": "Alliance Solutions | Technology Partnership Programs & Tools",
             "show_in_menus": false,
-            "search_description": "Discover AllianceCore's portfolio of partnership solutions: co‑innovation frameworks, joint go‑to‑market programs, and partner portal technologies designed to maximize the value of your alliances.",
+            "search_description": "Discover Alliance's portfolio of partnership solutions: co‑innovation frameworks, joint go‑to‑market programs, and partner portal technologies designed to maximize the value of your alliances.",
             "latest_revision_created_at": "2026-02-23T06:29:02.601Z",
             "alias_of": null
         }
@@ -394,15 +394,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "AllianceCore",
-            "draft_title": "AllianceCore",
+            "title": "Alliance",
+            "draft_title": "Alliance",
             "slug": "home-page-de",
             "content_type": 31,
             "url_path": "/home-page-de/",
             "owner": 1,
-            "seo_title": "AllianceCore | Strategische Technologiepartnerschaften & KI-Innovation",
+            "seo_title": "Alliance | Strategische Technologiepartnerschaften & KI-Innovation",
             "show_in_menus": false,
-            "search_description": "AllianceCore hilft Technologieunternehmen, durch strategische Allianzen zu skalieren. Wir entwerfen, bauen und verwalten Partner-Ökosysteme, um Co-Innovation zu fördern, die Markteinführung zu beschleunigen und neue Einnahmequellen zu erschließen.",
+            "search_description": "Alliance hilft Technologieunternehmen, durch strategische Allianzen zu skalieren. Wir entwerfen, bauen und verwalten Partner-Ökosysteme, um Co-Innovation zu fördern, die Markteinführung zu beschleunigen und neue Einnahmequellen zu erschließen.",
             "latest_revision_created_at": "2026-02-23T06:28:49.799Z",
             "alias_of": null
         }
@@ -428,15 +428,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "Über AllianceCore",
-            "draft_title": "Über AllianceCore",
+            "title": "Über Alliance",
+            "draft_title": "Über Alliance",
             "slug": "about-page",
             "content_type": 29,
             "url_path": "/home-page-de/about-page/",
             "owner": 1,
-            "seo_title": "Über AllianceCore | Experten für Technologiepartnerschaften",
+            "seo_title": "Über Alliance | Experten für Technologiepartnerschaften",
             "show_in_menus": true,
-            "search_description": "AllianceCore baut und verwaltet Technologiepartnerschaften, die messbare Geschäftsergebnisse liefern. Erfahren Sie, wie wir Unternehmen helfen, die komplexe Landschaft strategischer Allianzen zu navigieren.",
+            "search_description": "Alliance baut und verwaltet Technologiepartnerschaften, die messbare Geschäftsergebnisse liefern. Erfahren Sie, wie wir Unternehmen helfen, die komplexe Landschaft strategischer Allianzen zu navigieren.",
             "latest_revision_created_at": "2026-02-23T06:28:53.058Z",
             "alias_of": null
         }
@@ -468,9 +468,9 @@
             "content_type": 30,
             "url_path": "/home-page-de/contact-page/",
             "owner": 1,
-            "seo_title": "Kontaktieren Sie AllianceCore | Starten Sie eine strategische Partnerschaft",
+            "seo_title": "Kontaktieren Sie Alliance | Starten Sie eine strategische Partnerschaft",
             "show_in_menus": false,
-            "search_description": "Bereit, eine Technologieallianz zu erkunden? Wenden Sie sich an AllianceCore. Wir helfen Ihnen, eine Partnerschaftsstrategie zu entwickeln, die Wachstum und Innovation fördert.",
+            "search_description": "Bereit, eine Technologieallianz zu erkunden? Wenden Sie sich an Alliance. Wir helfen Ihnen, eine Partnerschaftsstrategie zu entwickeln, die Wachstum und Innovation fördert.",
             "latest_revision_created_at": "2026-02-23T06:28:55.222Z",
             "alias_of": null
         }
@@ -502,9 +502,9 @@
             "content_type": 32,
             "url_path": "/home-page-de/team-page/",
             "owner": 1,
-            "seo_title": "Das AllianceCore Team | Partnerschaftsarchitekten & Technologiestrategen",
+            "seo_title": "Das Alliance Team | Partnerschaftsarchitekten & Technologiestrategen",
             "show_in_menus": true,
-            "search_description": "Lernen Sie die Experten hinter AllianceCore kennen. Unser Team bringt jahrzehntelange Erfahrung in Technologieallianzen, Ökosystementwicklung und Partnerprogramm-Management mit.",
+            "search_description": "Lernen Sie die Experten hinter Alliance kennen. Unser Team bringt jahrzehntelange Erfahrung in Technologieallianzen, Ökosystementwicklung und Partnerprogramm-Management mit.",
             "latest_revision_created_at": "2026-02-23T06:28:59.741Z",
             "alias_of": null
         }
@@ -538,7 +538,7 @@
             "owner": 1,
             "seo_title": "Allianzlösungen | Programme & Tools für Technologiepartnerschaften",
             "show_in_menus": false,
-            "search_description": "Entdecken Sie das Portfolio von AllianceCore an Partnerschaftslösungen: Co-Innovations-Frameworks, gemeinsame Go-to-Market-Programme und Partnerportal-Technologien, die den Wert Ihrer Allianzen maximieren.",
+            "search_description": "Entdecken Sie das Portfolio von Alliance an Partnerschaftslösungen: Co-Innovations-Frameworks, gemeinsame Go-to-Market-Programme und Partnerportal-Technologien, die den Wert Ihrer Allianzen maximieren.",
             "latest_revision_created_at": "2026-02-23T06:29:03.085Z",
             "alias_of": null
         }
@@ -564,15 +564,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "AllianceCore",
-            "draft_title": "AllianceCore",
+            "title": "Alliance",
+            "draft_title": "Alliance",
             "slug": "home-page-es",
             "content_type": 31,
             "url_path": "/home-page-es/",
             "owner": 1,
-            "seo_title": "AllianceCore | Alianzas Estratégicas Tecnológicas e Innovación con IA",
+            "seo_title": "Alliance | Alianzas Estratégicas Tecnológicas e Innovación con IA",
             "show_in_menus": false,
-            "search_description": "AllianceCore ayuda a las empresas tecnológicas a escalar mediante alianzas estratégicas. Diseñamos, construimos y gestionamos ecosistemas de socios para impulsar la coinnovación, acelerar la comercialización y desbloquear nuevas fuentes de ingresos.",
+            "search_description": "Alliance ayuda a las empresas tecnológicas a escalar mediante alianzas estratégicas. Diseñamos, construimos y gestionamos ecosistemas de socios para impulsar la coinnovación, acelerar la comercialización y desbloquear nuevas fuentes de ingresos.",
             "latest_revision_created_at": "2026-02-23T06:28:52.120Z",
             "alias_of": null
         }
@@ -598,15 +598,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "Sobre AllianceCore",
-            "draft_title": "Sobre AllianceCore",
+            "title": "Sobre Alliance",
+            "draft_title": "Sobre Alliance",
             "slug": "about-page",
             "content_type": 29,
             "url_path": "/home-page-es/about-page/",
             "owner": 1,
-            "seo_title": "Sobre AllianceCore | Expertos en Alianzas Tecnológicas",
+            "seo_title": "Sobre Alliance | Expertos en Alianzas Tecnológicas",
             "show_in_menus": true,
-            "search_description": "AllianceCore construye y gestiona alianzas tecnológicas que generan resultados comerciales medibles. Conozca cómo ayudamos a las empresas a navegar por el complejo panorama de las alianzas estratégicas.",
+            "search_description": "Alliance construye y gestiona alianzas tecnológicas que generan resultados comerciales medibles. Conozca cómo ayudamos a las empresas a navegar por el complejo panorama de las alianzas estratégicas.",
             "latest_revision_created_at": "2026-02-23T06:28:53.690Z",
             "alias_of": null
         }
@@ -638,9 +638,9 @@
             "content_type": 30,
             "url_path": "/home-page-es/contact-page/",
             "owner": 1,
-            "seo_title": "Contacte a AllianceCore | Inicie una Alianza Estratégica",
+            "seo_title": "Contacte a Alliance | Inicie una Alianza Estratégica",
             "show_in_menus": false,
-            "search_description": "¿Listo para explorar una alianza tecnológica? Comuníquese con AllianceCore. Le ayudaremos a diseñar una estrategia de asociación que impulse el crecimiento y la innovación.",
+            "search_description": "¿Listo para explorar una alianza tecnológica? Comuníquese con Alliance. Le ayudaremos a diseñar una estrategia de asociación que impulse el crecimiento y la innovación.",
             "latest_revision_created_at": "2026-02-23T06:28:56.043Z",
             "alias_of": null
         }
@@ -672,9 +672,9 @@
             "content_type": 32,
             "url_path": "/home-page-es/team-page/",
             "owner": 1,
-            "seo_title": "Equipo de AllianceCore | Arquitectos de Alianzas y Estrategas Tecnológicos",
+            "seo_title": "Equipo de Alliance | Arquitectos de Alianzas y Estrategas Tecnológicos",
             "show_in_menus": true,
-            "search_description": "Conozca a los expertos detrás de AllianceCore. Nuestro equipo aporta décadas de experiencia en alianzas tecnológicas, desarrollo de ecosistemas y gestión de programas de socios.",
+            "search_description": "Conozca a los expertos detrás de Alliance. Nuestro equipo aporta décadas de experiencia en alianzas tecnológicas, desarrollo de ecosistemas y gestión de programas de socios.",
             "latest_revision_created_at": "2026-02-23T06:29:00.558Z",
             "alias_of": null
         }
@@ -708,7 +708,7 @@
             "owner": 1,
             "seo_title": "Soluciones de Alianzas | Programas y Herramientas para Alianzas Tecnológicas",
             "show_in_menus": false,
-            "search_description": "Descubra el portafolio de soluciones de alianzas de AllianceCore: marcos de coinnovación, programas conjuntos de comercialización y tecnologías de portal de socios diseñadas para maximizar el valor de sus alianzas.",
+            "search_description": "Descubra el portafolio de soluciones de alianzas de Alliance: marcos de coinnovación, programas conjuntos de comercialización y tecnologías de portal de socios diseñadas para maximizar el valor de sus alianzas.",
             "latest_revision_created_at": "2026-02-23T06:29:03.610Z",
             "alias_of": null
         }
@@ -734,15 +734,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "AllianceCore",
-            "draft_title": "AllianceCore",
+            "title": "Alliance",
+            "draft_title": "Alliance",
             "slug": "home-page-fr",
             "content_type": 31,
             "url_path": "/home-page-fr/",
             "owner": 1,
-            "seo_title": "AllianceCore | Partenariats technologiques stratégiques et innovation IA",
+            "seo_title": "Alliance | Partenariats technologiques stratégiques et innovation IA",
             "show_in_menus": false,
-            "search_description": "AllianceCore aide les entreprises technologiques à se développer grâce à des alliances stratégiques. Nous concevons, construisons et gérons des écosystèmes de partenaires pour favoriser la co‑innovation, accélérer la mise sur le marché et débloquer de nouvelles sources de revenus.",
+            "search_description": "Alliance aide les entreprises technologiques à se développer grâce à des alliances stratégiques. Nous concevons, construisons et gérons des écosystèmes de partenaires pour favoriser la co‑innovation, accélérer la mise sur le marché et débloquer de nouvelles sources de revenus.",
             "latest_revision_created_at": "2026-02-23T06:28:50.860Z",
             "alias_of": null
         }
@@ -768,15 +768,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "À propos d'AllianceCore",
-            "draft_title": "À propos d'AllianceCore",
+            "title": "À propos d'Alliance",
+            "draft_title": "À propos d'Alliance",
             "slug": "about-page",
             "content_type": 29,
             "url_path": "/home-page-fr/about-page/",
             "owner": 1,
-            "seo_title": "À propos d'AllianceCore | Experts en partenariats technologiques",
+            "seo_title": "À propos d'Alliance | Experts en partenariats technologiques",
             "show_in_menus": true,
-            "search_description": "AllianceCore construit et gère des partenariats technologiques qui apportent des résultats commerciaux mesurables. Découvrez comment nous aidons les entreprises à naviguer dans le paysage complexe des alliances stratégiques.",
+            "search_description": "Alliance construit et gère des partenariats technologiques qui apportent des résultats commerciaux mesurables. Découvrez comment nous aidons les entreprises à naviguer dans le paysage complexe des alliances stratégiques.",
             "latest_revision_created_at": "2026-02-23T06:28:53.547Z",
             "alias_of": null
         }
@@ -808,9 +808,9 @@
             "content_type": 30,
             "url_path": "/home-page-fr/contact-page/",
             "owner": 1,
-            "seo_title": "Contactez AllianceCore | Lancez un partenariat stratégique",
+            "seo_title": "Contactez Alliance | Lancez un partenariat stratégique",
             "show_in_menus": false,
-            "search_description": "Prêt à explorer une alliance technologique ? Contactez AllianceCore. Nous vous aiderons à concevoir une stratégie de partenariat qui stimule la croissance et l'innovation.",
+            "search_description": "Prêt à explorer une alliance technologique ? Contactez Alliance. Nous vous aiderons à concevoir une stratégie de partenariat qui stimule la croissance et l'innovation.",
             "latest_revision_created_at": "2026-02-23T06:28:55.337Z",
             "alias_of": null
         }
@@ -842,9 +842,9 @@
             "content_type": 32,
             "url_path": "/home-page-fr/team-page/",
             "owner": 1,
-            "seo_title": "Équipe AllianceCore | Architectes de partenariats et stratèges technologiques",
+            "seo_title": "Équipe Alliance | Architectes de partenariats et stratèges technologiques",
             "show_in_menus": true,
-            "search_description": "Rencontrez les experts derrière AllianceCore. Notre équipe apporte des décennies d'expérience dans les alliances technologiques, le développement d'écosystèmes et la gestion de programmes partenaires.",
+            "search_description": "Rencontrez les experts derrière Alliance. Notre équipe apporte des décennies d'expérience dans les alliances technologiques, le développement d'écosystèmes et la gestion de programmes partenaires.",
             "latest_revision_created_at": "2026-02-23T06:29:00.264Z",
             "alias_of": null
         }
@@ -878,7 +878,7 @@
             "owner": 1,
             "seo_title": "Solutions d'alliance | Programmes et outils pour partenariats technologiques",
             "show_in_menus": false,
-            "search_description": "Découvrez le portefeuille de solutions de partenariat d'AllianceCore : cadres de co‑innovation, programmes de commercialisation conjoints et technologies de portail partenaire conçus pour maximiser la valeur de vos alliances.",
+            "search_description": "Découvrez le portefeuille de solutions de partenariat d'Alliance : cadres de co‑innovation, programmes de commercialisation conjoints et technologies de portail partenaire conçus pour maximiser la valeur de vos alliances.",
             "latest_revision_created_at": "2026-02-23T06:29:03.220Z",
             "alias_of": null
         }
@@ -904,15 +904,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "AllianceCore",
-            "draft_title": "AllianceCore",
+            "title": "Alliance",
+            "draft_title": "Alliance",
             "slug": "home-page-pt-br",
             "content_type": 31,
             "url_path": "/home-page-pt-br/",
             "owner": 1,
-            "seo_title": "AllianceCore | Alianças Estratégicas em Tecnologia e Inovação com IA",
+            "seo_title": "Alliance | Alianças Estratégicas em Tecnologia e Inovação com IA",
             "show_in_menus": false,
-            "search_description": "A AllianceCore ajuda empresas de tecnologia a escalar por meio de alianças estratégicas. Projetamos, construímos e gerenciamos ecossistemas de parceiros para impulsionar a coinovação, acelerar a entrada no mercado e desbloquear novas receitas.",
+            "search_description": "A Alliance ajuda empresas de tecnologia a escalar por meio de alianças estratégicas. Projetamos, construímos e gerenciamos ecossistemas de parceiros para impulsionar a coinovação, acelerar a entrada no mercado e desbloquear novas receitas.",
             "latest_revision_created_at": "2026-02-23T06:28:52.269Z",
             "alias_of": null
         }
@@ -938,15 +938,15 @@
             "locked": false,
             "locked_at": null,
             "locked_by": null,
-            "title": "Sobre a AllianceCore",
-            "draft_title": "Sobre a AllianceCore",
+            "title": "Sobre a Alliance",
+            "draft_title": "Sobre a Alliance",
             "slug": "about-page",
             "content_type": 29,
             "url_path": "/home-page-pt-br/about-page/",
             "owner": 1,
-            "seo_title": "Sobre a AllianceCore | Especialistas em Parcerias Tecnológicas",
+            "seo_title": "Sobre a Alliance | Especialistas em Parcerias Tecnológicas",
             "show_in_menus": true,
-            "search_description": "A AllianceCore constrói e gerencia parcerias tecnológicas que entregam resultados de negócios mensuráveis. Saiba como ajudamos empresas a navegar no cenário complexo das alianças estratégicas.",
+            "search_description": "A Alliance constrói e gerencia parcerias tecnológicas que entregam resultados de negócios mensuráveis. Saiba como ajudamos empresas a navegar no cenário complexo das alianças estratégicas.",
             "latest_revision_created_at": "2026-02-23T06:28:54.472Z",
             "alias_of": null
         }
@@ -978,9 +978,9 @@
             "content_type": 30,
             "url_path": "/home-page-pt-br/contact-page/",
             "owner": 1,
-            "seo_title": "Contate a AllianceCore | Inicie uma Parceria Estratégica",
+            "seo_title": "Contate a Alliance | Inicie uma Parceria Estratégica",
             "show_in_menus": false,
-            "search_description": "Pronto para explorar uma aliança tecnológica? Entre em contato com a AllianceCore. Ajudaremos você a projetar uma estratégia de parceria que impulsione crescimento e inovação.",
+            "search_description": "Pronto para explorar uma aliança tecnológica? Entre em contato com a Alliance. Ajudaremos você a projetar uma estratégia de parceria que impulsione crescimento e inovação.",
             "latest_revision_created_at": "2026-02-23T06:28:56.250Z",
             "alias_of": null
         }
@@ -1012,9 +1012,9 @@
             "content_type": 32,
             "url_path": "/home-page-pt-br/team-page/",
             "owner": 1,
-            "seo_title": "Equipe AllianceCore | Arquitetos de Parcerias e Estrategistas de Tecnologia",
+            "seo_title": "Equipe Alliance | Arquitetos de Parcerias e Estrategistas de Tecnologia",
             "show_in_menus": true,
-            "search_description": "Conheça os especialistas por trás da AllianceCore. Nossa equipe traz décadas de experiência em alianças tecnológicas, desenvolvimento de ecossistemas e gestão de programas de parceiros.",
+            "search_description": "Conheça os especialistas por trás da Alliance. Nossa equipe traz décadas de experiência em alianças tecnológicas, desenvolvimento de ecossistemas e gestão de programas de parceiros.",
             "latest_revision_created_at": "2026-02-23T06:29:01.244Z",
             "alias_of": null
         }
@@ -1048,7 +1048,7 @@
             "owner": 1,
             "seo_title": "Soluções de Alianças | Programas e Ferramentas para Parcerias Tecnológicas",
             "show_in_menus": false,
-            "search_description": "Descubra o portfólio de soluções de parceria da AllianceCore: estruturas de coinovação, programas conjuntos de lançamento no mercado e tecnologias de portal de parceiros projetadas para maximizar o valor de suas alianças.",
+            "search_description": "Descubra o portfólio de soluções de parceria da Alliance: estruturas de coinovação, programas conjuntos de lançamento no mercado e tecnologias de portal de parceiros projetadas para maximizar o valor de suas alianças.",
             "latest_revision_created_at": "2026-02-23T06:29:03.722Z",
             "alias_of": null
         }
@@ -1082,7 +1082,7 @@
             "owner": null,
             "seo_title": "Alliance Events | Workshops & Summits",
             "show_in_menus": false,
-            "search_description": "Join AllianceCore workshops and summits on technology partnerships. Connect with ecosystem leaders, learn alliance best practices, and explore co‑innovation opportunities.",
+            "search_description": "Join Alliance workshops and summits on technology partnerships. Connect with ecosystem leaders, learn alliance best practices, and explore co‑innovation opportunities.",
             "latest_revision_created_at": "2026-02-23T06:29:03.867Z",
             "alias_of": null
         }
@@ -1150,7 +1150,7 @@
             "owner": null,
             "seo_title": "Allianz-Events | Workshops & Gipfeltreffen",
             "show_in_menus": false,
-            "search_description": "Nehmen Sie an AllianceCore Workshops und Gipfeltreffen zu Technologiepartnerschaften teil. Vernetzen Sie sich mit Ökosystemführern, lernen Sie Best Practices für Allianzen kennen und entdecken Sie Co-Innovationsmöglichkeiten.",
+            "search_description": "Nehmen Sie an Alliance Workshops und Gipfeltreffen zu Technologiepartnerschaften teil. Vernetzen Sie sich mit Ökosystemführern, lernen Sie Best Practices für Allianzen kennen und entdecken Sie Co-Innovationsmöglichkeiten.",
             "latest_revision_created_at": "2026-02-23T06:29:04.524Z",
             "alias_of": null
         }
@@ -1184,7 +1184,7 @@
             "owner": null,
             "seo_title": "Événements d'alliance | Ateliers & Sommets",
             "show_in_menus": false,
-            "search_description": "Participez aux ateliers et sommets d'AllianceCore sur les partenariats technologiques. Connectez-vous avec des leaders d'écosystème, apprenez les meilleures pratiques d'alliance et explorez les opportunités de co‑innovation.",
+            "search_description": "Participez aux ateliers et sommets d'Alliance sur les partenariats technologiques. Connectez-vous avec des leaders d'écosystème, apprenez les meilleures pratiques d'alliance et explorez les opportunités de co‑innovation.",
             "latest_revision_created_at": "2026-02-23T06:29:04.633Z",
             "alias_of": null
         }
@@ -1218,7 +1218,7 @@
             "owner": null,
             "seo_title": "Eventos de Alianzas | Talleres y Cumbres",
             "show_in_menus": false,
-            "search_description": "Únase a los talleres y cumbres de AllianceCore sobre alianzas tecnológicas. Conéctese con líderes del ecosistema, aprenda las mejores prácticas en alianzas y explore oportunidades de coinnovación.",
+            "search_description": "Únase a los talleres y cumbres de Alliance sobre alianzas tecnológicas. Conéctese con líderes del ecosistema, aprenda las mejores prácticas en alianzas y explore oportunidades de coinnovación.",
             "latest_revision_created_at": "2026-02-23T06:29:04.726Z",
             "alias_of": null
         }
@@ -1252,7 +1252,7 @@
             "owner": null,
             "seo_title": "Eventos de Alianças | Workshops e Cúpulas",
             "show_in_menus": false,
-            "search_description": "Participe dos workshops e cúpulas da AllianceCore sobre parcerias tecnológicas. Conecte-se com líderes de ecossistema, aprenda as melhores práticas de alianças e explore oportunidades de coinovação.",
+            "search_description": "Participe dos workshops e cúpulas da Alliance sobre parcerias tecnológicas. Conecte-se com líderes de ecossistema, aprenda as melhores práticas de alianças e explore oportunidades de coinovação.",
             "latest_revision_created_at": "2026-02-23T06:29:05.279Z",
             "alias_of": null
         }
@@ -1286,7 +1286,7 @@
             "owner": null,
             "seo_title": "Alliance Capabilities | Strategic Partner Ecosystem Services",
             "show_in_menus": false,
-            "search_description": "Leverage AllianceCore's capabilities in partner strategy, ecosystem orchestration, joint solution development, and alliance program management to scale your business through partnerships.",
+            "search_description": "Leverage Alliance's capabilities in partner strategy, ecosystem orchestration, joint solution development, and alliance program management to scale your business through partnerships.",
             "latest_revision_created_at": "2026-02-23T06:29:05.596Z",
             "alias_of": null
         }
@@ -1354,7 +1354,7 @@
             "owner": null,
             "seo_title": "Allianzfähigkeiten | Dienstleistungen für strategische Partner-Ökosysteme",
             "show_in_menus": false,
-            "search_description": "Nutzen Sie die Fähigkeiten von AllianceCore in Partnerstrategie, Ökosystem-Orchestrierung, gemeinsamer Lösungsentwicklung und Allianzprogramm-Management, um Ihr Geschäft durch Partnerschaften zu skalieren.",
+            "search_description": "Nutzen Sie die Fähigkeiten von Alliance in Partnerstrategie, Ökosystem-Orchestrierung, gemeinsamer Lösungsentwicklung und Allianzprogramm-Management, um Ihr Geschäft durch Partnerschaften zu skalieren.",
             "latest_revision_created_at": "2026-02-23T06:29:06.606Z",
             "alias_of": null
         }
@@ -1388,7 +1388,7 @@
             "owner": null,
             "seo_title": "Capacités d'alliance | Services d'écosystème de partenaires stratégiques",
             "show_in_menus": false,
-            "search_description": "Tirez parti des capacités d'AllianceCore en matière de stratégie partenaire, d'orchestration d'écosystème, de développement de solutions conjointes et de gestion de programmes d'alliance pour développer votre activité grâce aux partenariats.",
+            "search_description": "Tirez parti des capacités d'Alliance en matière de stratégie partenaire, d'orchestration d'écosystème, de développement de solutions conjointes et de gestion de programmes d'alliance pour développer votre activité grâce aux partenariats.",
             "latest_revision_created_at": "2026-02-23T06:29:06.863Z",
             "alias_of": null
         }
@@ -1422,7 +1422,7 @@
             "owner": null,
             "seo_title": "Capacidades de Alianzas | Servicios de Ecosistema de Socios Estratégicos",
             "show_in_menus": false,
-            "search_description": "Aproveche las capacidades de AllianceCore en estrategia de socios, orquestación de ecosistemas, desarrollo conjunto de soluciones y gestión de programas de alianzas para escalar su negocio a través de asociaciones.",
+            "search_description": "Aproveche las capacidades de Alliance en estrategia de socios, orquestación de ecosistemas, desarrollo conjunto de soluciones y gestión de programas de alianzas para escalar su negocio a través de asociaciones.",
             "latest_revision_created_at": "2026-02-23T06:29:07.799Z",
             "alias_of": null
         }
@@ -1456,7 +1456,7 @@
             "owner": null,
             "seo_title": "Capacidades de Alianças | Serviços de Ecossistema de Parceiros Estratégicos",
             "show_in_menus": false,
-            "search_description": "Aproveite as capacidades da AllianceCore em estratégia de parceiros, orquestração de ecossistemas, desenvolvimento conjunto de soluções e gestão de programas de alianças para escalar seu negócio por meio de parcerias.",
+            "search_description": "Aproveite as capacidades da Alliance em estratégia de parceiros, orquestração de ecossistemas, desenvolvimento conjunto de soluções e gestão de programas de alianças para escalar seu negócio por meio de parcerias.",
             "latest_revision_created_at": "2026-02-23T06:29:07.903Z",
             "alias_of": null
         }

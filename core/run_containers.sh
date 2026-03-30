@@ -1,7 +1,7 @@
 #!/bin/bash
 
 # ==============================================================================
-# AllianceCore Container Management Script
+# Alliance Container Management Script
 # ==============================================================================
 
 set -e
@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
-echo -e "${BLUE}=== AllianceCore Docker Compose Runner ===${NC}"
+echo -e "${BLUE}=== Alliance Docker Compose Runner ===${NC}"
 
 # Parse Arguments
 COMPOSE_FILE="docker-compose.yml"
@@ -40,7 +40,7 @@ if [ ! -d "$PROJECT_ROOT/libs/django-grep/.git" ]; then
     git clone https://github.com/mammhoud/django-grep.git "$PROJECT_ROOT/libs/django-grep"
 fi
 
-echo -e "${BLUE}Starting AllianceCore in ${YELLOW}$MODE${BLUE} mode using ${YELLOW}$COMPOSE_FILE${BLUE}...${NC}"
+echo -e "${BLUE}Starting Alliance in ${YELLOW}$MODE${BLUE} mode using ${YELLOW}$COMPOSE_FILE${BLUE}...${NC}"
 docker compose -f "$COMPOSE_FILE" up -d --build
 
 echo -e "${GREEN}✅ Containers started successfully!${NC}"

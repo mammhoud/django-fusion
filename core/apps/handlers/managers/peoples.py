@@ -7,7 +7,7 @@ from django.core.cache import cache
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 
-from core.CI.services import *
+from alliance.CI.services import *
 from django_grep.pipelines.managers import CachedManager
 
 # from django_grep.pipelines.models.manage.tags import PersonTag, TaggedPerson

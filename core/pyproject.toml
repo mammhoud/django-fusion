@@ -1,13 +1,13 @@
 
 [project]
-name = "alliancecore"
+name = "alliance"
 version = "1.0.3"
-description = "AllianceCore"
+description = "Alliance"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "AllianceCore Team", email = "support@structa.cloud"}
+    {name = "Alliance Team", email = "support@structa.cloud"}
 ]
 dependencies = [
     "bumpver",

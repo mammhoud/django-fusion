@@ -15,9 +15,9 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 # -------------------------------------------------------------------
 # 🏷️ Titling
 # -------------------------------------------------------------------
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "AllianceCore")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "AllianceCore Administration")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "AllianceCore Admin")
+WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "Alliance")
+ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "Alliance Administration")
+ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "Alliance Admin")
 ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Management")
 
 # -------------------------------------------------------------------

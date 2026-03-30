@@ -1,4 +1,4 @@
-# 📝 AllianceCore Blog — Advanced CMS Plugin
+# 📝 Alliance Blog — Advanced CMS Plugin
 
 ## 🏗️ Product Description
 
@@ -37,4 +37,4 @@ apps/blog/
 ## Further Reading
 
 - [MCP Integration](../integrations/mcp.md)
-- [AllianceCore PRODUCT.md](../PRODUCT.md)
+- [Alliance PRODUCT.md](../PRODUCT.md)

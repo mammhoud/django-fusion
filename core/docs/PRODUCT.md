@@ -1,6 +1,6 @@
-# AllianceCore – Premium Wagtail CMS & LMS Foundation
+# Alliance – Premium Wagtail CMS & LMS Foundation
 
-**AllianceCore** is a production-hardened, modular ecosystem built on the rock-solid foundations of **Django 4.x** and **Wagtail 5.x**. It is designed to be the definitive "source of truth" for modern web agencies, SaaS founders, and enterprise teams who need a professional-grade base for complex projects.
+**Alliance** is a production-hardened, modular ecosystem built on the rock-solid foundations of **Django 4.x** and **Wagtail 5.x**. It is designed to be the definitive "source of truth" for modern web agencies, SaaS founders, and enterprise teams who need a professional-grade base for complex projects.
 
 ---
 
@@ -14,7 +14,7 @@
 ## 🎯 Target Audiences & Marketing Usage
 
 ### 🏢 For Agencies
-- **Standardized Foundation:** Skip the boilerplate. Use AllianceCore to start every project with a unified, clean architecture.
+- **Standardized Foundation:** Skip the boilerplate. Use Alliance to start every project with a unified, clean architecture.
 - **Speed to Market:** Ship high-quality Wagtail sites 5x faster by focusing only on custom logic.
 - **Branding Ready:** Full Tailwind CSS integration and SCSS pipeline for rapid UI development.
 
@@ -42,12 +42,12 @@
 
 ## 🧩 The Plugin Ecosystem (Upcoming & Releasable)
 
-AllianceCore is an extensible hub. Your license allows you to integrate or build these modules:
+Alliance is an extensible hub. Your license allows you to integrate or build these modules:
 
-- **[STABLE] AllianceCore Blog**: Professional categories, tags, multi-author, and SEO management.
-- **[BETA] AllianceCore LMS**: Lessons, course enrollments, certificates, and student progress tracking.
-- **[Q3 ROADMAP] AllianceCore E-Commerce**: Stripe/PayPal checkouts, recurring billing, and digital asset delivery.
-- **[ROADMAP] AllianceCore Community**: Threaded forums, user reputation systems, and member directories.
+- **[STABLE] Alliance Blog**: Professional categories, tags, multi-author, and SEO management.
+- **[BETA] Alliance LMS**: Lessons, course enrollments, certificates, and student progress tracking.
+- **[Q3 ROADMAP] Alliance E-Commerce**: Stripe/PayPal checkouts, recurring billing, and digital asset delivery.
+- **[ROADMAP] Alliance Community**: Threaded forums, user reputation systems, and member directories.
 
 ---
 
@@ -66,4 +66,4 @@ AllianceCore is an extensible hub. Your license allows you to integrate or build
 
 ---
 
-**AllianceCore is the heart of your next big project. Don't waste time on the basics — build the features that matter.**
+**Alliance is the heart of your next big project. Don't waste time on the basics — build the features that matter.**

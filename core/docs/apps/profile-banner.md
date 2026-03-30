@@ -1,6 +1,6 @@
 # Profile Banner Options
 
-This document lists the available and recommended options for the profile banner actions dropdown in AllianceCore.
+This document lists the available and recommended options for the profile banner actions dropdown in Alliance.
 
 **Source component:** `components/profile/partials/banner-options.html`
 

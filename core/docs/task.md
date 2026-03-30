@@ -1,4 +1,4 @@
-# AllianceCore Docs Refactoring — Task List
+# Alliance Docs Refactoring — Task List
 
 > Generated from conversation: `7d30f510-588e-43f2-8111-d38b3fcda71e`
 > Date: 2026-03-30
@@ -8,13 +8,13 @@
 ## Phase 1: Create `docs/` Skeleton + New Root Docs
 
 - [x] Create `core/docs/README.md` (master index)
-- [x] Create `core/docs/PRODUCT.md` (AllianceCore product overview)
+- [x] Create `core/docs/PRODUCT.md` (Alliance product overview)
 - [x] Create `core/docs/INSTALL.md` (Docker-based install guide)
 - [ ] Create `core/docs/config/settings.md` (expanded settings reference)
 
 ---
 
-## Phase 2: Migrate Existing Docs → `docs/` (with Xellent → AllianceCore rename)
+## Phase 2: Migrate Existing Docs → `docs/` (with Xellent → Alliance rename)
 
 - [x] Migrate `apps/blog/PRODUCT.md` → `core/docs/apps/blog.md`
 - [x] Migrate `apps/handlers/PRODUCT.md` → `core/docs/apps/handlers.md`
@@ -49,7 +49,7 @@
 ## Phase 5: Verify
 
 - [ ] `find core/docs -name "*.md" | sort` — confirm all docs exist
-- [ ] `grep -r "Xellent\|xellent\|AllianceCore\|/root/xellent" core/docs` — should return 0 results
+- [ ] `grep -r "Xellent\|xellent\|Alliance\|/root/xellent" core/docs` — should return 0 results
 - [ ] `grep -r "Xellent" pyproject.toml` — should return 0 results
 - [ ] Confirm deleted originals no longer exist
 

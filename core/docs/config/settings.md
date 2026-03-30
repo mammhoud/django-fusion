@@ -1,6 +1,6 @@
 # Settings Reference
 
-AllianceCore uses **Dynaconf** layered on top of Django settings. Configuration is split by environment in `configs/settings/`.
+Alliance uses **Dynaconf** layered on top of Django settings. Configuration is split by environment in `configs/settings/`.
 
 ## Settings Files
 
@@ -59,7 +59,7 @@ Environment is selected via `DJANGO_ENV` (defaults to `local`).
 
 | Variable | Default | Description |
 |---|---|---|
-| `WAGTAIL_SITE_NAME` | `AllianceCore` | Site name shown in admin |
+| `WAGTAIL_SITE_NAME` | `Alliance` | Site name shown in admin |
 
 ### Temporal (Background Workflows)
 
@@ -121,14 +121,14 @@ INSTALLED_APPS = [
     "wagtail.images",
     # ... other wagtail apps
 
-    # AllianceCore apps
+    # Alliance apps
     "apps.blog",
     "apps.handlers",
     "apps.pages",
     "apps.LMS",
 
     # CI / Temporal
-    "core.CI",
+    "alliance.CI",
 
     # Third-party
     "allauth",

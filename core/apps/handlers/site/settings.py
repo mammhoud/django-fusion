@@ -247,18 +247,6 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
                 },
             ],
             "stats_overview": {
-                "total_courses": person.enrolled_courses.count()
-                if hasattr(person, "enrolled_courses")
-                else 0,
-                "completed_courses": person.completed_courses.count()
-                if hasattr(person, "completed_courses")
-                else 0,
-                "total_certifications": person.certifications.count()
-                if hasattr(person, "certifications")
-                else 0,
-                "active_projects": person.projects.filter(status="in_progress").count()
-                if hasattr(person, "projects")
-                else 0,
                 "total_connections": getattr(person, "connection_count", 0),
                 "profile_views": getattr(person, "profile_views", 0),
             },
@@ -307,15 +295,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
         elif section == "notifications":
             initial_data.update(
                 {
-                    "course_updates": getattr(person, "course_updates_notifications", True),
-                    "instructor_messages": getattr(
-                        person, "instructor_messages_notifications", True
-                    ),
                     "marketing_emails": getattr(person, "marketing_emails", False),
-                    "weekly_reports": getattr(person, "weekly_reports_notifications", True),
-                    "assignment_notifications": getattr(person, "assignment_notifications", True),
-                    "forum_activity": getattr(person, "forum_activity_notifications", False),
-                    "deadline_reminders": getattr(person, "deadline_reminders_notifications", True),
                     "sms_notifications": getattr(person, "sms_notifications", False),
                 }
             )

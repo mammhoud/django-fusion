@@ -1,13 +1,13 @@
-# AllianceCore – Professional Wagtail CMS Foundation
+# Alliance – Professional Wagtail CMS Foundation
 
 ## The Heart of a Modern Digital Ecosystem
 
-**AllianceCore** is the definitive starting point for developers, agencies, and startups who need more than just a template. It is a production-hardened, modular foundation built with **Django 4.x** and **Wagtail 5.x**, designed to power complex web applications and scale effortlessly.
+**Alliance** is the definitive starting point for developers, agencies, and startups who need more than just a template. It is a production-hardened, modular foundation built with **Django 4.x** and **Wagtail 5.x**, designed to power complex web applications and scale effortlessly.
 
 ---
 
 ### 🎯 Product Definition
-AllianceCore is a **Unified CMS Framework**. It provides the core architecture (Identity, Security, Settings, and Frontend Pipeline) needed to host a suite of specialized modules. Think of AllianceCore as the high-performance engine, with our other products serving as professional add-ons that plug directly into it.
+Alliance is a **Unified CMS Framework**. It provides the core architecture (Identity, Security, Settings, and Frontend Pipeline) needed to host a suite of specialized modules. Think of Alliance as the high-performance engine, with our other products serving as professional add-ons that plug directly into it.
 
 ### 🧩 Core Ecosystem Modules
 *   **Alliance LMS**: A full-featured Learning Management System built on top of the core.
@@ -15,8 +15,8 @@ AllianceCore is a **Unified CMS Framework**. It provides the core architecture (
 
 ---
 
-### 🚀 Why Choose AllianceCore?
-Unlike generic themes, AllianceCore is a **real Django project** with a clean, scalable architecture. You spend your time building features, not hacking around boilerplate code.
+### 🚀 Why Choose Alliance?
+Unlike generic themes, Alliance is a **real Django project** with a clean, scalable architecture. You spend your time building features, not hacking around boilerplate code.
 
 #### Premium Features Out-of-the-Box:
 *   **Modular Architecture**: Plug in LMS or Blog modules in minutes without rewriting core logic.
@@ -29,18 +29,18 @@ Unlike generic themes, AllianceCore is a **real Django project** with a clean, s
 ---
 
 ### 🔌 Integration Ready
-AllianceCore includes everything needed to support massive extensions:
+Alliance includes everything needed to support massive extensions:
 *   **Pluggable App Structure**: Standardized paths for third-party or custom apps.
 *   **Preconfigured URLs & Authentication**: Shared login and profile management across all modules.
 *   **Unified Settings System**: A single source of truth for your entire platform.
 
-### 🎓 Who is AllianceCore for?
+### 🎓 Who is Alliance for?
 *   **Agencies**: Standardize your project base to ship sites 5x faster.
 *   **SaaS Founders**: Build your MVP on a foundation that can actually handle growth.
 *   **Enterprise Teams**: Maintain a clean, auditable codebase across multiple departments.
 
 ---
 
-**AllianceCore is the heart of your next big project. Start with a solid base, then expand with power.**
+**Alliance is the heart of your next big project. Start with a solid base, then expand with power.**
 
 [View Live Demo](https://core.structa.cloud) | [Purchase License](https://structa.cloud)

@@ -1,4 +1,4 @@
-# AllianceCore — Installation Guide
+# Alliance — Installation Guide
 
 This guide covers setting up a full local development environment using Docker Compose.
 
@@ -52,7 +52,7 @@ POSTGRES_PASSWORD=alliancecore
 REDIS_URL=redis://redis:6379/0
 
 # Wagtail
-WAGTAIL_SITE_NAME=AllianceCore
+WAGTAIL_SITE_NAME=Alliance
 
 # Environment
 DJANGO_ENV=local
@@ -86,7 +86,7 @@ STRIPE_SECRET_KEY=
 
 ## 3. Set Up `django-grep` (Source Clone)
 
-AllianceCore uses `django-grep` installed from a local source clone as configured in `pyproject.toml`:
+Alliance uses `django-grep` installed from a local source clone as configured in `pyproject.toml`:
 
 ```toml
 [tool.uv.sources]
@@ -231,7 +231,7 @@ python com makemigrations
 python com collectstatic
 python com createsuperuser
 python com run_temporal_worker
-python com sync_alliancecore   # AllianceCore sync command
+python com sync_alliancecore   # Alliance sync command
 ```
 
 ---

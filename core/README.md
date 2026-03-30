@@ -1,6 +1,6 @@
-# AllianceCore – Developer Quick Start
+# Alliance – Developer Quick Start
 
-Welcome to **AllianceCore**, the modular Django/Wagtail foundation for professional-grade ecosystems.
+Welcome to **Alliance**, the modular Django/Wagtail foundation for professional-grade ecosystems.
 
 ## 🚀 Getting Started
 
@@ -36,4 +36,4 @@ cd core/
 
 ---
 
-**AllianceCore is built to scale. Start your next project on a rock-solid foundation.**
+**Alliance is built to scale. Start your next project on a rock-solid foundation.**

@@ -1,4 +1,4 @@
-# 🤖 Model Context Protocol (MCP) in AllianceCore
+# 🤖 Model Context Protocol (MCP) in Alliance
 
 ## Overview
 This project is designed to be fully integrated with AI-driven development workflows using the **Model Context Protocol (MCP)**. MCP allows AI agents (like Claude or Antigravity) to act as a "junior developer" with direct access to your Django environment.

@@ -3,10 +3,7 @@ from django.http import HttpRequest, JsonResponse
 from django.views import View
 from django.utils.translation import gettext_lazy as _
 from django_grep.comp.site import PageHandler
-from core.CI.services.cart_service import CartService
-from apps.LMS.models.courses.info import Course
-
-
+from alliance.CI.services.cart_service import CartService
 class CartView(PageHandler):
     """
     Shopping cart view handler.
@@ -17,14 +14,10 @@ class CartView(PageHandler):
 
     def get_context_data(self, request: HttpRequest, **kwargs):
         """
-        Get cart items for the current user.
+        Get context data for the cart view.
         """
         context = super().get_context_data(**kwargs)
-
-        # Get cart items from session or database
-        cart_items = self._get_cart_items(request)
-        context['cart_items'] = cart_items
-
+        context['cart_items'] = self._get_cart_items(request)
         return context
 
     def _get_cart_items(self, request: HttpRequest):
@@ -35,20 +28,12 @@ class CartView(PageHandler):
             cart = CartService.get_or_create_cart(request)
             items = []
             for item in cart.items.all():
-                # Try to get course-specific data if it exists
                 product_data = {
                     'id': item.id,
-                    'name': _('Product'),
+                    'name': item.product_name,
+                    'description': item.product_description,
                     'price': float(item.price),
                 }
-                if hasattr(item, 'course'):
-                    course = item.course
-                    product_data.update({
-                        'id': course.id,
-                        'name': course.title,
-                        'description': course.description,
-                        'image': course.image.file.url if course.image else None,
-                    })
 
                 items.append({
                     'id': item.id,
@@ -184,27 +169,32 @@ class CartAddItemView(View):
         """
         Add an item to the cart.
         """
-        product_id = request.POST.get('product_id')
+    def post(self, request: HttpRequest):
+        """
+        Add an item to the cart.
+        """
+        product_name = request.POST.get('product_name', _('Product'))
+        product_id = request.POST.get('product_id', '0')
+        price = float(request.POST.get('price', 0))
         quantity = int(request.POST.get('quantity', 1))
-
-        try:
-            course = Course.objects.get(id=product_id)
-        except (Course.DoesNotExist, ValueError):
-            return JsonResponse({'status': 'error', 'message': _('Product not found')}, status=404)
+        description = request.POST.get('description', '')
 
         if request.user.is_authenticated:
             cart = CartService.get_or_create_cart(request)
-            CartService.add_item(cart, course, quantity)
+            CartService.add_item(cart, product_name, price, quantity, description)
             count = cart.total_items
         else:
             cart_data = request.session.get('cart', {})
-            if product_id in cart_data:
-                cart_data[product_id]['quantity'] += quantity
+            # Use name as key or id if available
+            key = product_id if product_id != '0' else product_name
+            if key in cart_data:
+                cart_data[key]['quantity'] += quantity
             else:
-                cart_data[product_id] = {
-                    'name': course.title,
-                    'price': str(course.price),
+                cart_data[key] = {
+                    'name': product_name,
+                    'price': price,
                     'quantity': quantity,
+                    'description': description
                 }
             request.session['cart'] = cart_data
             request.session.modified = True

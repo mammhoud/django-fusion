@@ -1,4 +1,4 @@
-# AllianceCore Documentation Refactoring — Implementation Plan
+# Alliance Documentation Refactoring — Implementation Plan
 
 > Generated from conversation: `7d30f510-588e-43f2-8111-d38b3fcda71e`
 > Date: 2026-03-30
@@ -10,7 +10,7 @@
 The goal of this refactoring is to:
 
 1. Centralize all scattered `.md` specification files into a structured `core/docs/` directory.
-2. Rename **"Xellent"** → **"AllianceCore"** across the entire repository (docs, config, management commands).
+2. Rename **"Xellent"** → **"Alliance"** across the entire repository (docs, config, management commands).
 3. Create essential root-level documentation: `PRODUCT.md`, `INSTALL.md`, `README.md`.
 4. Clean up redundant or empty files to establish a professional, maintainable project foundation.
 
@@ -36,7 +36,7 @@ The goal of this refactoring is to:
 ```
 core/docs/
 ├── README.md                        # Index/overview of all docs
-├── PRODUCT.md                       # Root product overview (AllianceCore)
+├── PRODUCT.md                       # Root product overview (Alliance)
 ├── INSTALL.md                       # Docker-based installation guide
 ├── implementation_plan.md           # This file
 ├── task.md                          # Task checklist
@@ -73,7 +73,7 @@ core/docs/
 Master index linking to all documentation sections.
 
 #### [NEW] `core/docs/PRODUCT.md`
-Root-level product overview for **AllianceCore** — project purpose, modules, tech stack.
+Root-level product overview for **Alliance** — project purpose, modules, tech stack.
 
 #### [NEW] `core/docs/INSTALL.md`
 Full Docker-based installation guide including:
@@ -93,7 +93,7 @@ Expand the raw template list in `assets/templates/allauth.md` into a proper refe
 
 ### 3. Files to Migrate
 
-Content is copied to the new `docs/` location, all `Xellent`/`xellent` references replaced with `AllianceCore`, then originals deleted.
+Content is copied to the new `docs/` location, all `Xellent`/`xellent` references replaced with `Alliance`, then originals deleted.
 
 | Original Path | New Path |
 |---|---|
@@ -121,14 +121,14 @@ Content is copied to the new `docs/` location, all `Xellent`/`xellent` reference
 
 ---
 
-### 4. "Xellent" → "AllianceCore" Renames
+### 4. "Xellent" → "Alliance" Renames
 
 #### [MODIFY] `pyproject.toml`
 ```diff
 -name = "xellent"
 -description = "Xellent Learning Management System"
 +name = "alliancecore"
-+description = "AllianceCore Platform"
++description = "Alliance Platform"
 ```
 
 #### [MODIFY] `apps/handlers/management/commands/sync_xellent.py`
@@ -136,7 +136,7 @@ Content is copied to the new `docs/` location, all `Xellent`/`xellent` reference
 - Update all internal references from `xellent` → `alliancecore`
 
 #### [MODIFY] All migrated docs
-- Replace all occurrences of `Xellent`, `xellent`, `AllianceCore`, `CTC Blog`, `CTC Handlers` with `AllianceCore`
+- Replace all occurrences of `Xellent`, `xellent`, `Alliance`, `CTC Blog`, `CTC Handlers` with `Alliance`
 - Fix all `/root/xellent/` file paths to use relative paths (e.g., `../assets/static/js/pages/`)
 
 ---
@@ -162,7 +162,7 @@ Content is copied to the new `docs/` location, all `Xellent`/`xellent` reference
 find core/docs -name "*.md" | sort
 
 # Confirm zero Xellent references remain in docs
-grep -r "Xellent\|xellent\|AllianceCore\|/root/xellent" core/docs
+grep -r "Xellent\|xellent\|Alliance\|/root/xellent" core/docs
 
 # Confirm pyproject.toml updated
 grep -r "Xellent" pyproject.toml

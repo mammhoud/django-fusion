@@ -1,8 +1,8 @@
-# 🤖 Model Context Protocol (MCP) in AllianceCore
+# 🤖 Model Context Protocol (MCP) in Alliance
 
 ## Overview
 
-AllianceCore is designed to be fully integrated with AI-driven development workflows using the **Model Context Protocol (MCP)**. MCP allows AI agents (like Claude or Antigravity) to act as a "junior developer" with direct access to your Django environment.
+Alliance is designed to be fully integrated with AI-driven development workflows using the **Model Context Protocol (MCP)**. MCP allows AI agents (like Claude or Antigravity) to act as a "junior developer" with direct access to your Django environment.
 
 ## 🛠️ Usage with Django Grep
 
@@ -24,7 +24,7 @@ To enable AI agents to work on this project:
 1. Ensure `django_grep.mcp_designer` is in `INSTALLED_APPS`.
 2. Configure your AI IDE (e.g., Cursor, Windsurf) or Agent to point to the `mcp_django_server.py` entry point.
 3. Use the following prompt to prime the AI:
-   > "You are an expert Django/Wagtail developer. Use the MCP tools provided by django-grep to explore the AllianceCore codebase and help me build new features."
+   > "You are an expert Django/Wagtail developer. Use the MCP tools provided by django-grep to explore the Alliance codebase and help me build new features."
 
 ## 📍 Integration Points
 
