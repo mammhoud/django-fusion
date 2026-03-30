@@ -2,7 +2,7 @@
 [project]
 name = "alliancecore"
 version = "1.0.3"
-description = "AllianceCore Learning Management System"
+description = "AllianceCore"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}

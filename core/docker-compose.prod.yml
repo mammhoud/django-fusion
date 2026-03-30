@@ -18,7 +18,7 @@ x-django-base: &django-base
   networks:
     - traefik-net
   healthcheck:
-    test: ["CMD", "/root/.local/bin/uv", "run", "python", "com", "check"]
+    test: [ "CMD", "/root/.local/bin/uv", "run", "python", "com", "check" ]
     interval: 30s
     timeout: 20s
     retries: 3
@@ -47,14 +47,17 @@ services:
       TRAEFIK_ACME_EMAIL: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}
     networks:
       - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.traefik.rule=Host(`traefik.structa.cloud`)"
+      - "traefik.http.services.traefik.loadbalancer.server.port=8080"
 
   # ============================================================
   # POSTGRESQL DATABASE
   # ============================================================
   postgres:
-    build:
-      context: ./compose/postgres
-      dockerfile: Dockerfile
+    image: postgres:16-alpine
+    container_name: postgres
     container_name: postgres
     restart: unless-stopped
     ports:
@@ -67,7 +70,7 @@ services:
     volumes:
       - ./compose/data/postgres_data:/var/lib/postgresql/data:Z
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}"]
+      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -85,7 +88,7 @@ services:
     volumes:
       - ./compose/data/redis_data:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -103,7 +106,7 @@ services:
     volumes:
       - ./compose/data/redis_structa:/data
     healthcheck:
-      test: ["CMD", "redis-cli", "--raw", "incr", "ping"]
+      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -151,12 +154,12 @@ services:
   core:
     <<: *django-base
     build:
-      context: ./core
+      context: .
       dockerfile: ./compose/django/Dockerfile
     image: core
     container_name: core
     env_file:
-      - core/.env
+      - ./.env
     volumes:
       - ./libs:/libs:z
       - core_static:/app/assets/staticfiles:z
@@ -191,7 +194,7 @@ services:
   # ============================================================
   core-nginx:
     build:
-      context: ./core
+      context: .
       dockerfile: ./compose/nginx/Dockerfile
     image: core-nginx
     container_name: core-nginx
@@ -202,31 +205,13 @@ services:
       - traefik-net
     restart: unless-stopped
     healthcheck:
-      test: ["CMD", "nginx", "-t"]
+      test: [ "CMD", "nginx", "-t" ]
       interval: 30s
       timeout: 10s
       retries: 3
     depends_on:
       - core
 
-  # ============================================================
-  # DOCS - Documentation Site
-  # Domains: site-docs.structa.cloud, site.structa.cloud, lms.structa.cloud
-  # ============================================================
-  docs:
-    image: nginx:alpine
-    container_name: docs
-    volumes:
-      - ./docs:/usr/share/nginx/html:ro
-      - ./compose/nginx/ctc-docsify.conf:/etc/nginx/conf.d/default.conf:ro
-    networks:
-      - traefik-net
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   core_static:

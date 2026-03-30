@@ -1,0 +1,20 @@
+# Traefik Dynamic Configuration
+
+http:
+  middlewares:
+    secHeaders:
+      headers:
+        browserXssFilter: true
+        contentTypeNosniff: true
+        forceSTSHeader: true
+        stsIncludeSubdomains: true
+        stsPreload: true
+        stsSeconds: 15552000
+        customFrameOptionsValue: SAMEORIGIN
+        referrerPolicy: "strict-origin-when-cross-origin"
+
+    # Example Auth
+    # admin-auth:
+    #   basicAuth:
+    #     users:
+    #       - "admin:$apr1$H6uskkkW$Igixre4icuzthtmbi9p.u/"
