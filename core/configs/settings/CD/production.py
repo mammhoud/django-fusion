@@ -15,9 +15,9 @@ ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 # -------------------------------------------------------------------
 # 🏷️ Titling
 # -------------------------------------------------------------------
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "CTC Hub")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "CTC Research Administration")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "CTC Research Admin")
+WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "AllianceCore")
+ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "AllianceCore Administration")
+ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "AllianceCore Admin")
 ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Management")
 
 # -------------------------------------------------------------------

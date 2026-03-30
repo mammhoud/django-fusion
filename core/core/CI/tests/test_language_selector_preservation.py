@@ -4,13 +4,13 @@ Preservation property-based tests for language selector functionality.
 **Validates: Requirements 3.1, 3.2, 3.3, 3.4, 3.5**
 
 These tests capture the baseline behavior that MUST be preserved after the fix.
-They test the WORKING ctc-research language selector to establish expected behavior.
+They test the WORKING alliance-core language selector to establish expected behavior.
 
-CRITICAL: These tests should PASS on UNFIXED code (testing ctc-research template).
+CRITICAL: These tests should PASS on UNFIXED code (testing alliance-core template).
 After the fix, these tests should STILL PASS (proving no regressions).
 
 This follows the observation-first methodology:
-1. Observe behavior on working code (ctc-research)
+1. Observe behavior on working code (alliance-core)
 2. Write tests that capture that behavior
 3. Verify tests pass on unfixed code
 4. After fix, verify tests still pass (no regressions)
@@ -73,17 +73,17 @@ def test_preservation_language_switching_mechanism(language_code):
 
     This property verifies that the language switching functionality remains unchanged.
 
-    EXPECTED ON UNFIXED CODE: PASS (ctc-research template works correctly)
+    EXPECTED ON UNFIXED CODE: PASS (alliance-core template works correctly)
     EXPECTED ON FIXED CODE: PASS (behavior preserved)
     """
-    # Test the working ctc-research template
-    ctc_template = 'ctc-research/assets/templates/partials/language_selector.html'
+    # Test the working alliance-core template
+    alliance_template = 'alliance-core/assets/templates/partials/language_selector.html'
 
-    if not os.path.exists(ctc_template):
-        # If ctc-research template doesn't exist, skip this test
+    if not os.path.exists(alliance_template):
+        # If alliance-core template doesn't exist, skip this test
         return
 
-    features = analyze_template(ctc_template)
+    features = analyze_template(alliance_template)
 
     # Assert: Language switching form must be present
     assert features['has_language_form'], (
@@ -116,16 +116,16 @@ def test_preservation_flag_icon_display(language_code):
 
     This property verifies that flag display functionality remains unchanged.
 
-    EXPECTED ON UNFIXED CODE: PASS (ctc-research template works correctly)
+    EXPECTED ON UNFIXED CODE: PASS (alliance-core template works correctly)
     EXPECTED ON FIXED CODE: PASS (behavior preserved)
     """
-    # Test the working ctc-research template
-    ctc_template = 'ctc-research/assets/templates/partials/language_selector.html'
+    # Test the working alliance-core template
+    alliance_template = 'alliance-core/assets/templates/partials/language_selector.html'
 
-    if not os.path.exists(ctc_template):
+    if not os.path.exists(alliance_template):
         return
 
-    features = analyze_template(ctc_template)
+    features = analyze_template(alliance_template)
 
     # Assert: Flag icons must be present
     assert features['has_flag_icons'], (
@@ -151,16 +151,16 @@ def test_preservation_current_language_indicator(language_code):
 
     This property verifies that current language display remains unchanged.
 
-    EXPECTED ON UNFIXED CODE: PASS (ctc-research template works correctly)
+    EXPECTED ON UNFIXED CODE: PASS (alliance-core template works correctly)
     EXPECTED ON FIXED CODE: PASS (behavior preserved)
     """
-    # Test the working ctc-research template
-    ctc_template = 'ctc-research/assets/templates/partials/language_selector.html'
+    # Test the working alliance-core template
+    alliance_template = 'alliance-core/assets/templates/partials/language_selector.html'
 
-    if not os.path.exists(ctc_template):
+    if not os.path.exists(alliance_template):
         return
 
-    features = analyze_template(ctc_template)
+    features = analyze_template(alliance_template)
 
     # Assert: get_language_info tag must be used
     assert features['uses_get_language_info'], (
@@ -193,16 +193,16 @@ def test_preservation_translated_url_navigation(has_translation):
 
     This property verifies that URL navigation logic remains unchanged.
 
-    EXPECTED ON UNFIXED CODE: PASS (ctc-research template works correctly)
+    EXPECTED ON UNFIXED CODE: PASS (alliance-core template works correctly)
     EXPECTED ON FIXED CODE: PASS (behavior preserved)
     """
-    # Test the working ctc-research template
-    ctc_template = 'ctc-research/assets/templates/partials/language_selector.html'
+    # Test the working alliance-core template
+    alliance_template = 'alliance-core/assets/templates/partials/language_selector.html'
 
-    if not os.path.exists(ctc_template):
+    if not os.path.exists(alliance_template):
         return
 
-    features = analyze_template(ctc_template)
+    features = analyze_template(alliance_template)
 
     # Assert: Translated page URL must be used
     assert features['has_translated_url'], (
@@ -229,16 +229,16 @@ def test_preservation_template_libraries_loaded():
 
     This test verifies that adding wagtail_i18n_tags doesn't break other libraries.
 
-    EXPECTED ON UNFIXED CODE: PASS (ctc-research template has all libraries)
+    EXPECTED ON UNFIXED CODE: PASS (alliance-core template has all libraries)
     EXPECTED ON FIXED CODE: PASS (all libraries still work)
     """
-    # Test the working ctc-research template
-    ctc_template = 'ctc-research/assets/templates/partials/language_selector.html'
+    # Test the working alliance-core template
+    alliance_template = 'alliance-core/assets/templates/partials/language_selector.html'
 
-    if not os.path.exists(ctc_template):
+    if not os.path.exists(alliance_template):
         return
 
-    features = analyze_template(ctc_template)
+    features = analyze_template(alliance_template)
 
     # Required libraries that must be present
     required_libraries = [
@@ -257,58 +257,58 @@ def test_preservation_template_libraries_loaded():
         )
 
 
-def test_preservation_ctc_research_template_unchanged():
+def test_preservation_alliance_core_template_unchanged():
     """
-    Property 2: Preservation - CTC-Research Template Unchanged
+    Property 2: Preservation - AllianceCore Template Unchanged
 
     **Validates: Requirement 3.1**
 
-    The ctc-research project's language selector SHALL continue to work correctly
+    The alliance-core project's language selector SHALL continue to work correctly
     as it already has wagtail_i18n_tags loaded. The fix should not affect it.
 
-    EXPECTED ON UNFIXED CODE: PASS (ctc-research template already works)
-    EXPECTED ON FIXED CODE: PASS (ctc-research template still works)
+    EXPECTED ON UNFIXED CODE: PASS (alliance-core template already works)
+    EXPECTED ON FIXED CODE: PASS (alliance-core template still works)
     """
-    # Test the working ctc-research template
-    ctc_template = 'ctc-research/assets/templates/partials/language_selector.html'
+    # Test the working alliance-core template
+    alliance_template = 'alliance-core/assets/templates/partials/language_selector.html'
 
-    if not os.path.exists(ctc_template):
-        # If ctc-research doesn't exist in this environment, skip
+    if not os.path.exists(alliance_template):
+        # If alliance-core doesn't exist in this environment, skip
         return
 
-    features = analyze_template(ctc_template)
+    features = analyze_template(alliance_template)
 
-    # Assert: ctc-research template must have wagtail_i18n_tags
+    # Assert: alliance-core template must have wagtail_i18n_tags
     assert 'wagtail_i18n_tags' in features['loaded_libraries'], (
-        f"CTC-Research template must have 'wagtail_i18n_tags' loaded. "
+        f"AllianceCore template must have 'wagtail_i18n_tags' loaded. "
         f"This is the working reference implementation. "
         f"Found libraries: {features['loaded_libraries']}"
     )
 
-    # Assert: ctc-research template must use get_translation
+    # Assert: alliance-core template must use get_translation
     assert features['uses_get_translation'], (
-        f"CTC-Research template must use 'get_translation' tag. "
+        f"AllianceCore template must use 'get_translation' tag. "
         f"This is the working reference implementation that must remain unchanged."
     )
 
     # Assert: All core features must be present
-    assert features['has_language_form'], "CTC-Research template must have language switching form"
-    assert features['has_flag_icons'], "CTC-Research template must have flag icons"
-    assert features['has_current_language_indicator'], "CTC-Research template must have current language indicator"
-    assert features['has_translated_url'], "CTC-Research template must have translated URL navigation"
+    assert features['has_language_form'], "AllianceCore template must have language switching form"
+    assert features['has_flag_icons'], "AllianceCore template must have flag icons"
+    assert features['has_current_language_indicator'], "AllianceCore template must have current language indicator"
+    assert features['has_translated_url'], "AllianceCore template must have translated URL navigation"
 
 
 if __name__ == '__main__':
     """
     Run the preservation tests directly.
-    These should PASS on unfixed code (testing ctc-research template).
+    These should PASS on unfixed code (testing alliance-core template).
     """
     print("=" * 70)
     print("PRESERVATION PROPERTY-BASED TESTS")
     print("=" * 70)
     print()
     print("Testing baseline behavior that must be preserved after the fix.")
-    print("These tests run against the WORKING ctc-research template.")
+    print("These tests run against the WORKING alliance-core template.")
     print()
 
     # Run unit tests
@@ -321,11 +321,11 @@ if __name__ == '__main__':
         print(f"✗ FAIL: {e}")
     print()
 
-    print("Running: test_preservation_ctc_research_template_unchanged")
+    print("Running: test_preservation_alliance_core_template_unchanged")
     print("-" * 70)
     try:
-        test_preservation_ctc_research_template_unchanged()
-        print("✓ PASS: CTC-Research template works correctly")
+        test_preservation_alliance_core_template_unchanged()
+        print("✓ PASS: AllianceCore template works correctly")
     except AssertionError as e:
         print(f"✗ FAIL: {e}")
     print()

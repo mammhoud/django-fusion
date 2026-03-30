@@ -1,18 +1,7 @@
 # ============================================================
 # AllianceCore Standard Infrastructure (Non-Traefik)
-# Simplest setup for local development or straight-to-VM.
+# Simplified setup for local development.
 # ============================================================
-
-x-django-base: &django-base
-  restart: unless-stopped
-  environment:
-    - RUNNING_ENV=docker
-  healthcheck:
-    test: [ "CMD", "/root/.local/bin/uv", "run", "python", "com", "check" ]
-    interval: 30s
-    timeout: 20s
-    retries: 3
-    start_period: 40s
 
 services:
   # ============================================================
@@ -23,7 +12,7 @@ services:
     container_name: postgres
     restart: unless-stopped
     ports:
-      - "${POSTGRES_PORT:-5432}:5432"
+      - "5432:5432"
     environment:
       POSTGRES_USER: ${POSTGRES_USER:-postgres}
       POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mk_pAssWord123}
@@ -32,39 +21,7 @@ services:
     volumes:
       - ./compose/data/postgres_data:/var/lib/postgresql/data:Z
     healthcheck:
-      test: [ "CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ============================================================
-  # REDIS CACHE
-  # ============================================================
-  redis:
-    image: redis:7-alpine
-    container_name: redis
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
-    volumes:
-      - ./compose/data/redis_data:/data
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-
-  # ============================================================
-  # REDIS STRUCTA - Dedicated Redis for AllianceCore
-  # ============================================================
-  redis-structa:
-    image: redis:7-alpine
-    container_name: redis-structa
-    restart: unless-stopped
-    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password} --databases 16
-    volumes:
-      - ./compose/data/redis_structa:/data
-    healthcheck:
-      test: [ "CMD", "redis-cli", "--raw", "incr", "ping" ]
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -73,58 +30,35 @@ services:
   # CORE - Django/Uvicorn Application
   # ============================================================
   core:
-    <<: *django-base
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile
     image: core
     container_name: core
+    restart: unless-stopped
+    ports:
+      - "80:5080"
     env_file:
       - ./.env
     volumes:
-      - ./libs:/libs:z
-      - core_static:/app/assets/staticfiles:z
-      - core_media:/app/assets/media:z
+      - ../libs:/libs:rw
+      - core_static:/app/assets/staticfiles:rw
+      - core_media:/app/assets/media:rw
     environment:
       - RUNNING_ENV=docker
-      - SERVER_ENV=development
-      - DEBUG=True
+      - SERVER_ENV=production
+      - DEBUG=False
       - PORT=5080
       - DB_HOST=postgres
       - DB_NAME=db_structa
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis-structa:6379/5
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - RUN_SETUP=true
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
       - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-admin@structa.cloud}
       - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
     depends_on:
       postgres:
         condition: service_healthy
-      redis:
-        condition: service_healthy
-
-  # ============================================================
-  # CORE-NGINX - Static & Media Files
-  # ============================================================
-  core-nginx:
-    build:
-      context: .
-      dockerfile: ./compose/nginx/Dockerfile
-    image: core-nginx
-    container_name: core-nginx
-    ports:
-      - "80:80"
-    volumes:
-      - core_static:/var/www/static:ro
-      - core_media:/var/www/media:ro
-    restart: unless-stopped
-    healthcheck:
-      test: [ "CMD", "nginx", "-t" ]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    depends_on:
-      - core
 
 volumes:
   core_static:

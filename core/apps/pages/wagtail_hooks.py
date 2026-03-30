@@ -1,5 +1,5 @@
 """
-Wagtail Hooks for CTC Research Project
+Wagtail Hooks for AllianceCore Project
 """
 
 from django.utils.translation import gettext_lazy as _

@@ -2,31 +2,8 @@
 set -euo pipefail
 
 ###############################################################################
-# GIT CONFIGURATION
+# BOOT CONTAINER
 ###############################################################################
-echo "🔐 Configuring Git environment..."
-
-if [ -n "${GIT_USERNAME:-}" ]; then
-    git config --global user.name "$GIT_USERNAME" || echo "⚠️ Failed to set Git username"
-    echo "   ✔ Username set"
-fi
-
-if [ -n "${GIT_EMAIL:-}" ]; then
-    git config --global user.email "$GIT_EMAIL" || echo "⚠️ Failed to set Git email"
-    echo "   ✔ Email set"
-fi
-
-if [ -n "${GIT_TOKEN:-}" ] && [ -n "${GIT_USERNAME:-}" ] && [ -n "${GIT_REPO:-}" ]; then
-    SAFE_TOKEN="***${GIT_TOKEN: -4}"
-    echo "🔗 Updating Git remote with token (hidden: $SAFE_TOKEN)..."
-
-    git remote set-url origin \
-        "https://${GIT_TOKEN}@github.com/${GIT_USERNAME}/${GIT_REPO}.git" \
-        || echo "⚠️ Could not update Git remote URL"
-else
-    echo "ℹ️ Git token or repo info missing — skipping secure remote setup"
-fi
-
 echo "🚀 Django Entrypoint: Booting container..."
 
 # ###############################################################################

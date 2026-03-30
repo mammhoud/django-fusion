@@ -16,7 +16,8 @@ echo "📦 NPM version: $(npm -v 2>/dev/null || echo 'not installed')"
 # -----------------------------------------------------
 
 echo "📦 Preparing Django application..."
-make static migrate MANAGE="/app/.venv/bin/python ./com"
+/app/.venv/bin/python ./com migrate --noinput
+/app/.venv/bin/python ./com collectstatic --noinput
 # -----------------------------------------------------
 # Runtime configuration
 # -----------------------------------------------------

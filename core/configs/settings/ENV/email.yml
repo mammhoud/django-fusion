@@ -8,7 +8,7 @@ default:
   EMAIL_PASSWORD: "@jinja {{ env.get('EMAIL_PASSWORD', 'password') }}"
   DEFAULT_FROM_EMAIL: "@jinja {{ env.get('DEFAULT_FROM_EMAIL', 'noreply@example.com') }}"
   SERVER_EMAIL: "@jinja {{ env.get('DEFAULT_FROM_EMAIL', 'noreply@example.com') }}"
-  EMAIL_SUBJECT_PREFIX: "[CTC Research] "
+  EMAIL_SUBJECT_PREFIX: "[AllianceCore] "
   EMAIL_TIMEOUT: 30
 
   # Email queue

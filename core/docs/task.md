@@ -49,7 +49,7 @@
 ## Phase 5: Verify
 
 - [ ] `find core/docs -name "*.md" | sort` — confirm all docs exist
-- [ ] `grep -r "Xellent\|xellent\|CTC Hub\|/root/xellent" core/docs` — should return 0 results
+- [ ] `grep -r "Xellent\|xellent\|AllianceCore\|/root/xellent" core/docs` — should return 0 results
 - [ ] `grep -r "Xellent" pyproject.toml` — should return 0 results
 - [ ] Confirm deleted originals no longer exist
 

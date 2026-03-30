@@ -60,17 +60,15 @@ COPY pyproject.toml ${APP_HOME}/
 # 3️⃣ Copy application source
 # -----------------------------------------------------
 COPY . ${APP_HOME}/
-# RUN git clone https://mammhoud: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@github.com/mammhoud/ctc-website.git
 
 # -----------------------------------------------------
 # 4️⃣ Entrypoint and Start Script
 # -----------------------------------------------------
 COPY ./compose/django/entrypoint /entrypoint
 COPY ./compose/django/start /start
-COPY ./compose/django/rqworker-start /rqworker-start
 
-RUN sed -i 's/\r$//g' /entrypoint /start /rqworker-start \
-    && chmod +x /entrypoint /start /rqworker-start
+RUN sed -i 's/\r$//g' /entrypoint /start \
+    && chmod +x /entrypoint /start
 
 # -----------------------------------------------------
 # 5️⃣ Create non-root user

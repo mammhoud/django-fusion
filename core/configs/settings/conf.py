@@ -10,30 +10,13 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from django_grep.contrib.enums import Direction, Environment, LogLevel, Module, Runtime, Workflow
+from django_grep.contrib.enums import Environment, LogLevel, Module, Runtime
 from dynaconf import Dynaconf
 from pydantic import BaseModel, Field, validator
 from pydantic.dataclasses import dataclass
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 CONFIG_DIR = Path(__file__).parent / "ENV"
-
-# ==================== DATA CLASSES ====================
-
-
-@dataclass
-class SyncConfigData:
-    """Sync configuration data class."""
-
-    environment: Environment = Environment.DEVELOPMENT
-    direction: Direction = Direction.SYNC
-    workflow: Workflow = Workflow.STANDARD
-    container: str = ""
-    branch: str = ""
-    restart_container: bool = False
-    run_tests: bool = False
-    auto_commit: bool = True
-
 
 # ==================== MAIN SETTINGS CLASS ====================
 
@@ -63,29 +46,11 @@ class MainSettings(BaseSettings):
     PORT: int = Field(default=5080, description="Server port")
 
 
-    # ==================== VARIANT REPOSITORIES ====================
-    CORE_REPO: str = Field(default="", description="Repository for Core variant")
-    BLOG_REPO: str = Field(default="", description="Repository for Blog variant")
-    LMS_REPO: str = Field(default="", description="Repository for LMS variant")
-    ALL_REPO: str = Field(default="", description="Repository for Full variant")
-
     # ==================== DOCKER CONFIGURATION ====================
     DEMO_CONTAINER: str = Field(default="structa-demo", description="Demo container name")
     MAIN_CONTAINER: str = Field(default="structa-main", description="Main container name")
     DEMO_BRANCH: str = Field(default="dev", description="Demo branch name")
     MAIN_BRANCH: str = Field(default="main", description="Main branch name")
-
-    # ==================== SYNC CONFIGURATION ====================
-    SYNC_ENVIRONMENT: Environment = Field(
-        default=Environment.DEVELOPMENT, description="Sync environment"
-    )
-    SYNC_DIRECTION: Direction = Field(default=Direction.SYNC, description="Sync direction")
-    SYNC_WORKFLOW: Workflow = Field(default=Workflow.STANDARD, description="Sync workflow")
-    SYNC_CONTAINER: str = Field(default="", description="Sync container name")
-    SYNC_BRANCH: str = Field(default="", description="Sync branch")
-    SYNC_RESTART_CONTAINER: bool = Field(default=False, description="Restart container after sync")
-    SYNC_RUN_TESTS: bool = Field(default=False, description="Run tests after sync")
-    SYNC_AUTO_COMMIT: bool = Field(default=True, description="Auto commit after sync")
 
     # ==================== DYNACONF SETTINGS ====================
     dynaconf_settings: Optional[Dynaconf] = None
@@ -148,8 +113,6 @@ class MainSettings(BaseSettings):
             CONFIG_DIR / "storage.yml",
             CONFIG_DIR / "email.yml",
             CONFIG_DIR / "logging.yml",
-            CONFIG_DIR / "celery.yml",
-            CONFIG_DIR / "rq.yml",
             CONFIG_DIR / f"_{self.SERVER_ENV.value}.yml",
             CONFIG_DIR / ".secrets.yml",
         ]
@@ -185,7 +148,7 @@ class MainSettings(BaseSettings):
 
     # ==================== VALIDATORS ====================
 
-    @validator("DEBUG", "SYNC_RESTART_CONTAINER", "SYNC_RUN_TESTS", "SYNC_AUTO_COMMIT", pre=True)
+    @validator("DEBUG", pre=True)
     def validate_bool(cls, v):
         """Convert string boolean values."""
         if isinstance(v, str):
@@ -196,7 +159,7 @@ class MainSettings(BaseSettings):
                 return False
         return v
 
-    @validator("SERVER_ENV", "SYNC_ENVIRONMENT", pre=True)
+    @validator("SERVER_ENV", pre=True)
     def validate_server_env(cls, v):
         """Validate server environment."""
         if isinstance(v, str):
@@ -251,29 +214,6 @@ class MainSettings(BaseSettings):
                 "CUSTOMER_RELATIONSHIP": Module.CRM,
             }
             return mapping.get(v_upper, Module.LMS)
-        return v
-
-
-    @validator("SYNC_DIRECTION", pre=True)
-    def validate_sync_direction(cls, v):
-        """Validate sync direction."""
-        if isinstance(v, str):
-            v_lower = v.lower()
-            try:
-                return Direction(v_lower)
-            except ValueError:
-                return Direction.SYNC
-        return v
-
-    @validator("SYNC_WORKFLOW", pre=True)
-    def validate_sync_workflow(cls, v):
-        """Validate sync workflow."""
-        if isinstance(v, str):
-            v_lower = v.lower()
-            try:
-                return Workflow(v_lower)
-            except ValueError:
-                return Workflow.STANDARD
         return v
 
     # ==================== DYNAMIC ATTRIBUTE METHODS ====================
@@ -374,64 +314,14 @@ class MainSettings(BaseSettings):
     # ==================== PROPERTIES ====================
 
     @property
-
-    def _get_container(self, env: Environment) -> str:
-        """Get container name for environment."""
-        return {
-            Environment.DEVELOPMENT: self.DEMO_CONTAINER,
-            Environment.DEMO: self.DEMO_CONTAINER,
-            Environment.PRODUCTION: self.MAIN_CONTAINER,
-            Environment.STAGING: "django-staging",
-            Environment.TESTING: self.DEMO_CONTAINER,
-        }.get(env, self.DEMO_CONTAINER)
-
-    def _get_branch(self, env: Environment) -> str:
-        """Get branch name for environment."""
-        return {
-            Environment.DEVELOPMENT: self.DEMO_BRANCH,
-            Environment.DEMO: self.DEMO_BRANCH,
-            Environment.PRODUCTION: self.MAIN_BRANCH,
-            Environment.STAGING: "staging",
-            Environment.TESTING: "test",
-        }.get(env, self.DEMO_BRANCH)
-
-    @property
     def docker_configured(self) -> bool:
         """Check if docker is configured."""
         return bool(self.DEMO_CONTAINER and self.MAIN_CONTAINER)
 
     @property
-    def git_configured(self) -> bool:
-        """Check if git repositories are configured."""
-        return bool(self.CORE_REPO or self.ALL_REPO)
-
-    @property
-    def sync_container(self) -> str:
-        """Get sync container for current environment."""
-        if self.SYNC_CONTAINER:
-            return self.SYNC_CONTAINER
-        return self._get_container(self.SYNC_ENVIRONMENT or self.SERVER_ENV)
-
-    @property
-    def sync_branch(self) -> str:
-        """Get sync branch for current environment."""
-        if self.SYNC_BRANCH:
-            return self.SYNC_BRANCH
-        return self._get_branch(self.SYNC_ENVIRONMENT or self.SERVER_ENV)
-
-    @property
     def sync_config(self) -> Dict[str, Any]:
         """Get complete sync configuration."""
-        return {
-            "environment": self.SYNC_ENVIRONMENT,
-            "direction": self.SYNC_DIRECTION,
-            "workflow": self.SYNC_WORKFLOW,
-            "container": self.sync_container,
-            "branch": self.sync_branch,
-            "restart_container": self.SYNC_RESTART_CONTAINER,
-            "run_tests": self.SYNC_RUN_TESTS,
-            "auto_commit": self.SYNC_AUTO_COMMIT,
-        }
+        return {}
 
     # Environment Properties
     @property
@@ -496,64 +386,6 @@ class MainSettings(BaseSettings):
 
     # ==================== SYNC CONFIGURATION METHODS ====================
 
-    def get_sync_config(
-        self,
-        env: Optional[Union[str, Environment]] = None,
-        direction: Optional[Union[str, Direction]] = None,
-        workflow: Optional[Union[str, Workflow]] = None,
-    ) -> SyncConfigData:
-        """Get sync configuration."""
-        # Parse environment
-        if env:
-            if isinstance(env, str):
-                try:
-                    environment = Environment(env.lower())
-                except ValueError:
-                    environment = self.SERVER_ENV
-            else:
-                environment = env
-        else:
-            environment = self.SERVER_ENV
-
-        # Parse direction
-        if direction:
-            if isinstance(direction, str):
-                try:
-                    direction_enum = Direction(direction.lower())
-                except ValueError:
-                    direction_enum = Direction.SYNC
-            else:
-                direction_enum = direction
-        else:
-            direction_enum = Direction.SYNC
-
-        # Parse workflow
-        if workflow:
-            if isinstance(workflow, str):
-                try:
-                    workflow_enum = Workflow(workflow.lower())
-                except ValueError:
-                    workflow_enum = Workflow.STANDARD
-            else:
-                workflow_enum = workflow
-        else:
-            workflow_enum = Workflow.STANDARD
-
-        # Get container and branch for environment
-        container = self._get_container(environment)
-        branch = self._get_branch(environment)
-
-        return SyncConfigData(
-            environment=environment,
-            direction=direction_enum,
-            workflow=workflow_enum,
-            container=container,
-            branch=branch,
-            restart_container=self.SYNC_RESTART_CONTAINER,
-            run_tests=self.SYNC_RUN_TESTS,
-            auto_commit=self.SYNC_AUTO_COMMIT,
-        )
-
     # ==================== SUMMARY AND REPORTING ====================
 
     @property
@@ -583,7 +415,6 @@ class MainSettings(BaseSettings):
             "port": self.PORT,
             "is_production": self.is_production,
             "is_containerized": self.is_containerized,
-            "git_configured": self.git_configured,
             "docker_configured": self.docker_configured,
         }
 
@@ -614,7 +445,6 @@ class MainSettings(BaseSettings):
 
         # Configuration status
         config_rows = [
-            ("Git Configuration", "✅ Complete" if self.summary["git_configured"] else "⚠️ Partial"),
             ("Docker Config", "✅ Complete" if self.summary["docker_configured"] else "⚠️ Partial"),
             ("Server Host", self.summary["host"]),
             ("Server Port", str(self.summary["port"])),
@@ -672,16 +502,6 @@ class MainSettings(BaseSettings):
                 "demo_branch": self.DEMO_BRANCH,
                 "main_branch": self.MAIN_BRANCH,
                 "configured": self.docker_configured,
-            },
-            "sync": {
-                "environment": self.SYNC_ENVIRONMENT.value,
-                "direction": self.SYNC_DIRECTION.value,
-                "workflow": self.SYNC_WORKFLOW.value,
-                "container": self.sync_container,
-                "branch": self.sync_branch,
-                "restart_container": self.SYNC_RESTART_CONTAINER,
-                "run_tests": self.SYNC_RUN_TESTS,
-                "auto_commit": self.SYNC_AUTO_COMMIT,
             },
         }
 
@@ -849,17 +669,14 @@ def init_config(env: Optional[str] = None) -> MainSettings:
 __all__ = [
     # Main classes
     "MainSettings",
-    "SyncConfigData",
     # Instances
     "settings",
     # Utility functions
     # "get_django_settings",
     "init_config",
     # Enums
-    "Direction",
     "Environment",
     "LogLevel",
     "Module",
     "Runtime",
-    "Workflow",
 ]

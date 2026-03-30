@@ -136,7 +136,7 @@ Content is copied to the new `docs/` location, all `Xellent`/`xellent` reference
 - Update all internal references from `xellent` → `alliancecore`
 
 #### [MODIFY] All migrated docs
-- Replace all occurrences of `Xellent`, `xellent`, `CTC Hub`, `CTC Blog`, `CTC Handlers` with `AllianceCore`
+- Replace all occurrences of `Xellent`, `xellent`, `AllianceCore`, `CTC Blog`, `CTC Handlers` with `AllianceCore`
 - Fix all `/root/xellent/` file paths to use relative paths (e.g., `../assets/static/js/pages/`)
 
 ---
@@ -162,7 +162,7 @@ Content is copied to the new `docs/` location, all `Xellent`/`xellent` reference
 find core/docs -name "*.md" | sort
 
 # Confirm zero Xellent references remain in docs
-grep -r "Xellent\|xellent\|CTC Hub\|/root/xellent" core/docs
+grep -r "Xellent\|xellent\|AllianceCore\|/root/xellent" core/docs
 
 # Confirm pyproject.toml updated
 grep -r "Xellent" pyproject.toml

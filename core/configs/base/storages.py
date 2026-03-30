@@ -21,7 +21,7 @@ if USE_S3:
     
     # S3 Bucket Configuration
     AWS_STORAGE_BUCKET_NAME = getattr(settings, "AWS_STORAGE_BUCKET_NAME", os.environ.get("AWS_STORAGE_BUCKET_NAME", "static"))
-    AWS_S3_ENDPOINT_URL = getattr(settings, "AWS_S3_ENDPOINT_URL", os.environ.get("AWS_S3_ENDPOINT_URL", "http://ctc-minio:9000"))
+    AWS_S3_ENDPOINT_URL = getattr(settings, "AWS_S3_ENDPOINT_URL", os.environ.get("AWS_S3_ENDPOINT_URL", "http://alliance-minio:9000"))
 
     # For local MinIO (without HTTPS)
     AWS_S3_USE_SSL = False
