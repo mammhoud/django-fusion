@@ -10,8 +10,8 @@
 AllianceCore is a **Unified CMS Framework**. It provides the core architecture (Identity, Security, Settings, and Frontend Pipeline) needed to host a suite of specialized modules. Think of AllianceCore as the high-performance engine, with our other products serving as professional add-ons that plug directly into it.
 
 ### 🧩 Core Ecosystem Modules
-*   **Alliance LMS** (formerly Xpan): A full-featured Learning Management System built on top of the core.
-*   **Alliance Blog** (formerly Xpedia): An advanced publishing engine with multi-author support and deep SEO integration.
+*   **Alliance LMS**: A full-featured Learning Management System built on top of the core.
+*   **Alliance Blog**: An advanced publishing engine with multi-author support and deep SEO integration.
 
 ---
 
