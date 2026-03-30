@@ -151,12 +151,12 @@ services:
   core:
     <<: *django-base
     build:
-      context: ./structa/core
+      context: ./core
       dockerfile: ./compose/django/Dockerfile
     image: core
     container_name: core
     env_file:
-      - structa/core/.env
+      - core/.env
     volumes:
       - ./libs:/libs:z
       - core_static:/app/assets/staticfiles:z
@@ -191,7 +191,7 @@ services:
   # ============================================================
   core-nginx:
     build:
-      context: ./structa/core
+      context: ./core
       dockerfile: ./compose/nginx/Dockerfile
     image: core-nginx
     container_name: core-nginx

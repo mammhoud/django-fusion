@@ -1,99 +1,69 @@
-# AllianceCore Platform
+# AllianceCore – Premium Wagtail CMS & LMS Foundation
 
-**AllianceCore** is a production-ready, full-stack SaaS platform built on Django and Wagtail. It provides a modular foundation for building Learning Management Systems, community portals, and content-driven web applications.
-
----
-
-## 🎯 Mission
-
-To provide a battle-hardened, AI-ready platform that teams can extend quickly — without sacrificing code quality, security, or scalability.
+**AllianceCore** is a production-hardened, modular ecosystem built on the rock-solid foundations of **Django 4.x** and **Wagtail 5.x**. It is designed to be the definitive "source of truth" for modern web agencies, SaaS founders, and enterprise teams who need a professional-grade base for complex projects.
 
 ---
 
-## 🧩 Core Modules
-
-| Module | Description | Status |
-|---|---|---|
-| **Core** | Django/Wagtail project shell, settings, URL routing, ASGI/WSGI | ✅ Stable |
-| **Handlers** | User profiles, identity orchestration, Allauth adapters, 2FA, invitations | ✅ Stable |
-| **Blog** | Wagtail CMS blogging engine with categories, multi-author, SEO | ✅ Stable |
-| **Pages** | Wagtail pages — landing, contact form, contact submissions | ✅ Stable |
-| **LMS** | Learning Management System — courses, lessons, enrollments | 🚧 In Progress |
-| **CI / Temporal** | Durable background workflows (onboarding, batch processing) | ✅ Stable |
+## 🎨 Marketplace Overview
+- **Live Demo:** [https://core.structa.cloud](https://core.structa.cloud)
+- **Documentation:** [https://docs.structa.cloud](https://docs.structa.cloud)
+- **Tech Stack:** Django | Wagtail | Webpack 5 | Tailwind CSS | Docker
 
 ---
 
-## 🛠️ Technology Stack
+## 🎯 Target Audiences & Marketing Usage
 
-### Backend
-| Layer | Technology |
-|---|---|
-| Language | Python 3.11+ |
-| Framework | Django (latest LTS) |
-| CMS | Wagtail |
-| API | Django Ninja + Django Ninja Extra |
-| Auth | Django Allauth (social, 2FA, passkeys) |
-| Background Jobs | Django RQ + Temporal (durable workflows) |
-| Database | PostgreSQL (via psycopg 3) |
-| Cache | Redis (django-redis) |
-| Real-Time | Django Channels (ASGI / WebSocket) |
-| Observability | Sentry, Prometheus, Structlog, Django Silk |
-| Storage | AWS S3 (django-storages + boto3) |
+### 🏢 For Agencies
+- **Standardized Foundation:** Skip the boilerplate. Use AllianceCore to start every project with a unified, clean architecture.
+- **Speed to Market:** Ship high-quality Wagtail sites 5x faster by focusing only on custom logic.
+- **Branding Ready:** Full Tailwind CSS integration and SCSS pipeline for rapid UI development.
 
-### Frontend
-| Layer | Technology |
-|---|---|
-| Build Tool | Webpack 5 |
-| CSS | Bootstrap 5 + PostCSS + SCSS |
-| JS | Vanilla JS (modular, no heavy SPA framework) |
-| Interactivity | AlpineJS + HTMX |
-| Components | Vue SFCs (optional, per-page) |
-| Internationalisation | Django i18n (AR, EN, ES, FR, IT, RU, TR, ZH-HANS, ZH-HANT) |
+### 🚀 For SaaS Founders
+- **Secure by Design:** Built-in multi-factor authentication (2FA), Passkeys, and secure environment handling.
+- **Scalable Architecture:** Integrated with Redis, RQ, and Temporal for durable, high-concurrency background workflows.
+- **Modular Expansion:** Add LMS, Blog, or E-Commerce modules in minutes without rewriting core code.
 
-### Infrastructure
-| Layer | Technology |
-|---|---|
-| Containerisation | Docker + Docker Compose |
-| Web Server | Nginx |
-| App Server | Gunicorn (WSGI) + Uvicorn (ASGI) |
-| AI Integration | MCP via `django-grep` (source clone) |
+### 🎓 For Edu-Tech Startups
+- **LMS Ready:** Leverage pre-integrated student profile systems and curriculum structures.
+- **AI-Ready:** Built-in **Model Context Protocol (MCP)** support for deploying AI tutors and agents directly onto your data.
 
 ---
 
-## 📁 Project Layout
+## 🚀 Premium Out-of-the-Box Features
 
-```
-core/
-├── apps/                   # Django applications (blog, handlers, pages, LMS)
-├── assets/                 # Frontend static files, templates, bundles
-│   ├── static/             # Source JS, SCSS, images
-│   └── templates/          # Allauth and shared HTML templates
-├── components/             # Reusable Django Bird components (HTML partials)
-├── compose/                # Docker Compose service definitions
-├── configs/                # Django settings (base, local, production)
-│   └── settings/
-├── core/                   # Django project core (urls, asgi, wsgi, CI)
-│   └── CI/                 # Temporal workflow & activity definitions
-├── docs/                   # ← You are here: all project documentation
-├── locale/                 # Translation files (.po / .mo)
-├── webpack/                # Webpack configuration (common + main)
-├── pyproject.toml          # Project metadata and dependencies (uv)
-└── package.json            # Node.js dependencies
-```
+- **Modular "Handlers" System:** Orchestrates user identity, security, settings, and profile flows.
+- **Wagtail 5.x Integration:** Professional content management with nested blocks and reusable components.
+- **Enterprise Background Jobs:** Supported by **Temporal** for "set and forget" reliable orchestration.
+- **AI Tooling (MCP):** Direct integration with `django-grep` for AI-agent-assisted development.
+- **Cloud-Ready Storage:** Pre-configured for AWS S3 and other S3-compatible providers.
+- **Production Infrastructure:** Full Docker Compose setup including Traefik, PostgreSQL, Redis, and Nginx.
 
 ---
 
-## 🔌 AI-Readiness (MCP)
+## 🧩 The Plugin Ecosystem (Upcoming & Releasable)
 
-AllianceCore is designed to work with AI agents via the **Model Context Protocol (MCP)**. The `django-grep` package (installed from source) provides the MCP server that gives AI agents direct access to the Django environment.
+AllianceCore is an extensible hub. Your license allows you to integrate or build these modules:
 
-See [integrations/mcp.md](./integrations/mcp.md) for setup and usage.
+- **[STABLE] AllianceCore Blog**: Professional categories, tags, multi-author, and SEO management.
+- **[BETA] AllianceCore LMS**: Lessons, course enrollments, certificates, and student progress tracking.
+- **[Q3 ROADMAP] AllianceCore E-Commerce**: Stripe/PayPal checkouts, recurring billing, and digital asset delivery.
+- **[ROADMAP] AllianceCore Community**: Threaded forums, user reputation systems, and member directories.
 
 ---
 
-## 📖 Further Reading
+## 🛠️ Next Updates & Maintenance Policy
+1. **Security Patches**: Continuous updates for Django/Wagtail compatibility.
+2. **v1.2 Feature Update**: Unified Dashboard for all-module management.
+3. **API Expansion**: Full Django Ninja REST API shell for mobile app parity.
 
-- [Installation Guide](./INSTALL.md)
-- [Settings Reference](./config/settings.md)
-- [JavaScript Architecture](./frontend/js-architecture.md)
-- [Temporal Workflows](./architecture/temporal-workflows.md)
+---
+
+## 📦 What's Included in the Archive?
+- Full Django/Wagtail Source Code (the `core/` directory)
+- Production-ready `docker-compose.yml`
+- Comprehensive Documentation (Install, Architecture, Frontend)
+- Starter Data Fixtures (`dump-data.json`)
+
+---
+
+**AllianceCore is the heart of your next big project. Don't waste time on the basics — build the features that matter.**

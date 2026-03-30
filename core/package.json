@@ -1,5 +1,5 @@
 {
-  "name": "xellent",
+  "name": "alliancecore",
   "version": "1.0.3",
   "dependencies": {
     "@tailwindcss/cli": "^4.1.8",

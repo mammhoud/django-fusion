@@ -279,3 +279,9 @@ assets/media/uploads/*
 assets/media/original_images/*
 assets/media/media/*
 compose/postgres/*
+compose/data/
+**/__pycache__/
+*.log
+.env
+.env.*
+!.env.example

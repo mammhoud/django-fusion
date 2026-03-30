@@ -14,70 +14,7 @@ from django.template.loader import render_to_string
 logger = logging.getLogger(__name__)
 
 
-def _get_sender_accounts() -> list[dict]:
-    """
-    Build sender accounts list dynamically from environment variables.
-    Discovers EMAIL_SENDER_1, EMAIL_SENDER_2, EMAIL_SENDER_3, ... until
-    no more are found.
-
-    Defaults:
-        EMAIL_SENDER_1 = e.babiker55@gmail.com
-        EMAIL_SENDER_2 = yasirzaroug8@gmail.com (falls back to EMAIL_USER)
-        EMAIL_SENDER_3 = dranas352002@gmail.com
-    """
-    import os
-
-    _defaults = {
-        1: ("e.babiker55@gmail.com", "EMAIL_SENDER_1_PASSWORD"),
-        2: (os.environ.get("EMAIL_USER", "yasirzaroug8@gmail.com"), "EMAIL_SENDER_2_PASSWORD"),
-        3: ("dranas352002@gmail.com", "EMAIL_SENDER_3_PASSWORD"),
-    }
-
-    accounts = []
-    n = 1
-    while True:
-        default_email, default_pw_key = _defaults.get(n, (None, None))
-        email = os.environ.get(f"EMAIL_SENDER_{n}", default_email)
-        if not email:
-            break
-        password = os.environ.get(
-            f"EMAIL_SENDER_{n}_PASSWORD",
-            os.environ.get(default_pw_key, "") if default_pw_key else "",
-        )
-        if n == 2 and not password:
-            password = os.environ.get("EMAIL_PASSWORD", "")
-        if email and password:
-            accounts.append({"email": email, "password": password, "name": "Structa"})
-        n += 1
-        if n > 3 and not os.environ.get(f"EMAIL_SENDER_{n}"):
-            break
-
-    return accounts
-
-
-def _send_via_smtp(
-    sender_email: str,
-    sender_password: str,
-    sender_name: str,
-    recipient_email: str,
-    subject: str,
-    html_content: str,
-    text_content: str,
-) -> bool:
-    """Send email directly via Gmail SMTP with TLS."""
-    msg = MIMEMultipart("alternative")
-    msg["Subject"] = subject
-    msg["From"] = f"{sender_name} <{sender_email}>"
-    msg["To"] = recipient_email
-    msg.attach(MIMEText(text_content, "plain"))
-    msg.attach(MIMEText(html_content, "html"))
-    with smtplib.SMTP("smtp.gmail.com", 587, timeout=30) as server:
-        server.ehlo()
-        server.starttls()
-        server.ehlo()
-        server.login(sender_email, sender_password)
-        server.send_message(msg)
-    return True
+# No hardcoded sender accounts required. Use environment settings.
 
 
 class EmailService:
@@ -234,42 +171,13 @@ class EmailService:
         logger.info(f"Email job queued for {to}: {subject} (job: {job.id})")
         return job.id
 
-    def send_with_smtp_failover(
-        self,
-        to: str,
-        subject: str,
-        html_content: str,
-        text_content: str,
-    ) -> bool:
-        """
-        Send email with SMTP failover across configured sender accounts.
-        Falls back to Django's email backend if all SMTP senders fail.
-        """
-        sender_accounts = _get_sender_accounts()
-        if not sender_accounts:
-            logger.warning("No SMTP sender accounts configured, using Django backend")
-            return self.send_simple(to=to, subject=subject, body=text_content, html_body=html_content)
-
-        for i, account in enumerate(sender_accounts):
-            try:
-                success = _send_via_smtp(
-                    sender_email=account["email"],
-                    sender_password=account["password"],
-                    sender_name=account["name"],
-                    recipient_email=to,
-                    subject=subject,
-                    html_content=html_content,
-                    text_content=text_content,
-                )
-                if success:
-                    logger.info(f"Email sent to {to} via sender {i + 1} ({account['email']})")
-                    return True
-            except Exception as e:
-                logger.error(f"SMTP sender {i + 1} failed for {to}: {e}")
-                continue
-
-        logger.warning(f"All SMTP senders failed for {to}, trying Django backend")
-        return self.send_simple(to=to, subject=subject, body=text_content, html_body=html_content)
+    def send_test(self, to: str) -> bool:
+        """Send a test email using standard configuration."""
+        return self.send_simple(
+            to=to,
+            subject="AllianceCore Test Email",
+            body="If you received this, your email configuration is working correctly.",
+        )
 
     # Convenience methods for common email types
 

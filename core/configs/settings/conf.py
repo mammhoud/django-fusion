@@ -401,6 +401,11 @@ class MainSettings(BaseSettings):
         return bool(self.DEMO_CONTAINER and self.MAIN_CONTAINER)
 
     @property
+    def git_configured(self) -> bool:
+        """Check if git repositories are configured."""
+        return bool(self.CORE_REPO or self.ALL_REPO)
+
+    @property
     def sync_container(self) -> str:
         """Get sync container for current environment."""
         if self.SYNC_CONTAINER:
@@ -578,6 +583,7 @@ class MainSettings(BaseSettings):
             "port": self.PORT,
             "is_production": self.is_production,
             "is_containerized": self.is_containerized,
+            "git_configured": self.git_configured,
             "docker_configured": self.docker_configured,
         }
 

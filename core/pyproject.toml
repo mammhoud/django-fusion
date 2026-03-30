@@ -1,13 +1,13 @@
 
 [project]
-name = "xellent"
+name = "alliancecore"
 version = "1.0.3"
-description = "Xellent Learning Management System"
+description = "AllianceCore Learning Management System"
 readme = "README.md"
 requires-python = ">=3.11"
 license = {text = "MIT"}
 authors = [
-    {name = "Mahmoud Ezzat", email = "mahmoud.ezat@outlook.com"}
+    {name = "AllianceCore Team", email = "support@structa.cloud"}
 ]
 dependencies = [
     "bumpver",
