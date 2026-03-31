@@ -22,7 +22,7 @@ from django.utils.html import strip_tags
 from django.conf import settings
 from apps.pages.models.contact import ContactSubmission
 
-from apps.LMS.blocks.form import MinimalContactFormBlock
+from ..blocks.form import MinimalContactFormBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
 from django_grep.comp.blocks import ContactMethodBlock
 from django_grep.comp.blocks.partials.faq import FAQSectionBlock

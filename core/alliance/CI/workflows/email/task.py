@@ -4,7 +4,7 @@ from typing import Any, Dict, List, Optional
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
 
-from core.conf import app_settings
+from alliance.conf import app_settings
 
 
 class InvitationEmailHandler:

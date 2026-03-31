@@ -2,7 +2,7 @@ from django.conf import settings
 from django.core.mail import EmailMessage
 from django.urls import reverse
 
-from core import logger
+from alliance import logger
 
 # from core.app.payloads.urls import get_absolute_url
 

@@ -8,7 +8,7 @@ from django.db.models import Q
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
-from core.conf import app_settings
+from alliance.conf import app_settings
 
 logger = logging.getLogger(__name__)
 
@@ -71,10 +71,10 @@ class BaseInvitationManager(models.Manager):
             expires_at__lte=expiring_threshold,
             expires_at__gt=timezone.now()
         )
-        
+
         expiring_invitations = self.filter(expiring_q)
         resent = []
-        
+
         for invitation in expiring_invitations:
             try:
                 # Check if we can resend (not too frequent)
@@ -83,7 +83,7 @@ class BaseInvitationManager(models.Manager):
                     resent.append(invitation)
             except Exception as e:
                 logger.error(f"Failed to resend invitation {invitation.pk}: {str(e)}")
-        
+
         return resent
 
     def bulk_create_invitations(self, emails, inviter=None, **kwargs):
@@ -99,7 +99,7 @@ class BaseInvitationManager(models.Manager):
                 accepted=False,
                 is_active=True
             ).exists()
-            
+
             if not existing:
                 invitation = self.model.create(
                     email=email,
@@ -107,7 +107,7 @@ class BaseInvitationManager(models.Manager):
                     **kwargs
                 )
                 invitations.append(invitation)
-        
+
         return invitations
 
     def get_or_create_invitation(self, email, inviter=None, **kwargs):
@@ -121,10 +121,10 @@ class BaseInvitationManager(models.Manager):
             is_active=True,
             expires_at__gt=timezone.now()
         ).first()
-        
+
         if valid_invitation:
             return valid_invitation, False
-        
+
         # Create new invitation
         invitation = self.model.create(
             email=email,
@@ -141,7 +141,7 @@ class BaseInvitationManager(models.Manager):
         invitations = self.filter(id__in=invitation_ids, accepted=False, is_active=True)
         success = 0
         failures = []
-        
+
         for invitation in invitations:
             try:
                 if invitation.send_invitation(request):
@@ -151,7 +151,7 @@ class BaseInvitationManager(models.Manager):
             except Exception as e:
                 logger.error(f"Failed to send invitation {invitation.id}: {str(e)}")
                 failures.append(invitation.id)
-        
+
         return success, failures
 
     def statistics(self):
@@ -163,16 +163,16 @@ class BaseInvitationManager(models.Manager):
         accepted = self.accepted().count()
         pending = self.pending().count()
         expired = self.all_expired().count()
-        
+
         # Calculate acceptance rate
         acceptance_rate = (accepted / total * 100) if total > 0 else 0
-        
+
         # Get recent activity
         recent_days = 30
         recent_threshold = timezone.now() - timedelta(days=recent_days)
         recent_sent = self.filter(sent__gte=recent_threshold).count()
         recent_accepted = self.filter(accepted_at__gte=recent_threshold).count()
-        
+
         return {
             'total': total,
             'accepted': accepted,
@@ -192,9 +192,9 @@ class BaseInvitationManager(models.Manager):
         old_invitations = self.filter(
             Q(created__lt=old_threshold) & Q(accepted=True) | Q(is_active=False)
         )
-        
+
         count = old_invitations.count()
         old_invitations.delete()  # Hard delete for old records
-        
+
         return count
 

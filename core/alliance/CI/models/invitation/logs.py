@@ -1,7 +1,7 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from core.conf import EmailSendingStrategy, app_settings
+from alliance.conf import EmailSendingStrategy, app_settings
 
 try:
     from django.urls import reverse
@@ -76,18 +76,18 @@ class EmailLog(models.Model):
         blank=True,
         null=True
     )
-    
+
     class Meta:
         verbose_name = _("Email Log")
         verbose_name_plural = _("Email Logs")
         ordering = ['-sent_at']
-        
+
         indexes = [
             models.Index(fields=['email_address', 'sent_at']),
             models.Index(fields=['status', 'sent_at']),
             models.Index(fields=['invitation', 'sent_at']),
         ]
-    
+
     def __str__(self):
         return f"{self.email_address} - {self.subject} ({self.status})"
 

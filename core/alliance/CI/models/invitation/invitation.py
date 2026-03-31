@@ -10,7 +10,7 @@ from wagtail.admin.panels import (
     TabbedInterface,
 )
 
-from core.conf import app_settings
+from alliance.conf import app_settings
 from django_grep.pipelines.models import DefaultBase, TemplateRenderMixin
 
 from .managers import BaseInvitationManager

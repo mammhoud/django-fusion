@@ -5,7 +5,7 @@ from django.template import TemplateDoesNotExist
 from django.template.loader import render_to_string
 from django.utils.encoding import force_str
 
-from core.conf import app_settings, import_attribute
+from alliance.conf import app_settings, import_attribute
 
 
 # Code credits here to django-allauth

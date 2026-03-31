@@ -1,7 +1,7 @@
 from django.template import Context, Template
 from django.utils.safestring import mark_safe
 
-from core import logger
+from alliance import logger
 
 
 class DynamicComponentRenderer:

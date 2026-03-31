@@ -11,7 +11,7 @@ from django.utils.translation import gettext_lazy as _
 from alliance.CI.adapters import get_invitations_adapter
 from alliance.CI.adapters import InvitationEmailHandler
 from django_grep.pipelines.signals import invitations
-from core.conf import EmailSendingStrategy, app_settings
+from alliance.conf import EmailSendingStrategy, app_settings
 
 from .managers import BaseInvitationManager
 
@@ -133,7 +133,7 @@ class AbstractBaseInvitation(models.Model):
             )
 
             email_template = "invitations/email/email_invite"
-            
+
             try:
                 adapter = get_invitations_adapter()
                 if hasattr(adapter, 'send_mail'):
@@ -164,28 +164,28 @@ class AbstractBaseInvitation(models.Model):
             invite_url_sent=self.get_invite_url(request),
             inviter=self.inviter,
         )
-        
+
         return True
 
     def _send_invitation_email(self, context: Optional[Dict[str, Any]] = None):
         """Internal method to send invitation email using email handler"""
         if not app_settings.SEND_INVITATION_EMAIL:
             return True
-            
+
         # Add default context
         if context is None:
             context = {}
-        
+
         # Add invitation-specific context
         context.update({
             'invitation': self,
             'expiry_days': app_settings.INVITATION_EXPIRY,
             'subject': app_settings.INVITATION_EMAIL_SUBJECT,
         })
-        
+
         # Add app_settings context
         context.update(app_settings.get_invitation_email_context(self))
-        
+
         # Use the email handler
         return InvitationEmailHandler.send_invitation_email(self)
 
