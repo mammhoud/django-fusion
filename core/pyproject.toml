@@ -78,7 +78,7 @@ dependencies = [
 ]
 
 [tool.uv.sources]
-django-grep = { path = "/libs/django-grep", editable = true }
+django-grep = { path = "../libs/django-grep", editable = true }
 
 [tool.bumpver]
 current_version = "1.0.3"

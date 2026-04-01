@@ -19,7 +19,7 @@ default:
       - "::1"
 
     # CORS Configuration
-    CORS_ALLOW_ALL_ORIGINS: false
+    CORS_ALLOW_ALL_ORIGINS: true
     CORS_ALLOW_CREDENTIALS: true
     CORS_EXPOSE_HEADERS:
       - "Content-Disposition"
@@ -168,7 +168,7 @@ development:
       - "structa-demo"
 
     CORS_ALLOW_ALL_ORIGINS: true
-    CORS_ALLOWED_ORIGINS: []
+    CORS_ALLOWED_ORIGINS: ["localhost"]
     CSRF_TRUSTED_ORIGINS:
       - "http://localhost:*"
       - "http://127.0.0.1:*"
@@ -181,75 +181,6 @@ development:
     RATE_LIMIT_ENABLED: false
     REST_FRAMEWORK_THROTTLE_ENABLED: false
     LOG_SECURITY_EVENTS: false
-
-# Demo/staging environment - balanced security
-demo:
-  DEBUG: false
-  SECURITY:
-    ALLOWED_HOSTS:
-      - "demo.structa.cloud"
-      - "staging.structa.cloud"
-      - "*.structa.cloud"
-      - "*.vercel.app"
-      - "*.onrender.com"
-      - "*.railway.app"
-      - "*.herokuapp.com"
-      - "*.fly.dev"
-      - "structa-demo"
-      - "structa-main"
-      - "structa-demo"
-      - "structa-main"
-      - "localhost"
-      - "127.0.0.1"
-      - "0.0.0.0"
-
-    CORS_ALLOW_ALL_ORIGINS: false
-    CORS_ALLOWED_ORIGINS:
-      - "https://demo.structa.cloud"
-      - "http://demo.structa.cloud"
-      - "http://www.structa.cloud"
-      - "http://structa.cloud"
-      - "https://staging.structa.cloud"
-      - "http://localhost:5055"
-      - "http://localhost:5080"
-      - "http://localhost:5030"
-      - "http://localhost:5070"
-      - "http://127.0.0.1:5055"
-      - "http://127.0.0.1:5030"
-      - "http://127.0.0.1:5070"
-
-    CSRF_TRUSTED_ORIGINS:
-      - "https://demo.structa.cloud"
-      - "http://demo.structa.cloud"
-      - "http://www.structa.cloud"
-      - "http://structa.cloud"
-      - "https://staging.structa.cloud"
-      - "http://localhost:5055"
-      - "http://localhost:5030"
-      - "http://localhost:5070"
-      - "http://localhost:5080"
-      - "http://127.0.0.1:5055"
-      - "http://127.0.0.1:5030"
-      - "http://127.0.0.1:5070"
-
-    SECURE_SSL_REDIRECT: false
-    SECURE_HSTS_SECONDS: 2592000 # 30 days
-    SECURE_HSTS_INCLUDE_SUBDOMAINS: true
-    SECURE_HSTS_PRELOAD: false
-    SESSION_COOKIE_SECURE: true
-    CSRF_COOKIE_SECURE: true
-
-    # Proxy settings for demo/staging
-    USE_X_FORWARDED_HOST: true
-    USE_X_FORWARDED_PORT: true
-    SECURE_PROXY_SSL_HEADER:
-      - "HTTP_X_FORWARDED_PROTO"
-      - "https"
-
-    RATE_LIMIT_ENABLED: true
-    REST_FRAMEWORK_THROTTLE_ENABLED: true
-    LOG_SECURITY_EVENTS: true
-    SECURITY_LOG_LEVEL: "WARNING"
 
 # Production environment - maximum security
 production:
@@ -270,11 +201,11 @@ production:
       - "localhost"
       - "*.structa.cloud" # Added wildcard for all subdomains
 
-    CORS_ALLOW_ALL_ORIGINS: false
+    CORS_ALLOW_ALL_ORIGINS: true
     CORS_ALLOWED_ORIGINS:
       - "https://structa.cloud"
       - "https://www.structa.cloud"
-      - "https://arch.structa.cloud"
+      - "https://*.structa.cloud"
       - "https://api.structa.cloud"
       - "https://db.structa.cloud"
 

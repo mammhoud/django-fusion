@@ -55,76 +55,14 @@ default: &db_default
 
   # DATABASE_ROUTERS: ["project.db_routers.AnalyticsRouter"]
 
-demo:
-  <<: *db_default
-  DATABASES:
-    default:
-      ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
-      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
-      PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
-      NAME: "@jinja {{ env.get('DB_NAME', 'db_alliance') }}"
-      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
-      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
-      CONN_MAX_AGE: 180
-      ATOMIC_REQUESTS: false
-      OPTIONS:
-        connect_timeout: 10
-        keepalives: 1
-        keepalives_idle: 30
-        keepalives_interval: 10
-        keepalives_count: 3
-      POOL_ARGS:
-        max_overflow: 15
-        pool_size: 5
-        recycle: 1800
-        timeout: 20
-        pre_ping: false
-        use_lifo: false
-
-staging:
-  <<: *db_default
-  DATABASES:
-    default:
-      ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
-      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
-      PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
-      NAME: "@jinja {{ env.get('DB_NAME', 'db_staging') }}"
-      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
-      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
-      CONN_MAX_AGE: 180
-      ATOMIC_REQUESTS: false
-      OPTIONS:
-        connect_timeout: 10
-        keepalives: 1
-        keepalives_idle: 30
-        keepalives_interval: 10
-        keepalives_count: 3
-      POOL_ARGS:
-        max_overflow: 15
-        pool_size: 5
-        recycle: 1800
-        timeout: 20
-        pre_ping: false
-        use_lifo: false
-
-
-  DATABASE_POOLING:
-    enabled: true
-    pool_size: 5
-    max_overflow: 10
-
-  DATABASE_BACKUP:
-    enabled: true
-    retention_days: 14
-
 production:
   <<: *db_default
   DATABASES:
     default:
       ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
-      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
+      HOST: "@jinja {{ env.get('DB_HOST', 'localhost') }}"
       PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
-      NAME: "@jinja {{ env.get('DB_NAME', 'db_alliance') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_structa') }}"
       USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
       PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
       CONN_MAX_AGE: 600
@@ -158,9 +96,6 @@ production:
         sslmode: "verify-full"
         connect_timeout: 30
         application_name: "django_replica"
-
-  # Database routers for read/write splitting
-  # DATABASE_ROUTERS: ["project.db_routers.PrimaryReplicaRouter"]
 
   # Connection pooling
   DATABASE_POOLING:

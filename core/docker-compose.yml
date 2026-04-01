@@ -3,29 +3,17 @@
 # Simplified setup for local development.
 # ============================================================
 
+# ------------------------------------------------------------
+# NETWORKS
+# ------------------------------------------------------------
+networks:
+  traefik-net:
+    external: true
+
 services:
   # ============================================================
   # POSTGRESQL DATABASE
   # ============================================================
-  # postgres:
-  #   image: postgres:16-alpine
-  #   container_name: postgres
-  #   restart: unless-stopped
-  #   ports:
-  #     - "5432:5432"
-  #   environment:
-  #     POSTGRES_USER: ${POSTGRES_USER:-postgres}
-  #     POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mk_pAssWord123}
-  #     POSTGRES_DB: db_structa
-  #     PGDATA: /var/lib/postgresql/data/pgdata
-  #   volumes:
-  #     - ./compose/data/postgres_data:/var/lib/postgresql/data:Z
-  #   healthcheck:
-  #     test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-
   # ============================================================
   # CORE - Django/Uvicorn Application
   # ============================================================
@@ -46,19 +34,19 @@ services:
       - core_media:/app/assets/media:rw
     environment:
       - RUNNING_ENV=docker
+      - RELOAD=${RELOAD:-false}
       - SERVER_ENV=production
-      - DEBUG=False
+      - DEBUG=True
       - PORT=5080
       - DB_HOST=postgres
       - DB_NAME=db_structa
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
       - RUN_SETUP=true
-      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
-      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-admin@structa.cloud}
-      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
     # depends_on:
     #   postgres:
     #     condition: service_healthy
+    networks:
+      - traefik-net
 
 volumes:
   core_static:

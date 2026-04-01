@@ -15,7 +15,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 from apps.handlers.services import CertificateService, MessageService
-from apps.LMS.services import CourseService, NoteService
+# from apps.LMS.services import NoteService
 from alliance import logger
 from django_grep.comp.site import NotificationMixin, PageHandler
 

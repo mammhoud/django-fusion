@@ -12,7 +12,7 @@ DEBUG=true
 DJANGO_SECRET_KEY=dev-secret-key-change-y-in-production
 
 # Database Configuration
-DB_HOST=localhost
+DB_HOST=postgres
 DB_PORT=5432
 DB_NAME=db_structa
 DB_USER=postgres
