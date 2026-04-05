@@ -22,7 +22,7 @@ echo "📦 Preparing Django application..."
 # Runtime configuration
 # -----------------------------------------------------
 HOST="${HOST:-0.0.0.0}"
-PORT="${PORT:-5070}"
+PORT="${PORT:-5080}"
 WORKERS="${WORKERS:-5}"
 RELOAD="${RELOAD:-false}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
