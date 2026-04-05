@@ -32,7 +32,7 @@ cd core/
 ## 📘 Documentation & Support
 
 - **Marketplace Details**: See [PRODUCT.md](PRODUCT.md) for features and roadmap.
-- **Support**: Reach out via [https://structa.cloud](https://structa.cloud) or email `support@structa.cloud`.
+- **Support**: Reach out via [https://structa.cloud](https://structa.cloud) or email `mahmoud.ezat@outlook.com`.
 
 ---
 

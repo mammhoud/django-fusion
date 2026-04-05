@@ -24,8 +24,7 @@ LOCALE_PATHS = settings.get(
 
 # Time zone configuration
 TIME_ZONE = settings.get("TIME_ZONE", "UTC")
-if settings.SERVER_ENV.value in ["demo", "development"]:
-    # Use local timezone for development/demo
+if settings.SERVER_ENV.value == "development":
     TIME_ZONE = settings.get("LOCAL_TIME_ZONE", "Africa/Cairo")
 
 # -------------------------------

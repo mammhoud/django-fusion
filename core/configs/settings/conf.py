@@ -1,41 +1,33 @@
 """
-🌐 Enhanced UnifiedSettings with Dynamic Attribute Support
-========================================================
-Complete configuration management with environment tracking and validation.
-Automatically detects Docker runtime environment and supports accessing Dynaconf values directly as attributes.
+Configuration management for Alliance/Structa.
+Reads from .env and YAML files via Dynaconf.
+Supports: local, docker runtimes.
+Environments: development, staging, production, testing.
 """
 
 import os
-import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
 from django_grep.contrib.enums import Environment, LogLevel, Module, Runtime
 from dynaconf import Dynaconf
-from pydantic import BaseModel, Field, validator
-from pydantic.dataclasses import dataclass
+from pydantic import Field, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 CONFIG_DIR = Path(__file__).parent / "ENV"
 
-# ==================== MAIN SETTINGS CLASS ====================
-
 
 class MainSettings(BaseSettings):
-    """
-    Complete Unified Configuration with Dynamic Attribute Support
-    =============================================================
-    Combines environment, git, docker, sync, security, and dynamic settings.
-    Uses Dynaconf for hierarchical configuration with YAML files.
-    """
+    """Unified settings — reads env vars + Dynaconf YAML files."""
 
-    # ==================== CORE ENVIRONMENT ====================
+    # ---- Core ----
     SERVER_ENV: Environment = Field(
         default=Environment.DEVELOPMENT,
-        description="Server environment (development, demo, staging, production)",
+        description="Server environment (development, staging, production, testing)",
     )
     RUNNING_ENV: Runtime = Field(
-        default=Runtime.LOCAL, description="Runtime environment (local, docker, kubernetes, cloud)"
+        default=Runtime.LOCAL,
+        description="Runtime environment (local, docker)",
     )
     MODULE: Module = Field(default=Module.LMS, description="Application module")
     DEBUG: bool = Field(default=True, description="Debug mode")
@@ -45,67 +37,44 @@ class MainSettings(BaseSettings):
     HOST: str = Field(default="0.0.0.0", description="Server host")
     PORT: int = Field(default=5080, description="Server port")
 
-
-    # ==================== DOCKER CONFIGURATION ====================
-    DEMO_CONTAINER: str = Field(default="structa-demo", description="Demo container name")
+    # ---- Docker ----
     MAIN_CONTAINER: str = Field(default="structa-main", description="Main container name")
-    DEMO_BRANCH: str = Field(default="dev", description="Demo branch name")
     MAIN_BRANCH: str = Field(default="main", description="Main branch name")
 
-    # ==================== DYNACONF SETTINGS ====================
+    # ---- Dynaconf (internal) ----
     dynaconf_settings: Optional[Dynaconf] = None
 
-    # Pydantic Configuration
     model_config = SettingsConfigDict(
         env_file=Path(__file__).parent.parent.parent / ".env",
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="allow",
         env_prefix="",
-        # validate_assignment=True,
     )
 
     def __init__(self, **kwargs):
-        """Initialize with Docker detection and Dynaconf loading."""
-        # Detect runtime environment
-        self._detect_runtime_environment(kwargs)
+        self._detect_runtime(kwargs)
         super().__init__(**kwargs)
-
-        # Initialize Dynaconf
         self._init_dynaconf()
 
-    def _detect_runtime_environment(self, kwargs: Dict[str, Any]) -> None:
-        """Detect if running in Docker/Kubernetes container."""
+    def _detect_runtime(self, kwargs: Dict[str, Any]) -> None:
+        """Detect docker vs local runtime from env vars and filesystem."""
         runtime_from_env = os.environ.get("RUNNING_ENV", "").lower()
+        if runtime_from_env:
+            kwargs.setdefault("RUNNING_ENV", runtime_from_env)
+            return
 
-        docker_env_indicators = [
+        is_docker = any([
             os.path.exists("/.dockerenv"),
             os.path.exists("/run/.containerenv"),
             "DOCKER" in os.environ,
             "COMPOSE" in os.environ,
-            "KUBERNETES_SERVICE_HOST" in os.environ,
-            "KUBERNETES_PORT" in os.environ,
             "CONTAINER" in os.environ,
-            "PATH" in os.environ and "docker" in os.environ.get("PATH", "").lower(),
-        ]
-
-        is_containerized = any(docker_env_indicators)
-
-        if runtime_from_env:
-            kwargs.setdefault("RUNNING_ENV", runtime_from_env)
-        elif is_containerized:
-            if "KUBERNETES" in os.environ or "KUBERNETES_SERVICE_HOST" in os.environ:
-                kwargs["RUNNING_ENV"] = Runtime.KUBERNETES
-            elif "DOCKER" in os.environ or os.path.exists("/.dockerenv"):
-                kwargs["RUNNING_ENV"] = Runtime.DOCKER
-            else:
-                kwargs["RUNNING_ENV"] = Runtime.DOCKER
-        else:
-            kwargs.setdefault("RUNNING_ENV", Runtime.LOCAL)
+        ])
+        kwargs.setdefault("RUNNING_ENV", Runtime.DOCKER if is_docker else Runtime.LOCAL)
 
     def _init_dynaconf(self) -> None:
-        """Initialize Dynaconf configuration."""
-        # Define configuration files
+        """Load YAML config files via Dynaconf."""
         settings_files = [
             CONFIG_DIR / "_core.yml",
             CONFIG_DIR / "database.yml",
@@ -113,61 +82,35 @@ class MainSettings(BaseSettings):
             CONFIG_DIR / "storage.yml",
             CONFIG_DIR / "email.yml",
             CONFIG_DIR / "logging.yml",
-            CONFIG_DIR / f"_{self.SERVER_ENV.value}.yml",
             CONFIG_DIR / ".secrets.yml",
         ]
-
-        existing_files = [str(f) for f in settings_files if f.exists()]
-
-        # Initialize Dynaconf
+        existing = [str(f) for f in settings_files if f.exists()]
         self.dynaconf_settings = Dynaconf(
             envvar_prefix="DJANGO",
-            settings_files=existing_files,
+            settings_files=existing,
             environments=True,
             default_env="default",
             env=self.SERVER_ENV.value,
             merge_enabled=True,
             load_dotenv=True,
-            # env_switcher=self.SERVER_ENV.value,
             vault_enabled=False,
         )
 
-        # Update instance attributes from Dynaconf
-        # self._update_from_dynaconf()
-
-    def _update_from_dynaconf(self) -> None:
-        """Update settings from Dynaconf configuration."""
-        if not self.dynaconf_settings:
-            return
-
-        # Update all fields from Dynaconf
-        for field_name in self.model_fields:
-            value = self.dynaconf_settings.get(field_name)
-            if value is not None:
-                setattr(self, field_name, value)
-
-    # ==================== VALIDATORS ====================
+    # ---- Validators ----
 
     @validator("DEBUG", pre=True)
     def validate_bool(cls, v):
-        """Convert string boolean values."""
         if isinstance(v, str):
-            v_lower = v.lower()
-            if v_lower in ("true", "1", "yes", "on", "t", "y"):
-                return True
-            elif v_lower in ("false", "0", "no", "off", "f", "n"):
-                return False
+            return v.lower() in ("true", "1", "yes", "on", "t", "y")
         return v
 
     @validator("SERVER_ENV", pre=True)
     def validate_server_env(cls, v):
-        """Validate server environment."""
         if isinstance(v, str):
-            v_lower = v.lower()
             mapping = {
                 "dev": Environment.DEVELOPMENT,
                 "development": Environment.DEVELOPMENT,
-                "demo": Environment.DEMO,
+                "demo": Environment.DEVELOPMENT,  # demo → development
                 "prod": Environment.PRODUCTION,
                 "production": Environment.PRODUCTION,
                 "stage": Environment.STAGING,
@@ -175,33 +118,23 @@ class MainSettings(BaseSettings):
                 "test": Environment.TESTING,
                 "testing": Environment.TESTING,
             }
-            return mapping.get(v_lower, Environment.DEVELOPMENT)
+            return mapping.get(v.lower(), Environment.DEVELOPMENT)
         return v
 
     @validator("RUNNING_ENV", pre=True)
     def validate_runtime_env(cls, v):
-        """Validate runtime environment."""
         if isinstance(v, str):
-            v_lower = v.lower()
             mapping = {
                 "local": Runtime.LOCAL,
                 "docker": Runtime.DOCKER,
                 "container": Runtime.DOCKER,
-                "k8s": Runtime.KUBERNETES,
-                "kubernetes": Runtime.KUBERNETES,
-                "cloud": Runtime.CLOUD,
-                "aws": Runtime.CLOUD,
-                "gcp": Runtime.CLOUD,
-                "azure": Runtime.CLOUD,
             }
-            return mapping.get(v_lower, Runtime.LOCAL)
+            return mapping.get(v.lower(), Runtime.LOCAL)
         return v
 
     @validator("MODULE", pre=True)
     def validate_module(cls, v):
-        """Validate module."""
         if isinstance(v, str):
-            v_upper = v.upper()
             mapping = {
                 "LMS": Module.LMS,
                 "LEARNING_MANAGEMENT": Module.LMS,
@@ -213,76 +146,37 @@ class MainSettings(BaseSettings):
                 "CRM": Module.CRM,
                 "CUSTOMER_RELATIONSHIP": Module.CRM,
             }
-            return mapping.get(v_upper, Module.LMS)
+            return mapping.get(v.upper(), Module.LMS)
         return v
 
-    # ==================== DYNAMIC ATTRIBUTE METHODS ====================
+    # ---- Dynamic attribute access ----
 
     def __getattr__(self, name: str) -> Any:
-        """
-        Get dynamic attribute from Dynaconf.
-        This allows settings.SOME_SETTING to work even if not defined in class.
-        """
-        # Check Dynaconf
         if self.dynaconf_settings and hasattr(self.dynaconf_settings, name):
             return getattr(self.dynaconf_settings, name)
+        raise AttributeError(f"'{self.__class__.__name__}' has no attribute '{name}'")
 
-        # Check if it's a nested setting with dot notation
-        if self.dynaconf_settings and "." in name:
-            parts = name.split(".")
-            current = self.dynaconf_settings
-            for part in parts:
-                if hasattr(current, part):
-                    current = getattr(current, part)
-                else:
-                    raise AttributeError(
-                        f"'{self.__class__.__name__}' object has no attribute '{name}'"
-                    )
-            return current
-
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
-
-    # ==================== GET METHODS ====================
+    # ---- get() with casting ----
 
     def get(self, key: str, default: Any = None, cast: Optional[type] = None) -> Any:
-        """
-        Get configuration value.
-        """
-        # Check defined attributes first (if they have a non-default value)
         if hasattr(self, key) and key in self.model_fields:
             value = getattr(self, key)
-            if value:
-                # If the attribute has a non-empty/truthy value, return it
-                # This prioritizes explicitly set attributes
-                if not (isinstance(value, (str, list, dict)) and not value): # Check for non-empty strings, lists, dicts
-                    return value
-                elif value is not None: # For other types, check if not None
-                    return value
+            if value is not None and value != "":
+                return value
 
-        # Check Dynaconf if attribute is empty or not defined, or if the attribute was empty
-        if self.dynaconf_settings and hasattr(self.dynaconf_settings, key):
-            dyna_value = getattr(self.dynaconf_settings, key)
-            if dyna_value is not None:
-                # If Dynaconf has a non-None value, return it
-                return dyna_value
-
-        # If still no value, try to get from Dynaconf using its .get() method with default
         if self.dynaconf_settings:
             value = self.dynaconf_settings.get(key, default)
         else:
             value = default
 
-        # Apply casting
         if cast is not None and value is not None:
             try:
                 if cast == bool:
-                    value = self._cast_bool(value)
+                    value = str(value).lower() in ("true", "1", "yes", "on")
                 elif cast == int:
-                    value = self._cast_int(value)
+                    value = int(value)
                 elif cast == list:
-                    value = self._cast_list(value)
-                elif cast == str:
-                    value = str(value)
+                    value = [i.strip() for i in value.split(",")] if isinstance(value, str) else list(value)
                 else:
                     value = cast(value)
             except (ValueError, TypeError):
@@ -290,391 +184,144 @@ class MainSettings(BaseSettings):
 
         return value
 
-    def _cast_bool(self, value: Any) -> bool:
-        """Cast value to boolean."""
-        if isinstance(value, str):
-            return value.lower() in ("true", "1", "yes", "on", "t", "y")
-        return bool(value)
+    # ---- Properties ----
 
-    def _cast_int(self, value: Any) -> int:
-        """Cast value to integer."""
-        try:
-            return int(value)
-        except (ValueError, TypeError):
-            return 0
-
-    def _cast_list(self, value: Any) -> List:
-        """Cast value to list."""
-        if isinstance(value, str):
-            return [item.strip() for item in value.split(",") if item.strip()]
-        elif isinstance(value, list):
-            return value
-        return []
-
-    # ==================== PROPERTIES ====================
-
-    @property
-    def docker_configured(self) -> bool:
-        """Check if docker is configured."""
-        return bool(self.DEMO_CONTAINER and self.MAIN_CONTAINER)
-
-    @property
-    def sync_config(self) -> Dict[str, Any]:
-        """Get complete sync configuration."""
-        return {}
-
-    # Environment Properties
     @property
     def is_production(self) -> bool:
-        """Check if running in production."""
         return self.SERVER_ENV == Environment.PRODUCTION
 
     @property
     def is_development(self) -> bool:
-        """Check if running in development."""
         return self.SERVER_ENV == Environment.DEVELOPMENT
 
     @property
-    def is_demo(self) -> bool:
-        """Check if running in demo."""
-        return self.SERVER_ENV == Environment.DEMO
-
-    @property
     def is_staging(self) -> bool:
-        """Check if running in staging."""
         return self.SERVER_ENV == Environment.STAGING
 
     @property
     def is_testing(self) -> bool:
-        """Check if running in testing."""
         return self.SERVER_ENV == Environment.TESTING
 
     @property
     def is_local(self) -> bool:
-        """Check if running locally."""
         return self.RUNNING_ENV == Runtime.LOCAL
 
     @property
     def is_docker(self) -> bool:
-        """Check if running in Docker."""
         return self.RUNNING_ENV == Runtime.DOCKER
 
     @property
-    def is_kubernetes(self) -> bool:
-        """Check if running in Kubernetes."""
-        return self.RUNNING_ENV == Runtime.KUBERNETES
-
-    @property
-    def is_cloud(self) -> bool:
-        """Check if running in cloud."""
-        return self.RUNNING_ENV == Runtime.CLOUD
-
-    @property
     def is_containerized(self) -> bool:
-        """Check if running in container."""
-        return self.RUNNING_ENV in [Runtime.DOCKER, Runtime.KUBERNETES, Runtime.CLOUD]
+        return self.RUNNING_ENV == Runtime.DOCKER
 
     @property
     def is_debug(self) -> bool:
-        """Check if debug mode is enabled."""
         return self.DEBUG
 
     @property
+    def docker_configured(self) -> bool:
+        return bool(self.MAIN_CONTAINER)
+
+    @property
     def dynaconf(self) -> Optional[Dynaconf]:
-        """Get Dynaconf settings instance."""
         return self.dynaconf_settings
 
-    # ==================== SYNC CONFIGURATION METHODS ====================
-
-    # ==================== SUMMARY AND REPORTING ====================
+    # ---- Summary / validation ----
 
     @property
     def summary(self) -> Dict[str, Any]:
-        """Get environment summary."""
-        runtime_emoji = {
-            Runtime.LOCAL: "💻",
-            Runtime.DOCKER: "🐳",
-            Runtime.KUBERNETES: "☸️",
-            Runtime.CLOUD: "☁️",
-        }.get(self.RUNNING_ENV, "❓")
-
+        runtime_emoji = {Runtime.LOCAL: "💻", Runtime.DOCKER: "🐳"}.get(self.RUNNING_ENV, "❓")
         env_emoji = {
             Environment.DEVELOPMENT: "🔧",
-            Environment.DEMO: "🎬",
             Environment.STAGING: "🔄",
             Environment.PRODUCTION: "🚀",
             Environment.TESTING: "🧪",
         }.get(self.SERVER_ENV, "❓")
-
         return {
             "environment": f"{env_emoji} {self.SERVER_ENV.value}",
             "runtime": f"{runtime_emoji} {self.RUNNING_ENV.value}",
             "module": f"📦 {self.MODULE.value}",
-            "debug": ("✅ Disabled" if not self.DEBUG else "⚠️ Enabled") if self.is_production else ("✅ Enabled" if self.DEBUG else "⚠️ Disabled"),
+            "debug": "⚠️ Enabled" if self.DEBUG else "✅ Disabled",
             "host": self.HOST,
             "port": self.PORT,
             "is_production": self.is_production,
             "is_containerized": self.is_containerized,
-            "docker_configured": self.docker_configured,
         }
 
     def print_summary(self) -> None:
-        """Print formatted environment summary."""
         border = "=" * 60
-
         print(f"\n{border}")
         print("🌍 ENVIRONMENT SUMMARY".center(60))
         print(border)
-
-        # Environment info
-        rows = [
+        for label, value in [
             ("Environment", self.summary["environment"]),
             ("Runtime", self.summary["runtime"]),
             ("Module", self.summary["module"]),
             ("Debug Mode", self.summary["debug"]),
             ("Production", "✅ Yes" if self.summary["is_production"] else "❌ No"),
             ("Containerized", "✅ Yes" if self.summary["is_containerized"] else "❌ No"),
-        ]
-
-        for label, value in rows:
+            ("Host", self.summary["host"]),
+            ("Port", str(self.summary["port"])),
+        ]:
             print(f"│ {label:<20} : {value:<35} │")
-
-        print(border)
-        print("⚙️ CONFIGURATION STATUS".center(60))
-        print(border)
-
-        # Configuration status
-        config_rows = [
-            ("Docker Config", "✅ Complete" if self.summary["docker_configured"] else "⚠️ Partial"),
-            ("Server Host", self.summary["host"]),
-            ("Server Port", str(self.summary["port"])),
-        ]
-
-        for label, value in config_rows:
-            print(f"│ {label:<20} : {value:<35} │")
-
         print(f"{border}\n")
 
     def validate_environment(self) -> List[str]:
-        """Validate environment configuration."""
         warnings = []
-
-        # Environment-specific warnings
         if self.is_production and self.DEBUG:
-            warnings.append("⚠️ DEBUG mode is enabled in production!")
-
+            warnings.append("⚠️ DEBUG is enabled in production!")
         if self.is_production and self.DJANGO_SECRET_KEY == "dev-secret-key-change-me":
             warnings.append("🚨 Using default DJANGO_SECRET_KEY in production!")
-
-
-        if not self.docker_configured:
-            warnings.append("📦 Docker containers are not configured")
-
-        # Check for missing required variables
-        required_vars = [
-            ("DJANGO_SECRET_KEY", "dev-secret-key-change-me"),
-            ("HOST", "0.0.0.0"),
-            ("PORT", "5080"),
-        ]
-
-        for var, default_value in required_vars:
-            value = getattr(self, var, "")
-            if str(value) == str(default_value):
-                warnings.append(f"⚙️ Using default value for {var}")
-
         return warnings
 
-    def show_config(self) -> Dict[str, Dict[str, Any]]:
-        """Show current configuration."""
+    def show_config(self) -> Dict[str, Any]:
         return {
-            "core": {
-                "server_env": self.SERVER_ENV.value,
-                "running_env": self.RUNNING_ENV.value,
-                "module": self.MODULE.value,
-                "debug": self.DEBUG,
-                "host": self.HOST,
-                "port": self.PORT,
-                "is_containerized": self.is_containerized,
-            },
-            "docker": {
-                "demo_container": self.DEMO_CONTAINER,
-                "main_container": self.MAIN_CONTAINER,
-                "demo_branch": self.DEMO_BRANCH,
-                "main_branch": self.MAIN_BRANCH,
-                "configured": self.docker_configured,
-            },
+            "server_env": self.SERVER_ENV.value,
+            "running_env": self.RUNNING_ENV.value,
+            "module": self.MODULE.value,
+            "debug": self.DEBUG,
+            "host": self.HOST,
+            "port": self.PORT,
+            "main_container": self.MAIN_CONTAINER,
+            "main_branch": self.MAIN_BRANCH,
         }
 
-    def print_detailed_report(self) -> None:
-        """Print detailed environment report."""
-        self.print_summary()
-
-        warnings = self.validate_environment()
-        if warnings:
-            print("⚠️  WARNINGS & ISSUES:")
-            for i, warning in enumerate(warnings, 1):
-                print(f"  {i}. {warning}")
-
-        # Show recommendations
-        print("\n💡 RECOMMENDATIONS:")
-        if self.is_production:
-            print("  - Set DEBUG=False in production")
-            print("  - Use a strong DJANGO_SECRET_KEY")
-            print("  - Ensure all sensitive data is properly secured")
-
-            print("  - Generate a personal access token with repo scope")
-
-        if not self.docker_configured:
-            print("  - Configure DEMO_CONTAINER and MAIN_CONTAINER")
-            print("  - Set appropriate Docker image names")
-
-        if self.is_containerized and self.DEBUG:
-            print("  - Consider setting DEBUG=False in containerized environments")
-
-        # Print detected environment
-        print(f"\n🔍 DETECTED ENVIRONMENT:")
-        print(f"  - Running in: {self.RUNNING_ENV.value}")
-        print(f"  - Server environment: {self.SERVER_ENV.value}")
-        print(f"  - Containerized: {'Yes' if self.is_containerized else 'No'}")
-
-    # ==================== SETTINGS EXPORT ====================
-
-    # def get_django_settings(self) -> Dict[str, Any]:
-    #     """Get Django settings from configuration."""
-    #     django_settings = {
-    #         # Core Django
-    #         "DEBUG": self.DEBUG,
-    #         "SECRET_KEY": self.DJANGO_SECRET_KEY,
-    #         "ALLOWED_HOSTS": self.ALLOWED_HOSTS,
-    #         "CORS_ALLOWED_ORIGINS": self.CORS_ALLOWED_ORIGINS,
-    #         "CSRF_TRUSTED_ORIGINS": self.CSRF_TRUSTED_ORIGINS,
-    #         # Common Django settings (use get() for dynamic ones)
-    #         "ADMIN_URL": self.get("ADMIN_URL", "admin/"),
-    #         "STATIC_URL": self.get("STATIC_URL", "/static/"),
-    #         "MEDIA_URL": self.get("MEDIA_URL", "/media/"),
-    #         "LANGUAGE_CODE": self.get("LANGUAGE_CODE", "en-us"),
-    #         "TIME_ZONE": self.get("TIME_ZONE", "UTC"),
-    #     }
-
-    #     # Add any other Django settings from Dynaconf
-    #     django_specific_keys = [
-    #         "INSTALLED_APPS",
-    #         "MIDDLEWARE",
-    #         "DATABASES",
-    #         "AUTH_PASSWORD_VALIDATORS",
-    #         "REST_FRAMEWORK",
-    #         "LOGGING",
-    #         "SESSION_COOKIE_SECURE",
-    #         "CSRF_COOKIE_SECURE",
-    #         "SECURE_SSL_REDIRECT",
-    #         "SECURE_HSTS_SECONDS",
-    #     ]
-
-    #     for key in django_specific_keys:
-    #         value = self.get(key)
-    #         if value is not None:
-    #             django_settings[key] = value
-
-    #     return django_settings
-
     def to_dict(self, include_secrets: bool = False) -> Dict[str, Any]:
-        """Convert settings to dictionary."""
-        data = {}
-
-        # Add defined fields
-        for field in self.model_fields:
-            data[field] = getattr(self, field)
-
-        # Add Dynaconf settings
+        data = {f: getattr(self, f) for f in self.model_fields}
         if self.dynaconf_settings:
             for key in self.dynaconf_settings.keys():
                 if key not in data:
                     data[key] = self.dynaconf_settings.get(key)
-
-        # Mask secrets if not including them
         if not include_secrets:
-            secret_fields = ["DJANGO_SECRET_KEY", "SECRET_KEY"]
-            for field in secret_fields:
-                if field in data and data[field]:
-                    data[field] = "***SECRET***"
-
+            for field in ("DJANGO_SECRET_KEY", "SECRET_KEY"):
+                if field in data:
+                    data[field] = "***"
         return data
 
-    # ==================== HELPER METHODS ====================
-
-    def get_environment_config(
-        self, env: Optional[Union[str, Environment]] = None
-    ) -> Dict[str, str]:
-        """Get configuration for a specific environment."""
-        if env is None:
-            env = self.SERVER_ENV
-
-        if isinstance(env, str):
-            try:
-                env = Environment(env.lower())
-            except ValueError:
-                env = self.SERVER_ENV
-
-        return {
-            "container": self._get_container(env),
-            "branch": self._get_branch(env),
-            "environment": env.value,
-        }
-
     def get_env_file_path(self) -> Path:
-        """Get the path to the .env file."""
         return Path(__file__).parent.parent.parent / ".env"
 
     def reload(self) -> None:
-        """Reload settings from environment."""
         self.__init__()
 
 
-# ==================== GLOBAL INSTANCES ====================
-
-# Singleton instance
+# ---- Singleton ----
 settings = MainSettings()
-
-# ==================== UTILITY FUNCTIONS ====================
-
-
-# def get_django_settings() -> Dict[str, Any]:
-# """Get Django settings from main configuration."""
-# return settings.get_django_settings()
 
 
 def init_config(env: Optional[str] = None) -> MainSettings:
-    """
-    Initialize configuration with optional environment.
-
-    Args:
-        env: Environment name (development, staging, production)
-
-    Returns:
-        MainSettings instance
-    """
+    """Re-initialise settings, optionally forcing a SERVER_ENV."""
     global settings
-
     if env:
         os.environ["SERVER_ENV"] = env
-
-    # Reinitialize settings
     settings = MainSettings()
-
     return settings
 
 
-# ==================== EXPORTS ====================
-
 __all__ = [
-    # Main classes
     "MainSettings",
-    # Instances
     "settings",
-    # Utility functions
-    # "get_django_settings",
     "init_config",
-    # Enums
     "Environment",
     "LogLevel",
     "Module",

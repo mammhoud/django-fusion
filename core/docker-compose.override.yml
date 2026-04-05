@@ -1,0 +1,82 @@
+# ============================================================
+# Alliance — Production Override
+# Adds: Traefik network, Postgres, Redis
+# Usage: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --build
+#        OR simply: ./run_containers.sh --prod
+# ============================================================
+
+networks:
+  app-net:
+    driver: bridge
+  traefik-net:
+    external: true
+
+services:
+
+  # ----------------------------------------------------------
+  # POSTGRESQL
+  # ----------------------------------------------------------
+  postgres:
+    image: postgres:16-alpine
+    container_name: core-postgres
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    environment:
+      - POSTGRES_DB=${DB_NAME:-db_structa}
+      - POSTGRES_USER=${DB_USER:-postgres}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-mk_pAssWord123}
+    volumes:
+      - ./compose/data/postgres_data:/var/lib/postgresql/data:rw
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-postgres} -d ${DB_NAME:-db_structa}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------
+  # REDIS
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    container_name: core-redis
+    restart: unless-stopped
+    command: redis-server --requirepass ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - ./compose/data/redis_data:/data:rw
+    networks:
+      - app-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ----------------------------------------------------------
+  # CORE — override for production
+  # ----------------------------------------------------------
+  core:
+    ports: []                          # remove direct port exposure — Traefik handles it
+    environment:
+      - RUNNING_ENV=docker
+      - SERVER_ENV=production
+      - DEBUG=false
+      - PORT=5080
+      - RELOAD=false
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-structa.cloud,www.structa.cloud,core.structa.cloud}
+      - RUN_SETUP=true
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-net
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.services.core-service.loadbalancer.server.port=5080"

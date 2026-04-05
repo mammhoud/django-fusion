@@ -89,6 +89,7 @@ PLUGIN_APPS = [
 OVERRIDE_APPS = [
     "apps.pages",
     "apps.handlers",
+    "apps.handlers.registration",
 ]
 
 

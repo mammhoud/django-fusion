@@ -1,19 +1,15 @@
 # ====================================
-# 💾 Cache & Redis Configuration
+# 💾 Cache & Session Configuration
 # ====================================
 import multiprocessing
 
 from .. import settings, tracker
 
-# -------------------------------
-# Redis Configuration
-# -------------------------------
-REDIS_URL = getattr(settings, 'REDIS_URL', 'redis://localhost:6379/0')
+REDIS_URL = settings.get("REDIS_URL", "redis://localhost:6379/0")
 REDIS_SSL = REDIS_URL.startswith("rediss://")
 
-# -------------------------------
-# Django Cache Configuration
-# -------------------------------
+# Default: local memory cache (dev/local)
+# Override in production via Redis if REDIS_URL is set
 CACHES = {
     "default": {
         "BACKEND": "django.core.cache.backends.locmem.LocMemCache",
@@ -26,50 +22,24 @@ CACHES = {
     },
 }
 
-# # ====================================
-# # 💾 Cache Configuration
-# # ====================================
-# # Use Redis but with shorter timeouts for demo
-# CACHES = {
-#     "default": {
-#         "BACKEND": "django_redis.cache.RedisCache",
-#         "LOCATION": "redis://localhost:6379/2",  # Different DB for demo
-#         "OPTIONS": {
-#             "CLIENT_CLASS": "django_redis.client.DefaultClient",
-#             "SOCKET_CONNECT_TIMEOUT": 5,
-#             "SOCKET_TIMEOUT": 5,
-#             "IGNORE_EXCEPTIONS": True,
-#             "PARSER_CLASS": "redis.connection.PythonParser",
-#         },
-#         "KEY_PREFIX": "demo",
-#         "TIMEOUT": 60,  # 1 minute for demo
-#     }
-# }
-
-# Use database sessions
 SESSION_ENGINE = "django.contrib.sessions.backends.db"
 
-# -------------------------------
-# Django-Q Configuration
-# -------------------------------
+# ---- Django-Q ----
 Q_CLUSTER = {
-    "name": f"{tracker.module}_Cluster",
+    "name": f"{tracker.MODULE.value}_Cluster",
     "workers": multiprocessing.cpu_count() * 2 + 1,
     "recycle": 500,
-    "timeout": 60 * 10,
-    "retry": 60 * 12,
+    "timeout": 600,
+    "retry": 720,
     "queue_limit": 100,
     "bulk": 10,
-    "orm": "default",  # Use ORM instead of Redis
+    "orm": "default",
 }
 
-# -------------------------------
-# Celery Configuration
-# -------------------------------
+# ---- Celery (eager in dev — tasks run inline) ----
 CELERY_TASK_ALWAYS_EAGER = True
 CELERY_TASK_EAGER_PROPAGATES = True
 CELERY_TIMEZONE = "UTC"
 CELERY_ENABLE_UTC = True
 
 CHANNEL_LAYERS = {"default": {"BACKEND": "channels.layers.InMemoryChannelLayer"}}
-

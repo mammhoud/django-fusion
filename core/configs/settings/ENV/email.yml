@@ -18,7 +18,7 @@ default:
   # Email tracking
   EMAIL_TRACKING_ENABLED: false
 
-demo:
+development:
   EMAIL_STRATEGY: "smtp"
 
 

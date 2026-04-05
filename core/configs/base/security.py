@@ -18,11 +18,16 @@ security_settings = getattr(settings, "SECURITY", {})
 # Django Security
 # -------------------------------
 # Basic security settings
-ALLOWED_HOSTS = getattr(
+_allowed_hosts_raw = getattr(
     settings,
     "ALLOWED_HOSTS",
     getattr(security_settings, "ALLOWED_HOSTS", ["localhost", "127.0.0.1"]),
 )
+# Parse comma-separated string from .env into a list
+if isinstance(_allowed_hosts_raw, str):
+    ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_raw.split(",") if h.strip()]
+else:
+    ALLOWED_HOSTS = list(_allowed_hosts_raw)
 
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = getattr(

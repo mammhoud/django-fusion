@@ -1,19 +1,15 @@
-from django.conf import settings
-from django.conf.urls.i18n import i18n_patterns
-from django.contrib import admin
-from django.contrib.sitemaps import views as sitemap_views
-from django.urls import include, path, re_path
-from django.views import defaults as default_views
-from django.views.generic import TemplateView
-from django.views.i18n import set_language
-from django.views.static import serve
-from wagtail import urls as wagtail_urls
-from wagtail.admin import urls as wagtailadmin_urls
-from wagtail.contrib.sitemaps.views import index, sitemap
-from wagtail.documents import urls as wagtaildocs_urls
+from django.urls import include, path
 
 urlpatterns = [
-    # Your custom apps with i18n support
+    # Health check + auth routes served by django-grep
+    path("", include("django_grep.pipelines.urls")),
 
+    # Allauth URLs (accounts/login/, accounts/signup/, etc.)
+    path("accounts/", include("allauth.urls")),
+
+    # Registration views (allauth-backed login/signup)
+    path("", include("apps.handlers.registration.urls")),
+
+    # Core handler URLs
     path("", include("apps.handlers.urls")),
 ]
