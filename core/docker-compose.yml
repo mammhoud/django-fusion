@@ -1,8 +1,11 @@
 # ============================================================
-# Alliance — Local Development
-# Usage: docker compose up -d --build
+# Alliance Standard Infrastructure (Non-Traefik)
+# Simplified setup for local development.
 # ============================================================
 
+# ------------------------------------------------------------
+# NETWORKS
+# ------------------------------------------------------------
 networks:
   app-net:
     driver: bridge
@@ -11,7 +14,10 @@ networks:
 
 services:
   # ============================================================
-  # CORE — Django/Uvicorn (dev: direct port, prod: Traefik via override)
+  # POSTGRESQL DATABASE
+  # ============================================================
+  # ============================================================
+  # CORE - Django/Uvicorn Application
   # ============================================================
   core:
     build:
@@ -29,28 +35,12 @@ services:
       - alliance_static:/app/assets/staticfiles:rw
       - alliance_media:/app/assets/media:rw
     environment:
-      - RUNNING_ENV=docker
-      - SERVER_ENV=${SERVER_ENV:-development}
-      - DEBUG=${DEBUG:-true}
       - PORT=5080
+      - RUNNING_ENV=docker
       - RELOAD=${RELOAD:-false}
-      - WORKERS=${WORKERS:-2}
-      - APP_MODULE=${APP_MODULE:-alliance.asgi:application}
-      - RUN_SETUP=true
-      - DOMAIN=${DOMAIN:-localhost}
-      - SITE_DOMAIN=${SITE_DOMAIN:-localhost}
+      - SERVER_ENV=${SERVER_ENV:-production}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,*}
-      - CSRF_TRUSTED_ORIGINS=${CSRF_TRUSTED_ORIGINS:-http://localhost:8280,http://127.0.0.1:8280}
-      - CORS_ALLOWED_ORIGINS=${CORS_ALLOWED_ORIGINS:-http://localhost:8280,http://127.0.0.1:8280}
-      - DB_HOST=${DB_HOST:-postgres}
-      - DB_NAME=${DB_NAME:-db_structa}
-      - REDIS_URL=${REDIS_URL:-redis://:redis_password@redis:6379/5}
-      - DJANGO_SETTINGS_MODULE=configs.settings
-      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
-      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-admin@structa.cloud}
-      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
-      - DJANGO_SECURE_SSL_REDIRECT=false
-      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+      - RUN_SETUP=true
     networks:
       - app-net
       - traefik-net
@@ -60,46 +50,6 @@ services:
       timeout: 20s
       retries: 3
       start_period: 40s
-
-  # ============================================================
-  # ALLIANCE-MEDIA - Static & Media Files (nginx)
-  # ============================================================
-  alliance-media:
-    build:
-      context: ../../compose/nginx
-      dockerfile: Dockerfile
-    image: alliance-media
-    container_name: alliance-media
-    volumes:
-      - alliance_static:/var/www/static:ro
-      - alliance_media:/var/www/media:ro
-    networks:
-      - traefik-net
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    depends_on:
-      - core
-
-  # ============================================================
-  # LMS - Maintenance page
-  # ============================================================
-  lms:
-    image: nginx:alpine
-    container_name: lms
-    volumes:
-      - ./compose/lms/maintenance.html:/usr/share/nginx/html/index.html:ro
-    networks:
-      - traefik-net
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
 
 volumes:
   alliance_static:
