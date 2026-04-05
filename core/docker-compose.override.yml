@@ -1,6 +1,6 @@
 # ============================================================
 # Alliance — Production Override
-# Adds: Traefik network, Postgres, Redis
+# Adds: Postgres, Redis, Traefik labels, removes direct ports
 # Usage: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d --build
 #        OR simply: ./run_containers.sh --prod
 # ============================================================
@@ -55,52 +55,17 @@ services:
       retries: 5
 
   # ----------------------------------------------------------
-  # CORE — override for production
+  # CORE — production overrides only (base in docker-compose.yml)
   # ----------------------------------------------------------
   core:
-    ports: []                          # remove direct port exposure — Traefik handles it
-    environment:
-      - RUNNING_ENV=docker
-      - SERVER_ENV=production
-      - DEBUG=false
-      - PORT=5080
-      - RELOAD=false
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-structa.cloud,www.structa.cloud,core.structa.cloud}
-      - RUN_SETUP=true
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_healthy
-    networks:
-      - app-net
-      - traefik-net
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-net"
-      - "traefik.http.services.core-service.loadbalancer.server.port=5080"
-
-  # ----------------------------------------------------------
-  # ALLIANCE-WEBSITE — production override
-  # ----------------------------------------------------------
-  alliance-website:
     ports: []
     environment:
-      - RUNNING_ENV=docker
       - SERVER_ENV=production
-      - DEBUG=False
-      - PORT=5080
-      - WORKERS=4
+      - DEBUG=false
       - RELOAD=false
-      - APP_MODULE=alliance.asgi:application
-      - DB_HOST=postgres
-      - DB_NAME=db_structa
+      - WORKERS=4
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/5
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-structa.cloud,core.structa.cloud}
-      - RUN_SETUP=true
-      - DJANGO_SECURE_SSL_REDIRECT=false
-      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
     depends_on:
       postgres:
         condition: service_healthy

@@ -1,7 +1,6 @@
 # ============================================================
 # Alliance — Local Development
-# Database: SQLite (no external services)
-# Usage:    docker compose up -d --build
+# Usage: docker compose up -d --build
 # ============================================================
 
 networks:
@@ -11,12 +10,15 @@ networks:
     external: true
 
 services:
+  # ============================================================
+  # CORE — Django/Uvicorn (dev: direct port, prod: Traefik via override)
+  # ============================================================
   core:
     build:
       context: .
       dockerfile: ./compose/django/Dockerfile
-    image: core
-    container_name: core
+    image: alliance-website
+    container_name: alliance-website
     restart: unless-stopped
     ports:
       - "${PORT:-8280}:5080"
@@ -24,16 +26,17 @@ services:
       - ./.env
     volumes:
       - ../libs:/libs:rw
-      - core_static:/app/assets/staticfiles:rw
-      - core_media:/app/assets/media:rw
+      - alliance_static:/app/assets/staticfiles:rw
+      - alliance_media:/app/assets/media:rw
     environment:
       - RUNNING_ENV=docker
       - SERVER_ENV=${SERVER_ENV:-development}
       - DEBUG=${DEBUG:-true}
       - PORT=5080
       - RELOAD=${RELOAD:-false}
+      - WORKERS=${WORKERS:-2}
+      - APP_MODULE=${APP_MODULE:-alliance.asgi:application}
       - RUN_SETUP=true
-      # Domain & security — read from .env, fallback to open local defaults
       - DOMAIN=${DOMAIN:-localhost}
       - SITE_DOMAIN=${SITE_DOMAIN:-localhost}
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,*}
@@ -42,41 +45,7 @@ services:
       - DB_HOST=${DB_HOST:-postgres}
       - DB_NAME=${DB_NAME:-db_structa}
       - REDIS_URL=${REDIS_URL:-redis://:redis_password@redis:6379/5}
-    networks:
-      - app-net
-      - traefik-net
-
-  # ============================================================
-  # ALLIANCE-WEBSITE - Django/Uvicorn Application
-  # Domain: core.structa.cloud
-  # ============================================================
-  alliance-website:
-    build:
-      context: .
-      dockerfile: ./compose/django/Dockerfile
-    image: alliance-website
-    container_name: alliance-website
-    restart: unless-stopped
-    env_file:
-      - ./.env
-    volumes:
-      - ../libs:/libs:z
-      - alliance_static:/app/assets/staticfiles:z
-      - alliance_media:/app/assets/media:z
-    environment:
-      - RUNNING_ENV=docker
-      - RELOAD=${RELOAD:-false}
-      - SERVER_ENV=production
-      - DEBUG=False
-      - PORT=5080
-      - WORKERS=4
-      - APP_MODULE=alliance.asgi:application
-      - DB_HOST=postgres
-      - DB_NAME=db_structa
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/5
       - DJANGO_SETTINGS_MODULE=configs.settings
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
-      - RUN_SETUP=true
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
       - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-admin@structa.cloud}
       - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
@@ -93,7 +62,7 @@ services:
       start_period: 40s
 
   # ============================================================
-  # ALLIANCE-MEDIA - Static & Media Files
+  # ALLIANCE-MEDIA - Static & Media Files (nginx)
   # ============================================================
   alliance-media:
     build:
@@ -113,7 +82,7 @@ services:
       timeout: 10s
       retries: 3
     depends_on:
-      - alliance-website
+      - core
 
   # ============================================================
   # LMS - Learning Management System (Maintenance Mode)
@@ -134,8 +103,5 @@ services:
       retries: 3
 
 volumes:
-  core_static:
-  core_media:
   alliance_static:
   alliance_media:
-
