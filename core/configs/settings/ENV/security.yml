@@ -4,8 +4,7 @@
 # ============================================
 
 default: &security_default
-  DEBUG: false
-  DJANGO_SECRET_KEY: "@jinja {{ env.get('DJANGO_SECRET_KEY', 'django-insecure-change-me') }}"
+  DJANGO_SECRET_KEY: "@jinja {{ env.get('DJANGO_SECRET_KEY', '') }}"
 
   SECURITY:
     # ---- Hosts — read from env, fallback to local ----
@@ -96,7 +95,6 @@ default: &security_default
 
 # ---- development ----
 development:
-  DEBUG: true
   SECURITY:
     ALLOWED_HOSTS: "@jinja {{ env.get('ALLOWED_HOSTS', '*,localhost,127.0.0.1,0.0.0.0').split(',') }}"
     CORS_ALLOW_ALL_ORIGINS: true
@@ -112,7 +110,6 @@ development:
 
 # ---- production ----
 production:
-  DEBUG: false
   SECURITY:
     # All from env — no hardcoded domains
     ALLOWED_HOSTS: "@jinja {{ env.get('ALLOWED_HOSTS', 'structa.cloud,www.structa.cloud,core.structa.cloud').split(',') }}"
@@ -139,7 +136,6 @@ production:
 
 # ---- testing ----
 testing:
-  DEBUG: true
   SECURITY:
     ALLOWED_HOSTS: ["*", "localhost", "127.0.0.1", "testserver"]
     CORS_ALLOW_ALL_ORIGINS: true

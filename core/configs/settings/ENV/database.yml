@@ -37,7 +37,7 @@ production:
   DATABASES:
     default:
       ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
-      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
+      HOST: "@jinja {{ env.get('DB_HOST', 'localhost') }}"
       PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
       NAME: "@jinja {{ env.get('DB_NAME', 'db_structa') }}"
       USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"

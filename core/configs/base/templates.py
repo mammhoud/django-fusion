@@ -66,9 +66,8 @@ TEMPLATES = [
             "builtins": [
                 "django.templatetags.static",
                 "heroicons.templatetags.heroicons",
-                "django_grep.comp.templatetags.components",
+                "django_grep.comp.templatetags.comp_tags",
                 "django_grep.comp.templatetags.apps",
-                # "contrib.templatetags.user_role",
             ],
         },
     },

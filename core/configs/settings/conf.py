@@ -54,8 +54,21 @@ class MainSettings(BaseSettings):
 
     def __init__(self, **kwargs):
         self._detect_runtime(kwargs)
+        self._load_secret_key(kwargs)
         super().__init__(**kwargs)
         self._init_dynaconf()
+
+    def _load_secret_key(self, kwargs: Dict[str, Any]) -> None:
+        """Read DJANGO_SECRET_KEY from secret.key.txt if it exists."""
+        key_file = Path(__file__).parent.parent.parent / "secret.key.txt"
+        if key_file.exists():
+            try:
+                first_line = key_file.read_text(encoding="utf-8").splitlines()[0].strip()
+                if first_line and not first_line.startswith("#"):
+                    kwargs["DJANGO_SECRET_KEY"] = first_line
+                    os.environ.setdefault("DJANGO_SECRET_KEY", first_line)
+            except Exception:
+                pass
 
     def _detect_runtime(self, kwargs: Dict[str, Any]) -> None:
         """Detect docker vs local runtime from env vars and filesystem."""

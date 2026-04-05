@@ -108,7 +108,7 @@ production:
   # Core
   APP_NAME: "Alliance"
   APP_VERSION: "1.0.0-production"
-  DEBUG: true
+  DEBUG: false
 
   # Performance
   PERFORMANCE:

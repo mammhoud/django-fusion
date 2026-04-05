@@ -285,3 +285,4 @@ compose/data/
 .env
 .env.*
 !.env.example
+secret.key.txt
