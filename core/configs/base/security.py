@@ -34,10 +34,18 @@ CORS_ALLOW_ALL_ORIGINS = getattr(
     security_settings, "CORS_ALLOW_ALL_ORIGINS", not settings.is_production
 )
 CORS_ALLOW_CREDENTIALS = True
-CORS_ALLOWED_ORIGINS = getattr(security_settings, "CORS_ALLOWED_ORIGINS", [])
+_cors_raw = getattr(security_settings, "CORS_ALLOWED_ORIGINS", [])
+if isinstance(_cors_raw, str):
+    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_raw.split(",") if o.strip()]
+else:
+    CORS_ALLOWED_ORIGINS = list(_cors_raw)
 
 # CSRF Configuration
-CSRF_TRUSTED_ORIGINS = getattr(security_settings, "CSRF_TRUSTED_ORIGINS", [])
+_csrf_raw = getattr(security_settings, "CSRF_TRUSTED_ORIGINS", [])
+if isinstance(_csrf_raw, str):
+    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_raw.split(",") if o.strip()]
+else:
+    CSRF_TRUSTED_ORIGINS = list(_csrf_raw)
 CSRF_COOKIE_SECURE = settings.is_production
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access
 CSRF_COOKIE_NAME = "csrftoken"
