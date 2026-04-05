@@ -15,6 +15,16 @@ else
 fi
 
 ###############################################################################
+# INSTALL LOCAL PATH PACKAGES (mounted at runtime)
+###############################################################################
+if [ -d "/libs/django-grep" ]; then
+    echo "📦 Installing local package: django-grep..."
+    /root/.local/bin/uv pip install --editable /libs/django-grep
+else
+    echo "⚠️  /libs/django-grep not found — skipping local install"
+fi
+
+###############################################################################
 # DJANGO INITIALIZATION
 ###############################################################################
 if [ "${RUN_SETUP:-false}" = "true" ]; then

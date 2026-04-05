@@ -38,14 +38,14 @@ services:
       - PORT=5080
       - RUNNING_ENV=docker
       - RELOAD=${RELOAD:-false}
-      - SERVER_ENV=${SERVER_ENV:-production}
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-localhost,127.0.0.1,0.0.0.0,*}
+      - SERVER_ENV=development
+      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,alliance-website,*
       - RUN_SETUP=true
     networks:
       - app-net
       - traefik-net
     healthcheck:
-      test: ["CMD", "/root/.local/bin/uv", "run", "python", "com", "check"]
+      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:5080/health/ || exit 1"]
       interval: 30s
       timeout: 20s
       retries: 3

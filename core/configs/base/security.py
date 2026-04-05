@@ -17,17 +17,32 @@ security_settings = getattr(settings, "SECURITY", {})
 # -------------------------------
 # Django Security
 # -------------------------------
-# Basic security settings
-_allowed_hosts_raw = getattr(
-    settings,
-    "ALLOWED_HOSTS",
-    getattr(security_settings, "ALLOWED_HOSTS", ["localhost", "127.0.0.1"]),
+import ast
+
+def _parse_hosts(raw):
+    """Parse ALLOWED_HOSTS from various formats dynaconf may produce."""
+    if raw is None:
+        return ["localhost", "127.0.0.1"]
+    if isinstance(raw, list):
+        return [str(h).strip() for h in raw if str(h).strip()]
+    if isinstance(raw, str):
+        val = raw.strip()
+        # Handle stringified Python list: "['a', 'b']"
+        if val.startswith("[") and val.endswith("]"):
+            try:
+                parsed = ast.literal_eval(val)
+                return [str(h).strip() for h in parsed if str(h).strip()]
+            except (ValueError, SyntaxError):
+                pass
+        # Handle comma-separated string
+        return [h.strip() for h in val.split(",") if h.strip()]
+    return ["localhost", "127.0.0.1"]
+
+# Basic security settings — check top-level first, then SECURITY block
+_allowed_hosts_raw = getattr(settings, "ALLOWED_HOSTS", None) or getattr(
+    security_settings, "ALLOWED_HOSTS", None
 )
-# Parse comma-separated string from .env into a list
-if isinstance(_allowed_hosts_raw, str):
-    ALLOWED_HOSTS = [h.strip() for h in _allowed_hosts_raw.split(",") if h.strip()]
-else:
-    ALLOWED_HOSTS = list(_allowed_hosts_raw)
+ALLOWED_HOSTS = _parse_hosts(_allowed_hosts_raw)
 
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = getattr(

@@ -51,10 +51,10 @@ RUN pipx install uv && pipx ensurepath
 # -----------------------------------------------------
 
 # Copy manifests first for caching
-# Copy manifests first for caching
 COPY package*.json ${APP_HOME}/
 COPY pyproject.toml uv.lock ${APP_HOME}/
-RUN /root/.local/bin/uv sync --frozen
+# Skip local path packages (libs/ mounted at runtime, not available at build time)
+RUN /root/.local/bin/uv sync --frozen --no-install-package django-grep
 
 # -----------------------------------------------------
 # 3️⃣ Copy application source
