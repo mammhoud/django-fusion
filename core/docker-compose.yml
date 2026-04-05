@@ -85,14 +85,13 @@ services:
       - core
 
   # ============================================================
-  # LMS - Learning Management System (Maintenance Mode)
-  # Domain: lms.structa.cloud
+  # LMS - Maintenance page
   # ============================================================
   lms:
     image: nginx:alpine
     container_name: lms
     volumes:
-      - ../../compose/lms/maintenance.html:/usr/share/nginx/html/index.html:ro
+      - ./compose/lms/maintenance.html:/usr/share/nginx/html/index.html:ro
     networks:
       - traefik-net
     restart: unless-stopped
