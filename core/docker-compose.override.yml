@@ -80,3 +80,36 @@ services:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik-net"
       - "traefik.http.services.core-service.loadbalancer.server.port=5080"
+
+  # ----------------------------------------------------------
+  # ALLIANCE-WEBSITE — production override
+  # ----------------------------------------------------------
+  alliance-website:
+    ports: []
+    environment:
+      - RUNNING_ENV=docker
+      - SERVER_ENV=production
+      - DEBUG=False
+      - PORT=5080
+      - WORKERS=4
+      - RELOAD=false
+      - APP_MODULE=alliance.asgi:application
+      - DB_HOST=postgres
+      - DB_NAME=db_structa
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/5
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-structa.cloud,core.structa.cloud}
+      - RUN_SETUP=true
+      - DJANGO_SECURE_SSL_REDIRECT=false
+      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    networks:
+      - app-net
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.services.alliance-service.loadbalancer.server.port=5080"

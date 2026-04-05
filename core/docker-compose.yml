@@ -46,6 +46,96 @@ services:
       - app-net
       - traefik-net
 
+  # ============================================================
+  # ALLIANCE-WEBSITE - Django/Uvicorn Application
+  # Domain: core.structa.cloud
+  # ============================================================
+  alliance-website:
+    build:
+      context: .
+      dockerfile: ./compose/django/Dockerfile
+    image: alliance-website
+    container_name: alliance-website
+    restart: unless-stopped
+    env_file:
+      - ./.env
+    volumes:
+      - ../libs:/libs:z
+      - alliance_static:/app/assets/staticfiles:z
+      - alliance_media:/app/assets/media:z
+    environment:
+      - RUNNING_ENV=docker
+      - RELOAD=${RELOAD:-false}
+      - SERVER_ENV=production
+      - DEBUG=False
+      - PORT=5080
+      - WORKERS=4
+      - APP_MODULE=alliance.asgi:application
+      - DB_HOST=postgres
+      - DB_NAME=db_structa
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/5
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - RUN_SETUP=true
+      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
+      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-admin@structa.cloud}
+      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
+      - DJANGO_SECURE_SSL_REDIRECT=false
+      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+    networks:
+      - app-net
+      - traefik-net
+    healthcheck:
+      test: ["CMD", "/root/.local/bin/uv", "run", "python", "com", "check"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+      start_period: 40s
+
+  # ============================================================
+  # ALLIANCE-MEDIA - Static & Media Files
+  # ============================================================
+  alliance-media:
+    build:
+      context: ../../compose/nginx
+      dockerfile: Dockerfile
+    image: alliance-media
+    container_name: alliance-media
+    volumes:
+      - alliance_static:/var/www/static:ro
+      - alliance_media:/var/www/media:ro
+    networks:
+      - traefik-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "nginx", "-t"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+    depends_on:
+      - alliance-website
+
+  # ============================================================
+  # LMS - Learning Management System (Maintenance Mode)
+  # Domain: lms.structa.cloud
+  # ============================================================
+  lms:
+    image: nginx:alpine
+    container_name: lms
+    volumes:
+      - ../../compose/lms/maintenance.html:/usr/share/nginx/html/index.html:ro
+    networks:
+      - traefik-net
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
 volumes:
   core_static:
   core_media:
+  alliance_static:
+  alliance_media:
+
