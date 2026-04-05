@@ -46,7 +46,11 @@ SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_SAMESITE = "Lax"
 
 # HTTPS/SSL
-SECURE_SSL_REDIRECT = settings.get("SECURE_SSL_REDIRECT", settings.is_production, cast=bool)
+# SSL redirect is handled by Traefik — disable in Django to avoid redirect loops
+# and allow Traefik's internal health checks over plain HTTP
+SECURE_SSL_REDIRECT = False
+# Trust Traefik's X-Forwarded-Proto header so Django knows the request is HTTPS
+SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 SECURE_HSTS_SECONDS = 31536000 if settings.is_production else 0
 X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True

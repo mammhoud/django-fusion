@@ -26,7 +26,7 @@ PORT="${PORT:-5070}"
 WORKERS="${WORKERS:-5}"
 RELOAD="${RELOAD:-false}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
-APP_MODULE="${APP_MODULE:-core.asgi:application}"
+APP_MODULE="${APP_MODULE:-alliance.asgi:application}"
 WATCH_DIRS="${WATCH_DIRS:-./core,./theme,./apps,./configs}"
 
 echo "📊 Runtime Configuration:"

@@ -1,17 +1,17 @@
 import os
 
-from django.alliance.asgi import get_asgi_application
-
 from configs.settings import settings
 
-# If DJANGO_SETTINGS_MODULE is unset, default to the local settings
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", settings.get("DJANGO_SETTINGS_MODULE"))
+# Set DJANGO_SETTINGS_MODULE before loading the app
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
+
+from django.core.asgi import get_asgi_application
 
 # This application object is used by any ASGI server configured to use this file.
 django_application = get_asgi_application()
 
 # Import websocket application here, so apps from django_application are loaded first
-from core.websocket import websocket_application  # noqa: E402
+from alliance.websocket import websocket_application  # noqa: E402
 
 
 async def application(scope, receive, send):
