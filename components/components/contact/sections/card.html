@@ -1,0 +1,42 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags components %}
+{% prop block %}
+
+{% with val=block %}
+<section class="contact-card-section {{ block_classes }}" id="{{ block_id }}"
+         {% if val.background_image %}
+         style="background-image: url('{% image val.background_image original as bg %}{{ bg.url }}'); background-size: cover; background-position: center;"
+         {% endif %}>
+    <div class="container">
+        <div class="contact-card-wrapper {% if val.layout_style == 'split' %}row{% else %}stack{% endif %}">
+            <div class="contact-info-col {% if val.layout_style == 'split' %}col-lg-5{% endif %}">
+                {% if val.subtitle %}
+                    <span class="subtitle">{{ val.subtitle }}</span>
+                {% endif %}
+                <h2 class="title">{{ val.title }}</h2>
+                {% if val.description %}
+                    <div class="description">{{ val.description|richtext }}</div>
+                {% endif %}
+
+                <div class="contact-methods mt-4">
+                    {% for method in val.contact_methods %}
+                        {% comp "contact.sections.method" value=method.value / %}
+                    {% endfor %}
+                </div>
+            </div>
+
+            {% if val.show_contact_form %}
+            <div class="contact-form-col {% if val.layout_style == 'split' %}col-lg-7{% endif %}">
+                {% if val.form_title %}
+                    <h3>{{ val.form_title }}</h3>
+                {% endif %}
+                {# You might want to include a nested form component here or a simple form #}
+                <div class="form-placeholder">
+                    {# This could be another comp tag or just a placeholder #}
+                    <p>{% trans "Form goes here (use contact_form block for full functionality)" %}</p>
+                </div>
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endwith %}

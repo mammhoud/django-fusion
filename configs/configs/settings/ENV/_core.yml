@@ -1,0 +1,119 @@
+default:
+  # Extends all defaults with development-specific values
+  # ====================================
+  # 🌐 Core Configuration (All Environments)
+  # ====================================
+
+  # ====================================
+  # 🎯 Application Core
+  # ====================================
+  APP_NAME: "Alliance"
+  APP_VERSION: "1.0.0"
+  MODULE: "CMS"
+
+  # ====================================
+  # 🏗️ Django Core
+  # ====================================
+  DJANGO_SETTINGS_MODULE: "configs.settings"
+  DJANGO_ASGI_APPLICATION: "alliance.asgi:application"
+  # DJANGO_WSGI_APPLICATION: "alliance.asgi:application"
+
+  # ====================================
+  # 🌍 Internationalization
+  # ====================================
+  LANGUAGE_CODE: "en-us"
+  TIME_ZONE: "UTC"
+  USE_I18N: true
+  USE_TZ: true
+  USE_L10N: true
+
+  # ====================================
+  # 🔧 Feature Flags
+  # ====================================
+  DEBUG: false
+  ENABLE_DEBUG_TOOLBAR: false
+  ENABLE_SWAGGER: false
+  ENABLE_SILK_PROFILING: false
+  ENABLE_GRAPHQL: false
+  ENABLE_API_DOCS: false
+
+  # ====================================
+  # 👑 Admin Defaults
+  # ====================================
+  ADMIN:
+    SITE_HEADER: "Alliance Administration"
+    SITE_TITLE: "Alliance Admin"
+    INDEX_TITLE: "Site Administration"
+    URL: "admin/"
+    SHOW_LANGUAGES: true
+    RTL_SUPPORT: true
+    SHOW_HISTORY: true
+    SHOW_VIEW_ON_SITE: true
+    SHOW_BACK_BUTTON: false
+    SITE_URL: "/admin"
+
+  # ====================================
+  # 🎭 Authentication Defaults
+  # ====================================
+  AUTH:
+    ACCOUNT_ALLOW_REGISTRATION: true
+    ACCOUNT_EMAIL_VERIFICATION: "optional"
+    ACCOUNT_EMAIL_REQUIRED: true
+    ACCOUNT_LOGIN_METHODS: ["email"]
+    ACCOUNT_USERNAME_MIN_LENGTH: 4
+    ACCOUNT_USERNAME_BLACKLIST: ["admin", "root", "superuser"]
+    ACCOUNT_UNIQUE_EMAIL: true
+    ACCOUNT_CHANGE_EMAIL: true
+    ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE: true
+    ACCOUNT_SESSION_REMEMBER: true
+    SOCIALACCOUNT_ENABLED: true
+    SOCIALACCOUNT_AUTO_SIGNUP: true
+
+  # ====================================
+  # 📱 API Defaults
+  # ====================================
+  API:
+    VERSION: "v1"
+    BASE_PATH: "/api/v1/"
+    DEFAULT_PAGE_SIZE: 20
+    MAX_PAGE_SIZE: 100
+    ENABLE_VERSIONING: true
+    ALLOWED_VERSIONS: ["v1"]
+
+  # ====================================
+  # 🎯 Wagtail Defaults
+  # ====================================
+  WAGTAIL:
+    SITE_NAME: "Alliance"
+    ENABLE_UPDATE_CHECK: false
+    PASSWORD_MANAGEMENT_ENABLED: true
+    PASSWORD_RESET_ENABLED: true
+    I18N_ENABLED: true
+
+
+testing:
+  DEBUG: true
+  ENABLE_DEBUG_TOOLBAR: false
+  ENABLE_SWAGGER: false
+  ENABLE_GRAPHQL: false
+
+development:
+  DEBUG: true
+  ENABLE_DEBUG_TOOLBAR: true
+  ENABLE_SWAGGER: true
+  ENABLE_GRAPHQL: true
+  ENABLE_API_DOCS: true
+
+production:
+  # Core
+  APP_NAME: "Alliance"
+  APP_VERSION: "1.0.0-production"
+  DEBUG: false
+
+  # Performance
+  PERFORMANCE:
+    CACHE_MIDDLEWARE_SECONDS: 900
+    GZIP_ENABLED: true
+    BROTLI_ENABLED: true
+    DATABASE_OPTIMIZATION: true
+    TEMPLATE_CACHING: true

@@ -1,0 +1,10 @@
+/**!
+ * MixItUp v3.3.2
+ * A high-performance, dependency-free library for animated filtering, sorting and more
+ * Build 94e0fbf6-cd0b-4987-b3c0-14b59b67b8a0
+ *
+ * @copyright Copyright 2014-2024 KunkaLabs Limited.
+ * @author    KunkaLabs Limited.
+ * @link      https://github.com/patrickkunka/mixitup
+ * @license   Apache-2.0
+ */

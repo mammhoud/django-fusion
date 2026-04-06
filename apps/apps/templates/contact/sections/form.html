@@ -1,0 +1,87 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags %}
+<div class="contact-section pt-100 pb-100">
+    <div class="container">
+        <div class="row g-4 g-lg-5">
+            <!-- Form Column -->
+            <div class="col-12 col-lg-8">
+                <div class="contact-section__form"
+                     {% if page.form_background_color %}
+                     style="background-color: {{ page.form_background_color }}; padding: 2rem; border-radius: 0.5rem;"
+                     {% endif %}>
+                    {% include_block block %}
+                </div>
+            </div>
+
+            <!-- Contact Info Sidebar -->
+            <div class="col-12 col-lg-4">
+                <div class="contact-info p-4 bg-light rounded">
+                    <h4 class="mb-4">{% trans "Contact Details" %}</h4>
+
+                    <div class="contact-info__container">
+                        {% if page.contact_details %}
+                            {% for detail_block in page.contact_details %}
+                                <div class="contact-info__item mb-4 display-flex align-items-start">
+                                    {% if detail_block.value.icon_class %}
+                                    <div class="contact-info__icon me-3 text-primary">
+                                        <i class="{{ detail_block.value.icon_class }}"></i>
+                                    </div>
+                                    {% endif %}
+                                    <div class="contact-info__content">
+                                        {% if detail_block.value.title %}
+                                        <h6 class="contact-info__label fw-bold mb-2">{{ detail_block.value.title }}</h6>
+                                        {% endif %}
+
+                                        {% for line in detail_block.value.lines %}
+                                        <p class="contact-info__value mb-1 text-muted">
+                                            {{ line }}
+                                        </p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+
+                    <div class="contact-info__hours mt-5 pt-4 border-top">
+                        <h6 class="contact-info__hours-title fw-medium mb-3">{% trans "Business Hours" %}</h6>
+                        <ul class="contact-info__hours-list list-unstyled text-muted">
+                            <li class="contact-info__hours-item d-flex justify-content-between mb-2">
+                                <span class="contact-info__hours-day">{% trans "Monday - Friday" %}</span>
+                                <span class="contact-info__hours-time">9:00 AM - 6:00 PM</span>
+                            </li>
+                            <li class="contact-info__hours-item d-flex justify-content-between">
+                                <span class="contact-info__hours-day">{% trans "Saturday" %}</span>
+                                <span class="contact-info__hours-time">10:00 AM - 2:00 PM</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% if page.form_text_color or page.form_button_color or page.form_button_text_color %}
+<style>
+    /* Scoped form styling – respects per‑page colour settings from the admin */
+    .contact-section__form form {
+        color: {{ page.form_text_color|default:'inherit' }};
+    }
+    .contact-section__form form label,
+    .contact-section__form form input,
+    .contact-section__form form textarea,
+    .contact-section__form form select {
+        color: {{ page.form_text_color|default:'inherit' }};
+    }
+    .contact-section__form form .btn-primary,
+    .contact-section__form form button[type="submit"] {
+        background-color: {{ page.form_button_color|default:'#0d6efd' }} !important;
+        color: {{ page.form_button_text_color|default:'#ffffff' }} !important;
+        border-color: {{ page.form_button_color|default:'#0d6efd' }} !important;
+    }
+    .contact-section__form form .form-control:focus {
+        border-color: {{ page.form_button_color|default:'#0d6efd' }};
+        box-shadow: 0 0 0 0.25rem {{ page.form_button_color|default:'#0d6efd' }}33;
+    }
+</style>
+{% endif %}

@@ -1,0 +1,146 @@
+# ============================================
+# 🛡️ Security Configuration
+# All host/domain values read from .env
+# ============================================
+
+default: &security_default
+  DJANGO_SECRET_KEY: "@jinja {{ env.get('DJANGO_SECRET_KEY', '') }}"
+
+  SECURITY:
+    # ---- Hosts — read from env, fallback to local ----
+    ALLOWED_HOSTS: "@jinja {{ env.get('ALLOWED_HOSTS', 'localhost,127.0.0.1,0.0.0.0').split(',') }}"
+
+    # ---- CORS ----
+    CORS_ALLOW_ALL_ORIGINS: false
+    CORS_ALLOW_CREDENTIALS: true
+    CORS_EXPOSE_HEADERS:
+      - "Content-Disposition"
+    CORS_ALLOWED_ORIGINS: "@jinja {{ env.get('CORS_ALLOWED_ORIGINS', 'http://localhost:8280,http://127.0.0.1:8280').split(',') }}"
+
+    # ---- CSRF ----
+    CSRF_COOKIE_NAME: "csrftoken"
+    CSRF_HEADER_NAME: "HTTP_X_CSRFTOKEN"
+    CSRF_COOKIE_HTTPONLY: false
+    CSRF_COOKIE_SAMESITE: "Lax"
+    CSRF_USE_SESSIONS: false
+    CSRF_TRUSTED_ORIGINS: "@jinja {{ env.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8280,http://127.0.0.1:8280').split(',') }}"
+
+    # ---- HTTPS/SSL ----
+    SECURE_SSL_REDIRECT: false
+    SECURE_HSTS_SECONDS: 0
+    SECURE_HSTS_INCLUDE_SUBDOMAINS: false
+    SECURE_HSTS_PRELOAD: false
+    SECURE_PROXY_SSL_HEADER: ["HTTP_X_FORWARDED_PROTO", "https"]
+    SECURE_REFERRER_POLICY: "same-origin"
+
+    # ---- Session ----
+    SESSION_COOKIE_NAME: "sessionid"
+    SESSION_COOKIE_AGE: 1209600
+    SESSION_COOKIE_HTTPONLY: true
+    SESSION_COOKIE_SECURE: false
+    SESSION_COOKIE_SAMESITE: "Lax"
+    SESSION_COOKIE_PATH: "/"
+    SESSION_COOKIE_DOMAIN: null
+    SESSION_SAVE_EVERY_REQUEST: true
+    SESSION_EXPIRE_AT_BROWSER_CLOSE: false
+    SESSION_ENGINE: "django.contrib.sessions.backends.db"
+
+    # ---- Headers ----
+    X_FRAME_OPTIONS: "DENY"
+    SECURE_CONTENT_TYPE_NOSNIFF: true
+    SECURE_BROWSER_XSS_FILTER: true
+
+    # ---- Password ----
+    PASSWORD_HASHERS:
+      - "django.contrib.auth.hashers.PBKDF2PasswordHasher"
+      - "django.contrib.auth.hashers.PBKDF2SHA1PasswordHasher"
+      - "django.contrib.auth.hashers.BCryptSHA256PasswordHasher"
+
+    # ---- Rate Limiting ----
+    RATE_LIMIT_ENABLED: false
+    RATE_LIMIT_LOGIN_ATTEMPTS: 10
+    RATE_LIMIT_LOGIN_TIMEOUT: 900
+    REST_FRAMEWORK_THROTTLE_ENABLED: false
+    REST_FRAMEWORK_THROTTLE_ANON: "100/hour"
+    REST_FRAMEWORK_THROTTLE_USER: "1000/hour"
+
+    # ---- Admin ----
+    ADMIN_URL: "admin/"
+    LOGIN_URL: "/auth/sign-in/"
+    LOGIN_REDIRECT_URL: "/dashboard/"
+    LOGOUT_REDIRECT_URL: "/"
+
+    # ---- File Upload ----
+    FILE_UPLOAD_MAX_MEMORY_SIZE: 26214400
+    DATA_UPLOAD_MAX_MEMORY_SIZE: 26214400
+    DATA_UPLOAD_MAX_NUMBER_FIELDS: 1000
+
+    # ---- JWT ----
+    JWT_ACCESS_TOKEN_LIFETIME_DAYS: 30
+    JWT_REFRESH_TOKEN_LIFETIME_DAYS: 365
+    JWT_ALGORITHM: "HS256"
+    JWT_AUTH_HEADER_TYPES: ["Bearer", "JWT"]
+    JWT_USER_ID_FIELD: "id"
+    JWT_USER_ID_CLAIM: "user_id"
+
+    # ---- Logging ----
+    LOG_SECURITY_EVENTS: false
+    SECURITY_LOG_LEVEL: "INFO"
+    LOG_FAILED_LOGIN_ATTEMPTS: false
+
+    # ---- Email ----
+    EMAIL_USE_TLS: true
+    EMAIL_USE_SSL: false
+    EMAIL_TIMEOUT: 10
+
+# ---- development ----
+development:
+  SECURITY:
+    ALLOWED_HOSTS: "@jinja {{ env.get('ALLOWED_HOSTS', '*,localhost,127.0.0.1,0.0.0.0').split(',') }}"
+    CORS_ALLOW_ALL_ORIGINS: true
+    CORS_ALLOWED_ORIGINS: "@jinja {{ env.get('CORS_ALLOWED_ORIGINS', 'http://localhost:8280,http://127.0.0.1:8280').split(',') }}"
+    CSRF_TRUSTED_ORIGINS: "@jinja {{ env.get('CSRF_TRUSTED_ORIGINS', 'http://localhost:8280,http://127.0.0.1:8280').split(',') }}"
+    SECURE_SSL_REDIRECT: false
+    SECURE_HSTS_SECONDS: 0
+    SESSION_COOKIE_SECURE: false
+    CSRF_COOKIE_SECURE: false
+    RATE_LIMIT_ENABLED: false
+    REST_FRAMEWORK_THROTTLE_ENABLED: false
+    LOG_SECURITY_EVENTS: false
+
+# ---- production ----
+production:
+  SECURITY:
+    # All from env — no hardcoded domains
+    ALLOWED_HOSTS: "@jinja {{ env.get('ALLOWED_HOSTS', 'structa.cloud,www.structa.cloud,core.structa.cloud').split(',') }}"
+    CORS_ALLOW_ALL_ORIGINS: false
+    CORS_ALLOWED_ORIGINS: "@jinja {{ env.get('CORS_ALLOWED_ORIGINS', 'https://structa.cloud,https://www.structa.cloud').split(',') }}"
+    CSRF_TRUSTED_ORIGINS: "@jinja {{ env.get('CSRF_TRUSTED_ORIGINS', 'https://structa.cloud,https://www.structa.cloud').split(',') }}"
+
+    SECURE_SSL_REDIRECT: false          # Traefik handles SSL termination
+    SECURE_HSTS_SECONDS: 31536000
+    SECURE_HSTS_INCLUDE_SUBDOMAINS: true
+    SECURE_HSTS_PRELOAD: true
+    SESSION_COOKIE_SECURE: true
+    CSRF_COOKIE_SECURE: true
+    USE_X_FORWARDED_HOST: true
+    USE_X_FORWARDED_PORT: true
+    SECURE_PROXY_SSL_HEADER: ["HTTP_X_FORWARDED_PROTO", "https"]
+
+    RATE_LIMIT_ENABLED: true
+    RATE_LIMIT_LOGIN_ATTEMPTS: 5
+    REST_FRAMEWORK_THROTTLE_ENABLED: true
+    LOG_SECURITY_EVENTS: true
+    LOG_FAILED_LOGIN_ATTEMPTS: true
+    SECURITY_LOG_LEVEL: "WARNING"
+
+# ---- testing ----
+testing:
+  SECURITY:
+    ALLOWED_HOSTS: ["*", "localhost", "127.0.0.1", "testserver"]
+    CORS_ALLOW_ALL_ORIGINS: true
+    CSRF_TRUSTED_ORIGINS: ["http://localhost", "http://testserver"]
+    SECURE_SSL_REDIRECT: false
+    SESSION_COOKIE_SECURE: false
+    CSRF_COOKIE_SECURE: false
+    RATE_LIMIT_ENABLED: false

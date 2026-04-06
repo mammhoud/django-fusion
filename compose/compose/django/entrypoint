@@ -1,0 +1,53 @@
+#!/bin/bash
+set -euo pipefail
+
+echo "🚀 Django Entrypoint: Booting container..."
+
+###############################################################################
+# INSTALL uv (if missing)
+###############################################################################
+if ! command -v uv &>/dev/null; then
+    echo "🧩 Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+else
+    echo "✅ uv already installed: $(uv --version)"
+fi
+
+###############################################################################
+# DJANGO INITIALIZATION
+###############################################################################
+if [ "${RUN_SETUP:-false}" = "true" ]; then
+    echo "🛠️ Running Django setup..."
+
+    echo "📦 Collecting static files..."
+    uv run python com collectstatic --noinput || echo "⚠️ collectstatic failed."
+
+    echo "🗃️ Applying migrations..."
+    uv run python com migrate --noinput || echo "⚠️ migrate failed."
+
+    if [ -f "dump-data.json" ]; then
+        echo "📥 Loading fixture: dump-data.json..."
+        uv run python com loaddata dump-data.json --ignorenonexistent || echo "⚠️ loaddata failed."
+    fi
+
+    if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
+        echo "👑 Ensuring superuser exists..."
+        uv run python -m django_grep.scripts.superuser
+    fi
+fi
+###############################################################################
+# NODE BUILD
+###############################################################################
+echo "📦 Checking Node.js dependencies..."
+if [ -f "package.json" ]; then
+    echo "ℹ️ skipping Node build (managed by host or start script)."
+else
+    echo "ℹ️ No package.json found."
+fi
+
+###############################################################################
+# START APPLICATION
+###############################################################################
+echo "🎯 Launching command: $*"
+exec "$@"

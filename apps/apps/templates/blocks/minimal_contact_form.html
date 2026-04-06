@@ -1,0 +1,101 @@
+{% load wagtailcore_tags i18n components %}
+
+<div class="contact-form-section" id="{{ value.form_id }}"
+     style="background-color: {{ page.form_background_color|default:'#ffffff' }}; color: {{ page.form_text_color|default:'#000000' }};">
+
+    {# Form Title from Page Settings #}
+    {% if page.form_title %}
+        <h3 class="form-title">{{ page.form_title|richtext|safe }}</h3>
+    {% endif %}
+
+    {# Form Introduction from Page Settings #}
+    {% if page.form_intro %}
+        <div class="form-intro mb-4">
+            {{ page.form_intro|richtext|safe }}
+        </div>
+    {% endif %}
+
+    {# Unified Notification Display Area #}
+    <div id="form-notification-{{ value.form_id }}" class="form-notification-area mb-3"></div>
+
+    <form action="{% if page %}{% pageurl page %}{% else %}#{% endif %}"
+          method="POST"
+          class="contact-form"
+          id="form-{{ value.form_id }}"
+          hx-post="{% if page %}{% pageurl page %}{% else %}#{% endif %}"
+          hx-target="#form-notification-{{ value.form_id }}"
+          hx-swap="innerHTML"
+          hx-indicator="#form-submit-{{ value.form_id }}"
+          novalidate>
+        {% csrf_token %}
+        <input type="hidden" name="form_id" value="{{ value.form_id }}">
+
+        {% for field in value.fields %}
+            {% comp "contact.sections.field" field=field / %}
+        {% endfor %}
+
+        <button type="submit"
+                id="form-submit-{{ value.form_id }}"
+                class="btn btn-primary position-relative"
+                style="background-color: {{ page.form_button_color|default:'#0d6efd' }}; color: {{ page.form_button_text_color|default:'#ffffff' }};">
+            {{ page.button_text|default:"Send Message" }}
+            {# Loading Indicator #}
+            <span class="htmx-indicator position-absolute top-50 start-50 translate-middle">
+                <span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span>
+            </span>
+        </button>
+    </form>
+</div>
+
+{# Form Submission Response Template (for HTMX) #}
+{% if form_submitted %}
+    {% if form_success %}
+        {# Success Notification - Uses Unified Notification Template #}
+        <div class="notification-system__alert alert alert-success alert-dismissible fade show d-flex align-items-center"
+             role="alert">
+            <div class="alert__icon-container me-2">
+                <i class="alert__icon bi-check-circle-fill fs-5"></i>
+            </div>
+            <div class="alert__content flex-grow-1">
+                <div class="alert__body">
+                    {{ page.success_message|richtext|default:"✨ <strong>Your message has wings!</strong><br>Thank you for reaching out. We'll respond within 24 hours."|safe }}
+                </div>
+            </div>
+            <button type="button" class="alert__close btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% else %}
+        {# Error Notification - Uses Unified Notification Template #}
+        <div class="notification-system__alert alert alert-danger alert-dismissible fade show d-flex align-items-center"
+             role="alert">
+            <div class="alert__icon-container me-2">
+                <i class="alert__icon bi-x-circle-fill fs-5"></i>
+            </div>
+            <div class="alert__content flex-grow-1">
+                <div class="alert__body">
+                    {{ page.error_message|richtext|default:"🔄 <strong>A temporary detour...</strong><br>Your message couldn't be sent. Please try again or contact us directly."|safe }}
+                </div>
+            </div>
+            <button type="button" class="alert__close btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    {% endif %}
+{% endif %}
+
+<style>
+/* Ensure form notification area can show/hide smoothly */
+.form-notification-area:empty {
+    display: none;
+}
+
+/* HTMX loading indicator */
+.htmx-indicator {
+    display: none;
+}
+
+.htmx-request .htmx-indicator {
+    display: inline-block;
+}
+
+.htmx-request .btn:not(.htmx-indicator) {
+    color: transparent !important;
+}
+</style>

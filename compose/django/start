@@ -1,0 +1,107 @@
+#!/bin/bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+APP_HOME="/app"
+cd "$APP_HOME"
+
+echo "🚀 Initializing Django environment at $APP_HOME"
+echo "🐍 Python version: $(python3 --version 2>/dev/null || echo 'unknown')"
+echo "🟢 Node version: $(node -v 2>/dev/null || echo 'not installed')"
+echo "📦 NPM version: $(npm -v 2>/dev/null || echo 'not installed')"
+
+# -----------------------------------------------------
+# Django setup
+# -----------------------------------------------------
+
+echo "📦 Preparing Django application..."
+uv run python ./com migrate --noinput
+uv run python ./com collectstatic --noinput
+# -----------------------------------------------------
+# Runtime configuration
+# -----------------------------------------------------
+HOST="${HOST:-0.0.0.0}"
+PORT="${PORT:-5080}"
+WORKERS="${WORKERS:-5}"
+RELOAD="${RELOAD:-false}"
+LOG_LEVEL="${LOG_LEVEL:-info}"
+APP_MODULE="${APP_MODULE:-alliance.asgi:application}"
+WATCH_DIRS="${WATCH_DIRS:-./core,./theme,./apps,./configs}"
+
+echo "📊 Runtime Configuration:"
+echo "   Host: $HOST"
+echo "   Port: $PORT"
+echo "   Workers: $WORKERS"
+echo "   Reload: $RELOAD"
+echo "   App Module: $APP_MODULE"
+echo "   Log Level: $LOG_LEVEL"
+
+# -----------------------------------------------------
+# Decide between Gunicorn or Uvicorn
+# -----------------------------------------------------
+
+# -----------------------------------------------------
+# Run with Uvicorn (Single entry point)
+# -----------------------------------------------------
+
+echo "🚀 Starting Server with Uvicorn"
+
+UVICORN_CMD="uv run uvicorn $APP_MODULE"
+
+# Default args (Production-like)
+ARGS=(
+    "--host" "$HOST"
+    "--port" "$PORT"
+    "--workers" "$WORKERS"
+    "--log-level" "$LOG_LEVEL"
+)
+
+if [ "$RELOAD" = "true" ]; then
+    echo "🔄 Auto-reload ENABLED"
+
+    # Reload mode implies single worker usually for dev, or at least handled differently
+    # Uvicorn: The 'workers' flag should not be used with 'reload' flag.
+    # We redefine ARGS for reload mode
+
+    ARGS=(
+        "--host" "$HOST"
+        "--port" "$PORT"
+        "--reload"
+        "--log-level" "debug"
+    )
+
+    # Add reload watch directories
+    IFS=',' read -ra DIR_ARRAY <<< "$WATCH_DIRS"
+    for dir in "${DIR_ARRAY[@]}"; do
+        dir_clean=$(echo "$dir" | xargs)
+        if [ -d "$dir_clean" ]; then
+            ARGS+=("--reload-dir" "$dir_clean")
+            echo "   👉 Watching: $dir_clean"
+        fi
+    done
+else
+    echo "⚡ Auto-reload DISABLED (Production mode)"
+fi
+
+FINAL_CMD="$UVICORN_CMD ${ARGS[*]}"
+
+# -----------------------------------------------------
+# Show final command
+# -----------------------------------------------------
+echo ""
+echo "🎯 Final Command:"
+echo "$FINAL_CMD"
+
+echo ""
+echo "🏥 Health endpoint: http://${HOST}:${PORT}/health/"
+echo "📊 Metrics endpoint: http://${HOST}:${PORT}/metrics/"
+
+echo ""
+echo "🚀 Launching server..."
+echo "=========================================="
+
+# -----------------------------------------------------
+# Execute final command
+# -----------------------------------------------------
+exec $FINAL_CMD

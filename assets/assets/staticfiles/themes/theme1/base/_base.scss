@@ -1,0 +1,59 @@
+/*!
+ * Base styles and CSS reset
+ * File: base.css
+ * Category: base
+ * Generated: 2025-12-16 22:01:11
+ * Updated: 2025-12-31 (Added auth page reset)
+ * Size: 128 bytes
+ * Lines: 14
+ */
+
+
+*,
+::after,
+::before {
+  box-sizing: border-box;
+}
+
+html,
+body {
+  width: 100%;
+  height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+/* Auth page specific reset - removes white border */
+body.auth-page,
+body[data-page="auth"] {
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow-x: hidden;
+}
+
+/* Focus states for better accessibility */
+*:focus {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: 2px;
+}
+
+*:focus:not(:focus-visible) {
+    outline: none;
+}
+
+*:focus-visible {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: 2px;
+}
+
+/* HTMX Indicator Styles */
+.htmx-indicator {
+    opacity: 0;
+    transition: opacity 200ms ease-in;
+}
+.htmx-request .htmx-indicator {
+    opacity: 1;
+}
+.htmx-request.htmx-indicator {
+    opacity: 1;
+}

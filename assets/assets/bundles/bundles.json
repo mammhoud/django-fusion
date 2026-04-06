@@ -1,0 +1,1345 @@
+{
+  "status": "done",
+  "assets": {
+    "chunk/1942.ebef035a.chunk.js": {
+      "name": "chunk/1942.ebef035a.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/1942.ebef035a.chunk.js",
+      "publicPath": "/static/chunk/1942.ebef035a.chunk.js"
+    },
+    "chunk/1942.ebef035a.chunk.js.LICENSE.txt": {
+      "name": "chunk/1942.ebef035a.chunk.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/1942.ebef035a.chunk.js.LICENSE.txt",
+      "publicPath": "/static/chunk/1942.ebef035a.chunk.js.LICENSE.txt"
+    },
+    "chunk/1942.ebef035a.chunk.js.map": {
+      "name": "chunk/1942.ebef035a.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/1942.ebef035a.chunk.js.map",
+      "publicPath": "/static/chunk/1942.ebef035a.chunk.js.map"
+    },
+    "chunk/2011.a5e472c3.chunk.js": {
+      "name": "chunk/2011.a5e472c3.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2011.a5e472c3.chunk.js",
+      "publicPath": "/static/chunk/2011.a5e472c3.chunk.js"
+    },
+    "chunk/2011.a5e472c3.chunk.js.map": {
+      "name": "chunk/2011.a5e472c3.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2011.a5e472c3.chunk.js.map",
+      "publicPath": "/static/chunk/2011.a5e472c3.chunk.js.map"
+    },
+    "chunk/2630.49f3d691.chunk.js": {
+      "name": "chunk/2630.49f3d691.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2630.49f3d691.chunk.js",
+      "publicPath": "/static/chunk/2630.49f3d691.chunk.js"
+    },
+    "chunk/2630.49f3d691.chunk.js.LICENSE.txt": {
+      "name": "chunk/2630.49f3d691.chunk.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2630.49f3d691.chunk.js.LICENSE.txt",
+      "publicPath": "/static/chunk/2630.49f3d691.chunk.js.LICENSE.txt"
+    },
+    "chunk/2630.49f3d691.chunk.js.map": {
+      "name": "chunk/2630.49f3d691.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2630.49f3d691.chunk.js.map",
+      "publicPath": "/static/chunk/2630.49f3d691.chunk.js.map"
+    },
+    "chunk/2659.03d06289.chunk.js": {
+      "name": "chunk/2659.03d06289.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2659.03d06289.chunk.js",
+      "publicPath": "/static/chunk/2659.03d06289.chunk.js"
+    },
+    "chunk/2659.03d06289.chunk.js.LICENSE.txt": {
+      "name": "chunk/2659.03d06289.chunk.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2659.03d06289.chunk.js.LICENSE.txt",
+      "publicPath": "/static/chunk/2659.03d06289.chunk.js.LICENSE.txt"
+    },
+    "chunk/2659.03d06289.chunk.js.map": {
+      "name": "chunk/2659.03d06289.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2659.03d06289.chunk.js.map",
+      "publicPath": "/static/chunk/2659.03d06289.chunk.js.map"
+    },
+    "chunk/2755.817e4332.chunk.js": {
+      "name": "chunk/2755.817e4332.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2755.817e4332.chunk.js",
+      "publicPath": "/static/chunk/2755.817e4332.chunk.js"
+    },
+    "chunk/2755.817e4332.chunk.js.map": {
+      "name": "chunk/2755.817e4332.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/2755.817e4332.chunk.js.map",
+      "publicPath": "/static/chunk/2755.817e4332.chunk.js.map"
+    },
+    "chunk/3182.6e1fbe0e.chunk.js": {
+      "name": "chunk/3182.6e1fbe0e.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3182.6e1fbe0e.chunk.js",
+      "publicPath": "/static/chunk/3182.6e1fbe0e.chunk.js"
+    },
+    "chunk/3182.6e1fbe0e.chunk.js.map": {
+      "name": "chunk/3182.6e1fbe0e.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3182.6e1fbe0e.chunk.js.map",
+      "publicPath": "/static/chunk/3182.6e1fbe0e.chunk.js.map"
+    },
+    "chunk/3592.7e465638.chunk.js": {
+      "name": "chunk/3592.7e465638.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3592.7e465638.chunk.js",
+      "publicPath": "/static/chunk/3592.7e465638.chunk.js"
+    },
+    "chunk/3592.7e465638.chunk.js.LICENSE.txt": {
+      "name": "chunk/3592.7e465638.chunk.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3592.7e465638.chunk.js.LICENSE.txt",
+      "publicPath": "/static/chunk/3592.7e465638.chunk.js.LICENSE.txt"
+    },
+    "chunk/3592.7e465638.chunk.js.map": {
+      "name": "chunk/3592.7e465638.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3592.7e465638.chunk.js.map",
+      "publicPath": "/static/chunk/3592.7e465638.chunk.js.map"
+    },
+    "chunk/3648.c9fbed15.chunk.js": {
+      "name": "chunk/3648.c9fbed15.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3648.c9fbed15.chunk.js",
+      "publicPath": "/static/chunk/3648.c9fbed15.chunk.js"
+    },
+    "chunk/3648.c9fbed15.chunk.js.map": {
+      "name": "chunk/3648.c9fbed15.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3648.c9fbed15.chunk.js.map",
+      "publicPath": "/static/chunk/3648.c9fbed15.chunk.js.map"
+    },
+    "chunk/3692.353a51f8.chunk.js": {
+      "name": "chunk/3692.353a51f8.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3692.353a51f8.chunk.js",
+      "publicPath": "/static/chunk/3692.353a51f8.chunk.js"
+    },
+    "chunk/3692.353a51f8.chunk.js.LICENSE.txt": {
+      "name": "chunk/3692.353a51f8.chunk.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3692.353a51f8.chunk.js.LICENSE.txt",
+      "publicPath": "/static/chunk/3692.353a51f8.chunk.js.LICENSE.txt"
+    },
+    "chunk/3692.353a51f8.chunk.js.map": {
+      "name": "chunk/3692.353a51f8.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/3692.353a51f8.chunk.js.map",
+      "publicPath": "/static/chunk/3692.353a51f8.chunk.js.map"
+    },
+    "chunk/4690.3d745c4f.chunk.js": {
+      "name": "chunk/4690.3d745c4f.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/4690.3d745c4f.chunk.js",
+      "publicPath": "/static/chunk/4690.3d745c4f.chunk.js"
+    },
+    "chunk/4690.3d745c4f.chunk.js.LICENSE.txt": {
+      "name": "chunk/4690.3d745c4f.chunk.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/4690.3d745c4f.chunk.js.LICENSE.txt",
+      "publicPath": "/static/chunk/4690.3d745c4f.chunk.js.LICENSE.txt"
+    },
+    "chunk/4690.3d745c4f.chunk.js.map": {
+      "name": "chunk/4690.3d745c4f.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/4690.3d745c4f.chunk.js.map",
+      "publicPath": "/static/chunk/4690.3d745c4f.chunk.js.map"
+    },
+    "chunk/68.714d2be1.chunk.js": {
+      "name": "chunk/68.714d2be1.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/68.714d2be1.chunk.js",
+      "publicPath": "/static/chunk/68.714d2be1.chunk.js"
+    },
+    "chunk/68.714d2be1.chunk.js.map": {
+      "name": "chunk/68.714d2be1.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/68.714d2be1.chunk.js.map",
+      "publicPath": "/static/chunk/68.714d2be1.chunk.js.map"
+    },
+    "chunk/7151.e6506e33.chunk.js": {
+      "name": "chunk/7151.e6506e33.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/7151.e6506e33.chunk.js",
+      "publicPath": "/static/chunk/7151.e6506e33.chunk.js"
+    },
+    "chunk/7151.e6506e33.chunk.js.map": {
+      "name": "chunk/7151.e6506e33.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/7151.e6506e33.chunk.js.map",
+      "publicPath": "/static/chunk/7151.e6506e33.chunk.js.map"
+    },
+    "chunk/8535.2337a494.chunk.js": {
+      "name": "chunk/8535.2337a494.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/8535.2337a494.chunk.js",
+      "publicPath": "/static/chunk/8535.2337a494.chunk.js"
+    },
+    "chunk/8535.2337a494.chunk.js.map": {
+      "name": "chunk/8535.2337a494.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/8535.2337a494.chunk.js.map",
+      "publicPath": "/static/chunk/8535.2337a494.chunk.js.map"
+    },
+    "chunk/8651.31d83f0e.chunk.js": {
+      "name": "chunk/8651.31d83f0e.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/8651.31d83f0e.chunk.js",
+      "publicPath": "/static/chunk/8651.31d83f0e.chunk.js"
+    },
+    "chunk/8651.31d83f0e.chunk.js.map": {
+      "name": "chunk/8651.31d83f0e.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/8651.31d83f0e.chunk.js.map",
+      "publicPath": "/static/chunk/8651.31d83f0e.chunk.js.map"
+    },
+    "chunk/9100.7fd5ac80.chunk.js": {
+      "name": "chunk/9100.7fd5ac80.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/9100.7fd5ac80.chunk.js",
+      "publicPath": "/static/chunk/9100.7fd5ac80.chunk.js"
+    },
+    "chunk/9100.7fd5ac80.chunk.js.map": {
+      "name": "chunk/9100.7fd5ac80.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/9100.7fd5ac80.chunk.js.map",
+      "publicPath": "/static/chunk/9100.7fd5ac80.chunk.js.map"
+    },
+    "chunk/9226.a23aea8c.chunk.js": {
+      "name": "chunk/9226.a23aea8c.chunk.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/9226.a23aea8c.chunk.js",
+      "publicPath": "/static/chunk/9226.a23aea8c.chunk.js"
+    },
+    "chunk/9226.a23aea8c.chunk.js.map": {
+      "name": "chunk/9226.a23aea8c.chunk.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/chunk/9226.a23aea8c.chunk.js.map",
+      "publicPath": "/static/chunk/9226.a23aea8c.chunk.js.map"
+    },
+    "css/static-1ce848d4.20a40ace.min.css": {
+      "name": "css/static-1ce848d4.20a40ace.min.css",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/static-1ce848d4.20a40ace.min.css",
+      "publicPath": "/static/css/static-1ce848d4.20a40ace.min.css"
+    },
+    "css/static-1ce848d4.20a40ace.min.css.map": {
+      "name": "css/static-1ce848d4.20a40ace.min.css.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/static-1ce848d4.20a40ace.min.css.map",
+      "publicPath": "/static/css/static-1ce848d4.20a40ace.min.css.map"
+    },
+    "css/static-e2bed824.2e943aa6.min.css": {
+      "name": "css/static-e2bed824.2e943aa6.min.css",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/static-e2bed824.2e943aa6.min.css",
+      "publicPath": "/static/css/static-e2bed824.2e943aa6.min.css"
+    },
+    "css/static-e2bed824.2e943aa6.min.css.map": {
+      "name": "css/static-e2bed824.2e943aa6.min.css.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/static-e2bed824.2e943aa6.min.css.map",
+      "publicPath": "/static/css/static-e2bed824.2e943aa6.min.css.map"
+    },
+    "css/vendors-49d0a293-0ad61438.332c3909.min.css": {
+      "name": "css/vendors-49d0a293-0ad61438.332c3909.min.css",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/vendors-49d0a293-0ad61438.332c3909.min.css",
+      "publicPath": "/static/css/vendors-49d0a293-0ad61438.332c3909.min.css"
+    },
+    "css/vendors-49d0a293-0ad61438.332c3909.min.css.map": {
+      "name": "css/vendors-49d0a293-0ad61438.332c3909.min.css.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/vendors-49d0a293-0ad61438.332c3909.min.css.map",
+      "publicPath": "/static/css/vendors-49d0a293-0ad61438.332c3909.min.css.map"
+    },
+    "css/vendors-49d0a293-cb2d071c.c6593d93.min.css": {
+      "name": "css/vendors-49d0a293-cb2d071c.c6593d93.min.css",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/vendors-49d0a293-cb2d071c.c6593d93.min.css",
+      "publicPath": "/static/css/vendors-49d0a293-cb2d071c.c6593d93.min.css"
+    },
+    "css/vendors-49d0a293-cb2d071c.c6593d93.min.css.map": {
+      "name": "css/vendors-49d0a293-cb2d071c.c6593d93.min.css.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/vendors-49d0a293-cb2d071c.c6593d93.min.css.map",
+      "publicPath": "/static/css/vendors-49d0a293-cb2d071c.c6593d93.min.css.map"
+    },
+    "css/vendors-95dfecbe.014f6b35.min.css": {
+      "name": "css/vendors-95dfecbe.014f6b35.min.css",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/vendors-95dfecbe.014f6b35.min.css",
+      "publicPath": "/static/css/vendors-95dfecbe.014f6b35.min.css"
+    },
+    "css/vendors-95dfecbe.014f6b35.min.css.map": {
+      "name": "css/vendors-95dfecbe.014f6b35.min.css.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/css/vendors-95dfecbe.014f6b35.min.css.map",
+      "publicPath": "/static/css/vendors-95dfecbe.014f6b35.min.css.map"
+    },
+    "fonts/bootstrap-icons.woff": {
+      "name": "fonts/bootstrap-icons.woff",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/bootstrap-icons.woff",
+      "publicPath": "/static/fonts/bootstrap-icons.woff",
+      "sourceFilename": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff?e34853135f9e39acf64315236852cd5a"
+    },
+    "fonts/bootstrap-icons.woff2": {
+      "name": "fonts/bootstrap-icons.woff2",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/bootstrap-icons.woff2",
+      "publicPath": "/static/fonts/bootstrap-icons.woff2",
+      "sourceFilename": "node_modules/bootstrap-icons/font/fonts/bootstrap-icons.woff2?e34853135f9e39acf64315236852cd5a"
+    },
+    "fonts/fa-brands-400.ttf": {
+      "name": "fonts/fa-brands-400.ttf",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-brands-400.ttf",
+      "publicPath": "/static/fonts/fa-brands-400.ttf",
+      "sourceFilename": "assets/static/fonts/fa/fa-brands-400.ttf"
+    },
+    "fonts/fa-brands-400.woff2": {
+      "name": "fonts/fa-brands-400.woff2",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-brands-400.woff2",
+      "publicPath": "/static/fonts/fa-brands-400.woff2",
+      "sourceFilename": "assets/static/fonts/fa/fa-brands-400.woff2"
+    },
+    "fonts/fa-regular-400.ttf": {
+      "name": "fonts/fa-regular-400.ttf",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-regular-400.ttf",
+      "publicPath": "/static/fonts/fa-regular-400.ttf",
+      "sourceFilename": "assets/static/fonts/fa/fa-regular-400.ttf"
+    },
+    "fonts/fa-regular-400.woff2": {
+      "name": "fonts/fa-regular-400.woff2",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-regular-400.woff2",
+      "publicPath": "/static/fonts/fa-regular-400.woff2",
+      "sourceFilename": "assets/static/fonts/fa/fa-regular-400.woff2"
+    },
+    "fonts/fa-solid-900.ttf": {
+      "name": "fonts/fa-solid-900.ttf",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-solid-900.ttf",
+      "publicPath": "/static/fonts/fa-solid-900.ttf",
+      "sourceFilename": "assets/static/fonts/fa/fa-solid-900.ttf"
+    },
+    "fonts/fa-solid-900.woff2": {
+      "name": "fonts/fa-solid-900.woff2",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-solid-900.woff2",
+      "publicPath": "/static/fonts/fa-solid-900.woff2",
+      "sourceFilename": "assets/static/fonts/fa/fa-solid-900.woff2"
+    },
+    "fonts/fa-v4compatibility.ttf": {
+      "name": "fonts/fa-v4compatibility.ttf",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-v4compatibility.ttf",
+      "publicPath": "/static/fonts/fa-v4compatibility.ttf",
+      "sourceFilename": "assets/static/fonts/fa/fa-v4compatibility.ttf"
+    },
+    "fonts/fa-v4compatibility.woff2": {
+      "name": "fonts/fa-v4compatibility.woff2",
+      "path": "/root/site/structa.cloud/core/assets/bundles/fonts/fa-v4compatibility.woff2",
+      "publicPath": "/static/fonts/fa-v4compatibility.woff2",
+      "sourceFilename": "assets/static/fonts/fa/fa-v4compatibility.woff2"
+    },
+    "images/owl.video.play.png": {
+      "name": "images/owl.video.play.png",
+      "path": "/root/site/structa.cloud/core/assets/bundles/images/owl.video.play.png",
+      "publicPath": "/static/images/owl.video.play.png",
+      "sourceFilename": "node_modules/owl.carousel/dist/assets/owl.video.play.png"
+    },
+    "js/ARCHITECTURE.md": {
+      "name": "js/ARCHITECTURE.md",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/ARCHITECTURE.md",
+      "publicPath": "/static/js/ARCHITECTURE.md",
+      "sourceFilename": "assets/static/js/ARCHITECTURE.md"
+    },
+    "js/README.md": {
+      "name": "js/README.md",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/README.md",
+      "publicPath": "/static/js/README.md",
+      "sourceFilename": "assets/static/js/README.md"
+    },
+    "js/_init.orig.js": {
+      "name": "js/_init.orig.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/_init.orig.js",
+      "publicPath": "/static/js/_init.orig.js",
+      "sourceFilename": "assets/static/js/_init.orig.js"
+    },
+    "js/app.js": {
+      "name": "js/app.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/app.js",
+      "publicPath": "/static/js/app.js",
+      "sourceFilename": "assets/static/js/app.js"
+    },
+    "js/config.helpers.js": {
+      "name": "js/config.helpers.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/config.helpers.js",
+      "publicPath": "/static/js/config.helpers.js",
+      "sourceFilename": "assets/static/js/config.helpers.js"
+    },
+    "js/init.config.js": {
+      "name": "js/init.config.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/init.config.js",
+      "publicPath": "/static/js/init.config.js",
+      "sourceFilename": "assets/static/js/init.config.js"
+    },
+    "js/main.js": {
+      "name": "js/main.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/main.js",
+      "publicPath": "/static/js/main.js",
+      "sourceFilename": "assets/static/js/main.js"
+    },
+    "js/modules/auth/FormValidator.js": {
+      "name": "js/modules/auth/FormValidator.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/auth/FormValidator.js",
+      "publicPath": "/static/js/modules/auth/FormValidator.js",
+      "sourceFilename": "assets/static/js/modules/auth/FormValidator.js"
+    },
+    "js/modules/auth/NotificationManager.js": {
+      "name": "js/modules/auth/NotificationManager.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/auth/NotificationManager.js",
+      "publicPath": "/static/js/modules/auth/NotificationManager.js",
+      "sourceFilename": "assets/static/js/modules/auth/NotificationManager.js"
+    },
+    "js/modules/auth/index.js": {
+      "name": "js/modules/auth/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/auth/index.js",
+      "publicPath": "/static/js/modules/auth/index.js",
+      "sourceFilename": "assets/static/js/modules/auth/index.js"
+    },
+    "js/modules/components/accordion.init.js": {
+      "name": "js/modules/components/accordion.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/accordion.init.js",
+      "publicPath": "/static/js/modules/components/accordion.init.js",
+      "sourceFilename": "assets/static/js/modules/components/accordion.init.js"
+    },
+    "js/modules/components/docs/preloader.md": {
+      "name": "js/modules/components/docs/preloader.md",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/docs/preloader.md",
+      "publicPath": "/static/js/modules/components/docs/preloader.md",
+      "sourceFilename": "assets/static/js/modules/components/docs/preloader.md"
+    },
+    "js/modules/components/features/listing.init.js": {
+      "name": "js/modules/components/features/listing.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/features/listing.init.js",
+      "publicPath": "/static/js/modules/components/features/listing.init.js",
+      "sourceFilename": "assets/static/js/modules/components/features/listing.init.js"
+    },
+    "js/modules/components/features/portfolio.init.js": {
+      "name": "js/modules/components/features/portfolio.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/features/portfolio.init.js",
+      "publicPath": "/static/js/modules/components/features/portfolio.init.js",
+      "sourceFilename": "assets/static/js/modules/components/features/portfolio.init.js"
+    },
+    "js/modules/components/index.js": {
+      "name": "js/modules/components/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/index.js",
+      "publicPath": "/static/js/modules/components/index.js",
+      "sourceFilename": "assets/static/js/modules/components/index.js"
+    },
+    "js/modules/components/listing/blog.init.js": {
+      "name": "js/modules/components/listing/blog.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/listing/blog.init.js",
+      "publicPath": "/static/js/modules/components/listing/blog.init.js",
+      "sourceFilename": "assets/static/js/modules/components/listing/blog.init.js"
+    },
+    "js/modules/components/listing/portfolio.init.js": {
+      "name": "js/modules/components/listing/portfolio.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/listing/portfolio.init.js",
+      "publicPath": "/static/js/modules/components/listing/portfolio.init.js",
+      "sourceFilename": "assets/static/js/modules/components/listing/portfolio.init.js"
+    },
+    "js/modules/components/manager.init.js": {
+      "name": "js/modules/components/manager.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/manager.init.js",
+      "publicPath": "/static/js/modules/components/manager.init.js",
+      "sourceFilename": "assets/static/js/modules/components/manager.init.js"
+    },
+    "js/modules/components/media/images.init.js": {
+      "name": "js/modules/components/media/images.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/media/images.init.js",
+      "publicPath": "/static/js/modules/components/media/images.init.js",
+      "sourceFilename": "assets/static/js/modules/components/media/images.init.js"
+    },
+    "js/modules/components/media/lightbox.init.js": {
+      "name": "js/modules/components/media/lightbox.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/media/lightbox.init.js",
+      "publicPath": "/static/js/modules/components/media/lightbox.init.js",
+      "sourceFilename": "assets/static/js/modules/components/media/lightbox.init.js"
+    },
+    "js/modules/components/media/masonry.init.js": {
+      "name": "js/modules/components/media/masonry.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/media/masonry.init.js",
+      "publicPath": "/static/js/modules/components/media/masonry.init.js",
+      "sourceFilename": "assets/static/js/modules/components/media/masonry.init.js"
+    },
+    "js/modules/components/media/sliders.init.js": {
+      "name": "js/modules/components/media/sliders.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/media/sliders.init.js",
+      "publicPath": "/static/js/modules/components/media/sliders.init.js",
+      "sourceFilename": "assets/static/js/modules/components/media/sliders.init.js"
+    },
+    "js/modules/components/modal.init.js": {
+      "name": "js/modules/components/modal.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/modal.init.js",
+      "publicPath": "/static/js/modules/components/modal.init.js",
+      "sourceFilename": "assets/static/js/modules/components/modal.init.js"
+    },
+    "js/modules/components/partials/animations.init.js": {
+      "name": "js/modules/components/partials/animations.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/animations.init.js",
+      "publicPath": "/static/js/modules/components/partials/animations.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/animations.init.js"
+    },
+    "js/modules/components/partials/cursor.init.js": {
+      "name": "js/modules/components/partials/cursor.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/cursor.init.js",
+      "publicPath": "/static/js/modules/components/partials/cursor.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/cursor.init.js"
+    },
+    "js/modules/components/partials/fullscreen.init.js": {
+      "name": "js/modules/components/partials/fullscreen.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/fullscreen.init.js",
+      "publicPath": "/static/js/modules/components/partials/fullscreen.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/fullscreen.init.js"
+    },
+    "js/modules/components/partials/language.init.js": {
+      "name": "js/modules/components/partials/language.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/language.init.js",
+      "publicPath": "/static/js/modules/components/partials/language.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/language.init.js"
+    },
+    "js/modules/components/partials/maps.init.js": {
+      "name": "js/modules/components/partials/maps.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/maps.init.js",
+      "publicPath": "/static/js/modules/components/partials/maps.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/maps.init.js"
+    },
+    "js/modules/components/partials/parallax.init.js": {
+      "name": "js/modules/components/partials/parallax.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/parallax.init.js",
+      "publicPath": "/static/js/modules/components/partials/parallax.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/parallax.init.js"
+    },
+    "js/modules/components/partials/preloader.init.js": {
+      "name": "js/modules/components/partials/preloader.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/partials/preloader.init.js",
+      "publicPath": "/static/js/modules/components/partials/preloader.init.js",
+      "sourceFilename": "assets/static/js/modules/components/partials/preloader.init.js"
+    },
+    "js/modules/components/progress.init.js": {
+      "name": "js/modules/components/progress.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/progress.init.js",
+      "publicPath": "/static/js/modules/components/progress.init.js",
+      "sourceFilename": "assets/static/js/modules/components/progress.init.js"
+    },
+    "js/modules/components/tabs.init.js": {
+      "name": "js/modules/components/tabs.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/tabs.init.js",
+      "publicPath": "/static/js/modules/components/tabs.init.js",
+      "sourceFilename": "assets/static/js/modules/components/tabs.init.js"
+    },
+    "js/modules/components/widgets/countdown.init.js": {
+      "name": "js/modules/components/widgets/countdown.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/widgets/countdown.init.js",
+      "publicPath": "/static/js/modules/components/widgets/countdown.init.js",
+      "sourceFilename": "assets/static/js/modules/components/widgets/countdown.init.js"
+    },
+    "js/modules/components/widgets/counter.init.js": {
+      "name": "js/modules/components/widgets/counter.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/components/widgets/counter.init.js",
+      "publicPath": "/static/js/modules/components/widgets/counter.init.js",
+      "sourceFilename": "assets/static/js/modules/components/widgets/counter.init.js"
+    },
+    "js/modules/forms/authHandler.js": {
+      "name": "js/modules/forms/authHandler.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/forms/authHandler.js",
+      "publicPath": "/static/js/modules/forms/authHandler.js",
+      "sourceFilename": "assets/static/js/modules/forms/authHandler.js"
+    },
+    "js/modules/forms/contactHandler.js": {
+      "name": "js/modules/forms/contactHandler.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/forms/contactHandler.js",
+      "publicPath": "/static/js/modules/forms/contactHandler.js",
+      "sourceFilename": "assets/static/js/modules/forms/contactHandler.js"
+    },
+    "js/modules/forms/formHandler.js": {
+      "name": "js/modules/forms/formHandler.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/forms/formHandler.js",
+      "publicPath": "/static/js/modules/forms/formHandler.js",
+      "sourceFilename": "assets/static/js/modules/forms/formHandler.js"
+    },
+    "js/modules/forms/formsManager.js": {
+      "name": "js/modules/forms/formsManager.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/forms/formsManager.js",
+      "publicPath": "/static/js/modules/forms/formsManager.js",
+      "sourceFilename": "assets/static/js/modules/forms/formsManager.js"
+    },
+    "js/modules/forms/index.js": {
+      "name": "js/modules/forms/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/forms/index.js",
+      "publicPath": "/static/js/modules/forms/index.js",
+      "sourceFilename": "assets/static/js/modules/forms/index.js"
+    },
+    "js/modules/forms/validationUtils.js": {
+      "name": "js/modules/forms/validationUtils.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/forms/validationUtils.js",
+      "publicPath": "/static/js/modules/forms/validationUtils.js",
+      "sourceFilename": "assets/static/js/modules/forms/validationUtils.js"
+    },
+    "js/modules/handlers/cookies.js": {
+      "name": "js/modules/handlers/cookies.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/handlers/cookies.js",
+      "publicPath": "/static/js/modules/handlers/cookies.js",
+      "sourceFilename": "assets/static/js/modules/handlers/cookies.js"
+    },
+    "js/modules/handlers/events.js": {
+      "name": "js/modules/handlers/events.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/handlers/events.js",
+      "publicPath": "/static/js/modules/handlers/events.js",
+      "sourceFilename": "assets/static/js/modules/handlers/events.js"
+    },
+    "js/modules/handlers/htmxSSENotifications.js": {
+      "name": "js/modules/handlers/htmxSSENotifications.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/handlers/htmxSSENotifications.js",
+      "publicPath": "/static/js/modules/handlers/htmxSSENotifications.js",
+      "sourceFilename": "assets/static/js/modules/handlers/htmxSSENotifications.js"
+    },
+    "js/modules/handlers/index.js": {
+      "name": "js/modules/handlers/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/handlers/index.js",
+      "publicPath": "/static/js/modules/handlers/index.js",
+      "sourceFilename": "assets/static/js/modules/handlers/index.js"
+    },
+    "js/modules/handlers/sseSecurity.js": {
+      "name": "js/modules/handlers/sseSecurity.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/handlers/sseSecurity.js",
+      "publicPath": "/static/js/modules/handlers/sseSecurity.js",
+      "sourceFilename": "assets/static/js/modules/handlers/sseSecurity.js"
+    },
+    "js/modules/index.js": {
+      "name": "js/modules/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/index.js",
+      "publicPath": "/static/js/modules/index.js",
+      "sourceFilename": "assets/static/js/modules/index.js"
+    },
+    "js/modules/manager.init.js": {
+      "name": "js/modules/manager.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/manager.init.js",
+      "publicPath": "/static/js/modules/manager.init.js",
+      "sourceFilename": "assets/static/js/modules/manager.init.js"
+    },
+    "js/modules/navigations/index.js": {
+      "name": "js/modules/navigations/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/navigations/index.js",
+      "publicPath": "/static/js/modules/navigations/index.js",
+      "sourceFilename": "assets/static/js/modules/navigations/index.js"
+    },
+    "js/modules/navigations/menu.init.js": {
+      "name": "js/modules/navigations/menu.init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/navigations/menu.init.js",
+      "publicPath": "/static/js/modules/navigations/menu.init.js",
+      "sourceFilename": "assets/static/js/modules/navigations/menu.init.js"
+    },
+    "js/modules/notifications/index.js": {
+      "name": "js/modules/notifications/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/notifications/index.js",
+      "publicPath": "/static/js/modules/notifications/index.js",
+      "sourceFilename": "assets/static/js/modules/notifications/index.js"
+    },
+    "js/modules/notifications/notification-init.js": {
+      "name": "js/modules/notifications/notification-init.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/notifications/notification-init.js",
+      "publicPath": "/static/js/modules/notifications/notification-init.js",
+      "sourceFilename": "assets/static/js/modules/notifications/notification-init.js"
+    },
+    "js/modules/notifications/notification.js": {
+      "name": "js/modules/notifications/notification.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/notifications/notification.js",
+      "publicPath": "/static/js/modules/notifications/notification.js",
+      "sourceFilename": "assets/static/js/modules/notifications/notification.js"
+    },
+    "js/modules/readiness.js": {
+      "name": "js/modules/readiness.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/modules/readiness.js",
+      "publicPath": "/static/js/modules/readiness.js",
+      "sourceFilename": "assets/static/js/modules/readiness.js"
+    },
+    "js/pages/README.md": {
+      "name": "js/pages/README.md",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/README.md",
+      "publicPath": "/static/js/pages/README.md",
+      "sourceFilename": "assets/static/js/pages/README.md"
+    },
+    "js/pages/app.layout.js": {
+      "name": "js/pages/app.layout.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/app.layout.js",
+      "publicPath": "/static/js/pages/app.layout.js",
+      "sourceFilename": "assets/static/js/pages/app.layout.js"
+    },
+    "js/pages/auth.layout.js": {
+      "name": "js/pages/auth.layout.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/auth.layout.js",
+      "publicPath": "/static/js/pages/auth.layout.js",
+      "sourceFilename": "assets/static/js/pages/auth.layout.js"
+    },
+    "js/pages/init.layout.js": {
+      "name": "js/pages/init.layout.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/init.layout.js",
+      "publicPath": "/static/js/pages/init.layout.js",
+      "sourceFilename": "assets/static/js/pages/init.layout.js"
+    },
+    "js/pages/init.layout.orig.js": {
+      "name": "js/pages/init.layout.orig.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/init.layout.orig.js",
+      "publicPath": "/static/js/pages/init.layout.orig.js",
+      "sourceFilename": "assets/static/js/pages/init.layout.orig.js"
+    },
+    "js/pages/landing.layout.js": {
+      "name": "js/pages/landing.layout.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/landing.layout.js",
+      "publicPath": "/static/js/pages/landing.layout.js",
+      "sourceFilename": "assets/static/js/pages/landing.layout.js"
+    },
+    "js/pages/notifications.layout.js": {
+      "name": "js/pages/notifications.layout.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/notifications.layout.js",
+      "publicPath": "/static/js/pages/notifications.layout.js",
+      "sourceFilename": "assets/static/js/pages/notifications.layout.js"
+    },
+    "js/pages/profile.layout.js": {
+      "name": "js/pages/profile.layout.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/pages/profile.layout.js",
+      "publicPath": "/static/js/pages/profile.layout.js",
+      "sourceFilename": "assets/static/js/pages/profile.layout.js"
+    },
+    "js/plugins/active-links.js": {
+      "name": "js/plugins/active-links.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/active-links.js",
+      "publicPath": "/static/js/plugins/active-links.js",
+      "sourceFilename": "assets/static/js/plugins/active-links.js"
+    },
+    "js/plugins/backgroundImages.js": {
+      "name": "js/plugins/backgroundImages.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/backgroundImages.js",
+      "publicPath": "/static/js/plugins/backgroundImages.js",
+      "sourceFilename": "assets/static/js/plugins/backgroundImages.js"
+    },
+    "js/plugins/index.js": {
+      "name": "js/plugins/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/index.js",
+      "publicPath": "/static/js/plugins/index.js",
+      "sourceFilename": "assets/static/js/plugins/index.js"
+    },
+    "js/plugins/layoutDetector.js": {
+      "name": "js/plugins/layoutDetector.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/layoutDetector.js",
+      "publicPath": "/static/js/plugins/layoutDetector.js",
+      "sourceFilename": "assets/static/js/plugins/layoutDetector.js"
+    },
+    "js/plugins/pageLoader.js": {
+      "name": "js/plugins/pageLoader.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/pageLoader.js",
+      "publicPath": "/static/js/plugins/pageLoader.js",
+      "sourceFilename": "assets/static/js/plugins/pageLoader.js"
+    },
+    "js/plugins/scrollTracking.js": {
+      "name": "js/plugins/scrollTracking.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/scrollTracking.js",
+      "publicPath": "/static/js/plugins/scrollTracking.js",
+      "sourceFilename": "assets/static/js/plugins/scrollTracking.js"
+    },
+    "js/plugins/transparentHeaders.js": {
+      "name": "js/plugins/transparentHeaders.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/plugins/transparentHeaders.js",
+      "publicPath": "/static/js/plugins/transparentHeaders.js",
+      "sourceFilename": "assets/static/js/plugins/transparentHeaders.js"
+    },
+    "js/registry.js": {
+      "name": "js/registry.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/registry.js",
+      "publicPath": "/static/js/registry.js",
+      "sourceFilename": "assets/static/js/registry.js"
+    },
+    "js/utility/app.metrics.js": {
+      "name": "js/utility/app.metrics.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/app.metrics.js",
+      "publicPath": "/static/js/utility/app.metrics.js",
+      "sourceFilename": "assets/static/js/utility/app.metrics.js"
+    },
+    "js/utility/base.manager.js": {
+      "name": "js/utility/base.manager.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/base.manager.js",
+      "publicPath": "/static/js/utility/base.manager.js",
+      "sourceFilename": "assets/static/js/utility/base.manager.js"
+    },
+    "js/utility/dom.js": {
+      "name": "js/utility/dom.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/dom.js",
+      "publicPath": "/static/js/utility/dom.js",
+      "sourceFilename": "assets/static/js/utility/dom.js"
+    },
+    "js/utility/helpers.js": {
+      "name": "js/utility/helpers.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/helpers.js",
+      "publicPath": "/static/js/utility/helpers.js",
+      "sourceFilename": "assets/static/js/utility/helpers.js"
+    },
+    "js/utility/index.js": {
+      "name": "js/utility/index.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/index.js",
+      "publicPath": "/static/js/utility/index.js",
+      "sourceFilename": "assets/static/js/utility/index.js"
+    },
+    "js/utility/state.js": {
+      "name": "js/utility/state.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/state.js",
+      "publicPath": "/static/js/utility/state.js",
+      "sourceFilename": "assets/static/js/utility/state.js"
+    },
+    "js/utility/url.js": {
+      "name": "js/utility/url.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/js/utility/url.js",
+      "publicPath": "/static/js/utility/url.js",
+      "sourceFilename": "assets/static/js/utility/url.js"
+    },
+    "runtime.f6d46873.js": {
+      "name": "runtime.f6d46873.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/runtime.f6d46873.js",
+      "publicPath": "/static/runtime.f6d46873.js"
+    },
+    "runtime.f6d46873.js.map": {
+      "name": "runtime.f6d46873.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/runtime.f6d46873.js.map",
+      "publicPath": "/static/runtime.f6d46873.js.map"
+    },
+    "static-04cc4b6c.975424c5.js": {
+      "name": "static-04cc4b6c.975424c5.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-04cc4b6c.975424c5.js",
+      "publicPath": "/static/static-04cc4b6c.975424c5.js"
+    },
+    "static-04cc4b6c.975424c5.js.LICENSE.txt": {
+      "name": "static-04cc4b6c.975424c5.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-04cc4b6c.975424c5.js.LICENSE.txt",
+      "publicPath": "/static/static-04cc4b6c.975424c5.js.LICENSE.txt"
+    },
+    "static-04cc4b6c.975424c5.js.map": {
+      "name": "static-04cc4b6c.975424c5.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-04cc4b6c.975424c5.js.map",
+      "publicPath": "/static/static-04cc4b6c.975424c5.js.map"
+    },
+    "static-053e7595.cc6a4882.js": {
+      "name": "static-053e7595.cc6a4882.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-053e7595.cc6a4882.js",
+      "publicPath": "/static/static-053e7595.cc6a4882.js"
+    },
+    "static-053e7595.cc6a4882.js.LICENSE.txt": {
+      "name": "static-053e7595.cc6a4882.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-053e7595.cc6a4882.js.LICENSE.txt",
+      "publicPath": "/static/static-053e7595.cc6a4882.js.LICENSE.txt"
+    },
+    "static-053e7595.cc6a4882.js.map": {
+      "name": "static-053e7595.cc6a4882.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-053e7595.cc6a4882.js.map",
+      "publicPath": "/static/static-053e7595.cc6a4882.js.map"
+    },
+    "static-05b84894.e8822249.js": {
+      "name": "static-05b84894.e8822249.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-05b84894.e8822249.js",
+      "publicPath": "/static/static-05b84894.e8822249.js"
+    },
+    "static-05b84894.e8822249.js.LICENSE.txt": {
+      "name": "static-05b84894.e8822249.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-05b84894.e8822249.js.LICENSE.txt",
+      "publicPath": "/static/static-05b84894.e8822249.js.LICENSE.txt"
+    },
+    "static-05b84894.e8822249.js.map": {
+      "name": "static-05b84894.e8822249.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-05b84894.e8822249.js.map",
+      "publicPath": "/static/static-05b84894.e8822249.js.map"
+    },
+    "static-154956b6.58bda938.js": {
+      "name": "static-154956b6.58bda938.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-154956b6.58bda938.js",
+      "publicPath": "/static/static-154956b6.58bda938.js"
+    },
+    "static-154956b6.58bda938.js.map": {
+      "name": "static-154956b6.58bda938.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-154956b6.58bda938.js.map",
+      "publicPath": "/static/static-154956b6.58bda938.js.map"
+    },
+    "static-16a4bf31.44bf228b.js": {
+      "name": "static-16a4bf31.44bf228b.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-16a4bf31.44bf228b.js",
+      "publicPath": "/static/static-16a4bf31.44bf228b.js"
+    },
+    "static-16a4bf31.44bf228b.js.LICENSE.txt": {
+      "name": "static-16a4bf31.44bf228b.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-16a4bf31.44bf228b.js.LICENSE.txt",
+      "publicPath": "/static/static-16a4bf31.44bf228b.js.LICENSE.txt"
+    },
+    "static-16a4bf31.44bf228b.js.map": {
+      "name": "static-16a4bf31.44bf228b.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-16a4bf31.44bf228b.js.map",
+      "publicPath": "/static/static-16a4bf31.44bf228b.js.map"
+    },
+    "static-170c09d0.7c18a963.js": {
+      "name": "static-170c09d0.7c18a963.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-170c09d0.7c18a963.js",
+      "publicPath": "/static/static-170c09d0.7c18a963.js"
+    },
+    "static-170c09d0.7c18a963.js.LICENSE.txt": {
+      "name": "static-170c09d0.7c18a963.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-170c09d0.7c18a963.js.LICENSE.txt",
+      "publicPath": "/static/static-170c09d0.7c18a963.js.LICENSE.txt"
+    },
+    "static-170c09d0.7c18a963.js.map": {
+      "name": "static-170c09d0.7c18a963.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-170c09d0.7c18a963.js.map",
+      "publicPath": "/static/static-170c09d0.7c18a963.js.map"
+    },
+    "static-204e53ee.b4a7adb3.js": {
+      "name": "static-204e53ee.b4a7adb3.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-204e53ee.b4a7adb3.js",
+      "publicPath": "/static/static-204e53ee.b4a7adb3.js"
+    },
+    "static-204e53ee.b4a7adb3.js.LICENSE.txt": {
+      "name": "static-204e53ee.b4a7adb3.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-204e53ee.b4a7adb3.js.LICENSE.txt",
+      "publicPath": "/static/static-204e53ee.b4a7adb3.js.LICENSE.txt"
+    },
+    "static-204e53ee.b4a7adb3.js.map": {
+      "name": "static-204e53ee.b4a7adb3.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-204e53ee.b4a7adb3.js.map",
+      "publicPath": "/static/static-204e53ee.b4a7adb3.js.map"
+    },
+    "static-33197508.b71123af.js": {
+      "name": "static-33197508.b71123af.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-33197508.b71123af.js",
+      "publicPath": "/static/static-33197508.b71123af.js"
+    },
+    "static-33197508.b71123af.js.LICENSE.txt": {
+      "name": "static-33197508.b71123af.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-33197508.b71123af.js.LICENSE.txt",
+      "publicPath": "/static/static-33197508.b71123af.js.LICENSE.txt"
+    },
+    "static-33197508.b71123af.js.map": {
+      "name": "static-33197508.b71123af.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-33197508.b71123af.js.map",
+      "publicPath": "/static/static-33197508.b71123af.js.map"
+    },
+    "static-4cc53908.0f68785b.js": {
+      "name": "static-4cc53908.0f68785b.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-4cc53908.0f68785b.js",
+      "publicPath": "/static/static-4cc53908.0f68785b.js"
+    },
+    "static-4cc53908.0f68785b.js.map": {
+      "name": "static-4cc53908.0f68785b.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-4cc53908.0f68785b.js.map",
+      "publicPath": "/static/static-4cc53908.0f68785b.js.map"
+    },
+    "static-5ff16273.58be6057.js": {
+      "name": "static-5ff16273.58be6057.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-5ff16273.58be6057.js",
+      "publicPath": "/static/static-5ff16273.58be6057.js"
+    },
+    "static-5ff16273.58be6057.js.LICENSE.txt": {
+      "name": "static-5ff16273.58be6057.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-5ff16273.58be6057.js.LICENSE.txt",
+      "publicPath": "/static/static-5ff16273.58be6057.js.LICENSE.txt"
+    },
+    "static-5ff16273.58be6057.js.map": {
+      "name": "static-5ff16273.58be6057.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-5ff16273.58be6057.js.map",
+      "publicPath": "/static/static-5ff16273.58be6057.js.map"
+    },
+    "static-a212a05f.dc787a5d.js": {
+      "name": "static-a212a05f.dc787a5d.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a212a05f.dc787a5d.js",
+      "publicPath": "/static/static-a212a05f.dc787a5d.js"
+    },
+    "static-a212a05f.dc787a5d.js.map": {
+      "name": "static-a212a05f.dc787a5d.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a212a05f.dc787a5d.js.map",
+      "publicPath": "/static/static-a212a05f.dc787a5d.js.map"
+    },
+    "static-a2b84fce.10dd76d0.js": {
+      "name": "static-a2b84fce.10dd76d0.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a2b84fce.10dd76d0.js",
+      "publicPath": "/static/static-a2b84fce.10dd76d0.js"
+    },
+    "static-a2b84fce.10dd76d0.js.LICENSE.txt": {
+      "name": "static-a2b84fce.10dd76d0.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a2b84fce.10dd76d0.js.LICENSE.txt",
+      "publicPath": "/static/static-a2b84fce.10dd76d0.js.LICENSE.txt"
+    },
+    "static-a2b84fce.10dd76d0.js.map": {
+      "name": "static-a2b84fce.10dd76d0.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a2b84fce.10dd76d0.js.map",
+      "publicPath": "/static/static-a2b84fce.10dd76d0.js.map"
+    },
+    "static-a30a9e32.fd3081ab.js": {
+      "name": "static-a30a9e32.fd3081ab.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a30a9e32.fd3081ab.js",
+      "publicPath": "/static/static-a30a9e32.fd3081ab.js"
+    },
+    "static-a30a9e32.fd3081ab.js.LICENSE.txt": {
+      "name": "static-a30a9e32.fd3081ab.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a30a9e32.fd3081ab.js.LICENSE.txt",
+      "publicPath": "/static/static-a30a9e32.fd3081ab.js.LICENSE.txt"
+    },
+    "static-a30a9e32.fd3081ab.js.map": {
+      "name": "static-a30a9e32.fd3081ab.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-a30a9e32.fd3081ab.js.map",
+      "publicPath": "/static/static-a30a9e32.fd3081ab.js.map"
+    },
+    "static-b5afd3cf.c3f884ce.js": {
+      "name": "static-b5afd3cf.c3f884ce.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-b5afd3cf.c3f884ce.js",
+      "publicPath": "/static/static-b5afd3cf.c3f884ce.js"
+    },
+    "static-b5afd3cf.c3f884ce.js.LICENSE.txt": {
+      "name": "static-b5afd3cf.c3f884ce.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-b5afd3cf.c3f884ce.js.LICENSE.txt",
+      "publicPath": "/static/static-b5afd3cf.c3f884ce.js.LICENSE.txt"
+    },
+    "static-b5afd3cf.c3f884ce.js.map": {
+      "name": "static-b5afd3cf.c3f884ce.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-b5afd3cf.c3f884ce.js.map",
+      "publicPath": "/static/static-b5afd3cf.c3f884ce.js.map"
+    },
+    "static-b81592e7.19b29451.js": {
+      "name": "static-b81592e7.19b29451.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-b81592e7.19b29451.js",
+      "publicPath": "/static/static-b81592e7.19b29451.js"
+    },
+    "static-b81592e7.19b29451.js.LICENSE.txt": {
+      "name": "static-b81592e7.19b29451.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-b81592e7.19b29451.js.LICENSE.txt",
+      "publicPath": "/static/static-b81592e7.19b29451.js.LICENSE.txt"
+    },
+    "static-b81592e7.19b29451.js.map": {
+      "name": "static-b81592e7.19b29451.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-b81592e7.19b29451.js.map",
+      "publicPath": "/static/static-b81592e7.19b29451.js.map"
+    },
+    "static-bab5c281.72c8822d.js": {
+      "name": "static-bab5c281.72c8822d.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-bab5c281.72c8822d.js",
+      "publicPath": "/static/static-bab5c281.72c8822d.js"
+    },
+    "static-bab5c281.72c8822d.js.map": {
+      "name": "static-bab5c281.72c8822d.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-bab5c281.72c8822d.js.map",
+      "publicPath": "/static/static-bab5c281.72c8822d.js.map"
+    },
+    "static-c4db904d.13579ddb.js": {
+      "name": "static-c4db904d.13579ddb.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-c4db904d.13579ddb.js",
+      "publicPath": "/static/static-c4db904d.13579ddb.js"
+    },
+    "static-c4db904d.13579ddb.js.map": {
+      "name": "static-c4db904d.13579ddb.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-c4db904d.13579ddb.js.map",
+      "publicPath": "/static/static-c4db904d.13579ddb.js.map"
+    },
+    "static-de2d5fbc.5a7e9cd2.js": {
+      "name": "static-de2d5fbc.5a7e9cd2.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-de2d5fbc.5a7e9cd2.js",
+      "publicPath": "/static/static-de2d5fbc.5a7e9cd2.js"
+    },
+    "static-de2d5fbc.5a7e9cd2.js.LICENSE.txt": {
+      "name": "static-de2d5fbc.5a7e9cd2.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-de2d5fbc.5a7e9cd2.js.LICENSE.txt",
+      "publicPath": "/static/static-de2d5fbc.5a7e9cd2.js.LICENSE.txt"
+    },
+    "static-de2d5fbc.5a7e9cd2.js.map": {
+      "name": "static-de2d5fbc.5a7e9cd2.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-de2d5fbc.5a7e9cd2.js.map",
+      "publicPath": "/static/static-de2d5fbc.5a7e9cd2.js.map"
+    },
+    "static-e2bed824.e8d313b7.js": {
+      "name": "static-e2bed824.e8d313b7.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/static-e2bed824.e8d313b7.js",
+      "publicPath": "/static/static-e2bed824.e8d313b7.js"
+    },
+    "vendors-1ee49eab.7e6e8c6b.js": {
+      "name": "vendors-1ee49eab.7e6e8c6b.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-1ee49eab.7e6e8c6b.js",
+      "publicPath": "/static/vendors-1ee49eab.7e6e8c6b.js"
+    },
+    "vendors-1ee49eab.7e6e8c6b.js.map": {
+      "name": "vendors-1ee49eab.7e6e8c6b.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-1ee49eab.7e6e8c6b.js.map",
+      "publicPath": "/static/vendors-1ee49eab.7e6e8c6b.js.map"
+    },
+    "vendors-35120423.8f7bec0c.js": {
+      "name": "vendors-35120423.8f7bec0c.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-35120423.8f7bec0c.js",
+      "publicPath": "/static/vendors-35120423.8f7bec0c.js"
+    },
+    "vendors-35120423.8f7bec0c.js.map": {
+      "name": "vendors-35120423.8f7bec0c.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-35120423.8f7bec0c.js.map",
+      "publicPath": "/static/vendors-35120423.8f7bec0c.js.map"
+    },
+    "vendors-496eacfb.306128c4.js": {
+      "name": "vendors-496eacfb.306128c4.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-496eacfb.306128c4.js",
+      "publicPath": "/static/vendors-496eacfb.306128c4.js"
+    },
+    "vendors-496eacfb.306128c4.js.map": {
+      "name": "vendors-496eacfb.306128c4.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-496eacfb.306128c4.js.map",
+      "publicPath": "/static/vendors-496eacfb.306128c4.js.map"
+    },
+    "vendors-4d7f51c3.520520e9.js": {
+      "name": "vendors-4d7f51c3.520520e9.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-4d7f51c3.520520e9.js",
+      "publicPath": "/static/vendors-4d7f51c3.520520e9.js"
+    },
+    "vendors-4d7f51c3.520520e9.js.map": {
+      "name": "vendors-4d7f51c3.520520e9.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-4d7f51c3.520520e9.js.map",
+      "publicPath": "/static/vendors-4d7f51c3.520520e9.js.map"
+    },
+    "vendors-4ed39ea1.c8af36a0.js": {
+      "name": "vendors-4ed39ea1.c8af36a0.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-4ed39ea1.c8af36a0.js",
+      "publicPath": "/static/vendors-4ed39ea1.c8af36a0.js"
+    },
+    "vendors-4ed39ea1.c8af36a0.js.map": {
+      "name": "vendors-4ed39ea1.c8af36a0.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-4ed39ea1.c8af36a0.js.map",
+      "publicPath": "/static/vendors-4ed39ea1.c8af36a0.js.map"
+    },
+    "vendors-53f2243b.6c379836.js": {
+      "name": "vendors-53f2243b.6c379836.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-53f2243b.6c379836.js",
+      "publicPath": "/static/vendors-53f2243b.6c379836.js"
+    },
+    "vendors-53f2243b.6c379836.js.map": {
+      "name": "vendors-53f2243b.6c379836.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-53f2243b.6c379836.js.map",
+      "publicPath": "/static/vendors-53f2243b.6c379836.js.map"
+    },
+    "vendors-5e58aee3.b6aba0cb.js": {
+      "name": "vendors-5e58aee3.b6aba0cb.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-5e58aee3.b6aba0cb.js",
+      "publicPath": "/static/vendors-5e58aee3.b6aba0cb.js"
+    },
+    "vendors-5e58aee3.b6aba0cb.js.LICENSE.txt": {
+      "name": "vendors-5e58aee3.b6aba0cb.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-5e58aee3.b6aba0cb.js.LICENSE.txt",
+      "publicPath": "/static/vendors-5e58aee3.b6aba0cb.js.LICENSE.txt"
+    },
+    "vendors-5e58aee3.b6aba0cb.js.map": {
+      "name": "vendors-5e58aee3.b6aba0cb.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-5e58aee3.b6aba0cb.js.map",
+      "publicPath": "/static/vendors-5e58aee3.b6aba0cb.js.map"
+    },
+    "vendors-6f5a8aef.62ba68b2.js": {
+      "name": "vendors-6f5a8aef.62ba68b2.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-6f5a8aef.62ba68b2.js",
+      "publicPath": "/static/vendors-6f5a8aef.62ba68b2.js"
+    },
+    "vendors-6f5a8aef.62ba68b2.js.map": {
+      "name": "vendors-6f5a8aef.62ba68b2.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-6f5a8aef.62ba68b2.js.map",
+      "publicPath": "/static/vendors-6f5a8aef.62ba68b2.js.map"
+    },
+    "vendors-71b19865.50b018b6.js": {
+      "name": "vendors-71b19865.50b018b6.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-71b19865.50b018b6.js",
+      "publicPath": "/static/vendors-71b19865.50b018b6.js"
+    },
+    "vendors-71b19865.50b018b6.js.map": {
+      "name": "vendors-71b19865.50b018b6.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-71b19865.50b018b6.js.map",
+      "publicPath": "/static/vendors-71b19865.50b018b6.js.map"
+    },
+    "vendors-860654cf.9e3373ee.js": {
+      "name": "vendors-860654cf.9e3373ee.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-860654cf.9e3373ee.js",
+      "publicPath": "/static/vendors-860654cf.9e3373ee.js"
+    },
+    "vendors-860654cf.9e3373ee.js.map": {
+      "name": "vendors-860654cf.9e3373ee.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-860654cf.9e3373ee.js.map",
+      "publicPath": "/static/vendors-860654cf.9e3373ee.js.map"
+    },
+    "vendors-8c1e7563.84a7e33a.js": {
+      "name": "vendors-8c1e7563.84a7e33a.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-8c1e7563.84a7e33a.js",
+      "publicPath": "/static/vendors-8c1e7563.84a7e33a.js"
+    },
+    "vendors-8c1e7563.84a7e33a.js.map": {
+      "name": "vendors-8c1e7563.84a7e33a.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-8c1e7563.84a7e33a.js.map",
+      "publicPath": "/static/vendors-8c1e7563.84a7e33a.js.map"
+    },
+    "vendors-9540bc79.556f099f.js": {
+      "name": "vendors-9540bc79.556f099f.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-9540bc79.556f099f.js",
+      "publicPath": "/static/vendors-9540bc79.556f099f.js"
+    },
+    "vendors-9540bc79.556f099f.js.map": {
+      "name": "vendors-9540bc79.556f099f.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-9540bc79.556f099f.js.map",
+      "publicPath": "/static/vendors-9540bc79.556f099f.js.map"
+    },
+    "vendors-9e902c3b.c3b4bfa8.js": {
+      "name": "vendors-9e902c3b.c3b4bfa8.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-9e902c3b.c3b4bfa8.js",
+      "publicPath": "/static/vendors-9e902c3b.c3b4bfa8.js"
+    },
+    "vendors-9e902c3b.c3b4bfa8.js.LICENSE.txt": {
+      "name": "vendors-9e902c3b.c3b4bfa8.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-9e902c3b.c3b4bfa8.js.LICENSE.txt",
+      "publicPath": "/static/vendors-9e902c3b.c3b4bfa8.js.LICENSE.txt"
+    },
+    "vendors-9e902c3b.c3b4bfa8.js.map": {
+      "name": "vendors-9e902c3b.c3b4bfa8.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-9e902c3b.c3b4bfa8.js.map",
+      "publicPath": "/static/vendors-9e902c3b.c3b4bfa8.js.map"
+    },
+    "vendors-b1140668.4744a9c6.js": {
+      "name": "vendors-b1140668.4744a9c6.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-b1140668.4744a9c6.js",
+      "publicPath": "/static/vendors-b1140668.4744a9c6.js"
+    },
+    "vendors-b1140668.4744a9c6.js.LICENSE.txt": {
+      "name": "vendors-b1140668.4744a9c6.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-b1140668.4744a9c6.js.LICENSE.txt",
+      "publicPath": "/static/vendors-b1140668.4744a9c6.js.LICENSE.txt"
+    },
+    "vendors-b1140668.4744a9c6.js.map": {
+      "name": "vendors-b1140668.4744a9c6.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-b1140668.4744a9c6.js.map",
+      "publicPath": "/static/vendors-b1140668.4744a9c6.js.map"
+    },
+    "vendors-bcd1dcdb.ec01e595.js": {
+      "name": "vendors-bcd1dcdb.ec01e595.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-bcd1dcdb.ec01e595.js",
+      "publicPath": "/static/vendors-bcd1dcdb.ec01e595.js"
+    },
+    "vendors-bcd1dcdb.ec01e595.js.map": {
+      "name": "vendors-bcd1dcdb.ec01e595.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-bcd1dcdb.ec01e595.js.map",
+      "publicPath": "/static/vendors-bcd1dcdb.ec01e595.js.map"
+    },
+    "vendors-cb2d071c.6e54d0e9.js": {
+      "name": "vendors-cb2d071c.6e54d0e9.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cb2d071c.6e54d0e9.js",
+      "publicPath": "/static/vendors-cb2d071c.6e54d0e9.js"
+    },
+    "vendors-cb2d071c.6e54d0e9.js.LICENSE.txt": {
+      "name": "vendors-cb2d071c.6e54d0e9.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cb2d071c.6e54d0e9.js.LICENSE.txt",
+      "publicPath": "/static/vendors-cb2d071c.6e54d0e9.js.LICENSE.txt"
+    },
+    "vendors-cb2d071c.6e54d0e9.js.map": {
+      "name": "vendors-cb2d071c.6e54d0e9.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cb2d071c.6e54d0e9.js.map",
+      "publicPath": "/static/vendors-cb2d071c.6e54d0e9.js.map"
+    },
+    "vendors-cbcbeb49.700a4d85.js": {
+      "name": "vendors-cbcbeb49.700a4d85.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cbcbeb49.700a4d85.js",
+      "publicPath": "/static/vendors-cbcbeb49.700a4d85.js"
+    },
+    "vendors-cbcbeb49.700a4d85.js.map": {
+      "name": "vendors-cbcbeb49.700a4d85.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cbcbeb49.700a4d85.js.map",
+      "publicPath": "/static/vendors-cbcbeb49.700a4d85.js.map"
+    },
+    "vendors-cdd60c62.716bb4ae.js": {
+      "name": "vendors-cdd60c62.716bb4ae.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cdd60c62.716bb4ae.js",
+      "publicPath": "/static/vendors-cdd60c62.716bb4ae.js"
+    },
+    "vendors-cdd60c62.716bb4ae.js.LICENSE.txt": {
+      "name": "vendors-cdd60c62.716bb4ae.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cdd60c62.716bb4ae.js.LICENSE.txt",
+      "publicPath": "/static/vendors-cdd60c62.716bb4ae.js.LICENSE.txt"
+    },
+    "vendors-cdd60c62.716bb4ae.js.map": {
+      "name": "vendors-cdd60c62.716bb4ae.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-cdd60c62.716bb4ae.js.map",
+      "publicPath": "/static/vendors-cdd60c62.716bb4ae.js.map"
+    },
+    "vendors-d03b4435.31cbc89e.js": {
+      "name": "vendors-d03b4435.31cbc89e.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d03b4435.31cbc89e.js",
+      "publicPath": "/static/vendors-d03b4435.31cbc89e.js"
+    },
+    "vendors-d03b4435.31cbc89e.js.LICENSE.txt": {
+      "name": "vendors-d03b4435.31cbc89e.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d03b4435.31cbc89e.js.LICENSE.txt",
+      "publicPath": "/static/vendors-d03b4435.31cbc89e.js.LICENSE.txt"
+    },
+    "vendors-d03b4435.31cbc89e.js.map": {
+      "name": "vendors-d03b4435.31cbc89e.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d03b4435.31cbc89e.js.map",
+      "publicPath": "/static/vendors-d03b4435.31cbc89e.js.map"
+    },
+    "vendors-d2d6e1e2.a2c22fa2.js": {
+      "name": "vendors-d2d6e1e2.a2c22fa2.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d2d6e1e2.a2c22fa2.js",
+      "publicPath": "/static/vendors-d2d6e1e2.a2c22fa2.js"
+    },
+    "vendors-d2d6e1e2.a2c22fa2.js.map": {
+      "name": "vendors-d2d6e1e2.a2c22fa2.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d2d6e1e2.a2c22fa2.js.map",
+      "publicPath": "/static/vendors-d2d6e1e2.a2c22fa2.js.map"
+    },
+    "vendors-d8b1c25c.291c2872.js": {
+      "name": "vendors-d8b1c25c.291c2872.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d8b1c25c.291c2872.js",
+      "publicPath": "/static/vendors-d8b1c25c.291c2872.js"
+    },
+    "vendors-d8b1c25c.291c2872.js.map": {
+      "name": "vendors-d8b1c25c.291c2872.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-d8b1c25c.291c2872.js.map",
+      "publicPath": "/static/vendors-d8b1c25c.291c2872.js.map"
+    },
+    "vendors-ee28a12e.2457f22c.js": {
+      "name": "vendors-ee28a12e.2457f22c.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-ee28a12e.2457f22c.js",
+      "publicPath": "/static/vendors-ee28a12e.2457f22c.js"
+    },
+    "vendors-ee28a12e.2457f22c.js.map": {
+      "name": "vendors-ee28a12e.2457f22c.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-ee28a12e.2457f22c.js.map",
+      "publicPath": "/static/vendors-ee28a12e.2457f22c.js.map"
+    },
+    "vendors-efdcd332.a298e5b9.js": {
+      "name": "vendors-efdcd332.a298e5b9.js",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-efdcd332.a298e5b9.js",
+      "publicPath": "/static/vendors-efdcd332.a298e5b9.js"
+    },
+    "vendors-efdcd332.a298e5b9.js.LICENSE.txt": {
+      "name": "vendors-efdcd332.a298e5b9.js.LICENSE.txt",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-efdcd332.a298e5b9.js.LICENSE.txt",
+      "publicPath": "/static/vendors-efdcd332.a298e5b9.js.LICENSE.txt"
+    },
+    "vendors-efdcd332.a298e5b9.js.map": {
+      "name": "vendors-efdcd332.a298e5b9.js.map",
+      "path": "/root/site/structa.cloud/core/assets/bundles/vendors-efdcd332.a298e5b9.js.map",
+      "publicPath": "/static/vendors-efdcd332.a298e5b9.js.map"
+    }
+  },
+  "chunks": {
+    "static": [
+      "runtime.f6d46873.js",
+      "vendors-cdd60c62.716bb4ae.js",
+      "css/vendors-49d0a293-0ad61438.332c3909.min.css",
+      "css/vendors-49d0a293-cb2d071c.c6593d93.min.css",
+      "css/vendors-95dfecbe.014f6b35.min.css",
+      "vendors-5e58aee3.b6aba0cb.js",
+      "vendors-cb2d071c.6e54d0e9.js",
+      "vendors-8c1e7563.84a7e33a.js",
+      "vendors-1ee49eab.7e6e8c6b.js",
+      "vendors-9540bc79.556f099f.js",
+      "vendors-b1140668.4744a9c6.js",
+      "vendors-d03b4435.31cbc89e.js",
+      "vendors-9e902c3b.c3b4bfa8.js",
+      "vendors-d2d6e1e2.a2c22fa2.js",
+      "vendors-71b19865.50b018b6.js",
+      "vendors-d8b1c25c.291c2872.js",
+      "vendors-496eacfb.306128c4.js",
+      "vendors-53f2243b.6c379836.js",
+      "vendors-bcd1dcdb.ec01e595.js",
+      "vendors-ee28a12e.2457f22c.js",
+      "vendors-4ed39ea1.c8af36a0.js",
+      "vendors-860654cf.9e3373ee.js",
+      "vendors-4d7f51c3.520520e9.js",
+      "vendors-cbcbeb49.700a4d85.js",
+      "vendors-35120423.8f7bec0c.js",
+      "vendors-6f5a8aef.62ba68b2.js",
+      "vendors-efdcd332.a298e5b9.js",
+      "css/static-1ce848d4.20a40ace.min.css",
+      "static-33197508.b71123af.js",
+      "static-154956b6.58bda938.js",
+      "static-b5afd3cf.c3f884ce.js",
+      "static-bab5c281.72c8822d.js",
+      "static-04cc4b6c.975424c5.js",
+      "static-170c09d0.7c18a963.js",
+      "static-16a4bf31.44bf228b.js",
+      "static-de2d5fbc.5a7e9cd2.js",
+      "static-204e53ee.b4a7adb3.js",
+      "static-5ff16273.58be6057.js",
+      "static-05b84894.e8822249.js",
+      "static-b81592e7.19b29451.js",
+      "static-a30a9e32.fd3081ab.js",
+      "static-053e7595.cc6a4882.js",
+      "static-c4db904d.13579ddb.js",
+      "static-a212a05f.dc787a5d.js",
+      "static-4cc53908.0f68785b.js",
+      "static-a2b84fce.10dd76d0.js",
+      "static-e2bed824.e8d313b7.js",
+      "css/static-e2bed824.2e943aa6.min.css"
+    ]
+  },
+  "publicPath": "/static/"
+}
