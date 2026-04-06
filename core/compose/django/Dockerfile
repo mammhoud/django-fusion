@@ -51,10 +51,10 @@ RUN pipx install uv && pipx ensurepath
 # -----------------------------------------------------
 
 # Copy manifests first for caching
+# Copy manifests first for caching
 COPY package*.json ${APP_HOME}/
-COPY pyproject.toml uv.lock ${APP_HOME}/
-# Skip local path packages (libs/ mounted at runtime, not available at build time)
-RUN /root/.local/bin/uv sync --frozen --no-install-package django-grep
+COPY pyproject.toml ${APP_HOME}/
+# COPY uv.lock ${APP_HOME}/  # Optional for reproducible builds
 
 # -----------------------------------------------------
 # 3️⃣ Copy application source
@@ -66,9 +66,11 @@ COPY . ${APP_HOME}/
 # -----------------------------------------------------
 COPY ./compose/django/entrypoint /entrypoint
 COPY ./compose/django/start /start
+# COPY ./compose/django/rqworker-start /rqworker-start
 
 RUN sed -i 's/\r$//g' /entrypoint /start \
     && chmod +x /entrypoint /start
+    #/rqworker-start \
 
 # -----------------------------------------------------
 # 5️⃣ Create non-root user

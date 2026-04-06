@@ -1,56 +1,115 @@
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags wagtail_i18n_tags %}
-
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
 
 <div class="nav-item header-dropdown dropdown">
-            <button class="nav-link dropdown-toggle align-items-center" type="button"
-                id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
-                <i class="fas fa-globe me-2"></i>
-                {% get_language_info for LANGUAGE_CODE as current_lang %}
-                {{ current_lang.name_local }}
-            </button>
+    <button class="nav-link dropdown-toggle align-items-center" type="button"
+        id="languageDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-globe me-2"></i>
+        {% get_language_info for LANGUAGE_CODE as current_lang %}
+        {{ current_lang.name_local }}
+    </button>
 
-            <form method="post" action="{% url 'set_language' %}" class="d-none" id="languageForm">
-                {% csrf_token %}
-                <input type="hidden" name="next" value="{{ request.path }}">
-                <input type="hidden" name="language" id="selectedLanguage">
-            </form>
+    <!-- Hidden form that posts to Django's set_language view -->
+    <form method="post" action="{% url 'set_language' %}" class="d-none" id="languageForm">
+        {% csrf_token %}
+        <input type="hidden" name="next" value="{{ request.path }}">
+        <input type="hidden" name="language" id="selectedLanguage">
+    </form>
 
-            <ul class="dropdown-menu dropdown-menu-language shadow-sm" aria-labelledby="languageDropdown">
+    <ul class="dropdown-menu dropdown-menu-language shadow-sm" aria-labelledby="languageDropdown">
+        {% for lang in LANGUAGES %}
+            {% if lang.is_active %}   <!-- using your custom attribute -->
+            <li class="nav-dropdown-item">
+                <a class="nav-dropdown-link-compact {% if lang.code == LANGUAGE_CODE %}active{% endif %}"
+                   href="#"
+                   data-lang-code="{{ lang.code }}"
+                   onclick="event.preventDefault(); document.getElementById('selectedLanguage').value='{{ lang.code }}'; document.getElementById('languageForm').submit();">
 
-                {% for lang in LANGUAGES %}
-                {% if lang.is_active %}
-
-                <li class="nav-dropdown-item">
-                    {% if page %}
-                        {% get_translation page lang.code as trans_page %}
-                    {% elif self %}
-                        {% get_translation self lang.code as trans_page %}
+                    <!-- Flag icons (fixed slice syntax) -->
+                    {% if lang.code|slice:":2" == "en" %}
+                        <img src="https://flagcdn.com/w40/gb.png"
+                             srcset="https://flagcdn.com/w80/gb.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "ar" %}
+                        <img src="https://flagcdn.com/w40/eg.png"
+                             srcset="https://flagcdn.com/w80/eg.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "es" %}
+                        <img src="https://flagcdn.com/w40/es.png"
+                             srcset="https://flagcdn.com/w80/es.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "fr" %}
+                        <img src="https://flagcdn.com/w40/fr.png"
+                             srcset="https://flagcdn.com/w80/fr.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "de" %}
+                        <img src="https://flagcdn.com/w40/de.png"
+                             srcset="https://flagcdn.com/w80/de.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "it" %}
+                        <img src="https://flagcdn.com/w40/it.png"
+                             srcset="https://flagcdn.com/w80/it.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "pt" %}
+                        <img src="https://flagcdn.com/w40/pt.png"
+                             srcset="https://flagcdn.com/w80/pt.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "ru" %}
+                        <img src="https://flagcdn.com/w40/ru.png"
+                             srcset="https://flagcdn.com/w80/ru.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "zh" %}
+                        <img src="https://flagcdn.com/w40/cn.png"
+                             srcset="https://flagcdn.com/w80/cn.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "ja" %}
+                        <img src="https://flagcdn.com/w40/jp.png"
+                             srcset="https://flagcdn.com/w80/jp.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% elif lang.code|slice:":2" == "ko" %}
+                        <img src="https://flagcdn.com/w40/kr.png"
+                             srcset="https://flagcdn.com/w80/kr.png 2x"
+                             class="flag-icon"
+                             alt="{{ lang.name_local }}"
+                             loading="lazy">
+                    {% else %}
+                        {% with base_code=lang.code|slice:":2" %}
+                            <img src="https://flagcdn.com/w40/{{ base_code }}.png"
+                                 srcset="https://flagcdn.com/w80/{{ base_code }}.png 2x"
+                                 class="flag-icon"
+                                 alt="{{ lang.name_local }}"
+                                 loading="lazy"
+                                 onerror="this.onerror=null; this.src='https://flagcdn.com/w40/un.png';">
+                        {% endwith %}
                     {% endif %}
 
-                    <a class="nav-dropdown-link-compact {% if lang.code == LANGUAGE_CODE %}active{% endif %}"
-                       href="{% if trans_page %}{{ trans_page.url }}{% else %}{{ lang.url }}{% endif %}"
-                       data-lang-code="{{ lang.code }}">
-                        {% if lang.code|slice:":2" == "en" %}
-                        <img src="https://flagcdn.com/w40/gb.png" srcset="https://flagcdn.com/w80/gb.png 2x"
-                            class="flag-icon" alt="{{ lang.name_local }}">
-                        {% elif lang.code|slice:":2" == "ar" %}
-                        <img src="https://flagcdn.com/w40/eg.png" srcset="https://flagcdn.com/w80/eg.png 2x"
-                            class="flag-icon" alt="{{ lang.name_local }}">
-                        {% elif lang.code|slice:":2" == "es" %}
-                        <img src="https://flagcdn.com/w40/es.png" srcset="https://flagcdn.com/w80/es.png 2x"
-                            class="flag-icon" alt="{{ lang.name_local }}">
-                        {% else %}
-                        <img src="https://flagcdn.com/w40/{{ lang.code|slice:" :2" }}.png"
-                            srcset="https://flagcdn.com/w80/{{ lang.code|slice:" :2" }}.png 2x" class="flag-icon"
-                            alt="{{ lang.name_local }}">
-                        {% endif %}
-                        <span class="language-text">{{ lang.name_local }}</span>
-                        {% if lang.code == LANGUAGE_CODE %}
+                    <span class="language-text">{{ lang.name_local }}</span>
+
+                    {% if lang.code == LANGUAGE_CODE %}
                         <span class="current-language"><i class="fas fa-check"></i></span>
-                        {% endif %}
-                    </a>
-                </li>
-                {% endif %}
-                {% endfor %}
-            </ul>
-        </div>
+                    {% endif %}
+                </a>
+            </li>
+            {% endif %}
+        {% endfor %}
+    </ul>
+</div>

@@ -4,8 +4,7 @@
 {% block meta %}
 {% include 'partials/meta.html' %}
 {% endblock meta %}
-{% block html_attr %}
-{% endblock html_attr %}
+{% block html_attr %}data-theme="light"{% endblock html_attr %}
 {% block styles %}
     {% render_bundle 'static' 'css' %}
 {% endblock styles %}
@@ -31,11 +30,11 @@
 
 
 {% block body_attr %}
-data-page="auth" style="margin:0;padding:0;"
+data-page="auth" style="margin:0;padding:0;font-size:16px;line-height:1.6;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;"
 {% endblock body_attr %}
 
 {% block body %}
-<main class="auth-container" {% if request.user.is_authenticated %}hx-disabled="true"{% endif %}>
+<main class="auth-container" {% if request.user.is_authenticated %}hx-disabled="true"{% endif %} style="--auth-container-max-width:480px;--content-max-width:700px;">
 
   {% block contant %}
   {% endblock contant %}

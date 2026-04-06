@@ -4,6 +4,7 @@
  */
 
 import { NotificationSystem } from './notification.js';
+import { initializeNotificationContainers } from './notification-init.js';
 
 
 // Global instance (will be set when initialized)
@@ -19,6 +20,9 @@ export const NotificationModule = {
    */
   async initialize(config = {}, container = null) {
     try {
+      // Ensure containers exist
+      initializeNotificationContainers();
+
       // Find container if not provided
       const targetContainer = container || document.querySelector('.notifications-init');
 

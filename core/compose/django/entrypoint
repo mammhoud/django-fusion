@@ -15,16 +15,6 @@ else
 fi
 
 ###############################################################################
-# INSTALL LOCAL PATH PACKAGES (mounted at runtime)
-###############################################################################
-if [ -d "/libs/django-grep" ]; then
-    echo "📦 Installing local package: django-grep..."
-    /root/.local/bin/uv pip install --editable /libs/django-grep
-else
-    echo "⚠️  /libs/django-grep not found — skipping local install"
-fi
-
-###############################################################################
 # DJANGO INITIALIZATION
 ###############################################################################
 if [ "${RUN_SETUP:-false}" = "true" ]; then
@@ -46,6 +36,18 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
         uv run python -m django_grep.scripts.superuser
     fi
 fi
+###############################################################################
+# NODE BUILD
+###############################################################################
+echo "📦 Checking Node.js dependencies..."
+if [ -f "package.json" ]; then
+    echo "ℹ️ skipping Node build (managed by host or start script)."
+else
+    echo "ℹ️ No package.json found."
+fi
 
-echo "🎯 Launching: $*"
+###############################################################################
+# START APPLICATION
+###############################################################################
+echo "🎯 Launching command: $*"
 exec "$@"

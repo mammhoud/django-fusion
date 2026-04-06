@@ -15,14 +15,14 @@
   --form-control-text: var(--color-input-text);
   --form-control-focus-border: var(--color-border-input-focus);
   --form-control-placeholder: var(--color-input-placeholder);
-  
+
   /* Form states from master.css */
   --form-control-disabled-bg: var(--color-input-disabled-bg);
   --form-control-disabled-border: var(--color-input-disabled-border);
   --form-control-disabled-text: var(--color-input-disabled-text);
   --form-control-readonly-bg: var(--color-input-readonly-bg);
   --form-control-readonly-text: var(--color-input-readonly-text);
-  
+
   /* Validation from master.css */
   --form-valid-border: var(--color-input-valid-border);
   --form-valid-bg: var(--color-input-valid-bg);
@@ -30,7 +30,7 @@
   --form-invalid-bg: var(--color-input-invalid-bg);
   --form-invalid-feedback: var(--color-input-invalid);
   --form-valid-feedback: var(--color-input-valid);
-  
+
   /* Checkbox & Radio from master.css */
   --form-check-bg: var(--color-checkbox-bg);
   --form-check-border: var(--color-checkbox-border);
@@ -38,29 +38,29 @@
   --form-check-checked-border: var(--color-checkbox-checked-border);
   --form-check-disabled-bg: var(--color-checkbox-disabled-bg);
   --form-check-disabled-border: var(--color-checkbox-disabled-border);
-  
+
   /* Select from master.css */
   --form-select-bg: var(--color-input-bg);
   --form-select-border: var(--color-border-input);
   --form-select-text: var(--color-input-text);
   --form-select-arrow: var(--theme-text-tertiary);
-  
+
   /* File input from master.css */
   --form-file-bg: var(--color-input-bg);
   --form-file-border: var(--color-border-input);
   --form-file-text: var(--color-input-text);
   --form-file-hover-bg: var(--theme-bg-secondary);
   --form-file-hover-border: var(--color-border-input-focus);
-  
+
   /* Textarea scrollbar */
   --textarea-scroll-track: var(--color-bg-text-secondary);
   --textarea-scroll-thumb: var(--color-gray-400);
   --textarea-scroll-thumb-hover: var(--color-gray-500);
-  
+
   /* Spinner */
   --form-spinner-border: currentColor;
   --form-spinner-border-transparent: transparent;
-  
+
   /* Contact Form Colors */
   --contact-form-bg: var(--theme-surface);
   --contact-form-border: var(--theme-border-primary);
@@ -78,7 +78,7 @@
   --contact-form-error-bg: var(--color-alert-error-bg);
   --contact-form-error-border: var(--color-alert-error-border);
   --contact-form-error-text: var(--color-alert-error-text);
-  
+
   /* Modal Colors */
   --modal-z-index: var(--z-index-modal);
   --modal-backdrop-bg: var(--color-modal-backdrop);
@@ -95,10 +95,10 @@
   --modal-footer-border-color: var(--color-modal-footer-border);
   --modal-transition-duration: 0.3s;
   --modal-transition-timing: ease-out;
-  
+
   /* File hover color */
   --color-file-hover-bg: rgba(var(--theme-primary-rgb), 0.1);
-  
+
   /* Z-index hierarchy */
   --z-index-modal: 1050;
   --z-index-dropdown: 1040;
@@ -133,6 +133,14 @@
   outline: none;
   background-color: var(--form-control-bg);
   color: var(--form-control-text);
+}
+
+/* Registration form inputs — 2px solid primary focus */
+.form-input:focus {
+  outline: 2px solid #0056b3;
+  outline-offset: 0;
+  border-color: #0056b3;
+  box-shadow: 0 0 0 3px rgba(0, 86, 179, 0.15);
 }
 
 .form-control::placeholder,
@@ -893,21 +901,21 @@ select:-webkit-autofill:focus {
   --form-control-border: var(--color-gray-300); /* Light border */
   --form-control-focus-border: var(--theme-primary);
   --form-control-placeholder: var(--color-gray-500);
-  
+
   --form-select-bg: #FFFFFF;
   --form-select-text: var(--color-gray-900);
   --form-select-border: var(--color-gray-300);
-  
+
   --form-file-bg: #FFFFFF;
   --form-file-text: var(--color-gray-900);
   --form-file-border: var(--color-gray-300);
   --form-file-hover-bg: var(--color-gray-100);
-  
+
   --color-input-bg: #FFFFFF;
   --color-input-text: var(--color-gray-900);
   --color-input-border: var(--color-gray-300);
   --color-border-input: var(--color-gray-300);
-  
+
   /* Enhanced contact form variables */
   --contact-form-bg: var(--theme-surface-elevated);
   --contact-form-border: var(--theme-border-primary);
@@ -928,21 +936,21 @@ select:-webkit-autofill:focus {
     --form-control-border: var(--color-gray-300);
     --form-control-focus-border: var(--theme-primary);
     --form-control-placeholder: var(--color-gray-500);
-    
+
     --form-select-bg: #FFFFFF;
     --form-select-text: var(--color-gray-900);
     --form-select-border: var(--color-gray-300);
-    
+
     --form-file-bg: #FFFFFF;
     --form-file-text: var(--color-gray-900);
     --form-file-border: var(--color-gray-300);
     --form-file-hover-bg: var(--color-gray-100);
-    
+
     --color-input-bg: #FFFFFF;
     --color-input-text: var(--color-gray-900);
     --color-input-border: var(--color-gray-300);
     --color-border-input: var(--color-gray-300);
-    
+
     --contact-form-bg: var(--theme-surface-elevated);
     --contact-form-border: var(--theme-border-primary);
     --contact-form-focus-border: var(--theme-primary-light);
@@ -1123,35 +1131,35 @@ select:-webkit-autofill:focus {
     padding: 0.75rem;
     font-size: 0.9375rem;
   }
-  
+
   .form-label,
   .contact-form__label {
     font-size: 0.8125rem;
   }
-  
+
   .form-group,
   .contact-form__field {
     margin-bottom: 1rem;
   }
-  
+
   .contact-form-block {
     padding: 1.5rem;
   }
-  
+
   .form-layout-two-column .contact-form__fields,
   .form-layout-split .contact-form__fields {
     grid-template-columns: 1fr;
   }
-  
+
   .contact-form__button {
     width: 100%;
     justify-content: center;
   }
-  
+
   .contact-form__submit {
     flex-direction: column;
   }
-  
+
   .contact-form__input-group.has-icon.icon-outside {
     flex-direction: column;
     align-items: flex-start;
@@ -1203,7 +1211,7 @@ select:-webkit-autofill:focus {
   .contact-form__select {
     border: 2px solid currentColor;
   }
-  
+
   .form-control:focus,
   .form-select:focus,
   .contact-form__input:focus,
@@ -1211,13 +1219,13 @@ select:-webkit-autofill:focus {
   .contact-form__select:focus {
     border-width: 3px;
   }
-  
+
   .form-check-input,
   .contact-form__checkbox,
   .contact-form__radio {
     border: 2px solid currentColor;
   }
-  
+
   .error-tooltip {
     border: 2px solid currentColor;
   }
@@ -1237,13 +1245,13 @@ select:-webkit-autofill:focus {
     color: #000 !important;
     box-shadow: none !important;
   }
-  
+
   .form-spinner,
   .error-tooltip,
   .htmx-indicator {
     display: none !important;
   }
-  
+
   .contact-form-block {
     box-shadow: none !important;
     border: 1px solid #000 !important;
@@ -1525,11 +1533,11 @@ select:-webkit-autofill:focus {
   .contact-form__field--two-thirds {
     width: 100%;
   }
-  
+
   .form-layout-inline .contact-form__fields {
     flex-direction: column;
   }
-  
+
   .form-layout-inline .contact-form__field {
     width: 100%;
   }
@@ -1545,21 +1553,21 @@ select:-webkit-autofill:focus {
     --form-control-border: var(--color-gray-300);
     --form-control-focus-border: var(--theme-primary);
     --form-control-placeholder: var(--color-gray-500);
-    
+
     --form-select-bg: #FFFFFF;
     --form-select-text: var(--color-gray-900);
     --form-select-border: var(--color-gray-300);
-    
+
     --form-file-bg: #FFFFFF;
     --form-file-text: var(--color-gray-900);
     --form-file-border: var(--color-gray-300);
     --form-file-hover-bg: var(--color-gray-100);
-    
+
     --color-input-bg: #FFFFFF;
     --color-input-text: var(--color-gray-900);
     --color-input-border: var(--color-gray-300);
     --color-border-input: var(--color-gray-300);
-    
+
     --contact-form-bg: var(--theme-surface-elevated);
     --contact-form-border: var(--theme-border-primary);
     --contact-form-focus-border: var(--theme-primary-light);
@@ -1571,7 +1579,7 @@ select:-webkit-autofill:focus {
     --contact-form-file-hover: rgba(var(--theme-primary-rgb), 0.15);
     --contact-form-privacy-bg: var(--color-gray-150);
   }
-  
+
   .form-control,
   .contact-form__input,
   .contact-form__textarea,
@@ -1580,7 +1588,7 @@ select:-webkit-autofill:focus {
     color: var(--form-control-text) !important;
     border-color: var(--form-control-border) !important;
   }
-  
+
   .form-control:focus,
   .contact-form__input:focus,
   .contact-form__textarea:focus,
@@ -1589,13 +1597,13 @@ select:-webkit-autofill:focus {
     color: var(--form-control-text) !important;
     border-color: var(--form-control-focus-border) !important;
   }
-  
+
   .form-control::placeholder,
   .contact-form__input::placeholder,
   .contact-form__textarea::placeholder {
     color: var(--form-control-placeholder) !important;
   }
-  
+
   .form-select,
   .contact-form__select {
     background-color: var(--form-select-bg) !important;
@@ -1603,35 +1611,35 @@ select:-webkit-autofill:focus {
     border-color: var(--form-select-border) !important;
     background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23404040' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e") !important;
   }
-  
+
   .form-file-label,
   .contact-form__file {
     background-color: var(--form-file-bg) !important;
     color: var(--form-file-text) !important;
     border-color: var(--form-file-border) !important;
   }
-  
+
   .contact-form-block {
     background: var(--contact-form-bg) !important;
     color: var(--contact-form-text) !important;
     border-color: var(--contact-form-border) !important;
   }
-  
+
   .contact-form__label {
     color: var(--contact-form-label) !important;
   }
-  
+
   .contact-form__privacy {
     background: var(--contact-form-privacy-bg) !important;
   }
-  
+
   .form-check-input,
   .contact-form__checkbox,
   .contact-form__radio {
     background-color: #FFFFFF !important;
     border-color: var(--color-gray-400) !important;
   }
-  
+
   .form-check-input:checked,
   .contact-form__checkbox:checked,
   .contact-form__radio:checked {

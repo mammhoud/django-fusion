@@ -37,8 +37,9 @@ services:
     environment:
       - PORT=5080
       - RUNNING_ENV=docker
+      - SERVER_ENV=production
+      - DEBUG=False
       - RELOAD=${RELOAD:-false}
-      - SERVER_ENV=development
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,alliance-website,*
       - RUN_SETUP=true
     networks:

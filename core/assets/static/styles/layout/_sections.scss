@@ -1414,7 +1414,7 @@
 
 /* Gradient text for headings if needed */
 .text-gradient-1 {
-    background: linear-gradient(45deg, var(--theme-primary), var(--theme-accent));
+    background: linear-gradient(45deg, var(--bs-primary), #6c63ff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
     background-clip: text;

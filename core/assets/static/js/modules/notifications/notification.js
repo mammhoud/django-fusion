@@ -233,7 +233,9 @@ export class NotificationSystem {
 
     async setupIntegrations() {
         // HTMX integration
-        if (this.options.enableHTMX && typeof htmx !== 'undefined') {
+        // Always register the showNotification DOM event listener (HTMX dispatches it directly)
+        // The htmx:afterSwap listener also works without htmx being defined at init time
+        if (this.options.enableHTMX) {
             this.setupHTMXIntegration();
         }
 
@@ -613,9 +615,20 @@ export class NotificationSystem {
      * =========================================================== */
 
     setupHTMXIntegration() {
-        // Handle HTMX responses
+        // Handle HTMX responses (parse HX-Trigger header manually)
         document.addEventListener('htmx:afterSwap', (event) => {
             this.processHTMXResponse(event.detail.xhr);
+        });
+
+        // Handle HX-Trigger: {"showNotification": {...}} dispatched as a DOM event by HTMX
+        document.addEventListener('showNotification', (event) => {
+            const data = event.detail || {};
+            this.show(data.message, {
+                type: data.level || data.type || 'info',
+                title: data.title || '',
+                duration: data.duration || this.options.defaultDuration,
+                icon: data.icon || '',
+            });
         });
 
         // Custom HTMX trigger
@@ -645,7 +658,7 @@ export class NotificationSystem {
             const triggers = JSON.parse(headerValue);
 
             Object.entries(triggers).forEach(([key, value]) => {
-                if ((key === 'showNotification') || (key === 'Notification') || (key === 'showMessage')) {
+                if ((key === 'showNotification') || (key === 'Notification')) {
                     this.show(value.message, {
                         type: value.level || value.type || 'info',
                         title: value.title || '',
@@ -700,6 +713,15 @@ export class NotificationSystem {
     async setupSSEConnection() {
         if (typeof EventSource === 'undefined') {
             this.log('SSE not supported in this browser');
+            return;
+        }
+
+        // Only connect SSE for authenticated users
+        // The #sse-connection element is only rendered when user is authenticated
+        const isAuthenticated = document.getElementById('sse-connection') !== null
+            || document.body.dataset.userAuthenticated === 'true';
+        if (!isAuthenticated) {
+            this.log('SSE skipped: user not authenticated');
             return;
         }
 
