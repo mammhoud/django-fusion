@@ -7,16 +7,16 @@ default:
   # ====================================
   # 🎯 Application Core
   # ====================================
-  APP_NAME: "Alliance"
+  APP_NAME: "CTC Hub"
   APP_VERSION: "1.0.0"
-  MODULE: "CMS"
+  MODULE: "LMS"
 
   # ====================================
   # 🏗️ Django Core
   # ====================================
   DJANGO_SETTINGS_MODULE: "configs.settings"
-  DJANGO_ASGI_APPLICATION: "alliance.asgi:application"
-  # DJANGO_WSGI_APPLICATION: "alliance.asgi:application"
+  DJANGO_ASGI_APPLICATION: "core.asgi:application"
+  # DJANGO_WSGI_APPLICATION: "core.asgi:application"
 
   # ====================================
   # 🌍 Internationalization
@@ -41,8 +41,8 @@ default:
   # 👑 Admin Defaults
   # ====================================
   ADMIN:
-    SITE_HEADER: "Alliance Administration"
-    SITE_TITLE: "Alliance Admin"
+    SITE_HEADER: "CTC Hub Administration"
+    SITE_TITLE: "CTC Hub Admin"
     INDEX_TITLE: "Site Administration"
     URL: "admin/"
     SHOW_LANGUAGES: true
@@ -57,8 +57,9 @@ default:
   # ====================================
   AUTH:
     ACCOUNT_ALLOW_REGISTRATION: true
-    ACCOUNT_EMAIL_VERIFICATION: "optional"
+    ACCOUNT_EMAIL_VERIFICATION: "mandatory"
     ACCOUNT_EMAIL_REQUIRED: true
+    ACCOUNT_USERNAME_REQUIRED: false
     ACCOUNT_LOGIN_METHODS: ["email"]
     ACCOUNT_USERNAME_MIN_LENGTH: 4
     ACCOUNT_USERNAME_BLACKLIST: ["admin", "root", "superuser"]
@@ -66,8 +67,9 @@ default:
     ACCOUNT_CHANGE_EMAIL: true
     ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE: true
     ACCOUNT_SESSION_REMEMBER: true
-    SOCIALACCOUNT_ENABLED: true
+    SOCIALACCOUNT_ENABLED: false
     SOCIALACCOUNT_AUTO_SIGNUP: true
+    ACCOUNT_ADAPTER: "apps.handlers.registration.adapter.RegistrationAdapter"
 
   # ====================================
   # 📱 API Defaults
@@ -84,12 +86,35 @@ default:
   # 🎯 Wagtail Defaults
   # ====================================
   WAGTAIL:
-    SITE_NAME: "Alliance"
+    SITE_NAME: "CTC Hub"
     ENABLE_UPDATE_CHECK: false
     PASSWORD_MANAGEMENT_ENABLED: true
     PASSWORD_RESET_ENABLED: true
     I18N_ENABLED: true
 
+  # ====================================
+  # 📊 Monitoring Defaults
+  # ====================================
+  MONITORING:
+    ENABLED: false
+    HEALTH_CHECKS: true
+    METRICS: false
+    PROFILING: false
+    ALERTING: false
+
+  PERFORMANCE:
+    CACHE_MIDDLEWARE_SECONDS: 300
+    CACHE_MIDDLEWARE_KEY_PREFIX: "middleware"
+    GZIP_ENABLED: true
+    GZIP_COMPRESSION_LEVEL: 6
+
+  # ====================================
+  # 🏗️ Variant Repositories (Unified)
+  # ====================================
+  CORE_REPO: "mammhoud/ctc-website"
+  BLOG_REPO: "mammhoud/ctc-website"
+  LMS_REPO: "mammhoud/ctc-website"
+  ALL_REPO: "mammhoud/ctc-website"
 
 testing:
   DEBUG: true
@@ -104,11 +129,50 @@ development:
   ENABLE_GRAPHQL: true
   ENABLE_API_DOCS: true
 
+demo:
+  APP_NAME: "CTC Hub (Demo)"
+  DEBUG: true
+  ENABLE_DEBUG_TOOLBAR: true
+  ENABLE_SWAGGER: true
+  ENABLE_GRAPHQL: true
+  ENABLE_API_DOCS: true
+  MONITORING:
+    ENABLED: true
+  SENTRY:
+    ENABLED: true
+    ENVIRONMENT: "demo"
+    TRACES_SAMPLE_RATE: 0.5
+
 production:
   # Core
-  APP_NAME: "Alliance"
+  APP_NAME: "Structa"
   APP_VERSION: "1.0.0-production"
-  DEBUG: false
+  DEBUG: true
+
+  # Features
+  ENABLE_DEBUG_TOOLBAR: false
+  ENABLE_SWAGGER: false
+  ENABLE_SILK_PROFILING: false
+  ENABLE_GRAPHQL: false
+  ENABLE_API_DOCS: false
+  ENABLE_VUE_DEV_SERVER: false
+
+  # Monitoring
+  MONITORING:
+    ENABLED: false
+    PROVIDER: "sentry"
+    HEALTH_CHECKS_ENABLED: true
+    METRICS_ENABLED: true
+    ALERTING_ENABLED: true
+
+  # Sentry
+  SENTRY:
+    ENABLED: false
+    DSN: "@env SENTRY_DSN"
+    ENVIRONMENT: "production"
+    RELEASE: "@format {this.APP_VERSION}"
+    TRACES_SAMPLE_RATE: 0.1
+    PROFILES_SAMPLE_RATE: 0.0
 
   # Performance
   PERFORMANCE:
@@ -117,3 +181,25 @@ production:
     BROTLI_ENABLED: true
     DATABASE_OPTIMIZATION: true
     TEMPLATE_CACHING: true
+
+  # Scalability
+  SCALABILITY:
+    HORIZONTAL_SCALING: true
+    LOAD_BALANCING: true
+    DATABASE_READ_REPLICAS: 2
+    CACHE_CLUSTERING: true
+
+  # External Services
+  EXTERNAL_SERVICES:
+    GOOGLE_ANALYTICS_ID: "@env GOOGLE_ANALYTICS_ID"
+    STRIPE_PUBLIC_KEY: "@env STRIPE_PUBLIC_KEY"
+    STRIPE_SECRET_KEY: "@env STRIPE_SECRET_KEY"
+    AWS_ACCESS_KEY_ID: "@env AWS_ACCESS_KEY_ID"
+    AWS_SECRET_ACCESS_KEY: "@env AWS_SECRET_ACCESS_KEY"
+
+  # Backup
+  BACKUP:
+    ENABLED: true
+    SCHEDULE: "daily"
+    STORAGE: "s3"
+    S3_BUCKET: "@env AWS_BACKUP_BUCKET"

@@ -1,66 +1,65 @@
-# ====================================
+# =======================================================
 # 🚀 Production Environment Settings
-# ====================================
+# =======================================================
+from .core import *   # common settings
 import os
-
-from .core import *
 from ..conf import settings
 
-# ---- Core ----
+# -------------------------------------------------------------------
+# 🎛️ Main Switches
+# -------------------------------------------------------------------
 DEBUG = False
 SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
-ALLOWED_HOSTS = [h.strip() for h in os.environ.get("ALLOWED_HOSTS", "").split(",") if h.strip()]
+ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
-# ---- Wagtail ----
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "Alliance")
-WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "https://structa.cloud")
+# -------------------------------------------------------------------
+# 🔐 Production Security (Requirements: 9.6, 9.7, 9.8)
+# -------------------------------------------------------------------
+# SSL redirect is handled by Traefik — Django must NOT redirect or
+# Traefik's health check gets a 301 and marks the backend as unhealthy.
+SECURE_SSL_REDIRECT = False
+SESSION_COOKIE_SECURE = True
+CSRF_COOKIE_SECURE = True
+SECURE_HSTS_SECONDS = 31536000          # 1 year
+SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+SECURE_HSTS_PRELOAD = True
+
+# -------------------------------------------------------------------
+# 🏷️ Titling
+# -------------------------------------------------------------------
+WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "CTC Hub")
+ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "Structa Administration")
+ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "Structa Admin")
+ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Management")
+
+# -------------------------------------------------------------------
+# ⏱️ Timing
+# -------------------------------------------------------------------
+TIME_ZONE = settings.get("TIME_ZONE", "UTC")
+USE_TZ = settings.get("USE_TZ", True)
+SESSION_COOKIE_AGE = settings.get("SESSION_COOKIE_AGE", 604800)           # 1 week
+CACHE_MIDDLEWARE_SECONDS = settings.get("PERFORMANCE.CACHE_MIDDLEWARE_SECONDS", 600)
+CACHE_MIDDLEWARE_KEY_PREFIX = settings.get("PERFORMANCE.CACHE_MIDDLEWARE_KEY_PREFIX", "prod")
+PASSWORD_RESET_TIMEOUT = settings.get("PASSWORD_RESET_TIMEOUT", 259200)  # 3 days
+EMAIL_TIMEOUT = settings.get("EMAIL_TIMEOUT", 60)                        # 1 minute
+
+# -------------------------------------------------------------------
+# 🎛️ Wagtail Core
+# -------------------------------------------------------------------
+WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "https://example.com")
 WAGTAILSEARCH_BACKENDS = {
-    "default": {"BACKEND": "wagtail.search.backends.database"}
+    "default": {
+        "BACKEND": "wagtail.search.backends.database",   # PostgreSQL full‑text
+    }
 }
-WAGTAILIMAGES_SERVE_METHOD = "direct"
+WAGTAILIMAGES_SERVE_METHOD = "direct"                  # requires nginx X-Accel
 WAGTAIL_CACHE = True
 WAGTAIL_CACHE_BACKEND = "default"
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
-# ---- Admin ----
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "Alliance Administration")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "Alliance Admin")
-ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Management")
-
-# ---- Timing ----
-TIME_ZONE = settings.get("TIME_ZONE", "UTC")
-USE_TZ = True
-SESSION_COOKIE_AGE = settings.get("SESSION_COOKIE_AGE", 604800)       # 1 week
-SECURE_HSTS_SECONDS = settings.get("SECURE_HSTS_SECONDS", 31536000)   # 1 year
-PASSWORD_RESET_TIMEOUT = settings.get("PASSWORD_RESET_TIMEOUT", 259200)  # 3 days
-EMAIL_TIMEOUT = settings.get("EMAIL_TIMEOUT", 60)
-
-# ---- Cache middleware ----
-CACHE_MIDDLEWARE_SECONDS = settings.get("PERFORMANCE.CACHE_MIDDLEWARE_SECONDS", 600)
-CACHE_MIDDLEWARE_KEY_PREFIX = settings.get("PERFORMANCE.CACHE_MIDDLEWARE_KEY_PREFIX", "prod")
-CACHE_MIDDLEWARE_ALIAS = "default"
-MIDDLEWARE += [
-    "django.middleware.cache.UpdateCacheMiddleware",
-    "django.middleware.cache.FetchFromCacheMiddleware",
-]
-
-# ---- i18n ----
-USE_I18N = settings.get("USE_I18N", True)
-USE_L10N = settings.get("USE_L10N", True)
-LANGUAGE_CODE = settings.get("LANGUAGE_CODE", "en-us")
-
-# ---- Templates (cached loader) ----
-TEMPLATES[0]["OPTIONS"]["loaders"] = [
-    (
-        "django.template.loaders.cached.Loader",
-        [
-            "django.template.loaders.filesystem.Loader",
-            "django.template.loaders.app_directories.Loader",
-        ],
-    ),
-]
-
-# ---- Logging (JSON stdout — container friendly) ----
+# -------------------------------------------------------------------
+# 📝 Logging (JSON to stdout – container friendly)
+# -------------------------------------------------------------------
 LOGGING = {
     "version": 1,
     "disable_existing_loggers": False,
@@ -71,9 +70,15 @@ LOGGING = {
         },
     },
     "handlers": {
-        "console": {"class": "logging.StreamHandler", "formatter": "json"},
+        "console": {
+            "class": "logging.StreamHandler",
+            "formatter": "json",
+        },
     },
-    "root": {"handlers": ["console"], "level": "INFO"},
+    "root": {
+        "handlers": ["console"],
+        "level": "INFO",
+    },
     "loggers": {
         "django": {"level": "INFO", "handlers": ["console"], "propagate": False},
         "django.request": {"level": "ERROR", "handlers": ["console"], "propagate": False},
@@ -81,5 +86,45 @@ LOGGING = {
     },
 }
 
-# ---- Optional services ----
+# -------------------------------------------------------------------
+# 🧪 Caching Middleware (Django core)
+# -------------------------------------------------------------------
+MIDDLEWARE += [  # appended to base MIDDLEWARE
+    "django.middleware.cache.UpdateCacheMiddleware",
+    # ... your other middleware ...
+    "django.middleware.cache.FetchFromCacheMiddleware",
+]
+CACHE_MIDDLEWARE_ALIAS = "default"
+
+# -------------------------------------------------------------------
+# 🌍 Internationalisation
+# -------------------------------------------------------------------
+USE_I18N = settings.get("USE_I18N", True)
+USE_L10N = settings.get("USE_L10N", True)
+LANGUAGE_CODE = settings.get("LANGUAGE_CODE", "en-us")
+
+# -------------------------------------------------------------------
+# 🧰 Templates (cached loader)
+# -------------------------------------------------------------------
+TEMPLATES[0]["OPTIONS"]["loaders"] = [
+    (
+        "django.template.loaders.cached.Loader",
+        [
+            "django.template.loaders.filesystem.Loader",
+            "django.template.loaders.app_directories.Loader",
+        ],
+    ),
+]
+
+# -------------------------------------------------------------------
+# ✅ Reminders
+# -------------------------------------------------------------------
+# 1. Run `python manage.py migrate` to create session table.
+# 2. Run `python manage.py collectstatic --noinput`.
+# 3. Set all required environment variables.
+
+
+# -------------------------------------------------------------------
+# 📦 Optional Services
+# -------------------------------------------------------------------
 from .services import *

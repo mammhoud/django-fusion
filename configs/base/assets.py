@@ -3,8 +3,8 @@
 # ====================================
 from pathlib import Path
 
+from ..settings.conf import settings
 from ..settings.conf import settings as tracker
-from ..settings.setup import settings
 from .paths import BASE_DIR
 
 # -------------------------------
@@ -68,7 +68,13 @@ WEBPACK_LOADER = {
         "POLL_INTERVAL": 0.1 if tracker.is_debug else 300,
         "TIMEOUT": None if tracker.is_debug else 120,
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-        "LOADER_CLASS": "webpack_loader.loader.WebpackLoader",
+        # Use FakeWebpackLoader in Docker when webpack hasn't been built.
+        # Prevents TypeError from missing/stub bundles.json in production containers.
+        "LOADER_CLASS": (
+            "webpack_loader.loaders.FakeWebpackLoader"
+            if tracker.is_docker and not tracker.is_debug
+            else "webpack_loader.loader.WebpackLoader"
+        ),
     }
 }
 

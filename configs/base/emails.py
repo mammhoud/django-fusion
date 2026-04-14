@@ -3,7 +3,7 @@
 # ====================================
 from enum import Enum
 
-from ..settings.conf import Environment, settings
+from ..settings.conf import settings
 from .apps import INSTALLED_APPS
 
 
@@ -31,6 +31,8 @@ def get_email_strategy():
     """Get email strategy based on environment"""
     if settings.is_production:
         return settings.get("EMAIL_STRATEGY", EmailSendingStrategy.SMTP)
+    elif settings.SERVER_ENV == "demo":
+        return settings.get("EMAIL_STRATEGY", EmailSendingStrategy.MAILTRAP)
     else:
         return settings.get("EMAIL_STRATEGY", EmailSendingStrategy.CONSOLE)
 

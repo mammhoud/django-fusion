@@ -1,7 +1,11 @@
 # ====================================
 # 📦 Storage Configuration
 # ====================================
-from .. import settings, tracker
+import os
+
+from ..settings.conf import settings
+from ..settings.conf import settings as tracker
+from .paths import BASE_DIR
 
 # -------------------------------
 # Storage Backend Selection
@@ -11,17 +15,17 @@ if hasattr(settings, "STORAGE"):
     USE_S3 = settings.STORAGE.get("USE_S3", False)
 
 # -------------------------------
-# AWS S3 Configuration
+# AWS S3 / Local Storage Configuration
 # -------------------------------
 if USE_S3:
-    import os
     # AWS Credentials
     AWS_ACCESS_KEY_ID = getattr(settings, "AWS_ACCESS_KEY_ID", os.environ.get("AWS_ACCESS_KEY_ID", "minioadmin"))
     AWS_SECRET_ACCESS_KEY = getattr(settings, "AWS_SECRET_ACCESS_KEY", os.environ.get("AWS_SECRET_ACCESS_KEY", "minioadmin"))
-    
+
     # S3 Bucket Configuration
     AWS_STORAGE_BUCKET_NAME = getattr(settings, "AWS_STORAGE_BUCKET_NAME", os.environ.get("AWS_STORAGE_BUCKET_NAME", "static"))
-    AWS_S3_ENDPOINT_URL = getattr(settings, "AWS_S3_ENDPOINT_URL", os.environ.get("AWS_S3_ENDPOINT_URL", "http://alliance-minio:9000"))
+    AWS_S3_ENDPOINT_URL = getattr(settings, "AWS_S3_ENDPOINT_URL", os.environ.get("AWS_S3_ENDPOINT_URL", "http://ctc-minio:9000"))
+    AWS_S3_REGION_NAME = getattr(settings, "AWS_S3_REGION_NAME", os.environ.get("AWS_S3_REGION_NAME", "us-east-1"))
 
     # For local MinIO (without HTTPS)
     AWS_S3_USE_SSL = False
@@ -31,13 +35,12 @@ if USE_S3:
     AWS_QUERYSTRING_AUTH = False
 
     # Static files storage
-    STATICFILES_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    STATIC_URL = f'{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/'
+    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    STATIC_URL = f"{AWS_S3_ENDPOINT_URL}/{AWS_STORAGE_BUCKET_NAME}/"
 
-    # Media files storage (boto3 allows specifying location inside a bucket or an entirely different bucket)
-    # The user guide sets DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage' but doesn't separate buckets completely or relies on paths
-    DEFAULT_FILE_STORAGE = 'storages.backends.s3boto3.S3Boto3Storage'
-    MEDIA_URL = f'{AWS_S3_ENDPOINT_URL}/media/'
+    # Media files storage
+    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
+    MEDIA_URL = f"{AWS_S3_ENDPOINT_URL}/media/"
 
     # S3 Performance & Security
     AWS_S3_FILE_OVERWRITE = False
@@ -45,18 +48,6 @@ if USE_S3:
         "CacheControl": "max-age=86400, public",
         "ContentDisposition": "inline",
     }
-else:
-        aws_s3_domain = (
-            f"{AWS_STORAGE_BUCKET_NAME}.s3.{AWS_S3_REGION_NAME}.amazonaws.com"
-        )
-
-    # URLs
-    MEDIA_URL = f"https://{aws_s3_domain}/media/"
-    STATIC_URL = f"https://{aws_s3_domain}/static/"
-
-    # Storage Backends
-    DEFAULT_FILE_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
-    STATICFILES_STORAGE = "storages.backends.s3boto3.S3Boto3Storage"
 
     # S3 Transfer Acceleration (optional)
     AWS_S3_ACCELERATE = tracker.is_production
@@ -70,12 +61,8 @@ else:
     MEDIA_URL = "/media/"
     STATIC_URL = "/static/"
 
-    import os
-
-    from core.config import BASE_DIR
-
-    MEDIA_ROOT = os.path.join(BASE_DIR, "media")
-    STATIC_ROOT = os.path.join(BASE_DIR, "staticfiles")
+    MEDIA_ROOT = os.path.join(BASE_DIR, "assets", "media")
+    STATIC_ROOT = os.path.join(BASE_DIR, "assets", "staticfiles")
 
 STATICFILES_FINDERS = [
     "django.contrib.staticfiles.finders.FileSystemFinder",

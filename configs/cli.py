@@ -134,6 +134,10 @@ class SyncCLI:
 
     def __init__(self):
         self.key_mapping = {
+            "git.username": "git_username",
+            "git.email": "git_email",
+            "git.repo": "git_repo",
+            "git.token": "git_token",
             "demo.container": "demo_container",
             "main.container": "main_container",
             "demo.branch": "demo_branch",
@@ -265,6 +269,67 @@ class SyncCLI:
         print(f"\n📤 Syncing {config.direction.value} to {config.environment.value}...")
         print("✅ Sync completed!")
 
+    def _list_tokens(self):
+        """List available tokens."""
+        print("🔐 Available Tokens:")
+
+        # Git config
+        git_token = tracker.get_token()
+        if git_token:
+            masked = f"{git_token[:4]}...{git_token[-4:]}" if len(git_token) > 8 else "***"
+            print(f"  Git Config: {masked}")
+        else:
+            print("  Git Config: NOT SET")
+
+        # Environment variable
+        env_token = env_settings.GIT_TOKEN
+        if env_token:
+            masked = f"{env_token[:4]}...{env_token[-4:]}" if len(env_token) > 8 else "***"
+            print(f"  Environment: {masked}")
+
+    def _save_token(self, token: str = None, scope: str = "global"):
+        """Save token to git config."""
+        if not token:
+            token = input("Enter GitHub token: ").strip()
+
+        if token:
+            repo_path = Path.cwd() if scope == "local" else None
+
+            # Ask if user wants to save to .env file too
+            save_to_env = False
+            if scope == "global":
+                response = input("Also save to .env file? (y/n) [n]: ").strip().lower()
+                save_to_env = response == "y"
+
+            if tracker.save_token(token, repo_path, scope, save_to_env):
+                print("✅ Token saved")
+            else:
+                print("❌ Failed to save token")
+
+    def _test_token(self):
+        """Test token validity."""
+        token = tracker.get_token()
+        if token:
+            print(f"✅ Token found (masked: {token[:4]}...{token[-4:]})")
+
+            # Test with GitHub API
+            try:
+                import requests
+                response = requests.get(
+                    "https://api.github.com/user",
+                    headers={"Authorization": f"token {token}"},
+                    timeout=5
+                )
+                if response.status_code == 200:
+                    print("✅ Token is valid")
+                else:
+                    print("❌ Token is invalid")
+            except Exception:
+                print("⚠️  Could not verify token (network error)")
+        else:
+            print("❌ No token found")
+
+    def _show_config(self):
         """Show current configuration."""
         config = tracker.show_config()
 
@@ -425,17 +490,36 @@ class VariantCLI:
 
     @cli_command("Setup project variant")
     def setup(self, variant: str):
+        """
+        Setup a specific project variant.
+
+        Args:
+            variant: Variant name (basic, blogger, lms)
+        """
+        if variant not in self.variants:
+            print(f"❌ Unknown variant: {variant}")
+            print(f"Available variants: {', '.join(self.variants.keys())}")
+            return
+
         info = self.variants[variant]
         print(f"🏗️  Setting up {info['name']} variant...")
         print(f"📝 Use case: {info['use_case']}")
 
-        repo = tracker.get(info["repo_key"], "")
+        # GitHub Integration logic
+        repo = tracker.get(info["repo_key"], tracker.GIT_REPO)
         if repo:
             print(f"🔗 Target Repo: {repo}")
+            token = tracker.GIT_TOKEN
+            if token:
+                mask = f"{token[:4]}...{token[-4:]}" if len(token) > 8 else "***"
+                print(f"🔑 Using GitHub token: {mask}")
+            else:
+                print("⚠️  No GitHub token found. Using default SSH key.")
         else:
-            print("ℹ️  No specific repository configured for this variant.")
+            print("⚠️  No specific repository set for this variant. Using default GIT_REPO.")
 
         # Logic to "create" the variant (Filtering files)
+        if info["remove"]:
             print(f"🧹 Filtering apps for {variant}...")
             for app_path in info["remove"]:
                 full_path = self.project_dir / app_path
@@ -447,17 +531,17 @@ class VariantCLI:
         print(f"✅ {info['name']} variant integration defined!")
 
     @cli_command("Publish variant to GitHub")
-    @cli_command("Publish variant")
-    def publish(self, variant: str, message: str = "Update variant"):
+    def publish(self, variant: str, message: str = "Update variant", push: bool = True):
         """
-        Publish a specific variant locally (GitHub integration removed).
+        Publish a specific variant to the unified GitHub repository with tags.
         """
+        import re
         if variant not in self.variants:
             print(f"❌ Unknown variant: {variant}")
             return
 
         info = self.variants[variant]
-        repo_name = tracker.get(info["repo_key"], "")
+        repo_name = tracker.get(info["repo_key"], tracker.GIT_REPO)
 
         if not repo_name:
             print(f"❌ No repository configured for variant '{variant}'")
@@ -474,8 +558,12 @@ class VariantCLI:
         except Exception:
             pass
 
-        print(f"🚀 Publishing {info['name']} variant locally...")
-        print(f"🏷️  Version: {version}")
+        tag_name = f"v{version}-{variant}"
+        target_branch = "main" if variant == "all" else f"release/{variant}"
+
+        print(f"🚀 Publishing {info['name']} variant to {repo_name}...")
+        print(f"🏷️  Tag: {tag_name}")
+        print(f"🌿 Branch: {target_branch}")
 
         # Setup paths
         temp_dir = Path("/tmp/publish") / variant
@@ -484,13 +572,44 @@ class VariantCLI:
         temp_dir.mkdir(parents=True)
 
         try:
-            # 2. Clear target dir
+            # 1. Clone or initialize target repo
+            token = tracker.GIT_TOKEN or os.environ.get("GIT_TOKEN")
+
+            # Try to extract token from origin remote if missing
+            if not token:
+                try:
+                    result = subprocess.run(["git", "remote", "get-url", "origin"], capture_output=True, text=True)
+                    url = result.stdout.strip()
+                    if "@github.com" in url and "https://" in url:
+                        token = url.split("https://")[1].split("@")[0]
+                except Exception:
+                    pass
+
+            if token:
+                repo_url = f"https://{token}@github.com/{repo_name}.git"
+            else:
+                repo_url = f"git@github.com:{repo_name}.git"
+
+            print(f"📦 Cloning {repo_name}...")
+            # We try to clone the specific branch if it exists
+            result = subprocess.run(["git", "clone", "--depth", "1", "--branch", target_branch, repo_url, "."], cwd=temp_dir, capture_output=True)
+
+            if result.returncode != 0:
+                print(f"✨ Branch '{target_branch}' does not exist, initializing from default...")
+                subprocess.run(["git", "clone", "--depth", "1", repo_url, "."], cwd=temp_dir, capture_output=True)
+                if not (temp_dir / ".git").exists():
+                    subprocess.run(["git", "init"], cwd=temp_dir)
+                    subprocess.run(["git", "remote", "add", "origin", repo_url], cwd=temp_dir)
+                subprocess.run(["git", "checkout", "-b", target_branch], cwd=temp_dir)
+
+            # 2. Clear target dir except .git
             print("🧹 Preparing workspace...")
             for item in temp_dir.iterdir():
-                if item.is_dir():
-                    shutil.rmtree(item)
-                else:
-                    item.unlink()
+                if item.name != ".git":
+                    if item.is_dir():
+                        shutil.rmtree(item)
+                    else:
+                        item.unlink()
 
             # 3. Copy files from source to target
             print("📂 Copying files...")
@@ -505,10 +624,37 @@ class VariantCLI:
                 else:
                     shutil.copy2(item, dest)
 
-            print(f"✅ Published {info['name']} variant to {temp_dir}")
+            # 4. Commit, Tag and Push
+            print("💾 Committing changes...")
+            subprocess.run(["git", "add", "."], cwd=temp_dir)
+
+            user_name = tracker.GIT_USERNAME or "Xellent Bot"
+            user_email = tracker.GIT_EMAIL or "bot@structa.cloud"
+            subprocess.run(["git", "config", "user.name", user_name], cwd=temp_dir)
+            subprocess.run(["git", "config", "user.email", user_email], cwd=temp_dir)
+
+            status = subprocess.run(["git", "status", "--porcelain"], cwd=temp_dir, capture_output=True, text=True)
+            if not status.stdout.strip():
+                print("ℹ️ No changes to publish.")
+            else:
+                commit_msg = f"{message} [{variant} v{version}]"
+                subprocess.run(["git", "commit", "-m", commit_msg], cwd=temp_dir)
+
+            # Handle tagging (force update if version matches)
+            subprocess.run(["git", "tag", "-d", tag_name], cwd=temp_dir, capture_output=True)
+            subprocess.run(["git", "tag", "-a", tag_name, "-m", f"Release {info['name']} v{version}"], cwd=temp_dir)
+
+            if push:
+                print("📤 Pushing to GitHub...")
+                subprocess.run(["git", "push", "-f", "origin", target_branch], cwd=temp_dir)
+                subprocess.run(["git", "push", "-f", "origin", tag_name], cwd=temp_dir)
+                print(f"✅ Published successfully to {repo_name} ({target_branch} @ {tag_name})")
+
         finally:
             if temp_dir.exists():
                 shutil.rmtree(temp_dir)
+
+    @cli_command("Publish all variants")
     def publish_all(self, message: str = "Sync all variants"):
         """Publish all defined project variants."""
         for variant in self.variants.keys():
@@ -622,7 +768,7 @@ Examples:
 
   # Configuration
   python -m configs config --show
-  python -m configs config --set username myuser
+  python -m configs config --set git.username myuser
   python -m configs env --show-all
 
   # Interactive

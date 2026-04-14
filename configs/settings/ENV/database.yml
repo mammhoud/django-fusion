@@ -1,9 +1,4 @@
-# ============================================
-# Database Configuration
-# default/development = SQLite
-# production         = PostgreSQL (from env)
-# testing            = SQLite in-memory
-# ============================================
+# databases.yaml - Complete database configuration
 
 default: &db_default
   DATABASES:
@@ -13,25 +8,115 @@ default: &db_default
       ATOMIC_REQUESTS: false
 
   DATABASE_ROUTERS: []
+
   DATABASE_POOLING:
     enabled: false
+    max_overflow: 10
+    pool_size: 5
+    recycle: 3600
+
   DATABASE_HEALTH:
     enabled: true
     timeout: 10
     interval: 30
+
   DATABASE_BACKUP:
     enabled: false
+    schedule: "0 2 * * *"
+    retention_days: 30
 
-# development — same as default: SQLite, reads DB_NAME from env if set
-development:
+# development:
+#   <<: *db_default
+#   DATABASES:
+#     default:
+#       ENGINE: "django.db.backends.postgresql"
+#       NAME: "dev_db"
+#       USER: "dev_user"
+#       HOST: "localhost"
+#       PORT: 5432
+#       CONN_MAX_AGE: 0
+#       OPTIONS:
+#         connect_timeout: 10
+#         keepalives_idle: 30
+
+  # For local development with multiple DBs
+  # DATABASES:
+  #   default:
+  #     ENGINE: "django.db.backends.postgresql"
+  #     NAME: "main_db"
+  #     HOST: "localhost"
+  #     PORT: 5432
+  #
+  #   analytics:
+  #     ENGINE: "django.db.backends.postgresql"
+  #     NAME: "analytics_db"
+  #     HOST: "localhost"
+  #     PORT: 5433
+
+  # DATABASE_ROUTERS: ["project.db_routers.AnalyticsRouter"]
+
+demo:
   <<: *db_default
   DATABASES:
     default:
-      ENGINE: "django.db.backends.sqlite3"
-      NAME: "@jinja {{ env.get('DB_NAME', 'db.sqlite3') }}"
+      ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
+      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
+      PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_ctc') }}"
+      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
+      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
+      CONN_MAX_AGE: 180
       ATOMIC_REQUESTS: false
+      OPTIONS:
+        connect_timeout: 10
+        keepalives: 1
+        keepalives_idle: 30
+        keepalives_interval: 10
+        keepalives_count: 3
+      POOL_ARGS:
+        max_overflow: 15
+        pool_size: 5
+        recycle: 1800
+        timeout: 20
+        pre_ping: false
+        use_lifo: false
 
-# production — PostgreSQL, all values from env with safe defaults
+staging:
+  <<: *db_default
+  DATABASES:
+    default:
+      ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
+      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
+      PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_staging') }}"
+      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
+      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
+      CONN_MAX_AGE: 180
+      ATOMIC_REQUESTS: false
+      OPTIONS:
+        connect_timeout: 10
+        keepalives: 1
+        keepalives_idle: 30
+        keepalives_interval: 10
+        keepalives_count: 3
+      POOL_ARGS:
+        max_overflow: 15
+        pool_size: 5
+        recycle: 1800
+        timeout: 20
+        pre_ping: false
+        use_lifo: false
+
+
+  DATABASE_POOLING:
+    enabled: true
+    pool_size: 5
+    max_overflow: 10
+
+  DATABASE_BACKUP:
+    enabled: true
+    retention_days: 14
+
 production:
   <<: *db_default
   DATABASES:
@@ -39,17 +124,20 @@ production:
       ENGINE: "@jinja {{ env.get('DB_ENGINE', 'django.db.backends.postgresql') }}"
       HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
       PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
-      NAME: "@jinja {{ env.get('DB_NAME', 'db_structa') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_ctc') }}"
       USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
       PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
       CONN_MAX_AGE: 600
       ATOMIC_REQUESTS: true
       OPTIONS:
+        # sslmode: "require"
+        # sslrootcert: "@format {env.get('DB_SSL_ROOT_CERT') or env.get('POSTGRES_SSL_CERT') or ''}"
         connect_timeout: 15
         keepalives: 1
         keepalives_idle: 60
         keepalives_interval: 15
         keepalives_count: 5
+        # application_name: "@format {env.get('APP_NAME') or 'django_app'}"
       POOL_ARGS:
         max_overflow: 30
         pool_size: 20
@@ -58,6 +146,23 @@ production:
         pre_ping: true
         use_lifo: true
 
+    # Read replica
+    replica:
+      ENGINE: "django.db.backends.postgresql"
+      NAME: "production_db"
+      USER: "readonly_user"
+      HOST: "prod-db-replica.example.com"
+      PORT: 5432
+      CONN_MAX_AGE: 60
+      OPTIONS:
+        sslmode: "verify-full"
+        connect_timeout: 30
+        application_name: "django_replica"
+
+  # Database routers for read/write splitting
+  # DATABASE_ROUTERS: ["project.db_routers.PrimaryReplicaRouter"]
+
+  # Connection pooling
   DATABASE_POOLING:
     enabled: true
     pool_size: 20
@@ -65,23 +170,28 @@ production:
     recycle: 3600
     pre_ping: true
 
+  # Health checks
   DATABASE_HEALTH:
     enabled: true
     timeout: 15
     interval: 10
     max_failures: 3
 
+  # Automated backups
   DATABASE_BACKUP:
     enabled: true
-    schedule: "0 2 * * *"
+    schedule: "0 2 * * *"  # Daily at 2 AM
     retention_days: 90
+    storage: "s3://backups-bucket/"
+    encryption: true
 
-# testing — in-memory SQLite
+# Test environment
 testing:
   <<: *db_default
   DATABASES:
     default:
       ENGINE: "django.db.backends.sqlite3"
       NAME: ":memory:"
+
   DATABASE_POOLING:
     enabled: false

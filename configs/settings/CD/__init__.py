@@ -10,8 +10,8 @@ current_env = settings.SERVER_ENV
 # ====================================
 if current_env in (Environment.PRODUCTION, Environment.STAGING):
     from .production import *  # noqa: F403
-elif current_env == Environment.DEVELOPMENT:
-    from .core import *  # noqa: F403
+elif current_env in (Environment.DEMO, Environment.DEVELOPMENT):
+    from .demo import *  # noqa: F403
 else:
     from .core import *  # noqa: F403
 

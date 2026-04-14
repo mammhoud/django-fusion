@@ -8,7 +8,7 @@ default:
   EMAIL_PASSWORD: "@jinja {{ env.get('EMAIL_PASSWORD', 'password') }}"
   DEFAULT_FROM_EMAIL: "@jinja {{ env.get('DEFAULT_FROM_EMAIL', 'noreply@example.com') }}"
   SERVER_EMAIL: "@jinja {{ env.get('DEFAULT_FROM_EMAIL', 'noreply@example.com') }}"
-  EMAIL_SUBJECT_PREFIX: "[Alliance] "
+  EMAIL_SUBJECT_PREFIX: "[Structa] "
   EMAIL_TIMEOUT: 30
 
   # Email queue
@@ -18,7 +18,7 @@ default:
   # Email tracking
   EMAIL_TRACKING_ENABLED: false
 
-development:
+demo:
   EMAIL_STRATEGY: "smtp"
 
 

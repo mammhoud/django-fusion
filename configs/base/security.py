@@ -17,57 +17,23 @@ security_settings = getattr(settings, "SECURITY", {})
 # -------------------------------
 # Django Security
 # -------------------------------
-import ast
-
-
-def _parse_hosts(raw):
-    """Parse ALLOWED_HOSTS from various formats dynaconf may produce."""
-    if raw is None:
-        return ["localhost", "127.0.0.1"]
-    if isinstance(raw, list):
-        return [str(h).strip() for h in raw if str(h).strip()]
-    if isinstance(raw, str):
-        val = raw.strip()
-        # Handle stringified Python list: "['a', 'b']"
-        if val.startswith("[") and val.endswith("]"):
-            try:
-                parsed = ast.literal_eval(val)
-                return [str(h).strip() for h in parsed if str(h).strip()]
-            except (ValueError, SyntaxError):
-                pass
-        # Handle comma-separated string
-        return [h.strip() for h in val.split(",") if h.strip()]
-    return ["localhost", "127.0.0.1"]
-
-# Basic security settings — check top-level first, then SECURITY block
-_allowed_hosts_raw = getattr(settings, "ALLOWED_HOSTS", None) or getattr(
-    security_settings, "ALLOWED_HOSTS", None
+# Basic security settings
+ALLOWED_HOSTS = getattr(
+    settings,
+    "ALLOWED_HOSTS",
+    getattr(security_settings, "ALLOWED_HOSTS", ["localhost", "127.0.0.1"]),
 )
-ALLOWED_HOSTS = _parse_hosts(_allowed_hosts_raw)
 
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = getattr(
     security_settings, "CORS_ALLOW_ALL_ORIGINS", not settings.is_production
 )
 CORS_ALLOW_CREDENTIALS = True
-_cors_raw = getattr(security_settings, "CORS_ALLOWED_ORIGINS", [])
-if isinstance(_cors_raw, str):
-    CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_raw.split(",") if o.strip()]
-else:
-    CORS_ALLOWED_ORIGINS = list(_cors_raw)
+CORS_ALLOWED_ORIGINS = getattr(security_settings, "CORS_ALLOWED_ORIGINS", [])
 
 # CSRF Configuration
-_csrf_raw = getattr(security_settings, "CSRF_TRUSTED_ORIGINS", [])
-if isinstance(_csrf_raw, str):
-    CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_raw.split(",") if o.strip()]
-else:
-    CSRF_TRUSTED_ORIGINS = list(_csrf_raw)
+CSRF_TRUSTED_ORIGINS = getattr(security_settings, "CSRF_TRUSTED_ORIGINS", [])
 CSRF_COOKIE_SECURE = getattr(security_settings, "CSRF_COOKIE_SECURE", settings.is_production)
-# Allow override via environment variable for testing
-import os
-
-if os.environ.get("AUTH_CSRF_COOKIE_SECURE") == "False":
-    CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_HEADER_NAME = "X-CSRFToken"
@@ -80,15 +46,16 @@ SESSION_COOKIE_NAME = "sessionid"
 SESSION_COOKIE_SAMESITE = "Lax"
 
 # HTTPS/SSL
-# SSL redirect is handled by Traefik — disable in Django to avoid redirect loops
-# and allow Traefik's internal health checks over plain HTTP
-SECURE_SSL_REDIRECT = False
-# Trust Traefik's X-Forwarded-Proto header so Django knows the request is HTTPS
-SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
+SECURE_SSL_REDIRECT = getattr(security_settings, "SECURE_SSL_REDIRECT", False)
 SECURE_HSTS_SECONDS = 31536000 if settings.is_production else 0
 X_FRAME_OPTIONS = "DENY"
 SECURE_CONTENT_TYPE_NOSNIFF = True
 SECURE_BROWSER_XSS_FILTER = True
+
+# Proxy SSL header — set when behind a reverse proxy (e.g. Traefik) that terminates TLS
+_proxy_ssl_header = getattr(security_settings, "SECURE_PROXY_SSL_HEADER", None)
+if _proxy_ssl_header:
+    SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 
 # -------------------------------
 # Password Configuration

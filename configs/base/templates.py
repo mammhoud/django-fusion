@@ -5,9 +5,8 @@ from django.utils.translation import gettext_lazy as _  # Noqa
 
 from configs.base.assets import ASSETS_DIR
 
-from ..settings.conf import Environment
 from ..settings.conf import settings as tracker
-from ..settings.setup import settings
+from ..settings.conf import settings
 from .paths import APPS_DIR, BASE_DIR, CORE_DIR
 
 # -------------------------------
@@ -40,7 +39,7 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                # "wagtail.contrib.settings.context_processors.settings",
+                # Custom context processors
                 "django_rseal.contrib.context.LANGUAGES",
                 "django_rseal.contrib.context.COOKIES",
                 "django_rseal.contrib.context.AUTH_SETTINGS",
@@ -68,6 +67,7 @@ TEMPLATES = [
                 "heroicons.templatetags.heroicons",
                 "django_osoul.comp.templatetags.comp_tags",
                 "django_osoul.comp.templatetags.apps",
+                "django_osoul.comp.templatetags.components.field",
             ],
         },
     },

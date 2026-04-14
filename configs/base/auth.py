@@ -14,8 +14,8 @@ References:
 
 from django.urls import reverse_lazy
 
+from ..settings.conf import settings
 from ..settings.conf import settings as tracker
-from ..settings.setup import settings
 
 # =============================================================================
 # 🔐 AUTHENTICATION BACKENDS
@@ -116,7 +116,9 @@ ACCOUNT_ALLOW_SIGNUPS = settings.get(
 
 # Email settings
 ACCOUNT_UNIQUE_EMAIL = settings.get("AUTH_ACCOUNT_UNIQUE_EMAIL", True)
-ACCOUNT_EMAIL_VERIFICATION = settings.get("AUTH_ACCOUNT_EMAIL_VERIFICATION", "optional")
+ACCOUNT_EMAIL_VERIFICATION = settings.get("AUTH_ACCOUNT_EMAIL_VERIFICATION", "mandatory")
+# ACCOUNT_EMAIL_REQUIRED and ACCOUNT_USERNAME_REQUIRED are deprecated in allauth.
+# Use ACCOUNT_SIGNUP_FIELDS instead (defined below).
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = settings.get(
     "AUTH_ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS", 3
 )
@@ -126,7 +128,7 @@ ACCOUNT_EMAIL_CONFIRMATION_HMAC = settings.get(
 # ACCOUNT_EMAIL_RATE_LIMITS = settings.get("ACCOUNT_RATE_LIMITS", {})
 ACCOUNT_EMAIL_SUBJECT_PREFIX = settings.get("AUTH_ACCOUNT_EMAIL_SUBJECT_PREFIX", "")
 ACCOUNT_RATE_LIMITS["confirm_email"] = settings.get(
-    "AUTH_ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN", 180
+    "AUTH_ACCOUNT_EMAIL_CONFIRMATION_COOLDOWN", "1/3m"
 )
 # Username settings
 ACCOUNT_USERNAME_MIN_LENGTH = settings.get("AUTH_ACCOUNT_USERNAME_MIN_LENGTH", 4)
@@ -135,7 +137,7 @@ ACCOUNT_USERNAME_BLACKLIST = settings.get(
 )
 ACCOUNT_USERNAME_VALIDATORS = settings.get("AUTH_ACCOUNT_USERNAME_VALIDATORS", None)
 ACCOUNT_RATE_LIMITS["login_failed"] = settings.get(
-    "AUTH_ACCOUNT_LOGIN_ATTEMPTS_LIMIT", 5
+    "AUTH_ACCOUNT_LOGIN_ATTEMPTS_LIMIT", "5/5m"
 )
 # Login settings
 ACCOUNT_LOGIN_METHODS = settings.get("AUTH_ACCOUNT_LOGIN_METHODS", ["email"])
@@ -256,7 +258,7 @@ MFA_RECOVERY_CODES_LENGTH = settings.get("AUTH_MFA_RECOVERY_CODES_LENGTH", 8)
 # 🌐 SOCIAL AUTHENTICATION PROVIDERS
 # =============================================================================
 
-SOCIALACCOUNT_ENABLED = settings.get("AUTH_SOCIALACCOUNT_ENABLED", True)
+SOCIALACCOUNT_ENABLED = settings.get("AUTH_SOCIALACCOUNT_ENABLED", False)
 SOCIALACCOUNT_AUTO_SIGNUP = settings.get("AUTH_SOCIALACCOUNT_AUTO_SIGNUP", True)
 SOCIALACCOUNT_EMAIL_REQUIRED = settings.get("AUTH_SOCIALACCOUNT_EMAIL_REQUIRED", True)
 SOCIALACCOUNT_EMAIL_VERIFICATION = settings.get(

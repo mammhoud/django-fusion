@@ -1,5 +1,5 @@
-# Unfold — must be listed before django.contrib.admin
-ADMIN_APPS = [
+# UNFOLD — must be listed before django.contrib.admin
+UNFOLD_APPS = [
     "unfold",
     "unfold.contrib.filters",
     "unfold.contrib.forms",
@@ -12,7 +12,7 @@ ADMIN_APPS = [
 # DJANGO CORE
 APPS = [
     # "daphne",
-    *ADMIN_APPS,
+    *UNFOLD_APPS,
     "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -26,9 +26,17 @@ APPS = [
     "django.contrib.postgres",
 ]
 
+
+# ADMIN (legacy alias kept for compatibility)
+ADMIN_APPS = [
+    *UNFOLD_APPS,
+]
+
+
 # WAGTAIL
 WAGTAIL_APPS = [
     "wagtail",
+    # "wagtail.api.v2",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.routable_page",
@@ -54,7 +62,6 @@ WAGTAIL_APPS = [
     "taggit",
     "modelcluster",
 ]
-
 THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
@@ -72,9 +79,10 @@ THIRD_PARTY_APPS = [
     "django_structlog",
     "heroicons",
     "embed_video",
-    "colorfield",
+    "colorfield",  # Color picker field for Wagtail
     "django_rq",
 ]
+
 
 PLUGIN_APPS = [
     "django_rseal.pipelines",
@@ -84,16 +92,19 @@ PLUGIN_APPS = [
     "django_rseal",  # email automation: EmailLog, UserRole, UserGroup + management commands
 ]
 
+
 OVERRIDE_APPS = [
     "apps.pages",
     "apps.handlers",
     "apps.handlers.registration",
 ]
 
+
 LOCAL_APPS = [
-    "alliance.CI",
-    "alliance",
+    "core.CI",
+    "apps.LMS",
+    "apps.blog",
 ]
 
-# COMBINED — unfold (via APPS) must precede django.contrib.admin
+# COMBINED
 INSTALLED_APPS: list[str] = OVERRIDE_APPS + APPS + WAGTAIL_APPS + THIRD_PARTY_APPS + PLUGIN_APPS + LOCAL_APPS

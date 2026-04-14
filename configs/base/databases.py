@@ -1,50 +1,88 @@
 # ====================================
 # 🗄️ Database Configuration
-# default/development = SQLite
-# production/staging  = PostgreSQL from env
 # ====================================
 from ..settings.conf import Environment, settings
 
-db_conf = settings.DATABASES.default if (
-    hasattr(settings, "DATABASES") and hasattr(settings.DATABASES, "default")
-) else None
-
-def _pg_from_conf(conn_max_age=0, atomic=False):
-    """Build a PostgreSQL DATABASES dict from dynaconf db_conf."""
-    return {
-        "ENGINE": getattr(db_conf, "ENGINE", "django.db.backends.postgresql"),
-        "NAME": getattr(db_conf, "NAME", "db_structa"),
-        "USER": getattr(db_conf, "USER", "postgres"),
-        "PASSWORD": getattr(db_conf, "PASSWORD", ""),
-        "HOST": getattr(db_conf, "HOST", "postgres"),
-        "PORT": getattr(db_conf, "PORT", "5432"),
-        "CONN_MAX_AGE": conn_max_age,
-        "CONN_HEALTH_CHECKS": True,
-        "ATOMIC_REQUESTS": atomic,
-        "OPTIONS": dict(getattr(db_conf, "OPTIONS", {})),
-    }
-
-# ---- development / default: SQLite ----
+# -------------------------------
+# Database Configuration
+# -------------------------------
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.sqlite3",
-        "NAME": settings.get("DB_NAME", "db.sqlite3"),
+        "NAME": "dev_db.sqlite3",
         "ATOMIC_REQUESTS": False,
     }
 }
-
-# ---- production / staging: PostgreSQL ----
-if settings.SERVER_ENV in (Environment.PRODUCTION, Environment.STAGING):
-    if db_conf:
-        DATABASES["default"] = _pg_from_conf(conn_max_age=0, atomic=False)
+db_conf = settings.DATABASES.default
+# print(db_conf)
+# Determine database engine based on environment
+if settings.SERVER_ENV == Environment.DEVELOPMENT:
+    # Demo environment: SQLite
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": "dev_db.sqlite3",
+            "ATOMIC_REQUESTS": True,
+        }
+    }
+elif settings.SERVER_ENV == Environment.DEMO:
+    if hasattr(settings, "DATABASES") and hasattr(settings.DATABASES, "default"):
+        DATABASES["default"] = {
+            "ENGINE": db_conf.ENGINE,
+            "NAME": db_conf.NAME,
+            "USER": db_conf.USER if hasattr(db_conf, "USER") else "",
+            "PASSWORD": db_conf.PASSWORD if hasattr(db_conf, "PASSWORD") else "",
+            "HOST": db_conf.HOST if hasattr(db_conf, "HOST") else "",
+            "PORT": db_conf.PORT if hasattr(db_conf, "PORT") else "",
+            "CONN_MAX_AGE": 60,  # Persistent connections (60s) — enables CONN_HEALTH_CHECKS
+            "CONN_HEALTH_CHECKS": True,
+            "ATOMIC_REQUESTS": False,
+        }
     else:
-        # Fallback — should not happen if .env is set correctly
+        # Fallback SQLite
         DATABASES = {
             "default": {
                 "ENGINE": "django.db.backends.sqlite3",
-                "NAME": "fallback.sqlite3",
+                "NAME": "demo.sqlite3",
+                "ATOMIC_REQUESTS": False,
+            }
+        }
+elif settings.SERVER_ENV in [Environment.PRODUCTION, Environment.STAGING]:
+    # Production/Staging: PostgreSQL from settings
+    if hasattr(settings, "DATABASES") and hasattr(settings.DATABASES, "default"):
+        DATABASES["default"] = {
+            "ENGINE": db_conf.ENGINE,
+            "NAME": db_conf.NAME,
+            "USER": db_conf.USER,
+            "PASSWORD": db_conf.PASSWORD,
+            "HOST": db_conf.HOST,
+            "PORT": db_conf.PORT,
+            "CONN_MAX_AGE": 60,  # Persistent connections (60s) — enables CONN_HEALTH_CHECKS
+            "CONN_HEALTH_CHECKS": True,
+            "OPTIONS": db_conf.get("OPTIONS", {}),
+            "ATOMIC_REQUESTS": False,
+        }
+    else:
+        # Fallback SQLite
+        DATABASES = {
+            "default": {
+                "ENGINE": "django.db.backends.sqlite3",
+                "NAME": "production.sqlite3",
                 "ATOMIC_REQUESTS": False,
             }
         }
 
+# -------------------------------
+# Database Router (if needed)
+# -------------------------------
 DATABASE_ROUTERS = []
+# print(DATABASES)
+
+# # -------------------------------
+# # Connection Health Check
+# # -------------------------------
+# DATABASE_CONNECTION_HEALTH_CHECK = {
+#     'enabled': True,
+#     'timeout': 5,
+#     'retries': 3,
+# }
