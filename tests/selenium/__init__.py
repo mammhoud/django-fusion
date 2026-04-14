@@ -1,0 +1,1 @@
+# structa selenium tests
