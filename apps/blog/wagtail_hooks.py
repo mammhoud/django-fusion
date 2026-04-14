@@ -1,7 +1,6 @@
 """
 Wagtail hooks for Blog application.
 """
-from wagtail import hooks
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSet
 
