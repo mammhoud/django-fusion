@@ -6,7 +6,7 @@ from wagtail.blocks import PageChooserBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
 from wagtail.fields import StreamField
 
-from django_grep.comp.blocks import ContactCardBlock, PageLinkBlock
+from django_osoul.comp.blocks import ContactCardBlock, PageLinkBlock
 from .base import BaseFormPage
 
 class HomePage(BaseFormPage):

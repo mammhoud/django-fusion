@@ -5,9 +5,9 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 
-from django_grep.contrib.enums import FileUploadStorage
-from django_grep.contrib.utils import file_generate_upload_path
-from django_grep.pipelines.models import ContentBase
+from django_rseal.contrib.enums import FileUploadStorage
+from django_rseal.contrib.utils import file_generate_upload_path
+from django_rseal.pipelines.models import ContentBase
 
 
 class File(ContentBase):

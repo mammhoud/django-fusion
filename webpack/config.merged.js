@@ -16,8 +16,17 @@ const ctcResearchConfig = require('./ctc-research/webpack/main.config.js');
  */
 module.exports = async (env, argv) => {
     const mode = argv.mode || (process.env.NODE_ENV === 'production' ? 'production' : 'development');
+    const isServe = argv.hot || false;
+
+    // Determine public path based on environment
+    // In Docker/production, assets are served through nginx at /static/
+    // In development with webpack-dev-server, use localhost:3000
+    const publicPath = isServe
+        ? 'http://localhost:3000/static/'
+        : process.env.WEBPACK_PUBLIC_PATH || '/static/';
 
     console.log(`🚀 Building merged webpack configuration in ${mode} mode`);
+    console.log(`📦 Public path: ${publicPath}`);
 
     // Get CTC Research config
     const ctcConfig = await ctcResearchConfig(env, argv);
@@ -33,7 +42,7 @@ module.exports = async (env, argv) => {
 
         output: {
             path: path.resolve(__dirname, 'dist'),
-            publicPath: '/static/',
+            publicPath: publicPath,
             filename: '[name]/[name].[contenthash:8].js',
             chunkFilename: '[name]/chunk/[name].[contenthash:8].chunk.js',
             clean: true,

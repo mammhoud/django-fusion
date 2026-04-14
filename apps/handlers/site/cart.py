@@ -2,7 +2,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import HttpRequest, JsonResponse
 from django.views import View
 from django.utils.translation import gettext_lazy as _
-from django_grep.comp.site import PageHandler
+from django_osoul.comp.site import PageHandler
 from alliance.CI.services.cart_service import CartService
 class CartView(PageHandler):
     """

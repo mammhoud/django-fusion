@@ -1,7 +1,7 @@
 from django.db.models import Q
 
-from django_grep.contrib.models import Contact, ContactEmail, ContactPhone
-from django_grep.contrib.models import Corporate as Company
+from django_rseal.contrib.models import Contact, ContactEmail, ContactPhone
+from django_rseal.contrib.models import Corporate as Company
 
 # from commons.contact.models.profile import Company
 

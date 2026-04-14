@@ -5,10 +5,10 @@ from taggit.managers import TaggableManager
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField
 
-from django_grep.comp.blocks import EventSectionBlock
+from django_osoul.comp.blocks import EventSectionBlock
 
 # Base and reusable block imports
-from django_grep.pipelines.models import DefaultBase
+from django_rseal.pipelines.models import DefaultBase
 
 # ===================================================================
 # 🗓️ EVENT MODEL

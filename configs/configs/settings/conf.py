@@ -9,7 +9,7 @@ import os
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from django_grep.contrib.enums import Environment, LogLevel, Module, Runtime
+from django_rseal.contrib.enums import Environment, LogLevel, Module, Runtime
 from dynaconf import Dynaconf
 from pydantic import Field, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict

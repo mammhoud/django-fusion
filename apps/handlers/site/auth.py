@@ -9,7 +9,7 @@ from django.views.decorators.http import require_http_methods
 from django.utils.decorators import method_decorator
 from django.views.decorators.csrf import csrf_protect
 
-from django_grep.comp.site import PageHandler
+from django_osoul.comp.site import PageHandler
 # Assuming a custom form exists, otherwise fallback to UserCreationForm would be needed
 from apps.users.forms import UserRegisterForm
 from apps.handlers.services import trigger_notification

@@ -4,8 +4,8 @@ from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TabbedInterface, ObjectList
 from wagtail.fields import StreamField
 
-from django_grep.comp.blocks import ContactMethodBlock
-from django_grep.comp.blocks.partials.faq import FAQSectionBlock
+from django_osoul.comp.blocks import ContactMethodBlock
+from django_osoul.comp.blocks.partials.faq import FAQSectionBlock
 from .base import BaseFormPage
 
 class ContactPage(BaseFormPage):

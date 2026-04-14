@@ -24,8 +24,8 @@ from apps.pages.models.contact import ContactSubmission
 
 from ..blocks.form import MinimalContactFormBlock
 from wagtail.admin.panels import TabbedInterface, ObjectList
-from django_grep.comp.blocks import ContactMethodBlock
-from django_grep.comp.blocks.partials.faq import FAQSectionBlock
+from django_osoul.comp.blocks import ContactMethodBlock
+from django_osoul.comp.blocks.partials.faq import FAQSectionBlock
 
 
 class BasePage(Page):

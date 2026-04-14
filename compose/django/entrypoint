@@ -21,26 +21,34 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "🛠️ Running Django setup..."
 
     echo "📦 Collecting static files..."
-    uv run python com collectstatic --noinput || echo "⚠️ collectstatic failed."
+    cd /app && uv run python com collectstatic --noinput || echo "⚠️ collectstatic failed."
 
     echo "🗃️ Applying migrations..."
-    uv run python com migrate --noinput || echo "⚠️ migrate failed."
+    cd /app && uv run python com migrate --noinput || echo "⚠️ migrate failed."
 
-    if [ -f "dump-data.json" ]; then
+    if [ -f "/app/dump-data.json" ]; then
         echo "📥 Loading fixture: dump-data.json..."
-        uv run python com loaddata dump-data.json --ignorenonexistent || echo "⚠️ loaddata failed."
+        cd /app && uv run python com loaddata dump-data.json --ignorenonexistent || echo "⚠️ loaddata failed."
     fi
 
     if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
         echo "👑 Ensuring superuser exists..."
-        uv run python -m django_grep.scripts.superuser
+        cd /app && uv run python com shell -c "
+from django.contrib.auth import get_user_model
+User = get_user_model()
+if not User.objects.filter(username='${SUPERUSER_USERNAME}').exists():
+    User.objects.create_superuser('${SUPERUSER_USERNAME}', '${SUPERUSER_EMAIL:-}', '${SUPERUSER_PASSWORD}')
+    print('Superuser created.')
+else:
+    print('Superuser already exists.')
+" || echo "⚠️ superuser setup failed (non-fatal)"
     fi
 fi
 ###############################################################################
 # NODE BUILD
 ###############################################################################
 echo "📦 Checking Node.js dependencies..."
-if [ -f "package.json" ]; then
+if [ -f "/app/package.json" ]; then
     echo "ℹ️ skipping Node build (managed by host or start script)."
 else
     echo "ℹ️ No package.json found."
@@ -50,4 +58,5 @@ fi
 # START APPLICATION
 ###############################################################################
 echo "🎯 Launching command: $*"
+cd /app
 exec "$@"

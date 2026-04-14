@@ -15,7 +15,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.models import DraftStateMixin, Orderable, Page
 from wagtail.search import index
 
-from django_grep.comp.blocks import BaseStreamBlock
+from django_osoul.comp.blocks import BaseStreamBlock
 
 from ..manage import Person
 

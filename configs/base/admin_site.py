@@ -8,9 +8,9 @@ from django.utils.translation import gettext_lazy as _
 from ..settings.setup import settings
 
 # ---- Admin ----
-ADMIN_URL = settings.get("ADMIN_URL", "admin/")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "Admin Panel")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "Admin Panel")
+ADMIN_URL = settings.get("ADMIN_URL", "control/")
+ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "Alliance Admin")
+ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "Alliance")
 ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Administration")
 
 ADMINS = settings.get("ADMINS", [])
@@ -26,20 +26,22 @@ WAGTAIL_PASSWORD_RESET_ENABLED = settings.get("WAGTAIL_PASSWORD_RESET_ENABLED", 
 
 # ---- Migrations ----
 MIGRATION_MODULES = settings.get(
-    "MIGRATION_MODULES", {"sites": "django_grep.contrib.migrations"}
+    "MIGRATION_MODULES", {"sites": "django_rseal.contrib.migrations"}
 )
 
-# ---- Unfold / Admin UI ----
-ADMIN_TEMPLATE = {
-    "SITE_HEADER": _(ADMIN_SITE_HEADER),
+# ====================================
+# 🎨 Unfold Admin (UNFOLD = ADMIN_TEMPLATE)
+# Single source of truth for admin UI config.
+# ====================================
+UNFOLD = {
     "SITE_TITLE": _(ADMIN_SITE_TITLE),
-    "INDEX_TITLE": _(ADMIN_INDEX_TITLE),
+    "SITE_HEADER": _(ADMIN_SITE_HEADER),
+    "SITE_URL": settings.get("ADMIN_SITE_URL", "/"),
+    "SITE_SYMBOL": settings.get("ADMIN_SITE_SYMBOL", "speed"),
     "SHOW_LANGUAGES": settings.get("ADMIN_SHOW_LANGUAGES", True),
-    "RTL_SUPPORT": settings.get("ADMIN_RTL_SUPPORT", True),
     "SHOW_HISTORY": settings.get("ADMIN_SHOW_HISTORY", True),
     "SHOW_VIEW_ON_SITE": settings.get("ADMIN_SHOW_VIEW_ON_SITE", True),
     "SHOW_BACK_BUTTON": settings.get("ADMIN_SHOW_BACK_BUTTON", False),
-    "SITE_URL": settings.get("ADMIN_SITE_URL", "/admin"),
     "SITE_DROPDOWN": settings.get(
         "ADMIN_SITE_DROPDOWN",
         [{"icon": "diamond", "title": _("My site"), "link": "/"}],
@@ -64,7 +66,6 @@ ADMIN_TEMPLATE = {
             ],
         ),
     },
-    "SITE_SYMBOL": settings.get("ADMIN_SITE_SYMBOL", "speed"),
     "COLORS": settings.get("ADMIN_COLORS", {
         "base": {
             "50": "249, 250, 251", "100": "243, 244, 246", "200": "229, 231, 235",
@@ -96,6 +97,10 @@ ADMIN_TEMPLATE = {
     "THEME": settings.get("ADMIN_THEME", "default"),
 }
 
+# ADMIN_TEMPLATE is an alias — Unfold IS the admin template
+ADMIN_TEMPLATE = UNFOLD
+
+# ---- Admin Site Class ----
 ADMIN_SITE_CLASS = settings.get("ADMIN_SITE_CLASS", "django.contrib.admin.AdminSite")
 
 ADMIN_PERMISSIONS = {
@@ -122,7 +127,7 @@ ADMIN_LOGGING = {
     "BACKUP_COUNT": settings.get("ADMIN_LOG_BACKUP_COUNT", 5),
 }
 
-# ---- Wagtail Transfer (keys from env only) ----
+# ---- Wagtail Transfer ----
 WAGTAILTRANSFER_SECRET_KEY = settings.get("WAGTAILTRANSFER_SECRET_KEY", "")
 WAGTAILTRANSFER_SOURCES = settings.get("WAGTAILTRANSFER_SOURCES", {})
 WAGTAILTRANSFER_UPDATE_RELATED_MODELS = settings.get(

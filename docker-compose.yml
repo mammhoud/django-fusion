@@ -7,8 +7,6 @@
 # NETWORKS
 # ------------------------------------------------------------
 networks:
-  app-net:
-    driver: bridge
   traefik-net:
     external: true
 
@@ -21,8 +19,8 @@ services:
   # ============================================================
   core:
     build:
-      context: .
-      dockerfile: ./compose/django/Dockerfile
+      context: ..
+      dockerfile: ./structa.cloud/compose/django/Dockerfile
     image: alliance-website
     container_name: alliance-website
     restart: unless-stopped
@@ -31,7 +29,7 @@ services:
     env_file:
       - ./.env
     volumes:
-      - ../libs:/libs:rw
+      - ../venv/libs:/venv/libs:rw
       - alliance_static:/app/assets/staticfiles:rw
       - alliance_media:/app/assets/media:rw
     environment:
@@ -42,8 +40,13 @@ services:
       - RELOAD=${RELOAD:-false}
       - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,alliance-website,*
       - RUN_SETUP=true
+      - AUTH_CSRF_COOKIE_SECURE=False
+      - DB_HOST=postgres
+      - DB_NAME=db_structa
+      - DB_USER=${POSTGRES_USER:-postgres}
+      - DB_PASSWORD=${POSTGRES_PASSWORD:-mk_pAssWord123}
+      - DB_PORT=5432
     networks:
-      - app-net
       - traefik-net
     healthcheck:
       test: ["CMD-SHELL", "curl -sf http://127.0.0.1:5080/health/ || exit 1"]
@@ -70,7 +73,6 @@ services:
     depends_on:
       - core
     networks:
-      - app-net
       - traefik-net
     healthcheck:
       test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/static/ || exit 0"]

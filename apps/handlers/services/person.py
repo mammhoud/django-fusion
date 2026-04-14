@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
 
-from django_grep.pipelines.models import Person
+from django_rseal.pipelines.models import Person
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

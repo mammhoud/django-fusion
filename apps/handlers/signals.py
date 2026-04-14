@@ -4,7 +4,7 @@ from django.dispatch import receiver
 
 from apps import logger
 from apps.LMS.models import Instructor, Student
-from django_grep.pipelines.models.settings.templates import EmailTemplate
+from django_rseal.pipelines.models.settings.templates import EmailTemplate
 
 User = get_user_model()
 

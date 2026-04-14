@@ -1,6 +1,18 @@
+# Unfold — must be listed before django.contrib.admin
+ADMIN_APPS = [
+    "unfold",
+    "unfold.contrib.filters",
+    "unfold.contrib.forms",
+    "unfold.contrib.inlines",
+    "unfold.contrib.import_export",
+    "unfold.contrib.guardian",
+    "unfold.contrib.simple_history",
+]
+
 # DJANGO CORE
 APPS = [
     # "daphne",
+    *ADMIN_APPS,
     "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -14,24 +26,9 @@ APPS = [
     "django.contrib.postgres",
 ]
 
-
-# ADMIN
-ADMIN_APPS = [
-    "unfold",
-    "unfold.contrib.filters",
-    "unfold.contrib.forms",
-    "unfold.contrib.inlines",
-    "unfold.contrib.import_export",
-    "unfold.contrib.guardian",
-    "unfold.contrib.simple_history",
-]
-
-
 # WAGTAIL
 WAGTAIL_APPS = [
     "wagtail",
-    *ADMIN_APPS,
-    # "wagtail.api.v2",
     "wagtail.contrib.forms",
     "wagtail.contrib.redirects",
     "wagtail.contrib.routable_page",
@@ -57,6 +54,7 @@ WAGTAIL_APPS = [
     "taggit",
     "modelcluster",
 ]
+
 THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
@@ -74,18 +72,17 @@ THIRD_PARTY_APPS = [
     "django_structlog",
     "heroicons",
     "embed_video",
-    "colorfield",  # Color picker field for Wagtail
+    "colorfield",
     "django_rq",
 ]
 
-
 PLUGIN_APPS = [
-    "django_grep.pipelines",
-    "django_grep.comp",
-    "django_grep.mcp_designer",
-    "django_grep.email_tools",
+    "django_rseal.pipelines",
+    "django_osoul.comp",
+    "django_rseal.mcp_designer",
+    "django_rseal.email_tools",
+    "django_rseal",  # email automation: EmailLog, UserRole, UserGroup + management commands
 ]
-
 
 OVERRIDE_APPS = [
     "apps.pages",
@@ -93,37 +90,10 @@ OVERRIDE_APPS = [
     "apps.handlers.registration",
 ]
 
-
 LOCAL_APPS = [
     "alliance.CI",
     "alliance",
 ]
 
-# COMBINED
+# COMBINED — unfold (via APPS) must precede django.contrib.admin
 INSTALLED_APPS: list[str] = OVERRIDE_APPS + APPS + WAGTAIL_APPS + THIRD_PARTY_APPS + PLUGIN_APPS + LOCAL_APPS
-
-
-# "guardian",
-# "polymorphic",
-
-# "django_celery_beat",
-# "django_q",
-# "django_q_registry",
-# "django_tailwind_cli",
-# "django_filters",
-# "django_tables2",
-# "ninja_extra",
-# "ninja_jwt",
-
-# "corsheaders",
-# "djmoney",
-# "schema_viewer",
-# "django_cotton.apps.SimpleAppConfig",
-# "colorfield",
-# "wagtail_transfer",
-# "components",
-# "crispy_forms",
-# "crispy_tailwind",
-# "widget_tweaks",
-
-

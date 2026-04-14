@@ -80,9 +80,9 @@ THIRD_PARTY_APPS = [
 
 
 PLUGIN_APPS = [
-    "django_grep.pipelines",
-    "django_grep.comp",
-    "django_grep.mcp_designer",
+    "django_rseal.pipelines",
+    "django_osoul.comp",
+    "django_rseal.mcp_designer",
 ]
 
 

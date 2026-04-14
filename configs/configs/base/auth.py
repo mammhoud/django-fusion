@@ -58,7 +58,7 @@ ACCOUNT_ADAPTER = settings.get(
 )
 SOCIALACCOUNT_ADAPTER = settings.get(
     "AUTH_SOCIALACCOUNT_ADAPTER",
-    "django_grep.pipelines.adapters.social.SocialAccountAdapter",
+    "django_rseal.pipelines.adapters.social.SocialAccountAdapter",
 )
 
 # Custom forms

@@ -23,7 +23,6 @@ if not django_settings.configured:
     django.setup()
 
 from django.test import Client, override_settings
-
 from hypothesis import given, settings
 from hypothesis import strategies as st
 

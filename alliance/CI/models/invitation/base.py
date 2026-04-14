@@ -10,7 +10,7 @@ from django.utils.translation import gettext_lazy as _
 
 from alliance.CI.adapters import get_invitations_adapter
 from alliance.CI.adapters import InvitationEmailHandler
-from django_grep.pipelines.signals import invitations
+from django_rseal.pipelines.signals import invitations
 from alliance.conf import EmailSendingStrategy, app_settings
 
 from .managers import BaseInvitationManager

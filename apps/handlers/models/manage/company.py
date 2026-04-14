@@ -18,7 +18,7 @@ from wagtail.search import index
 from wagtail.snippets.models import register_snippet
 
 from apps.handlers.models.manage.service import Service
-from django_grep.pipelines.models import DefaultBase
+from django_rseal.pipelines.models import DefaultBase
 
 
 # -------------------------------------------------------------------

@@ -4,7 +4,7 @@ from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.models import DraftStateMixin, LockableMixin, RevisionMixin
 
-from django_grep.pipelines.models import DefaultBase
+from django_rseal.pipelines.models import DefaultBase
 
 
 class ContactSubmission(DefaultBase, DraftStateMixin, RevisionMixin, LockableMixin):

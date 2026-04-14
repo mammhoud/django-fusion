@@ -15,11 +15,10 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from twilio.rest import Client
-
-from ..integrations import (
-    Integration,  # Assuming Integration model is defined elsewhere
+from django_osoul.CI.models.integrations import (
+    Integration,  # moved to django-grep
 )
+from twilio.rest import Client
 
 
 # ---------------------------------------------------------------------

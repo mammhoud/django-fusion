@@ -6,10 +6,10 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 
 from apps.handlers.filters.revision import RevisionFilterSetMixin
 from apps.handlers.models import Service, Organization as Corporate
-from django_grep.pipelines.models.users.users import Person
-from django_grep.pipelines.models.workspace import Workspace
-from django_grep.pipelines.models.users.team import Team
-# from django_grep.pipelines.models.locations.branch import Branch
+from django_rseal.pipelines.models.users.users import Person
+from django_rseal.pipelines.models.workspace import Workspace
+from django_rseal.pipelines.models.users.team import Team
+# from django_rseal.pipelines.models.locations.branch import Branch
 
 # =============================================================================
 # FILTERSET CLASSES

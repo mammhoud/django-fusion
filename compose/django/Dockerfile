@@ -51,24 +51,35 @@ RUN pipx install uv && pipx ensurepath
 # -----------------------------------------------------
 
 # Copy manifests first for caching
-COPY package*.json ${APP_HOME}/
-COPY pyproject.toml uv.lock ${APP_HOME}/
+COPY structa.cloud/package*.json /app/
+COPY structa.cloud/pyproject.toml /app/
+COPY structa.cloud/uv.lock /app/
+COPY uv.lock /
+COPY pyproject.toml /
+
+# Copy venv/libs (canonical workspace packages)
+COPY venv/libs /venv/libs
+
+# Install Python dependencies with uv from root to recognize workspace
+WORKDIR /
+RUN /root/.local/bin/uv sync --frozen
+
+# Set working directory back to app
+WORKDIR ${APP_HOME}
 
 # -----------------------------------------------------
 # 3️⃣ Copy application source
 # -----------------------------------------------------
-COPY . ${APP_HOME}/
+COPY structa.cloud . ${APP_HOME}/
 
 # -----------------------------------------------------
 # 4️⃣ Entrypoint and Start Script
 # -----------------------------------------------------
-COPY ./compose/django/entrypoint /entrypoint
-COPY ./compose/django/start /start
-# COPY ./compose/django/rqworker-start /rqworker-start
+COPY structa.cloud/compose/django/entrypoint /entrypoint
+COPY structa.cloud/compose/django/start /start
 
 RUN sed -i 's/\r$//g' /entrypoint /start \
     && chmod +x /entrypoint /start
-    #/rqworker-start \
 
 # -----------------------------------------------------
 # 5️⃣ Create non-root user

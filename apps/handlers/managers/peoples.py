@@ -8,9 +8,9 @@ from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 
 from alliance.CI.services import *
-from django_grep.pipelines.managers import CachedManager
+from django_rseal.pipelines.managers import CachedManager
 
-# from django_grep.pipelines.models.manage.tags import PersonTag, TaggedPerson
+# from django_rseal.pipelines.models.manage.tags import PersonTag, TaggedPerson
 
 if TYPE_CHECKING:
     from ..models import Person

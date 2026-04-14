@@ -1,69 +1,174 @@
-# Alliance – Premium Wagtail CMS & LMS Foundation
+# AllianceCore – Professional Wagtail CMS Foundation
 
-**Alliance** is a production-hardened, modular ecosystem built on the rock-solid foundations of **Django 4.x** and **Wagtail 5.x**. It is designed to be the definitive "source of truth" for modern web agencies, SaaS founders, and enterprise teams who need a professional-grade base for complex projects.
+## The Heart of a Modern Digital Ecosystem
 
----
-
-## 🎨 Marketplace Overview
-- **Live Demo:** [https://core.structa.cloud](https://core.structa.cloud)
-- **Documentation:** [https://docs.structa.cloud](https://docs.structa.cloud)
-- **Tech Stack:** Django | Wagtail | Webpack 5 | Tailwind CSS | Docker
+**AllianceCore** is a production-hardened, modular CMS foundation built with **Django 5.x** and **Wagtail 6.x**, designed to power complex web applications and scale from MVP to enterprise.
 
 ---
 
-## 🎯 Target Audiences & Marketing Usage
+## 🧩 Installed Applications
 
-### 🏢 For Agencies
-- **Standardized Foundation:** Skip the boilerplate. Use Alliance to start every project with a unified, clean architecture.
-- **Speed to Market:** Ship high-quality Wagtail sites 5x faster by focusing only on custom logic.
-- **Branding Ready:** Full Tailwind CSS integration and SCSS pipeline for rapid UI development.
+### Core Django
+| App | Purpose |
+|---|---|
+| `django.contrib.auth` | User authentication and permissions |
+| `django.contrib.admin` | Django admin interface |
+| `django.contrib.sites` | Multi-site framework |
+| `django.contrib.sessions` | Session management |
+| `django.contrib.messages` | Flash messaging |
+| `django.contrib.staticfiles` | Static file serving |
+| `django.contrib.sitemaps` | XML sitemap generation |
+| `django.contrib.humanize` | Human-friendly data formatting |
+| `django.contrib.contenttypes` | Generic content type framework |
+| `django.contrib.postgres` | PostgreSQL-specific fields and operations |
 
-### 🚀 For SaaS Founders
-- **Secure by Design:** Built-in multi-factor authentication (2FA), Passkeys, and secure environment handling.
-- **Scalable Architecture:** Integrated with Redis, RQ, and Temporal for durable, high-concurrency background workflows.
-- **Modular Expansion:** Add LMS, Blog, or E-Commerce modules in minutes without rewriting core code.
+### Wagtail CMS
+| App | Purpose |
+|---|---|
+| `wagtail` | Core CMS engine |
+| `wagtail.contrib.forms` | Form builder |
+| `wagtail.contrib.redirects` | URL redirect management |
+| `wagtail.contrib.routable_page` | URL routing within pages |
+| `wagtail.contrib.search_promotions` | Search result promotions |
+| `wagtail.contrib.sitemaps` | Wagtail sitemap integration |
+| `wagtail.contrib.settings` | Site-wide settings snippets |
+| `wagtail.contrib.frontend_cache` | Frontend cache invalidation |
+| `wagtail.contrib.simple_translation` | Multi-language page translation |
+| `wagtail.contrib.table_block` | Table content blocks |
+| `wagtail.contrib.typed_table_block` | Typed table blocks |
+| `wagtail.documents` | Document management |
+| `wagtail.embeds` | Embedded media support |
+| `wagtail.images` | Image management with renditions |
+| `wagtail.search` | Full-text search |
+| `wagtail.snippets` | Reusable content snippets |
+| `wagtail.sites` | Wagtail site configuration |
+| `wagtail.admin` | Wagtail admin interface |
+| `wagtail.users` | Wagtail user management |
+| `wagtail.locales` | Locale management for i18n |
+| `wagtail_newsletter` | Newsletter integration |
+| `wagtailfontawesomesvg` | Font Awesome SVG icons in Wagtail |
+| `taggit` | Tagging support |
+| `modelcluster` | In-memory model clustering for Wagtail |
 
-### 🎓 For Edu-Tech Startups
-- **LMS Ready:** Leverage pre-integrated student profile systems and curriculum structures.
-- **AI-Ready:** Built-in **Model Context Protocol (MCP)** support for deploying AI tutors and agents directly onto your data.
+### Django Unfold Admin
+| App | Purpose |
+|---|---|
+| `unfold` | Modern admin UI replacing default Django admin |
+| `unfold.contrib.filters` | Enhanced admin filters |
+| `unfold.contrib.forms` | Styled admin forms |
+| `unfold.contrib.inlines` | Enhanced inline admin |
+| `unfold.contrib.import_export` | Import/export integration |
+| `unfold.contrib.guardian` | Object-level permission UI |
+| `unfold.contrib.simple_history` | History tracking UI |
+
+### Authentication — django-allauth
+| App | Purpose |
+|---|---|
+| `allauth` | Core allauth framework |
+| `allauth.account` | Email/password account management |
+| `allauth.mfa` | Multi-factor authentication (TOTP, WebAuthn, recovery codes) |
+| `allauth.socialaccount` | Social authentication base |
+| `allauth.socialaccount.providers.google` | Google OAuth2 |
+| `allauth.socialaccount.providers.github` | GitHub OAuth2 |
+| `allauth.socialaccount.providers.facebook` | Facebook OAuth2 |
+| `allauth.socialaccount.providers.linkedin_oauth2` | LinkedIn OAuth2 |
+
+### Third-Party Integrations
+| App | Purpose |
+|---|---|
+| `webpack_loader` | Webpack bundle integration |
+| `django_htmx` | HTMX request/response helpers |
+| `import_export` | Django import/export for admin |
+| `simple_history` | Model change history tracking |
+| `django_extensions` | Developer utilities (shell_plus, etc.) |
+| `django_structlog` | Structured JSON logging |
+| `heroicons` | Heroicons SVG icon set |
+| `embed_video` | Video embedding (YouTube, Vimeo) |
+| `colorfield` | Color picker field |
+| `django_rq` | Redis Queue background jobs |
+
+### django-grep (Internal Library)
+| App | Purpose |
+|---|---|
+| `django_grep.pipelines` | Core models, auth views, newsletter, user pipelines |
+| `django_grep.comp` | PageHandler, HTMX components, notification system |
+| `django_grep.mcp_designer` | MCP server integration for AI tooling |
+
+### Project Apps
+| App | Purpose |
+|---|---|
+| `apps.pages` | Wagtail page models (HomePage, AboutPage, etc.) |
+| `apps.handlers` | Core request handlers, startup diagnostics, signals |
+| `apps.handlers.registration` | Allauth registration adapter, AuthEmailTemplate, token generator, email service |
+| `apps.blog` | Blog engine with multi-author support |
+| `apps.LMS` | Learning Management System (courses, modules, lessons, quizzes, certificates) |
+| `alliance.CI` | CI/CD utilities and deployment helpers |
+| `alliance` | Alliance platform core |
 
 ---
 
-## 🚀 Premium Out-of-the-Box Features
+## 🔌 Key Features Added in Latest Release
 
-- **Modular "Handlers" System:** Orchestrates user identity, security, settings, and profile flows.
-- **Wagtail 5.x Integration:** Professional content management with nested blocks and reusable components.
-- **Enterprise Background Jobs:** Supported by **Temporal** for "set and forget" reliable orchestration.
-- **AI Tooling (MCP):** Direct integration with `django-grep` for AI-agent-assisted development.
-- **Cloud-Ready Storage:** Pre-configured for AWS S3 and other S3-compatible providers.
-- **Production Infrastructure:** Full Docker Compose setup including Traefik, PostgreSQL, Redis, and Nginx.
+### Authentication & Registration (`apps.handlers.registration`)
+- `RegistrationAdapter` — custom allauth `DefaultAccountAdapter` routing lifecycle events into the email service
+- `AuthEmailTemplate` — Wagtail snippet for editable transactional email templates (registration confirmation, sign-in success) with single-active invariant
+- `RegistrationTokenGenerator` — HMAC-SHA256 signed tokens with allauth key embedding and 24-hour expiry
+- `AllauthLoginView` / `AllauthSignupView` — `PageHandler` subclasses with HTMX fragment rendering and `HX-Trigger: showNotification` on every response
+- Multi-sender SMTP email service with failover and Django backend fallback
 
----
+### Server Diagnostics (`apps.handlers.startup`)
+- Startup validation in `HandlersConfig.ready()`: SECRET_KEY length, insecure placeholder detection, duplicate YAML settings, URL routing resolution, middleware ordering
 
-## 🧩 The Plugin Ecosystem (Upcoming & Releasable)
+### Health Check
+- `GET /health/` → `{"status": "ok"}` — served by `django_grep.pipelines` (shared with ctc-research)
 
-Alliance is an extensible hub. Your license allows you to integrate or build these modules:
+### Management Commands
+| Command | Description |
+|---|---|
+| `validate_config` | Audit YAML/`.env` for duplicate settings and insecure SECRET_KEY |
+| `verify_deployment` | Docker container, network, port, env var, Traefik, and health checks |
 
-- **[STABLE] Alliance Blog**: Professional categories, tags, multi-author, and SEO management.
-- **[BETA] Alliance LMS**: Lessons, course enrollments, certificates, and student progress tracking.
-- **[Q3 ROADMAP] Alliance E-Commerce**: Stripe/PayPal checkouts, recurring billing, and digital asset delivery.
-- **[ROADMAP] Alliance Community**: Threaded forums, user reputation systems, and member directories.
+### Social Authentication
+- Google, GitHub, Facebook, LinkedIn OAuth2 providers configured
+- `SocialAccountAdapter` from django-grep for custom signup flow
 
----
-
-## 🛠️ Next Updates & Maintenance Policy
-1. **Security Patches**: Continuous updates for Django/Wagtail compatibility.
-2. **v1.2 Feature Update**: Unified Dashboard for all-module management.
-3. **API Expansion**: Full Django Ninja REST API shell for mobile app parity.
-
----
-
-## 📦 What's Included in the Archive?
-- Full Django/Wagtail Source Code (the `core/` directory)
-- Production-ready `docker-compose.yml`
-- Comprehensive Documentation (Install, Architecture, Frontend)
-- Starter Data Fixtures (`dump-data.json`)
+### MFA
+- TOTP, WebAuthn, and recovery codes via `allauth.mfa`
 
 ---
 
-**Alliance is the heart of your next big project. Don't waste time on the basics — build the features that matter.**
+## 🏗️ Architecture
+
+```
+structa.cloud/
+├── core/                        # Django project root (PORT=5080)
+│   ├── apps/
+│   │   ├── handlers/            # Core app: auth, registration, startup, health
+│   │   │   └── registration/    # Allauth adapter, tokens, emails, views
+│   │   ├── pages/               # Wagtail page models
+│   │   ├── blog/                # Blog engine
+│   │   └── LMS/                 # Learning Management System
+│   ├── configs/                 # Dynaconf + Pydantic settings
+│   └── compose/                 # Docker + Traefik configs
+└── libs/
+    └── django-grep/             # Shared internal library
+        └── src/django_grep/
+            ├── pipelines/       # Models, auth views, /health/, newsletter
+            └── comp/            # PageHandler, HTMX, notifications
+```
+
+---
+
+## 🚀 Quick Start
+
+```bash
+# Local development (SQLite)
+cd core && ./run_containers.sh
+
+# Production (Postgres + Redis + Traefik)
+cd core && ./run_containers.sh --prod
+```
+
+---
+
+[View Live Demo](https://core.structa.cloud) | [Purchase License](https://structa.cloud)

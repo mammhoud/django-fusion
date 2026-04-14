@@ -15,7 +15,7 @@ from apps.handlers.models import (
     PersonTag,
     PersonTagCategory,
 )
-from django_grep.comp.site import NotificationMixin, PageHandler
+from django_osoul.comp.site import NotificationMixin, PageHandler
 
 
 class EnhancedTagsView(PageHandler, NotificationMixin):

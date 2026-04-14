@@ -6,7 +6,7 @@ from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
 
-from django_grep.pipelines.managers import BaseManager, CachedManager, cached_method
+from django_rseal.pipelines.managers import BaseManager, CachedManager, cached_method
 
 logger = logging.getLogger(__name__)
 

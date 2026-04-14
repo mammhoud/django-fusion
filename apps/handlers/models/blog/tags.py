@@ -15,7 +15,7 @@ from wagtail.admin.panels import (
 from wagtail.models import Orderable
 from wagtail.search import index
 
-from django_grep.pipelines.models import BaseTag, BaseTagCategory
+from django_rseal.pipelines.models import BaseTag, BaseTagCategory
 
 
 # ---------------------------------------------------------------------

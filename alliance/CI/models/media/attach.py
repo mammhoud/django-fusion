@@ -3,7 +3,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from django_grep.pipelines.models import ContentBase
+from django_rseal.pipelines.models import ContentBase
 
 from .file import File
 

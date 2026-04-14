@@ -2,7 +2,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter
 from wagtail.admin.filters import WagtailFilterSet
 
-from django_grep.pipelines.models import EmailTemplate
+from django_rseal.pipelines.models import EmailTemplate
 
 from ..base import BaseSnippetViewSet  # ✅ unified base class for all snippets
 

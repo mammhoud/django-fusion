@@ -11,10 +11,11 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
+from django_osoul.comp.site import NotificationMixin, PageHandler
+from django_rseal.pipelines.models import Person
+from django_rseal.pipelines.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 
 from apps.handlers.services import PersonService
-from django_grep.comp.site import NotificationMixin, PageHandler
-from django_grep.pipelines.models import Person
 
 from ..forms import (
     AccountSettingsForm,
@@ -24,7 +25,6 @@ from ..forms import (
     PrivacySettingsForm,
     SecuritySettingsForm,
 )
-from .mixins import ProfileContextMixin, ProfileOperationsMixin
 
 
 class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin):

@@ -21,6 +21,6 @@ MIDDLEWARE = [
     # "allauth.usersessions.middleware.UserSessionsMiddleware",
     # "src.utils.middlewares.htmx.HtmxMiddleware",
     # "django_htmx.middleware.HtmxMiddleware",
-    "django_grep.pipelines.middlewares.site.SiteMiddleware",
+    "django_rseal.pipelines.middlewares.site.SiteMiddleware",
     # "core.middlewares.language.DefaultLanguageMiddleware",
 ]

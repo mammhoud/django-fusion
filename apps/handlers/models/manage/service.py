@@ -10,8 +10,8 @@ from wagtail.admin.panels import (
 )
 from wagtail.fields import StreamField
 
-from django_grep.comp.blocks import ServicesSectionBlock
-from django_grep.pipelines.models.default import DefaultBase
+from django_osoul.comp.blocks import ServicesSectionBlock
+from django_rseal.pipelines.models.default import DefaultBase
 
 
 # ---------------------------------------------------------------------

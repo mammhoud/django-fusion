@@ -4,7 +4,7 @@ from embed_video.fields import EmbedVideoField
 from wagtail.admin.panels import FieldPanel
 from wagtail.images import get_image_model_string
 
-from django_grep.pipelines.models import ContentBase
+from django_rseal.pipelines.models import ContentBase
 
 
 class Video(ContentBase):

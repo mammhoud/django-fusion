@@ -1,16 +1,16 @@
-from django_grep.comp.conf import (
+from django_osoul.comp.conf import (
     COMPONENTS_BUILTINS,
     COMPONENTS_FINDER,
     COMPONENTS_SETTINGS_NAME,
 )
-from django_grep.comp.conf import (
+from django_osoul.comp.conf import (
     DjangoComponentsSettings as _DjangoComponentsSettings,
 )
-from django_grep.conf import *
-from django_grep.pipelines.conf import (
+from django_osoul.conf import *
+from django_rseal.pipelines.conf import (
     AppSettings as _AppSettings,
 )
-from django_grep.pipelines.conf import (
+from django_rseal.pipelines.conf import (
     EmailPriority,
     EmailSendingStrategy,
     EmailStatus,

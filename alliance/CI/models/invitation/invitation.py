@@ -2,6 +2,7 @@ from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django_rseal.pipelines.models import DefaultBase, TemplateRenderMixin
 from wagtail.admin.panels import (
     FieldPanel,
     FieldRowPanel,
@@ -11,7 +12,6 @@ from wagtail.admin.panels import (
 )
 
 from alliance.conf import app_settings
-from django_grep.pipelines.models import DefaultBase, TemplateRenderMixin
 
 from .managers import BaseInvitationManager
 

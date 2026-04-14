@@ -26,8 +26,10 @@ from hypothesis import strategies as st
 # ---------------------------------------------------------------------------
 # Paths (relative to workspace root, resolved from this file's location)
 # ---------------------------------------------------------------------------
-_REPO_ROOT = Path(__file__).resolve().parents[3]  # workspace root
-_CORE = _REPO_ROOT / "structa.cloud" / "core"
+_REPO_ROOT = Path(__file__).resolve().parents[2]  # workspace root (/root/site)
+# structa.cloud/core/ was removed in infrastructure-reorganization-cleanup.
+# The compose scripts now live directly under structa.cloud/compose/django/.
+_CORE = _REPO_ROOT / "structa.cloud"
 _START_SCRIPT = _CORE / "compose" / "django" / "start"
 _ENTRYPOINT = _CORE / "compose" / "django" / "entrypoint"
 _CANONICAL_COMPOSE = _CORE / "docker-compose.yml"

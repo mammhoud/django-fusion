@@ -12,8 +12,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic.base import ContextMixin
 
 from apps.handlers.services import PersonService
-from django_grep.pipelines.models import Person
-from django_grep.pipelines.site import NotificationMixin
+from django_rseal.pipelines.models import Person
+from django_rseal.pipelines.site import NotificationMixin
 
 
 class ProfileContextMixin(ContextMixin):

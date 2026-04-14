@@ -26,7 +26,7 @@ WAGTAIL_PASSWORD_RESET_ENABLED = settings.get("WAGTAIL_PASSWORD_RESET_ENABLED", 
 
 # ---- Migrations ----
 MIGRATION_MODULES = settings.get(
-    "MIGRATION_MODULES", {"sites": "django_grep.contrib.migrations"}
+    "MIGRATION_MODULES", {"sites": "django_rseal.contrib.migrations"}
 )
 
 # ---- Unfold / Admin UI ----

@@ -17,7 +17,7 @@ from django.views.decorators.http import require_GET, require_POST
 from apps.handlers.services import CertificateService, MessageService
 from apps.LMS.services import CourseService, NoteService
 from alliance import logger
-from django_grep.comp.site import NotificationMixin, PageHandler
+from django_osoul.comp.site import NotificationMixin, PageHandler
 
 User = get_user_model()
 

@@ -14,9 +14,26 @@ are present on each response. SecurityMiddleware injects these headers when
 X_FRAME_OPTIONS and SECURE_CONTENT_TYPE_NOSNIFF are set in settings.
 """
 import os
+import socket
 
 import django
+import pytest
 from django.conf import settings as django_settings
+
+
+# Skip DB-dependent tests when running outside Docker (no postgres host available)
+def _postgres_available() -> bool:
+    try:
+        socket.getaddrinfo("postgres", 5432)
+        return True
+    except (socket.gaierror, OSError):
+        return False
+
+_POSTGRES_AVAILABLE = _postgres_available()
+skip_no_postgres = pytest.mark.skipif(
+    not _POSTGRES_AVAILABLE,
+    reason="postgres host not reachable — run inside Docker to execute this test"
+)
 
 if not django_settings.configured:
     os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
@@ -24,7 +41,6 @@ if not django_settings.configured:
     django.setup()
 
 from django.test import RequestFactory, override_settings
-
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -40,11 +56,19 @@ _SAFE_PATHS = [
 safe_path_strategy = st.sampled_from(_SAFE_PATHS)
 
 
+@skip_no_postgres
+@pytest.mark.django_db
 @given(path=safe_path_strategy)
 @settings(max_examples=100)
 @override_settings(
     X_FRAME_OPTIONS="DENY",
     SECURE_CONTENT_TYPE_NOSNIFF=True,
+    DATABASES={
+        "default": {
+            "ENGINE": "django.db.backends.sqlite3",
+            "NAME": ":memory:",
+        }
+    },
     MIDDLEWARE=[
         "django.middleware.security.SecurityMiddleware",
         "django.contrib.sessions.middleware.SessionMiddleware",

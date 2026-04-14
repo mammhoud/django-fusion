@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter
 from wagtail.admin.filters import WagtailFilterSet
 
-from django_grep.pipelines.models import Newsletter
+from django_rseal.pipelines.models import Newsletter
 
 from ..base import BaseSnippetViewSet
 

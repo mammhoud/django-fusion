@@ -6,8 +6,8 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-from django_grep.contrib.debug_tools.common_urls import configure_common_urls
-from django_grep.contrib.debug_tools.error_views import (
+from django_rseal.contrib.debug_tools.common_urls import configure_common_urls
+from django_rseal.contrib.debug_tools.error_views import (
     handler400, handler403, handler404, handler500,
 )
 
@@ -21,12 +21,12 @@ urlpatterns = [
 urlpatterns = configure_common_urls(urlpatterns)
 
 urlpatterns += i18n_patterns(
-    # apps.urls includes django_grep.pipelines.urls (health + auth routes)
+    # apps.urls includes django_rseal.pipelines.urls (health + auth routes)
     path("", include("apps.urls")),
     path("", include(wagtail_urls)),
     prefix_default_language=False,
 )
 
 if settings.DEBUG:
-    from django_grep.contrib.debug_tools.dev_urls import configure_dev_urls
+    from django_rseal.contrib.debug_tools.dev_urls import configure_dev_urls
     urlpatterns = configure_dev_urls(urlpatterns, settings)

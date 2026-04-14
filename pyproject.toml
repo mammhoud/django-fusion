@@ -9,6 +9,7 @@ license = {text = "MIT"}
 authors = [
     {name = "Alliance Team", email = "mahmoud.ezat@outlook.com"}
 ]
+packages = []
 dependencies = [
     "bumpver",
     "django-rq",
@@ -24,6 +25,9 @@ dependencies = [
     "django-embed-video",
     "django-environ",
     "django-extensions>=4.1",
+    "django-osoul",
+    "django-grep",
+    "nawaai",
     "django-heroicons",
     "django-htmx",
     "django-import-export",
@@ -32,6 +36,7 @@ dependencies = [
     "django-ninja-jwt",
     "django-prometheus>=2.4.0",
     "django-redis>=6.0.0",
+    "django-rseal",
     "django-silk>=5.4.3",
     "django-simple-history",
     "django-structlog",
@@ -73,20 +78,19 @@ dependencies = [
     "stripe>=14.3.0",
     "django-paypal>=2.1",
     "hypothesis>=6.151.6",
-    "django-grep",
-    "django-seed",
     "django-storages[boto3]>=1.14.6",
     "pytest>=9.0.2",
     "pytest-django>=4.12.0",
-    "django-seed",
 ]
 
 [project.scripts]
-orchestrator = "django_seed.orchestrator.cli:main"
+orchestrator = "django_rseal.workflows.orchestrator.cli:main"
 
 [tool.uv.sources]
-django-grep = { path = "../libs/django-grep", editable = true }
-django-seed = { path = "../libs/django-seed", editable = true }
+django-osoul = { workspace = true }
+django-grep  = { workspace = true }
+django-rseal = { workspace = true }
+nawaai       = { workspace = true }
 
 [tool.bumpver]
 current_version = "1.0.3"
@@ -128,6 +132,7 @@ testpaths = ["alliance/CI/tests"]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
+pythonpath = ["."]
 DJANGO_SETTINGS_MODULE = "configs.settings"
 markers = [
     "slow: marks tests as slow (deselect with '-m \"not slow\"')",

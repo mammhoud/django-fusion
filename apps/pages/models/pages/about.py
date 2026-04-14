@@ -1,4 +1,4 @@
-from django_grep.comp.blocks.media.gallery import MediaGalleryBlock
+from django_osoul.comp.blocks.media.gallery import MediaGalleryBlock
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from django.utils.translation import gettext_lazy as _
 from wagtail import blocks

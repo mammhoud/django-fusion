@@ -19,6 +19,7 @@ security_settings = getattr(settings, "SECURITY", {})
 # -------------------------------
 import ast
 
+
 def _parse_hosts(raw):
     """Parse ALLOWED_HOSTS from various formats dynaconf may produce."""
     if raw is None:
@@ -61,13 +62,18 @@ if isinstance(_csrf_raw, str):
     CSRF_TRUSTED_ORIGINS = [o.strip() for o in _csrf_raw.split(",") if o.strip()]
 else:
     CSRF_TRUSTED_ORIGINS = list(_csrf_raw)
-CSRF_COOKIE_SECURE = settings.is_production
+CSRF_COOKIE_SECURE = getattr(security_settings, "CSRF_COOKIE_SECURE", settings.is_production)
+# Allow override via environment variable for testing
+import os
+
+if os.environ.get("AUTH_CSRF_COOKIE_SECURE") == "False":
+    CSRF_COOKIE_SECURE = False
 CSRF_COOKIE_HTTPONLY = False  # Allow JavaScript access
 CSRF_COOKIE_NAME = "csrftoken"
 CSRF_HEADER_NAME = "X-CSRFToken"
 
 # Session Configuration
-SESSION_COOKIE_SECURE = settings.is_production
+SESSION_COOKIE_SECURE = getattr(security_settings, "SESSION_COOKIE_SECURE", settings.is_production)
 SESSION_COOKIE_HTTPONLY = True
 SESSION_COOKIE_AGE = 1209600  # 2 weeks
 SESSION_COOKIE_NAME = "sessionid"

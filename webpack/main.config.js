@@ -66,10 +66,18 @@ module.exports = async (env, argv) => {
   const isProduction = mode === 'production';
   const isWatch = argv.watch || false;
   const isServe = argv.hot || false;
-  
+
+  // Determine public path based on environment
+  // In Docker/production, assets are served through nginx at /static/
+  // In development with webpack-dev-server, use localhost:3000
+  const publicPath = isServe
+    ? 'http://localhost:3000/static/'
+    : process.env.WEBPACK_PUBLIC_PATH || staticUrl;
+
   console.log(`🚀 Webpack mode: ${mode}`);
   console.log(`👀 Watch mode: ${isWatch ? 'enabled' : 'disabled'}`);
   console.log(`🔥 Serve mode: ${isServe ? 'enabled (HMR)' : 'disabled'}`);
+  console.log(`📦 Public path: ${publicPath}`);
 
   let copiedPackages = [];
   let watcher = null;
@@ -81,7 +89,7 @@ module.exports = async (env, argv) => {
 
     output: {
       path: outputPath,
-      publicPath: `${staticUrl}`,
+      publicPath: publicPath,
       filename: isProduction ? '[name].[contenthash:8].js' : '[name].js',
       chunkFilename: isProduction ? 'chunk/[name].[contenthash:8].chunk.js' : 'chunk/[name].chunk.js',
       clean: !isWatch, // Don't clean during watch mode
@@ -140,7 +148,7 @@ module.exports = async (env, argv) => {
                   persistent: true,
                   ignoreInitial: true,
                 });
-                
+
                 watcher.on('change', async () => {
                   console.log('📄 package-copy.json changed, updating libraries...');
                   await cleanupLibs(copiedPackages);

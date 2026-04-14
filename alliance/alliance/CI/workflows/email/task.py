@@ -88,7 +88,7 @@ class InvitationEmailHandler:
             if app_settings.EMAIL_AS_BACKGROUND_TASK:
                 # Import here to avoid circular imports
                 from apps.handlers.services.email.tasks import send_email_raw
-                from django_grep.pipelines.services.jobs import dispatch_job
+                from django_rseal.pipelines.services.jobs import dispatch_job
 
                 dispatch_job(
                     send_email_raw,

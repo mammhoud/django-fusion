@@ -11,14 +11,11 @@ from django.views.generic.base import TemplateView
 
 from .apps import HandlersConfig
 from .site import *
-from .site.health import health_check
 
 app_name = HandlersConfig.label
 
 
 urlpatterns = [
-    path("health/", health_check, name="health-check"),
-
     path("profile/dashboard/", DashboardView.as_view(), name="dashboard"),
     path("profile/profile/", ProfileView.as_view(), name="profile"),
     path("profile/edit/", ProfileEditView.as_view(), name="profile-edit"),
