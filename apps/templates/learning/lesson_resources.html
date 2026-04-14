@@ -1,4 +1,4 @@
-<h4 class="mb-3">Lesson Resources</h4>
+<h4 class="mb-3">{% trans "Lesson Resources" %}</h4>
 
 {% if lesson.resources.exists %}
 {% for resource in lesson.resources.all %}
@@ -24,7 +24,7 @@
 {% else %}
 <div class="text-center py-4">
     <i class="bi bi-folder-x display-4 text-muted mb-3"></i>
-    <p class="text-muted">No resources available for this lesson.</p>
+    <p class="text-muted">{% trans "No resources available for this lesson." %}</p>
 </div>
 {% endif %}
 

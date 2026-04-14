@@ -15,7 +15,7 @@
                     <!-- Breadcrumb -->
                     <nav aria-label="breadcrumb" class="mb-3">
                         <ol class="breadcrumb">
-                            <li class="breadcrumb-item"><a href="{% url 'courses' %}">Courses</a></li>
+                            <li class="breadcrumb-item"><a href="{% url 'courses' %}">{% trans "Courses" %}</a></li>
                             <li class="breadcrumb-item"><a href="{% url 'course_detail' lesson.course.slug %}">{{
                                     lesson.course.title }}</a></li>
                             <li class="breadcrumb-item active">{{ lesson.title }}</li>
@@ -84,13 +84,13 @@
                     <div class="tab-content" id="lessonTabsContent">
                         <!-- Overview Tab -->
                         <div class="tab-pane fade show active" id="overview" role="tabpanel">
-                            <h4 class="mb-3">About this Lesson</h4>
+                            <h4 class="mb-3">{% trans "About this Lesson" %}</h4>
                             <div class="lesson-description">
                                 {{ lesson.description|linebreaks }}
                             </div>
 
                             {% if lesson.objectives %}
-                            <h5 class="mt-4">Learning Objectives</h5>
+                            <h5 class="mt-4">{% trans "Learning Objectives" %}</h5>
                             <ul class="list-unstyled">
                                 {% for objective in lesson.objectives_list %}
                                 <li class="d-flex align-items-start mb-2">

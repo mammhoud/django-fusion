@@ -29,7 +29,7 @@
                 <div class="product__item-2 p-relative mb-30">
                     {% if product.value.featured %}
                     <div class="product__badge p-absolute">
-                        <span>Featured</span>
+                        <span>{% trans "Featured" %}</span>
                     </div>
                     {% endif %}
                     <div class="product__thumb-2 w-img">
@@ -64,8 +64,8 @@
             {% empty %}
             <div class="col-xl-12">
                 <div class="text-center py-5">
-                    <h3>No products available at the moment.</h3>
-                    <p>Please check back later for our latest products.</p>
+                    <h3>{% trans "No products available at the moment." %}</h3>
+                    <p>{% trans "Please check back later for our latest products." %}</p>
                 </div>
             </div>
             {% endfor %}

@@ -1,5 +1,5 @@
 <div class="p-4 sidebar-lessons">
-    <h5 class="mb-3">Course Content</h5>
+    <h5 class="mb-3">{% trans "Course Content" %}</h5>
     
     {% for module in course_modules %}
     <div class="card mb-3">
@@ -25,7 +25,7 @@
                     <div>
                         <small class="text-muted">{{ lesson_item.duration }} min</small>
                         {% if lesson_item.is_preview and not user.is_authenticated %}
-                        <span class="badge bg-warning ms-2">Preview</span>
+                        <span class="badge bg-warning ms-2">{% trans "Preview" %}</span>
                         {% endif %}
                     </div>
                 </div>
@@ -38,7 +38,7 @@
     <!-- Course Tools -->
     <div class="card">
         <div class="card-header">
-            <h6 class="mb-0">Course Tools</h6>
+            <h6 class="mb-0">{% trans "Course Tools" %}</h6>
         </div>
         <div class="card-body">
             <div class="d-grid gap-2">

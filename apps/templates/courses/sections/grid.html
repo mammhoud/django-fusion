@@ -53,9 +53,7 @@
                                     {{ specialization.name }}
                                 </a>{% if not forloop.last %}, {% endif %}
                             {% empty %}
-                                <span class="course-card__specialization course-card__specialization--general">
-                                    General
-                                </span>
+                                <span class="course-card__specialization course-card__specialization--general">{% trans "General" %}</span>
                             {% endfor %}
                         </div>
 
@@ -119,7 +117,7 @@
                             <!-- Price -->
                             <div class="course-card__pricing">
                                 {% if course.price == 0 %}
-                                    <span class="course-card__price course-card__price--free">Free</span>
+                                    <span class="course-card__price course-card__price--free">{% trans "Free" %}</span>
                                 {% else %}
                                     {% if course.discount_percentage %}
                                         <span class="course-card__price course-card__price--discounted">
@@ -149,10 +147,8 @@
                     <div class="course-grid__empty-icon mb-3">
                         <i class="bi bi-book text-muted" style="font-size: 3rem;"></i>
                     </div>
-                    <h3 class="course-grid__empty-title mb-2">No published courses available</h3>
-                    <p class="course-grid__empty-text text-muted mb-4">
-                        We're working on new content. Please check back later for exciting courses!
-                    </p>
+                    <h3 class="course-grid__empty-title mb-2">{% trans "No published courses available" %}</h3>
+                    <p class="course-grid__empty-text text-muted mb-4">{% trans "We're working on new content. Please check back later for exciting courses!" %}</p>
                     
                 </div>
             </div>
