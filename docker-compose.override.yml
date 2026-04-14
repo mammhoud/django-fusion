@@ -1,21 +1,47 @@
 # ============================================================
-# Alliance — Production Override
-# Removes direct port, adds Traefik labels, tightens env.
-# Usage: docker compose -f docker-compose.yml -f docker-compose.override.yml up -d
+# Structa - Docker Compose Override
+# This file extends docker-compose.yml for local development
+# Usage: docker compose up (automatically merges with base)
 # ============================================================
 
 services:
-  core:
-    ports: []
+  # ============================================================
+  # DJANGO MAIN APP - Development Overrides
+  # ============================================================
+  website:
     environment:
-      - SERVER_ENV=production
-      - DEBUG=false
-      - RELOAD=false
-      - WORKERS=4
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/5
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-structa.cloud,core.structa.cloud}
-    depends_on: []
-    labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik-net"
-      - "traefik.http.services.alliance-service.loadbalancer.server.port=5080"
+      - DEBUG=${DEBUG:-true}
+      - SERVER_ENV=${SERVER_ENV:-development}
+      - RELOAD=${RELOAD:-true}
+      - WORKERS=${WORKERS:-2}
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+    volumes:
+      - ./:/app:rw  # Mount source for hot reload
+      - ../venv/libs:/venv/libs:rw
+      - website_static:/app/assets/staticfiles:rw
+      - website_media:/app/assets/media:rw
+
+  # ============================================================
+  # WEBSITE-MEDIA - Development Overrides
+  # ============================================================
+  website-media:
+    ports:
+      - "${PORT:-8270}:80"  # Expose nginx on port 8270 for local development
+    depends_on:
+      - website
+
+  # ============================================================
+  # RQ WORKER - Development Overrides
+  # ============================================================
+  website-worker:
+    volumes:
+      - ./:/app:rw  # Mount source for hot reload
+      - ../venv/libs:/venv/libs:rw
+      - website_static:/app/assets/staticfiles:rw
+      - website_media:/app/assets/media:rw
+    environment:
+      - LOG_LEVEL=${LOG_LEVEL:-debug}
+
+volumes:
+  website_static:
+  website_media:

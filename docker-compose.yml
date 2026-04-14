@@ -1,86 +1,126 @@
 # ============================================================
-# Alliance Standard Infrastructure (Non-Traefik)
-# Simplified setup for local development.
+# Structa Project - Docker Compose
+# Run infra first: docker compose up -d postgres redis (from workspace root)
+# Then: docker compose -f structa.cloud/docker-compose.yml up -d
 # ============================================================
 
-# ------------------------------------------------------------
-# NETWORKS
-# ------------------------------------------------------------
+x-django-base: &django-base
+  build:
+    context: ..
+    dockerfile: ./structa.cloud/compose/django/Dockerfile
+  restart: unless-stopped
+  env_file:
+    - .env
+  environment:
+    - RUNNING_ENV=docker
+  networks:
+    - traefik-net
+  healthcheck:
+    test: ["CMD-SHELL", "curl -sf http://127.0.0.1:${PORT:-5070}/health/ && curl -sf http://127.0.0.1:${PORT:-5070}/health/assets/ && curl -sf http://127.0.0.1:${PORT:-5070}/health/media/ || exit 1"]
+    interval: 30s
+    timeout: 20s
+    retries: 3
+    start_period: 60s
+
 networks:
   traefik-net:
     external: true
 
+volumes:
+  website_static:
+    external: true
+    name: website_static
+  website_media:
+    external: true
+    name: website_media
+
 services:
   # ============================================================
-  # POSTGRESQL DATABASE
+  # DJANGO MAIN APP
   # ============================================================
-  # ============================================================
-  # CORE - Django/Uvicorn Application
-  # ============================================================
-  core:
-    build:
-      context: ..
-      dockerfile: ./structa.cloud/compose/django/Dockerfile
-    image: alliance-website
-    container_name: alliance-website
-    restart: unless-stopped
-    ports:
-      - "${PORT:-8280}:5080"
-    env_file:
-      - ./.env
+  website:
+    <<: *django-base
+    image: website
+    container_name: website
+    external_links:
+      - postgres
+      - redis
     volumes:
-      - ../venv/libs:/venv/libs:rw
-      - alliance_static:/app/assets/staticfiles:rw
-      - alliance_media:/app/assets/media:rw
+      - ../venv/libs:/venv/libs:z
+      - website_static:/app/assets/staticfiles:z
+      - website_media:/app/assets/media:z
     environment:
-      - PORT=5080
       - RUNNING_ENV=docker
+      - RELOAD=${RELOAD:-false}
       - SERVER_ENV=production
       - DEBUG=False
-      - RELOAD=${RELOAD:-false}
-      - ALLOWED_HOSTS=localhost,127.0.0.1,0.0.0.0,alliance-website,*
-      - RUN_SETUP=true
-      - AUTH_CSRF_COOKIE_SECURE=False
+      - PORT=5070
       - DB_HOST=postgres
-      - DB_NAME=db_structa
-      - DB_USER=${POSTGRES_USER:-postgres}
-      - DB_PASSWORD=${POSTGRES_PASSWORD:-mk_pAssWord123}
-      - DB_PORT=5432
-    networks:
-      - traefik-net
-    healthcheck:
-      test: ["CMD-SHELL", "curl -sf http://127.0.0.1:5080/health/ || exit 1"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
-      start_period: 40s
+      - DB_NAME=db_ctc
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - RUN_SETUP=true
+      - LOAD_FIXTURES=${LOAD_FIXTURES:-false}
+      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
+      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-admin@structa.cloud}
+      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
+      - DJANGO_SECURE_SSL_REDIRECT=false
+      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
 
   # ============================================================
-  # MEDIA - Nginx for static/media file serving
+  # WEBSITE-MEDIA - Static & Media Files
   # ============================================================
-  alliance-media:
+  website-media:
     build:
-      context: .
+      context: ..
       dockerfile: ./compose/nginx/Dockerfile
-    image: alliance-media
-    container_name: alliance-media
-    restart: unless-stopped
+    image: website-media
+    container_name: website-media
     ports:
-      - "${MEDIA_PORT:-8281}:80"
+      - "8271:80"
     volumes:
-      - alliance_static:/var/www/static:ro
-      - alliance_media:/var/www/media:ro
-    depends_on:
-      - core
+      - website_static:/var/www/static:ro
+      - website_media:/var/www/media:ro
     networks:
       - traefik-net
+    restart: unless-stopped
+    depends_on:
+      - website
     healthcheck:
-      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/static/ || exit 0"]
+      test: ["CMD", "nginx", "-t"]
       interval: 30s
       timeout: 10s
       retries: 3
-      start_period: 10s
 
-volumes:
-  alliance_static:
-  alliance_media:
+  # ============================================================
+  # RQ WORKER
+  # ============================================================
+  website-worker:
+    <<: *django-base
+    image: website-worker
+    container_name: website-worker
+    depends_on:
+      - website
+    external_links:
+      - postgres
+      - redis
+    volumes:
+      - ../venv/libs:/venv/libs:z
+      - website_static:/app/assets/staticfiles:z
+      - website_media:/app/assets/media:z
+    environment:
+      - RUNNING_ENV=docker
+      - SERVER_ENV=production
+      - PORT=5075
+      - DB_HOST=postgres
+      - DB_NAME=db_ctc
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
+      - DJANGO_SETTINGS_MODULE=configs.settings
+    command: /rqworker-start
+    healthcheck:
+      test: ["CMD-SHELL", "python com rqworker --help > /dev/null 2>&1 || exit 1"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 30s

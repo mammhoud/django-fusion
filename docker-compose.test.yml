@@ -1,0 +1,105 @@
+# ============================================================
+# Structa - Docker Compose Test Configuration
+# Adds Selenium Chrome service for E2E / Selenium tests.
+#
+# Usage:
+#   docker compose -f docker-compose.yml \
+#                  -f docker-compose.override.yml \
+#                  -f docker-compose.test.yml \
+#                  up -d
+#
+# Then run tests:
+#   docker compose -f docker-compose.yml \
+#                  -f docker-compose.override.yml \
+#                  -f docker-compose.test.yml \
+#                  run --rm test-runner
+# ============================================================
+
+services:
+  # ============================================================
+  # SELENIUM CHROME - Headless browser for E2E tests
+  # ============================================================
+  selenium-chrome:
+    image: selenium/standalone-chrome:latest
+    container_name: selenium-chrome
+    shm_size: "2gb"
+    ports:
+      - "4444:4444"   # WebDriver endpoint
+      - "7900:7900"   # noVNC viewer (optional, for debugging)
+    environment:
+      - SE_NODE_MAX_SESSIONS=4
+      - SE_NODE_SESSION_TIMEOUT=300
+      - SE_VNC_NO_PASSWORD=1
+    networks:
+      - traefik-net
+    healthcheck:
+      test: ["CMD-SHELL", "curl -sf http://localhost:4444/wd/hub/status | python3 -c \"import sys,json; d=json.load(sys.stdin); sys.exit(0 if d['value']['ready'] else 1)\""]
+      interval: 15s
+      timeout: 10s
+      retries: 5
+      start_period: 30s
+    restart: unless-stopped
+
+  # ============================================================
+  # TEST RUNNER - Runs the full pytest suite inside the container
+  # ============================================================
+  test-runner:
+    build:
+      context: ..
+      dockerfile: ./structa.cloud/compose/django/Dockerfile
+    container_name: test-runner
+    env_file:
+      - .env
+    environment:
+      - RUNNING_ENV=docker
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - DB_HOST=postgres
+      - DB_NAME=db_ctc
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
+      - DEBUG=False
+      - SERVER_ENV=test
+      # Selenium configuration
+      - SELENIUM_BASE_URL=http://website:5070
+      - SELENIUM_REMOTE_URL=http://selenium-chrome:4444/wd/hub
+      - SELENIUM_HEADLESS=true
+    networks:
+      - traefik-net
+    depends_on:
+      website:
+        condition: service_healthy
+      selenium-chrome:
+        condition: service_healthy
+    external_links:
+      - postgres
+      - redis
+    volumes:
+      - ../venv/libs:/venv/libs:z
+      - ./:/app:ro
+      - ./test-results:/app/test-results:rw
+    working_dir: /app
+    command: >
+      sh -c "
+        python -m pytest tests/ apps/blog/tests/ -v
+          --tb=short
+          --no-header
+          -m 'not selenium'
+          --junit-xml=test-results/junit.xml
+          --html=test-results/report.html
+          --self-contained-html
+        &&
+        python -m pytest tests/selenium/ -v
+          --tb=short
+          --no-header
+          -m selenium
+          --junit-xml=test-results/selenium-junit.xml
+      "
+    profiles:
+      - test
+
+networks:
+  traefik-net:
+    external: true
+
+volumes:
+  website_static:
+  website_media:
