@@ -27,7 +27,7 @@ if not django_settings.configured:
         INSTALLED_APPS=[
             "django.contrib.contenttypes",
             "django.contrib.auth",
-            "apps.handlers",
+            "apps.accounts",
         ],
         DATABASES={
             "default": {
@@ -44,7 +44,7 @@ from django.core.management.base import CommandError
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-# Commands under test (all live in apps.handlers.management.commands)
+# Commands under test (all live in apps.accounts.management.commands)
 _COMMANDS = [
     "populate_content",
     "update_site_settings",
@@ -78,7 +78,7 @@ def test_command_raises_on_handle_error(command: str, message: str, exc_class: t
     must propagate as a CommandError (or subclass) so Django's runner
     can set a non-zero exit code.
     """
-    module_path = f"apps.handlers.management.commands.{command}.Command.handle"
+    module_path = f"apps.accounts.management.commands.{command}.Command.handle"
 
     stderr_buf = StringIO()
 

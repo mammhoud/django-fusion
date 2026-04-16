@@ -8,8 +8,11 @@ urlpatterns = [
     path("accounts/", include("allauth.urls")),
 
     # Registration views (allauth-backed login/signup)
-    path("", include("apps.handlers.registration.urls")),
+    path("", include("apps.accounts.registration.urls")),
 
     # Core handler URLs
-    path("", include("apps.handlers.urls")),
+    path("", include("apps.accounts.urls")),
+
+    # Blog URLs
+    path("blog/", include("apps.blog.urls")),
 ]

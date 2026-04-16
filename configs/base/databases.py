@@ -78,6 +78,14 @@ elif settings.SERVER_ENV in [Environment.PRODUCTION, Environment.STAGING]:
 DATABASE_ROUTERS = []
 # print(DATABASES)
 
+# -------------------------------
+# Migration Modules
+# -------------------------------
+# Point django.contrib.sites migrations to our custom location
+MIGRATION_MODULES = {
+    "sites": "core.contrib.sites.migrations",
+}
+
 # # -------------------------------
 # # Connection Health Check
 # # -------------------------------

@@ -1,96 +1,83 @@
 # =====================================================
-# Base image: Debian Bookworm + Python + Node + uv
+# Structa — Django/Uvicorn container
+# Build context: workspace root (..)
 # =====================================================
 FROM python:3.12-slim AS app-base
 
 ARG APP_HOME=/app
-ARG USER_NAME=django
-ARG GROUP_NAME=django
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
-    UV_COMPILE_BYTECODE=1 \
-    UV_LINK_MODE=copy \
-    UV_PYTHON_PREFERENCE=only-managed \
     UV_NO_CACHE=1 \
-    NODE_ENV=production
+    NODE_ENV=production \
+    PATH="/opt/venv/bin:/root/.local/bin:$PATH" \
+    VIRTUAL_ENV="/opt/venv"
 
 WORKDIR ${APP_HOME}
 
 # -----------------------------------------------------
-# 1️⃣ Install System Packages + Node.js + uv
+# 1. System packages + Node.js + uv
 # -----------------------------------------------------
 RUN apt-get update && apt-get install --no-install-recommends -y \
-    curl \
-    wget \
-    git \
-    nano \
-    libpq-dev \
-    gettext \
-    sudo \
-    bash-completion \
-    ca-certificates \
-    ssh \
-    pipx \
-    make \
-    build-essential \
+    curl wget git nano libpq-dev gettext sudo \
+    bash-completion ca-certificates ssh pipx make build-essential \
+    cron \
     && rm -rf /var/lib/apt/lists/*
-
 
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
   && apt-get install -y nodejs \
   && npm install -g npm@latest \
   && npm cache clean --force
 
-
-# Install uv (Python dependency manager)
 RUN pipx install uv && pipx ensurepath
 
 # -----------------------------------------------------
-# 2️⃣ Copy and install dependencies
+# 2. Create shared venv and install workspace libs
 # -----------------------------------------------------
+RUN uv venv /opt/venv
 
-# Copy manifests first for caching
-COPY structa.cloud/package*.json /app/
-COPY structa.cloud/pyproject.toml /app/
-COPY structa.cloud/uv.lock /app/
-COPY uv.lock /
-COPY pyproject.toml /
-
-# Copy venv/libs (canonical workspace packages)
+# Copy venv/libs packages (editable installs)
 COPY venv/libs /venv/libs
 
-# Install Python dependencies with uv from root to recognize workspace
-WORKDIR /
-RUN /root/.local/bin/uv sync --frozen
-
-# Set working directory back to app
-WORKDIR ${APP_HOME}
-
-# -----------------------------------------------------
-# 3️⃣ Copy application source
-# -----------------------------------------------------
-COPY structa.cloud . ${APP_HOME}/
+RUN uv pip install --python /opt/venv/bin/python \
+        -e /venv/libs/django-osoul \
+        -e /venv/libs/django-rseal \
+        -e /venv/libs/django-grep \
+        -e /venv/libs/nawaai
 
 # -----------------------------------------------------
-# 4️⃣ Entrypoint and Start Script
+# 3. Install structa.cloud Python dependencies
 # -----------------------------------------------------
+# Copy only the dependency manifests first (better layer caching)
+COPY structa.cloud/pyproject.toml structa.cloud/uv.lock /tmp/structa/
+
+# uv sync reads pyproject.toml + uv.lock — single source of truth.
+# UV_PROJECT_ENVIRONMENT points uv at our shared venv.
+# --no-install-project: install deps only, not the project package itself.
+# --frozen: use exact pinned versions from uv.lock.
+ENV UV_PROJECT_ENVIRONMENT="/opt/venv"
+RUN uv sync \
+        --project /tmp/structa \
+        --frozen \
+        --no-install-project
+
+# -----------------------------------------------------
+# 4. Copy application source
+# -----------------------------------------------------
+COPY structa.cloud/package*.json ${APP_HOME}/
+COPY structa.cloud ${APP_HOME}/
+
+# -----------------------------------------------------
+# 5. Entrypoint and start scripts
+# -----------------------------------------------------
+RUN mkdir -p /app/logs
+
 COPY structa.cloud/compose/django/entrypoint /entrypoint
 COPY structa.cloud/compose/django/start /start
+COPY structa.cloud/compose/django/rqworker-start /rqworker-start
 
-RUN sed -i 's/\r$//g' /entrypoint /start \
-    && chmod +x /entrypoint /start
+RUN sed -i 's/\r$//g' /entrypoint /start /rqworker-start \
+    && chmod +x /entrypoint /start /rqworker-start
 
-# -----------------------------------------------------
-# 5️⃣ Create non-root user
-# -----------------------------------------------------
-# RUN groupadd -r ${GROUP_NAME} && useradd -r -g ${GROUP_NAME} ${USER_NAME} \
-#     && chown -R ${USER_NAME}:${GROUP_NAME} ${APP_HOME}
-
-# USER ${USER_NAME}
-
-# -----------------------------------------------------
-# 6️⃣ Default Entrypoint
-# -----------------------------------------------------
 ENTRYPOINT ["/entrypoint"]
 CMD ["/start"]

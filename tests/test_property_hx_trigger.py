@@ -20,9 +20,9 @@ import sys
 from types import ModuleType
 from unittest.mock import MagicMock, patch
 
+import pytest
 from django.http import HttpResponse
 from django.test import RequestFactory
-
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
@@ -68,8 +68,11 @@ sys.modules.setdefault("django_osoul.comp", ModuleType("django_osoul.comp"))
 sys.modules["django_osoul.comp.site"] = _stub_module
 
 # Now we can safely import the views
-from apps.handlers.registration.allauth_views import AllauthLoginView, AllauthSignupView  # noqa: E402
-from apps.handlers.registration.views import trigger_notification  # noqa: E402
+from apps.accounts.registration.allauth_views import (  # noqa: E402
+    AllauthLoginView,
+    AllauthSignupView,
+)
+from apps.accounts.registration.views import trigger_notification  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -173,6 +176,7 @@ valid_signup_data_strategy = st.fixed_dictionaries(
 
 @given(form_data=invalid_login_data_strategy)
 @settings(max_examples=100)
+@pytest.mark.django_db
 def test_hx_trigger_on_invalid_login(form_data: dict):
     """
     **Validates: Requirements 10.5, 10.8**
@@ -209,6 +213,7 @@ def test_hx_trigger_on_invalid_login(form_data: dict):
 
 @given(form_data=invalid_signup_data_strategy)
 @settings(max_examples=100)
+@pytest.mark.django_db
 def test_hx_trigger_on_invalid_signup(form_data: dict):
     """
     **Validates: Requirements 10.5, 10.8**
@@ -274,6 +279,7 @@ def test_hx_trigger_on_valid_login_form_valid_path(form_data: dict):
 
 @given(form_data=valid_signup_data_strategy)
 @settings(max_examples=100)
+@pytest.mark.django_db
 def test_hx_trigger_on_valid_signup_form_valid_path(form_data: dict):
     """
     **Validates: Requirements 10.5, 10.8**

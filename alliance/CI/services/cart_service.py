@@ -1,59 +1,75 @@
 import logging
+
 from django.conf import settings
-from alliance.CI.models.cart import Cart, CartItem
+from django_rseal.pipelines.services import CartServiceBase
+
 from alliance.CI.models.cart import Cart, CartItem
 
 logger = logging.getLogger(__name__)
 
-class CartService:
-    @staticmethod
-    def get_or_create_cart(request):
+
+class CartService(CartServiceBase):
+    """
+    Cart service for structa.cloud alliance.
+
+    Delegates to django_rseal.pipelines.services.CartServiceBase
+    """
+
+    cart_model = Cart
+    cart_item_model = CartItem
+
+    @classmethod
+    def _merge_cart_item(cls, cart, product_id: str, item_data: dict):
         """
-        Retrieve or create a cart for the current session or user.
+        Merge a single cart item from session to database.
+
+        Args:
+            cart: Cart instance
+            product_id: Product identifier
+            item_data: Item data dictionary
         """
-        if request.user.is_authenticated:
-            cart, created = Cart.objects.get_or_create(user=request.user)
-            # If we have a session cart, merge it
-            if session_cart := request.session.get('cart'):
-                CartService.merge_session_cart_to_db(request.user, session_cart)
-                del request.session['cart']
-                request.session.modified = True
-            return cart
+        try:
+            # Check if already in DB cart
+            if not CartItem.objects.filter(cart=cart, product_name=item_data.get('name')).exists():
+                CartItem.objects.create(
+                    cart=cart,
+                    product_name=item_data.get('name', 'Product'),
+                    product_description=item_data.get('description', ''),
+                    quantity=item_data.get('quantity', 1),
+                    price=float(item_data.get('price', 0))
+                )
+        except Exception as e:
+            logger.error(f"Error merging session cart item {product_id}: {e}")
+
+    @classmethod
+    def add_item(cls, cart, product, quantity: int = 1, **kwargs):
+        """
+        Add an item to the database cart.
+
+        Args:
+            cart: Cart instance
+            product: Product to add (could be string name or dict with product data)
+            quantity: Quantity to add
+            **kwargs: Additional item data
+
+        Returns:
+            CartItem instance
+        """
+        # Handle different product input types
+        if isinstance(product, str):
+            product_name = product
+            price = kwargs.get('price', 0)
+            description = kwargs.get('description', '')
+        elif isinstance(product, dict):
+            product_name = product.get('name', 'Product')
+            price = product.get('price', 0)
+            description = product.get('description', '')
         else:
-            session_key = request.session.session_key
-            if not session_key:
-                request.session.create()
-                session_key = request.session.session_key
+            # Assume it's a product object with name, price, description attributes
+            product_name = getattr(product, 'name', 'Product')
+            price = getattr(product, 'price', 0)
+            description = getattr(product, 'description', '')
 
-            cart, created = Cart.objects.get_or_create(session_key=session_key)
-            return cart
-
-    @staticmethod
-    def merge_session_cart_to_db(user, session_cart_data):
-        """
-        Merge items from a session-only cart (dict) into a user's database cart.
-        """
-        user_cart, _ = Cart.objects.get_or_create(user=user)
-
-        for product_id, item_data in session_cart_data.items():
-            try:
-                # Check if already in DB cart
-                if not CartItem.objects.filter(cart=user_cart, product_name=item_data.get('name')).exists():
-                    CartItem.objects.create(
-                        cart=user_cart,
-                        product_name=item_data.get('name', 'Product'),
-                        product_description=item_data.get('description', ''),
-                        quantity=item_data.get('quantity', 1),
-                        price=float(item_data.get('price', 0))
-                    )
-            except Exception as e:
-                logger.error(f"Error merging session cart item {product_id}: {e}")
-
-    @staticmethod
-    def add_item(cart, product_name, price, quantity=1, description=""):
-        """
-        Add a generic item to the database cart.
-        """
         item, created = CartItem.objects.get_or_create(
             cart=cart,
             product_name=product_name,
@@ -64,16 +80,20 @@ class CartService:
             item.save()
         return item
 
-    @staticmethod
-    def get_cart_count(request):
-        """
-        Get total number of items in the cart.
-        """
-        if request.user.is_authenticated:
-            try:
-                return request.user.cart.total_items
-            except AttributeError:
-                return 0
+    @classmethod
+    def remove_from_cart(cls, user, item, **kwargs):
+        """Remove item from cart."""
+        cart = cls.get_or_create_cart(user._request if hasattr(user, '_request') else None)
+        if isinstance(item, CartItem):
+            item.delete()
+        elif isinstance(item, str):
+            CartItem.objects.filter(cart=cart, product_name=item).delete()
+        else:
+            # Try to find by ID
+            CartItem.objects.filter(cart=cart, id=item).delete()
 
-        session_cart = request.session.get('cart', {})
-        return sum(item.get('quantity', 1) for item in session_cart.values())
+    @classmethod
+    def clear_cart(cls, user, **kwargs):
+        """Clear user's cart."""
+        cart = cls.get_or_create_cart(user._request if hasattr(user, '_request') else None)
+        cart.items.all().delete()

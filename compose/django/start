@@ -6,71 +6,38 @@ set -o nounset
 APP_HOME="/app"
 cd "$APP_HOME"
 
-echo "🚀 Initializing Django environment at $APP_HOME"
-echo "🐍 Python version: $(python3 --version 2>/dev/null || echo 'unknown')"
-echo "🟢 Node version: $(node -v 2>/dev/null || echo 'not installed')"
-echo "📦 NPM version: $(npm -v 2>/dev/null || echo 'not installed')"
-
-# Ensure uv is on PATH
-export PATH="$HOME/.local/bin:$PATH"
-
-# -----------------------------------------------------
-# Django setup
-# -----------------------------------------------------
-echo "📦 Preparing Django application..."
-uv run python ./com migrate --noinput || echo "⚠️ migrate warning (non-fatal)"
-uv run python ./com collectstatic --noinput || echo "⚠️ collectstatic warning (non-fatal)"
-
-# -----------------------------------------------------
-# Runtime configuration
-# -----------------------------------------------------
 HOST="${HOST:-0.0.0.0}"
-PORT="${PORT:-5080}"
-WORKERS="${WORKERS:-5}"
+PORT="${PORT:-5070}"
+WORKERS="${WORKERS:-4}"
 RELOAD="${RELOAD:-false}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 APP_MODULE="${APP_MODULE:-alliance.asgi:application}"
-WATCH_DIRS="${WATCH_DIRS:-./core,./theme,./apps,./configs}"
+WATCH_DIRS="${WATCH_DIRS:-./alliance,./apps,./configs}"
 
-echo "📊 Runtime Configuration:"
-echo "   Host: $HOST"
-echo "   Port: $PORT"
-echo "   Workers: $WORKERS"
-echo "   Reload: $RELOAD"
-echo "   App Module: $APP_MODULE"
-echo "   Log Level: $LOG_LEVEL"
+echo "🚀 Starting uvicorn: $APP_MODULE on $HOST:$PORT"
 
-# Use the pre-installed venv uvicorn directly for speed
-UVICORN_BIN="$APP_HOME/.venv/bin/uvicorn"
-if [ ! -f "$UVICORN_BIN" ]; then
-    echo "⚠️ .venv uvicorn not found, falling back to uv run"
-    UVICORN_BIN="uv run uvicorn"
-fi
-
-# -----------------------------------------------------
-# Build uvicorn args
-# -----------------------------------------------------
 if [ "$RELOAD" = "true" ]; then
-    echo "🔄 Auto-reload ENABLED"
-    ARGS="$APP_MODULE --host $HOST --port $PORT --reload --log-level debug"
+    ARGS=(
+        "$APP_MODULE"
+        "--host" "$HOST"
+        "--port" "$PORT"
+        "--reload"
+        "--log-level" "debug"
+    )
     IFS=',' read -ra DIR_ARRAY <<< "$WATCH_DIRS"
     for dir in "${DIR_ARRAY[@]}"; do
         dir_clean=$(echo "$dir" | xargs)
-        if [ -d "$dir_clean" ]; then
-            ARGS="$ARGS --reload-dir $dir_clean"
-            echo "   👉 Watching: $dir_clean"
-        fi
+        [ -d "$dir_clean" ] && ARGS+=("--reload-dir" "$dir_clean")
     done
 else
-    echo "⚡ Auto-reload DISABLED (Production mode)"
-    ARGS="$APP_MODULE --host $HOST --port $PORT --workers $WORKERS --log-level $LOG_LEVEL"
+    ARGS=(
+        "$APP_MODULE"
+        "--host" "$HOST"
+        "--port" "$PORT"
+        "--workers" "$WORKERS"
+        "--log-level" "$LOG_LEVEL"
+    )
 fi
 
-echo ""
-echo "🎯 Final Command: $UVICORN_BIN $ARGS"
-echo "🏥 Health endpoint: http://${HOST}:${PORT}/health/"
-echo ""
-echo "🚀 Launching server..."
-echo "=========================================="
-
-exec $UVICORN_BIN $ARGS
+echo "🏥 Health: http://${HOST}:${PORT}/health/"
+exec uvicorn "${ARGS[@]}"

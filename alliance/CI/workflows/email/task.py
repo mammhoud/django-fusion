@@ -87,7 +87,7 @@ class InvitationEmailHandler:
             # Send email based on strategy
             if app_settings.EMAIL_AS_BACKGROUND_TASK:
                 # Import here to avoid circular imports
-                from apps.handlers.services.email.tasks import send_email_raw
+                from apps.accounts.services.email.tasks import send_email_raw
                 from django_rseal.pipelines.services.jobs import dispatch_job
 
                 dispatch_job(

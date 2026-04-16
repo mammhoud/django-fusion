@@ -13,7 +13,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.search import index
 
-from apps.pages.models.pages.base import BasePage
+from apps.content.models.pages.base import BasePage
 
 
 class BlogIndexPage(RoutablePageMixin, BasePage):

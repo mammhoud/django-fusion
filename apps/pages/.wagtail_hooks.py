@@ -3,20 +3,20 @@ Wagtail Hooks for Alliance Project
 """
 
 from django.utils.translation import gettext_lazy as _
+
+# Manage snippets
+from django_rseal.pipelines.snippets.manage.submissions import FormSubmissionViewSet
 from wagtail import hooks
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSetGroup
 
-# Manage snippets
-from django_rseal.pipelines.snippets.manage.submissions import FormSubmissionViewSet
-from apps.handlers.snippets.manage.peoples import (
-    PersonViewSet,
-    WorkspaceViewSet,
+from apps.accounts.snippets.manage.peoples import (
     CompanyViewSet,
-    TeamViewSet,
+    PersonViewSet,
     ServiceViewSet,
+    TeamViewSet,
+    WorkspaceViewSet,
 )
-
 
 # =============================================================================
 # SNIPPET GROUP: Manage

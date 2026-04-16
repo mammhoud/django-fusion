@@ -2,8 +2,8 @@ from django.test import TestCase, RequestFactory
 from django.contrib.auth import get_user_model
 from alliance.CI.models.cart import Cart, CartItem
 from alliance.CI.services.cart_service import CartService
-from apps.LMS.models.courses.info import Course
-from apps.LMS.models.blocks.cart import CourseCartItem
+from apps.lms.models.courses.info import Course
+from apps.lms.models.blocks.cart import CourseCartItem
 
 User = get_user_model()
 

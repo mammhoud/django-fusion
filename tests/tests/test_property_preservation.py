@@ -140,11 +140,11 @@ def test_alliance_static_volume_declared():
     """
     **Validates: Requirements 3.4**
 
-    The canonical docker-compose.yml must declare the alliance_static named volume.
+    The canonical docker-compose.yml must declare the website_static named volume.
     """
     content = _read(_CANONICAL_COMPOSE)
-    assert "alliance_static" in content, (
-        "structa.cloud/core/docker-compose.yml must declare alliance_static volume"
+    assert "website_static" in content, (
+        "structa.cloud/core/docker-compose.yml must declare website_static volume"
     )
 
 
@@ -152,11 +152,11 @@ def test_alliance_media_volume_declared():
     """
     **Validates: Requirements 3.4**
 
-    The canonical docker-compose.yml must declare the alliance_media named volume.
+    The canonical docker-compose.yml must declare the website_media named volume.
     """
     content = _read(_CANONICAL_COMPOSE)
-    assert "alliance_media" in content, (
-        "structa.cloud/core/docker-compose.yml must declare alliance_media volume"
+    assert "website_media" in content, (
+        "structa.cloud/core/docker-compose.yml must declare website_media volume"
     )
 
 

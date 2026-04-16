@@ -29,7 +29,7 @@
         {# Split Layout Media #}
         {% if is_split_layout and has_media and self.media_position == 'left' %}
         <div class="cta-block__media cta-block__media--{{ self.media_position }}">
-            {% include "components/blocks/partials/cta_media.html" %}
+            {% include "blocks/partials/cta_media.html" %}
         </div>
         {% endif %}
 
@@ -139,7 +139,7 @@
         {# Split Layout Media (Right/Bottom) #}
         {% if is_split_layout and has_media and self.media_position != 'left' %}
         <div class="cta-block__media cta-block__media--{{ self.media_position }}">
-            {% include "components/blocks/partials/cta_media.html" %}
+            {% include "blocks/partials/cta_media.html" %}
         </div>
         {% endif %}
 

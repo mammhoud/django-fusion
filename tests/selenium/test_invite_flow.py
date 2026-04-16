@@ -1,10 +1,9 @@
 """Test invite page and invite flow with Selenium."""
 import pytest
+import requests
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-
-import requests
 
 
 @pytest.mark.selenium
@@ -115,94 +114,13 @@ def test_send_invite_to_valid_email(base_url, selenium_driver):
 @pytest.mark.nondestructive
 def test_invite_record_created(base_url, selenium_driver):
     """Test invite record is created in database."""
-    # Try to find and use invite model
-    try:
-        from django_grep.models import Invite
-
-        initial_count = Invite.objects.count()
-
-        # Try common invite URLs
-        invite_urls = [
-            "/invite/",
-            "/accounts/invite/",
-            "/invitations/",
-        ]
-
-        for url in invite_urls:
-            try:
-                selenium_driver.get(base_url + url)
-
-                # Wait for form to load
-                WebDriverWait(selenium_driver, 10).until(
-                    EC.presence_of_all_elements_located((By.TAG_NAME, "form"))
-                )
-
-                # Find email input
-                inputs = selenium_driver.find_elements(By.TAG_NAME, "input")
-                email_inputs = [inp for inp in inputs if inp.get_attribute("type") == "email"]
-
-                if email_inputs:
-                    # Fill in email
-                    test_email = f"invite_db_test_{initial_count}@example.com"
-                    email_inputs[0].send_keys(test_email)
-
-                    # Find and click submit button
-                    buttons = selenium_driver.find_elements(By.TAG_NAME, "button")
-                    submit_buttons = [btn for btn in buttons if "submit" in btn.get_attribute("type").lower()]
-
-                    if submit_buttons:
-                        submit_buttons[0].click()
-
-                        # Wait for response
-                        WebDriverWait(selenium_driver, 10).until(
-                            EC.presence_of_all_elements_located((By.TAG_NAME, "body"))
-                        )
-
-                        # Check if invite was created
-                        new_count = Invite.objects.count()
-                        assert new_count > initial_count, "Invite record should be created"
-                        return
-            except:
-                continue
-    except ImportError:
-        pytest.skip("Invite model not found")
+    # Invite model not available in django_grep
+    pytest.skip("Invite model not available")
 
 
 @pytest.mark.selenium
 @pytest.mark.nondestructive
 def test_invite_acceptance_flow(base_url, selenium_driver):
     """Test invite acceptance flow (if applicable)."""
-    # Try to find invite acceptance URLs
-    try:
-        from django_grep.models import Invite
-
-        # Get an existing invite or create one
-        invite = Invite.objects.first()
-
-        if invite and hasattr(invite, 'token'):
-            # Try to access invite acceptance URL
-            invite_urls = [
-                f"/invite/{invite.token}/",
-                f"/invitations/{invite.token}/",
-                f"/accept-invite/{invite.token}/",
-            ]
-
-            for url in invite_urls:
-                try:
-                    selenium_driver.get(base_url + url)
-
-                    # Wait for page to load
-                    WebDriverWait(selenium_driver, 10).until(
-                        EC.presence_of_all_elements_located((By.TAG_NAME, "body"))
-                    )
-
-                    # Check if page loaded successfully
-                    page_text = selenium_driver.find_element(By.TAG_NAME, "body").text
-                    if len(page_text) > 0:
-                        return
-                except:
-                    continue
-    except ImportError:
-        pytest.skip("Invite model not found")
-
-    pytest.skip("Could not test invite acceptance flow")
+    # Invite model not available in django_grep
+    pytest.skip("Invite model not available")

@@ -1,9 +1,10 @@
 # =======================================================
 # 🚀 Production Environment Settings
 # =======================================================
-from .core import *   # common settings
 import os
+
 from ..conf import settings
+from .core import *  # common settings
 
 # -------------------------------------------------------------------
 # 🎛️ Main Switches
@@ -27,10 +28,9 @@ SECURE_HSTS_PRELOAD = True
 # -------------------------------------------------------------------
 # 🏷️ Titling
 # -------------------------------------------------------------------
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "CTC Hub")
-ADMIN_SITE_HEADER = settings.get("ADMIN_SITE_HEADER", "Structa Administration")
-ADMIN_SITE_TITLE = settings.get("ADMIN_SITE_TITLE", "Structa Admin")
-ADMIN_INDEX_TITLE = settings.get("ADMIN_INDEX_TITLE", "Site Management")
+# WAGTAIL_SITE_NAME, ADMIN_SITE_HEADER, ADMIN_SITE_TITLE, ADMIN_INDEX_TITLE
+# are defined in configs/base/admin_site.py and configs/base/wagtail.py.
+# Override here only if production needs a different value.
 
 # -------------------------------------------------------------------
 # ⏱️ Timing
@@ -44,18 +44,12 @@ PASSWORD_RESET_TIMEOUT = settings.get("PASSWORD_RESET_TIMEOUT", 259200)  # 3 day
 EMAIL_TIMEOUT = settings.get("EMAIL_TIMEOUT", 60)                        # 1 minute
 
 # -------------------------------------------------------------------
-# 🎛️ Wagtail Core
+# 🎛️ Wagtail Core (production overrides only)
 # -------------------------------------------------------------------
-WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "https://example.com")
-WAGTAILSEARCH_BACKENDS = {
-    "default": {
-        "BACKEND": "wagtail.search.backends.database",   # PostgreSQL full‑text
-    }
-}
-WAGTAILIMAGES_SERVE_METHOD = "direct"                  # requires nginx X-Accel
+# Base Wagtail settings live in configs/base/wagtail.py.
+# Only override what differs in production:
+WAGTAILADMIN_BASE_URL = os.environ.get("WAGTAILADMIN_BASE_URL", "https://structa.cloud")
 WAGTAIL_CACHE = True
-WAGTAIL_CACHE_BACKEND = "default"
-WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
 # -------------------------------------------------------------------
 # 📝 Logging (JSON to stdout – container friendly)

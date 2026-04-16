@@ -17,9 +17,9 @@ from django.utils import timezone
 from hypothesis import given, strategies as st, settings, assume
 from hypothesis.extra.django import from_model, TestCase as HypothesisTestCase
 
-from apps.LMS.models.courses.info import Course
-from apps.LMS.models.enrollment import Enrollment
-from apps.handlers.services.email.service import EmailService
+from apps.lms.models.courses.info import Course
+from apps.lms.models.enrollment import Enrollment
+from apps.accounts.services.email.service import EmailService
 
 User = get_user_model()
 
@@ -311,7 +311,7 @@ class EmailTemplatePropertyTests(HypothesisTestCase):
         **Validates: Requirements 1.1, 1.5**
         """
         # Test welcome email
-        with patch('apps.handlers.services.email.service.render_to_string') as mock_render:
+        with patch('apps.accounts.services.email.service.render_to_string') as mock_render:
             mock_render.return_value = f"<html><body>Welcome {user_data['first_name']}!</body></html>"
 
             result = self.email_service.send_welcome(

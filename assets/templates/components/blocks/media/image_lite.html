@@ -1,0 +1,4 @@
+{% load wagtailimages_tags %}
+{% if self.image %}
+    {% image self.image width-800 class="img-fluid" alt=self.alternative_text loading="lazy" %}
+{% endif %}

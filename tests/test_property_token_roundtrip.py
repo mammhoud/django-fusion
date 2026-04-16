@@ -25,7 +25,7 @@ from unittest.mock import MagicMock
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from apps.handlers.registration.tokens import RegistrationTokenGenerator
+from apps.accounts.registration.tokens import RegistrationTokenGenerator
 
 
 @given(st.integers(min_value=1), st.text(min_size=1))

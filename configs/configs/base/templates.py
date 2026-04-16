@@ -49,8 +49,8 @@ TEMPLATES = [
                 # "core.processors.settings_context",
             ],
             "libraries": {
-                "embedBlocks": "django_osoul.comp.templatetags.embedBlocks",
-                "userRole": "django_osoul.comp.templatetags.userRole",
+                "embedBlocks": "django_osoul.comp.templatetags.embed_blocks",
+                "userRole": "django_osoul.comp.templatetags.user_role",
             },
             "loaders": [
                 (
@@ -66,8 +66,8 @@ TEMPLATES = [
             "builtins": [
                 "django.templatetags.static",
                 "heroicons.templatetags.heroicons",
-                "django_osoul.comp.templatetags.comp_tags",
-                "django_osoul.comp.templatetags.apps",
+                "django_osoul.comp.templatetags.components",
+                "django_rseal.comp.templatetags.apps",
             ],
         },
     },

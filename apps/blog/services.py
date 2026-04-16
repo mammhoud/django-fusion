@@ -13,7 +13,11 @@ from .models import BlogPost, BlogTag
 
 
 class TagService(TagServiceBase):
-    """Tag service for the blog app."""
+    """
+    Tag service for the blog app.
+
+    Delegates to django_osoul.services.TagServiceBase
+    """
 
     post_model = BlogPost
     tag_model = BlogTag
@@ -21,7 +25,11 @@ class TagService(TagServiceBase):
 
 
 class PostFilterService(PostFilterServiceBase):
-    """Post filter service for the blog app."""
+    """
+    Post filter service for the blog app.
+
+    Delegates to django_osoul.services.PostFilterServiceBase
+    """
 
     tag_field = "tags__slug"
     category_field = "categories__slug"

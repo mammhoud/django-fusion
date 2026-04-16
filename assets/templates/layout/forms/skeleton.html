@@ -30,7 +30,7 @@
     <!-- Default: Use dynamic field configuration -->
     <div class="form-fields {{ block.value.layout }}">
         {% for field_config in block.value.fields %}
-        {% include 'forms/partials/form_field.html' with field_config=field_config block=block %}
+        {% include 'blocks/partials/form_field.html' with field_config=field_config block=block %}
         {% endfor %}
     </div>
     {% endblock form_fields %}

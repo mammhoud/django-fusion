@@ -1,31 +1,28 @@
-from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
+from colorfield.fields import ColorField
+from django.conf import settings
+from django.core.mail import EmailMultiAlternatives
+from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
 from django.http import HttpResponseServerError
+from django.template.loader import render_to_string
 from django.utils import timezone
+from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
-from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
-
-from wagtail.models import Page
-from wagtail.fields import StreamField, RichTextField
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel
+from django_rseal.comp.blocks import ContactMethodBlock
+from django_rseal.comp.blocks.partials.faq import FAQSectionBlock
 from wagtail import blocks
+from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
+from wagtail.fields import RichTextField, StreamField
+from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
+from wagtail.models import Page
 from wagtail.search import index
 
 from apps import logger
-from apps.handlers.models.manage.company import Organization
-from apps.handlers.models.manage.service import Service
-
-from colorfield.fields import ColorField
-from django.core.mail import EmailMultiAlternatives
-from django.template.loader import render_to_string
-from django.utils.html import strip_tags
-from django.conf import settings
+from apps.accounts.models.manage.company import Organization
+from apps.accounts.models.manage.service import Service
 from apps.pages.models.contact import ContactSubmission
 
 from ..blocks.form import MinimalContactFormBlock
-from wagtail.admin.panels import TabbedInterface, ObjectList
-from django_osoul.comp.blocks import ContactMethodBlock
-from django_osoul.comp.blocks.partials.faq import FAQSectionBlock
 
 
 class BasePage(Page):

@@ -68,12 +68,12 @@ WEBPACK_LOADER = {
         "POLL_INTERVAL": 0.1 if tracker.is_debug else 300,
         "TIMEOUT": None if tracker.is_debug else 120,
         "IGNORE": [r".+\.hot-update.js", r".+\.map"],
-        # Use FakeWebpackLoader in Docker when webpack hasn't been built.
-        # Prevents TypeError from missing/stub bundles.json in production containers.
+        # Use real WebpackLoader when bundles.json exists and has built assets.
+        # Fall back to FakeWebpackLoader only when bundles haven't been built yet.
         "LOADER_CLASS": (
-            "webpack_loader.loaders.FakeWebpackLoader"
-            if tracker.is_docker and not tracker.is_debug
-            else "webpack_loader.loader.WebpackLoader"
+            "webpack_loader.loader.WebpackLoader"
+            if (BUNDLES_DIR / "bundles.json").exists()
+            else "webpack_loader.loaders.FakeWebpackLoader"
         ),
     }
 }

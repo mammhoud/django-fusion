@@ -1,0 +1,21 @@
+You're Invited!
+===============
+
+Hello {% if name %}{{ name }}{% else %}there{% endif %},
+
+You have been invited to join our platform.
+
+{% if role %}Your assigned role: {{ role }}{% endif %}
+
+{% if group %}You will be part of the {{ group }} group.{% endif %}
+
+To complete your registration, visit the link below:
+
+{{ invitation_link }}
+
+This invitation was sent to {{ recipient_email }}.
+If you did not expect this email, you can safely ignore it.
+
+---
+CTC Research
+This is an automated message. Please do not reply directly to this email.

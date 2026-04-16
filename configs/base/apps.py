@@ -94,15 +94,15 @@ PLUGIN_APPS = [
 
 
 OVERRIDE_APPS = [
-    "apps.pages",
-    "apps.handlers",
-    "apps.handlers.registration",
+    "apps.content",
+    "apps.accounts",
+    "apps.accounts.registration",
 ]
 
 
 LOCAL_APPS = [
     "core.CI",
-    "apps.LMS",
+    "apps.lms",
     "apps.blog",
 ]
 

@@ -22,22 +22,6 @@ ADMINS = settings.get("ADMINS", [("Admin", "admin@example.com")])
 MANAGERS = settings.get("MANAGERS", ADMINS)
 SITE_ID = settings.get("SITE_ID", 1)
 
-# -------------------------------
-# Wagtail Settings
-# -------------------------------
-WAGTAIL_SITE_NAME = settings.get("WAGTAIL_SITE_NAME", "CTC_Hub")
-WAGTAILADMIN_BASE_URL = settings.get("WAGTAILADMIN_BASE_URL", "/admin/")
-WAGTAIL_ENABLE_UPDATE_CHECK = settings.get("WAGTAIL_ENABLE_UPDATE_CHECK", False)
-WAGTAIL_PASSWORD_MANAGEMENT_ENABLED = settings.get("WAGTAIL_PASSWORD_MANAGEMENT_ENABLED", True)
-WAGTAIL_PASSWORD_RESET_ENABLED = settings.get("WAGTAIL_PASSWORD_RESET_ENABLED", True)
-
-# -------------------------------
-# Migrations
-# -------------------------------
-MIGRATION_MODULES = settings.get(
-    "MIGRATION_MODULES", {"sites": "django_rseal.contrib.migrations"}
-)
-
 # ====================================
 # 🎨 Unfold Admin (UNFOLD = ADMIN_TEMPLATE)
 # Single source of truth for admin UI config.

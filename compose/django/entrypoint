@@ -1,62 +1,60 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "🚀 Django Entrypoint: Booting container..."
-
-###############################################################################
-# INSTALL uv (if missing)
-###############################################################################
-if ! command -v uv &>/dev/null; then
-    echo "🧩 Installing uv..."
-    curl -LsSf https://astral.sh/uv/install.sh | sh
-    export PATH="$HOME/.local/bin:$PATH"
-else
-    echo "✅ uv already installed: $(uv --version)"
+# Git config (optional)
+[ -n "${GIT_USERNAME:-}" ] && git config --global user.name "$GIT_USERNAME" 2>/dev/null || true
+[ -n "${GIT_EMAIL:-}" ] && git config --global user.email "$GIT_EMAIL" 2>/dev/null || true
+if [ -n "${GIT_TOKEN:-}" ] && [ -n "${GIT_USERNAME:-}" ] && [ -n "${GIT_REPO:-}" ]; then
+    git remote set-url origin "https://${GIT_TOKEN}@github.com/${GIT_USERNAME}/${GIT_REPO}.git" 2>/dev/null || true
 fi
 
+echo "🚀 Structa Entrypoint: Booting..."
+
 ###############################################################################
-# DJANGO INITIALIZATION
+# DJANGO SETUP
 ###############################################################################
 if [ "${RUN_SETUP:-false}" = "true" ]; then
-    echo "🛠️ Running Django setup..."
 
     echo "📦 Collecting static files..."
-    cd /app && uv run python com collectstatic --noinput || echo "⚠️ collectstatic failed."
+    cd /app && python com collectstatic --noinput 2>&1 || echo "⚠️  collectstatic failed (non-fatal)"
 
-    echo "🗃️ Applying migrations..."
-    cd /app && uv run python com migrate --noinput || echo "⚠️ migrate failed."
+    echo "🗃️  Making migrations..."
+    cd /app && python com makemigrations --noinput 2>&1 || echo "⚠️  makemigrations failed (non-fatal)"
 
-    if [ -f "/app/dump-data.json" ]; then
-        echo "📥 Loading fixture: dump-data.json..."
-        cd /app && uv run python com loaddata dump-data.json --ignorenonexistent || echo "⚠️ loaddata failed."
-    fi
+    echo "🗃️  Applying migrations..."
+    cd /app && python com migrate --noinput 2>&1 || echo "⚠️  migrate failed (non-fatal)"
 
     if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
-        echo "👑 Ensuring superuser exists..."
-        cd /app && uv run python com shell -c "
-from django.contrib.auth import get_user_model
-User = get_user_model()
-if not User.objects.filter(username='${SUPERUSER_USERNAME}').exists():
-    User.objects.create_superuser('${SUPERUSER_USERNAME}', '${SUPERUSER_EMAIL:-}', '${SUPERUSER_PASSWORD}')
-    print('Superuser created.')
-else:
-    print('Superuser already exists.')
-" || echo "⚠️ superuser setup failed (non-fatal)"
+        echo "👑 Ensuring superuser..."
+        cd /app && python -m django_rseal.scripts.superuser 2>&1 || echo "⚠️  superuser failed (non-fatal)"
+    fi
+
+    echo "🏠 Setting up Wagtail home page..."
+    cd /app && python com setup_wagtail_home 2>&1 || echo "⚠️  setup_wagtail_home failed (non-fatal)"
+
+    if [ "${LOAD_FIXTURES:-false}" = "true" ]; then
+        echo "📂 Loading fixtures..."
+        for fixture in dump-data.json structa-data.json; do
+            [ -f "/app/${fixture}" ] && python com loaddata "${fixture}" --ignorenonexistent 2>&1 || echo "⚠️  loaddata ${fixture} skipped"
+        done
+    fi
+
+    # ── Compile translation messages ─────────────────────────────────────────
+    echo "🌐 Compiling translation messages..."
+    cd /app && python com compilemessages 2>&1 || echo "⚠️  compilemessages failed (non-fatal)"
+
+    # ── Hourly error-report cron ──────────────────────────────────────────────
+    if command -v crontab >/dev/null 2>&1; then
+        echo "⏰ Installing hourly error-report cron..."
+        (crontab -l 2>/dev/null | grep -v "send_error_report"; \
+         echo "0 * * * * cd /app && python com send_error_report >> /app/logs/error_report_cron.log 2>&1") \
+         | crontab - 2>/dev/null || echo "⚠️  crontab install failed (non-fatal)"
+        service cron start 2>/dev/null || crond 2>/dev/null || true
+    else
+        echo "ℹ️  cron not available — run 'python com send_error_report' manually"
     fi
 fi
-###############################################################################
-# NODE BUILD
-###############################################################################
-echo "📦 Checking Node.js dependencies..."
-if [ -f "/app/package.json" ]; then
-    echo "ℹ️ skipping Node build (managed by host or start script)."
-else
-    echo "ℹ️ No package.json found."
-fi
 
-###############################################################################
-# START APPLICATION
-###############################################################################
-echo "🎯 Launching command: $*"
+echo "🎯 Launching: $*"
 cd /app
 exec "$@"

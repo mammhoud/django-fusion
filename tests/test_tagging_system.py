@@ -6,8 +6,8 @@ import pytest
 from django.contrib.auth.models import User
 from django.contrib.contenttypes.models import ContentType
 
-from apps.handlers.models.example_tagged_model import Article, Product
-from apps.handlers.models.tags import Tag, TaggedItem
+from apps.accounts.models.example_tagged_model import Article, Product
+from apps.accounts.models.tags import Tag, TaggedItem
 
 
 @pytest.mark.django_db

@@ -13,7 +13,7 @@ class TestTagModel:
 
     def test_tag_model_has_required_fields(self):
         """Test that Tag model has all required fields."""
-        from apps.handlers.models.tags import Tag
+        from apps.accounts.models.tags import Tag
 
         # Check that the model has the expected fields
         field_names = [f.name for f in Tag._meta.get_fields()]
@@ -26,7 +26,7 @@ class TestTagModel:
 
     def test_tag_model_meta_options(self):
         """Test that Tag model has correct meta options."""
-        from apps.handlers.models.tags import Tag
+        from apps.accounts.models.tags import Tag
 
         assert Tag._meta.verbose_name == 'Tag'
         assert Tag._meta.verbose_name_plural == 'Tags'
@@ -38,7 +38,7 @@ class TestTaggedItemModel:
 
     def test_tagged_item_model_has_required_fields(self):
         """Test that TaggedItem model has all required fields."""
-        from apps.handlers.models.tags import TaggedItem
+        from apps.accounts.models.tags import TaggedItem
 
         field_names = [f.name for f in TaggedItem._meta.get_fields()]
 
@@ -51,7 +51,7 @@ class TestTaggedItemModel:
 
     def test_tagged_item_model_meta_options(self):
         """Test that TaggedItem model has correct meta options."""
-        from apps.handlers.models.tags import TaggedItem
+        from apps.accounts.models.tags import TaggedItem
 
         assert TaggedItem._meta.verbose_name == 'Tagged Item'
         assert TaggedItem._meta.verbose_name_plural == 'Tagged Items'
@@ -62,7 +62,7 @@ class TestTagManager:
 
     def test_tag_manager_has_required_methods(self):
         """Test that TagManager has all required methods."""
-        from apps.handlers.models.tags import TagManager
+        from apps.accounts.models.tags import TagManager
 
         manager = TagManager()
 
@@ -78,7 +78,7 @@ class TestArticleModel:
 
     def test_article_model_has_tagging_support(self):
         """Test that Article model has tagging support."""
-        from apps.handlers.models.example_tagged_model import Article
+        from apps.accounts.models.example_tagged_model import Article
 
         # Check that the model has tagging methods
         assert hasattr(Article, 'get_tag_list')
@@ -88,7 +88,7 @@ class TestArticleModel:
 
     def test_article_model_has_required_fields(self):
         """Test that Article model has all required fields."""
-        from apps.handlers.models.example_tagged_model import Article
+        from apps.accounts.models.example_tagged_model import Article
 
         field_names = [f.name for f in Article._meta.get_fields()]
 
@@ -105,7 +105,7 @@ class TestProductModel:
 
     def test_product_model_has_tagging_support(self):
         """Test that Product model has tagging support."""
-        from apps.handlers.models.example_tagged_model import Product
+        from apps.accounts.models.example_tagged_model import Product
 
         # Check that the model has tagging methods
         assert hasattr(Product, 'get_tag_list')
@@ -115,7 +115,7 @@ class TestProductModel:
 
     def test_product_model_has_required_fields(self):
         """Test that Product model has all required fields."""
-        from apps.handlers.models.example_tagged_model import Product
+        from apps.accounts.models.example_tagged_model import Product
 
         field_names = [f.name for f in Product._meta.get_fields()]
 
@@ -131,7 +131,7 @@ class TestTaggingSystemIntegration:
 
     def test_tagging_models_are_importable(self):
         """Test that all tagging models can be imported."""
-        from apps.handlers.models import Article, Product, Tag, TaggedItem, TagManager
+        from apps.accounts.models import Article, Product, Tag, TaggedItem, TagManager
 
         assert Tag is not None
         assert TaggedItem is not None
@@ -141,14 +141,14 @@ class TestTaggingSystemIntegration:
 
     def test_admin_interface_is_available(self):
         """Test that admin interface is available."""
-        from apps.handlers.admin import TagAdmin, TaggedItemAdmin
+        from apps.accounts.admin import TagAdmin, TaggedItemAdmin
 
         assert TagAdmin is not None
         assert TaggedItemAdmin is not None
 
     def test_views_are_available(self):
         """Test that views are available."""
-        from apps.handlers.views.tags import (
+        from apps.accounts.views.tags import (
             ArticlesByTagView,
             ProductsByTagView,
             TagDetailView,

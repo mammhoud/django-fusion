@@ -12,7 +12,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from apps.handlers.registration.models import AuthEmailTemplate
+from apps.accounts.registration.models import AuthEmailTemplate
 
 # ---------------------------------------------------------------------------
 # Strategies
