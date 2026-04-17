@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Template Preview: {{ newsletter.title }}</title>
+    <style>
+        .template-preview-container {
+            display: flex;
+            gap: 20px;
+            padding: 20px;
+        }
+        .template-html {
+            flex: 1;
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 5px;
+        }
+        .template-preview {
+            flex: 1;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            overflow: hidden;
+        }
+        .code-header {
+            background: #2c3e50;
+            color: white;
+            padding: 10px;
+            margin: -20px -20px 20px -20px;
+            font-family: monospace;
+        }
+        pre {
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+    </style>
+</head>
+<body>
+    <div class="template-preview-container">
+        <div class="template-html">
+            <div class="code-header">HTML Template</div>
+            <pre>{{ newsletter.get_template_html }}</pre>
+        </div>
+        
+        <div class="template-preview">
+            <iframe 
+                srcdoc="{{ rendered_content }}" 
+                style="width: 100%; height: 800px; border: none;"
+                title="Template Preview"
+            ></iframe>
+        </div>
+    </div>
+</body>
+</html>

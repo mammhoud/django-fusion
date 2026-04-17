@@ -13,7 +13,7 @@
             <i class="bi bi-cart3 fs-4"></i>
             <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
                   id="cartItemCount"
-                  hx-get="{% url 'handlers:cart-count' %}"
+                  hx-get="{% url 'accounts:cart-count' %}"
                   hx-trigger="load, cartUpdated from:body"
                   hx-swap="innerHTML">
                 0
@@ -66,7 +66,7 @@
             </li>
 
             <li class="nav-dropdown-item">
-                <a class="nav-dropdown-link-compact" href="{% url 'handlers:profile' %}">
+                <a class="nav-dropdown-link-compact" href="{% url 'accounts:profile' %}">
                     <i class="bi bi-person me-2 text-success"></i>
                     <span class="nav-header-select-item">{% trans "Profile" %}</span>
                 </a>

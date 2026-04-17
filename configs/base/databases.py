@@ -83,7 +83,7 @@ DATABASE_ROUTERS = []
 # -------------------------------
 # Point django.contrib.sites migrations to our custom location
 MIGRATION_MODULES = {
-    "sites": "core.contrib.sites.migrations",
+    "sites": "core.migrations",
 }
 
 # # -------------------------------
