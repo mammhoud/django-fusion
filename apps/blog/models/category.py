@@ -31,6 +31,7 @@ class BlogCategory(models.Model):
     )
 
     class Meta:
+        app_label = 'blog'
         verbose_name = _("Blog Category")
         verbose_name_plural = _("Blog Categories")
         ordering = ["name"]

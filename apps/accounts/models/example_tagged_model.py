@@ -67,6 +67,7 @@ class Article(TaggableMixin, models.Model):
     objects = ArticleManager()
 
     class Meta:
+        app_label = 'accounts'
         verbose_name = "Article"
         verbose_name_plural = "Articles"
         ordering = ["-created_at"]
@@ -97,6 +98,7 @@ class Product(TaggableMixin, models.Model):
     objects = ProductManager()
 
     class Meta:
+        app_label = 'accounts'
         verbose_name = "Product"
         verbose_name_plural = "Products"
         ordering = ["name"]

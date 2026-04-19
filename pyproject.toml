@@ -25,18 +25,13 @@ dependencies = [
     "django-embed-video",
     "django-environ",
     "django-extensions>=4.1",
-    "django-osoul",
+    "django-heroicons",
     "django-grep",
-    "nawaai",
     "django-heroicons",
     "django-htmx",
     "django-import-export",
     "django-ninja",
-    "django-ninja-extra>=0.18.4",
-    "django-ninja-jwt",
-    "django-prometheus>=2.4.0",
     "django-redis>=6.0.0",
-    "django-rseal",
     "django-silk>=5.4.3",
     "django-simple-history",
     "django-structlog",
@@ -83,12 +78,6 @@ dependencies = [
 
 [project.scripts]
 orchestrator = "django_rseal.workflows.orchestrator.cli:main"
-
-[tool.uv.sources]
-django-osoul = { workspace = true }
-django-grep  = { workspace = true }
-django-rseal = { workspace = true }
-nawaai       = { workspace = true }
 
 [tool.bumpver]
 current_version = "1.0.3"

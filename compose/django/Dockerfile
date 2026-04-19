@@ -1,6 +1,6 @@
 # =====================================================
 # Structa — Django/Uvicorn container
-# Build context: workspace root (..)
+# Build context: structa.cloud directory (.)
 # =====================================================
 FROM python:3.12-slim AS app-base
 
@@ -37,7 +37,7 @@ RUN pipx install uv && pipx ensurepath
 RUN uv venv /opt/venv
 
 # Copy venv/libs packages (editable installs)
-COPY venv/libs /venv/libs
+COPY ./libs /venv/libs
 
 RUN uv pip install --python /opt/venv/bin/python \
         -e /venv/libs/django-osoul \
@@ -49,7 +49,7 @@ RUN uv pip install --python /opt/venv/bin/python \
 # 3. Install structa.cloud Python dependencies
 # -----------------------------------------------------
 # Copy only the dependency manifests first (better layer caching)
-COPY structa.cloud/pyproject.toml structa.cloud/uv.lock /tmp/structa/
+COPY pyproject.toml uv.lock ./
 
 # uv sync reads pyproject.toml + uv.lock — single source of truth.
 # UV_PROJECT_ENVIRONMENT points uv at our shared venv.
@@ -57,24 +57,23 @@ COPY structa.cloud/pyproject.toml structa.cloud/uv.lock /tmp/structa/
 # --frozen: use exact pinned versions from uv.lock.
 ENV UV_PROJECT_ENVIRONMENT="/opt/venv"
 RUN uv sync \
-        --project /tmp/structa \
         --frozen \
         --no-install-project
 
 # -----------------------------------------------------
 # 4. Copy application source
 # -----------------------------------------------------
-COPY structa.cloud/package*.json ${APP_HOME}/
-COPY structa.cloud ${APP_HOME}/
+COPY package*.json ${APP_HOME}/
+COPY . ${APP_HOME}/
 
 # -----------------------------------------------------
 # 5. Entrypoint and start scripts
 # -----------------------------------------------------
 RUN mkdir -p /app/logs
 
-COPY structa.cloud/compose/django/entrypoint /entrypoint
-COPY structa.cloud/compose/django/start /start
-COPY structa.cloud/compose/django/rqworker-start /rqworker-start
+COPY compose/django/entrypoint /entrypoint
+COPY compose/django/start /start
+COPY compose/django/rqworker-start /rqworker-start
 
 RUN sed -i 's/\r$//g' /entrypoint /start /rqworker-start \
     && chmod +x /entrypoint /start /rqworker-start

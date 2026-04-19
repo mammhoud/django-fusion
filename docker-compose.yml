@@ -6,8 +6,8 @@
 
 x-django-base: &django-base
   build:
-    context: ..
-    dockerfile: ./structa.cloud/compose/django/Dockerfile
+    context: .
+    dockerfile: ./compose/django/Dockerfile
   restart: unless-stopped
   env_file:
     - .env
@@ -16,11 +16,11 @@ x-django-base: &django-base
   networks:
     - traefik-net
   healthcheck:
-    test: ["CMD-SHELL", "curl -sf http://127.0.0.1:${PORT:-5070}/health/ && curl -sf http://127.0.0.1:${PORT:-5070}/health/assets/ && curl -sf http://127.0.0.1:${PORT:-5070}/health/media/ || exit 1"]
+    test: ["CMD-SHELL", "curl -sf http://127.0.0.1:${PORT:-5071}/health/ || exit 1"]
     interval: 30s
-    timeout: 20s
+    timeout: 10s
     retries: 3
-    start_period: 60s
+    start_period: 40s
 
 networks:
   traefik-net:
@@ -41,12 +41,14 @@ services:
   website:
     <<: *django-base
     image: website
-    container_name: website
+    container_name: structa-website
     external_links:
       - postgres
       - redis
+    ports:
+      - "5071:5071"
     volumes:
-      - ../venv/libs:/venv/libs:z
+      - ./libs:/venv/libs:z
       - website_static:/app/assets/staticfiles:z
       - website_media:/app/assets/media:z
     environment:
@@ -54,12 +56,13 @@ services:
       - RELOAD=${RELOAD:-false}
       - SERVER_ENV=production
       - DEBUG=False
-      - PORT=5070
+      - PORT=5071
       - DB_HOST=postgres
-      - DB_NAME=db_ctc
+      - DB_NAME=db_structa
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
       - DJANGO_SETTINGS_MODULE=configs.settings
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - APP_MODULE=alliance.asgi:application
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*,structa-website,localhost,127.0.0.1,core.structa.cloud,structa.cloud,www.structa.cloud}
       - RUN_SETUP=true
       - LOAD_FIXTURES=${LOAD_FIXTURES:-false}
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
@@ -73,12 +76,12 @@ services:
   # ============================================================
   website-media:
     build:
-      context: ..
+      context: .
       dockerfile: ./compose/nginx/Dockerfile
     image: website-media
-    container_name: website-media
+    container_name: structa-website-media
     ports:
-      - "8271:80"
+      - "8272:80"
     volumes:
       - website_static:/var/www/static:ro
       - website_media:/var/www/media:ro
@@ -99,14 +102,14 @@ services:
   website-worker:
     <<: *django-base
     image: website-worker
-    container_name: website-worker
+    container_name: structa-website-worker
     depends_on:
       - website
     external_links:
       - postgres
       - redis
     volumes:
-      - ../venv/libs:/venv/libs:z
+      - ./libs:/venv/libs:z
       - website_static:/app/assets/staticfiles:z
       - website_media:/app/assets/media:z
     environment:
@@ -114,9 +117,10 @@ services:
       - SERVER_ENV=production
       - PORT=5075
       - DB_HOST=postgres
-      - DB_NAME=db_ctc
+      - DB_NAME=db_structa
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
       - DJANGO_SETTINGS_MODULE=configs.settings
+      - APP_MODULE=alliance.asgi:application
     command: /rqworker-start
     healthcheck:
       test: ["CMD-SHELL", "python com rqworker --help > /dev/null 2>&1 || exit 1"]

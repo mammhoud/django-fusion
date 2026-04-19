@@ -117,6 +117,7 @@ class BlogPost(models.Model):
     )
 
     class Meta:
+        app_label = 'blog'
         verbose_name = _("Blog Post")
         verbose_name_plural = _("Blog Posts")
         ordering = ["-published_date", "-created_at"]

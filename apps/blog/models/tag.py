@@ -25,6 +25,7 @@ class BlogTag(models.Model):
     )
 
     class Meta:
+        app_label = 'blog'
         verbose_name = _("Blog Tag")
         verbose_name_plural = _("Blog Tags")
         ordering = ["name"]

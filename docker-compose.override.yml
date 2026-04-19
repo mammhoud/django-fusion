@@ -17,7 +17,7 @@ services:
       - LOG_LEVEL=${LOG_LEVEL:-debug}
     volumes:
       - ./:/app:rw  # Mount source for hot reload
-      - ../venv/libs:/venv/libs:rw
+      - ./libs:/venv/libs:rw
       - website_static:/app/assets/staticfiles:rw
       - website_media:/app/assets/media:rw
 
@@ -26,7 +26,7 @@ services:
   # ============================================================
   website-media:
     ports:
-      - "${PORT:-8270}:80"  # Expose nginx on port 8270 for local development
+      - "${PORT:-8272}:80"  # Expose nginx on port 8272 for local development
     depends_on:
       - website
 
@@ -36,7 +36,7 @@ services:
   website-worker:
     volumes:
       - ./:/app:rw  # Mount source for hot reload
-      - ../venv/libs:/venv/libs:rw
+      - ./libs:/venv/libs:rw
       - website_static:/app/assets/staticfiles:rw
       - website_media:/app/assets/media:rw
     environment:

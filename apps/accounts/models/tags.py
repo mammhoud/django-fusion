@@ -74,6 +74,7 @@ class Tag(models.Model):
     updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     class Meta:
+        app_label = 'accounts'
         verbose_name = "Tag"
         verbose_name_plural = "Tags"
         ordering = ["name"]
@@ -109,6 +110,7 @@ class TaggedItem(models.Model):
     tagged_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Tagged At"))
 
     class Meta:
+        app_label = 'accounts'
         verbose_name = "Tagged Item"
         verbose_name_plural = "Tagged Items"
         unique_together = [["tag", "content_type", "object_id"]]

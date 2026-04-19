@@ -11,7 +11,17 @@ fi
 echo "🚀 Structa Entrypoint: Booting..."
 
 ###############################################################################
-# DJANGO SETUP
+# WORKSPACE LIBRARIES SETUP (Always run for both main app and workers)
+###############################################################################
+echo "📦 Installing workspace libraries..."
+uv pip install --python /opt/venv/bin/python \
+    -e /venv/libs/django-osoul \
+    -e /venv/libs/django-rseal \
+    -e /venv/libs/django-grep \
+    -e /venv/libs/nawaai 2>&1 || echo "⚠️  workspace libs install failed (non-fatal)"
+
+###############################################################################
+# DJANGO SETUP (Only for main app, not workers)
 ###############################################################################
 if [ "${RUN_SETUP:-false}" = "true" ]; then
 
