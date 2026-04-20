@@ -27,7 +27,6 @@ dependencies = [
     "django-extensions>=4.1",
     "django-heroicons",
     "django-grep",
-    "django-heroicons",
     "django-htmx",
     "django-import-export",
     "django-ninja",
@@ -50,7 +49,6 @@ dependencies = [
     "marshmallow",
     "ninja",
     "psycopg",
-    # "psycopg2",
     "psycopg-binary>=3.3.2",
     "pydantic",
     "pydantic-settings>=2.12.0",
@@ -74,6 +72,11 @@ dependencies = [
     "django-storages[boto3]>=1.14.6",
     "pytest>=9.0.2",
     "pytest-django>=4.12.0",
+    # GitHub-hosted libs (replaced local workspace refs)
+    "django-osoul @ git+https://github.com/mammhoud/django-osoul.git",
+    "django-rseal @ git+https://github.com/mammhoud/django-rseal.git",
+    "django-grep @ git+https://github.com/mammhoud/django-grep.git",
+    "nawaai @ git+https://github.com/mammhoud/nawaai.git",
 ]
 
 [project.scripts]

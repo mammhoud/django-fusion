@@ -48,7 +48,6 @@ services:
     ports:
       - "5071:5071"
     volumes:
-      - ./libs:/venv/libs:z
       - website_static:/app/assets/staticfiles:z
       - website_media:/app/assets/media:z
     environment:
@@ -109,7 +108,6 @@ services:
       - postgres
       - redis
     volumes:
-      - ./libs:/venv/libs:z
       - website_static:/app/assets/staticfiles:z
       - website_media:/app/assets/media:z
     environment:
