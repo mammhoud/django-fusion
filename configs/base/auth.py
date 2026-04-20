@@ -54,11 +54,11 @@ USER_MODEL_CONFIG = {
 # Custom adapters allow fine-grained control over login/signup behavior.
 
 ACCOUNT_ADAPTER = settings.get(
-    "AUTH_ACCOUNT_ADAPTER", "apps.accounts.registration.adapter.RegistrationAdapter"
+    "AUTH_ACCOUNT_ADAPTER", "django_osoul.adapters.AccountAdapter"
 )
 SOCIALACCOUNT_ADAPTER = settings.get(
     "AUTH_SOCIALACCOUNT_ADAPTER",
-    "django_rseal.pipelines.adapters.social.SocialAccountAdapter",
+    "django_osoul.adapters.SocialAccountAdapter",
 )
 
 # Custom forms

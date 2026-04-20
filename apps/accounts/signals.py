@@ -8,7 +8,7 @@ import logging
 
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django_rseal.pipelines.models.settings.templates import EmailTemplate
+from django_osoul.models import EmailTemplate
 
 logger = logging.getLogger(__name__)
 

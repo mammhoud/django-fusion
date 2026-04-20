@@ -46,6 +46,7 @@ class BlogComment(models.Model):
         verbose_name = _("Blog Comment")
         verbose_name_plural = _("Blog Comments")
         ordering = ["created_at"]
+        app_label = 'blog'
 
     def __str__(self):
         return f"Comment by {self.author} on '{self.post}'"
