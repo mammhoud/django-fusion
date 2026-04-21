@@ -7,7 +7,7 @@ from configs.base.assets import ASSETS_DIR
 
 from ..settings.conf import settings as tracker
 from ..settings.conf import settings
-from .paths import APPS_DIR, BASE_DIR, CORE_DIR
+from .paths import APPS_DIR, BASE_DIR, CORE_DIR, TEMPLATES_DIR
 
 # -------------------------------
 # Template Configuration
@@ -18,7 +18,10 @@ TEMPLATE_DEBUG = settings.get("TEMPLATE_DEBUG", tracker.is_debug)
 TEMPLATES_DIRS = [
     Path(APPS_DIR) / "templates",
     Path(ASSETS_DIR) / "templates" / "layout",
-    Path(BASE_DIR) / "components",
+    Path(BASE_DIR) / "www" / "components",
+    TEMPLATES_DIR,
+    Path(BASE_DIR) / "plugins" / "components",
+    Path(BASE_DIR) / "plugins" / "templates",
     Path(CORE_DIR) / "templates",
 ]
 
@@ -90,26 +93,3 @@ COMPONENTS = {
     "ADD_ASSET_PREFIX": False,
 }
 # ------------------------------------------------------------------------------
-# -------------------------------------------------------------------------------
-
-
-# WAGTAILTRANSFER_SECRET_KEY = ''
-# WAGTAILTRANSFER_SOURCES = {}
-
-# if current_env == Environment.DEMO:
-#     WAGTAILTRANSFER_SECRET_KEY = '4ac4822773be75eea36b21a47273b2ae'
-#     WAGTAILTRANSFER_SOURCES = {
-#     'main': {
-#         'BASE_URL': 'https://www.structa.cloud/wagtail-transfer/',
-#         'SECRET_KEY': 'ea3ea7cd5daeaf8ea36a7cd5dc2ada7e',
-#         },
-#     }
-# else:
-#     WAGTAILTRANSFER_SECRET_KEY = 'ea3ea7cd5daeaf8ea36a7cd5dc2ada7e'
-#     WAGTAILTRANSFER_SOURCES = {
-#         'demo': {
-#             'BASE_URL': 'https://demo.structa.cloud/wagtail-transfer/',
-#             'SECRET_KEY': '4ac4822773be75eea36b21a47273b2ae',
-#         },
-#     }
-# WAGTAILTRANSFER_UPDATE_RELATED_MODELS = ['wagtailimages.image']

@@ -1,4 +1,4 @@
-from configs.base import *
+from www.configs.base import *
 
 # ====================================
 # 🧠 Environment Detection

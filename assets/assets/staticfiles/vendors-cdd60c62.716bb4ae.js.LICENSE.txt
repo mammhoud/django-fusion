@@ -1,5 +1,0 @@
-/*!
- * getSize v2.0.3
- * measure size of elements
- * MIT license
- */
