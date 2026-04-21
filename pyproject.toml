@@ -1,0 +1,51 @@
+[project]
+name = "core"
+version = "1.0.3"
+description = "Structa Cloud — Tech Bridges Platform"
+requires-python = ">=3.11"
+dependencies = [
+    "bumpver", "click", "colorlog",
+    "django>=4.2",
+    "django-allauth[socialaccount]",
+    "django-bird", "django-browser-reload", "django-colorfield",
+    "django-crispy-forms", "django-debug-toolbar", "django-embed-video",
+    "django-environ", "django-extensions", "django-grep", "django-heroicons",
+    "django-htmx", "django-import-export", "django-ninja", "django-paypal",
+    "django-redis", "django-rq", "django-silk", "django-simple-history",
+    "django-storages[boto3]", "django-structlog", "django-stubs",
+    "django-tables2", "django-unfold", "django-webpack-loader",
+    "draftjs-exporter", "dynaconf[vault]", "environ", "fido2", "fire",
+    "gunicorn", "hypothesis", "jinja2", "jwt", "livereload", "marshmallow",
+    "ninja", "psycopg", "psycopg-binary", "pydantic", "pydantic-settings",
+    "pytest", "pytest-django", "python-json-logger", "sentry-sdk[django]",
+    "stripe", "structlog", "twilio", "uvicorn", "virtualenv",
+    "wagtail", "wagtail-font-awesome-svg", "wagtail-newsletter[mailchimp]",
+    "wagtail-transfer", "wagtailfontawesome", "watchfiles", "whitenoise",
+    "django-osoul", "django-rseal",
+]
+
+# GitHub sources — active standalone (Docker).
+# Workspace root sources take precedence in local dev.
+[tool.uv.sources]
+django-osoul = { git = "https://github.com/mammhoud/django-osoul", branch = "generic" }
+django-rseal = { git = "https://github.com/mammhoud/django-rseal", branch = "generic" }
+django-grep  = { git = "https://github.com/mammhoud/django-grep",  branch = "generic" }
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["www", "plugins", "configs"]
+
+[tool.bumpver]
+current_version = "1.0.3"
+version_pattern = "MAJOR.MINOR.PATCH[-TAG]"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['version = "{version}"']
+"__about__.py"   = ['^__version__ = "{version}"']
