@@ -13,6 +13,9 @@ urlpatterns = [
     # Core handler URLs
     path("", include("apps.accounts.urls")),
 
+    # Profile plugin URLs
+    path("profile/", include("apps.profile.urls")),
+
     # Blog URLs
     path("blog/", include("apps.blog.urls")),
 ]
