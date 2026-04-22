@@ -3,7 +3,7 @@
 # ====================================
 from pathlib import Path
 
-from www.configs.base import *
+from configs.base import *
 
 from ..conf import settings
 
