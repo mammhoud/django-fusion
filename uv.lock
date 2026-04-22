@@ -1090,7 +1090,7 @@ wheels = [
 [[package]]
 name = "django-grep"
 version = "0.1.1"
-source = { git = "https://github.com/mammhoud/django-grep?branch=generic#a7455802bd1b21c628f84d9aa700631e3ddd3ef2" }
+source = { git = "https://github.com/mammhoud/django-grep?branch=generic#6b4a20976b07b39b51aa26beb1a0ccf5689cb418" }
 dependencies = [
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
