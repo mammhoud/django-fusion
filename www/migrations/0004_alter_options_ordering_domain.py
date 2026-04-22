@@ -48,7 +48,7 @@ def update_site_reverse(apps, schema_editor):
 class Migration(migrations.Migration):
 
     dependencies = [
-        ("sites", "0003_set_site_domain_and_name"),
+        ("www", "0003_set_site_domain_and_name"),
     ]
 
     operations = [
