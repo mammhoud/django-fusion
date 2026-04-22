@@ -88,22 +88,22 @@ PLUGIN_APPS = [
     "django_rseal.pipelines",
     "django_osoul.comp",
     "django_rseal.mcp_designer",
-    "django_rseal.email_tools",
+    "django_rseal.email",  # was email_tools, now email
     "django_rseal",  # email automation: EmailLog, UserRole, UserGroup + management commands
 ]
 
 
 OVERRIDE_APPS = [
-    "apps.content",
-    "apps.accounts",
-    "apps.accounts.registration",
+    # "apps.content",      # TODO: create this app
+    # "apps.accounts",     # TODO: create this app
+    # "apps.accounts.registration",  # TODO: create this app
 ]
 
 
 LOCAL_APPS = [
-    "core.CI",
-    "apps.lms",
-    "apps.blog",
+    # "core.CI",   # TODO: create this app
+    # "apps.lms",  # TODO: create this app
+    # "apps.blog", # TODO: create this app
 ]
 
 # COMBINED
