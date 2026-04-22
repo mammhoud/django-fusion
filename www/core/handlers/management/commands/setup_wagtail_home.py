@@ -1,64 +1,120 @@
 """
 Management command: setup_wagtail_home
 ======================================
-Ensures the Wagtail default site's root page is set to the first
-live HomePage instance. Creates a default site record if none exists.
+Run after loaddata to:
+  1. Set the Wagtail default site's root page to the first live HomePage.
+  2. Set the site domain from WAGTAILADMIN_BASE_URL / SITE_DOMAIN env.
+  3. Ensure the English locale exists and is active.
+  4. Create a default site record if none exists.
 
 Usage:
-    python com setup_wagtail_home
+    python manage.py setup_wagtail_home
 """
+import os
 
+from django.conf import settings
 from django.core.management.base import BaseCommand
 from django.db import transaction
 
 
 class Command(BaseCommand):
-    help = "Set Wagtail root page to HomePage and configure default site"
+    help = "Set Wagtail root page to HomePage, configure site domain and English locale"
 
     def handle(self, *args, **options):
         try:
-            from wagtail.models import Page, Site
-
-            from www.apps.content.models.pages.home import HomePage
-
-            with transaction.atomic():
-                # Find or create a HomePage
-                home = HomePage.objects.filter(live=True).first()
-
-                if not home:
-                    self.stdout.write(self.style.WARNING(
-                        "No live HomePage found. Skipping root page setup."
-                    ))
-                    return
-
-                # Get or create the default site
-                site = Site.objects.filter(is_default_site=True).first()
-
-                if site:
-                    if site.root_page_id != home.pk:
-                        site.root_page = home
-                        site.save()
-                        self.stdout.write(self.style.SUCCESS(
-                            f"✅ Updated default site root page → '{home.title}' (pk={home.pk})"
-                        ))
-                    else:
-                        self.stdout.write(self.style.SUCCESS(
-                            f"✅ Default site already points to '{home.title}'"
-                        ))
-                else:
-                    from django.conf import settings as django_settings
-                    hostname = getattr(django_settings, "WAGTAILADMIN_BASE_URL", "localhost")
-                    hostname = hostname.replace("https://", "").replace("http://", "").rstrip("/")
-                    Site.objects.create(
-                        hostname=hostname,
-                        port=80,
-                        root_page=home,
-                        is_default_site=True,
-                        site_name=getattr(django_settings, "WAGTAIL_SITE_NAME", "CTC Hub"),
-                    )
-                    self.stdout.write(self.style.SUCCESS(
-                        f"✅ Created default site with root page '{home.title}'"
-                    ))
-
+            self._run()
         except Exception as exc:
             self.stderr.write(self.style.ERROR(f"❌ setup_wagtail_home failed: {exc}"))
+
+    def _run(self):
+        from wagtail.models import Locale, Page, Site
+
+        with transaction.atomic():
+            # ── 1. Ensure English locale ──────────────────────────────────────
+            locale_en, created = Locale.objects.get_or_create(language_code="en")
+            if created:
+                self.stdout.write(self.style.SUCCESS("✅ Created English locale"))
+
+            # ── 2. Find a live root/home page ─────────────────────────────────
+            home = self._find_home_page()
+            if not home:
+                self.stdout.write(self.style.WARNING(
+                    "⚠️  No live HomePage found — skipping root page setup"
+                ))
+                return
+
+            # ── 3. Resolve site hostname ──────────────────────────────────────
+            hostname = self._resolve_hostname()
+
+            # ── 4. Configure the default site ────────────────────────────────
+            site = Site.objects.filter(is_default_site=True).first()
+            if site:
+                changed = False
+                if site.root_page_id != home.pk:
+                    site.root_page = home
+                    changed = True
+                if site.hostname != hostname:
+                    site.hostname = hostname
+                    changed = True
+                if changed:
+                    site.save()
+                    self.stdout.write(self.style.SUCCESS(
+                        f"✅ Updated site → hostname={hostname}, root='{home.title}'"
+                    ))
+                else:
+                    self.stdout.write(self.style.SUCCESS(
+                        f"✅ Site already configured: {hostname} → '{home.title}'"
+                    ))
+            else:
+                Site.objects.create(
+                    hostname=hostname,
+                    port=443,
+                    root_page=home,
+                    is_default_site=True,
+                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "Structa Cloud"),
+                )
+                self.stdout.write(self.style.SUCCESS(
+                    f"✅ Created default site: {hostname} → '{home.title}'"
+                ))
+
+            # ── 5. Set page locale to English ─────────────────────────────────
+            if hasattr(home, "locale") and home.locale != locale_en:
+                home.locale = locale_en
+                home.save(update_fields=["locale"])
+                self.stdout.write(self.style.SUCCESS("✅ Set home page locale to English"))
+
+    def _find_home_page(self):
+        """Try to find a HomePage, fall back to any live non-root page."""
+        from wagtail.models import Page
+
+        # Try project-specific HomePage first
+        for model_path in [
+            "www.apps.content.models.pages.home.HomePage",
+            "www.core.content.models.HomePage",
+        ]:
+            try:
+                module, cls = model_path.rsplit(".", 1)
+                import importlib
+                mod = importlib.import_module(module)
+                HomePageClass = getattr(mod, cls)
+                home = HomePageClass.objects.filter(live=True).first()
+                if home:
+                    return home
+            except Exception:
+                continue
+
+        # Fall back to any live page that is not the root
+        return Page.objects.filter(live=True, depth__gte=2).first()
+
+    def _resolve_hostname(self):
+        """Resolve hostname from env or settings."""
+        # Prefer explicit env var
+        domain = os.environ.get("SITE_DOMAIN", "")
+        if not domain:
+            base_url = getattr(settings, "WAGTAILADMIN_BASE_URL", "")
+            domain = base_url.replace("https://", "").replace("http://", "").rstrip("/")
+        if not domain:
+            domain = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")[0].strip()
+            if domain in ("*", ""):
+                domain = "core.structa.cloud"
+        return domain
