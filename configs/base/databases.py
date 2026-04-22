@@ -84,6 +84,7 @@ DATABASE_ROUTERS = []
 # Point django.contrib.sites migrations to our custom location
 MIGRATION_MODULES = {
     "sites": "www.migrations",
+    "www_core": None,  # no migrations for www.core app
 }
 
 # # -------------------------------

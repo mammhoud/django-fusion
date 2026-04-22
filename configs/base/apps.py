@@ -101,7 +101,7 @@ OVERRIDE_APPS = [
 
 
 LOCAL_APPS = [
-    "www",  # provides setup_wagtail_home management command
+    "www.core",  # provides setup_wagtail_home management command (no migrations)
     # "core.CI",   # TODO: create this app
     # "apps.lms",  # TODO: create this app
     # "apps.blog", # TODO: create this app
