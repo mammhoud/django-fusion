@@ -21,6 +21,6 @@ MIDDLEWARE = [
     # "allauth.usersessions.middleware.UserSessionsMiddleware",
     # "src.utils.middlewares.htmx.HtmxMiddleware",
     # "django_htmx.middleware.HtmxMiddleware",
-    "django_osoul.middlewares.SiteMiddleware",
+    # "django_osoul.middlewares.SiteMiddleware",  # disabled: DjangoAdapter() takes no arguments
     # "core.middlewares.language.DefaultLanguageMiddleware",
 ]
