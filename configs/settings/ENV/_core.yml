@@ -15,8 +15,8 @@ default:
   # 🏗️ Django Core
   # ====================================
   DJANGO_SETTINGS_MODULE: "configs.settings"
-  DJANGO_ASGI_APPLICATION: "www.alliance.asgi:application"
-  # DJANGO_WSGI_APPLICATION: "www.alliance.wsgi:application"
+  DJANGO_ASGI_APPLICATION: "www.asgi:application"
+  # DJANGO_WSGI_APPLICATION: "www.wsgi:application"
 
   # ====================================
   # 🌍 Internationalization
