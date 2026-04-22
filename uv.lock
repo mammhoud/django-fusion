@@ -1177,7 +1177,7 @@ wheels = [
 [[package]]
 name = "django-osoul"
 version = "0.1.0"
-source = { git = "https://github.com/mammhoud/django-osoul?branch=generic#03e87d89adc7e624f1d050fc6b76f40dc4f1f293" }
+source = { git = "https://github.com/mammhoud/django-osoul?branch=generic#0a651bc808ef560ac917150152ab6d3e686b2ee9" }
 dependencies = [
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
