@@ -1244,7 +1244,7 @@ wheels = [
 [[package]]
 name = "django-rseal"
 version = "0.1.0"
-source = { git = "https://github.com/mammhoud/django-rseal?branch=generic#841a0452191b40b5ca830c87e2f67ce0878543e0" }
+source = { git = "https://github.com/mammhoud/django-rseal?branch=generic#795431f9dfc17fc6f60df5571e4e55ef9ee59f9c" }
 dependencies = [
     { name = "celery" },
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
