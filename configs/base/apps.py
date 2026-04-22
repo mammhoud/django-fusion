@@ -85,11 +85,11 @@ THIRD_PARTY_APPS = [
 
 
 PLUGIN_APPS = [
-    "django_rseal.pipelines",
+    # "django_rseal.pipelines",  # deprecated shim — no models needed
     "django_osoul.comp",
-    "django_rseal.mcp_designer",
-    "django_rseal.email",  # was email_tools, now email
-    "django_rseal",  # email automation: EmailLog, UserRole, UserGroup + management commands
+    # "django_rseal.mcp_designer",  # optional MCP tooling
+    "django_rseal.email",
+    # "django_rseal",  # has broken model references to accounts.Service/pipelines.Person
 ]
 
 
