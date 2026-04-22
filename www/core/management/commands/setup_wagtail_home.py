@@ -35,7 +35,7 @@ class Command(BaseCommand):
             if created:
                 self.stdout.write(self.style.SUCCESS("✅ Created English locale"))
 
-            # ── 2. Find a live root/home page ─────────────────────────────────
+            # ── 2. Find the home page (first live child of root, depth=2) ─────
             home = self._find_home_page()
             if not home:
                 self.stdout.write(self.style.WARNING(
@@ -43,10 +43,17 @@ class Command(BaseCommand):
                 ))
                 return
 
-            # ── 3. Resolve site hostname ──────────────────────────────────────
+            # ── 3. Ensure home page is at depth=2 (direct child of root) ──────
+            root = Page.objects.filter(depth=1).first()
+            if root and home.get_parent().pk != root.pk:
+                self.stdout.write(self.style.WARNING(
+                    f"⚠️  Home page '{home.title}' is not a direct child of root"
+                ))
+
+            # ── 4. Resolve site hostname ──────────────────────────────────────
             hostname = self._resolve_hostname()
 
-            # ── 4. Configure the default site ────────────────────────────────
+            # ── 5. Configure the default site ────────────────────────────────
             site = Site.objects.filter(is_default_site=True).first()
             if site:
                 changed = False
@@ -77,14 +84,17 @@ class Command(BaseCommand):
                     f"✅ Created default site: {hostname} → '{home.title}'"
                 ))
 
-            # ── 5. Set page locale to English ─────────────────────────────────
+            # ── 6. Set page locale to English ─────────────────────────────────
             if hasattr(home, "locale") and home.locale != locale_en:
                 home.locale = locale_en
                 home.save(update_fields=["locale"])
                 self.stdout.write(self.style.SUCCESS("✅ Set home page locale to English"))
 
     def _find_home_page(self):
-        """Try to find a HomePage, fall back to any live non-root page."""
+        """
+        Find the home page — the first live page at depth=2
+        (direct child of the Wagtail root), preferring a HomePage model.
+        """
         from wagtail.models import Page
 
         # Try project-specific HomePage first
@@ -97,13 +107,18 @@ class Command(BaseCommand):
                 import importlib
                 mod = importlib.import_module(module)
                 HomePageClass = getattr(mod, cls)
-                home = HomePageClass.objects.filter(live=True).first()
+                home = HomePageClass.objects.filter(live=True, depth=2).first()
                 if home:
                     return home
             except Exception:
                 continue
 
-        # Fall back to any live page that is not the root
+        # Fall back: first live page at depth=2 (direct child of root)
+        home = Page.objects.filter(live=True, depth=2).first()
+        if home:
+            return home
+
+        # Last resort: any live non-root page
         return Page.objects.filter(live=True, depth__gte=2).first()
 
     def _resolve_hostname(self):
