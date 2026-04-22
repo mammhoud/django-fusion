@@ -92,12 +92,16 @@ class Command(BaseCommand):
 
     def _find_home_page(self):
         """
-        Find the home page — the first live page at depth=2
-        (direct child of the Wagtail root), preferring a HomePage model.
+        Find the real home page — the first live depth=2 page that is NOT
+        the default Wagtail 'Welcome to your new Wagtail site!' page.
+        Prefers English locale (locale_id=1).
+        Falls back to any live depth=2 page.
         """
         from wagtail.models import Page
 
-        # Try project-specific HomePage first
+        WAGTAIL_DEFAULT_TITLE = "Welcome to your new Wagtail site!"
+
+        # Try project-specific HomePage model first
         for model_path in [
             "www.apps.content.models.pages.home.HomePage",
             "www.core.content.models.HomePage",
@@ -113,13 +117,30 @@ class Command(BaseCommand):
             except Exception:
                 continue
 
-        # Fall back: first live page at depth=2 (direct child of root)
-        home = Page.objects.filter(live=True, depth=2).first()
+        # Prefer English (locale_id=1), skip the default welcome page
+        home = (
+            Page.objects
+            .filter(live=True, depth=2, locale_id=1)
+            .exclude(title=WAGTAIL_DEFAULT_TITLE)
+            .order_by("path")
+            .first()
+        )
         if home:
             return home
 
-        # Last resort: any live non-root page
-        return Page.objects.filter(live=True, depth__gte=2).first()
+        # Any live depth=2 page that isn't the welcome page
+        home = (
+            Page.objects
+            .filter(live=True, depth=2)
+            .exclude(title=WAGTAIL_DEFAULT_TITLE)
+            .order_by("path")
+            .first()
+        )
+        if home:
+            return home
+
+        # Last resort: any live depth=2 page
+        return Page.objects.filter(live=True, depth=2).order_by("path").first()
 
     def _resolve_hostname(self):
         """Resolve hostname from env or settings."""
