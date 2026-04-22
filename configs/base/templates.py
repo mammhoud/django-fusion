@@ -42,13 +42,6 @@ TEMPLATES = [
                 "django.template.context_processors.static",
                 "django.template.context_processors.tz",
                 "django.contrib.messages.context_processors.messages",
-                # Custom context processors
-                "django_rseal.contrib.context.LANGUAGES",
-                "django_rseal.contrib.context.COOKIES",
-                "django_rseal.contrib.context.AUTH_SETTINGS",
-                "django_rseal.contrib.context.CONTEXT",
-                "django_rseal.contrib.context.SETTINGS",
-                # "core.processors.settings_context",
             ],
             "libraries": {
                 "embedBlocks": "django_osoul.comp.templatetags.embed_blocks",
@@ -69,7 +62,7 @@ TEMPLATES = [
                 "django.templatetags.static",
                 "heroicons.templatetags.heroicons",
                 "django_osoul.comp.templatetags.components",
-                "django_rseal.comp.templatetags.apps",
+                "django_rseal.templatetags.apps",
                 "django_osoul.comp.templatetags.components.field",
             ],
         },
