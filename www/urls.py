@@ -24,7 +24,7 @@ urlpatterns = [
 urlpatterns = configure_common_urls(urlpatterns)
 
 urlpatterns += i18n_patterns(
-    path("", include("www.apps.urls")),
+    path("", include("plugins.urls")),
     path("", include(wagtail_urls)),
     prefix_default_language=False,
 )
