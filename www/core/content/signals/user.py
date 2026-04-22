@@ -17,7 +17,7 @@ from django.db import transaction
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 
-from www.apps.accounts.models import Person
+from plugins.accounts.models import Person
 
 logger = logging.getLogger(__name__)
 
@@ -101,7 +101,7 @@ def create_user_related_records(sender, instance, created, **kwargs):
 
             # 8. Optionally send welcome message
             try:
-                from www.apps.content.tasks import send_user_welcome_notification
+                from www.core.content.tasks import send_user_welcome_notification
 
                 send_user_welcome_notification(instance, profile)
                 logger.info(f"📨 Sent welcome notification to [{instance.username}]")

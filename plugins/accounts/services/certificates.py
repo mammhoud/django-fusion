@@ -41,7 +41,7 @@ class CertificateService:
         Returns:
             Tuple of (success, message, certificate)
         """
-        from www.apps.accounts.models import Certificate
+        from plugins.accounts.models import Certificate
         
         try:
             # Set default issue date
@@ -86,7 +86,7 @@ class CertificateService:
         Returns:
             Tuple of (valid, message, certificate_data)
         """
-        from www.apps.accounts.models import Certificate
+        from plugins.accounts.models import Certificate
         
         try:
             certificate = Certificate.objects.get(certificate_id=certificate_id)
@@ -145,7 +145,7 @@ class CertificateService:
         Returns:
             Dictionary with dashboard data
         """
-        from www.apps.accounts.models import Certificate
+        from plugins.accounts.models import Certificate
         
         cache_key = f"cert_dashboard_{user.id}"
         dashboard_data = cache.get(cache_key)
@@ -215,7 +215,7 @@ class CertificateService:
         Returns:
             Dictionary with report data
         """
-        from www.apps.accounts.models import Certificate
+        from plugins.accounts.models import Certificate
         
         # Set default dates
         if not end_date:

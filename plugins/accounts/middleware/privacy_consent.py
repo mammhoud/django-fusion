@@ -7,7 +7,7 @@ on authentication pages.
 
 from django.shortcuts import render
 
-from www.apps.accounts.models.profiles.privacy_consent import (
+from plugins.accounts.models.profiles.privacy_consent import (
     PrivacyConsent,
     PrivacyPolicy,
     TermsConsent,

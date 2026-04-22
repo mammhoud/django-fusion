@@ -10,7 +10,7 @@ from hypothesis import strategies as st
 
 
 def _make_view_with_next(next_url):
-    from www.apps.accounts.registration.allauth_views import AllauthLoginView
+    from plugins.accounts.registration.allauth_views import AllauthLoginView
 
     view = AllauthLoginView()
     request = MagicMock()

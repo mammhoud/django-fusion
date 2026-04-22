@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.ui.tables import BooleanColumn
 
-from www.apps.accounts.models import Service
+from plugins.accounts.models import Service
 
 from ..base import BaseSnippetViewSet
 

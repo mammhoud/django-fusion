@@ -4,7 +4,7 @@ from django.views import View
 from django.utils.translation import gettext_lazy as _
 from django_osoul.comp.site import PageHandler
 from www.core.CI.services.cart_service import CartService
-from www.apps.lms.models.courses.info import Course
+from plugins.lms.models.courses.info import Course
 
 
 class CartView(PageHandler):

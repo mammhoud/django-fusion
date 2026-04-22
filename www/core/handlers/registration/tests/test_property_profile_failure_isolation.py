@@ -220,7 +220,7 @@ class TestProfileCreationFailureIsolation(unittest.TestCase):
         try:
             # Must NOT raise — exception must be caught internally
             try:
-                from www.apps.accounts.registration import views as _views
+                from plugins.accounts.registration import views as _views
                 # Reload the Person reference inside the function by patching
                 # the module-level import cache
                 _ensure_profile_exists_fn = _views._ensure_profile_exists
@@ -292,7 +292,7 @@ class TestProfileCreationFailureIsolation(unittest.TestCase):
         try:
             # assertLogs verifies that at least one WARNING is emitted
             with self.assertLogs("apps.registration", level="WARNING") as log_ctx:
-                from www.apps.accounts.registration import views as _views
+                from plugins.accounts.registration import views as _views
                 _views._ensure_profile_exists(user)
 
             # Confirm the log contains a warning (not just any level)

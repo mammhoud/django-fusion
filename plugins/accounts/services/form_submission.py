@@ -13,7 +13,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from wagtail.models import Page
 
-from www.apps.accounts.models import FormSubmission
+from plugins.accounts.models import FormSubmission
 
 logger = logging.getLogger(__name__)
 

@@ -2,8 +2,8 @@ from django.utils.translation import gettext_lazy as _
 from django_filters import CharFilter
 from wagtail.admin.filters import WagtailFilterSet
 
-from www.apps.accounts.filters.revision import RevisionFilterSetMixin
-from www.apps.accounts.snippets import BaseSnippetViewSet
+from plugins.accounts.filters.revision import RevisionFilterSetMixin
+from plugins.accounts.snippets import BaseSnippetViewSet
 
 from ..models import Specialization
 

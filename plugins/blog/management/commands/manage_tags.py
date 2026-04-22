@@ -4,8 +4,8 @@ Management command for managing blog tags.
 
 from django.core.management.base import BaseCommand
 
-from www.apps.blog.models import BlogTag
-from www.apps.blog.services import TagService
+from plugins.blog.models import BlogTag
+from plugins.blog.services import TagService
 
 
 class Command(BaseCommand):

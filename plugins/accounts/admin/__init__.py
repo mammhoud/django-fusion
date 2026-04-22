@@ -4,7 +4,7 @@ Admin configuration for the handlers app.
 
 from django.contrib import admin
 
-from www.apps.accounts.models.tags import Tag, TaggedItem
+from plugins.accounts.models.tags import Tag, TaggedItem
 
 
 @admin.register(Tag)

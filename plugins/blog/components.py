@@ -34,7 +34,7 @@ class BlogPostListFragment(FragmentComponent):
         return True  # Public
 
     def get_queryset(self):
-        from www.apps.blog.models import BlogPost
+        from plugins.blog.models import BlogPost
 
         qs = BlogPost.objects.filter(status="published").select_related("author")
 
@@ -50,7 +50,7 @@ class BlogPostListFragment(FragmentComponent):
 
     def get_fragment_context(self, **kwargs):
         context = super().get_fragment_context(**kwargs)
-        from www.apps.blog.models import BlogCategory
+        from plugins.blog.models import BlogCategory
 
         context["categories"] = BlogCategory.objects.all()
         context["search_query"] = self.request.GET.get("q", "")

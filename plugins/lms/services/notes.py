@@ -38,7 +38,7 @@ class NoteService:
         Returns:
             Tuple of (success, message, note)
         """
-        from www.apps.accounts.models import Note, Tag
+        from plugins.accounts.models import Note, Tag
         
         try:
             # Create note
@@ -97,7 +97,7 @@ class NoteService:
         Returns:
             Tuple of (success, message, note)
         """
-        from www.apps.accounts.models import Note
+        from plugins.accounts.models import Note
         
         try:
             note = Note.objects.get(id=note_id)
@@ -148,7 +148,7 @@ class NoteService:
         Returns:
             Tuple of (success, message)
         """
-        from www.apps.accounts.models import Note, SharedNote
+        from plugins.accounts.models import Note, SharedNote
         
         try:
             note = Note.objects.get(id=note_id)
@@ -211,7 +211,7 @@ class NoteService:
         Returns:
             Dictionary with results and metadata
         """
-        from www.apps.accounts.models import Note
+        from plugins.accounts.models import Note
         
         # Get base queryset
         notes = Note.objects.search_notes(user, query, **(filters or {}))
@@ -253,7 +253,7 @@ class NoteService:
         from django.db.models import Count
         from django.db.models.functions import TruncDate
 
-        from www.apps.accounts.models import Note
+        from plugins.accounts.models import Note
         
         end_date = timezone.now()
         start_date = end_date - timedelta(days=days)

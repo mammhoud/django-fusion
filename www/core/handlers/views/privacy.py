@@ -9,7 +9,7 @@ from django.http import HttpResponse, JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
-from www.apps.accounts.models.profiles.privacy_consent import (
+from plugins.accounts.models.profiles.privacy_consent import (
     PrivacyConsent,
     PrivacyPolicy,
     TermsConsent,

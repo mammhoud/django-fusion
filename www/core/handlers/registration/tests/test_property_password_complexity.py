@@ -62,7 +62,7 @@ if not settings.configured:
 # so that we always import the real module here.
 sys.modules.pop("apps.accounts.registration.forms", None)
 
-from www.apps.accounts.registration.forms import PasswordCreationForm  # noqa: E402
+from plugins.accounts.registration.forms import PasswordCreationForm  # noqa: E402
 
 from hypothesis import given, settings as h_settings  # noqa: E402
 from hypothesis import strategies as st  # noqa: E402

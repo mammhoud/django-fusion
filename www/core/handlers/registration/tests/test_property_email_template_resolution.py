@@ -18,8 +18,8 @@ pytestmark = pytest.mark.django_db
 )
 @settings(max_examples=50)
 def test_resolve_uses_snippet_when_present(template_type, subject, body):
-    from www.apps.accounts.registration.models import AuthEmailTemplate
-    from www.apps.accounts.registration.emails import _resolve_template
+    from plugins.accounts.registration.models import AuthEmailTemplate
+    from plugins.accounts.registration.emails import _resolve_template
 
     # Deactivate any existing snippets
     AuthEmailTemplate.objects.filter(template_type=template_type).update(is_active=False)
@@ -42,8 +42,8 @@ def test_resolve_uses_snippet_when_present(template_type, subject, body):
 )
 @settings(max_examples=50)
 def test_resolve_falls_back_when_no_snippet(template_type):
-    from www.apps.accounts.registration.models import AuthEmailTemplate
-    from www.apps.accounts.registration.emails import _resolve_template
+    from plugins.accounts.registration.models import AuthEmailTemplate
+    from plugins.accounts.registration.emails import _resolve_template
 
     # Ensure no active snippet
     AuthEmailTemplate.objects.filter(template_type=template_type).update(is_active=False)

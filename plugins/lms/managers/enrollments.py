@@ -12,7 +12,7 @@ from django.db.models.aggregates import Sum
 from django.utils import timezone
 from django_osoul.managers import CachedManager
 
-from www.apps.lms.models import Course, Enrollment, Lesson, Module
+from plugins.lms.models import Course, Enrollment, Lesson, Module
 
 User = get_user_model()
 logger = logging.getLogger(__name__)

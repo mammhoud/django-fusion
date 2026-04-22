@@ -31,7 +31,7 @@ class CertificateService:
         """
         from django.utils import timezone
 
-        from www.apps.lms.models.certificate import Certificate
+        from plugins.lms.models.certificate import Certificate
 
         if completion_date is None:
             completion_date = timezone.now().date()
@@ -174,7 +174,7 @@ class CertificateService:
         Returns:
             Certificate details if valid, None otherwise
         """
-        from www.apps.lms.models.certificate import Certificate
+        from plugins.lms.models.certificate import Certificate
 
         try:
             cert = Certificate.objects.select_related("user", "course").get(
@@ -194,5 +194,5 @@ class CertificateService:
     @classmethod
     def get_user_certificates(cls, user):
         """Get all certificates for a user."""
-        from www.apps.lms.models.certificate import Certificate
+        from plugins.lms.models.certificate import Certificate
         return Certificate.objects.filter(user=user).select_related("course")

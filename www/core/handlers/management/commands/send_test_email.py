@@ -9,7 +9,7 @@ import sys
 
 from django.core.management.base import BaseCommand
 
-from www.apps.accounts.registration.emails import (
+from plugins.accounts.registration.emails import (
     _get_sender_accounts,
     _send_via_smtp,
     _send_with_django_backend,

@@ -63,7 +63,7 @@ from unittest.mock import call, patch  # noqa: E402
 from hypothesis import given, settings as h_settings  # noqa: E402
 from hypothesis import strategies as st  # noqa: E402
 
-from www.apps.accounts.registration.emails import (  # noqa: E402
+from plugins.accounts.registration.emails import (  # noqa: E402
     send_registration_email,
 )
 

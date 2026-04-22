@@ -29,7 +29,7 @@ def send_user_welcome_notification(user, profile) -> None:
     """
     Send a welcome notification to a newly registered user.
 
-    Called from www.apps.content.signals.user after profile creation.
+    Called from www.core.content.signals.user after profile creation.
     Wrapped in try/except at call site — failures are non-fatal.
     """
     try:

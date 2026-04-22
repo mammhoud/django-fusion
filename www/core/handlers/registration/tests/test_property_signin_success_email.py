@@ -22,7 +22,7 @@ def _make_user(last_login):
 @given(last_login=st.none())
 @settings(max_examples=50)
 def test_first_login_triggers_email(last_login):
-    from www.apps.accounts.registration.signals import on_user_logged_in
+    from plugins.accounts.registration.signals import on_user_logged_in
 
     user = _make_user(last_login)
     threads_started = []
@@ -49,7 +49,7 @@ def test_first_login_triggers_email(last_login):
 )
 @settings(max_examples=50)
 def test_returning_login_does_not_trigger_email(last_login):
-    from www.apps.accounts.registration.signals import on_user_logged_in
+    from plugins.accounts.registration.signals import on_user_logged_in
 
     user = _make_user(last_login)
     threads_started = []

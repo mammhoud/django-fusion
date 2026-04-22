@@ -10,7 +10,7 @@ from wagtail.snippets.views.snippets import SnippetViewSetGroup
 
 # Manage snippets
 from django_rseal.pipelines.snippets.manage.submissions import FormSubmissionViewSet
-from www.apps.accounts.snippets.manage.peoples import (
+from plugins.accounts.snippets.manage.peoples import (
     PersonViewSet,
     WorkspaceViewSet,
     CompanyViewSet,

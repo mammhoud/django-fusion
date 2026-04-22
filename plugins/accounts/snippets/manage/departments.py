@@ -1,6 +1,6 @@
 # from django.utils.translation import gettext_lazy as _
 
-# from www.apps.accounts.models import Company  # Uses your detailed model
+# from plugins.accounts.models import Company  # Uses your detailed model
 
 # from ..base import BaseSnippetViewSet
 
@@ -69,7 +69,7 @@
 # # OPTIONAL: REGISTER DEPARTMENT AS SNIPPET
 # # Uncomment if you want departments manageable as standalone snippets
 # # ------------------------------------------------------------------
-# # from www.apps.accounts.models import Department
+# # from plugins.accounts.models import Department
 # #
 # # @register_snippet
 # # class DepartmentViewSet(BaseSnippetViewSet):

@@ -19,8 +19,8 @@ from wagtail.models import Page
 from wagtail.search import index
 
 from apps import logger
-from www.apps.accounts.models.manage.service import Service
-from www.apps.content.models.contact import ContactSubmission
+from plugins.accounts.models.manage.service import Service
+from www.core.content.models.contact import ContactSubmission
 
 from ..blocks.form import MinimalContactFormBlock
 

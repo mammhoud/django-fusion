@@ -26,7 +26,7 @@ class ModuleManager(BaseManager):
         Returns:
             Dictionary with statistics
         """
-        from www.apps.accounts.models import LessonProgress
+        from plugins.accounts.models import LessonProgress
 
         # Get all lessons in module
         lessons = module.lessons.filter(is_active=True)

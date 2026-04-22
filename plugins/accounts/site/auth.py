@@ -11,8 +11,8 @@ from django.views.decorators.csrf import csrf_protect
 
 from django_osoul.comp.site import PageHandler
 # Assuming a custom form exists, otherwise fallback to UserCreationForm would be needed
-from www.apps.users.forms import UserRegisterForm
-from www.apps.accounts.services import trigger_notification
+from plugins.accounts.forms import UserRegisterForm
+from plugins.accounts.services import trigger_notification
 
 class RegisterView(PageHandler):
     """

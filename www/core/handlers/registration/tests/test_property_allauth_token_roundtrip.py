@@ -10,7 +10,7 @@ import pytest
 from hypothesis import given, settings
 from hypothesis import strategies as st
 
-from www.apps.accounts.registration.tokens import RegistrationTokenGenerator
+from plugins.accounts.registration.tokens import RegistrationTokenGenerator
 
 
 def _make_mock_user(pk: int):

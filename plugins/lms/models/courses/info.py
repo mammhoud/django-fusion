@@ -527,7 +527,7 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
         """
         Get modules for a given course instance.
         """
-        from www.apps.lms.services.lessons import LessonsService
+        from plugins.lms.services.lessons import LessonsService
 
         try:
             return LessonsService().get_course_modules(course)
@@ -549,7 +549,7 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
         """
         Get cached search results using CourseService.
         """
-        from www.apps.lms.services.courses import CourseService
+        from plugins.lms.services.courses import CourseService
 
         filters = filters or {}
         if query:

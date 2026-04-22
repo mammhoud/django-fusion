@@ -16,7 +16,7 @@ from wagtail.admin.panels import (
 )
 from wagtail.search import index
 
-from www.apps.accounts.models.manage.service import Service
+from plugins.accounts.models.manage.service import Service
 
 
 # -------------------------------------------------------------------
@@ -926,7 +926,7 @@ class Department(DefaultBase, ClusterableModel):
 
     def get_employee_count(self):
         """Calculate actual employee count from team memberships."""
-        from www.apps.teams.models import TeamMembership
+        from plugins.accounts.models import TeamMembership
 
         # Count unique active employees across all department teams
         return TeamMembership.objects.filter(

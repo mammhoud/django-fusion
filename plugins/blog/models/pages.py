@@ -13,7 +13,7 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.search import index
 
-from www.apps.content.models.pages.base import BasePage
+from www.core.content.models.pages.base import BasePage
 
 
 class BlogIndexPage(RoutablePageMixin, BasePage):
@@ -94,7 +94,7 @@ class BlogIndexPage(RoutablePageMixin, BasePage):
 
     def get_posts(self, category: str = None, tag: str = None, query: str = None):
         """Return published BlogPost queryset with optional filters."""
-        from www.apps.blog.services import PostFilterService
+        from plugins.blog.services import PostFilterService
 
         from .post import BlogPost
 
@@ -122,7 +122,7 @@ class BlogIndexPage(RoutablePageMixin, BasePage):
 
     def _sidebar_context(self):
         """Return categories and tags for the sidebar."""
-        from www.apps.blog.services import TagService
+        from plugins.blog.services import TagService
 
         from .category import BlogCategory
         from .tag import BlogTag
@@ -245,7 +245,7 @@ class BlogIndexPage(RoutablePageMixin, BasePage):
     @route(r"^search/$", name="search")
     def search_view(self, request):
         """HTMX live-search endpoint — returns the search_results partial."""
-        from www.apps.blog.services import PostFilterService
+        from plugins.blog.services import PostFilterService
 
         from .category import BlogCategory
         from .post import BlogPost

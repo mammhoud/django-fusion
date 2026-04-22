@@ -7,7 +7,7 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views import View
 
-from www.apps.blog.models import BlogPost
+from plugins.blog.models import BlogPost
 
 
 @method_decorator(login_required, name="dispatch")

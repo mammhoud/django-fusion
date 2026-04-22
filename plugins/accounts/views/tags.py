@@ -6,8 +6,8 @@ from django.contrib.contenttypes.models import ContentType
 from django.http import JsonResponse
 from django.views.generic import DetailView, ListView
 
-from www.apps.accounts.models.example_tagged_model import Article, Product
-from www.apps.accounts.models.tags import Tag, TaggedItem
+from plugins.accounts.models.example_tagged_model import Article, Product
+from plugins.accounts.models.tags import Tag, TaggedItem
 
 
 class TagListView(ListView):

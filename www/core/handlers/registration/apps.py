@@ -10,5 +10,5 @@ class HandlersRegistrationConfig(AppConfig):
 
     def ready(self):
         import www.apps.accounts.registration.signals  # noqa: F401
-        from www.apps.accounts.registration.admin import register_user_admin
+        from plugins.accounts.registration.admin import register_user_admin
         register_user_admin()

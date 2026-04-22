@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 
-from www.apps.accounts.snippets import BaseSnippetViewSet
+from plugins.accounts.snippets import BaseSnippetViewSet
 
 from ..models import Classes, Schedule
 

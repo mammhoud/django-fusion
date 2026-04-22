@@ -32,7 +32,7 @@ def _make_email_confirmation(pk: int, email: str):
 )
 @settings(max_examples=100)
 def test_confirmation_email_sent_once_per_signup(pk, email):
-    from www.apps.accounts.registration.adapter import RegistrationAdapter
+    from plugins.accounts.registration.adapter import RegistrationAdapter
 
     request = MagicMock()
     adapter = RegistrationAdapter(request=request)

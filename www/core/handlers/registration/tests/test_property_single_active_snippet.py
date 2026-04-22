@@ -16,7 +16,7 @@ pytestmark = pytest.mark.django_db
 )
 @settings(max_examples=100)
 def test_single_active_per_type(template_type, n_saves):
-    from www.apps.accounts.registration.models import AuthEmailTemplate
+    from plugins.accounts.registration.models import AuthEmailTemplate
 
     for i in range(n_saves):
         AuthEmailTemplate.objects.create(

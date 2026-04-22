@@ -7,7 +7,7 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from www.apps.accounts.services import MessageService
+from plugins.accounts.services import MessageService
 from core import logger
 from django_osoul.comp.site import NotificationMixin, PageHandler
 
@@ -35,7 +35,7 @@ class MessagesView(PageHandler, NotificationMixin):
         if request.user.is_authenticated:
             try:
                 # Get message statistics
-                from www.apps.accounts.models import Message
+                from plugins.accounts.models import Message
 
                 message_stats = Message.objects.get_message_statistics(request.user)
 

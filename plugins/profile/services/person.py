@@ -311,7 +311,7 @@ class PersonService:
                 person.save()
 
                 # Invalidate cache
-                from www.apps.accounts.managers import PersonManager
+                from plugins.accounts.managers import PersonManager
                 PersonManager().invalidate_object_cache(person)
 
                 return True, "Notification preferences updated"
@@ -346,7 +346,7 @@ class PersonService:
         Returns:
             Dict with invitation details
         """
-        from www.apps.accounts.services.invitation import InvitationService
+        from plugins.accounts.services.invitation import InvitationService
 
         try:
             # Check if person already exists

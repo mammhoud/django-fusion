@@ -80,7 +80,7 @@ if not hasattr(_tokens_mod, "registration_token_generator"):
 # ---------------------------------------------------------------------------
 # Now import the function under test
 # ---------------------------------------------------------------------------
-from www.apps.accounts.registration.views import trigger_notification  # noqa: E402
+from plugins.accounts.registration.views import trigger_notification  # noqa: E402
 
 from django.http import HttpResponse  # noqa: E402
 

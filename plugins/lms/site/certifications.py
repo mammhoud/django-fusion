@@ -7,7 +7,7 @@ from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
-from www.apps.accounts.services import CertificateService
+from plugins.accounts.services import CertificateService
 from core import logger
 from django_osoul.comp.site import NotificationMixin, PageHandler
 
@@ -38,7 +38,7 @@ class CertificationsView(PageHandler, NotificationMixin):
                 dashboard = CertificateService.get_certificate_profile(request.user)
 
                 # Get valid certificates
-                from www.apps.accounts.models import Certificate
+                from plugins.accounts.models import Certificate
 
                 valid_certificates = Certificate.objects.get_valid_certificates(request.user)
 
@@ -68,7 +68,7 @@ class CertificationsView(PageHandler, NotificationMixin):
 
     def _get_user_issuers(self, user):
         """Get unique issuers for user's certificates."""
-        from www.apps.accounts.models import Certificate
+        from plugins.accounts.models import Certificate
 
         return (
             Certificate.objects.filter(content_object=user)

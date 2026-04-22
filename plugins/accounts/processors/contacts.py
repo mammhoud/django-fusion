@@ -1,4 +1,4 @@
-# from www.apps.company.models import Company
+# from plugins.accounts.models import Company
 from commons.contact.models import Contact, ContactEmail, ContactPhone
 from django.db.models import Q
 

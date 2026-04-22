@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.views.snippets import SnippetViewSet
 
-from www.apps.lms.models import Enrollment
+from plugins.lms.models import Enrollment
 
 class EnrollmentViewSet(SnippetViewSet):
     """

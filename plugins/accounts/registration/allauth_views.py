@@ -15,7 +15,7 @@ from django.shortcuts import redirect
 from django.urls import reverse
 from django_osoul.comp.site import PageHandler
 
-from www.apps.accounts.services import trigger_notification
+from plugins.accounts.services import trigger_notification
 
 
 class AllauthLoginView(PageHandler, AllauthBaseLoginView):

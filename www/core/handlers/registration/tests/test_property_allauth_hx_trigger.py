@@ -28,7 +28,7 @@ def _make_htmx_request():
 )
 @settings(max_examples=100)
 def test_trigger_notification_header_valid(message, notification_type):
-    from www.apps.accounts.registration.views import trigger_notification
+    from plugins.accounts.registration.views import trigger_notification
     from django.http import HttpResponse
 
     response = HttpResponse()
@@ -52,7 +52,7 @@ def test_trigger_notification_header_valid(message, notification_type):
 )
 @settings(max_examples=50)
 def test_form_invalid_sets_hx_trigger(form_errors):
-    from www.apps.accounts.registration.allauth_views import AllauthLoginView
+    from plugins.accounts.registration.allauth_views import AllauthLoginView
     from django.http import HttpResponse
 
     view = AllauthLoginView()

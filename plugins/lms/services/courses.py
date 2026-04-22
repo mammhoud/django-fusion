@@ -12,7 +12,7 @@ from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
 from apps import logger
-from www.apps.lms.models.courses import Course, Lesson, Module
+from plugins.lms.models.courses import Course, Lesson, Module
 from django_rseal.pipelines.services import (
     CRUDService,
 )
@@ -156,7 +156,7 @@ class CourseService(CRUDService):
 
                 # Issue completion certificate if enabled
                 if enrollment.course.issue_certificate_on_completion:
-                    from www.apps.accounts.services import CertificateService
+                    from plugins.accounts.services import CertificateService
 
                     CertificateService.issue_certificate(
                         content_object=enrollment.content_object,
@@ -601,7 +601,7 @@ class CourseService(CRUDService):
 
             # Add user enrollment status if user_id provided
             if user_id:
-                from www.apps.lms.models.enrollment import EnrollmentsManager
+                from plugins.lms.models.enrollment import EnrollmentsManager
 
                 enrollment = EnrollmentsManager().get_user_enrollment_for_course(
                     user_id=user_id,

@@ -6,8 +6,8 @@ from django_osoul.comp.site import PageHandler
 from django_rseal.pipelines.models import (
     PersonTag,
 )
-from www.apps.lms.models import Course, Enrollment
-from www.apps.lms.models.courses.progress import LessonProgress
+from plugins.lms.models import Course, Enrollment
+from plugins.lms.models.courses.progress import LessonProgress
 
 from apps import logger
 
@@ -129,7 +129,7 @@ class DashboardView(PageHandler):
             })
 
         # Recent lesson completions
-        from www.apps.accounts.models import LessonProgress
+        from plugins.accounts.models import LessonProgress
 
         recent_lessons = LessonProgress.objects.filter(
             user=user,
@@ -233,7 +233,7 @@ class DashboardView(PageHandler):
         })
 
         # Manage tags
-        from www.apps.accounts.models import Person
+        from plugins.accounts.models import Person
         person = Person.objects.filter(user=user).first()
         if person and person.tagged_items.count() < 5:
             actions.append({

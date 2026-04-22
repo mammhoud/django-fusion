@@ -22,7 +22,7 @@ def _make_request(htmx: bool, authenticated: bool = False):
 @given(htmx=st.booleans())
 @settings(max_examples=50)
 def test_login_view_routing(htmx):
-    from www.apps.accounts.registration.allauth_views import AllauthLoginView
+    from plugins.accounts.registration.allauth_views import AllauthLoginView
 
     view = AllauthLoginView()
     request = _make_request(htmx=htmx)

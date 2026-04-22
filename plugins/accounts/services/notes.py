@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.db import models
 from django.utils import timezone
-from www.apps.accounts.models.profiles.note import Note, SharedNote
+from plugins.accounts.models.profiles.note import Note, SharedNote
 
 User = get_user_model()
 

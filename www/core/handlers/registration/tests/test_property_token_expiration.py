@@ -58,7 +58,7 @@ from django.core import signing  # noqa: E402
 from hypothesis import given, settings as h_settings  # noqa: E402
 from hypothesis import strategies as st  # noqa: E402
 
-from www.apps.accounts.registration.tokens import (  # noqa: E402
+from plugins.accounts.registration.tokens import (  # noqa: E402
     RegistrationTokenGenerator,
 )
 

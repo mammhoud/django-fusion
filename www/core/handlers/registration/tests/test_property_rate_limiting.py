@@ -100,7 +100,7 @@ from unittest.mock import patch  # noqa: E402
 
 from django.core.cache import cache  # noqa: E402
 
-from www.apps.accounts.registration.views import (  # noqa: E402
+from plugins.accounts.registration.views import (  # noqa: E402
     RATE_LIMIT_MAX_ATTEMPTS,
     rate_limit_check,
     rate_limit_increment,

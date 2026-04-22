@@ -47,7 +47,7 @@ class MessageService:
         Returns:
             Tuple of (success, message, message_object)
         """
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
 
         try:
             # Create message
@@ -91,7 +91,7 @@ class MessageService:
         from django.db.models import Count, Q
         from django.db.models.functions import TruncDate
 
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
 
         end_date = timezone.now()
         start_date = end_date - timedelta(days=days)

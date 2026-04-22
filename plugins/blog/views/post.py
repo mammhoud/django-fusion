@@ -5,8 +5,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
 from django_osoul.views import FilterMixin, SearchMixin
 
-from www.apps.blog.models import BlogCategory, BlogPost, BlogTag
-from www.apps.blog.services import TagService
+from plugins.blog.models import BlogCategory, BlogPost, BlogTag
+from plugins.blog.services import TagService
 
 
 class BlogPostListView(SearchMixin, FilterMixin, ListView):

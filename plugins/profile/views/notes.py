@@ -6,8 +6,8 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
-from www.apps.accounts.services import CertificateService, MessageService
-from www.apps.lms.services import CourseService, NoteService
+from plugins.accounts.services import CertificateService, MessageService
+from plugins.lms.services import CourseService, NoteService
 
 from core import logger
 
@@ -34,7 +34,7 @@ class NotesView(PageHandler, NotificationMixin):
         if request.user.is_authenticated:
             try:
                 # Get notes statistics
-                from www.apps.accounts.models import Note
+                from plugins.accounts.models import Note
 
                 note_stats = Note.objects.get_note_statistics(request.user)
 
@@ -68,7 +68,7 @@ class NotesView(PageHandler, NotificationMixin):
 
     def _get_user_tags(self, user):
         """Get tags used by user."""
-        from www.apps.accounts.models import Tag
+        from plugins.accounts.models import Tag
 
         return Tag.objects.filter(notes__created_by=user).distinct().order_by("name")
 
@@ -212,7 +212,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
         activity = []
 
         # Recent notes
-        from www.apps.accounts.models import Note
+        from plugins.accounts.models import Note
 
         recent_notes = Note.objects.get_recent_notes(user, 3)
         for note in recent_notes:
@@ -229,7 +229,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
             )
 
         # Recent messages
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
 
         recent_messages = Message.objects.get_user_messages(user, unread_only=False)[:3]
         for msg in recent_messages:
@@ -246,7 +246,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
             )
 
         # Recent course progress
-        from www.apps.lms.models import Enrollment
+        from plugins.lms.models import Enrollment
 
         recent_enrollments = Enrollment.objects.filter(content_object=user).order_by(
             "-last_accessed_at"
@@ -274,7 +274,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
         actions = []
 
         # Check for incomplete profile
-        from www.apps.accounts.models import Person
+        from plugins.accounts.models import Person
 
         person = Person.objects.filter(user=user).first()
         if person and person.completion_percentage < 80:
@@ -290,7 +290,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
             )
 
         # Check for expiring certificates
-        from www.apps.accounts.models import Certificate
+        from plugins.accounts.models import Certificate
 
         expiring_certs = Certificate.objects.get_expiring_soon(user, 30)
         if expiring_certs.exists():
@@ -306,7 +306,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
             )
 
         # Check for unread messages
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
 
         unread_count = Message.objects.get_user_messages(user, unread_only=True).count()
         if unread_count > 0:
@@ -360,7 +360,7 @@ class ContentDashboardView(PageHandler, NotificationMixin):
 
     def _get_profile_completion(self):
         """Get profile completion percentage."""
-        from www.apps.accounts.models import Person
+        from plugins.accounts.models import Person
 
         person = Person.objects.filter(user=self.request.user).first()
         return person.completion_percentage if person else 0

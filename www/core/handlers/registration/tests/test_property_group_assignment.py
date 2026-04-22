@@ -116,7 +116,7 @@ from django.contrib.auth.models import Group  # noqa: E402
 from hypothesis import given, settings as h_settings  # noqa: E402
 from hypothesis import strategies as st  # noqa: E402
 
-from www.apps.accounts.registration.views import (  # noqa: E402
+from plugins.accounts.registration.views import (  # noqa: E402
     assign_default_group,
     ensure_groups_exist,
 )

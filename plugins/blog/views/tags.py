@@ -11,9 +11,9 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import CreateView, DeleteView, ListView, UpdateView
 
-from www.apps.blog.forms import BlogTagForm
-from www.apps.blog.models import BlogTag
-from www.apps.blog.services import TagService
+from plugins.blog.forms import BlogTagForm
+from plugins.blog.models import BlogTag
+from plugins.blog.services import TagService
 
 
 @method_decorator(staff_member_required, name="dispatch")

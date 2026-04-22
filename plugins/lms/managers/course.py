@@ -59,7 +59,7 @@ class CourseManager(CachedManager):
             return {**cached_result, 'from_cache': True}
 
         # Get enrollment model
-        from www.apps.lms.models.enrollment import Enrollment
+        from plugins.lms.models.enrollment import Enrollment
 
         # Build enrollment filters
         enrollment_filters = {'student__user_id': user_id}
@@ -133,7 +133,7 @@ class CourseManager(CachedManager):
 
         try:
             # Get from enrolled courses
-            from www.apps.lms.models.enrollment import Enrollment
+            from plugins.lms.models.enrollment import Enrollment
 
             enrollments = Enrollment.objects.filter(
                 student__user_id=user_id,
@@ -233,7 +233,7 @@ class CourseManager(CachedManager):
         Returns:
             Dictionary with skill assessment
         """
-        from www.apps.lms.models.enrollment import Enrollment
+        from plugins.lms.models.enrollment import Enrollment
 
         # Get completed courses
         completed_courses = Enrollment.objects.filter(
@@ -307,7 +307,7 @@ class CourseManager(CachedManager):
         if cached_result is not None:
             return cached_result
 
-        from www.apps.lms.models.enrollment import Enrollment
+        from plugins.lms.models.enrollment import Enrollment
 
         end_date = timezone.now()
         start_date = end_date - timedelta(days=days)
@@ -434,7 +434,7 @@ class CourseManager(CachedManager):
         # New user-specific filters
         if user_id := filters.get('user_id'):
             # Filter by user enrollment status
-            from www.apps.lms.models.enrollment import Enrollment
+            from plugins.lms.models.enrollment import Enrollment
 
             if filters.get('enrolled_only'):
                 enrolled_course_ids = Enrollment.objects.filter(

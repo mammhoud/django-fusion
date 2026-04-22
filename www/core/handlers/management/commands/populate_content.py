@@ -176,7 +176,7 @@ def _populate_home(translation, trans_map: dict, code: str) -> None:
         (b[0] if isinstance(b, tuple) else b.block_type) == "clients" for b in ns
     )
     if not clients_exists:
-        from www.apps.accounts.models.manage.company import Organization
+        from plugins.accounts.models.manage.company import Organization
         orgs = Organization.objects.all()[:5]
         client_blocks = [("client", {"organization": org}) for org in orgs]
         ns.append(("clients", client_blocks))
@@ -250,7 +250,7 @@ def _populate_about(translation, trans_map: dict, code: str) -> None:
         }))
 
     if not has_clients:
-        from www.apps.accounts.models.manage.company import Organization
+        from plugins.accounts.models.manage.company import Organization
         orgs = Organization.objects.all()[:5]
         client_blocks = [("client", {"organization": org}) for org in orgs]
         nf.append(("clients", client_blocks))
@@ -401,13 +401,13 @@ class Command(BaseCommand):
         # Deferred Wagtail imports — must be inside handle() so the module can
         # be imported and patched in tests before the app registry is ready.
 
-        from www.apps.content.models.pages.about import AboutPage
-        from www.apps.content.models.pages.contact import ContactPage
-        from www.apps.content.models.pages.events import EventPage
-        from www.apps.content.models.pages.home import HomePage
-        from www.apps.content.models.pages.services import ServicesPage
-        from www.apps.content.models.pages.team import TeamPage
-        from www.apps.lms.models.courses.index import CoursesPage
+        from www.core.content.models.pages.about import AboutPage
+        from www.core.content.models.pages.contact import ContactPage
+        from www.core.content.models.pages.events import EventPage
+        from www.core.content.models.pages.home import HomePage
+        from www.core.content.models.pages.services import ServicesPage
+        from www.core.content.models.pages.team import TeamPage
+        from plugins.lms.models.courses.index import CoursesPage
 
         MODEL_MAP = {
             "HomePage": HomePage,

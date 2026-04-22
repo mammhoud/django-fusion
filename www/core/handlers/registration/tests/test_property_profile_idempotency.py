@@ -148,7 +148,7 @@ _users_mod.Person = PersonStub
 # ---------------------------------------------------------------------------
 # Now import the function under test.
 # ---------------------------------------------------------------------------
-from www.apps.accounts.registration.views import _ensure_profile_exists  # noqa: E402
+from plugins.accounts.registration.views import _ensure_profile_exists  # noqa: E402
 
 # ---------------------------------------------------------------------------
 # Imports

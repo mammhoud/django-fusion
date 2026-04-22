@@ -32,8 +32,8 @@ class BlogApp(Application):
 
     @viewprop
     def viewsets(self):
-        from www.apps.blog.components import BlogPostCreateFragment, BlogPostListFragment
-        from www.apps.blog.viewsets import BlogCategoryViewset, BlogPostViewset
+        from plugins.blog.components import BlogPostCreateFragment, BlogPostListFragment
+        from plugins.blog.viewsets import BlogCategoryViewset, BlogPostViewset
         return [
             BlogPostViewset(),
             BlogCategoryViewset(),

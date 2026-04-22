@@ -5,7 +5,7 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
-from www.apps.lms.services.courses import CourseService
+from plugins.lms.services.courses import CourseService
 
 from apps import logger
 
@@ -33,7 +33,7 @@ class CoursesView(PageHandler, NotificationMixin):
                 dashboard = CourseService.get_user_course_dashboard(request.user)
 
                 # Get active courses
-                from www.apps.lms.models import Course
+                from plugins.lms.models import Course
 
                 active_courses = Course.objects.get_active_courses(request.user)
 

@@ -7,7 +7,7 @@ These work alongside the existing URL definitions in apps/blog/urls.py.
 
 Usage::
 
-    from www.apps.blog.viewsets import BlogPostViewset
+    from plugins.blog.viewsets import BlogPostViewset
     # Register in apps/core/routes.py → BlogApp.viewsets
 """
 

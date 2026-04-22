@@ -10,7 +10,7 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
-from www.apps.accounts.models import PersonTag, PersonTagCategory
+from plugins.accounts.models import PersonTag, PersonTagCategory
 
 from apps import logger
 

@@ -24,7 +24,7 @@ _COMMANDS_DIR = os.path.join(
 )
 sys.path.insert(0, os.path.abspath(os.path.join(_COMMANDS_DIR, "..")))
 
-from www.apps.accounts.management.commands.validate_config import (  # noqa: E402
+from plugins.accounts.management.commands.validate_config import (  # noqa: E402
     _check_secret_key,
     INSECURE_KEY_PREFIXES,
     MIN_SECRET_KEY_LENGTH,

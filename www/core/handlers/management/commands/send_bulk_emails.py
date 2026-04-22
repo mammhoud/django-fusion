@@ -18,7 +18,7 @@ from django.template import Context, Template
 from django.utils import timezone
 from django.utils.html import strip_tags
 
-from www.apps.accounts.registration.models import CSVEmailTestBatch
+from plugins.accounts.registration.models import CSVEmailTestBatch
 
 logger = logging.getLogger(__name__)
 

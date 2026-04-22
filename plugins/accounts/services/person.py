@@ -235,7 +235,7 @@ class PersonService:
                 person.save()
 
                 # Invalidate cache
-                from www.apps.accounts.managers import PersonManager
+                from plugins.accounts.managers import PersonManager
                 PersonManager().invalidate_object_cache(person)
 
                 return True, "Notification preferences updated"

@@ -15,7 +15,7 @@ def send_email_task(
     """
     Background job for sending emails.
     """
-    from www.apps.accounts.services.email.service import EmailService
+    from plugins.accounts.services.email.service import EmailService
 
     try:
         service = EmailService()
@@ -44,7 +44,7 @@ def send_bulk_email_task(
     """
     Background job for sending bulk emails.
     """
-    from www.apps.accounts.services.email.service import EmailService
+    from plugins.accounts.services.email.service import EmailService
 
     service = EmailService()
     success = 0

@@ -8,8 +8,8 @@ from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.snippets.views.snippets import SnippetViewSet
 
-from www.apps.accounts.filters.revision import RevisionFilterSetMixin
-from www.apps.accounts.models import Service
+from plugins.accounts.filters.revision import RevisionFilterSetMixin
+from plugins.accounts.models import Service
 
 # from django_rseal.pipelines.models.locations.branch import Branch
 

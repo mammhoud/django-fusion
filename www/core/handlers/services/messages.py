@@ -41,7 +41,7 @@ class MessageService:
         Returns:
             Tuple of (success, message, message_object)
         """
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
         
         try:
             # Create message
@@ -59,7 +59,7 @@ class MessageService:
             
             # Generate notification if recipient is a user
             if hasattr(recipient, 'notifications'):
-                from www.apps.accounts.services import NotificationService
+                from plugins.accounts.services import NotificationService
                 
                 NotificationService.create_notification(
                     recipient,
@@ -100,7 +100,7 @@ class MessageService:
         Returns:
             Tuple of (success, message, sent_messages)
         """
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
         
         try:
             # Use system as default sender
@@ -124,7 +124,7 @@ class MessageService:
             # Create notifications for recipients
             for recipient in recipients:
                 if hasattr(recipient, 'notifications'):
-                    from www.apps.accounts.services import NotificationService
+                    from plugins.accounts.services import NotificationService
                     
                     NotificationService.create_notification(
                         recipient,
@@ -158,7 +158,7 @@ class MessageService:
         Returns:
             Dictionary with conversation data
         """
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
         
         # Get conversation
         all_messages = Message.objects.get_conversation(user1, user2)
@@ -225,7 +225,7 @@ class MessageService:
         from django.db.models import Count
         from django.db.models.functions import TruncDate
 
-        from www.apps.accounts.models import Message
+        from plugins.accounts.models import Message
         
         end_date = timezone.now()
         start_date = end_date - timedelta(days=days)

@@ -34,9 +34,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args, **options):
-        from www.apps.accounts.registration.emails import send_registration_email
-        from www.apps.accounts.registration.tokens import registration_token_generator
-        from www.apps.accounts.registration.views import get_site_url
+        from plugins.accounts.registration.emails import send_registration_email
+        from plugins.accounts.registration.tokens import registration_token_generator
+        from plugins.accounts.registration.views import get_site_url
 
         dry_run = options["dry_run"]
         email_filter = options.get("email")

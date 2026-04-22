@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
-from www.apps.blog.models import BlogComment, BlogPost
+from plugins.blog.models import BlogComment, BlogPost
 
 
 @method_decorator(login_required, name="dispatch")

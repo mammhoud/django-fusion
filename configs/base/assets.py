@@ -39,13 +39,13 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS = settings.get("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10
 # -------------------------------
 # Static Files Configuration
 # -------------------------------
-STATIC_ROOT = str(ASSETS_DIR / "staticfiles")
+STATIC_ROOT = str(ASSETS_DIR / "bundles" / "staticfiles")
 STATIC_URL = settings.get("STATIC_URL", "/static/")
 
 # Static files directories
 STATICFILES_DIRS = [
     str(BUNDLES_DIR),
-    str(STATIC_DIR),
+    # str(STATIC_DIR),
     # str(MEDIA_DIR / "images"),
 ]
 
@@ -53,8 +53,6 @@ STATICFILES_DIRS = [
 STATICFILES_FINDERS = settings.get("STATICFILES_FINDERS", [
     "django.contrib.staticfiles.finders.FileSystemFinder",
     "django.contrib.staticfiles.finders.AppDirectoriesFinder",
-    # "compressor.finders.CompressorFinder",
-    # "pipeline.finders.PipelineFinder",
 ])
 
 # -------------------------------
@@ -78,86 +76,6 @@ WEBPACK_LOADER = {
     }
 }
 
-# -------------------------------
-# Django Compressor Configuration
-# -------------------------------
-COMPRESS_ENABLED = settings.get("COMPRESS_ENABLED", not tracker.is_debug)
-COMPRESS_OFFLINE = settings.get("COMPRESS_OFFLINE", tracker.is_production)
-COMPRESS_CSS_HASHING_METHOD = settings.get("COMPRESS_CSS_HASHING_METHOD", "content")
-COMPRESS_ROOT = STATIC_ROOT
-COMPRESS_URL = STATIC_URL
-COMPRESS_STORAGE = settings.get("COMPRESS_STORAGE", "compressor.storage.CompressorFileStorage")
-
-# Compressor filters
-COMPRESS_FILTERS = {
-    "css": [
-        "compressor.filters.css_default.CssAbsoluteFilter",
-        "compressor.filters.cssmin.rCSSMinFilter",
-    ],
-    "js": [
-        "compressor.filters.jsmin.JSMinFilter",
-    ],
-}
-
-# Compressor precompilers
-COMPRESS_PRECOMPILERS = settings.get("COMPRESS_PRECOMPILERS", [
-    ("text/x-scss", "django_libsass.SassCompiler"),
-    ("text/x-sass", "django_libsass.SassCompiler"),
-    ("text/less", "lessc {infile} {outfile}"),
-])
-
-# -------------------------------
-# Django Pipeline Configuration
-# -------------------------------
-PIPELINE = {
-    "PIPELINE_ENABLED": settings.get("PIPELINE_ENABLED", tracker.is_production),
-    "JS_COMPRESSOR": settings.get("PIPELINE_JS_COMPRESSOR", "pipeline.compressors.uglifyjs.UglifyJSCompressor"),
-    "CSS_COMPRESSOR": settings.get("PIPELINE_CSS_COMPRESSOR", "pipeline.compressors.cssmin.CSSMinCompressor"),
-    "STYLESHEETS": settings.get("PIPELINE_STYLESHEETS", {
-        "main": {
-            "source_filenames": [
-                "css/vendors.css",
-                "css/app.css",
-            ],
-            "output_filename": "css/styles.min.css",
-            "extra_context": {
-                "media": "screen,projection",
-            },
-        },
-    }),
-    "JAVASCRIPT": settings.get("PIPELINE_JAVASCRIPT", {
-        "main": {
-            "source_filenames": [
-                "js/vendors.js",
-                "js/app.js",
-            ],
-            "output_filename": "js/app.min.js",
-            "extra_context": {
-                "async": True,
-            },
-        },
-    }),
-}
-
-# Pipeline storage
-STATICFILES_STORAGE = settings.get(
-    "STATICFILES_STORAGE",
-    "pipeline.storage.PipelineManifestStorage" if PIPELINE["PIPELINE_ENABLED"] else "django.contrib.staticfiles.storage.ManifestStaticFilesStorage"
-)
-
-# -------------------------------
-# File Type Configuration
-# -------------------------------
-MIMETYPES = settings.get("MIMETYPES", (
-    ("text/javascript", ".js"),
-    ("text/css", ".css"),
-    ("text/x-scss", ".scss"),
-    ("text/x-sass", ".sass"),
-    ("text/less", ".less"),
-    ("text/coffeescript", ".coffee"),
-    ("application/json", ".json"),
-    ("image/svg+xml", ".svg"),
-))
 
 # Allowed file extensions
 ALLOWED_IMAGE_EXTENSIONS = settings.get("ALLOWED_IMAGE_EXTENSIONS", [
@@ -252,12 +170,3 @@ CACHE_BUSTING = {
     "STRATEGY": "content-hash",  # content-hash, version, timestamp
     "MANIFEST_FILE": str(Path(STATIC_ROOT) / "staticfiles.json"),
 }
-
-# -------------------------------
-# Development Server Configuration
-# -------------------------------
-if tracker.is_debug:
-    # Disable compression and caching in development
-    COMPRESS_ENABLED = False
-    PIPELINE["PIPELINE_ENABLED"] = False
-    STATICFILES_STORAGE = "django.contrib.staticfiles.storage.StaticFilesStorage"

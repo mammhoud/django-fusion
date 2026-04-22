@@ -7,9 +7,9 @@ from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 
 from apps import logger
-from www.apps.content.models.pages.base import BaseIndexPage
-from www.apps.lms.models.courses.detail import Specialization
-from www.apps.lms.models.courses.info import Course
+from www.core.content.models.pages.base import BaseIndexPage
+from plugins.lms.models.courses.detail import Specialization
+from plugins.lms.models.courses.info import Course
 
 
 class CoursesPage(BaseIndexPage):
