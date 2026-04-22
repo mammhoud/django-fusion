@@ -2,15 +2,54 @@
 # 🚀 Production Environment Settings
 # =======================================================
 import os
+import secrets
+from pathlib import Path
 
 from ..conf import settings
 from .core import *  # common settings
+
+
+# -------------------------------------------------------------------
+# 🔑 Secret Key — read from secret.key.txt, generate if missing
+# -------------------------------------------------------------------
+def _get_or_create_secret_key() -> str:
+    """
+    Load SECRET_KEY from secret.key.txt (project root).
+    If the file doesn't exist or is empty, generate a new key,
+    persist it to the file, and return it.
+    Never reads from or writes to .env.
+    """
+    key_file = Path(__file__).resolve().parent.parent.parent.parent / "secret.key.txt"
+    # 1. Try the file
+    if key_file.exists():
+        try:
+            line = key_file.read_text(encoding="utf-8").splitlines()[0].strip()
+            if line and not line.startswith("#"):
+                os.environ.setdefault("DJANGO_SECRET_KEY", line)
+                return line
+        except Exception:
+            pass
+    # 2. Try env var (set by conf.py _load_secret_key or Docker env)
+    env_key = os.environ.get("DJANGO_SECRET_KEY", "")
+    if env_key and env_key not in ("change-this-in-production-with-environment-variable",):
+        return env_key
+    # 3. Generate a new key and persist it
+    new_key = "django-" + secrets.token_urlsafe(50)
+    try:
+        key_file.parent.mkdir(parents=True, exist_ok=True)
+        key_file.write_text(new_key + "\n", encoding="utf-8")
+    except Exception:
+        pass
+    os.environ["DJANGO_SECRET_KEY"] = new_key
+    return new_key
+
+
+SECRET_KEY = _get_or_create_secret_key()
 
 # -------------------------------------------------------------------
 # 🎛️ Main Switches
 # -------------------------------------------------------------------
 DEBUG = False
-SECRET_KEY = os.environ["DJANGO_SECRET_KEY"]
 ALLOWED_HOSTS = os.environ.get("ALLOWED_HOSTS", "").split(",")
 
 # -------------------------------------------------------------------
