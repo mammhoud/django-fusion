@@ -1,4 +1,4 @@
-from www.configs.base import *
+from configs.settings.conf import settings
 
 # ====================================
 # 🧠 Environment Detection

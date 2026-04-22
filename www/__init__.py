@@ -1,8 +1,5 @@
 import os
 
-# Re-exports for compatibility
-from django_osoul.comp import *
-from django_rseal.pipelines import *
 from structlog import get_logger
 
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
