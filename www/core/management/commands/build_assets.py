@@ -82,35 +82,35 @@ class Command(BaseCommand):
 
         # Get project root (parent of www/)
         project_root = Path(__file__).resolve().parent.parent.parent.parent.parent
-        webpack_config = project_root / "webpack"
         static_root = Path(settings.STATIC_ROOT)
 
-        self.stdout.write(
-            self.style.SUCCESS(f"Project root: {project_root}")
-        )
-        self.stdout.write(
-            self.style.SUCCESS(f"Static root: {static_root}")
-        )
+        self.stdout.write(self.style.SUCCESS(f"Project root: {project_root}"))
+        self.stdout.write(self.style.SUCCESS(f"Static root: {static_root}"))
 
         # Step 1: Clean if requested
         if clean and not collectstatic_only:
             self._clean_bundles(static_root)
 
-        # Step 2: Run webpack
+        # Step 2: Run webpack (only if explicitly requested or not collectstatic-only)
+        # In Docker, webpack runs at build time — skip unless explicitly requested
         if not collectstatic_only:
-            self._run_webpack(
-                project_root=project_root,
-                production=production,
-                watch=watch,
-            )
+            bundles_json = project_root / "assets" / "bundles" / "bundles.json"
+            if bundles_json.exists() and not options.get("force_webpack"):
+                self.stdout.write(self.style.WARNING(
+                    "⚡ Webpack bundles already built (bundles.json exists) — skipping webpack"
+                ))
+            else:
+                self._run_webpack(
+                    project_root=project_root,
+                    production=production,
+                    watch=watch,
+                )
 
         # Step 3: Run collectstatic
         if not webpack_only:
             self._run_collectstatic(no_input=no_input)
 
-        self.stdout.write(
-            self.style.SUCCESS("✓ Asset build completed successfully!")
-        )
+        self.stdout.write(self.style.SUCCESS("✓ Asset build completed successfully!"))
 
     def _clean_bundles(self, static_root: Path):
         """Clean the bundles directory."""
