@@ -191,11 +191,10 @@ class Command(BaseCommand):
             sys.executable,
             "manage.py",
             "collectstatic",
-            "--no-progress",
         ]
 
         if no_input:
-            cmd.append("--no-input")
+            cmd.append("--noinput")
 
         try:
             result = subprocess.run(
