@@ -7,7 +7,7 @@ routing system. Coexists with the existing manual URL routing in apps/urls.py.
 
 Wire into core/urls.py::
 
-    from www.apps.core.routes import site
+    from www.core.routes import site
     urlpatterns += [path("osoul/", include(site.urls))]
 
 Generated URL prefix: /osoul/
