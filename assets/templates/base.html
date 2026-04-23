@@ -35,7 +35,7 @@
     {% endblock extra_head %}
 
 </head>
-{% comp "notification" with hx_connection="/" /%}
+{# {% comp "notification" with hx_connection="/" /%} #}
 
 <body data-navigation data-header-menu data-preloader="2" class="{% block bodyclass %}{% endblock bodyclass %}" {% block body_attr %}
 hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
