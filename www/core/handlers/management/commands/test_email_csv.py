@@ -23,7 +23,6 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import strip_tags
-
 from plugins.accounts.registration.models import CSVEmailTest, CSVEmailTestBatch
 
 logger = logging.getLogger(__name__)
@@ -79,9 +78,9 @@ class EmailCSVTester:
             'email': email,
             'role': role,
             'site_name': getattr(settings, 'SITE_NAME', 'CTC Research'),
-            'site_url': getattr(settings, 'SITE_URL', 'https://ctc-research.com'),
+            'site_url': getattr(settings, 'SITE_URL', 'https://structa.cloud'),
             'current_date': datetime.now().strftime('%B %d, %Y'),
-            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@ctc-research.com')
+            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@structa.cloud')
         }
 
     def get_template_path(self, role: str) -> Path:

@@ -40,7 +40,7 @@ def test_confirmation_email_sent_once_per_signup(pk, email):
 
     with patch("apps.accounts.registration.adapter.send_registration_email") as mock_send, \
          patch("apps.accounts.registration.adapter.registration_token_generator") as mock_gen, \
-         patch("apps.accounts.registration.adapter.RegistrationAdapter._get_site_url", return_value="https://ctc-research.com"), \
+         patch("apps.accounts.registration.adapter.RegistrationAdapter._get_site_url", return_value="https://structa.cloud"), \
          patch("apps.accounts.registration.adapter.reverse", return_value="/accounts/confirm/token/"):
         mock_gen.make_allauth_compatible_token.return_value = "mock-token"
         adapter.send_confirmation_mail(request=request, emailconfirmation=confirmation, signup=True)

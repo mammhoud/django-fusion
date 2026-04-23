@@ -1,10 +1,9 @@
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_rseal.models.default import DefaultBase
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.models import DraftStateMixin, LockableMixin, RevisionMixin
-
-from django_rseal.pipelines.models import DefaultBase
 
 
 class ContactSubmission(DefaultBase, DraftStateMixin, RevisionMixin, LockableMixin):

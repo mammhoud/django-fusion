@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.comp.blocks.media.gallery import MediaGalleryBlock
+from django_rseal.blocks.media.gallery import MediaGalleryBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
@@ -276,3 +276,4 @@ class AboutPage(BasePage):
     class Meta:
         verbose_name = _("About Page")
         verbose_name_plural = _("About Pages")
+        db_table = "content_aboutpage"

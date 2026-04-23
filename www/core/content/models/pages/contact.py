@@ -1,6 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.comp.blocks import ContactMethodBlock
-from django_rseal.comp.blocks.partials.faq import FAQSectionBlock
+from django_rseal.comp import ContactMethodBlock, FAQSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import StreamField
@@ -295,3 +294,4 @@ class ContactPage(BaseFormPage):
     class Meta:
         verbose_name = _("Contact Page")
         verbose_name_plural = _("Contact Pages")
+        db_table = "content_contactpage"

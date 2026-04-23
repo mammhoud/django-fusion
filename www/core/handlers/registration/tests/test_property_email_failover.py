@@ -42,7 +42,7 @@ if not settings.configured:
         },
         SECRET_KEY="test-secret-key-for-property-tests-at-least-50-chars-long!!",
         USE_TZ=True,
-        DEFAULT_FROM_EMAIL="noreply@ctc-research.com",
+        DEFAULT_FROM_EMAIL="noreply@structa.cloud",
         TEMPLATES=[
             {
                 "BACKEND": "django.template.backends.django.DjangoTemplates",
@@ -60,9 +60,9 @@ if not settings.configured:
 import smtplib  # noqa: E402
 from unittest.mock import call, patch  # noqa: E402
 
-from hypothesis import given, settings as h_settings  # noqa: E402
+from hypothesis import given  # noqa: E402
+from hypothesis import settings as h_settings
 from hypothesis import strategies as st  # noqa: E402
-
 from plugins.accounts.registration.emails import (  # noqa: E402
     send_registration_email,
 )
@@ -76,7 +76,7 @@ email_strategy = st.emails()
 
 # Confirmation URLs — simple https URLs with a path token
 url_strategy = st.builds(
-    "https://ctc-research.com/create-password/{}/".format,
+    "https://structa.cloud/create-password/{}/".format,
     st.text(
         alphabet="abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_-",
         min_size=8,

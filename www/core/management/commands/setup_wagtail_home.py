@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     port=443,
                     root_page=home,
                     is_default_site=True,
-                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "Structa Cloud"),
+                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "CTC Research"),
                 )
                 self.stdout.write(self.style.SUCCESS(
                     f"✅ Created default site: {hostname} → '{home.title}'"
@@ -152,5 +152,5 @@ class Command(BaseCommand):
         if not domain:
             domain = os.environ.get("ALLOWED_HOSTS", "localhost").split(",")[0].strip()
             if domain in ("*", ""):
-                domain = "core.structa.cloud"
+                domain = "www.structa.cloud"
         return domain

@@ -1,9 +1,8 @@
-from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
-
 from django.utils.translation import gettext_lazy as _
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField
+from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Page
 
 from .base import BasePage

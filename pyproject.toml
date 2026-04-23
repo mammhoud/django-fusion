@@ -3,29 +3,14 @@ name = "core"
 version = "1.0.3"
 description = "Structa Cloud — Tech Bridges Platform"
 requires-python = ">=3.11"
+# Site-specific extras on top of workspace shared deps (websites/pyproject.toml).
 dependencies = [
-    "bumpver", "click", "colorlog",
-    "django>=4.2",
-    "django-allauth[socialaccount]",
-    "django-bird", "django-browser-reload", "django-colorfield",
-    "django-crispy-forms", "django-debug-toolbar", "django-embed-video",
-    "django-environ", "django-extensions", "django-grep", "django-heroicons",
-    "django-htmx", "django-import-export", "django-ninja", "django-paypal",
-    "django-redis", "django-rq", "django-silk", "django-simple-history",
-    "django-storages[boto3]", "django-structlog", "django-stubs",
-    "django-tables2", "django-unfold", "django-webpack-loader",
-    "draftjs-exporter", "dynaconf[vault]", "environ", "fido2", "fire",
-    "gunicorn", "hypothesis", "jinja2", "jwt", "livereload", "marshmallow",
-    "ninja", "psycopg", "psycopg-binary", "pydantic", "pydantic-settings",
-    "pytest", "pytest-django", "python-json-logger", "sentry-sdk[django]",
-    "stripe", "structlog", "twilio", "uvicorn", "virtualenv",
-    "wagtail", "wagtail-font-awesome-svg", "wagtail-newsletter[mailchimp]",
-    "wagtail-transfer", "wagtailfontawesome", "watchfiles", "whitenoise",
-    "django-osoul", "django-rseal",
+    "bumpver",
+    "django-stubs",
 ]
 
-# GitHub sources — active standalone (Docker).
-# Workspace root sources take precedence in local dev.
+# Inherit GitHub sources from workspace root.
+# Repeated here so standalone `uv sync` inside this directory still works.
 [tool.uv.sources]
 django-osoul = { git = "https://github.com/mammhoud/django-osoul", branch = "generic" }
 django-rseal = { git = "https://github.com/mammhoud/django-rseal", branch = "generic" }

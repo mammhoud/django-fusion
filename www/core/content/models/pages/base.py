@@ -1,16 +1,18 @@
+import logging
+
 from colorfield.fields import ColorField
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 from django.db import models
-from django.http import HttpResponseServerError
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
-from django_rseal.comp.blocks import ContactMethodBlock
-from django_rseal.comp.blocks.partials.faq import FAQSectionBlock
+from django_osoul.site._context_mixins import WagtailPageMixin
+from django_rseal.comp import ContactMethodBlock, FAQSectionBlock
 from django_rseal.handlers.models.manage_company import Organization
+from plugins.accounts.models.manage.service import Service
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import RichTextField, StreamField
@@ -18,36 +20,35 @@ from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Page
 from wagtail.search import index
 
-from apps import logger
-from plugins.accounts.models.manage.service import Service
 from www.core.content.models.contact import ContactSubmission
 
 from ..blocks.form import MinimalContactFormBlock
 
+logger = logging.getLogger(__name__)
 
-class BasePage(Page):
+
+class BasePage(WagtailPageMixin, Page):
     """
-    🧩 Base Wagtail Page class
-    Provides:
-      - Fragment and full render support
-      - Global "options" and footer visibility
-      - Shared context with partners and footer pages
-      - JSON-style data (via get_listed_data)
+    🧩 Base Wagtail Page — powered by django-osoul's WagtailPageMixin.
+
+    Rendering pipeline (same order as ComponentViews/PageHandler):
+      1. resolve_strategy(request)   → "fragment" | "document"
+      2. resolve_template_name()     → template path
+      3. get_context(request)        → context dict
+      4. render_response(request, context)
+           fragment  → content template only (no layout)
+           document  → outer layout (base_page.html) + {% include template_name %}
+
+    Subclasses set:
+      template      = "base_page.html"   # outer layout (Wagtail attr)
+      template_name = "my/content.html"  # inner content
+      fragment_name = "my.content"       # dotted → "my/content.html" for HTMX
     """
 
-    fragment_template = "base_fragment.html"
+    # osoul pipeline attributes
+    layout_path = "landing/skeleton.html"
     fragment_name = None
     template_name = None
-
-    # === Page Options ===
-    # DEFERRED TO NEXT PHASE: Footer partners display
-    # has_footer_with_partners = models.BooleanField(
-    #     default=False,
-    #     verbose_name=_("Show Footer Partners"),
-    #     help_text=_("Display partner logos in the footer section."),
-    #     null=True,
-    #     blank=True,
-    # )
 
     # === Footer Control ===
     show_page_at_footer = models.BooleanField(
@@ -61,10 +62,7 @@ class BasePage(Page):
 
     settings_panels = Page.settings_panels + [
         MultiFieldPanel(
-            [
-                # FieldPanel("has_footer_with_partners"),
-                FieldPanel("show_page_at_footer"),
-            ],
+            [FieldPanel("show_page_at_footer")],
             heading=_("Page Options"),
             classname="collapsible",
         ),
@@ -73,108 +71,55 @@ class BasePage(Page):
     class Meta:
         abstract = True
 
-    # === Serve ===
-    def serve(self, request, *args, **kwargs):
-        """Handle both fragment and full-page requests."""
-        is_fragment_request = getattr(request, "htmx", False) or getattr(
-            request, "is_unpoly", False
-        )
-
-        try:
-            if is_fragment_request:
-                context = self.get_context(request)
-                if self.fragment_name:
-                    logger.info(
-                        f"[FragmentHandler] Using fragment_name: {self.fragment_name}"
-                    )
-                    self.template = self.fragment_template
-                    if getattr(request, "is_unpoly", False):
-                        request.up.set_title(getattr(self, "page_title", self.title))
-            else:
-                if self.fragment_name and not self.template_name:
-                    self.template_name = (
-                        f"{str(self.fragment_name).replace('.', '/')}.html"
-                    )
-
-            return super().serve(request, *args, **kwargs)
-
-        except Exception as e:
-            logger.error(f"[ServeError] {self.title}: {str(e)}", exc_info=True)
-            return HttpResponseServerError(
-                "An internal error occurred while loading the page."
-            )
-
     # === Context ===
     def get_context(self, request, *args, **kwargs):
         """
-        Extend context for all inheriting pages.
-        Includes:
-          - Common service data
-          - Global options
-          - Pages marked 'show_page_at_footer'
-          - JSON-like structured data
+        Build context via WagtailPageMixin (injects strategy/template keys)
+        then add site-wide data: partners, footer pages, services summary.
         """
+        # WagtailPageMixin.get_context() calls super() which is Page.get_context()
+        # and then injects strategy, template_name, fragment_name, etc.
         context = super().get_context(request, *args, **kwargs)
 
-        context.update(
-            {
-                "page_title": getattr(self, "page_title", self.title),
-                "template_name": getattr(self, "template_name", None),
-                "is_fragment_request": getattr(request, "htmx", False)
-                or getattr(request, "is_unpoly", False),
-            }
-        )
+        context["page_title"] = getattr(self, "page_title", self.title)
 
-        # 🧠 Common data (Partners)
+        # Partners
         try:
             context["partners"] = Organization.get_partners()
         except Exception as e:
-            logger.warning(
-                f"[ContextWarning] Could not load partners for {self.title}: {str(e)}"
-            )
+            logger.warning("[ContextWarning] partners: %s", e)
             context["partners"] = []
 
-        # ⚙️ Page-level options
-        context["options"] = {
-            # "has_footer_with_partners": self.has_footer_with_partners,
-            "show_page_at_footer": self.show_page_at_footer,
-        }
+        # Page options
+        context["options"] = {"show_page_at_footer": self.show_page_at_footer}
 
-        # 🔗 Footer links (all pages with show_page_at_footer=True)
+        # Footer pages
         try:
             from wagtail.models import Locale
-            current_locale = Locale.get_active()
-            footer_pages = Page.objects.live().filter(locale=current_locale).specific()
+            locale = Locale.get_active()
             footer_pages = [
-                p
-                for p in footer_pages
+                p for p in Page.objects.live().filter(locale=locale).specific()
                 if isinstance(p, BasePage) and p.show_page_at_footer
             ]
             context["footer_pages"] = footer_pages
-            logger.info(f"footer_pages = {footer_pages}")
         except Exception as e:
-            logger.warning(f"[FooterPagesError] Could not fetch footer pages: {e}")
+            logger.warning("[FooterPagesError] %s", e)
             context["footer_pages"] = []
 
-        # ✅ Add listed data if any
-        listed_data = self.get_listed_data(request)
-        if isinstance(listed_data, dict):
-            context.update(listed_data)
+        # Listed data
+        listed = self.get_listed_data(request)
+        if isinstance(listed, dict):
+            context.update(listed)
 
         return context
 
-    # === JSON-like data provider ===
     def get_listed_data(self, request=None):
-        """
-        Returns structured JSON-like data for templates or APIs.
-        Child pages may override to include page-specific data.
-        """
+        """Structured data for templates. Override in subclasses."""
         try:
-            services_qs = Service.objects.filter(is_active=True).values(
-                "id", "name", "category"
-            )
             return {
-                "services_summary": list(services_qs),
+                "services_summary": list(
+                    Service.objects.filter(is_active=True).values("id", "name", "category")
+                ),
                 "metadata": {
                     "page_type": self.__class__.__name__,
                     "page_id": self.id,
@@ -182,9 +127,7 @@ class BasePage(Page):
                 },
             }
         except Exception as e:
-            logger.warning(
-                f"[ListedData] {self.__class__.__name__}: failed to build JSON — {e}"
-            )
+            logger.warning("[ListedData] %s: %s", self.__class__.__name__, e)
             return {}
 
 
