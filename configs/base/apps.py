@@ -90,13 +90,13 @@ PLUGIN_APPS = [
     # "django_rseal.mcp_designer",  # optional MCP tooling
     "django_rseal.email",
     # "django_rseal",  # has broken model references to accounts.Service/pipelines.Person
+    "plugins.accounts",  # Service, Organization, Team models + registration
+    "plugins.profile",  # Profile, Dashboard, Settings
 ]
 
 
 OVERRIDE_APPS = [
     # "apps.content",      # TODO: create this app
-    # "apps.accounts",     # TODO: create this app
-    # "apps.accounts.registration",  # TODO: create this app
 ]
 
 

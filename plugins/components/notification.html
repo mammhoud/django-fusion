@@ -36,7 +36,7 @@
 
     <!-- SSE Connection Status Indicator -->
     <div id="sse-indicator" {% if hx_connection %} sse-connect="{{ hx_connection }}" {% else %}
-        sse-connect="{% url 'pipelines:notifications' %}" {% endif %} class="notification-system__sse-indicator"
+        sse-connect="{% url 'plugins:notifications' %}" {% endif %} class="notification-system__sse-indicator"
         style="display: none;" aria-hidden="true">
         <div class="sse-indicator__dot"></div>
         <span class="sse-indicator__text">Live updates</span>

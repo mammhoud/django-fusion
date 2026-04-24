@@ -90,7 +90,7 @@
         <p class="message">{{ message }}</p>
 
         {% if error_type == 'already_used' %}
-            <a href="{% url 'pipelines:login' %}" class="action-btn">{% trans "Sign In" %}</a>
+            <a href="{% url 'plugins:login' %}" class="action-btn">{% trans "Sign In" %}</a>
         {% elif error_type == 'rate_limited' %}
             <a href="/" class="action-btn">{% trans "Go Home" %}</a>
         {% else %}

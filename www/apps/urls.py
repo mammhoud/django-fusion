@@ -23,6 +23,6 @@ urlpatterns = [
     path("cart/add/", CartAddItemView.as_view(), name="cart-add-item"),
     path("checkout/", CheckoutView.as_view(), name="checkout"),
 ] + [  # Registration endpoints
-    path("", include("apps.accounts.registration.urls")),
+    path("", include("plugins.accounts.registration_urls")),
 ]
 

@@ -54,11 +54,16 @@ USER_MODEL_CONFIG = {
 # Custom adapters allow fine-grained control over login/signup behavior.
 
 ACCOUNT_ADAPTER = settings.get(
-    "AUTH_ACCOUNT_ADAPTER", "django_osoul.adapters.AccountAdapter"
+    "AUTH_ACCOUNT_ADAPTER", "plugins.accounts.adapters.AuthHTMXAdapter"
 )
 SOCIALACCOUNT_ADAPTER = settings.get(
     "AUTH_SOCIALACCOUNT_ADAPTER",
-    "django_osoul.adapters.SocialAccountAdapter",
+    "plugins.accounts.adapters.AuthHTMXSocialAccountAdapter",
+)
+
+# Registration token SALT — must be unique per site to prevent token cross-use
+REGISTRATION_TOKEN_SALT = settings.get(
+    "REGISTRATION_TOKEN_SALT", "structa-registration-password-create"
 )
 
 # Custom forms
@@ -80,12 +85,13 @@ SOCIALACCOUNT_ADAPTER = settings.get(
 
 LOGIN_REDIRECT_URL = settings.get("AUTH_LOGIN_REDIRECT_URL", "/")
 LOGOUT_REDIRECT_URL = settings.get("AUTH_LOGOUT_REDIRECT_URL", "/")
-LOGIN_URL = settings.get("AUTH_LOGIN_URL", reverse_lazy("pipelines:login"))
-LOGOUT_URL = settings.get("AUTH_LOGOUT_URL", reverse_lazy("pipelines:logout"))
+LOGIN_URL = settings.get("AUTH_LOGIN_URL", reverse_lazy("plugins:login"))
+LOGOUT_URL = settings.get("AUTH_LOGOUT_URL", reverse_lazy("plugins:logout"))
+ACCOUNT_LOGOUT_ON_GET = settings.get("AUTH_ACCOUNT_LOGOUT_ON_GET", True)
 
 # Allauth-specific redirects
 ACCOUNT_LOGOUT_REDIRECT_URL = settings.get(
-    "AUTH_ACCOUNT_LOGOUT_REDIRECT_URL", LOGOUT_REDIRECT_URL
+    "AUTH_ACCOUNT_LOGOUT_REDIRECT_URL", "/"
 )
 ACCOUNT_LOGIN_REDIRECT_URL = settings.get(
     "AUTH_ACCOUNT_LOGIN_REDIRECT_URL", LOGIN_REDIRECT_URL
@@ -149,7 +155,7 @@ ACCOUNT_SESSION_COOKIE_AGE = settings.get(
 ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE = settings.get(
     "AUTH_ACCOUNT_LOGOUT_ON_PASSWORD_CHANGE", True
 )
-ACCOUNT_LOGOUT_ON_GET = settings.get("AUTH_ACCOUNT_LOGOUT_ON_GET", False)
+ACCOUNT_LOGOUT_ON_GET = settings.get("AUTH_ACCOUNT_LOGOUT_ON_GET", True)
 
 # Password settings
 ACCOUNT_PASSWORD_MIN_LENGTH = settings.get("AUTH_ACCOUNT_PASSWORD_MIN_LENGTH", 8)

@@ -1,30 +1,28 @@
 """
-Wagtail Hooks for CTC Research Project
+Wagtail Hooks for Structa Cloud
 """
 
 from django.utils.translation import gettext_lazy as _
-from wagtail.snippets.models import register_snippet
-from wagtail.snippets.views.snippets import SnippetViewSetGroup
 
 # Import all ViewSets from django-grep
-
 # Manage snippets
 from django_rseal.pipelines.snippets.manage.submissions import FormSubmissionViewSet
 from plugins.accounts.snippets.manage.peoples import (
-    PersonViewSet,
-    WorkspaceViewSet,
     CompanyViewSet,
-    # DepartmentViewSet,
-    # ContactViewSet,
-    TeamViewSet,
+    PersonViewSet,
     ServiceViewSet,
     # InvitationViewSet,
     # ContactEmailViewSet,
     # ContactPhoneViewSet,
     # BranchViewSet,
     # FooterTextViewSet,
+    # DepartmentViewSet,
+    # ContactViewSet,
+    TeamViewSet,
+    WorkspaceViewSet,
 )
-
+from wagtail.snippets.models import register_snippet
+from wagtail.snippets.views.snippets import SnippetViewSetGroup
 
 # =============================================================================
 # SNIPPET GROUP: Manage

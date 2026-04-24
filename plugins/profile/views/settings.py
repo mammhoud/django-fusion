@@ -7,9 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django_osoul.comp.site import NotificationMixin, PageHandler
 from django_rseal.pipelines.models import Person
 from django_rseal.pipelines.site.mixins import ProfileContextMixin, ProfileOperationsMixin
-from plugins.accounts.services import PersonService
 
-from apps.accounts.forms import (
+from plugins.accounts.forms import (
     AccountSettingsForm,
     BillingSettingsForm,
     NotificationSettingsForm,
@@ -17,6 +16,7 @@ from apps.accounts.forms import (
     PrivacySettingsForm,
     SecuritySettingsForm,
 )
+from plugins.accounts.services import PersonService
 
 
 class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin):

@@ -12,6 +12,8 @@ class AuthEmailTemplateViewSet(SnippetViewSet):
     list_display = ["template_type", "subject", "is_active"]
     list_filter = ["template_type", "is_active"]
     search_fields = ["subject"]
+    # Explicit name prevents KeyError on URL reversal when app_label differs
+    name = "auth_email_template"
 
 
 class AuthEmailSnippetGroup(SnippetViewSetGroup):

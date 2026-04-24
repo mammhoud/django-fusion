@@ -11,9 +11,9 @@
 {% endif %}
 
 <form method="post"
-      action="{% url 'pipelines:login' %}"
+      action="{% url 'plugins:login' %}"
       id="login-form"
-      hx-post="{% url 'pipelines:login' %}"
+      hx-post="{% url 'plugins:login' %}"
       hx-target="#login-form-container"
       hx-swap="innerHTML"
       novalidate>

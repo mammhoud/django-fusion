@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load static %}
+{# Context fields: form, request #}
+{# Placeholders: none #}
 <!-- SSE Connection for Real-time Notifications -->
 <section class="fragment--form">
   <!-- Login Card -->
@@ -22,8 +24,8 @@
       {% endif %}
     </div>
 
-    <form id="login-form" class="auth__form" action="{% url 'pipelines:login' %}" method="post" novalidate
-      hx-post="{% url 'pipelines:login' %}" hx-target=".auth__form" hx-swap="innerHTML" hx-trigger="submit"
+    <form id="login-form" class="auth__form" action="{% url 'plugins:login' %}" method="post" novalidate
+      hx-post="{% url 'plugins:login' %}" hx-target=".auth__form" hx-swap="innerHTML" hx-trigger="submit"
       hx-indicator="#login-spinner" hx-headers='{"X-Requested-With": "XMLHttpRequest", "HX-Request": "true"}'>
       {% csrf_token %}
 
@@ -45,7 +47,7 @@
           <input id="id_email_username" name="email-username" type="email" maxlength="40"
             class="form__input form-control border-0 rounded-end ps-1 {% if form.email_username.errors %}is-invalid{% endif %}"
             placeholder="{% trans 'you@example.com' %}"  required
-            minlength="5" {% comment %} value="{{ form.email_username.value|default:'' }}" hx-get="{% url 'pipelines:validate_field' field='email' %}"
+            minlength="5" {% comment %} value="{{ form.email_username.value|default:'' }}" hx-get="{% url 'plugins:validate_field' field='email' %}"
             hx-trigger="keyup changed delay:500ms" hx-target="#email-validation" hx-swap="innerHTML" {% endcomment %} />
         </div>
 
@@ -73,7 +75,7 @@
           <input id="id_password" name="password" type="password"
             class="form__input form-control border-0 rounded-end ps-1 {% if form.password.errors %}is-invalid{% endif %}"
             maxlength="40" placeholder="{% trans 'Your password' %}" required minlength="6" {% comment %}
-            hx-get="{% url 'pipelines:validate_field' field='password' %}" hx-trigger="keyup changed delay:500ms"
+            hx-get="{% url 'plugins:validate_field' field='password' %}" hx-trigger="keyup changed delay:500ms"
             hx-target="#password-strength" hx-swap="innerHTML" {% endcomment %} />
 
         </div>
@@ -98,8 +100,8 @@
           <input type="checkbox" name="remember" class="form-check-input" />
           <span>{% trans "Remember me" %}</span>
         </label>
-        <a href="{% url 'pipelines:password_forgot' %}" class="auth__link" hx-get="{% url 'pipelines:password_forgot' %}"
-          hx-target=".fragment--form" hx-swap="innerHTML" hx-push-url="{% url 'pipelines:password_forgot' %}">
+        <a href="{% url 'plugins:password_forgot' %}" class="auth__link" hx-get="{% url 'plugins:password_forgot' %}"
+          hx-target=".fragment--form" hx-swap="innerHTML" hx-push-url="{% url 'plugins:password_forgot' %}">
           <u>{% trans "Forgot Password?" %}</u>
         </a>
       </div>
@@ -143,14 +145,14 @@
     <footer class="auth__footer mt-4 text-center">
       <p>
         {% trans "New on our platform?" %}
-        <a href="{% url 'pipelines:register' %}" class="auth__link" hx-get="{% url 'pipelines:register' %}"
-          hx-target=".fragment--form" hx-swap="innerHTML" hx-push-url="{% url 'pipelines:register' %}">
+        <a href="{% url 'plugins:register' %}" class="auth__link" hx-get="{% url 'plugins:register' %}"
+          hx-target=".fragment--form" hx-swap="innerHTML" hx-push-url="{% url 'plugins:register' %}">
           <u>{% trans "Create an account" %}</u>
         </a>
       </p>
       <p class="mt-2">
         <a href="#" class="auth__link text-muted small"
-           hx-get="{% url 'pipelines:privacy_modal' %}"
+           hx-get="{% url 'plugins:privacy_modal' %}"
            hx-target="#privacyModalContainer"
            hx-swap="innerHTML">
           <i class="bi bi-shield-lock me-1"></i>{% trans "Privacy Policy" %}

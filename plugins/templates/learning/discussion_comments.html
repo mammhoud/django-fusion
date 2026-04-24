@@ -18,7 +18,7 @@
 </div>
 {% else %}
 <div class="alert alert-info">
-    <a href="{% url 'pipelines:login' %}?next={{ request.path }}">{% trans "Login" %}</a> to participate in the discussion.
+    <a href="{% url 'plugins:login' %}?next={{ request.path }}">{% trans "Login" %}</a> to participate in the discussion.
 </div>
 {% endif %}
 

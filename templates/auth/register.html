@@ -1,6 +1,9 @@
 {% load i18n %}
 {% load static %}
-<section class="fragment--form">  
+{% load socialaccount %}
+{# Context fields: form, request #}
+{# Placeholders: none #}
+<section class="fragment--form">
 
   <!-- Register Card -->
   <section class="auth__card card card--form">
@@ -10,7 +13,7 @@
       {% trans "Fill in the form below to get started" %}
     </p>
   </header>
-  
+
   <!-- Form Errors Container -->
   <div id="form-errors"
        class="mb-3">
@@ -24,9 +27,9 @@
   <!-- re-use register-form ID so existing JS keeps working -->
   <form id="register-form"
         class="auth__form"
-        action="{% url 'pipelines:register' %}"
+        action="{% url 'plugins:register' %}"
         method="post"
-        hx-post="{% url 'pipelines:register' %}"
+        hx-post="{% url 'plugins:register' %}"
         hx-target=".auth__form">
     {% csrf_token %}
 
@@ -89,7 +92,7 @@
                 class="form__input form-control border-0 rounded-end ps-1"
                 placeholder="{% trans 'Re-enter password' %}"
                 required />
-        
+
       </div>
       <p class="invalid-feedback">{% trans "Passwords do not match." %}</p>
     </div>
@@ -117,8 +120,8 @@
         <i class="fas fa-arrow-right ms-2"></i>
       </button>
     </div>
-          {% comment %}
-
+    {% get_providers as socialaccount_providers %}
+    {% if socialaccount_providers %}
     <!-- Divider -->
     <div class="auth__divider position-relative my-4">
       <hr>
@@ -127,32 +130,40 @@
 
     <!-- Social -->
     <div class="auth__social row">
-      <div class="col-xxl-6 d-grid">
-        <button class="btn btn--social bg-google mb-2 mb-xxl-0">
-          <i class="fab fa-google me-2"></i>
-          {% trans "Continue with Google" %}
-        </button>
-      </div>
-      <div class="col-xxl-6 d-grid">
-        <button class="btn btn--social bg-facebook mb-0">
-          <i class="fab fa-facebook-f me-2"></i>
-          {% trans "Continue with Facebook" %}
-        </button>
-      </div>
+      {% for provider in socialaccount_providers %}
+        {% if provider.id == "google" %}
+        <div class="col-xxl-6 d-grid">
+          <a href="{% provider_login_url 'google' %}"
+             class="btn btn--social bg-google mb-2 mb-xxl-0">
+            <i class="fab fa-google me-2"></i>
+            {% trans "Continue with Google" %}
+          </a>
+        </div>
+        {% endif %}
+        {% if provider.id == "facebook" %}
+        <div class="col-xxl-6 d-grid">
+          <a href="{% provider_login_url 'facebook' %}"
+             class="btn btn--social bg-facebook mb-0">
+            <i class="fab fa-facebook-f me-2"></i>
+            {% trans "Continue with Facebook" %}
+          </a>
+        </div>
+        {% endif %}
+      {% endfor %}
     </div>
-          {% endcomment %}
+    {% endif %}
 
   </form>
 
   <footer class="auth__footer mt-4 text-center">
     <p>
       {% trans "Already have an account?" %}
-      <a  href="{% url 'pipelines:login' %}"
+      <a  href="{% url 'plugins:login' %}"
                       class="auth__link"
-                      hx-get="{% url 'pipelines:login' %}"
+                      hx-get="{% url 'plugins:login' %}"
                       hx-target=".fragment--form"
                       hx-swap="innerHTML"
-                      hx-push-url="{% url 'pipelines:login' %}">
+                      hx-push-url="{% url 'plugins:login' %}">
                       <u>{% trans "Sign in here" %}</u>
                     </a>
     </p>

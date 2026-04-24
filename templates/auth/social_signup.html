@@ -1,0 +1,118 @@
+{# Template: auth/social_signup.html #}
+{# Context fields: form (allauth SocialSignupForm), request #}
+{# Placeholders: none #}
+{% load i18n static %}
+
+<section class="fragment--form">
+  <!-- Social Signup Card -->
+  <section class="auth__card card card--form">
+    <header class="auth__form-header">
+      <h2 class="auth__form-title">{% trans "Complete Your Registration" %}</h2>
+      <p class="auth__form-subtitle mb-4">
+        {% trans "Just a few more details to finish setting up your account" %}
+      </p>
+    </header>
+
+    <!-- Form Errors -->
+    <div id="form-errors" class="mb-3">
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        <strong>{% trans "Please correct the errors below:" %}</strong>
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+    </div>
+
+    <form id="social-signup-form"
+          class="auth__form"
+          action=""
+          method="post"
+          novalidate
+          hx-post=""
+          hx-target=".auth__form"
+          hx-swap="innerHTML"
+          hx-trigger="submit"
+          hx-indicator="#social-signup-spinner"
+          hx-headers='{"X-Requested-With": "XMLHttpRequest", "HX-Request": "true"}'>
+
+      {% csrf_token %}
+
+      <!-- HTMX Context -->
+      <input type="hidden" name="strategy" value="{% if request.htmx %}htmx{% else %}document{% endif %}">
+      <input type="hidden" name="supports_sse" value="{{ request.supports_sse|yesno:'true,false' }}">
+
+      <!-- Email -->
+      {% if form.email %}
+      <div class="form__group mb-4">
+        <label class="form__label" for="{{ form.email.id_for_label }}">
+          {% trans "Email Address" %}
+        </label>
+        <div class="form__input-wrapper input-group input-group-lg">
+          <span class="form__icon rounded-start border-0 px-3">
+            <i class="fas fa-envelope"></i>
+          </span>
+          <input id="{{ form.email.id_for_label }}"
+                 name="{{ form.email.html_name }}"
+                 type="email"
+                 maxlength="254"
+                 class="form__input form-control border-0 rounded-end ps-1 {% if form.email.errors %}is-invalid{% endif %}"
+                 placeholder="{% trans 'you@example.com' %}"
+                 value="{{ form.email.value|default:'' }}"
+                 required />
+        </div>
+        {% if form.email.errors %}
+        <div class="invalid-feedback d-block">
+          {% for error in form.email.errors %}{{ error }}{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Username (if required) -->
+      {% if form.username %}
+      <div class="form__group mb-4">
+        <label class="form__label" for="{{ form.username.id_for_label }}">
+          {% trans "Username" %}
+        </label>
+        <div class="form__input-wrapper input-group input-group-lg">
+          <span class="form__icon rounded-start border-0 px-3">
+            <i class="fas fa-user"></i>
+          </span>
+          <input id="{{ form.username.id_for_label }}"
+                 name="{{ form.username.html_name }}"
+                 type="text"
+                 maxlength="150"
+                 class="form__input form-control border-0 rounded-end ps-1 {% if form.username.errors %}is-invalid{% endif %}"
+                 placeholder="{% trans 'Choose a username' %}"
+                 value="{{ form.username.value|default:'' }}"
+                 required />
+        </div>
+        {% if form.username.errors %}
+        <div class="invalid-feedback d-block">
+          {% for error in form.username.errors %}{{ error }}{% endfor %}
+        </div>
+        {% endif %}
+      </div>
+      {% endif %}
+
+      <!-- Submit -->
+      <div class="d-grid">
+        <button class="btn btn-primary btn--primary auth__submit mb-0 gap-4"
+                type="submit">
+          <span class="btn__text">{% trans "Complete Registration" %}</span>
+          <i class="fas fa-user-check ms-2"></i>
+          <span id="social-signup-spinner"
+                class="spinner-border spinner-border-sm ms-2 htmx-indicator"></span>
+        </button>
+      </div>
+
+    </form>
+
+    <!-- Footer -->
+    <footer class="auth__footer mt-4 text-center">
+      <p class="small text-muted">
+        {% trans "By completing registration you agree to our terms of service." %}
+      </p>
+    </footer>
+  </section>
+</section>

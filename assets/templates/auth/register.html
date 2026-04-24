@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load static %}
+{# Context fields: form, request #}
+{# Placeholders: none #}
 <section class="fragment--form">
 
   <!-- Register Card -->
@@ -24,9 +26,9 @@
   <!-- re-use register-form ID so existing JS keeps working -->
   <form id="register-form"
         class="auth__form"
-        action="{% url 'pipelines:register' %}"
+        action="{% url 'plugins:register' %}"
         method="post"
-        hx-post="{% url 'pipelines:register' %}"
+        hx-post="{% url 'plugins:register' %}"
         hx-target=".auth__form">
     {% csrf_token %}
 
@@ -105,7 +107,7 @@
         <span>
           {% trans "I agree to the" %}
           <a href="#" class="auth__link"
-             hx-get="{% url 'pipelines:privacy_modal' %}"
+             hx-get="{% url 'plugins:privacy_modal' %}"
              hx-target="#privacyModalContainer"
              hx-swap="innerHTML">{% trans "privacy policy & terms" %}</a>
         </span>
@@ -150,12 +152,12 @@
   <footer class="auth__footer mt-4 text-center">
     <p>
       {% trans "Already have an account?" %}
-      <a  href="{% url 'pipelines:login' %}"
+      <a  href="{% url 'plugins:login' %}"
                       class="auth__link"
-                      hx-get="{% url 'pipelines:login' %}"
+                      hx-get="{% url 'plugins:login' %}"
                       hx-target=".fragment--form"
                       hx-swap="innerHTML"
-                      hx-push-url="{% url 'pipelines:login' %}">
+                      hx-push-url="{% url 'plugins:login' %}">
                       <u>{% trans "Sign in here" %}</u>
                     </a>
     </p>

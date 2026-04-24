@@ -69,7 +69,12 @@ default:
     ACCOUNT_SESSION_REMEMBER: true
     SOCIALACCOUNT_ENABLED: false
     SOCIALACCOUNT_AUTO_SIGNUP: true
-    ACCOUNT_ADAPTER: "www.apps.handlers.registration.adapter.RegistrationAdapter"
+    ACCOUNT_ADAPTER: "plugins.accounts.adapters.AuthHTMXAdapter"
+    SOCIALACCOUNT_ADAPTER: "plugins.accounts.adapters.AuthHTMXSocialAccountAdapter"
+    ACCOUNT_LOGOUT_ON_GET: true
+    ACCOUNT_LOGOUT_REDIRECT_URL: "/"
+    LOGIN_URL: "account_login"
+    LOGOUT_URL: "account_logout"
 
   # ====================================
   # 📱 API Defaults

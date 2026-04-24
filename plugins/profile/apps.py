@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 class ProfileConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.profile"
+    name = "plugins.profile"
     label = "profile"
     verbose_name = _("Profile")
 

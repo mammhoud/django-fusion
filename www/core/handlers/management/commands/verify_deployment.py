@@ -379,7 +379,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("CTC Research Deployment Verification")
+        self.stdout.write("Structa Cloud Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )

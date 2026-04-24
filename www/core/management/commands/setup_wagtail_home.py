@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     port=443,
                     root_page=home,
                     is_default_site=True,
-                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "CTC Research"),
+                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "Structa Cloud"),
                 )
                 self.stdout.write(self.style.SUCCESS(
                     f"✅ Created default site: {hostname} → '{home.title}'"

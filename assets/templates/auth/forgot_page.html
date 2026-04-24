@@ -1,5 +1,7 @@
 {% load i18n %}
 {% load static %}
+{# Context fields: form, request #}
+{# Placeholders: none #}
 
 <section class="fragment--form">
   <!-- Forgot Password Card -->
@@ -23,10 +25,10 @@
 
     <form id="forgot-password-form"
           class="auth__form"
-          action="{% url 'pipelines:password_forgot' %}"
+          action="{% url 'plugins:password_forgot' %}"
           method="post"
           novalidate
-          hx-post="{% url 'pipelines:password_forgot' %}"
+          hx-post="{% url 'plugins:password_forgot' %}"
           hx-target=".auth__form"
           hx-swap="innerHTML"
           hx-trigger="submit"
@@ -88,12 +90,12 @@
     <!-- Footer -->
     <footer class="auth__footer mt-4 text-center">
       <p class="mb-1">
-        <a href="{% url 'pipelines:login' %}"
+        <a href="{% url 'plugins:login' %}"
            class="auth__link"
-           hx-get="{% url 'pipelines:login' %}"
+           hx-get="{% url 'plugins:login' %}"
            hx-target=".fragment--form"
            hx-swap="innerHTML"
-           hx-push-url="{% url 'pipelines:login' %}">
+           hx-push-url="{% url 'plugins:login' %}">
           <u>{% trans "Back to Sign In" %}</u>
         </a>
       </p>

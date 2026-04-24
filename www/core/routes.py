@@ -1,5 +1,5 @@
 """
-CTC Research — Routable Components Site Configuration
+Structa Cloud — Routable Components Site Configuration
 ======================================================
 
 Defines the Application and Site hierarchy for the routable-components
@@ -78,7 +78,7 @@ class BlogApp(Application):
 # ---------------------------------------------------------------------------
 
 site = Site(
-    title="CTC Research",
+    title="Structa Cloud",
     viewsets=[
         LMSApp(),
         BlogApp(),

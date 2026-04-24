@@ -3,25 +3,29 @@
 {% image BrandSettings.logo original as logo %}
 {% get_site_root as site_root %}
 
+{# Context fields: confirmation, request, user #}
+{# Placeholders: none #}
+
+<section class="fragment--form">
 <!-- Verify Email Card -->
 <section class="auth__card card card--form">
     <header class="auth__form-header">
         <div class="auth__logo mb-4 text-center">
             <a href="{{ site_root.url }}" class="auth__logo-link">
-                <img src="{{ logo.url }}" 
-                     alt="{% trans 'Logo' %}" 
+                <img src="{{ logo.url }}"
+                     alt="{% trans 'Logo' %}"
                      class="auth__logo-image">
             </a>
         </div>
-        
+
         <div class="auth__icon-wrapper mb-3">
             <div class="auth__icon bg-primary bg-opacity-10 p-3 rounded-circle d-inline-flex">
                 <i class="fas fa-envelope text-primary fa-2x"></i>
             </div>
         </div>
-        
+
         <h1 class="auth__form-title">{% trans "Verify Your Email" %} ✉️</h1>
-        
+
         {% if request.user.is_authenticated %}
             <p class="auth__form-subtitle mb-3">
                 {% blocktrans with email=request.user.email %}
@@ -41,18 +45,18 @@
         {% if messages %}
         <div class="auth__messages mb-4">
             {% for message in messages %}
-            <div class="auth__message alert alert-dismissible fade show d-flex align-items-center 
+            <div class="auth__message alert alert-dismissible fade show d-flex align-items-center
                         {% if message.tags == 'success' %}alert-success
                         {% elif message.tags == 'error' %}alert-danger
-                        {% else %}alert-warning{% endif %}" 
+                        {% else %}alert-warning{% endif %}"
                  role="alert">
-                <i class="fas 
+                <i class="fas
                     {% if message.tags == 'success' %}fa-check-circle
                     {% elif message.tags == 'error' %}fa-exclamation-triangle
-                    {% else %}fa-info-circle{% endif %} 
+                    {% else %}fa-info-circle{% endif %}
                     me-2"></i>
                 <div class="auth__message-text flex-grow-1">{{ message }}</div>
-                <button type="button" class="auth__message-close btn-close" 
+                <button type="button" class="auth__message-close btn-close"
                         data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
             </div>
             {% endfor %}
@@ -119,7 +123,7 @@
             <div class="auth__actions">
                 <!-- Verify Button -->
                 <div class="auth__action mb-3">
-                    <a href="{% url 'send-verification' %}" 
+                    <a href="{% url 'account_email_verification_sent' %}"
                        class="auth__btn auth__btn--primary btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center"
                        id="verifyBtn">
                         <i class="fas fa-paper-plane me-2"></i>
@@ -127,44 +131,44 @@
                         <span class="auth__btn-loader spinner-border spinner-border-sm d-none ms-2"></span>
                     </a>
                 </div>
-                
+
                 <!-- Back Button -->
                 <div class="auth__action">
-                    <a href="{% url 'index' %}" 
+                    <a href="{% url 'index' %}"
                        class="auth__btn auth__btn--secondary btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
                         <i class="fas fa-arrow-left me-2"></i>
                         <span class="auth__btn-text">{% trans "Back to Dashboard" %}</span>
                     </a>
                 </div>
             </div>
-        
+
         <!-- Actions for Unauthenticated Users -->
         {% else %}
             <div class="auth__actions">
                 <!-- Login Button -->
                 <div class="auth__action mb-3">
-                    <a href="{% url 'pipelines:login' %}" 
+                    <a href="{% url 'plugins:login' %}"
                        class="auth__btn auth__btn--primary btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center">
                         <i class="fas fa-sign-in-alt me-2"></i>
                         <span class="auth__btn-text">{% trans "Skip for now & Login" %}</span>
                     </a>
                 </div>
-                
+
                 <!-- Resend Section -->
                 <div class="auth__resend-section text-center mb-4">
                     <p class="auth__resend-text text-secondary mb-3">
                         <i class="fas fa-clock me-1"></i>
                         {% trans "Didn't receive the email?" %}
                     </p>
-                    
-                    <a href="{% url 'send-verification' %}" 
+
+                    <a href="{% url 'account_email_verification_sent' %}"
                        class="auth__btn auth__btn--secondary btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
                        id="resendBtn">
                         <i class="fas fa-redo me-2"></i>
                         <span class="auth__btn-text">{% trans "Resend Verification Email" %}</span>
                         <span class="auth__btn-timer badge bg-light text-dark ms-2 d-none" id="resendTimer">60</span>
                     </a>
-                    
+
                     <p class="auth__resend-help text-secondary small mt-2">
                         <i class="fas fa-lightbulb me-1"></i>
                         {% trans "Check your spam folder if you don't see it in your inbox" %}
@@ -172,7 +176,7 @@
                 </div>
             </div>
         {% endif %}
-        
+
         <!-- Support -->
         <div class="auth__support text-center mt-4 pt-4 border-top">
             <p class="auth__support-text text-secondary small mb-2">
@@ -185,6 +189,7 @@
         </div>
     </div>
 </section>
+</section>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
@@ -195,33 +200,33 @@ document.addEventListener('DOMContentLoaded', function() {
             const btnText = this.querySelector('.auth__btn-text');
             const btnLoader = this.querySelector('.auth__btn-loader');
             const originalText = btnText.textContent;
-            
+
             // Show loading state
             btnText.textContent = '{% trans "Sending..." %}';
             btnLoader.classList.remove('d-none');
             this.disabled = true;
-            
+
             // Simulate API call delay
             setTimeout(() => {
                 // Restore button state (in real scenario, this would be after API response)
                 btnText.textContent = originalText;
                 btnLoader.classList.add('d-none');
                 this.disabled = false;
-                
+
                 // Show success message
                 showToast('{% trans "Verification email sent successfully!" %}', 'success');
             }, 1500);
         });
     }
-    
+
     // Resend Timer Functionality
     const resendBtn = document.getElementById('resendBtn');
     const resendTimer = document.getElementById('resendTimer');
-    
+
     if (resendBtn && resendTimer) {
         let timerInterval;
         let timeLeft = 60;
-        
+
         // Load saved timer state from localStorage
         const savedTime = localStorage.getItem('resendTimerEnd');
         if (savedTime) {
@@ -231,16 +236,16 @@ document.addEventListener('DOMContentLoaded', function() {
                 startTimer();
             }
         }
-        
+
         function startTimer() {
             resendBtn.disabled = true;
             resendBtn.classList.add('disabled');
             resendTimer.classList.remove('d-none');
-            
+
             timerInterval = setInterval(() => {
                 timeLeft--;
                 resendTimer.textContent = timeLeft;
-                
+
                 if (timeLeft <= 0) {
                     clearInterval(timerInterval);
                     resendBtn.disabled = false;
@@ -251,51 +256,51 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             }, 1000);
         }
-        
+
         resendBtn.addEventListener('click', function(e) {
             e.preventDefault();
-            
+
             // Show sending state
             const btnText = this.querySelector('.auth__btn-text');
             const originalText = btnText.textContent;
             btnText.textContent = '{% trans "Sending..." %}';
-            
+
             // Simulate API call
             setTimeout(() => {
                 // Restore button text
                 btnText.textContent = originalText;
-                
+
                 // Start timer
                 timeLeft = 60;
                 startTimer();
-                
+
                 // Save timer end time to localStorage
                 const timerEnd = new Date();
                 timerEnd.setSeconds(timerEnd.getSeconds() + 60);
                 localStorage.setItem('resendTimerEnd', timerEnd.toISOString());
-                
+
                 // Show success message
                 showToast('{% trans "Verification email resent successfully!" %}', 'success');
             }, 1000);
         });
     }
-    
+
     // Toast Notification Function
     function showToast(message, type = 'info') {
         const toastContainer = document.getElementById('toast-container') || createToastContainer();
         const toastId = 'toast-' + Date.now();
-        
+
         const toast = document.createElement('div');
         toast.id = toastId;
         toast.className = `toast align-items-center border-0 bg-${type} bg-opacity-10`;
         toast.setAttribute('role', 'alert');
         toast.setAttribute('aria-live', 'assertive');
         toast.setAttribute('aria-atomic', 'true');
-        
-        const iconClass = type === 'success' ? 'fa-check-circle' : 
-                         type === 'error' ? 'fa-exclamation-triangle' : 
+
+        const iconClass = type === 'success' ? 'fa-check-circle' :
+                         type === 'error' ? 'fa-exclamation-triangle' :
                          'fa-info-circle';
-        
+
         toast.innerHTML = `
             <div class="d-flex">
                 <div class="toast-body d-flex align-items-center gap-2">
@@ -305,23 +310,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
             </div>
         `;
-        
+
         toastContainer.appendChild(toast);
-        
+
         const bsToast = new bootstrap.Toast(toast, {
             animation: true,
             autohide: true,
             delay: 5000
         });
-        
+
         bsToast.show();
-        
+
         // Remove toast after hiding
         toast.addEventListener('hidden.bs.toast', function() {
             this.remove();
         });
     }
-    
+
     function createToastContainer() {
         const container = document.createElement('div');
         container.id = 'toast-container';
@@ -330,14 +335,14 @@ document.addEventListener('DOMContentLoaded', function() {
         document.body.appendChild(container);
         return container;
     }
-    
+
     // Add card animation on load
     setTimeout(() => {
         const card = document.querySelector('.auth__form');
         if (card) {
             card.style.opacity = '0';
             card.style.transform = 'translateY(20px)';
-            
+
             setTimeout(() => {
                 card.style.transition = 'all 0.4s ease';
                 card.style.opacity = '1';

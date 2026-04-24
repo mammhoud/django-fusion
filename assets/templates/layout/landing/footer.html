@@ -57,8 +57,8 @@
                     <p class="text-white-50 small mb-3">
                         {{ brand_settings.newsletter_prompt|richtext|default:"Subscribe for news, insights, and digital growth tips." }}
                     </p>
-                    <form method="POST" action="{% url 'pipelines:subscribe_newsletter' %}"
-                          hx-post="{% url 'pipelines:subscribe_newsletter' %}"
+                    <form method="POST" action="{% url 'plugins:subscribe_newsletter' %}"
+                          hx-post="{% url 'plugins:subscribe_newsletter' %}"
                           hx-target="#newsletter-response"
                           hx-swap="innerHTML"
                           class="mt-3">

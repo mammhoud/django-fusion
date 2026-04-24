@@ -67,7 +67,7 @@ class Command(BaseCommand):
             try:
                 with open(logo_path, "rb") as f:
                     image = Image.objects.create(
-                        title="CTC Research Logo",
+                        title="Structa Cloud Logo",
                         file=File(f, name=logo_path.name),
                     )
                 gs.logo = image
