@@ -1,28 +1,35 @@
 # type: ignore NOQA
-# from __future__ import annotations
+"""
+Handlers URL configuration — structa.cloud
 
-from allauth.account.decorators import secure_admin_login
-from django.contrib import admin
-from django.contrib.auth import views as auth_views
+Includes:
+  - Privacy policy & terms of service (page + modal + consent API)
+  - Accounts plugin URLs
+"""
+
 from django.urls import include, path
-from django.views.generic.base import TemplateView
 
 from .apps import AccountsConfig
-from .site import *
+from .views import privacy
 
 app_name = AccountsConfig.label
 
+# ---------------------------------------------------------------------------
+# Privacy & Terms patterns (merged from urls_privacy.py)
+# ---------------------------------------------------------------------------
+privacy_patterns = (
+    [
+        path("policy/",         privacy.privacy_policy,       name="policy"),
+        path("terms/",          privacy.terms_of_service,     name="terms"),
+        path("consent/",        privacy.consent_required,     name="consent_required"),
+        path("policy/accept/",  privacy.accept_privacy_policy, name="accept_policy"),
+        path("terms/accept/",   privacy.accept_terms,         name="accept_terms"),
+        path("consent/status/", privacy.consent_status,       name="consent_status"),
+    ],
+    "privacy",
+)
 
 urlpatterns = [
-    # Cart endpoints
-    path("cart/count/", CartCountView.as_view(), name="cart-count"),
-    path("cart/items/", CartView.as_view(), name="cart-items"),
-    path("cart/subtotal/", CartSubtotalView.as_view(), name="cart-subtotal"),
-    path("cart/update/<str:item_id>/", CartUpdateQuantityView.as_view(), name="cart-update-quantity"),
-    path("cart/remove/<str:item_id>/", CartRemoveItemView.as_view(), name="cart-remove-item"),
-    path("cart/add/", CartAddItemView.as_view(), name="cart-add-item"),
-    path("checkout/", CheckoutView.as_view(), name="checkout"),
-] + [  # Registration endpoints
-    path("", include("plugins.accounts.registration_urls")),
+    path("legal/", include(privacy_patterns)),
+    path("", include("plugins.accounts.urls", namespace="accounts")),
 ]
-

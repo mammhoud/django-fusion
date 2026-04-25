@@ -23,4 +23,5 @@ MIDDLEWARE = [
     # "django_htmx.middleware.HtmxMiddleware",
     # "django_osoul.middlewares.SiteMiddleware",  # disabled: DjangoAdapter() takes no arguments
     # "core.middlewares.language.DefaultLanguageMiddleware",
+    "plugins.accounts.middleware.error_tracker.ErrorTrackerMiddleware",
 ]

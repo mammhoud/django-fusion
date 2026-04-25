@@ -17,7 +17,7 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template import Context, Template
 from django.utils import timezone
 from django.utils.html import strip_tags
-from plugins.accounts.registration.models import CSVEmailTestBatch
+# CSVEmailTestBatch model removed — no longer available
 
 logger = logging.getLogger(__name__)
 

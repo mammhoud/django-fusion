@@ -8,7 +8,7 @@ from django_osoul.comp.site import PageHandler
 
 # Optional coupling to Core plugins
 try:
-    from www.core.CI.services.cart_service import CartService
+    from plugins.products.services.cart_service import CartService
 except ImportError:
     CartService = None
 

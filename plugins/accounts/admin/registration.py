@@ -18,7 +18,7 @@ class ImportExportModelAdmin(BaseImportExportModelAdmin, ModelAdmin):
 from plugins.accounts.models.snippets import AuthEmailTemplate
 
 try:
-    from plugins.accounts.registration.models import CSVEmailTest, CSVEmailTestBatch
+    # CSVEmailTest/CSVEmailTestBatch removed — models merged into accounts
 
     @admin.register(CSVEmailTest)
     class CSVEmailTestAdmin(ImportExportModelAdmin):

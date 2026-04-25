@@ -1,6 +1,6 @@
-{% extends "email/base_email.html" %}
+{% extends "emails/base.html" %}
 
-{% block title %}We received your message — {{ site_name|default:"Structa" }}{% endblock %}
+{% block title %}We received your message — {{ site_name|default:"CTC Research" }}{% endblock %}
 
 {% block header %}✅ Message Received{% endblock %}
 
@@ -30,6 +30,6 @@
 
 <p style="font-size: 16px; line-height: 1.6; color: #555;">
     Best regards,<br>
-    <strong>The {{ site_name|default:"Structa" }} Team</strong>
+    <strong>The {{ site_name|default:"CTC Research" }} Team</strong>
 </p>
 {% endblock %}

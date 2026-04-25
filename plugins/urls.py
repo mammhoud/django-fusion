@@ -10,6 +10,7 @@ urlpatterns = [
     # Plugin namespaces
     path("accounts/", include("plugins.accounts.urls", namespace="accounts")),
     path("profile/", include("plugins.profile.urls", namespace="profile")),
+    path("", include("plugins.products.urls", namespace="products")),
     # Auth URL aliases — merged from legacy 'pipelines' namespace
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),

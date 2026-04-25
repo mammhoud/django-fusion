@@ -8,7 +8,7 @@ Delegates to the apps.accounts.registration.emails service.
 import sys
 
 from django.core.management.base import BaseCommand
-from plugins.accounts.registration.emails import (
+from plugins.accounts.emails import (
     _get_sender_accounts,
     _send_via_smtp,
     _send_with_django_backend,

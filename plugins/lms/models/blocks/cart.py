@@ -4,7 +4,7 @@ from django.db import models
 from django.utils.translation import gettext_lazy as _
 from decimal import Decimal
 
-from www.core.CI.models.cart import CartItem
+from plugins.products.models.cart import CartItem
 
 
 class CourseCartItem(CartItem):

@@ -7,7 +7,7 @@ Usage:
 
 from django.core.management.base import BaseCommand
 
-from www.apps.models.profiles.privacy_consent import (
+from www.apps.models.profiles.privacy import (
     PrivacyPolicy,
     TermsOfService,
 )

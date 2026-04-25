@@ -118,7 +118,7 @@ def send_registration_email(user, confirmation_url: str) -> bool:
     }
 
     try:
-        html_content = render_to_string("registration/emails/confirmation.html", context)
+        html_content = render_to_string("emails/registration/confirmation.html", context)
         text_content = strip_tags(html_content)
     except Exception as e:
         logger.error(f"Failed to render email template: {e}")
@@ -181,7 +181,7 @@ def send_signin_success_email(user) -> bool:
 
     subject, html_content, text_content = _resolve_template(
         template_type="signin_success",
-        fallback_template="registration/emails/signin_success.html",
+        fallback_template="emails/registration/signin_success.html",
         context=context,
     )
 

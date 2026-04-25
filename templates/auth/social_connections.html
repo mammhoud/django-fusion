@@ -4,6 +4,10 @@
 {% load i18n static %}
 {% load socialaccount %}
 
+<!-- HTMX Context -->
+<input type="hidden" name="strategy" value="{% if request.htmx %}htmx{% else %}document{% endif %}">
+<input type="hidden" name="supports_sse" value="{{ request.supports_sse|yesno:'true,false' }}">
+
 <section class="fragment--form">
   <!-- Social Connections Card -->
   <section class="auth__card card card--form">

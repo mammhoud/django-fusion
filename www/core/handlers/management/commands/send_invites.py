@@ -80,7 +80,7 @@ class Command(BaseCommand):
                 # Try to render email template
                 try:
                     html_message = render_to_string(
-                        "handlers/email/invite.html",
+                        "emails/invitation.html",
                         {
                             "email": email,
                             "invite_url": invite_url,

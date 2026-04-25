@@ -6,8 +6,7 @@ Usage:
 """
 
 from django.core.management.base import BaseCommand
-
-from plugins.accounts.models.profiles.privacy_consent import (
+from plugins.accounts.models.profiles.privacy import (
     PrivacyPolicy,
     TermsOfService,
 )

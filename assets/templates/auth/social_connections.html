@@ -39,6 +39,8 @@
           {% if account in disconnectable_accounts %}
           <form method="post" action="" class="d-inline">
             {% csrf_token %}
+            <input type="hidden" name="strategy" value="{{ strategy|default:'fragment' }}">
+            <input type="hidden" name="supports_sse" value="{{ supports_sse|default:'false' }}">
             <input type="hidden" name="account" value="{{ account.id }}">
             <button type="submit"
                     name="action_remove"

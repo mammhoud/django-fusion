@@ -85,9 +85,6 @@ DATABASE_ROUTERS = []
 MIGRATION_MODULES = {
     "sites": "www.migrations",
     "www_core": None,  # no migrations for www.core app
-    # Registration models live in accounts_registration label but are owned
-    # by plugins.accounts after the sub-app merge.
-    "accounts_registration": "plugins.accounts.registration.migrations",
 }
 }
 

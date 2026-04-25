@@ -24,6 +24,9 @@
 @import '~shared/styles/components/menu';
 @import '~shared/styles/components/parallax';
 
+/* COMPONENTS — Structa-specific */
+@import 'components/email';
+
 /* PAGES — shared */
 @import '~shared/styles/pages/profile';
 @import '~shared/styles/pages/preloader';

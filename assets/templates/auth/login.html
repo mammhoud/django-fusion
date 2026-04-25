@@ -114,31 +114,37 @@
           <span id="login-spinner" class="spinner-border spinner-border-sm ms-2 htmx-indicator"></span>
         </button>
       </div>
-      {% comment %}
+      {% load socialaccount %}
+      {% get_providers as socialaccount_providers %}
+      {% if socialaccount_providers %}
       <!-- Divider -->
       <div class="auth__divider position-relative my-4">
         <hr>
         <span class="small position-absolute top-50 start-50 translate-middle px-3">{% trans "or" %}</span>
       </div>
 
-      <!-- Social -->
+      <!-- Social — use <a href> not hx-post; OAuth redirects cannot be handled by HTMX -->
       <div class="auth__social row">
-        <div class="col-xxl-6 d-grid">
-          <button class="btn btn--social bg-google mb-2 mb-xxl-0" type="button" hx-post=""
-            hx-target="#sse-notifications" hx-swap="innerHTML">
-            <i class="fab fa-google me-2"></i>
-            {% trans "Continue with Google" %}
-          </button>
-        </div>
-        <div class="col-xxl-6 d-grid">
-          <button class="btn btn--social bg-facebook mb-0" type="button" hx-post="" hx-target="#sse-notifications"
-            hx-swap="innerHTML">
-            <i class="fab fa-facebook-f me-2"></i>
-            {% trans "Continue with Facebook" %}
-          </button>
-        </div>
+        {% for provider in socialaccount_providers %}
+          {% if provider.id == "google" %}
+          <div class="col-xxl-6 d-grid">
+            <a href="{% provider_login_url 'google' %}" class="btn btn--social bg-google mb-2 mb-xxl-0">
+              <i class="fab fa-google me-2"></i>
+              {% trans "Continue with Google" %}
+            </a>
+          </div>
+          {% endif %}
+          {% if provider.id == "facebook" %}
+          <div class="col-xxl-6 d-grid">
+            <a href="{% provider_login_url 'facebook' %}" class="btn btn--social bg-facebook mb-0">
+              <i class="fab fa-facebook-f me-2"></i>
+              {% trans "Continue with Facebook" %}
+            </a>
+          </div>
+          {% endif %}
+        {% endfor %}
       </div>
-      {% endcomment %}
+      {% endif %}
 
     </form>
 

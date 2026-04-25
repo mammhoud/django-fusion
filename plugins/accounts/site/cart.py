@@ -3,7 +3,7 @@ from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_osoul.comp.site import PageHandler
-from www.core.CI.services.cart_service import CartService
+from plugins.products.services.cart_service import CartService
 
 
 class CartView(PageHandler):
