@@ -89,7 +89,7 @@ PLUGIN_APPS = [
     "django_osoul.comp",
     # "django_rseal.mcp_designer",  # optional MCP tooling
     "django_rseal.email",
-    # "django_rseal",  # has broken model references to accounts.Service/pipelines.Person
+    "django_rseal",  # required for DefaultBase, Coupon, Newsletter and other shared models
     "plugins.accounts",  # Service, Organization, Team models + registration
     "plugins.lms",       # LMS: Course, Lesson, Module, Enrollment, Certificate
     "plugins.profile",  # Profile, Dashboard, Settings
