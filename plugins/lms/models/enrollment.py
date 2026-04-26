@@ -2,7 +2,7 @@ from django.conf import settings
 from django.db import models
 from django_osoul.models import BaseModel as DefaultBase
 
-from plugins.lms.managers import EnrollmentsManager
+from plugins.lms.managers import EnrollmentManager as EnrollmentsManager
 
 
 class Enrollment(
