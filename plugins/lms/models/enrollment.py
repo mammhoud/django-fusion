@@ -33,7 +33,7 @@ class Enrollment(
     payment_id = models.CharField(max_length=200, blank=True, null=True)
     amount_paid = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     transaction_date = models.DateTimeField(null=True, blank=True)
-    course = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='enrollments')
+    course = models.ForeignKey("alliance.Course", on_delete=models.CASCADE, related_name='enrollments')
 
     # Progress tracking (Aligned with Manager)
     status = models.CharField(
