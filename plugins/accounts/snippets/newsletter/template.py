@@ -1,3 +1,4 @@
+from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter
 from django_osoul.models import EmailTemplate
@@ -57,8 +58,6 @@ class EmailTemplateViewSet(BaseSnippetViewSet):
         Set one selected template as the default (unsets all others).
         """
         if queryset.count() != 1:
-            from django.contrib import messages
-
             messages.warning(request, _("Please select exactly one template to set as default."))
             return
 

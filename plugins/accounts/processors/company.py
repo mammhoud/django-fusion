@@ -1,5 +1,4 @@
 from django.db.models import Q
-
 from django_rseal.contrib.models import Contact, ContactEmail, ContactPhone
 from django_rseal.contrib.models import Corporate as Company
 

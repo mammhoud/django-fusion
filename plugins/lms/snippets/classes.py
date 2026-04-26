@@ -4,6 +4,7 @@ from plugins.accounts.snippets import BaseSnippetViewSet
 
 from ..models import Classes, Schedule
 
+
 class ScheduleSnippet(BaseSnippetViewSet):
     """
     Snippet admin configuration for managing schedules.

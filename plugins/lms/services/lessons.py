@@ -1,12 +1,12 @@
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
 
-import logging
 logger = logging.getLogger(__name__)
 from django_rseal.pipelines.services import BaseService, TokenService
 

@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
 
@@ -13,7 +14,6 @@ from django.db import models, transaction
 from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
-import logging
 logger = logging.getLogger(__name__)
 
 User = get_user_model()

@@ -3,6 +3,7 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 
 from plugins.lms.models import Enrollment
 
+
 class EnrollmentViewSet(SnippetViewSet):
     """
     Admin management for student enrollments.

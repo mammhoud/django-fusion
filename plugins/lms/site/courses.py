@@ -1,5 +1,6 @@
 
 import json
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
@@ -7,7 +8,6 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
 
-import logging
 logger = logging.getLogger(__name__)
 from plugins.lms.services.courses import CourseService
 

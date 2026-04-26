@@ -7,6 +7,7 @@
 #   from .services import *
 #
 import os
+
 from ..conf import settings
 
 # -------------------------------------------------------------------
@@ -95,9 +96,10 @@ if settings.get("WAGTAIL.FRONTEND_CACHE_ENABLED", False):
 # -------------------------------------------------------------------
 # 📈 USE CASE: Performance Monitoring (django-silk) – Debug only
 # -------------------------------------------------------------------
-if settings.get("ENABLE_SILK_PROFILING", False) and DEBUG:
-    INSTALLED_APPS += ["silk"]
-    MIDDLEWARE += ["silk.middleware.SilkyMiddleware"]
+_DEBUG = settings.get("DEBUG", False)
+if settings.get("ENABLE_SILK_PROFILING", False) and _DEBUG:
+    INSTALLED_APPS = [*globals().get("INSTALLED_APPS", []), "silk"]
+    MIDDLEWARE = [*globals().get("MIDDLEWARE", []), "silk.middleware.SilkyMiddleware"]
 
 # -------------------------------------------------------------------
 # 🛡️ USE CASE: Content Security Policy (django-csp)

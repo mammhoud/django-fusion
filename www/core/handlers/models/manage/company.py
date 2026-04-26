@@ -7,6 +7,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
 from modelcluster.models import ClusterableModel
+from plugins.accounts.models.manage.service import Service
 from wagtail.admin.panels import (
     FieldPanel,
     FieldRowPanel,
@@ -15,8 +16,6 @@ from wagtail.admin.panels import (
     TabbedInterface,
 )
 from wagtail.search import index
-
-from plugins.accounts.models.manage.service import Service
 
 
 # -------------------------------------------------------------------

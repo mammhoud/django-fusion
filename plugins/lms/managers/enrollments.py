@@ -15,6 +15,11 @@ from django_osoul.managers import CachedManager
 if TYPE_CHECKING:
     from plugins.lms.models import Course, Enrollment, Lesson, Module
 
+try:
+    from django_rseal.pipelines.models import Person as Profile
+except ImportError:
+    Profile = None  # type: ignore[assignment,misc]
+
 User = get_user_model()
 logger = logging.getLogger(__name__)
 

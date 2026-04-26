@@ -5,7 +5,6 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from ninja.errors import AuthenticationError
-
 from www.core.auth_app.models.token import Token
 
 

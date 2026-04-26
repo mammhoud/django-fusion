@@ -1,5 +1,3 @@
-from wagtail.embeds.blocks import EmbedBlock as SimpleVideoBlock
-from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from django.db import models
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
@@ -12,8 +10,11 @@ from wagtail.admin.panels import (
     InlinePanel,
     MultiFieldPanel,
 )
+from wagtail.embeds.blocks import EmbedBlock as SimpleVideoBlock
 from wagtail.fields import StreamField
+from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Orderable
+
 
 # -------------------------------------------------------------------
 # LESSON MODEL

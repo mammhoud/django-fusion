@@ -30,6 +30,7 @@ ALL_LOCALE_CODES = ["en", "ar", "de", "fr", "es", "pt-br"]
 
 
 def _get_or_create_locale(code: str):
+    from wagtail_localize.models import Locale  # deferred — safe after app ready
     locale, _ = Locale.objects.get_or_create(language_code=code)
     return locale
 
@@ -401,13 +402,14 @@ class Command(BaseCommand):
         # Deferred Wagtail imports — must be inside handle() so the module can
         # be imported and patched in tests before the app registry is ready.
 
+        from plugins.lms.models.courses.index import CoursesPage
+
         from www.core.content.models.pages.about import AboutPage
         from www.core.content.models.pages.contact import ContactPage
         from www.core.content.models.pages.events import EventPage
         from www.core.content.models.pages.home import HomePage
         from www.core.content.models.pages.services import ServicesPage
         from www.core.content.models.pages.team import TeamPage
-        from plugins.lms.models.courses.index import CoursesPage
 
         MODEL_MAP = {
             "HomePage": HomePage,

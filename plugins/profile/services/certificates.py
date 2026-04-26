@@ -1,4 +1,5 @@
 
+import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, Tuple
 
@@ -8,7 +9,6 @@ from django.db.models.expressions import F
 from django.db.models.query_utils import Q
 from django.utils import timezone
 
-import logging
 logger = logging.getLogger(__name__)
 
 

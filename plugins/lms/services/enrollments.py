@@ -4,6 +4,7 @@ Enrollment Service with comprehensive operations for views.
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Dict, List, Optional
 
 from django.apps import apps
@@ -16,7 +17,6 @@ from django.db.models.aggregates import Avg, Count
 from django.utils import timezone
 from django_rseal.pipelines.services import BaseService, TokenService
 
-import logging
 logger = logging.getLogger(__name__)
 
 from ..managers import EnrollmentsManager

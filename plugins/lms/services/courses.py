@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
 
@@ -11,12 +12,12 @@ from django.db import models
 from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
-import logging
 logger = logging.getLogger(__name__)
-from plugins.lms.models.courses import Course, Lesson, Module
 from django_rseal.pipelines.services import (
     CRUDService,
 )
+
+from plugins.lms.models.courses import Course, Lesson, Module
 
 from ..models.enrollment import Enrollment
 

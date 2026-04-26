@@ -13,12 +13,9 @@ except ImportError:
     AuthenticationError = Exception  # type: ignore[assignment,misc]
     HttpBasicAuth = object  # type: ignore[assignment,misc]
 
-try:
-    import logging
+import logging
+
 logger = logging.getLogger(__name__)
-except ImportError:
-    import logging
-    logger = logging.getLogger(__name__)
 
 try:
     from django_rseal.pipelines.models.token import Token  # type: ignore[import]

@@ -149,7 +149,7 @@ def _check_network(container: str) -> list[tuple[bool | None, str]]:
     # Check container is connected
     rc2, out2, _ = _run(["docker", "inspect", container])
     if rc2 == 0 and "traefik-net" in out2:
-        results.append((True, f"Container is connected to traefik-net"))
+        results.append((True, "Container is connected to traefik-net"))
     else:
         results.append((None, "Container not connected to traefik-net (or not running)"))
 
@@ -533,8 +533,8 @@ class Command(BaseCommand):
             "======================================================\n"
         )
         self.stdout.write(f"Container : {container}")
-        self.stdout.write(f"Project   : structa.cloud")
-        self.stdout.write(f"Domain    : https://structa.cloud\n")
+        self.stdout.write("Project   : structa.cloud")
+        self.stdout.write("Domain    : https://structa.cloud\n")
 
         if any_failure:
             self.stderr.write(

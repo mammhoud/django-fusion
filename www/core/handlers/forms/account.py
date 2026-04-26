@@ -3,7 +3,6 @@ from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
 
 
-
 class AccountSettingsForm(forms.Form):
     first_name = forms.CharField(
         label=_("First Name"),

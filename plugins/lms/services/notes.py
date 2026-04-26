@@ -1,11 +1,11 @@
 
+import logging
 from datetime import datetime, timedelta
 from typing import Any, Dict, List, Tuple
 
 from django.core.cache import cache
 from django.utils import timezone
 
-import logging
 logger = logging.getLogger(__name__)
 
 

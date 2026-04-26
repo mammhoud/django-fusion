@@ -17,7 +17,12 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template import Context, Template
 from django.utils import timezone
 from django.utils.html import strip_tags
+
 # CSVEmailTestBatch model removed — no longer available
+try:
+    from www.apps.models import CSVEmailTestBatch
+except ImportError:
+    CSVEmailTestBatch = None  # type: ignore[assignment,misc]
 
 logger = logging.getLogger(__name__)
 
@@ -209,7 +214,8 @@ class BulkEmailSender:
         template = self.load_template()
 
         # Create batch record
-        self.batch_record = CSVEmailTestBatch.objects.create(
+        if CSVEmailTestBatch is not None:
+            self.batch_record = CSVEmailTestBatch.objects.create(
             batch_id=f"batch_{int(time.time())}",
             csv_file=str(self.csv_path),
             total_emails=len(emails),
@@ -239,10 +245,11 @@ class BulkEmailSender:
             print(f"Processed {processed}/{len(emails)} emails...")
 
         # Update batch record
-        self.batch_record.sent_count = results['successful']
-        self.batch_record.failed_count = results['failed']
-        self.batch_record.completed_at = timezone.now()
-        self.batch_record.save()
+        if self.batch_record is not None:
+            self.batch_record.sent_count = results['successful']
+            self.batch_record.failed_count = results['failed']
+            self.batch_record.completed_at = timezone.now()
+            self.batch_record.save()
 
         return results
 

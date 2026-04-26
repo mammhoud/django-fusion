@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import logging
 from datetime import timedelta
 from typing import Any, Dict, List, Tuple
 
@@ -9,7 +10,6 @@ from django.core.cache import cache
 from django.db.models import Q
 from django.utils import timezone
 
-import logging
 logger = logging.getLogger(__name__)
 
 User = get_user_model()
@@ -225,7 +225,6 @@ class MessageService:
         """
         from django.db.models import Count
         from django.db.models.functions import TruncDate
-
         from plugins.accounts.models import Message
         
         end_date = timezone.now()

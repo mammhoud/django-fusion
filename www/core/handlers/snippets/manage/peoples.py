@@ -4,12 +4,11 @@ from django_rseal.handlers.models.manage_company import Organization as Corporat
 from django_rseal.pipelines.models.users.team import Team
 from django_rseal.pipelines.models.users.users import Person
 from django_rseal.pipelines.models.workspace import Workspace
+from plugins.accounts.filters.revision import RevisionFilterSetMixin
+from plugins.accounts.models import Service
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.panels import FieldPanel
 from wagtail.snippets.views.snippets import SnippetViewSet
-
-from plugins.accounts.filters.revision import RevisionFilterSetMixin
-from plugins.accounts.models import Service
 
 # from django_rseal.pipelines.models.locations.branch import Branch
 

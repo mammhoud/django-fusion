@@ -1,3 +1,5 @@
+import logging
+
 from django.db import models
 from django.db.models.aggregates import Count
 from django.http import HttpRequest
@@ -6,10 +8,10 @@ from django_osoul.comp.site import PageHandler
 from django_rseal.pipelines.models import (
     PersonTag,
 )
+
 from plugins.lms.models import Course, Enrollment
 from plugins.lms.models.courses.progress import LessonProgress
 
-import logging
 logger = logging.getLogger(__name__)
 
 

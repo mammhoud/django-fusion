@@ -4,8 +4,11 @@ from .views import *
 
 try:
     from django_rseal.pipelines.site.payments import (
-        StripeInitView, PayPalInitView, CartStripeInitView,
-        CartPayPalInitView, StripeWebhookView
+        CartPayPalInitView,
+        CartStripeInitView,
+        PayPalInitView,
+        StripeInitView,
+        StripeWebhookView,
     )
     payment_urls = [
         path("checkout/stripe/init/<slug:slug>/", StripeInitView.as_view(), name="stripe_init"),

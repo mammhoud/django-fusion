@@ -1,10 +1,10 @@
-from django.shortcuts import render
 from django.http import HttpRequest, JsonResponse
-from django.views import View
+from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 from django_osoul.comp.site import PageHandler
-from plugins.products.services.cart_service import CartService
 from plugins.lms.models.courses.info import Course
+from plugins.products.services.cart_service import CartService
 
 
 class CartView(PageHandler):

@@ -1,4 +1,9 @@
 # from plugins.accounts.models import Company
+try:
+    from plugins.accounts.models.manage.company import Company
+except ImportError:
+    Company = None  # type: ignore[assignment,misc]
+
 from commons.contact.models import Contact, ContactEmail, ContactPhone
 from django.db.models import Q
 

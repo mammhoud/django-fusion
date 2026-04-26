@@ -1,8 +1,8 @@
 # ====================================
 # 🎪 Demo Environment Settings
 # ====================================
-from .core import *
 from ..conf import settings
+from .core import *
 
 # -------------------------------------------------------------------
 # 🎛️ Main Switches

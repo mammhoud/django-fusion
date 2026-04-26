@@ -15,10 +15,8 @@ from typing import Any
 
 from django.core.management.base import BaseCommand, CommandError
 from django.db import models
-
 from wagtail.fields import StreamField
 from wagtail.models import Locale, Page
-
 
 # ---------------------------------------------------------------------------
 # Helpers (ported from base-dir verify_content.py)

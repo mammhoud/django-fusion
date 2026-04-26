@@ -372,13 +372,13 @@ class MainSettings(BaseSettings):
         # Apply casting
         if cast is not None and value is not None:
             try:
-                if cast == bool:
+                if cast is bool:
                     value = self._cast_bool(value)
-                elif cast == int:
+                elif cast is int:
                     value = self._cast_int(value)
-                elif cast == list:
+                elif cast is list:
                     value = self._cast_list(value)
-                elif cast == str:
+                elif cast is str:
                     value = str(value)
                 else:
                     value = cast(value)
@@ -790,7 +790,7 @@ class MainSettings(BaseSettings):
             print("  - Consider setting DEBUG=False in containerized environments")
 
         # Print detected environment
-        print(f"\n🔍 DETECTED ENVIRONMENT:")
+        print("\n🔍 DETECTED ENVIRONMENT:")
         print(f"  - Running in: {self.RUNNING_ENV.value}")
         print(f"  - Server environment: {self.SERVER_ENV.value}")
         print(f"  - Containerized: {'Yes' if self.is_containerized else 'No'}")

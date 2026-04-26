@@ -1,5 +1,4 @@
 import django_filters
-
 from www.core.base.models.locations import *  # type: ignore
 
 

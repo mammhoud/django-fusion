@@ -86,7 +86,6 @@ MIGRATION_MODULES = {
     "sites": "www.migrations",
     "www_core": None,  # no migrations for www.core app
 }
-}
 
 # # -------------------------------
 # # Connection Health Check

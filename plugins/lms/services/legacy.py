@@ -5,20 +5,20 @@ Enhanced Enrollment Service with comprehensive operations for views.
 
 from __future__ import annotations
 
+import logging
 from typing import Any, Dict, List, Optional
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
-from django.db import transaction
-from django.db.models import F, Q
+from django.db import models, transaction
+from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
 from django_osoul.comp.payloads.services import BaseService, TokenService
 from django_rseal.pipelines.models import Person as Profile
 
-import logging
 logger = logging.getLogger(__name__)
 
-from ..managers.enrollments import EnrollmentsManager as EnrollmentManager
+from ..managers.enrollments import EnrollmentManager
 from ..models import Course, Enrollment
 from ..models.courses.progress import LessonProgress, ModuleProgress
 from ..models.courses.specification import Lesson

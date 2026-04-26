@@ -3,6 +3,7 @@ Tags view for user profiles.
 Moved from www/core/handlers/site/tags.py
 """
 import json
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.db import models
@@ -10,9 +11,9 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
+
 from plugins.accounts.models import PersonTag, PersonTagCategory
 
-import logging
 logger = logging.getLogger(__name__)
 
 

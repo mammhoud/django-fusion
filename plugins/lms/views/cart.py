@@ -3,7 +3,6 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-
 from django_osoul.comp.site import PageHandler
 
 # Optional coupling to Core plugins
@@ -13,7 +12,7 @@ except ImportError:
     CartService = None
 
 try:
-    from django_rseal.pipelines.services.payments import StripeGateway, PayPalGateway
+    from django_rseal.pipelines.services.payments import PayPalGateway, StripeGateway
     from django_rseal.pipelines.site.payments import PaymentProcessingMixin
 except ImportError:
     StripeGateway = None
@@ -22,7 +21,6 @@ except ImportError:
         pass
 
 from ..models import Course, Enrollment
-
 
 
 class EnrollView(PaymentProcessingMixin, PageHandler):

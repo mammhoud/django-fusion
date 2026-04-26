@@ -10,6 +10,7 @@ from django_rseal.pipelines.site.mixins import (
     ProfileDashboardMixin,
     ProfileOperationsMixin,
 )
+
 from plugins.accounts.services import PersonService
 
 

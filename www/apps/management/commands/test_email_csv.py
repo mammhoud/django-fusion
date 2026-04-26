@@ -23,7 +23,13 @@ from django.core.management.base import BaseCommand, CommandError
 from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import strip_tags
+
 # CSVEmailTest/CSVEmailTestBatch models removed — no longer available
+try:
+    from www.apps.models.email import CSVEmailTest, CSVEmailTestBatch  # type: ignore[import]
+except ImportError:
+    CSVEmailTest = None  # type: ignore[assignment,misc]
+    CSVEmailTestBatch = None  # type: ignore[assignment,misc]
 
 logger = logging.getLogger(__name__)
 
