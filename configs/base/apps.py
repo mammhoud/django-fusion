@@ -91,6 +91,7 @@ PLUGIN_APPS = [
     "django_rseal.email",
     # "django_rseal",  # has broken model references to accounts.Service/pipelines.Person
     "plugins.accounts",  # Service, Organization, Team models + registration
+    "plugins.lms",       # LMS: Course, Lesson, Module, Enrollment, Certificate
     "plugins.profile",  # Profile, Dashboard, Settings
     "plugins.products",  # Cart, CartItem, Checkout
 ]
