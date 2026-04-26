@@ -8,7 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 
 from plugins.accounts.services import CertificateService
-from core import logger
+import logging
+logger = logging.getLogger(__name__)
 from django_osoul.comp.site import NotificationMixin, PageHandler
 
 User = get_user_model()

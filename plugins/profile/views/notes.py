@@ -9,7 +9,8 @@ from django_osoul.comp.site import NotificationMixin, PageHandler
 from plugins.accounts.services import CertificateService, MessageService
 from plugins.lms.services import CourseService, NoteService
 
-from core import logger
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 

@@ -8,7 +8,8 @@ from django.views.decorators.http import require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
 from plugins.accounts.services import MessageService
 
-from core import logger
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 

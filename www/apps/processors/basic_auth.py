@@ -14,7 +14,8 @@ except ImportError:
     HttpBasicAuth = object  # type: ignore[assignment,misc]
 
 try:
-    from core import logger
+    import logging
+logger = logging.getLogger(__name__)
 except ImportError:
     import logging
     logger = logging.getLogger(__name__)
