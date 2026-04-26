@@ -11,7 +11,8 @@ from django.db import models
 from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 from plugins.lms.models.courses import Course, Lesson, Module
 from django_rseal.pipelines.services import (
     CRUDService,

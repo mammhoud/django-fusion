@@ -3,7 +3,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django_osoul.models import EmailTemplate
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 

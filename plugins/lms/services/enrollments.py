@@ -16,7 +16,8 @@ from django.db.models.aggregates import Avg, Count
 from django.utils import timezone
 from django_rseal.pipelines.services import BaseService, TokenService
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 from ..managers import EnrollmentsManager
 from ..models import Course, Enrollment, Lesson, LessonProgress, ModuleProgress

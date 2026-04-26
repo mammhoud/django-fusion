@@ -9,7 +9,8 @@ from django_rseal.pipelines.models import (
 from plugins.lms.models import Course, Enrollment
 from plugins.lms.models.courses.progress import LessonProgress
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 
 class DashboardView(PageHandler):

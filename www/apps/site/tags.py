@@ -7,7 +7,8 @@ from django.http import HttpRequest, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 from www.apps.models import (
     PersonTag,
     PersonTagCategory,

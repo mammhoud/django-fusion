@@ -5,7 +5,8 @@ from typing import Any, Dict, List, Tuple
 from django.core.cache import cache
 from django.utils import timezone
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 
 class NoteService:

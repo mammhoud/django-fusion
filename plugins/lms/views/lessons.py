@@ -3,7 +3,8 @@ from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 from django_osoul.comp.site import PageHandler
 
 from ..models import Course, Lesson

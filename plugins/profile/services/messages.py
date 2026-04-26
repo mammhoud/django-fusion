@@ -9,7 +9,8 @@ from django.core.cache import cache
 from django.db.models import Q
 from django.utils import timezone
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 

@@ -12,7 +12,8 @@ from django.views.decorators.http import require_GET, require_POST
 from django_osoul.comp.site import NotificationMixin, PageHandler
 from plugins.accounts.models import PersonTag, PersonTagCategory
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 
 class EnhancedTagsView(PageHandler, NotificationMixin):

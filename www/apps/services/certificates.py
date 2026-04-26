@@ -8,7 +8,8 @@ from django.db.models.expressions import F
 from django.db.models.query_utils import Q
 from django.utils import timezone
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 
 class CertificateService:

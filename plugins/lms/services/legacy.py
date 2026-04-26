@@ -15,7 +15,8 @@ from django.utils import timezone
 from django_osoul.comp.payloads.services import BaseService, TokenService
 from django_rseal.pipelines.models import Person as Profile
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 from ..managers.enrollments import EnrollmentsManager as EnrollmentManager
 from ..models import Course, Enrollment

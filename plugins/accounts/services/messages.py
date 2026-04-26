@@ -13,7 +13,8 @@ from django.db import models, transaction
 from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 
 User = get_user_model()
 

@@ -6,7 +6,8 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 
-from apps import logger
+import logging
+logger = logging.getLogger(__name__)
 from www.core.content.models.pages.base import BaseIndexPage
 from plugins.lms.models.courses.detail import Specialization
 from plugins.lms.models.courses.info import Course
