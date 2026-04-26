@@ -13,9 +13,7 @@ from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-from django_rseal.pipelines.services import (
-    CRUDService,
-)
+from django_rseal.services.infrastructure.base import BaseService
 
 from plugins.lms.models.courses import Course, Lesson, Module
 
@@ -24,7 +22,7 @@ from ..models.enrollment import Enrollment
 User = get_user_model()
 
 
-class CourseService(CRUDService):
+class CourseService(BaseService):
     """
     Service for course operations with CRUD capabilities.
     """

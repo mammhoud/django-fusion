@@ -15,7 +15,8 @@ from django.db import models, transaction
 from django.db.models import F, Q
 from django.db.models.aggregates import Avg, Count
 from django.utils import timezone
-from django_rseal.pipelines.services import BaseService, TokenService
+from django_rseal.services.infrastructure.base import BaseService
+from django_rseal.services.infrastructure.token import TokenService
 
 logger = logging.getLogger(__name__)
 
