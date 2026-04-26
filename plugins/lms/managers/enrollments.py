@@ -27,13 +27,6 @@ class EnrollmentManager(CachedManager):
     CACHE_PREFIX = "enrollment"
     DEFAULT_TIMEOUT = 1800  # 30 minutes
 
-    def __init__(self):
-        super().__init__(
-            cache_timeout=self.DEFAULT_TIMEOUT,
-            cache_key_prefix=self.CACHE_PREFIX,
-            enable_cache=True,
-        )
-
     # -------------------------------------------------------------------------
     # User Enrollment Methods (For User Dashboard)
     # -------------------------------------------------------------------------
