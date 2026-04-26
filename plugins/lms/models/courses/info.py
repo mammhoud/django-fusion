@@ -168,14 +168,12 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
         help_text=_("Auto-calculated: (price - discount) + tax. Do not edit."),
         editable=False,
     )
-    coupon = models.ForeignKey(
-        "pipelines.Coupon",
+    coupon = models.CharField(
+        max_length=100,
         null=True,
         blank=True,
-        on_delete=models.SET_NULL,
-        related_name="courses",
         verbose_name=_("Coupon"),
-        help_text=_("Optional coupon attached to this course."),
+        help_text=_("Optional coupon code attached to this course."),
     )
     enrolled_count = models.PositiveIntegerField(
         default=0,
