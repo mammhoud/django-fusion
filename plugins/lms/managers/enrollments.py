@@ -2,7 +2,7 @@ from __future__ import annotations
 
 import logging
 from datetime import timedelta
-from typing import Any, Dict, List, Optional, Tuple
+from typing import TYPE_CHECKING, Any, Dict, List, Optional, Tuple
 
 from django.contrib.auth import get_user_model
 from django.core.cache import cache
@@ -12,7 +12,8 @@ from django.db.models.aggregates import Sum
 from django.utils import timezone
 from django_osoul.managers import CachedManager
 
-from plugins.lms.models import Course, Enrollment, Lesson, Module
+if TYPE_CHECKING:
+    from plugins.lms.models import Course, Enrollment, Lesson, Module
 
 User = get_user_model()
 logger = logging.getLogger(__name__)
