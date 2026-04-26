@@ -4,10 +4,6 @@ from django.urls import path
 
 from .apps import ProfileConfig
 from .views import (
-    BlogPostCreateView,
-    BlogPostDeleteView,
-    BlogPostEditView,
-    BlogPostsView,
     CertificationsView,
     CoursesView,
     DashboardView,
@@ -19,6 +15,18 @@ from .views import (
     ProfileView,
     SettingsView,
 )
+
+# Blog views are optional — only available when plugins.blog is in INSTALLED_APPS
+try:
+    from .views import (
+        BlogPostCreateView,
+        BlogPostDeleteView,
+        BlogPostEditView,
+        BlogPostsView,
+    )
+    _blog_urls_available = True
+except (ImportError, TypeError):
+    _blog_urls_available = False
 
 app_name = ProfileConfig.label
 
@@ -33,12 +41,13 @@ urlpatterns = [
     path("notes/", NotesView.as_view(), name="notes"),
     path("settings/", SettingsView.as_view(), name="settings"),
     path("messages/", MessagesView.as_view(), name="messages"),
-    # Blog post management
+] + ([
+    # Blog post management — only when blog views are available
     path("blog/", BlogPostsView.as_view(), name="blog-posts"),
     path("blog/create/", BlogPostCreateView.as_view(), name="blog-post-create"),
     path("blog/<int:post_id>/edit/", BlogPostEditView.as_view(), name="blog-post-edit"),
     path("blog/<int:post_id>/delete/", BlogPostDeleteView.as_view(), name="blog-post-delete"),
-] + [
+] if _blog_urls_available else []) + [
     # Action endpoints
     path("update/", ProfileView.as_view(), name="profile-update"),
     path("image/upload/", ProfileImageUploadView.as_view(), name="profile-image-upload"),

@@ -1,10 +1,16 @@
 # Profile views
-from .blog import (
-    BlogPostCreateView,
-    BlogPostDeleteView,
-    BlogPostEditView,
-    BlogPostsView,
-)
+try:
+    from .blog import (
+        BlogPostCreateView,
+        BlogPostDeleteView,
+        BlogPostEditView,
+        BlogPostsView,
+    )
+    _blog_views_available = True
+except (ImportError, RuntimeError):
+    _blog_views_available = False
+    BlogPostsView = BlogPostCreateView = BlogPostEditView = BlogPostDeleteView = None
+
 from .certifications import CertificationsView
 from .courses import CoursesView
 from .dashboard import DashboardView
