@@ -86,6 +86,7 @@ THIRD_PARTY_APPS = [
 
 PLUGIN_APPS = [
     # "django_rseal.pipelines",  # deprecated shim — no models needed
+    "django_osoul",              # provides Role, Token models
     "django_osoul.comp",
     # "django_rseal.mcp_designer",  # optional MCP tooling
     "django_rseal.email",

@@ -1,13 +1,8 @@
 # Profile views
 try:
-    from .blog import (
-        BlogPostCreateView,
-        BlogPostDeleteView,
-        BlogPostEditView,
-        BlogPostsView,
-    )
+    from .blog import BlogPostCreateView, BlogPostDeleteView, BlogPostEditView, BlogPostsView
     _blog_views_available = True
-except (ImportError, RuntimeError):
+except (ImportError, RuntimeError, Exception):
     _blog_views_available = False
     BlogPostsView = BlogPostCreateView = BlogPostEditView = BlogPostDeleteView = None
 

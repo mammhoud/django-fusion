@@ -24,7 +24,12 @@ try:
         BlogPostEditView,
         BlogPostsView,
     )
-    _blog_urls_available = True
+    _blog_urls_available = (
+        BlogPostsView is not None and
+        BlogPostCreateView is not None and
+        BlogPostEditView is not None and
+        BlogPostDeleteView is not None
+    )
 except (ImportError, TypeError):
     _blog_urls_available = False
 

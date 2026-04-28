@@ -1,6 +1,6 @@
 <div class="p-4 sidebar-lessons">
     <h5 class="mb-3">{% trans "Course Content" %}</h5>
-    
+
     {% for module in course_modules %}
     <div class="card mb-3">
         <div class="card-header module-header">
@@ -9,7 +9,7 @@
         </div>
         <div class="list-group list-group-flush">
             {% for lesson_item in module.lessons.all %}
-            <a href="{% url 'lesson_watch' lesson_item.id %}" 
+            <a href="{% url 'lesson_watch' lesson_item.id %}"
                class="list-group-item list-group-item-action lesson-item {% if lesson_item.id == lesson.id %}active{% endif %} {% if lesson_item.is_completed %}completed{% endif %}">
                 <div class="d-flex justify-content-between align-items-center">
                     <div>
@@ -57,3 +57,4 @@
         </div>
     </div>
 </div>
+
