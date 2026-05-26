@@ -15,6 +15,7 @@ from pathlib import Path
 WEBSITE = os.environ.get("WEBSITE", "structa.cloud")
 
 # Set up paths
+
 SCRIPT_DIR = Path(__file__).resolve().parent
 WEBSITE_DIR = SCRIPT_DIR / WEBSITE
 WWW_DIR = WEBSITE_DIR / "www"
