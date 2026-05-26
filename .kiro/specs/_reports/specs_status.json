@@ -1,0 +1,132 @@
+{
+  "generated": "2026-04-17T14:01:40.319951",
+  "total_specs": 7,
+  "specs": {
+    "finalize-refactor": {
+      "name": "finalize-refactor",
+      "category": "refactoring",
+      "description": "",
+      "tasks": {
+        "total": 86,
+        "completed": 86,
+        "in_progress": 0,
+        "partial": 0,
+        "not_started": 0,
+        "completion_percentage": 100.0
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": true,
+        "has_tasks": true
+      }
+    },
+    "phase-2-website-sync-completion": {
+      "name": "phase-2-website-sync-completion",
+      "category": "phases",
+      "description": "",
+      "tasks": {
+        "total": 242,
+        "completed": 0,
+        "in_progress": 0,
+        "partial": 0,
+        "not_started": 242,
+        "completion_percentage": 0.0
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": true,
+        "has_tasks": true
+      }
+    },
+    "core-logic-consolidation-and-app-restructure": {
+      "name": "core-logic-consolidation-and-app-restructure",
+      "category": "refactoring",
+      "description": "",
+      "tasks": {
+        "total": 84,
+        "completed": 23,
+        "in_progress": 1,
+        "partial": 0,
+        "not_started": 60,
+        "completion_percentage": 27.380952380952383
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": true,
+        "has_tasks": true
+      }
+    },
+    "phase-3-production-deployment": {
+      "name": "phase-3-production-deployment",
+      "category": "deployment",
+      "description": "- Build structa.cloud Django image from `structa.cloud/compose/django/Dockerfile`",
+      "tasks": {
+        "total": 15,
+        "completed": 15,
+        "in_progress": 0,
+        "partial": 0,
+        "not_started": 0,
+        "completion_percentage": 100.0
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": false,
+        "has_tasks": true
+      }
+    },
+    "ecosystem-architectural-refactoring": {
+      "name": "ecosystem-architectural-refactoring",
+      "category": "refactoring",
+      "description": "",
+      "tasks": {
+        "total": 663,
+        "completed": 621,
+        "in_progress": 1,
+        "partial": 8,
+        "not_started": 33,
+        "completion_percentage": 93.66515837104072
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": true,
+        "has_tasks": true
+      }
+    },
+    "django-refactoring": {
+      "name": "django-refactoring",
+      "category": "refactoring",
+      "description": "**User Story:** As a developer, I want to restore HTML templates from structa.cloud to ctc-research.",
+      "tasks": {
+        "total": 121,
+        "completed": 88,
+        "in_progress": 0,
+        "partial": 0,
+        "not_started": 33,
+        "completion_percentage": 72.72727272727273
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": true,
+        "has_tasks": true
+      }
+    },
+    "ctc-research-deployment-verification": {
+      "name": "ctc-research-deployment-verification",
+      "category": "deployment",
+      "description": "",
+      "tasks": {
+        "total": 136,
+        "completed": 136,
+        "in_progress": 0,
+        "partial": 0,
+        "not_started": 0,
+        "completion_percentage": 100.0
+      },
+      "files": {
+        "has_requirements": true,
+        "has_design": true,
+        "has_tasks": true
+      }
+    }
+  }
+}
