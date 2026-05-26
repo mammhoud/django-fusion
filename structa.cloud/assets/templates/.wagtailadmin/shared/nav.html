@@ -1,0 +1,28 @@
+{% load wagtailadmin_tags static i18n %}
+<nav class="navbar navbar-expand-lg navbar-light bg-light">
+    <div class="container-fluid">
+        <a class="navbar-brand" href="{% url 'wagtailadmin_home' %}">
+            {% block branding_logo %}
+                <img src="{% static 'wagtailadmin/images/wagtail-logo.svg' %}" alt="" width="30" height="24">
+                Wagtail
+            {% endblock %}
+        </a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#wagtail-navbar">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="wagtail-navbar">
+            <ul class="navbar-nav me-auto">
+                {% for item in menu_items %}
+                    <li class="nav-item">
+                        <a class="nav-link {% if item.active %}active{% endif %}" href="{{ item.url }}">
+                            {{ item.label }}
+                        </a>
+                    </li>
+                {% endfor %}
+            </ul>
+            <ul class="navbar-nav">
+                {% include "wagtailadmin/shared/user_avatar.html" %}
+            </ul>
+        </div>
+    </div>
+</nav>

@@ -1,0 +1,17 @@
+
+{% with block_val=self|default:block %}
+{% comp "media.video"
+    block=block_val
+    player_attributes=player_attributes
+    player_classes=player_classes
+    block_id=block_id
+    block_classes=block_classes
+    framework=framework
+    css_prefix=css_prefix
+/%}
+    {% if block_val.video_description %}
+        <div class="video-description">
+            {{ block_val.video_description }}
+        </div>
+    {% endif %}
+{% endwith %}

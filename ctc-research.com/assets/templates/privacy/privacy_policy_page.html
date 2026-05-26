@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Privacy Policy" %} — {{ site_name }}{% endblock %}
+
+{% block content %}
+<div class="legal-page">
+    <div class="legal-page__container">
+
+        <header class="legal-page__header">
+            <div class="legal-page__icon" aria-hidden="true">🔒</div>
+            <h1 class="legal-page__title">{{ policy.title }}</h1>
+            <p class="legal-page__meta">
+                {% trans "Version" %} {{ policy.version }}
+                &mdash;
+                {% blocktrans with date=policy.updated_at|date:"DATE_FORMAT" %}Last updated {{ date }}{% endblocktrans %}
+            </p>
+        </header>
+
+        {% if has_consented %}
+        <div class="legal-page__consent-badge legal-page__consent-badge--accepted" role="status">
+            <span class="legal-page__consent-icon" aria-hidden="true">✓</span>
+            {% trans "You have accepted this privacy policy." %}
+        </div>
+        {% endif %}
+
+        <div class="legal-page__body prose">
+            {{ policy.content|safe }}
+        </div>
+
+        <footer class="legal-page__footer">
+            {% if not has_consented and request.user.is_authenticated %}
+            <form method="post" action="{% url 'privacy:accept_policy' %}" class="legal-page__consent-form">
+                {% csrf_token %}
+                <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}">
+                <p class="legal-page__consent-note">
+                    {% trans "By clicking Accept, you confirm that you have read and agree to this Privacy Policy." %}
+                </p>
+                <div class="legal-page__actions">
+                    <a href="{{ request.GET.next|default:'/' }}" class="btn btn--secondary">
+                        {% trans "Decline" %}
+                    </a>
+                    <button type="submit" class="btn btn--primary">
+                        {% trans "Accept Privacy Policy" %}
+                    </button>
+                </div>
+            </form>
+            {% else %}
+            <div class="legal-page__actions">
+                <a href="{% url 'privacy:terms' %}" class="btn btn--outline">
+                    {% trans "View Terms of Service" %}
+                </a>
+                <a href="/" class="btn btn--secondary">
+                    {% trans "Back to Home" %}
+                </a>
+            </div>
+            {% endif %}
+        </footer>
+
+    </div>
+</div>
+{% endblock %}

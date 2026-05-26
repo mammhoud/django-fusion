@@ -1,0 +1,958 @@
+{% load i18n %}
+{% load static %}
+<div class="profiled-panel profiled-panel--settings">
+    <div class="profiled-panel__header">
+        <h3 class="profiled-panel__title profiled-panel__title--settings">
+            <i class="fas fa-cog me-2"></i>{% trans "Account Settings" %}
+        </h3>
+        <div class="profiled-panel__actions">
+            <button class="btn btn-sm btn-outline-secondary" id="resetAllSettings" type="button">
+                <i class="fas fa-undo me-1"></i>{% trans "Reset All" %}
+            </button>
+        </div>
+    </div>
+
+    <div class="profiled-panel__content">
+        <!-- Settings Navigation -->
+        <div class="row">
+            <div class="col-md-3">
+                <div class="settings-nav">
+                    <div class="nav flex-column nav-pills me-3" id="settingsTab" role="tablist">
+                        {% for tab in settings_tabs %}
+                        <button class="nav-link {% if active_tab == tab.id %}active{% endif %}" id="{{ tab.id }}-tab"
+                            data-bs-toggle="pill" data-bs-target="#{{ tab.id }}" type="button"
+                            aria-controls="{{ tab.id }}"
+                            aria-selected="{% if active_tab == tab.id %}true{% else %}false{% endif %}">
+                            <i class="fas fa-{{ tab.icon }} me-2"></i>{% trans tab.title %}
+                        </button>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-9">
+                <div class="tab-content" id="settingsTabContent">
+
+                    <!-- Account Settings Section -->
+                    <div class="tab-pane fade {% if active_tab == 'account' %}show active{% endif %}" id="account"
+                        role="tabpanel" aria-labelledby="account-tab">
+                        <div class="settings-section">
+                            <div class="settings-section__header">
+                                <h5 class="settings-section__title">{% trans "Account Information" %}</h5>
+                                <p class="settings-section__description">
+                                    {% trans "Update your personal information and account settings" %}
+                                </p>
+                            </div>
+
+                            <div class="settings-section__content">
+                                <form method="post" action="{% url 'handlers:settings' %}" id="accountForm"
+                                    class="settings-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="section" value="account">
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-user me-2"></i>{% trans "Basic Information" %}
+                                        </h6>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "First Name" %}</label>
+                                                {{ all_sections_data.account.form.first_name }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Last Name" %}</label>
+                                                {{ all_sections_data.account.form.last_name }}
+                                            </div>
+                                        </div>
+
+                                        <div class="row g-3 mt-3">
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Email Address" %}</label>
+                                                {{ all_sections_data.account.form.email }}
+                                                <div class="settings-form__description">
+                                                    {% trans "Your primary email for notifications" %}
+                                                    {% if not person.email_verified %}
+                                                    <span class="badge bg-warning ms-2">{% trans "Unverified" %}</span>
+                                                    {% endif %}
+                                                </div>
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Username" %}</label>
+                                                {{ all_sections_data.account.form.username }}
+                                                <div class="settings-form__description">
+                                                    {% trans "Username cannot be changed" %}
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-address-card me-2"></i>{% trans "Contact Information" %}
+                                        </h6>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Phone Number" %}</label>
+                                                {{ all_sections_data.account.form.phone }}
+                                            </div>
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Location" %}</label>
+                                                {{ all_sections_data.account.form.location }}
+                                            </div>
+                                        </div>
+
+                                        <div class="mt-3">
+                                            <label class="settings-form__label">{% trans "Bio" %}</label>
+                                            {{ all_sections_data.account.form.bio }}
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-globe me-2"></i>{% trans "Profile Visibility" %}
+                                        </h6>
+
+                                        <div class="form-check form-switch">
+                                            {{ all_sections_data.account.form.public_profile }}
+                                            <label class="form-check-label"
+                                                for="{{ all_sections_data.account.form.public_profile.id_for_label }}">
+                                                {% trans "Make profile public" %}
+                                            </label>
+                                            <div class="settings-form__description">
+                                                {% trans "When enabled, your profile will be visible to other users" %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if all_sections_data.account.form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        {% trans "Please fix the errors below:" %}
+                                        <ul class="mb-0 mt-2">
+                                            {% for field, errors in all_sections_data.account.form.errors.items %}
+                                            {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="settings-form__actions mt-4">
+                                        <button type="submit" class="btn btn-primary btn--settings">
+                                            <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn--settings"
+                                            onclick="resetForm('accountForm')">
+                                            <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Privacy Settings Section -->
+                    <div class="tab-pane fade {% if active_tab == 'privacy' %}show active{% endif %}" id="privacy"
+                        role="tabpanel" aria-labelledby="privacy-tab">
+                        <div class="settings-section">
+                            <div class="settings-section__header">
+                                <h5 class="settings-section__title">{% trans "Privacy Settings" %}</h5>
+                                <p class="settings-section__description">
+                                    {% trans "Control your privacy preferences and data sharing" %}
+                                </p>
+                            </div>
+
+                            <div class="settings-section__content">
+                                <form method="post" action="{% url 'handlers:settings' %}" id="privacyForm"
+                                    class="settings-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="section" value="privacy">
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-eye me-2"></i>{% trans "Profile Visibility" %}
+                                        </h6>
+
+                                        <div class="privacy-options">
+                                            {% for choice in all_sections_data.privacy.form.profile_visibility %}
+                                            <div class="form-check mb-3">
+                                                {{ choice.tag }}
+                                                <label class="form-check-label" for="{{ choice.id_for_label }}">
+                                                    <strong>{{ choice.choice_label }}</strong>
+                                                </label>
+                                            </div>
+                                            {% endfor %}
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-chart-bar me-2"></i>{% trans "Data Sharing" %}
+                                        </h6>
+
+                                        <div class="privacy-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.privacy.form.share_usage_data }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.privacy.form.share_usage_data.id_for_label }}">
+                                                    {% trans "Share anonymized usage data to improve our services" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.privacy.form.allow_search_indexing }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.privacy.form.allow_search_indexing.id_for_label }}">
+                                                    {% trans "Allow search engines to index your profile" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch">
+                                                {{ all_sections_data.privacy.form.show_online_status }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.privacy.form.show_online_status.id_for_label }}">
+                                                    {% trans "Show online status to other users" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-comments me-2"></i>{% trans "Contact Preferences" %}
+                                        </h6>
+
+                                        <div class="privacy-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.privacy.form.allow_contact }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.privacy.form.allow_contact.id_for_label }}">
+                                                    {% trans "Allow other members to contact you" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch">
+                                                {{ all_sections_data.privacy.form.show_email }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.privacy.form.show_email.id_for_label }}">
+                                                    {% trans "Show email address on profile" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if all_sections_data.privacy.form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        {% trans "Please fix the errors below:" %}
+                                        <ul class="mb-0 mt-2">
+                                            {% for field, errors in all_sections_data.privacy.form.errors.items %}
+                                            {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="settings-form__actions mt-4">
+                                        <button type="submit" class="btn btn-primary btn--settings">
+                                            <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn--settings"
+                                            onclick="resetForm('privacyForm')">
+                                            <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Privacy Actions -->
+                                <div class="settings-actions mt-4 pt-3 border-top">
+                                    <h6 class="mb-3">{% trans "Privacy Actions" %}</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <form method="post" action="{% url 'handlers:export_data' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-primary">
+                                                <i class="fas fa-download me-1"></i>{% trans "Export My Data" %}
+                                            </button>
+                                        </form>
+
+                                        <button type="button" class="btn btn-outline-danger" data-bs-toggle="modal"
+                                            data-bs-target="#deleteAccountModal">
+                                            <i class="fas fa-trash me-1"></i>{% trans "Delete Account" %}
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Notifications Settings Section -->
+                    <div class="tab-pane fade {% if active_tab == 'notifications' %}show active{% endif %}"
+                        id="notifications" role="tabpanel" aria-labelledby="notifications-tab">
+                        <div class="settings-section">
+                            <div class="settings-section__header">
+                                <h5 class="settings-section__title">{% trans "Notification Preferences" %}</h5>
+                                <p class="settings-section__description">
+                                    {% trans "Configure how and when you receive notifications" %}
+                                </p>
+                            </div>
+
+                            <div class="settings-section__content">
+                                <form method="post" action="{% url 'handlers:settings' %}" id="notificationsForm"
+                                    class="settings-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="section" value="notifications">
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-envelope me-2"></i>{% trans "Email Notifications" %}
+                                        </h6>
+
+                                        <div class="notification-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.notifications.form.course_updates }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.course_updates.id_for_label }}">
+                                                    {% trans "Course updates and announcements" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.notifications.form.instructor_messages }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.instructor_messages.id_for_label }}">
+                                                    {% trans "New messages from instructors" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.notifications.form.marketing_emails }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.marketing_emails.id_for_label }}">
+                                                    {% trans "Marketing and promotional emails" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch">
+                                                {{ all_sections_data.notifications.form.weekly_reports }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.weekly_reports.id_for_label }}">
+                                                    {% trans "Weekly progress reports" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-bell me-2"></i>{% trans "Push Notifications" %}
+                                        </h6>
+
+                                        <div class="notification-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.notifications.form.assignment_notifications }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.assignment_notifications.id_for_label }}">
+                                                    {% trans "New course assignments" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.notifications.form.forum_activity }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.forum_activity.id_for_label }}">
+                                                    {% trans "Forum activity" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch">
+                                                {{ all_sections_data.notifications.form.deadline_reminders }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.deadline_reminders.id_for_label }}">
+                                                    {% trans "Deadline reminders" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-sms me-2"></i>{% trans "SMS Notifications" %}
+                                        </h6>
+
+                                        <div class="notification-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.notifications.form.sms_notifications }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.notifications.form.sms_notifications.id_for_label }}">
+                                                    {% trans "Enable SMS notifications for urgent updates" %}
+                                                </label>
+                                            </div>
+                                        </div>
+
+                                        <small class="text-muted">
+                                            <i class="fas fa-info-circle me-1"></i>
+                                            {% trans "Standard carrier rates may apply for SMS notifications" %}
+                                        </small>
+                                    </div>
+
+                                    {% if all_sections_data.notifications.form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        {% trans "Please fix the errors below:" %}
+                                        <ul class="mb-0 mt-2">
+                                            {% for field, errors in all_sections_data.notifications.form.errors.items %}
+                                            {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="settings-form__actions mt-4">
+                                        <button type="submit" class="btn btn-primary btn--settings">
+                                            <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn--settings"
+                                            onclick="resetForm('notificationsForm')">
+                                            <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Security Settings Section -->
+                    <div class="tab-pane fade {% if active_tab == 'security' %}show active{% endif %}" id="security"
+                        role="tabpanel" aria-labelledby="security-tab">
+                        <div class="settings-section">
+                            <div class="settings-section__header">
+                                <h5 class="settings-section__title">{% trans "Security Settings" %}</h5>
+                                <p class="settings-section__description">
+                                    {% trans "Manage your security, verification, and account access" %}
+                                </p>
+                            </div>
+
+                            <div class="settings-section__content">
+                                <div class="security-overview mb-5">
+                                    <div class="row g-4">
+                                        <div class="col-md-4">
+                                            <div class="security-card">
+                                                <div class="security-card__icon text-success">
+                                                    <i
+                                                        class="fas fa-{% if person.email_verified %}check-circle{% else %}times-circle{% endif %}"></i>
+                                                </div>
+                                                <div class="security-card__content">
+                                                    <h6 class="security-card__title">{% trans "Email" %}</h6>
+                                                    <div class="security-card__value">
+                                                        {% if person.email_verified %}
+                                                        <span class="badge bg-success">{% trans "Verified" %}</span>
+                                                        {% else %}
+                                                        <span class="badge bg-warning">{% trans "Unverified" %}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="security-card">
+                                                <div
+                                                    class="security-card__icon text-{% if person.two_factor_enabled %}success{% else %}secondary{% endif %}">
+                                                    <i
+                                                        class="fas fa-{% if person.two_factor_enabled %}lock{% else %}unlock{% endif %}"></i>
+                                                </div>
+                                                <div class="security-card__content">
+                                                    <h6 class="security-card__title">{% trans "2FA" %}</h6>
+                                                    <div class="security-card__value">
+                                                        {% if person.two_factor_enabled %}
+                                                        <span class="badge bg-success">{% trans "Enabled" %}</span>
+                                                        {% else %}
+                                                        <span class="badge bg-secondary">{% trans "Disabled" %}</span>
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-4">
+                                            <div class="security-card">
+                                                <div class="security-card__icon text-info">
+                                                    <i class="fas fa-clock"></i>
+                                                </div>
+                                                <div class="security-card__content">
+                                                    <h6 class="security-card__title">{% trans "Last Password Change" %}
+                                                    </h6>
+                                                    <div class="security-card__value">
+                                                        {% if person.password_last_changed %}
+                                                        {{ person.password_last_changed|timesince }} {% trans "ago" %}
+                                                        {% else %}
+                                                        {% trans "Never" %}
+                                                        {% endif %}
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form method="post" action="{% url 'handlers:settings' %}" id="securityForm"
+                                    class="settings-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="section" value="security">
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-mobile-alt me-2"></i>{% trans "Two-Factor Authentication"
+                                            %}
+                                        </h6>
+
+                                        <div class="security-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.security.form.two_factor_enabled }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.security.form.two_factor_enabled.id_for_label }}">
+                                                    {% trans "Enable Two-Factor Authentication" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if all_sections_data.security.form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        {% trans "Please fix the errors below:" %}
+                                        <ul class="mb-0 mt-2">
+                                            {% for field, errors in all_sections_data.security.form.errors.items %}
+                                            {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="settings-form__actions mt-4">
+                                        <button type="submit" class="btn btn-primary btn--settings">
+                                            <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn--settings"
+                                            onclick="resetForm('securityForm')">
+                                            <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Security Actions -->
+                                <div class="settings-actions mt-4 pt-3 border-top">
+                                    <h6 class="mb-3">{% trans "Security Actions" %}</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal"
+                                            data-bs-target="#changePasswordModal">
+                                            <i class="fas fa-key me-1"></i>{% trans "Change Password" %}
+                                        </button>
+
+                                        {% if not person.two_factor_enabled %}
+                                        <form method="post" action="{% url 'handlers:enable_2fa' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-success">
+                                                <i class="fas fa-shield-alt me-1"></i>{% trans "Enable 2FA" %}
+                                            </button>
+                                        </form>
+                                        {% else %}
+                                        <form method="post" action="{% url 'handlers:disable_2fa' %}" class="d-inline"
+                                            onsubmit="return confirm('{% trans 'Are you sure you want to disable two-factor authentication?' %}')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="fas fa-shield-alt me-1"></i>{% trans "Disable 2FA" %}
+                                            </button>
+                                        </form>
+                                        {% endif %}
+
+                                        <form method="post" action="{% url 'handlers:revoke_sessions' %}"
+                                            class="d-inline"
+                                            onsubmit="return confirm('{% trans 'Are you sure you want to log out from all other devices?' %}')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-warning">
+                                                <i class="fas fa-sign-out-alt me-1"></i>{% trans "Revoke All Sessions"
+                                                %}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Preferences Settings Section -->
+                    <div class="tab-pane fade {% if active_tab == 'preferences' %}show active{% endif %}"
+                        id="preferences" role="tabpanel" aria-labelledby="preferences-tab">
+                        <div class="settings-section">
+                            <div class="settings-section__header">
+                                <h5 class="settings-section__title">{% trans "Preferences" %}</h5>
+                                <p class="settings-section__description">
+                                    {% trans "Customize your experience and appearance" %}
+                                </p>
+                            </div>
+
+                            <div class="settings-section__content">
+                                <form method="post" action="{% url 'handlers:settings' %}" id="preferencesForm"
+                                    class="settings-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="section" value="preferences">
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-language me-2"></i>{% trans "Language & Region" %}
+                                        </h6>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Language" %}</label>
+                                                {{ all_sections_data.preferences.form.language }}
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Time Zone" %}</label>
+                                                {{ all_sections_data.preferences.form.timezone }}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-palette me-2"></i>{% trans "Display" %}
+                                        </h6>
+
+                                        <div class="preference-switches">
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.preferences.form.dark_mode }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.preferences.form.dark_mode.id_for_label }}">
+                                                    {% trans "Dark mode" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch mb-3">
+                                                {{ all_sections_data.preferences.form.high_contrast }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.preferences.form.high_contrast.id_for_label }}">
+                                                    {% trans "High contrast mode" %}
+                                                </label>
+                                            </div>
+
+                                            <div class="form-check form-switch">
+                                                {{ all_sections_data.preferences.form.reduce_animations }}
+                                                <label class="form-check-label"
+                                                    for="{{ all_sections_data.preferences.form.reduce_animations.id_for_label }}">
+                                                    {% trans "Reduce animations" %}
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-layer-group me-2"></i>{% trans "Content Density" %}
+                                        </h6>
+
+                                        <div class="density-selector">
+                                            <div class="btn-group" role="group">
+                                                {% for choice in all_sections_data.preferences.form.density %}
+                                                {{ choice.tag }}
+                                                <label class="btn btn-outline-primary" for="{{ choice.id_for_label }}">
+                                                    {{ choice.choice_label }}
+                                                </label>
+                                                {% endfor %}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if all_sections_data.preferences.form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        {% trans "Please fix the errors below:" %}
+                                        <ul class="mb-0 mt-2">
+                                            {% for field, errors in all_sections_data.preferences.form.errors.items %}
+                                            {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="settings-form__actions mt-4">
+                                        <button type="submit" class="btn btn-primary btn--settings">
+                                            <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn--settings"
+                                            onclick="resetForm('preferencesForm')">
+                                            <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                                        </button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Billing Settings Section -->
+                    <div class="tab-pane fade {% if active_tab == 'billing' %}show active{% endif %}" id="billing"
+                        role="tabpanel" aria-labelledby="billing-tab">
+                        <div class="settings-section">
+                            <div class="settings-section__header">
+                                <h5 class="settings-section__title">{% trans "Billing & Subscription" %}</h5>
+                                <p class="settings-section__description">
+                                    {% trans "Manage your subscription, payment methods, and billing history" %}
+                                </p>
+                            </div>
+
+                            <div class="settings-section__content">
+                                <div class="billing-overview mb-5">
+                                    <div class="row g-4">
+                                        <div class="col-md-6">
+                                            <div class="billing-card">
+                                                <div class="billing-card__header">
+                                                    <h6 class="billing-card__title">{% trans "Current Plan" %}</h6>
+                                                    <span class="badge bg-success">
+                                                        {% trans "Active" %}
+                                                    </span>
+                                                </div>
+                                                <div class="billing-card__body">
+                                                    <div class="billing-plan">
+                                                        <h3 class="billing-plan__name">
+                                                            {% if person.subscription_plan == 'pro' %}
+                                                            {% trans "Pro Plan" %}
+                                                            {% elif person.subscription_plan == 'business' %}
+                                                            {% trans "Business Plan" %}
+                                                            {% else %}
+                                                            {% trans "Free Plan" %}
+                                                            {% endif %}
+                                                        </h3>
+                                                        <div class="billing-plan__price">
+                                                            {% if person.subscription_plan == 'pro' %}
+                                                            $29.99/{% trans "month" %}
+                                                            {% elif person.subscription_plan == 'business' %}
+                                                            $99.99/{% trans "month" %}
+                                                            {% else %}
+                                                            $0/{% trans "month" %}
+                                                            {% endif %}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <form method="post" action="{% url 'handlers:settings' %}" id="billingForm"
+                                    class="settings-form">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="section" value="billing">
+
+                                    <div class="settings-form__section">
+                                        <h6 class="settings-form__section-title">
+                                            <i class="fas fa-cog me-2"></i>{% trans "Billing Settings" %}
+                                        </h6>
+
+                                        <div class="row g-3">
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Subscription Plan"
+                                                    %}</label>
+                                                {{ all_sections_data.billing.form.plan }}
+                                            </div>
+
+                                            <div class="col-md-6">
+                                                <label class="settings-form__label">{% trans "Auto Renew" %}</label>
+                                                <div class="form-check form-switch">
+                                                    {{ all_sections_data.billing.form.auto_renew }}
+                                                    <label class="form-check-label"
+                                                        for="{{ all_sections_data.billing.form.auto_renew.id_for_label }}">
+                                                        {% trans "Automatically renew my subscription" %}
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {% if all_sections_data.billing.form.errors %}
+                                    <div class="alert alert-danger mt-3">
+                                        <i class="fas fa-exclamation-circle me-2"></i>
+                                        {% trans "Please fix the errors below:" %}
+                                        <ul class="mb-0 mt-2">
+                                            {% for field, errors in all_sections_data.billing.form.errors.items %}
+                                            {% for error in errors %}
+                                            <li>{{ field }}: {{ error }}</li>
+                                            {% endfor %}
+                                            {% endfor %}
+                                        </ul>
+                                    </div>
+                                    {% endif %}
+
+                                    <div class="settings-form__actions mt-4">
+                                        <button type="submit" class="btn btn-primary btn--settings">
+                                            <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                                        </button>
+                                        <button type="button" class="btn btn-outline-secondary btn--settings"
+                                            onclick="resetForm('billingForm')">
+                                            <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                                        </button>
+                                    </div>
+                                </form>
+
+                                <!-- Billing Actions -->
+                                <div class="settings-actions mt-4 pt-3 border-top">
+                                    <h6 class="mb-3">{% trans "Billing Actions" %}</h6>
+                                    <div class="d-flex flex-wrap gap-2">
+                                        <form method="post" action="{% url 'handlers:update_plan' %}" class="d-inline">
+                                            {% csrf_token %}
+                                            <select name="plan" class="form-select d-inline w-auto me-2">
+                                                <option value="free">{% trans "Free Plan" %}</option>
+                                                <option value="pro">{% trans "Pro Plan" %}</option>
+                                                <option value="business">{% trans "Business Plan" %}</option>
+                                            </select>
+                                            <button type="submit" class="btn btn-outline-primary">
+                                                {% trans "Update Plan" %}
+                                            </button>
+                                        </form>
+
+                                        <form method="post" action="{% url 'handlers:cancel_subscription' %}"
+                                            class="mt-2"
+                                            onsubmit="return confirm('{% trans 'Are you sure you want to cancel your subscription?' %}')">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-outline-danger">
+                                                <i class="fas fa-ban me-1"></i>{% trans "Cancel Subscription" %}
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Include modal templates -->
+{% comp "profile.modals.change_password" / %}
+{% comp "profile.modals.delete_account" / %}
+
+<!-- 2FA Verification Modal -->
+{% if two_factor_data %}
+<div class="modal fade" id="twoFactorVerifyModal" tabindex="-1" data-bs-backdrop="static">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Setup Two-Factor Authentication" %}</h5>
+            </div>
+            <form method="post" action="{% url 'handlers:verify_2fa' %}">
+                {% csrf_token %}
+                <div class="modal-body">
+                    <div class="text-center mb-4">
+                        <p class="mb-3">{% trans "Scan this QR code with your authenticator app:" %}</p>
+                        <img src="{{ two_factor_data.qr_code }}" alt="2FA QR Code" class="img-fluid mb-3"
+                            style="max-width: 200px;">
+                        <p class="text-muted small mb-3">
+                            <i class="fas fa-key me-1"></i>
+                            {% trans "Or enter this secret manually:" %}
+                            <code class="d-block mt-1">{{ two_factor_data.secret }}</code>
+                        </p>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">{% trans "Enter verification code" %}</label>
+                        <input type="text" class="form-control" name="code" placeholder="000000" maxlength="6" required
+                            pattern="\d{6}" title="{% trans 'Enter 6-digit code' %}">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="submit" class="btn btn-primary">{% trans "Verify & Enable" %}</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<script>
+    // Reset form function
+    function resetForm(formId) {
+        if (confirm('{% trans "Reset this form to original values?" %}')) {
+            document.getElementById(formId).reset();
+        }
+    }
+
+    // Reset all forms
+    document.getElementById('resetAllSettings').addEventListener('click', function () {
+        if (confirm('{% trans "Reset all settings forms to their original values?" %}')) {
+            var forms = document.querySelectorAll('.settings-form');
+            forms.forEach(function (form) {
+                form.reset();
+            });
+        }
+    });
+
+    // Handle form submissions
+    document.addEventListener('DOMContentLoaded', function () {
+        var forms = document.querySelectorAll('.settings-form');
+
+        forms.forEach(function (form) {
+            form.addEventListener('submit', function (e) {
+                var submitButton = form.querySelector('button[type="submit"]');
+                if (submitButton) {
+                    submitButton.disabled = true;
+                    submitButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>{% trans "Processing..." %}';
+                }
+            });
+        });
+
+        // Show 2FA verification modal if needed
+        {% if two_factor_data %}
+        var twoFactorModal = new bootstrap.Modal(document.getElementById('twoFactorVerifyModal'));
+        twoFactorModal.show();
+        {% endif %}
+
+        // Handle tab persistence
+        var tabEls = document.querySelectorAll('#settingsTab button[data-bs-toggle="pill"]');
+
+        tabEls.forEach(function (tab) {
+            tab.addEventListener('shown.bs.tab', function (event) {
+                var target = event.target.getAttribute('data-bs-target').replace('#', '');
+
+                // Store active tab in localStorage for persistence
+                localStorage.setItem('activeSettingsTab', target);
+
+                // Update session via AJAX to remember tab on server
+                fetch('{% url "handlers:settings" %}', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                        'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+                    },
+                    body: 'section=' + target + '&update_tab_only=true'
+                });
+            });
+        });
+
+        // Restore active tab from localStorage
+        var savedTab = localStorage.getItem('activeSettingsTab');
+        if (savedTab) {
+            var tabButton = document.querySelector('button[data-bs-target="#' + savedTab + '"]');
+            if (tabButton) {
+                var tab = new bootstrap.Tab(tabButton);
+                tab.show();
+            }
+        }
+    });
+</script>

@@ -1,0 +1,11 @@
+export class PageLoaderHandler {
+    constructor() {
+        console.log('📄 Page loader handler created');
+    }
+
+    init() {
+        window.addEventListener('load', () => {
+            document.body.classList.add('loaded');
+        });
+    }
+}

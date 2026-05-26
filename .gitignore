@@ -12,10 +12,6 @@ __pycache__/
 test_db.sqlite3
 *.sqlite3
 
-# Website sub-repos (tracked separately)
-ctc-research.com/*
-structa.cloud/*
-
 # Secrets
 *.env
 secret.key.txt

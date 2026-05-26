@@ -1,0 +1,49 @@
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n %}
+
+{% block title %}Register — CTC Research{% endblock %}
+
+{% block contant %}
+<div class="auth auth--split-layout" id="register-form-container">
+  <div class="auth__container--split">
+
+    {# Welcome panel #}
+    <div class="auth__welcome--split">
+      <div class="auth__welcome-inner">
+        <div class="auth__logo">
+          <h3>{% trans "🎓 CTC Research" %}</h3>
+        </div>
+        <h1 class="auth__welcome-title">{% trans "Join CTC Research" %}</h1>
+        <p class="auth__welcome-text">
+          {% trans "Create your account to access curated learning tracks, collaborate with peers, and advance your research career." %}
+        </p>
+        <div class="auth__social-proof">
+          <ul class="auth__features-list" style="list-style:none;padding:0;margin-top:1.5rem;">
+            <li class="auth__feature-item">✓ {% trans "Access expert-led courses" %}</li>
+            <li class="auth__feature-item">✓ {% trans "Collaborate with researchers" %}</li>
+            <li class="auth__feature-item">✓ {% trans "Earn professional certificates" %}</li>
+            <li class="auth__feature-item">✓ {% trans "Publish and review articles" %}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    {# Form panel #}
+    <div class="auth__form-section--split">
+      <div class="auth__form-container">
+        <div class="auth__form-header">
+          <h2 class="auth__form-title">{% trans "Create Account" %}</h2>
+          <p class="auth__form-subtitle">{% trans "Enter your details to get started" %}</p>
+        </div>
+
+        {% include "registration/fragments/register_form.html" %}
+
+        <p class="auth__privacy-note" style="font-size:0.75rem;color:var(--auth-text-tertiary);text-align:center;margin-top:1rem;line-height:1.5;">
+          {% trans "By creating an account, you agree to our Terms of Service and Privacy Policy." %}
+        </p>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock contant %}

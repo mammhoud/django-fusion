@@ -1,0 +1,26 @@
+# Root .dockerignore — applies when build context is workspace root
+**/node_modules
+**/.venv
+
+**/__pycache__
+**/*.pyc
+
+**/.sass-cache
+**/.cache
+**/dist
+**/build
+**/*.egg-info
+
+**/.DS_Store
+# Keep venv/libs (needed for package installs)
+
+**/assets/staticfiles
+**/staticfiles/*
+**/.git
+**/logs
+**/cache
+**/.pytest_cache
+**/.hypothesis
+**/.ruff_cache
+**/.mypy_cache
+**/postgres_data

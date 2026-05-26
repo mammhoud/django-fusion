@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block subject %}Email{% endblock %}</title>
+</head>
+
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333;">
+    <div style="max-width: 600px; margin: 0 auto; padding: 20px;">
+        <h2>Hello {{ name|default:"Valued Customer" }},</h2>
+        <p>This is a bulk email sent from our system.</p>
+        <p>Email: {{ email }}</p>
+        <p>Date: {{ date }}</p>
+        {% if custom_message %}
+        <p>{{ custom_message }}</p>
+        {% endif %}
+        <p>Thank you for your attention.</p>
+    </div>
+</body>
+
+</html>

@@ -1,0 +1,5 @@
+<form method="post" hx-post="." class="htmx-post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save Post</button>
+</form>

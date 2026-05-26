@@ -1,0 +1,24 @@
+{% load static wagtailimages_tags %}
+
+{# Simple logo logic #}
+{% if social_settings and social_settings.logo %}
+{% image social_settings.logo max-165x120 as logo %}
+{% endif %}
+
+<div class="header-logo">
+    <a href="/">
+        {% if logo %}
+        {# Logo image #}
+        <img src="{{ logo.url }}" alt="{{ brand_settings.site_name|default:'Logo' }}" class="logo-img">
+        {% else %}
+        {# Text fallback with uppercase and letter spacing #}
+        <h3 class="uppercase letter-spacing-1">
+            {% if self.title %}
+            {{ self.title }}
+            {% else %}
+            {{ brand_settings.site_name|default:'WEBSITE' }}
+            {% endif %}
+        </h3>
+        {% endif %}
+    </a>
+</div>

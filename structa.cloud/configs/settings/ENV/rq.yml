@@ -1,0 +1,32 @@
+# ====================================
+# 🐕 Django-RQ Configuration
+# ====================================
+default:
+  RQ_QUEUES:
+    default:
+      URL: "redis://localhost:6379/2"
+      DEFAULT_TIMEOUT: 600
+    email:
+      URL: "redis://localhost:6379/2"
+      DEFAULT_TIMEOUT: 300
+    newsletter:
+      URL: "redis://localhost:6379/2"
+      DEFAULT_TIMEOUT: 300
+
+demo:
+  RQ_QUEUES:
+    default:
+      URL: "@jinja {{ env.get('REDIS_URL', 'redis://localhost:6379/5') }}"
+    email:
+      URL: "@jinja {{ env.get('REDIS_URL', 'redis://localhost:6379/5') }}"
+    newsletter:
+      URL: "@jinja {{ env.get('REDIS_URL', 'redis://localhost:6379/5') }}"
+
+production:
+  RQ_QUEUES:
+    default:
+      URL: "@jinja {{ env.REDIS_URL }}"
+    email:
+      URL: "@jinja {{ env.REDIS_URL }}"
+    newsletter:
+      URL: "@jinja {{ env.REDIS_URL }}"

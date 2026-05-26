@@ -1,0 +1,56 @@
+<!-- pricing area start -->
+<section class="pricing__area pt-110 pb-90">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 offset-xl-2 col-lg-10 offset-lg-1">
+                <div class="section__title mb-70 text-center">
+                    <h1>{{ block.value.title }}</h1>
+                    <div class="section__icon mb-10">
+                        <span class="section__sub-title section__sub-title-2 section__sub-title-3 section__sub-title-4">{{ block.value.subtitle }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            {% for plan in block.value.pricing_plans %}
+            <div class="col-xl-4 col-lg-4 col-md-6">
+                <div class="pricing__item mb-60">
+                    <div class="pricing__thumb w-img p-relative mb-15 {% if plan.value.popular_badge %}fix{% endif %}">
+                        <img src="{{ plan.value.image.url }}" alt="{{ plan.value.plan_name }}">
+                        {% if plan.value.popular_badge %}
+                        <div class="pricing__popular p-absolute">
+                            <span>{% trans "popular" %}</span>
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="pricing__content text-center pink-soft-bg p-relative">
+                        <div class="pricing__price p-absolute d-flex align-items-center justify-content-center">
+                            <div class="pricing__price-inner">
+                                <h1>${{ plan.value.price }}</h1>
+                                <span>{{ plan.value.period }}</span>
+                            </div>
+                        </div>
+                        <h2>{{ plan.value.plan_name }}</h2>
+                        <p>{{ plan.value.description }}</p>
+                        {% if plan.value.features %}
+                        <ul class="pricing-features mt-3 mb-3">
+                            {% for feature in plan.value.features %}
+                            <li>{{ feature }}</li>
+                            {% endfor %}
+                        </ul>
+                        {% endif %}
+                        <div class="pricing__btn p-absolute">
+                            {% if plan.value.button_link %}
+                            <a href="{{ plan.value.button_link }}" class="s-btn s-btn__square-2">{{ plan.value.button_text }}</a>
+                            {% else %}
+                            <a href="#" class="s-btn s-btn__square-2">{{ plan.value.button_text }}</a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<!-- pricing area end -->

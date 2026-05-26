@@ -1,0 +1,67 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+
+{% if show_related_courses %}
+
+<!-- Related Courses -->
+<div class="section bg-light">
+    <div class="container">
+
+        <div class="text-center mb-5">
+            <h2>{% trans "Related Courses" %}</h2>
+            <p>{% trans "Explore more courses in the same category" %}</p>
+        </div>
+
+        <div class="row g-4">
+            {% for related_course in related_courses %}
+            <div class="col-12 col-md-4">
+                <div class="card border-0 shadow-sm h-100">
+
+                    <!-- Image -->
+                    <div class="card-img-top position-relative">
+                        <img src="{% if related_course.image %}{{ related_course.image.url }}{% else %}images/default-course.jpg{% endif %}"
+                             alt="{{ related_course.title }}" class="card-img-top">
+
+                        <div class="position-absolute top-0 end-0 m-3">
+                            <span class="badge bg-{{ related_course.difficulty_level|lower }}">
+                                {{ related_course.difficulty_level }}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Content -->
+                    <div class="card-body">
+                        <h5 class="card-title">{{ related_course.title }}</h5>
+
+                        <p class="card-text text-muted small">
+                            {{ related_course.short_description|truncatewords:15 }}
+                        </p>
+
+                        <div class="d-flex justify-content-between align-items-center mt-3">
+                            
+                            <!-- Price -->
+                            <span class="text-primary fw-bold">
+                                {% if related_course.price %}
+                                    ${{ related_course.price }}
+                                {% else %}
+                                    {% trans "Free" %}
+                                {% endif %}
+                            </span>
+
+                            <!-- View Course Button -->
+                            <a href="{{ related_course.url }}"
+                               class="button button-sm button-radius button-primary">
+                                {% trans "View Course" %}
+                            </a>
+
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+    </div>
+</div>
+
+{% endif %}

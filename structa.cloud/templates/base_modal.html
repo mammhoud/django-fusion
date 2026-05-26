@@ -1,0 +1,56 @@
+{% load static i18n %}
+
+<div class="modal fade"
+     id="{{ modal_id }}"
+     tabindex="-1"
+     aria-labelledby="{{ modal_id }}Label"
+     aria-hidden="true"
+     data-bs-backdrop="true"
+     data-bs-keyboard="true">
+    <div class="modal-dialog {{ modal_size|default:'' }} {% if modal_centered|default:True %}modal-dialog-centered{% endif %} {% block modal_dialog_class %}{% endblock %}">
+        <div class="modal-content border-0 shadow-lg">
+            {# Modal Header #}
+            <div class="modal-header border-bottom">
+                <h5 class="modal-title d-flex align-items-center gap-2 {{ modal_title_color|default:'' }}"
+                    id="{{ modal_id }}Label">
+                    {% block modal_icon_block %}
+                    {% if modal_icon %}
+                    <i class="bi {{ modal_icon }} {{ modal_icon_color|default:'text-primary' }}"></i>
+                    {% endif %}
+                    {% endblock %}
+                    {% block modal_title_block %}{{ modal_title }}{% endblock %}
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="{% trans 'Close' %}"></button>
+            </div>
+
+            {% block modal_full_body %}
+            {# Modal Body #}
+            <div class="modal-body p-4">
+                {% block modal_content %}
+                {# Override this block with modal content #}
+                {% endblock %}
+            </div>
+
+            {# Modal Footer #}
+            {% block modal_footer %}
+            <div class="modal-footer border-top">
+                <button type="button"
+                        class="btn btn-secondary"
+                        data-bs-dismiss="modal">
+                    {% trans "Cancel" %}
+                </button>
+                {% block modal_actions %}
+                {# Override this block with action buttons #}
+                {% endblock %}
+            </div>
+            {% endblock %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+{% block modal_styles %}{% endblock %}
+{% block modal_scripts %}{% endblock %}

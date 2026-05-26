@@ -1,0 +1,47 @@
+{% extends "wagtailadmin/login.html" %}
+{% load wagtailadmin_tags wagtailcore_tags static i18n %}
+{% load static %}
+
+{% block branding_login %}
+    <div style="text-align: center; margin-bottom: 20px;">
+        <img src="{% static 'images/logo.png' %}" alt="CTC Hub" width="150" />
+        <h2 style="margin-top: 10px;">Sign in to CTC Research</h2>
+    </div>
+{% endblock %}
+
+{% block furniture %}
+    <div class="auth-container d-flex align-items-center min-vh-100">
+        <div class="container">
+            <div class="row justify-content-center">
+                <div class="col-md-6 col-lg-5">
+                    <div class="card shadow-lg border-0">
+                        <div class="card-body p-5">
+                            <h2 class="text-center mb-4">{% block branding_login %}Sign in{% endblock %}</h2>
+                            <form action="{% url 'wagtailadmin_login' %}" method="post" autocomplete="off" novalidate>
+                                {% csrf_token %}
+                                {% if form.errors %}
+                                    <div class="alert alert-danger">
+                                        <strong>Error:</strong> {{ form.non_field_errors }}
+                                    </div>
+                                {% endif %}
+                                <div class="mb-3">
+                                    <label for="id_username" class="form-label">{% blocktrans %}Username or email{% endblocktrans %}</label>
+                                    <input type="text" name="username" autofocus="autofocus" class="form-control" id="id_username">
+                                </div>
+                                <div class="mb-3">
+                                    <label for="id_password" class="form-label">{% trans "Password" %}</label>
+                                    <input type="password" name="password" class="form-control" id="id_password">
+                                </div>
+                                <button type="submit" class="btn btn-primary w-100">{% trans "Sign in" %}</button>
+                                <input type="hidden" name="next" value="{{ next }}" />
+                            </form>
+                            <div class="text-center mt-3">
+                                <a href="{% url 'wagtailadmin_password_reset' %}">{% trans "Forgotten password?" %}</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

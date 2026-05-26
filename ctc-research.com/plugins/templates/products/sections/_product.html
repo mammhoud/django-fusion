@@ -1,0 +1,75 @@
+<!-- products area start -->
+<section class="product__area pt-110">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-8 offset-xl-2">
+                <div class="section__title mb-60 pl-50 pr-50 text-center">
+                    <h1>{{ block.value.title }}</h1>
+                    <div class="section__icon mb-10">
+                        <span class="section__sub-title section__sub-title-2 section__sub-title-3 section__sub-title-4">{{ block.value.subtitle }}</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="masonary-menu product__menu filter-button-group text-center mb-20">
+                    {% for filter in block.value.category_filters %}
+                    <button {% if forloop.first %}class="active"{% endif %} 
+                            data-filter="{{ filter.value.slug }}">
+                        {{ filter.value.name }}
+                    </button>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        <div class="row grid">
+            {% for product in block.value.products %}
+            <div class="col-xl-4 col-lg-4 col-md-6 grid-item {% for cat in product.value.categories %}{{ cat }} {% endfor %} {% if product.value.featured %}featured{% endif %}">
+                <div class="product__item-2 p-relative mb-30">
+                    {% if product.value.featured %}
+                    <div class="product__badge p-absolute">
+                        <span>{% trans "Featured" %}</span>
+                    </div>
+                    {% endif %}
+                    <div class="product__thumb-2 w-img">
+                        <img src="{{ product.value.image.url }}" alt="{{ product.value.title }}">
+                    </div>
+                    <div class="product__content-2 transition-3 grey-bg-3 p-relative">
+                        <h3>
+                            {% if product.value.detail_page %}
+                                <a href="{{ product.value.detail_page.url }}">{{ product.value.title }}</a>
+                            {% elif product.value.external_link %}
+                                <a href="{{ product.value.external_link }}" target="_blank">{{ product.value.title }}</a>
+                            {% else %}
+                                {{ product.value.title }}
+                            {% endif %}
+                        </h3>
+                        <p>{{ product.value.description }}</p>
+                        {% if product.value.price %}
+                        <div class="product__price mb-2">
+                            <strong>${{ product.value.price }}</strong>
+                        </div>
+                        {% endif %}
+                        {% if product.value.detail_page or product.value.external_link %}
+                        <a href="{% if product.value.detail_page %}{{ product.value.detail_page.url }}{% else %}{{ product.value.external_link }}{% endif %}" 
+                           class="link-btn"
+                           {% if product.value.external_link %}target="_blank"{% endif %}>
+                            {{ product.value.button_text }}
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            {% empty %}
+            <div class="col-xl-12">
+                <div class="text-center py-5">
+                    <h3>{% trans "No products available at the moment." %}</h3>
+                    <p>{% trans "Please check back later for our latest products." %}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+<!-- products area end -->

@@ -1,0 +1,8 @@
+{% for post in object_list %}
+<article class="post-item">
+  <h2><a href="{{ post.get_absolute_url }}">{{ post.title }}</a></h2>
+  {% if post.excerpt %}<p>{{ post.excerpt }}</p>{% endif %}
+</article>
+{% empty %}
+<p>No posts found.</p>
+{% endfor %}

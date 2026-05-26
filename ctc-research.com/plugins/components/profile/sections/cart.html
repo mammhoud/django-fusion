@@ -1,0 +1,125 @@
+{% load static i18n %}
+<!-- Start Enrole Course  -->
+<div class="rbt-dashboard-content bg-color-white rbt-shadow-box">
+    <div class="content">
+        <div class="section-title">
+            <h4 class="rbt-title-style-3">{% trans "Order History" %}</h4>
+        </div>
+
+        <div class="rbt-dashboard-table table-responsive mobile-table-750">
+            <table class="rbt-table table table-borderless">
+                <thead>
+                    <tr>
+                        <th>{% trans "Order ID" %}</th>
+                        <th>{% trans "Course Name" %}</th>
+                        <th>{% trans "Date" %}</th>
+                        <th>{% trans "Price" %}</th>
+                        <th>{% trans "Status" %}</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr>
+                        <th>#5478</th>
+                        <td>{% trans "App Development" %}</td>
+                        <td>{% trans "January 27, 2023" %}</td>
+                        <td>$100.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-color-success-opacity color-success">
+                                {% trans "Success" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>#4585</th>
+                        <td>{% trans "Graphic" %}</td>
+                        <td>{% trans "May 27, 2023" %}</td>
+                        <td>$200.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-primary-opacity">
+                                {% trans "Processing" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>#9656</th>
+                        <td>{% trans "Graphic" %}</td>
+                        <td>{% trans "March 27, 2023" %}</td>
+                        <td>$200.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-color-warning-opacity color-warning">
+                                {% trans "On Hold" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>#2045</th>
+                        <td>{% trans "Application" %}</td>
+                        <td>{% trans "March 27, 2023" %}</td>
+                        <td>$200.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-color-danger-opacity color-danger">
+                                {% trans "Canceled" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <!-- REPEAT SAME BLOCKS WITH TRANSLATIONS BELOW -->
+                    {% comment %}Duplicated rows translated below{% endcomment %}
+
+                    <tr>
+                        <th>#5478</th>
+                        <td>{% trans "App Development" %}</td>
+                        <td>{% trans "January 27, 2023" %}</td>
+                        <td>$100.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-color-success-opacity color-success">
+                                {% trans "Success" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>#4585</th>
+                        <td>{% trans "Graphic" %}</td>
+                        <td>{% trans "May 27, 2023" %}</td>
+                        <td>$200.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-primary-opacity">
+                                {% trans "Processing" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>#9656</th>
+                        <td>{% trans "Graphic" %}</td>
+                        <td>{% trans "March 27, 2023" %}</td>
+                        <td>$200.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-color-warning-opacity color-warning">
+                                {% trans "On Hold" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                    <tr>
+                        <th>#2045</th>
+                        <td>{% trans "Application" %}</td>
+                        <td>{% trans "March 27, 2023" %}</td>
+                        <td>$200.99</td>
+                        <td>
+                            <span class="rbt-badge-5 bg-color-danger-opacity color-danger">
+                                {% trans "Canceled" %}
+                            </span>
+                        </td>
+                    </tr>
+
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
