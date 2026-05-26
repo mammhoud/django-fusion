@@ -1,4 +1,11 @@
+from pathlib import Path
+import sys
 import os
+import sys
+from pathlib import Path
+
+# Ensure workspace root is importable (shared `configs/`, `plugins/`)
+sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 # Set DJANGO_SETTINGS_MODULE before loading the app
 os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")

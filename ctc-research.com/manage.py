@@ -2,6 +2,10 @@
 """Django's command-line utility for administrative tasks."""
 import os
 import sys
+from pathlib import Path
+
+# Ensure workspace root is importable (shared `configs/`, `plugins/`)
+sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
 
 
 def main():
