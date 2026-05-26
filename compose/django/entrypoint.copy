@@ -1,0 +1,121 @@
+#!/bin/bash
+set -euo pipefail
+
+# -----------------------------------------------------------------
+# Ensure system tools like `make` stay accessible even after
+# a virtual environment is activated later.
+# -----------------------------------------------------------------
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/root/.local/bin:$PATH"
+
+###############################################################################
+# INSTALL uv (if missing)
+###############################################################################
+if ! command -v uv &>/dev/null; then
+    echo "🧩 Installing uv..."
+    curl -LsSf https://astral.sh/uv/install.sh | sh
+    export PATH="$HOME/.local/bin:$PATH"
+else
+    echo "✅ uv already installed: $(uv --version)"
+fi
+
+###############################################################################
+# VALIDATE & CLEAN BROKEN VENV
+###############################################################################
+APP_VENV="${APP_HOME:-/app}/v1/.venv"
+if [ -d "$APP_VENV" ]; then
+    echo "🔍 Checking Python venv validity..."
+    PYTHON_BIN="$APP_VENV/bin/python"
+
+    if [ ! -f "$PYTHON_BIN" ] || ! "$PYTHON_BIN" --version &>/dev/null 2>&1; then
+        echo "⚠️ Broken venv detected at $APP_VENV"
+        echo "🧹 Removing broken venv..."
+        rm -rf "$APP_VENV"
+        echo "✅ Broken venv removed"
+    else
+        echo "✅ Venv is valid"
+    fi
+fi
+
+###############################################################################
+# DJANGO SETUP (Priority: Migrations before Webpack)
+###############################################################################
+echo "🛠️ Running Django setup..."
+
+# Change to app directory
+cd "${APP_HOME:-/app}/v1" || exit 1
+
+# Install Python dependencies via UV
+echo "📦 Installing Python dependencies with uv..."
+if ! uv sync; then
+    echo "❌ UV sync failed. Dependency installation is required before the app can start."
+    exit 1
+fi
+
+# Run migrations - CRITICAL before anything else
+echo "🗃️ Applying database migrations..."
+# Run migrations, allowing it to succeed even if tables already exist
+uv run python manage.py migrate --noinput 2>&1 | tail -20 || {
+    echo "⚠️ Migration had issues, attempting to continue anyway..."
+    true
+}
+
+# Makemigrations if needed
+echo "🔍 Checking for unmigrated changes..."
+uv run python manage.py makemigrations --noinput 2>&1 | tail -5 || true
+
+# Collect static files
+echo "🧹 Collecting static files..."
+uv run python manage.py collectstatic --noinput 2>&1 | tail -10 || echo "⚠️ Static collection had issues"
+
+###############################################################################
+# FRONTEND BUILD (WEBPACK) - Only if no critical failures
+###############################################################################
+echo "📦 Building frontend assets with webpack..."
+FRONTEND_DIR="${APP_HOME:-/app}/v1"
+if [ -f "${FRONTEND_DIR}/package.json" ]; then
+    echo "🔨 Running webpack build from ${FRONTEND_DIR}..."
+    cd "${FRONTEND_DIR}"
+
+    # Install node_modules if missing or webpack-cli is not installed
+    if [ ! -d "node_modules" ] || [ ! -f "node_modules/.bin/webpack" ]; then
+        echo "📥 Installing npm dependencies..."
+        rm -rf node_modules package-lock.json
+        npm install --legacy-peer-deps 2>&1 || echo "⚠️ npm install failed"
+    fi
+
+    if npm run build 2>&1 | tail -30; then
+        echo "✅ Webpack build succeeded"
+    else
+        echo "⚠️ Webpack build failed but continuing (CSS/JS may be missing)"
+    fi
+
+    cd "${APP_HOME:-/app}"
+else
+    echo "⚠️ No package.json found at ${FRONTEND_DIR} - skipping webpack build"
+fi
+
+echo "✅ Setup complete!"
+
+# Default to the 'server' make target when no command is provided
+if [ "$#" -eq 0 ]; then
+  set -- server
+fi
+
+# If the first argument looks like a system command (celery, uv, python, /bin/*), execute it appropriately
+case "$1" in
+  celery)
+    echo "🎯 Executing celery via uv: $*"
+    cd "${APP_HOME:-/app}"
+    exec uv run "$@"
+    ;;
+  uv|uvicorn|python|/bin/*|/usr/bin/*)
+    echo "🎯 Executing command directly: $*"
+    cd "${APP_HOME:-/app}"
+    exec "$@"
+    ;;
+  *)
+    echo "🎯 Launching make target: $*"
+    cd "${APP_HOME:-/app}"
+    exec /usr/bin/make "$@"
+    ;;
+esac

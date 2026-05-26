@@ -1,0 +1,40 @@
+# ====================================
+# 📧 Email Configuration
+# ====================================
+default:
+  # Defaults for all environments
+  EMAIL:
+    BACKEND: "@env EMAIL_BACKEND django.core.mail.backends.console.EmailBackend"
+    HOST: "@env EMAIL_HOST localhost"
+    PORT: "@env EMAIL_PORT 25"
+    USE_TLS: "@env EMAIL_USE_TLS false"
+    USE_SSL: "@env EMAIL_USE_SSL false"
+    USER: "@env EMAIL_USER"
+    PASSWORD: "@env EMAIL_PASSWORD"
+    FROM: "@env EMAIL_FROM noreply@vresume.local"
+    DEFAULT_FROM_EMAIL: "@env DEFAULT_FROM_EMAIL dev@vresume.local"
+    SERVER_EMAIL: "@env SERVER_EMAIL server@vresume.local"
+    SUBJECT_PREFIX: "@env EMAIL_SUBJECT_PREFIX [VResume] "
+    TIMEOUT: 30
+    FAILURE_RATE: 0.0
+    
+    # Email settings
+    MAX_RECIPIENTS: 100
+    MAX_ATTACHMENT_SIZE: 25000000
+    
+    # Email queue
+    QUEUE_ENABLED: "@env EMAIL_QUEUE_ENABLED false"
+    QUEUE_BATCH_SIZE: 10
+    QUEUE_MAX_RETRIES: 3
+    QUEUE_RETRY_DELAY: 60
+    
+    # Email tracking
+    TRACKING_ENABLED: "@env EMAIL_TRACKING_ENABLED false"
+    OPEN_TRACKING: false
+    CLICK_TRACKING: false
+    UNSUBSCRIBE_LINK: false
+    
+    # Rate limiting
+    RATE_LIMIT_ENABLED: false
+    RATE_LIMIT_REQUESTS: 100
+    RATE_LIMIT_BURST: 10

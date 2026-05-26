@@ -1,0 +1,33 @@
+{
+    email {$EMAIL:-admin@example.com}
+}
+
+{$DOMAIN_NAME:localhost} {
+    # Static files
+    handle_path /static/* {
+        root * /var/www/static
+        file_server
+    }
+
+    # Media files
+    handle_path /media/* {
+        root * /var/www/media
+        file_server
+    }
+
+    # Proxy to Django
+    handle {
+        reverse_proxy vresume-django:5073 {
+            header_up Host {host}
+            header_up X-Real-IP {remote_host}
+            header_up X-Forwarded-For {remote_host}
+            header_up X-Forwarded-Proto {scheme}
+        }
+    }
+
+    # Logging
+    log {
+        output file /var/log/caddy/access.log
+        format json
+    }
+}

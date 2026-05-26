@@ -1,0 +1,46 @@
+default:
+  # ====================================
+  # 📝 Logging Configuration
+  # ====================================
+
+  # Defaults for all environments
+  LOGGING:
+    LOG_LEVEL: "INFO"
+    LOG_FORMAT: "verbose"
+    LOG_FILE: "logs/django.log"
+    ERROR_LOG_FILE: "logs/error.log"
+    ACCESS_LOG_FILE: "logs/access.log"
+    CELERY_LOG_FILE: "logs/celery.log"
+    FILE_LOG_LEVEL: "INFO"
+    CONSOLE_LOG_LEVEL: "INFO"
+    ERROR_LOG_LEVEL: "ERROR"
+    DATE_FORMAT: "%Y-%m-%d %H:%M:%S"
+    TIME_FORMAT: "%H:%M:%S"
+
+    # Log rotation
+    MAX_LOG_SIZE: 52428800
+    BACKUP_COUNT: 10
+    COMPRESS_LOGS: false
+
+    # Log destinations
+    LOG_TO_CONSOLE: true
+    LOG_TO_FILE: true
+    LOG_TO_SENTRY: false
+    LOG_TO_CLOUDWATCH: false
+
+    # Structured logging
+    STRUCTURED_LOGGING: false
+    INCLUDE_CONTEXT: false
+    INCLUDE_TRACE_ID: false
+    INCLUDE_USER_ID: false
+
+    # Performance logging
+    LOG_SLOW_REQUESTS: false
+    SLOW_REQUEST_THRESHOLD: 1000
+    LOG_SQL_QUERIES: false
+    SQL_QUERY_THRESHOLD: 100
+
+    # Log aggregation
+    LOG_AGGREGATION: false
+    LOG_SHIPPER: "vector"
+    LOG_DESTINATION: "elasticsearch"
