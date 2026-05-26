@@ -22,9 +22,34 @@ _ctc_path = _websites_dir / "ctc-research.com"
 _structa_path = _websites_dir / "structa.cloud"
 _rseal_tests = _workspace_root / "libs" / "django-rseal" / "tests"
 
-for p in [str(_ctc_path), str(_structa_path), str(_rseal_tests)]:
-    if p not in sys.path:
-        sys.path.insert(0, p)
+# Support both monorepo layout (websites/<site>) and single-site layout (repo root).
+_repo_root = _websites_dir
+
+_plugin_roots = [
+    _repo_root / "plugins",
+    _structa_path / "plugins",
+    _ctc_path / "plugins",
+]
+_www_roots = [
+    _repo_root / "www",
+    _structa_path / "www",
+    _ctc_path / "www",
+]
+_core_roots = [
+    _repo_root / "www" / "core",
+    _structa_path / "www" / "core",
+    _ctc_path / "www" / "core",
+]
+
+_sys_paths = [_repo_root, _ctc_path, _structa_path, _rseal_tests]
+for _p in _sys_paths:
+    if _p.exists() and str(_p) not in sys.path:
+        sys.path.insert(0, str(_p))
+
+# Keep only directories that actually exist to avoid invalid import roots.
+_plugin_paths = [str(p) for p in _plugin_roots if p.exists()]
+_www_paths = [str(p) for p in _www_roots if p.exists()]
+_core_paths = [str(p) for p in _core_roots if p.exists()]
 
 # ---------------------------------------------------------------------------
 # Module stubs — must happen before INSTALLED_APPS are loaded
@@ -50,10 +75,7 @@ if "attrs" not in sys.modules:
 # 1. `apps` namespace package → structa.cloud/plugins  (so "apps.blog" resolves)
 if "apps" not in sys.modules:
     _apps_mod = types.ModuleType("apps")
-    _apps_mod.__path__ = [
-        str(_structa_path / "plugins"),
-        str(_ctc_path / "plugins"),
-    ]
+    _apps_mod.__path__ = _plugin_paths
     _apps_mod.__package__ = "apps"
     sys.modules["apps"] = _apps_mod
 
@@ -61,20 +83,14 @@ if "apps" not in sys.modules:
 # www needs to point to www/core for Django imports
 if "www" not in sys.modules:
     _www_mod = types.ModuleType("www")
-    _www_mod.__path__ = [
-        str(_ctc_path / "www"),
-        str(_structa_path / "www"),
-    ]
+    _www_mod.__path__ = _www_paths
     _www_mod.__package__ = "www"
     sys.modules["www"] = _www_mod
 
 # www.core → structa.cloud/www/core (and ctc)
 if "www.core" not in sys.modules:
     _www_core = types.ModuleType("www.core")
-    _www_core.__path__ = [
-        str(_structa_path / "www" / "core"),
-        str(_ctc_path / "www" / "core"),
-    ]
+    _www_core.__path__ = _core_paths
     _www_core.__package__ = "www.core"
     sys.modules["www.core"] = _www_core
 
@@ -82,10 +98,7 @@ if "www.core" not in sys.modules:
 # We need to set up the full hierarchy as direct aliases
 if "www.apps" not in sys.modules:
     _www_apps_mod = types.ModuleType("www.apps")
-    _www_apps_mod.__path__ = [
-        str(_structa_path / "plugins"),
-        str(_ctc_path / "plugins"),
-    ]
+    _www_apps_mod.__path__ = _plugin_paths
     _www_apps_mod.__package__ = "www.apps"
     sys.modules["www.apps"] = _www_apps_mod
 
@@ -221,7 +234,15 @@ for _mod_path in [
 # (the test_tasks_recovery tests import from these paths)
 def _register_tasks_aliases():
     import importlib as _il
-    _content_tasks_path = str(_structa_path / "www" / "core" / "content" / "tasks.py")
+    _task_candidates = [
+        _repo_root / "www" / "core" / "content" / "tasks.py",
+        _structa_path / "www" / "core" / "content" / "tasks.py",
+        _ctc_path / "www" / "core" / "content" / "tasks.py",
+    ]
+    _content_tasks_file = next((p for p in _task_candidates if p.exists()), None)
+    if _content_tasks_file is None:
+        return
+    _content_tasks_path = str(_content_tasks_file)
     import importlib.util as _ilu
     _spec = _ilu.spec_from_file_location("_content_tasks_real", _content_tasks_path)
     if _spec:
