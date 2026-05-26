@@ -1,0 +1,159 @@
+# ============================================================
+# VResume - Application Services (Django & Celery)
+# ============================================================
+# Application layer with Django, Celery workers, and Nginx
+# Usage: docker compose -f compose/docker-compose.warehouse.yml up -d
+networks:
+  traefik-net:
+    name: traefik-net
+    external: true
+
+
+x-django-base: &django-base
+  build:
+    context: ..
+    dockerfile: ./compose/django/Dockerfile
+  restart: unless-stopped
+  env_file:
+    - ../v1/.env
+  environment: &django-env
+    RUNNING_ENV: docker
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-vresume-postgres}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_NAME: ${DB_NAME:-vresume}
+    DB_USER: ${DB_USER:-vresume}
+    DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    PORT: ${PORT:-5072}
+  volumes:
+    - ../:/app:z
+    - ../v1/assets/media:/app/v1/assets/media:z
+  networks:
+    - traefik-net
+  # depends_on:
+  #   - vresume-postgres
+  #   - vresume-redis
+
+services:
+
+  # ============================================================
+  # CELERY WORKER
+  # ============================================================
+  vresume-celery-worker:
+    <<: *django-base
+    container_name: vresume-celery-worker
+    environment:
+      <<: *django-env
+      SKIP_SETUP: "true"
+    command: >
+      celery -A core worker -l info
+      --concurrency=2
+      --prefetch-multiplier=1
+      --without-gossip
+      --without-mingle
+      --without-heartbeat
+      -O fair
+    ports: []
+    labels: {}
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.5'
+          memory: 512M
+
+  # ============================================================
+  # CELERY BEAT (SCHEDULER)
+  # ============================================================
+  vresume-celery-beat:
+    <<: *django-base
+    container_name: vresume-celery-beat
+    environment:
+      <<: *django-env
+      SKIP_SETUP: "true"
+    command: >
+      celery -A core beat -l info
+      --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      --max-interval=30
+      --pidfile=/tmp/celerybeat.pid
+    ports: []
+    labels: {}
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+  # ============================================================
+  # POSTGRESQL DATABASE
+  # ============================================================
+  vresume-postgres:
+    image: postgres:16-alpine
+    container_name: vresume-postgres
+    environment:
+      POSTGRES_DB: ${DB_NAME:-vresume}
+      POSTGRES_USER: ${DB_USER:-vresume}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
+    ports:
+      - "${DB_PORT_HOST:-5432}:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    networks:
+      - traefik-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1.5G
+        reservations:
+          cpus: '1'
+          memory: 1G
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USER:-vresume}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # ============================================================
+  # REDIS CACHE & CELERY BROKER
+  # ============================================================
+  vresume-redis:
+    image: redis:7-alpine
+    container_name: vresume-redis
+    command: redis-server --requirepass ${REDIS_PASSWORD:-mk_pAssWord123}
+    ports:
+      - "${REDIS_PORT_HOST:-6379}:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - traefik-net
+    restart: unless-stopped
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 512M
+        reservations:
+          cpus: '0.25'
+          memory: 256M
+    healthcheck:
+      test: ["CMD-SHELL", "redis-cli -a $${REDIS_PASSWORD:-mk_pAssWord123} ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+volumes:
+  postgres_data:
+    driver: local
+  redis_data:
+    driver: local

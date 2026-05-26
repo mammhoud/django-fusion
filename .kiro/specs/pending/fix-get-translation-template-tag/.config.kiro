@@ -1,6 +1,0 @@
-{
-  "specId": "666211e2-ebeb-4cb5-aa43-7df6a74159d0",
-  "workflowType": "requirements-first",
-  "specType": "bugfix",
-  "featureName": "fix-get-translation-template-tag"
-}
