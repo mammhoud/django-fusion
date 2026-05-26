@@ -48,3 +48,47 @@ python -m pytest tests/ci -q --ds=configs.settings
 
 ## Notes / Constraints
 - This plan emphasizes safe reorganization: prefer fixing import paths, removing small deprecated shim files, updating `configs`, and documenting changes. Avoid large structural refactors in this pass.
+
+## Configs consolidation (two-site merge)
+
+Goal: Merge per-site `configs` into the canonical `websites/configs` package so both sites use the same configuration without symlinks, then remove per-site copies.
+
+Steps:
+
+- [ ] Inspect per-site configs:
+  - `websites/ctc-research.com/configs`
+  - `websites/structa.cloud/configs`
+
+- [ ] Merge into `websites/configs` (create backups with `.bak` suffix):
+
+```bash
+cd /root/site/websites
+rsync -av --backup --suffix=.bak ctc-research.com/configs/ configs/
+rsync -av --backup --suffix=.bak structa.cloud/configs/ configs/
+```
+
+- [ ] Verify merged `configs.settings` imports and ensure `DJANGO_SETTINGS_MODULE` points to `configs.settings` at runtime.
+
+- [ ] Check for symlinks and external references (there should be none):
+
+```bash
+cd /root/site/websites
+find . -type l -ls
+```
+
+- [ ] Remove per-site `configs` directories after verification:
+
+```bash
+rm -rf ctc-research.com/configs structa.cloud/configs
+```
+
+- [ ] Commit and push the consolidation (include `.bak` backups in commit only if desired):
+
+```bash
+cd /root/site
+git add websites/configs
+git commit -m "Merge per-site configs into websites/configs and remove local copies"
+git push origin HEAD
+```
+
+Notes: If merge conflicts or environment-specific overrides exist, resolve manually and keep `.bak` backups. Record decisions and any removed keys in the `## Results` section below.
