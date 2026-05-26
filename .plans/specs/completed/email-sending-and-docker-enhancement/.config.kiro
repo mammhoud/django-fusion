@@ -1,0 +1,5 @@
+{
+  "specType": "feature",
+  "workflowType": "requirements-first",
+  "featureName": "email-sending-and-docker-enhancement"
+}

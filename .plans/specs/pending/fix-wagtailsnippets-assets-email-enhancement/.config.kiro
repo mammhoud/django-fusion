@@ -1,0 +1,7 @@
+{
+  "specType": "bugfix",
+  "workflowType": "requirements-first",
+  "featureName": "fix-wagtailsnippets-assets-email-enhancement",
+  "createdAt": "2026-04-06",
+  "description": "Fix Wagtail snippet namespace error, structa.cloud asset/URL issues, create email CSV and invitation command, integrate into django-grep, and reorganize specs"
+}
