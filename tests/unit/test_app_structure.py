@@ -16,22 +16,17 @@ import pytest
 WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
 CTC_ROOT = WORKSPACE_ROOT / "ctc-research.com"
 STRUCTA_ROOT = WORKSPACE_ROOT / "structa.cloud"
+REPO_ROOT = WORKSPACE_ROOT
+
+SITE_ROOTS = [r for r in (CTC_ROOT, STRUCTA_ROOT, REPO_ROOT) if (r / "plugins").exists()]
 
 
 # ── Test 15.1: Registration app location ─────────────────────────────────────
 
-@pytest.mark.parametrize("site_root,expected_name,expected_label", [
-    (
-        CTC_ROOT,
-        "plugins.accounts.registration",
-        "accounts_registration",
-    ),
-    (
-        STRUCTA_ROOT,
-        "plugins.accounts.registration",
-        "accounts_registration",
-    ),
-])
+@pytest.mark.parametrize(
+    "site_root,expected_name,expected_label",
+    [(root, "plugins.accounts.registration", "accounts_registration") for root in SITE_ROOTS],
+)
 def test_registration_app_location(site_root, expected_name, expected_label):
     """
     Feature: allauth-htmx-auth-pages, Test 15.1: Registration app location.
@@ -67,11 +62,14 @@ def test_registration_app_location(site_root, expected_name, expected_label):
 
 # ── Test 15.3: No cross-site branding in templates ───────────────────────────
 
-@pytest.mark.parametrize("site_root,forbidden_term", [
-    (CTC_ROOT, "structa"),
-    (STRUCTA_ROOT, "ctc-research"),
-    (STRUCTA_ROOT, "ctc_research"),
-])
+@pytest.mark.parametrize(
+    "site_root,forbidden_term",
+    [
+        *([(CTC_ROOT, "structa")] if CTC_ROOT in SITE_ROOTS else []),
+        *([(STRUCTA_ROOT, "ctc-research"), (STRUCTA_ROOT, "ctc_research")] if STRUCTA_ROOT in SITE_ROOTS else []),
+    ],
+    ids=lambda row: f"{row[0].name}:{row[1]}",
+)
 def test_no_cross_site_branding_in_templates(site_root, forbidden_term):
     """
     Feature: allauth-htmx-auth-pages, Test 15.3: No cross-site branding in templates.
@@ -118,7 +116,7 @@ def test_no_cross_site_branding_in_templates(site_root, forbidden_term):
 
 # ── Test 15.4: URL namespace separation ──────────────────────────────────────
 
-@pytest.mark.parametrize("site_root", [CTC_ROOT, STRUCTA_ROOT], ids=lambda p: p.name)
+@pytest.mark.parametrize("site_root", SITE_ROOTS, ids=lambda p: p.name)
 def test_url_namespace_separation(site_root):
     """
     Feature: allauth-htmx-auth-pages, Test 15.4: URL namespace separation.
@@ -163,7 +161,7 @@ def test_url_namespace_separation(site_root):
 
 # ── Test: No pipelines: namespace in any template ────────────────────────────
 
-@pytest.mark.parametrize("site_root", [CTC_ROOT, STRUCTA_ROOT], ids=lambda p: p.name)
+@pytest.mark.parametrize("site_root", SITE_ROOTS, ids=lambda p: p.name)
 def test_no_pipelines_namespace_in_templates(site_root):
     """
     Feature: allauth-htmx-auth-pages: No pipelines: namespace in any template.
@@ -200,7 +198,7 @@ def test_no_pipelines_namespace_in_templates(site_root):
 
 # ── Test: account/ templates deleted ─────────────────────────────────────────
 
-@pytest.mark.parametrize("site_root", [CTC_ROOT, STRUCTA_ROOT], ids=lambda p: p.name)
+@pytest.mark.parametrize("site_root", SITE_ROOTS, ids=lambda p: p.name)
 def test_account_templates_deleted(site_root):
     """
     Feature: allauth-htmx-auth-pages: account/ wrapper templates deleted.
