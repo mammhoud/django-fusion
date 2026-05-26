@@ -2,7 +2,7 @@
 PrivacyConsentMiddleware
 
 Re-exports PrivacyConsentMiddleware from django_rseal.
-Canonical import: from django_rseal.middlewares import PrivacyConsentMiddleware
+Canonical import: from django_rseal.http.middlewares import PrivacyConsentMiddleware
 
 Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
 
@@ -16,6 +16,6 @@ Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
     }
 """
 
-from django_rseal.middlewares import PrivacyConsentMiddleware
+from django_rseal.http.middlewares import PrivacyConsentMiddleware
 
 __all__ = ["PrivacyConsentMiddleware"]

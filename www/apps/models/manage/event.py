@@ -3,8 +3,8 @@ from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 
 # Base and reusable block imports
-from django_osoul.models import BaseModel as DefaultBase
-from django_rseal.comp.blocks import EventSectionBlock
+from django_osoul.core.models import BaseModel as DefaultBase
+from django_rseal.content.blocks.blocks import EventSectionBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField

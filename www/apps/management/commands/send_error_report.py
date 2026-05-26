@@ -239,7 +239,7 @@ class Command(BaseCommand):
     # ── Sender ─────────────────────────────────────────────────────────────────
 
     def _send(self, subject, html_body, text_body, recipient):
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@structa.cloud")
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
         msg = EmailMultiAlternatives(subject, text_body, from_email, [recipient])
         msg.attach_alternative(html_body, "text/html")
         try:

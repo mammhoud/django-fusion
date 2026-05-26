@@ -3,7 +3,7 @@ from django.urls import path
 from .views import *
 
 try:
-    from django_rseal.pipelines.site.payments import (
+    from django_rseal.workflows.pipelines.site.payments import (
         CartPayPalInitView,
         CartStripeInitView,
         PayPalInitView,

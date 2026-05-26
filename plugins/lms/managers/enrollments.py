@@ -10,13 +10,13 @@ from django.db import transaction
 from django.db.models import Avg, Count, F, Max, Min, Q
 from django.db.models.aggregates import Sum
 from django.utils import timezone
-from django_osoul.managers import CachedManager
+from django_osoul.core.managers import CachedManager
 
 if TYPE_CHECKING:
     from plugins.lms.models import Course, Enrollment, Lesson, Module
 
 try:
-    from django_rseal.pipelines.models import Person as Profile
+    from django_rseal.workflows.pipelines.models import Person as Profile
 except ImportError:
     Profile = None  # type: ignore[assignment,misc]
 

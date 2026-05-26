@@ -6,11 +6,11 @@ from django_osoul.comp.conf import (
 from django_osoul.comp.conf import (
     DjangoComponentsSettings as _DjangoComponentsSettings,
 )
-from django_osoul.conf import *
-from django_rseal.pipelines.conf import (
+from django_osoul.config.conf import *
+from django_rseal.workflows.pipelines.conf import (
     AppSettings as _AppSettings,
 )
-from django_rseal.pipelines.conf import (
+from django_rseal.workflows.pipelines.conf import (
     EmailPriority,
     EmailSendingStrategy,
     EmailStatus,

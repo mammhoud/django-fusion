@@ -5,8 +5,8 @@ import uuid
 
 import django.core.validators
 import django.db.models.deletion
-import django_rseal.pipelines.models.cache
-import django_rseal.pipelines.models.default
+import django_rseal.workflows.pipelines.models.cache
+import django_rseal.workflows.pipelines.models.default
 import embed_video.fields
 import modelcluster.fields
 import modelsearch.index

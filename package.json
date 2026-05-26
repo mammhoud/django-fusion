@@ -1,6 +1,23 @@
 {
-  "name": "alliance",
+  "name": "websites-workspace",
   "version": "1.0.3",
+  "private": true,
+  "description": "Shared frontend build for structa.cloud and ctc-research.com",
+  "scripts": {
+    "build": "PROJECT_PATH=${PROJECT_PATH:-ctc-research.com} NODE_ENV=production webpack --mode production --config webpack/main.config.js",
+    "build:prod": "npm run build",
+    "build:dev": "PROJECT_PATH=${PROJECT_PATH:-ctc-research.com} webpack --mode development --config webpack/main.config.js",
+    "build:ctc": "PROJECT_PATH=ctc-research.com npm run build:prod",
+    "build:structa": "PROJECT_PATH=structa.cloud npm run build:prod",
+    "build:all": "npm run build:ctc && npm run build:structa",
+    "build:assets:ctc": "PROJECT_PATH=ctc-research.com python ctc-research.com/manage.py build_assets --no-input",
+    "build:assets:structa": "PROJECT_PATH=structa.cloud python structa.cloud/manage.py build_assets --no-input",
+    "watch": "PROJECT_PATH=${PROJECT_PATH:-ctc-research.com} webpack watch --mode development --config webpack/main.config.js",
+    "dev": "webpack serve --mode development --config webpack/main.config.js",
+    "clean": "rm -rf bundles/ctc-research.com/* bundles/structa.cloud/*",
+    "start": "npm run dev",
+    "analyze": "npx webpack --config webpack/main.config.js --profile --json > stats.json && npx webpack-bundle-analyzer stats.json"
+  },
   "dependencies": {
     "@tailwindcss/cli": "^4.1.8",
     "@tailwindcss/forms": "^0.5.10",
@@ -141,27 +158,5 @@
     "webpack-cli": "^6.0.1",
     "webpack-dev-server": "^5.2.1",
     "webpack-merge": "^6.0.1"
-  },
-  "babel": {
-    "presets": [
-      "@babel/preset-env"
-    ]
-  },
-  "resolutions": {
-    "autoprefixer": "10.4.5"
-  },
-  "scripts": {
-    "purgecss": "npx purgecss --config ./purgecss.config.js",
-    "analyze": "npx webpack --config webpack/main.config.js --profile --json > stats.json && npx webpack-bundle-analyzer stats.json",
-    "css:stats": "npx cssstats assets/static/css/master.css",
-    "css:minify": "npx cssnano assets/static/css/master.css assets/static/css/master.min.css",
-    "dev": "webpack serve --mode development --config webpack/main.config.js",
-    "watch": "webpack watch --mode development --config webpack/main.config.js",
-    "build": "NODE_ENV=production webpack --mode production --config webpack/main.config.js",
-    "build:dev": "webpack --mode development --config webpack/main.config.js",
-    "build:prod": "npm run build",
-    "build:analyze": "NODE_ENV=production webpack --mode production --config webpack/main.config.js --stats detailed",
-    "clean": "rm -rf assets/bundles/*",
-    "start": "npm run dev"
   }
 }

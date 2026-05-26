@@ -5,8 +5,8 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.comp.site import NotificationMixin, PageHandler
-from django_rseal.pipelines.models import Person
-from django_rseal.pipelines.site.mixins import ProfileContextMixin, ProfileOperationsMixin
+from django_rseal.workflows.pipelines.models import Person
+from django_rseal.workflows.pipelines.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 
 from plugins.accounts.forms import (
     AccountSettingsForm,

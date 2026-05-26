@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 # Import all ViewSets from django-grep
 # Manage snippets
-from django_rseal.pipelines.snippets.manage.submissions import FormSubmissionViewSet
+from django_rseal.workflows.pipelines.snippets.manage.submissions import FormSubmissionViewSet
 from plugins.accounts.snippets.manage.peoples import (
     CompanyViewSet,
     PersonViewSet,

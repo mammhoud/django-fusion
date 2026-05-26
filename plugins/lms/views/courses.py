@@ -9,8 +9,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
 from django_osoul.comp.site import PageHandler
-from django_osoul.views import FilterMixin, SearchMixin
-from django_rseal.pipelines.models import CachingStorage
+from django_osoul.web.views import FilterMixin, SearchMixin
+from django_rseal.workflows.pipelines.models import CachingStorage
 
 from ..models import Course
 

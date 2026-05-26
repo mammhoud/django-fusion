@@ -86,7 +86,7 @@ class EmailCSVTester:
             'site_name': getattr(settings, 'SITE_NAME', 'Structa Cloud'),
             'site_url': getattr(settings, 'SITE_URL', 'https://structa.cloud'),
             'current_date': datetime.now().strftime('%B %d, %Y'),
-            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@structa.cloud')
+            'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@example.com')
         }
 
     def get_template_path(self, role: str) -> Path:

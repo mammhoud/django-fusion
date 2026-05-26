@@ -97,7 +97,7 @@ REDIS_URL=redis://localhost:6379/0
 # Email
 EMAIL_HOST=smtp.example.com
 EMAIL_PORT=587
-EMAIL_HOST_USER=noreply@structa.cloud
+EMAIL_HOST_USER=noreply@example.com
 EMAIL_HOST_PASSWORD=your-password
 
 # Celery

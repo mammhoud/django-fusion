@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 try:
-    from django_rseal.handlers.models.forms.submission import FormSubmission
+    from django_rseal.http.handlers.models.forms.submission import FormSubmission
 except ImportError:
     FormSubmission = None  # type: ignore[assignment,misc]
 

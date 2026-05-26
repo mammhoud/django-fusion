@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.blocks.media.gallery import MediaGalleryBlock
+from django_rseal.content.blocks.media.gallery import MediaGalleryBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField

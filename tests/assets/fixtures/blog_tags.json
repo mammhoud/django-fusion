@@ -1,0 +1,42 @@
+[
+    {
+        "model": "blog.blogtag",
+        "pk": 1,
+        "fields": {
+            "name": "Python",
+            "slug": "python"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 2,
+        "fields": {
+            "name": "Django",
+            "slug": "django"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 3,
+        "fields": {
+            "name": "JavaScript",
+            "slug": "javascript"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 4,
+        "fields": {
+            "name": "API",
+            "slug": "api"
+        }
+    },
+    {
+        "model": "blog.blogtag",
+        "pk": 5,
+        "fields": {
+            "name": "Unused",
+            "slug": "unused"
+        }
+    }
+]

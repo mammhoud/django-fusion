@@ -13,7 +13,7 @@ from django.core.cache import cache
 from django.db import models, transaction
 from django.db.models import Avg, Count, F, Q
 from django.utils import timezone
-from django_rseal.pipelines.models import Person as Profile
+from django_rseal.workflows.pipelines.models import Person as Profile
 from django_rseal.services.infrastructure.base import BaseService
 from django_rseal.services.infrastructure.token import TokenService
 
