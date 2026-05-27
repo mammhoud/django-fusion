@@ -7,6 +7,12 @@ requires-python = ">=3.11"
 dependencies = [
     "bumpver",
     "django-stubs",
+    "dynaconf[vault]",
+    "pydantic",
+    "pydantic-settings",
+    "hypothesis",
+    "pytest",
+    "pytest-django",
 ]
 
 # Inherit GitHub sources from workspace root.

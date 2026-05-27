@@ -1,0 +1,27 @@
+{% extends 'landing/skeleton.html' %}
+
+{% load i18n static unfold %}
+
+{% block modal %}
+<div id="modal-overlay" class="backdrop-blur-xs bg-base-900/80 bottom-0 fixed hidden left-0 mr-1 right-0 top-0 z-50">
+</div>
+{% endblock modal %}
+{% block layout_css %}
+
+{% endblock layout_css %}
+
+{% block header %}
+{% include 'landing/header/landing.html' %}
+{% endblock header %}
+
+{% block body %}
+<main class="profile" data-layout="profile">
+    {% block contant %}
+    {% endblock contant %}
+</main>
+{% endblock body %}
+
+
+{% block extra_assets %}
+{# Profile layout is auto-initialized by init.layout.js #}
+{% endblock %}
