@@ -1,1 +1,0 @@
-"""Blog plugin tests."""
