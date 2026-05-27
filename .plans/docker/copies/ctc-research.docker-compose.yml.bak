@@ -1,0 +1,72 @@
+# Backup of /root/site/websites/ctc-research.com/docker-compose.yml
+# Created before adding `site_network` external network.
+
+# ============================================================
+# CTC-Research.com Website - Docker Compose
+# ============================================================
+
+x-django-base: &django-base
+  build:
+    context: ..
+    dockerfile: ./websites/compose/django/Dockerfile
+    args:
+      - PROJECT_PATH=ctc-research.com
+  restart: unless-stopped
+  env_file:
+    - ctc-research.com/.env
+  environment:
+    - RUNNING_ENV=docker
+    - PROJECT_PATH=ctc-research.com
+  networks:
+    - traefik-net
+  external_links:
+    - postgres
+    - redis
+  volumes:
+    - website_static:/app/assets/staticfiles:z
+    - website_media:/app/assets/media:z
+    - ${ASSETS_DIR:-./assets}/static:/app/assets/static:ro
+    - ${ASSETS_DIR:-./assets}/media:/app/assets/media:ro
+  healthcheck:
+    test: ["CMD-SHELL", "curl -sf http://127.0.0.1:${PORT:-5070}/health/ || exit 1"]
+    interval: 60s
+    timeout: 10s
+    retries: 3
+    start_period: 120s
+
+networks:
+  traefik-net:
+    external: true
+    name: traefik-net
+
+volumes:
+  website_static:
+    external: true
+    name: website_static
+  website_media:
+    external: true
+    name: website_media
+
+services:
+  ctc-website:
+    container_name: ctc-website
+    ports:
+      - "5070:5070"
+    environment:
+      - RELOAD=${RELOAD:-false}
+      - SERVER_ENV=production
+      - DEBUG=False
+      - PORT=5070
+      - DB_HOST=postgres
+      - DB_NAME=db_ctc
+      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
+      - SITE_DOMAIN=www.ctc-research.com
+      - RUN_SETUP=true
+      - LOAD_FIXTURES=${LOAD_FIXTURES:-false}
+      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
+      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-vresume@structa.cloud}
+      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
+      - DJANGO_SECURE_SSL_REDIRECT=false
+      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')

@@ -1,3 +1,82 @@
+# Backup of /root/site/docker-compose.warehouse.yml
+# Created before adding `site_network` external network.
+
+# ============================================================
+# Warehouse Services - Docker Compose
+# Redis, PostgreSQL, Blinko, Docs, Adminer
+# ============================================================
+
+networks:
+  traefik-net:
+    external: true
+    name: traefik-net
+
+volumes:
+  website_static:
+    external: true
+    name: website_static
+  website_media:
+    external: true
+    name: website_media
+  redis_data:
+    external: true
+    name: redis_data
+
+services:
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: unless-stopped
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - redis_data:/data
+    networks:
+      - traefik-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  postgres:
+    build:
+      context: ../compose/postgres
+      dockerfile: Dockerfile
+    container_name: postgres
+    restart: unless-stopped
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-mk_pAssWord123}
+      INITDB_MULTIPLE_DATABASES: ${POSTGRES_DATABASES:-db_site,db_ctc,db_structa,db_vresume,blinko}
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - ../compose/postgres/postgres_data:/var/lib/postgresql/data:Z
+      - ../compose/postgres/backups:/backups:Z
+    networks:
+      - traefik-net
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER:-postgres}"]
+      interval: 60s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
 # Backup marker for docker-compose.warehouse.yml
 
 ---

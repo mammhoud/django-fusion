@@ -5,8 +5,8 @@
 
 x-django-base: &django-base
   build:
-    context: ..
-    dockerfile: ./websites/compose/django/Dockerfile
+    context: ../..
+    dockerfile: websites/compose/django/Dockerfile
     args:
       - PROJECT_PATH=ctc-research.com
   restart: unless-stopped
@@ -17,6 +17,7 @@ x-django-base: &django-base
     - PROJECT_PATH=ctc-research.com
   networks:
     - traefik-net
+    - site_network
   external_links:
     - postgres
     - redis
@@ -37,10 +38,11 @@ x-django-base: &django-base
 
 x-nginx-base: &nginx-base
   build:
-    context: ..
-    dockerfile: ./websites/compose/nginx/Dockerfile
+    context: ../..
+    dockerfile: websites/compose/nginx/Dockerfile
   networks:
     - traefik-net
+    - site_network
   restart: unless-stopped
   volumes:
     - website_static:/var/www/static:ro
@@ -55,6 +57,9 @@ networks:
   traefik-net:
     external: true
     name: traefik-net
+  site_network:
+    external: true
+    name: site_network
 
 volumes:
   website_static:
@@ -82,7 +87,7 @@ services:
       - DB_HOST=postgres
       - DB_NAME=db_ctc
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
-      - DJANGO_SETTINGS_MODULE=configs.settings
+      - DJANGO_SETTINGS_MODULE=settings
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
       - SITE_DOMAIN=www.ctc-research.com
       - RUN_SETUP=true
@@ -136,7 +141,7 @@ services:
       - DB_HOST=postgres
       - DB_NAME=db_ctc
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
-      - DJANGO_SETTINGS_MODULE=configs.settings
+      - DJANGO_SETTINGS_MODULE=settings
     command: /rqworker-start
     healthcheck:
       test: ["CMD-SHELL", "pgrep -f 'rqworker' > /dev/null || exit 1"]
