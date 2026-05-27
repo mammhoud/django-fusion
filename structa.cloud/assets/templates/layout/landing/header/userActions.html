@@ -1,0 +1,26 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+
+
+        <!-- Menu Extra -->
+        <div class="header-menu-extra">
+            <ul class="list-inline-sm">
+                {% with social=global_settings %}
+                {% for social_link in social.get_social_links %}
+                {% if social_link.platform == "facebook" %}
+                <li><a href="{{ social_link.url }}" target="_blank"><i class="bi bi-facebook"></i></a></li>
+                {% endif %}
+                {% if social_link.platform == "twitter" %}
+                <li><a href="{{ social_link.url }}" target="_blank"><i class="bi bi-twitter-x"></i></a></li>
+                {% endif %}
+                {% if social_link.platform == "linkedin" %}
+                <li><a href="{{ social_link.url }}" target="_blank"><i class="bi bi-linkedin"></i></a></li>
+                {% endif %}
+                {% endfor %}
+                {% endwith %}
+            </ul>
+
+        {% include "partials/auth_buttons.html" %}
+        {% include "partials/language_selector.html" %}
+        {% include "partials/header_toggle.html" %}
+
+        </div>

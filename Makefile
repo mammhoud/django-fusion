@@ -1,4 +1,4 @@
-.PHONY: help check validate-config build-assets test compose assets website-ctc website-structa tests run-dev migrations migrate
+.PHONY: help check validate-config build-assets test compose assets website-ctc website-structa tests tests-website run-dev migrations migrate
 
 PYTHON ?= .venv/bin/python
 MANAGE ?= $(PYTHON) manage.py
@@ -11,6 +11,7 @@ help:
 	@echo "  website-structa- Delegate to structa.cloud/Makefile"
 	@echo "  check          - Django checks"
 	@echo "  test           - Pytest"
+	@echo "  tests-website  - Run tests for WEBSITE=ctc|structa|all"
 
 compose:
 	$(MAKE) -C compose $(filter-out $@,$(MAKECMDGOALS))
@@ -56,3 +57,7 @@ tests-integration:
 	$(MAKE) -C tests integration
 tests-websites:
 	$(MAKE) -C tests websites
+
+
+tests-website:
+	./scripts/run_website_tests.sh $${WEBSITE:-all}

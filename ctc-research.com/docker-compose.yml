@@ -24,8 +24,10 @@ x-django-base: &django-base
     - website_static:/app/assets/staticfiles:z
     - website_media:/app/assets/media:z
     # Mount pre-built frontend assets from host (faster builds)
-    - ./ctc-research.com/assets/static:/app/assets/static:ro
-    - ./ctc-research.com/assets/media:/app/assets/media:ro
+    # Default uses project-local assets/.
+    # To run from repo root, set ASSETS_DIR=./ctc-research.com/assets
+    - ${ASSETS_DIR:-./assets}/static:/app/assets/static:ro
+    - ${ASSETS_DIR:-./assets}/media:/app/assets/media:ro
   healthcheck:
     test: ["CMD-SHELL", "curl -sf http://127.0.0.1:${PORT:-5070}/health/ || exit 1"]
     interval: 60s

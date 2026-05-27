@@ -1,0 +1,26 @@
+{% load static wagtailcore_tags %}
+
+
+{% for menuitem in menuitems %}
+<li class="nav-item {{ menuitem.title|lower|cut:" " }}{% if menuitem.active %} active{% endif %}">
+    <a class="nav-link" href="{% pageurl menuitem %}">{{ menuitem.title }}</a>
+</li>
+{% endfor %}
+
+{% comment %}
+
+{% for menuitem in menuitems %}
+
+
+
+<li class="presentation {{ menuitem.title|lower|cut:" " }}{% if menuitem.active %} active{% endif %}">
+    <a href="{% pageurl menuitem %}">{{ menuitem.title }}</a>
+</li>
+{% endfor %}
+<li class="has-dropdown"> <a href="services.html">services</a>
+    <ul class="submenu">
+        <li><a href="services.html">services</a></li>
+        <li><a href="services-details.html">service details</a></li>
+    </ul>
+</li>
+{% endcomment %}

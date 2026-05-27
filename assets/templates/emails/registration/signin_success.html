@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ subject }}</title>
+</head>
+<body style="margin:0;padding:0;background:#f4f4f4;font-family:Arial,sans-serif;">
+  <table width="100%" cellpadding="0" cellspacing="0" style="background:#f4f4f4;padding:40px 0;">
+    <tr>
+      <td align="center">
+        <table width="600" cellpadding="0" cellspacing="0"
+               style="background:#ffffff;border-radius:12px;padding:40px;max-width:600px;">
+          <tr>
+            <td>
+              <h1 style="color:#1a1a2e;margin-top:0;">Welcome back, {{ user_name }}!</h1>
+              <p style="color:#444;font-size:15px;line-height:1.6;">
+                You have successfully signed in to
+                <a href="{{ site_url }}" style="color:#6C63FF;text-decoration:none;">{{ site_name }}</a>.
+              </p>
+              <p style="color:#444;font-size:15px;line-height:1.6;">
+                If this was you, no further action is needed. If you did not sign in,
+                please contact us immediately at
+                <a href="mailto:{{ support_email }}" style="color:#6C63FF;">{{ support_email }}</a>.
+              </p>
+              <p style="text-align:center;margin:32px 0;">
+                <a href="{{ site_url }}"
+                   style="background:#6C63FF;color:#ffffff;padding:14px 32px;
+                          border-radius:8px;text-decoration:none;font-weight:bold;
+                          display:inline-block;">{% trans "Go to Dashboard" %}</a>
+              </p>
+              <hr style="border:none;border-top:1px solid #eeeeee;margin:32px 0;">
+              <p style="font-size:12px;color:#999999;text-align:center;margin:0;">
+                &copy; {{ site_name }} &mdash; Need help?
+                <a href="mailto:{{ support_email }}" style="color:#999999;">{{ support_email }}</a>
+              </p>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</body>
+</html>

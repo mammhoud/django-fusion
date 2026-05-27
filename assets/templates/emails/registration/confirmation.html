@@ -1,0 +1,263 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <title>Welcome to {{ site_name }}</title>
+    <!--[if mso]>
+    <style>table{border-collapse:collapse;}td{font-family:Arial,sans-serif;}</style>
+    <![endif]-->
+    <style>
+        /* Reset */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+        body { margin: 0; padding: 0; width: 100% !important; height: 100% !important; }
+
+        /* Styles */
+        .email-wrapper {
+            background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%);
+            padding: 40px 20px;
+        }
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        .email-header {
+            background: linear-gradient(135deg, #6C63FF 0%, #4ECDC4 100%);
+            padding: 40px 30px;
+            text-align: center;
+        }
+        .email-header h1 {
+            color: #ffffff;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 28px;
+            font-weight: 700;
+            margin: 0;
+            letter-spacing: -0.5px;
+        }
+        .email-header .subtitle {
+            color: rgba(255, 255, 255, 0.9);
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 14px;
+            margin-top: 8px;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+        }
+        .logo-circle {
+            width: 72px;
+            height: 72px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            margin: 0 auto 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            line-height: 72px;
+            font-size: 32px;
+        }
+        .email-body {
+            padding: 40px 30px;
+            font-family: 'Segoe UI', Arial, sans-serif;
+        }
+        .greeting {
+            font-size: 20px;
+            color: #1a1a2e;
+            font-weight: 600;
+            margin-bottom: 16px;
+        }
+        .body-text {
+            font-size: 15px;
+            color: #444;
+            line-height: 1.7;
+            margin-bottom: 24px;
+        }
+        .cta-wrapper {
+            text-align: center;
+            margin: 32px 0;
+        }
+        .cta-button {
+            display: inline-block;
+            background: linear-gradient(135deg, #6C63FF 0%, #5a52e0 100%);
+            color: #ffffff !important;
+            padding: 16px 48px;
+            border-radius: 50px;
+            text-decoration: none;
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 16px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            box-shadow: 0 8px 24px rgba(108, 99, 255, 0.35);
+            transition: all 0.2s;
+        }
+        .info-box {
+            background: #f8f9ff;
+            border-left: 4px solid #6C63FF;
+            padding: 16px 20px;
+            border-radius: 0 8px 8px 0;
+            margin: 24px 0;
+        }
+        .info-box p {
+            margin: 0;
+            font-size: 13px;
+            color: #555;
+            line-height: 1.6;
+        }
+        .fallback-link {
+            margin-top: 24px;
+            text-align: center;
+        }
+        .fallback-link p {
+            font-size: 12px;
+            color: #888;
+            margin-bottom: 4px;
+        }
+        .fallback-link a {
+            font-size: 11px;
+            color: #6C63FF;
+            word-break: break-all;
+        }
+        .divider {
+            height: 1px;
+            background: linear-gradient(to right, transparent, #e0e0e0, transparent);
+            margin: 32px 0;
+        }
+        .email-footer {
+            background: #f8f9fa;
+            padding: 24px 30px;
+            text-align: center;
+            border-top: 1px solid #eee;
+        }
+        .footer-text {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            font-size: 12px;
+            color: #999;
+            line-height: 1.6;
+        }
+        .footer-text a {
+            color: #6C63FF;
+            text-decoration: none;
+        }
+        .security-notice {
+            background: #fff8e1;
+            border: 1px solid #ffe082;
+            border-radius: 8px;
+            padding: 12px 16px;
+            margin: 20px 0;
+        }
+        .security-notice p {
+            margin: 0;
+            font-size: 12px;
+            color: #795548;
+            line-height: 1.5;
+        }
+        /* Dark mode */
+        @media (prefers-color-scheme: dark) {
+            .email-wrapper {
+                background: linear-gradient(135deg, #0a0a1a 0%, #1a1a3e 50%, #0f0f2e 100%) !important;
+            }
+        }
+        /* Mobile */
+        @media only screen and (max-width: 600px) {
+            .email-container { border-radius: 0 !important; }
+            .email-header { padding: 30px 20px !important; }
+            .email-body { padding: 30px 20px !important; }
+            .email-header h1 { font-size: 22px !important; }
+            .cta-button { padding: 14px 36px !important; font-size: 15px !important; }
+        }
+    </style>
+</head>
+<body style="margin: 0; padding: 0;">
+    <div class="email-wrapper" style="background: linear-gradient(135deg, #0f0c29 0%, #302b63 50%, #24243e 100%); padding: 40px 20px;">
+        <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%">
+            <tr>
+                <td align="center">
+                    <table role="presentation" cellspacing="0" cellpadding="0" border="0" class="email-container" style="max-width: 600px; margin: 0 auto; background: #ffffff; border-radius: 16px; overflow: hidden; box-shadow: 0 20px 60px rgba(0,0,0,0.3);">
+
+                        <!-- Header -->
+                        <tr>
+                            <td class="email-header" style="background: linear-gradient(135deg, #6C63FF 0%, #4ECDC4 100%); padding: 40px 30px; text-align: center;">
+                                <div style="width: 72px; height: 72px; background: rgba(255,255,255,0.2); border-radius: 50%; margin: 0 auto 16px; line-height: 72px; font-size: 32px;">
+                                    🎓
+                                </div>
+                                <h1 style="color: #ffffff; font-family: 'Segoe UI', Arial, sans-serif; font-size: 28px; font-weight: 700; margin: 0; letter-spacing: -0.5px;">
+                                    {{ site_name }}
+                                </h1>
+                                <p style="color: rgba(255,255,255,0.9); font-family: 'Segoe UI', Arial, sans-serif; font-size: 14px; margin-top: 8px; letter-spacing: 2px; text-transform: uppercase;">{% trans "Welcome Aboard" %}</p>
+                            </td>
+                        </tr>
+
+                        <!-- Body -->
+                        <tr>
+                            <td class="email-body" style="padding: 40px 30px; font-family: 'Segoe UI', Arial, sans-serif;">
+                                <p class="greeting" style="font-size: 20px; color: #1a1a2e; font-weight: 600; margin-bottom: 16px;">
+                                    Hello {{ user_name }}! 👋
+                                </p>
+
+                                <p class="body-text" style="font-size: 15px; color: #444; line-height: 1.7; margin-bottom: 24px;">
+                                    Thank you for joining <strong>{{ site_name }}</strong>. Your account has been created and is almost ready.
+                                    To get started, please create a secure password by clicking the button below.
+                                </p>
+
+                                <!-- CTA Button -->
+                                <div style="text-align: center; margin: 32px 0;">
+                                    <a href="{{ confirmation_url }}"
+                                       class="cta-button"
+                                       style="display: inline-block; background: linear-gradient(135deg, #6C63FF 0%, #5a52e0 100%); color: #ffffff; padding: 16px 48px; border-radius: 50px; text-decoration: none; font-family: 'Segoe UI', Arial, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0.5px; box-shadow: 0 8px 24px rgba(108,99,255,0.35);">{% trans "✨ Create Your Password" %}</a>
+                                </div>
+
+                                <!-- Info Box -->
+                                <div style="background: #f8f9ff; border-left: 4px solid #6C63FF; padding: 16px 20px; border-radius: 0 8px 8px 0; margin: 24px 0;">
+                                    <p style="margin: 0; font-size: 13px; color: #555; line-height: 1.6;">
+                                        ⏳ <strong>This link will expire in {{ expiration_hours }} hours.</strong><br>
+                                        After expiration, you will need to register again.
+                                    </p>
+                                </div>
+
+                                <!-- Fallback Link -->
+                                <div style="margin-top: 24px; text-align: center;">
+                                    <p style="font-size: 12px; color: #888; margin-bottom: 4px;">{% trans "If the button doesn't work, copy and paste this link into your browser:" %}</p>
+                                    <a href="{{ confirmation_url }}" style="font-size: 11px; color: #6C63FF; word-break: break-all;">
+                                        {{ confirmation_url }}
+                                    </a>
+                                </div>
+
+                                <!-- Divider -->
+                                <div style="height: 1px; background: linear-gradient(to right, transparent, #e0e0e0, transparent); margin: 32px 0;"></div>
+
+                                <!-- Security Notice -->
+                                <div style="background: #fff8e1; border: 1px solid #ffe082; border-radius: 8px; padding: 12px 16px; margin: 20px 0;">
+                                    <p style="margin: 0; font-size: 12px; color: #795548; line-height: 1.5;">
+                                        🔒 <strong>Security Notice:</strong> If you did not create this account, please ignore this email.
+                                        No account will be activated without your action.
+                                    </p>
+                                </div>
+                            </td>
+                        </tr>
+
+                        <!-- Footer -->
+                        <tr>
+                            <td class="email-footer" style="background: #f8f9fa; padding: 24px 30px; text-align: center; border-top: 1px solid #eee;">
+                                <p style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 12px; color: #999; line-height: 1.6; margin: 0;">
+                                    &copy; {{ site_name }} &mdash; Empowering Research &amp; Learning<br>
+                                    Need help? Contact us at
+                                    <a href="mailto:{{ support_email }}" style="color: #6C63FF; text-decoration: none;">{{ support_email }}</a>
+                                </p>
+                                <p style="font-family: 'Segoe UI', Arial, sans-serif; font-size: 11px; color: #bbb; margin-top: 8px;">
+                                    <a href="{{ unsubscribe_url|default:'#' }}" style="color: #bbb; text-decoration: none;">{% trans "Unsubscribe" %}</a>
+                                </p>
+                            </td>
+                        </tr>
+
+                    </table>
+                </td>
+            </tr>
+        </table>
+    </div>
+</body>
+</html>
