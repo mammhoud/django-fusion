@@ -1,0 +1,59 @@
+{% load i18n %}
+{# Rendered inside an Unpoly overlay (modal/drawer) or HTMX swap target. #}
+{# No base template — just the content. #}
+
+<div class="legal-modal" id="privacy-policy-modal">
+
+    <div class="legal-modal__header">
+        <span class="legal-modal__icon" aria-hidden="true">🔒</span>
+        <h2 class="legal-modal__title" id="privacy-modal-title">{{ policy.title }}</h2>
+        <p class="legal-modal__meta">
+            {% trans "Version" %} {{ policy.version }}
+        </p>
+    </div>
+
+    <div class="legal-modal__body prose" id="privacy-modal-body">
+        {{ policy.content|safe }}
+    </div>
+
+    <footer class="legal-modal__footer">
+        {% if has_consented %}
+        <div class="legal-modal__consent-badge legal-modal__consent-badge--accepted" role="status">
+            <span aria-hidden="true">✓</span>
+            {% trans "You have already accepted this policy." %}
+        </div>
+        <button type="button" class="btn btn--secondary" up-dismiss aria-label="{% trans 'Close' %}">
+            {% trans "Close" %}
+        </button>
+
+        {% elif request.user.is_authenticated %}
+        <form method="post"
+              action="{% url 'privacy:accept_policy' %}"
+              hx-post="{% url 'privacy:accept_policy' %}"
+              hx-target="#privacy-policy-modal"
+              hx-swap="outerHTML">
+            {% csrf_token %}
+            <input type="hidden" name="next" value="{{ request.GET.next|default:'/' }}">
+            <div class="legal-modal__actions">
+                <button type="button" class="btn btn--secondary" up-dismiss>
+                    {% trans "Decline" %}
+                </button>
+                <button type="submit" class="btn btn--primary">
+                    {% trans "Accept" %}
+                </button>
+            </div>
+        </form>
+
+        {% else %}
+        <p class="legal-modal__login-note">
+            {% blocktrans %}
+                <a href="{% url 'account_login' %}">Sign in</a> to accept this policy.
+            {% endblocktrans %}
+        </p>
+        <button type="button" class="btn btn--secondary" up-dismiss>
+            {% trans "Close" %}
+        </button>
+        {% endif %}
+    </footer>
+
+</div>

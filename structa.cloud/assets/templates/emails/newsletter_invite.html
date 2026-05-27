@@ -1,0 +1,34 @@
+{% extends "emails/base.html" %}
+{# Newsletter-only invite — no account creation, no signup link #}
+{# Context: recipient_email, name, site_name, site_url, newsletter_name, unsubscribe_url #}
+
+{% block title %}Join our newsletter — {{ site_name }}{% endblock %}
+{% block header %}{{ newsletter_name|default:"Our Newsletter" }}{% endblock %}
+
+{% block content %}
+<h2>Hello{% if name %} {{ name }}{% endif %},</h2>
+
+<p>You've been invited to subscribe to <strong>{{ newsletter_name|default:"our newsletter" }}</strong> from <strong>{{ site_name }}</strong>.</p>
+
+<p>Stay up to date with our latest news, articles, and updates — delivered directly to your inbox.</p>
+
+<p style="text-align: center;">
+    <a href="{{ subscribe_url }}" class="btn">Subscribe Now</a>
+</p>
+
+<p style="font-size: 13px; color: #666;">
+    This invitation was sent to <strong>{{ recipient_email }}</strong>.
+    If you did not request this, you can safely ignore this email — no account will be created and you will not receive further emails.
+</p>
+{% endblock %}
+
+{% block footer %}
+<p>&copy; {{ site_name }}. All rights reserved.</p>
+<p>
+    <a href="{{ unsubscribe_url|default:'#' }}">Unsubscribe</a> |
+    <a href="{{ privacy_url|default:'#' }}">Privacy Policy</a>
+</p>
+<p style="font-size: 11px; color: #aaa;">
+    This is a newsletter subscription invitation only. No account or login is required.
+</p>
+{% endblock %}

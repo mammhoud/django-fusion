@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+{% load routable_components %}
+
+{% block title %}{{ page_title }} — CTC Research{% endblock %}
+
+{% block content %}
+<div class="dashboard">
+  {# Breadcrumbs #}
+  {% breadcrumbs component %}
+
+  <header class="dashboard__header">
+    <h1>{{ page_title }}</h1>
+  </header>
+
+  {# Stats #}
+  {% if stats %}
+  <section class="dashboard__stats" aria-label="Statistics">
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.total_courses }}</span>
+      <span class="stat-card__label">Total Courses</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.published_courses }}</span>
+      <span class="stat-card__label">Published</span>
+    </div>
+    <div class="stat-card">
+      <span class="stat-card__value">{{ stats.total_enrollments }}</span>
+      <span class="stat-card__label">Enrollments</span>
+    </div>
+  </section>
+  {% endif %}
+
+  {# Course list fragment — loaded via HTMX #}
+  <section class="dashboard__courses">
+    <h2>Courses</h2>
+    <div id="course-list"
+         hx-get="{% url 'lms:course-list-fragment' %}"
+         hx-trigger="load"
+         hx-swap="innerHTML">
+      <p>Loading courses…</p>
+    </div>
+  </section>
+
+  {# Recent enrollments #}
+  {% if recent_enrollments %}
+  <section class="dashboard__enrollments">
+    <h2>Recent Enrollments</h2>
+    <table>
+      <thead>
+        <tr><th>Student</th><th>Course</th><th>Date</th></tr>
+      </thead>
+      <tbody>
+        {% for enrollment in recent_enrollments %}
+        <tr>
+          <td>{{ enrollment.student }}</td>
+          <td>{{ enrollment.course }}</td>
+          <td>{{ enrollment.enrolled_at|date:"N j, Y" }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

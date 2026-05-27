@@ -1,0 +1,63 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Site Contact Settings Block Template - Wagtail Bakery Style #}
+
+<div class="site-contact-settings site-contact-settings--{{ self.display_mode|default:'list' }}">
+
+    {% if self.show_section_title and self.title %}
+    <div class="site-contact-settings__header mb-4">
+        <h3 class="site-contact-settings__title">{{ self.title }}</h3>
+        {% if self.description %}
+        <p class="site-contact-settings__description text-muted">{{ self.description }}</p>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {% if all_profiles %}
+    <div class="site-contact-settings__profiles row g-3 {% if self.columns != 'auto' %}row-cols-1 row-cols-md-{{ self.columns }}{% endif %}">
+
+        {# Display profiles by type if organized #}
+        {% if social_profiles %}
+        <div class="contact-group contact-group--social col-12">
+            <h5 class="contact-group__title">
+                <i class="bi bi-share me-2"></i>{% trans "Social Media" %}
+            </h5>
+            <div class="contact-group__items d-flex flex-wrap gap-2">
+                {% for profile in social_profiles %}
+                {% include "blocks/contact_profile.html" with value=profile %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if contact_methods %}
+        <div class="contact-group contact-group--contact col-12">
+            <h5 class="contact-group__title">
+                <i class="bi bi-envelope me-2"></i>{% trans "Contact Methods" %}
+            </h5>
+            <div class="contact-group__items">
+                {% for profile in contact_methods %}
+                {% include "blocks/contact_profile.html" with value=profile %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if websites %}
+        <div class="contact-group contact-group--websites col-12">
+            <h5 class="contact-group__title">
+                <i class="bi bi-globe me-2"></i>{% trans "Websites" %}
+            </h5>
+            <div class="contact-group__items">
+                {% for profile in websites %}
+                {% include "blocks/contact_profile.html" with value=profile %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+    </div>
+    {% else %}
+    <p class="text-muted">{% trans "No contact information available." %}</p>
+    {% endif %}
+
+</div>

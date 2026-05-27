@@ -1,0 +1,88 @@
+{% load wagtailcore_tags i18n %}
+{# Event Schedule Item Block Template - Wagtail Bakery Style #}
+
+<div class="schedule-item schedule-item--{{ self.session_type|default:'keynote' }}">
+    <div class="schedule-item__card d-flex gap-3 p-3 border-start border-4 border-primary bg-white rounded-end shadow-sm mb-3">
+
+        {# Time #}
+        <div class="schedule-item__time flex-shrink-0 text-center" style="min-width: 100px;">
+            <div class="time-display fw-bold text-primary">
+                {{ self.time }}
+            </div>
+        </div>
+
+        {# Content #}
+        <div class="schedule-item__content flex-grow-1">
+            {# Session Type Badge #}
+            <div class="schedule-item__type mb-2">
+                {% if self.session_type == 'keynote' %}
+                <span class="badge bg-primary">{% trans "Keynote" %}</span>
+                {% elif self.session_type == 'workshop' %}
+                <span class="badge bg-success">{% trans "Workshop" %}</span>
+                {% elif self.session_type == 'panel' %}
+                <span class="badge bg-info">{% trans "Panel Discussion" %}</span>
+                {% elif self.session_type == 'breakout' %}
+                <span class="badge bg-secondary">{% trans "Breakout Session" %}</span>
+                {% elif self.session_type == 'networking' %}
+                <span class="badge bg-warning text-dark">{% trans "Networking" %}</span>
+                {% elif self.session_type == 'break' %}
+                <span class="badge bg-light text-dark">{% trans "Break" %}</span>
+                {% elif self.session_type == 'meal' %}
+                <span class="badge bg-light text-dark">{% trans "Meal" %}</span>
+                {% endif %}
+            </div>
+
+            {# Title #}
+            <h5 class="schedule-item__title h6 mb-2">{{ self.title }}</h5>
+
+            {# Speaker #}
+            {% if self.speaker %}
+            <p class="schedule-item__speaker text-muted small mb-2">
+                <i class="bi bi-person me-1"></i>{{ self.speaker }}
+            </p>
+            {% endif %}
+
+            {# Location #}
+            {% if self.location %}
+            <p class="schedule-item__location text-muted small mb-2">
+                <i class="bi bi-geo-alt me-1"></i>{{ self.location }}
+            </p>
+            {% endif %}
+
+            {# Description #}
+            {% if self.description %}
+            <div class="schedule-item__description text-muted small">
+                {{ self.description|richtext }}
+            </div>
+            {% endif %}
+
+            {# Resources #}
+            {% if self.resources %}
+            <div class="schedule-item__resources mt-3">
+                <p class="fw-semibold small mb-2">{% trans "Resources:" %}</p>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for resource in self.resources %}
+                    <a href="{{ resource.value.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="btn btn-sm btn-outline-secondary"
+                       title="{{ resource.value.description|default:resource.value.title }}">
+                        {% if resource.value.type == 'slides' %}
+                        <i class="bi bi-file-slides me-1"></i>
+                        {% elif resource.value.type == 'video' %}
+                        <i class="bi bi-play-circle me-1"></i>
+                        {% elif resource.value.type == 'document' %}
+                        <i class="bi bi-file-earmark me-1"></i>
+                        {% else %}
+                        <i class="bi bi-link me-1"></i>
+                        {% endif %}
+                        {{ resource.value.title }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>

@@ -12,7 +12,10 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from dynaconf import Dynaconf
+try:
+    from dynaconf import Dynaconf
+except Exception:  # pragma: no cover
+    Dynaconf = None  # type: ignore[assignment]
 from pydantic import Field, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -168,6 +171,10 @@ class MainSettings(BaseSettings):
         existing_files = [str(f) for f in settings_files if f.exists()]
 
         # Initialize Dynaconf
+        if Dynaconf is None:
+            self.dynaconf_settings = None
+            return
+
         self.dynaconf_settings = Dynaconf(
             envvar_prefix="DJANGO",
             settings_files=existing_files,

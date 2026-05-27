@@ -1,0 +1,223 @@
+{% load static wagtailimages_tags %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{ certificate_title|default:"Certificate of Attendance" }}</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Georgia', serif;
+        }
+
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f5f5f5;
+            padding: 20px;
+        }
+
+        .certificate-container {
+            width: 800px;
+            height: 600px;
+            background-color: white;
+            border: 15px solid {{ border_color|default:"#2c3e50" }};
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+            position: relative;
+            padding: 40px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .certificate-header {
+            text-align: center;
+            border-bottom: 2px solid {{ border_color|default:"#2c3e50" }};
+            padding-bottom: 15px;
+            margin-bottom: 20px;
+        }
+
+        .certificate-logo {
+            max-height: 60px;
+            margin-bottom: 10px;
+        }
+
+        .certificate-title {
+            font-size: 36px;
+            font-weight: bold;
+            color: {{ border_color|default:"#2c3e50" }};
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .organization-name {
+            font-size: 24px;
+            color: {{ accent_color|default:"#3498db" }};
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .certificate-body {
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .certificate-text {
+            font-size: 18px;
+            line-height: 1.6;
+            margin-bottom: 20px;
+            text-align: center;
+            color: {{ text_color|default:"#333" }};
+        }
+
+        .recipient-name {
+            font-size: 28px;
+            font-weight: bold;
+            text-align: center;
+            margin: 20px 0;
+            padding: 10px;
+            border-bottom: 1px dashed #ccc;
+            color: {{ border_color|default:"#2c3e50" }};
+        }
+
+        .course-title {
+            font-size: 22px;
+            font-weight: bold;
+            text-align: center;
+            color: {{ border_color|default:"#2c3e50" }};
+            margin: 15px 0;
+            font-style: italic;
+        }
+
+        .presenter-info {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .presenter-name {
+            font-size: 20px;
+            font-weight: bold;
+        }
+
+        .presenter-title {
+            font-size: 16px;
+            color: #555;
+        }
+
+        .course-date {
+            text-align: center;
+            margin: 20px 0;
+            font-size: 18px;
+        }
+
+        .certificate-footer {
+            text-align: center;
+            border-top: 2px solid {{ border_color|default:"#2c3e50" }};
+            padding-top: 15px;
+            margin-top: 20px;
+        }
+
+        .certificate-signature {
+            max-height: 50px;
+            margin-bottom: 10px;
+        }
+
+        .footer-text {
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        .decoration {
+            position: absolute;
+            width: 100px;
+            height: 100px;
+            opacity: 0.1;
+        }
+
+        .decoration-top-left {
+            top: 20px;
+            left: 20px;
+            border-top: 3px solid {{ accent_color|default:"#3498db" }};
+            border-left: 3px solid {{ accent_color|default:"#3498db" }};
+        }
+
+        .decoration-top-right {
+            top: 20px;
+            right: 20px;
+            border-top: 3px solid {{ accent_color|default:"#3498db" }};
+            border-right: 3px solid {{ accent_color|default:"#3498db" }};
+        }
+
+        .decoration-bottom-left {
+            bottom: 20px;
+            left: 20px;
+            border-bottom: 3px solid {{ accent_color|default:"#3498db" }};
+            border-left: 3px solid {{ accent_color|default:"#3498db" }};
+        }
+
+        .decoration-bottom-right {
+            bottom: 20px;
+            right: 20px;
+            border-bottom: 3px solid {{ accent_color|default:"#3498db" }};
+            border-right: 3px solid {{ accent_color|default:"#3498db" }};
+        }
+
+        {{ custom_css|default:"" }}
+    </style>
+</head>
+<body>
+    <div class="certificate-container">
+        <div class="decoration decoration-top-left"></div>
+        <div class="decoration decoration-top-right"></div>
+        <div class="decoration decoration-bottom-left"></div>
+        <div class="decoration decoration-bottom-right"></div>
+
+        <div class="certificate-header">
+            {% if logo_image %}
+            {% image logo_image max-200x80 as logo %}
+            <img src="{{ logo.url }}" alt="{{ organization_name }}" class="certificate-logo">
+            {% endif %}
+            <h1 class="certificate-title">{{ certificate_title|default:"CERTIFICATE OF ATTENDANCE" }}</h1>
+            <div class="organization-name">{{ organization_name|default:"CTC RESEARCH HUB" }}</div>
+        </div>
+
+        <div class="certificate-body">
+            <p class="certificate-text">{{ certifies_text|default:"This certifies that:" }}</p>
+
+            <div class="recipient-name">{{ recipient_name|default:"[Recipient Name]" }}</div>
+
+            <p class="certificate-text">{{ body_text|default:"has successfully attended and completed the training course titled:" }}</p>
+
+            <div class="course-title">{{ course_title|default:"[Course Title]" }}</div>
+
+            {% if presenter_name %}
+            <div class="presenter-info">
+                <div class="presenter-name">Presented by: {{ presenter_name }}</div>
+                {% if presenter_title %}
+                <div class="presenter-title">({{ presenter_title }})</div>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            <div class="course-date">
+                <strong>COURSE DATE:</strong> {{ course_date|default:"[Course Date]" }}
+            </div>
+        </div>
+
+        <div class="certificate-footer">
+            {% if signature_image %}
+            {% image signature_image max-200x60 as sig %}
+            <img src="{{ sig.url }}" alt="Signature" class="certificate-signature">
+            {% endif %}
+            <div class="footer-text">{{ footer_text|default:"CTC RESEARCH CENTER TEAM" }}</div>
+        </div>
+    </div>
+</body>
+</html>
