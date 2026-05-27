@@ -1,3 +1,11 @@
+"""Application registry for workspace websites.
+
+Keeps canonical app lists explicit while allowing optional package filtering
+for local/container environments where some integrations may be unavailable.
+"""
+
+import importlib.util as _ilu
+
 # ADMIN
 ADMIN_APPS = [
     "unfold",
@@ -9,7 +17,7 @@ ADMIN_APPS = [
 ]
 
 # DJANGO CORE
-APPS = [
+DJANGO_APPS = [
     "django.contrib.sites",
     "django.contrib.auth",
     "django.contrib.sessions",
@@ -18,11 +26,12 @@ APPS = [
     "django.contrib.staticfiles",
     "django.contrib.humanize",
     "django.contrib.contenttypes",
-    *ADMIN_APPS,
     "django.contrib.admin",
     "django.forms",
     "django.contrib.postgres",
 ]
+
+APPS = [*DJANGO_APPS, *ADMIN_APPS]
 
 # WAGTAIL
 WAGTAIL_APPS = [
@@ -66,13 +75,34 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
-    "pages.home",     # HomePage + Slider, TeamMember, Service, Testimonial, VResumeSettings
-    "pages.about",    # AboutPage
-    "pages.cv",       # ResumePage
-    "pages.connect",  # ContactPage + Campaign, Subscriber, FormSubmission, ...
-    "pages.portfolio",# PortfolioPage + Project, PortfolioTag
-    "pages.blog",     # BlogPage + BlogIndexPage + snippets
+    "pages.home",
+    "pages.about",
+    "pages.cv",
+    "pages.connect",
+    "pages.portfolio",
+    "pages.blog",
 ]
 
-# COMBINED
-INSTALLED_APPS: list[str] = APPS + WAGTAIL_APPS + THIRD_PARTY_APPS + LOCAL_APPS
+
+def _is_mod(name: str) -> bool:
+    try:
+        return _ilu.find_spec(name) is not None
+    except ModuleNotFoundError:
+        return False
+
+
+OPTIONAL_APP_MAP = {
+    "django_celery_beat": "django_celery_beat",
+    "django_celery_results": "django_celery_results",
+    "django_rq": "django_rq",
+    "simple_history": "simple_history",
+    "import_export": "import_export",
+    "webpack_loader": "webpack_loader",
+}
+
+EFFECTIVE_THIRD_PARTY_APPS = [
+    app for app in THIRD_PARTY_APPS if _is_mod(OPTIONAL_APP_MAP.get(app, app))
+]
+EFFECTIVE_LOCAL_APPS = [app for app in LOCAL_APPS if _is_mod(app)]
+
+INSTALLED_APPS: list[str] = APPS + WAGTAIL_APPS + EFFECTIVE_THIRD_PARTY_APPS + EFFECTIVE_LOCAL_APPS

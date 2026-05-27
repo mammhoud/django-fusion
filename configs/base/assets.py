@@ -25,7 +25,7 @@ if os.getenv('RUNNING_ENV') == 'docker':
     BUNDLES_DIR = ASSETS_DIR / "bundles"           # /app/assets/bundles
     SHARED_STATIC_DIR = BASE_DIR / "shared" / "assets" / "static"  # /app/shared/assets/static
 else:
-    BUNDLES_DIR = WORKSPACE_DIR / "bundles" / SITE_NAME  # compiled webpack output
+    BUNDLES_DIR = ASSETS_DIR / "bundles"  # compiled webpack output (site-local)
     SHARED_STATIC_DIR = WORKSPACE_DIR / "assets" / "static"  # websites/assets/static
 
 STATICFILES_DIR  = ASSETS_DIR / "staticfiles"             # collectstatic output
