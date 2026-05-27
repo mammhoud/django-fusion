@@ -732,3 +732,6 @@ reset: cla rm fb st dr cd ## 🔨 Build everything (frontend + static)
 
 instance: rm fb st
 	@echo -e "$(GREEN)✅ build completed$(NC)"
+
+build-assets: ## 🧱 Build frontend assets via webpack
+	@npm run build

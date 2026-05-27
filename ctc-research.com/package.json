@@ -152,15 +152,15 @@
   },
   "scripts": {
     "purgecss": "npx purgecss --config ./purgecss.config.js",
-    "analyze": "npx webpack --config webpack/main.config.js --profile --json > stats.json && npx webpack-bundle-analyzer stats.json",
+    "analyze": "PROJECT_PATH=ctc-research.com npx webpack --config ../webpack/main.config.js --profile --json > stats.json && npx webpack-bundle-analyzer stats.json",
     "css:stats": "npx cssstats assets/static/css/master.css",
     "css:minify": "npx cssnano assets/static/css/master.css assets/static/css/master.min.css",
-    "dev": "webpack serve --mode development --config webpack/main.config.js",
-    "watch": "webpack watch --mode development --config webpack/main.config.js",
-    "build": "NODE_ENV=production webpack --mode production --config webpack/main.config.js",
-    "build:dev": "webpack --mode development --config webpack/main.config.js",
+    "dev": "PROJECT_PATH=ctc-research.com webpack serve --mode development --config ../webpack/main.config.js",
+    "watch": "PROJECT_PATH=ctc-research.com webpack watch --mode development --config ../webpack/main.config.js",
+    "build": "PROJECT_PATH=ctc-research.com NODE_ENV=production webpack --mode production --config ../webpack/main.config.js",
+    "build:dev": "PROJECT_PATH=ctc-research.com webpack --mode development --config ../webpack/main.config.js",
     "build:prod": "npm run build",
-    "build:analyze": "NODE_ENV=production webpack --mode production --config webpack/main.config.js --stats detailed",
+    "build:analyze": "PROJECT_PATH=ctc-research.com NODE_ENV=production webpack --mode production --config ../webpack/main.config.js --stats detailed",
     "clean": "rm -rf assets/bundles/*",
     "start": "npm run dev"
   }

@@ -15,8 +15,8 @@ const PROJECT_ROOT = isDocker ? WORKSPACE_ROOT : path.join(WORKSPACE_ROOT, PROJE
 
 // Output path: Docker uses /app/assets/bundles, local uses workspace/bundles/<site>/
 const outputPath = isDocker
-  ? path.join(WORKSPACE_ROOT, 'assets', 'bundles')
-  : path.join(WORKSPACE_ROOT, 'bundles', PROJECT_PATH);
+  ? path.join(WORKSPACE_ROOT, 'assets', 'bundles', PROJECT_PATH)
+  : path.join(PROJECT_ROOT, 'assets', 'bundles');
 const libsOutputPath = path.join(outputPath, 'libs');
 const configPath = path.resolve(__dirname, './package-copy.json');
 const staticUrl = '/static/';
@@ -197,7 +197,7 @@ module.exports = async (env, argv) => {
         open: false,
         proxy: {
           '/': {
-            target: 'http://localhost:8000',
+            target: 'http://localhost:5080',
             changeOrigin: true,
           }
         },
