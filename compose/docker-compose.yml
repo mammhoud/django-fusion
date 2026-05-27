@@ -47,8 +47,8 @@ services:
   vresume-website:
     <<: *django-base
     container_name: vresume-website
-    ports:
-      - "5072:5072"
+    # ports:
+    #   - "5072:5072"  # removed to avoid duplicate host port when composing multiple stacks; canonical mapping lives in VResume/compose/docker-compose.yml
     environment:
       <<: *django-env
       WORKERS: ${WORKERS:-4}

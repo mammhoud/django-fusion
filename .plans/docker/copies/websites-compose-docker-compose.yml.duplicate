@@ -1,0 +1,2 @@
+# Duplicate of websites/compose/docker-compose.yml (VResume infra)
+# Saved before removing host port mappings to prevent conflicts when composing multiple stacks.

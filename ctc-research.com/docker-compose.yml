@@ -92,6 +92,14 @@ services:
       - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
       - DJANGO_SECURE_SSL_REDIRECT=false
       - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
 
   # ============================================================
   # CTC WEBSITE MEDIA - Static & Media Files
@@ -104,6 +112,14 @@ services:
       - "8271:80"
     depends_on:
       - ctc-website
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
 
   # ============================================================
   # CTC RQ WORKER
@@ -128,3 +144,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 30s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
