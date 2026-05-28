@@ -78,6 +78,16 @@ COPY websites/webpack/ ${APP_HOME}/webpack/
 # Webpack alias 'shared' → /app/shared/assets/static/
 COPY websites/assets/static/ ${APP_HOME}/shared/assets/static/
 
+# Copy shared configuration package so `import configs` works inside the image
+COPY websites/configs/ ${APP_HOME}/configs/
+
+# Copy workspace-level multi-site manage.py so containers can select a site
+# via `--site` or `DJANGO_SITE` env var. This ensures runtime switching.
+COPY websites/manage.py ${APP_HOME}/manage.py
+
+# Copy shared core package so `import core` works at runtime
+COPY websites/core/ ${APP_HOME}/core/
+
 # -----------------------------------------------------
 # 4b. Frontend assets are now mounted via volume (faster builds)
 #    To build frontend assets, run locally:

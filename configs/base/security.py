@@ -24,6 +24,23 @@ ALLOWED_HOSTS = getattr(
     getattr(security_settings, "ALLOWED_HOSTS", ["localhost", "127.0.0.1"]),
 )
 
+# Ensure ALLOWED_HOSTS is always a list (env vars may provide a comma-separated
+# string or a single string like '*'). This prevents Django raising
+# ImproperlyConfigured when a plain string is present.
+if isinstance(ALLOWED_HOSTS, str):
+    # Dynaconf may leave placeholders like "@env ALLOWED_HOSTS *" as the
+    # resolved value; in that case prefer the real environment variable.
+    val = ALLOWED_HOSTS.strip()
+    if val.startswith("@env"):
+        import os
+
+        env_val = os.environ.get("ALLOWED_HOSTS", "")
+        ALLOWED_HOSTS = [item.strip() for item in env_val.split(",") if item.strip()]
+    else:
+        ALLOWED_HOSTS = [item.strip() for item in val.split(",") if item.strip()]
+elif isinstance(ALLOWED_HOSTS, (tuple, set)):
+    ALLOWED_HOSTS = list(ALLOWED_HOSTS)
+
 # CORS Configuration
 CORS_ALLOW_ALL_ORIGINS = getattr(
     security_settings, "CORS_ALLOW_ALL_ORIGINS", not settings.is_production
