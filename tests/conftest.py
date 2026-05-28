@@ -63,21 +63,39 @@ def pytest_configure(config):
 
 def _register_aliases():
     alias_map = {
+        # www.apps.blog aliases
         "www.apps.blog":               "apps.blog",
         "www.apps.blog.models":        "apps.blog.models",
-        # Skip views — importing views triggers plugins.blog.models conflict
-        # "www.apps.blog.views":       "apps.blog.views",
         "www.apps.blog.forms":         "apps.blog.forms",
         "www.apps.blog.admin":         "apps.blog.admin",
         "www.apps.blog.urls":          "apps.blog.urls",
         "www.apps.blog.services":      "apps.blog.services",
         "www.apps.blog.api":           "apps.blog.api",
-        # www.apps.accounts → accounts
+        "www.apps.blog.management":    "apps.blog.management",
+        "www.apps.blog.viewsets":      "apps.blog.viewsets",
+        "www.apps.blog.components":    "apps.blog.components",
+        "www.apps.blog.feeds":         "apps.blog.feeds",
+
+        # www.apps.accounts aliases
         "www.apps.accounts":           "accounts",
         "www.apps.accounts.models":    "accounts.models",
         "www.apps.accounts.models.tags": "accounts.models.tags",
+        "www.apps.accounts.registration": "accounts.registration",
+        "www.apps.accounts.management": "accounts.management",
+        "www.apps.accounts.forms":     "accounts.forms",
+        "www.apps.accounts.services":  "accounts.services",
+        "www.apps.accounts.views":     "accounts.views",
+        "www.apps.accounts.filters":   "accounts.filters",
+        "www.apps.accounts.admin":     "accounts.admin",
+        "www.apps.accounts.signals":   "accounts.signals",
+        "www.apps.accounts.middleware": "accounts.middleware",
         "www.apps.accounts.site":      "accounts.site",
         "www.apps.accounts.site.blog": "accounts.site.blog",
+        "www.apps.accounts.adapters":  "accounts.adapters",
+        "www.apps.accounts.blocks":    "accounts.blocks",
+        "www.apps.accounts.emails":    "accounts.emails",
+        "www.apps.accounts.tokens":    "accounts.tokens",
+        "www.apps.accounts.renderers": "accounts.renderers",
     }
     for alias, target in alias_map.items():
         if alias in sys.modules:

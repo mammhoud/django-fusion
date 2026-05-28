@@ -50,10 +50,24 @@ def _import_blog_handlers():
 
     # Import the blog module directly
     import importlib.util
-    import os
-    blog_path = os.path.join(
-        os.path.dirname(__file__), "..", "..", "handlers", "site", "blog.py"
-    )
+    from pathlib import Path
+
+    # Find the correct handler path - check multiple locations
+    possible_paths = [
+        Path(__file__).parent.parent.parent / "ctc-research.com" / "www" / "core" / "handlers" / "site" / "blog.py",
+        Path(__file__).parent.parent.parent / "structa.cloud" / "www" / "core" / "handlers" / "site" / "blog.py",
+    ]
+
+    blog_path = None
+    for path in possible_paths:
+        if path.exists():
+            blog_path = str(path)
+            break
+
+    if blog_path is None:
+        # Handler not found - skip this import
+        return None
+
     spec = importlib.util.spec_from_file_location("apps.accounts.site.blog", blog_path)
     module = importlib.util.module_from_spec(spec)
     sys.modules["apps.accounts.site.blog"] = module

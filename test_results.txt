@@ -1,0 +1,1684 @@
+============================= test session starts ==============================
+collecting ... collected 893 items / 71 errors
+
+==================================== ERRORS ====================================
+_ ERROR collecting tests/apps/accounts/registration/test_property_allauth_token_roundtrip.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_allauth_token_roundtrip.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_allauth_token_roundtrip.py:12: in <module>
+    from www.apps.accounts.registration.tokens import RegistrationTokenGenerator
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_config_validation.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_config_validation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_config_validation.py:29: in <module>
+    from www.apps.accounts.management.commands.validate_config import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.management'
+_ ERROR collecting tests/apps/accounts/registration/test_property_email_failover.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_email_failover.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_email_failover.py:66: in <module>
+    from www.apps.accounts.registration.emails import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_group_assignment.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/apps/accounts/registration/test_property_htmx_headers.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_htmx_headers.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_htmx_headers.py:97: in <module>
+    from www.apps.accounts.registration.views import trigger_notification  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_hx_trigger_validity.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_hx_trigger_validity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_hx_trigger_validity.py:87: in <module>
+    from www.apps.accounts.registration.views import trigger_notification  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_password_complexity.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_password_complexity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_password_complexity.py:68: in <module>
+    from www.apps.accounts.registration.forms import PasswordCreationForm  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_profile_failure_isolation.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/apps/accounts/registration/test_property_profile_idempotency.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/apps/accounts/registration/test_property_rate_limiting.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_rate_limiting.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_rate_limiting.py:105: in <module>
+    from www.apps.accounts.registration.views import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_token_expiration.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_token_expiration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_token_expiration.py:60: in <module>
+    from www.apps.accounts.registration.tokens import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_token_single_use.py _
+ImportError while importing test module '/root/site/websites/tests/apps/accounts/registration/test_property_token_single_use.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_token_single_use.py:63: in <module>
+    from www.apps.accounts.registration.tokens import RegistrationTokenGenerator  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/accounts/registration/test_property_transaction_rollback.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+____________ ERROR collecting tests/apps/blog/test_handlers_blog.py ____________
+E   FileNotFoundError: [Errno 2] No such file or directory: '/root/site/websites/tests/apps/blog/../../handlers/site/blog.py'
+_____________ ERROR collecting tests/apps/blog/test_properties.py ______________
+ImportError while importing test module '/root/site/websites/tests/apps/blog/test_properties.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/blog/test_properties.py:14: in <module>
+    from www.apps.blog.services import PostFilterService, TagService
+E   ImportError: cannot import name 'PostFilterService' from 'www.apps.blog.services' (unknown location)
+______________ ERROR collecting tests/apps/blog/test_services.py _______________
+ImportError while importing test module '/root/site/websites/tests/apps/blog/test_services.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/blog/test_services.py:7: in <module>
+    from www.apps.blog.services import PostFilterService, TagService
+E   ImportError: cannot import name 'PostFilterService' from 'www.apps.blog.services' (unknown location)
+_ ERROR collecting tests/apps/handlers/registration/test_property_allauth_htmx_routing.py _
+import file mismatch:
+imported module 'registration.test_property_allauth_htmx_routing' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_allauth_htmx_routing.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_allauth_htmx_routing.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_allauth_hx_trigger.py _
+import file mismatch:
+imported module 'registration.test_property_allauth_hx_trigger' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_allauth_hx_trigger.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_allauth_hx_trigger.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_allauth_token_roundtrip.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_allauth_token_roundtrip.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_allauth_token_roundtrip.py:12: in <module>
+    from www.apps.accounts.registration.tokens import RegistrationTokenGenerator
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_config_validation.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_config_validation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_config_validation.py:29: in <module>
+    from www.apps.accounts.management.commands.validate_config import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.management'
+_ ERROR collecting tests/apps/handlers/registration/test_property_confirmation_email.py _
+import file mismatch:
+imported module 'registration.test_property_confirmation_email' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_confirmation_email.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_confirmation_email.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_email_failover.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_email_failover.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_email_failover.py:66: in <module>
+    from www.apps.accounts.registration.emails import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_email_template_resolution.py _
+import file mismatch:
+imported module 'registration.test_property_email_template_resolution' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_email_template_resolution.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_email_template_resolution.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_group_assignment.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/apps/handlers/registration/test_property_htmx_headers.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_htmx_headers.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_htmx_headers.py:97: in <module>
+    from www.apps.accounts.registration.views import trigger_notification  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_hx_trigger_validity.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_hx_trigger_validity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_hx_trigger_validity.py:87: in <module>
+    from www.apps.accounts.registration.views import trigger_notification  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_login_redirect.py _
+import file mismatch:
+imported module 'registration.test_property_login_redirect' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_login_redirect.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_login_redirect.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_password_complexity.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_password_complexity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_password_complexity.py:68: in <module>
+    from www.apps.accounts.registration.forms import PasswordCreationForm  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_profile_failure_isolation.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/apps/handlers/registration/test_property_profile_idempotency.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/apps/handlers/registration/test_property_pw_rate_limiting.py _
+import file mismatch:
+imported module 'registration.test_property_pw_rate_limiting' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_pw_rate_limiting.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_pw_rate_limiting.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_rate_limiting.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_rate_limiting.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_rate_limiting.py:105: in <module>
+    from www.apps.accounts.registration.views import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_redirect_behavior.py _
+import file mismatch:
+imported module 'registration.test_property_redirect_behavior' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_redirect_behavior.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_redirect_behavior.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_signin_success_email.py _
+import file mismatch:
+imported module 'registration.test_property_signin_success_email' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_signin_success_email.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_signin_success_email.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_single_active_snippet.py _
+import file mismatch:
+imported module 'registration.test_property_single_active_snippet' has this __file__ attribute:
+  /root/site/websites/tests/apps/accounts/registration/test_property_single_active_snippet.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/apps/handlers/registration/test_property_single_active_snippet.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/apps/handlers/registration/test_property_token_expiration.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_token_expiration.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_token_expiration.py:60: in <module>
+    from www.apps.accounts.registration.tokens import (  # noqa: E402
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_token_single_use.py _
+ImportError while importing test module '/root/site/websites/tests/apps/handlers/registration/test_property_token_single_use.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/apps/accounts/registration/test_property_token_single_use.py:63: in <module>
+    from www.apps.accounts.registration.tokens import RegistrationTokenGenerator  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+E   ModuleNotFoundError: No module named 'www.apps.accounts.registration'
+_ ERROR collecting tests/apps/handlers/registration/test_property_transaction_rollback.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+____________________ ERROR collecting tests/ci/test_cart.py ____________________
+E   RuntimeError: Model class www.apps.lms.models.certificate.Certificate doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+______________ ERROR collecting tests/ci/test_email_templates.py _______________
+ImportError while importing test module '/root/site/websites/tests/ci/test_email_templates.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/ci/test_email_templates.py:21: in <module>
+    from www.apps.accounts.services.email.service import EmailService
+E   ModuleNotFoundError: No module named 'www.apps.accounts.services'
+______________ ERROR collecting tests/ci/test_group_management.py ______________
+ImportError while importing test module '/root/site/websites/tests/ci/test_group_management.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/ci/test_group_management.py:9: in <module>
+    from www.core.CI.models.group import GroupContentAccess, RoleEmailMapping, WagtailGroupRole
+E   ModuleNotFoundError: No module named 'www.core.CI'
+________________ ERROR collecting tests/ci/test_group_models.py ________________
+ImportError while importing test module '/root/site/websites/tests/ci/test_group_models.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/ci/test_group_models.py:10: in <module>
+    from www.core.CI.models.group import (
+E   ModuleNotFoundError: No module named 'www.core.CI'
+____________ ERROR collecting tests/ci/test_template_validation.py _____________
+ImportError while importing test module '/root/site/websites/tests/ci/test_template_validation.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/ci/test_template_validation.py:14: in <module>
+    from www.core.CI.utils import (
+E   ModuleNotFoundError: No module named 'www.core.CI'
+_____________ ERROR collecting tests/selenium/test_ctc_selenium.py _____________
+ImportError while importing test module '/root/site/websites/tests/selenium/test_ctc_selenium.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium/test_ctc_selenium.py:10: in <module>
+    from selenium.common.exceptions import NoSuchElementException, TimeoutException
+E   ModuleNotFoundError: No module named 'selenium.common'
+_________ ERROR collecting tests/selenium-detailed/test_admin_flows.py _________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_admin_flows.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_admin_flows.py:11: in <module>
+    from selenium.common.exceptions import NoSuchElementException, TimeoutException
+E   ModuleNotFoundError: No module named 'selenium.common'
+__________ ERROR collecting tests/selenium-detailed/test_all_pages.py __________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_all_pages.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_all_pages.py:5: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+___________ ERROR collecting tests/selenium-detailed/test_assets.py ____________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_assets.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_assets.py:4: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+_________ ERROR collecting tests/selenium-detailed/test_auth_pages.py __________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_auth_pages.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_auth_pages.py:4: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+_________ ERROR collecting tests/selenium-detailed/test_error_pages.py _________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_error_pages.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_error_pages.py:4: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+__________ ERROR collecting tests/selenium-detailed/test_homepage.py ___________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_homepage.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_homepage.py:4: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+_________ ERROR collecting tests/selenium-detailed/test_invite_flow.py _________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_invite_flow.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_invite_flow.py:4: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+_________ ERROR collecting tests/selenium-detailed/test_login_flow.py __________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_login_flow.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_login_flow.py:5: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+________ ERROR collecting tests/selenium-detailed/test_notifications.py ________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_notifications.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_notifications.py:4: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+________ ERROR collecting tests/selenium-detailed/test_profile_pages.py ________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_profile_pages.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_profile_pages.py:5: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+________ ERROR collecting tests/selenium-detailed/test_register_flow.py ________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_register_flow.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_register_flow.py:5: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+________ ERROR collecting tests/selenium-detailed/test_translations.py _________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_translations.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_translations.py:5: in <module>
+    from selenium.webdriver.common.by import By
+E   ModuleNotFoundError: No module named 'selenium.webdriver'
+_________ ERROR collecting tests/selenium-detailed/test_user_flows.py __________
+ImportError while importing test module '/root/site/websites/tests/selenium-detailed/test_user_flows.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/selenium-detailed/test_user_flows.py:10: in <module>
+    from selenium.common.exceptions import NoSuchElementException, TimeoutException
+E   ModuleNotFoundError: No module named 'selenium.common'
+__________________ ERROR collecting tests/test_domain_urls.py __________________
+import file mismatch:
+imported module 'test_domain_urls' has this __file__ attribute:
+  /root/site/websites/tests/scripts/test_domain_urls.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/test_domain_urls.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_______________ ERROR collecting tests/test_production_simple.py _______________
+import file mismatch:
+imported module 'test_production_simple' has this __file__ attribute:
+  /root/site/websites/tests/scripts/test_production_simple.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/test_production_simple.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_____________________ ERROR collecting tests/test_sites.py _____________________
+import file mismatch:
+imported module 'test_sites' has this __file__ attribute:
+  /root/site/websites/tests/http/test_sites.py
+which is not the same as the test file we want to collect:
+  /root/site/websites/tests/test_sites.py
+HINT: remove __pycache__ / .pyc files and/or use a unique basename for your test file modules
+_ ERROR collecting tests/unit/accounts/registration/test_property_group_assignment.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/unit/accounts/registration/test_property_htmx_headers.py _
+ImportError while importing test module '/root/site/websites/tests/unit/accounts/registration/test_property_htmx_headers.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/unit/accounts/registration/test_property_htmx_headers.py:97: in <module>
+    from plugins.accounts.views.registration import trigger_notification  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+structa.cloud/plugins/accounts/views/__init__.py:3: in <module>
+    from .registration import (  # noqa: F401
+structa.cloud/plugins/accounts/views/registration.py:26: in <module>
+    from .emails import send_registration_email
+E   ModuleNotFoundError: No module named 'plugins.accounts.views.emails'
+_ ERROR collecting tests/unit/accounts/registration/test_property_hx_trigger_validity.py _
+ImportError while importing test module '/root/site/websites/tests/unit/accounts/registration/test_property_hx_trigger_validity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/unit/accounts/registration/test_property_hx_trigger_validity.py:87: in <module>
+    from plugins.accounts.views.registration import trigger_notification  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+structa.cloud/plugins/accounts/views/__init__.py:3: in <module>
+    from .registration import (  # noqa: F401
+structa.cloud/plugins/accounts/views/registration.py:26: in <module>
+    from .emails import send_registration_email
+E   ModuleNotFoundError: No module named 'plugins.accounts.views.emails'
+_ ERROR collecting tests/unit/accounts/registration/test_property_password_complexity.py _
+ImportError while importing test module '/root/site/websites/tests/unit/accounts/registration/test_property_password_complexity.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/unit/accounts/registration/test_property_password_complexity.py:68: in <module>
+    from plugins.accounts.forms import PasswordCreationForm  # noqa: E402
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+structa.cloud/plugins/accounts/forms/__init__.py:1: in <module>
+    from .account import *
+structa.cloud/plugins/accounts/forms/account.py:5: in <module>
+    from django_rseal.workflows.pipelines.models import Person
+E   ModuleNotFoundError: No module named 'django_rseal.workflows.pipelines'
+_ ERROR collecting tests/unit/accounts/registration/test_property_profile_failure_isolation.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/unit/accounts/registration/test_property_profile_idempotency.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_ ERROR collecting tests/unit/accounts/registration/test_property_rate_limiting.py _
+ImportError while importing test module '/root/site/websites/tests/unit/accounts/registration/test_property_rate_limiting.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/unit/accounts/registration/test_property_rate_limiting.py:105: in <module>
+    from plugins.accounts.views import (  # noqa: E402
+structa.cloud/plugins/accounts/views/__init__.py:3: in <module>
+    from .registration import (  # noqa: F401
+structa.cloud/plugins/accounts/views/registration.py:26: in <module>
+    from .emails import send_registration_email
+E   ModuleNotFoundError: No module named 'plugins.accounts.views.emails'
+_ ERROR collecting tests/unit/accounts/registration/test_property_transaction_rollback.py _
+E   RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+_____________ ERROR collecting tests/unit/blog/test_properties.py ______________
+ImportError while importing test module '/root/site/websites/tests/unit/blog/test_properties.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/unit/blog/test_properties.py:14: in <module>
+    from www.apps.blog.services import PostFilterService, TagService
+E   ImportError: cannot import name 'PostFilterService' from 'www.apps.blog.services' (unknown location)
+______________ ERROR collecting tests/unit/blog/test_services.py _______________
+ImportError while importing test module '/root/site/websites/tests/unit/blog/test_services.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+.venv/lib/python3.11/site-packages/_pytest/python.py:507: in importtestmodule
+    mod = import_path(
+.venv/lib/python3.11/site-packages/_pytest/pathlib.py:587: in import_path
+    importlib.import_module(module_name)
+/root/.local/share/uv/python/cpython-3.11-linux-x86_64-gnu/lib/python3.11/importlib/__init__.py:126: in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+<frozen importlib._bootstrap>:1204: in _gcd_import
+    ???
+<frozen importlib._bootstrap>:1176: in _find_and_load
+    ???
+<frozen importlib._bootstrap>:1147: in _find_and_load_unlocked
+    ???
+<frozen importlib._bootstrap>:690: in _load_unlocked
+    ???
+.venv/lib/python3.11/site-packages/_pytest/assertion/rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests/unit/blog/test_services.py:7: in <module>
+    from www.apps.blog.services import PostFilterService, TagService
+E   ImportError: cannot import name 'PostFilterService' from 'www.apps.blog.services' (unknown location)
+______________ ERROR collecting tests/unit/test_app_structure.py _______________
+E   TypeError: 'PosixPath' object is not subscriptable
+
+The above exception was the direct cause of the following exception:
+E   ValueError: tests/unit/test_app_structure.py::test_no_cross_site_branding_in_templates: error raised while trying to determine id of parameter 'site_root' at position 0
+=============================== warnings summary ===============================
+tests/selenium-detailed/test_auth.py:6
+  /root/site/websites/tests/selenium-detailed/test_auth.py:6: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_auth.py:7
+  /root/site/websites/tests/selenium-detailed/test_auth.py:7: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_auth.py:13
+  /root/site/websites/tests/selenium-detailed/test_auth.py:13: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_auth.py:14
+  /root/site/websites/tests/selenium-detailed/test_auth.py:14: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_auth.py:22
+  /root/site/websites/tests/selenium-detailed/test_auth.py:22: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_auth.py:23
+  /root/site/websites/tests/selenium-detailed/test_auth.py:23: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:41
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:41: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:42
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:42: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:54
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:54: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:55
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:55: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:68
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:68: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:69
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:69: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:82
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:82: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:83
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:83: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:102
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:102: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:103
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:103: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:120
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:120: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:121
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:121: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:133
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:133: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:134
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:134: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:150
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:150: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:151
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:151: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:177
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:177: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:178
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:178: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_detail.py:200
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:200: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_detail.py:201
+  /root/site/websites/tests/selenium-detailed/test_blog_detail.py:201: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:19
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:19: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:20
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:20: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:29
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:29: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:30
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:40
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:40: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:41
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:41: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:52
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:52: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:53
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:53: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:62
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:62: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:63
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:63: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:72
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:72: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:73
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:73: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:86
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:86: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:87
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:87: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:96
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:96: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:97
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:97: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:110
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:110: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:111
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:111: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:147
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:147: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:148
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:148: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_index.py:173
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:173: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_index.py:174
+  /root/site/websites/tests/selenium-detailed/test_blog_index.py:174: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:21
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:21: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:22
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:22: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:33
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:33: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:34
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:34: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:45
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:45: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:46
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:46: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:57
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:57: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:58
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:58: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:73
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:73: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:74
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:74: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:86
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:86: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:87
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:87: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:99
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:99: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:100
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:100: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_blog_profile.py:114
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:114: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_blog_profile.py:115
+  /root/site/websites/tests/selenium-detailed/test_blog_profile.py:115: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:19
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:19: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:20
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:20: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:29
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:29: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:30
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:30: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:39
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:39: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:40
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:40: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:49
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:49: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:50
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:50: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:63
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:63: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:64
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:64: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:77
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:77: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:78
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:78: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:98
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:98: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:99
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:99: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:108
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:108: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:109
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:109: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:136
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:136: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:137
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:137: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_courses_search.py:164
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:164: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_courses_search.py:165
+  /root/site/websites/tests/selenium-detailed/test_courses_search.py:165: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:35
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:35: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:36
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:36: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:45
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:45: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:46
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:46: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:58
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:58: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:59
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:59: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:76
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:76: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:77
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:77: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:94
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:94: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:95
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:95: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:107
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:107: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:108
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:108: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:138
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:138: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:139
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:139: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/selenium-detailed/test_services_page.py:165
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:165: PytestUnknownMarkWarning: Unknown pytest.mark.selenium - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.selenium
+
+tests/selenium-detailed/test_services_page.py:166
+  /root/site/websites/tests/selenium-detailed/test_services_page.py:166: PytestUnknownMarkWarning: Unknown pytest.mark.nondestructive - is this a typo?  You can register custom marks to avoid this warning - for details, see https://docs.pytest.org/en/stable/how-to/mark.html
+    @pytest.mark.nondestructive
+
+tests/unit/blog/test_handlers_blog.py:78
+  /root/site/websites/tests/unit/blog/test_handlers_blog.py:78: UserWarning: test_handlers_blog: could not import blog handlers: cannot import name 'NotificationMixin' from 'django_osoul.comp.site' (unknown location)
+    warnings.warn(f"test_handlers_blog: could not import blog handlers: {_e}")
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ============================
+ERROR tests/apps/accounts/registration/test_property_allauth_token_roundtrip.py
+ERROR tests/apps/accounts/registration/test_property_config_validation.py
+ERROR tests/apps/accounts/registration/test_property_email_failover.py
+ERROR tests/apps/accounts/registration/test_property_group_assignment.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/accounts/registration/test_property_htmx_headers.py
+ERROR tests/apps/accounts/registration/test_property_hx_trigger_validity.py
+ERROR tests/apps/accounts/registration/test_property_password_complexity.py
+ERROR tests/apps/accounts/registration/test_property_profile_failure_isolation.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/accounts/registration/test_property_profile_idempotency.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/accounts/registration/test_property_rate_limiting.py
+ERROR tests/apps/accounts/registration/test_property_token_expiration.py
+ERROR tests/apps/accounts/registration/test_property_token_single_use.py
+ERROR tests/apps/accounts/registration/test_property_transaction_rollback.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/blog/test_handlers_blog.py - FileNotFoundError: [Errno 2] No such file or directory: '/root/site/websites/tests/apps/blog/../../handlers/site/blog.py'
+ERROR tests/apps/blog/test_properties.py
+ERROR tests/apps/blog/test_services.py
+ERROR tests/apps/handlers/registration/test_property_allauth_htmx_routing.py
+ERROR tests/apps/handlers/registration/test_property_allauth_hx_trigger.py
+ERROR tests/apps/handlers/registration/test_property_allauth_token_roundtrip.py
+ERROR tests/apps/handlers/registration/test_property_config_validation.py
+ERROR tests/apps/handlers/registration/test_property_confirmation_email.py
+ERROR tests/apps/handlers/registration/test_property_email_failover.py
+ERROR tests/apps/handlers/registration/test_property_email_template_resolution.py
+ERROR tests/apps/handlers/registration/test_property_group_assignment.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/handlers/registration/test_property_htmx_headers.py
+ERROR tests/apps/handlers/registration/test_property_hx_trigger_validity.py
+ERROR tests/apps/handlers/registration/test_property_login_redirect.py
+ERROR tests/apps/handlers/registration/test_property_password_complexity.py
+ERROR tests/apps/handlers/registration/test_property_profile_failure_isolation.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/handlers/registration/test_property_profile_idempotency.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/apps/handlers/registration/test_property_pw_rate_limiting.py
+ERROR tests/apps/handlers/registration/test_property_rate_limiting.py
+ERROR tests/apps/handlers/registration/test_property_redirect_behavior.py
+ERROR tests/apps/handlers/registration/test_property_signin_success_email.py
+ERROR tests/apps/handlers/registration/test_property_single_active_snippet.py
+ERROR tests/apps/handlers/registration/test_property_token_expiration.py
+ERROR tests/apps/handlers/registration/test_property_token_single_use.py
+ERROR tests/apps/handlers/registration/test_property_transaction_rollback.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/ci/test_cart.py - RuntimeError: Model class www.apps.lms.models.certificate.Certificate doesn't declare an explicit app_label and isn't in an application in INSTALLED_APPS.
+ERROR tests/ci/test_email_templates.py
+ERROR tests/ci/test_group_management.py
+ERROR tests/ci/test_group_models.py
+ERROR tests/ci/test_template_validation.py
+ERROR tests/selenium/test_ctc_selenium.py
+ERROR tests/selenium-detailed/test_admin_flows.py
+ERROR tests/selenium-detailed/test_all_pages.py
+ERROR tests/selenium-detailed/test_assets.py
+ERROR tests/selenium-detailed/test_auth_pages.py
+ERROR tests/selenium-detailed/test_error_pages.py
+ERROR tests/selenium-detailed/test_homepage.py
+ERROR tests/selenium-detailed/test_invite_flow.py
+ERROR tests/selenium-detailed/test_login_flow.py
+ERROR tests/selenium-detailed/test_notifications.py
+ERROR tests/selenium-detailed/test_profile_pages.py
+ERROR tests/selenium-detailed/test_register_flow.py
+ERROR tests/selenium-detailed/test_translations.py
+ERROR tests/selenium-detailed/test_user_flows.py
+ERROR tests/test_domain_urls.py
+ERROR tests/test_production_simple.py
+ERROR tests/test_sites.py
+ERROR tests/unit/accounts/registration/test_property_group_assignment.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/unit/accounts/registration/test_property_htmx_headers.py
+ERROR tests/unit/accounts/registration/test_property_hx_trigger_validity.py
+ERROR tests/unit/accounts/registration/test_property_password_complexity.py
+ERROR tests/unit/accounts/registration/test_property_profile_failure_isolation.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/unit/accounts/registration/test_property_profile_idempotency.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/unit/accounts/registration/test_property_rate_limiting.py
+ERROR tests/unit/accounts/registration/test_property_transaction_rollback.py - RuntimeError: Database access not allowed, use the "django_db" mark, or the "db" or "transactional_db" fixtures to enable it.
+ERROR tests/unit/blog/test_properties.py
+ERROR tests/unit/blog/test_services.py
+ERROR tests/unit/test_app_structure.py - ValueError: tests/unit/test_app_structure.py::test_no_cross_site_branding_in_templates: error raised while trying to determine id of parameter 'site_root' at position 0
+!!!!!!!!!!!!!!!!!!! Interrupted: 71 errors during collection !!!!!!!!!!!!!!!!!!!
+======================= 101 warnings, 71 errors in 6.44s =======================
