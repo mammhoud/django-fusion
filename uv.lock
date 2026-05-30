@@ -8,8 +8,36 @@ resolution-markers = [
 
 [manifest]
 members = [
+    "alliance",
     "core",
     "websites-workspace",
+]
+
+[[package]]
+name = "alliance"
+version = "1.0.3"
+source = { editable = "ctc-research.com" }
+dependencies = [
+    { name = "bumpver" },
+    { name = "django-stubs" },
+    { name = "dynaconf", extra = ["vault"] },
+    { name = "hypothesis" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "pytest" },
+    { name = "pytest-django" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "bumpver" },
+    { name = "django-stubs" },
+    { name = "dynaconf", extras = ["vault"] },
+    { name = "hypothesis" },
+    { name = "pydantic" },
+    { name = "pydantic-settings" },
+    { name = "pytest" },
+    { name = "pytest-django" },
 ]
 
 [[package]]

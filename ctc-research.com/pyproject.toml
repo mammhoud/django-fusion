@@ -5,14 +5,19 @@ description = "CTC Research — LMS & Blog Platform"
 requires-python = ">=3.11"
 # Site-specific extras on top of workspace shared deps (websites/pyproject.toml).
 dependencies = [
-    "bumpver",
-    "django-stubs",
-    "dynaconf[vault]",
-    "pydantic",
-    "pydantic-settings",
-    "hypothesis",
-    "pytest",
-    "pytest-django",
+    # Core framework
+    "django>=4.2",
+    "uvicorn", "gunicorn", "watchfiles",
+    "jinja2",
+    # Config & env
+    "dynaconf[vault]", "django-environ", "environ",
+    "pydantic", "pydantic-settings",
+    # Database
+    "psycopg", "psycopg-binary",
+    # Development tools
+    "bumpver", "django-stubs", "hypothesis", "pytest", "pytest-django",
+    # Internal libs
+    "django-grep", "django-osoul", "django-rseal",
 ]
 
 # Inherit GitHub sources from workspace root.

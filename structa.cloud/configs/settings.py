@@ -10,4 +10,3 @@ from configs.settings import *  # noqa: E402,F401
 ROOT_URLCONF = "www.core.urls"
 WSGI_APPLICATION = "www.wsgi.application"
 ASGI_APPLICATION = "www.asgi.application"
-

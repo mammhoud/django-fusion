@@ -48,7 +48,7 @@ dependencies = [
 ]
 
 [tool.uv.workspace]
-members = ["structa.cloud"]
+members = ["structa.cloud", "ctc-research.com"]
 
 # GitHub sources for internal libs — used by all workspace members.
 # Pin to the 'generic' branch; uv resolves the exact commit at sync time.

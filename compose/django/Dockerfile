@@ -59,7 +59,8 @@ RUN if [ -f uv.lock ]; then \
 #     which is missing from the distribution. Create a
 #     stub so the package initialises without error.
 # -----------------------------------------------------
-RUN COMM_DIR="/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
+RUN mkdir -p "/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
+    COMM_DIR="/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
     if [ ! -f "${COMM_DIR}/invitation_service.py" ]; then \
         printf '# stub – missing from installed distribution\nclass InvitationService:\n    pass\n' \
             > "${COMM_DIR}/invitation_service.py"; \
@@ -85,8 +86,8 @@ COPY websites/configs/ ${APP_HOME}/configs/
 # via `--site` or `DJANGO_SITE` env var. This ensures runtime switching.
 COPY websites/manage.py ${APP_HOME}/manage.py
 
-# Copy shared core package so `import core` works at runtime
-COPY websites/core/ ${APP_HOME}/core/
+# Note: shared core package is within each website's www/ directory
+# Each website has its own www/core/ package for app-specific core functionality
 
 # -----------------------------------------------------
 # 4b. Frontend assets are now mounted via volume (faster builds)
