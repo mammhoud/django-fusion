@@ -12,7 +12,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from configs.site import active_site_dir, active_website_name
+from configs.site import active_site_dir, active_website_name, site_config, site_dir_for, site_security_defaults
 
 try:
     from dynaconf import Dynaconf
@@ -113,9 +113,21 @@ class MainSettings(BaseSettings):
         # Convert string booleans from environment BEFORE Pydantic validation
         self._convert_env_booleans()
 
-        # Detect runtime environment
+        # Detect runtime environment and seed site-derived defaults before Pydantic validation.
         self._detect_runtime_environment(kwargs)
+        selected_site = kwargs.get("WEBSITE_NAME") or active_website_name()
+        selected_site_config = site_config(str(selected_site))
+        kwargs.setdefault("WEBSITE_NAME", selected_site_config["name"])
+        kwargs.setdefault("WEBSITE_DIR", str(site_dir_for(str(selected_site_config["name"]))))
+        kwargs.setdefault("SITE_DOMAIN", selected_site_config.get("domain", selected_site_config["name"]))
+        kwargs.setdefault("DOMAIN_NAME", selected_site_config.get("domain", selected_site_config["name"]))
+        kwargs.setdefault("MODULE", selected_site_config.get("module", "CMS"))
+        kwargs.setdefault("PORT", selected_site_config.get("port", 5080))
+        kwargs.setdefault("SSL_ENABLED", selected_site_config.get("ssl_enabled", False))
         super().__init__(**kwargs)
+        object.__setattr__(self, "site_settings", site_config(self.WEBSITE_NAME))
+        object.__setattr__(self, "site_security", site_security_defaults(self.WEBSITE_NAME))
+        object.__setattr__(self, "_section_cache", {})
 
         # Initialize Dynaconf
         self._init_dynaconf()
@@ -289,37 +301,82 @@ class MainSettings(BaseSettings):
     # ==================== DYNAMIC ATTRIBUTE METHODS ====================
 
     def __getattr__(self, name: str) -> Any:
-        """
-        Get dynamic attribute from Dynaconf.
-        This allows settings.SOME_SETTING to work even if not defined in class.
-        """
-        # Check Dynaconf
-        if self.dynaconf_settings and hasattr(self.dynaconf_settings, name):
-            return getattr(self.dynaconf_settings, name)
+        """Resolve dynamic attributes from YAML/Dynaconf and site mappings."""
+        if name.startswith("__"):
+            raise AttributeError(name)
+        value = self._get_dynamic_value(name, _MISSING)
+        if value is _MISSING:
+            raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+        return self._cast_value(value, None)
 
-        # Check if it's a nested setting with dot notation
-        if self.dynaconf_settings and "." in name:
-            parts = name.split(".")
-            current = self.dynaconf_settings
-            for part in parts:
-                if hasattr(current, part):
-                    current = getattr(current, part)
-                else:
-                    raise AttributeError(
-                        f"'{self.__class__.__name__}' object has no attribute '{name}'"
-                    )
-            return current
-
-        raise AttributeError(f"'{self.__class__.__name__}' object has no attribute '{name}'")
+    def _get_dynamic_value(self, key: str, default: Any = None) -> Any:
+        """Return a dynamic value without raising optional dependency errors."""
+        if key == "SITE":
+            return dict(getattr(self, "site_settings", {}))
+        if key == "SECURITY":
+            return self.section("SECURITY")
+        if "." in key:
+            block, _, nested = key.partition(".")
+            section_value = self.section(block, {})
+            if section_value:
+                return self._get_nested_value(section_value, nested, default)
+        return self._get_dynaconf_value(key, default)
 
     # ==================== GET METHODS ====================
 
     def section(self, name: str, default: Optional[dict[str, Any]] = None) -> dict[str, Any]:
-        """Return a YAML/Dynaconf configuration section as a plain dict."""
-        value = self.get(name, default or {})
-        if isinstance(value, Mapping):
-            return dict(value)
-        return default or {}
+        """Return a YAML/Dynaconf/site configuration section as a plain dict."""
+        cache = getattr(self, "_section_cache", {})
+        section_name = name.upper()
+        if section_name in cache:
+            return dict(cache[section_name])
+
+        if section_name in {"SITE", "WEBSITE"}:
+            value = dict(getattr(self, "site_settings", {}))
+        else:
+            raw_value = self._get_dynaconf_value(section_name, _MISSING)
+            value = dict(raw_value) if isinstance(raw_value, Mapping) else dict(default or {})
+
+        if section_name == "SECURITY":
+            value = self._deep_merge(value, getattr(self, "site_security", {}))
+
+        cache[section_name] = value
+        object.__setattr__(self, "_section_cache", cache)
+        return dict(value)
+
+    def config_map(
+        self,
+        keys: Sequence[str],
+        *,
+        block: Optional[str] = None,
+        defaults: Optional[Mapping[str, Any]] = None,
+        casts: Optional[Mapping[str, type]] = None,
+    ) -> dict[str, Any]:
+        """Map a list of setting keys from YAML/env into a Python dict."""
+        defaults = defaults or {}
+        casts = casts or {}
+        return {
+            key: self.get(key, defaults.get(key), cast=casts.get(key), block=block)
+            for key in keys
+        }
+
+    def setting_map(self, mapping: Mapping[str, Any], *, block: Optional[str] = None) -> dict[str, Any]:
+        """Map Django setting names to config keys with optional defaults/casts.
+
+        Values may be ``"CONFIG_KEY"`` or ``("CONFIG_KEY", default[, cast])``.
+        """
+        resolved: dict[str, Any] = {}
+        for setting_name, spec in mapping.items():
+            if isinstance(spec, tuple):
+                config_key = spec[0]
+                default = spec[1] if len(spec) > 1 else None
+                cast = spec[2] if len(spec) > 2 else None
+            else:
+                config_key = spec
+                default = None
+                cast = None
+            resolved[setting_name] = self.get(config_key, default, cast=cast, block=block)
+        return resolved
 
     def get(
         self,
@@ -346,9 +403,12 @@ class MainSettings(BaseSettings):
         if value is _MISSING:
             value = self._get_env_value(key)
         if value is _MISSING and block:
-            value = self._get_from_mapping(self.section(block), key, _MISSING)
+            value = self._get_nested_value(self.section(block), key, _MISSING)
+        if value is _MISSING and "." in key:
+            block_name, _, nested_key = key.partition(".")
+            value = self._get_nested_value(self.section(block_name), nested_key, _MISSING)
         if value is _MISSING:
-            value = self._get_dynaconf_value(key, _MISSING)
+            value = self._get_dynamic_value(key, _MISSING)
         if value is _MISSING and key in self.model_fields:
             value = getattr(self, key, _MISSING)
         if value is _MISSING:
@@ -390,6 +450,11 @@ class MainSettings(BaseSettings):
 
     def _cast_value(self, value: Any, cast: Optional[type], default: Any = None) -> Any:
         """Cast a resolved setting to the requested Python type."""
+        if isinstance(value, str) and value.startswith("@env "):
+            parts = value.split(maxsplit=2)
+            env_name = parts[1] if len(parts) > 1 else ""
+            fallback = parts[2] if len(parts) > 2 else default
+            value = os.environ.get(env_name, fallback)
         if cast is None or value is None:
             return value
         try:
@@ -445,16 +510,22 @@ class MainSettings(BaseSettings):
         """Read a top-level or dotted key from the Dynaconf settings object."""
         if not self.dynaconf_settings:
             return default
-        if "." in key:
-            current = self.dynaconf_settings
-            for part in key.split("."):
-                current = self._get_from_mapping(current, part, _MISSING)
-                if current is _MISSING:
-                    return default
-            return current
-        if hasattr(self.dynaconf_settings, key):
-            return getattr(self.dynaconf_settings, key)
-        return self.dynaconf_settings.get(key, default)
+        try:
+            if "." in key:
+                current = self.dynaconf_settings
+                for part in key.split("."):
+                    current = self._get_from_mapping(current, part, _MISSING)
+                    if current is _MISSING:
+                        return default
+                return current
+            if hasattr(self.dynaconf_settings, key):
+                return getattr(self.dynaconf_settings, key)
+            return self.dynaconf_settings.get(key, default)
+        except ImportError:
+            # Dynaconf lazy values such as @jinja require optional extras. Keep
+            # Django bootable with explicit fallbacks when those extras are not
+            # installed in a local validation environment.
+            return default
 
     @staticmethod
     def _get_from_mapping(source: Any, key: str, default: Any = None) -> Any:
@@ -466,6 +537,27 @@ class MainSettings(BaseSettings):
         if hasattr(source, "get"):
             return source.get(key, default)
         return default
+
+    @classmethod
+    def _get_nested_value(cls, source: Any, dotted_key: str, default: Any = None) -> Any:
+        """Read a dotted key from nested mappings/objects."""
+        current = source
+        for part in dotted_key.split("."):
+            current = cls._get_from_mapping(current, part, _MISSING)
+            if current is _MISSING:
+                return default
+        return current
+
+    @classmethod
+    def _deep_merge(cls, base: Mapping[str, Any], override: Mapping[str, Any]) -> dict[str, Any]:
+        """Return a recursive merge of two mappings."""
+        merged = dict(base)
+        for key, value in override.items():
+            if isinstance(value, Mapping) and isinstance(merged.get(key), Mapping):
+                merged[key] = cls._deep_merge(merged[key], value)
+            else:
+                merged[key] = value
+        return merged
 
     # ==================== PROPERTIES ====================
 

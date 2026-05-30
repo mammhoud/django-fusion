@@ -1,0 +1,10 @@
+[
+  {
+    "model": "sites.site",
+    "pk": 101,
+    "fields": {
+      "domain": "structa.cloud",
+      "name": "structa.cloud dummy site"
+    }
+  }
+]

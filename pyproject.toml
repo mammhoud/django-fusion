@@ -24,7 +24,7 @@ dependencies = [
     # Payments
     "django-paypal", "stripe",
     # Cache & queue
-    "django-redis", "django-rq",
+    "django-redis", "django-rq", "celery[redis]",
     # Storage & media
     "django-storages[boto3]",
     # Config & env

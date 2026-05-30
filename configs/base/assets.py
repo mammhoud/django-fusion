@@ -1,41 +1,48 @@
 # ====================================
 # 🎨 Assets & Static Files Configuration
 # ====================================
-import os
-from pathlib import Path
-
 from ..settings.conf import settings
 from ..settings.conf import settings as tracker
 from .paths import BASE_DIR
 
-# ── Workspace root (websites/) ────────────────────────────────────────────────
-WORKSPACE_DIR = BASE_DIR.parent          # websites/
-SITE_NAME = BASE_DIR.name                # ctc-research.com or structa.cloud
+# ── Workspace and asset directories ─────────────────────────────────────────
+WORKSPACE_DIR = BASE_DIR.parent
+SITE_NAME = BASE_DIR.name
 
-# ── Per-site asset directories ────────────────────────────────────────────────
-ASSETS_DIR   = BASE_DIR / "assets"
-STATIC_DIR   = ASSETS_DIR / "static"
+# Shared repository-level assets. npm installs live here so every website uses
+# one dependency tree: ``assets/node_modules``.
+BASE_ASSETS_DIR = WORKSPACE_DIR / "assets"
+BASE_NODE_MODULES_DIR = BASE_ASSETS_DIR / "node_modules"
+SHARED_STATIC_DIR = BASE_ASSETS_DIR / "static"
+SHARED_BUNDLES_DIR = BASE_ASSETS_DIR / "bundles" / "shared"
+MEDIA_DIR = BASE_ASSETS_DIR / "media"
+LOCALE_DIRS = BASE_ASSETS_DIR / "locale"
+
+# Per-site assets and build outputs. Webpack writes selected website bundles to
+# ``<site>/assets/bundles/<site-name>`` so collectstatic can preserve a stable
+# URL namespace: ``/static/bundles/<site-name>/...``.
+ASSETS_DIR = BASE_DIR / "assets"
+STATIC_DIR = ASSETS_DIR / "static"
 FIXTURES_DIR = ASSETS_DIR / "fixtures"
-
-# ── Workspace-level shared directories ───────────────────────────────────────
-# In Docker, bundles are inside the app directory, not at workspace level
-import os
-
-if os.getenv('RUNNING_ENV') == 'docker':
-    BUNDLES_DIR = ASSETS_DIR / "bundles"           # /app/assets/bundles
-    SHARED_STATIC_DIR = BASE_DIR / "shared" / "assets" / "static"  # /app/shared/assets/static
-else:
-    BUNDLES_DIR = ASSETS_DIR / "bundles"  # compiled webpack output (site-local)
-    SHARED_STATIC_DIR = WORKSPACE_DIR / "assets" / "static"  # websites/assets/static
-
-STATICFILES_DIR  = ASSETS_DIR / "staticfiles"             # collectstatic output
-SITE_STATIC_DIR  = STATIC_DIR                              # per-site assets/static/ (styles only)
-MEDIA_DIR        = WORKSPACE_DIR / "assets" / "media"      # shared media
-LOCALE_DIRS      = WORKSPACE_DIR / "assets" / "locale"     # shared locale
+SITE_STATIC_DIR = STATIC_DIR
+SITE_BUNDLES_DIR = ASSETS_DIR / "bundles" / SITE_NAME
+BUNDLES_DIR = SITE_BUNDLES_DIR
+STATICFILES_DIR = ASSETS_DIR / "staticfiles"
 
 # Ensure directories exist
-for directory in [ASSETS_DIR, STATIC_DIR, BUNDLES_DIR, STATICFILES_DIR,
-                  FIXTURES_DIR, SHARED_STATIC_DIR, MEDIA_DIR, LOCALE_DIRS]:
+for directory in [
+    BASE_ASSETS_DIR,
+    BASE_NODE_MODULES_DIR,
+    SHARED_STATIC_DIR,
+    SHARED_BUNDLES_DIR,
+    ASSETS_DIR,
+    STATIC_DIR,
+    SITE_BUNDLES_DIR,
+    STATICFILES_DIR,
+    FIXTURES_DIR,
+    MEDIA_DIR,
+    LOCALE_DIRS,
+]:
     directory.mkdir(exist_ok=True, parents=True)
 
 # ── Media ─────────────────────────────────────────────────────────────────────
@@ -53,9 +60,10 @@ STATIC_ROOT = str(STATICFILES_DIR)
 STATIC_URL  = settings.get("STATIC_URL", "/static/")
 
 STATICFILES_DIRS = [
-    str(BUNDLES_DIR),        # compiled webpack bundles
-    str(SHARED_STATIC_DIR),  # shared assets (fonts, images, js, styles)
-    str(SITE_STATIC_DIR),    # per-site assets (site-specific styles)
+    (f"bundles/{SITE_NAME}", str(SITE_BUNDLES_DIR)),
+    ("bundles/shared", str(SHARED_BUNDLES_DIR)),
+    str(SHARED_STATIC_DIR),
+    (f"site/{SITE_NAME}", str(SITE_STATIC_DIR)),
 ]
 
 STATICFILES_FINDERS = settings.get("STATICFILES_FINDERS", [
@@ -64,7 +72,7 @@ STATICFILES_FINDERS = settings.get("STATICFILES_FINDERS", [
 ])
 
 # ── Webpack Loader ────────────────────────────────────────────────────────────
-_bundles_json = BUNDLES_DIR / "bundles.json"
+_bundles_json = SITE_BUNDLES_DIR / "bundles.json"
 
 WEBPACK_LOADER = {
     "DEFAULT": {

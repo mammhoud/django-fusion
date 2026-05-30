@@ -1,3 +1,4 @@
+import importlib.util
 import os  # Noqa
 from pathlib import Path  # Noqa
 
@@ -21,30 +22,33 @@ TEMPLATES_DIRS = [
 
 # ------------------------------------------------------------------------------
 
+_CONTEXT_PROCESSORS = [
+    "django.template.context_processors.debug",
+    "django.template.context_processors.request",
+    "django.contrib.auth.context_processors.auth",
+    "django.template.context_processors.i18n",
+    "django.template.context_processors.static",
+    "django.template.context_processors.tz",
+    "django.contrib.messages.context_processors.messages",
+]
+if importlib.util.find_spec("wagtail") is not None:
+    _CONTEXT_PROCESSORS.append("wagtail.contrib.settings.context_processors.settings")
+
+_TEMPLATE_BUILTINS = ["django.templatetags.static"]
+if importlib.util.find_spec("heroicons") is not None:
+    _TEMPLATE_BUILTINS.append("heroicons.templatetags.heroicons")
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
         "DIRS": TEMPLATES_DIRS,
         "APP_DIRS": True,  # Enable app template loading for Wagtail and other apps
         "OPTIONS": {
-            "context_processors": [
-                "django.template.context_processors.debug",
-                "django.template.context_processors.request",
-                "django.contrib.auth.context_processors.auth",
-                "django.template.context_processors.i18n",
-                "django.template.context_processors.static",
-                "django.template.context_processors.tz",
-                "django.contrib.messages.context_processors.messages",
-                "wagtail.contrib.settings.context_processors.settings",
-                # "core.processors.settings_context",
-            ],
+            "context_processors": _CONTEXT_PROCESSORS,
             "libraries": {
                 # Custom template tags can be added here
             },
-            "builtins": [
-                "django.templatetags.static",
-                "heroicons.templatetags.heroicons",
-            ],
+            "builtins": _TEMPLATE_BUILTINS,
         },
     },
 ]

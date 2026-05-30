@@ -16,3 +16,10 @@ test_db.sqlite3
 *.env
 secret.key.txt
 assets/media
+# Node / frontend build artifacts
+node_modules/
+assets/node_modules/
+*/node_modules/
+assets/bundles/
+*/assets/bundles/
+*/assets/staticfiles/

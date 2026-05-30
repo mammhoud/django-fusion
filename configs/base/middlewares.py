@@ -1,3 +1,5 @@
+import importlib
+
 
 
 # MIDDLEWARE
@@ -24,3 +26,17 @@ MIDDLEWARE = [
     # "django.contrib.auth.middleware.LoginRequiredMiddleware",
     # "core.middlewares.language.DefaultLanguageMiddleware",
 ]
+
+
+def _middleware_available(path: str) -> bool:
+    if path.startswith("django."):
+        return True
+    module_name, _, class_name = path.rpartition(".")
+    try:
+        module = importlib.import_module(module_name)
+    except Exception:
+        return False
+    return hasattr(module, class_name)
+
+
+MIDDLEWARE = [middleware for middleware in MIDDLEWARE if _middleware_available(middleware)]

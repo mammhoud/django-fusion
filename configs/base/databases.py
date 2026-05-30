@@ -23,17 +23,23 @@ except Exception:
     db_conf = None
 
 if db_conf:
+    def _db_get(key, default=None):
+        try:
+            return db_conf.get(key, default)
+        except ImportError:
+            return default
+
     DATABASES["default"] = {
-        "ENGINE": db_conf.get("ENGINE", DATABASES["default"]["ENGINE"]),
-        "NAME": db_conf.get("NAME", DATABASES["default"]["NAME"]),
-        "USER": db_conf.get("USER", ""),
-        "PASSWORD": db_conf.get("PASSWORD", ""),
-        "HOST": db_conf.get("HOST", ""),
-        "PORT": db_conf.get("PORT", ""),
-        "CONN_MAX_AGE": db_conf.get("CONN_MAX_AGE", 60),
-        "CONN_HEALTH_CHECKS": db_conf.get("CONN_HEALTH_CHECKS", True),
-        "OPTIONS": db_conf.get("OPTIONS", {}),
-        "ATOMIC_REQUESTS": db_conf.get("ATOMIC_REQUESTS", False),
+        "ENGINE": _db_get("ENGINE", DATABASES["default"]["ENGINE"]),
+        "NAME": _db_get("NAME", DATABASES["default"]["NAME"]),
+        "USER": _db_get("USER", ""),
+        "PASSWORD": _db_get("PASSWORD", ""),
+        "HOST": _db_get("HOST", ""),
+        "PORT": _db_get("PORT", ""),
+        "CONN_MAX_AGE": _db_get("CONN_MAX_AGE", 60),
+        "CONN_HEALTH_CHECKS": _db_get("CONN_HEALTH_CHECKS", True),
+        "OPTIONS": _db_get("OPTIONS", {}),
+        "ATOMIC_REQUESTS": _db_get("ATOMIC_REQUESTS", False),
     }
 
 DATABASE_ROUTERS = []

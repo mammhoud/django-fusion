@@ -48,3 +48,14 @@ if settings.DEBUG:
         urlpatterns = configure_dev_urls(urlpatterns, settings)
     except Exception:
         pass
+# Static/assets health endpoint for deployment smoke tests.
+try:
+    from django.http import JsonResponse
+
+    def _assets_health(request):
+        static_url = getattr(settings, "STATIC_URL", "/static/")
+        return JsonResponse({"status": "ok", "static_url": static_url})
+
+    urlpatterns += [path("assets/health/", _assets_health, name="assets-health")]
+except Exception:
+    pass

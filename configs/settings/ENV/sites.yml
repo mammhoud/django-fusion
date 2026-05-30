@@ -1,0 +1,21 @@
+default:
+  default: structa.cloud
+  websites:
+    structa.cloud:
+      aliases: [structa, core]
+      domain: structa.cloud
+      port: 5071
+      module: CMS
+      ssl_enabled: false
+      allowed_hosts: [structa.cloud, www.structa.cloud, localhost, 127.0.0.1]
+      csrf_trusted_origins: [http://structa.cloud, https://structa.cloud, http://www.structa.cloud, https://www.structa.cloud]
+      cors_allowed_origins: [http://structa.cloud, https://structa.cloud, http://www.structa.cloud, https://www.structa.cloud]
+    ctc-research.com:
+      aliases: [ctc, ctc-research]
+      domain: ctc-research.com
+      port: 5070
+      module: LMS
+      ssl_enabled: false
+      allowed_hosts: [ctc-research.com, www.ctc-research.com, localhost, 127.0.0.1]
+      csrf_trusted_origins: [http://ctc-research.com, https://ctc-research.com, http://www.ctc-research.com, https://www.ctc-research.com]
+      cors_allowed_origins: [http://ctc-research.com, https://ctc-research.com, http://www.ctc-research.com, https://www.ctc-research.com]

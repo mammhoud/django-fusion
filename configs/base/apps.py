@@ -4,7 +4,8 @@ Keeps canonical app lists explicit while allowing optional package filtering
 for local/container environments where some integrations may be unavailable.
 """
 
-import importlib.util as _ilu
+from configs.base.classes import AppRegistry
+
 
 # ADMIN
 ADMIN_APPS = [
@@ -15,6 +16,7 @@ ADMIN_APPS = [
     "unfold.contrib.import_export",
     "unfold.contrib.simple_history",
 ]
+EFFECTIVE_ADMIN_APPS = AppRegistry().available_apps(ADMIN_APPS)
 
 # DJANGO CORE
 DJANGO_APPS = [
@@ -28,10 +30,12 @@ DJANGO_APPS = [
     "django.contrib.contenttypes",
     "django.contrib.admin",
     "django.forms",
-    "django.contrib.postgres",
 ]
 
-APPS = [*DJANGO_APPS, *ADMIN_APPS]
+if AppRegistry().has_any("psycopg", "psycopg2"):
+    DJANGO_APPS.append("django.contrib.postgres")
+
+APPS = [*DJANGO_APPS, *EFFECTIVE_ADMIN_APPS]
 
 # WAGTAIL
 WAGTAIL_APPS = [
@@ -60,6 +64,8 @@ WAGTAIL_APPS = [
     "modelcluster",
 ]
 
+EFFECTIVE_WAGTAIL_APPS = AppRegistry().available_apps(WAGTAIL_APPS)
+
 THIRD_PARTY_APPS = [
     "webpack_loader",
     "django_htmx",
@@ -84,13 +90,6 @@ LOCAL_APPS = [
 ]
 
 
-def _is_mod(name: str) -> bool:
-    try:
-        return _ilu.find_spec(name) is not None
-    except ModuleNotFoundError:
-        return False
-
-
 OPTIONAL_APP_MAP = {
     "django_celery_beat": "django_celery_beat",
     "django_celery_results": "django_celery_results",
@@ -100,9 +99,13 @@ OPTIONAL_APP_MAP = {
     "webpack_loader": "webpack_loader",
 }
 
-EFFECTIVE_THIRD_PARTY_APPS = [
-    app for app in THIRD_PARTY_APPS if _is_mod(OPTIONAL_APP_MAP.get(app, app))
-]
-EFFECTIVE_LOCAL_APPS = [app for app in LOCAL_APPS if _is_mod(app)]
+_registry = AppRegistry(OPTIONAL_APP_MAP)
+EFFECTIVE_THIRD_PARTY_APPS = _registry.available_apps(THIRD_PARTY_APPS)
+EFFECTIVE_LOCAL_APPS = _registry.available_apps(LOCAL_APPS)
 
-INSTALLED_APPS: list[str] = APPS + WAGTAIL_APPS + EFFECTIVE_THIRD_PARTY_APPS + EFFECTIVE_LOCAL_APPS
+INSTALLED_APPS: list[str] = AppRegistry.merge(
+    APPS,
+    EFFECTIVE_WAGTAIL_APPS,
+    EFFECTIVE_THIRD_PARTY_APPS,
+    EFFECTIVE_LOCAL_APPS,
+)
