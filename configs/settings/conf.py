@@ -10,7 +10,7 @@ import os
 from collections.abc import Mapping, Sequence
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from configs.site import (
     active_site_dir,
@@ -31,6 +31,31 @@ CONFIG_DIR = Path(__file__).parent / "ENV"
 WORKSPACE_DIR = Path(__file__).resolve().parents[2]
 SITE_DIR = active_site_dir()
 _MISSING = object()
+
+
+class Environment(str, Enum):
+    """Supported server environments for YAML/settings selection."""
+
+    DEVELOPMENT = "development"
+    DEMO = "demo"
+    STAGING = "staging"
+    PRODUCTION = "production"
+
+
+class Runtime(str, Enum):
+    """Supported runtime locations."""
+
+    LOCAL = "local"
+    DOCKER = "docker"
+    KUBERNETES = "kubernetes"
+    CLOUD = "cloud"
+
+
+class Module(str, Enum):
+    """High-level product modules exposed by site configuration."""
+
+    CMS = "CMS"
+    LMS = "LMS"
 
 
 # ==================== MAIN SETTINGS CLASS ====================
@@ -217,6 +242,9 @@ class MainSettings(BaseSettings):
             mapping = {
                 "dev": Environment.DEVELOPMENT,
                 "development": Environment.DEVELOPMENT,
+                "demo": Environment.DEMO,
+                "stage": Environment.STAGING,
+                "staging": Environment.STAGING,
                 "prod": Environment.PRODUCTION,
                 "production": Environment.PRODUCTION,
             }

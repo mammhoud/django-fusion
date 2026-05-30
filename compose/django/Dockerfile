@@ -1,11 +1,11 @@
 # =====================================================
 # Structa — Django/Uvicorn/Celery container
 # Build context: repository root
-# PROJECT_PATH is a site directory, e.g. "ctc-research.com" or "structa.cloud".
+# PROJECT_PATH is a site directory, e.g. "ctc-research" or "lms-demo".
 # =====================================================
 FROM python:3.12-slim AS app-base
 
-ARG PROJECT_PATH=structa.cloud
+ARG PROJECT_PATH=lms-demo
 ARG APP_HOME=/app
 ARG USER_NAME=django
 ARG GROUP_NAME=django
@@ -46,8 +46,8 @@ RUN python -m pip install --no-cache-dir --upgrade pip uv \
 # 2. Install Python dependencies from workspace manifests
 # -----------------------------------------------------
 COPY pyproject.toml uv.lock* ${APP_HOME}/
-COPY ctc-research.com/pyproject.toml ${APP_HOME}/ctc-research.com/pyproject.toml
-COPY structa.cloud/pyproject.toml ${APP_HOME}/structa.cloud/pyproject.toml
+COPY ctc-research/pyproject.toml ${APP_HOME}/ctc-research/pyproject.toml
+COPY lms-demo/pyproject.toml ${APP_HOME}/lms-demo/pyproject.toml
 
 RUN if [ -f uv.lock ]; then \
         uv sync --frozen --no-install-project; \

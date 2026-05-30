@@ -48,7 +48,7 @@ dependencies = [
 ]
 
 [tool.uv.workspace]
-members = ["structa.cloud", "ctc-research.com"]
+members = ["lms-demo", "ctc-research"]
 
 # GitHub sources for internal libs — used by all workspace members.
 # Pin to the 'generic' branch; uv resolves the exact commit at sync time.
@@ -83,5 +83,5 @@ push = true
 
 [tool.bumpver.file_patterns]
 "pyproject.toml"                   = ['version = "{version}"']
-"structa.cloud/pyproject.toml"     = ['version = "{version}"']
-"structa.cloud/__about__.py"       = ['^__version__ = "{version}"']
+"lms-demo/pyproject.toml"         = ['version = "{version}"']
+"lms-demo/__about__.py"           = ['^__version__ = "{version}"']

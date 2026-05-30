@@ -1,53 +1,71 @@
 # Project Structure
 
-VResume follows a modular Django/Wagtail architecture, designed to separate core infrastructure from content-specific logic.
+The repository is organized as a shared Django/Wagtail workspace with two deployable site directories and root-level orchestration.
 
-## 📂 Root Directory
+## Root directories
 
 | Path | Description |
-| :--- | :--- |
-| `v1/` | The primary application source code. |
-| `docs/` | MkDocs documentation source. |
-| `compose/` | Docker Compose configuration snippets. |
-| `scripts/` | Automation and utility scripts. |
-| `Makefile` | The central command interface for development. |
-| `mkdocs.yml` | Documentation site configuration. |
+|---|---|
+| `manage.py` | Root site selector. Accepts `--site`, `DJANGO_SITE`, or `SITE` and maps legacy aliases to real site directories. |
+| `pyproject.toml` | Workspace dependency definition for the real members `ctc-research` and `lms-demo`. |
+| `Makefile` | Root command interface for checks, tests, assets, Docker, and per-site runtime operations. |
+| `configs/` | Shared settings fragments, YAML environment files, base Django settings modules, and config tests. |
+| `tasks/` | Shared Celery/runtime task entrypoints that can serve more than one website. |
+| `assets/` | Shared frontend assets, templates, static files, and package scripts. |
+| `webpack/` | Shared webpack configuration used by the asset pipeline. |
+| `compose/` | Dockerfiles and modular Compose stacks for app, warehouse, proxies, docs, tasks, PostgreSQL, and media. |
+| `scripts/` | Runtime utilities such as dumped-data loading and deployment verification. |
+| `tests/` | Unit, integration, website, Docker, HTTP, Selenium, and fixture tests. |
+| `docs/` | Documentation source, architecture notes, deployment flow, and reports. |
+| `ctc-research/` | CTC Research site package. |
+| `lms-demo/` | Structa/LMS demo site package. |
 
-## 📦 Application Source (`v1/`)
+## Site directory pattern
 
-The backend is organized into several key directories:
+Both site directories follow the same high-level pattern:
 
-### `v1/core/`
-The "brain" of the application. Contains shared logic that isn't specific to a single content type.
-- `pages_base.py`: Base abstract models for all Wagtail pages.
-- `page_blocks.py`: Reusable StreamField blocks (Hero, Services, Testimonials).
-- `snippets/`: Reusable content snippets (Social links, Navbar items).
-- `middleware.py`: Custom Django middleware (Cookies, Tracking).
+```text
+site-name/
+├── manage.py              # Site-local Django command wrapper
+├── pyproject.toml         # Site package metadata and standalone dependency hints
+├── settings.py            # Site-local Django settings entrypoint
+├── configs/               # Site-specific settings package
+├── www/                   # ASGI/WSGI/URLs, apps, core routes, handlers
+├── plugins/               # Site feature plugins and reusable app surfaces
+├── templates/             # Root templates for public, auth, profile, modal, email pages
+├── assets/                # Site-specific static overrides
+└── docker-compose.yml     # Site-focused compose entry where present
+```
 
-### `v1/pages/`
-Contains the actual Wagtail Apps. Each subdirectory represents a logical section of the site.
-- `home/`: Homepage logic and sections.
-- `about/`: About me, biography, and experience.
-- `portfolio/`: Project showcase and filtering.
-- `blog/`: Articles, categories, and tags.
-- `cv/`: Professional resume and timeline data.
-- `connect/`: Contact forms and newsletter subscriptions.
-- `templates/`: Centralized HTML templates (organized by app).
+## Site aliases
 
-### `v1/configs/`
-Configuration management system.
-- `settings/conf.py`: The settings loader (Pydantic + Dynaconf).
-- `settings/ENV/`: YAML files containing environment-specific settings.
+The root `manage.py` supports aliases for compatibility, but the real directories are `ctc-research` and `lms-demo`.
 
-### `v1/assets/`
-Frontend source files and compiled bundles.
-- `src/`: SCSS and JavaScript source files.
-- `static/`: Static assets (images, fonts).
-- `bundles/`: Compiled Webpack bundles.
+| Alias | Real directory |
+|---|---|
+| `ctc`, `ctc-research`, `ctc-research.com` | `ctc-research` |
+| `structa`, `structa.cloud`, `core`, `lms`, `lms-demo` | `lms-demo` |
 
-### `v1/webpack/`
-Build system configurations for frontend assets.
+## Docker structure
 
-## 🛠️ Infrastructure
-- **Docker Stacks**: Modular compose files (`docker-compose.db.yml`, `app.yml`, `proxy.yml`) allow for independent service management.
-- **Makefile**: Proxies all complex commands into simple aliases (e.g., `make dev`, `make build`).
+```text
+compose/
+├── docker-compose.yml             # Django application service
+├── docker-compose.warehouse.yml   # PostgreSQL, Redis, Celery definitions
+├── docker-compose.tasks.yml       # Shared task workers
+├── docker-compose.traefik.yml     # Traefik edge proxy
+├── docker-compose.nginx.yml       # Optional Nginx static/media proxy
+├── docker-compose.docs.yml        # Docs service
+├── django/                        # Application image, entrypoint, start scripts
+├── postgres/                      # PostgreSQL image and maintenance scripts
+├── traefik/                       # Static and dynamic Traefik config
+├── nginx/                         # Nginx image/config
+└── media/                         # Media proxy config and local SSL placeholders
+```
+
+## Why this structure is stable
+
+- Site packages remain small and independently selectable.
+- Root tooling performs shared orchestration without duplicating commands in every site.
+- Docker builds copy actual workspace members, so dependency installation fails early if a site directory is missing.
+- Deployment docs and enhancement backlog are tracked under `docs/`, allowing `.plans/` to be removed safely.
