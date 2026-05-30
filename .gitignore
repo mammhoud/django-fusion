@@ -23,3 +23,11 @@ assets/node_modules/
 assets/bundles/
 */assets/bundles/
 */assets/staticfiles/
+
+# Django/webpack generated artifacts
+bundles/
+staticfiles/
+**/bundles/
+**/staticfiles/
+**/assets/bundles/
+**/assets/staticfiles/

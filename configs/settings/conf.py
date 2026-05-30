@@ -10,9 +10,15 @@ import os
 from collections.abc import Mapping, Sequence
 from enum import Enum
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, List, Optional
 
-from configs.site import active_site_dir, active_website_name, site_config, site_dir_for, site_security_defaults
+from configs.site import (
+    active_site_dir,
+    active_website_name,
+    site_config,
+    site_dir_for,
+    site_security_defaults,
+)
 
 try:
     from dynaconf import Dynaconf
@@ -20,42 +26,6 @@ except Exception:  # pragma: no cover
     Dynaconf = None  # type: ignore[assignment]
 from pydantic import Field, validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
-
-# ==================== ENUMS ====================
-
-
-class Environment(str, Enum):
-    """Server environment."""
-
-    DEVELOPMENT = "development"
-    PRODUCTION = "production"
-
-
-class LogLevel(str, Enum):
-    """Logging level."""
-
-    DEBUG = "debug"
-    INFO = "info"
-    WARNING = "warning"
-    ERROR = "error"
-    CRITICAL = "critical"
-
-
-class Module(str, Enum):
-    """Application module."""
-
-    CMS = "cms"
-    LMS = "lms"
-
-
-class Runtime(str, Enum):
-    """Runtime environment."""
-
-    LOCAL = "local"
-    DOCKER = "docker"
-    KUBERNETES = "kubernetes"
-    CLOUD = "cloud"
-
 
 CONFIG_DIR = Path(__file__).parent / "ENV"
 WORKSPACE_DIR = Path(__file__).resolve().parents[2]

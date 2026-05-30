@@ -28,7 +28,8 @@ services:
       context: ./traefik
       dockerfile: Dockerfile
     env_file:
-      - ../v1/.env
+      - path: ../.env
+        required: false
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

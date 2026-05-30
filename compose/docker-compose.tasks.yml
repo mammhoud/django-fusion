@@ -3,7 +3,7 @@
 # ============================================================
 # Runs one Celery worker/beat pair that can process tasks for every website.
 # Website-specific tasks must pass `website` when enqueueing work, e.g.
-# tasks.email.send_email_task.delay(..., website="ctc-research.com").
+# tasks.email.send_email_task.delay(..., website="ctc-research").
 #
 # Usage:
 #   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up shared-tasks-worker shared-tasks-beat
@@ -19,7 +19,7 @@ x-shared-tasks-base: &shared-tasks-base
     context: ..
     dockerfile: ./compose/django/Dockerfile
     args:
-      PROJECT_PATH: ${TASKS_PROJECT_PATH:-ctc-research.com}
+      PROJECT_PATH: ${TASKS_PROJECT_PATH:-ctc-research}
   restart: unless-stopped
   working_dir: /app
   env_file:
@@ -27,12 +27,13 @@ x-shared-tasks-base: &shared-tasks-base
       required: false
   environment: &shared-tasks-env
     RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
     SERVER_ENV: ${SERVER_ENV:-production}
     DEBUG: ${DEBUG:-False}
     DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
-    DJANGO_SITE: ${DJANGO_SITE:-ctc-research.com}
-    DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research.com}
-    WEBSITE: ${WEBSITE:-ctc-research.com}
+    DJANGO_SITE: ${DJANGO_SITE:-ctc-research}
+    DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research}
+    WEBSITE: ${WEBSITE:-ctc-research}
     DB_TYPE: ${DB_TYPE:-postgres}
     DB_HOST: ${DB_HOST:-vresume-postgres}
     DB_PORT: ${DB_PORT:-5432}

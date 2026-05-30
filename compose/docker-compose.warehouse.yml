@@ -15,9 +15,11 @@ x-django-base: &django-base
     dockerfile: ./compose/django/Dockerfile
   restart: unless-stopped
   env_file:
-    - ../v1/.env
+    - path: ../.env
+      required: false
   environment: &django-env
     RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
     DB_TYPE: ${DB_TYPE:-postgres}
     DB_HOST: ${DB_HOST:-vresume-postgres}
     DB_PORT: ${DB_PORT:-5432}
@@ -32,7 +34,7 @@ x-django-base: &django-base
     PORT: ${PORT:-5072}
   volumes:
     - ../:/app:z
-    - ../v1/assets/media:/app/v1/assets/media:z
+    - ../assets/media:/app/assets/media:z
   networks:
     - traefik-net
   # depends_on:

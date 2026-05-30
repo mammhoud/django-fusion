@@ -1,3 +1,4 @@
+import asyncio
 import os
 import sys
 from pathlib import Path
@@ -23,6 +24,7 @@ os.environ["DJANGO_SETTINGS_MODULE"] = "configs.settings"
 
 django_application = None
 websocket_application = None
+_startup_lock = None
 
 
 def _is_health_path(scope):
@@ -36,8 +38,16 @@ async def _ensure_django_app():
     respond to a simple healthcheck even when Django URLConf or templates
     are misconfigured.
     """
-    global django_application, websocket_application
+    global django_application, websocket_application, _startup_lock
     if django_application is None:
+        # Ensure only one coroutine performs Django setup to avoid
+        # concurrent calls to `django.setup()` which raise
+        # "populate() isn't reentrant" when run in parallel.
+        if _startup_lock is None:
+            _startup_lock = asyncio.Lock()
+        async with _startup_lock:
+            if django_application is not None:
+                return
         # Ensure the runtime config singleton is imported so dynamic
         # settings (site selection, ROOT_URLCONF, etc.) are applied
         try:
@@ -45,9 +55,9 @@ async def _ensure_django_app():
         except Exception:
             _cfg_settings = None
 
-        from django.core.asgi import get_asgi_application
+            from django.core.asgi import get_asgi_application
 
-        django_application = get_asgi_application()
+            django_application = get_asgi_application()
         # Import websocket application after Django apps are loaded
         try:
             from www.websocket import websocket_application as _ws  # noqa: E402

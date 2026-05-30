@@ -1,17 +1,18 @@
-"""Workspace settings entrypoint using full layered configuration when available.
-Falls back gracefully if dynaconf stack is unavailable.
+"""Workspace settings entrypoint.
+
+Selects one compact settings layer from ``SERVER_ENV``/``DJANGO_SERVER_ENV`` and
+then appends shared service configuration.
 """
 
 import os
 
-_profile = (os.getenv("SERVER_ENV") or os.getenv("DJANGO_SERVER_ENV") or "development").lower()
+from .conf import settings as _settings
 
-try:
-    from .conf import settings as _settings
-    _profile = (os.getenv("SERVER_ENV") or os.getenv("DJANGO_SERVER_ENV") or str(getattr(_settings, "SERVER_ENV", _profile))).lower()
-except Exception:
-    # keep env-derived profile if dynaconf/pydantic stack isn't importable yet
-    pass
+_profile = (
+    os.getenv("SERVER_ENV")
+    or os.getenv("DJANGO_SERVER_ENV")
+    or str(getattr(_settings, "SERVER_ENV", "development"))
+).lower()
 
 if _profile in {"production", "prod"}:
     from .CD.production import *  # noqa: F401,F403
@@ -20,7 +21,4 @@ elif _profile in {"demo", "staging"}:
 else:
     from .CD.core import *  # noqa: F401,F403
 
-try:
-    from .CD.services import *  # noqa: F401,F403
-except Exception:
-    pass
+from .CD.services import *  # noqa: F401,F403

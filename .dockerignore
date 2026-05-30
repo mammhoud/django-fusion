@@ -24,3 +24,5 @@
 **/.ruff_cache
 **/.mypy_cache
 **/postgres_data
+**/assets/bundles
+**/bundles

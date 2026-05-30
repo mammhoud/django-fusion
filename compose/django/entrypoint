@@ -1,64 +1,114 @@
 #!/bin/bash
 set -euo pipefail
 
-echo "🚀 Entrypoint: Booting..."
+# Keep system tools such as `make` available even when a virtualenv is active.
+export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/venv/bin:/root/.local/bin:$PATH"
+APP_HOME="${APP_HOME:-/app}"
+APP_VENV="${VIRTUAL_ENV:-/opt/venv}"
+LOG_DIR="${LOG_DIR:-${APP_HOME}/logs}"
+SITE_NAME="${DJANGO_SITE:-${DJANGO_WEBSITE:-${WEBSITE:-${PROJECT_PATH:-ctc-research.com}}}}"
+
+mkdir -p "$LOG_DIR"
+
+echo "🚀 Entrypoint: Booting in ${APP_HOME} for ${SITE_NAME}..."
+
+run_logged() {
+    local name="$1"
+    shift
+    local logfile="${LOG_DIR}/${name}.log"
+    echo "▶️  $name: $*"
+    echo "===== $(date -Iseconds) $name: $* =====" >> "$logfile"
+    "$@" 2>&1 | tee -a "$logfile"
+}
+
+if ! command -v uv >/dev/null 2>&1; then
+    echo "🧩 Installing uv..."
+    python -m pip install --no-cache-dir --upgrade uv
+else
+    echo "✅ uv already installed: $(uv --version)"
+fi
+
+if [ -d "$APP_VENV" ]; then
+    echo "🔍 Checking Python venv validity..."
+    PYTHON_BIN="$APP_VENV/bin/python"
+    if [ ! -f "$PYTHON_BIN" ] || ! "$PYTHON_BIN" --version >/dev/null 2>&1; then
+        echo "⚠️ Broken venv detected at $APP_VENV"
+        rm -rf "$APP_VENV"
+        uv venv "$APP_VENV"
+    else
+        echo "✅ Venv is valid"
+    fi
+fi
+
+cd "$APP_HOME"
+export PYTHONPATH="${APP_HOME}/${SITE_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+
+if [ "${RUN_UV_SYNC:-false}" = "true" ]; then
+    echo "📦 Syncing Python dependencies with uv..."
+    if [ -f uv.lock ]; then
+        uv sync --frozen --no-install-project
+    else
+        uv sync --no-install-project
+    fi
+fi
 
 ###############################################################################
-# DJANGO SETUP (Only for main app, not workers)
+# DJANGO SETUP (opt-in for main app, not workers)
 ###############################################################################
 if [ "${RUN_SETUP:-false}" = "true" ]; then
+    echo "🛠️ Running Django setup..."
 
-    echo "📦 Building static assets..."
-    python manage.py build_assets --collectstatic-only --no-input 2>&1 || echo "⚠️  build_assets failed (non-fatal)"
-
-    echo "🗃️  Making migrations..."
-    python manage.py makemigrations --noinput 2>&1 || echo "⚠️  makemigrations failed (non-fatal)"
-
-    echo "🗃️  Applying migrations..."
-    python manage.py migrate --noinput 2>&1 || echo "⚠️  migrate failed (non-fatal)"
-
-    if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
-        echo "👑 Ensuring superuser..."
-        python -m django_rseal.scripts.superuser 2>&1 || echo "⚠️  superuser failed (non-fatal)"
-    fi
-
-    # ── Load dump-data.json first (always, skip if already loaded) ───────────
-    FIXTURES_DIR="/app/assets/fixtures"
-    if [ -f "${FIXTURES_DIR}/dump-data.json" ]; then
-        echo "📂 Loading dump-data.json ..."
-        # Only load if wagtailcore_page table has 2 or fewer rows (just root + welcome)
-        PAGE_COUNT=$(python manage.py shell -c "from wagtail.models import Page; print(Page.objects.count())" 2>/dev/null | tail -1 || echo "0")
-        if [ "${PAGE_COUNT:-0}" -le 2 ]; then
-            python manage.py loaddata "${FIXTURES_DIR}/dump-data.json" --ignorenonexistent 2>&1 \
-                || echo "⚠️  loaddata dump-data.json failed (non-fatal)"
-        else
-            echo "  ℹ️  Skipping — ${PAGE_COUNT} pages already in DB"
+    echo "🧹 Collecting/building static files..."
+    if ! run_logged build_assets python manage.py --site "$SITE_NAME" build_assets --collectstatic-only --no-input; then
+        if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
+            echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
         fi
     fi
 
-    # ── Load extra fixtures only when LOAD_FIXTURES=true ─────────────────────
-    if [ "${LOAD_FIXTURES:-false}" = "true" ]; then
-        echo "📂 Loading extra fixtures..."
-        for fixture in initial_choices.json users.json; do
-            if [ -f "${FIXTURES_DIR}/${fixture}" ]; then
-                echo "  → ${fixture}"
-                python manage.py loaddata "${FIXTURES_DIR}/${fixture}" --ignorenonexistent 2>&1 \
-                    || echo "⚠️  loaddata ${fixture} failed (non-fatal)"
-            fi
-        done
+    echo "🗃️  Making migrations..."
+    if ! run_logged makemigrations python manage.py --site "$SITE_NAME" makemigrations --noinput; then
+        echo "⚠️  makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
     fi
 
-    # ── Set Wagtail home page + English language (after data is loaded) ───────
+    echo "🗃️  Applying migrations..."
+    if ! run_logged migrate python manage.py --site "$SITE_NAME" migrate --noinput; then
+        echo "⚠️  migrate failed (non-fatal); see ${LOG_DIR}/migrate.log"
+    fi
+
+    if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
+        echo "👑 Ensuring superuser..."
+        run_logged superuser python -m django_rseal.scripts.superuser || echo "⚠️  superuser failed (non-fatal); see ${LOG_DIR}/superuser.log"
+    fi
+
+    echo "📂 Loading dumped data fixtures..."
+    LOAD_DUMP_ARGS=("--site" "$SITE_NAME")
+    [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force")
+    [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
+    if ! run_logged load_dumped_data python scripts/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
+        echo "⚠️  dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
+    fi
+
     echo "🏠 Setting up Wagtail home page and language..."
-    python manage.py setup_wagtail_home 2>&1 || echo "⚠️  setup_wagtail_home failed (non-fatal)"
+    if ! run_logged setup_wagtail_home python manage.py --site "$SITE_NAME" setup_wagtail_home; then
+        echo "⚠️  setup_wagtail_home failed (non-fatal); see ${LOG_DIR}/setup_wagtail_home.log"
+    fi
 
     echo "🌐 Compiling translation messages..."
-    python manage.py compilemessages 2>&1 || echo "⚠️  compilemessages failed (non-fatal)"
+    if ! run_logged compilemessages python manage.py --site "$SITE_NAME" compilemessages; then
+        echo "⚠️  compilemessages failed (non-fatal); see ${LOG_DIR}/compilemessages.log"
+    fi
+
+    echo "🔎 Verifying Wagtail pages and collected assets..."
+    VERIFY_ARGS=("--site" "$SITE_NAME" "--strict-assets" "--strict-pages")
+    [ "${STRICT_PAGE_CONTENT:-true}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
+    if ! run_logged verify_runtime python scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
+        echo "⚠️  runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
+    fi
 
     if command -v crontab >/dev/null 2>&1; then
         echo "⏰ Installing hourly error-report cron..."
         (crontab -l 2>/dev/null | grep -v "send_error_report"; \
-         echo "0 * * * * cd /app && python manage.py send_error_report >> /app/logs/error_report_cron.log 2>&1") \
+         echo "0 * * * * cd ${APP_HOME} && python manage.py send_error_report >> ${APP_HOME}/logs/error_report_cron.log 2>&1") \
          | crontab - 2>/dev/null || echo "⚠️  crontab install failed (non-fatal)"
         service cron start 2>/dev/null || crond 2>/dev/null || true
     else
@@ -66,6 +116,21 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 fi
 
-echo "🎯 Launching: $*"
-cd /app
-exec "$@"
+if [ "$#" -eq 0 ]; then
+    set -- server
+fi
+
+case "$1" in
+    celery)
+        echo "🎯 Executing celery via uv: $*"
+        exec uv run "$@"
+        ;;
+    uv|uvicorn|python|pytest|/bin/*|/usr/bin/*|/usr/local/bin/*)
+        echo "🎯 Executing command directly: $*"
+        exec "$@"
+        ;;
+    *)
+        echo "🎯 Launching make target: $*"
+        exec /usr/bin/make "$@"
+        ;;
+esac

@@ -14,7 +14,6 @@ services:
   # NGINX REVERSE PROXY (Optional if not using Traefik)
   # ============================================================
   vresume-website-media:
-    profiles: ["media-proxy"]
     build:
       context: ..
       dockerfile: ./compose/nginx/Dockerfile

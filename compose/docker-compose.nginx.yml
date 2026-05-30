@@ -14,12 +14,12 @@ services:
   # NGINX REVERSE PROXY (Optional if not using Traefik)
   # ============================================================
   vresume-website-media:
-    profiles: ["media-proxy"]
     build:
       context: ..
       dockerfile: ./compose/nginx/Dockerfile
     env_file:
-      - ../v1/.env
+      - path: ../.env
+        required: false
     container_name: vresume-website-media
     restart: unless-stopped
     depends_on:
@@ -28,8 +28,8 @@ services:
     #   - "80:80"
     #   - "443:443"
     volumes:
-      - ../v1/assets/staticfiles:/var/www/static:ro
-      - ../v1/assets/media:/var/www/media:ro
+      - ../${PROJECT_PATH:-ctc-research}/assets/staticfiles:/var/www/static:ro
+      - ../assets/media:/var/www/media:ro
       - ./media/ssl:/etc/nginx/ssl
 
     networks:

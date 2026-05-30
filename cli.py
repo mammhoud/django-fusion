@@ -1,13 +1,13 @@
 """
 🎯 Unified Django CLI — check + deploy + push libs
 Usage:
-  python cli.py check structa.cloud
-  python cli.py deploy structa.cloud
-  python cli.py deploy ctc-research.com
+  python cli.py check lms-demo
+  python cli.py deploy lms-demo
+  python cli.py deploy ctc-research
   python cli.py push                        # commit & push all libs to generic
   python cli.py push --lib django-osoul     # push a single lib
-  python -m websites check structa.cloud
-  python -m websites deploy ctc-research.com
+  python -m websites check lms-demo
+  python -m websites deploy ctc-research
 """
 
 import os
@@ -21,13 +21,13 @@ SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent  # root of the monorepo
 
 WEBSITES = {
-    "structa.cloud": {
-        "compose": SCRIPT_DIR / "structa.docker-compose.yml",
+    "lms-demo": {
+        "compose": SCRIPT_DIR / "lms-demo" / "docker-compose.yml",
         "port": 5071,
         "container": "structa-website",
     },
-    "ctc-research.com": {
-        "compose": SCRIPT_DIR / "ctc-research.docker-compose.yml",
+    "ctc-research": {
+        "compose": SCRIPT_DIR / "ctc-research" / "docker-compose.yml",
         "port": 5070,
         "container": "ctc-website",
     },
@@ -152,13 +152,13 @@ class CLI:
     Websites CLI — check, deploy, push libs.
 
     Examples:
-      python cli.py check structa.cloud
-      python cli.py deploy structa.cloud
-      python cli.py deploy ctc-research.com --skip-local-check
+      python cli.py check lms-demo
+      python cli.py deploy lms-demo
+      python cli.py deploy ctc-research --skip-local-check
       python cli.py push                        # commit & push all libs
       python cli.py push --lib django-osoul     # push a single lib
-      python cli.py logs structa.cloud
-      python cli.py down structa.cloud
+      python cli.py logs lms-demo
+      python cli.py down lms-demo
     """
 
     def check(self, website: str):
@@ -166,7 +166,7 @@ class CLI:
         Run Django system checks locally via <website>/__main__.py.
 
         Args:
-            website: 'structa.cloud' or 'ctc-research.com'
+            website: 'lms-demo' or 'ctc-research'
         """
         _resolve(website)
         ok = _local_check(website)
@@ -184,7 +184,7 @@ class CLI:
           4. docker compose up -d
 
         Args:
-            website:              'structa.cloud' or 'ctc-research.com'
+            website:              'lms-demo' or 'ctc-research'
             skip_local_check:     Skip step 1
             skip_container_check: Skip step 3
             no_cache:             Pass --no-cache to docker build
@@ -222,7 +222,7 @@ class CLI:
         Show container logs.
 
         Args:
-            website: 'structa.cloud' or 'ctc-research.com'
+            website: 'lms-demo' or 'ctc-research'
             tail:    Number of lines (default 30)
             service: Specific service name (optional)
         """
@@ -238,7 +238,7 @@ class CLI:
         Stop and remove containers for a website.
 
         Args:
-            website: 'structa.cloud' or 'ctc-research.com'
+            website: 'lms-demo' or 'ctc-research'
         """
         _resolve(website)
         cfg = WEBSITES[website]
@@ -258,7 +258,7 @@ class CLI:
         Runs webpack bundling and Django collectstatic.
 
         Args:
-            website:     'structa.cloud', 'ctc-research.com', or 'all'
+            website:     'lms-demo', 'ctc-research', or 'all'
             production:  Run production build (default True)
             clean:       Clean bundles directory before building
         """
@@ -313,8 +313,8 @@ class CLI:
           2. HTTP integration tests via pytest tests/test_sites.py
 
         Args:
-            website: 'structa.cloud', 'ctc-research.com', or 'all'
-            live:    Use live domains (core.structa.cloud / www.ctc-research.com)
+            website: 'lms-demo', 'ctc-research', or 'all'
+            live:    Use live domains (core.lms-demo / www.ctc-research)
         """
         if website != "all":
             _resolve(website)
@@ -348,7 +348,7 @@ class CLI:
         Stages all modified tracked files in each lib, commits with an
         auto-generated message (or the one you provide), then pushes to
         the target branch.  After pushing, updates the commit SHAs in
-        websites/ctc-research.com/uv.lock so the next Docker build picks
+        websites/ctc-research/uv.lock so the next Docker build picks
         up the new versions.
 
         Args:

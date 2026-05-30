@@ -1,21 +1,27 @@
 # =====================================================
-# Structa — Django/Uvicorn container
-# Build context: workspace root (parent of websites/)
-# PROJECT_PATH arg is relative to websites/, e.g. "ctc-research.com"
+# Structa — Django/Uvicorn/Celery container
+# Build context: repository root
+# PROJECT_PATH is a site directory, e.g. "ctc-research.com" or "structa.cloud".
 # =====================================================
 FROM python:3.12-slim AS app-base
 
 ARG PROJECT_PATH=structa.cloud
 ARG APP_HOME=/app
+ARG USER_NAME=django
+ARG GROUP_NAME=django
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
     UV_NO_CACHE=1 \
     NODE_ENV=production \
+    DEBIAN_FRONTEND=noninteractive \
     PATH="/opt/venv/bin:/root/.local/bin:$PATH" \
     VIRTUAL_ENV="/opt/venv" \
     UV_PROJECT_ENVIRONMENT="/opt/venv" \
-    PROJECT_PATH=${PROJECT_PATH}
+    PROJECT_PATH=${PROJECT_PATH} \
+    APP_HOME=${APP_HOME}
 
 WORKDIR ${APP_HOME}
 
@@ -23,29 +29,25 @@ WORKDIR ${APP_HOME}
 # 1. System packages + Node.js + uv
 # -----------------------------------------------------
 RUN apt-get update && apt-get install --no-install-recommends -y \
-        curl wget git nano libpq-dev gettext sudo \
-        bash-completion ca-certificates ssh pipx make build-essential cron \
+        bash-completion build-essential ca-certificates cron curl gettext git \
+        libpq-dev make nano ssh sudo wget \
     && rm -rf /var/lib/apt/lists/*
 
 RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
-    && apt-get install -y nodejs \
+    && apt-get install --no-install-recommends -y nodejs \
     && npm install -g npm@latest \
-    && npm cache clean --force
+    && npm cache clean --force \
+    && rm -rf /var/lib/apt/lists/*
 
-RUN pipx install uv && pipx ensurepath
-
-# -----------------------------------------------------
-# 2. Create venv
-# -----------------------------------------------------
-RUN uv venv /opt/venv
+RUN python -m pip install --no-cache-dir --upgrade pip uv \
+    && uv venv /opt/venv
 
 # -----------------------------------------------------
-# 3. Install dependencies from pyproject.toml
-#    django-osoul, django-rseal, django-grep are pulled
-#    directly from GitHub via [tool.uv.sources]
+# 2. Install Python dependencies from workspace manifests
 # -----------------------------------------------------
-COPY websites/${PROJECT_PATH}/pyproject.toml ./pyproject.toml
-COPY websites/${PROJECT_PATH}/uv.lock* ./
+COPY pyproject.toml uv.lock* ${APP_HOME}/
+COPY ctc-research.com/pyproject.toml ${APP_HOME}/ctc-research.com/pyproject.toml
+COPY structa.cloud/pyproject.toml ${APP_HOME}/structa.cloud/pyproject.toml
 
 RUN if [ -f uv.lock ]; then \
         uv sync --frozen --no-install-project; \
@@ -54,64 +56,30 @@ RUN if [ -f uv.lock ]; then \
     fi
 
 # -----------------------------------------------------
-# 3b. Patch broken django_rseal.services.communication
-#     The installed package references invitation_service
-#     which is missing from the distribution. Create a
-#     stub so the package initialises without error.
+# 3. Patch broken django_rseal.services.communication
 # -----------------------------------------------------
 RUN mkdir -p "/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
     COMM_DIR="/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
     if [ ! -f "${COMM_DIR}/invitation_service.py" ]; then \
-        printf '# stub – missing from installed distribution\nclass InvitationService:\n    pass\n' \
+        printf '# stub - missing from installed distribution\nclass InvitationService:\n    pass\n' \
             > "${COMM_DIR}/invitation_service.py"; \
     fi
 
 # -----------------------------------------------------
 # 4. Copy application source
 # -----------------------------------------------------
-COPY websites/${PROJECT_PATH}/package*.json ${APP_HOME}/
-COPY websites/${PROJECT_PATH}/ ${APP_HOME}/
-
-# Copy shared webpack config
-COPY websites/webpack/ ${APP_HOME}/webpack/
-
-# Copy shared assets (fonts, images, js, videos, static.js, shared styles)
-# Webpack alias 'shared' → /app/shared/assets/static/
-COPY websites/assets/static/ ${APP_HOME}/shared/assets/static/
-
-# Copy shared configuration package so `import configs` works inside the image
-COPY websites/configs/ ${APP_HOME}/configs/
-
-# Copy shared background task project for Celery workers
-COPY tasks/ ${APP_HOME}/tasks/
-
-# Copy workspace-level multi-site manage.py so containers can select a site
-# via `--site` or `DJANGO_SITE` env var. This ensures runtime switching.
-COPY websites/manage.py ${APP_HOME}/manage.py
-
-# Note: shared core package is within each website's www/ directory
-# Each website has its own www/core/ package for app-specific core functionality
+COPY . ${APP_HOME}/
 
 # -----------------------------------------------------
-# 4b. Frontend assets are now mounted via volume (faster builds)
-#    To build frontend assets, run locally:
-#    cd websites/structa.cloud && npm install && npm run build:prod
-#    Assets will be mounted from websites/structa.cloud/assets/
+# 5. Entrypoint and helper scripts
 # -----------------------------------------------------
-# Original build removed for faster container rebuilds
-# Build assets are now shared via volume mounts in docker-compose
-
-# -----------------------------------------------------
-# 5. Entrypoint and start scripts
-# -----------------------------------------------------
-RUN mkdir -p /app/logs
-
-COPY websites/compose/django/entrypoint /entrypoint
-COPY websites/compose/django/start /start
-COPY websites/compose/django/rqworker-start /rqworker-start
-
-RUN sed -i 's/\r$//g' /entrypoint /start /rqworker-start \
-    && chmod +x /entrypoint /start /rqworker-start
+RUN mkdir -p ${APP_HOME}/logs \
+    && sed -i 's/\r$//g' /app/compose/django/entrypoint /app/compose/django/start /app/compose/django/rqworker-start /app/compose/django/flower /app/Makefile \
+    && cp /app/compose/django/entrypoint /entrypoint \
+    && cp /app/compose/django/start /start \
+    && cp /app/compose/django/rqworker-start /rqworker-start \
+    && cp /app/compose/django/flower /flower \
+    && chmod +x /entrypoint /start /rqworker-start /flower
 
 ENTRYPOINT ["/entrypoint"]
-CMD ["/start"]
+CMD ["server"]

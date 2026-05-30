@@ -2,7 +2,6 @@
 # 🎨 Assets & Static Files Configuration
 # ====================================
 from ..settings.conf import settings
-from ..settings.conf import settings as tracker
 from .paths import BASE_DIR
 
 # ── Workspace and asset directories ─────────────────────────────────────────
@@ -12,9 +11,7 @@ SITE_NAME = BASE_DIR.name
 # Shared repository-level assets. npm installs live here so every website uses
 # one dependency tree: ``assets/node_modules``.
 BASE_ASSETS_DIR = WORKSPACE_DIR / "assets"
-BASE_NODE_MODULES_DIR = BASE_ASSETS_DIR / "node_modules"
 SHARED_STATIC_DIR = BASE_ASSETS_DIR / "static"
-SHARED_BUNDLES_DIR = BASE_ASSETS_DIR / "bundles" / "shared"
 MEDIA_DIR = BASE_ASSETS_DIR / "media"
 LOCALE_DIRS = BASE_ASSETS_DIR / "locale"
 
@@ -26,19 +23,16 @@ STATIC_DIR = ASSETS_DIR / "static"
 FIXTURES_DIR = ASSETS_DIR / "fixtures"
 SITE_STATIC_DIR = STATIC_DIR
 SITE_BUNDLES_DIR = ASSETS_DIR / "bundles" / SITE_NAME
-BUNDLES_DIR = SITE_BUNDLES_DIR
-STATICFILES_DIR = ASSETS_DIR / "staticfiles"
+SHARED_BUNDLES_DIR = BASE_ASSETS_DIR / "bundles" / "shared"
 
-# Ensure directories exist
+# Ensure source/runtime directories exist. Generated webpack and collectstatic
+# outputs (bundles/staticfiles) are intentionally not created here so empty build
+# directories do not appear just from importing Django settings.
 for directory in [
     BASE_ASSETS_DIR,
-    BASE_NODE_MODULES_DIR,
     SHARED_STATIC_DIR,
-    SHARED_BUNDLES_DIR,
     ASSETS_DIR,
     STATIC_DIR,
-    SITE_BUNDLES_DIR,
-    STATICFILES_DIR,
     FIXTURES_DIR,
     MEDIA_DIR,
     LOCALE_DIRS,
@@ -56,14 +50,18 @@ DATA_UPLOAD_MAX_MEMORY_SIZE       = settings.get("DATA_UPLOAD_MAX_MEMORY_SIZE", 
 DATA_UPLOAD_MAX_NUMBER_FIELDS     = settings.get("DATA_UPLOAD_MAX_NUMBER_FIELDS", 10000)
 
 # ── Static files ──────────────────────────────────────────────────────────────
-STATIC_ROOT = str(STATICFILES_DIR)
 STATIC_URL  = settings.get("STATIC_URL", "/static/")
 
+_staticfiles_candidates = [
+    (f"bundles/{SITE_NAME}", SITE_BUNDLES_DIR),
+    ("bundles/shared", SHARED_BUNDLES_DIR),
+    (None, SHARED_STATIC_DIR),
+    (f"site/{SITE_NAME}", SITE_STATIC_DIR),
+]
 STATICFILES_DIRS = [
-    (f"bundles/{SITE_NAME}", str(SITE_BUNDLES_DIR)),
-    ("bundles/shared", str(SHARED_BUNDLES_DIR)),
-    str(SHARED_STATIC_DIR),
-    (f"site/{SITE_NAME}", str(SITE_STATIC_DIR)),
+    (prefix, str(path)) if prefix else str(path)
+    for prefix, path in _staticfiles_candidates
+    if path.exists()
 ]
 
 STATICFILES_FINDERS = settings.get("STATICFILES_FINDERS", [
@@ -76,11 +74,11 @@ _bundles_json = SITE_BUNDLES_DIR / "bundles.json"
 
 WEBPACK_LOADER = {
     "DEFAULT": {
-        "CACHE":           not tracker.is_debug,
+        "CACHE":           not settings.is_debug,
         "BUNDLE_DIR_NAME": f"bundles/{SITE_NAME}/",
         "STATS_FILE":      str(_bundles_json),
-        "POLL_INTERVAL":   0.1 if tracker.is_debug else 300,
-        "TIMEOUT":         None if tracker.is_debug else 120,
+        "POLL_INTERVAL":   0.1 if settings.is_debug else 300,
+        "TIMEOUT":         None if settings.is_debug else 120,
         "IGNORE":          [r".+\.hot-update.js", r".+\.map"],
         "LOADER_CLASS": (
             "webpack_loader.loader.WebpackLoader"

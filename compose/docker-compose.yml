@@ -15,7 +15,8 @@ x-django-base: &django-base
     dockerfile: ./compose/django/Dockerfile
   restart: unless-stopped
   env_file:
-    - ../v1/.env
+    - path: ../.env
+      required: false
   environment: &django-env
     RUNNING_ENV: docker
     DB_TYPE: ${DB_TYPE:-postgres}

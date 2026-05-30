@@ -3,7 +3,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-APP_HOME="/app"
+APP_HOME="${APP_HOME:-/app}"
 cd "$APP_HOME"
 
 HOST="${HOST:-0.0.0.0}"
@@ -13,31 +13,60 @@ RELOAD="${RELOAD:-false}"
 LOG_LEVEL="${LOG_LEVEL:-info}"
 APP_MODULE="${APP_MODULE:-www.asgi:application}"
 WATCH_DIRS="${WATCH_DIRS:-./www,./configs}"
+SERVER_TYPE="${SERVER_TYPE:-${RUNSERVER:-gunicorn}}"
+LOG_DIR="${LOG_DIR:-${APP_HOME}/logs}"
+ACCESS_LOG="${ACCESS_LOG:-${LOG_DIR}/${SERVER_TYPE}-access.log}"
+ERROR_LOG="${ERROR_LOG:-${LOG_DIR}/${SERVER_TYPE}-error.log}"
 
-echo "🚀 Starting uvicorn: $APP_MODULE on $HOST:$PORT"
+mkdir -p "$LOG_DIR"
 
-if [ "$RELOAD" = "true" ]; then
-    ARGS=(
-        "$APP_MODULE"
-        "--host" "$HOST"
-        "--port" "$PORT"
-        "--reload"
-        "--log-level" "debug"
-    )
-    IFS=',' read -ra DIR_ARRAY <<< "$WATCH_DIRS"
-    for dir in "${DIR_ARRAY[@]}"; do
-        dir_clean=$(echo "$dir" | xargs)
-        [ -d "$dir_clean" ] && ARGS+=("--reload-dir" "$dir_clean")
-    done
-else
-    ARGS=(
-        "$APP_MODULE"
-        "--host" "$HOST"
-        "--port" "$PORT"
-        "--workers" "$WORKERS"
-        "--log-level" "$LOG_LEVEL"
-    )
+echo "🚀 Starting ${SERVER_TYPE}: ${APP_MODULE} on ${HOST}:${PORT}"
+echo "🏥 Health: http://${HOST}:${PORT}/health/"
+echo "📝 Access log: ${ACCESS_LOG}"
+echo "📝 Error log: ${ERROR_LOG}"
+
+if [ "$SERVER_TYPE" = "uvicorn" ]; then
+    if [ "$RELOAD" = "true" ]; then
+        ARGS=(
+            "$APP_MODULE"
+            "--host" "$HOST"
+            "--port" "$PORT"
+            "--reload"
+            "--log-level" "debug"
+            "--access-log"
+        )
+        IFS=',' read -ra DIR_ARRAY <<< "$WATCH_DIRS"
+        for dir in "${DIR_ARRAY[@]}"; do
+            dir_clean=$(echo "$dir" | xargs)
+            [ -d "$dir_clean" ] && ARGS+=("--reload-dir" "$dir_clean")
+        done
+    else
+        ARGS=(
+            "$APP_MODULE"
+            "--host" "$HOST"
+            "--port" "$PORT"
+            "--workers" "$WORKERS"
+            "--log-level" "$LOG_LEVEL"
+            "--access-log"
+        )
+    fi
+    exec uvicorn "${ARGS[@]}" 2> >(tee -a "$ERROR_LOG" >&2)
 fi
 
-echo "🏥 Health: http://${HOST}:${PORT}/health/"
-exec uvicorn "${ARGS[@]}"
+if [ "$SERVER_TYPE" = "gunicorn" ]; then
+    ARGS=(
+        "$APP_MODULE"
+        "--bind" "${HOST}:${PORT}"
+        "--workers" "$WORKERS"
+        "--worker-class" "uvicorn.workers.UvicornWorker"
+        "--log-level" "$LOG_LEVEL"
+        "--access-logfile" "$ACCESS_LOG"
+        "--error-logfile" "$ERROR_LOG"
+        "--capture-output"
+    )
+    [ "$RELOAD" = "true" ] && ARGS+=("--reload")
+    exec gunicorn "${ARGS[@]}"
+fi
+
+echo "Unsupported SERVER_TYPE='${SERVER_TYPE}'. Use 'gunicorn' or 'uvicorn'." >&2
+exit 2

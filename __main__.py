@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
 """
-Entry point for structa.cloud website CLI.
+Entry point for lms-demo website CLI.
 Usage:
-  python structa.cloud/__main__.py check
-  python structa.cloud/__main__.py manage migrate
-  python structa.cloud/__main__.py shell
+  python lms-demo/__main__.py check
+  python lms-demo/__main__.py manage migrate
+  python lms-demo/__main__.py shell
 """
 import os
 import subprocess

@@ -6,7 +6,6 @@ for local/container environments where some integrations may be unavailable.
 
 from configs.base.classes import AppRegistry
 
-
 # ADMIN
 ADMIN_APPS = [
     "unfold",
@@ -90,16 +89,9 @@ LOCAL_APPS = [
 ]
 
 
-OPTIONAL_APP_MAP = {
-    "django_celery_beat": "django_celery_beat",
-    "django_celery_results": "django_celery_results",
-    "django_rq": "django_rq",
-    "simple_history": "simple_history",
-    "import_export": "import_export",
-    "webpack_loader": "webpack_loader",
-}
+OPTIONAL_APP_MAP = {}
 
-_registry = AppRegistry(OPTIONAL_APP_MAP)
+_registry = AppRegistry()
 EFFECTIVE_THIRD_PARTY_APPS = _registry.available_apps(THIRD_PARTY_APPS)
 EFFECTIVE_LOCAL_APPS = _registry.available_apps(LOCAL_APPS)
 

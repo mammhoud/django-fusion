@@ -1,49 +1,93 @@
 # ============================================
-# All Django Services — Routers & Backends
-# Covers:
-#   - vresume.structa.cloud
+# Website routers, Django backends, and media/static backends
 # ============================================
 http:
-  # ------------------------------------------
-  # ROUTERS
-  # ------------------------------------------
   routers:
-    # --- vresume.structa.cloud ---
-    vresume-http:
-      rule: "Host(`vresume.structa.cloud`)"
+    ctc-media-http:
+      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web]
       middlewares: [compress, redirect-to-https]
-      service: vresume-service
+      service: ctc-media-service
+      priority: 100
 
-    vresume-https:
-      rule: "Host(`vresume.structa.cloud`)"
+    ctc-media-https:
+      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web-secure]
-      middlewares: [compress, csrf-headers, security-headers]
-      service: vresume-service
+      middlewares: [compress, security-headers]
+      service: ctc-media-service
+      priority: 100
       tls:
         certResolver: letsencrypt
         domains:
-          - main: "vresume.structa.cloud"
+          - main: "ctc-research.com"
+            sans: ["www.ctc-research.com", "arch.ctc-research.com"]
 
-  # ------------------------------------------
-  # SERVICES
-  # ------------------------------------------
+    ctc-site-https:
+      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: ctc-site-service
+      tls:
+        certResolver: letsencrypt
+
+    lms-demo-media-http:
+      rule: "(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: lms-demo-media-service
+      priority: 100
+
+    lms-demo-media-https:
+      rule: "(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: lms-demo-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "structa.cloud"
+            sans: ["*.structa.cloud", "www.structa.cloud", "core.structa.cloud"]
+
+    lms-demo-site-https:
+      rule: "Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: lms-demo-site-service
+      tls:
+        certResolver: letsencrypt
+
   services:
-    vresume-service:
+    ctc-site-service:
       loadBalancer:
         servers:
-          - url: "http://vresume-website:5072"
+          - url: "http://ctc-website:5070"
         healthCheck:
           path: /health/
           interval: 30s
           timeout: 10s
-          followRedirects: false
           headers:
-            Host: "vresume.structa.cloud"
+            Host: "ctc-research.com"
             X-Forwarded-Proto: "https"
-        sticky:
-          cookie:
-            name: vresume_lb
-            secure: true
-            httpOnly: true
 
+    ctc-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://ctc-website-media:80"
+
+    lms-demo-site-service:
+      loadBalancer:
+        servers:
+          - url: "http://structa-website:5071"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+          headers:
+            Host: "core.structa.cloud"
+            X-Forwarded-Proto: "https"
+
+    lms-demo-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://structa-website-media:80"
