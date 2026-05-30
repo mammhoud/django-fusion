@@ -1,81 +1,71 @@
 # Deployment Guide
 
-How to deploy VResume via Docker, Gunicorn, and Nginx using the modular service architecture.
+This guide summarizes the stable Docker deployment path. For the full step-by-step flow, see [Docker Deployment Flow](deployment_flow.md).
 
-## 🏗️ Architecture Overview
+## Architecture overview
 
-VResume uses a modular Docker Compose architecture to allow for flexible deployments. The configuration is split into several files:
+The stack is split into independently composable layers:
 
-- **`docker-compose.yml`**: The default full-stack production-ready configuration.
-- **`docker-compose.local.yml`**: Optimized for local development (auto-reload, debug mode).
-- **`docker-compose.prod.yml`**: Optimized for production (Nginx integrated, SSL, performance-tuned).
-- **`docker-compose.db.yml`**: Infrastructure only (PostgreSQL & Redis).
-- **`docker-compose.app.yml`**: Application only (Django & Celery Workers).
-- **`docker-compose.proxy.yml`**: Nginx Proxy only.
+| Layer | Compose file | Services |
+|---|---|---|
+| Warehouse | `compose/docker-compose.warehouse.yml` | PostgreSQL, Redis, optional Celery worker/beat definitions |
+| Application | `compose/docker-compose.yml` | Django ASGI application container |
+| Shared tasks | `compose/docker-compose.tasks.yml` | Shared Celery worker and beat |
+| Edge proxy | `compose/docker-compose.traefik.yml` | Traefik with TLS termination |
+| Static/media proxy | `compose/docker-compose.nginx.yml` | Optional Nginx layer |
+| Docs | `compose/docker-compose.docs.yml` | Documentation service |
 
-## 🚀 Deployment Process
+## Required environment
 
-The easiest way to build and deploy VResume is using the provided `Makefile`.
-
-### 1. Configure Environment
-
-Edit your `v1/.env` file to specify your domain name and other deployment configurations:
+Create a root `.env` and keep these values aligned:
 
 ```env
-DOMAIN_NAME=vresume.structa.cloud
-DB_TYPE=postgres
+PROJECT_PATH=lms-demo
+DJANGO_SITE=lms-demo
+DJANGO_SETTINGS_MODULE=settings
 SERVER_ENV=production
 DEBUG=False
+DB_TYPE=postgres
+DB_HOST=vresume-postgres
+DB_NAME=vresume
+DB_USER=vresume
+DB_PASSWORD=change-me
+REDIS_PASSWORD=change-me-too
+REDIS_URL=redis://:change-me-too@vresume-redis:6379/0
+CELERY_BROKER_URL=redis://:change-me-too@vresume-redis:6379/1
+DJANGO_HOST=structa.cloud
+ACME_EMAIL=admin@structa.cloud
 ```
 
-### 2. Start the Production Stack
+Use `PROJECT_PATH=ctc-research` and `DJANGO_SITE=ctc-research` when deploying the CTC Research site.
 
-To start the complete production-ready stack:
+## Production deployment
 
 ```bash
-make docker-prod
+docker network create traefik-net || true
+docker compose -f compose/docker-compose.warehouse.yml up -d vresume-postgres vresume-redis
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml up -d --build vresume-website
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat
+docker compose -f compose/docker-compose.traefik.yml up -d
 ```
 
-This will:
-1. Build and start the PostgreSQL and Redis containers.
-2. Build and start the Django application and Celery workers.
-3. Start the Nginx reverse proxy with automatic SSL certificate handling.
+## Verification gates
 
-### 3. Modular Service Management
-
-You can also manage services independently if needed:
-
-- **Start Infrastructure only**: `make docker-db`
-- **Start Application only**: `make docker-app`
-- **Start Proxy only**: `make docker-proxy`
-
-### 4. Stopping the Stack
-
-To stop all active containers across all stacks:
+Run these before routing production traffic:
 
 ```bash
-make down
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml config
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" check
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" migrate --noinput
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" collectstatic --noinput
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python scripts/verify_runtime.py --site "$PROJECT_PATH" --strict-assets --strict-pages
+curl -fL -H 'X-Forwarded-Proto: https' http://localhost:5072/health/
 ```
 
-## 🛠️ Development Deployment
+## Operational notes
 
-If you want to run the stack in development mode (with auto-reload and debug tools):
-
-```bash
-make docker-dev
-```
-
-This uses `docker-compose.local.yml` and exposes port `8000` and `5070` for direct access.
-
-## 🔍 Health Checks & Monitoring
-
-All services include built-in health checks:
-- **Database**: Uses `pg_isready`.
-- **Redis**: Uses `redis-cli ping`.
-- **Django**: Uses `manage.py check`.
-- **Nginx**: Uses `nginx -t`.
-
-To view logs for the default stack:
-```bash
-make dl  # or make docker-logs
-```
+- Use `SERVER_TYPE=gunicorn` for production.
+- Use `RUN_SETUP=true` only when you intentionally want the entrypoint to run setup tasks at container start.
+- Use the shared task stack only when background jobs are needed.
+- Rotate default database and Redis passwords before deployment.
+- Keep the Traefik ACME CA server on staging until DNS and routing are confirmed, then switch to the production Let's Encrypt endpoint.

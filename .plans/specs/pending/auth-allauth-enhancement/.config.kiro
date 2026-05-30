@@ -1,6 +1,0 @@
-{
-  "specId": "28e00b06-84f3-45c1-98bc-3e1842cf63d1",
-  "workflowType": "requirements-first",
-  "specType": "feature",
-  "featureName": "auth-allauth-enhancement"
-}

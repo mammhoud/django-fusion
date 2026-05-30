@@ -250,6 +250,9 @@ class MainSettings(BaseSettings):
             mapping = {
                 "dev": Environment.DEVELOPMENT,
                 "development": Environment.DEVELOPMENT,
+                "demo": Environment.DEMO,
+                "stage": Environment.STAGING,
+                "staging": Environment.STAGING,
                 "prod": Environment.PRODUCTION,
                 "production": Environment.PRODUCTION,
             }
