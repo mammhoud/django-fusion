@@ -46,13 +46,14 @@ def check_assets(strict: bool) -> int:
         print(("❌ " if strict else "⚠️  ") + message)
         failures += int(strict)
 
-    static_root = Path(getattr(settings, "STATIC_ROOT", ""))
-    static_files = list(static_root.rglob("*")) if static_root.exists() else []
+    raw_static_root = getattr(settings, "STATIC_ROOT", "") or ""
+    static_root = Path(raw_static_root) if raw_static_root else None
+    static_files = list(static_root.rglob("*")) if static_root and static_root.exists() else []
     static_file_count = sum(1 for path in static_files if path.is_file())
     if static_file_count:
         print(f"✅ Collected static files found: {static_file_count} files under {static_root}")
     else:
-        message = f"No collected static files found under STATIC_ROOT={static_root}"
+        message = f"No collected static files found under STATIC_ROOT={static_root or '<unset>'}"
         print(("❌ " if strict else "⚠️  ") + message)
         failures += int(strict)
     return failures
@@ -80,10 +81,16 @@ def check_pages(strict_content: bool, strict_pages: bool) -> int:
         return int(strict_pages)
 
     failures = 0
-    wagtail_site = Site.objects.filter(is_default_site=True).first() or Site.objects.first()
+    try:
+        wagtail_site = Site.objects.filter(is_default_site=True).first() or Site.objects.first()
+        pages = list(Page.objects.live().public().specific().order_by("path"))
+    except Exception as exc:
+        message = f"Wagtail pages could not be queried. Run migrations first: {exc}"
+        print(("❌ " if strict_pages else "⚠️  ") + message)
+        return int(strict_pages)
+
     host = wagtail_site.hostname if wagtail_site else "localhost"
     client = Client(HTTP_HOST=host)
-    pages = list(Page.objects.live().public().specific().order_by("path"))
     if not pages:
         print(("❌ " if strict_pages else "⚠️  ") + "No live public Wagtail pages found.")
         return int(strict_pages)

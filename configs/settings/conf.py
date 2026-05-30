@@ -37,6 +37,9 @@ class Environment(str, Enum):
     """Supported server environments."""
 
     DEVELOPMENT = "development"
+    DEMO = "demo"
+    STAGING = "staging"
+    TESTING = "testing"
     PRODUCTION = "production"
 
 
@@ -118,6 +121,14 @@ class MainSettings(BaseSettings):
 
         # Detect runtime environment and seed site-derived defaults before Pydantic validation.
         self._detect_runtime_environment(kwargs)
+        env_value = str(
+            kwargs.get("SERVER_ENV")
+            or os.environ.get("SERVER_ENV")
+            or os.environ.get("DJANGO_SERVER_ENV")
+            or "development"
+        ).lower()
+        if "DEBUG" not in kwargs and "DEBUG" not in os.environ:
+            kwargs["DEBUG"] = env_value in {"dev", "development", "test", "testing"}
         selected_site = kwargs.get("WEBSITE_NAME") or active_website_name()
         selected_site_config = site_config(str(selected_site))
         kwargs.setdefault("WEBSITE_NAME", selected_site_config["name"])
@@ -253,6 +264,8 @@ class MainSettings(BaseSettings):
                 "demo": Environment.DEMO,
                 "stage": Environment.STAGING,
                 "staging": Environment.STAGING,
+                "test": Environment.TESTING,
+                "testing": Environment.TESTING,
                 "prod": Environment.PRODUCTION,
                 "production": Environment.PRODUCTION,
             }
@@ -579,6 +592,21 @@ class MainSettings(BaseSettings):
         return self.SERVER_ENV == Environment.DEVELOPMENT
 
     @property
+    def is_demo(self) -> bool:
+        """Check if running in demo."""
+        return self.SERVER_ENV == Environment.DEMO
+
+    @property
+    def is_staging(self) -> bool:
+        """Check if running in staging."""
+        return self.SERVER_ENV == Environment.STAGING
+
+    @property
+    def is_testing(self) -> bool:
+        """Check if running in testing."""
+        return self.SERVER_ENV == Environment.TESTING
+
+    @property
     def is_local(self) -> bool:
         """Check if running locally."""
         return self.RUNNING_ENV == Runtime.LOCAL
@@ -627,6 +655,9 @@ class MainSettings(BaseSettings):
 
         env_emoji = {
             Environment.DEVELOPMENT: "🔧",
+            Environment.DEMO: "🧪",
+            Environment.STAGING: "🚦",
+            Environment.TESTING: "🧫",
             Environment.PRODUCTION: "🚀",
         }.get(self.SERVER_ENV, "❓")
 

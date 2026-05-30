@@ -28,6 +28,21 @@ development:
       PORT: "@env DB_PORT 5432"
       CONN_MAX_AGE: 0
 
+demo:
+  <<: *db_default
+  DATABASES:
+    default:
+      ENGINE: "django.db.backends.postgresql"
+      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
+      PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_demo') }}"
+      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
+      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', '') }}"
+      CONN_MAX_AGE: 300
+      ATOMIC_REQUESTS: true
+      OPTIONS:
+        connect_timeout: 15
+
 production:
   <<: *db_default
   DATABASES:
@@ -36,8 +51,8 @@ production:
       HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
       PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
       NAME: "@jinja {{ env.get('DB_NAME', 'db_structa') }}"
-      USER: "@jinja {{ env.get('DB_USER', 'structa') }}"
-      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', 'mk_pAssWord123') }}"
+      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
+      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', '') }}"
       CONN_MAX_AGE: 600
       ATOMIC_REQUESTS: true
       OPTIONS:
@@ -53,6 +68,19 @@ production:
     max_overflow: 40
     recycle: 3600
     pre_ping: true
+
+staging:
+  <<: *db_default
+  DATABASES:
+    default:
+      ENGINE: "django.db.backends.postgresql"
+      HOST: "@jinja {{ env.get('DB_HOST', 'postgres') }}"
+      PORT: "@jinja {{ env.get('DB_PORT', '5432') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'db_staging') }}"
+      USER: "@jinja {{ env.get('DB_USER', 'postgres') }}"
+      PASSWORD: "@jinja {{ env.get('DB_PASSWORD', '') }}"
+      CONN_MAX_AGE: 300
+      ATOMIC_REQUESTS: true
 
 testing:
   <<: *db_default
