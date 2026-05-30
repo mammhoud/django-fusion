@@ -1,11 +1,12 @@
 # =====================================================
-# Structa — Django/Uvicorn/Celery container
+# Shared Django/Uvicorn/Celery container
 # Build context: repository root
 # PROJECT_PATH is a site directory, e.g. "ctc-research" or "lms-demo".
+# Extra image data can be staged by Makefile in .docker-image-data/.
 # =====================================================
 FROM python:3.12-slim AS app-base
 
-ARG PROJECT_PATH=lms-demo
+ARG PROJECT_PATH=ctc-research
 ARG APP_HOME=/app
 ARG USER_NAME=django
 ARG GROUP_NAME=django
@@ -21,6 +22,8 @@ ENV PYTHONUNBUFFERED=1 \
     VIRTUAL_ENV="/opt/venv" \
     UV_PROJECT_ENVIRONMENT="/opt/venv" \
     PROJECT_PATH=${PROJECT_PATH} \
+    DJANGO_SITE=${PROJECT_PATH} \
+    WEBSITE=${PROJECT_PATH} \
     APP_HOME=${APP_HOME}
 
 WORKDIR ${APP_HOME}
@@ -43,11 +46,9 @@ RUN python -m pip install --no-cache-dir --upgrade pip uv \
     && uv venv /opt/venv
 
 # -----------------------------------------------------
-# 2. Install Python dependencies from workspace manifests
+# 2. Install Python dependencies from the single root manifest
 # -----------------------------------------------------
 COPY pyproject.toml uv.lock* ${APP_HOME}/
-COPY ctc-research/pyproject.toml ${APP_HOME}/ctc-research/pyproject.toml
-COPY lms-demo/pyproject.toml ${APP_HOME}/lms-demo/pyproject.toml
 
 RUN if [ -f uv.lock ]; then \
         uv sync --frozen --no-install-project; \
@@ -66,9 +67,17 @@ RUN mkdir -p "/opt/venv/lib/python3.12/site-packages/django_rseal/services/commu
     fi
 
 # -----------------------------------------------------
-# 4. Copy application source
+# 4. Copy shared source, the selected website, and staged data only
 # -----------------------------------------------------
-COPY . ${APP_HOME}/
+COPY Makefile manage.py __about__.py __main__.py cli.py com ${APP_HOME}/
+COPY configs ${APP_HOME}/configs
+COPY assets ${APP_HOME}/assets
+COPY compose ${APP_HOME}/compose
+COPY scripts ${APP_HOME}/scripts
+COPY tasks ${APP_HOME}/tasks
+COPY tests ${APP_HOME}/tests
+COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
+COPY .docker-image-data/ ${APP_HOME}/
 
 # -----------------------------------------------------
 # 5. Entrypoint and helper scripts

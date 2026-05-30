@@ -1,9 +1,10 @@
 #!/usr/bin/env python3
 """Django's command-line utility for administrative tasks.
 
-This manage.py supports switching between multiple site directories in this
-workspace. Use the `--site` option or the `DJANGO_SITE`/`SITE` environment
-variable to select which site's settings module will be used.
+This manage.py supports switching between multiple website instances placed
+under this repository. Use the `--site` option or the
+`DJANGO_SITE`/`SITE` environment variable to select which site's
+`configs.settings` module will be used.
 
 Examples:
   python manage.py --site=ctc-research migrate
@@ -20,10 +21,10 @@ ALIASES = {
     "ctc-research": "ctc-research",
     "ctc-research.com": "ctc-research",
     "structa": "lms-demo",
-    "structa.cloud": "lms-demo",
     "core": "lms-demo",
     "lms": "lms-demo",
     "lms-demo": "lms-demo",
+    "structa.cloud": "lms-demo",
 }
 
 
@@ -57,8 +58,7 @@ def main():
 
     repo_root = Path(__file__).resolve().parent
     source_dir = repo_root / selected
-    wrapper_dir = repo_root / "websites" / selected
-    site_dir = source_dir if source_dir.exists() else wrapper_dir
+    site_dir = source_dir
 
     if site_dir.exists():
         # Ensure the repo root and selected site directory are on sys.path. The

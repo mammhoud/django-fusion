@@ -34,16 +34,14 @@ _MISSING = object()
 
 
 class Environment(str, Enum):
-    """Supported server environments for YAML/settings selection."""
+    """Supported server environments."""
 
     DEVELOPMENT = "development"
-    DEMO = "demo"
-    STAGING = "staging"
     PRODUCTION = "production"
 
 
 class Runtime(str, Enum):
-    """Supported runtime locations."""
+    """Supported runtime environments."""
 
     LOCAL = "local"
     DOCKER = "docker"
@@ -52,10 +50,20 @@ class Runtime(str, Enum):
 
 
 class Module(str, Enum):
-    """High-level product modules exposed by site configuration."""
+    """Supported website modules."""
 
     CMS = "CMS"
     LMS = "LMS"
+
+
+class LogLevel(str, Enum):
+    """Supported log levels."""
+
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
 
 
 # ==================== MAIN SETTINGS CLASS ====================
