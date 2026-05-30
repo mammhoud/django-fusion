@@ -8,7 +8,7 @@ x-django-base: &django-base
     context: ..
     dockerfile: compose/django/Dockerfile
     args:
-      - PROJECT_PATH=structa.cloud
+      - PROJECT_PATH=${PROJECT_PATH:-lms-demo}
   restart: unless-stopped
   env_file:
     - path: .env
@@ -16,7 +16,7 @@ x-django-base: &django-base
   environment:
     - RUNNING_ENV=docker
     - SERVER_TYPE=${SERVER_TYPE:-gunicorn}
-    - PROJECT_PATH=structa.cloud
+    - PROJECT_PATH=${PROJECT_PATH:-lms-demo}
   networks:
     - traefik-net
   external_links:
@@ -27,7 +27,7 @@ x-django-base: &django-base
     - website_media:/app/assets/media:z
     # Mount pre-built frontend assets from host (faster builds)
     # Default uses project-local assets/.
-    # To run from repo root, set ASSETS_DIR=./structa.cloud/assets
+    # To run from repo root, set ASSETS_DIR=./lms-demo/assets
     - ${ASSETS_DIR:-./assets}/static:/app/assets/static:ro
     - ${ASSETS_DIR:-./assets}/media:/app/assets/media:ro
   healthcheck:

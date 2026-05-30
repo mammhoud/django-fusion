@@ -10,7 +10,7 @@ import os
 from collections.abc import Mapping, Sequence
 from enum import Enum
 from pathlib import Path
-from typing import Any, List, Optional
+from typing import Any, Dict, List, Optional
 
 from configs.site import (
     active_site_dir,
@@ -31,6 +31,39 @@ CONFIG_DIR = Path(__file__).parent / "ENV"
 WORKSPACE_DIR = Path(__file__).resolve().parents[2]
 SITE_DIR = active_site_dir()
 _MISSING = object()
+
+
+class Environment(str, Enum):
+    """Supported server environments."""
+
+    DEVELOPMENT = "development"
+    PRODUCTION = "production"
+
+
+class Runtime(str, Enum):
+    """Supported runtime environments."""
+
+    LOCAL = "local"
+    DOCKER = "docker"
+    KUBERNETES = "kubernetes"
+    CLOUD = "cloud"
+
+
+class Module(str, Enum):
+    """Supported website modules."""
+
+    CMS = "CMS"
+    LMS = "LMS"
+
+
+class LogLevel(str, Enum):
+    """Supported log levels."""
+
+    DEBUG = "DEBUG"
+    INFO = "INFO"
+    WARNING = "WARNING"
+    ERROR = "ERROR"
+    CRITICAL = "CRITICAL"
 
 
 # ==================== MAIN SETTINGS CLASS ====================

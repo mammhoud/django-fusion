@@ -2,13 +2,13 @@
 """Django's command-line utility for administrative tasks.
 
 This manage.py supports switching between multiple website instances placed
-under the `websites/` directory. Use the `--site` option or the
+under this repository. Use the `--site` option or the
 `DJANGO_SITE`/`SITE` environment variable to select which site's
 `configs.settings` module will be used.
 
 Examples:
-  python manage.py --site=ctc-research.com migrate
-  SITE=VResume python manage.py runserver
+  python manage.py --site=ctc-research migrate
+  SITE=lms-demo python manage.py runserver
 """
 
 import os
@@ -17,11 +17,14 @@ from pathlib import Path
 
 # Map short names to actual site directory names.
 ALIASES = {
-    "ctc": "ctc-research.com",
-    "ctc-research": "ctc-research.com",
-    "structa": "structa.cloud",
-    "core": "structa.cloud",
-    "vresume": "VResume",
+    "ctc": "ctc-research",
+    "ctc-research": "ctc-research",
+    "ctc-research.com": "ctc-research",
+    "structa": "lms-demo",
+    "core": "lms-demo",
+    "lms": "lms-demo",
+    "lms-demo": "lms-demo",
+    "structa.cloud": "lms-demo",
 }
 
 
@@ -51,12 +54,11 @@ def main():
         selected = ALIASES.get(site_arg.lower(), site_arg)
     else:
         # sensible default when nothing is provided
-        selected = "ctc-research.com"
+        selected = "ctc-research"
 
     repo_root = Path(__file__).resolve().parent
     source_dir = repo_root / selected
-    wrapper_dir = repo_root / "websites" / selected
-    site_dir = source_dir if source_dir.exists() else wrapper_dir
+    site_dir = source_dir
 
     if site_dir.exists():
         # Ensure the repo root and selected site directory are on sys.path. The

@@ -8,7 +8,7 @@ from django.urls import reverse
 
 
 ROOT = Path(__file__).resolve().parents[2]
-WEBSITES = ("ctc-research.com", "structa.cloud")
+WEBSITES = ("ctc-research", "lms-demo")
 
 
 class WebsiteLayoutTests(SimpleTestCase):
@@ -17,12 +17,10 @@ class WebsiteLayoutTests(SimpleTestCase):
             with self.subTest(website=website):
                 assert (ROOT / website / "settings.py").exists()
                 assert (ROOT / website / "configs" / "settings.py").exists()
-                assert (ROOT / "websites" / website / "settings.py").exists()
-                assert (ROOT / "websites" / website / "configs" / "settings.py").exists()
 
     def test_dummy_fixtures_are_split_by_app_and_model(self):
         for website in WEBSITES:
-            fixture_root = ROOT / "websites" / website / "assets" / "fixtures"
+            fixture_root = ROOT / website / "assets" / "fixtures"
             for relative in (
                 "auth/user_dummy.json",
                 "auth/group_dummy.json",
@@ -54,7 +52,7 @@ class SiteConfigTests(SimpleTestCase):
         assert spec.loader is not None
         spec.loader.exec_module(site_module)
 
-        assert site_module._normalise_website("ctc") == "ctc-research.com"
+        assert site_module._normalise_website("ctc") == "ctc-research"
         assert site_module.site_config("ctc")["module"] == "LMS"
         assert "ctc-research.com" in site_module.site_security_defaults("ctc")["ALLOWED_HOSTS"]
 

@@ -6,7 +6,7 @@ export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/v
 APP_HOME="${APP_HOME:-/app}"
 APP_VENV="${VIRTUAL_ENV:-/opt/venv}"
 LOG_DIR="${LOG_DIR:-${APP_HOME}/logs}"
-SITE_NAME="${DJANGO_SITE:-${DJANGO_WEBSITE:-${WEBSITE:-${PROJECT_PATH:-ctc-research.com}}}}"
+SITE_NAME="${DJANGO_SITE:-${DJANGO_WEBSITE:-${WEBSITE:-${PROJECT_PATH:-ctc-research}}}}"
 
 mkdir -p "$LOG_DIR"
 

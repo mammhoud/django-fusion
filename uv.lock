@@ -8,36 +8,7 @@ resolution-markers = [
 
 [manifest]
 members = [
-    "alliance",
-    "core",
     "websites-workspace",
-]
-
-[[package]]
-name = "alliance"
-version = "1.0.3"
-source = { editable = "ctc-research.com" }
-dependencies = [
-    { name = "bumpver" },
-    { name = "django-stubs" },
-    { name = "dynaconf", extra = ["vault"] },
-    { name = "hypothesis" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pytest" },
-    { name = "pytest-django" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "bumpver" },
-    { name = "django-stubs" },
-    { name = "dynaconf", extras = ["vault"] },
-    { name = "hypothesis" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pytest" },
-    { name = "pytest-django" },
 ]
 
 [[package]]
@@ -422,33 +393,6 @@ dependencies = [
 sdist = { url = "https://files.pythonhosted.org/packages/a2/61/f083b5ac52e505dfc1c624eafbf8c7589a0d7f32daa398d2e7590efa5fda/colorlog-6.10.1.tar.gz", hash = "sha256:eb4ae5cb65fe7fec7773c2306061a8e63e02efc2c72eba9d27b0fa23c94f1321", size = 17162, upload-time = "2025-10-16T16:14:11.978Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/6d/c1/e419ef3723a074172b68aaa89c9f3de486ed4c2399e2dbd8113a4fdcaf9e/colorlog-6.10.1-py3-none-any.whl", hash = "sha256:2d7e8348291948af66122cff006c9f8da6255d224e7cf8e37d8de2df3bad8c9c", size = 11743, upload-time = "2025-10-16T16:14:10.512Z" },
-]
-
-[[package]]
-name = "core"
-version = "1.0.3"
-source = { editable = "structa.cloud" }
-dependencies = [
-    { name = "bumpver" },
-    { name = "django-stubs" },
-    { name = "dynaconf", extra = ["vault"] },
-    { name = "hypothesis" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pytest" },
-    { name = "pytest-django" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "bumpver" },
-    { name = "django-stubs" },
-    { name = "dynaconf", extras = ["vault"] },
-    { name = "hypothesis" },
-    { name = "pydantic" },
-    { name = "pydantic-settings" },
-    { name = "pytest" },
-    { name = "pytest-django" },
 ]
 
 [[package]]
@@ -2449,6 +2393,7 @@ source = { virtual = "." }
 dependencies = [
     { name = "click" },
     { name = "colorlog" },
+    { name = "bumpver" },
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "django-allauth", extra = ["socialaccount"] },
@@ -2472,6 +2417,7 @@ dependencies = [
     { name = "django-silk" },
     { name = "django-simple-history" },
     { name = "django-storages", extra = ["boto3"] },
+    { name = "django-stubs" },
     { name = "django-structlog" },
     { name = "django-tables2" },
     { name = "django-unfold" },
@@ -2513,6 +2459,7 @@ dependencies = [
 requires-dist = [
     { name = "click" },
     { name = "colorlog" },
+    { name = "bumpver" },
     { name = "django", specifier = ">=4.2" },
     { name = "django-allauth", extras = ["socialaccount"] },
     { name = "django-bird" },
@@ -2535,6 +2482,7 @@ requires-dist = [
     { name = "django-silk" },
     { name = "django-simple-history" },
     { name = "django-storages", extras = ["boto3"] },
+    { name = "django-stubs" },
     { name = "django-structlog" },
     { name = "django-tables2" },
     { name = "django-unfold" },
