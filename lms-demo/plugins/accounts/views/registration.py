@@ -205,7 +205,9 @@ class RegisterView(PageHandler):
             logger.info(f"Registration form invalid: {form.errors}")
             context = self.get_context_data(request=request, form=form)
             if is_htmx:
-                return self.render_fragment(request, context)
+                response = self.render_fragment(request, context)
+                trigger_notification(response, "Please correct the highlighted fields.", "error")
+                return response
             return self.render_layout(context)
 
         email = form.cleaned_data["email"]
@@ -436,7 +438,9 @@ class CreatePasswordView(PageHandler):
                 user_name=user.get_full_name() or user.email,
             )
             if is_htmx:
-                return self.render_fragment(request, context)
+                response = self.render_fragment(request, context)
+                trigger_notification(response, "Please choose a valid password.", "error")
+                return response
             return self.render_layout(context)
 
         # Set password, activate user, and create profile atomically
@@ -464,6 +468,7 @@ class CreatePasswordView(PageHandler):
         if is_htmx:
             response = HttpResponse(status=200)
             response["HX-Redirect"] = success_url
+            trigger_notification(response, "Password set. You are signed in.", "success")
             return response
         return HttpResponseRedirect(success_url)
 

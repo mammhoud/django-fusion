@@ -20,6 +20,7 @@ from ..settings.setup import settings
 
 AUTHENTICATION_BACKENDS = [
     "django.contrib.auth.backends.ModelBackend",
+    "allauth.account.auth_backends.AuthenticationBackend",
 ]
 
 # =============================================================================
@@ -90,3 +91,19 @@ CSRF_FAILURE_VIEW = settings.get(
 )
 # Ensure the admin login form always gets a fresh CSRF token
 CSRF_COOKIE_AGE = None  # Session-scoped (expires when browser closes)
+
+# =============================================================================
+# ✉️ ALLAUTH / HTMX AUTH FLOW
+# =============================================================================
+# The site URLconf exposes allauth login/signup/password routes and wraps selected
+# views for HTMX fragments. Keep email verification mandatory enough to send set-
+# password/invite messages, but avoid blocking local dry-run tests.
+SITE_ID = int(settings.get("SITE_ID", 1))
+ACCOUNT_LOGIN_METHODS = {"email"}
+ACCOUNT_SIGNUP_FIELDS = ["email*", "password1*", "password2*"]
+ACCOUNT_EMAIL_VERIFICATION = settings.get("ACCOUNT_EMAIL_VERIFICATION", "optional")
+ACCOUNT_UNIQUE_EMAIL = True
+ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
+ACCOUNT_LOGOUT_ON_GET = True
+ACCOUNT_ADAPTER = settings.get("ACCOUNT_ADAPTER", "plugins.accounts.adapters.RegistrationAdapter")
+ACCOUNT_FORMS = settings.get("ACCOUNT_FORMS", {})

@@ -6,7 +6,7 @@ from django.utils.translation import gettext_lazy as _
 
 class AccountsConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "apps.accounts"
+    name = "www.core.handlers"
     label = "handlers"
     verbose_name = _("Module Common Settings")
 

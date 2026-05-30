@@ -66,6 +66,9 @@ WAGTAIL_APPS = [
 EFFECTIVE_WAGTAIL_APPS = AppRegistry().available_apps(WAGTAIL_APPS)
 
 THIRD_PARTY_APPS = [
+    "allauth",
+    "allauth.account",
+    "allauth.socialaccount",
     "webpack_loader",
     "django_htmx",
     "import_export",
@@ -80,6 +83,10 @@ THIRD_PARTY_APPS = [
 ]
 
 LOCAL_APPS = [
+    # Website-local infrastructure. www.core exposes shared management commands
+    # such as setup_wagtail_home without importing legacy duplicated models.
+    "www.core",
+    # Legacy page apps are optional; AppRegistry filters them when absent.
     "pages.home",
     "pages.about",
     "pages.cv",

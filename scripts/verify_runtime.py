@@ -11,10 +11,19 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 
-def configure(site: str) -> None:
+def bootstrap_workspace() -> Path:
+    """Ensure standalone script execution can import workspace modules."""
     repo_root = Path(__file__).resolve().parents[1]
-    if str(repo_root) not in sys.path:
-        sys.path.insert(0, str(repo_root))
+    os.chdir(repo_root)
+    for path in (repo_root, repo_root / "configs"):
+        path_text = str(path)
+        if path_text not in sys.path:
+            sys.path.insert(0, path_text)
+    return repo_root
+
+
+def configure(site: str) -> None:
+    repo_root = bootstrap_workspace()
 
     from configs.site import configure_site_environment, site_dir_for
 

@@ -33,6 +33,7 @@ x-django-base: &django-base
     PORT: ${PORT:-5072}
   volumes:
     - ../:/app:z
+    - ./logs:/app/logs:z
   networks:
     - traefik-net
   # depends_on:

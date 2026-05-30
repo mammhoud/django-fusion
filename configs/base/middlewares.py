@@ -15,6 +15,7 @@ MIDDLEWARE = [
     "django.middleware.common.CommonMiddleware",
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
+    "allauth.account.middleware.AccountMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
     "wagtail.contrib.redirects.middleware.RedirectMiddleware",
@@ -29,7 +30,7 @@ MIDDLEWARE = [
 
 
 def _middleware_available(path: str) -> bool:
-    if path.startswith("django."):
+    if path.startswith(("django.", "allauth.")):
         return True
     module_name, _, class_name = path.rpartition(".")
     try:

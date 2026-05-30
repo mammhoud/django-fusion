@@ -1,12 +1,14 @@
 # ============================================================
 # Shared Background Task Server
 # ============================================================
-# Runs one Celery worker/beat pair that can process tasks for every website.
-# Website-specific tasks must pass `website` when enqueueing work, e.g.
-# tasks.email.send_email_task.delay(..., website="ctc-research").
+# Runs Celery worker/beat pairs for both workspace websites. Each service uses
+# the same shared task app but seeds DJANGO_SITE/DJANGO_WEBSITE so site-aware
+# tasks render templates, settings, and URLs for the correct website.
 #
 # Usage:
 #   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up shared-tasks-worker shared-tasks-beat
+#   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up ctc-research-tasks-worker ctc-research-tasks-beat
+#   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up lms-demo-tasks-worker lms-demo-tasks-beat
 # ============================================================
 
 networks:
@@ -44,37 +46,105 @@ x-shared-tasks-base: &shared-tasks-base
     CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
     CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
+    LOG_DIR: /app/logs
   volumes:
     - ../:/app:z
+    - ./logs:/app/logs:z
   networks:
     - traefik-net
   depends_on:
     - vresume-redis
     - vresume-postgres
 
+x-worker-command: &worker-command >
+  celery -A tasks.celery:app worker
+  --loglevel=${CELERY_LOG_LEVEL:-info}
+  --queues=${CELERY_QUEUES:-shared,email,default}
+  --concurrency=${CELERY_WORKER_CONCURRENCY:-2}
+  --prefetch-multiplier=${CELERY_PREFETCH_MULTIPLIER:-1}
+  --without-gossip
+  --without-mingle
+  -O fair
+
+x-beat-command: &beat-command >
+  celery -A tasks.celery:app beat
+  --loglevel=${CELERY_LOG_LEVEL:-info}
+  --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  --pidfile=/tmp/celerybeat.pid
+
 services:
   shared-tasks-worker:
     <<: *shared-tasks-base
     container_name: shared-tasks-worker
-    command: >
-      celery -A tasks worker
-      --loglevel=${CELERY_LOG_LEVEL:-info}
-      --queues=${CELERY_QUEUES:-shared,email,default}
-      --concurrency=${CELERY_WORKER_CONCURRENCY:-2}
-      --prefetch-multiplier=${CELERY_PREFETCH_MULTIPLIER:-1}
-      --without-gossip
-      --without-mingle
-      -O fair
+    command: *worker-command
     ports: []
     labels: {}
 
   shared-tasks-beat:
     <<: *shared-tasks-base
     container_name: shared-tasks-beat
-    command: >
-      celery -A tasks beat
-      --loglevel=${CELERY_LOG_LEVEL:-info}
-      --scheduler django_celery_beat.schedulers:DatabaseScheduler
-      --pidfile=/tmp/shared-celerybeat.pid
+    command: *beat-command
+    ports: []
+    labels: {}
+
+  ctc-research-tasks-worker:
+    <<: *shared-tasks-base
+    container_name: ctc-research-tasks-worker
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      CELERY_TASK_DEFAULT_QUEUE: ctc-research
+    command: *worker-command
+    ports: []
+    labels: {}
+
+  ctc-research-tasks-beat:
+    <<: *shared-tasks-base
+    container_name: ctc-research-tasks-beat
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      CELERY_TASK_DEFAULT_QUEUE: ctc-research
+    command: *beat-command
+    ports: []
+    labels: {}
+
+  lms-demo-tasks-worker:
+    <<: *shared-tasks-base
+    container_name: lms-demo-tasks-worker
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      CELERY_TASK_DEFAULT_QUEUE: lms-demo
+    command: *worker-command
+    ports: []
+    labels: {}
+
+  lms-demo-tasks-beat:
+    <<: *shared-tasks-base
+    container_name: lms-demo-tasks-beat
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      CELERY_TASK_DEFAULT_QUEUE: lms-demo
+    command: *beat-command
     ports: []
     labels: {}
