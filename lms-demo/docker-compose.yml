@@ -25,6 +25,7 @@ x-django-base: &django-base
   volumes:
     - website_static:/app/assets/staticfiles:z
     - website_media:/app/assets/media:z
+    - ${LOGS_DIR:-./logs}:/app/logs:z
     # Mount pre-built frontend assets from host (faster builds)
     # Default uses project-local assets/.
     # To run from repo root, set ASSETS_DIR=./lms-demo/assets
