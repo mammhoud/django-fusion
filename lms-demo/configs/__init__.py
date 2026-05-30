@@ -1,1 +1,0 @@
-"""Structa.cloud configs package."""
