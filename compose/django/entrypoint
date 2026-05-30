@@ -2,7 +2,7 @@
 set -euo pipefail
 
 # Keep system tools such as `make` available even when a virtualenv is active.
-export PATH="/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/opt/venv/bin:/root/.local/bin:$PATH"
+export PATH="/opt/venv/bin:/root/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:$PATH"
 APP_HOME="${APP_HOME:-/app}"
 APP_VENV="${VIRTUAL_ENV:-/opt/venv}"
 LOG_DIR="${LOG_DIR:-${APP_HOME}/logs}"
