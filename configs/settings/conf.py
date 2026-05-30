@@ -12,6 +12,8 @@ from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
+from configs.site import active_site_dir, active_website_name
+
 try:
     from dynaconf import Dynaconf
 except Exception:  # pragma: no cover
@@ -43,6 +45,7 @@ class Module(str, Enum):
     """Application module."""
 
     CMS = "cms"
+    LMS = "lms"
 
 
 class Runtime(str, Enum):
@@ -55,6 +58,8 @@ class Runtime(str, Enum):
 
 
 CONFIG_DIR = Path(__file__).parent / "ENV"
+WORKSPACE_DIR = Path(__file__).resolve().parents[2]
+SITE_DIR = active_site_dir()
 _MISSING = object()
 
 
@@ -85,6 +90,9 @@ class MainSettings(BaseSettings):
     HOST: str = Field(default="0.0.0.0", description="Server host")
     PORT: int = Field(default=5080, description="Server port")
     DOMAIN_NAME: str = Field(default="localhost", description="Primary domain name")
+    WEBSITE_NAME: str = Field(default_factory=active_website_name, description="Active website name")
+    WEBSITE_DIR: str = Field(default_factory=lambda: str(active_site_dir()), description="Active website directory")
+    SITE_DOMAIN: str = Field(default="localhost", description="Canonical website domain")
     SSL_ENABLED: bool = Field(default=False, description="Enable SSL/HTTPS")
 
     # ==================== DYNACONF SETTINGS ====================
@@ -92,7 +100,7 @@ class MainSettings(BaseSettings):
 
     # Pydantic Configuration
     model_config = SettingsConfigDict(
-        env_file=Path(__file__).parent.parent.parent / ".env",
+        env_file=(WORKSPACE_DIR / ".env", SITE_DIR / ".env"),
         env_file_encoding="utf-8",
         case_sensitive=True,
         extra="allow",
@@ -167,6 +175,11 @@ class MainSettings(BaseSettings):
             CONFIG_DIR / f"_{self.SERVER_ENV.value}.yml",
             CONFIG_DIR / ".secrets.yml",
         ]
+
+        dotenv_files = [WORKSPACE_DIR / ".env", SITE_DIR / ".env"]
+        for dotenv_file in dotenv_files:
+            if dotenv_file.exists():
+                settings_files.append(dotenv_file)
 
         existing_files = [str(f) for f in settings_files if f.exists()]
 
@@ -255,6 +268,8 @@ class MainSettings(BaseSettings):
             mapping = {
                 "CMS": Module.CMS,
                 "CONTENT_MANAGEMENT": Module.CMS,
+                "LMS": Module.LMS,
+                "LEARNING_MANAGEMENT": Module.LMS,
             }
             return mapping.get(v_upper, Module.CMS)
         return v
@@ -328,6 +343,8 @@ class MainSettings(BaseSettings):
         value = self._get_env_value(env)
         if value is _MISSING:
             value = self._get_env_value(f"DJANGO_{key}")
+        if value is _MISSING:
+            value = self._get_env_value(key)
         if value is _MISSING and block:
             value = self._get_from_mapping(self.section(block), key, _MISSING)
         if value is _MISSING:
@@ -519,6 +536,8 @@ class MainSettings(BaseSettings):
             "environment": f"{env_emoji} {self.SERVER_ENV.value}",
             "runtime": f"{runtime_emoji} {self.RUNNING_ENV.value}",
             "module": f"📦 {self.MODULE.value}",
+            "website": self.WEBSITE_NAME,
+            "site_domain": self.SITE_DOMAIN,
             "debug": (
                 ("✅ Disabled" if not self.DEBUG else "⚠️ Enabled")
                 if self.is_production
@@ -528,6 +547,9 @@ class MainSettings(BaseSettings):
             "port": self.PORT,
             "is_production": self.is_production,
             "is_containerized": self.is_containerized,
+            "website_name": self.WEBSITE_NAME,
+            "website_dir": self.WEBSITE_DIR,
+            "site_domain": self.SITE_DOMAIN,
         }
 
     def print_summary(self) -> None:
@@ -543,6 +565,8 @@ class MainSettings(BaseSettings):
             ("Environment", self.summary["environment"]),
             ("Runtime", self.summary["runtime"]),
             ("Module", self.summary["module"]),
+            ("Website", self.summary["website"]),
+            ("Domain", self.summary["site_domain"]),
             ("Debug Mode", self.summary["debug"]),
             ("Production", "✅ Yes" if self.summary["is_production"] else "❌ No"),
             ("Containerized", "✅ Yes" if self.summary["is_containerized"] else "❌ No"),
@@ -606,6 +630,9 @@ class MainSettings(BaseSettings):
                 "host": self.HOST,
                 "port": self.PORT,
                 "is_containerized": self.is_containerized,
+                "website_name": self.WEBSITE_NAME,
+                "website_dir": self.WEBSITE_DIR,
+                "site_domain": self.SITE_DOMAIN,
             },
         }
 
