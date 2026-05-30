@@ -10,11 +10,21 @@ from ..conf import settings
 # ====================================
 # 🔧 Core Settings
 # ====================================
-MODULE = "lms"
+MODULE = settings.MODULE.value
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-BASE_DIR = Path(__file__).resolve().parent.parent.parent.parent
+BASE_DIR = Path(settings.WEBSITE_DIR)
+WORKSPACE_BASE_DIR = BASE_DIR.parent
+WEBSITE_NAME = settings.WEBSITE_NAME
+SITE_DOMAIN = settings.SITE_DOMAIN
+DOMAIN_NAME = settings.DOMAIN_NAME
+SITE_URL = settings.get(
+    "SITE_URL",
+    f"{'https' if settings.SSL_ENABLED else 'http'}://{SITE_DOMAIN}",
+)
+BASE_URL = SITE_URL
+WAGTAILADMIN_BASE_URL = settings.get("WAGTAILADMIN_BASE_URL", SITE_URL)
 
 # ====================================
 # 💾 Cache Configuration

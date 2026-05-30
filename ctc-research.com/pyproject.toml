@@ -13,6 +13,9 @@ dependencies = [
     "hypothesis",
     "pytest",
     "pytest-django",
+    "django-osoul",
+    "django-rseal",
+    "django-grep",
 ]
 
 # Inherit GitHub sources from workspace root.
