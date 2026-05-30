@@ -3,6 +3,17 @@
 # Usage: docker compose -f docker-compose.yml -f ctc-research.docker-compose.yml up -d
 # ============================================================
 
+x-django-env: &django-env
+  RUNNING_ENV: docker
+  SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+  PROJECT_PATH: ${PROJECT_PATH:-ctc-research}
+  DJANGO_SITE: ${PROJECT_PATH:-ctc-research}
+  DJANGO_WEBSITE: ${PROJECT_PATH:-ctc-research}
+  WEBSITE: ${PROJECT_PATH:-ctc-research}
+  WEBSITE_NAME: ${PROJECT_PATH:-ctc-research}
+  DJANGO_SETTINGS_MODULE: settings
+  PYTHONPATH: /app/${PROJECT_PATH:-ctc-research}:/app
+
 x-django-base: &django-base
   build:
     context: ..
@@ -11,12 +22,12 @@ x-django-base: &django-base
       - PROJECT_PATH=${PROJECT_PATH:-ctc-research}
   restart: unless-stopped
   env_file:
+    - path: .env.${SERVER_ENV:-production}
+      required: false
     - path: .env
       required: false
   environment:
-    - RUNNING_ENV=docker
-    - SERVER_TYPE=${SERVER_TYPE:-gunicorn}
-    - PROJECT_PATH=${PROJECT_PATH:-ctc-research}
+    <<: *django-env
   networks:
     - traefik-net
     - site_network
@@ -83,23 +94,21 @@ services:
     ports:
       - "5070:5070"
     environment:
-      - RELOAD=${RELOAD:-false}
-      - SERVER_ENV=production
-      - DEBUG=False
-      - PORT=5070
-      - DB_HOST=postgres
-      - DB_NAME=db_ctc
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
-      - DJANGO_SETTINGS_MODULE=settings
-      - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*}
-      - SITE_DOMAIN=www.ctc-research.com
-      - RUN_SETUP=true
-      - LOAD_FIXTURES=${LOAD_FIXTURES:-false}
-      - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
-      - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-vresume@structa.cloud}
-      - SUPERUSER_PASSWORD=${SUPERUSER_PASSWORD:-mk_pAssWord123}
-      - DJANGO_SECURE_SSL_REDIRECT=false
-      - DJANGO_SECURE_PROXY_SSL_HEADER=('HTTP_X_FORWARDED_PROTO', 'https')
+      <<: *django-env
+      RELOAD: ${RELOAD:-false}
+      SERVER_ENV: ${SERVER_ENV:-production}
+      DEBUG: ${DEBUG:-false}
+      PORT: ${PORT:-5070}
+      ALLOWED_HOSTS: ${ALLOWED_HOSTS:-ctc-research.com,www.ctc-research.com,arch.ctc-research.com,localhost,127.0.0.1}
+      SITE_DOMAIN: ${SITE_DOMAIN:-ctc-research.com}
+      RUN_SETUP: ${RUN_SETUP:-true}
+      LOAD_FIXTURES: ${LOAD_FIXTURES:-false}
+      FORCE_LOAD_DUMPS: ${FORCE_LOAD_DUMPS:-false}
+      STRICT_PAGE_CONTENT: ${STRICT_PAGE_CONTENT:-true}
+      SUPERUSER_USERNAME: ${SUPERUSER_USERNAME:-admin}
+      SUPERUSER_EMAIL: ${SUPERUSER_EMAIL:-admin@ctc-research.com}
+      DJANGO_SECURE_SSL_REDIRECT: ${DJANGO_SECURE_SSL_REDIRECT:-false}
+      DJANGO_SECURE_PROXY_SSL_HEADER: ${DJANGO_SECURE_PROXY_SSL_HEADER:-('HTTP_X_FORWARDED_PROTO', 'https')}
     deploy:
       resources:
         limits:
@@ -139,12 +148,9 @@ services:
     depends_on:
       - ctc-website
     environment:
-      - SERVER_ENV=production
-      - PORT=5075
-      - DB_HOST=postgres
-      - DB_NAME=db_ctc
-      - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
-      - DJANGO_SETTINGS_MODULE=settings
+      <<: *django-env
+      SERVER_ENV: ${SERVER_ENV:-production}
+      PORT: ${WORKER_PORT:-5075}
     command: /rqworker-start
     healthcheck:
       test: ["CMD-SHELL", "pgrep -f 'rqworker' > /dev/null || exit 1"]
