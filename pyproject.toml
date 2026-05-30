@@ -1,9 +1,8 @@
 [project]
 name = "websites-workspace"
 version = "1.0.3"
+description = "Shared Django workspace for Structa Cloud and CTC Research websites"
 requires-python = ">=3.11"
-# Shared dependencies across all workspace members.
-# Individual members inherit these via the workspace mechanism.
 dependencies = [
     # Core
     "click", "colorlog", "fire",
@@ -15,7 +14,8 @@ dependencies = [
     "django-crispy-forms", "django-heroicons", "django-htmx",
     "django-unfold",
     # Dev tools
-    "django-debug-toolbar", "django-extensions", "django-silk",
+    "bumpver", "django-debug-toolbar", "django-extensions", "django-silk",
+    "django-stubs",
     # Data & forms
     "django-embed-video", "django-import-export", "django-simple-history",
     "django-tables2", "django-webpack-loader",
@@ -39,7 +39,7 @@ dependencies = [
     "gunicorn", "uvicorn", "watchfiles", "whitenoise",
     # DB
     "psycopg", "psycopg-binary",
-    # Utilities
+    # Utilities and tests
     "draftjs-exporter", "fido2", "hypothesis", "jinja2", "jwt",
     "livereload", "marshmallow", "pydantic", "pydantic-settings",
     "pytest", "pytest-django", "virtualenv",
@@ -47,11 +47,19 @@ dependencies = [
     "django-grep", "django-osoul", "django-rseal",
 ]
 
-[tool.uv.workspace]
-members = ["structa.cloud", "ctc-research.com"]
+[project.optional-dependencies]
+test = ["pytest", "pytest-django", "hypothesis"]
+dev = ["bumpver", "django-stubs"]
 
-# GitHub sources for internal libs — used by all workspace members.
-# Pin to the 'generic' branch; uv resolves the exact commit at sync time.
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["configs", "tasks"]
+
+# GitHub sources for internal libs — used by all websites.
+# Pin to the 'generic' branch; uv resolves the exact commit at lock/sync time.
 [tool.uv.sources]
 django-osoul = { git = "https://github.com/mammhoud/django-osoul", branch = "generic" }
 django-rseal = { git = "https://github.com/mammhoud/django-rseal", branch = "generic" }
@@ -82,6 +90,5 @@ tag = true
 push = true
 
 [tool.bumpver.file_patterns]
-"pyproject.toml"                   = ['version = "{version}"']
-"structa.cloud/pyproject.toml"     = ['version = "{version}"']
-"structa.cloud/__about__.py"       = ['^__version__ = "{version}"']
+"pyproject.toml" = ['version = "{version}"']
+"__about__.py"   = ['^__version__ = "{version}"']
