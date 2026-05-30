@@ -82,6 +82,9 @@ COPY websites/assets/static/ ${APP_HOME}/shared/assets/static/
 # Copy shared configuration package so `import configs` works inside the image
 COPY websites/configs/ ${APP_HOME}/configs/
 
+# Copy shared background task project for Celery workers
+COPY tasks/ ${APP_HOME}/tasks/
+
 # Copy workspace-level multi-site manage.py so containers can select a site
 # via `--site` or `DJANGO_SITE` env var. This ensures runtime switching.
 COPY websites/manage.py ${APP_HOME}/manage.py

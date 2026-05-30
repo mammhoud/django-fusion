@@ -15,11 +15,12 @@ import os
 import sys
 from pathlib import Path
 
-# Map short names to actual site directory names (if you want aliases).
+# Map short names to actual site directory names.
 ALIASES = {
     "ctc": "ctc-research.com",
     "ctc-research": "ctc-research.com",
-    "vresume": "VResume",
+    "structa": "structa.cloud",
+    "core": "structa.cloud",
     "vresume": "VResume",
 }
 
@@ -52,26 +53,30 @@ def main():
         # sensible default when nothing is provided
         selected = "ctc-research.com"
 
-    base_dir = Path(__file__).resolve().parent  # websites/
-    site_dir = base_dir / selected
+    repo_root = Path(__file__).resolve().parent
+    source_dir = repo_root / selected
+    wrapper_dir = repo_root / "websites" / selected
+    site_dir = source_dir if source_dir.exists() else wrapper_dir
 
     if site_dir.exists():
-        # Ensure the repo root and selected site directory are on sys.path so
-        # `import configs` will resolve to the chosen site's `configs` package.
-        repo_root = str(base_dir.parent)
-        site_path = str(site_dir)
-        if repo_root not in sys.path:
-            sys.path.insert(0, repo_root)
-        if site_path not in sys.path:
-            sys.path.insert(0, site_path)
-        print(f"Using site '{selected}' (site path: {site_path})", file=sys.stderr)
+        # Ensure the repo root and selected site directory are on sys.path. The
+        # repo root exposes shared configs; the site directory exposes website
+        # apps, templates, static assets, and website-local settings.py.
+        for path in (str(site_dir), str(repo_root)):
+            if path not in sys.path:
+                sys.path.insert(0, path)
+        os.environ.setdefault("DJANGO_WEBSITE", selected)
+        os.environ.setdefault("WEBSITE", selected)
+        os.environ.setdefault("WEBSITE_NAME", selected)
+        os.environ.setdefault("DJANGO_WEBSITE_DIR", str(site_dir))
+        os.environ.setdefault("WEBSITE_DIR", str(site_dir))
+        print(f"Using site '{selected}' (site path: {site_dir})", file=sys.stderr)
     else:
         print(f"Warning: site directory '{site_dir}' not found; continuing with current PYTHONPATH", file=sys.stderr)
 
-    # If the environment hasn't provided a settings module, use the site's
-    # `configs.settings` by default (the site directory was just pushed onto
-    # `sys.path`, so `configs` will resolve from the chosen site).
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'configs.settings')
+    # Prefer website-local settings.py; wrapper configs/settings.py remains
+    # available for deployments that explicitly use configs.settings.
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 
     try:
         from django.core.management import execute_from_command_line

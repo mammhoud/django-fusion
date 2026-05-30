@@ -1,25 +1,20 @@
-const { merge } = require('webpack-merge');
-const commonConfig = require('./common.config');
 const path = require('path');
-const fs = require('fs-extra');
-const chokidar = require('chokidar');
+const { createRequire } = require('module');
+const { resolveAssetPaths } = require('./paths');
 
-// ── Per-site configuration via PROJECT_PATH env var ──────────────────────────
-const PROJECT_PATH = process.env.PROJECT_PATH || 'ctc-research.com';
-const WORKSPACE_ROOT = path.resolve(__dirname, '..');
+const assetPaths = resolveAssetPaths();
+const assetsRequire = createRequire(path.join(assetPaths.assetsRoot, 'package.json'));
+const { merge } = assetsRequire('webpack-merge');
+const fs = assetsRequire('fs-extra');
+const chokidar = assetsRequire('chokidar');
+const rtlcss = assetsRequire('rtlcss');
+const { RawSource } = assetsRequire('webpack-sources');
+const commonConfig = require('./common.config');
 
-// In Docker, the app is at /app directly (PROJECT_PATH is the site name but
-// the code is already copied to /app). Detect Docker by checking RUNNING_ENV.
-const isDocker = process.env.RUNNING_ENV === 'docker';
-const PROJECT_ROOT = isDocker ? WORKSPACE_ROOT : path.join(WORKSPACE_ROOT, PROJECT_PATH);
-
-// Output path: Docker uses /app/assets/bundles, local uses workspace/bundles/<site>/
-const outputPath = isDocker
-  ? path.join(WORKSPACE_ROOT, 'assets', 'bundles', PROJECT_PATH)
-  : path.join(PROJECT_ROOT, 'assets', 'bundles');
+const outputPath = assetPaths.siteBundlesDir;
 const libsOutputPath = path.join(outputPath, 'libs');
 const configPath = path.resolve(__dirname, './package-copy.json');
-const staticUrl = '/static/';
+const staticUrl = `/static/bundles/${assetPaths.siteName}/`;
 
 // RTL CSS Pairs
 const cssPairs = [
@@ -43,9 +38,9 @@ async function copyLibs() {
 
     for (const packageName of packagesToCopy) {
       const destPackagePath = path.join(libsOutputPath, packageName);
-      const sourcePath = fs.existsSync(path.join(__dirname, '../node_modules', packageName, 'dist'))
-        ? path.join(__dirname, '../node_modules', packageName, 'dist')
-        : path.join(__dirname, '../node_modules', packageName);
+      const sourcePath = fs.existsSync(path.join(assetPaths.assetsNodeModules, packageName, 'dist'))
+        ? path.join(assetPaths.assetsNodeModules, packageName, 'dist')
+        : path.join(assetPaths.assetsNodeModules, packageName);
 
       await fs.copy(sourcePath, destPackagePath);
       console.log(`📦 Copied ${packageName} to libs/`);
@@ -111,7 +106,7 @@ module.exports = async (env, argv) => {
       buildDependencies: {
         config: [__filename],
       },
-      cacheDirectory: path.resolve(__dirname, '../node_modules/.cache/webpack'),
+      cacheDirectory: path.join(assetPaths.assetsNodeModules, '.cache', 'webpack'),
     },
 
     performance: {
@@ -197,7 +192,7 @@ module.exports = async (env, argv) => {
         open: false,
         proxy: {
           '/': {
-            target: 'http://localhost:5080',
+            target: process.env.DJANGO_DEV_SERVER || 'http://localhost:5080',
             changeOrigin: true,
           }
         },

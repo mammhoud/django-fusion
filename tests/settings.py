@@ -312,6 +312,28 @@ INSTALLED_APPS = [
     # Skip apps.accounts to avoid admin autodiscover issues with www.apps.accounts.models.tags
 ]
 
+
+import importlib.util as _importlib_util
+
+def _installed(app: str) -> bool:
+    try:
+        return _importlib_util.find_spec(app) is not None
+    except ModuleNotFoundError:
+        return False
+
+_OPTIONAL_TEST_APPS = {
+    "wagtail", "wagtail.images", "wagtail.documents", "wagtail.snippets",
+    "wagtail.search", "wagtail.admin", "wagtail.contrib.settings",
+    "taggit", "modelcluster", "django_osoul", "allauth",
+    "allauth.account", "allauth.socialaccount", "apps.blog",
+}
+INSTALLED_APPS = [
+    app for app in INSTALLED_APPS
+    if app not in _OPTIONAL_TEST_APPS or _installed(app)
+]
+if not _installed("wagtail"):
+    INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "apps.blog"]
+
 # Disable admin autodiscover to prevent import errors from accounts admin
 # We'll manually register needed models in conftest.py instead
 import sys
@@ -331,8 +353,9 @@ MIDDLEWARE = [
     "django.middleware.csrf.CsrfViewMiddleware",
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
-    "allauth.account.middleware.AccountMiddleware",
 ]
+if _installed("allauth.account"):
+    MIDDLEWARE.append("allauth.account.middleware.AccountMiddleware")
 
 TEMPLATES = [{
     "BACKEND": "django.template.backends.django.DjangoTemplates",

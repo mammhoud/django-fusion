@@ -1,0 +1,79 @@
+# ============================================================
+# Shared Background Task Server
+# ============================================================
+# Runs one Celery worker/beat pair that can process tasks for every website.
+# Website-specific tasks must pass `website` when enqueueing work, e.g.
+# tasks.email.send_email_task.delay(..., website="ctc-research.com").
+#
+# Usage:
+#   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up shared-tasks-worker shared-tasks-beat
+# ============================================================
+
+networks:
+  traefik-net:
+    name: traefik-net
+    external: true
+
+x-shared-tasks-base: &shared-tasks-base
+  build:
+    context: ..
+    dockerfile: ./compose/django/Dockerfile
+    args:
+      PROJECT_PATH: ${TASKS_PROJECT_PATH:-ctc-research.com}
+  restart: unless-stopped
+  working_dir: /app
+  env_file:
+    - path: ../.env
+      required: false
+  environment: &shared-tasks-env
+    RUNNING_ENV: docker
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+    DJANGO_SITE: ${DJANGO_SITE:-ctc-research.com}
+    DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research.com}
+    WEBSITE: ${WEBSITE:-ctc-research.com}
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-vresume-postgres}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_NAME: ${DB_NAME:-vresume}
+    DB_USER: ${DB_USER:-vresume}
+    DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
+    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
+    CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
+  volumes:
+    - ../:/app:z
+  networks:
+    - traefik-net
+  depends_on:
+    - vresume-redis
+    - vresume-postgres
+
+services:
+  shared-tasks-worker:
+    <<: *shared-tasks-base
+    container_name: shared-tasks-worker
+    command: >
+      celery -A tasks worker
+      --loglevel=${CELERY_LOG_LEVEL:-info}
+      --queues=${CELERY_QUEUES:-shared,email,default}
+      --concurrency=${CELERY_WORKER_CONCURRENCY:-2}
+      --prefetch-multiplier=${CELERY_PREFETCH_MULTIPLIER:-1}
+      --without-gossip
+      --without-mingle
+      -O fair
+    ports: []
+    labels: {}
+
+  shared-tasks-beat:
+    <<: *shared-tasks-base
+    container_name: shared-tasks-beat
+    command: >
+      celery -A tasks beat
+      --loglevel=${CELERY_LOG_LEVEL:-info}
+      --scheduler django_celery_beat.schedulers:DatabaseScheduler
+      --pidfile=/tmp/shared-celerybeat.pid
+    ports: []
+    labels: {}
