@@ -487,3 +487,21 @@ make env-check
 
 Last Updated: May 9, 2024
 Version: 1.0.0
+
+## 2026-05 targeted auth, notification, and task checks
+
+Run these checks after editing auth templates, HTMX form handlers, notification headers, or Celery task bootstrap code:
+
+```bash
+uv run pytest tests/unit/test_notification_headers.py tests/unit/tasks/test_runtime_imports.py
+uv run python manage.py --site ctc-research check
+uv run python manage.py --site lms-demo check
+uv run python scripts/load_dumped_data.py --site ctc-research --list
+```
+
+For production-equivalent settings, prefix Django commands with `SERVER_ENV=production`:
+
+```bash
+SERVER_ENV=production uv run python manage.py --site ctc-research check
+SERVER_ENV=production uv run python manage.py --site ctc-research help setup_wagtail_home
+```

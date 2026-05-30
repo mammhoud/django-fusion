@@ -136,7 +136,7 @@ class AuthHTMXSocialAccountAdapter(DefaultSocialAccountAdapter):
         super().pre_social_login(request, sociallogin)
 
 
-class RegistrationAdapter(DefaultAccountAdapter):
+class RegistrationAdapter(AuthHTMXAdapter):
     """
     Custom allauth adapter that routes lifecycle events into the
     existing email service.

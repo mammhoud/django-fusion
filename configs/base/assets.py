@@ -52,6 +52,11 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS     = settings.get("DATA_UPLOAD_MAX_NUMBER_FIELDS"
 # ── Static files ──────────────────────────────────────────────────────────────
 STATIC_URL  = settings.get("STATIC_URL", "/static/")
 
+# collectstatic must always have a filesystem destination. Keep generated
+# files under the active website so both ctc-research and lms-demo can be
+# collected independently while sharing the same workspace image.
+STATIC_ROOT = str(settings.get("STATIC_ROOT", ASSETS_DIR / "staticfiles"))
+
 _staticfiles_candidates = [
     (f"bundles/{SITE_NAME}", SITE_BUNDLES_DIR),
     ("bundles/shared", SHARED_BUNDLES_DIR),

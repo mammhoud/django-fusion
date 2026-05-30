@@ -69,3 +69,50 @@ curl -fL -H 'X-Forwarded-Proto: https' http://localhost:5072/health/
 - Use the shared task stack only when background jobs are needed.
 - Rotate default database and Redis passwords before deployment.
 - Keep the Traefik ACME CA server on staging until DNS and routing are confirmed, then switch to the production Let's Encrypt endpoint.
+
+## 2026-05 runtime updates
+
+### Local log mounts
+
+All Django and Celery compose services now mount `compose/logs` to `/app/logs`, so entrypoint logs such as `build_assets.log`, `collectstatic.log`, `load_dumped_data.log`, and `verify_runtime.log` are available from the compose directory on the host.
+
+```bash
+mkdir -p compose/logs
+docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml up -d --build vresume-website
+tail -f compose/logs/collectstatic.log
+```
+
+### Static collection and runtime setup
+
+`STATIC_ROOT` is set per website at `<site>/assets/staticfiles`, which keeps `ctc-research` and `lms-demo` build outputs isolated.
+
+```bash
+SERVER_ENV=production uv run python manage.py --site ctc-research collectstatic --noinput
+SERVER_ENV=production uv run python manage.py --site lms-demo collectstatic --noinput
+SERVER_ENV=production uv run python scripts/verify_runtime.py --site ctc-research --strict-assets --strict-pages
+```
+
+### Celery workers for both websites
+
+The task compose file supports either the shared queue pair or explicit site-scoped workers/beat services.
+
+```bash
+# Shared worker/beat pair
+docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat
+
+# CTC Research site-scoped worker/beat
+docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up -d ctc-research-tasks-worker ctc-research-tasks-beat
+
+# LMS demo / Structa site-scoped worker/beat
+docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up -d lms-demo-tasks-worker lms-demo-tasks-beat
+```
+
+### Delegate workflow for operators
+
+Use this checklist when delegating deploy verification across people or automation agents:
+
+1. **Build delegate:** run `docker compose -f compose/docker-compose.yml build vresume-website` and confirm no dependency drift.
+2. **Runtime delegate:** run `python manage.py --site <site> check`, `migrate`, `collectstatic`, and `scripts/verify_runtime.py` for each site.
+3. **Tasks delegate:** start the relevant Celery worker/beat pair and inspect `compose/logs` for import or broker errors.
+4. **Auth delegate:** submit HTMX login/register/password forms and verify `HX-Trigger` notification payloads and email backend output.
+5. **Cleanup delegate:** follow `docs/reports/unused_files_plan.md` before removing duplicate legacy files.
