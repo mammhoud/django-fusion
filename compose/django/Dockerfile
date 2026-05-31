@@ -79,7 +79,16 @@ COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 COPY .docker-image-data/ ${APP_HOME}/
 
 # -----------------------------------------------------
-# 5. Entrypoint and helper scripts
+# 5. Install the shared frontend toolchain in the image.
+# -----------------------------------------------------
+# Build/collect commands may run at container startup, so install dev tooling
+# explicitly even though NODE_ENV defaults to production. This keeps webpack-cli
+# available non-interactively and avoids npx install prompts.
+RUN cd ${APP_HOME}/assets \
+    && npm ci --include=dev --legacy-peer-deps --no-audit --no-fund
+
+# -----------------------------------------------------
+# 6. Entrypoint and helper scripts
 # -----------------------------------------------------
 RUN mkdir -p ${APP_HOME}/logs \
     && sed -i 's/\r$//g' /app/compose/django/entrypoint /app/compose/django/start /app/compose/django/rqworker-start /app/compose/django/flower /app/Makefile \

@@ -16,6 +16,12 @@ import sys
 from pathlib import Path
 
 # Map short names to actual site directory names.
+SITES = {
+    "ctc-research": "ctc-research",
+    "lms-demo": "lms-demo",
+    "vresume": "VResume",
+}
+
 ALIASES = {
     "ctc": "ctc-research",
     "ctc-research": "ctc-research",
@@ -50,9 +56,21 @@ def _pop_site_arg(argv):
     return None
 
 
+def _print_sites() -> None:
+    print("Available sites:")
+    print("  ctc-research  aliases: ctc, ctc-research.com")
+    print("  lms-demo      aliases: structa, structa.cloud, lms")
+    print("  vresume       aliases: resume, VResume, vresume.structa.cloud")
+
+
 def main():
+    if "--list-sites" in sys.argv:
+        sys.argv.remove("--list-sites")
+        _print_sites()
+        return
+
     # Allow CLI arg to override env vars.
-    site_arg = _pop_site_arg(sys.argv) or os.environ.get("DJANGO_SITE") or os.environ.get("SITE")
+    site_arg = _pop_site_arg(sys.argv) or os.environ.get("DJANGO_SITE") or os.environ.get("DJANGO_WEBSITE") or os.environ.get("WEBSITE") or os.environ.get("SITE")
     if site_arg:
         selected = ALIASES.get(site_arg.lower(), site_arg)
     else:
@@ -72,9 +90,11 @@ def main():
         for path in (str(site_app_dir), str(site_dir), str(repo_root)):
             if path not in sys.path:
                 sys.path.insert(0, path)
+        os.environ.setdefault("DJANGO_SITE", logical_site)
         os.environ.setdefault("DJANGO_WEBSITE", logical_site)
         os.environ.setdefault("WEBSITE", logical_site)
         os.environ.setdefault("WEBSITE_NAME", logical_site)
+        os.environ.setdefault("PROJECT_PATH", logical_site)
         os.environ.setdefault("DJANGO_WEBSITE_DIR", str(site_dir))
         os.environ.setdefault("WEBSITE_DIR", str(site_dir))
         print(f"Using site '{logical_site}' (site path: {site_dir})", file=sys.stderr)

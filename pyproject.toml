@@ -68,7 +68,7 @@ django-grep  = { git = "https://github.com/mammhoud/django-grep",  branch = "gen
 
 [tool.pytest.ini_options]
 minversion = "7.0"
-addopts = ["--strict-markers", "--strict-config", "-v", "--tb=short", "--no-header"]
+addopts = ["--strict-markers", "--strict-config", "-v", "--tb=short", "--no-header", "--import-mode=importlib"]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 testpaths = ["tests"]
 python_files = ["test_*.py", "*_test.py"]

@@ -55,16 +55,24 @@ def fixture_dirs() -> list[Path]:
     return dirs
 
 
-def ordered_fixtures(include_extra: bool) -> list[Path]:
+def ordered_fixtures(include_extra: bool, include_dumps: bool) -> list[Path]:
     found: list[Path] = []
     for directory in fixture_dirs():
         candidates: list[Path] = []
-        primary = directory / "dump-data.json"
-        if primary.exists():
-            candidates.append(primary)
-        candidates.extend(sorted(directory.glob("*dump*.json")))
+        if include_dumps:
+            primary = directory / "dump-data.json"
+            if primary.exists():
+                candidates.append(primary)
+            candidates.extend(sorted(directory.glob("*dump*.json")))
         if include_extra:
-            candidates.extend(directory / name for name in ("initial_choices.json", "users.json"))
+            preferred = [
+                directory / "auth" / "group_dummy.json",
+                directory / "auth" / "user_dummy.json",
+                directory / "sites" / "site_dummy.json",
+                directory / "initial_choices.json",
+                directory / "users.json",
+            ]
+            candidates.extend(preferred)
         for path in candidates:
             if path.exists() and path not in found:
                 found.append(path)
@@ -85,7 +93,8 @@ def main() -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--site", default=os.getenv("DJANGO_SITE") or os.getenv("DJANGO_WEBSITE") or os.getenv("WEBSITE") or "ctc-research.com")
     parser.add_argument("--force", action="store_true", help="Load dump fixtures even when Wagtail already has content.")
-    parser.add_argument("--include-extra", action="store_true", help="Also load non-dump bootstrap fixtures such as users and choices.")
+    parser.add_argument("--include-dumps", action="store_true", help="Load legacy dump fixtures with hard-coded Wagtail/contenttype IDs.")
+    parser.add_argument("--include-extra", action="store_true", help="Also load non-dump bootstrap fixtures such as auth/site/users/choices.")
     parser.add_argument("--list", action="store_true", help="Only list the fixtures that would be loaded.")
     args = parser.parse_args()
 
@@ -96,7 +105,8 @@ def main() -> int:
 
     django.setup()
 
-    fixtures = ordered_fixtures(args.include_extra)
+    include_dumps = args.include_dumps or args.force
+    fixtures = ordered_fixtures(args.include_extra, include_dumps)
     if not fixtures:
         print("ℹ️  No dump fixtures found for this site.")
         return 0
@@ -108,7 +118,7 @@ def main() -> int:
         return 0
 
     page_count = wagtail_page_count()
-    if page_count is not None and page_count > 2 and not args.force:
+    if include_dumps and page_count is not None and page_count > 2 and not args.force:
         print(f"ℹ️  Skipping dump fixture load because Wagtail already has {page_count} pages. Use --force to reload.")
         return 0
 

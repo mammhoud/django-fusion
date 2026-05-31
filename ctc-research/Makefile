@@ -5,8 +5,8 @@
         populate-data-pages-only populate-data-clear test-reports clean-test-reports check format \
         lint fix fix-unused shell debug db-shell reset-db clean-migrations \
         reset-migrations clean-python clean env-show \
-        frontend-install frontend-build frontend-watch frontend-production \
-        css-purge css-analyze frontend-clean assets-setup webpack-validate
+        frontend-install frontend-build frontend-watch frontend-production build-assets main-assets assets \
+        workspace-assets workspace-test scripts workspace-script css-purge css-analyze frontend-clean assets-setup webpack-validate
 
 .DEFAULT_GOAL := help
 SHELL := /bin/bash
@@ -79,6 +79,21 @@ server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var
 		echo "WSGI mode detected – using sync workers"; \
 		$(UV_RUN) gunicorn $$APP_MODULE --bind $$HOST:$$PORT --workers $$WORKERS --timeout $$TIMEOUT --log-level $$LOG_LEVEL; \
 	fi
+
+
+assets: ## Delegate to this project's assets/Makefile (pass target after assets)
+	@$(MAKE) -C assets $(filter-out $@,$(MAKECMDGOALS))
+
+build-assets main-assets: frontend-production ## Build this project's main frontend assets
+
+workspace-assets: ## Delegate to workspace assets Makefile for this project
+	@PROJECT_PATH=$(SITE_NAME) $(MAKE) -C ../assets $(filter-out $@,$(MAKECMDGOALS))
+
+workspace-test: ## Run workspace pytest for this project
+	@cd .. && $(MAKE) tests-website WEBSITE=$(SITE_NAME)
+
+scripts workspace-script: ## Delegate to workspace test utility scripts
+	@cd .. && $(MAKE) scripts $(filter-out $@,$(MAKECMDGOALS))
 
 frontend-install: ## Install npm dependencies
 	@$(MAKE) -C assets install
@@ -272,3 +287,8 @@ clean-python: ## Clean Python cache artifacts
 
 clean: clean-python clean-test-reports frontend-clean ## Django + frontend clean
 	@echo -e "$(GREEN)✅ Django cleaned$(NC)"
+
+# Delegated subtargets are consumed by nested Makefiles.
+.PHONY: list health containers production production-simple domains vresume-pages
+list health containers production production-simple domains vresume-pages:
+	@:

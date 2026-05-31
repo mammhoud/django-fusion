@@ -105,13 +105,13 @@ Create the verify_deployment management command (www/alliance/CI/management/comm
 - Reference: .kiro/steering/structa-cloud-alliance.md
 ```
 
-### Create build_assets Command
+### Create Makefile Asset Delegates
 ```
-Create the build_assets management command (www/alliance/CI/management/commands/build_assets.py) with:
-- Webpack bundling
-- Django collectstatic
-- Asset verification
-- Production/development modes
+Create Makefile targets that delegate asset work to the workspace assets package:
+- Webpack bundling through make build-assets WEBSITE=structa
+- Django collectstatic through manage.py collectstatic
+- Asset verification through tests/scripts/verify_runtime.py
+- Production/development modes through frontend-production/frontend-build
 ```
 
 ### Create load_fixtures Command
@@ -256,13 +256,13 @@ docker compose logs -f website
 
 # Run management commands
 docker compose exec website python manage.py verify_deployment
-docker compose exec website python manage.py build_assets --production
+docker compose exec website make build-assets
 ```
 
 ### Production Deployment
 ```bash
 # Build assets for production
-python manage.py build_assets --production
+make build-assets WEBSITE=structa
 
 # Run migrations
 python manage.py migrate --noinput

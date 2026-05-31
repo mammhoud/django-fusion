@@ -2,8 +2,8 @@ const path = require('path');
 const { createRequire } = require('module');
 const { resolveAssetPaths } = require('./paths');
 
-const assetPaths = resolveAssetPaths();
-const assetsRequire = createRequire(path.join(assetPaths.assetsRoot, 'package.json'));
+const defaultAssetPaths = resolveAssetPaths();
+const assetsRequire = createRequire(path.join(defaultAssetPaths.assetsRoot, 'package.json'));
 const { merge } = assetsRequire('webpack-merge');
 const fs = assetsRequire('fs-extra');
 const chokidar = assetsRequire('chokidar');
@@ -11,19 +11,51 @@ const rtlcss = assetsRequire('rtlcss');
 const { RawSource } = assetsRequire('webpack-sources');
 const commonConfig = require('./common.config');
 
-const outputPath = assetPaths.siteBundlesDir;
-const libsOutputPath = path.join(outputPath, 'libs');
 const configPath = path.resolve(__dirname, './package-copy.json');
-const staticUrl = `/static/bundles/${assetPaths.siteName}/`;
+const ALL_SITES = ['ctc-research', 'lms-demo', 'vresume'];
 
-// RTL CSS Pairs
 const cssPairs = [
   { ltr: 'css/static.min.css', rtl: 'css/static-rtl.min.css' },
   { ltr: 'css/bootstrap.min.css', rtl: 'css/bootstrap-rtl.min.css' },
 ];
 
-// Package copying function
-async function copyLibs() {
+class SiteManifestPlugin {
+  apply(compiler) {
+    compiler.hooks.thisCompilation.tap('SiteManifestPlugin', (compilation) => {
+      compilation.hooks.processAssets.tap(
+        { name: 'SiteManifestPlugin', stage: compilation.PROCESS_ASSETS_STAGE_REPORT },
+        () => {
+          const manifest = {};
+          for (const asset of compilation.getAssets()) {
+            manifest[asset.name] = `${compilation.outputOptions.publicPath || ''}${asset.name}`;
+          }
+          compilation.emitAsset('manifest.json', new RawSource(JSON.stringify(manifest, null, 2)));
+        }
+      );
+    });
+  }
+}
+
+class DistMirrorPlugin {
+  constructor(assetPaths) {
+    this.assetPaths = assetPaths;
+  }
+
+  apply(compiler) {
+    compiler.hooks.afterEmit.tapPromise('DistMirrorPlugin', async () => {
+      await fs.ensureDir(this.assetPaths.distSiteDir);
+      await fs.copy(this.assetPaths.siteBundlesDir, this.assetPaths.distSiteDir);
+      if (await fs.pathExists(this.assetPaths.sharedBundlesDir)) {
+        await fs.ensureDir(this.assetPaths.distSharedDir);
+        await fs.copy(this.assetPaths.sharedBundlesDir, this.assetPaths.distSharedDir);
+      }
+    });
+  }
+}
+
+async function copyLibs(assetPaths) {
+  const outputPath = assetPaths.siteBundlesDir;
+  const libsOutputPath = path.join(outputPath, 'libs');
   try {
     if (!fs.existsSync(configPath)) {
       console.log('📝 No package-copy.json found, skipping library copy');
@@ -44,7 +76,6 @@ async function copyLibs() {
 
       await fs.copy(sourcePath, destPackagePath);
       console.log(`📦 Copied ${packageName} to libs/`);
-
       copiedPackages.push(destPackagePath);
     }
 
@@ -55,7 +86,6 @@ async function copyLibs() {
   }
 }
 
-// Cleanup function
 async function cleanupLibs(copiedPackages) {
   try {
     for (const packagePath of copiedPackages) {
@@ -67,196 +97,131 @@ async function cleanupLibs(copiedPackages) {
   }
 }
 
-module.exports = async (env, argv) => {
+function createSiteConfig(env = {}, argv = {}, siteName) {
+  const assetPaths = resolveAssetPaths(siteName || env.site || process.env.PROJECT_PATH);
+  const outputPath = assetPaths.siteBundlesDir;
+  const staticUrl = `/static/bundles/${assetPaths.siteName}/`;
   const mode = argv.mode || (process.env.NODE_ENV === 'production' ? 'production' : 'development');
   const isProduction = mode === 'production';
   const isWatch = argv.watch || false;
   const isServe = argv.hot || false;
 
-  // Determine public path based on environment
-  // In Docker/production, assets are served through nginx at /static/
-  // In development with webpack-dev-server, use localhost:3000
   const publicPath = isServe
     ? 'http://localhost:3000/static/'
     : process.env.WEBPACK_PUBLIC_PATH || staticUrl;
 
-  console.log(`🚀 Webpack mode: ${mode}`);
-  console.log(`👀 Watch mode: ${isWatch ? 'enabled' : 'disabled'}`);
-  console.log(`🔥 Serve mode: ${isServe ? 'enabled (HMR)' : 'disabled'}`);
-  console.log(`📦 Public path: ${publicPath}`);
+  console.log(`🚀 ${assetPaths.siteName} webpack mode: ${mode}`);
+  console.log(`📦 ${assetPaths.siteName} public path: ${publicPath}`);
 
   let copiedPackages = [];
   let watcher = null;
+  const common = commonConfig({ ...env, site: assetPaths.siteName }, argv);
 
-  const common = commonConfig(env, argv);
-
-  const config = merge(common, {
+  return merge(common, {
+    name: assetPaths.siteName,
     mode,
-
     output: {
       path: outputPath,
-      publicPath: publicPath,
+      publicPath,
       filename: isProduction ? '[name].[contenthash:8].js' : '[name].js',
       chunkFilename: isProduction ? 'chunk/[name].[contenthash:8].chunk.js' : 'chunk/[name].chunk.js',
-      clean: !isWatch, // Don't clean during watch mode
+      clean: !isWatch,
     },
-
     cache: {
-      type: "filesystem",
-      buildDependencies: {
-        config: [__filename],
-      },
-      cacheDirectory: path.join(assetPaths.assetsNodeModules, '.cache', 'webpack'),
+      type: 'filesystem',
+      buildDependencies: { config: [__filename] },
+      cacheDirectory: path.join(assetPaths.assetsNodeModules, '.cache', 'webpack', assetPaths.siteName),
     },
-
     performance: {
-      hints: isProduction ? "warning" : false,
+      hints: isProduction ? 'warning' : false,
       maxAssetSize: 512000,
       maxEntrypointSize: 512000,
     },
-
     plugins: [
+      new SiteManifestPlugin(),
+      new DistMirrorPlugin(assetPaths),
       {
         apply: (compiler) => {
-          // Copy libraries before build starts
           compiler.hooks.beforeRun.tapPromise('CopyLibs', async () => {
-            copiedPackages = await copyLibs();
+            copiedPackages = await copyLibs(assetPaths);
           });
-
-          // Generate RTL CSS
           compiler.hooks.thisCompilation.tap('GenerateRTL', (compilation) => {
             compilation.hooks.processAssets.tap(
-              {
-                name: 'GenerateRTL',
-                stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONAL,
-              },
+              { name: 'GenerateRTL', stage: compilation.PROCESS_ASSETS_STAGE_ADDITIONAL },
               () => {
                 cssPairs.forEach((pair) => {
                   const ltrAsset = compilation.assets[pair.ltr];
                   if (ltrAsset) {
-                    const rtlCss = rtlcss.process(ltrAsset.source(), {
-                      autoRename: false,
-                      clean: false
-                    });
+                    const rtlCss = rtlcss.process(ltrAsset.source(), { autoRename: false, clean: false });
                     compilation.emitAsset(pair.rtl, new RawSource(rtlCss));
                   }
                 });
               }
             );
           });
-
-          // Watch package-copy.json in watch/serve mode
           if (isWatch || isServe) {
             compiler.hooks.watchRun.tap('WatchPackageConfig', () => {
               if (!watcher) {
-                console.log('👀 Watching package-copy.json for changes...');
-                watcher = chokidar.watch(configPath, {
-                  persistent: true,
-                  ignoreInitial: true,
-                });
-
+                watcher = chokidar.watch(configPath, { persistent: true, ignoreInitial: true });
                 watcher.on('change', async () => {
-                  console.log('📄 package-copy.json changed, updating libraries...');
                   await cleanupLibs(copiedPackages);
-                  copiedPackages = await copyLibs();
+                  copiedPackages = await copyLibs(assetPaths);
                 });
               }
             });
-
             compiler.hooks.watchClose.tap('CloseWatcher', () => {
               if (watcher) {
                 watcher.close();
                 watcher = null;
-                console.log('👋 Stopped watching package-copy.json');
               }
             });
           }
-
-          // Cleanup after production build
           if (isProduction && !isWatch && !isServe) {
-            compiler.hooks.done.tapPromise('CleanupLibs', async () => {
-              await cleanupLibs(copiedPackages);
-            });
+            compiler.hooks.done.tapPromise('CleanupLibs', async () => cleanupLibs(copiedPackages));
           }
-        }
-      }
+        },
+      },
     ],
-
-    // Development server configuration
     ...((isServe || isWatch) && {
       devServer: {
         port: 3000,
         host: 'localhost',
-        hot: isServe, // Only enable HMR in serve mode
+        hot: isServe,
         liveReload: true,
         open: false,
-        proxy: {
-          '/': {
-            target: process.env.DJANGO_DEV_SERVER || 'http://localhost:5080',
-            changeOrigin: true,
-          }
-        },
-        client: {
-          overlay: {
-            errors: true,
-            warnings: false,
-            runtimeErrors: true,
-          },
-          progress: true,
-        },
-        static: {
-          directory: outputPath,
-          publicPath: `${staticUrl}`,
-          watch: !isServe, // Watch static files in watch mode only
-        },
+        proxy: { '/': { target: process.env.DJANGO_DEV_SERVER || 'http://localhost:5080', changeOrigin: true } },
+        client: { overlay: { errors: true, warnings: false, runtimeErrors: true }, progress: true },
+        static: { directory: outputPath, publicPath: staticUrl, watch: !isServe },
         compress: true,
         historyApiFallback: true,
-        devMiddleware: {
-          writeToDisk: true, // Write files to disk for Django to serve
-          stats: 'minimal',
-        },
+        devMiddleware: { writeToDisk: true, stats: 'minimal' },
       },
     }),
-
     optimization: {
       minimize: isProduction,
-      minimizer: [
-        '...', // Use default minimizers
-      ],
+      minimizer: ['...'],
       splitChunks: {
         chunks: 'all',
         minSize: 10000,
         maxSize: 50000,
         cacheGroups: {
-          vendors: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all',
-            priority: 10,
-          },
-          common: {
-            name: 'common',
-            minChunks: 2,
-            chunks: 'all',
-            priority: 5,
-            reuseExistingChunk: true,
-          },
+          vendors: { test: /[\\/]node_modules[\\/]/, name: 'vendors', chunks: 'all', priority: 20, enforce: true },
+          sharedBase: { test: /[\\/]assets[\\/]static[\\/]js[\\/]base[\\/]/, name: 'shared-base', chunks: 'all', priority: 15, enforce: true },
+          common: { name: 'common', minChunks: 2, chunks: 'all', priority: 5, reuseExistingChunk: true },
         },
       },
       runtimeChunk: 'single',
     },
-
-    bail: isProduction, // Stop on error in production
+    bail: isProduction,
     devtool: isProduction ? 'source-map' : 'cheap-module-source-map',
-    stats: {
-      colors: true,
-      modules: false,
-      chunks: false,
-      assets: true,
-      performance: isProduction,
-      timings: true,
-    },
+    stats: { colors: true, modules: false, chunks: false, assets: true, performance: isProduction, timings: true },
   });
+}
 
-  return config;
+module.exports = async (env = {}, argv = {}) => {
+  const selected = env.site || process.env.PROJECT_PATH || 'ctc-research';
+  if (selected === 'all') {
+    return ALL_SITES.map((site) => createSiteConfig(env, argv, site));
+  }
+  return createSiteConfig(env, argv, selected);
 };
