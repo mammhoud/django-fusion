@@ -1,0 +1,55 @@
+# ============================================
+# CTC-RESEARCH.COM CONFIGURATION
+# Domain: ctc-research.com, www.ctc-research.com, arch.ctc-research.com
+# ============================================
+http:
+  routers:
+    # Redirect HTTP to HTTPS for media/static files
+    ctc-media-http:
+      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: ctc-media-service
+      priority: 100
+
+    # HTTPS for media/static files
+    ctc-media-https:
+      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: ctc-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "ctc-research.com"
+            sans: ["www.ctc-research.com", "arch.ctc-research.com"]
+
+    # HTTPS for main site
+    ctc-site-https:
+      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: ctc-site-service
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    # Django backend
+    ctc-site-service:
+      loadBalancer:
+        servers:
+          - url: "http://ctc-website:5070"
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 10s
+          headers:
+            Host: "ctc-research.com"
+            X-Forwarded-Proto: "https"
+
+    # Nginx media/static server
+    ctc-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://ctc-website-media:8271"

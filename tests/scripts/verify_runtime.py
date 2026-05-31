@@ -44,7 +44,7 @@ def check_assets(strict: bool) -> int:
     failures = 0
     webpack_config = getattr(settings, "WEBPACK_LOADER", {}).get("DEFAULT", {})
     stats_file = Path(webpack_config.get("STATS_FILE", ""))
-    if stats_file and stats_file.exists():
+    if stats_file and stats_file.exists() and stats_file.is_file():
         try:
             data = json.loads(stats_file.read_text())
             status = data.get("status", "unknown")

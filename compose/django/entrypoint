@@ -99,7 +99,9 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
     echo "🔎 Verifying Wagtail pages and collected assets..."
-    VERIFY_ARGS=("--site" "$SITE_NAME" "--strict-assets" "--strict-pages")
+    VERIFY_ARGS=("--site" "$SITE_NAME")
+    [ "${STRICT_ASSETS:-true}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
+    [ "${STRICT_PAGE_CONTENT:-true}" = "true" ] && VERIFY_ARGS+=("--strict-pages")
     [ "${STRICT_PAGE_CONTENT:-true}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
     if ! run_logged verify_runtime python tests/scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
         echo "⚠️  runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"

@@ -58,6 +58,10 @@ providers:
   file:
     directory: /etc/traefik/dynamic
     watch: true
+    # Watches all subdirectories including:
+    # - /etc/traefik/dynamic/ctc-research.yml (ctc-research.com)
+    # - /etc/traefik/dynamic/structa-cloud.yml (core.structa.cloud)
+    # - /etc/traefik/dynamic/vresume/vresume-structa.yml (vresume.structa.cloud)
 
 # ============================================
 # Let's Encrypt (ACME)
