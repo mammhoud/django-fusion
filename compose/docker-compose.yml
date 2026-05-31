@@ -67,6 +67,11 @@ services:
       WEBSITE: ctc-research
       WEBSITE_NAME: ctc-research
       PROJECT_PATH: ctc-research
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"
+      - "traefik.http.routers.ctc-website.rule=Host(`ctc-website.local`) || Host(`ctc-research.local`)"
+      - "traefik.http.services.ctc-website.loadbalancer.server.port=5070"
     healthcheck:
       test: ["CMD", "curl", "-fL", "http://localhost:5070/health/"]
       interval: 30s
@@ -91,6 +96,11 @@ services:
       WEBSITE: lms-demo
       WEBSITE_NAME: lms-demo
       PROJECT_PATH: lms-demo
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:lms-demo.local"
+      - "traefik.http.routers.lms-demo.rule=Host(`lms-demo.local`)"
+      - "traefik.http.services.lms-demo.loadbalancer.server.port=5071"
     healthcheck:
       test: ["CMD", "curl", "-fL", "http://localhost:5071/health/"]
       interval: 30s
@@ -115,6 +125,11 @@ services:
       WEBSITE: vresume
       WEBSITE_NAME: vresume
       PROJECT_PATH: vresume
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:vresume.local"
+      - "traefik.http.routers.vresume.rule=Host(`vresume.local`)"
+      - "traefik.http.services.vresume.loadbalancer.server.port=5072"
     healthcheck:
       test: ["CMD", "curl", "-fL", "http://localhost:5072/health/"]
       interval: 30s

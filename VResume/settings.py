@@ -16,7 +16,4 @@ from configs.site import configure_site_environment
 configure_site_environment("vresume", module="CMS", default_port=5072)
 
 from configs.settings import *  # noqa: E402,F401,F403
-
-ROOT_URLCONF = "www.urls"
-WSGI_APPLICATION = "www.wsgi.application"
-ASGI_APPLICATION = "www.asgi.application"
+from config.overrides import *  # noqa: E402,F401,F403

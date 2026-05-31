@@ -318,14 +318,13 @@ APP_MODULE: "core.asgi:application"
 
 ## Management Commands
 
-### build_assets.py
-Build webpack bundles and run collectstatic.
+### Makefile asset build
+Build webpack bundles through the workspace asset Makefiles and run collectstatic separately when needed.
 
 ```bash
-python manage.py build_assets
-python manage.py build_assets --webpack-only
-python manage.py build_assets --collectstatic-only
-python manage.py build_assets --production
+make build-assets WEBSITE=structa
+make assets build PROJECT_PATH=lms-demo
+python manage.py --site=lms-demo collectstatic --noinput
 ```
 
 ### verify_deployment.py
@@ -385,11 +384,11 @@ assets/
 
 ### Build Command
 ```bash
-python manage.py build_assets
+make build-assets WEBSITE=structa
 ```
 
 This will:
-1. Run webpack to generate bundles
+1. Run webpack through the shared assets package to generate bundles
 2. Run collectstatic to collect static files
 3. Verify the output
 

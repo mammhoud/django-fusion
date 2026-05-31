@@ -25,6 +25,32 @@ A personal portfolio CMS built with Django, Wagtail, HTMX, and Bootstrap. Single
 
 ---
 
+
+## Workspace commands
+
+This project is managed from the workspace root. The local `manage.py` delegates to `../manage.py`, and frontend assets are built by the single shared package at `../assets/package.json`. Do not add project-local `package.json` or webpack config files.
+
+```bash
+# Django CLI
+../.venv/bin/python ../manage.py --site vresume check
+./manage.py check
+./manage.py runserver 0.0.0.0:5072
+
+# Assets
+make build-assets
+make main-assets
+make assets build
+cd .. && make build-assets WEBSITE=vresume
+cd .. && npm --prefix assets run build -- --site vresume
+cd .. && npm --prefix assets run build:collect -- --site vresume
+
+# Data and tests
+cd .. && npm --prefix assets run populate -- --site vresume --dry-run
+cd .. && make tests-website WEBSITE=vresume
+```
+
+Runtime port: `5072`. Generated media/staticfiles/bundles and database files are ignored; source fixtures and source static assets remain tracked.
+
 ## Scope
 
 VResume is a content-managed personal portfolio site. The owner manages everything through the Wagtail admin — no code changes needed for content updates. Key capabilities:
