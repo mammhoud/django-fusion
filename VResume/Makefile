@@ -50,3 +50,20 @@ runserver:
 .PHONY: list health containers production production-simple domains vresume-pages
 list health containers production production-simple domains vresume-pages:
 	@:
+
+# Docker delegation helpers (delegate to workspace top-level Makefile)
+.PHONY: docker-build docker-up docker-down docker-redeploy docker-build-server
+docker-build:
+	@cd .. && $(MAKE) docker-build WEBSITE=vresume
+
+docker-up:
+	@cd .. && $(MAKE) docker-up WEBSITE=vresume
+
+docker-down:
+	@cd .. && $(MAKE) docker-down WEBSITE=vresume
+
+docker-redeploy:
+	@cd .. && $(MAKE) docker-redeploy WEBSITE=vresume
+
+docker-build-server:
+	@cd .. && $(MAKE) docker-build-server WEBSITE=vresume

@@ -183,6 +183,38 @@ docker-prune-containers:
 	docker compose -f docker-compose.yml down --remove-orphans
 	docker container prune -f
 
+# Build shared/base services (proxy, db, redis, docs, adminer, etc.)
+.PHONY: docker-build-base docker-build-full docker-redeploy docker-prune-images docker-test-build build-ctc-research
+docker-build-base:
+	@echo "Building base/shared services: traefik, postgres, redis, docs, adminer, blinko"
+	$(DOCKER_BUILD_ARGS) docker compose -f docker-compose.yml build traefik postgres redis docs adminer blinko || true
+
+# Build selected website after building base services
+docker-build-full: docker-build-base docker-build
+	@echo "Finished full build for WEBSITE=$(SITE)"
+
+# Redeploy workflow: stop, prune containers, full build, and start
+docker-redeploy: docker-down docker-prune-containers docker-build-full docker-up
+	@echo "Redeploy complete for WEBSITE=$(SITE)"
+
+# Prune unused images
+docker-prune-images:
+	@echo "Pruning unused docker images (this may remove other images)."
+	docker image prune -a -f || true
+
+# Lightweight test-build: build and start containers for WEBSITE
+docker-test-build: prepare-image-data
+	@echo "Building and starting containers for test (WEBSITE=$(SITE))"
+	$(DOCKER_BUILD_ARGS) docker compose -f $(COMPOSE_FILE) build || true
+	$(DOCKER_BUILD_ARGS) docker compose -f $(COMPOSE_FILE) up -d || true
+	@echo "Containers are up; run tests with 'make test' or run integration tests."
+
+# Convenience target to build and start ctc-research explicitly
+build-ctc-research:
+	$(MAKE) docker-down WEBSITE=ctc
+	$(MAKE) docker-build WEBSITE=ctc
+	$(MAKE) docker-up WEBSITE=ctc
+
 docker-prune-data:
 	docker compose -f docker-compose.yml down --volumes --remove-orphans
 	rm -rf compose/postgres/backups/* compose/data/* .docker-image-data/*

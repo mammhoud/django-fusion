@@ -292,3 +292,20 @@ clean: clean-python clean-test-reports frontend-clean ## Django + frontend clean
 .PHONY: list health containers production production-simple domains vresume-pages
 list health containers production production-simple domains vresume-pages:
 	@:
+
+# Docker delegation helpers (delegate to workspace top-level Makefile)
+.PHONY: docker-build docker-up docker-down docker-redeploy docker-build-server
+docker-build:
+	@cd .. && $(MAKE) docker-build WEBSITE=lms-demo
+
+docker-up:
+	@cd .. && $(MAKE) docker-up WEBSITE=lms-demo
+
+docker-down:
+	@cd .. && $(MAKE) docker-down WEBSITE=lms-demo
+
+docker-redeploy:
+	@cd .. && $(MAKE) docker-redeploy WEBSITE=lms-demo
+
+docker-build-server:
+	@cd .. && $(MAKE) docker-build-server WEBSITE=lms-demo
