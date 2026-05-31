@@ -152,14 +152,14 @@
   },
   "scripts": {
     "install:assets": "npm --prefix ../assets ci",
-    "dev": "PROJECT_PATH=ctc-research.com npm --prefix ../assets run dev",
-    "watch": "PROJECT_PATH=ctc-research.com npm --prefix ../assets run watch",
-    "build": "PROJECT_PATH=ctc-research.com npm --prefix ../assets run build",
-    "build:dev": "PROJECT_PATH=ctc-research.com npm --prefix ../assets run build:dev",
+    "dev": "PROJECT_PATH=ctc-research npm --prefix ../assets run dev",
+    "watch": "PROJECT_PATH=ctc-research npm --prefix ../assets run watch",
+    "build": "PROJECT_PATH=ctc-research npm --prefix ../assets run build",
+    "build:dev": "PROJECT_PATH=ctc-research npm --prefix ../assets run build:dev",
     "build:prod": "npm run build",
-    "build:collectstatic": "PROJECT_PATH=ctc-research.com npm --prefix ../assets run build && ../.venv/bin/python ../manage.py --site=ctc-research.com collectstatic --noinput",
-    "analyze": "PROJECT_PATH=ctc-research.com npm --prefix ../assets run analyze",
-    "clean": "rm -rf assets/bundles/ctc-research.com",
+    "build:collectstatic": "PROJECT_PATH=ctc-research npm --prefix ../assets run build && ../.venv/bin/python ../manage.py --site=ctc-research.com collectstatic --noinput",
+    "analyze": "PROJECT_PATH=ctc-research npm --prefix ../assets run analyze",
+    "clean": "rm -rf assets/bundles/ctc-research",
     "start": "npm run dev"
   }
 }
