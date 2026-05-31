@@ -84,7 +84,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     LOAD_DUMP_ARGS=("--site" "$SITE_NAME")
     [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force")
     [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
-    if ! run_logged load_dumped_data python scripts/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
+    if ! run_logged load_dumped_data python tests/scripts/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
         echo "⚠️  dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
     fi
 
@@ -101,7 +101,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "🔎 Verifying Wagtail pages and collected assets..."
     VERIFY_ARGS=("--site" "$SITE_NAME" "--strict-assets" "--strict-pages")
     [ "${STRICT_PAGE_CONTENT:-true}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
-    if ! run_logged verify_runtime python scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
+    if ! run_logged verify_runtime python tests/scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
         echo "⚠️  runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
     fi
 

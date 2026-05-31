@@ -157,11 +157,11 @@ migrate-site:
 
 load-dumps-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) scripts/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
+	$(PYTHON) tests/scripts/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
 
 verify-runtime-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) scripts/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
+	$(PYTHON) tests/scripts/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
 
 full-site-check: build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site
 

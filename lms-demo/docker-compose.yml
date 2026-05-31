@@ -17,6 +17,10 @@ x-django-base: &django-base
     - RUNNING_ENV=docker
     - SERVER_TYPE=${SERVER_TYPE:-gunicorn}
     - PROJECT_PATH=${PROJECT_PATH:-lms-demo}
+    - DJANGO_SETTINGS_MODULE=settings
+    - DJANGO_SITE=${PROJECT_PATH:-lms-demo}
+    - WEBSITE=${PROJECT_PATH:-lms-demo}
+    - PYTHONPATH=/app/${PROJECT_PATH:-lms-demo}:/app
   networks:
     - traefik-net
   external_links:
@@ -84,12 +88,14 @@ services:
       - PORT=5071
       - DB_HOST=postgres
       - DB_NAME=db_structa
+      - DB_USER=structa
+      - DB_PASSWORD=mk_pAssWord123
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
-      - DJANGO_SETTINGS_MODULE=configs.settings
+      - DJANGO_SETTINGS_MODULE=settings
       - APP_MODULE=www.asgi:application
       - ALLOWED_HOSTS=${ALLOWED_HOSTS:-*,structa-website,localhost,127.0.0.1,core.structa.cloud,structa.cloud,www.structa.cloud}
       - SITE_DOMAIN=core.structa.cloud
-      - RUN_SETUP=false
+      - RUN_SETUP=${RUN_SETUP:-true}
       - LOAD_FIXTURES=${LOAD_FIXTURES:-false}
       - SUPERUSER_USERNAME=${SUPERUSER_USERNAME:-admin}
       - SUPERUSER_EMAIL=${SUPERUSER_EMAIL:-vresume@structa.cloud}
@@ -139,8 +145,10 @@ services:
       - PORT=5075
       - DB_HOST=postgres
       - DB_NAME=db_structa
+      - DB_USER=structa
+      - DB_PASSWORD=mk_pAssWord123
       - REDIS_URL=redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/3
-      - DJANGO_SETTINGS_MODULE=configs.settings
+      - DJANGO_SETTINGS_MODULE=settings
       - APP_MODULE=www.asgi:application
     command: /rqworker-start
     healthcheck:

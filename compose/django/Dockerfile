@@ -73,9 +73,8 @@ COPY Makefile manage.py __about__.py __main__.py cli.py com ${APP_HOME}/
 COPY configs ${APP_HOME}/configs
 COPY assets ${APP_HOME}/assets
 COPY compose ${APP_HOME}/compose
-COPY scripts ${APP_HOME}/scripts
-COPY tasks ${APP_HOME}/tasks
 COPY tests ${APP_HOME}/tests
+COPY tasks ${APP_HOME}/tasks
 COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 COPY .docker-image-data/ ${APP_HOME}/
 

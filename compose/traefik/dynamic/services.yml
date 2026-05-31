@@ -3,6 +3,9 @@
 # ============================================
 http:
   routers:
+    # ============================================
+    # CTC-RESEARCH.COM ROUTERS
+    # ============================================
     ctc-media-http:
       rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web]
@@ -30,6 +33,9 @@ http:
       tls:
         certResolver: letsencrypt
 
+    # ============================================
+    # STRUCTA.CLOUD (LMS-DEMO) ROUTERS
+    # ============================================
     lms-demo-media-http:
       rule: "(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web]
@@ -57,7 +63,40 @@ http:
       tls:
         certResolver: letsencrypt
 
+    # ============================================
+    # VRESUME ROUTERS
+    # ============================================
+    vresume-media-http:
+      rule: "(Host(`vresume.com`) || Host(`www.vresume.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: vresume-media-service
+      priority: 100
+
+    vresume-media-https:
+      rule: "(Host(`vresume.com`) || Host(`www.vresume.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: vresume-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "vresume.com"
+            sans: ["www.vresume.com"]
+
+    vresume-site-https:
+      rule: "Host(`vresume.com`) || Host(`www.vresume.com`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: vresume-site-service
+      tls:
+        certResolver: letsencrypt
+
   services:
+    # ============================================
+    # CTC-RESEARCH.COM SERVICES
+    # ============================================
     ctc-site-service:
       loadBalancer:
         servers:
@@ -73,8 +112,11 @@ http:
     ctc-media-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-website-media:80"
+          - url: "http://ctc-website-media:8271"
 
+    # ============================================
+    # STRUCTA.CLOUD (LMS-DEMO) SERVICES
+    # ============================================
     lms-demo-site-service:
       loadBalancer:
         servers:
@@ -90,4 +132,24 @@ http:
     lms-demo-media-service:
       loadBalancer:
         servers:
-          - url: "http://structa-website-media:80"
+          - url: "http://structa-website-media:8272"
+
+    # ============================================
+    # VRESUME SERVICES
+    # ============================================
+    vresume-site-service:
+      loadBalancer:
+        servers:
+          - url: "http://vresume-website:5072"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+          headers:
+            Host: "vresume.com"
+            X-Forwarded-Proto: "https"
+
+    vresume-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://vresume-website-media:8273"

@@ -1,5 +1,3 @@
-from pathlib import Path
-import sys
 import os
 import sys
 from pathlib import Path
@@ -8,7 +6,8 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 
 # Set DJANGO_SETTINGS_MODULE before loading the app
-os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
+# Use local settings module instead of workspace-level configs.settings
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 from django.core.asgi import get_asgi_application
 

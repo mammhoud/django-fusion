@@ -41,13 +41,13 @@ if command -v uv >/dev/null 2>&1; then
     if ! uv run python manage.py --site="$SITE" migrate --noinput 2>&1 | tee "logs/migrate-${SITE}.log"; then
         echo -e "${YELLOW}migrate failed; container startup can retry when RUN_SETUP=true.${NC}"
     fi
-    if ! uv run python scripts/load_dumped_data.py --site "$SITE" 2>&1 | tee "logs/load_dumped_data-${SITE}.log"; then
+    if ! uv run python tests/scripts/load_dumped_data.py --site "$SITE" 2>&1 | tee "logs/load_dumped_data-${SITE}.log"; then
         echo -e "${YELLOW}dumped data load failed; check logs/load_dumped_data-${SITE}.log.${NC}"
     fi
     if ! uv run python manage.py --site="$SITE" collectstatic --no-input 2>&1 | tee "logs/collectstatic-${SITE}.log"; then
         echo -e "${YELLOW}collectstatic failed; container startup can retry when RUN_SETUP=true.${NC}"
     fi
-    if ! uv run python scripts/verify_runtime.py --site "$SITE" --strict-assets --strict-pages 2>&1 | tee "logs/verify_runtime-${SITE}.log"; then
+    if ! uv run python tests/scripts/verify_runtime.py --site "$SITE" --strict-assets --strict-pages 2>&1 | tee "logs/verify_runtime-${SITE}.log"; then
         echo -e "${YELLOW}runtime verification failed; check logs/verify_runtime-${SITE}.log.${NC}"
     fi
 else

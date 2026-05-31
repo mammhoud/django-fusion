@@ -17,10 +17,12 @@ def bootstrap_workspace() -> Path:
     """Ensure standalone script execution can import workspace modules."""
     repo_root = Path(__file__).resolve().parents[1]
     os.chdir(repo_root)
-    for path in (repo_root, repo_root / "configs"):
-        path_text = str(path)
-        if path_text not in sys.path:
-            sys.path.insert(0, path_text)
+    path_text = str(repo_root)
+    # Ensure the workspace root is at the beginning of sys.path
+    # to override any site-specific paths that may be set by the container
+    if path_text in sys.path:
+        sys.path.remove(path_text)
+    sys.path.insert(0, path_text)
     return repo_root
 
 

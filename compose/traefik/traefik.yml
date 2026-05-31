@@ -67,12 +67,11 @@ certificatesResolvers:
     acme:
       email: "vresume@structa.cloud"
       storage: /etc/traefik/acme/acme.json
-      # Use staging for testing:
+      # Use staging for testing (recommended for initial deployments)
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-      # To change this, set ACME_CA_SERVER in your container environment and update this file
-      # Use production ACME server by default. Set ACME_CA_SERVER in your container environment
-      # to override for testing or staging.
+      # PRODUCTION: Uncomment below for production ACME server
       # caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      # Note: Switch to production after verifying staging works to avoid rate limits
       httpChallenge:
         entryPoint: web
       # Uncomment for DNS challenge (recommended for wildcard certs)
