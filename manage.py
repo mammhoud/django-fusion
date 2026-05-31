@@ -25,6 +25,9 @@ ALIASES = {
     "lms": "lms-demo",
     "lms-demo": "lms-demo",
     "structa.cloud": "lms-demo",
+    "vresume": "VResume",
+    "vresume.structa.cloud": "VResume",
+    "resume": "VResume",
 }
 
 
@@ -55,6 +58,7 @@ def main():
     else:
         # sensible default when nothing is provided
         selected = "ctc-research"
+    logical_site = "vresume" if selected == "VResume" else selected
 
     repo_root = Path(__file__).resolve().parent
     source_dir = repo_root / selected
@@ -64,15 +68,16 @@ def main():
         # Ensure the repo root and selected site directory are on sys.path. The
         # repo root exposes shared configs; the site directory exposes website
         # apps, templates, static assets, and website-local settings.py.
-        for path in (str(site_dir), str(repo_root)):
+        site_app_dir = site_dir / "www"
+        for path in (str(site_app_dir), str(site_dir), str(repo_root)):
             if path not in sys.path:
                 sys.path.insert(0, path)
-        os.environ.setdefault("DJANGO_WEBSITE", selected)
-        os.environ.setdefault("WEBSITE", selected)
-        os.environ.setdefault("WEBSITE_NAME", selected)
+        os.environ.setdefault("DJANGO_WEBSITE", logical_site)
+        os.environ.setdefault("WEBSITE", logical_site)
+        os.environ.setdefault("WEBSITE_NAME", logical_site)
         os.environ.setdefault("DJANGO_WEBSITE_DIR", str(site_dir))
         os.environ.setdefault("WEBSITE_DIR", str(site_dir))
-        print(f"Using site '{selected}' (site path: {site_dir})", file=sys.stderr)
+        print(f"Using site '{logical_site}' (site path: {site_dir})", file=sys.stderr)
     else:
         print(f"Warning: site directory '{site_dir}' not found; continuing with current PYTHONPATH", file=sys.stderr)
 

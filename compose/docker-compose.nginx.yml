@@ -1,56 +1,55 @@
 # ============================================================
-# VResume - Application Services (Django & Celery)
+# Workspace Media Frontends
 # ============================================================
-# Application layer with Django, Celery workers, and Nginx
-# Usage: docker compose -f compose/docker-compose.nginx.yml up -d
+# Provides one unified static/media server plus optional per-site media servers.
+# ============================================================
 
 networks:
   traefik-net:
     name: traefik-net
     external: true
 
+x-media-base: &media-base
+  build:
+    context: ..
+    dockerfile: ./compose/media/Dockerfile
+  restart: unless-stopped
+  networks:
+    - traefik-net
+  healthcheck:
+    test: ["CMD", "nginx", "-t"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
 services:
-  # ============================================================
-  # NGINX REVERSE PROXY (Optional if not using Traefik)
-  # ============================================================
-  vresume-website-media:
-    build:
-      context: ..
-      dockerfile: ./compose/nginx/Dockerfile
-    env_file:
-      - path: ../.env
-        required: false
-    container_name: vresume-website-media
-    restart: unless-stopped
-    depends_on:
-      - vresume-website
-    # ports:
-    #   - "80:80"
-    #   - "443:443"
+  workspace-media:
+    <<: *media-base
+    container_name: workspace-media
     volumes:
-      - ../${PROJECT_PATH:-ctc-research}/assets/staticfiles:/var/www/static:ro
+      - ../assets/staticfiles:/var/www/static:ro
       - ../assets/media:/var/www/media:ro
-      - ./media/ssl:/etc/nginx/ssl
+      - ../ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
+      - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
 
-    networks:
-      - traefik-net
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-    healthcheck:
-      test: ["CMD", "nginx", "-t"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-    environment:
-      - DJANGO_HOST=${DJANGO_HOST:-localhost}
-      - DJANGO_PORT=${PORT:-5073}
+  ctc-research-media:
+    <<: *media-base
+    container_name: ctc-research-media
+    volumes:
+      - ../ctc-research/assets/staticfiles:/var/www/static:ro
+      - ../assets/media:/var/www/media:ro
 
-volumes:
-  staticfiles:
-    driver: local
+  lms-demo-media:
+    <<: *media-base
+    container_name: lms-demo-media
+    volumes:
+      - ../lms-demo/assets/staticfiles:/var/www/static:ro
+      - ../assets/media:/var/www/media:ro
+
+  vresume-media:
+    <<: *media-base
+    container_name: vresume-media
+    volumes:
+      - ../VResume/assets/staticfiles:/var/www/static:ro
+      - ../assets/media:/var/www/media:ro

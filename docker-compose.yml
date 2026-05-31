@@ -1,22 +1,16 @@
 # ============================================================
-# Default Docker Compose for Websites
-# Combines proxy + warehouse + website services
+# Structa Cloud Workspace Compose Orchestrator
+# ============================================================
+# Runs the shared proxy, warehouse services, the three websites, and media
+# frontends from the single canonical compose/ directory.
+#
 # Usage:
-#   docker compose -f docker-compose.yml up -d
-#   docker compose -f docker-compose.yml -f structa.docker-compose.yml up -d
-#   docker compose -f docker-compose.yml -f ctc-research.docker-compose.yml up -d
-#   docker compose -f docker-compose.yml -f vresume.docker-compose.yml up -d
+#   docker compose up -d
+#   docker compose up -d traefik postgres redis ctc-research-website
 # ============================================================
 
-# This file extends the base infrastructure by including:
-# - docker-compose.proxy.yml: Traefik reverse proxy
-# - docker-compose.warehouse.yml: Redis, PostgreSQL, Blinko, Docs, Adminer
-# - structa.docker-compose.yml: structa.cloud website
-# - ctc-research.docker-compose.yml: ctc-research.com website
-# - vresume.docker-compose.yml: vresume.structa.cloud website
-
-# To run with specific website:
-#   docker compose -f docker-compose.yml -f structa.docker-compose.yml up -d
-
-# Or run all:
-#   docker compose -f docker-compose.yml -f structa.docker-compose.yml -f ctc-research.docker-compose.yml -f vresume.docker-compose.yml up -d
+include:
+  - path: compose/docker-compose.traefik.yml
+  - path: compose/docker-compose.warehouse.yml
+  - path: compose/docker-compose.yml
+  - path: compose/docker-compose.nginx.yml

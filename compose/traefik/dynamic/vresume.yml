@@ -1,0 +1,50 @@
+# ============================================
+# VRESUME CONFIGURATION
+# Domain: vresume.structa.cloud, www.vresume.structa.cloud, resume.structa.cloud
+# ============================================
+http:
+  routers:
+    vresume-media-http:
+      rule: "(Host(`vresume.structa.cloud`) || Host(`www.vresume.structa.cloud`) || Host(`resume.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: vresume-media-service
+      priority: 100
+
+    vresume-media-https:
+      rule: "(Host(`vresume.structa.cloud`) || Host(`www.vresume.structa.cloud`) || Host(`resume.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: vresume-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "vresume.structa.cloud"
+            sans: ["www.vresume.structa.cloud", "resume.structa.cloud"]
+
+    vresume-site-https:
+      rule: "Host(`vresume.structa.cloud`) || Host(`www.vresume.structa.cloud`) || Host(`resume.structa.cloud`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: vresume-site-service
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    vresume-site-service:
+      loadBalancer:
+        servers:
+          - url: "http://vresume-website:5072"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+          headers:
+            Host: "vresume.structa.cloud"
+            X-Forwarded-Proto: "https"
+
+    vresume-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://vresume-media:80"

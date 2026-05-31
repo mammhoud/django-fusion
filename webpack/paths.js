@@ -12,13 +12,17 @@ function normalizeSiteName(value) {
     structa: 'lms-demo',
     core: 'lms-demo',
     'structa.cloud': 'lms-demo',
+    resume: 'vresume',
+    VResume: 'vresume',
+    'vresume.structa.cloud': 'vresume',
   };
   return aliases[raw] || raw;
 }
 
 function resolveAssetPaths(siteName = normalizeSiteName()) {
   const selectedSite = normalizeSiteName(siteName);
-  const sourceSiteDir = path.join(WORKSPACE_ROOT, selectedSite);
+  const siteDirectoryNames = { vresume: 'VResume' };
+  const sourceSiteDir = path.join(WORKSPACE_ROOT, siteDirectoryNames[selectedSite] || selectedSite);
   const wrapperSiteDir = path.join(WORKSPACE_ROOT, 'websites', selectedSite);
   const siteDir = require('fs').existsSync(sourceSiteDir) ? sourceSiteDir : wrapperSiteDir;
   const siteAssetsDir = path.join(siteDir, 'assets');

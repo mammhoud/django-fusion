@@ -195,9 +195,9 @@ npm run watch
 ```
 
 **Output locations:**
-- CSS: `v1/assets/static/styles/` (compiled from SCSS)
-- JS: `v1/assets/static/js/` (bundled)
-- Bundles: `v1/assets/bundles/`
+- CSS: `assets/static/styles/` (compiled from SCSS)
+- JS: `assets/static/js/` (bundled)
+- Bundles: `assets/bundles/`
 
 ### Docker Shortcuts
 
@@ -260,7 +260,7 @@ bandit -r pages/
 1. **Clone and setup environment**
    ```bash
    # Visit https://github.com/mammhoud/VResume
-   cd VResume/v1
+   cd VResume
    python -m venv .venv
    source .venv/bin/activate  # Windows: .venv\Scripts\activate
    pip install -r requirements/local.txt
@@ -384,7 +384,7 @@ DB_TYPE=postgres  # or sqlite3 for local dev
 POSTGRES_DB=vresume
 POSTGRES_USER=vresume
 POSTGRES_PASSWORD=<password>
-POSTGRES_HOST=vresume-postgres
+POSTGRES_HOST=postgres
 
 # Email (SMTP)
 EMAIL_BACKEND=django.core.mail.backends.smtp.EmailBackend
@@ -396,8 +396,8 @@ EMAIL_HOST_PASSWORD=your-app-password
 DEFAULT_FROM_EMAIL=noreply@example.com
 
 # Celery & Redis
-CELERY_BROKER_URL=redis://vresume-redis:6379/1
-CELERY_RESULT_BACKEND=redis://vresume-redis:6379/2
+CELERY_BROKER_URL=redis://redis:6379/1
+CELERY_RESULT_BACKEND=redis://redis:6379/2
 
 # Site Configuration
 SITE_URL=https://vresume.structa.cloud
@@ -420,7 +420,7 @@ CSRF_COOKIE_SECURE=True
 The easiest way to deploy is using the production stack:
 
 ```bash
-# 1. Configure environment in v1/.env
+# 1. Configure environment in .env
 # 2. Start the stack
 make docker-prod
 ```

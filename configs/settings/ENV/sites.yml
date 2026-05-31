@@ -19,3 +19,13 @@ default:
       allowed_hosts: [ctc-research.com, www.ctc-research.com, arch.ctc-research.com, localhost, 127.0.0.1]
       csrf_trusted_origins: [http://ctc-research.com, https://ctc-research.com, http://www.ctc-research.com, https://www.ctc-research.com, http://arch.ctc-research.com, https://arch.ctc-research.com]
       cors_allowed_origins: [http://ctc-research.com, https://ctc-research.com, http://www.ctc-research.com, https://www.structa.cloud, http://arch.ctc-research.com, https://arch.ctc-research.com]
+    vresume:
+      path: VResume
+      aliases: [vresume, resume, vresume.structa.cloud]
+      domain: vresume.structa.cloud
+      port: 5072
+      module: CMS
+      ssl_enabled: false
+      allowed_hosts: [vresume.structa.cloud, www.vresume.structa.cloud, resume.structa.cloud, localhost, 127.0.0.1]
+      csrf_trusted_origins: [http://vresume.structa.cloud, https://vresume.structa.cloud, http://www.vresume.structa.cloud, https://www.vresume.structa.cloud, http://resume.structa.cloud, https://resume.structa.cloud]
+      cors_allowed_origins: [http://vresume.structa.cloud, https://vresume.structa.cloud, http://www.vresume.structa.cloud, https://www.vresume.structa.cloud, http://resume.structa.cloud, https://resume.structa.cloud]

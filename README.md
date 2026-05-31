@@ -45,7 +45,7 @@ python manage.py --site lms-demo runserver 0.0.0.0:8000
 
 ```bash
 docker network create traefik-net || true
-docker compose -f compose/docker-compose.warehouse.yml up -d vresume-postgres vresume-redis
+docker compose -f compose/docker-compose.warehouse.yml up -d postgres redis
 docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml up -d --build vresume-website
 ```
 

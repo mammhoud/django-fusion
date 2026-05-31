@@ -1,12 +1,16 @@
 # ============================================================
-# VResume - Base Infrastructure Services (PostgreSQL & Redis)
+# Workspace Website Services
 # ============================================================
-# Database and cache layer
-# Usage: docker compose -f compose/docker-compose.yml up -d
+# Builds/runs the three Django websites from one repository image pattern.
+# Shared infrastructure is defined in compose/docker-compose.warehouse.yml.
+# ============================================================
 
 networks:
   traefik-net:
     name: traefik-net
+    external: true
+  site_network:
+    name: site_network
     external: true
 
 x-django-base: &django-base
@@ -14,59 +18,106 @@ x-django-base: &django-base
     context: ..
     dockerfile: ./compose/django/Dockerfile
   restart: unless-stopped
+  working_dir: /app
   env_file:
     - path: ../.env
       required: false
   environment: &django-env
     RUNNING_ENV: docker
-    DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-vresume-postgres}
-    DB_PORT: ${DB_PORT:-5432}
-    DB_NAME: ${DB_NAME:-vresume}
-    DB_USER: ${DB_USER:-vresume}
-    DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
-    REDIS_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/0
-    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
-    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
     SERVER_ENV: ${SERVER_ENV:-production}
     DEBUG: ${DEBUG:-False}
-    PORT: ${PORT:-5072}
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-postgres}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_USER: ${DB_USER:-structa}
+    DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+    WORKERS: ${WORKERS:-4}
+    TIMEOUT: ${TIMEOUT:-120}
   volumes:
     - ../:/app:z
-    - ./logs:/app/logs:z
+    - ../assets/media:/app/assets/media:z
   networks:
     - traefik-net
-  # depends_on:
+    - site_network
   depends_on:
-    - vresume-postgres
-    - vresume-redis
-
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
 
 services:
-  # ============================================================
-  # DJANGO APPLICATION SERVER
-  # ============================================================
-  vresume-website:
+  ctc-research-website:
     <<: *django-base
-    container_name: vresume-website
-    # ports:
-    #   - "5072:5072"  # removed to avoid duplicate host port when composing multiple stacks; canonical mapping lives in VResume/compose/docker-compose.yml
+    container_name: ctc-research-website
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
     environment:
       <<: *django-env
-      WORKERS: ${WORKERS:-4}
-      TIMEOUT: ${TIMEOUT:-120}
-    deploy:
-      resources:
-        limits:
-          cpus: '2'
-          memory: 2G
-        reservations:
-          cpus: '1'
-          memory: 1G
+      PORT: 5070
+      DB_NAME: ${CTC_DB_NAME:-db_ctc}
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      WEBSITE_NAME: ctc-research
+      PROJECT_PATH: ctc-research
     healthcheck:
-      test: ["CMD", "curl", "-fL", "-H", "X-Forwarded-Proto: https", "http://localhost:5072/health/"]
+      test: ["CMD", "curl", "-fL", "http://localhost:5070/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
       start_period: 90s
 
+  lms-demo-website:
+    <<: *django-base
+    container_name: lms-demo-website
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    environment:
+      <<: *django-env
+      PORT: 5071
+      DB_NAME: ${STRUCTA_DB_NAME:-db_structa}
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      WEBSITE_NAME: lms-demo
+      PROJECT_PATH: lms-demo
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://localhost:5071/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  vresume-website:
+    <<: *django-base
+    container_name: vresume-website
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    environment:
+      <<: *django-env
+      PORT: 5072
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      WEBSITE_NAME: vresume
+      PROJECT_PATH: vresume
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://localhost:5072/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s

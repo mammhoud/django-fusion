@@ -39,7 +39,7 @@ http:
     ctc-site-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-website:5070"
+          - url: "http://ctc-research-website:5070"
         healthCheck:
           path: /
           interval: 30s
@@ -52,4 +52,4 @@ http:
     ctc-media-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-website-media:80"
+          - url: "http://ctc-research-media:80"
