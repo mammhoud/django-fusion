@@ -14,6 +14,11 @@ config: _docker_check
 build: _docker_check
 	@command -v docker >/dev/null 2>&1 && $(COMPOSE) -f $(BASE_FILE) build || true
 
+# Build only the shared/base services (proxy, db, redis, docs, adminer, blinko)
+.PHONY: build-base
+build-base: _docker_check
+	@command -v docker >/dev/null 2>&1 && $(COMPOSE) -f $(BASE_FILE) build traefik postgres redis docs adminer blinko || true
+
 up: _docker_check
 	@command -v docker >/dev/null 2>&1 && $(COMPOSE) -f $(BASE_FILE) up -d --build --remove-orphans || true
 
