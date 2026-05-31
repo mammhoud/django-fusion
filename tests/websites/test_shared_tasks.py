@@ -21,7 +21,7 @@ def test_website_task_modules_reexport_shared_tasks():
     import importlib.util
 
     task_file = (
-        ROOT / "ctc-research.com" / "plugins" / "accounts" / "services" / "email" / "tasks.py"
+        ROOT / "ctc-research" / "plugins" / "accounts" / "services" / "email" / "tasks.py"
     )
     spec = importlib.util.spec_from_file_location("ctc_email_tasks", task_file)
     module = importlib.util.module_from_spec(spec)
@@ -37,6 +37,6 @@ def test_shared_tasks_compose_file_documents_worker_and_beat():
     compose_file = ROOT / "compose" / "docker-compose.tasks.yml"
     content = compose_file.read_text()
     assert "shared-tasks-worker" in content
-    assert "celery -A tasks worker" in content
+    assert "celery -A tasks.celery:app worker" in content
     assert "shared-tasks-beat" in content
-    assert "celery -A tasks beat" in content
+    assert "celery -A tasks.celery:app beat" in content

@@ -52,4 +52,4 @@ http:
     structa-media-service:
       loadBalancer:
         servers:
-          - url: "http://lms-demo-media:80"
+          - url: "http://shared-media:80"

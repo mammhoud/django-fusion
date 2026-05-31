@@ -31,3 +31,25 @@ staticfiles/
 **/staticfiles/
 **/assets/bundles/
 **/assets/staticfiles/
+
+# Workspace generated website media/static/database artifacts
+ctc-research/assets/media/uploads/
+ctc-research/assets/media/original_images/
+ctc-research/assets/staticfiles/
+ctc-research/assets/bundles/
+lms-demo/assets/media/uploads/
+lms-demo/assets/media/original_images/
+lms-demo/assets/staticfiles/
+lms-demo/assets/bundles/
+VResume/assets/media/uploads/
+VResume/assets/media/original_images/
+VResume/assets/staticfiles/
+VResume/assets/bundles/
+compose/postgres/postgres_data/
+compose/postgres/backups/
+compose/data/
+*.sqlite3
+*.dump
+*.sql.gz
+# Workspace webpack mirror output
+dist/

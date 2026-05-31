@@ -1,7 +1,8 @@
 # ============================================================
-# Workspace Media Frontends
+# Workspace Shared Media Frontend
 # ============================================================
-# Provides one unified static/media server plus optional per-site media servers.
+# Provides one canonical static/media server for shared files and isolated
+# per-site mount points under /var/www/sites/<site>/.
 # ============================================================
 
 networks:
@@ -23,33 +24,20 @@ x-media-base: &media-base
     retries: 3
 
 services:
-  workspace-media:
+  shared-media:
     <<: *media-base
-    container_name: workspace-media
+    container_name: shared-media
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:shared-media.local,ctc-media.local,lms-media.local,vresume-media.local"
+      - "traefik.http.routers.shared-media.rule=Host(`shared-media.local`) || Host(`ctc-media.local`) || Host(`lms-media.local`) || Host(`vresume-media.local`)"
+      - "traefik.http.services.shared-media.loadbalancer.server.port=80"
     volumes:
       - ../assets/staticfiles:/var/www/static:ro
       - ../assets/media:/var/www/media:ro
       - ../ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../ctc-research/assets/media:/var/www/sites/ctc-research/media:ro
       - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
+      - ../lms-demo/assets/media:/var/www/sites/lms-demo/media:ro
       - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
-
-  ctc-research-media:
-    <<: *media-base
-    container_name: ctc-research-media
-    volumes:
-      - ../ctc-research/assets/staticfiles:/var/www/static:ro
-      - ../assets/media:/var/www/media:ro
-
-  lms-demo-media:
-    <<: *media-base
-    container_name: lms-demo-media
-    volumes:
-      - ../lms-demo/assets/staticfiles:/var/www/static:ro
-      - ../assets/media:/var/www/media:ro
-
-  vresume-media:
-    <<: *media-base
-    container_name: vresume-media
-    volumes:
-      - ../VResume/assets/staticfiles:/var/www/static:ro
-      - ../assets/media:/var/www/media:ro
+      - ../VResume/assets/media:/var/www/sites/vresume/media:ro
