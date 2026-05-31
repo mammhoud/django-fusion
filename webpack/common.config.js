@@ -41,6 +41,18 @@ function buildEntries(paths) {
   const siteStylesEntry = path.join(paths.siteStaticDir, 'styles.js');
   const siteStyles = path.join(paths.siteStaticDir, 'styles', 'main.scss');
   const siteMain = path.join(paths.siteStaticDir, 'js', 'main.js');
+  const siteAppEntries = {
+    'ctc-research': path.join(paths.siteStaticDir, 'js', 'ctc-app.js'),
+    'lms-demo': path.join(paths.siteStaticDir, 'js', 'lms-app.js'),
+    vresume: path.join(paths.siteStaticDir, 'js', 'vresume-app.js'),
+  };
+  const sharedBaseEntry = path.join(paths.baseStaticDir, 'index.js');
+  if (fs.existsSync(sharedBaseEntry)) {
+    entries.shared_base = sharedBaseEntry;
+  }
+  if (siteAppEntries[paths.siteName] && fs.existsSync(siteAppEntries[paths.siteName])) {
+    entries[`${paths.siteName}_app`] = siteAppEntries[paths.siteName];
+  }
   if (fs.existsSync(siteStaticEntry)) {
     entries.static = siteStaticEntry;
   }
@@ -88,13 +100,13 @@ module.exports = (env = {}, argv = {}) => {
       { test: /\.vue$/, loader: 'vue-loader' },
       { test: /\.html$/, use: 'html-loader' },
       { test: /\.css$/i, use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false }}], sideEffects: true },
-      { test: /\.scss$/i, use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false }}, { loader: 'sass-loader', options: { sassOptions: { includePaths: [path.join(assetPaths.siteStaticDir, 'styles'), path.join(assetPaths.sharedStaticDir, 'styles')] } } }], sideEffects: true },
+      { test: /\.scss$/i, use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false }}, { loader: 'sass-loader', options: { sassOptions: { includePaths: [path.join(assetPaths.siteStaticDir, 'styles'), path.join(assetPaths.sharedStaticDir, 'styles'), assetPaths.baseScssDir] } } }], sideEffects: true },
       { test: /\.(png|jpe?g|gif|svg|webp)$/i, type: 'asset/resource', generator: { filename: 'images/[name][ext]' } },
       { test: /\.(woff2?|eot|ttf|otf)$/i, type: 'asset/resource', generator: { filename: 'fonts/[name][ext]' } },
     ]},
     resolve: {
       extensions: ['.js', '.jsx', '.json', '.vue', '.scss', '.css'],
-      alias: { shared: assetPaths.sharedStaticDir, site: assetPaths.siteStaticDir },
+      alias: { shared: assetPaths.sharedStaticDir, site: assetPaths.siteStaticDir, '@base': assetPaths.baseStaticDir },
       modules: [assetPaths.assetsNodeModules, 'node_modules'],
     },
   };

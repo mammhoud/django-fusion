@@ -52,4 +52,4 @@ http:
     ctc-media-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-research-media:80"
+          - url: "http://shared-media:80"

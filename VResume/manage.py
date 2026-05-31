@@ -1,34 +1,23 @@
-#!/usr/bin/env python
-"""Django's command-line utility for vResume within the workspace."""
+#!/usr/bin/env python3
+"""Project-local wrapper for the unified workspace manage.py."""
+from __future__ import annotations
+
 import os
+import runpy
 import sys
 from pathlib import Path
 
+SITE = "vresume"
 
-def main():
-    site_dir = Path(__file__).resolve().parent
-    workspace_dir = site_dir.parent
-    site_app_dir = site_dir / "www"
-    for path in (site_app_dir, site_dir, workspace_dir):
-        value = str(path)
-        if value not in sys.path:
-            sys.path.insert(0, value)
 
-    os.environ.setdefault("DJANGO_WEBSITE", "vresume")
-    os.environ.setdefault("WEBSITE", "vresume")
-    os.environ.setdefault("WEBSITE_NAME", "vresume")
-    os.environ.setdefault("DJANGO_WEBSITE_DIR", str(site_dir))
-    os.environ.setdefault("WEBSITE_DIR", str(site_dir))
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
-
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable?"
-        ) from exc
-    execute_from_command_line(sys.argv)
+def main() -> None:
+    workspace = Path(__file__).resolve().parents[1]
+    os.environ.setdefault("DJANGO_SITE", SITE)
+    os.environ.setdefault("DJANGO_WEBSITE", SITE)
+    os.environ.setdefault("WEBSITE", SITE)
+    if not any(arg == "--site" or arg.startswith("--site=") for arg in sys.argv[1:]):
+        sys.argv.insert(1, f"--site={SITE}")
+    runpy.run_path(str(workspace / "manage.py"), run_name="__main__")
 
 
 if __name__ == "__main__":

@@ -63,7 +63,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "🛠️ Running Django setup..."
 
     echo "🧹 Collecting/building static files..."
-    if ! run_logged build_assets python manage.py --site "$SITE_NAME" build_assets --no-input; then
+    if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
         if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
             echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
         fi
