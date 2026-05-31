@@ -96,6 +96,27 @@ def _register_aliases():
         "www.apps.accounts.emails":    "accounts.emails",
         "www.apps.accounts.tokens":    "accounts.tokens",
         "www.apps.accounts.renderers": "accounts.renderers",
+
+        # Legacy registration module aliases used by older django-osoul/rseal
+        # registration tests. The site implementation lives in accounts.*.
+        "www.apps.accounts.registration.tokens": "accounts.registration.tokens",
+        "www.apps.accounts.registration.adapter": "accounts.adapters",
+        "www.apps.accounts.registration.adapters": "accounts.adapters",
+        "www.apps.accounts.registration.emails": "accounts.emails",
+        "www.apps.accounts.registration.forms": "accounts.registration.forms",
+        "www.apps.accounts.registration.views": "accounts.registration.views",
+        "www.apps.accounts.registration.allauth_views": "accounts.allauth_views",
+        "www.apps.accounts.registration.signals": "accounts.signals",
+        "apps.accounts":                  "accounts",
+        "apps.accounts.registration":     "accounts.registration",
+        "apps.accounts.registration.tokens": "accounts.registration.tokens",
+        "apps.accounts.registration.adapter": "accounts.adapters",
+        "apps.accounts.registration.adapters": "accounts.adapters",
+        "apps.accounts.registration.emails": "accounts.emails",
+        "apps.accounts.registration.forms": "accounts.registration.forms",
+        "apps.accounts.registration.views": "accounts.registration.views",
+        "apps.accounts.registration.allauth_views": "accounts.allauth_views",
+        "apps.accounts.registration.signals": "accounts.signals",
     }
     for alias, target in alias_map.items():
         if alias in sys.modules:
@@ -109,18 +130,22 @@ def _register_aliases():
 
 
 
-def pytest_ignore_collect(collection_path, config):
-    """Ignore legacy duplicated app/property suites that import removed paths.
 
-    Canonical workspace smoke scenarios now live in YAML files at tests/*.yaml,
-    while these generated duplicate suites are retained in-tree for reference.
-    Skipping them keeps `pytest tests/` focused on the runnable workspace suite.
+def pytest_ignore_collect(collection_path, config):
+    """Keep workspace runs focused on runnable workspace/yaml suites.
+
+    Legacy generated property/app suites are still available for focused runs,
+    but several perform Django database setup at import time or depend on the
+    old monorepo import layout. Focused regression commands cover the fixed
+    registration token aliases directly.
     """
     path_obj = Path(str(collection_path))
     path = str(path_obj)
     tests_root = Path(__file__).resolve().parent
     if path_obj.suffix == ".py" and path_obj.parent == tests_root and path_obj.name not in {"test_yaml_site_scenarios.py", "conftest.py"}:
         return True
+    if path_obj.name == "test_property_allauth_token_roundtrip.py":
+        return False
     ignored = (
         "tests/apps/",
         "tests/ci/",
@@ -167,12 +192,12 @@ def workspace_root():
 
 @pytest.fixture(scope="session")
 def ctc_research_root(workspace_root):
-    return workspace_root / "ctc-research.com"
+    return workspace_root / "ctc-research"
 
 
 @pytest.fixture(scope="session")
 def structa_cloud_root(workspace_root):
-    return workspace_root / "structa.cloud"
+    return workspace_root / "lms-demo"
 
 
 @pytest.fixture(scope="session")
@@ -183,7 +208,7 @@ def docker_compose_file(workspace_root):
 
 @pytest.fixture(scope="session")
 def test_databases():
-    return {"ctc_research": "db_ctc_test", "structa_cloud": "db_structa_test"}
+    return {"ctc_research": "db_ctc_test", "structa_cloud": "db_structa_test", "vresume": "vresume_test"}
 
 
 @pytest.fixture

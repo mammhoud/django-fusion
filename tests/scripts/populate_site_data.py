@@ -42,7 +42,13 @@ SITE_DIRS = {
 
 
 def normalize_site(value: str) -> str:
+    if value == "all" or value.lower() == "all":
+        return "all"
     return SITE_ALIASES.get(value, SITE_ALIASES.get(value.lower(), value))
+
+
+def selected_sites(site: str) -> list[str]:
+    return list(SITE_DIRS) if site == "all" else [site]
 
 
 def python_bin(root: Path) -> str:

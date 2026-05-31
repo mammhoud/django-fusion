@@ -8,8 +8,9 @@ from django.urls import reverse
 
 
 ROOT = Path(__file__).resolve().parents[2]
-WEBSITES = ("ctc-research", "lms-demo")
-PROJECTS = WEBSITES + ("VResume",)
+WEBSITE_DIRS = {"ctc-research": "ctc-research", "lms-demo": "lms-demo", "vresume": "VResume"}
+WEBSITES = tuple(WEBSITE_DIRS)
+PROJECTS = tuple(WEBSITE_DIRS.values())
 
 
 class WebsiteLayoutTests(SimpleTestCase):
@@ -22,13 +23,13 @@ class WebsiteLayoutTests(SimpleTestCase):
     def test_each_website_has_local_settings_and_workspace_config(self):
         assert (ROOT / "configs" / "settings" / "conf.py").exists()
         assert (ROOT / "configs" / "site.py").exists()
-        for website in WEBSITES:
+        for website, directory in WEBSITE_DIRS.items():
             with self.subTest(website=website):
-                assert (ROOT / website / "settings.py").exists()
+                assert (ROOT / directory / "settings.py").exists()
 
     def test_dummy_fixtures_are_split_by_app_and_model(self):
-        for website in WEBSITES:
-            fixture_root = ROOT / website / "assets" / "fixtures"
+        for website, directory in WEBSITE_DIRS.items():
+            fixture_root = ROOT / directory / "assets" / "fixtures"
             for relative in (
                 "auth/user_dummy.json",
                 "auth/group_dummy.json",
@@ -37,6 +38,27 @@ class WebsiteLayoutTests(SimpleTestCase):
                 with self.subTest(website=website, fixture=relative):
                     assert (fixture_root / relative).exists()
 
+
+class RegistrationIntegrationTests(SimpleTestCase):
+    def test_registration_compat_modules_exist_for_auth_login_invite_flows(self):
+        for project in ("ctc-research", "lms-demo"):
+            registration_root = ROOT / project / "plugins" / "accounts" / "registration"
+            with self.subTest(project=project):
+                assert (registration_root / "tokens.py").exists()
+                assert (registration_root / "forms.py").exists()
+                assert (registration_root / "views.py").exists()
+                assert "RegistrationTokenGenerator" in (registration_root / "tokens.py").read_text()
+                assert "PasswordCreationForm" in (registration_root / "forms.py").read_text()
+                assert "assign_default_group" in (registration_root / "views.py").read_text()
+
+    def test_registration_views_use_parent_account_modules(self):
+        for project in ("ctc-research", "lms-demo"):
+            source = (ROOT / project / "plugins" / "accounts" / "views" / "registration.py").read_text()
+            with self.subTest(project=project):
+                assert "from ..tokens import registration_token_generator" in source
+                assert "from ..forms.registration import PasswordCreationForm, RegistrationForm" in source
+                assert "from .tokens import" not in source
+                assert "from .forms.registration import" not in source
 
 class FrontendBuildLayoutTests(SimpleTestCase):
     def test_shared_assets_package_owns_node_modules_and_webpack_config(self):
@@ -69,6 +91,8 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         webpack_common = (ROOT / "webpack" / "common.config.js").read_text()
         assert not (ROOT / "base").exists()
         assert (ROOT / "assets" / "static" / "js" / "base" / "utils" / "index.js").exists()
+        assert (ROOT / "VResume" / "assets" / "static" / "js" / "lib" / "dom.js").read_text().strip() == "// Shared DOM helpers live in the workspace assets package.\nexport { DOM, DOM as default } from 'shared/js/utility/dom.js';"
+        assert (ROOT / "VResume" / "assets" / "static" / "js" / "lib" / "url.js").read_text().strip() == "// Shared URL tracking mixin lives in the workspace assets package.\nexport { URLTrackerMixin } from 'shared/js/utility/url.js';"
         assert "'@base'" in webpack_common
         for entry in ("ctc-app.js", "lms-app.js", "vresume-app.js"):
             assert entry in webpack_common
@@ -110,6 +134,12 @@ class SiteConfigTests(SimpleTestCase):
         for database in ("db_ctc", "db_structa", "vresume"):
             with self.subTest(database=database):
                 assert database in sql
+
+    def test_populate_script_supports_all_sites_and_vresume_images(self):
+        script = (ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
+        assert 'if value == "all" or value.lower() == "all"' in script
+        assert 'def selected_sites(site: str) -> list[str]:' in script
+        assert 'if args.images or selected == "vresume"' in script
 
 
 class AssetHealthTests(SimpleTestCase):

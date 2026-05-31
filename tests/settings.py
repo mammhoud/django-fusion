@@ -18,8 +18,9 @@ _tests_dir = Path(__file__).parent
 _websites_dir = _tests_dir.parent
 _workspace_root = _websites_dir.parent
 
-_ctc_path = _websites_dir / "ctc-research.com"
-_structa_path = _websites_dir / "structa.cloud"
+_ctc_path = _websites_dir / "ctc-research"
+_structa_path = _websites_dir / "lms-demo"
+_vresume_path = _websites_dir / "VResume"
 _rseal_tests = _workspace_root / "libs" / "django-rseal" / "tests"
 
 # Support both monorepo layout (websites/<site>) and single-site layout (repo root).
@@ -29,19 +30,33 @@ _plugin_roots = [
     _repo_root / "plugins",
     _structa_path / "plugins",
     _ctc_path / "plugins",
+    _vresume_path / "plugins",
 ]
 _www_roots = [
     _repo_root / "www",
     _structa_path / "www",
     _ctc_path / "www",
+    _vresume_path / "www",
 ]
 _core_roots = [
     _repo_root / "www" / "core",
     _structa_path / "www" / "core",
     _ctc_path / "www" / "core",
+    _vresume_path / "www" / "core",
 ]
 
-_sys_paths = [_repo_root, _ctc_path, _structa_path, _rseal_tests]
+_sys_paths = [
+    # Inserted with sys.path.insert(0), so lower-priority roots come first.
+    _repo_root,
+    _repo_root / "plugins",
+    _vresume_path,
+    _vresume_path / "plugins",
+    _structa_path,
+    _structa_path / "plugins",
+    _ctc_path,
+    _ctc_path / "plugins",
+    _rseal_tests,
+]
 for _p in _sys_paths:
     if _p.exists() and str(_p) not in sys.path:
         sys.path.insert(0, str(_p))
@@ -107,7 +122,7 @@ if "www.apps.accounts" not in sys.modules:
     try:
         import accounts as _real_accounts
         sys.modules["www.apps.accounts"] = _real_accounts
-    except ImportError:
+    except Exception:
         pass
 
 # Set up www.apps.accounts.models as an alias to accounts.models
@@ -115,7 +130,7 @@ if "www.apps.accounts.models" not in sys.modules:
     try:
         import accounts.models as _real_models
         sys.modules["www.apps.accounts.models"] = _real_models
-    except ImportError:
+    except Exception:
         pass
 
 # Set up www.apps.accounts.models.tags as an alias to accounts.models.tags
@@ -123,7 +138,7 @@ if "www.apps.accounts.models.tags" not in sys.modules:
     try:
         import accounts.models.tags as _real_tags
         sys.modules["www.apps.accounts.models.tags"] = _real_tags
-    except ImportError:
+    except Exception:
         pass
 
 # 3. Mock heavy Wagtail page deps so blog models import cleanly
@@ -149,7 +164,7 @@ if "www.apps.accounts" not in sys.modules:
         _www_accounts.__path__ = list(getattr(_real_accounts, "__path__", []))
         _www_accounts.__package__ = "www.apps.accounts"
         sys.modules["www.apps.accounts"] = _www_accounts
-    except ImportError:
+    except Exception:
         _m = types.ModuleType("www.apps.accounts")
         _m.__path__ = []
         _m.__package__ = "www.apps.accounts"
@@ -163,7 +178,7 @@ if "www.apps.accounts.models" not in sys.modules:
         _ns.__path__ = list(getattr(_real_models, "__path__", []))
         _ns.__package__ = "www.apps.accounts.models"
         sys.modules["www.apps.accounts.models"] = _ns
-    except ImportError:
+    except Exception:
         pass
 
 # www.apps.accounts.renderers → real module at structa.cloud/plugins/accounts/renderers.py
@@ -172,10 +187,32 @@ if "www.apps.accounts.renderers" not in sys.modules:
         import importlib as _il
         _real = _il.import_module("accounts.renderers")
         sys.modules["www.apps.accounts.renderers"] = _real
-    except ImportError:
+    except Exception:
         _stub = types.ModuleType("www.apps.accounts.renderers")
         _stub.dynamic_renderer = MagicMock()
         sys.modules["www.apps.accounts.renderers"] = _stub
+
+# Registration modules moved under accounts.*; keep django-osoul/rseal and
+# legacy tests that import www.apps.accounts.registration.* working.
+def _register_registration_aliases():
+    _alias_targets = {
+        "www.apps.accounts.registration": "accounts.registration",
+        "www.apps.accounts.registration.tokens": "accounts.registration.tokens",
+        "apps.accounts": "accounts",
+        "apps.accounts.registration": "accounts.registration",
+        "apps.accounts.registration.tokens": "accounts.registration.tokens",
+    }
+    for _alias, _target in _alias_targets.items():
+        if _alias in sys.modules:
+            continue
+        try:
+            sys.modules[_alias] = importlib.import_module(_target)
+        except Exception:
+            # Non-token registration modules can require Django's app registry;
+            # pytest_configure registers those after django.setup().
+            pass
+
+_register_registration_aliases()
 
 # www.apps.accounts.models.tags → real module (must be before the mock loop)
 # This must be set up as a direct alias so the import works
@@ -184,7 +221,7 @@ if "www.apps.accounts.models.tags" not in sys.modules:
         import importlib as _il
         _real = _il.import_module("accounts.models.tags")
         sys.modules["www.apps.accounts.models.tags"] = _real
-    except ImportError:
+    except Exception:
         pass  # Keep the mock if import fails
 
 # Also set up www.apps.accounts.models.manage.service
@@ -195,7 +232,7 @@ if "www.apps.accounts.models.manage" not in sys.modules:
         _ns.__path__ = list(getattr(_real_manage, "__path__", []))
         _ns.__package__ = "www.apps.accounts.models.manage"
         sys.modules["www.apps.accounts.models.manage"] = _ns
-    except ImportError:
+    except Exception:
         pass
 
 # Modules that need to be proper namespace packages (not MagicMock)
@@ -238,6 +275,7 @@ def _register_tasks_aliases():
         _repo_root / "www" / "core" / "content" / "tasks.py",
         _structa_path / "www" / "core" / "content" / "tasks.py",
         _ctc_path / "www" / "core" / "content" / "tasks.py",
+        _vresume_path / "www" / "core" / "content" / "tasks.py",
     ]
     _content_tasks_file = next((p for p in _task_candidates if p.exists()), None)
     if _content_tasks_file is None:
