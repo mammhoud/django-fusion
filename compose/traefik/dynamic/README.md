@@ -18,13 +18,6 @@ Traefik dynamic configuration is now organized by domain/website project.
 │           ├── middlewares.yml            # Common middlewares
 │           ├── docs.yml                   # Documentation routers
 │           └── traefik-dashboard.yml      # Dashboard configuration
-│
-└── VResume/
-    └── compose/
-        └── traefik/
-            └── dynamic/
-                ├── README.md                  (vresume-specific docs)
-                └── vresume-structa.yml        # vresume.structa.cloud routers & services
 ```
 
 ## File Descriptions
@@ -38,8 +31,8 @@ Traefik dynamic configuration is now organized by domain/website project.
   - `ctc-media-https`: HTTPS for /static/ and /media/ files
   - `ctc-site-https`: HTTPS for main site (port 5070)
 - **Services:**
-  - `ctc-site-service`: Django backend on ctc-website:5070
-  - `ctc-media-service`: Nginx static/media on ctc-website-media:8271
+  - `ctc-site-service`: Django backend on ctc-research-website:5070
+  - `ctc-media-service`: Nginx static/media on ctc-research-media:80
 
 #### structa-cloud.yml
 - **Domain:** core.structa.cloud, structa.cloud, www.structa.cloud
@@ -48,12 +41,12 @@ Traefik dynamic configuration is now organized by domain/website project.
   - `structa-media-https`: HTTPS for /static/ and /media/ files
   - `structa-site-https`: HTTPS for main site (port 5071)
 - **Services:**
-  - `structa-site-service`: Django backend on structa-website:5071
-  - `structa-media-service`: Nginx static/media on structa-website-media:8272
+  - `structa-site-service`: Django backend on lms-demo-website:5071
+  - `structa-media-service`: Nginx static/media on lms-demo-media:80
 
-### VResume Project Configuration (VResume/compose/traefik/dynamic/)
+### VResume Project Configuration (compose/traefik/dynamic/)
 
-#### vresume-structa.yml
+#### vresume.yml
 - **Domain:** vresume.structa.cloud, www.vresume.structa.cloud
 - **Routers:**
   - `vresume-media-http`: HTTP → HTTPS redirect for /static/ and /media/
@@ -61,7 +54,7 @@ Traefik dynamic configuration is now organized by domain/website project.
   - `vresume-site-https`: HTTPS for main site (port 5072)
 - **Services:**
   - `vresume-site-service`: Django backend on vresume-website:5072
-  - `vresume-media-service`: Nginx static/media on vresume-website-media:8273
+  - `vresume-media-service`: Nginx static/media on vresume-media:80
 
 ## How Traefik Loads Configuration
 
@@ -70,7 +63,7 @@ Traefik dynamic configuration is now organized by domain/website project.
 3. File provider watches directory recursively:
    - Loads `ctc-research.yml` from `/etc/traefik/dynamic/`
    - Loads `structa-cloud.yml` from `/etc/traefik/dynamic/`
-   - Loads `vresume-structa.yml` from `/etc/traefik/dynamic/vresume/`
+   - Loads `vresume.yml` from `/etc/traefik/dynamic/`
    - Loads common configs (catchall, middlewares, docs, dashboard)
 4. Traefik combines all configurations and watches for changes
 
@@ -81,7 +74,6 @@ In `/root/site/docker-compose.yml`, the traefik service mounts:
 volumes:
   - ./compose/traefik/traefik.yml:/etc/traefik/traefik.yml:ro
   - ./compose/traefik/dynamic:/etc/traefik/dynamic:ro
-  - ./VResume/compose/traefik/dynamic:/etc/traefik/dynamic/vresume:ro
 ```
 
 This creates the directory structure:
@@ -93,7 +85,7 @@ This creates the directory structure:
     ├── structa-cloud.yml
     ├── (other common configs)
     └── vresume/
-        └── vresume-structa.yml
+        └── vresume.yml
 ```
 
 ## SSL Certificates
@@ -110,8 +102,8 @@ Each domain defines its main domain and SANs (Subject Alternative Names):
 ## Health Checks
 
 Each Django service includes a health check:
-- **ctc-website:** Path `/` on port 5070, Host: ctc-research.com
-- **structa-website:** Path `/` on port 5071, Host: core.structa.cloud
+- **ctc-research-website:** Path `/` on port 5070, Host: ctc-research.com
+- **lms-demo-website:** Path `/` on port 5071, Host: core.structa.cloud
 - **vresume-website:** Path `/` on port 5072, Host: vresume.structa.cloud
 
 Health checks run every 30 seconds with 10-second timeout.
@@ -142,7 +134,7 @@ To add a new domain, create a new file in the appropriate directory:
 
 **For VResume project:**
 ```
-/root/site/VResume/compose/traefik/dynamic/newdomain.yml
+/root/site/compose/traefik/dynamic/newdomain.yml
 ```
 
 Then use this template:
@@ -189,7 +181,7 @@ http:
     newdomain-media-service:
       loadBalancer:
         servers:
-          - url: "http://newdomain-website-media:8274"
+          - url: "http://newdomain-media:80"
 ```
 
 Traefik will automatically reload and apply the new configuration.

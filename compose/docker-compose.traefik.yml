@@ -1,61 +1,38 @@
 # ============================================================
-# VResume - Traefik Reverse Proxy (Optional)
+# Shared Traefik Reverse Proxy
 # ============================================================
-# Modern reverse proxy with automatic SSL, service discovery, and routing
-# Usage: docker compose -f compose/docker-compose.traefik up -d
-#
-# Features:
-#   - HTTP/HTTPS routing
-#   - Automatic SSL with Let's Encrypt
-#   - Service discovery via labels
-#   - Dashboard at http://localhost:8080
-#   - Redirect HTTP to HTTPS
+# One proxy routes the three websites, the unified media server, and utilities.
+# ============================================================
 
 networks:
   traefik-net:
     name: traefik-net
     external: true
 
-
 volumes:
-  letsencrypt:
-    driver: local
-    # Switched to a managed Docker volume to avoid failing when /etc/letsencrypt is absent on the host.
+  traefik_acme:
 
 services:
   traefik:
     build:
       context: ./traefik
       dockerfile: Dockerfile
-    env_file:
-      - path: ../.env
-        required: false
+    image: structa-traefik
+    container_name: traefik
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
-    container_name: vresume-traefik
     ports:
       - "80:80"
       - "443:443"
       - "8080:8080"
     volumes:
-      - letsencrypt:/etc/traefik/acme
+      - traefik_acme:/etc/traefik/acme
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
+    environment:
+      DOCKER_API_VERSION: "1.44"
+      TRAEFIK_ACME_EMAIL: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}
+      TRAEFIK_LOG_LEVEL: ${TRAEFIK_LOG_LEVEL:-INFO}
     networks:
       - traefik-net
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
-    environment:
-      - DOCKER_API_VERSION=1.44
-      - TRAEFIK_LOG_LEVEL=${TRAEFIK_LOG_LEVEL:-INFO}
-      - ACME_EMAIL=${ACME_EMAIL:-vresume@structa.cloud}
-      - ACME_CA_SERVER=${ACME_CA_SERVER:-https://acme-staging-v02.api.letsencrypt.org/directory}
-      - TRAEFIK_HOST=${TRAEFIK_HOST:-traefik.localhost}
-      - DJANGO_HOST=${DJANGO_HOST:-vresume.structa.cloud}

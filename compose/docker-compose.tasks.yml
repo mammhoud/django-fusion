@@ -1,7 +1,7 @@
 # ============================================================
 # Shared Background Task Server
 # ============================================================
-# Runs Celery worker/beat pairs for both workspace websites. Each service uses
+# Runs Celery worker/beat pairs for all three workspace websites. Each service uses
 # the same shared task app but seeds DJANGO_SITE/DJANGO_WEBSITE so site-aware
 # tasks render templates, settings, and URLs for the correct website.
 #
@@ -37,14 +37,14 @@ x-shared-tasks-base: &shared-tasks-base
     DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research}
     WEBSITE: ${WEBSITE:-ctc-research}
     DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-vresume-postgres}
+    DB_HOST: ${DB_HOST:-postgres}
     DB_PORT: ${DB_PORT:-5432}
-    DB_NAME: ${DB_NAME:-vresume}
-    DB_USER: ${DB_USER:-vresume}
+    DB_NAME: ${DB_NAME:-db_ctc}
+    DB_USER: ${DB_USER:-structa}
     DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
-    REDIS_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/0
-    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
-    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-mk_pAssWord123}@vresume-redis:6379/1
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
+    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
     LOG_DIR: /app/logs
   volumes:
@@ -53,8 +53,10 @@ x-shared-tasks-base: &shared-tasks-base
   networks:
     - traefik-net
   depends_on:
-    - vresume-redis
-    - vresume-postgres
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
 
 x-worker-command: &worker-command >
   celery -A tasks.celery:app worker
@@ -145,6 +147,45 @@ services:
       DJANGO_WEBSITE: lms-demo
       WEBSITE: lms-demo
       CELERY_TASK_DEFAULT_QUEUE: lms-demo
+    command: *beat-command
+    ports: []
+    labels: {}
+
+
+  vresume-tasks-worker:
+    <<: *shared-tasks-base
+    container_name: vresume-tasks-worker
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      CELERY_TASK_DEFAULT_QUEUE: vresume
+    command: *worker-command
+    ports: []
+    labels: {}
+
+  vresume-tasks-beat:
+    <<: *shared-tasks-base
+    container_name: vresume-tasks-beat
+    build:
+      context: ..
+      dockerfile: ./compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      CELERY_TASK_DEFAULT_QUEUE: vresume
     command: *beat-command
     ports: []
     labels: {}

@@ -39,7 +39,7 @@ http:
     structa-site-service:
       loadBalancer:
         servers:
-          - url: "http://structa-website:5071"
+          - url: "http://lms-demo-website:5071"
         healthCheck:
           path: /
           interval: 30s
@@ -52,4 +52,4 @@ http:
     structa-media-service:
       loadBalancer:
         servers:
-          - url: "http://structa-website-media:8272"
+          - url: "http://lms-demo-media:80"

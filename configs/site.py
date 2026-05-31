@@ -154,6 +154,13 @@ def active_website_name(default: str = "structa.cloud") -> str:
 def site_dir_for(website: str) -> Path:
     """Return the preferred filesystem path for a known website."""
     website = _normalise_website(website) or active_website_name()
+    config = site_config(website)
+    configured_path = config.get("path") or config.get("directory")
+    if configured_path:
+        configured_site = Path(str(configured_path))
+        if not configured_site.is_absolute():
+            configured_site = WORKSPACE_DIR / configured_site
+        return configured_site
     root_site = WORKSPACE_DIR / website
     if root_site.exists():
         return root_site

@@ -3,7 +3,7 @@ const fs = require('fs');
 const { createRequire } = require('module');
 const { resolveAssetPaths } = require('./paths');
 
-const assetPaths = resolveAssetPaths();
+let assetPaths = resolveAssetPaths(process.env.PROJECT_PATH);
 const assetsRequire = createRequire(path.join(assetPaths.assetsRoot, 'package.json'));
 const webpack = assetsRequire('webpack');
 const fse = assetsRequire('fs-extra');
@@ -12,21 +12,18 @@ const MiniCssExtractPlugin = assetsRequire('mini-css-extract-plugin');
 const BundleTracker = assetsRequire('webpack-bundle-tracker');
 const CopyWebpackPlugin = assetsRequire('copy-webpack-plugin');
 
-const SITE_NAME = assetPaths.siteName;
-const SITE_DIR = assetPaths.siteDir;
-const SHARED_DIR = assetPaths.sharedStaticDir;
-const SITE_STATIC_DIR = assetPaths.siteStaticDir;
-const DIST_DIR = assetPaths.siteBundlesDir;
-const SHARED_BUNDLES_DIR = assetPaths.sharedBundlesDir;
-
 class SharedAssetCopyPlugin {
+  constructor(paths) {
+    this.paths = paths;
+  }
+
   apply(compiler) {
     compiler.hooks.afterEmit.tapPromise('SharedAssetCopyPlugin', async () => {
       const directories = ['js', 'fonts', 'images', 'videos'];
-      await fse.ensureDir(SHARED_BUNDLES_DIR);
+      await fse.ensureDir(this.paths.sharedBundlesDir);
       await Promise.all(directories.map(async (directory) => {
-        const source = path.join(SHARED_DIR, directory);
-        const destination = path.join(SHARED_BUNDLES_DIR, directory);
+        const source = path.join(this.paths.sharedStaticDir, directory);
+        const destination = path.join(this.paths.sharedBundlesDir, directory);
         if (await fse.pathExists(source)) {
           await fse.copy(source, destination);
         }
@@ -35,13 +32,21 @@ class SharedAssetCopyPlugin {
   }
 }
 
-function buildEntries() {
+function buildEntries(paths) {
   const entries = {
-    shared: path.join(SHARED_DIR, 'static'),
-    shared_styles: path.join(SHARED_DIR, 'styles'),
+    shared: path.join(paths.sharedStaticDir, 'static'),
+    shared_styles: path.join(paths.sharedStaticDir, 'styles'),
   };
-  const siteStyles = path.join(SITE_STATIC_DIR, 'styles', 'main.scss');
-  const siteMain = path.join(SITE_STATIC_DIR, 'js', 'main.js');
+  const siteStaticEntry = path.join(paths.siteStaticDir, 'static.js');
+  const siteStylesEntry = path.join(paths.siteStaticDir, 'styles.js');
+  const siteStyles = path.join(paths.siteStaticDir, 'styles', 'main.scss');
+  const siteMain = path.join(paths.siteStaticDir, 'js', 'main.js');
+  if (fs.existsSync(siteStaticEntry)) {
+    entries.static = siteStaticEntry;
+  }
+  if (fs.existsSync(siteStylesEntry)) {
+    entries.styles = siteStylesEntry;
+  }
   if (fs.existsSync(siteStyles)) {
     entries.site_styles = siteStyles;
   }
@@ -51,23 +56,27 @@ function buildEntries() {
   return entries;
 }
 
-module.exports = (env, argv) => {
+module.exports = (env = {}, argv = {}) => {
+  if (env.site) {
+    process.env.PROJECT_PATH = env.site;
+  }
+  assetPaths = resolveAssetPaths(env.site || process.env.PROJECT_PATH);
   const isProduction = argv.mode === 'production';
   process.env.NODE_ENV = isProduction ? 'production' : 'development';
 
   return {
     target: 'web',
-    context: SHARED_DIR,
-    entry: buildEntries(),
+    context: assetPaths.sharedStaticDir,
+    entry: buildEntries(assetPaths),
     performance: { hints: false },
     plugins: [
       new webpack.ProvidePlugin({ $: 'jquery', jQuery: 'jquery', 'window.jQuery': 'jquery' }),
       new CopyWebpackPlugin({ patterns: [
-        { from: path.join(SITE_STATIC_DIR, 'images'), to: path.join(DIST_DIR, 'images'), noErrorOnMissing: true },
-        { from: path.join(SITE_STATIC_DIR, 'js'), to: path.join(DIST_DIR, 'js'), noErrorOnMissing: true },
+        { from: path.join(assetPaths.siteStaticDir, 'images'), to: path.join(assetPaths.siteBundlesDir, 'images'), noErrorOnMissing: true },
+        { from: path.join(assetPaths.siteStaticDir, 'js'), to: path.join(assetPaths.siteBundlesDir, 'js'), noErrorOnMissing: true },
       ]}),
-      new SharedAssetCopyPlugin(),
-      new BundleTracker({ path: DIST_DIR, filename: 'bundles.json' }),
+      new SharedAssetCopyPlugin(assetPaths),
+      new BundleTracker({ path: assetPaths.siteBundlesDir, filename: 'bundles.json' }),
       new MiniCssExtractPlugin({ filename: isProduction ? 'css/[name].[contenthash:8].min.css' : 'css/[name].min.css' }),
       new VueLoaderPlugin(),
     ],
@@ -79,13 +88,13 @@ module.exports = (env, argv) => {
       { test: /\.vue$/, loader: 'vue-loader' },
       { test: /\.html$/, use: 'html-loader' },
       { test: /\.css$/i, use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false }}], sideEffects: true },
-      { test: /\.scss$/i, use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false }}, 'sass-loader'], sideEffects: true },
+      { test: /\.scss$/i, use: [MiniCssExtractPlugin.loader, { loader: 'css-loader', options: { url: false }}, { loader: 'sass-loader', options: { sassOptions: { includePaths: [path.join(assetPaths.siteStaticDir, 'styles'), path.join(assetPaths.sharedStaticDir, 'styles')] } } }], sideEffects: true },
       { test: /\.(png|jpe?g|gif|svg|webp)$/i, type: 'asset/resource', generator: { filename: 'images/[name][ext]' } },
       { test: /\.(woff2?|eot|ttf|otf)$/i, type: 'asset/resource', generator: { filename: 'fonts/[name][ext]' } },
     ]},
     resolve: {
       extensions: ['.js', '.jsx', '.json', '.vue', '.scss', '.css'],
-      alias: { shared: SHARED_DIR, site: SITE_STATIC_DIR },
+      alias: { shared: assetPaths.sharedStaticDir, site: assetPaths.siteStaticDir },
       modules: [assetPaths.assetsNodeModules, 'node_modules'],
     },
   };

@@ -16,6 +16,7 @@ TEMPLATE_DEBUG = settings.get("TEMPLATE_DEBUG", conf_settings.is_debug)
 
 TEMPLATES_DIRS = [
     BASE_DIR / "pages" / "templates",
+    BASE_DIR / "www" / "pages" / "templates",
     BASE_DIR / "assets" / "templates",
     BASE_DIR.parent / "assets" / "templates",
 ]
