@@ -94,10 +94,11 @@ class Command(BaseCommand):
         # Step 2: Run webpack (only if explicitly requested or not collectstatic-only)
         # In Docker, webpack runs at build time — skip unless explicitly requested
         if not collectstatic_only:
-            bundles_json = project_root / "assets" / "bundles" / "bundles.json"
+            webpack_config = getattr(settings, "WEBPACK_LOADER", {}).get("DEFAULT", {})
+            bundles_json = Path(webpack_config.get("STATS_FILE", ""))
             if bundles_json.exists() and not options.get("force_webpack"):
                 self.stdout.write(self.style.WARNING(
-                    "⚡ Webpack bundles already built (bundles.json exists) — skipping webpack"
+                    "⚡ Webpack bundles already built (stats file exists) — skipping webpack"
                 ))
             else:
                 self._run_webpack(

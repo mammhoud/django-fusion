@@ -102,7 +102,7 @@ services:
       ALLOWED_HOSTS: ${ALLOWED_HOSTS:-ctc-research.com,www.ctc-research.com,arch.ctc-research.com,localhost,127.0.0.1}
       SITE_DOMAIN: ${SITE_DOMAIN:-ctc-research.com}
       RUN_SETUP: ${RUN_SETUP:-true}
-      LOAD_FIXTURES: ${LOAD_FIXTURES:-false}
+      LOAD_FIXTURES: ${LOAD_FIXTURES:-true}
       FORCE_LOAD_DUMPS: ${FORCE_LOAD_DUMPS:-false}
       STRICT_PAGE_CONTENT: ${STRICT_PAGE_CONTENT:-true}
       SUPERUSER_USERNAME: ${SUPERUSER_USERNAME:-admin}

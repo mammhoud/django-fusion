@@ -15,7 +15,7 @@ from pathlib import Path
 
 def bootstrap_workspace() -> Path:
     """Ensure standalone script execution can import workspace modules."""
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[2]
     os.chdir(repo_root)
     path_text = str(repo_root)
     # Ensure the workspace root is at the beginning of sys.path

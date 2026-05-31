@@ -59,7 +59,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "🛠️ Running Django setup..."
 
     echo "🧹 Collecting/building static files..."
-    if ! run_logged build_assets python manage.py --site "$SITE_NAME" build_assets --collectstatic-only --no-input; then
+    if ! run_logged build_assets python manage.py --site "$SITE_NAME" build_assets --no-input; then
         if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
             echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
         fi
@@ -72,7 +72,8 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
 
     echo "🗃️  Applying migrations..."
     if ! run_logged migrate python manage.py --site "$SITE_NAME" migrate --noinput; then
-        echo "⚠️  migrate failed (non-fatal); see ${LOG_DIR}/migrate.log"
+        echo "❌ migrate failed; see ${LOG_DIR}/migrate.log"
+        exit 1
     fi
 
     if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then

@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 class LmsConfig(AppConfig):
     default_auto_field = 'django.db.models.BigAutoField'
     name = 'plugins.lms'
-    label = "alliance"
+    label = "lms"
     verbose_name = _("LMS Module")
 
     def ready(self):
