@@ -1,0 +1,89 @@
+{# JS Translation Strings Template Component #}
+{# Injects translatable strings into a global JS object so front-end components can use them. #}
+{# Usage: {% include 'components/js_i18n.html' %} in base.html before scripts block #}
+{% load i18n %}
+
+<script id="vresume-i18n-strings" type="application/json">
+{
+  "show_contacts": "{% trans 'Show Contacts' %}",
+  "hide_contacts": "{% trans 'Hide Contacts' %}",
+  "loading": "{% trans 'Loading...' %}",
+  "changing": "{% trans 'Changing...' %}",
+  "search": "{% trans 'Search' %}",
+  "search_placeholder": "{% trans 'Search...' %}",
+  "no_results": "{% trans 'No results found.' %}",
+  "no_projects_match": "{% trans 'No projects match your search.' %}",
+  "no_posts_match": "{% trans 'No posts match your search.' %}",
+  "read_more": "{% trans 'Read More' %}",
+  "view_project": "{% trans 'View Project' %}",
+  "close": "{% trans 'Close' %}",
+  "next": "{% trans 'Next' %}",
+  "previous": "{% trans 'Previous' %}",
+  "all": "{% trans 'All' %}",
+  "filter_by": "{% trans 'Filter by' %}",
+  "sort_by": "{% trans 'Sort by' %}",
+  "grid_view": "{% trans 'Grid View' %}",
+  "list_view": "{% trans 'List View' %}",
+  "send_message": "{% trans 'Send Message' %}",
+  "subscribe": "{% trans 'Subscribe' %}",
+  "subscribe_success": "{% trans 'Thank you for subscribing!' %}",
+  "message_sent": "{% trans 'Message Sent!' %}",
+  "message_sent_body": "{% trans 'Thank you for reaching out. I will get back to you as soon as possible.' %}",
+  "error_occurred": "{% trans 'An error occurred. Please try again.' %}",
+  "validation_error": "{% trans 'Please fill in all required fields.' %}",
+  "full_name_required": "{% trans 'Full name is required' %}",
+  "email_required": "{% trans 'Email is required' %}",
+  "message_required": "{% trans 'Message is required' %}",
+  "cookie_consent_title": "{% trans 'Cookie Preferences' %}",
+  "cookie_consent_body": "{% trans 'We use cookies to enhance your experience. Choose your preferences below.' %}",
+  "cookie_accept_all": "{% trans 'Accept All' %}",
+  "cookie_reject_all": "{% trans 'Reject All' %}",
+  "cookie_save": "{% trans 'Save Preferences' %}",
+  "theme_light": "{% trans 'Light Mode' %}",
+  "theme_dark": "{% trans 'Dark Mode' %}",
+  "theme_ocean": "{% trans 'Ocean Theme' %}",
+  "theme_classic": "{% trans 'Classic Theme' %}",
+  "min_read": "{% trans 'min read' %}",
+  "by_author": "{% trans 'By' %}",
+  "tools_technologies": "{% trans 'Tools & Technologies' %}",
+  "view_live_project": "{% trans 'View Live Project' %}",
+  "read_full_article": "{% trans 'Read Full Article' %}",
+  "project_video": "{% trans 'Project Video' %}",
+  "portfolio": "{% trans 'Portfolio' %}",
+  "contact": "{% trans 'Contact' %}"
+}
+</script>
+<script>
+/**
+ * VResume i18n — runtime translation helper.
+ * Reads from the embedded JSON block so that Django's trans tags
+ * are evaluated server-side, and JS components can use the result.
+ *
+ * Usage:
+ *   const label = VResumeI18n.t('show_contacts');
+ */
+window.VResumeI18n = (function() {
+    'use strict';
+    let _strings = {};
+    try {
+        const el = document.getElementById('vresume-i18n-strings');
+        if (el) _strings = JSON.parse(el.textContent);
+    } catch(e) {
+        console.warn('[VResumeI18n] Failed to parse i18n strings:', e);
+    }
+    return {
+        /** Get translated string by key, with optional fallback. */
+        t: function(key, fallback) {
+            return _strings[key] || fallback || key;
+        },
+        /** Get all strings (read-only copy). */
+        all: function() {
+            return Object.assign({}, _strings);
+        },
+        /** Check if a key exists. */
+        has: function(key) {
+            return key in _strings;
+        }
+    };
+})();
+</script>

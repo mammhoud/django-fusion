@@ -1,0 +1,17 @@
+{# HTMX Fragment: Blog Tab Content Only (No Layout) #}
+{% load i18n %}
+
+<article class="blog active container" data-page="blog">
+  <header class="content__header">
+    <h2 class="h2 article__title">{% trans "Blog" %}</h2>
+  </header>
+
+  {# Alpine.js-based filter form with HTMX integration #}
+  {% url 'pages:blog_search' as blog_search_url %}
+  {% include 'components/search/filter_form.html' with search_url=blog_search_url storage_key='blogTags' persist=True tags_json=tags_json %}
+
+  {# Results container - replaced by HTMX on filter/search #}
+  <div id="results-container">
+    {% include 'blog/sections/posts.html' %}
+  </div>
+</article>

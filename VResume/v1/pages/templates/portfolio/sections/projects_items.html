@@ -1,0 +1,63 @@
+{% load i18n static wagtailimages_tags %}
+{% with projects=page_obj.object_list|default:featured_projects %}
+{% for project in projects %}
+  <li class="project__item project__item--active"
+      data-portfolio-filter-item
+      data-category="{{ project.category|lower }}"
+      data-title="{{ project.title|lower }}">
+    <button class="project__card project__card--grid"
+            data-portfolio-card="grid"
+            data-title="{{ project.title }}"
+            hx-get="{% url 'pages:project_detail' project.pk %}"
+            hx-target="#unified-modal-container"
+            hx-swap="innerHTML"
+            aria-label="{{ project.title }}">
+      <figure class="content__img">
+        <div class="content__icon" aria-hidden="true"><i class="ri ri-eye-line"></i></div>
+        {% if project.image %}
+          {% image project.image fill-400x300 as proj_img %}
+          <img src="{{ proj_img.url }}" alt="{{ project.title }}" loading="lazy" class="content__img-src">
+        {% else %}
+          <div class="content__placeholder"><i class="ri ri-image-line"></i></div>
+        {% endif %}
+      </figure>
+      <div class="content__content">
+        <h3 class="content__title">{{ project.title }}</h3>
+        <p class="content__category">{{ project.category }}</p>
+      </div>
+    </button>
+
+    <button class="project__card project__card--list"
+            data-portfolio-card="list"
+            data-title="{{ project.title }}"
+            hx-get="{% url 'pages:project_detail' project.pk %}"
+            hx-target="#unified-modal-container"
+            hx-swap="innerHTML"
+            aria-label="{{ project.title }}">
+      <div class="content__thumb">
+        {% if project.image %}
+          {% image project.image fill-80x60 as proj_thumb %}
+          <img src="{{ proj_thumb.url }}" alt="" loading="lazy">
+        {% else %}
+          <div class="content__placeholder content__placeholder--sm"><i class="ri ri-image-line"></i></div>
+        {% endif %}
+      </div>
+      <div class="content__body">
+        <h3 class="content__title">{{ project.title }}</h3>
+        <p class="content__category">{{ project.category }}</p>
+        {% if project.description %}<p class="content__description">{{ project.description|truncatewords:15 }}</p>{% endif %}
+      </div>
+      <div class="content__action" aria-hidden="true"><i class="ri ri-arrow-right-line"></i></div>
+    </button>
+  </li>
+{% endfor %}
+{% if page_obj.has_next %}
+<li class="project__infinite-trigger"
+    hx-get="{{ request.path }}?q={{ current_q|urlencode }}&tags={{ current_tags|urlencode }}&page={{ page_obj.next_page_number }}&append=1"
+    hx-trigger="revealed"
+    hx-swap="outerHTML"
+    hx-target="this">
+  <span class="htmx-indicator">{% trans "Loading more..." %}</span>
+</li>
+{% endif %}
+{% endwith %}

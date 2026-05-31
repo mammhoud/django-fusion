@@ -1,0 +1,20 @@
+{# Skills Grid Section #}
+{# Displays skills in a visual grid layout grouped by proficiency level #}
+{% load i18n %}
+
+{% if page.skills %}
+<section class="skills-grid">
+  <h3 class="h3 skills-grid__title">{% trans "Skills Overview" %}</h3>
+  <div class="skills-grid__container">
+    {% for block in page.skills %}
+      <div class="skills-grid__card">
+        <div class="skills-grid__icon">
+          <i class="ri ri-checkbox-circle-line"></i>
+        </div>
+        <h5 class="h5 skills-grid__name">{{ block.value.name }}</h5>
+        <div class="skills-grid__badge" data-level="{{ block.value.level }}">{{ block.value.level }}%</div>
+      </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}

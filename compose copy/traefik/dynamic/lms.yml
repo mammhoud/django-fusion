@@ -1,0 +1,37 @@
+# ============================================
+# LMS Service Configuration
+# Domain: lms.structa.cloud
+# ============================================
+http:
+  routers:
+    lms-http:
+      rule: "Host(`lms.structa.cloud`)"
+      entryPoints:
+        - web
+      middlewares:
+        - compress
+        - redirect-to-https
+      service: lms-service
+
+    lms-https:
+      rule: "Host(`lms.structa.cloud`)"
+      entryPoints:
+        - web-secure
+      middlewares:
+        - compress
+        - security-headers
+      service: lms-service
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "lms.structa.cloud"
+
+  services:
+    lms-service:
+      loadBalancer:
+        servers:
+          - url: "http://lms:80"
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 5s

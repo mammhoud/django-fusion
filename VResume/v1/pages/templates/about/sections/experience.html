@@ -1,0 +1,28 @@
+{# Experience Section (About page) #}
+{# Displays counters/stats from Wagtail or static fallback #}
+{% load i18n wagtailimages_tags %}
+
+{% if page.facts %}
+  {% for block in page.facts %}
+    {% if block.block_type == 'about' and block.value.counters %}
+      <section class="experience-counters">
+        <h3 class="h3 experience-counters__title">{% trans "Experience" %}</h3>
+        <ul class="experience-counters__list">
+          {% for counter in block.value.counters %}
+            <li class="experience-counters__item">
+              <div class="experience-counters__icon">
+                {% if counter.value.icon_class %}
+                  <i class="{{ counter.value.icon_class }}"></i>
+                {% endif %}
+              </div>
+              <div class="experience-counters__content">
+                <span class="experience-counters__number" data-counter data-target="{{ counter.value.number }}">{{ counter.value.number }}</span>
+                <p class="experience-counters__label">{{ counter.value.label }}</p>
+              </div>
+            </li>
+          {% endfor %}
+        </ul>
+      </section>
+    {% endif %}
+  {% endfor %}
+{% endif %}

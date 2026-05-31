@@ -1,0 +1,49 @@
+# ============================================
+# All Django Services — Routers & Backends
+# Covers:
+#   - vresume.structa.cloud
+# ============================================
+http:
+  # ------------------------------------------
+  # ROUTERS
+  # ------------------------------------------
+  routers:
+    # --- vresume.structa.cloud ---
+    vresume-http:
+      rule: "Host(`vresume.structa.cloud`)"
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: vresume-service
+
+    vresume-https:
+      rule: "Host(`vresume.structa.cloud`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: vresume-service
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "vresume.structa.cloud"
+
+  # ------------------------------------------
+  # SERVICES
+  # ------------------------------------------
+  services:
+    vresume-service:
+      loadBalancer:
+        servers:
+          - url: "http://vresume-website:5072"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+          followRedirects: false
+          headers:
+            Host: "vresume.structa.cloud"
+            X-Forwarded-Proto: "https"
+        sticky:
+          cookie:
+            name: vresume_lb
+            secure: true
+            httpOnly: true
+

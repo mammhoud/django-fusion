@@ -1,0 +1,452 @@
+/**
+ * VResume Design System — Two Theme Families (Classic + Ocean)
+ * Enhanced with color variants (light/dark shades) for each legacy color
+ * Built upon the original style.css palette
+ */
+
+/* ================================
+   DESIGN TOKENS & LEGACY BASE COLORS
+   (Theme-agnostic, used across all themes)
+   ================================ */
+:root {
+  /* ── Legacy Base Colors (HSL) ── */
+  --jet: hsl(0, 0%, 22%);
+  --jet-light: hsl(0, 0%, 28%);
+  --jet-dark: hsl(0, 0%, 16%);
+  
+  --onyx: hsl(240, 1%, 17%);
+  --onyx-light: hsl(240, 1%, 23%);
+  --onyx-dark: hsl(240, 1%, 11%);
+  
+  --eerie-black-1: hsl(240, 2%, 13%);
+  --eerie-black-1-light: hsl(240, 2%, 19%);
+  --eerie-black-1-dark: hsl(240, 2%, 7%);
+  
+  --eerie-black-2: hsl(240, 2%, 12%);
+  --eerie-black-2-light: hsl(240, 2%, 18%);
+  --eerie-black-2-dark: hsl(240, 2%, 6%);
+  
+  --smoky-black: hsl(0, 0%, 7%);
+  --smoky-black-light: hsl(0, 0%, 13%);
+  --smoky-black-dark: hsl(0, 0%, 3%);
+  
+  --white-1: hsl(0, 0%, 100%);
+  --white-1-dark: hsl(0, 0%, 94%);
+  
+  --white-2: hsl(0, 0%, 98%);
+  --white-2-dark: hsl(0, 0%, 92%);
+  
+  --orange-yellow-crayola: hsl(45, 100%, 72%);
+  --orange-yellow-crayola-light: hsl(45, 100%, 78%);
+  --orange-yellow-crayola-dark: hsl(45, 100%, 62%);
+  
+  --vegas-gold: hsl(45, 54%, 58%);
+  --vegas-gold-light: hsl(45, 54%, 68%);
+  --vegas-gold-dark: hsl(45, 54%, 48%);
+  
+  --light-gray: hsl(0, 0%, 84%);
+  --light-gray-light: hsl(0, 0%, 90%);
+  --light-gray-dark: hsl(0, 0%, 78%);
+  
+  --light-gray-70: hsla(0, 0%, 84%, 0.7);
+  
+  --bittersweet-shimmer: hsl(0, 43%, 51%);
+  --bittersweet-shimmer-light: hsl(0, 43%, 61%);
+  --bittersweet-shimmer-dark: hsl(0, 43%, 41%);
+
+  /* ── Legacy Gradients ── */
+  --bg-gradient-onyx: linear-gradient(to bottom right, var(--jet) 3%, var(--onyx) 97%);
+  --bg-gradient-jet: linear-gradient(to bottom right, hsla(240, 1%, 18%, 0.251) 0%, hsla(240, 2%, 11%, 0) 100%), var(--eerie-black-1);
+  --bg-gradient-yellow-1: linear-gradient(to bottom right, var(--orange-yellow-crayola) 0%, hsla(36, 100%, 69%, 0) 50%);
+  --bg-gradient-yellow-2: linear-gradient(135deg, hsla(45, 100%, 71%, 0.251) 0%, hsla(35, 100%, 68%, 0) 59.86%), var(--eerie-black-2);
+  --border-gradient-onyx: linear-gradient(to bottom right, hsl(0, 0%, 25%) 0%, hsla(0, 0%, 25%, 0) 50%);
+  --text-gradient-yellow: linear-gradient(to right, hsl(45, 100%, 72%), hsl(35, 100%, 68%));
+  --accent-color: var(--color-accent, #d98c00);
+
+  /* ── Typography ── */
+  --ff-poppins: 'Poppins', sans-serif;
+  --fs-xs: 0.75rem;
+  --fs-sm: 0.875rem;
+  --fs-base: 1rem;
+  --fs-md: 1.125rem;
+  --fs-lg: 1.25rem;
+  --fs-xl: 1.5rem;
+  --fs-2xl: 1.875rem;
+  --fs-3xl: 2.25rem;
+  --fs-4xl: 3rem;
+  --fs-2: 0.875rem;
+  --fs-3: 1rem;
+  --fs-4: 1.125rem;
+  --fs-5: 1.25rem;
+  --fs-6: 1.5rem;
+  --fs-7: 1.75rem;
+  --fs-8: 2rem;
+  --fw-300: 300;
+  --fw-400: 400;
+  --fw-500: 500;
+  --fw-600: 600;
+  --fw-700: 700;
+
+  /* ── Spacing ── */
+  --space-0: 0;
+  --space-px: 1px;
+  --space-0_5: 0.125rem;
+  --space-1: 0.25rem;
+  --space-1_5: 0.375rem;
+  --space-2: 0.5rem;
+  --space-2_5: 0.625rem;
+  --space-3: 0.75rem;
+  --space-3_5: 0.875rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-7: 1.75rem;
+  --space-8: 2rem;
+  --space-9: 2.25rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-14: 3.5rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* ── Border Radius ── */
+  --radius-none: 0;
+  --radius-sm: 0.25rem;
+  --radius-md: 0.5rem;
+  --radius-lg: 0.75rem;
+  --radius-xl: 1rem;
+  --radius-2xl: 1.5rem;
+  --radius-3xl: 2rem;
+  --radius-full: 9999px;
+
+  /* ── Shadows ── */
+  --shadow-1: -4px 8px 24px hsla(0, 0%, 0%, 0.25);
+  --shadow-2: 0 16px 30px hsla(0, 0%, 0%, 0.25);
+  --shadow-3: 0 16px 40px hsla(0, 0%, 0%, 0.25);
+  --shadow-4: 0 25px 50px hsla(0, 0%, 0%, 0.15);
+  --shadow-5: 0 24px 80px hsla(0, 0%, 0%, 0.25);
+  --shadow-xs: 0 1px 2px hsla(0, 0%, 0%, 0.05);
+  --shadow-sm: 0 1px 3px hsla(0, 0%, 0%, 0.1);
+  --shadow-md: 0 4px 6px -1px hsla(0, 0%, 0%, 0.1);
+  --shadow-lg: 0 10px 15px -3px hsla(0, 0%, 0%, 0.1);
+  --shadow-xl: 0 20px 25px -5px hsla(0, 0%, 0%, 0.1);
+  --shadow-2xl: 0 25px 50px -12px hsla(0, 0%, 0%, 0.25);
+  --shadow-inner: inset 0 2px 4px 0 hsla(0, 0%, 0%, 0.06);
+
+  /* ── Transitions ── */
+  --transition-1: 0.25s ease;
+  --transition-2: 0.5s ease-in-out;
+  --transition-fast: 150ms ease;
+  --transition-base: 250ms ease;
+  --transition-slow: 400ms ease;
+}
+
+/* ================================
+   THEME FAMILY 1: CLASSIC
+   (Warm browns + gold accents)
+   ================================ */
+
+/* ── CLASSIC LIGHT ── */
+html[data-theme="classic-light"] {
+  --color-primary: #ffffff;
+  --color-primary-hover: #f1f3f5;
+  --color-primary-active: #e9ecef;
+  --color-primary-rgb: 255, 255, 255;
+  
+  --color-secondary: #7a3a00;           /* darkened for better contrast */
+  --color-secondary-hover: #964700;
+  --color-secondary-active: #5c2c00;
+  --color-secondary-rgb: 122, 58, 0;
+  
+  --color-accent: #d98c00;              /* slightly deeper gold */
+  --color-accent-hover: #f29f00;
+  --color-accent-active: #bf7b00;
+  --color-accent-rgb: 217, 140, 0;
+  
+  --bg-canvas: #fcfaf7;                /* cleaner warm white */
+  --bg-surface: #f4efea;               /* distinguishable surface */
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-inverse: #1a0f06;
+  --bg-canvas-rgb: 252, 250, 247;
+  
+  --text-primary: #1a0f06;             /* deeper dark brown for max contrast */
+  --text-secondary: #4d2d14;           /* clearer secondary text */
+  --text-tertiary: #6b4426;            /* readable tertiary text */
+  --text-inverse: #ffffff;
+  --text-primary-rgb: 26, 15, 6;
+  
+  --border-subtle: #eadbc5;
+  --border-default: #d4b47a;           /* stronger gold border */
+  --border-strong: #7a3a00;
+  --border-focus: #d98c00;
+  
+  --shadow-color: 80, 40, 0;
+  --link-color: #7a3a00;
+  --link-hover: #964700;
+  
+  --gradient-primary: linear-gradient(135deg, #fffaf5 0%, #f0e2d0 100%);
+  --gradient-accent: linear-gradient(135deg, #d98c00 0%, #a66a00 100%);
+  
+  /* Status colors — optimized for light bg */
+  --color-success: #086a6c;
+  --color-warning: #7a5800;
+  --color-danger: #8a1d21;
+  --color-info: #004f60;
+  
+  /* Input/Form variables */
+  --input-bg: #f0f0f0;
+  --input-border: #d4b47a;
+  --input-focus-shadow: rgba(217, 140, 0, 0.25);
+}
+
+/* ── CLASSIC DARK (Default) ── */
+html[data-theme="classic-dark"],
+html:not([data-theme]) {
+  --color-primary: #1a0f06;
+  --color-primary-hover: #26170a;
+  --color-primary-active: #321e0d;
+  --color-primary-rgb: 26, 15, 6;
+  
+  --color-secondary: #f28d35;
+  --color-secondary-hover: #ffa65c;
+  --color-secondary-active: #d9771a;
+  --color-secondary-rgb: 242, 141, 53;
+  
+  --color-accent: #ffa65c;
+  --color-accent-hover: #ffbf8a;
+  --color-accent-active: #f28d35;
+  --color-accent-rgb: 255, 166, 92;
+  
+  --bg-canvas: #0f0703;                /* deeper black-brown */
+  --bg-surface: #1a0d06;
+  --bg-surface-elevated: #261309;
+  --bg-surface-inverse: #f0e2d0;
+  --bg-canvas-rgb: 15, 7, 3;
+  
+  --text-primary: #fff5eb;             /* cleaner off-white */
+  --text-secondary: #f0d4bf;
+  --text-tertiary: #d9b191;
+  --text-inverse: #0f0703;
+  --text-primary-rgb: 255, 245, 235;
+  
+  --border-subtle: rgba(217, 177, 145, 0.15);
+  --border-default: #f28d35;
+  --border-strong: #ffa65c;
+  --border-focus: #ffa65c;
+  
+  --shadow-color: 0, 0, 0;
+  --link-color: #ffa65c;
+  --link-hover: #ffbf8a;
+  
+  --gradient-primary: linear-gradient(135deg, #1a0d06 0%, #261309 100%);
+  --gradient-accent: linear-gradient(135deg, #a66a00 0%, #8c5a00 100%);
+  
+  /* Status colors — optimized for dark bg */
+  --color-success: #34e8b0;
+  --color-warning: #ffbf8a;
+  --color-danger: #f56d5a;
+  --color-info: #a4e2cd;
+
+  /* Input/Form variables */
+  --input-bg: #261309;
+  --input-border: #f28d35;
+  --input-focus-shadow: rgba(242, 141, 53, 0.25);
+}
+
+/* ================================
+   THEME FAMILY 2: OCEAN
+   (Cool teal/blue + gold accents)
+   ================================ */
+
+/* ── OCEAN LIGHT ── */
+html[data-theme="ocean-light"] {
+  --color-primary: #ffffff;
+  --color-primary-hover: #f0f7f9;
+  --color-primary-active: #e2eff2;
+  --color-primary-rgb: 255, 255, 255;
+  
+  --color-secondary: #004250;
+  --color-secondary-hover: #005a6d;
+  --color-secondary-active: #002b35;
+  --color-secondary-rgb: 0, 66, 80;
+  
+  --color-accent: #d98c00;
+  --color-accent-hover: #f29f00;
+  --color-accent-active: #bf7b00;
+  --color-accent-rgb: 217, 140, 0;
+  
+  --bg-canvas: #fafdff;
+  --bg-surface: #f0f8fa;
+  --bg-surface-elevated: #ffffff;
+  --bg-surface-inverse: #00151c;
+  --bg-canvas-rgb: 250, 253, 255;
+  
+  --text-primary: #00151c;
+  --text-secondary: #164152;
+  --text-tertiary: #255a43;
+  --text-inverse: #ffffff;
+  --text-primary-rgb: 0, 21, 28;
+  
+  --border-subtle: #cde4ec;
+  --border-default: #087e81;
+  --border-strong: #004250;
+  --border-focus: #d98c00;
+  
+  --shadow-color: 0, 40, 50;
+  --link-color: #004250;
+  --link-hover: #d98c00;
+  
+  --gradient-primary: linear-gradient(135deg, #f0f9fa 0%, #d0eef2 100%);
+  --gradient-accent: linear-gradient(135deg, #d98c00 0%, #a66a00 100%);
+  
+  --color-success: #086a6c;
+  --color-warning: #7a5800;
+  --color-danger: #8a1d21;
+  --color-info: #004250;
+
+  --input-bg: #f0f8fa;
+  --input-border: #087e81;
+  --input-focus-shadow: rgba(8, 126, 129, 0.25);
+}
+
+/* ── OCEAN DARK ── */
+html[data-theme="ocean-dark"] {
+  --color-primary: #000a0d;
+  --color-primary-hover: #001f29;
+  --color-primary-active: #003445;
+  --color-primary-rgb: 0, 10, 13;
+  
+  --color-secondary: #087e81;
+  --color-secondary-hover: #16a0a3;
+  --color-secondary-active: #066568;
+  --color-secondary-rgb: 8, 126, 129;
+  
+  --color-accent: #f0e2d0;
+  --color-accent-hover: #f9f0e6;
+  --color-accent-active: #d9c4aa;
+  --color-accent-rgb: 240, 226, 208;
+  
+  --bg-canvas: #000a0d;
+  --bg-surface: #06161d;
+  --bg-surface-elevated: #0e2a34;
+  --bg-surface-inverse: #f0e2d0;
+  --bg-canvas-rgb: 0, 10, 13;
+  
+  --text-primary: #f0f7f9;
+  --text-secondary: #c2dbe1;
+  --text-tertiary: #84c2ab;
+  --text-inverse: #000a0d;
+  --text-primary-rgb: 240, 247, 249;
+  
+  --border-subtle: rgba(132, 194, 171, 0.15);
+  --border-default: #087e81;
+  --border-strong: #16a0a3;
+  --border-focus: #f0e2d0;
+  
+  --shadow-color: 0, 0, 0;
+  --link-color: #84c2ab;
+  --link-hover: #f0e2d0;
+  
+  --gradient-primary: linear-gradient(135deg, #000a0d 0%, #06161d 100%);
+  --gradient-accent: linear-gradient(135deg, #f0e2d0 0%, #84c2ab 100%);
+  
+  --color-success: #34e8b0;
+  --color-warning: #f0e2d0;
+  --color-danger: #f56d5a;
+  --color-info: #84c2ab;
+
+  --input-bg: #0e2a34;
+  --input-border: #087e81;
+  --input-focus-shadow: rgba(8, 126, 129, 0.25);
+}
+
+/* ================================
+   GLOBAL STYLES & COMPONENTS
+   (same for all themes)
+   ================================ */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+  background-color: var(--bg-canvas);
+}
+
+body {
+  font-family: var(--ff-poppins);
+  background-color: var(--bg-canvas);
+  color: var(--text-primary);
+  line-height: 1.5;
+  margin: 0;
+  transition: background-color var(--transition-1), color var(--transition-1);
+}
+
+/* Focus styles */
+:focus-visible {
+  outline: 2px solid var(--border-focus);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}
+
+/* Links */
+a {
+  color: var(--link-color);
+  text-decoration: none;
+  transition: color var(--transition-1);
+}
+a:hover {
+  color: var(--link-hover);
+  text-decoration: underline;
+}
+
+/* Buttons */
+button,
+.button {
+  background-color: var(--color-secondary);
+  color: var(--text-inverse);
+  border: none;
+  padding: var(--space-2) var(--space-4);
+  border-radius: var(--radius-md);
+  font-weight: var(--fw-500);
+  transition: all var(--transition-1);
+  cursor: pointer;
+}
+button:hover,
+.button:hover {
+  background-color: var(--color-secondary-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-sm);
+}
+button:active,
+.button:active {
+  transform: translateY(0);
+  background-color: var(--color-secondary-active);
+}
+
+/* Card component */
+.card {
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-lg);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-1);
+  transition: transform var(--transition-1), box-shadow var(--transition-1);
+}
+.card:hover {
+  box-shadow: var(--shadow-3);
+  transform: translateY(-2px);
+}
+
+/* Gradients */
+.gradient-primary {
+  background: var(--gradient-primary);
+}
+.gradient-accent {
+  background: var(--gradient-accent);
+}

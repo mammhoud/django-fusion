@@ -1,0 +1,78 @@
+{# VResume Sidebar Component (BEM) #}
+{# Displays: avatar, name, title, contacts, social links, show/hide toggle #}
+{% load i18n wagtailimages_tags vresume_settings_tags %}
+{% vresume_settings as s %}
+
+
+<div class="sidebar__info">
+  <figure class="sidebar__avatar-box">
+    {% if s.avatar %}
+      {% image s.avatar width-160 as av %}
+      {% image s.avatar width-800 as av_full %}
+      <a href="{{ av_full.url }}" class="glightbox" data-gallery="profile-avatar">
+        <img src="{{ av.url }}" alt="{{ s.full_name }}" class="sidebar__avatar-image">
+      </a>
+    {% else %}
+      <div class="sidebar__avatar-placeholder">{{ s.full_name|first }}</div>
+    {% endif %}
+  </figure>
+  <div class="sidebar__info-content mb-4">
+    <h1 class="sidebar__name">{{ s.full_name }}</h1>
+    <p class="sidebar__title">{{ s.job_title }}</p>
+  </div>
+  <button class="sidebar__toggle-btn" data-sidebar-btn>
+    <span class="sidebar__toggle-btn__text">{% trans "Show Profile" %}</span>
+    <i class="ri-arrow-down-s-line sidebar__toggle-icon"></i>
+  </button>
+</div>
+
+<div class="sidebar__more">
+  <div class="sidebar__separator"></div>
+  <ul class="sidebar__contacts-list">
+    {% if s.email %}
+    <li class="sidebar__contact-item mb-3">
+      <div class="sidebar__contact-icon-box"><i class="ri ri-mail-line"></i></div>
+      <div class="sidebar__contact-info">
+        <p class="sidebar__contact-title">{% trans "Email" %}</p>
+        <a href="mailto:{{ s.email }}" class="sidebar__contact-link">{{ s.email }}</a>
+      </div>
+    </li>
+    {% endif %}
+    {% if s.phone %}
+    <li class="sidebar__contact-item mb-3">
+      <div class="sidebar__contact-icon-box"><i class="ri ri-phone-line"></i></div>
+      <div class="sidebar__contact-info">
+        <p class="sidebar__contact-title">{% trans "Phone" %}</p>
+        <a href="tel:{{ s.phone }}" class="sidebar__contact-link">{{ s.phone }}</a>
+      </div>
+    </li>
+    {% endif %}
+    {% if s.birthday %}
+    <li class="sidebar__contact-item mb-3">
+      <div class="sidebar__contact-icon-box"><i class="ri ri-calendar-line"></i></div>
+      <div class="sidebar__contact-info">
+        <p class="sidebar__contact-title">{% trans "Birthday" %}</p>
+        <time datetime="{{ s.birthday|date:'Y-m-d' }}">{{ s.birthday|date:"F j, Y" }}</time>
+      </div>
+    </li>
+    {% endif %}
+    {% if s.location %}
+    <li class="sidebar__contact-item mb-3">
+      <div class="sidebar__contact-icon-box"><i class="ri ri-map-pin-line"></i></div>
+      <div class="sidebar__contact-info">
+        <p class="sidebar__contact-title">{% trans "Location" %}</p>
+        <address>{{ s.location }}</address>
+      </div>
+    </li>
+    {% endif %}
+  </ul>
+  <div class="sidebar__separator"></div>
+  <ul class="sidebar__social-list">
+    {% if s.facebook_url %}<li class="sidebar__social-item"><a href="{{ s.facebook_url }}" class="sidebar__social-link" target="_blank" rel="noopener" title="{% trans 'Facebook' %}"><i class="ri ri-facebook-circle-line"></i></a></li>{% endif %}
+    {% if s.twitter_url %}<li class="sidebar__social-item"><a href="{{ s.twitter_url }}" class="sidebar__social-link" target="_blank" rel="noopener" title="{% trans 'Twitter' %}"><i class="ri ri-twitter-line"></i></a></li>{% endif %}
+    {% if s.linkedin_url %}<li class="sidebar__social-item"><a href="{{ s.linkedin_url }}" class="sidebar__social-link" target="_blank" rel="noopener" title="{% trans 'LinkedIn' %}"><i class="ri ri-linkedin-box-line"></i></a></li>{% endif %}
+    {% if s.github_url %}<li class="sidebar__social-item"><a href="{{ s.github_url }}" class="sidebar__social-link" target="_blank" rel="noopener" title="{% trans 'GitHub' %}"><i class="ri ri-github-line"></i></a></li>{% endif %}
+    {% if s.instagram_url %}<li class="sidebar__social-item"><a href="{{ s.instagram_url }}" class="sidebar__social-link" target="_blank" rel="noopener" title="{% trans 'Instagram' %}"><i class="ri ri-instagram-line"></i></a></li>{% endif %}
+  </ul>
+</div>
+

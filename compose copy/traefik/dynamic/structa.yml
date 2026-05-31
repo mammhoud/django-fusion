@@ -1,0 +1,39 @@
+# ============================================
+# Structa Service Configuration
+# Domain: structa.cloud, www.structa.cloud, core.structa.cloud
+# ============================================
+http:
+  routers:
+    structa-http:
+      rule: "Host(`structa.cloud`) || Host(`www.structa.cloud`)"
+      entryPoints:
+        - web
+      middlewares:
+        - compress
+        - redirect-to-https
+      service: structa-service
+
+    structa-https:
+      rule: "(Host(`structa.cloud`) || Host(`www.structa.cloud`)) && !PathPrefix(`/static/`) && !PathPrefix(`/media/`)"
+      entryPoints:
+        - web-secure
+      middlewares:
+        - compress
+        - security-headers
+      service: structa-service
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "structa.cloud"
+            sans:
+              - "www.structa.cloud"
+
+  services:
+    structa-service:
+      loadBalancer:
+        servers:
+          - url: "http://structa-website:5071"
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 5s

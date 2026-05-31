@@ -1,0 +1,32 @@
+{# Testimonials Section #}
+{# Renders from HomePage.testimonials StreamField (TestimonialBlock: avatar, name, text) #}
+{% load i18n static wagtailimages_tags %}
+
+<section class="testimonials vresume-section" data-testimonials>
+  <h3 class="vresume-section-title">{% trans "Testimonials" %}</h3>
+
+  <ul class="testimonials__list">
+      {% for block in page.testimonials %}
+        <li class="testimonials__item">
+          <div class="testimonials__card" data-testimonials-item>
+            <figure class="testimonials__avatar">
+              {% if block.value.image %}
+                {% image block.value.image fill-70x70 as t_avatar %}
+                <img src="{{ t_avatar.url }}" alt="{{ block.value.name }}" width="70" height="70" data-testimonials-avatar loading="lazy">
+              {% else %}
+                <img src="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='70' height='70'%3E%3Crect fill='%23ddd' width='70' height='70'/%3E%3Ctext fill='%23999' x='50%25' y='50%25' text-anchor='middle' dy='.3em' font-size='28'%3E{{ block.value.name|first }}%3C/text%3E%3C/svg%3E" alt="{{ block.value.name }}" width="70" height="70">
+              {% endif %}
+            </figure>
+            <h4 class="testimonials__name" data-testimonials-title>{{ block.value.name }}</h4>
+            {% if block.value.job_title %}<p class="testimonials__title">{{ block.value.job_title }}</p>{% endif %}
+            <div class="testimonials__text" data-testimonials-text>
+              <p>{{ block.value.text }}</p>
+            </div>
+          </div>
+        </li>
+      {% endfor %}
+  </ul>
+
+</section>
+
+

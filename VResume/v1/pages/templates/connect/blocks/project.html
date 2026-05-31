@@ -1,0 +1,15 @@
+{% load i18n static wagtailimages_tags %}
+
+<li class="project__item" data-filter-item data-category="{{ self.category|lower }}">
+  <a href="{{ self.url|default:'#' }}" class="project__link">
+    <figure class="project__img">
+      <div class="project__icon"><i class="ri ri-eye-line"></i></div>
+      {% if self.image %}
+        {% image self.image fill-400x300 as proj_img %}
+        <img src="{{ proj_img.url }}" alt="{{ self.title }}" loading="lazy" class="project__img-src">
+      {% endif %}
+    </figure>
+    <h3 class="project__title">{{ self.title }}</h3>
+    <p class="project__category">{{ self.category }}</p>
+  </a>
+</li>

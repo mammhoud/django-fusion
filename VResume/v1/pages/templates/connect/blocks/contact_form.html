@@ -1,0 +1,25 @@
+{% load i18n %}
+
+<section class="contact-form">
+  <h3 class="h3 contact-form__title">{% trans "Contact Form" %}</h3>
+  <form action="{% url 'pages:contact_submit' %}" method="POST" class="contact-form__form" data-contact-form hx-post="{% url 'pages:contact_submit' %}" hx-target="#vresume-content-area">
+    {% csrf_token %}
+    <div class="contact-form__input-wrapper">
+      {% if self.show_name %}
+        <input type="text" name="fullname" class="contact-form__input" placeholder="{% trans 'Full name' %}" required data-form-input>
+      {% endif %}
+      <input type="email" name="email" class="contact-form__input" placeholder="{% trans 'Email address' %}" required data-form-input>
+    </div>
+    {% if self.show_phone %}
+        <input type="tel" name="phone" class="contact-form__input" placeholder="{% trans 'Phone number' %}" data-form-input>
+    {% endif %}
+    {% if self.show_subject %}
+        <input type="text" name="subject" class="contact-form__input" placeholder="{% trans 'Subject' %}" data-form-input>
+    {% endif %}
+    <textarea name="message" class="contact-form__input" placeholder="{% trans 'Your Message' %}" required data-form-input></textarea>
+    <button class="contact-form__btn" type="submit" data-form-btn>
+      <i class="ri ri-send-plane-line"></i>
+      <span>{{ self.button_text|default:_("Send Message") }}</span>
+    </button>
+  </form>
+</section>

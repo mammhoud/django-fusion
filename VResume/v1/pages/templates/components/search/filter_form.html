@@ -1,0 +1,71 @@
+{# Filter/Search Form — vertical newsletter-style layout #}
+{# Usage: {% include 'components/search/filter_form.html' with search_url='/portfolio/search/' tags_json=tags_json %} #}
+
+<div
+  x-data="filterableList({
+    storageKey: '{{ storage_key }}',
+    persist: {{ persist|yesno:'true,false' }}
+  })"
+  @init="init()"
+  data-tags='{{ tags_json }}'
+  class="vresume-section"
+>
+  <form
+    id="filter-form"
+    x-ref="filterForm"
+    hx-get="{{ search_url }}"
+    hx-target="#results-container"
+    hx-swap="innerHTML"
+    hx-indicator="#search-spinner"
+    @htmx:before-request="isLoading = true"
+    @htmx:after-request="isLoading = false"
+    class="newsletter__form"
+  >
+    {# Hidden tag input #}
+    <input type="hidden" name="tags" :value="tagsParam" />
+
+    {# Search input — styled like newsletter subscribe #}
+    <div class="contact-form__wrap-input">
+      <input
+        id="search-input"
+        type="text"
+        name="q"
+        class="contact-form__input"
+        placeholder="Search..."
+        x-model="currentQ"
+        @input.debounce.300ms="saveFilters(); $refs.filterForm.requestSubmit()"
+        @keydown.enter.prevent="$refs.filterForm.requestSubmit()"
+        aria-label="Search"
+      />
+    </div>
+
+    {# Tag filters — only shown when tags exist #}
+    <template x-if="allTags && allTags.length > 0">
+      <div class="filter-buttons__wrapper">
+        <button
+          type="button"
+          class="filter-btn"
+          :class="{ 'filter-btn--active': selectedTags.length === 0 }"
+          @click="clearTags()"
+          :aria-pressed="selectedTags.length === 0"
+        >All</button>
+
+        <template x-for="tag in allTags" :key="tag.slug">
+          <button
+            type="button"
+            class="filter-btn"
+            :class="{ 'filter-btn--active': isSelected(tag.slug) }"
+            @click="toggleTag(tag.slug)"
+            :aria-pressed="isSelected(tag.slug)"
+            x-text="tag.name"
+          ></button>
+        </template>
+      </div>
+    </template>
+
+    {# Loading indicator #}
+    <div id="search-spinner" class="htmx-indicator search-spinner">
+      <span class="spinner"></span>
+    </div>
+  </form>
+</div>

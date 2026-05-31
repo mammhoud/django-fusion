@@ -1,0 +1,70 @@
+{% extends "email/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Confirm Your Subscription" %}{% endblock %}
+
+{% block content %}
+<h1 style="color: #333333; font-size: 24px; margin-bottom: 20px;">
+    {% trans "Confirm Your Subscription" %}
+</h1>
+
+<p style="color: #666666; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+    {% if subscriber_name %}
+        {% blocktrans with name=subscriber_name %}
+        Hi {{ name }},
+        {% endblocktrans %}
+    {% else %}
+        {% trans "Hello," %}
+    {% endif %}
+</p>
+
+<p style="color: #666666; font-size: 16px; line-height: 1.6; margin-bottom: 20px;">
+    {% trans "Thank you for subscribing to our newsletter! We're excited to have you on board." %}
+</p>
+
+<p style="color: #666666; font-size: 16px; line-height: 1.6; margin-bottom: 30px;">
+    {% trans "To complete your subscription and start receiving our latest updates, please confirm your email address by clicking the button below." %}
+</p>
+
+<div style="text-align: center; margin: 30px 0;">
+    <a href="{{ confirmation_url }}" 
+       style="background-color: #3A7CA5; color: #ffffff; padding: 14px 30px; text-decoration: none; border-radius: 6px; font-weight: 600; display: inline-block; font-size: 16px;">
+        {% trans "Confirm Subscription" %}
+    </a>
+</div>
+
+<p style="color: #999999; font-size: 14px; line-height: 1.6; margin-top: 30px; padding-top: 20px; border-top: 1px solid #eeeeee;">
+    {% trans "What to expect:" %}
+</p>
+
+<ul style="color: #666666; font-size: 14px; line-height: 1.8; margin: 10px 0 20px 20px;">
+    <li>{% trans "Regular updates on our latest projects and insights" %}</li>
+    <li>{% trans "Exclusive content and early access to new features" %}</li>
+    <li>{% trans "Tips and best practices from our team" %}</li>
+    <li>{% trans "Special offers and announcements" %}</li>
+</ul>
+
+<p style="color: #999999; font-size: 14px; line-height: 1.6; margin-top: 20px;">
+    {% trans "If you didn't subscribe to our newsletter, you can safely ignore this email or click the unsubscribe link below." %}
+</p>
+
+<p style="color: #999999; font-size: 14px; line-height: 1.6; margin-top: 10px;">
+    {% trans "This confirmation link will expire in 24 hours." %}
+</p>
+
+<div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #eeeeee;">
+    <p style="color: #999999; font-size: 12px; margin: 0;">
+        {% trans "If the button doesn't work, copy and paste this link into your browser:" %}<br>
+        <a href="{{ confirmation_url }}" style="color: #3A7CA5; word-break: break-all;">{{ confirmation_url }}</a>
+    </p>
+</div>
+{% endblock %}
+
+{% block footer_extra %}
+<p style="color: #999999; font-size: 12px; margin-top: 10px;">
+    {% trans "Questions? Contact us at" %} 
+    <a href="mailto:{{ support_email|default:'support@example.com' }}" style="color: #3A7CA5;">
+        {{ support_email|default:"support@example.com" }}
+    </a>
+</p>
+{% endblock %}

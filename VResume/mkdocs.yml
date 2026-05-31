@@ -1,0 +1,116 @@
+site_name: VResume Documentation
+site_description: Personal Portfolio CMS by Structa
+site_author: mammhoud (Structa)
+site_url: https://vresume.structa.cloud/
+
+repo_name: mammhoud/vresume
+repo_url: https://github.com/mammhoud/vresume
+edit_uri: edit/main/docs/
+
+docs_dir: docs
+theme:
+  name: material
+  palette:
+    - scheme: slate
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/brightness-4
+        name: Switch to light mode
+    - scheme: default
+      primary: amber
+      accent: amber
+      toggle:
+        icon: material/brightness-7
+        name: Switch to dark mode
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.expand
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.code.copy
+    - content.code.annotate
+  icon:
+    repo: fontawesome/brands/github
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+  - git-revision-date-localized:
+      type: datetime
+
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.snippets
+  - pymdownx.tabbed:
+      alternate_style: true
+  - tables
+  - attr_list
+  - md_in_html
+  - toc:
+      permalink: true
+
+nav:
+  - Introduction:
+    - Welcome: index.md
+    - Getting Started: getting_started.md
+
+  - Core Architecture:
+    - System Overview: architecture/index.md
+    - Project Structure: architecture/project_structure.md
+    - Configuration System: architecture/configuration.md
+    - Core Utilities: architecture/core_utils.md
+    - Data Models: architecture/models.md
+    - Request & Render Flow: architecture/request_flow.md
+    - Templates & HTMX: architecture/templates_flow.md
+
+  - Development:
+    - Dev Overview: development.md
+    - Makefile Automation: development/makefile.md
+    - Testing Suite: development/testing_guide.md
+    - Quickstart Details: development/quickstart.md
+
+  - Feature Guides:
+    - User Guide Overview: user_guide/index.md
+    - Portfolio Management: user_guide/portfolio.md
+    - Blog & Content: user_guide/blog.md
+    - Communications & Newsletter: user_guide/newsletter.md
+    - Analytics & Tracking: user_guide/analytics.md
+
+  - Design & Frontend:
+    - Design Overview: design/index.md
+    - UI Components: design/components.md
+    - Theme Customization: design/customization.md
+    - JS Architecture: design/js_structure.md
+    - Accessibility: design/accessibility.md
+
+  - Deployment & DevOps:
+    - Deployment Guide: deployment.md
+
+  - Project History:
+    - Change Logs Index: logs/index.md
+    - Migration History: logs/migration.md
+    - Latest Fixes: logs/fixes.md
+
+
+
+
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mammhoud
+  version:
+    provider: mike

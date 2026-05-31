@@ -1,0 +1,14 @@
+{# HTMX Fragment: About Tab Content Only (No Layout) #}
+{# Used when HTMX swaps the main-content area for the About tab #}
+{% load i18n %}
+
+<article class="about active container" data-page="about">
+    <header>
+        <h2 class="h2 article-title">{% trans "About me" %}</h2>
+    </header>
+
+    {% include 'about/sections/intro.html' %}
+    {% include 'about/sections/team.html' with team_members=team %}
+    {% include 'about/sections/testimonials.html' %}
+    {% include 'about/sections/clients.html' %}
+</article>

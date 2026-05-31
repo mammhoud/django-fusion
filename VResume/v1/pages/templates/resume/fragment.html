@@ -1,0 +1,12 @@
+{# HTMX Fragment: Resume Tab Content Only (No Layout) #}
+{% load i18n %}
+
+<article class="resume active container" data-page="resume">
+    <header>
+        <h2 class="h2 article-title">{% trans "Resume" %}</h2>
+    </header>
+
+    {% include 'resume/sections/education.html' %}
+    {% include 'resume/sections/experience.html' %}
+    {% include 'resume/sections/skills.html' %}
+</article>

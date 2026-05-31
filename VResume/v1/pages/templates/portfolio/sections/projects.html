@@ -1,0 +1,18 @@
+{# Portfolio Projects Section #}
+{# Grid + list view with search/filter support and HTMX modal integration #}
+{% load i18n static wagtailimages_tags %}
+
+{% with projects=page_obj.object_list|default:featured_projects %}
+<div class="grid-section__listing" data-portfolio-grid>
+
+  {# Empty state #}
+  {% if not projects %}
+  <div class="content__empty">
+    <i class="ri ri-folder-open-line content__empty-icon"></i>
+    <p class="content__empty-text">{% trans "No projects match your search." %}</p>
+  </div>
+  {% endif %}
+
+  <ul class="project__list" data-portfolio-list role="list">{% include "portfolio/sections/projects_items.html" %}</ul>
+</div>{# /.grid-section__listing #}
+{% endwith %}

@@ -1,0 +1,242 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ site_name|default:"VResume" }}{% endblock %}</title>
+    <!--[if mso]>
+    <noscript>
+    <xml>
+    <o:OfficeDocumentSettings>
+    <o:PixelsPerInch>96</o:PixelsPerInch>
+    </o:OfficeDocumentSettings>
+    </xml>
+    </noscript>
+    <![endif]-->
+    <style>
+        /* ── Reset ─────────────────────────────── */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; height: auto; line-height: 100%; outline: none; text-decoration: none; }
+
+        /* ── Base ──────────────────────────────── */
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+            line-height: 1.7;
+            color: #1a202c;
+            margin: 0;
+            padding: 0;
+            background-color: #f0f4f8;
+            direction: {{ LANGUAGE_BIDI|yesno:'rtl,ltr' }};
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* ── Container ─────────────────────────── */
+        .email-wrapper {
+            max-width: 640px;
+            margin: 32px auto;
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.08), 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        /* ── Header ────────────────────────────── */
+        .email-header {
+            background: linear-gradient(135deg, #1e2d3d 0%, #2d3748 50%, #1a365d 100%);
+            color: #ffffff;
+            padding: 40px 32px 32px;
+            text-align: center;
+        }
+        .email-header__logo {
+            margin-bottom: 16px;
+        }
+        .email-header__logo img {
+            max-width: 120px;
+            height: auto;
+        }
+        .email-header__title {
+            margin: 0;
+            font-size: 22px;
+            font-weight: 700;
+            letter-spacing: -0.02em;
+            color: #ffffff;
+        }
+        .email-header__accent {
+            display: block;
+            width: 48px;
+            height: 3px;
+            background: linear-gradient(90deg, #e8651a, #f59e0b);
+            border-radius: 2px;
+            margin: 16px auto 0;
+        }
+
+        /* ── Body ──────────────────────────────── */
+        .email-body {
+            padding: 40px 32px;
+            font-size: 16px;
+            color: #2d3748;
+        }
+        .email-body h1, .email-body h2, .email-body h3 {
+            color: #1a202c;
+            margin-top: 0;
+        }
+        .email-body h2 {
+            font-size: 20px;
+            font-weight: 700;
+        }
+        .email-body p {
+            margin: 0 0 16px;
+            line-height: 1.7;
+        }
+        .email-body a {
+            color: #e8651a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .email-body ul {
+            padding-{{ LANGUAGE_BIDI|yesno:'right,left' }}: 20px;
+        }
+        .email-body li {
+            margin-bottom: 8px;
+        }
+
+        /* ── CTA Button ────────────────────────── */
+        .btn {
+            display: inline-block;
+            padding: 14px 32px;
+            background: linear-gradient(135deg, #e8651a 0%, #d4580f 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 700;
+            font-size: 15px;
+            letter-spacing: 0.02em;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 12px rgba(232, 101, 26, 0.3);
+        }
+
+        /* ── Divider ───────────────────────────── */
+        .email-divider {
+            border: none;
+            height: 1px;
+            background: linear-gradient(90deg, transparent, #e2e8f0, transparent);
+            margin: 32px 0;
+        }
+
+        /* ── Info Box ──────────────────────────── */
+        .info-box {
+            background: #f7fafc;
+            border-{{ LANGUAGE_BIDI|yesno:'right,left' }}: 4px solid #e8651a;
+            border-radius: 8px;
+            padding: 20px 24px;
+            margin: 24px 0;
+        }
+        .info-box h3 {
+            color: #2d3748;
+            font-size: 16px;
+            margin: 0 0 8px;
+        }
+
+        /* ── Data Table ────────────────────────── */
+        .data-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            margin: 24px 0;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+        .data-table th {
+            text-align: {{ LANGUAGE_BIDI|yesno:'right,left' }};
+            padding: 12px 16px;
+            background: #f7fafc;
+            border-bottom: 1px solid #e2e8f0;
+            font-size: 13px;
+            font-weight: 600;
+            color: #4a5568;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            width: 35%;
+        }
+        .data-table td {
+            padding: 12px 16px;
+            border-bottom: 1px solid #edf2f7;
+            color: #2d3748;
+        }
+        .data-table tr:last-child th,
+        .data-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* ── Footer ────────────────────────────── */
+        .email-footer {
+            background: #f7fafc;
+            padding: 28px 32px;
+            text-align: center;
+            border-top: 1px solid #edf2f7;
+        }
+        .email-footer p {
+            margin: 0 0 8px;
+            font-size: 13px;
+            color: #718096;
+            line-height: 1.5;
+        }
+        .email-footer a {
+            color: #e8651a;
+            text-decoration: none;
+            font-weight: 500;
+        }
+        .email-footer__brand {
+            font-size: 11px;
+            color: #a0aec0;
+            margin-top: 16px;
+        }
+
+        /* ── Responsive ────────────────────────── */
+        @media only screen and (max-width: 600px) {
+            .email-wrapper { margin: 0 !important; border-radius: 0 !important; }
+            .email-header { padding: 28px 20px 24px !important; }
+            .email-body { padding: 28px 20px !important; }
+            .email-footer { padding: 20px !important; }
+        }
+    </style>
+</head>
+<body>
+    <div class="email-wrapper">
+        {# ── Header ── #}
+        <div class="email-header">
+            <div class="email-header__logo">
+                {% block logo %}
+                <img src="{{ logo_url|default:'' }}" alt="{{ site_name|default:'VResume' }}" width="120">
+                {% endblock %}
+            </div>
+            <h1 class="email-header__title">{% block header %}{{ site_name|default:"VResume" }}{% endblock %}</h1>
+            <span class="email-header__accent"></span>
+        </div>
+
+        {# ── Body ── #}
+        <div class="email-body">
+            {% block content %}{% endblock %}
+        </div>
+
+        {# ── Footer ── #}
+        <div class="email-footer">
+            {% block footer %}
+            <p>&copy; {% now "Y" %} {{ site_name|default:"VResume" }}. {% trans "All rights reserved." %}</p>
+            <p>
+                <a href="{{ unsubscribe_url|default:'#' }}">{% trans "Unsubscribe" %}</a>
+                &nbsp;·&nbsp;
+                <a href="{{ privacy_url|default:'#' }}">{% trans "Privacy Policy" %}</a>
+            </p>
+            {% endblock %}
+            {% block footer_extra %}{% endblock %}
+            <p class="email-footer__brand">
+                {% trans "Powered by" %} <a href="https://structa.cloud" style="color: #e8651a;">structa.cloud</a>
+            </p>
+        </div>
+    </div>
+</body>
+</html>

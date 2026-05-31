@@ -1,0 +1,196 @@
+[project]
+name = "vresume"
+version = "1.0.3"
+description = "VResume Personal Portfolio CMS"
+readme = "README.md"
+requires-python = ">=3.11"
+license = {text = "MIT"}
+authors = [
+    {name = "Mahmoud Ezzat", email = "your.email@example.com"}
+]
+dependencies = [
+    # ---------------------------------------------------------------------------
+    # Version management
+    # ---------------------------------------------------------------------------
+    # bumpver: automated version bumping (MAJOR.MINOR.PATCH) across all files
+    "bumpver",
+    # ---------------------------------------------------------------------------
+    # CLI utilities
+    # ---------------------------------------------------------------------------
+    # click: command-line interface toolkit (used by management scripts)
+    "click",
+    # ---------------------------------------------------------------------------
+    # Core framework
+    # ---------------------------------------------------------------------------
+    # django: the web framework
+    "django>=4.2,<5.0",
+    # wagtail: CMS layer on top of Django (pages, snippets, images, rich text)
+    "wagtail>=6.0",
+    # ---------------------------------------------------------------------------
+    # Task Queue & Async Processing
+    # ---------------------------------------------------------------------------
+    # celery: distributed task queue for async jobs (email, tracking, etc.)
+    "celery>=5.3.0",
+    # django-celery-beat: Celery Beat scheduler for Django
+    "django-celery-beat>=2.5.0",
+    # django-celery-results: Celery results backend for Django
+    "django-celery-results>=2.5.0",
+    # redis: Redis client for Celery broker and caching
+    "redis>=5.0.0",
+    # ---------------------------------------------------------------------------
+    # Django extensions & utilities
+    # ---------------------------------------------------------------------------
+    # django-bird: component-based template system (vResume UI components)
+    "django-bird",
+    # django-colorfield: colour picker widget for model fields
+    "django-colorfield",
+    # django-crispy-forms: DRY form rendering with Bootstrap layout support
+    "django-crispy-forms",
+    # django-debug-toolbar: in-browser SQL/request profiling panel (dev/staging)
+    "django-debug-toolbar",
+    # django-embed-video: embed YouTube/Vimeo/SoundCloud in model fields
+    "django-embed-video",
+    # django-environ: 12-factor .env file parsing for settings
+    "django-environ",
+    # django-extensions: extra management commands (shell_plus, runserver_plus…)
+    "django-extensions",
+    # django-import-export: CSV/XLSX import & export for admin models
+    "django-import-export",
+    # django-simple-history: per-row change history for audited models
+    "django-simple-history",
+    # django-tables2: sortable/paginated HTML tables from querysets
+    "django-tables2",
+    # django-unfold: modern Tailwind-based Django admin theme
+    "django-unfold>=0.25.0",
+    # django-webpack-loader: injects webpack bundle tags into Django templates
+    "django-webpack-loader",
+    # django-cors-headers: CORS support for API endpoints
+    "django-cors-headers",
+    # django-filter: filtering support for querysets
+    "django-filter",
+    # ---------------------------------------------------------------------------
+    # Environment / configuration
+    # ---------------------------------------------------------------------------
+    # environ: low-level env-var parsing (pulled in transitively; kept explicit)
+    "environ",
+    # python-decouple: alternative env-var parsing
+    "python-decouple",
+    # ---------------------------------------------------------------------------
+    # Authentication / security
+    # ---------------------------------------------------------------------------
+    # fido2: FIDO2/WebAuthn passkey support for Django admin 2FA
+    "fido2",
+    # django-ratelimit: rate limiting for views
+    "django-ratelimit",
+    # ---------------------------------------------------------------------------
+    # Application server
+    # ---------------------------------------------------------------------------
+    # gunicorn: WSGI production server (used behind nginx in Docker)
+    "gunicorn>=21.0.0",
+    # uvicorn: ASGI production server (used for async/WebSocket support)
+    "uvicorn>=0.24.0",
+    # ---------------------------------------------------------------------------
+    # Database
+    # ---------------------------------------------------------------------------
+    # psycopg: PostgreSQL adapter (psycopg v3, pure-Python)
+    "psycopg>=3.1.0",
+    # ---------------------------------------------------------------------------
+    # Email & Notifications
+    # ---------------------------------------------------------------------------
+    # django-anymail: unified email backend for multiple providers
+    "django-anymail>=10.0",
+    # beautifulsoup4: HTML parsing for email tracking
+    "beautifulsoup4>=4.12.0",
+    # ---------------------------------------------------------------------------
+    # Testing
+    # ---------------------------------------------------------------------------
+    # hypothesis: property-based testing
+    "hypothesis",
+    # pytest-django: Django integration for pytest
+    "pytest-django",
+    # pytest-cov: coverage reporting for pytest
+    "pytest-cov",
+    # factory-boy: test data factories
+    "factory-boy",
+    # ---------------------------------------------------------------------------
+    # Static files & Assets
+    # ---------------------------------------------------------------------------
+    # whitenoise: serves static files directly from Django/gunicorn (no S3 needed)
+    "whitenoise>=6.5.0",
+    # pillow: image processing library
+    "pillow>=10.0.0",
+    # ---------------------------------------------------------------------------
+    # Monitoring & Logging
+    # ---------------------------------------------------------------------------
+    # sentry-sdk: error tracking and monitoring
+    "sentry-sdk>=1.32.0",
+    # django-structlog: structured logging for Django
+    "django-structlog>=7.0.0",
+    # ---------------------------------------------------------------------------
+    # API & Serialization
+    # ---------------------------------------------------------------------------
+    # djangorestframework: REST API framework
+    "djangorestframework>=3.14.0",
+    # django-rest-framework-simplejwt: JWT authentication for DRF
+    "djangorestframework-simplejwt>=5.3.0",
+    "dynaconf>=3.2.13",
+    "jinja2",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.0",
+    "django-htmx>=1.27.0",
+    "heroicons>=2.14.0",
+    "django-rq>=4.1.0",
+    "typing-extensions>=4.15.0",
+]
+
+[tool.black]
+line-length = 100
+target-version = ["py311"]
+include = "\\.pyi?$"
+extend-exclude = '''
+/(
+  \.venv
+  | migrations
+  | assets
+)/
+'''
+
+[tool.ruff]
+line-length = 100
+target-version = "py311"
+extend-exclude = [
+    ".venv",
+    "migrations",
+    "assets",
+]
+
+[tool.ruff.lint]
+select = ["E", "F", "I"]
+ignore = ["E402", "E501", "F403", "F405"]
+
+[tool.bumpver]
+current_version = "1.0.3"
+version_pattern = "MAJOR.MINOR.PATCH[-TAG]"
+commit_message = "bump version {old_version} -> {new_version}"
+tag_message = "{new_version}"
+tag_scope = "default"
+pre_commit_hook = ""
+post_commit_hook = ""
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = [
+    'current_version = "{version}"',
+    'version = "{version}"',
+]
+"__about__.py" = [
+    '^__version__ = "{version}"$',
+]
+"package.json" = [
+    '"version": "{version}"',
+]
+
+
+

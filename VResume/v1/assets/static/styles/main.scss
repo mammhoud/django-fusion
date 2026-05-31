@@ -1,0 +1,231 @@
+/**
+ * VResume Design System — Main SCSS Bundle
+ * Imports all partials in order: variables, reset, layout, components, responsive
+ * Ported from legacy/VResume/assets/css/style.css
+ */
+
+/* ── 1. Design System Partials (using @use for modern SCSS) ── */
+/* Base: Variables, Reset, Design System */
+@use 'base/variables' as *;
+@use 'base/design-system' as *;
+@use 'base/reset' as *;
+@use 'base/bootstrap-overrides' as *;
+@use 'base/theme-toggle' as *;
+
+/* Layout: Structure, Navigation, Components */
+@use 'layout/layout' as *;
+@use 'layout/sidebar' as *;
+@use 'layout/navigator' as *;
+@use 'layout/sliders' as *;
+
+/* Pages: Content Pages */
+@use 'pages/about' as *;
+@use 'pages/resume' as *;
+@use 'pages/content' as *;  /* Unified blog + portfolio styles */
+@use 'pages/articles' as *;
+@use 'pages/contact' as *;
+@use 'pages/skills' as *;
+
+/* Components: Reusable UI Components */
+@use 'components/_modal' as *;
+@use 'components/tag-filter' as *;
+
+
+/* ── 2. Animations & Transitions ── */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* ── Unified Component Animations ── */
+@keyframes itemFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.5;
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-5px);
+  }
+}
+
+/* ── 4. Utility Classes ── */
+.animate-fade-in {
+  animation: fadeIn 0.3s ease-in-out;
+}
+.animate-slide-in-left {
+  animation: slideInLeft 0.3s ease-in-out;
+}
+.animate-slide-in-right {
+  animation: slideInRight 0.3s ease-in-out;
+}
+.animate-scale-up {
+  animation: scaleUp 0.3s ease-in-out;
+}
+
+.transition-fast {
+  transition: all 0.15s ease-in-out;
+}
+.transition-normal {
+  transition: all 0.3s ease-in-out;
+}
+.transition-slow {
+  transition: all 0.5s ease-in-out;
+}
+
+.hidden {
+  display: none !important;
+}
+.visible {
+  display: block !important;
+}
+.invisible {
+  visibility: hidden;
+}
+
+.opacity-0 { opacity: 0; }
+.opacity-50 { opacity: 0.5; }
+.opacity-100 { opacity: 1; }
+
+/* ── 5. Print Styles ── */
+@media print {
+  body {
+    background: white;
+    color: black;
+  }
+  .no-print {
+    display: none !important;
+  }
+  a {
+    text-decoration: underline;
+  }
+  img {
+    max-width: 100%;
+  }
+}
+
+/* ── 6. Dark Mode Support ── */
+html[data-theme="classic-dark"],
+html[data-theme="ocean-dark"],
+html:not([data-theme]) {
+  color-scheme: dark;
+}
+
+html[data-theme="classic-light"],
+html[data-theme="ocean-light"] {
+  color-scheme: light;
+}
+
+/* ── 7. Accessibility ── */
+:focus-visible {
+  outline: 2px solid var(--accent-color);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+
+@media (prefers-contrast: more) {
+  body {
+    font-weight: 600;
+  }
+  a {
+    text-decoration: underline;
+  }
+}
+

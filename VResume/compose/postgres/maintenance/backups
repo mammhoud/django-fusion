@@ -1,0 +1,90 @@
+#!/usr/bin/env bash
+
+### View backups.
+###
+### Options:
+###     --database <name>  List backups for specific database only
+###     --summary          Show summary statistics
+###
+### Usage:
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres backups
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres backups --database db_staging
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres backups --summary
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+# Parse command line arguments
+SHOW_SUMMARY=false
+FILTER_DB=""
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --database)
+            FILTER_DB="$2"
+            shift 2
+            ;;
+        --summary)
+            SHOW_SUMMARY=true
+            shift
+            ;;
+        *)
+            message_error "Unknown option: $1"
+            echo "Usage: backups [--database <name>] [--summary]"
+            exit 1
+            ;;
+    esac
+done
+
+if [ "$SHOW_SUMMARY" = true ]; then
+    message_welcome "Backup Summary Statistics:"
+    
+    # Count by database
+    echo -e "\nBackups by database:"
+    for db in "${ALL_DATABASES[@]}"; do
+        count=$(find "$BACKUP_DIR_PATH" -name "${db}_*.sql.gz" 2>/dev/null | wc -l)
+        if [ $count -gt 0 ]; then
+            echo "  $db: $count backup(s)"
+        fi
+    done
+    
+    # Full cluster backups
+    full_count=$(find "$BACKUP_DIR_PATH" -name "full_cluster_*.sql.gz" 2>/dev/null | wc -l)
+    echo "  Full cluster: $full_count backup(s)"
+    
+    # Total size
+    total_size=$(find "$BACKUP_DIR_PATH" -name "*.sql.gz" -exec du -ch {} + 2>/dev/null | grep total$ | cut -f1)
+    echo -e "\nTotal backup size: ${total_size:-0}"
+    
+    # Oldest and newest
+    oldest=$(find "$BACKUP_DIR_PATH" -name "*.sql.gz" -printf '%T+ %p\n' 2>/dev/null | sort | head -n1 | cut -d' ' -f2-)
+    newest=$(find "$BACKUP_DIR_PATH" -name "*.sql.gz" -printf '%T+ %p\n' 2>/dev/null | sort -r | head -n1 | cut -d' ' -f2-)
+    
+    if [ -n "$oldest" ]; then
+        echo "Oldest backup: $(basename "$oldest")"
+        echo "Newest backup: $(basename "$newest")"
+    fi
+    
+    exit 0
+fi
+
+if [ -n "$FILTER_DB" ]; then
+    message_welcome "Backups for database '${FILTER_DB}':"
+    if ls "${BACKUP_DIR_PATH}/${FILTER_DB}_"*.sql.gz 1>/dev/null 2>&1; then
+        ls -lht "${BACKUP_DIR_PATH}/${FILTER_DB}_"*.sql.gz
+    else
+        message_info "No backups found for database '${FILTER_DB}'"
+    fi
+else
+    message_welcome "All available backups:"
+    if ls "${BACKUP_DIR_PATH}/"*.sql.gz 1>/dev/null 2>&1; then
+        ls -lht "${BACKUP_DIR_PATH}/"*.sql.gz
+    else
+        message_info "No backups found in '${BACKUP_DIR_PATH}'"
+    fi
+fi

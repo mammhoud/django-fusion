@@ -1,0 +1,132 @@
+{% load i18n static %}
+{% load render_bundle from webpack_loader %}
+{% load vresume_settings_tags %}
+{% get_vresume_settings as settings %}
+
+{% get_current_language as LANGUAGE_CODE %}
+{% get_current_language_bidi as LANGUAGE_BIDI %}
+
+<!DOCTYPE html>
+<html data-theme="classic-dark"
+      class="{% if theme %}{{ theme }}{% endif %}{% if LANGUAGE_BIDI %} rtl{% endif %}"
+      dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr" }}"
+      lang="{{ LANGUAGE_CODE|default:"en-us" }}">
+
+<head>
+    <title>
+        {% if page_title %}
+            {{ page_title }} | {{ settings.communications.VResumeSettings.full_name }}
+        {% else %}
+            {{ settings.communications.VResumeSettings.full_name }} — {{ settings.communications.VResumeSettings.job_title }}
+        {% endif %}
+    </title>
+
+    {% block meta_tags %}{% endblock %}
+    {% include 'layout/meta.html' %}
+
+    {% block favicon %}
+        {% if settings.communications.VResumeSettings.favicon %}
+            {% load wagtailimages_tags %}
+            {% image settings.communications.VResumeSettings.favicon width-32 as favicon %}
+            <link rel="icon" type="image/png" href="{{ favicon.url }}" sizes="32x32">
+            <link rel="apple-touch-icon" href="{{ favicon.url }}">
+        {% endif %}
+    {% endblock favicon %}
+
+    {% block styles %}
+        {% render_bundle 'styles' 'css' %}
+    {% endblock styles %}
+
+    {% block extrastyle %}{% endblock %}
+    {% block extrascripts %}{% endblock %}
+    {% block extrahead %}{% endblock %}
+    {% block js %}{% endblock %}
+    {% block responsive %}{% endblock %}
+    {% block blockbots %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+
+</head>
+
+<body data-preloader="1" hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' data-navigation data-header-menu>
+
+    {# ====================================================== #}
+    {# Cookie Preferences — handled by bootbox in main.js   #}
+    {# ====================================================== #}
+
+    {# ====================================================== #}
+    {# VResume Layout: Fixed Sidebar + Scrollable Main Content  #}
+    {# ====================================================== #}
+
+    <main class="vresume-layout">
+        {# LEFT SIDEBAR (fixed, collapsible on mobile) #}
+        <aside class="vresume-layout__sidebar" data-sidebar>
+            {% include 'sidebar.html' with vresume_settings=settings.communications.VResumeSettings %}
+        </aside>
+
+        {# RIGHT MAIN CONTENT AREA #}
+        <div class="vresume-layout__main-content">
+            {# Tab Navigation (About, Resume, Portfolio, Blog, Contact) #}
+            {% include 'navigator.html' with active_tab=active_tab|default:"about" %}
+
+            <div id="vresume-tab-content">
+                {# Render appropriate fragment based on active tab #}
+                {% if active_tab == "home" %}
+                    {% include 'home/fragment.html' with page=page %}
+                {% elif active_tab == "about" %}
+                    {% include 'about/fragment.html' with page=page %}
+                {% elif active_tab == "resume" %}
+                    {% include 'resume/fragment.html' with page=page %}
+                {% elif active_tab == "portfolio" %}
+                    {% include 'portfolio/fragment.html' with page=page %}
+                {% elif active_tab == "blog" %}
+                    {% include 'blog/fragment.html' with page=page posts=posts %}
+                {% elif active_tab == "contact" %}
+                    {% include 'connect/fragment.html' with page=page %}
+                {% else %}
+                    {% include 'about/fragment.html' with page=page %}
+                {% endif %}
+            </div>
+        </div>
+    </main>
+
+    {# ====================================================== #}
+    {# Footer (minimal copyright)                             #}
+    {# ====================================================== #}
+    {% block footer %}
+        {% include 'layout/footer.html' %}
+    {% endblock footer %}
+
+    {# ====================================================== #}
+    {# Modals / Dialogs / Popups                             #}
+    {# Include the unified modal component once for all pages #}
+    {# This provides a single `#unified-modal-container` target #}
+    {% block modal %}
+        {% include 'components/modals/unified-modal.html' %}
+
+        {# Cookie Consent Templates (cloned into bootbox dialogs by main.js) #}
+        {% include 'components/modals/cookie-consent.html' %}
+        {% include 'components/modals/privacy-policy.html' %}
+        {% include 'components/modals/cookie-policy.html' %}
+    {% endblock modal %}
+
+    {# ====================================================== #}
+    {# JS i18n — exposes {% trans %} strings to front-end    #}
+    {# ====================================================== #}
+    {% include 'components/js_i18n.html' %}
+
+    {# ====================================================== #}
+    {# Scripts                                               #}
+    {# ====================================================== #}
+    {% block scripts %}
+        {% render_bundle 'static' 'js' %}
+        {% render_bundle 'styles' 'js' %}
+
+    {% endblock scripts %}
+
+    {% block extra_scripts %}{% endblock %}
+    {% block extra_assets %}{% endblock %}
+
+</body>
+
+
+</html>

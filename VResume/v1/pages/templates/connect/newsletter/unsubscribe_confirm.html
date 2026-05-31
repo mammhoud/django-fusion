@@ -1,0 +1,32 @@
+{% extends "base_page.html" %}
+{% load static i18n %}
+
+{% block content %}
+<section class="newsletter-unsubscribe">
+    <div class="newsletter-unsubscribe__container">
+        <div class="newsletter-unsubscribe__wrapper">
+            <div class="newsletter-unsubscribe__card">
+                <div class="newsletter-unsubscribe__body">
+                    <i class="ri ri-question-line newsletter-unsubscribe__icon"></i>
+                    <h2 class="newsletter-unsubscribe__title">{% trans "Unsubscribe from Newsletter?" %}</h2>
+                    <p class="newsletter-unsubscribe__text">
+                        {% trans "Are you sure you want to unsubscribe" %}
+                        <strong>{{ subscriber.email }}</strong>
+                        {% trans "from our newsletter?" %}
+                    </p>
+                    
+                    <form method="post" class="newsletter-unsubscribe__form">
+                        {% csrf_token %}
+                        <button type="submit" class="newsletter-unsubscribe__btn newsletter-unsubscribe__btn--danger">
+                            {% trans "Yes, Unsubscribe Me" %}
+                        </button>
+                        <a href="/" class="newsletter-unsubscribe__btn newsletter-unsubscribe__btn--secondary">
+                            {% trans "Cancel" %}
+                        </a>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

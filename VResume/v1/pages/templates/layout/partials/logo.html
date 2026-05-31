@@ -1,0 +1,18 @@
+{% load i18n wagtailimages_tags %}
+
+{# Simple logo logic #}
+{% if vresume_settings and vresume_settings.logo %}
+{% image vresume_settings.logo max-165x120 as logo %}
+{% endif %}
+
+<div class="header-logo">
+    <a href="/" class="logo-link">
+        {% if logo %}
+        {# Logo image #}
+        <img src="{{ logo.url }}" alt="{{ vresume_settings.full_name|default:'Logo' }}" class="logo-img">
+        {% else %}
+        {# Fallback Logo Text #}
+        <span class="logo-text">{{ vresume_settings.full_name|default:'VResume' }}</span>
+        {% endif %}
+    </a>
+</div>

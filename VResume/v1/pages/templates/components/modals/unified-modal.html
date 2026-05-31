@@ -1,0 +1,39 @@
+{# Unified Modal Component for Portfolio Projects and Blog Posts #}
+{# Used by both portfolio and blog pages via HTMX #}
+{% load i18n %}
+
+<div id="unified-modal-overlay"
+     class="unified-modal__overlay"
+     role="dialog"
+     aria-modal="true"
+     aria-label="{% trans 'Content Detail' %}"
+     aria-hidden="true"
+     data-modal-overlay>
+
+  <div class="unified-modal__content" data-modal-content>
+    {# Close button #}
+    <button class="unified-modal__close"
+            type="button"
+            aria-label="{% trans 'Close' %}"
+            data-modal-close>
+      <i class="ri ri-close-line"></i>
+    </button>
+
+    {# Modal body - content loaded via HTMX #}
+    <div id="unified-modal-container" class="unified-modal__body">
+      {# HTMX will load content here #}
+    </div>
+  </div>
+</div>
+
+{# Provide a template variant for programmatic previews (like cookie modal) #}
+<template id="unified-modal-template">
+  <div class="unified-modal__content" data-modal-content>
+    <button class="unified-modal__close" type="button" aria-label="{% trans 'Close' %}" data-modal-close>
+      <i class="ri ri-close-line"></i>
+    </button>
+    <div class="unified-modal__body" id="unified-modal-container-template">
+      <!-- content injected here -->
+    </div>
+  </div>
+</template>

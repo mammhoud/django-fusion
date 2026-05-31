@@ -1,0 +1,43 @@
+{# Education Timeline Section #}
+{# Renders from HomePage.education StreamField (TimelineItemBlock: title, subtitle, date, description) #}
+{% load i18n %}
+
+<section class="education-timeline vresume-section">
+  <div class="education-timeline__header">
+    <div class="education-timeline__icon-box">
+      <i class="ri ri-book-line"></i>
+    </div>
+    <h3 class="vresume-section-title">{% trans "Education" %}</h3>
+  </div>
+
+  <ol class="education-timeline__list">
+    {% if page.education %}
+      {% for block in page.education %}
+        <li class="education-timeline__item">
+          <h4 class="h4 education-timeline__title">{{ block.value.title }}</h4>
+          <p class="education-timeline__subtitle">{{ block.value.subtitle }}</p>
+          <span class="education-timeline__date">{{ block.value.date }}</span>
+          {% if block.value.description %}
+            <p class="education-timeline__text">{{ block.value.description }}</p>
+          {% endif %}
+        </li>
+      {% endfor %}
+    {% else %}
+      <li class="education-timeline__item">
+        <h4 class="h4 education-timeline__title">{% trans "University School of the Arts" %}</h4>
+        <span class="education-timeline__date">2007 — 2008</span>
+        <p class="education-timeline__text">{% trans "Nemo enims ipsam voluptatem, blanditiis praesentium voluptum delenit atque corrupti, quos dolores et quas molestias exceptur." %}</p>
+      </li>
+      <li class="education-timeline__item">
+        <h4 class="h4 education-timeline__title">{% trans "New York Academy of Art" %}</h4>
+        <span class="education-timeline__date">2006 — 2007</span>
+        <p class="education-timeline__text">{% trans "Ratione voluptatem sequi nesciunt, facere quisquams facere menda ossimus, omnis voluptas assumenda est omnis." %}</p>
+      </li>
+      <li class="education-timeline__item">
+        <h4 class="h4 education-timeline__title">{% trans "High School of Art and Design" %}</h4>
+        <span class="education-timeline__date">2002 — 2004</span>
+        <p class="education-timeline__text">{% trans "Duis aute irure dolor in reprehenderit in voluptate, quila voluptas mag odit aut fugit, sed consequuntur magni dolores eos." %}</p>
+      </li>
+    {% endif %}
+  </ol>
+</section>

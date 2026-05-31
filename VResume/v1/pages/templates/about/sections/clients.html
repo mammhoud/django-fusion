@@ -1,0 +1,27 @@
+{# Clients Section #}
+{# Renders from AboutPage.clients StreamField (ClientBlock: logo, name) #}
+{% load i18n static wagtailimages_tags %}
+
+{% if page.clients %}
+<section class="clients vresume-section">
+  <h3 class="vresume-section-title">{% trans "Clients" %}</h3>
+
+  <ul class="clients__list">
+      {% for block in page.clients %}
+        <li class="clients__item">
+          <div class="clients__logo-wrapper">
+            <a href="{{ block.value.url|default:'#' }}" class="clients__link" {% if block.value.url %}target="_blank" rel="noopener"{% endif %} title="{{ block.value.name }}">
+              {% if block.value.logo %}
+                {% image block.value.logo width-150 as client_logo %}
+                <img src="{{ client_logo.url }}" alt="{{ block.value.name }}" class="clients__logo" loading="lazy">
+              {% else %}
+                <span class="clients__name">{{ block.value.name }}</span>
+              {% endif %}
+            </a>
+          </div>
+        </li>
+
+      {% endfor %}
+  </ul>
+</section>
+{% endif %}
