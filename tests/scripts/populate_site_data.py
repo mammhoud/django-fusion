@@ -102,28 +102,27 @@ def main() -> int:
     site = normalize_site(args.site)
     py = python_bin(root)
 
-    for selected in selected_sites(site):
-        if not args.skip_migrate:
-            rc = run([py, "manage.py", f"--site={selected}", "migrate", "--noinput"], root, selected, args.dry_run)
+    if not args.skip_migrate:
+        rc = run([py, "manage.py", f"--site={site}", "migrate", "--noinput"], root, site, args.dry_run)
+        if rc != 0:
+            return rc
+
+    if not args.skip_json:
+        fixtures = fixture_candidates(root, site, args.include_shared)
+        if fixtures:
+            rc = run([py, "manage.py", f"--site={site}", "loaddata", *[str(p) for p in fixtures]], root, site, args.dry_run)
             if rc != 0:
                 return rc
+        else:
+            print(f"No JSON fixtures found for {site}; continuing.")
 
-        if not args.skip_json:
-            fixtures = fixture_candidates(root, selected, args.include_shared)
-            if fixtures:
-                rc = run([py, "manage.py", f"--site={selected}", "loaddata", *[str(p) for p in fixtures]], root, selected, args.dry_run)
-                if rc != 0:
-                    return rc
-            else:
-                print(f"No JSON fixtures found for {selected}; continuing.")
-
-        if args.images or selected == "vresume":
-            if selected == "vresume":
-                rc = run([py, "-m", "configs.tests.data_populator", "--verbose", *args.extra], root, selected, args.dry_run)
-                if rc != 0:
-                    return rc
-            else:
-                print(f"No Python image/content populator registered for {selected}; JSON fixtures loaded only.")
+    if args.images or site == "vresume":
+        if site == "vresume":
+            rc = run([py, "-m", "configs.tests.data_populator", "--verbose", *args.extra], root, site, args.dry_run)
+            if rc != 0:
+                return rc
+        else:
+            print(f"No Python image/content populator registered for {site}; JSON fixtures loaded only.")
 
     return 0
 
