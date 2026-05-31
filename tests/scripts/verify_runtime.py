@@ -13,7 +13,7 @@ from urllib.parse import urlparse
 
 def bootstrap_workspace() -> Path:
     """Ensure standalone script execution can import workspace modules."""
-    repo_root = Path(__file__).resolve().parents[1]
+    repo_root = Path(__file__).resolve().parents[2]
     os.chdir(repo_root)
     path_text = str(repo_root)
     # Ensure the workspace root is at the beginning of sys.path
@@ -43,7 +43,8 @@ def check_assets(strict: bool) -> int:
 
     failures = 0
     webpack_config = getattr(settings, "WEBPACK_LOADER", {}).get("DEFAULT", {})
-    stats_file = Path(webpack_config.get("STATS_FILE", ""))
+    raw_stats_file = webpack_config.get("STATS_FILE", "")
+    stats_file = Path(raw_stats_file) if raw_stats_file else None
     if stats_file and stats_file.exists() and stats_file.is_file():
         try:
             data = json.loads(stats_file.read_text())
@@ -53,7 +54,7 @@ def check_assets(strict: bool) -> int:
             print(f"❌ Webpack stats are invalid JSON: {stats_file}: {exc}")
             failures += 1
     else:
-        message = f"Webpack stats file missing: {stats_file}"
+        message = f"Webpack stats file missing: {stats_file or '<unset>'}"
         print(("❌ " if strict else "⚠️  ") + message)
         failures += int(strict)
 

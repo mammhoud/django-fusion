@@ -7,10 +7,11 @@ const ASSETS_NODE_MODULES = path.join(ASSETS_ROOT, 'node_modules');
 function normalizeSiteName(value) {
   const raw = value || process.env.PROJECT_PATH || process.env.DJANGO_WEBSITE || process.env.WEBSITE || 'ctc-research.com';
   const aliases = {
-    ctc: 'ctc-research.com',
-    'ctc-research': 'ctc-research.com',
-    structa: 'structa.cloud',
-    core: 'structa.cloud',
+    ctc: 'ctc-research',
+    'ctc-research.com': 'ctc-research',
+    structa: 'lms-demo',
+    core: 'lms-demo',
+    'structa.cloud': 'lms-demo',
   };
   return aliases[raw] || raw;
 }
