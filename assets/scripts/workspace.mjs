@@ -7,7 +7,7 @@ import { fileURLToPath } from 'node:url';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const assetsRoot = path.resolve(__dirname, '..');
 const workspaceRoot = path.resolve(assetsRoot, '..');
-const nodeBin = process.platform === 'win32' ? 'npx.cmd' : 'npx';
+const webpackBin = path.join(assetsRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'webpack.cmd' : 'webpack');
 
 const siteAliases = {
   ctc: 'ctc-research',
@@ -94,8 +94,12 @@ function pythonBin() {
 }
 
 function webpack(site, mode, extra = []) {
+  if (!existsSync(webpackBin)) {
+    console.error('Missing local webpack CLI. Run `npm --prefix assets ci --include=dev --legacy-peer-deps` before building assets.');
+    process.exit(1);
+  }
   const env = { PROJECT_PATH: site, DJANGO_SITE: site, WEBSITE: site, NODE_ENV: mode };
-  run(nodeBin, ['webpack', '--env', `site=${site}`, '--mode', mode, '--config', '../webpack/main.config.js', ...extra], { cwd: assetsRoot, env });
+  run(webpackBin, ['--env', `site=${site}`, '--mode', mode, '--config', '../webpack/main.config.js', ...extra], { cwd: assetsRoot, env });
 }
 
 function manage(site, args) {

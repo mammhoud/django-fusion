@@ -10,7 +10,7 @@ CYAN   := \033[0;36m
 NC     := \033[0m
 
 NPM := npm
-NPX := npx
+NPX := npm exec --no --
 PYTHON ?= ../.venv/bin/python
 PROJECT_PATH ?= ctc-research
 DJANGO_SITE ?= $(PROJECT_PATH)
@@ -24,7 +24,7 @@ help: ## Show frontend commands help
 
 install: ## Install npm dependencies
 	@if [ -f "package-lock.json" ]; then \
-		$(NPM) ci --legacy-peer-deps --no-audit --no-fund; \
+		$(NPM) ci --include=dev --legacy-peer-deps --no-audit --no-fund; \
 	else \
 		$(NPM) install --legacy-peer-deps; \
 	fi

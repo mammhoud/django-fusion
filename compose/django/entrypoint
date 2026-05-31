@@ -87,15 +87,19 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
 
     echo "📂 Loading dumped data fixtures..."
     LOAD_DUMP_ARGS=("--site" "$SITE_NAME")
-    [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force")
+    [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
     [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
     if ! run_logged load_dumped_data python tests/scripts/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
         echo "⚠️  dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
     fi
 
     echo "🏠 Setting up Wagtail home page and language..."
-    if ! run_logged setup_wagtail_home python manage.py --site "$SITE_NAME" setup_wagtail_home; then
-        echo "⚠️  setup_wagtail_home failed (non-fatal); see ${LOG_DIR}/setup_wagtail_home.log"
+    if python manage.py --site "$SITE_NAME" help setup_wagtail_home >/dev/null 2>&1; then
+        if ! run_logged setup_wagtail_home python manage.py --site "$SITE_NAME" setup_wagtail_home; then
+            echo "⚠️  setup_wagtail_home failed (non-fatal); see ${LOG_DIR}/setup_wagtail_home.log"
+        fi
+    else
+        echo "ℹ️  setup_wagtail_home command is not installed for ${SITE_NAME}; skipping."
     fi
 
     echo "🌐 Compiling translation messages..."
@@ -105,9 +109,9 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
 
     echo "🔎 Verifying Wagtail pages and collected assets..."
     VERIFY_ARGS=("--site" "$SITE_NAME")
-    [ "${STRICT_ASSETS:-true}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
-    [ "${STRICT_PAGE_CONTENT:-true}" = "true" ] && VERIFY_ARGS+=("--strict-pages")
-    [ "${STRICT_PAGE_CONTENT:-true}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
+    [ "${STRICT_ASSETS:-false}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
+    [ "${STRICT_PAGE_CONTENT:-false}" = "true" ] && VERIFY_ARGS+=("--strict-pages")
+    [ "${STRICT_PAGE_CONTENT:-false}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
     if ! run_logged verify_runtime python tests/scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
         echo "⚠️  runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
     fi

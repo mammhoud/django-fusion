@@ -65,20 +65,25 @@ def run(cmd: list[str], root: Path, site: str, dry_run: bool = False) -> int:
     return subprocess.run(cmd, cwd=root, env=env, check=False).returncode
 
 
-def fixture_candidates(root: Path, site: str, include_shared: bool) -> list[Path]:
+def fixture_candidates(root: Path, site: str, include_shared: bool, include_dumps: bool) -> list[Path]:
     site_dir = root / SITE_DIRS.get(site, site)
     candidates: list[Path] = []
     for base in [site_dir / "assets" / "fixtures"]:
         if not base.exists():
             print(f"Skipping missing fixture directory: {base.relative_to(root)}")
             continue
-        preferred = ["dump-data.json", "initial_choices.json", "users.json"]
-        for name in preferred:
-            path = base / name
+        preferred = [
+            base / "auth" / "group_dummy.json",
+            base / "auth" / "user_dummy.json",
+            base / "sites" / "site_dummy.json",
+            base / "initial_choices.json",
+            base / "users.json",
+        ]
+        if include_dumps:
+            preferred.extend([base / "dump-data.json", base / "wagtail_pages_dump.json"])
+            preferred.extend(sorted(base.glob("*dump*.json")))
+        for path in preferred:
             if path.exists() and path not in candidates:
-                candidates.append(path)
-        for path in sorted(base.rglob("*.json")):
-            if path not in candidates:
                 candidates.append(path)
     if include_shared:
         for path in [root / "tests" / "fixtures" / "models_fixture.json", root / "tests" / "fixtures" / "dumped_data_fixture.json"]:
@@ -93,6 +98,7 @@ def main() -> int:
     parser.add_argument("--skip-migrate", action="store_true", help="Do not run migrations before loading fixtures.")
     parser.add_argument("--skip-json", action="store_true", help="Do not load JSON fixtures.")
     parser.add_argument("--include-shared", action="store_true", help="Also load shared tests/fixtures JSON files.")
+    parser.add_argument("--include-dumps", action="store_true", help="Also load legacy dump/page JSON fixtures with hard-coded Wagtail/contenttype IDs.")
     parser.add_argument("--images", action="store_true", help="Run site-specific Python image/content population when available.")
     parser.add_argument("--dry-run", action="store_true", help="Print commands without executing them.")
     parser.add_argument("extra", nargs="*", help="Extra arguments passed to the site-specific Python populator.")
@@ -102,27 +108,28 @@ def main() -> int:
     site = normalize_site(args.site)
     py = python_bin(root)
 
-    if not args.skip_migrate:
-        rc = run([py, "manage.py", f"--site={site}", "migrate", "--noinput"], root, site, args.dry_run)
-        if rc != 0:
-            return rc
-
-    if not args.skip_json:
-        fixtures = fixture_candidates(root, site, args.include_shared)
-        if fixtures:
-            rc = run([py, "manage.py", f"--site={site}", "loaddata", *[str(p) for p in fixtures]], root, site, args.dry_run)
+    for selected in selected_sites(site):
+        if not args.skip_migrate:
+            rc = run([py, "manage.py", f"--site={selected}", "migrate", "--noinput"], root, selected, args.dry_run)
             if rc != 0:
                 return rc
-        else:
-            print(f"No JSON fixtures found for {site}; continuing.")
 
-    if args.images or site == "vresume":
-        if site == "vresume":
-            rc = run([py, "-m", "configs.tests.data_populator", "--verbose", *args.extra], root, site, args.dry_run)
-            if rc != 0:
-                return rc
-        else:
-            print(f"No Python image/content populator registered for {site}; JSON fixtures loaded only.")
+        if not args.skip_json:
+            fixtures = fixture_candidates(root, selected, args.include_shared, args.include_dumps)
+            if fixtures:
+                rc = run([py, "manage.py", f"--site={selected}", "loaddata", *[str(p) for p in fixtures]], root, selected, args.dry_run)
+                if rc != 0:
+                    return rc
+            else:
+                print(f"No JSON fixtures found for {selected}; continuing.")
+
+        if args.images or selected == "vresume":
+            if selected == "vresume":
+                rc = run([py, "-m", "configs.tests.data_populator", "--verbose", *args.extra], root, selected, args.dry_run)
+                if rc != 0:
+                    return rc
+            else:
+                print(f"No Python image/content populator registered for {selected}; JSON fixtures loaded only.")
 
     return 0
 

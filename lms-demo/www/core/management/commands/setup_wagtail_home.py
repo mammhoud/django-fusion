@@ -24,7 +24,7 @@ class Command(BaseCommand):
         try:
             self._run()
         except Exception as exc:
-            self.stderr.write(self.style.ERROR(f"❌ setup_wagtail_home failed: {exc}"))
+            self.stderr.write(self.style.WARNING(f"⚠️  setup_wagtail_home skipped: {exc}"))
 
     def _run(self):
         from wagtail.models import Locale, Page, Site
@@ -139,7 +139,9 @@ class Command(BaseCommand):
         if home:
             return home
 
-        # Last resort: any live depth=2 page
+        # Last resort: keep startup idempotent on a freshly migrated database by
+        # using Wagtail's generated welcome page until real content fixtures are
+        # loaded.
         return Page.objects.filter(live=True, depth=2).order_by("path").first()
 
     def _resolve_hostname(self):

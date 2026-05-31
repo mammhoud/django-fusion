@@ -99,13 +99,41 @@ class FrontendBuildLayoutTests(SimpleTestCase):
 
     def test_media_compose_uses_one_shared_media_server(self):
         compose = (ROOT / "compose" / "docker-compose.nginx.yml").read_text()
+        nginx_conf = (ROOT / "compose" / "media" / "nginx.conf").read_text()
         assert "container_name: shared-media" in compose
         assert "container_name: ctc-media" not in compose
         assert "container_name: lms-media" not in compose
         assert "container_name: vresume-media" not in compose
-        assert "../ctc-research/assets/media:/var/www/sites/ctc-research/media:ro" in compose
-        assert "../lms-demo/assets/media:/var/www/sites/lms-demo/media:ro" in compose
-        assert "../VResume/assets/media:/var/www/sites/vresume/media:ro" in compose
+        assert "../assets/media:/var/www/media:ro" in compose
+        assert "assets/media:/var/www/sites" not in compose
+        assert "location /media/" in nginx_conf
+        assert "alias /var/www/media/;" in nginx_conf
+        assert "location /sites/" in nginx_conf
+
+    def test_compose_files_are_canonicalized(self):
+        duplicate_compose_files = [
+            ROOT / "ctc-research" / "docker-compose.yml",
+            ROOT / "lms-demo" / "docker-compose.yml",
+            ROOT / "lms-demo" / "docker-compose.proxy.yml",
+            ROOT / "lms-demo" / "docker-compose.warehouse.yml",
+        ]
+        for path in duplicate_compose_files:
+            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+                assert not path.exists()
+        assert (ROOT / "docker-compose.yml").exists()
+        assert (ROOT / "compose" / "docker-compose.yml").exists()
+        assert (ROOT / "compose" / "docker-compose.nginx.yml").exists()
+
+    def test_assets_tooling_uses_local_webpack_cli_without_npx_prompt(self):
+        workspace_cli = (ROOT / "assets" / "scripts" / "workspace.mjs").read_text()
+        assets_makefile = (ROOT / "assets" / "Makefile").read_text()
+        dockerfile = (ROOT / "compose" / "django" / "Dockerfile").read_text()
+        assert "node_modules', '.bin'" in workspace_cli
+        assert "Missing local webpack CLI" in workspace_cli
+        assert "npx" not in workspace_cli
+        assert "npm exec --no --" in assets_makefile
+        assert "ci --include=dev" in assets_makefile
+        assert "npm ci --include=dev" in dockerfile
 
 
 class SiteConfigTests(SimpleTestCase):
@@ -140,6 +168,30 @@ class SiteConfigTests(SimpleTestCase):
         assert 'if value == "all" or value.lower() == "all"' in script
         assert 'def selected_sites(site: str) -> list[str]:' in script
         assert 'if args.images or selected == "vresume"' in script
+
+    def test_entrypoint_uses_safe_fixture_and_runtime_defaults(self):
+        entrypoint = (ROOT / "compose" / "django" / "entrypoint").read_text()
+        loader = (ROOT / "tests" / "scripts" / "load_dumped_data.py").read_text()
+        populator = (ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
+        assert 'LOAD_DUMP_ARGS+=("--force" "--include-dumps")' in entrypoint
+        assert 'help setup_wagtail_home' in entrypoint
+        assert 'setup_wagtail_home command is not installed' in entrypoint
+        assert '${STRICT_ASSETS:-false}' in entrypoint
+        assert '${STRICT_PAGE_CONTENT:-false}' in entrypoint
+        assert 'parser.add_argument("--include-dumps"' in loader
+        assert 'if include_dumps:' in loader
+        assert 'directory / "auth" / "group_dummy.json"' in loader
+        assert 'sorted(directory.rglob("*.json"))' not in loader
+        assert 'parser.add_argument("--include-dumps"' in populator
+        assert 'base / "dump-data.json"' in populator
+
+    def test_setup_wagtail_home_is_idempotent_without_page_fixtures(self):
+        for project in ("ctc-research", "lms-demo"):
+            command = (ROOT / project / "www" / "core" / "management" / "commands" / "setup_wagtail_home.py").read_text()
+            with self.subTest(project=project):
+                assert "setup_wagtail_home skipped" in command
+                assert 'Page.objects.filter(live=True, depth=2).order_by("path").first()' in command
+                assert "CommandError" not in command
 
 
 class AssetHealthTests(SimpleTestCase):

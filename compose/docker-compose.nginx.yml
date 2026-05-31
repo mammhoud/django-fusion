@@ -40,4 +40,3 @@ services:
       - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
       - ../lms-demo/assets/media:/var/www/sites/lms-demo/media:ro
       - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
-      - ../VResume/assets/media:/var/www/sites/vresume/media:ro
