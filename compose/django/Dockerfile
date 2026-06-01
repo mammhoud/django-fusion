@@ -28,7 +28,7 @@ ENV PYTHONUNBUFFERED=1 \
 WORKDIR ${APP_HOME}
 
 # -----------------------------------------------------
-# 1. System packages + Node.js + uv
+# System packages + Node.js + uv
 # -----------------------------------------------------
 RUN apt-get update && apt-get install --no-install-recommends -y \
         bash-completion build-essential ca-certificates cron curl gettext git \
@@ -45,7 +45,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip uv \
     && uv venv /opt/venv
 
 # -----------------------------------------------------
-# 2. Install Python dependencies from the single root manifest
+# Install Python dependencies from the single root manifest
 # -----------------------------------------------------
 COPY pyproject.toml uv.lock* ${APP_HOME}/
 
@@ -56,19 +56,9 @@ RUN if [ -f uv.lock ]; then \
     fi
 
 # -----------------------------------------------------
-# 3. Patch broken django_rseal.services.communication
+# Copy shared source and the selected website
 # -----------------------------------------------------
-RUN mkdir -p "/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
-    COMM_DIR="/opt/venv/lib/python3.12/site-packages/django_rseal/services/communication" && \
-    if [ ! -f "${COMM_DIR}/invitation_service.py" ]; then \
-        printf '# stub - missing from installed distribution\nclass InvitationService:\n    pass\n' \
-            > "${COMM_DIR}/invitation_service.py"; \
-    fi
-
-# -----------------------------------------------------
-# 4. Copy shared source and the selected website
-# -----------------------------------------------------
-COPY Makefile manage.py __about__.py __main__.py cli.py com ${APP_HOME}/
+COPY Makefile manage.py __about__.py __main__.py cli.py ${APP_HOME}/
 COPY configs ${APP_HOME}/configs
 COPY assets ${APP_HOME}/assets
 COPY compose ${APP_HOME}/compose
@@ -77,7 +67,7 @@ COPY tasks ${APP_HOME}/tasks
 COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 
 # -----------------------------------------------------
-# 5. Install the shared frontend toolchain in the image.
+# Install the shared frontend toolchain in the image.
 # -----------------------------------------------------
 # Build/collect commands may run at container startup, so install dev tooling
 # explicitly even though NODE_ENV defaults to production. This keeps webpack-cli
@@ -86,7 +76,7 @@ RUN cd ${APP_HOME}/assets \
     && npm ci --include=dev --legacy-peer-deps --no-audit --no-fund
 
 # -----------------------------------------------------
-# 6. Entrypoint and helper scripts
+# Entrypoint and helper scripts
 # -----------------------------------------------------
 RUN mkdir -p ${APP_HOME}/logs \
     && sed -i 's/\r$//g' /app/compose/django/entrypoint /app/compose/django/start /app/compose/django/rqworker-start /app/compose/django/flower /app/Makefile \

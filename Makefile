@@ -65,7 +65,7 @@ else
   COMPOSE_FILE ?= docker-compose.yml
 endif
 
-MANAGE ?= $(PYTHON) manage.py --site=$(SITE)
+MANAGE ?= uv run $(SITE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),VResume,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
@@ -174,7 +174,7 @@ test:
 	$(PYTHON) -m pytest
 
 run-dev:
-	$(MANAGE) runserver 0.0.0.0:$${PORT:-8000}
+	$(MANAGE) runserver
 
 server:
 	/start

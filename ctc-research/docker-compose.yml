@@ -17,6 +17,8 @@ x-django-base: &django-base
   env_file:
     - path: ../.env
       required: false
+    - path: .env
+      required: false
   environment: &django-env
     RUNNING_ENV: docker
     SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
@@ -32,6 +34,10 @@ x-django-base: &django-base
     DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
     WORKERS: ${WORKERS:-4}
     TIMEOUT: ${TIMEOUT:-120}
+    DJANGO_SITE: ctc-research
+    DJANGO_WEBSITE: ctc-research
+    WEBSITE: ctc-research
+    PROJECT_PATH: ctc-research
   volumes:
     - ../:/app:z
     - ../assets/media:/app/assets/media:z
@@ -57,11 +63,6 @@ services:
       <<: *django-env
       PORT: 5070
       DB_NAME: ${CTC_DB_NAME:-db_ctc}
-      DJANGO_SITE: ctc-research
-      DJANGO_WEBSITE: ctc-research
-      WEBSITE: ctc-research
-      WEBSITE_NAME: ctc-research
-      PROJECT_PATH: ctc-research
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"
@@ -85,10 +86,8 @@ services:
     environment:
       <<: *django-env
       PORT: 5070
-      DJANGO_SITE: ctc-research
-      DJANGO_WEBSITE: ctc-research
-      WEBSITE: ctc-research
-      PROJECT_PATH: ctc-research
+      DB_NAME: ${CTC_DB_NAME:-db_ctc}
+    command: /rqworker-start
 
   ctc-website-media:
     <<: *django-base
@@ -101,10 +100,7 @@ services:
     environment:
       <<: *django-env
       PORT: 5074
-      DJANGO_SITE: ctc-research
-      DJANGO_WEBSITE: ctc-research
-      WEBSITE: ctc-research
-      PROJECT_PATH: ctc-research
+      DB_NAME: ${CTC_DB_NAME:-db_ctc}
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:ctc-media.local"

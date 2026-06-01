@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Unified entry point for lms-demo website.
+Unified entry point for VResume website.
 
 Supports:
 1. Django management commands via uv
@@ -8,15 +8,15 @@ Supports:
 3. Website-specific environment setup
 
 Usage with uv:
-  uv run lms-demo check
-  uv run lms-demo migrate
-  uv run lms-demo runserver
-  uv run lms-demo server  # Start ASGI/WSGI server
+  uv run vresume check
+  uv run vresume migrate
+  uv run vresume runserver
+  uv run vresume server  # Start ASGI/WSGI server
 
 Usage directly:
-  python -m lms-demo check
-  python -m lms-demo migrate
-  python -m lms-demo server
+  python -m vresume check
+  python -m vresume migrate
+  python -m vresume server
 """
 import os
 import sys
@@ -24,7 +24,7 @@ import subprocess
 from pathlib import Path
 
 # Set website identifier
-SITE = "lms-demo"
+SITE = "vresume"
 os.environ.setdefault("DJANGO_SITE", SITE)
 os.environ.setdefault("DJANGO_WEBSITE", SITE)
 os.environ.setdefault("WEBSITE", SITE)
@@ -57,7 +57,7 @@ def run_server():
     from server import application
     
     server_type = os.environ.get("SERVER_TYPE", "asgi").lower()
-    port = int(os.environ.get("PORT", 8001))
+    port = int(os.environ.get("PORT", 8002))
     host = os.environ.get("HOST", "0.0.0.0")
     
     if server_type == "asgi":
@@ -86,8 +86,8 @@ def main():
     args = sys.argv[1:]
     
     if not args:
-        print(f"Usage: python -m {SITE} <command> [args...]")
-        print(f"       uv run {SITE} <command> [args...]")
+        print(f"Usage: python -m vresume <command> [args...]")
+        print(f"       uv run vresume <command> [args...]")
         print("\nCommands:")
         print("  check, migrate, makemigrations, collectstatic, shell, test")
         print("  runserver [port]  - Django development server")
@@ -102,7 +102,7 @@ def main():
     if command == "server":
         run_server()
     elif command == "runserver":
-        port = args[1] if len(args) > 1 else "8001"
+        port = args[1] if len(args) > 1 else "8002"
         run_django_command("runserver", f"0.0.0.0:{port}")
     elif command == "uv":
         run_uv_command(*args[1:])
