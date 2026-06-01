@@ -16,6 +16,7 @@ SITE_DIR_NAME="${PROJECT_PATH:-$SITE_NAME}"
 if [ ! -d "${APP_HOME}/${SITE_DIR_NAME}" ] && [ "$SITE_NAME" = "vresume" ]; then
     SITE_DIR_NAME="VResume"
 fi
+# Use website-specific server module, not configs.server
 APP_MODULE="${APP_MODULE:-${SITE_DIR_NAME}.server:application}"
 WATCH_DIRS="${WATCH_DIRS:-./www,./configs}"
 SERVER_TYPE="${SERVER_TYPE:-${RUNSERVER:-gunicorn}}"

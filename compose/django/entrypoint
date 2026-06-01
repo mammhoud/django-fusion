@@ -10,33 +10,33 @@ SITE_NAME="${DJANGO_SITE:-${DJANGO_WEBSITE:-${WEBSITE:-${PROJECT_PATH:-ctc-resea
 
 mkdir -p "$LOG_DIR"
 
-echo "🚀 Entrypoint: Booting in ${APP_HOME} for ${SITE_NAME}..."
+echo "[ENTRYPOINT] Booting in ${APP_HOME} for ${SITE_NAME}..."
 
 run_logged() {
     local name="$1"
     shift
     local logfile="${LOG_DIR}/${name}.log"
-    echo "▶️  $name: $*"
+    echo "[LOG] $name: $*"
     echo "===== $(date -Iseconds) $name: $* =====" >> "$logfile"
     "$@" 2>&1 | tee -a "$logfile"
 }
 
 if ! command -v uv >/dev/null 2>&1; then
-    echo "🧩 Installing uv..."
+    echo "[SETUP] Installing uv..."
     python -m pip install --no-cache-dir --upgrade uv
 else
-    echo "✅ uv already installed: $(uv --version)"
+    echo "[OK] uv already installed: $(uv --version)"
 fi
 
 if [ -d "$APP_VENV" ]; then
-    echo "🔍 Checking Python venv validity..."
+    echo "[CHECK] Checking Python venv validity..."
     PYTHON_BIN="$APP_VENV/bin/python"
     if [ ! -f "$PYTHON_BIN" ] || ! "$PYTHON_BIN" --version >/dev/null 2>&1; then
-        echo "⚠️ Broken venv detected at $APP_VENV"
+        echo "[WARN] Broken venv detected at $APP_VENV"
         rm -rf "$APP_VENV"
         uv venv "$APP_VENV"
     else
-        echo "✅ Venv is valid"
+        echo "[OK] Venv is valid"
     fi
 fi
 
@@ -48,7 +48,7 @@ fi
 export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
 
 if [ "${RUN_UV_SYNC:-false}" = "true" ]; then
-    echo "📦 Syncing Python dependencies with uv..."
+    echo "[SETUP] Syncing Python dependencies with uv..."
     if [ -f uv.lock ]; then
         uv sync --frozen --no-install-project
     else
@@ -60,9 +60,9 @@ fi
 # DJANGO SETUP (opt-in for main app, not workers)
 ###############################################################################
 if [ "${RUN_SETUP:-false}" = "true" ]; then
-    echo "🛠️ Running Django setup..."
+    echo "[SETUP] Running Django setup..."
 
-    echo "🧹 Preparing static files..."
+    echo "[SETUP] Preparing static files..."
     BUILD_ASSETS_MODE="${BUILD_ASSETS_ON_START:-auto}"
     WEBPACK_BIN="${APP_HOME}/assets/node_modules/.bin/webpack"
     SHOULD_BUILD_ASSETS=false
@@ -71,89 +71,89 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
             if [ -x "$WEBPACK_BIN" ]; then
                 SHOULD_BUILD_ASSETS=true
             else
-                echo "⚠️  BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}, but ${WEBPACK_BIN} is missing; run 'npm --prefix assets ci --include=dev --legacy-peer-deps' before container startup to enable webpack builds."
+                echo "[WARN] BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}, but ${WEBPACK_BIN} is missing; run 'npm --prefix assets ci --include=dev --legacy-peer-deps' before container startup to enable webpack builds."
             fi
             ;;
         auto)
             if [ -x "$WEBPACK_BIN" ]; then
                 SHOULD_BUILD_ASSETS=true
             else
-                echo "ℹ️  Skipping webpack build because assets/node_modules is not installed in the mounted workspace."
+                echo "[INFO] Skipping webpack build because assets/node_modules is not installed in the mounted workspace."
             fi
             ;;
         false|0|no)
-            echo "ℹ️  BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; skipping webpack build."
+            echo "[INFO] BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; skipping webpack build."
             ;;
         *)
-            echo "⚠️  Unknown BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; expected auto, true, or false. Skipping webpack build."
+            echo "[WARN] Unknown BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; expected auto, true, or false. Skipping webpack build."
             ;;
     esac
 
     if [ "$SHOULD_BUILD_ASSETS" = "true" ]; then
-        echo "🧹 Collecting/building static files..."
+        echo "[SETUP] Collecting/building static files..."
         if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
             if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
-                echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
+                echo "[WARN] static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
             fi
         fi
     fi
 
 
-    echo "🗃️  Making migrations..."
+    echo "[SETUP] Making migrations..."
     if ! run_logged makemigrations python manage.py --site "$SITE_NAME" makemigrations --noinput; then
-        echo "⚠️  makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
+        echo "[WARN] makemigrations failed (non-fatal); see ${LOG_DIR}/makemigrations.log"
     fi
 
-    echo "🗃️  Applying migrations..."
+    echo "[SETUP] Applying migrations..."
     if ! run_logged migrate python manage.py --site "$SITE_NAME" migrate --noinput; then
-        echo "❌ migrate failed; see ${LOG_DIR}/migrate.log"
+        echo "[ERROR] migrate failed; see ${LOG_DIR}/migrate.log"
         exit 1
     fi
 
     if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
-        echo "👑 Ensuring superuser..."
-        run_logged superuser python -m django_rseal.scripts.superuser || echo "⚠️  superuser failed (non-fatal); see ${LOG_DIR}/superuser.log"
+        echo "[SETUP] Ensuring superuser..."
+        run_logged superuser python -m django_rseal.scripts.superuser || echo "[WARN] superuser failed (non-fatal); see ${LOG_DIR}/superuser.log"
     fi
 
-    echo "📂 Loading dumped data fixtures..."
+    echo "[SETUP] Loading dumped data fixtures..."
     LOAD_DUMP_ARGS=("--site" "$SITE_NAME")
     [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
     [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
     if ! run_logged load_dumped_data python tests/scripts/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
-        echo "⚠️  dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
+        echo "[WARN] dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
     fi
 
-    echo "🏠 Setting up Wagtail home page and language..."
+    echo "[SETUP] Setting up Wagtail home page and language..."
     if python manage.py --site "$SITE_NAME" help setup_wagtail_home >/dev/null 2>&1; then
         if ! run_logged setup_wagtail_home python manage.py --site "$SITE_NAME" setup_wagtail_home; then
-            echo "⚠️  setup_wagtail_home failed (non-fatal); see ${LOG_DIR}/setup_wagtail_home.log"
+            echo "[WARN] setup_wagtail_home failed (non-fatal); see ${LOG_DIR}/setup_wagtail_home.log"
         fi
     else
-        echo "ℹ️  setup_wagtail_home command is not installed for ${SITE_NAME}; skipping."
+        echo "[INFO] setup_wagtail_home command is not installed for ${SITE_NAME}; skipping."
     fi
 
-    echo "🌐 Compiling translation messages..."
+    echo "[SETUP] Compiling translation messages..."
     if ! run_logged compilemessages python manage.py --site "$SITE_NAME" compilemessages; then
-        echo "⚠️  compilemessages failed (non-fatal); see ${LOG_DIR}/compilemessages.log"
+        echo "[WARN] compilemessages failed (non-fatal); see ${LOG_DIR}/compilemessages.log"
     fi
 
-    echo "🔎 Verifying Wagtail pages and collected assets..."
+    echo "[SETUP] Verifying Wagtail pages and collected assets..."
     VERIFY_ARGS=("--site" "$SITE_NAME")
     [ "${STRICT_ASSETS:-false}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
     [ "${STRICT_PAGE_CONTENT:-false}" = "true" ] && VERIFY_ARGS+=("--strict-pages")
     [ "${STRICT_PAGE_CONTENT:-false}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
     if ! run_logged verify_runtime python tests/scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
-        echo "⚠️  runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
+        echo "[WARN] runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
     fi
 
     if command -v crontab >/dev/null 2>&1; then
-        echo "⏰ Installing hourly error-report cron..."
+        echo "[SETUP] Installing hourly error-report cron..."
         (crontab -l 2>/dev/null | grep -v "send_error_report"; \
          echo "0 * * * * cd ${APP_HOME} && python manage.py send_error_report >> ${APP_HOME}/logs/error_report_cron.log 2>&1") \
-         | crontab - 2>/dev/null || echo "⚠️  crontab install failed (non-fatal)"
+         | crontab - 2>/dev/null || echo "[WARN] crontab install failed (non-fatal)"
         service cron start 2>/dev/null || crond 2>/dev/null || true
     else
-        echo "ℹ️  cron not available"
+        echo "[INFO] cron not available"
     fi
 fi
 
@@ -163,15 +163,15 @@ fi
 
 case "$1" in
     celery)
-        echo "🎯 Executing celery via uv: $*"
+        echo "[RUN] Executing celery via uv: $*"
         exec uv run "$@"
         ;;
     uv|uvicorn|python|pytest|/bin/*|/usr/bin/*|/usr/local/bin/*)
-        echo "🎯 Executing command directly: $*"
+        echo "[RUN] Executing command directly: $*"
         exec "$@"
         ;;
     *)
-        echo "🎯 Launching make target: $*"
+        echo "[RUN] Launching make target: $*"
         exec /usr/bin/make "$@"
         ;;
 esac

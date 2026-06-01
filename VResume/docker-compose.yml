@@ -17,6 +17,8 @@ x-django-base: &django-base
   env_file:
     - path: ../.env
       required: false
+    - path: .env
+      required: false
   environment: &django-env
     RUNNING_ENV: docker
     SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
@@ -32,6 +34,10 @@ x-django-base: &django-base
     DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
     WORKERS: ${WORKERS:-4}
     TIMEOUT: ${TIMEOUT:-120}
+    DJANGO_SITE: vresume
+    DJANGO_WEBSITE: vresume
+    WEBSITE: vresume
+    PROJECT_PATH: vresume
   volumes:
     - ../:/app:z
     - ../assets/media:/app/assets/media:z
@@ -57,11 +63,6 @@ services:
       <<: *django-env
       PORT: 5072
       DB_NAME: ${VRESUME_DB_NAME:-vresume}
-      DJANGO_SITE: vresume
-      DJANGO_WEBSITE: vresume
-      WEBSITE: vresume
-      WEBSITE_NAME: vresume
-      PROJECT_PATH: vresume
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:vresume.local"
@@ -73,3 +74,11 @@ services:
       timeout: 10s
       retries: 3
       start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M

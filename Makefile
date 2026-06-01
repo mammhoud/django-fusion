@@ -291,3 +291,119 @@ list health containers production production-simple domains vresume-pages:
 .PHONY: list health containers production production-simple domains vresume-pages
 list health containers production production-simple domains vresume-pages:
 	@:
+
+###############################################################################
+# COMPREHENSIVE DEPLOYMENT TARGETS
+###############################################################################
+
+.PHONY: docker-clean docker-clean-all docker-deploy-full docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-status docker-logs-all
+
+# Clean all docker resources (containers, images, volumes)
+docker-clean:
+	@echo "Cleaning Docker containers and images..."
+	docker compose -f docker-compose.yml down --remove-orphans 2>/dev/null || true
+	docker system prune -f --volumes
+
+# Aggressive clean - removes all images and volumes
+docker-clean-all: docker-clean
+	@echo "Removing all Docker images..."
+	docker rmi -f $$(docker images -q) 2>/dev/null || true
+	@echo "Removing all Docker volumes..."
+	docker volume prune -f
+
+# Deploy warehouse services (postgres, redis, adminer, blinko)
+docker-deploy-warehouse:
+	@echo "Deploying warehouse services (postgres, redis, adminer, blinko)..."
+	docker network create traefik-net 2>/dev/null || true
+	docker network create site_network 2>/dev/null || true
+	docker compose -f docker-compose.yml up -d postgres redis adminer blinko
+	@echo "Waiting for warehouse services to be healthy..."
+	@sleep 10
+	docker compose -f docker-compose.yml ps
+
+# Deploy traefik proxy
+docker-deploy-traefik:
+	@echo "Deploying Traefik reverse proxy..."
+	docker network create traefik-net 2>/dev/null || true
+	docker compose -f docker-compose.yml up -d traefik
+	@echo "Traefik deployed. Dashboard: http://localhost:8080"
+	@sleep 5
+	docker compose -f docker-compose.yml ps traefik
+
+# Deploy all three websites
+docker-deploy-websites:
+	@echo "Deploying all websites..."
+	@echo "Building ctc-research..."
+	$(MAKE) docker-rebuild WEBSITE=ctc-research
+	@echo "Building lms-demo..."
+	$(MAKE) docker-rebuild WEBSITE=lms-demo
+	@echo "Building VResume..."
+	$(MAKE) docker-rebuild WEBSITE=vresume
+	@echo "All websites deployed!"
+	docker compose -f docker-compose.yml ps
+
+# Full deployment: clean, build, and deploy everything
+docker-deploy-full: docker-clean docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites
+	@echo ""
+	@echo "=========================================="
+	@echo "FULL DEPLOYMENT COMPLETE!"
+	@echo "=========================================="
+	@echo ""
+	@echo "Services running:"
+	docker compose -f docker-compose.yml ps
+	@echo ""
+	@echo "Access points:"
+	@echo "  - Traefik Dashboard: http://localhost:8080"
+	@echo "  - CTC Research: http://ctc-research.local:5070"
+	@echo "  - LMS Demo: http://lms-demo.local:5071"
+	@echo "  - VResume: http://vresume.local:5072"
+	@echo "  - Adminer: http://localhost (via traefik)"
+	@echo ""
+
+# Show status of all services
+docker-status:
+	@echo "Docker Services Status:"
+	@echo "======================="
+	docker compose -f docker-compose.yml ps
+	@echo ""
+	@echo "Resource Usage:"
+	docker stats --no-stream
+
+# Show logs for all services
+docker-logs-all:
+	@echo "Showing logs for all services (last 50 lines)..."
+	docker compose -f docker-compose.yml logs --tail=50
+
+# Show logs for specific service
+docker-logs-service:
+	@echo "Usage: make docker-logs-service SERVICE=<service-name>"
+	@echo "Available services:"
+	docker compose -f docker-compose.yml ps --services
+
+# Health check all services
+docker-health-check:
+	@echo "Checking health of all services..."
+	@for service in postgres redis traefik ctc-research-website lms-demo-website vresume-website; do \
+		echo "Checking $$service..."; \
+		docker compose -f docker-compose.yml exec -T $$service curl -f http://localhost:$$(docker compose -f docker-compose.yml port $$service 2>/dev/null | cut -d: -f2)/health/ 2>/dev/null && echo "✓ $$service is healthy" || echo "✗ $$service is not responding"; \
+	done
+
+# Restart all services
+docker-restart-all:
+	@echo "Restarting all services..."
+	docker compose -f docker-compose.yml restart
+	@sleep 5
+	docker compose -f docker-compose.yml ps
+
+# Stop all services
+docker-stop-all:
+	@echo "Stopping all services..."
+	docker compose -f docker-compose.yml stop
+
+# Start all services
+docker-start-all:
+	@echo "Starting all services..."
+	docker compose -f docker-compose.yml start
+	@sleep 5
+	docker compose -f docker-compose.yml ps
+

@@ -74,6 +74,14 @@ services:
       timeout: 10s
       retries: 3
       start_period: 90s
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
 
   ctc-website-worker:
     <<: *django-base
@@ -88,6 +96,14 @@ services:
       PORT: 5070
       DB_NAME: ${CTC_DB_NAME:-db_ctc}
     command: /rqworker-start
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
 
   ctc-website-media:
     <<: *django-base
@@ -106,3 +122,11 @@ services:
       - "traefik.frontend.rule=Host:ctc-media.local"
       - "traefik.http.routers.ctc-media.rule=Host(`ctc-media.local`)"
       - "traefik.http.services.ctc-media.loadbalancer.server.port=5074"
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M

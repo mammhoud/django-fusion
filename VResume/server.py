@@ -1,30 +1,53 @@
+#!/usr/bin/env python3
+"""Unified ASGI/WSGI server for VResume website.
+
+Supports both ASGI (async, WebSocket) and WSGI (sync) modes via DJANGO_SERVER_TYPE env var.
 """
-ASGI/WSGI server entry point for VResume website.
-
-This module imports the unified server from configs and makes it available
-for both development and production use.
-
-Usage:
-  gunicorn vresume.server:application
-  uvicorn vresume.server:application
-"""
-
 import os
-import sys
-from pathlib import Path
 
-# Set website identifier
+from django.core.asgi import get_asgi_application
+from django.core.wsgi import get_wsgi_application
+
+# Set the default Django settings module
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", os.environ.get("DJANGO_SETTINGS_MODULE", "settings"))
 os.environ.setdefault("DJANGO_SITE", "vresume")
-os.environ.setdefault("DJANGO_WEBSITE", "vresume")
 os.environ.setdefault("WEBSITE", "vresume")
-os.environ.setdefault("PROJECT_PATH", "vresume")
 
-# Add workspace root to path
-workspace_root = Path(__file__).resolve().parent.parent
-if str(workspace_root) not in sys.path:
-    sys.path.insert(0, str(workspace_root))
+# Choose server mode: "asgi" (default) or "wsgi"
+SERVER_TYPE = os.environ.get("DJANGO_SERVER_TYPE", "asgi").lower()
 
-# Import the unified server application
-from configs.server import application
+if SERVER_TYPE == "wsgi":
+    # --- WSGI application (synchronous, no websocket support) ---
+    application = get_wsgi_application()
 
-__all__ = ["application"]
+else:
+    # --- ASGI application (HTTP + WebSocket) ---
+    django_asgi_app = get_asgi_application()
+
+    async def websocket_application(scope, receive, send):
+        """Simple WebSocket handler: accepts connection, replies 'pong' to 'ping'."""
+        while True:
+            event = await receive()
+
+            if event["type"] == "websocket.connect":
+                await send({"type": "websocket.accept"})
+
+            if event["type"] == "websocket.disconnect":
+                break
+
+            if event["type"] == "websocket.receive":
+                if event.get("text") == "ping":
+                    await send({"type": "websocket.send", "text": "pong!"})
+
+    async def application(scope, receive, send):
+        """
+        ASGI dispatcher:
+        - HTTP → Django
+        - WebSocket → custom websocket handler
+        """
+        if scope["type"] == "http":
+            await django_asgi_app(scope, receive, send)
+        elif scope["type"] == "websocket":
+            await websocket_application(scope, receive, send)
+        else:
+            raise NotImplementedError(f"Unknown scope type: {scope['type']}")
