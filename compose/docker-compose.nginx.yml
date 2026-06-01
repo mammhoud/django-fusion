@@ -36,5 +36,7 @@ services:
       - ../assets/staticfiles:/var/www/static:ro
       - ../assets/media:/var/www/media:ro
       - ../ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../ctc-research/assets/media:/var/www/sites/ctc-research/media:ro
       - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
+      - ../lms-demo/assets/media:/var/www/sites/lms-demo/media:ro
       - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro

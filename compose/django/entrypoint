@@ -62,6 +62,7 @@ fi
 if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "🛠️ Running Django setup..."
 
+<<<<<<< HEAD
     echo "🧹 Preparing static files..."
     BUILD_ASSETS_MODE="${BUILD_ASSETS_ON_START:-auto}"
     WEBPACK_BIN="${APP_HOME}/assets/node_modules/.bin/webpack"
@@ -92,6 +93,12 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     if [ "$SHOULD_BUILD_ASSETS" = "true" ]; then
         if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
             echo "⚠️  webpack asset build failed (non-fatal); see ${LOG_DIR}/build_assets.log"
+=======
+    echo "🧹 Collecting/building static files..."
+    if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
+        if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
+            echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
+>>>>>>> generic
         fi
     fi
 

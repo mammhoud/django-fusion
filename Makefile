@@ -91,12 +91,16 @@ help:
 	@echo "  compose        - Delegate to compose/Makefile"
 	@echo "  assets         - Delegate to assets/Makefile"
 	@echo "  scripts        - Delegate to tests/scripts/Makefile"
+	@echo "  scripts        - Delegate to tests/scripts/Makefile"
 	@echo "  website-ctc    - Delegate to ctc-research/Makefile"
 	@echo "  website-structa- Delegate to lms-demo/Makefile"
 	@echo "  website-vresume- Delegate to VResume/Makefile"
 	@echo "  projects       - Run a delegated target in every project Makefile"
+	@echo "  website-vresume- Delegate to VResume/Makefile"
+	@echo "  projects       - Run a delegated target in every project Makefile"
 	@echo "  check          - Django checks for selected website"
 	@echo "  test           - Pytest from repo-level tests/"
+	@echo "  tests-website  - Run tests for WEBSITE=ctc|structa|vresume|all"
 	@echo "  tests-website  - Run tests for WEBSITE=ctc|structa|vresume|all"
 	@echo "  run-dev        - Run Django dev server for selected website"
 	@echo "  server         - Start the ASGI server (container default)"
@@ -106,7 +110,10 @@ help:
 	@echo "  docker-redeploy - Build and restart selected website service"
 	@echo "  docker-up      - Build and start selected website containers"
 	@echo "  build-assets-all - Build frontend assets for ctc, structa, and vresume"
+	@echo "  build-assets-all - Build frontend assets for ctc, structa, and vresume"
 	@echo "  docker-down    - Stop selected website containers"
+	@echo "  docker-prune-containers - Remove stopped containers/orphans"
+	@echo "  docker-prune-data - Remove generated compose data (dangerous)"
 	@echo "  docker-prune-containers - Remove stopped containers/orphans"
 	@echo "  docker-prune-data - Remove generated compose data (dangerous)"
 	@echo "  full-site-check- Build assets, collectstatic, migrate, load dumps, verify pages/assets"
@@ -115,6 +122,10 @@ compose:
 	$(MAKE) -C compose $(filter-out $@,$(MAKECMDGOALS))
 
 assets:
+	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
+
+scripts script:
+	$(MAKE) -C tests/scripts $(filter-out $@,$(MAKECMDGOALS))
 	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
 
 scripts script:
@@ -135,6 +146,15 @@ projects:
 		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
 	done
 
+website-vresume:
+	$(MAKE) -C VResume $(filter-out $@,$(MAKECMDGOALS))
+
+projects:
+	@for project in ctc-research lms-demo VResume; do \
+		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
+		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
+	done
+
 check:
 	$(MANAGE) check
 
@@ -143,6 +163,9 @@ validate-config:
 
 build-assets:
 	PROJECT_PATH=$(SITE) $(MAKE) -C assets build
+
+build-assets-all:
+	$(MAKE) -C assets build-all
 
 build-assets-all:
 	$(MAKE) -C assets build-all
@@ -221,6 +244,16 @@ populate-data-all:
 		$(PYTHON) tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
+populate-data-site:
+	mkdir -p $(LOG_DIR)
+	$(PYTHON) tests/scripts/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
+
+populate-data-all:
+	mkdir -p $(LOG_DIR)
+	@for site in ctc-research lms-demo vresume; do \
+		$(PYTHON) tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
+	done
+
 verify-runtime-site:
 	mkdir -p $(LOG_DIR)
 	$(PYTHON) tests/scripts/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
@@ -246,6 +279,12 @@ tests-websites:
 	$(MAKE) -C tests websites
 
 tests-website:
+	tests/scripts/run_website_tests.sh $(TEST_WEBSITE)
+
+# Delegated subtargets are consumed by nested Makefiles.
+.PHONY: list health containers production production-simple domains vresume-pages
+list health containers production production-simple domains vresume-pages:
+	@:
 	tests/scripts/run_website_tests.sh $(TEST_WEBSITE)
 
 # Delegated subtargets are consumed by nested Makefiles.

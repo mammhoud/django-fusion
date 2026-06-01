@@ -1,11 +1,4 @@
-# ============================================================
-# Website base definitions
-# This file keeps common anchors and network definitions used by
-# per-site docker-compose.yml files located in each website directory.
-#
-# It intentionally does not declare website services; those live in
-# each website's `docker-compose.yml` so sites can be managed independently.
-# ============================================================
+# Per-site docker-compose for ctc-research
 
 networks:
   traefik-net:
@@ -50,7 +43,6 @@ x-django-base: &django-base
       condition: service_healthy
     redis:
       condition: service_healthy
-<<<<<<< HEAD
 
 services:
   ctc-research-website:
@@ -58,7 +50,7 @@ services:
     container_name: ctc-research-website
     build:
       context: ..
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: compose/django/Dockerfile
       args:
         PROJECT_PATH: ctc-research
     environment:
@@ -82,62 +74,39 @@ services:
       retries: 3
       start_period: 90s
 
-  lms-demo-website:
+  ctc-website-worker:
     <<: *django-base
-    container_name: lms-demo-website
+    container_name: ctc-website-worker
     build:
       context: ..
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: compose/django/Dockerfile
       args:
-        PROJECT_PATH: lms-demo
+        PROJECT_PATH: ctc-research
     environment:
       <<: *django-env
-      PORT: 5071
-      DB_NAME: ${STRUCTA_DB_NAME:-db_structa}
-      DJANGO_SITE: lms-demo
-      DJANGO_WEBSITE: lms-demo
-      WEBSITE: lms-demo
-      WEBSITE_NAME: lms-demo
-      PROJECT_PATH: lms-demo
-    labels:
-      - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:lms-demo.local"
-      - "traefik.http.routers.lms-demo.rule=Host(`lms-demo.local`)"
-      - "traefik.http.services.lms-demo.loadbalancer.server.port=5071"
-    healthcheck:
-      test: ["CMD", "curl", "-fL", "http://localhost:5071/health/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 90s
+      PORT: 5070
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
 
-  vresume-website:
+  ctc-website-media:
     <<: *django-base
-    container_name: vresume-website
+    container_name: ctc-website-media
     build:
       context: ..
-      dockerfile: ./compose/django/Dockerfile
+      dockerfile: compose/django/Dockerfile
       args:
-        PROJECT_PATH: VResume
+        PROJECT_PATH: ctc-research
     environment:
       <<: *django-env
-      PORT: 5072
-      DB_NAME: ${VRESUME_DB_NAME:-vresume}
-      DJANGO_SITE: vresume
-      DJANGO_WEBSITE: vresume
-      WEBSITE: vresume
-      WEBSITE_NAME: vresume
-      PROJECT_PATH: vresume
+      PORT: 5074
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:vresume.local"
-      - "traefik.http.routers.vresume.rule=Host(`vresume.local`)"
-      - "traefik.http.services.vresume.loadbalancer.server.port=5072"
-    healthcheck:
-      test: ["CMD", "curl", "-fL", "http://localhost:5072/health/"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-      start_period: 90s
-=======
->>>>>>> generic
+      - "traefik.frontend.rule=Host:ctc-media.local"
+      - "traefik.http.routers.ctc-media.rule=Host(`ctc-media.local`)"
+      - "traefik.http.services.ctc-media.loadbalancer.server.port=5074"
