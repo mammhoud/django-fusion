@@ -20,16 +20,36 @@ import fire
 SCRIPT_DIR = Path(__file__).resolve().parent
 WORKSPACE_ROOT = SCRIPT_DIR.parent  # root of the monorepo
 
+ROOT_COMPOSE = SCRIPT_DIR / "docker-compose.yml"
+
+WEBSITE_ALIASES = {
+    "ctc": "ctc-research",
+    "ctc-website": "ctc-research",
+    "ctc-research.com": "ctc-research",
+    "structa": "lms-demo",
+    "structa.cloud": "lms-demo",
+    "lms": "lms-demo",
+    "core": "lms-demo",
+    "VResume": "vresume",
+    "resume": "vresume",
+    "vresume.structa.cloud": "vresume",
+}
+
 WEBSITES = {
     "lms-demo": {
-        "compose": SCRIPT_DIR / "lms-demo" / "docker-compose.yml",
+        "compose": ROOT_COMPOSE,
         "port": 5071,
-        "container": "structa-website",
+        "container": "lms-demo-website",
     },
     "ctc-research": {
-        "compose": SCRIPT_DIR / "ctc-research" / "docker-compose.yml",
+        "compose": ROOT_COMPOSE,
         "port": 5070,
-        "container": "ctc-website",
+        "container": "ctc-research-website",
+    },
+    "vresume": {
+        "compose": ROOT_COMPOSE,
+        "port": 5072,
+        "container": "vresume-website",
     },
 }
 
@@ -53,12 +73,17 @@ def _run(cmd: list[str], cwd=None, check=True) -> subprocess.CompletedProcess:
 def _website_env(website: str) -> dict:
     """Minimal env vars needed to run manage.py check without a real DB."""
     env = os.environ.copy()
+    database_names = {
+        "ctc-research": "db_ctc",
+        "lms-demo": "db_structa",
+        "vresume": "vresume",
+    }
     env.update({
         "DJANGO_SETTINGS_MODULE": "configs.settings",
         "RUNNING_ENV": "docker",
         "SERVER_ENV": "production",
         "DB_HOST": env.get("DB_HOST", "postgres"),
-        "DB_NAME": env.get("DB_NAME", f"db_{'structa' if 'structa' in website else 'ctc'}"),
+        "DB_NAME": env.get("DB_NAME", database_names.get(website, "db_ctc")),
         "REDIS_URL": env.get("REDIS_URL", "redis://redis:6379/3"),
         "ALLOWED_HOSTS": "*",
     })
@@ -68,10 +93,12 @@ def _website_env(website: str) -> dict:
 
 
 def _resolve(website: str) -> str:
-    if website not in WEBSITES:
-        print(f"❌ Unknown website '{website}'. Choose: {', '.join(WEBSITES)}")
+    resolved = WEBSITE_ALIASES.get(website, website)
+    if resolved not in WEBSITES:
+        choices = sorted(set(WEBSITES) | set(WEBSITE_ALIASES))
+        print(f"❌ Unknown website '{website}'. Choose: {', '.join(choices)}")
         sys.exit(1)
-    return website
+    return resolved
 
 
 # ─────────────────────────────────────────────
@@ -120,20 +147,18 @@ def _container_check(website: str) -> bool:
     image = cfg["container"]
     env = _website_env(website)
 
-    print(f"\n🔍 Running container Django check on image '{image}' ...")
+    print(f"\n🔍 Running container Django check on service '{image}' ...")
     cmd = [
-        "docker", "run", "--rm",
-        *[f"-e{k}={v}" for k, v in {
-            "DJANGO_SETTINGS_MODULE": env["DJANGO_SETTINGS_MODULE"],
-            "RUNNING_ENV": env["RUNNING_ENV"],
-            "SERVER_ENV": env["SERVER_ENV"],
-            "DB_HOST": env["DB_HOST"],
-            "DB_NAME": env["DB_NAME"],
-            "REDIS_URL": env["REDIS_URL"],
-            "ALLOWED_HOSTS": env["ALLOWED_HOSTS"],
-        }.items()],
+        "docker", "compose", "-f", str(cfg["compose"]), "run", "--rm",
+        "-e", f"DJANGO_SETTINGS_MODULE={env['DJANGO_SETTINGS_MODULE']}",
+        "-e", f"RUNNING_ENV={env['RUNNING_ENV']}",
+        "-e", f"SERVER_ENV={env['SERVER_ENV']}",
+        "-e", f"DB_HOST={env['DB_HOST']}",
+        "-e", f"DB_NAME={env['DB_NAME']}",
+        "-e", f"REDIS_URL={env['REDIS_URL']}",
+        "-e", f"ALLOWED_HOSTS={env['ALLOWED_HOSTS']}",
         image,
-        "python", "manage.py", "check",
+        "python", "manage.py", "--site", website, "check",
     ]
     result = subprocess.run(cmd, capture_output=False)
     if result.returncode != 0:
@@ -166,9 +191,9 @@ class CLI:
         Run Django system checks locally via <website>/__main__.py.
 
         Args:
-            website: 'lms-demo' or 'ctc-research'
+            website: 'lms-demo', 'ctc-research', or 'vresume'
         """
-        _resolve(website)
+        website = _resolve(website)
         ok = _local_check(website)
         sys.exit(0 if ok else 1)
 
@@ -189,7 +214,7 @@ class CLI:
             skip_container_check: Skip step 3
             no_cache:             Pass --no-cache to docker build
         """
-        _resolve(website)
+        website = _resolve(website)
         cfg = WEBSITES[website]
         compose = str(cfg["compose"])
 
@@ -203,6 +228,7 @@ class CLI:
         build_cmd = ["docker", "compose", "-f", compose, "build"]
         if no_cache:
             build_cmd.append("--no-cache")
+        build_cmd.append(cfg["container"])
         print(f"\n🏗️  Building {website} ...")
         _run(build_cmd)
 
@@ -214,7 +240,7 @@ class CLI:
 
         # ── Step 4: up ───────────────────────────────────────────────────
         print(f"\n🚀 Deploying {website} ...")
-        _run(["docker", "compose", "-f", compose, "up", "-d"])
+        _run(["docker", "compose", "-f", compose, "up", "-d", "--build", cfg["container"]])
         print(f"\n✅ {website} deployed. Health: http://localhost:{cfg['port']}/health/")
 
     def logs(self, website: str, tail: int = 30, service: str = None):
@@ -222,11 +248,11 @@ class CLI:
         Show container logs.
 
         Args:
-            website: 'lms-demo' or 'ctc-research'
+            website: 'lms-demo', 'ctc-research', or 'vresume'
             tail:    Number of lines (default 30)
             service: Specific service name (optional)
         """
-        _resolve(website)
+        website = _resolve(website)
         cfg = WEBSITES[website]
         cmd = ["docker", "compose", "-f", str(cfg["compose"]), "logs", f"--tail={tail}"]
         if service:
@@ -238,18 +264,19 @@ class CLI:
         Stop and remove containers for a website.
 
         Args:
-            website: 'lms-demo' or 'ctc-research'
+            website: 'lms-demo', 'ctc-research', or 'vresume'
         """
-        _resolve(website)
+        website = _resolve(website)
         cfg = WEBSITES[website]
-        _run(["docker", "compose", "-f", str(cfg["compose"]), "down"])
+        _run(["docker", "compose", "-f", str(cfg["compose"]), "down", "--remove-orphans"])
 
     def ps(self):
         """Show status of all website containers."""
         _run(["docker", "ps", "--format",
               "table {{.Names}}\t{{.Status}}\t{{.Ports}}",
-              "--filter", "name=structa-website",
-              "--filter", "name=ctc-website"], check=False)
+              "--filter", "name=lms-demo-website",
+              "--filter", "name=ctc-research-website",
+              "--filter", "name=vresume-website"], check=False)
 
     def build_assets(self, website: str = "all", production: bool = True, clean: bool = False):
         """
@@ -263,7 +290,7 @@ class CLI:
             clean:       Clean bundles directory before building
         """
         if website != "all":
-            _resolve(website)
+            website = _resolve(website)
 
         targets = [website] if website != "all" else WEBSITES.keys()
 
@@ -317,7 +344,7 @@ class CLI:
             live:    Use live domains (core.lms-demo / www.ctc-research)
         """
         if website != "all":
-            _resolve(website)
+            website = _resolve(website)
 
         script = SCRIPT_DIR / "tests" / "scripts" / "run_container_tests.sh"
         env = os.environ.copy()

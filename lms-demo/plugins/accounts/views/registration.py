@@ -23,9 +23,9 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django_osoul.comp.site import PageHandler
 
-from .emails import send_registration_email
-from .forms.registration import PasswordCreationForm, RegistrationForm
-from .tokens import registration_token_generator
+from ..emails import send_registration_email
+from ..forms.registration import PasswordCreationForm, RegistrationForm
+from ..tokens import registration_token_generator
 
 logger = logging.getLogger("apps.registration")
 User = get_user_model()

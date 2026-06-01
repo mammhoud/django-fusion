@@ -6,6 +6,32 @@ structa.cloud is a thin-layer Django project that delegates all business logic t
 
 ---
 
+
+## Workspace commands
+
+This project is managed from the workspace root. The local `manage.py` delegates to `../manage.py`, and frontend assets are built by the single shared package at `../assets/package.json`. Do not add project-local `package.json` or webpack config files.
+
+```bash
+# Django CLI
+../.venv/bin/python ../manage.py --site ctc check
+./manage.py check
+./manage.py runserver 0.0.0.0:5070
+
+# Assets
+make build-assets
+make main-assets
+make assets build
+cd .. && make build-assets WEBSITE=ctc
+cd .. && npm --prefix assets run build -- --site ctc
+cd .. && npm --prefix assets run build:collect -- --site ctc
+
+# Data and tests
+cd .. && npm --prefix assets run populate -- --site ctc --dry-run
+cd .. && make tests-website WEBSITE=ctc
+```
+
+Runtime port: `5070`. Generated media/staticfiles/bundles and database files are ignored; source fixtures and source static assets remain tracked.
+
 ## Features
 
 - **Alliance LMS**: Courses, modules, lessons, quizzes, enrollments, progress tracking

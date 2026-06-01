@@ -2,7 +2,6 @@
 # Shared Django/Uvicorn/Celery container
 # Build context: repository root
 # PROJECT_PATH is a site directory, e.g. "ctc-research" or "lms-demo".
-# Extra image data can be staged by Makefile in .docker-image-data/.
 # =====================================================
 FROM python:3.12-slim AS app-base
 
@@ -67,7 +66,7 @@ RUN mkdir -p "/opt/venv/lib/python3.12/site-packages/django_rseal/services/commu
     fi
 
 # -----------------------------------------------------
-# 4. Copy shared source, the selected website, and staged data only
+# 4. Copy shared source and the selected website
 # -----------------------------------------------------
 COPY Makefile manage.py __about__.py __main__.py cli.py com ${APP_HOME}/
 COPY configs ${APP_HOME}/configs
@@ -76,7 +75,6 @@ COPY compose ${APP_HOME}/compose
 COPY tests ${APP_HOME}/tests
 COPY tasks ${APP_HOME}/tasks
 COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
-COPY .docker-image-data/ ${APP_HOME}/
 
 # -----------------------------------------------------
 # 5. Entrypoint and helper scripts

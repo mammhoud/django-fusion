@@ -1,28 +1,43 @@
 # Frontend asset delegation for the parent Django website.
-.PHONY: install build watch production purge analyze clean
+.PHONY: help install build watch production purge analyze clean collectstatic build-collect
 
 NPM ?= npm
-NPX ?= npx
-ROOT := $(abspath ..)
+WORKSPACE_ROOT := $(abspath ../..)
+SITE_NAME := $(notdir $(abspath ..))
+PROJECT_PATH ?= $(SITE_NAME)
+ASSETS_MAKE := $(WORKSPACE_ROOT)/assets
+
+help:
+	@echo "$(SITE_NAME) asset targets delegate to $(ASSETS_MAKE)"
+	@echo "  make build         Build this project's main assets"
+	@echo "  make production    Build this project's production assets"
+	@echo "  make watch         Watch this project's assets"
+	@echo "  make collectstatic Collect this project's static files"
+	@echo "  make clean         Remove this project's bundle artifacts"
 
 install:
-	@if [ -f "$(ROOT)/package.json" ]; then $(NPM) --prefix "$(ROOT)" install; else echo "No package.json in $(ROOT)"; fi
+	@$(MAKE) -C "$(ASSETS_MAKE)" install
 
 build:
-	@if [ -f "$(ROOT)/package.json" ]; then NODE_ENV=development $(NPM) --prefix "$(ROOT)" run build; else echo "No package.json in $(ROOT)"; fi
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" build
 
 watch:
-	@if [ -f "$(ROOT)/package.json" ]; then NODE_ENV=development $(NPM) --prefix "$(ROOT)" run dev; else echo "No package.json in $(ROOT)"; fi
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" watch
 
 production:
-	@if [ -f "$(ROOT)/package.json" ]; then NODE_ENV=production $(NPM) --prefix "$(ROOT)" run build; else echo "No package.json in $(ROOT)"; fi
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" production
 
 purge:
-	@if [ -f "$(ROOT)/purgecss.config.js" ]; then NODE_ENV=production $(NPX) --prefix "$(ROOT)" purgecss --config "$(ROOT)/purgecss.config.js"; else echo "No purgecss.config.js in $(ROOT)"; fi
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" purge
 
 analyze:
-	@if [ -f "$(ROOT)/assets/static/css/master.css" ]; then $(NPX) --prefix "$(ROOT)" cssnano --no-map "$(ROOT)/assets/static/css/master.css" | $(NPX) --prefix "$(ROOT)" cssstats; else echo "No master.css to analyze"; fi
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" analyze
+
+collectstatic:
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" collectstatic-site
+
+build-collect:
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" build-collect-site
 
 clean:
-	@rm -rf bundles staticfiles .cache
-	@echo "Frontend artifacts cleaned"
+	@PROJECT_PATH=$(PROJECT_PATH) $(MAKE) -C "$(ASSETS_MAKE)" clean-site

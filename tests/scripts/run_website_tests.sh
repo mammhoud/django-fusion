@@ -16,11 +16,14 @@ case "$WEBSITE" in
   structa)
     "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}" -k "structa and not hypothesis"
     ;;
+  vresume)
+    "$PYTHON_BIN" manage.py --site=vresume check
+    ;;
   all)
     "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}"
     ;;
   *)
-    echo "Usage: $0 [ctc|structa|all]" >&2
+    echo "Usage: $0 [ctc|structa|vresume|all]" >&2
     exit 2
     ;;
 esac

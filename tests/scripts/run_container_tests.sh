@@ -25,8 +25,9 @@ run_for() {
     local container port
 
     case "$site" in
-        structa.cloud)    container="structa-website"; port=5071 ;;
-        ctc-research.com) container="ctc-website";     port=5070 ;;
+        structa.cloud|lms-demo) container="lms-demo-website"; port=5071 ;;
+        ctc-research.com|ctc-research) container="ctc-research-website"; port=5070 ;;
+        vresume|vresume.local) container="vresume-website"; port=5072 ;;
         *) echo "Unknown site: $site"; exit 1 ;;
     esac
 

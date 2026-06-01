@@ -47,4 +47,4 @@ http:
     vresume-media-service:
       loadBalancer:
         servers:
-          - url: "http://vresume-media:80"
+          - url: "http://shared-media:80"

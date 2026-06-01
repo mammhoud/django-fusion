@@ -22,9 +22,9 @@ from django.views import View
 from django.views.decorators.csrf import csrf_protect
 from django_osoul.comp.site import PageHandler
 
-from .emails import send_registration_email
-from .forms.registration import PasswordCreationForm, RegistrationForm
-from .tokens import registration_token_generator
+from ..emails import send_registration_email
+from ..forms.registration import PasswordCreationForm, RegistrationForm
+from ..tokens import registration_token_generator
 from ..services.notifications import trigger_notification
 
 logger = logging.getLogger("apps.registration")

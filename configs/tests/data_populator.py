@@ -22,11 +22,19 @@ import django
 from PIL import Image as PILImage
 
 # === Django Setup ===
-if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
+WORKSPACE_ROOT = Path(__file__).resolve().parents[2]
+SITE_NAME = os.environ.get("DJANGO_SITE") or os.environ.get("DJANGO_WEBSITE") or os.environ.get("WEBSITE") or "vresume"
 
-# Add the v1 directory to the Python path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+from configs.site import configure_site_environment, site_dir_for
+
+configure_site_environment(SITE_NAME)
+SITE_DIR = site_dir_for(SITE_NAME)
+for path in (SITE_DIR / "www", SITE_DIR, WORKSPACE_ROOT):
+    path_text = str(path)
+    if path_text not in sys.path:
+        sys.path.insert(0, path_text)
+
+os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
 
 try:
     django.setup()

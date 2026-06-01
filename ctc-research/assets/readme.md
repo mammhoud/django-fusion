@@ -25,17 +25,20 @@ assets/
 ### Full Asset Build (Webpack + Collectstatic)
 
 ```bash
-# From project root
-python manage.py build_assets
+# From workspace root
+make build-assets WEBSITE=ctc
+
+# From this project
+make build-assets
 
 # Production build (default)
-python manage.py build_assets --production
+make frontend-production
 
 # Development build
-python manage.py build_assets --development
+make frontend-build
 
 # Watch mode for development
-python manage.py build_assets --watch
+make frontend-watch
 ```
 
 ### Webpack Only
@@ -64,11 +67,12 @@ python manage.py collectstatic --no-input
 
 ```bash
 # Clean bundles and rebuild
-python manage.py build_assets --clean
+make frontend-clean
+make build-assets
 
-# Or manually
-npm run clean
-python manage.py build_assets
+# Or from the workspace root
+make assets clean-site WEBSITE=ctc
+make build-assets WEBSITE=ctc
 ```
 
 ## Translation Commands
