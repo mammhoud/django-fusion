@@ -26,7 +26,7 @@ The workspace now has one operational surface for all three websites. Use the ro
 | Website | Aliases | Dev port | Docker service |
 |---|---|---:|---|
 | `ctc-research` / `ctc-website` | `ctc`, `ctc-website`, `ctc-research.com` | `5070` | `ctc-research-website` |
-| `lms-demo` | `structa`, `structa.cloud`, `lms` | `5071` | `structa-website` |
+| `lms-demo` | `structa`, `structa.cloud`, `lms` | `5071` | `lms-demo-website` |
 | `vresume` | `resume`, `VResume`, `vresume.structa.cloud` | `5072` | `vresume-website` |
 
 Core commands:
@@ -58,13 +58,27 @@ make tests-website WEBSITE=vresume
 pytest tests/test_yaml_site_scenarios.py
 ```
 
-Docker/deployment commands create/use one external routing network and keep the three website ports unique:
+Docker/deployment commands create/use the shared routing networks, one root compose file, and unique per-site ports. Install/build frontend dependencies on the host or in CI before deployment; the Django image no longer runs `npm ci` during `docker build`, which avoids webpack-cli install prompts and long repeated Node dependency installs for each website image.
 
 ```bash
 docker network create traefik-net || true
-docker compose -f compose/docker-compose.warehouse.yml up -d postgres redis
-docker compose -f compose/docker-compose.yml config
-docker compose -f compose/docker-compose.yml up -d --build ctc-research-website structa-website vresume-website
+docker network create site_network || true
+npm --prefix assets ci --include=dev --legacy-peer-deps --no-audit --no-fund
+npm --prefix assets run build:all
+docker compose -f docker-compose.yml config
+docker compose -f docker-compose.yml up -d --build postgres redis shared-media ctc-research-website lms-demo-website vresume-website
+```
+
+Makefile deployment shortcuts wrap the same root compose file:
+
+```bash
+make docker-build WEBSITE=ctc
+make docker-rebuild WEBSITE=ctc
+make docker-redeploy WEBSITE=ctc
+make docker-redeploy WEBSITE=structa
+make docker-redeploy WEBSITE=vresume
+make docker-prune-containers
+make docker-prune-data
 ```
 
 Shared JS/SCSS lives under `assets/static/js/base/` and `assets/static/scss/`, site entry points live under each site `assets/static/js/*-app.js`, webpack mirrors bundles into `dist/shared`, `dist/lms-demo`, `dist/ctc-research`, and `dist/vresume`, and generated media, Wagtail originals, PostgreSQL volumes/backups, staticfiles, and webpack bundles are ignored by git. Commit only source fixtures, source static assets, and code.
@@ -98,13 +112,31 @@ python manage.py --site vresume runserver 0.0.0.0:5072
 
 ## Docker quick start
 
+Use the root `docker-compose.yml`; it includes warehouse, Traefik, websites, and the shared nginx media server from `compose/`. For a production-like rebuild/redeploy of one site:
+
 ```bash
 docker network create traefik-net || true
-docker compose -f compose/docker-compose.warehouse.yml up -d postgres redis
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml up -d --build vresume-website
+docker network create site_network || true
+npm --prefix assets ci --include=dev --legacy-peer-deps --no-audit --no-fund
+npm --prefix assets run build:all
+make docker-rebuild WEBSITE=ctc
+make docker-redeploy WEBSITE=ctc
 ```
 
-Set `PROJECT_PATH` and `DJANGO_SITE` in `.env` to `ctc-research`, `lms-demo`, or `vresume` before production deployment.
+Start all websites and shared media together:
+
+```bash
+docker compose -f docker-compose.yml up -d --build postgres redis shared-media ctc-research-website lms-demo-website vresume-website
+```
+
+Or use the runner script with the canonical compose file:
+
+```bash
+SITE=ctc-research INSTALL_ASSETS=true BUILD_ASSETS=true ./run_containers.sh
+SITE=all ./run_containers.sh
+```
+
+Set `PROJECT_PATH` and `DJANGO_SITE` in `.env` to `ctc-research`, `lms-demo`, or `vresume` only when running a single-site custom command; the root compose file supplies those values for the managed website services.
 
 ## Important docs
 
@@ -119,8 +151,8 @@ Set `PROJECT_PATH` and `DJANGO_SITE` in `.env` to `ctc-research`, `lms-demo`, or
 
 ```bash
 python -m py_compile manage.py
-python -m py_compile scripts/verify_runtime.py scripts/load_dumped_data.py
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml config
+python -m py_compile tests/scripts/verify_runtime.py tests/scripts/load_dumped_data.py
+docker compose -f docker-compose.yml config
 ```
 
-Before routing traffic, also run site-specific Django checks, migrations, static collection, and `scripts/verify_runtime.py` as described in the deployment docs.
+Before routing traffic, also run site-specific Django checks, migrations, static collection, and `tests/scripts/verify_runtime.py` as described in the deployment docs.

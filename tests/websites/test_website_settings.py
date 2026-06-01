@@ -128,12 +128,31 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         workspace_cli = (ROOT / "assets" / "scripts" / "workspace.mjs").read_text()
         assets_makefile = (ROOT / "assets" / "Makefile").read_text()
         dockerfile = (ROOT / "compose" / "django" / "Dockerfile").read_text()
+        entrypoint = (ROOT / "compose" / "django" / "entrypoint").read_text()
         assert "node_modules', '.bin'" in workspace_cli
         assert "Missing local webpack CLI" in workspace_cli
         assert "npx" not in workspace_cli
         assert "npm exec --no --" in assets_makefile
         assert "ci --include=dev" in assets_makefile
-        assert "npm ci --include=dev" in dockerfile
+        assert "npm ci --include=dev" not in dockerfile
+        assert ".docker-image-data" not in dockerfile
+        assert "BUILD_ASSETS_ON_START" in entrypoint
+        assert "Skipping webpack build" in entrypoint
+
+    def test_root_makefile_uses_canonical_compose_without_staged_image_data(self):
+        makefile = (ROOT / "Makefile").read_text()
+        compose_makefile = (ROOT / "compose" / "Makefile").read_text()
+        runner = (ROOT / "run_containers.sh").read_text()
+        assert "COMPOSE_FILE ?= docker-compose.yml" in makefile
+        assert "DOCKER_PROJECT_PATH" in makefile
+        assert "docker-rebuild rebuild:" in makefile
+        assert "docker-redeploy docker-deploy deploy redeploy:" in makefile
+        assert "prepare-image-data" not in makefile
+        assert "clean-image-data" not in makefile
+        assert ".docker-image-data" not in makefile
+        assert ".docker-image-data" not in compose_makefile
+        assert 'COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"' in runner
+        assert 'SERVICE="ctc-research-website"' in runner
 
 
 class SiteConfigTests(SimpleTestCase):

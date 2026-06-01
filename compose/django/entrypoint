@@ -62,11 +62,48 @@ fi
 if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "🛠️ Running Django setup..."
 
+<<<<<<< HEAD
+    echo "🧹 Preparing static files..."
+    BUILD_ASSETS_MODE="${BUILD_ASSETS_ON_START:-auto}"
+    WEBPACK_BIN="${APP_HOME}/assets/node_modules/.bin/webpack"
+    SHOULD_BUILD_ASSETS=false
+    case "$BUILD_ASSETS_MODE" in
+        true|1|yes)
+            if [ -x "$WEBPACK_BIN" ]; then
+                SHOULD_BUILD_ASSETS=true
+            else
+                echo "⚠️  BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}, but ${WEBPACK_BIN} is missing; run 'npm --prefix assets ci --include=dev --legacy-peer-deps' before container startup to enable webpack builds."
+            fi
+            ;;
+        auto)
+            if [ -x "$WEBPACK_BIN" ]; then
+                SHOULD_BUILD_ASSETS=true
+            else
+                echo "ℹ️  Skipping webpack build because assets/node_modules is not installed in the mounted workspace."
+            fi
+            ;;
+        false|0|no)
+            echo "ℹ️  BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; skipping webpack build."
+            ;;
+        *)
+            echo "⚠️  Unknown BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; expected auto, true, or false. Skipping webpack build."
+            ;;
+    esac
+
+    if [ "$SHOULD_BUILD_ASSETS" = "true" ]; then
+        if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
+            echo "⚠️  webpack asset build failed (non-fatal); see ${LOG_DIR}/build_assets.log"
+=======
     echo "🧹 Collecting/building static files..."
     if ! run_logged build_assets env WEBSITE="$SITE_NAME" PROJECT_PATH="$SITE_NAME" /usr/bin/make build-assets-site; then
         if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
             echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/build_assets.log and ${LOG_DIR}/collectstatic.log"
+>>>>>>> generic
         fi
+    fi
+
+    if ! run_logged collectstatic python manage.py --site "$SITE_NAME" collectstatic --noinput; then
+        echo "⚠️  static collection failed (non-fatal); see ${LOG_DIR}/collectstatic.log"
     fi
 
     echo "🗃️  Making migrations..."
