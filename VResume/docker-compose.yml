@@ -1,11 +1,4 @@
-# ============================================================
-# Website base definitions
-# This file keeps common anchors and network definitions used by
-# per-site docker-compose.yml files located in each website directory.
-#
-# It intentionally does not declare website services; those live in
-# each website's `docker-compose.yml` so sites can be managed independently.
-# ============================================================
+# Per-site docker-compose for VResume
 
 networks:
   traefik-net:
@@ -50,3 +43,33 @@ x-django-base: &django-base
       condition: service_healthy
     redis:
       condition: service_healthy
+
+services:
+  vresume-website:
+    <<: *django-base
+    container_name: vresume-website
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    environment:
+      <<: *django-env
+      PORT: 5072
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      WEBSITE_NAME: vresume
+      PROJECT_PATH: vresume
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:vresume.local"
+      - "traefik.http.routers.vresume.rule=Host(`vresume.local`)"
+      - "traefik.http.services.vresume.loadbalancer.server.port=5072"
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://localhost:5072/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s

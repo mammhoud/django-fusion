@@ -165,19 +165,19 @@ clean-image-data:
 	touch .docker-image-data/.keep
 
 docker-build: prepare-image-data
-	$(DOCKER_BUILD_ARGS) docker compose -f $(COMPOSE_FILE) build --build-arg PROJECT_PATH=$(SITE)
+	$(DOCKER_BUILD_ARGS) docker compose -f compose/docker-compose.traefik.yml -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml -f $(COMPOSE_FILE) build --build-arg PROJECT_PATH=$(SITE)
 
 docker-build-server: prepare-image-data
-	$(DOCKER_BUILD_ARGS) docker compose -f docker-compose.yml build $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-demo-website,$(if $(filter $(SITE),vresume),vresume-website,)))
+	$(DOCKER_BUILD_ARGS) docker compose -f compose/docker-compose.traefik.yml -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml -f docker-compose.yml build $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-demo-website,$(if $(filter $(SITE),vresume),vresume-website,)))
 
 docker-up: prepare-image-data
-	$(DOCKER_BUILD_ARGS) docker compose -f $(COMPOSE_FILE) up -d --build --remove-orphans
+	$(DOCKER_BUILD_ARGS) docker compose -f compose/docker-compose.traefik.yml -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml -f $(COMPOSE_FILE) up -d --build --remove-orphans
 
 docker-down:
-	$(DOCKER_BUILD_ARGS) docker compose -f $(COMPOSE_FILE) down --remove-orphans
+	$(DOCKER_BUILD_ARGS) docker compose -f compose/docker-compose.traefik.yml -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml -f $(COMPOSE_FILE) down --remove-orphans
 
 docker-logs:
-	$(DOCKER_BUILD_ARGS) docker compose -f $(COMPOSE_FILE) logs -f --tail=200
+	$(DOCKER_BUILD_ARGS) docker compose -f compose/docker-compose.traefik.yml -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml -f $(COMPOSE_FILE) logs -f --tail=200
 
 docker-prune-containers:
 	docker compose -f docker-compose.yml down --remove-orphans

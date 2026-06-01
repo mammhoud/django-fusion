@@ -1,0 +1,112 @@
+# Per-site docker-compose for ctc-research
+
+networks:
+  traefik-net:
+    name: traefik-net
+    external: true
+  site_network:
+    name: site_network
+    external: true
+
+x-django-base: &django-base
+  build:
+    context: ..
+    dockerfile: compose/django/Dockerfile
+  restart: unless-stopped
+  working_dir: /app
+  env_file:
+    - path: ../.env
+      required: false
+  environment: &django-env
+    RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-postgres}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_USER: ${DB_USER:-structa}
+    DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+    WORKERS: ${WORKERS:-4}
+    TIMEOUT: ${TIMEOUT:-120}
+  volumes:
+    - ../:/app:z
+    - ../assets/media:/app/assets/media:z
+  networks:
+    - traefik-net
+    - site_network
+  depends_on:
+    postgres:
+      condition: service_healthy
+    redis:
+      condition: service_healthy
+
+services:
+  ctc-research-website:
+    <<: *django-base
+    container_name: ctc-research-website
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
+    environment:
+      <<: *django-env
+      PORT: 5070
+      DB_NAME: ${CTC_DB_NAME:-db_ctc}
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      WEBSITE_NAME: ctc-research
+      PROJECT_PATH: ctc-research
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"
+      - "traefik.http.routers.ctc-website.rule=Host(`ctc-website.local`) || Host(`ctc-research.local`)"
+      - "traefik.http.services.ctc-website.loadbalancer.server.port=5070"
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://localhost:5070/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  ctc-website-worker:
+    <<: *django-base
+    container_name: ctc-website-worker
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
+    environment:
+      <<: *django-env
+      PORT: 5070
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
+
+  ctc-website-media:
+    <<: *django-base
+    container_name: ctc-website-media
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
+    environment:
+      <<: *django-env
+      PORT: 5074
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
+    labels:
+      - "traefik.enable=true"
+      - "traefik.frontend.rule=Host:ctc-media.local"
+      - "traefik.http.routers.ctc-media.rule=Host(`ctc-media.local`)"
+      - "traefik.http.services.ctc-media.loadbalancer.server.port=5074"

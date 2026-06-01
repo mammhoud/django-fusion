@@ -13,4 +13,7 @@ include:
   - path: compose/docker-compose.traefik.yml
   - path: compose/docker-compose.warehouse.yml
   - path: compose/docker-compose.yml
+  - path: ctc-research/docker-compose.yml
+  - path: lms-demo/docker-compose.yml
+  - path: VResume/docker-compose.yml
   - path: compose/docker-compose.nginx.yml
