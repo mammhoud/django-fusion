@@ -35,7 +35,13 @@ _security_map = settings.setting_map(
     },
     block="SECURITY",
 )
-ALLOWED_HOSTS = _as_list(_security_map["ALLOWED_HOSTS"])
+# Get ALLOWED_HOSTS from environment variable or settings
+import os
+_env_allowed_hosts = os.environ.get("ALLOWED_HOSTS", "")
+if _env_allowed_hosts:
+    ALLOWED_HOSTS = _as_list(_env_allowed_hosts)
+else:
+    ALLOWED_HOSTS = _as_list(_security_map["ALLOWED_HOSTS"])
 CORS_ALLOW_ALL_ORIGINS = _security_map["CORS_ALLOW_ALL_ORIGINS"]
 CORS_ALLOW_CREDENTIALS = True
 CORS_ALLOWED_ORIGINS = _as_list(_security_map["CORS_ALLOWED_ORIGINS"])

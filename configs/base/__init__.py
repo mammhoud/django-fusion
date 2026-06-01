@@ -9,3 +9,4 @@ from configs.base.logging import *
 from configs.base.middlewares import *
 from configs.base.security import *
 from configs.base.templates import *
+from configs.base.urls import *

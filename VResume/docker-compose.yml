@@ -53,7 +53,7 @@ x-django-base: &django-base
 services:
   vresume-website:
     <<: *django-base
-    container_name: vresume-website
+    container_name: web-vresume
     build:
       context: ..
       dockerfile: compose/django/Dockerfile
@@ -63,6 +63,7 @@ services:
       <<: *django-env
       PORT: 5072
       DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      ALLOWED_HOSTS: "vresume.local,vresume-website,localhost,127.0.0.1"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:vresume.local"

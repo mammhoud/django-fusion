@@ -53,7 +53,7 @@ x-django-base: &django-base
 services:
   lms-demo-website:
     <<: *django-base
-    container_name: lms-demo-website
+    container_name: web-lms-demo
     build:
       context: ..
       dockerfile: compose/django/Dockerfile
@@ -63,6 +63,7 @@ services:
       <<: *django-env
       PORT: 5071
       DB_NAME: ${STRUCTA_DB_NAME:-db_structa}
+      ALLOWED_HOSTS: "lms-demo.local,lms-demo-website,localhost,127.0.0.1"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:lms-demo.local"
@@ -85,7 +86,7 @@ services:
 
   lms-demo-website-worker:
     <<: *django-base
-    container_name: lms-demo-website-worker
+    container_name: worker-lms-demo
     build:
       context: ..
       dockerfile: compose/django/Dockerfile

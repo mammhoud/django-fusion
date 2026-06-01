@@ -53,7 +53,7 @@ x-django-base: &django-base
 services:
   ctc-research-website:
     <<: *django-base
-    container_name: ctc-research-website
+    container_name: web-ctc-research
     build:
       context: ..
       dockerfile: compose/django/Dockerfile
@@ -63,6 +63,7 @@ services:
       <<: *django-env
       PORT: 5070
       DB_NAME: ${CTC_DB_NAME:-db_ctc}
+      ALLOWED_HOSTS: "ctc-research.local,ctc-website.local,ctc-research-website,localhost,127.0.0.1"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"
@@ -85,7 +86,7 @@ services:
 
   ctc-website-worker:
     <<: *django-base
-    container_name: ctc-website-worker
+    container_name: worker-ctc-research
     build:
       context: ..
       dockerfile: compose/django/Dockerfile
@@ -107,7 +108,7 @@ services:
 
   ctc-website-media:
     <<: *django-base
-    container_name: ctc-website-media
+    container_name: media-ctc-research
     build:
       context: ..
       dockerfile: compose/django/Dockerfile

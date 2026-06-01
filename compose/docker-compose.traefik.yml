@@ -18,7 +18,7 @@ services:
       context: ./traefik
       dockerfile: Dockerfile
     image: structa-traefik
-    container_name: traefik
+    container_name: proxy-traefik
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true

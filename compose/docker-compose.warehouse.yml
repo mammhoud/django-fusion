@@ -21,7 +21,7 @@ services:
     build:
       context: ..
       dockerfile: compose/postgres/Dockerfile
-    container_name: postgres
+    container_name: db-postgres
     restart: unless-stopped
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -52,7 +52,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: redis
+    container_name: db-redis
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
     volumes:
@@ -74,62 +74,3 @@ services:
           cpus: '0.5'
           memory: 256M
 
-  docs:
-    image: python:3.12-slim
-    container_name: docs
-    restart: unless-stopped
-    networks:
-      - traefik-net
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-
-  adminer:
-    image: adminer:latest
-    container_name: adminer
-    restart: unless-stopped
-    environment:
-      ADMINER_DESIGN: ${ADMINER_DESIGN:-dracula}
-      ADMINER_DEFAULT_SERVER: postgres
-    networks:
-      - traefik-net
-      - site_network
-    depends_on:
-      postgres:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
-
-  blinko:
-    image: blinkospace/blinko:latest
-    container_name: blinko
-    restart: unless-stopped
-    environment:
-      DATABASE_URL: postgresql://${POSTGRES_USER:-postgres}:${POSTGRES_PASSWORD:-mk_pAssWord123}@postgres:5432/blinko
-      NEXTAUTH_SECRET: ${BLINKO_SECRET:-my-secret-key-change-me}
-      NEXTAUTH_URL: ${BLINKO_URL:-https://space.structa.cloud}
-    networks:
-      - traefik-net
-      - site_network
-    depends_on:
-      postgres:
-        condition: service_healthy
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
