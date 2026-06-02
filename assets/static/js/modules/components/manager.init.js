@@ -161,7 +161,7 @@ export const UI_COMPONENTS = {
         }],
         ['backgroundImages', {
             name: 'BackgroundImages',
-            loader: () => import('../../plugins/backgroundImages.js'),
+            loader: () => import('../../plugins/page/background-images.js'),
             className: 'BackgroundImages',
             autoInit: true,
             priority: 8,

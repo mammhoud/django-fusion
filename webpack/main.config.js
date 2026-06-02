@@ -1,89 +1,143 @@
 /**
  * Webpack Main Configuration
- * Entry point configuration for all 3 workspace sites
+ * Unified entry point for all 3 workspace sites.
+ *
+ * Site entry files are all named app.js:
+ *   ctc-research/assets/static/js/app.js
+ *   lms-demo/assets/static/js/app.js
+ *   VResume/assets/static/js/app.js
+ *
+ * Shared core bundle:
+ *   assets/static/js/core/main.js
  */
 
+'use strict';
+
 const path = require('path');
-const fs = require('fs');
 
-// Resolve webpack-merge from assets/node_modules
-const webpackMergePath = require.resolve('webpack-merge', { paths: [path.join(__dirname, '../assets/node_modules')] });
-const { merge } = require(webpackMergePath);
+// Resolve webpack-merge and webpack-bundle-tracker from the assets node_modules tree
+const nodeModulesDir = path.join(__dirname, '../assets/node_modules');
+const { merge } = require(require.resolve('webpack-merge', { paths: [nodeModulesDir] }));
+let BundleTracker;
+try {
+  BundleTracker = require(require.resolve('webpack-bundle-tracker', { paths: [nodeModulesDir] }));
+} catch (_) {
+  BundleTracker = null; // optional — skip if not installed
+}
 
-// Common config is in the same directory
-const assetsRoot = path.resolve(__dirname, '../assets');
-const commonConfig = require(path.join(__dirname, 'common.config.js'));
+const commonConfig = require('./common.config.js');
 
-module.exports = (env, argv) => {
-  const { site = 'ctc-research' } = env;
-  const projectPath = process.env.PROJECT_PATH || site;
-  const mode = argv.mode || 'production';
+// ─────────────────────────────────────────────────────────────────────────────
+// Site directory map  (alias key → real directory name)
+// ─────────────────────────────────────────────────────────────────────────────
+const SITE_DIR_MAP = {
+  'ctc-research':     'ctc-research',
+  ctc:                'ctc-research',
+  'ctc-research.com': 'ctc-research',
+  'lms-demo':         'lms-demo',
+  lms:                'lms-demo',
+  structa:            'lms-demo',
+  'structa.cloud':    'lms-demo',
+  vresume:            'VResume',
+  VResume:            'VResume',
+  resume:             'VResume',
+  'vresume.structa.cloud': 'VResume',
+};
 
-  // Map site names to directories
-  const siteDir = {
-    'ctc-research': 'ctc-research',
-    'ctc': 'ctc-research',
-    'lms-demo': 'lms-demo',
-    'lms': 'lms-demo',
-    'structa': 'lms-demo',
-    'vresume': 'VResume',
-    'resume': 'VResume',
-  }[projectPath] || projectPath;
+// ─────────────────────────────────────────────────────────────────────────────
+module.exports = (env = {}, argv = {}) => {
+  const site        = process.env.PROJECT_PATH || process.env.DJANGO_SITE || env.site || 'ctc-research';
+  const siteDir     = SITE_DIR_MAP[site] || site;
+  const mode        = argv.mode || process.env.NODE_ENV || 'production';
+  const isDev       = mode === 'development';
+  const workspaceRoot = path.resolve(__dirname, '..');  // webpack/ → project root
 
-  // Determine entry point
-  let entry = {};
-  
-  if (siteDir === 'VResume') {
-    entry = {
-      'vresume-app': './VResume/assets/static/js/vresume-app.js',
-    };
-  } else if (siteDir === 'lms-demo') {
-    entry = {
-      'lms-app': './lms-demo/assets/static/js/lms-app.js',
-    };
-  } else {
-    entry = {
-      'ctc-app': './ctc-research/assets/static/js/ctc-app.js',
-    };
-  }
-
-  // Main JS entry points
-  const sharedEntry = {
-    'main': './assets/static/js/core/main.js',
+  // ── Entry points ───────────────────────────────────────────────────────────
+  // VResume has its own self-contained core/main.js + static.js bootstrap.
+  // CTC-Research and LMS-Demo use the shared core/main.js + their own app.js.
+  const SITE_ENTRIES = {
+    'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/app.js'),
+    'lms-demo':     path.resolve(workspaceRoot, 'lms-demo/assets/static/js/app.js'),
+    'VResume':      path.resolve(workspaceRoot, 'VResume/assets/static/js/static.js'),
   };
 
-  console.log(`🚀 ${siteDir} webpack mode: ${mode}`);
-  console.log(`📦 ${siteDir} public path: /static/bundles/${siteDir}/`);
+  const isVResume   = siteDir === 'VResume';
+  const sharedEntry = isVResume ? {} : {
+    main: path.resolve(workspaceRoot, 'assets/static/js/core/main.js'),
+  };
+  const siteEntry = {
+    app: SITE_ENTRIES[siteDir] || path.resolve(workspaceRoot, `${siteDir}/assets/static/js/app.js`),
+  };
+
+  console.log(`🚀  ${siteDir} | mode: ${mode}`);
+  console.log(`📦  output: /static/bundles/${siteDir}/`);
+
+  // ── Output path ────────────────────────────────────────────────────────────
+  // Site-specific bundles land in:
+  //   ctc-research/assets/bundles/ctc-research/
+  //   lms-demo/assets/bundles/lms-demo/
+  //   VResume/assets/bundles/vresume/
+  const outputDir = siteDir === 'VResume'
+    ? path.resolve(workspaceRoot, 'VResume', 'assets', 'bundles', 'vresume')
+    : path.resolve(workspaceRoot, siteDir, 'assets', 'bundles', siteDir);
 
   return merge(commonConfig, {
     mode,
-    entry: {
-      ...sharedEntry,
-      ...entry,
-    },
+    entry: { ...sharedEntry, ...siteEntry },
+
     output: {
-      path: path.resolve(__dirname, `../assets/bundles/${siteDir}`),
-      publicPath: `/static/bundles/${siteDir}/`,
-      filename: '[name]-[contenthash:8].js',
+      path:          outputDir,
+      publicPath:    `/static/bundles/${siteDir === 'VResume' ? 'vresume' : siteDir}/`,
+      filename:      '[name]-[contenthash:8].js',
       chunkFilename: 'chunk-[name]-[contenthash:8].js',
-      clean: mode === 'production',
+      clean:         !isDev,
     },
+
+    plugins: BundleTracker ? [
+      new BundleTracker({
+        path:     outputDir,
+        filename: 'bundles.json',
+      }),
+    ] : [],
+
     resolve: {
       extensions: ['.js', '.jsx', '.vue', '.json'],
+      // Always look in assets/node_modules so cross-directory imports resolve
+      modules: [
+        path.resolve(workspaceRoot, 'assets/node_modules'),
+        'node_modules',
+      ],
       alias: {
-        '@utility':  path.resolve(__dirname, '../assets/static/js/utility'),
-        '@base':     path.resolve(__dirname, '../assets/static/js/utility'),
-        '@theme':    path.resolve(__dirname, '../assets/static/js/theme'),
-        '@modules':  path.resolve(__dirname, '../assets/static/js/modules'),
-        '@plugins':  path.resolve(__dirname, '../assets/static/js/plugins'),
-        '@core':     path.resolve(__dirname, '../assets/static/js/core'),
-        '@layouts':  path.resolve(__dirname, '../assets/static/js/theme/layouts'),
-        '@usecases': path.resolve(__dirname, '../assets/static/js/theme/usecases'),
-        '@htmx':     path.resolve(__dirname, '../assets/static/js/core/htmx-bridge'),
-        '@ctc':      path.resolve(__dirname, '../ctc-research/assets/static/js'),
-        '@lms':      path.resolve(__dirname, '../lms-demo/assets/static/js'),
-        '@vresume':  path.resolve(__dirname, '../VResume/assets/static/js'),
+        // Shared utility layer  (@utility / @base both resolve here)
+        '@utility':  path.resolve(workspaceRoot, 'assets/static/js/utility'),
+        '@base':     path.resolve(workspaceRoot, 'assets/static/js/utility'),
+        // VResume uses 'shared/js/utility/' — point it to the same place
+        'shared/js/utility': path.resolve(workspaceRoot, 'assets/static/js/utility'),
+        'shared/js':         path.resolve(workspaceRoot, 'assets/static/js'),
+        // Theme system
+        '@theme':    path.resolve(workspaceRoot, 'assets/static/js/theme'),
+        '@layouts':  path.resolve(workspaceRoot, 'assets/static/js/theme/layouts'),
+        '@usecases': path.resolve(workspaceRoot, 'assets/static/js/theme/usecases'),
+        // Feature modules
+        '@modules':  path.resolve(workspaceRoot, 'assets/static/js/modules'),
+        '@plugins':  path.resolve(workspaceRoot, 'assets/static/js/plugins'),
+        // Core bootstrap
+        '@core':     path.resolve(workspaceRoot, 'assets/static/js/core'),
+        '@htmx':     path.resolve(workspaceRoot, 'assets/static/js/core/htmx-bridge'),
+        // Per-site shortcuts (override shared modules with site-level files)
+        '@ctc':      path.resolve(workspaceRoot, 'ctc-research/assets/static/js'),
+        '@lms':      path.resolve(workspaceRoot, 'lms-demo/assets/static/js'),
+        '@vresume':  path.resolve(workspaceRoot, 'VResume/assets/static/js'),
       },
+    },
+
+    devtool: isDev ? 'eval-source-map' : false,
+
+    resolveLoader: {
+      modules: [
+        path.resolve(workspaceRoot, 'assets/node_modules'),
+        'node_modules',
+      ],
     },
   });
 };

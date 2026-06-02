@@ -7,12 +7,17 @@
 import {
   ConfigHelpers,
   DEFAULT_LAYOUT,
-  PAGE_TYPE_MAPPINGS,
-  APP_SUB_TYPES
+  LAYOUT_TYPES,
 } from '../utility/config.helpers.js';
 
-// Re-export so registry.js can import from one place
-export { ConfigHelpers, DEFAULT_LAYOUT, PAGE_TYPE_MAPPINGS, APP_SUB_TYPES, LAYOUT_TYPES } from '../utility/config.helpers.js';
+// Re-export so any consumer can import from @core or @utility
+export {
+  ConfigHelpers,
+  DEFAULT_LAYOUT,
+  PAGE_TYPE_MAPPINGS,
+  APP_SUB_TYPES,
+  LAYOUT_TYPES,
+} from '../utility/config.helpers.js';
 
 // Environment detection
 const isDev = ConfigHelpers.isDevelopment();
@@ -169,8 +174,5 @@ if (typeof window !== 'undefined') {
     CONFIG.page.has = (c) => pageData.components.has(c);
   });
 }
-
-// Re-export ConfigHelpers for convenience
-export { ConfigHelpers };
 
 export default { CONFIG, ConfigHelpers };

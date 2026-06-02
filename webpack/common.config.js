@@ -1,109 +1,138 @@
 /**
- * Webpack Common Configuration
- * Shared configuration for all sites
+ * Webpack Common Configuration — shared rules + optimisation for all 3 sites.
+ * Required plugins are resolved from assets/node_modules.
  */
 
+'use strict';
+
 const path = require('path');
-const MiniCssExtractPlugin = require('mini-css-extract-plugin');
-const CssMinimizerPlugin = require('css-minimizer-webpack-plugin');
-const TerserPlugin = require('terser-webpack-plugin');
+
+// Resolve all plugins from the assets node_modules so they work when
+// webpack is run with --prefix assets / cwd=assets
+const nm = path.join(__dirname, '../assets/node_modules');
+
+const MiniCssExtractPlugin = require(require.resolve('mini-css-extract-plugin',     { paths: [nm] }));
+const CssMinimizerPlugin   = require(require.resolve('css-minimizer-webpack-plugin', { paths: [nm] }));
+const TerserPlugin         = require(require.resolve('terser-webpack-plugin',        { paths: [nm] }));
 
 module.exports = {
   module: {
     rules: [
-      // JavaScript/JSX
+      // ── JavaScript / JSX ───────────────────────────────────────────────────
       {
-        test: /\.(js|jsx)$/,
-        exclude: /node_modules/,
+        test:    /\.(js|jsx)$/,
+        // Exclude node_modules AND VResume pre-compiled component files
+        // (those files already have core-js polyfills injected by a prior Babel pass)
+        exclude: [
+          /node_modules/,
+          /VResume[\\/]assets[\\/]static[\\/]js[\\/]components/,
+        ],
         use: {
-          loader: 'babel-loader',
+          loader:  require.resolve('babel-loader', { paths: [nm] }),
           options: {
             presets: [
-              ['@babel/preset-env', {
-                modules: false,
-                useBuiltIns: 'usage',
-                corejs: 3,
-              }],
+              [
+                require.resolve('@babel/preset-env', { paths: [nm] }),
+                { modules: false, useBuiltIns: 'usage', corejs: 3 },
+              ],
             ],
+            cacheDirectory: true,
           },
         },
       },
-      // CSS/SCSS
+      // ── VResume pre-compiled components (no babel transform, just bundle) ──
+      {
+        test:    /\.(js|jsx)$/,
+        include: /VResume[\\/]assets[\\/]static[\\/]js[\\/]components/,
+        use: {
+          loader:  require.resolve('babel-loader', { paths: [nm] }),
+          options: {
+            // No useBuiltIns — polyfills are already in the file
+            presets: [
+              [require.resolve('@babel/preset-env', { paths: [nm] }), { modules: false }],
+            ],
+            cacheDirectory: true,
+          },
+        },
+      },
+
+      // ── CSS / SCSS ─────────────────────────────────────────────────────────
       {
         test: /\.(css|scss|sass)$/,
+        exclude: /node_modules\/(?!(your-package)\/).*/,  // allow node_modules CSS
         use: [
           MiniCssExtractPlugin.loader,
           {
-            loader: 'css-loader',
-            options: {
-              sourceMap: true,
-              importLoaders: 2,
-            },
+            loader:  require.resolve('css-loader', { paths: [nm] }),
+            options: { sourceMap: true, importLoaders: 2 },
           },
           {
-            loader: 'postcss-loader',
+            loader:  require.resolve('postcss-loader', { paths: [nm] }),
             options: {
               postcssOptions: {
-                plugins: [
-                  'autoprefixer',
-                  ['tailwindcss', { content: ['**/*.html'] }],
-                ],
+                plugins: ['autoprefixer'],
               },
             },
           },
-          'sass-loader',
+          require.resolve('sass-loader', { paths: [nm] }),
         ],
       },
-      // Vue files
+      // ── CSS from node_modules (no sass/postcss processing) ──────────────────
+      {
+        test: /\.css$/,
+        include: /node_modules/,
+        use: [
+          MiniCssExtractPlugin.loader,
+          { loader: require.resolve('css-loader', { paths: [nm] }), options: { sourceMap: false } },
+        ],
+      },
+      // ── TypeScript (for preline and similar packages) ───────────────────────
+      {
+        test: /\.tsx?$/,
+        include: /node_modules/,
+        use: {
+          loader: require.resolve('babel-loader', { paths: [nm] }),
+          options: { presets: [require.resolve('@babel/preset-env', { paths: [nm] })] },
+        },
+      },
+
+      // ── Vue SFC ────────────────────────────────────────────────────────────
       {
         test: /\.vue$/,
-        use: 'vue-loader',
+        use:  require.resolve('vue-loader', { paths: [nm] }),
       },
-      // Images
+
+      // ── Images ─────────────────────────────────────────────────────────────
       {
-        test: /\.(png|jpg|jpeg|gif|svg)$/,
-        type: 'asset',
-        parser: {
-          dataUrlCondition: {
-            maxSize: 8 * 1024,
-          },
-        },
-        generator: {
-          filename: 'images/[name]-[hash:8][ext]',
-        },
+        test:   /\.(png|jpe?g|gif|svg|webp)$/i,
+        type:   'asset',
+        parser: { dataUrlCondition: { maxSize: 8 * 1024 } },
+        generator: { filename: 'images/[name]-[hash:8][ext]' },
       },
-      // Fonts
+
+      // ── Fonts ──────────────────────────────────────────────────────────────
       {
-        test: /\.(woff|woff2|eot|ttf|otf)$/,
-        type: 'asset/resource',
-        generator: {
-          filename: 'fonts/[name]-[hash:8][ext]',
-        },
-      },
-      // HTML
-      {
-        test: /\.html$/,
-        use: 'html-loader',
+        test:      /\.(woff2?|eot|ttf|otf)$/i,
+        type:      'asset/resource',
+        generator: { filename: 'fonts/[name]-[hash:8][ext]' },
       },
     ],
   },
+
   plugins: [
     new MiniCssExtractPlugin({
-      filename: '[name]-[contenthash:8].css',
+      filename:      '[name]-[contenthash:8].css',
       chunkFilename: 'chunk-[name]-[contenthash:8].css',
     }),
   ],
+
   optimization: {
     minimize: true,
     minimizer: [
       new TerserPlugin({
         terserOptions: {
-          compress: {
-            drop_console: false,
-          },
-          output: {
-            comments: false,
-          },
+          compress:  { drop_console: false },
+          format:    { comments: false },
         },
         extractComments: false,
       }),
@@ -113,24 +142,27 @@ module.exports = {
     splitChunks: {
       chunks: 'all',
       cacheGroups: {
+        // All node_modules → vendor chunk
         vendor: {
-          test: /[\\/]node_modules[\\/]/,
-          name: 'vendor',
-          priority: 10,
+          test:               /[\\/]node_modules[\\/]/,
+          name:               'vendor',
+          priority:           10,
           reuseExistingChunk: true,
         },
+        // Shared code used by ≥2 entry points → common chunk
         common: {
-          minChunks: 2,
-          priority: 5,
+          minChunks:          2,
+          priority:           5,
           reuseExistingChunk: true,
-          name: 'common',
+          name:               'common',
         },
       },
     },
   },
+
   performance: {
-    maxEntrypointSize: 512000,
-    maxAssetSize: 512000,
-    hints: 'warning',
+    maxEntrypointSize: 1024 * 1024,   // 1 MB — large vendor bundles expected
+    maxAssetSize:       512 * 1024,
+    hints:             'warning',
   },
 };

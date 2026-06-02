@@ -1546,7 +1546,7 @@ export class LayoutManager extends BaseManager {
             } else {
                 try {
                     const layoutConfig = this.config.layouts[layoutName] || `./${layoutName}.layout.js`;
-                    const layoutModule = await import(layoutConfig);
+                    const layoutModule = await import(/* webpackIgnore: true */ layoutConfig);
                     LayoutClass = layoutModule.default || layoutModule.Layout;
                 } catch (e) {
                     console.warn(`Could not load specific layout file for ${layoutName}, falling back to BaseLayout`);

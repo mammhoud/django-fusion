@@ -3,7 +3,7 @@
  * Handles modal functionality with focus trap and animations
  */
 
-import { debounce, Utils, DOM } from '../utility/index.js';
+import { debounce, Utils, DOM } from '../../utility/index.js';
 
 export class ModalController {
     static activeModals = new Set();

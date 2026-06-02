@@ -5,7 +5,7 @@
  * Animations Component
  */
 
-import { DOM } from '../utility/dom.js';
+import { DOM } from '../../utility/dom.js';
 
 export const Animations = {
     counters: [],

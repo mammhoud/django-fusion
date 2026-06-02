@@ -283,10 +283,7 @@ export {
   UnifiedFormHandler as FormHandler,
   AuthFormsHandler,
   ContactFormHandler,
-  validateField,
-  validateEmail,
-  validatePhone,
-  validateRequired,
+  ValidationUtils,
 } from './ui/forms.js';
 
 // ── Page Plugins ──────────────────────────────────────────────────────────────
