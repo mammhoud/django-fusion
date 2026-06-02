@@ -270,3 +270,22 @@ export function registerPlugin(name, plugin) {
 
 // Default export
 export default pluginManager;
+
+// UI Plugins
+export * from './modal.js';
+export * from './animations.js';
+// Form Plugins
+export * from './forms.js';
+
+// ── UI Plugins (moved from modules/components) ──────────────────────────────
+export { ModalController, ModalController as Modal } from './modal.js';
+export { default as AnimationsPlugin } from './animations.js';
+
+// ── Form Plugins ─────────────────────────────────────────────────────────────
+export {
+  FormsManager,
+  UnifiedFormHandler,
+  UnifiedFormHandler as FormHandler,
+  AuthFormsHandler,
+  ContactFormHandler,
+} from './forms.js';

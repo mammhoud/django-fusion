@@ -70,7 +70,7 @@ services:
       - "traefik.http.routers.lms-demo.rule=Host(`lms-demo.local`)"
       - "traefik.http.services.lms-demo.loadbalancer.server.port=5071"
     healthcheck:
-      test: ["CMD", "curl", "-fL", "http://localhost:5071/health/"]
+      test: ["CMD", "curl", "-fL", "http://127.0.0.1:5071/health/"]
       interval: 30s
       timeout: 10s
       retries: 3

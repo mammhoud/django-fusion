@@ -8,11 +8,11 @@
 import { BaseManager } from './utility/base.manager.js';
 import { moduleManager } from './modules/manager.init.js';
 import {
-    ConfigHelpers,
-    DEFAULT_LAYOUT,
-    PAGE_TYPE_MAPPINGS,
-    APP_SUB_TYPES
-} from './config.helpers.js';
+  ConfigHelpers,
+  DEFAULT_LAYOUT,
+  PAGE_TYPE_MAPPINGS,
+  APP_SUB_TYPES
+} from './core/config.helpers.js';
 
 /**
  * Unified Registry Manager
@@ -424,3 +424,5 @@ export class RegistryManager extends BaseManager {
 // Create singleton instance
 export const registry = new RegistryManager();
 export default registry;
+
+// Last updated: Tue Jun  2 12:46:09 UTC 2026

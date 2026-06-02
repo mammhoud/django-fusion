@@ -1,3 +1,9 @@
+/**
+ * Theme Vendor Packages Loader
+ * Dynamically loads vendor libraries from npm packages installed in assets/package.json
+ * Each vendor is loaded on-demand and exposed to window object when needed
+ */
+
 const loadedVendors = new Map();
 
 function expose(name, value) {
@@ -10,37 +16,82 @@ function moduleValue(module) {
 }
 
 const vendorLoaders = [
+  ['alpinejs', () => import('alpinejs').then((module) => expose('Alpine', moduleValue(module)))],
+  ['aos', () => import('aos').then((module) => expose('AOS', moduleValue(module)))],
+  ['apexcharts', () => import('apexcharts').then((module) => expose('ApexCharts', moduleValue(module)))],
   ['bootstrap', () => import('bootstrap/dist/js/bootstrap.bundle.min.js').then((module) => expose('bootstrap', moduleValue(module)))],
-  ['bootstrap-select', () => import('./vendor/bootstrap-select.min.js')],
+  ['bootstrap-icons', () => import('bootstrap-icons')],
+  ['bootstrap-select', () => import('bootstrap-select').then((module) => expose('$.fn.selectpicker', moduleValue(module)))],
+  ['chart.js', () => import('chart.js').then((module) => expose('Chart', moduleValue(module)))],
+  ['choices.js', () => import('choices.js').then((module) => expose('Choices', moduleValue(module)))],
+  ['cleave.js', () => import('cleave.js').then((module) => expose('Cleave', moduleValue(module)))],
+  ['countup.js', () => import('countup.js').then((module) => expose('CountUp', moduleValue(module)))],
+  ['dragula', () => import('dragula').then((module) => expose('dragula', moduleValue(module)))],
+  ['dropzone', () => import('dropzone').then((module) => expose('Dropzone', moduleValue(module)))],
+  ['dual-listbox', () => import('dual-listbox')],
+  ['echarts', () => import('echarts').then((module) => expose('echarts', moduleValue(module)))],
+  ['feather-icons', () => import('feather-icons').then((module) => expose('feather', moduleValue(module)))],
+  ['flyonui', () => import('flyonui')],
+  ['frostui', () => import('frostui')],
+  ['glightbox', () => import('glightbox').then((module) => expose('GLightbox', moduleValue(module)))],
+  ['gmaps', () => import('gmaps').then((module) => expose('GMaps', moduleValue(module)))],
+  ['gridjs', () => import('gridjs').then((module) => expose('Grid', moduleValue(module)))],
+  ['htmx.org', () => import('htmx.org/dist/htmx.min.js').then((module) => expose('htmx', moduleValue(module)))],
   ['imagesloaded', () => import('imagesloaded').then((module) => expose('imagesLoaded', moduleValue(module)))],
-  ['isotope-layout', () => import('./vendor/isotop.js').then((module) => expose('Isotope', moduleValue(module)))],
-  ['jquery.appear', () => import('./vendor/jquery-appear.js')],
+  ['isotope-layout', () => import('isotope-layout').then((module) => expose('Isotope', moduleValue(module)))],
+  ['jquery', () => import('jquery').then((module) => expose('$', moduleValue(module)))],
   ['jquery-countdown', () => import('jquery-countdown/dist/jquery.countdown.min.js')],
-  ['jquery-one-page-nav', () => import('./vendor/jquery-one-page-nav.js')],
+  ['jquery-parallax', () => import('jquery-parallax')],
   ['jquery-ui', () => import('jquery-ui/dist/jquery-ui.min.js')],
-  ['jquery.easy-pie-chart', () => import('./vendor/easypie.js')],
-  ['jquery.magnify', () => import('./vendor/magnify.min.js')],
+  ['jquery.appear', () => import('jquery.appear')],
+  ['jquery.easing', () => import('jquery.easing')],
+  ['jquery.easy-pie-chart', () => import('jquery.easy-pie-chart').then((module) => expose('easyPieChart', moduleValue(module)))],
+  ['jquery.magnify', () => import('jquery.magnify')],
+  ['jquery.marquee', () => import('jquery.marquee')],
+  ['jsvectormap', () => import('jsvectormap').then((module) => expose('jsVectorMap', moduleValue(module)))],
+  ['leaflet', () => import('leaflet').then((module) => expose('L', moduleValue(module)))],
+  ['list.js', () => import('list.js').then((module) => expose('List', moduleValue(module)))],
   ['magnific-popup', () => import('magnific-popup/dist/jquery.magnific-popup.min.js')],
   ['masonry-layout', () => import('masonry-layout').then((module) => expose('Masonry', moduleValue(module)))],
-  ['modernizr', () => import('./vendor/modernizr.min.js')],
-  ['odometer', () => import('./vendor/odometer.js').then((module) => expose('Odometer', moduleValue(module)))],
+  ['mixitup', () => import('mixitup').then((module) => expose('mixitup', moduleValue(module)))],
+  ['modernizr', () => import('modernizr').then((module) => expose('Modernizr', moduleValue(module)))],
+  ['nouislider', () => import('nouislider').then((module) => expose('noUiSlider', moduleValue(module)))],
+  ['odometer', () => import('odometer').then((module) => expose('Odometer', moduleValue(module)))],
   ['owl.carousel', () => import('owl.carousel/dist/owl.carousel.min.js')],
-  ['parallax-js', () => import('./vendor/paralax.min.js').then((module) => expose('Parallax', moduleValue(module)))],
+  ['parallax-js', () => import('parallax-js').then((module) => expose('Parallax', moduleValue(module)))],
   ['plyr', () => import('plyr').then((module) => expose('Plyr', moduleValue(module)))],
-  ['sal.js', () => import('./vendor/sal.js').then((module) => expose('sal', moduleValue(module)))],
+  ['preline', () => import('preline')],
+  ['prismjs', () => import('prismjs').then((module) => expose('Prism', moduleValue(module)))],
+  ['quill', () => import('quill').then((module) => expose('Quill', moduleValue(module)))],
+  ['remixicon', () => import('remixicon')],
+  ['sal.js', () => import('sal.js').then((module) => expose('sal', moduleValue(module)))],
   ['scrollcue', () => import('scrollcue').then((module) => expose('scrollCue', moduleValue(module)))],
+  ['select2', () => import('select2/dist/js/select2.full.min.js')],
+  ['shepherd.js', () => import('shepherd.js').then((module) => expose('Shepherd', moduleValue(module)))],
+  ['simplebar', () => import('simplebar').then((module) => expose('SimpleBar', moduleValue(module)))],
   ['slick-carousel', () => import('slick-carousel/slick/slick.js')],
+  ['sortablejs', () => import('sortablejs').then((module) => expose('Sortable', moduleValue(module)))],
+  ['star-rating.js', () => import('star-rating.js')],
+  ['sweetalert2', () => import('sweetalert2').then((module) => expose('Swal', moduleValue(module)))],
   ['swiper', () => import('swiper/bundle').then((module) => expose('Swiper', moduleValue(module)))],
+  ['theme-change', () => import('theme-change')],
+  ['unpoly', () => import('unpoly').then((module) => expose('up', moduleValue(module)))],
+  ['vanilla-tilt', () => import('vanilla-tilt').then((module) => expose('VanillaTilt', moduleValue(module)))],
+  ['vue', () => import('vue').then((module) => expose('Vue', moduleValue(module)))],
   ['waypoints', () => Promise.all([
     import('waypoints/lib/noframework.waypoints.min.js').then((module) => expose('Waypoint', moduleValue(module))),
     import('waypoints/lib/jquery.waypoints.min.js'),
   ])],
   ['wowjs', () => import('wowjs/dist/wow.min.js').then((module) => expose('WOW', moduleValue(module).WOW || moduleValue(module)))],
-  ['aos', () => import('aos').then((module) => expose('AOS', moduleValue(module)))],
-  ['glightbox', () => import('glightbox').then((module) => expose('GLightbox', moduleValue(module)))],
-  ['mixitup', () => import('mixitup').then((module) => expose('mixitup', moduleValue(module)))],
+  ['yaireo/tagify', () => import('@yaireo/tagify').then((module) => expose('Tagify', moduleValue(module)))],
 ];
 
+/**
+ * Load theme vendor packages
+ * @param {Object} options - Configuration options
+ * @param {boolean} options.debug - Enable debug logging for failed packages
+ * @returns {Promise<Map>} Map of loaded vendors
+ */
 export async function loadThemeVendorPackages({ debug = false } = {}) {
   if (loadedVendors.size === vendorLoaders.length) {
     return loadedVendors;
@@ -64,4 +115,41 @@ export async function loadThemeVendorPackages({ debug = false } = {}) {
   }
 
   return loadedVendors;
+}
+
+/**
+ * Load a specific vendor package
+ * @param {string} name - Vendor package name
+ * @returns {Promise<any>} Loaded module
+ */
+export async function loadThemeVendor(name) {
+  const loader = vendorLoaders.find(([n]) => n === name);
+  if (!loader) {
+    throw new Error(`Unknown vendor: ${name}`);
+  }
+
+  if (loadedVendors.has(name)) {
+    return loadedVendors.get(name);
+  }
+
+  const result = await loader[1]();
+  loadedVendors.set(name, result || true);
+  return result;
+}
+
+/**
+ * Check if a vendor is loaded
+ * @param {string} name - Vendor package name
+ * @returns {boolean} True if vendor is loaded
+ */
+export function isThemeVendorLoaded(name) {
+  return loadedVendors.has(name);
+}
+
+/**
+ * Get all loaded vendors
+ * @returns {Map} Map of loaded vendors
+ */
+export function getLoadedThemeVendors() {
+  return new Map(loadedVendors);
 }
