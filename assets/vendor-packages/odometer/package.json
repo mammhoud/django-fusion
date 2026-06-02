@@ -1,0 +1,10 @@
+{
+  "name": "odometer",
+  "version": "0.0.0-local",
+  "private": true,
+  "description": "Local workspace wrapper for legacy odometer vendor asset.",
+  "main": "dist/odometer.js",
+  "files": [
+    "dist"
+  ]
+}

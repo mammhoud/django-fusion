@@ -1,0 +1,10 @@
+{
+  "name": "jquery.magnify",
+  "version": "0.0.0-local",
+  "private": true,
+  "description": "Local workspace wrapper for legacy jquery.magnify vendor asset.",
+  "main": "dist/jquery.magnify.js",
+  "files": [
+    "dist"
+  ]
+}

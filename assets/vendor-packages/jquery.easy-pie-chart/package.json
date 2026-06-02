@@ -1,0 +1,10 @@
+{
+  "name": "jquery.easy-pie-chart",
+  "version": "0.0.0-local",
+  "private": true,
+  "description": "Local workspace wrapper for legacy jquery.easy-pie-chart vendor asset.",
+  "main": "dist/jquery.easypiechart.js",
+  "files": [
+    "dist"
+  ]
+}

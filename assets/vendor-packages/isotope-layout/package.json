@@ -1,0 +1,10 @@
+{
+  "name": "isotope-layout",
+  "version": "0.0.0-local",
+  "private": true,
+  "description": "Local workspace wrapper for legacy isotope-layout vendor asset.",
+  "main": "dist/isotope.pkgd.js",
+  "files": [
+    "dist"
+  ]
+}

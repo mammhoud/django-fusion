@@ -98,6 +98,7 @@ window.Swiper = Swiper;
 // ===============================================
 
 import { CONFIG } from './init.config.js';
+import './usecases/index.js';
 import { app } from './app.js';
 
 // Global configuration

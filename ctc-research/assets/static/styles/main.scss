@@ -59,3 +59,7 @@
 @import '~shared/styles/utility/unpoly.min';
 @import '~shared/styles/utility/simplebar';
 @import '~shared/styles/utility/helpers';
+
+/* SHARED THEME USECASE BRIDGES — common BEM hooks across all websites */
+@import '~shared/styles/theme/index';
+@import '~shared/styles/usecases/index';

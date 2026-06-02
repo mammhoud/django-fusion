@@ -1,4 +1,11 @@
-@import '~shared/styles/base/base';
-@import '~shared/styles/base/buttons';
-@import '~shared/styles/base/forms';
-@import '~shared/styles/base/typography';
+/*
+ * lms-demo site bundle.
+ * Reuses the shared SCSS theme and BEM usecase shells so LMS templates match
+ * the ctc-research theme while keeping site overrides isolated here.
+ */
+@import '~shared/styles/main';
+
+.lms-demo-theme,
+[data-site='lms-demo'] {
+  --lms-demo-brand: var(--lms-accent, #2f57ef);
+}
