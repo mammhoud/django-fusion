@@ -70,15 +70,13 @@ async function copyLibs(assetPaths) {
 
     for (const packageName of packagesToCopy) {
       const destPackagePath = path.join(libsOutputPath, packageName);
-      const nodePackagePath = path.join(assetPaths.assetsNodeModules, packageName);
-      const localVendorPath = path.join(assetPaths.assetsRoot, 'vendor-packages', packageName);
-      const packageRoot = fs.existsSync(nodePackagePath) ? nodePackagePath : localVendorPath;
+      const packageRoot = path.join(assetPaths.assetsNodeModules, packageName);
       const sourcePath = fs.existsSync(path.join(packageRoot, 'dist'))
         ? path.join(packageRoot, 'dist')
         : packageRoot;
 
       if (!fs.existsSync(sourcePath)) {
-        console.warn(`⚠️ Skipping missing package copy source for ${packageName}`);
+        console.warn(`⚠️ Skipping ${packageName}; run npm --prefix assets install to install package-copy dependencies.`);
         continue;
       }
       await fs.copy(sourcePath, destPackagePath);

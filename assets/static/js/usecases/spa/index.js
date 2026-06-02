@@ -1,9 +1,3 @@
-import { ready } from '../../base/utils/index.js';
+import { registerUsecase } from '../helpers.js';
 
-export function initSpaUsecase(root = document) {
-  root.querySelectorAll('.spa-shell, [data-usecase~="spa"]').forEach((shell) => {
-    shell.dataset.usecaseReady = 'spa';
-  });
-}
-
-ready(initSpaUsecase);
+export const initSpaUsecase = registerUsecase('spa', ['.spa-shell', '[data-usecase~="spa"]']);

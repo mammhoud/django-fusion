@@ -1,9 +1,3 @@
-import { ready } from '../../base/utils/index.js';
+import { registerUsecase } from '../helpers.js';
 
-export function initCrmUsecase(root = document) {
-  root.querySelectorAll('.crm-shell, [data-usecase~="crm"]').forEach((shell) => {
-    shell.dataset.usecaseReady = 'crm';
-  });
-}
-
-ready(initCrmUsecase);
+export const initCrmUsecase = registerUsecase('crm', ['.crm-shell', '[data-usecase~="crm"]']);

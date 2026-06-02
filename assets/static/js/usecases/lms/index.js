@@ -1,9 +1,3 @@
-import { ready } from '../../base/utils/index.js';
+import { registerUsecase } from '../helpers.js';
 
-export function initLmsUsecase(root = document) {
-  root.querySelectorAll('.lms-shell, [data-usecase~="lms"]').forEach((shell) => {
-    shell.dataset.usecaseReady = 'lms';
-  });
-}
-
-ready(initLmsUsecase);
+export const initLmsUsecase = registerUsecase('lms', ['.lms-shell', '[data-usecase~="lms"]']);

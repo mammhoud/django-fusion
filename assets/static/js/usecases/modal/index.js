@@ -1,9 +1,3 @@
-import { ready } from '../../base/utils/index.js';
+import { registerUsecase } from '../helpers.js';
 
-export function initModalUsecase(root = document) {
-  root.querySelectorAll('.modal-shell, [data-usecase~="modal"]').forEach((shell) => {
-    shell.dataset.usecaseReady = 'modal';
-  });
-}
-
-ready(initModalUsecase);
+export const initModalUsecase = registerUsecase('modal', ['.modal-shell', '[data-usecase~="modal"]']);

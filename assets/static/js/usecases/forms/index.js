@@ -1,9 +1,3 @@
-import { ready } from '../../base/utils/index.js';
+import { registerUsecase } from '../helpers.js';
 
-export function initFormsUsecase(root = document) {
-  root.querySelectorAll('.form-stack, [data-usecase~="forms"]').forEach((shell) => {
-    shell.dataset.usecaseReady = 'forms';
-  });
-}
-
-ready(initFormsUsecase);
+export const initFormsUsecase = registerUsecase('forms', ['.form-stack', '[data-usecase~="forms"]']);

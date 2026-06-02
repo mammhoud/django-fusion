@@ -1,9 +1,3 @@
-import { ready } from '../../base/utils/index.js';
+import { registerUsecase } from '../helpers.js';
 
-export function initLandingUsecase(root = document) {
-  root.querySelectorAll('.landing-shell, [data-usecase~="landing"]').forEach((shell) => {
-    shell.dataset.usecaseReady = 'landing';
-  });
-}
-
-ready(initLandingUsecase);
+export const initLandingUsecase = registerUsecase('landing', ['.landing-shell', '[data-usecase~="landing"]']);
