@@ -4,7 +4,7 @@
  */
 import { usecaseConfig } from './usecase-config.js';
 import { ready, siteName } from '@utility';
-import { initAllUsecases } from '@theme';
+import { initAllUsecases } from '../../../../assets/static/js/modules/index.js';
 
 window.STRUCTA_SITE           = 'lms-demo';
 window.STRUCTA_USECASE_CONFIG  = usecaseConfig;

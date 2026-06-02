@@ -29,8 +29,7 @@ services:
     container_name: shared-media
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:shared-media.local,ctc-media.local,lms-media.local,vresume-media.local"
-      - "traefik.http.routers.shared-media.rule=Host(`shared-media.local`) || Host(`ctc-media.local`) || Host(`lms-media.local`) || Host(`vresume-media.local`)"
+      - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms-demo.com`) || Host(`media.vresume.structa.cloud`)"
       - "traefik.http.services.shared-media.loadbalancer.server.port=80"
     volumes:
       - ../assets/staticfiles:/var/www/static:ro

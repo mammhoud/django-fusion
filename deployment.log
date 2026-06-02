@@ -1,0 +1,34 @@
+Makefile:132: warning: overriding recipe for target 'scripts'
+Makefile:128: warning: ignoring old recipe for target 'scripts'
+Makefile:132: warning: overriding recipe for target 'script'
+Makefile:128: warning: ignoring old recipe for target 'script'
+Makefile:150: warning: overriding recipe for target 'website-vresume'
+Makefile:141: warning: ignoring old recipe for target 'website-vresume'
+Makefile:153: warning: overriding recipe for target 'projects'
+Makefile:144: warning: ignoring old recipe for target 'projects'
+Makefile:171: warning: overriding recipe for target 'build-assets-all'
+Makefile:168: warning: ignoring old recipe for target 'build-assets-all'
+Makefile:248: warning: overriding recipe for target 'populate-data-site'
+Makefile:238: warning: ignoring old recipe for target 'populate-data-site'
+Makefile:252: warning: overriding recipe for target 'populate-data-all'
+Makefile:242: warning: ignoring old recipe for target 'populate-data-all'
+Makefile:293: warning: overriding recipe for target 'list'
+Makefile:287: warning: ignoring old recipe for target 'list'
+Makefile:293: warning: overriding recipe for target 'health'
+Makefile:287: warning: ignoring old recipe for target 'health'
+Makefile:293: warning: overriding recipe for target 'containers'
+Makefile:287: warning: ignoring old recipe for target 'containers'
+Makefile:293: warning: overriding recipe for target 'production'
+Makefile:287: warning: ignoring old recipe for target 'production'
+Makefile:293: warning: overriding recipe for target 'production-simple'
+Makefile:287: warning: ignoring old recipe for target 'production-simple'
+Makefile:293: warning: overriding recipe for target 'domains'
+Makefile:287: warning: ignoring old recipe for target 'domains'
+Makefile:293: warning: overriding recipe for target 'vresume-pages'
+Makefile:287: warning: ignoring old recipe for target 'vresume-pages'
+Deploying warehouse services (postgres, redis, adminer, blinko)...
+docker network create traefik-net 2>/dev/null || true
+docker network create site_network 2>/dev/null || true
+docker compose -f docker-compose.yml up -d postgres redis adminer blinko
+no such service: adminer
+make: *** [Makefile:319: docker-deploy-warehouse] Error 1

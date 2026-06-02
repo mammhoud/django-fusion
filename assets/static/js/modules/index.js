@@ -10,6 +10,24 @@ export { navigationTracker } from './navigations/index.js';
 export { NotificationModule } from './notifications/index.js';
 export { FormsManager } from './forms/index.js';
 
+// Re-export usecases
+export {
+  registerUsecase,
+  getUsecase,
+  getUsecaseNames,
+  reinitUsecases,
+  initAnimationsUsecase,
+  initLandingUsecase,
+  initLmsUsecase,
+  initCrmUsecase,
+  initFormsUsecase,
+  initModalUsecase,
+  initSpaUsecase,
+  initAllUsecases,
+  initUsecase,
+  USECASES
+} from './usecases/index.js';
+
 // Export the main manager and class
 export { moduleManager, ModuleManager };
 

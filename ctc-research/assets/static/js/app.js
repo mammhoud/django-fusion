@@ -8,7 +8,7 @@
  */
 import { usecaseConfig } from './usecase-config.js';
 import { ready, siteName } from '@utility';
-import { initAllUsecases } from '@theme';
+import { initAllUsecases } from '../../../../assets/static/js/modules/index.js';
 import { HTMXBridge }      from '@htmx';
 
 // Expose config so any module can read enabled components / overrides

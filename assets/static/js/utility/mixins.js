@@ -236,7 +236,7 @@ export const AnimationMixin = (Base) => class Animation extends Base {
 // ─────────────────────────────────────────────────────────────────────────────
 
 /**
- * Lazy-loads a named vendor from theme/vendor-packages.js.
+ * Lazy-loads a named vendor from core/vendor-packages.js.
  */
 export const ThemeVendorMixin = (Base) => class ThemeVendor extends Base {
   /**
@@ -244,12 +244,12 @@ export const ThemeVendorMixin = (Base) => class ThemeVendor extends Base {
    * @returns {Promise<any>}
    */
   async loadVendor(vendorName) {
-    const { loadThemeVendor } = await import('../theme/vendor-packages.js');
+    const { loadThemeVendor } = await import('../core/vendor-packages.js');
     return loadThemeVendor(vendorName);
   }
 
   async loadVendors(names = []) {
-    const { loadThemeVendorPackages } = await import('../theme/vendor-packages.js');
+    const { loadThemeVendorPackages } = await import('../core/vendor-packages.js');
     const all = await loadThemeVendorPackages();
     return names.length === 0 ? all : Object.fromEntries(names.map((n) => [n, all.get(n)]));
   }

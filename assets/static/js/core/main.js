@@ -52,12 +52,12 @@ import "htmx.org";
 import "htmx-ext-sse";
 // HTMX component lifecycle bridge (re-initializes sliders, forms, notifications after swaps)
 import './htmx-bridge.js';
-import { loadThemeVendorPackages } from '../theme/vendor-packages.js';
+import { loadThemeVendorPackages } from './vendor-packages.js';
 
 // Application configuration
 import { CONFIG } from './init.config.js';
-// Theme system (usecases, plugins, vendors)
-import '../theme/index.js';
+// Theme system (usecases, plugins, vendors) - moved to plugins and modules
+// import '../theme/index.js';
 // Main app instance
 import { app } from './app.js';
 

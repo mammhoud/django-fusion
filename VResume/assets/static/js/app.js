@@ -4,7 +4,7 @@
  */
 import { usecaseConfig } from './usecases/config.js';
 import { ready, siteName } from '@utility';
-import { initAllUsecases } from '@theme';
+import { initAllUsecases } from '../../../../assets/static/js/modules/index.js';
 import './index';          // VResume-specific core/lib/services/navigation/components barrel
 
 window.STRUCTA_SITE           = 'vresume';
