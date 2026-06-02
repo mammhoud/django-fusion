@@ -1,72 +1,53 @@
-{# lms/fragments/course_list.html — HTMX fragment for Histudy course cards #}
+{# lms/fragments/course_list.html — HTMX fragment for LMS BEM course cards #}
 {% load i18n routable_components %}
-<div id="course-list" class="row g-5 lms-shell__course-list" data-fragment>
+<div id="course-list" class="lms-course-grid lms-shell__course-list" data-fragment>
   {% if search_query %}
-    <div class="col-12">
-      <div class="rbt-search-with-category search-info">
-        {% blocktrans with query=search_query %}Results for <strong>{{ query }}</strong>{% endblocktrans %}
-        <a class="rbt-btn-link ms-3"
-           hx-get="{{ request.path }}"
-           hx-target="#course-list"
-           hx-swap="innerHTML"
-           href="#">{% trans "Clear" %}</a>
-      </div>
+    <div class="lms-search-summary">
+      {% blocktrans with query=search_query %}Results for <strong>{{ query }}</strong>{% endblocktrans %}
+      <a class="lms-search-summary__clear"
+         hx-get="{{ request.path }}"
+         hx-target="#course-list"
+         hx-swap="innerHTML"
+         href="#">{% trans "Clear" %}</a>
     </div>
   {% endif %}
 
   {% for course in object_list %}
-    <div class="col-lg-4 col-md-6 col-12">
-      <article class="rbt-card variation-01 rbt-hover course-card lms-shell__course-card">
-        <div class="rbt-card-body">
-          <div class="rbt-card-top">
-            <div class="rbt-review">
-              <div class="rating">
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-                <i class="fas fa-star"></i>
-              </div>
-            </div>
-            {% if course.level %}
-              <span class="rbt-badge-5 bg-primary-opacity badge badge--level">{{ course.get_level_display }}</span>
-            {% endif %}
-          </div>
-
-          <h3 class="rbt-card-title course-card__title">
-            <a href="{{ course.get_absolute_url }}">{{ course.title }}</a>
-          </h3>
-
-          {% if course.instructor %}
-            <ul class="rbt-meta course-card__instructor">
-              <li><i class="feather-user"></i>{{ course.instructor }}</li>
-            </ul>
-          {% endif %}
-
-          {% if course.description %}
-            <p class="rbt-card-text course-card__description">{{ course.description|truncatewords:25 }}</p>
-          {% endif %}
-
-          <div class="rbt-card-bottom course-card__meta">
-            {% if course.category %}
-              <span class="rbt-badge-5 bg-secondary-opacity badge">{{ course.category }}</span>
-            {% endif %}
-            <a class="rbt-btn-link" href="{{ course.get_absolute_url }}">
-              {% trans "Learn More" %}<i class="feather-arrow-right"></i>
-            </a>
-          </div>
-        </div>
-      </article>
-    </div>
-  {% empty %}
-    <div class="col-12">
-      <div class="rbt-callto-action rbt-cta-default style-2 empty-state">
-        <div class="content-wrapper"><p>{% trans "No courses found." %}</p></div>
+    <article class="lms-course-card lms-shell__course-card">
+      <div class="lms-course-card__header">
+        {% if course.level %}
+          <span class="lms-badge lms-course-card__level">{{ course.get_level_display }}</span>
+        {% endif %}
       </div>
-    </div>
+
+      <h3 class="lms-course-card__title">
+        <a href="{{ course.get_absolute_url }}">{{ course.title }}</a>
+      </h3>
+
+      {% if course.instructor %}
+        <p class="lms-course-card__instructor"><i class="feather-user"></i> {{ course.instructor }}</p>
+      {% endif %}
+
+      {% if course.description %}
+        <p class="lms-course-card__description">{{ course.description|truncatewords:25 }}</p>
+      {% endif %}
+
+      <div class="lms-course-card__footer">
+        <div class="lms-course-card__meta">
+          {% if course.category %}
+            <span class="lms-badge">{{ course.category }}</span>
+          {% endif %}
+        </div>
+        <a class="lms-course-card__link" href="{{ course.get_absolute_url }}">
+          {% trans "Learn More" %}<i class="feather-arrow-right"></i>
+        </a>
+      </div>
+    </article>
+  {% empty %}
+    <div class="lms-empty-state">{% trans "No courses found." %}</div>
   {% endfor %}
 
-  <div class="col-12">
+  <div class="lms-course-grid__pagination">
     {% fragment_pagination page_obj url=request.path %}
   </div>
 </div>

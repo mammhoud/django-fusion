@@ -1,31 +1,8 @@
 /*
  * lms-demo site bundle.
- * The LMS demo now consumes the shared Histudy theme partials through
- * ~shared/styles/main and exposes Histudy-compatible markup hooks in templates
- * (`.rbt-main-wrapper`, `.rbt-dashboard-area`, `.rbt-card`) alongside the
- * workspace BEM shells (`.lms-shell`, `.landing-shell`).
+ * Uses the shared workspace foundations plus local LMS-demo BEM partials.
+ * Theme source SCSS is intentionally not imported here; LMS templates expose
+ * stable `.lms-*` classes that map to this website-owned stylesheet.
  */
 @import '~shared/styles/main';
-@import 'theme/histudy';
-
-.lms-demo-theme,
-[data-site='lms-demo'] {
-  --lms-demo-brand: var(--lms-accent, #2f57ef);
-  --color-primary: var(--lms-demo-brand);
-}
-
-.lms-demo-theme.rbt-main-wrapper,
-.lms-demo-theme .rbt-main-wrapper {
-  background: var(--color-white, #fff);
-}
-
-.lms-demo-theme.rbt-dashboard-area,
-.lms-demo-theme .rbt-dashboard-area {
-  padding-block: clamp(2rem, 4vw, 5rem);
-}
-
-.lms-demo-theme .rbt-card,
-.lms-demo-theme .lms-shell__course-card {
-  border-radius: var(--radius-lg, 1rem);
-  box-shadow: var(--shadow-1, 0 10px 30px rgba(0, 0, 0, 0.08));
-}
+@import 'pages/lms-demo';
