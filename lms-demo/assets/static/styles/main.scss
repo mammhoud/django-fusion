@@ -6,6 +6,7 @@
  * workspace BEM shells (`.lms-shell`, `.landing-shell`).
  */
 @import '~shared/styles/main';
+@import 'theme/histudy';
 
 .lms-demo-theme,
 [data-site='lms-demo'] {

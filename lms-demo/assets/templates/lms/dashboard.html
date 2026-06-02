@@ -1,65 +1,95 @@
-{% extends "base.html" %}
-{% load routable_components %}
+{% extends "layout/learning/skeleton.html" %}
+{% load i18n routable_components %}
 
 {% block title %}{{ page_title }} — CTC Research{% endblock %}
 
 {% block content %}
-<div class="dashboard">
-  {# Breadcrumbs #}
-  {% breadcrumbs component %}
+<div class="rbt-dashboard-content bg-color-white rbt-shadow-box lms-shell__dashboard">
+  <div class="content">
+    {% breadcrumbs component %}
 
-  <header class="dashboard__header">
-    <h1>{{ page_title }}</h1>
-  </header>
+    <div class="section-title d-flex align-items-center justify-content-between flex-wrap gap-3 mb--30">
+      <div>
+        <span class="subtitle bg-primary-opacity">{% trans "Learning" %}</span>
+        <h1 class="title mb--0">{{ page_title }}</h1>
+      </div>
+    </div>
 
-  {# Stats #}
-  {% if stats %}
-  <section class="dashboard__stats" aria-label="Statistics">
-    <div class="stat-card">
-      <span class="stat-card__value">{{ stats.total_courses }}</span>
-      <span class="stat-card__label">Total Courses</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__value">{{ stats.published_courses }}</span>
-      <span class="stat-card__label">Published</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__value">{{ stats.total_enrollments }}</span>
-      <span class="stat-card__label">Enrollments</span>
-    </div>
-  </section>
-  {% endif %}
+    {% if stats %}
+      <div class="row g-5 mb--40 dashboard__stats" aria-label="{% trans 'Statistics' %}">
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="rbt-counterup rbt-hover-03 border-bottom-gradient lms-shell__stat-card">
+            <div class="inner">
+              <div class="rbt-round-icon bg-primary-opacity"><i class="feather-book-open"></i></div>
+              <div class="content">
+                <h3 class="counter without-icon color-primary"><span class="odometer">{{ stats.total_courses }}</span></h3>
+                <span class="subtitle">{% trans "Total Courses" %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="rbt-counterup rbt-hover-03 border-bottom-gradient lms-shell__stat-card">
+            <div class="inner">
+              <div class="rbt-round-icon bg-secondary-opacity"><i class="feather-check-circle"></i></div>
+              <div class="content">
+                <h3 class="counter without-icon color-secondary"><span class="odometer">{{ stats.published_courses }}</span></h3>
+                <span class="subtitle">{% trans "Published" %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="col-lg-4 col-md-6 col-12">
+          <div class="rbt-counterup rbt-hover-03 border-bottom-gradient lms-shell__stat-card">
+            <div class="inner">
+              <div class="rbt-round-icon bg-pink-opacity"><i class="feather-users"></i></div>
+              <div class="content">
+                <h3 class="counter without-icon color-pink"><span class="odometer">{{ stats.total_enrollments }}</span></h3>
+                <span class="subtitle">{% trans "Enrollments" %}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    {% endif %}
 
-  {# Course list fragment — loaded via HTMX #}
-  <section class="dashboard__courses">
-    <h2>Courses</h2>
-    <div id="course-list"
-         hx-get="{% url 'lms:course-list-fragment' %}"
-         hx-trigger="load"
-         hx-swap="innerHTML">
-      <p>Loading courses…</p>
-    </div>
-  </section>
+    <section class="rbt-dashboard-table table-responsive mobile-table-750 dashboard__courses lms-shell__courses">
+      <div class="section-title mb--20">
+        <h2 class="title h4">{% trans "Courses" %}</h2>
+      </div>
+      <div id="course-list"
+           hx-get="{% url 'lms:course-list-fragment' %}"
+           hx-trigger="load"
+           hx-swap="innerHTML">
+        <div class="rbt-loader mb--20" aria-live="polite">{% trans "Loading courses…" %}</div>
+      </div>
+    </section>
 
-  {# Recent enrollments #}
-  {% if recent_enrollments %}
-  <section class="dashboard__enrollments">
-    <h2>Recent Enrollments</h2>
-    <table>
-      <thead>
-        <tr><th>Student</th><th>Course</th><th>Date</th></tr>
-      </thead>
-      <tbody>
-        {% for enrollment in recent_enrollments %}
-        <tr>
-          <td>{{ enrollment.student }}</td>
-          <td>{{ enrollment.course }}</td>
-          <td>{{ enrollment.enrolled_at|date:"N j, Y" }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
-  {% endif %}
+    {% if recent_enrollments %}
+      <section class="rbt-dashboard-table table-responsive mobile-table-750 dashboard__enrollments mt--40">
+        <div class="section-title mb--20">
+          <h2 class="title h4">{% trans "Recent Enrollments" %}</h2>
+        </div>
+        <table class="rbt-table table table-borderless">
+          <thead>
+            <tr>
+              <th>{% trans "Student" %}</th>
+              <th>{% trans "Course" %}</th>
+              <th>{% trans "Date" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for enrollment in recent_enrollments %}
+              <tr>
+                <td>{{ enrollment.student }}</td>
+                <td>{{ enrollment.course }}</td>
+                <td>{{ enrollment.enrolled_at|date:"N j, Y" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </section>
+    {% endif %}
+  </div>
 </div>
 {% endblock %}
