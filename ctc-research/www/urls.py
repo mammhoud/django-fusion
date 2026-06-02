@@ -71,18 +71,29 @@ if settings.DEBUG:
 
 # Ensure a basic health endpoint is always present even if the debug tools
 # package or its URL wiring is unavailable.
-try:
-    urlpatterns += [path("health/", include("django_grep.health.urls"))]
-except Exception:
+from django.http import JsonResponse
+
+def _health_check(request):
+    """Basic health check endpoint for monitoring."""
     try:
-        from django.http import JsonResponse
+        from django.db import connection
+        with connection.cursor() as cursor:
+            cursor.execute("SELECT 1")
+        db_status = "ok"
+    except Exception as e:
+        db_status = str(e)
+    
+    return JsonResponse({
+        "status": "ok",
+        "database": db_status
+    })
 
-        def _basic_health(request):
-            return JsonResponse({"status": "ok"})
+urlpatterns = [path("health/", _health_check)] + urlpatterns
 
-        urlpatterns += [path("health/", _basic_health)]
-    except Exception:
-        pass
+try:
+    urlpatterns += [path("health_admin/", include("django_grep.health.urls"))]
+except Exception:
+    pass
 
 # Serve collected static files and uploaded media from Django as a fallback when
 # a dedicated media/static server is not mounted in front of the active website.
