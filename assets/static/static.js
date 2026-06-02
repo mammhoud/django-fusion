@@ -3,6 +3,7 @@
 // ===============================================
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap-icons/font/bootstrap-icons.css';
+import 'animate.css/animate.min.css';
 import 'owl.carousel/dist/assets/owl.carousel.min.css';
 import 'owl.carousel/dist/assets/owl.theme.default.min.css';
 import 'magnific-popup/dist/magnific-popup.css';

@@ -35,6 +35,7 @@ function resolveAssetPaths(siteName = normalizeSiteName()) {
   const baseStaticDir = path.join(sharedStaticDir, 'js', 'base');
   const baseScssDir = path.join(sharedStaticDir, 'scss');
   const sharedBundlesDir = path.join(ASSETS_ROOT, 'bundles', 'shared');
+  const sharedMediaDir = path.join(ASSETS_ROOT, 'media');
   const distRoot = DIST_ROOT;
   const distSharedDir = path.join(DIST_ROOT, 'shared');
   const distSiteDir = path.join(DIST_ROOT, selectedSite);
@@ -52,6 +53,7 @@ function resolveAssetPaths(siteName = normalizeSiteName()) {
     baseStaticDir,
     baseScssDir,
     sharedBundlesDir,
+    sharedMediaDir,
     distRoot,
     distSharedDir,
     distSiteDir,

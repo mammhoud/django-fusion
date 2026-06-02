@@ -1,7 +1,10 @@
 from django.apps import apps
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
-from django.urls import include, path
+from django.urls import include, path, re_path
+from django.conf.urls.static import static
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.views.static import serve
 
 # Optional imports with safe fallbacks
 try:
@@ -80,6 +83,19 @@ except Exception:
         urlpatterns += [path("health/", _basic_health)]
     except Exception:
         pass
+
+# Serve collected static files and uploaded media from Django as a fallback when
+# a dedicated media/static server is not mounted in front of the active website.
+urlpatterns += staticfiles_urlpatterns()
+urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
+urlpatterns += [
+    re_path(
+        r"^{media_url}(?P<path>.*)$".format(media_url=settings.MEDIA_URL.lstrip("/")),
+        serve,
+        {"document_root": settings.MEDIA_ROOT},
+    )
+]
+
 # Static/assets health endpoint for deployment smoke tests.
 try:
     from django.http import JsonResponse

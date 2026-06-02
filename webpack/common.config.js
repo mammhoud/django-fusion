@@ -20,10 +20,16 @@ class SharedAssetCopyPlugin {
   apply(compiler) {
     compiler.hooks.afterEmit.tapPromise('SharedAssetCopyPlugin', async () => {
       const directories = ['js', 'fonts', 'images', 'videos'];
+      const copyJobs = directories.map((directory) => ({
+        source: path.join(this.paths.sharedStaticDir, directory),
+        destination: path.join(this.paths.sharedBundlesDir, directory),
+      }));
+      copyJobs.push({
+        source: this.paths.sharedMediaDir,
+        destination: path.join(this.paths.sharedBundlesDir, 'media'),
+      });
       await fse.ensureDir(this.paths.sharedBundlesDir);
-      await Promise.all(directories.map(async (directory) => {
-        const source = path.join(this.paths.sharedStaticDir, directory);
-        const destination = path.join(this.paths.sharedBundlesDir, directory);
+      await Promise.all(copyJobs.map(async ({ source, destination }) => {
         if (await fse.pathExists(source)) {
           await fse.copy(source, destination);
         }
@@ -47,23 +53,29 @@ function buildEntries(paths) {
     vresume: path.join(paths.siteStaticDir, 'js', 'vresume-app.js'),
   };
   const sharedBaseEntry = path.join(paths.baseStaticDir, 'index.js');
+  const staticStack = [];
+
   if (fs.existsSync(sharedBaseEntry)) {
     entries.shared_base = sharedBaseEntry;
   }
   if (siteAppEntries[paths.siteName] && fs.existsSync(siteAppEntries[paths.siteName])) {
     entries[`${paths.siteName}_app`] = siteAppEntries[paths.siteName];
+    staticStack.push(siteAppEntries[paths.siteName]);
   }
+  if (fs.existsSync(siteMain)) {
+    entries.site_main = siteMain;
+    staticStack.push(siteMain);
+  }
+  staticStack.push(path.join(paths.sharedStaticDir, 'static'));
   if (fs.existsSync(siteStaticEntry)) {
-    entries.static = siteStaticEntry;
+    staticStack.push(siteStaticEntry);
   }
+  entries.static = staticStack;
   if (fs.existsSync(siteStylesEntry)) {
     entries.styles = siteStylesEntry;
   }
   if (fs.existsSync(siteStyles)) {
     entries.site_styles = siteStyles;
-  }
-  if (fs.existsSync(siteMain)) {
-    entries.site_main = siteMain;
   }
   return entries;
 }

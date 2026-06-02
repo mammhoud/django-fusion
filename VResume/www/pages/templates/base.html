@@ -7,7 +7,7 @@
 {% get_current_language_bidi as LANGUAGE_BIDI %}
 
 <!DOCTYPE html>
-<html data-theme="classic-dark"
+<html data-theme="classic-dark" data-usecase="spa"
       class="{% if theme %}{{ theme }}{% endif %}{% if LANGUAGE_BIDI %} rtl{% endif %}"
       dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr" }}"
       lang="{{ LANGUAGE_CODE|default:"en-us" }}">
@@ -57,7 +57,7 @@
     {# VResume Layout: Fixed Sidebar + Scrollable Main Content  #}
     {# ====================================================== #}
 
-    <main class="vresume-layout">
+    <main class="vresume-layout spa-shell" data-usecase="spa" data-animate="fade-in">
         {# LEFT SIDEBAR (fixed, collapsible on mobile) #}
         <aside class="vresume-layout__sidebar" data-sidebar>
             {% include 'sidebar.html' with vresume_settings=settings.communications.VResumeSettings %}

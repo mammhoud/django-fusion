@@ -229,3 +229,6 @@ html[data-theme="ocean-light"] {
   }
 }
 
+
+/* Shared workspace BEM usecase hooks for cross-site components. */
+@import '~shared/styles/usecases/index';

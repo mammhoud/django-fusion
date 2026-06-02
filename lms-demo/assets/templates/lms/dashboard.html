@@ -1,65 +1,79 @@
-{% extends "base.html" %}
-{% load routable_components %}
+{% extends "layout/learning/skeleton.html" %}
+{% load i18n routable_components %}
 
 {% block title %}{{ page_title }} — CTC Research{% endblock %}
 
 {% block content %}
-<div class="dashboard">
-  {# Breadcrumbs #}
+<div class="lms-dashboard lms-shell__dashboard">
   {% breadcrumbs component %}
 
-  <header class="dashboard__header">
-    <h1>{{ page_title }}</h1>
+  <header class="lms-dashboard__header">
+    <div>
+      <span class="lms-dashboard__eyebrow">{% trans "Learning" %}</span>
+      <h1 class="lms-dashboard__title">{{ page_title }}</h1>
+    </div>
   </header>
 
-  {# Stats #}
   {% if stats %}
-  <section class="dashboard__stats" aria-label="Statistics">
-    <div class="stat-card">
-      <span class="stat-card__value">{{ stats.total_courses }}</span>
-      <span class="stat-card__label">Total Courses</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__value">{{ stats.published_courses }}</span>
-      <span class="stat-card__label">Published</span>
-    </div>
-    <div class="stat-card">
-      <span class="stat-card__value">{{ stats.total_enrollments }}</span>
-      <span class="stat-card__label">Enrollments</span>
-    </div>
-  </section>
+    <section class="lms-dashboard__stats" aria-label="{% trans 'Statistics' %}">
+      <article class="lms-stat-card lms-shell__stat-card">
+        <span class="lms-stat-card__icon" aria-hidden="true"><i class="feather-book-open"></i></span>
+        <span>
+          <strong class="lms-stat-card__value">{{ stats.total_courses }}</strong>
+          <span class="lms-stat-card__label">{% trans "Total Courses" %}</span>
+        </span>
+      </article>
+      <article class="lms-stat-card lms-shell__stat-card">
+        <span class="lms-stat-card__icon" aria-hidden="true"><i class="feather-check-circle"></i></span>
+        <span>
+          <strong class="lms-stat-card__value">{{ stats.published_courses }}</strong>
+          <span class="lms-stat-card__label">{% trans "Published" %}</span>
+        </span>
+      </article>
+      <article class="lms-stat-card lms-shell__stat-card">
+        <span class="lms-stat-card__icon" aria-hidden="true"><i class="feather-users"></i></span>
+        <span>
+          <strong class="lms-stat-card__value">{{ stats.total_enrollments }}</strong>
+          <span class="lms-stat-card__label">{% trans "Enrollments" %}</span>
+        </span>
+      </article>
+    </section>
   {% endif %}
 
-  {# Course list fragment — loaded via HTMX #}
-  <section class="dashboard__courses">
-    <h2>Courses</h2>
+  <section class="lms-section lms-dashboard__courses lms-shell__courses">
+    <h2 class="lms-section__title">{% trans "Courses" %}</h2>
     <div id="course-list"
          hx-get="{% url 'lms:course-list-fragment' %}"
          hx-trigger="load"
          hx-swap="innerHTML">
-      <p>Loading courses…</p>
+      <div class="lms-loader" aria-live="polite">{% trans "Loading courses…" %}</div>
     </div>
   </section>
 
-  {# Recent enrollments #}
   {% if recent_enrollments %}
-  <section class="dashboard__enrollments">
-    <h2>Recent Enrollments</h2>
-    <table>
-      <thead>
-        <tr><th>Student</th><th>Course</th><th>Date</th></tr>
-      </thead>
-      <tbody>
-        {% for enrollment in recent_enrollments %}
-        <tr>
-          <td>{{ enrollment.student }}</td>
-          <td>{{ enrollment.course }}</td>
-          <td>{{ enrollment.enrolled_at|date:"N j, Y" }}</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
-  </section>
+    <section class="lms-section lms-dashboard__enrollments">
+      <h2 class="lms-section__title">{% trans "Recent Enrollments" %}</h2>
+      <div class="table-responsive">
+        <table class="lms-table">
+          <thead>
+            <tr>
+              <th>{% trans "Student" %}</th>
+              <th>{% trans "Course" %}</th>
+              <th>{% trans "Date" %}</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for enrollment in recent_enrollments %}
+              <tr>
+                <td>{{ enrollment.student }}</td>
+                <td>{{ enrollment.course }}</td>
+                <td>{{ enrollment.enrolled_at|date:"N j, Y" }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    </section>
   {% endif %}
 </div>
 {% endblock %}

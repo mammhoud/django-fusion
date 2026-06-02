@@ -1,4 +1,8 @@
-@import '~shared/styles/base/base';
-@import '~shared/styles/base/buttons';
-@import '~shared/styles/base/forms';
-@import '~shared/styles/base/typography';
+/*
+ * lms-demo site bundle.
+ * Uses the shared workspace foundations plus local LMS-demo BEM partials.
+ * Theme source SCSS is intentionally not imported here; LMS templates expose
+ * stable `.lms-*` classes that map to this website-owned stylesheet.
+ */
+@import '~shared/styles/main';
+@import 'pages/lms-demo';

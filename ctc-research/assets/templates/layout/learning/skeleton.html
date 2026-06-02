@@ -5,7 +5,7 @@
 {% include 'partials/meta.html' %}
 {% endblock meta %}
 {% block html_attr %}
-    data-theme="theme2" data-sidenav-view="{{ sidenav }}"
+    data-theme="theme2" data-usecase="lms" data-sidenav-view="{{ sidenav }}"
 {% endblock html_attr %}
 
 {% block styles %}
@@ -41,7 +41,7 @@
 {# Main Body / Content #}
 {# ====================================================== #}
 
-<main>
+<main class="lms-shell" data-usecase="lms" data-animate="fade-up">
     {% block content %}
 
 
