@@ -99,7 +99,7 @@
     "jquery-ui": "^1.14.0",
     "jquery.appear": "^1.0.1",
     "jquery.easing": "^1.4.1",
-    "jquery.easy-pie-chart": "^2.1.7",
+    "easy-pie-chart": "^2.1.7",
     "jquery.magnify": "^1.0.0",
     "jquery.marquee": "^1.6.0",
     "jsvectormap": "^1.6.0",
