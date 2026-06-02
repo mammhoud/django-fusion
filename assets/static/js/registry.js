@@ -12,7 +12,7 @@ import {
   DEFAULT_LAYOUT,
   PAGE_TYPE_MAPPINGS,
   APP_SUB_TYPES
-} from './core/config.helpers.js';
+} from './utility/config.helpers.js';
 
 /**
  * Unified Registry Manager

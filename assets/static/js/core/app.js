@@ -3,9 +3,9 @@
  * Clean Application Core with Direct UI and Modules Management
  */
 
-import { URLTrackerMixin } from './utility/url.js';
-import { moduleManager, NotificationModule } from './modules/index.js';
-import { uiManager } from './modules/components/index.js';
+import { URLTrackerMixin }                  from '../utility/url.js';
+import { moduleManager, NotificationModule } from '../modules/index.js';
+import { uiManager }                         from '../modules/components/index.js';
 
 /**
  * Minimal Application Class

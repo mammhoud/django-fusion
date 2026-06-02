@@ -271,21 +271,28 @@ export function registerPlugin(name, plugin) {
 // Default export
 export default pluginManager;
 
-// UI Plugins
-export * from './modal.js';
-export * from './animations.js';
-// Form Plugins
-export * from './forms.js';
+// ── UI Plugins (modal, animations) ──────────────────────────────────────────
+export { ModalController, ModalController as Modal } from './ui/modal.js';
+export { Animations as AnimationsPlugin }            from './ui/animations.js';
+export { default as AnimationsDefault }              from './ui/animations.js';
 
-// ── UI Plugins (moved from modules/components) ──────────────────────────────
-export { ModalController, ModalController as Modal } from './modal.js';
-export { default as AnimationsPlugin } from './animations.js';
-
-// ── Form Plugins ─────────────────────────────────────────────────────────────
+// ── Form Plugins ──────────────────────────────────────────────────────────────
 export {
   FormsManager,
   UnifiedFormHandler,
   UnifiedFormHandler as FormHandler,
   AuthFormsHandler,
   ContactFormHandler,
-} from './forms.js';
+  validateField,
+  validateEmail,
+  validatePhone,
+  validateRequired,
+} from './ui/forms.js';
+
+// ── Page Plugins ──────────────────────────────────────────────────────────────
+export { ActiveLinksPlugin }       from './page/active-links.js';
+export { BackgroundImages }        from './page/background-images.js';
+export { LayoutDetectorPlugin }    from './page/layout-detector.js';
+export { PageLoaderHandler }       from './page/page-loader.js';
+export { ScrollTrackingPlugin }    from './page/scroll-tracking.js';
+export { TransparentHeadersHandler } from './page/transparent-headers.js';
