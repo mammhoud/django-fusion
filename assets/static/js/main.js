@@ -48,28 +48,9 @@ import $ from 'jquery';
 window.jQuery = $;
 window.$ = $;
 
-import 'bootstrap/dist/js/bootstrap.bundle.min.js';
-import 'slick-carousel/slick/slick.js';
-import 'owl.carousel/dist/owl.carousel.min.js';
-import 'masonry-layout';
-import 'magnific-popup/dist/jquery.magnific-popup.min.js';
-import 'waypoints/lib/noframework.waypoints.min.js';
-import scrollCue from 'scrollcue';
-import AOS from 'aos';
-import GLightbox from 'glightbox';
-import imagesLoaded from 'imagesloaded';
-import mixitup from 'mixitup';
 import "htmx.org";
 import "htmx-ext-sse";
-import Swiper from "swiper/bundle";
-
-// Export libraries to window for use in _init.js (legacy code)
-window.scrollCue = scrollCue;
-window.AOS = AOS;
-window.GLightbox = GLightbox;
-window.imagesLoaded = imagesLoaded;
-window.mixitup = mixitup;
-window.Swiper = Swiper;
+import { loadThemeVendorPackages } from './theme/vendor-packages.js';
 
 // // Load optional UI libraries on demand
 // const loadOptionalLibraries = async () => {
@@ -101,6 +82,8 @@ import { CONFIG } from './init.config.js';
 import './usecases/index.js';
 import { app } from './app.js';
 
+const themeVendorPackagesReady = loadThemeVendorPackages({ debug: CONFIG.debug });
+
 // Global configuration
 if (CONFIG.debug) {
     window.APP_CONFIG = CONFIG;
@@ -115,7 +98,8 @@ async function initialize() {
         // Load optional libraries
         // await loadOptionalLibraries();
 
-        // Initialize app with config
+        // Initialize app with config after package-backed theme vendors are available.
+        await themeVendorPackagesReady;
         await app.init();
 
         // console.log('🎉 Application ready!');
