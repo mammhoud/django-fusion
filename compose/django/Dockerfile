@@ -73,7 +73,7 @@ COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 # explicitly even though NODE_ENV defaults to production. This keeps webpack-cli
 # available non-interactively and avoids npx install prompts.
 RUN cd ${APP_HOME}/assets \
-    && npm ci --include=dev --legacy-peer-deps --no-audit --no-fund
+    && npm install --include=dev --legacy-peer-deps --no-audit --no-fund
 
 # -----------------------------------------------------
 # Entrypoint and helper scripts
