@@ -7,10 +7,10 @@ RUN apk add --no-cache openssl
 RUN rm /etc/nginx/conf.d/default.conf
 
 # Copy our custom config (from this directory)
-COPY nginx.conf /etc/nginx/conf.d/nginx.conf
+COPY compose/media/nginx.conf /etc/nginx/conf.d/nginx.conf
 
 # Copy entrypoint script
-COPY entrypoint.sh /entrypoint.sh
+COPY compose/media/entrypoint.sh /entrypoint.sh
 RUN chmod +x /entrypoint.sh
 
 ENTRYPOINT ["/entrypoint.sh"]

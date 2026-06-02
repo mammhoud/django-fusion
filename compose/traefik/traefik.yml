@@ -69,13 +69,12 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "vresume@structa.cloud"
+      email: "${TRAEFIK_ACME_EMAIL:-admin@ctc-research.com}"
       storage: /etc/traefik/acme/acme.json
-      # Use staging for testing (recommended for initial deployments)
-      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-      # PRODUCTION: Uncomment below for production ACME server
-      # caServer: "https://acme-v02.api.letsencrypt.org/directory"
-      # Note: Switch to production after verifying staging works to avoid rate limits
+      # PRODUCTION ACME Server - generates valid certificates
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      # Use for testing/staging (generates fake certificates, no rate limits)
+      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
       # Uncomment for DNS challenge (recommended for wildcard certs)

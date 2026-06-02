@@ -4,6 +4,14 @@
 # ============================================
 http:
   routers:
+    # HTTP to HTTPS redirect for main site
+    ctc-site-http:
+      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: ctc-site-service
+      priority: 10
+
     # Redirect HTTP to HTTPS for media/static files
     ctc-media-http:
       rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
@@ -31,8 +39,12 @@ http:
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-site-service
+      priority: 10
       tls:
         certResolver: letsencrypt
+        domains:
+          - main: "ctc-research.com"
+            sans: ["www.ctc-research.com", "arch.ctc-research.com"]
 
   services:
     # Django backend
