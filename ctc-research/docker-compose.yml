@@ -63,7 +63,7 @@ services:
       <<: *django-env
       PORT: 5070
       DB_NAME: ${CTC_DB_NAME:-db_ctc}
-      ALLOWED_HOSTS: "ctc-research.local,ctc-website.local,ctc-research-website,localhost,127.0.0.1"
+      ALLOWED_HOSTS: "ctc-research.com,www.ctc-research.com,arch.ctc-research.com,ctc-research.local,ctc-website.local,ctc-research-website,localhost,127.0.0.1"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"

@@ -12,17 +12,17 @@ http:
       service: ctc-site-service
       priority: 10
 
-    # Redirect HTTP to HTTPS for media/static files
+    # Redirect HTTP to HTTPS for media/static/sites files
     ctc-media-http:
-      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))"
       entryPoints: [web]
       middlewares: [compress, redirect-to-https]
       service: ctc-media-service
       priority: 100
 
-    # HTTPS for media/static files
+    # HTTPS for media/static/sites files
     ctc-media-https:
-      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))"
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: ctc-media-service

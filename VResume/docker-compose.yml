@@ -63,7 +63,7 @@ services:
       <<: *django-env
       PORT: 5072
       DB_NAME: ${VRESUME_DB_NAME:-vresume}
-      ALLOWED_HOSTS: "vresume.local,vresume-website,localhost,127.0.0.1"
+      ALLOWED_HOSTS: "vresume.structa.cloud,www.vresume.structa.cloud,resume.structa.cloud,vresume.local,vresume-website,localhost,127.0.0.1"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:vresume.local"
