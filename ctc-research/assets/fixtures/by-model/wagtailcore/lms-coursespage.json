@@ -1,0 +1,77 @@
+[
+  {
+    "model": "lms.coursespage",
+    "pk": 7,
+    "fields": {
+      "show_page_at_footer": false,
+      "header_section": "[]",
+      "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
+      "intro_text": "",
+      "items_per_page": 9,
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "introduction": "",
+      "selected_courses": [],
+      "live": true
+    }
+  },
+  {
+    "model": "lms.coursespage",
+    "pk": 12,
+    "fields": {
+      "show_page_at_footer": false,
+      "header_section": "[]",
+      "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
+      "intro_text": "",
+      "items_per_page": 9,
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "introduction": "",
+      "selected_courses": [],
+      "live": true
+    }
+  },
+  {
+    "model": "lms.coursespage",
+    "pk": 17,
+    "fields": {
+      "show_page_at_footer": false,
+      "header_section": "[]",
+      "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
+      "intro_text": "",
+      "items_per_page": 9,
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "introduction": "",
+      "selected_courses": [],
+      "live": true
+    }
+  },
+  {
+    "model": "lms.coursespage",
+    "pk": 22,
+    "fields": {
+      "show_page_at_footer": false,
+      "header_section": "[]",
+      "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
+      "intro_text": "",
+      "items_per_page": 9,
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "introduction": "",
+      "selected_courses": [],
+      "live": true
+    }
+  },
+  {
+    "model": "lms.coursespage",
+    "pk": 27,
+    "fields": {
+      "show_page_at_footer": false,
+      "header_section": "[]",
+      "cta_section": "[{\"id\": \"71db6b90-7d3c-4647-95a0-404150ed0683\", \"type\": \"cta\", \"value\": {\"title\": \"\", \"subtitle\": \"\", \"button_link\": null, \"button_text\": \"\", \"background_image\": 10}}]",
+      "intro_text": "",
+      "items_per_page": 9,
+      "head": "[{\"id\": \"56d1abeb-0b91-4210-9bca-6ff6372893e1\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Our Courses\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 1}}]",
+      "introduction": "",
+      "selected_courses": [],
+      "live": true
+    }
+  }
+]
