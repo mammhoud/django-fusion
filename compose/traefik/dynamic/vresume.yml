@@ -18,7 +18,7 @@ http:
       service: vresume-media-service
       priority: 100
       tls:
-        certResolver: letsencrypt
+        certResolver: local
         domains:
           - main: "vresume.structa.cloud"
             sans: ["www.vresume.structa.cloud", "resume.structa.cloud"]
@@ -29,7 +29,7 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: vresume-site-service
       tls:
-        certResolver: letsencrypt
+        certResolver: local
 
   services:
     vresume-site-service:

@@ -40,7 +40,7 @@ entryPoints:
     address: ":443"
     http:
       tls:
-        certResolver: letsencrypt
+        certResolver: local
 
 # ============================================
 # Providers
@@ -64,7 +64,7 @@ providers:
     # - /etc/traefik/dynamic/vresume/vresume-structa.yml (vresume.structa.cloud)
 
 # ============================================
-# Let's Encrypt (ACME)
+# Certificate Resolvers
 # ============================================
 certificatesResolvers:
   letsencrypt:
@@ -81,3 +81,26 @@ certificatesResolvers:
       # dnsChallenge:
       #   provider: cloudflare
       #   delayBeforeCheck: 0
+
+# ============================================
+# Static Certificates (Local Files)
+# ============================================
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/ctc-research.crt
+        keyFile: /etc/traefik/certs/ctc-research.key
+  certificates:
+    - certFile: /etc/traefik/certs/ctc-research.crt
+      keyFile: /etc/traefik/certs/ctc-research.key
+      stores:
+        - default
+    - certFile: /etc/traefik/certs/structa-cloud.crt
+      keyFile: /etc/traefik/certs/structa-cloud.key
+      stores:
+        - default
+    - certFile: /etc/traefik/certs/vresume.crt
+      keyFile: /etc/traefik/certs/vresume.key
+      stores:
+        - default

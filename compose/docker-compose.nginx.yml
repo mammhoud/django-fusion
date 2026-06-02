@@ -26,7 +26,7 @@ x-media-base: &media-base
 services:
   shared-media:
     <<: *media-base
-    container_name: shared-media
+    container_name: media-server
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms-demo.com`) || Host(`media.vresume.structa.cloud`)"

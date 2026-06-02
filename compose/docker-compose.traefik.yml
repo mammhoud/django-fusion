@@ -18,7 +18,7 @@ services:
       context: ./traefik
       dockerfile: Dockerfile
     image: traefik-proxy
-    container_name: traefik
+    container_name: structa-proxy
     restart: unless-stopped
     security_opt:
       - no-new-privileges:true
@@ -30,6 +30,7 @@ services:
       - traefik_acme:/etc/traefik/acme
       - ./traefik/traefik.yml:/etc/traefik/traefik.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./traefik/certs:/etc/traefik/certs:ro
     environment:
       DOCKER_API_VERSION: "1.44"
       TRAEFIK_ACME_EMAIL: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}

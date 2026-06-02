@@ -20,7 +20,7 @@ http:
       service: structa-media-service
       priority: 100
       tls:
-        certResolver: letsencrypt
+        certResolver: local
         domains:
           - main: "structa.cloud"
             sans: ["*.structa.cloud", "www.structa.cloud", "core.structa.cloud"]
@@ -32,7 +32,7 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: structa-site-service
       tls:
-        certResolver: letsencrypt
+        certResolver: local
 
   services:
     # Django backend

@@ -37,14 +37,14 @@ x-shared-tasks-base: &shared-tasks-base
     DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research}
     WEBSITE: ${WEBSITE:-ctc-research}
     DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-postgres}
+    DB_HOST: ${DB_HOST:-structa-db}
     DB_PORT: ${DB_PORT:-5432}
     DB_NAME: ${DB_NAME:-db_ctc}
     DB_USER: ${DB_USER:-structa}
     DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
-    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
-    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
-    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@structa-cache:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@structa-cache:6379/1
+    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@structa-cache:6379/1
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
     LOG_DIR: /app/logs
   volumes:
@@ -53,9 +53,9 @@ x-shared-tasks-base: &shared-tasks-base
   networks:
     - traefik-net
   depends_on:
-    postgres:
+    structa-db:
       condition: service_healthy
-    redis:
+    structa-cache:
       condition: service_healthy
 
 x-worker-command: &worker-command >
@@ -77,21 +77,21 @@ x-beat-command: &beat-command >
 services:
   shared-tasks-worker:
     <<: *shared-tasks-base
-    container_name: shared-tasks-worker
+    container_name: shared-worker
     command: *worker-command
     ports: []
     labels: {}
 
   shared-tasks-beat:
     <<: *shared-tasks-base
-    container_name: shared-tasks-beat
+    container_name: shared-scheduler
     command: *beat-command
     ports: []
     labels: {}
 
   ctc-research-tasks-worker:
     <<: *shared-tasks-base
-    container_name: ctc-research-tasks-worker
+    container_name: ctc-worker
     environment:
       <<: *shared-tasks-env
       DJANGO_SITE: ctc-research
@@ -104,7 +104,7 @@ services:
 
   ctc-research-tasks-beat:
     <<: *shared-tasks-base
-    container_name: ctc-research-tasks-beat
+    container_name: ctc-scheduler
     environment:
       <<: *shared-tasks-env
       DJANGO_SITE: ctc-research
@@ -117,7 +117,7 @@ services:
 
   lms-demo-tasks-worker:
     <<: *shared-tasks-base
-    container_name: lms-demo-tasks-worker
+    container_name: lms-worker
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile
@@ -135,7 +135,7 @@ services:
 
   lms-demo-tasks-beat:
     <<: *shared-tasks-base
-    container_name: lms-demo-tasks-beat
+    container_name: lms-scheduler
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile
@@ -154,7 +154,7 @@ services:
 
   vresume-tasks-worker:
     <<: *shared-tasks-base
-    container_name: vresume-tasks-worker
+    container_name: vresume-worker
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile
@@ -173,7 +173,7 @@ services:
 
   vresume-tasks-beat:
     <<: *shared-tasks-base
-    container_name: vresume-tasks-beat
+    container_name: vresume-scheduler
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile

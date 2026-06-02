@@ -17,11 +17,11 @@ volumes:
   redis_data:
 
 services:
-  postgres:
+  structa-postgres-db:
     build:
       context: ..
       dockerfile: compose/postgres/Dockerfile
-    container_name: postgres
+    container_name: structa-db
     restart: unless-stopped
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
@@ -50,9 +50,9 @@ services:
           cpus: '1'
           memory: 1G
 
-  redis:
+  structa-redis-cache:
     image: redis:7-alpine
-    container_name: redis
+    container_name: structa-cache
     restart: unless-stopped
     command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD:-redis_password}
     volumes:

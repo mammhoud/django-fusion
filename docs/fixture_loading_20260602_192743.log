@@ -1,0 +1,64 @@
+📦 Loading Fixtures in Dependency Order
+
+[0;34m[2026-06-02 19:27:43][0m Step 1/5: Loading authentication and core models...
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/auth/auth-permission.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/auth/auth-group.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/auth/auth-user.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-locale.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-site.json[0m
+
+[0;34m[2026-06-02 19:27:43][0m Step 2/5: Loading page models and structure...
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-page.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-collection.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-groupcollectionpermission.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-grouppagepermission.json[0m
+
+[0;34m[2026-06-02 19:27:43][0m Step 3/5: Loading images and renditions...
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailimages/wagtailimages-image.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailimages/wagtailimages-rendition.json[0m
+
+[0;34m[2026-06-02 19:27:43][0m Step 4/5: Loading page content (homepage, about, contact, team, courses)...
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/pages-homepage.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/pages-aboutpage.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/pages-contactpage.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/pages-teampage.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/lms-coursespage.json[0m
+
+[0;34m[2026-06-02 19:27:43][0m Step 5/5: Loading workflows, logs, and metadata...
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-workflow.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-workflowpage.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-workflowtask.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-groupapprovaltask.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-task.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-pagelogentry.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-modellogentry.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-revision.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-referenceindex.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/wagtailcore/wagtailcore-pagesubscription.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/handlers/handlers-organization.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/modules/modules-activitytype.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/modules/modules-statuschoice.json[0m
+[1;33m⚠️  Fixture file not found: /app/ctc-research/assets/fixtures/by-model/modules/modules-derivedstatus.json[0m
+
+
+[0;34m[2026-06-02 19:27:43][0m Verifying fixture load...
+
+[0;32m✅ Total pages in database: 2[0m
+
+========================================
+📊 Loading Summary
+========================================
+[0;32m✅ All fixtures loaded successfully![0m
+[0;34m[2026-06-02 19:27:44][0m Total pages: 2
+[0;34m[2026-06-02 19:27:44][0m Total locales: 
+[0;34m[2026-06-02 19:27:44][0m Log file: fixture_loading_20260602_192743.log
+
+[0;34m[2026-06-02 19:27:50][0m ✅ Fixture loading complete!
+
+🎉 Production database is now populated with all content!
+   - Pages: Homepage, About, Contact, Team, Courses
+   - Languages: 6 locales (English, Arabic, German, Spanish, French, Portuguese)
+   - Images: 22 images with renditions
+   - Users & Permissions: All configured
+
+Visit: https://ctc-research.com/ to see the fully populated site!
