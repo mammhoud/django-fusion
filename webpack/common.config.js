@@ -53,7 +53,7 @@ function buildEntries(paths) {
     vresume: path.join(paths.siteStaticDir, 'js', 'vresume-app.js'),
   };
   const sharedBaseEntry = path.join(paths.baseStaticDir, 'index.js');
-  const staticStack = [path.join(paths.sharedStaticDir, 'static')];
+  const staticStack = [];
 
   if (fs.existsSync(sharedBaseEntry)) {
     entries.shared_base = sharedBaseEntry;
@@ -66,6 +66,7 @@ function buildEntries(paths) {
     entries.site_main = siteMain;
     staticStack.push(siteMain);
   }
+  staticStack.push(path.join(paths.sharedStaticDir, 'static'));
   if (fs.existsSync(siteStaticEntry)) {
     staticStack.push(siteStaticEntry);
   }

@@ -1,4 +1,5 @@
 import { ready } from '../base/utils/index.js';
+import { initializeUsecaseComponents } from './component-registry.js';
 
 export function markUsecaseReady(usecase, selectors, root = document) {
   const selectorList = Array.isArray(selectors) ? selectors.join(', ') : selectors;
@@ -11,7 +12,11 @@ export function markUsecaseReady(usecase, selectors, root = document) {
 }
 
 export function registerUsecase(usecase, selectors) {
-  const init = (root = document) => markUsecaseReady(usecase, selectors, root);
+  const init = async (root = document) => {
+    markUsecaseReady(usecase, selectors, root);
+    await initializeUsecaseComponents(usecase, root);
+  };
+
   ready(init);
   return init;
 }

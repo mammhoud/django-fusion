@@ -18,3 +18,11 @@ Every module name mirrors a Sass partial in `assets/static/styles/usecases`:
 
 The non-animation modules mark initialized shells with `data-usecase-ready` so
 JavaScript, SCSS, and templates use one unified class/data-hook vocabulary.
+
+## Website overrides
+
+Each website can define `window.STRUCTA_USECASE_CONFIG` from its site asset entry
+before the shared webpack `static` entry runs. Components can be disabled with
+`{ enabled: false }`, enabled with `true`, or overridden with `selectors` and
+`options` at either `components[componentId]` or
+`usecases[usecase].components[componentId]`.

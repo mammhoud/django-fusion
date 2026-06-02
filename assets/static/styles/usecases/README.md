@@ -19,3 +19,9 @@ webpack can bundle behavior and styles through the same naming contract.
 The root `assets/static/styles/main.scss` imports this index for shared/base
 sites. `ctc-research`, `lms-demo`, and `VResume` also import these layers, so the
 same hooks are available across all three websites.
+
+## Webpack and website overrides
+
+The webpack `static` entry runs the website app file before the shared static
+entry, allowing `ctc-research`, `lms-demo`, and `VResume` to set per-site
+`STRUCTA_USECASE_CONFIG` values before this shared usecase layer initializes.
