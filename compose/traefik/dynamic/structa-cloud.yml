@@ -39,14 +39,7 @@ http:
     structa-site-service:
       loadBalancer:
         servers:
-          - url: "http://lms-demo-website:5071"
-        healthCheck:
-          path: /
-          interval: 30s
-          timeout: 10s
-          headers:
-            Host: "core.structa.cloud"
-            X-Forwarded-Proto: "https"
+          - url: "http://lms-web:5071"
 
     # Nginx media/static server
     structa-media-service:

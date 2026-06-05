@@ -4,7 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django_rseal.workflows.pipelines.models import BaseTag, BaseTagCategory
+from django_rseal.models import BaseTag, BaseTagCategory
 from modelcluster.fields import ParentalKey
 from taggit.models import ItemBase
 from wagtail.admin.panels import (

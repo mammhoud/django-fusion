@@ -13,7 +13,7 @@ volumes:
   traefik_acme:
 
 services:
-  traefik:
+  structa-proxy:
     build:
       context: ./traefik
       dockerfile: Dockerfile

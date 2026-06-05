@@ -30,7 +30,7 @@ x-django-base: &django-base
     SERVER_ENV: ${SERVER_ENV:-production}
     DEBUG: ${DEBUG:-False}
     DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-postgres}
+    DB_HOST: ${DB_HOST:-structa-db}
     DB_PORT: ${DB_PORT:-5432}
     DB_USER: ${DB_USER:-structa}
     DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
@@ -46,9 +46,9 @@ x-django-base: &django-base
     - traefik-net
     - site_network
   depends_on:
-    structa-postgres-db:
+    structa-db:
       condition: service_healthy
-    structa-redis-cache:
+    structa-cache:
       condition: service_healthy
 
 

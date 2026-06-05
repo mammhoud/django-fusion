@@ -51,7 +51,7 @@ x-django-base: &django-base
       condition: service_healthy
 
 services:
-  website:
+  ctc-web:
     <<: *django-base
     container_name: ctc-web
     build:
@@ -63,7 +63,12 @@ services:
       <<: *django-env
       PORT: 5070
       DB_NAME: ${CTC_DB_NAME:-db_ctc}
-      ALLOWED_HOSTS: "ctc-research.com,www.ctc-research.com,arch.ctc-research.com,ctc-research.local,ctc-website.local,website,localhost,127.0.0.1"
+      DJANGO_SETTINGS_MODULE: settings
+      ALLOWED_HOSTS: "ctc-research.com,www.ctc-research.com,arch.ctc-research.com,ctc-web,ctc-research.local,ctc-website.local,localhost,127.0.0.1"
+      CSRF_TRUSTED_ORIGINS: "https://ctc-research.com,https://www.ctc-research.com,https://arch.ctc-research.com,http://ctc-web,http://ctc-research.local,http://localhost,http://127.0.0.1"
+      SITE_DOMAIN: "ctc-research.com"
+      WAGTAILADMIN_BASE_URL: "https://ctc-research.com"
+      DEBUG: "false"
     labels:
       - "traefik.enable=true"
       - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"
@@ -83,51 +88,3 @@ services:
         reservations:
           cpus: '1'
           memory: 512M
-
-  worker:
-    <<: *django-base
-    container_name: ctc-worker
-    build:
-      context: ..
-      dockerfile: compose/django/Dockerfile
-      args:
-        PROJECT_PATH: ctc-research
-    environment:
-      <<: *django-env
-      PORT: 5070
-      DB_NAME: ${CTC_DB_NAME:-db_ctc}
-    command: /rqworker-start
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M
-
-  media:
-    <<: *django-base
-    container_name: ctc-media
-    build:
-      context: ..
-      dockerfile: compose/django/Dockerfile
-      args:
-        PROJECT_PATH: ctc-research
-    environment:
-      <<: *django-env
-      PORT: 5074
-      DB_NAME: ${CTC_DB_NAME:-db_ctc}
-    labels:
-      - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:ctc-media.local"
-      - "traefik.http.routers.ctc-media.rule=Host(`ctc-media.local`)"
-      - "traefik.http.services.ctc-media.loadbalancer.server.port=5074"
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M

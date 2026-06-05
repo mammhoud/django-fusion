@@ -52,12 +52,12 @@ verify_docker() {
         exit 1
     fi
     
-    if ! command -v docker-compose &> /dev/null; then
-        print_error "Docker Compose not installed"
+    docker version > /dev/null 2>&1 || {
+        print_error "Docker is not running"
         exit 1
-    fi
+    }
     
-    print_success "Docker and Docker Compose installed"
+    print_success "Docker installed and running"
 }
 
 create_networks() {

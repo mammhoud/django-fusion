@@ -4,8 +4,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.core.models import BaseModel as DefaultBase
-from django_rseal.content.blocks.blocks import BaseStreamBlock
-from django_rseal.workflows.pipelines.models import ContentBase
+from django_rseal.blocks.stream_blocks import BaseStreamBlock
+from django_rseal.models import ContentBase
 from wagtail.admin.panels import (
     FieldPanel,
     FieldRowPanel,
@@ -518,7 +518,7 @@ class Classes(ContentBase):
 
     # Schedule
     schedule = models.OneToOneField(
-        Schedule,
+        "Schedule",
         on_delete=models.CASCADE,
         related_name="class_instance",
         verbose_name=_("Schedule"),

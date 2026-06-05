@@ -86,8 +86,12 @@ LOCAL_APPS = [
     # Website-local infrastructure. www.core exposes shared management commands
     # such as setup_wagtail_home without importing legacy duplicated models.
     "www.core",
+    # django_rseal must be in INSTALLED_APPS so its GenericSetting models
+    # (EmailSettings, Newsletter, etc.) can register with Wagtail.
+    "django_rseal",
     # CTC page/LMS models are required by the bundled Wagtail fixtures.
     "www.core.content.apps.ContentConfig",
+    "plugins.accounts.apps.AccountsConfig",
     "plugins.lms.apps.LmsConfig",
     # Legacy page apps are optional; AppRegistry filters them when absent.
     "pages.home",

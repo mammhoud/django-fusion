@@ -17,7 +17,7 @@ volumes:
   redis_data:
 
 services:
-  structa-postgres-db:
+  structa-db:
     build:
       context: ..
       dockerfile: compose/postgres/Dockerfile
@@ -50,7 +50,7 @@ services:
           cpus: '1'
           memory: 1G
 
-  structa-redis-cache:
+  structa-cache:
     image: redis:7-alpine
     container_name: structa-cache
     restart: unless-stopped

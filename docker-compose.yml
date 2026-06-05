@@ -1,19 +1,19 @@
 # ============================================================
-# Structa Cloud Workspace Compose Orchestrator
+# CTC Research Deployment - Single Site Only
 # ============================================================
-# Runs the shared proxy, warehouse services, the three websites, and media
-# frontends from the single canonical compose/ directory.
+# Runs only CTC Research website with shared infrastructure
 #
-# Usage:
-#   docker compose up -d
-#   docker compose up -d traefik postgres redis ctc-research-website
+# Disabled sites:
+#   - lms-demo/docker-compose.yml (commented out)
+#   - VResume/docker-compose.yml (commented out)
 # ============================================================
 
 include:
   - path: compose/docker-compose.traefik.yml
   - path: compose/docker-compose.warehouse.yml
   - path: compose/docker-compose.yml
+  - path: compose/docker-compose.tasks.yml
   - path: ctc-research/docker-compose.yml
-  - path: lms-demo/docker-compose.yml
-  - path: VResume/docker-compose.yml
+  # - path: lms-demo/docker-compose.yml       # DISABLED
+  # - path: VResume/docker-compose.yml        # DISABLED
   - path: compose/docker-compose.nginx.yml

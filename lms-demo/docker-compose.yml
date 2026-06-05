@@ -51,7 +51,7 @@ x-django-base: &django-base
       condition: service_healthy
 
 services:
-  website:
+  lms-web:
     <<: *django-base
     container_name: lms-web
     build:
@@ -83,25 +83,3 @@ services:
         reservations:
           cpus: '1'
           memory: 512M
-
-  website-worker:
-    <<: *django-base
-    container_name: lms-worker
-    build:
-      context: ..
-      dockerfile: compose/django/Dockerfile
-      args:
-        PROJECT_PATH: lms-demo
-    environment:
-      <<: *django-env
-      PORT: 5071
-      DB_NAME: ${STRUCTA_DB_NAME:-db_structa}
-    command: /rqworker-start
-    deploy:
-      resources:
-        limits:
-          cpus: '1'
-          memory: 512M
-        reservations:
-          cpus: '0.5'
-          memory: 256M

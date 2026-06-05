@@ -64,14 +64,7 @@ http:
     ctc-site-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-research-website:5070"
-        healthCheck:
-          path: /
-          interval: 30s
-          timeout: 10s
-          headers:
-            Host: "ctc-research.com"
-            X-Forwarded-Proto: "https"
+          - url: "http://ctc-web:5070"
 
     # Nginx media/static server
     ctc-media-service:

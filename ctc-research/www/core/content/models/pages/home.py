@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.content.blocks import ContactCardBlock, PageLinkBlock
+from django_rseal.blocks.contact.contact_card import ContactCardBlock
+from django_rseal.blocks.partials.button import PageLinkBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.blocks import PageChooserBlock

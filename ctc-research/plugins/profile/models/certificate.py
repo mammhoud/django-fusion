@@ -8,7 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.core.models import BaseModel as DefaultBase
-from django_rseal.workflows.pipelines.models.tags import *
+from django_rseal.models.tags import *
 
 User = get_user_model()
 

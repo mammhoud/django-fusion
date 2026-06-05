@@ -38,7 +38,11 @@ EMAIL_TIMEOUT = settings.get("EMAIL_TIMEOUT", 60)  # 1 minute
 # -------------------------------------------------------------------
 # 🎛️ Wagtail Core
 # -------------------------------------------------------------------
-WAGTAILADMIN_BASE_URL = os.environ.get("DJANGO_HOST", "https://example.com")
+WAGTAILADMIN_BASE_URL = (
+    os.environ.get("WAGTAILADMIN_BASE_URL")
+    or os.environ.get("DJANGO_HOST")
+    or f"https://{os.environ.get('SITE_DOMAIN', 'example.com')}"
+)
 WAGTAILSEARCH_BACKENDS = {
     "default": {
         "BACKEND": "wagtail.search.backends.database",  # PostgreSQL full‑text
@@ -54,11 +58,12 @@ WAGTAILEMBEDS_RESPONSIVE_HTML = True
 # -------------------------------------------------------------------
 # 🧪 Caching Middleware (Django core)
 # -------------------------------------------------------------------
-MIDDLEWARE += [  # appended to base MIDDLEWARE
-    "django.middleware.cache.UpdateCacheMiddleware",
-    # ... your other middleware ...
-    "django.middleware.cache.FetchFromCacheMiddleware",
-]
+if "MIDDLEWARE" in dir():  # noqa: F821
+    MIDDLEWARE += [  # noqa: F821
+        "django.middleware.cache.UpdateCacheMiddleware",
+        # ... your other middleware ...
+        "django.middleware.cache.FetchFromCacheMiddleware",
+    ]
 CACHE_MIDDLEWARE_ALIAS = "default"
 
 # -------------------------------------------------------------------

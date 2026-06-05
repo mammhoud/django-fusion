@@ -75,21 +75,21 @@ x-beat-command: &beat-command >
   --pidfile=/tmp/celerybeat.pid
 
 services:
-  shared-tasks-worker:
+  shared-worker:
     <<: *shared-tasks-base
     container_name: shared-worker
     command: *worker-command
     ports: []
     labels: {}
 
-  shared-tasks-beat:
+  shared-scheduler:
     <<: *shared-tasks-base
     container_name: shared-scheduler
     command: *beat-command
     ports: []
     labels: {}
 
-  ctc-research-tasks-worker:
+  ctc-worker:
     <<: *shared-tasks-base
     container_name: ctc-worker
     environment:
@@ -102,7 +102,7 @@ services:
     ports: []
     labels: {}
 
-  ctc-research-tasks-beat:
+  ctc-scheduler:
     <<: *shared-tasks-base
     container_name: ctc-scheduler
     environment:
@@ -115,7 +115,7 @@ services:
     ports: []
     labels: {}
 
-  lms-demo-tasks-worker:
+  lms-worker:
     <<: *shared-tasks-base
     container_name: lms-worker
     build:
@@ -132,8 +132,9 @@ services:
     command: *worker-command
     ports: []
     labels: {}
+    profiles: ["lms"]  # disabled — start with: docker compose --profile lms up
 
-  lms-demo-tasks-beat:
+  lms-scheduler:
     <<: *shared-tasks-base
     container_name: lms-scheduler
     build:
@@ -150,9 +151,9 @@ services:
     command: *beat-command
     ports: []
     labels: {}
+    profiles: ["lms"]  # disabled — start with: docker compose --profile lms up
 
-
-  vresume-tasks-worker:
+  vresume-worker:
     <<: *shared-tasks-base
     container_name: vresume-worker
     build:
@@ -170,8 +171,9 @@ services:
     command: *worker-command
     ports: []
     labels: {}
+    profiles: ["vresume"]  # disabled — start with: docker compose --profile vresume up
 
-  vresume-tasks-beat:
+  vresume-scheduler:
     <<: *shared-tasks-base
     container_name: vresume-scheduler
     build:
@@ -189,3 +191,4 @@ services:
     command: *beat-command
     ports: []
     labels: {}
+    profiles: ["vresume"]  # disabled — start with: docker compose --profile vresume up

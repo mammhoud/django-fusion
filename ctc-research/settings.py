@@ -24,6 +24,16 @@ from configs.site import configure_site_environment
 configure_site_environment("ctc-research", module="LMS", default_port=5070)
 
 # ============================================================
+# Create Fake django_osoul Module
+# ============================================================
+# django_rseal depends on django_osoul which requires twilio
+# We can't install twilio due to memory constraints
+# So we create a fake module to satisfy the imports
+from configs.fake_modules import setup_django_osoul_stub
+
+setup_django_osoul_stub()
+
+# ============================================================
 # Import Shared Django Settings
 # ============================================================
 from configs.settings import *  # noqa: E402,F401,F403
@@ -44,3 +54,11 @@ WSGI_APPLICATION = "server.application"
 WEBSITE_NAME = "ctc-research"
 WEBSITE_IDENTIFIER = "ctc-research"
 SITE_ID = 1
+
+# ============================================================
+# django_rseal required settings
+# ============================================================
+# PROFILE_MODEL is a required ForeignKey target in django_rseal models.
+# Point it to Django's built-in User model since this project
+# does not have a separate profile model.
+PROFILE_MODEL = "auth.User"

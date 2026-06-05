@@ -71,7 +71,8 @@ STRIPE_SECRET_KEY = "sk_test_dev_key"
 # 📄 Template Configuration
 # ====================================
 # TEMPLATES[0]["OPTIONS"]["string_if_invalid"] = "INVALID_EXPRESSION"  # Show errors
-TEMPLATES[0]["OPTIONS"]["debug"] = True
+if "TEMPLATES" in dir() and TEMPLATES:  # noqa: F821
+    TEMPLATES[0]["OPTIONS"]["debug"] = True  # noqa: F821
 
 
 # ====================================
@@ -134,8 +135,8 @@ DEV_FEATURES = {
 # ====================================
 # Docker-specific settings
 if settings.RUNNING_ENV.value == "docker":
-
-    INTERNAL_IPS.append("web")
+    if "INTERNAL_IPS" in dir():  # noqa: F821
+        INTERNAL_IPS.append("web")  # noqa: F821
 
 # ====================================
 # 🔧 Development Commands
