@@ -3,10 +3,8 @@
 networks:
   traefik-net:
     name: traefik-net
-    external: true
   site_network:
     name: site_network
-    external: true
 
 x-django-base: &django-base
   build:

@@ -120,7 +120,10 @@ try:
     class UserAdmin(ModelAdmin):
         compressed_fields = True
         warn_unsaved_changes = True
-        inlines = [SocialAccountInline]
+        # Keep allauth available without registering the inline: during Django's
+        # admin system check, unresolved string relations inside optional
+        # social-account models can raise AttributeError before checks finish.
+        inlines = []
 
 except ImportError:
     class UserAdmin(ModelAdmin):  # type: ignore[no-redef]

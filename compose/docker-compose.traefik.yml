@@ -7,7 +7,6 @@
 networks:
   traefik-net:
     name: traefik-net
-    external: true
 
 volumes:
   traefik_acme:

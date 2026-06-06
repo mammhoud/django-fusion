@@ -36,11 +36,5 @@ prune-containers: _docker_check
 
 prune-data: _docker_check
 	@command -v docker >/dev/null 2>&1 && $(COMPOSE) -f $(BASE_FILE) down --volumes --remove-orphans || true
-<<<<<<< HEAD
 	@rm -rf postgres/backups/* ../compose/data/*
 	@mkdir -p postgres/backups ../compose/data
-=======
-	@rm -rf postgres/backups/* ../compose/data/* ../.docker-image-data/*
-	@mkdir -p postgres/backups ../compose/data ../.docker-image-data
-	@touch ../.docker-image-data/.keep
->>>>>>> generic
