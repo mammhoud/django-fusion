@@ -1,18 +1,32 @@
 # ============================================================
-# CTC Research Deployment - Single Site Only
+# Main Orchestration - Includes All Sites & Shared Infrastructure
 # ============================================================
-# Runs only CTC Research website with shared infrastructure
+# This file orchestrates deployment of all websites (ctc-research,
+# lms-demo, vresume) along with shared infrastructure (traefik, db,
+# cache, tasks, media server, nginx).
 #
-# Disabled sites:
-#   - lms-demo/docker-compose.yml (commented out)
-#   - VResume/docker-compose.yml (commented out)
+# Each website is defined in its own docker-compose.yml:
+#   - ctc-research/docker-compose.yml (primary)
+#   - lms-demo/docker-compose.yml
+#   - VResume/docker-compose.yml
+#
+# Infrastructure is defined in compose/:
+#   - docker-compose.traefik.yml (reverse proxy)
+#   - docker-compose.warehouse.yml (database & cache)
+#   - docker-compose.tasks.yml (celery workers)
+#   - docker-compose.utilities.yml (utilities)
+#   - docker-compose.nginx.yml (media server)
 # ============================================================
 
 include:
+  # Shared Infrastructure
   - path: compose/docker-compose.traefik.yml
   - path: compose/docker-compose.warehouse.yml
-  - path: compose/docker-compose.yml
   - path: compose/docker-compose.tasks.yml
-  # - path: lms-demo/docker-compose.yml       # DISABLED
-  # - path: VResume/docker-compose.yml        # DISABLED
+  - path: compose/docker-compose.utilities.yml
   - path: compose/docker-compose.nginx.yml
+  
+  # Per-Site Website Configurations
+  - path: ctc-research/docker-compose.yml
+  - path: lms-demo/docker-compose.yml
+  - path: VResume/docker-compose.yml

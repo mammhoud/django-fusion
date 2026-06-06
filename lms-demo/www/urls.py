@@ -1,14 +1,16 @@
-from django.conf import settings
-from django.conf.urls.i18n import i18n_patterns
-from django.contrib import admin
-from django.urls import include, path, re_path
-from django.conf.urls.static import static
-from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.views.static import serve
-from django.http import JsonResponse
+import os
+
+# Import shared configuration modules from parent directory
+import sys
 
 from allauth.account.views import LoginView, LogoutView, PasswordResetView, SignupView
-
+from django.conf import settings
+from django.conf.urls.i18n import i18n_patterns
+from django.conf.urls.static import static
+from django.contrib import admin
+from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import include, path, re_path
+from django.views.static import serve
 from django_grep.contrib.debug_tools.common_urls import configure_common_urls
 from django_grep.contrib.debug_tools.error_views import (
     handler400,
@@ -20,15 +22,10 @@ from wagtail import urls as wagtail_urls
 from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
-
-def _health(request):
-    return JsonResponse({"status": "ok", "site": getattr(settings, "WEBSITE_NAME", "lms-demo")})
-
-
-def _assets_health(request):
-    static_url = getattr(settings, "STATIC_URL", "/static/")
-    return JsonResponse({"status": "ok", "static_url": static_url})
-
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from proxy import assets_health as _assets_health
+from proxy import health as _health
+from utilities import get_root_redirect_pattern
 
 urlpatterns = [
     path("health/", _health, name="health"),
@@ -68,3 +65,6 @@ urlpatterns += [
         {"document_root": settings.MEDIA_ROOT},
     )
 ]
+
+# Root path redirect to default language (MUST be at the end as catch-all fallback)
+urlpatterns += [get_root_redirect_pattern()]

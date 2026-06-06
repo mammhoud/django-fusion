@@ -1,10 +1,21 @@
+import os
+
+# Import shared configuration modules from parent directory
+import sys
+
 from django.apps import apps
 from django.conf import settings
 from django.conf.urls.i18n import i18n_patterns
-from django.urls import include, path, re_path
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
+from django.urls import include, path, re_path
 from django.views.static import serve
+
+sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
+from proxy import assets_health as _assets_health
+from proxy import database_health
+from proxy import health as _health_check
+from utilities import get_root_redirect_pattern
 
 # Optional imports with safe fallbacks
 try:
@@ -69,25 +80,6 @@ if settings.DEBUG:
     except Exception:
         pass
 
-# Ensure a basic health endpoint is always present even if the debug tools
-# package or its URL wiring is unavailable.
-from django.http import JsonResponse
-
-def _health_check(request):
-    """Basic health check endpoint for monitoring."""
-    try:
-        from django.db import connection
-        with connection.cursor() as cursor:
-            cursor.execute("SELECT 1")
-        db_status = "ok"
-    except Exception as e:
-        db_status = str(e)
-    
-    return JsonResponse({
-        "status": "ok",
-        "database": db_status
-    })
-
 urlpatterns = [path("health/", _health_check)] + urlpatterns
 
 try:
@@ -107,14 +99,8 @@ urlpatterns += [
     )
 ]
 
-# Static/assets health endpoint for deployment smoke tests.
-try:
-    from django.http import JsonResponse
+# Static/assets health endpoint for deployment smoke tests
+urlpatterns += [path("assets/health/", _assets_health, name="assets-health")]
 
-    def _assets_health(request):
-        static_url = getattr(settings, "STATIC_URL", "/static/")
-        return JsonResponse({"status": "ok", "static_url": static_url})
-
-    urlpatterns += [path("assets/health/", _assets_health, name="assets-health")]
-except Exception:
-    pass
+# Root path redirect to default language (MUST be at the end as catch-all fallback)
+urlpatterns += [get_root_redirect_pattern()]

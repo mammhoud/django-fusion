@@ -12,17 +12,17 @@
                     <div class="course-card__image-container">
                         {% if course.image %}
                             {% image course.image fill-400x250 as img %}
-                            <img src="{{ img.url }}" 
-                                 alt="{{ course.title }}" 
+                            <img src="{{ img.url }}"
+                                 alt="{{ course.title }}"
                                  class="course-card__image img-fluid"
                                  loading="lazy">
                         {% else %}
-                            <img src="{% static 'images/default-course.jpg' %}" 
-                                 alt="Default course image" 
+                            <img src="{% static 'images/default-course.jpg' %}"
+                                 alt="Default course image"
                                  class="course-card__image img-fluid"
                                  loading="lazy">
                         {% endif %}
-                        
+
                         <!-- Course Badges -->
                         <div class="course-card__badges">
                             {% if course.is_featured %}
@@ -30,7 +30,7 @@
                                     <i class="bi bi-star-fill me-1"></i>Featured
                                 </span>
                             {% endif %}
-                            
+
                             {% if course.price == 0 %}
                                 <span class="course-card__badge course-card__badge--free">
                                     <i class="bi bi-gift-fill me-1"></i>Free
@@ -48,7 +48,7 @@
                         <!-- Specializations -->
                         <div class="course-card__specializations mb-2">
                             {% for specialization in course.specializations.all %}
-                                <a href="{% url 'specialization_courses' specialization.slug %}" 
+                                <a href="{% url 'specialization_courses' specialization.slug %}"
                                    class="course-card__specialization">
                                     {{ specialization.name }}
                                 </a>{% if not forloop.last %}, {% endif %}
@@ -101,8 +101,8 @@
                             <div class="course-card__instructor">
                                 {% if course.instructor.profile_image %}
                                     {% image course.instructor.profile_image fill-40x40 as instructor_img %}
-                                    <img src="{{ instructor_img.url }}" 
-                                         alt="{{ course.instructor.get_full_name }}" 
+                                    <img src="{{ instructor_img.url }}"
+                                         alt="{{ course.instructor.get_full_name }}"
                                          class="course-card__instructor-avatar rounded-circle">
                                 {% else %}
                                     <div class="course-card__instructor-avatar-placeholder">
@@ -134,9 +134,7 @@
                         </div>
 
                         <!-- Enroll Button -->
-                        <a href="{{ course.url }}" class="course-card__cta-btn btn btn-primary w-100">
-                            <i class="bi bi-arrow-right me-2"></i>View Course
-                        </a>
+                        {% include "courses/partials/course_actions.html" with course=course %}
                     </div>
                 </article>
             </div>
@@ -149,7 +147,7 @@
                     </div>
                     <h3 class="course-grid__empty-title mb-2">{% trans "No published courses available" %}</h3>
                     <p class="course-grid__empty-text text-muted mb-4">{% trans "We're working on new content. Please check back later for exciting courses!" %}</p>
-                    
+
                 </div>
             </div>
             {% endfor %}
@@ -159,7 +157,7 @@
 
 <style>
     /* Course Grid - BEM CSS Structure */
-    
+
     /* Color Palette Variables */
     :root {
         --primary-blue: #1e3a8a;      /* Dark Blue */

@@ -1,7 +1,7 @@
 # ============================================================
-# VResume Website - Per-Site Docker Compose
+# LMS Demo Website - Per-Site Docker Compose
 # ============================================================
-# This file defines the vresume website service and
+# This file defines the lms-demo website service and
 # inherits shared infrastructure from ../compose/docker-compose.yml
 # ============================================================
 
@@ -55,34 +55,34 @@ x-django-base: &django-base
       condition: service_healthy
 
 services:
-  vresume-website:
+  lms-demo-website:
     <<: *django-base
-    container_name: vresume-website
+    container_name: lms-demo-website
     build:
       context: ..
       dockerfile: compose/django/Dockerfile
       args:
-        PROJECT_PATH: VResume
+        PROJECT_PATH: lms-demo
     environment:
       <<: *django-env
-      DJANGO_SITE: vresume
-      DJANGO_WEBSITE: vresume
-      WEBSITE: vresume
-      PROJECT_PATH: vresume
-      PORT: 5072
-      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      PROJECT_PATH: lms-demo
+      PORT: 5071
+      DB_NAME: ${STRUCTA_DB_NAME:-db_structa}
       DJANGO_SETTINGS_MODULE: settings
-      ALLOWED_HOSTS: "vresume.structa.cloud,www.vresume.structa.cloud,resume.structa.cloud,vresume.local,vresume-website,localhost,127.0.0.1"
-      CSRF_TRUSTED_ORIGINS: "https://vresume.structa.cloud,https://www.vresume.structa.cloud,https://resume.structa.cloud,http://vresume.local,http://vresume-website,http://localhost,http://127.0.0.1"
-      SITE_DOMAIN: "vresume.structa.cloud"
-      WAGTAILADMIN_BASE_URL: "https://vresume.structa.cloud"
+      ALLOWED_HOSTS: "structa.cloud,www.structa.cloud,core.structa.cloud,lms-demo.local,lms-demo-website,localhost,127.0.0.1"
+      CSRF_TRUSTED_ORIGINS: "https://structa.cloud,https://www.structa.cloud,https://core.structa.cloud,http://lms-demo.local,http://lms-demo-website,http://localhost,http://127.0.0.1"
+      SITE_DOMAIN: "structa.cloud"
+      WAGTAILADMIN_BASE_URL: "https://structa.cloud"
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:vresume.local,vresume.structa.cloud"
-      - "traefik.http.routers.vresume.rule=Host(`vresume.local`) || Host(`vresume.structa.cloud`)"
-      - "traefik.http.services.vresume.loadbalancer.server.port=5072"
+      - "traefik.frontend.rule=Host:lms-demo.local,structa.cloud"
+      - "traefik.http.routers.lms-demo.rule=Host(`lms-demo.local`) || Host(`structa.cloud`)"
+      - "traefik.http.services.lms-demo.loadbalancer.server.port=5071"
     healthcheck:
-      test: ["CMD", "curl", "-fL", "http://127.0.0.1:5072/health/"]
+      test: ["CMD", "curl", "-fL", "http://127.0.0.1:5071/health/"]
       interval: 30s
       timeout: 10s
       retries: 3
