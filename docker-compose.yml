@@ -25,7 +25,7 @@ include:
   - path: compose/docker-compose.tasks.yml
   - path: compose/docker-compose.utilities.yml
   - path: compose/docker-compose.nginx.yml
-  
+
   # Per-Site Website Configurations
   - path: ctc-research/docker-compose.yml
   - path: lms-demo/docker-compose.yml
