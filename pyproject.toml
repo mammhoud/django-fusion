@@ -6,7 +6,7 @@ requires-python = ">=3.11"
 dependencies = [
     # Core
     "click", "colorlog", "fire",
-    "django>=4.2",
+    "django>=4.2", "twilio>=9.0",
     # Auth & accounts
     "django-allauth[socialaccount]",
     # UI & templates

@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, DateFilter
-from django_rseal.http.handlers.models.manage_company import Organization as Corporate
+from django_rseal.handlers.models.manage_company import Organization as Corporate
 from django_rseal.workflows.pipelines.models.users.team import Team
 from django_rseal.workflows.pipelines.models.users.users import Person
 from django_rseal.workflows.pipelines.models.workspace import Workspace

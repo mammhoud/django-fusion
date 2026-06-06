@@ -3,7 +3,7 @@
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
-from django_osoul.comp.site import PageHandler
+from django_osoul.site import PageHandler
 from django_rseal.models import Person
 from django_rseal.site.mixins import (
     ProfileContextMixin,

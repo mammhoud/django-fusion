@@ -9,7 +9,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 
 logger = logging.getLogger(__name__)
-from django_osoul.comp.site import NotificationMixin, PageHandler
+from django_osoul.site import NotificationMixin, PageHandler
 
 from www.apps.models import (
     PersonTag,

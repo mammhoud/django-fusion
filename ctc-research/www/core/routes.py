@@ -19,7 +19,7 @@ Generated URL prefix: /osoul/
 
 from __future__ import annotations
 
-from django_osoul.web.routes import Application, Site, viewprop
+from django_osoul.site.routes import Application, Site, viewprop
 
 # ---------------------------------------------------------------------------
 # LMS Application

@@ -8,8 +8,8 @@ from django.shortcuts import get_object_or_404
 from django.utils.decorators import method_decorator
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
-from django_osoul.comp.site import PageHandler
-from django_osoul.web.views import FilterMixin, SearchMixin
+from django_osoul.site import PageHandler
+from django_osoul.views import FilterMixin, SearchMixin
 from django_rseal.models import CachingStorage
 
 from ..models import Course

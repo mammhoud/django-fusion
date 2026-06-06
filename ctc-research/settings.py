@@ -24,14 +24,10 @@ from configs.site import configure_site_environment
 configure_site_environment("ctc-research", module="LMS", default_port=5070)
 
 # ============================================================
-# Create Fake django_osoul Module
+# Internal Dependency Handling
 # ============================================================
-# django_rseal depends on django_osoul which requires twilio
-# We can't install twilio due to memory constraints
-# So we create a fake module to satisfy the imports
-from configs.fake_modules import setup_django_osoul_stub
-
-setup_django_osoul_stub()
+# django_osoul and django_rseal are real workspace dependencies. Do not install
+# fake sys.modules shims here; dependency failures should surface during checks.
 
 # ============================================================
 # Import Shared Django Settings

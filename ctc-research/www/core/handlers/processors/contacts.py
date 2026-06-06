@@ -1,6 +1,6 @@
 # from plugins.accounts.models import Company
 # from commons.contact.models import Contact, ContactEmail, ContactPhone
-# NOTE: commons.contact is not a local module; these models come from django_rseal.contrib.models
+# NOTE: commons.contact is not a local module; these models come from django_rseal.contrib.core.models
 # Importing from django_rseal when available, with a fallback stub for environments without it.
 try:
     from django_rseal.contrib.core.models import Contact, ContactEmail, ContactPhone

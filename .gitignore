@@ -53,3 +53,13 @@ compose/data/
 *.sql.gz
 # Workspace webpack mirror output
 dist/
+
+# Runtime logs and generated diagnostics
+logs/
+*/logs/
+compose/logs/*.log
+docs/*.log
+*.log
+
+# Local virtual environments in nested workspaces
+libs/.venv/

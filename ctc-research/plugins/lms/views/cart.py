@@ -3,7 +3,7 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
-from django_osoul.comp.site import PageHandler
+from django_osoul.site import PageHandler
 
 # Optional coupling to Core plugins
 try:

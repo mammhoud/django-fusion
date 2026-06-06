@@ -5,7 +5,7 @@ import logging
 
 from django.contrib.auth import get_user_model
 from django.db import models, transaction
-from django_osoul.core.managers import BaseManager
+from django_osoul.managers import BaseManager
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

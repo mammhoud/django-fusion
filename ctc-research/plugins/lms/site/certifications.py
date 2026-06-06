@@ -11,7 +11,7 @@ from django.views.decorators.http import require_POST
 from plugins.accounts.services import CertificateService
 
 logger = logging.getLogger(__name__)
-from django_osoul.comp.site import NotificationMixin, PageHandler
+from django_osoul.site import NotificationMixin, PageHandler
 
 User = get_user_model()
 

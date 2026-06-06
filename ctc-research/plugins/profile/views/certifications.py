@@ -6,7 +6,7 @@ from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from django_osoul.comp.site import NotificationMixin, PageHandler
+from django_osoul.site import NotificationMixin, PageHandler
 
 from plugins.accounts.services import CertificateService
 
