@@ -83,10 +83,9 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {% block extra_body %}
     {% endblock extra_body %}
 
-    {# ====================================================== #}
-    {# Modals / Dialogs / Popups #}
-    {# ====================================================== #}
     {% block modal %}
+        {% include "notifications/notification.html" %}
+        <div id="modal-container"></div>
     {% endblock modal %}
 
     {% block scripts %}

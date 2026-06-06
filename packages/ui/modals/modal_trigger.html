@@ -1,0 +1,11 @@
+{# packages/ui/modals/modal_trigger.html #}
+<button type="button"
+        class="{{ btn_class|default:'btn btn-primary' }}"
+        hx-get="{{ hx_url }}"
+        hx-target="{{ hx_target|default:'#modal-container' }}"
+        hx-trigger="click"
+        {% if hx_indicator %}hx-indicator="{{ hx_indicator }}"{% endif %}
+        {% if extra_attrs %}{{ extra_attrs|safe }}{% endif %}>
+    {% if icon %}<i class="bi {{ icon }} {% if label %}me-2{% endif %}"></i>{% endif %}
+    {% if label %}{{ label }}{% endif %}
+</button>

@@ -38,7 +38,7 @@ services:
       - traefik-net
       - site_network
     depends_on:
-      structa-postgres-db:
+      structa-db:
         condition: service_healthy
     deploy:
       resources:
@@ -61,7 +61,7 @@ services:
       - traefik-net
       - site_network
     depends_on:
-      structa-postgres-db:
+      structa-db:
         condition: service_healthy
     deploy:
       resources:

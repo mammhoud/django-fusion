@@ -1,0 +1,58 @@
+{# packages/ui/notifications/toast_templates.html #}
+{% load i18n %}
+
+<!-- Success Toast -->
+<div id="toast-container" hx-swap-oob="beforeend">
+    <div class="toast show notification-system__toast border-0 shadow-sm mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="toast-header bg-success text-white">
+            <i class="bi bi-check-circle-fill me-2"></i>
+            <strong class="me-auto">{% trans "Success" %}</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-white text-dark">
+            {{ message }}
+        </div>
+    </div>
+</div>
+
+<!-- Error Toast -->
+<div id="toast-container" hx-swap-oob="beforeend">
+    <div class="toast show notification-system__toast border-0 shadow-sm mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="7000">
+        <div class="toast-header bg-danger text-white">
+            <i class="bi bi-exclamation-octagon-fill me-2"></i>
+            <strong class="me-auto">{% trans "Error" %}</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-white text-dark">
+            {{ message }}
+        </div>
+    </div>
+</div>
+
+<!-- Warning Toast -->
+<div id="toast-container" hx-swap-oob="beforeend">
+    <div class="toast show notification-system__toast border-0 shadow-sm mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="toast-header bg-warning text-dark">
+            <i class="bi bi-exclamation-triangle-fill me-2"></i>
+            <strong class="me-auto">{% trans "Warning" %}</strong>
+            <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-white text-dark">
+            {{ message }}
+        </div>
+    </div>
+</div>
+
+<!-- Info Toast -->
+<div id="toast-container" hx-swap-oob="beforeend">
+    <div class="toast show notification-system__toast border-0 shadow-sm mb-2" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="toast-header bg-info text-white">
+            <i class="bi bi-info-circle-fill me-2"></i>
+            <strong class="me-auto">{% trans "Information" %}</strong>
+            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="Close"></button>
+        </div>
+        <div class="toast-body bg-white text-dark">
+            {{ message }}
+        </div>
+    </div>
+</div>

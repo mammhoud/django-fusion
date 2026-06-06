@@ -19,6 +19,7 @@ TEMPLATES_DIRS = [
     BASE_DIR / "www" / "pages" / "templates",
     BASE_DIR / "assets" / "templates",
     BASE_DIR.parent / "assets" / "templates",
+    BASE_DIR.parent / "packages" / "ui",
 ]
 
 # ------------------------------------------------------------------------------

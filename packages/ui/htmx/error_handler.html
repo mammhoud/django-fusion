@@ -1,0 +1,11 @@
+{# packages/ui/htmx/error_handler.html #}
+{% load i18n %}
+
+<div class="alert alert-danger d-flex align-items-center gap-3 shadow-sm border-0 my-3" role="alert">
+    <i class="bi bi-exclamation-octagon-fill fs-4 text-danger"></i>
+    <div class="flex-grow-1">
+        <strong class="d-block">{% trans "An error occurred" %}</strong>
+        <span class="small text-muted">{{ message|default:_("Failed to complete your request. Please try again.") }}</span>
+    </div>
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+</div>

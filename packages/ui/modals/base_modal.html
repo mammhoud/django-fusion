@@ -1,16 +1,28 @@
 {% load static i18n %}
+{#
+Base Modal Template for all websites in the workspace
+Backwards-compatible with ctc-research/templates/base_modal.html blocks.
+Usage:
+    {% include "modals/base_modal.html" with
+        modal_id="myModal"
+        modal_title="My Modal Title"
+        modal_icon="bi-person"
+        modal_icon_color="text-primary"
+        modal_size="modal-lg"
+        modal_centered=True
+    %}
+#}
 
 <div class="modal fade"
      id="{{ modal_id }}"
      tabindex="-1"
      aria-labelledby="{{ modal_id }}Label"
      aria-hidden="true"
-     data-bs-backdrop="true"
-     data-bs-keyboard="true">
+     data-bs-backdrop="static">
     <div class="modal-dialog {{ modal_size|default:'' }} {% if modal_centered|default:True %}modal-dialog-centered{% endif %} {% block modal_dialog_class %}{% endblock %}">
-        <div class="modal-content border-0 shadow-lg">
+        <div class="modal-content border-0 shadow-lg" id="{{ modal_id }}-content">
             {# Modal Header #}
-            <div class="modal-header border-bottom">
+            <div class="modal-header border-bottom py-3">
                 <h5 class="modal-title d-flex align-items-center gap-2 {{ modal_title_color|default:'' }}"
                     id="{{ modal_id }}Label">
                     {% block modal_icon_block %}
@@ -36,7 +48,7 @@
 
             {# Modal Footer #}
             {% block modal_footer %}
-            <div class="modal-footer border-top">
+            <div class="modal-footer border-top py-3">
                 <button type="button"
                         class="btn btn-secondary"
                         data-bs-dismiss="modal">

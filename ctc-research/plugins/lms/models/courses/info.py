@@ -51,6 +51,18 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
         related_name="courses",
         verbose_name=_("Specializations"),
     )
+    categories = models.ManyToManyField(
+        "CourseCategory",
+        blank=True,
+        related_name="courses",
+        verbose_name=_("Categories"),
+    )
+    tags = models.ManyToManyField(
+        "CourseTag",
+        blank=True,
+        related_name="courses",
+        verbose_name=_("Tags"),
+    )
 
     # === Visual & Media ===
     image = models.ForeignKey(
@@ -260,6 +272,8 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
                 FieldPanel("title"),
                 FieldPanel("slug"),
                 FieldPanel("specializations"),
+                FieldPanel("categories"),
+                FieldPanel("tags"),
                 FieldPanel("instructor"),
                 FieldPanel("image"),
                 FieldPanel("header_image"),
