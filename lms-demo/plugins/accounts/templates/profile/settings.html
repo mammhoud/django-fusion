@@ -1,0 +1,4 @@
+<div class="profile-fragment" id="profile-settings">
+  <h2>{{ page_title|default:"Settings" }}</h2>
+  {% if request.user.is_authenticated %}<p>{{ request.user.get_full_name|default:request.user.email|default:request.user.username }}</p>{% endif %}
+</div>

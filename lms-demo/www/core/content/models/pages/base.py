@@ -10,8 +10,6 @@ from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from django_osoul.site._context_mixins import WagtailPageMixin
-from django_rseal.content.blocks import ContactMethodBlock, FAQSectionBlock
-from django_rseal.handlers.models.manage_company import Organization
 from plugins.accounts.models.manage.service import Service
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
@@ -20,6 +18,7 @@ from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Page
 from wagtail.search import index
 
+from www.core.content.models._compat import ContactMethodBlock, FAQSectionBlock, Organization
 from www.core.content.models.contact import ContactSubmission
 
 from ..blocks.form import MinimalContactFormBlock
@@ -301,7 +300,7 @@ class BaseFormPage(BasePage):
         """
         site_name = getattr(settings, 'SITE_NAME', 'Alliance')
         subject = f"{getattr(settings, 'EMAIL_SUBJECT_PREFIX', '[Alliance] ')} New Submission: {submission.page_title}"
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@example.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@ctc-research.com')
         recipient_list = [getattr(settings, 'CONTACT_FORM_RECIPIENT', from_email)]
 
         context = {

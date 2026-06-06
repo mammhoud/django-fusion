@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from plugins.lms.models import Course, Enrollment, Lesson, Module
 
 try:
-    from django_rseal.workflows.pipelines.models import Person as Profile
+    from django_rseal.pipelines.models import Person as Profile
 except ImportError:
     Profile = None  # type: ignore[assignment,misc]
 

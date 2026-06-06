@@ -3,7 +3,7 @@
 Service for complex person operations.
 
 Delegates to django_rseal.pipelines.services.PersonServiceBase
-Canonical import: from django_rseal.workflows.pipelines.services import PersonServiceBase
+Canonical import: from django_rseal.pipelines.services import PersonServiceBase
 """
 
 import logging
@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
-from django_rseal.workflows.pipelines.models import Person
+from django_rseal.pipelines.models import Person
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

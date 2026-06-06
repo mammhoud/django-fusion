@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.content.blocks.media.gallery import MediaGalleryBlock
+from django_rseal.blocks.media.gallery import MediaGalleryBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
@@ -30,9 +30,7 @@ class AboutPage(BasePage):
                         ),
                         (
                             "page_title",
-                            blocks.CharBlock(
-                                required=True, max_length=200, label=_("Page Title")
-                            ),
+                            blocks.CharBlock(required=True, max_length=200, label=_("Page Title")),
                         ),
                         (
                             "breadcrumb_home_text",
@@ -68,22 +66,16 @@ class AboutPage(BasePage):
                         ),
                         (
                             "welcome_text",
-                            blocks.CharBlock(
-                                max_length=100, label=_("Welcome Text")
-                            ),
+                            blocks.CharBlock(max_length=100, label=_("Welcome Text")),
                         ),
                         (
                             "main_title",
-                            blocks.CharBlock(
-                                max_length=200, label=_("Main Title")
-                            ),
+                            blocks.CharBlock(max_length=200, label=_("Main Title")),
                         ),
                         ("description", blocks.TextBlock(label=_("Description"))),
                         (
                             "years_experience",
-                            blocks.IntegerBlock(
-                                default=20, label=_("Years of Experience")
-                            ),
+                            blocks.IntegerBlock(default=20, label=_("Years of Experience")),
                         ),
                         (
                             "experience_description",
@@ -205,9 +197,7 @@ class AboutPage(BasePage):
                                                     "client_name",
                                                     blocks.CharBlock(
                                                         max_length=100,
-                                                        help_text=_(
-                                                            "Full name of the client."
-                                                        ),
+                                                        help_text=_("Full name of the client."),
                                                         label=_("Client Name"),
                                                     ),
                                                 ),
@@ -266,7 +256,6 @@ class AboutPage(BasePage):
         blank=True,
         verbose_name=_("Facts & Testimonials"),
     )
-
 
     content_panels = Page.content_panels + [
         FieldPanel("head"),

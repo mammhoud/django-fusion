@@ -142,7 +142,7 @@ class EmailService:
         """
         Queue an email for async sending via django-rq.
         """
-        from django_rseal.workflows.pipelines.services.jobs import dispatch_job
+        from django_rseal.pipelines.services.jobs import dispatch_job
         from plugins.accounts.services.email.tasks import send_email_task
 
         # Note: django-rq uses 'at' or 'in' for delays, we'll use enqueue_in if delay > 0

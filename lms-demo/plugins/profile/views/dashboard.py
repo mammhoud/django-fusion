@@ -5,7 +5,7 @@ from django.db.models.aggregates import Count
 from django.http import HttpRequest
 from django.utils import timezone
 from django_osoul.site import PageHandler
-from django_rseal.workflows.pipelines.models import (
+from django_rseal.pipelines.models import (
     PersonTag,
 )
 

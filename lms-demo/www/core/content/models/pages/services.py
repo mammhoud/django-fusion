@@ -17,4 +17,4 @@ class ServicesPage(BaseIndexPage):
         db_table = "content_servicespage"
 
     def get_listed_items(self):
-        return Service.objects.filter(is_active=True).order_by("name")
+        return Service.objects.filter(is_active=True).order_by("name")  # noqa: F821

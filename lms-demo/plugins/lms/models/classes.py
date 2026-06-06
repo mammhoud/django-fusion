@@ -4,8 +4,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
-from django_rseal.content.blocks.blocks import BaseStreamBlock
-from django_rseal.workflows.pipelines.models import ContentBase
+from django_rseal.blocks.stream_blocks import BaseStreamBlock
+from django_rseal.pipelines.models import ContentBase
 from wagtail.admin.panels import (
     FieldPanel,
     FieldRowPanel,

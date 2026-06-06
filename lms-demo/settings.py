@@ -44,3 +44,14 @@ WSGI_APPLICATION = "server.application"
 WEBSITE_NAME = "lms-demo"
 WEBSITE_IDENTIFIER = "lms-demo"
 SITE_ID = 2
+# ============================================================
+# django_rseal required settings
+# ============================================================
+# PROFILE_MODEL is a required ForeignKey target in django_rseal models.
+# Point it to Django's built-in User model since this project
+# does not have a separate profile model.
+PROFILE_MODEL = "auth.User"
+
+
+# Third-party django_rseal currently declares an invalid TeamMembership ordering.
+SILENCED_SYSTEM_CHECKS = ["models.E015"]
