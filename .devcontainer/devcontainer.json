@@ -1,8 +1,12 @@
 // For format details, see https://containers.dev/implementors/json_reference/
+//
+// Local development container for ctc-research Django project
+// Configured to use SQLite database (matches GitHub Actions testing environment)
+//
 {
-    "name": "_dev",
+    "name": "ctc-research-dev",
     "dockerComposeFile": [
-        "../docker-compose.local.yml"
+        "./docker-compose.local.yml"
     ],
     "init": true,
     "mounts": [
@@ -21,7 +25,13 @@
     // /bin/sh -c "while sleep 1000; do :; done" when starting the container instead of the container’s default command
     "overrideCommand": false,
     "service": "django",
-    // "remoteEnv": {"PATH": "/home/dev-user/.local/bin:${containerEnv:PATH}"},
+    "remoteEnv": {
+        "PATH": "/home/dev-user/.local/bin:${containerEnv:PATH}",
+        "RUNNING_ENV": "local",
+        "DB_TYPE": "sqlite",
+        "DEBUG": "true",
+        "RUN_SETUP": "true"
+    },
     "remoteUser": "dev-user",
     "workspaceFolder": "/app",
     // Set *default* container specific settings.json values on container create.
