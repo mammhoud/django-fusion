@@ -10,12 +10,20 @@ const path = require('path');
 // Resolve all plugins from the assets node_modules so they work when
 // webpack is run with --prefix assets / cwd=assets
 const nm = path.join(__dirname, '../assets/node_modules');
+const workspaceRoot = path.resolve(__dirname, '..');
+// Canonical site entry filenames consumed by webpack/main.config.js: ctc-app.js, lms-app.js, vresume-app.js
 
 const MiniCssExtractPlugin = require(require.resolve('mini-css-extract-plugin',     { paths: [nm] }));
 const CssMinimizerPlugin   = require(require.resolve('css-minimizer-webpack-plugin', { paths: [nm] }));
 const TerserPlugin         = require(require.resolve('terser-webpack-plugin',        { paths: [nm] }));
 
 module.exports = {
+  resolve: {
+    alias: {
+      '@base': path.resolve(workspaceRoot, 'assets/static/js/base'),
+      '@utility': path.resolve(workspaceRoot, 'assets/static/js/utility'),
+    },
+  },
   module: {
     rules: [
       // ── JavaScript / JSX ───────────────────────────────────────────────────

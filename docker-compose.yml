@@ -13,7 +13,6 @@ include:
   - path: compose/docker-compose.warehouse.yml
   - path: compose/docker-compose.yml
   - path: compose/docker-compose.tasks.yml
-  - path: ctc-research/docker-compose.yml
   # - path: lms-demo/docker-compose.yml       # DISABLED
   # - path: VResume/docker-compose.yml        # DISABLED
   - path: compose/docker-compose.nginx.yml

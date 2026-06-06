@@ -8,7 +8,6 @@
 networks:
   traefik-net:
     name: traefik-net
-    external: true
 
 x-media-base: &media-base
   build:
@@ -26,7 +25,7 @@ x-media-base: &media-base
 services:
   shared-media:
     <<: *media-base
-    container_name: media-server
+    container_name: shared-media
     labels:
       - "traefik.enable=true"
       - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms-demo.com`) || Host(`media.vresume.structa.cloud`)"
@@ -35,11 +34,8 @@ services:
       - ../assets/staticfiles:/var/www/static:ro
       - ../assets/media:/var/www/media:ro
       - ../ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../ctc-research/assets/media:/var/www/sites/ctc-research/media:ro
       - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
-      - ../lms-demo/assets/media:/var/www/sites/lms-demo/media:ro
       - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
-      - ../VResume/assets/media:/var/www/sites/vresume/media:ro
       - ./media/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
     deploy:
       resources:

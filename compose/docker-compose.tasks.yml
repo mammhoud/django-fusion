@@ -14,7 +14,6 @@
 networks:
   traefik-net:
     name: traefik-net
-    external: true
 
 x-shared-tasks-base: &shared-tasks-base
   build:
