@@ -5,8 +5,8 @@ import uuid
 
 import django.core.validators
 import django.db.models.deletion
-import django_rseal.workflows.pipelines.models.cache
-import django_rseal.workflows.pipelines.models.default
+import django_rseal.models.cache
+import django_rseal.models.default
 import embed_video.fields
 import modelcluster.fields
 import modelsearch.index
@@ -20,9 +20,9 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('CI', '0001_initial'),
+        ('content', '0001_initial'),
         ('contenttypes', '0002_remove_content_type_name'),
-        ('pipelines', '0002_remove_workspace_workspaces_name_f0081f_idx_and_more'),
+        ('django_rseal', '0002_enhance_email_template'),
         ('wagtailcore', '0096_referenceindex_referenceindex_source_object_and_more'),
         ('wagtailimages', '0027_image_description'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
@@ -89,7 +89,7 @@ class Migration(migrations.Migration):
                 ('updated_at', models.DateTimeField(auto_now=True, verbose_name='Last Updated')),
                 ('pass_percentage', models.DecimalField(decimal_places=2, default=70.0, help_text='Percentage required to pass the course.', max_digits=5, verbose_name='Passing Percentage')),
                 ('has_certificate', models.BooleanField(default=False, help_text='Indicates if the course offers a certificate upon completion.', verbose_name='Certificate Available')),
-                ('coupon', models.ForeignKey(blank=True, help_text='Optional coupon attached to this course.', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='courses', to='pipelines.coupon', verbose_name='Coupon')),
+                ('coupon', models.CharField(blank=True, help_text='Optional coupon code attached to this course.', max_length=50, verbose_name='Coupon Code')),
                 ('header_image', models.ForeignKey(blank=True, help_text='Large header image for course detail page', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='course_header_images', to='wagtailimages.image', verbose_name='Header Image')),
                 ('image', models.ForeignKey(blank=True, help_text='Main course image/thumbnail', null=True, on_delete=django.db.models.deletion.SET_NULL, related_name='course_images', to='wagtailimages.image', verbose_name='Course Image')),
                 ('instructor', models.ForeignKey(limit_choices_to={'groups__name': 'Instructors'}, on_delete=django.db.models.deletion.CASCADE, related_name='courses_taught', to=settings.AUTH_USER_MODEL, verbose_name='Instructor')),
@@ -99,25 +99,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Courses',
                 'ordering': ['-publication_date', '-created_at'],
             },
-            bases=(modelsearch.index.Indexed, django_rseal.pipelines.models.cache.ModelCacheMixin, models.Model),
-        ),
-        migrations.CreateModel(
-            name='CourseCartItem',
-            fields=[
-                ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('quantity', models.PositiveIntegerField(default=1, verbose_name='Quantity')),
-                ('price', models.DecimalField(decimal_places=2, max_digits=10, verbose_name='Price')),
-                ('created_at', models.DateTimeField(auto_now_add=True)),
-                ('updated_at', models.DateTimeField(auto_now=True)),
-                ('object_id', models.CharField(editable=False, max_length=255)),
-                ('cart', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, related_name='items', to='CI.cart', verbose_name='Cart')),
-                ('content_type', models.ForeignKey(editable=False, on_delete=django.db.models.deletion.CASCADE, to='contenttypes.contenttype')),
-                ('course', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='alliance.course', verbose_name='Course')),
-            ],
-            options={
-                'verbose_name': 'Course Cart Item',
-                'verbose_name_plural': 'Course Cart Items',
-            },
+            bases=(modelsearch.index.Indexed, django_rseal.models.cache.ModelCacheMixin, models.Model),
         ),
         migrations.CreateModel(
             name='CoursesPage',
@@ -420,7 +402,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Classes',
                 'ordering': ['course', 'sequence', 'created_at'],
             },
-            bases=(models.Model, django_rseal.pipelines.models.default.TemplateRenderMixin),
+            bases=(models.Model, django_rseal.models.default.TemplateRenderMixin),
         ),
         migrations.CreateModel(
             name='Specialization',

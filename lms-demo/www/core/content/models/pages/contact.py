@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.content.blocks import ContactMethodBlock, FAQSectionBlock
+from django_rseal.blocks.contact.contact_methods import ContactMethodBlock
+from django_rseal.blocks.partials.faq import FAQSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import StreamField

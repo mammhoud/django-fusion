@@ -4,12 +4,18 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django_osoul.site import PageHandler
-from django_rseal.workflows.pipelines.models import Person
-from django_rseal.workflows.pipelines.site.mixins import (
-    ProfileContextMixin,
-    ProfileDashboardMixin,
-    ProfileOperationsMixin,
-)
+from django_rseal.pipelines.models import Person
+class ProfileContextMixin:
+    pass
+
+
+class ProfileDashboardMixin:
+    pass
+
+
+class ProfileOperationsMixin:
+    pass
+
 
 from plugins.accounts.services import PersonService
 

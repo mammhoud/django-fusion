@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.content.blocks import ContactCardBlock, PageLinkBlock
+from django_rseal.blocks.contact.contact_card import ContactCardBlock
+from django_rseal.blocks.partials.button import PageLinkBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.blocks import PageChooserBlock
@@ -60,9 +61,7 @@ class HomePage(BaseFormPage):
                                     ),
                                     (
                                         "video_url",
-                                        blocks.URLBlock(
-                                            required=False, label=_("Video URL")
-                                        ),
+                                        blocks.URLBlock(required=False, label=_("Video URL")),
                                     ),
                                 ],
                                 icon="images",
@@ -109,9 +108,7 @@ class HomePage(BaseFormPage):
                                     ),
                                     (
                                         "description",
-                                        blocks.TextBlock(
-                                            required=True, label=_("Description")
-                                        ),
+                                        blocks.TextBlock(required=True, label=_("Description")),
                                     ),
                                 ],
                                 icon="th-list",
@@ -145,9 +142,7 @@ class HomePage(BaseFormPage):
                         ),
                         (
                             "years_experience",
-                            blocks.IntegerBlock(
-                                default=20, label=_("Years of Experience")
-                            ),
+                            blocks.IntegerBlock(default=20, label=_("Years of Experience")),
                         ),
                         (
                             "welcome_text",
@@ -208,15 +203,11 @@ class HomePage(BaseFormPage):
                     [
                         (
                             "subtitle",
-                            blocks.CharBlock(
-                                max_length=100, required=False, label=_("Subtitle")
-                            ),
+                            blocks.CharBlock(max_length=100, required=False, label=_("Subtitle")),
                         ),
                         (
                             "title",
-                            blocks.CharBlock(
-                                max_length=200, required=True, label=_("Title")
-                            ),
+                            blocks.CharBlock(max_length=200, required=True, label=_("Title")),
                         ),
                         (
                             "listing_pages",
@@ -279,15 +270,11 @@ class HomePage(BaseFormPage):
                     [
                         (
                             "subtitle",
-                            blocks.CharBlock(
-                                required=False, max_length=150, label=_("Subtitle")
-                            ),
+                            blocks.CharBlock(required=False, max_length=150, label=_("Subtitle")),
                         ),
                         (
                             "title",
-                            blocks.CharBlock(
-                                required=True, max_length=200, label=_("Title")
-                            ),
+                            blocks.CharBlock(required=True, max_length=200, label=_("Title")),
                         ),
                         (
                             "description",
@@ -379,4 +366,3 @@ class HomePage(BaseFormPage):
         verbose_name = _("Home Page")
         verbose_name_plural = _("Home Pages")
         db_table = "content_homepage"
-

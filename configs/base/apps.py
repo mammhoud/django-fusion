@@ -93,6 +93,7 @@ LOCAL_APPS = [
     "www.core.content.apps.ContentConfig",
     "plugins.accounts.apps.AccountsConfig",
     "plugins.lms.apps.LmsConfig",
+    "plugins.blog.apps.BlogConfig",
     # Legacy page apps are optional; AppRegistry filters them when absent.
     "pages.home",
     "pages.about",

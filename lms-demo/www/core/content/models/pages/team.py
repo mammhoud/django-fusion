@@ -29,9 +29,7 @@ class TeamPage(BasePage):
                         ),
                         (
                             "page_title",
-                            blocks.CharBlock(
-                                required=True, max_length=200, label=_("Page Title")
-                            ),
+                            blocks.CharBlock(required=True, max_length=200, label=_("Page Title")),
                         ),
                         (
                             "breadcrumb_home_text",
@@ -87,7 +85,7 @@ class TeamPage(BasePage):
                                             SimpleImageBlock(
                                                 template="django_grep/comp/blocks/media/simple_image.html",
                                                 label=_("Photo"),
-                                            )
+                                            ),
                                         ),
                                         (
                                             "name",
@@ -183,9 +181,7 @@ class TeamPage(BasePage):
                                                 ),
                                                 required=False,
                                                 label=_("Skills"),
-                                                help_text=_(
-                                                    "Add skills for this team member"
-                                                ),
+                                                help_text=_("Add skills for this team member"),
                                             ),
                                         ),
                                         (
@@ -193,9 +189,7 @@ class TeamPage(BasePage):
                                             blocks.IntegerBlock(
                                                 required=False,
                                                 default=1,
-                                                help_text=_(
-                                                    "Display order (lower numbers first)"
-                                                ),
+                                                help_text=_("Display order (lower numbers first)"),
                                                 label=_("Order"),
                                             ),
                                         ),
@@ -221,7 +215,6 @@ class TeamPage(BasePage):
         help_text=_("Add team sections to the page"),
     )
 
-
     # === Panels ===
     content_panels = BasePage.content_panels + [
         FieldPanel("head"),
@@ -244,9 +237,11 @@ class TeamPage(BasePage):
             if block.block_type == "team_section":
                 team_count += len(block.value.get("team_members", []))
 
-        data.update({
-            "team_members_count": team_count,
-        })
+        data.update(
+            {
+                "team_members_count": team_count,
+            }
+        )
         return data
 
     def get_sorted_team_members(self, block_value):

@@ -2,7 +2,7 @@
 Form Submission Service for handling contact form submissions.
 
 Delegates to django_rseal.pipelines.services.FormSubmissionService
-Canonical import: from django_rseal.workflows.pipelines.services import FormSubmissionService
+Canonical import: from django_rseal.pipelines.services import FormSubmissionService
 """
 import logging
 from typing import Any, Optional

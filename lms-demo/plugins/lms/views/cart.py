@@ -12,8 +12,8 @@ except ImportError:
     CartService = None
 
 try:
-    from django_rseal.workflows.pipelines.services.payments import PayPalGateway, StripeGateway
-    from django_rseal.workflows.pipelines.site.payments import PaymentProcessingMixin
+    from django_rseal.pipelines.services.payments import PayPalGateway, StripeGateway
+    from django_rseal.pipelines.site.payments import PaymentProcessingMixin
 except ImportError:
     StripeGateway = None
     PayPalGateway = None
