@@ -2,7 +2,7 @@ import logging
 
 from django.db import models
 from django.utils import timezone
-from django_osoul.core.managers import BaseManager, cached_method
+from django_osoul.managers import BaseManager, cached_method
 
 logger = logging.getLogger(__name__)
 

@@ -4,7 +4,7 @@ version = "0.1.0"
 requires-python = ">=3.10"
 
 [tool.uv.workspace]
-members = ["django-grep", "django-osoul", "django-rseal", "crafts-ai", "django-osoul-stub"]
+members = ["django-grep", "django-osoul", "django-rseal"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
@@ -17,4 +17,3 @@ addopts = "-v --tb=short"
 django-osoul = { workspace = true }
 django-rseal = { workspace = true }
 django-grep  = { workspace = true }
-nawaai       = { workspace = true }

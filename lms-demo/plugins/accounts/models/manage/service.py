@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from django_osoul.core.models import BaseModel as DefaultBase
+from django_osoul.models import BaseModel as DefaultBase
 from django_rseal.content.blocks.blocks import ServicesSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import (

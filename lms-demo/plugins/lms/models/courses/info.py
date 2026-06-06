@@ -10,7 +10,7 @@ from django.urls import reverse_lazy
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from django_osoul.core.models import BaseModel as DefaultBase
+from django_osoul.models import BaseModel as DefaultBase
 from django_rseal.content.blocks.blocks import OverviewBlock
 from django_rseal.workflows.pipelines.models import ModelCacheMixin
 from modelcluster.models import ClusterableModel

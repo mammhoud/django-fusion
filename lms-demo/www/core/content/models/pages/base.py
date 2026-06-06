@@ -11,7 +11,7 @@ from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from django_osoul.site._context_mixins import WagtailPageMixin
 from django_rseal.content.blocks import ContactMethodBlock, FAQSectionBlock
-from django_rseal.http.handlers.models.manage_company import Organization
+from django_rseal.handlers.models.manage_company import Organization
 from plugins.accounts.models.manage.service import Service
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
