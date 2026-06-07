@@ -82,13 +82,16 @@
 - [x] Test all providers
 - [x] Create payment documentation
 
-## Phase 8 — Wagtail CMS Integration (IN PROGRESS 🚀)
-- [ ] Register EnrollmentSnippetGroup
-- [ ] Add CourseEnrollmentLeadViewSet
-- [ ] Add notification management ViewSet
-- [ ] Verify permissions and search support
+## Phase 8 — Wagtail CMS Integration (COMPLETE ✅)
+- [x] Register EnrollmentSnippetGroup
+- [x] Add PaymentTransactionViewSet
+- [x] Add PaymentRefundViewSet
+- [x] Add PaymentWebhookLogViewSet
+- [x] Configure permissions and search support
+- [x] Add filtering and export capabilities
+- [x] Create comprehensive documentation
 
-## Phase 10 — Traefik Refactor
+## Phase 10 — Traefik Refactor (IN PROGRESS 🚀)
 - [ ] Create infra/traefik/ directory
 - [ ] Move traefik config to infra/
 - [ ] Update compose references
@@ -138,7 +141,7 @@
 
 ## Summary
 
-**Completed Phases (11 total):**
+**Completed Phases (12 total):**
 - ✅ Phase A - Docker service naming
 - ✅ Phase B - SSL certificate backup/restore  
 - ✅ Phase C - Template consolidation
@@ -150,11 +153,12 @@
 - ✅ Phase 6 - Enrollment workflow
 - ✅ Phase 9 - JavaScript bundle standardization
 - ✅ Phase 7 - Payment providers
+- ✅ Phase 8 - Wagtail CMS integration
 
 **In Progress (1):**
-- 🚀 Phase 8 - Wagtail CMS Integration
+- 🚀 Phase 10 - Traefik Refactor
 
-**Remaining (5):**
-- Phase 10, 11, 12, 13, 14, 15, 16
+**Remaining (4):**
+- Phase 11, 12, 13, 14, 15, 16
 
-**Estimated Completion:** Today (9-11 hours remaining)
+**Estimated Completion:** Today (8-10 hours remaining)
