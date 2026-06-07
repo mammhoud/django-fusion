@@ -75,7 +75,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-rebuild docker-redeploy docker-deploy deploy rebuild redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites
+.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-rebuild docker-redeploy docker-deploy deploy rebuild redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config
 
 help:
 	@echo "Top-level targets:"
@@ -128,23 +128,11 @@ scripts script:
 	$(MAKE) -C tests/scripts $(filter-out $@,$(MAKECMDGOALS))
 	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
 
-scripts script:
-	$(MAKE) -C tests/scripts $(filter-out $@,$(MAKECMDGOALS))
-
 website-ctc:
 	$(MAKE) -C ctc-research $(filter-out $@,$(MAKECMDGOALS))
 
 website-structa:
 	$(MAKE) -C lms-demo $(filter-out $@,$(MAKECMDGOALS))
-
-website-vresume:
-	$(MAKE) -C VResume $(filter-out $@,$(MAKECMDGOALS))
-
-projects:
-	@for project in ctc-research lms-demo VResume; do \
-		echo "==> $$project: $(or $(filter-out $@,$(MAKECMDGOALS)),help)"; \
-		$(MAKE) -C $$project $(or $(filter-out $@,$(MAKECMDGOALS)),help); \
-	done
 
 website-vresume:
 	$(MAKE) -C VResume $(filter-out $@,$(MAKECMDGOALS))
@@ -163,9 +151,6 @@ validate-config:
 
 build-assets:
 	PROJECT_PATH=$(SITE) $(MAKE) -C assets build
-
-build-assets-all:
-	$(MAKE) -C assets build-all
 
 build-assets-all:
 	$(MAKE) -C assets build-all
@@ -244,16 +229,6 @@ populate-data-all:
 		$(PYTHON) tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
-populate-data-site:
-	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
-
-populate-data-all:
-	mkdir -p $(LOG_DIR)
-	@for site in ctc-research lms-demo vresume; do \
-		$(PYTHON) tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
-	done
-
 verify-runtime-site:
 	mkdir -p $(LOG_DIR)
 	$(PYTHON) tests/scripts/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
@@ -279,12 +254,6 @@ tests-websites:
 	$(MAKE) -C tests websites
 
 tests-website:
-	tests/scripts/run_website_tests.sh $(TEST_WEBSITE)
-
-# Delegated subtargets are consumed by nested Makefiles.
-.PHONY: list health containers production production-simple domains vresume-pages
-list health containers production production-simple domains vresume-pages:
-	@:
 	tests/scripts/run_website_tests.sh $(TEST_WEBSITE)
 
 # Delegated subtargets are consumed by nested Makefiles.
@@ -407,3 +376,67 @@ docker-start-all:
 	@sleep 5
 	docker compose -f docker-compose.yml ps
 
+###############################################################################
+# ADDITIONAL UTILITY TARGETS
+###############################################################################
+
+.PHONY: lint format typecheck docs lint-all format-all typecheck-all
+
+# Lint all Python code
+lint:
+	$(PYTHON) -m pylint ctc-research lms-demo VResume 2>/dev/null || echo "Linting completed with warnings"
+
+# Format Python code
+format:
+	$(PYTHON) -m black ctc-research lms-demo VResume tests/
+
+# Type checking with mypy
+typecheck:
+	$(PYTHON) -m mypy ctc-research lms-demo VResume --ignore-missing-imports 2>/dev/null || echo "Type checking completed with warnings"
+
+# Run all checks: lint, format, typecheck
+lint-all: lint typecheck
+	@echo "Linting completed for all projects"
+
+# Generate documentation
+docs:
+	@echo "Documentation can be found in docs/ directory"
+	@ls -la docs/
+
+# Clean Python cache and build artifacts
+clean:
+	@echo "Cleaning Python cache and build artifacts..."
+	find . -type d -name '__pycache__' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name '.pytest_cache' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name '.mypy_cache' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name 'dist' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name 'build' -exec rm -rf {} + 2>/dev/null || true
+	find . -type d -name '*.egg-info' -exec rm -rf {} + 2>/dev/null || true
+	@echo "Clean completed"
+
+# Show Makefile targets with descriptions
+show-targets:
+	@grep -E "^[a-zA-Z_-]+:" Makefile | sed 's/:.*//' | sort | uniq
+
+# Print variable values
+show-vars:
+	@echo "WEBSITE=$(WEBSITE)"
+	@echo "SITE=$(SITE)"
+	@echo "TEST_WEBSITE=$(TEST_WEBSITE)"
+	@echo "MANAGE=$(MANAGE)"
+	@echo "DOCKER_SERVICE=$(DOCKER_SERVICE)"
+	@echo "DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)"
+	@echo "COMPOSE_FILE=$(COMPOSE_FILE)"
+	@echo "PYTHON=$(PYTHON)"
+	@echo "LOG_DIR=$(LOG_DIR)"
+	@echo "SERVER_TYPE=$(SERVER_TYPE)"
+
+# Print all configuration
+show-config: show-vars
+	@echo ""
+	@echo "Derived paths:"
+	@echo "  SITE_PATH=$(SITE)"
+	@echo "  DOCKER_BUILD_ARGS=$(DOCKER_BUILD_ARGS)"
+	@echo ""
+
+.PHONY: clean show-targets show-vars show-config

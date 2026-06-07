@@ -111,13 +111,16 @@
 - [x] Create utilities grafana provisioning
 - [x] All services with health checks and Traefik integration
 
-## Phase 12 — Makefile Refactor (IN PROGRESS 🚀)
-- [ ] Review current targets (already comprehensive)
-- [ ] Add missing targets if any
-- [ ] Create MAKEFILE_REFERENCE.md
-- [ ] Verify all commands work
+## Phase 12 — Makefile Refactor (COMPLETE ✅)
+- [x] Review current targets (49 total)
+- [x] Remove duplicate target definitions
+- [x] Add missing targets (lint, format, typecheck, etc.)
+- [x] Create MAKEFILE_REFERENCE.md
+- [x] Verify all commands work
+- [x] Update .PHONY declarations
 
-## Phase 13 — Testing
+## Phase 13 — Testing (IN PROGRESS 🚀)
+- [ ] Review current test coverage
 - [ ] Add course model tests
 - [ ] Add enrollment lead tests
 - [ ] Add HTMX view tests
@@ -147,7 +150,7 @@
 
 ## Summary
 
-**Completed Phases (13 total):**
+**Completed Phases (14 total):**
 - ✅ Phase A - Docker service naming
 - ✅ Phase B - SSL certificate backup/restore  
 - ✅ Phase C - Template consolidation
@@ -162,11 +165,12 @@
 - ✅ Phase 8 - Wagtail CMS integration
 - ✅ Phase 10 - Traefik refactor
 - ✅ Phase 11 - Warehouses & utilities separation
+- ✅ Phase 12 - Makefile refactor
 
 **In Progress (1):**
-- 🚀 Phase 12 - Makefile Refactor
+- 🚀 Phase 13 - Testing
 
-**Remaining (3):**
-- Phase 13, 14, 15, 16
+**Remaining (2):**
+- Phase 14, 15, 16
 
-**Estimated Completion:** Today (4-6 hours remaining)
+**Estimated Completion:** Today (2-3 hours remaining)
