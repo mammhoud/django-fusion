@@ -9,13 +9,15 @@ WAGTAIL HOOKS CONFIGURATION FOR COURSE MANAGEMENT
 ==================================================
 
 This file configures the Wagtail admin interface for all course-related models.
-It provides comprehensive admin views for managing courses, modules, images, and specializations.
+It provides comprehensive admin views for managing courses, modules, images, 
+specializations, enrollments, and payments.
 
-Menu Company:
+Menu Organization:
 - Courses & Content: Main course management
 - Learning Structure: Modules and curriculum
+- Enrollments: Student enrollment management
+- Payments: Payment transactions, refunds, webhooks
 - Media & Assets: Course images and media
-- Specializations: Course categories and topics
 
 Icons Reference:
 - book: Courses
@@ -23,6 +25,8 @@ Icons Reference:
 - image: Course images
 - tag: Specializations
 - star: Featured content
+- user: Enrollments
+- credit: Payments
 """
 
 
@@ -61,16 +65,18 @@ class TracksSnippetViewSetGroup(SnippetViewSetGroup):
 # REGISTRATION
 # =============================================================================
 
-register_snippet(TracksSnippetViewSetGroup)
-register_snippet(ClassesSnippetViewSetGroup)
-
 class EnrollmentSnippetGroup(SnippetViewSetGroup):
-    menu_label = _("Enrollments")
-    menu_icon = "group"
-    menu_order = 200
+    menu_label = _("Enrollments & Payments")
+    menu_icon = "wallet"
+    menu_order = 150
     items = (
         EnrollmentViewSet,
+        PaymentTransactionViewSet,
+        PaymentRefundViewSet,
+        PaymentWebhookLogViewSet,
     )
 
-# register_snippet(EnrollmentSnippetGroup)
+register_snippet(EnrollmentSnippetGroup)
+register_snippet(TracksSnippetViewSetGroup)
+register_snippet(ClassesSnippetViewSetGroup)
 
