@@ -1,0 +1,129 @@
+# ============================================
+# MEDIA SERVER DOMAINS CONFIGURATION
+# Provides domain-specific media server endpoints
+# Domains:
+# - media.structa.cloud  (shared media)
+# - media.ctc-research.com (CTC Research)
+# - media.lms-demo.com (LMS Demo)
+# - media.vresume.structa.cloud (VResume)
+# ============================================
+http:
+  routers:
+    # Shared media server - HTTP to HTTPS redirect
+    shared-media-http:
+      rule: "Host(`media.structa.cloud`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: shared-media-service
+      priority: 10
+
+    # Shared media server - HTTPS
+    shared-media-https:
+      rule: "Host(`media.structa.cloud`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: shared-media-service
+      priority: 10
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "media.structa.cloud"
+
+    # CTC Research media server - HTTP to HTTPS redirect
+    ctc-media-http:
+      rule: "Host(`media.ctc-research.com`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: ctc-media-service
+      priority: 10
+
+    # CTC Research media server - HTTPS
+    ctc-media-https:
+      rule: "Host(`media.ctc-research.com`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: ctc-media-service
+      priority: 10
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "media.ctc-research.com"
+
+    # LMS Demo media server - HTTP to HTTPS redirect
+    lms-media-http:
+      rule: "Host(`media.lms-demo.com`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: lms-media-service
+      priority: 10
+
+    # LMS Demo media server - HTTPS
+    lms-media-https:
+      rule: "Host(`media.lms-demo.com`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: lms-media-service
+      priority: 10
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "media.lms-demo.com"
+
+    # VResume media server - HTTP to HTTPS redirect
+    vresume-media-http:
+      rule: "Host(`media.vresume.structa.cloud`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: vresume-media-service
+      priority: 10
+
+    # VResume media server - HTTPS
+    vresume-media-https:
+      rule: "Host(`media.vresume.structa.cloud`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: vresume-media-service
+      priority: 10
+      tls:
+        certResolver: letsencrypt
+        domains:
+          - main: "media.vresume.structa.cloud"
+
+  services:
+    # All media servers point to the same shared-media container
+    # but can have different paths mounted if needed in future
+    shared-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://shared-media:80"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+
+    ctc-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://shared-media:80"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+
+    lms-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://shared-media:80"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+
+    vresume-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://shared-media:80"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
