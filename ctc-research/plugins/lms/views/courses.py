@@ -1,18 +1,18 @@
 import logging
 
+from django.contrib.auth.decorators import login_required
 from django.db import models
-from django.http import JsonResponse
-
-# views.py
-from django.shortcuts import get_object_or_404
+from django.http import HttpRequest, HttpResponse, JsonResponse
+from django.shortcuts import get_object_or_404, render
 from django.utils.decorators import method_decorator
+from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
 from django_osoul.site import PageHandler
 from django_osoul.views import FilterMixin, SearchMixin
 from django_rseal.models import CachingStorage
 
-from ..models import Course
+from ..models import Course, CourseEnrollmentLead, CourseTag
 
 logger = logging.getLogger(__name__)
 
@@ -430,20 +430,6 @@ class CourseSearchView(SearchMixin, FilterMixin, ListView):
             "duration_ranges": duration_ranges,
         }
 
-    def render_to_response(self, context, **response_kwargs):
-        """Add cache headers to response."""
-        response = super().render_to_response(context, **response_kwargs)
-
-        # Add cache headers
-        if getattr(self.request, "cache_hit", False):
-            response["X-Cache"] = "HIT"
-            response["X-Cache-Source"] = "Redis/Memcached"
-        else:
-            response["X-Cache"] = "MISS"
-
-        return response
-
-
 # -------------------------------------------------------------------
 # API ENDPOINT FOR FILTERED SEARCH
 # -------------------------------------------------------------------
@@ -531,22 +517,67 @@ class CourseSearchAPIView(ListView):
 
 
 # -------------------------------------------------------------------
-# URL CONFIGURATION
+# HTMX ENROLLMENT & WISHLIST VIEWS (Supporting CoursesPage)
 # -------------------------------------------------------------------
-"""
-# In your urls.py:
-from django.urls import path
-from .views import CourseSearchView, CourseSearchAPIView, FrontCourseDetailView
 
-urlpatterns = [
-    # Course search and filter
-    path('courses/search/', CourseSearchView.as_view(), name='course_search'),
-    path('api/courses/search/', CourseSearchAPIView.as_view(), name='course_search_api'),
+@login_required
+@require_http_methods(["GET"])
+def course_enrollment_form(request: HttpRequest, course_id: int) -> HttpResponse:
+    """Display enrollment form modal (AJAX response)."""
+    course = get_object_or_404(Course, id=course_id, is_active=True)
 
-    # Course detail (with caching)
-    path('course/<slug:slug>/', FrontCourseDetailView.as_view(), name='course_detail'),
+    context = {
+        "course": course,
+    }
 
-    # Course index (optional)
-    path('courses/', CourseSearchView.as_view(), name='course_index'),
-]
-"""
+    return render(request, "learning/_course_enrollment_modal.html", context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def course_enrollment_create(request: HttpRequest, course_id: int) -> HttpResponse:
+    """Create course enrollment lead (AJAX response)."""
+    course = get_object_or_404(Course, id=course_id, is_active=True)
+
+    full_name = request.POST.get("full_name", request.user.get_full_name())
+    email = request.POST.get("email", request.user.email)
+    phone = request.POST.get("phone", "")
+
+    # Create or update enrollment lead
+    enrollment, created = CourseEnrollmentLead.objects.get_or_create(
+        course=course,
+        email=email,
+        defaults={
+            "full_name": full_name,
+            "phone": phone,
+            "status": CourseEnrollmentLead.Status.PENDING,
+        }
+    )
+
+    if not created:
+        enrollment.phone = phone
+        enrollment.save()
+
+    context = {
+        "enrollment": enrollment,
+        "created": created,
+    }
+
+    return render(request, "learning/_course_enrollment_success.html", context)
+
+
+@login_required
+@require_http_methods(["POST"])
+def course_wishlist_toggle(request: HttpRequest, course_id: int) -> HttpResponse:
+    """Toggle course in user wishlist (AJAX response)."""
+    course = get_object_or_404(Course, id=course_id, is_active=True)
+
+    # TODO: Implement wishlist functionality with custom user model
+    # For now, placeholder response
+
+    context = {
+        "course": course,
+        "is_wishlisted": False,
+    }
+
+    return render(request, "learning/_course_wishlist_button.html", context)

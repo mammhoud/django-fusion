@@ -91,6 +91,15 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {% block scripts %}
     {% endblock scripts %}
 
+    {# ====================================================== #}
+    {# Unified JavaScript Modules (Workspace Root)           #}
+    {# ====================================================== #}
+    <script src="{% static 'js/app.js' %}"></script>
+    <script src="{% static 'js/htmx-config.js' %}"></script>
+    <script src="{% static 'js/notifications.js' %}"></script>
+    <script src="{% static 'js/modals.js' %}"></script>
+    <script src="{% static 'js/forms.js' %}"></script>
+
     {% block extra_styles %}
     {% endblock extra_styles %}
 

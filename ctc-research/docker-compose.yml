@@ -78,9 +78,15 @@ services:
       WAGTAILADMIN_BASE_URL: "https://ctc-research.com"
     labels:
       - "traefik.enable=true"
-      - "traefik.frontend.rule=Host:ctc-website.local,ctc-research.local"
-      - "traefik.http.routers.ctc-website.rule=Host(`ctc-website.local`) || Host(`ctc-research.local`)"
-      - "traefik.http.services.ctc-website.loadbalancer.server.port=5070"
+      - "traefik.http.routers.ctc-research.rule=Host(`ctc-research.local`) || Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      - "traefik.http.routers.ctc-research.service=ctc-research-service"
+      - "traefik.http.routers.ctc-research.entrypoints=web,websecure"
+      - "traefik.http.routers.ctc-research.tls=true"
+      - "traefik.http.services.ctc-research-service.loadbalancer.server.port=5070"
+      - "traefik.http.middlewares.ctc-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.ctc-research-http.rule=Host(`ctc-research.local`) || Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      - "traefik.http.routers.ctc-research-http.entrypoints=web"
+      - "traefik.http.routers.ctc-research-http.middlewares=ctc-redirect"
     healthcheck:
       test: ["CMD", "curl", "-fL", "http://127.0.0.1:5070/health/"]
       interval: 30s

@@ -1,0 +1,143 @@
+{% comment %}
+Course Grid View - HTMX Fragment
+Used for displaying courses in grid layout
+{% endcomment %}
+
+{% load static %}
+
+<div class="rbt-course-grid{% if compact %} rbt-course-grid--compact{% endif %}">
+  {% for course in courses %}
+    <article class="rbt-course-card{% if course.featured %} rbt-course-card--featured{% endif %}" 
+             data-course-id="{{ course.id }}">
+      
+      {# Image Section #}
+      <div class="rbt-course-card__image">
+        {% if course.image_url %}
+          <img src="{{ course.image_url }}" 
+               alt="{{ course.title }}"
+               loading="lazy">
+        {% else %}
+          <img src="{% static 'images/placeholder-course.png' %}" 
+               alt="No image available"
+               loading="lazy">
+        {% endif %}
+
+        {# Wishlist Button #}
+        <button class="rbt-course-card__wishlist" 
+                title="Add to wishlist"
+                hx-post="{% url 'course_wishlist_toggle' course.id %}"
+                hx-swap="outerHTML">
+          <i class="feather-heart"></i>
+        </button>
+
+        {# Sale Badge #}
+        {% if course.discount_percentage > 0 %}
+          <span class="rbt-course-card__badge rbt-course-card__badge--sale">
+            Save {{ course.discount_percentage }}%
+          </span>
+        {% elif course.featured %}
+          <span class="rbt-course-card__badge rbt-course-card__badge--featured">
+            Featured
+          </span>
+        {% endif %}
+      </div>
+
+      {# Content Section #}
+      <div class="rbt-course-card__content">
+        {# Tags #}
+        {% if course.tags.all %}
+          <div class="rbt-course-card__tags">
+            {% for tag in course.tags.all|slice:":3" %}
+              <span class="tag">{{ tag.name }}</span>
+            {% endfor %}
+          </div>
+        {% endif %}
+
+        {# Title #}
+        <h3 class="rbt-course-card__title">
+          <a href="{% url 'course_detail' course.slug %}">
+            {{ course.title }}
+          </a>
+        </h3>
+
+        {# Instructor #}
+        <div class="rbt-course-card__instructor">
+          <span class="label">By</span> {{ course.instructor_name }}
+        </div>
+
+        {# Description #}
+        <p class="rbt-course-card__description">
+          {{ course.short_description }}
+        </p>
+
+        {# Difficulty #}
+        <span class="rbt-course-card__difficulty rbt-course-card__difficulty--{{ course.get_difficulty_level_display|lower }}">
+          <i class="feather-zap"></i>
+          {{ course.get_difficulty_level_display }}
+        </span>
+
+        {# Rating #}
+        <div class="rbt-course-card__rating">
+          <div class="stars">
+            {% for i in "12345" %}
+              {% if i|add:"0" <= course.rating %}
+                <span class="star">★</span>
+              {% else %}
+                <span class="star star--empty">☆</span>
+              {% endif %}
+            {% endfor %}
+          </div>
+          <span class="count">({{ course.total_reviews }})</span>
+        </div>
+
+        {# Duration #}
+        <div class="rbt-course-card__duration">
+          <i class="feather-clock"></i>
+          {{ course.duration_hours }}h {{ course.duration_hours|pluralize:"hour,hours" }}
+        </div>
+
+        {# Student Count #}
+        <div class="rbt-course-card__students">
+          <i class="feather-users"></i>
+          {{ course.student_count }} students
+        </div>
+      </div>
+
+      {# Footer Section #}
+      <div class="rbt-course-card__footer">
+        {# Pricing #}
+        <div class="rbt-course-card__price">
+          <span class="current">${{ course.price }}</span>
+          {% if course.original_price %}
+            <span class="original">${{ course.original_price }}</span>
+          {% endif %}
+        </div>
+
+        {# CTA Button #}
+        <button class="rbt-course-card__action"
+                hx-get="{% url 'course_enrollment_form' course.id %}"
+                hx-target="body"
+                hx-swap="beforeend"
+                type="button">
+          <i class="feather-check-circle"></i>
+          Enroll Now
+        </button>
+      </div>
+    </article>
+  {% empty %}
+    <div class="rbt-course-empty" style="grid-column: 1 / -1;">
+      <div class="rbt-course-empty__icon">
+        <i class="feather-inbox"></i>
+      </div>
+      <h3 class="rbt-course-empty__title">No courses found</h3>
+      <p class="rbt-course-empty__message">
+        Try adjusting your filters or search query
+      </p>
+    </div>
+  {% endfor %}
+</div>
+
+{# Pagination #}
+{% if page_obj.has_other_pages %}
+  {% include "courses/_pagination.html" %}
+{% endif %}

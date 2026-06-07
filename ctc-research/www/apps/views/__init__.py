@@ -1,23 +1,20 @@
-"""
-Handlers Views Module
-"""
-
-from . import privacy
-from .tags import (
-    ArticlesByTagView,
-    ProductsByTagView,
-    TagDetailView,
-    TagListView,
-    filter_by_tags,
-    search_tags,
+"""Views for CTC Research application."""
+from .courses import (
+    course_catalog,
+    course_search,
+    course_filter,
+    course_detail,
+    course_enrollment_form,
+    course_enrollment_create,
+    course_wishlist_toggle,
 )
 
 __all__ = [
-    "privacy",
-    "TagListView",
-    "TagDetailView",
-    "ArticlesByTagView",
-    "ProductsByTagView",
-    "search_tags",
-    "filter_by_tags",
+    "course_catalog",
+    "course_search",
+    "course_filter",
+    "course_detail",
+    "course_enrollment_form",
+    "course_enrollment_create",
+    "course_wishlist_toggle",
 ]

@@ -1,0 +1,198 @@
+{% load static wagtailcore_tags %}
+{% comment %}
+CoursesPage Catalog Template
+=============================
+Main course catalog template integrated with Wagtail CoursesPage.
+Handles:
+- Search and filtering
+- Grid/list view toggle  
+- Pagination
+- Course cards rendering
+{% endcomment %}
+
+<div class="course-catalog">
+  {# Page Header #}
+  <div class="course-catalog__header">
+    <h1 class="course-catalog__title">{{ page.title }}</h1>
+    {% if page.introduction %}
+      <div class="course-catalog__intro">
+        {{ page.introduction|safe }}
+      </div>
+    {% endif %}
+  </div>
+
+  {# Search & Controls Bar #}
+  <div class="course-catalog__controls">
+    <form method="get" class="course-catalog__search-form">
+      <input type="text" 
+             name="q" 
+             class="course-catalog__search-input" 
+             placeholder="Search courses..."
+             value="{{ request.GET.q|default:'' }}">
+      <button type="submit" class="course-catalog__search-button">
+        <i class="feather-search"></i> Search
+      </button>
+    </form>
+
+    {# View Toggle #}
+    <div class="course-catalog__view-toggle">
+      <a href="?view=grid{% for key, value in request.GET.items %}{% if key != 'view' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+         class="course-catalog__view-btn {% if request.GET.view|default:'grid' == 'grid' %}active{% endif %}" 
+         title="Grid View">
+        <i class="feather-grid"></i>
+      </a>
+      <a href="?view=list{% for key, value in request.GET.items %}{% if key != 'view' %}&{{ key }}={{ value }}{% endif %}{% endfor %}" 
+         class="course-catalog__view-btn {% if request.GET.view == 'list' %}active{% endif %}" 
+         title="List View">
+        <i class="feather-list"></i>
+      </a>
+    </div>
+
+    {# Filter Toggle #}
+    <button type="button" class="course-catalog__filter-toggle" data-toggle="course-filters">
+      <i class="feather-filter"></i> Filters
+    </button>
+  </div>
+
+  {# Filters Section #}
+  <aside class="course-catalog__filters" id="course-filters">
+    <form method="get" class="course-filters-form">
+      {# Difficulty Level #}
+      <fieldset class="course-filters__group">
+        <legend class="course-filters__legend">Difficulty Level</legend>
+        <div class="course-filters__options">
+          <label class="course-filters__option">
+            <input type="checkbox" name="difficulty" value="" {% if not request.GET.difficulty %}checked{% endif %}>
+            All Levels
+          </label>
+          {% for choice in filter_options.difficulties %}
+            <label class="course-filters__option">
+              <input type="checkbox" 
+                     name="difficulty" 
+                     value="{{ choice.value }}"
+                     {% if request.GET.difficulty == choice.value %}checked{% endif %}>
+              {{ choice.label }} ({{ choice.count }})
+            </label>
+          {% endfor %}
+        </div>
+      </fieldset>
+
+      {# Price Range #}
+      <fieldset class="course-filters__group">
+        <legend class="course-filters__legend">Price Range</legend>
+        <div class="course-filters__inputs">
+          <input type="number" 
+                 name="price_min" 
+                 class="course-filters__input" 
+                 placeholder="Min" 
+                 min="0"
+                 value="{{ request.GET.price_min|default:'' }}">
+          <input type="number" 
+                 name="price_max" 
+                 class="course-filters__input" 
+                 placeholder="Max" 
+                 min="0"
+                 value="{{ request.GET.price_max|default:'' }}">
+        </div>
+      </fieldset>
+
+      {# Tags #}
+      {% if filter_options.tags %}
+        <fieldset class="course-filters__group">
+          <legend class="course-filters__legend">Tags</legend>
+          <div class="course-filters__options">
+            {% for tag in filter_options.tags %}
+              <label class="course-filters__option">
+                <input type="checkbox" 
+                       name="tags" 
+                       value="{{ tag.id }}"
+                       {% if tag.id|stringformat:"s" in request.GET.getlist|add:["tags"] %}checked{% endif %}>
+                {{ tag.name }} ({{ tag.course_count }})
+              </label>
+            {% endfor %}
+          </div>
+        </fieldset>
+      {% endif %}
+
+      {# Sort #}
+      <fieldset class="course-filters__group">
+        <legend class="course-filters__legend">Sort By</legend>
+        <select name="sort" class="course-filters__select">
+          <option value="-created_at" {% if request.GET.sort == '-created_at' or not request.GET.sort %}selected{% endif %}>Newest First</option>
+          <option value="title" {% if request.GET.sort == 'title' %}selected{% endif %}>Title (A-Z)</option>
+          <option value="-rating" {% if request.GET.sort == '-rating' %}selected{% endif %}>Highest Rated</option>
+          <option value="price" {% if request.GET.sort == 'price' %}selected{% endif %}>Price (Low to High)</option>
+          <option value="-price" {% if request.GET.sort == '-price' %}selected{% endif %}>Price (High to Low)</option>
+        </select>
+      </fieldset>
+
+      <button type="submit" class="course-filters__submit">Apply Filters</button>
+    </form>
+  </aside>
+
+  {# Course Grid/List #}
+  <div class="course-catalog__content">
+    {% if courses %}
+      <div class="course-catalog__view course-catalog__view--{{ request.GET.view|default:'grid' }}">
+        {% for course in courses %}
+          {% include "learning/_course_card.html" with course=course %}
+        {% endfor %}
+      </div>
+
+      {# Pagination #}
+      {% if paginator.num_pages > 1 %}
+        <nav class="course-catalog__pagination" aria-label="Course pagination">
+          <ul class="pagination">
+            {% if page_obj.has_previous %}
+              <li class="page-item">
+                <a class="page-link" href="?page=1{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                  &laquo; First
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                  Previous
+                </a>
+              </li>
+            {% endif %}
+
+            {% for num in paginator.page_range %}
+              {% if page_obj.number == num %}
+                <li class="page-item active">
+                  <span class="page-link">{{ num }}</span>
+                </li>
+              {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                <li class="page-item">
+                  <a class="page-link" href="?page={{ num }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                    {{ num }}
+                  </a>
+                </li>
+              {% endif %}
+            {% endfor %}
+
+            {% if page_obj.has_next %}
+              <li class="page-item">
+                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                  Next
+                </a>
+              </li>
+              <li class="page-item">
+                <a class="page-link" href="?page={{ paginator.num_pages }}{% for key, value in request.GET.items %}{% if key != 'page' %}&{{ key }}={{ value }}{% endif %}{% endfor %}">
+                  Last &raquo;
+                </a>
+              </li>
+            {% endif %}
+          </ul>
+        </nav>
+      {% endif %}
+    {% else %}
+      <div class="course-catalog__empty">
+        <p>No courses found matching your criteria. Please try adjusting your filters.</p>
+      </div>
+    {% endif %}
+  </div>
+</div>
+
+<style>
+  {% include "learning/course_catalog.scss" %}
+</style>

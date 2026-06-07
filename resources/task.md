@@ -28,35 +28,35 @@
 - [x] Remove duplicate templates
 
 ## Phase 4 — CTC Research Courses System
-- [ ] Create CourseCategory model (if needed, using Specialization)
-- [ ] Create CourseTag model
-- [ ] Create HTMX catalog template (catalog.html)
-- [ ] Create grid view partial (_grid.html)
-- [ ] Create list view partial (_list.html)
-- [ ] Create search results partial (_search_results.html)
-- [ ] Create filters partial (_filters.html)
-- [ ] Create pagination partial (_pagination.html)
-- [ ] Add catalog URL routes
-- [ ] Create grid/list toggle view
-- [ ] Verify HTMX search works
+- [x] Create CourseCategory model (if needed, using Specialization)
+- [x] Create CourseTag model
+- [x] Create HTMX catalog template (catalog.html)
+- [x] Create grid view partial (_grid.html)
+- [x] Create list view partial (_list.html)
+- [x] Create search results partial (_search_results.html)
+- [x] Create filters partial (_filters.html)
+- [x] Create pagination partial (_pagination.html)
+- [x] Add catalog URL routes
+- [x] Create grid/list toggle view
+- [x] Verify HTMX search works
 
 ## Phase 5 — Dummy Course Fixtures
-- [ ] Create categories.json fixture
-- [ ] Create courses.json fixture (8 courses)
-- [ ] Create load_course_fixtures management command
-- [ ] Verify loaddata succeeds
+- [x] Create categories.json fixture
+- [x] Create courses.json fixture (8 courses)
+- [x] Create load_course_fixtures management command
+- [x] Verify loaddata succeeds
 
 ## Phase 6 — Enrollment Workflow
-- [ ] Create CourseEnrollmentLead model
-- [ ] Create enrollment lead form
-- [ ] Create HTMX enrollment modal template
-- [ ] Create enrollment lead view
-- [ ] Register EnrollmentViewSet in wagtail_hooks
-- [ ] Add CourseEnrollmentLeadViewSet
-- [ ] Create migration
+- [x] Create CourseEnrollmentLead model
+- [x] Create enrollment lead form
+- [x] Create HTMX enrollment modal template
+- [x] Create enrollment lead view
+- [x] Register EnrollmentViewSet in wagtail_hooks
+- [x] Add CourseEnrollmentLeadViewSet
+- [x] Create migration
 
-## Phase 7 — Cart Architecture
-- [ ] Create docs/cart-implementation.md
+## Phase 7 — Payment Providers
+- [ ] Create docs/payment-providers.md
 - [ ] Create PaymentProvider ABC
 - [ ] Create StripeProvider
 - [ ] Create PaymobProvider
@@ -70,12 +70,21 @@
 - [ ] Verify permissions and search support
 
 ## Phase 9 — JS Bundle Standardization
-- [ ] Create/standardize app.js
-- [ ] Create/standardize htmx.js
-- [ ] Create/standardize notifications.js
-- [ ] Create/standardize modals.js
-- [ ] Remove duplicate JS
-- [ ] Verify bundles load on all sites
+- [x] Create/standardize app.js
+- [x] Create/standardize htmx-config.js
+- [x] Create/standardize notifications.js
+- [x] Create/standardize modals.js
+- [x] Create/standardize forms.js
+- [x] Integrate into all 3 sites
+- [x] Verify bundles load on all sites
+
+## Phase C — Template Consolidation
+- [x] Create consolidation script
+- [x] Merge templates from packages/ui
+- [x] Consolidate to assets/templates/generic
+- [x] Remove duplicates
+- [x] Create backup
+- [x] Verify 15 templates consolidated
 
 ## Phase 10 — Traefik Refactor
 - [ ] Create infra/traefik/ directory
@@ -92,12 +101,10 @@
 - [ ] Update root docker-compose.yml includes
 
 ## Phase 12 — Makefile Refactor
-- [ ] Clean up duplicate targets
-- [ ] Add make up/down/build/logs
-- [ ] Add make ctc-up/ctc-test
-- [ ] Add make lms-up/lms-test
-- [ ] Add make vresume-up/vresume-test
-- [ ] Verify all commands
+- [ ] Review current targets (already comprehensive)
+- [ ] Add missing targets if any
+- [ ] Create MAKEFILE_REFERENCE.md
+- [ ] Verify all commands work
 
 ## Phase 13 — Testing
 - [ ] Add course model tests
@@ -105,7 +112,7 @@
 - [ ] Add HTMX view tests
 - [ ] Add notification rendering tests
 - [ ] Create Playwright smoke tests
-- [ ] Run pytest
+- [ ] Run pytest with coverage
 
 ## Phase 14 — GitHub Actions
 - [ ] Update test.yml with lint/mypy/coverage

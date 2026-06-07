@@ -1,0 +1,98 @@
+{# assets/templates/generic/_modals.html #}
+{% load static i18n %}
+
+<!--
+Generic Base Modal Template
+Supports multiple modal types and patterns:
+  - Standard modal with header, body, footer
+  - Centered/scrollable modals
+  - Different sizes (sm, md, lg, xl)
+  - Custom content and actions
+
+Usage:
+    {% include "generic/_modals.html" with
+        modal_id="myModal"
+        modal_title="My Modal Title"
+        modal_icon="bi-person"
+        modal_size="modal-lg"
+        modal_centered=True
+        modal_body_content=content
+    %}
+-->
+
+<div class="modal fade"
+     id="{{ modal_id }}"
+     tabindex="-1"
+     aria-labelledby="{{ modal_id }}Label"
+     aria-hidden="true"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog {{ modal_size|default:'modal-md' }} {% if modal_centered|default:True %}modal-dialog-centered{% endif %} {% if modal_scrollable %}modal-dialog-scrollable{% endif %} {% block modal_dialog_class %}{% endblock %}">
+        <div class="modal-content border-0 shadow-lg" id="{{ modal_id }}-content">
+            
+            {# Modal Header #}
+            {% block modal_header %}
+            <div class="modal-header border-bottom py-3">
+                <h5 class="modal-title d-flex align-items-center gap-2 {{ modal_title_color|default:'text-heading' }}"
+                    id="{{ modal_id }}Label">
+                    {% block modal_icon_block %}
+                    {% if modal_icon %}
+                    <i class="bi {{ modal_icon }} {{ modal_icon_color|default:'text-primary' }} fs-5"></i>
+                    {% endif %}
+                    {% endblock %}
+                    {% block modal_title_block %}{{ modal_title|default:"" }}{% endblock %}
+                </h5>
+                <button type="button"
+                        class="btn-close"
+                        data-bs-dismiss="modal"
+                        aria-label="{% trans 'Close' %}"></button>
+            </div>
+            {% endblock %}
+
+            {# Modal Body #}
+            {% block modal_full_body %}
+            <div class="modal-body p-4">
+                {% block modal_content %}
+                {# Override this block with modal content or pass via modal_body_content #}
+                {% if modal_body_content %}
+                    {{ modal_body_content|safe }}
+                {% endif %}
+                {% endblock %}
+            </div>
+
+            {# Modal Footer #}
+            {% block modal_footer %}
+            <div class="modal-footer border-top py-3">
+                {% block modal_footer_left %}{% endblock %}
+                
+                <div class="modal-footer-actions d-flex gap-2 ms-auto">
+                    {% block modal_close_button %}
+                    {% if show_close_button|default:True %}
+                    <button type="button"
+                            class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        {% trans "Close" %}
+                    </button>
+                    {% endif %}
+                    {% endblock %}
+                    
+                    {% block modal_actions %}
+                    {# Override this block with action buttons #}
+                    {% if modal_primary_action %}
+                    <button type="button"
+                            class="btn btn-primary"
+                            id="{{ modal_id }}-primary-action">
+                        {{ modal_primary_action }}
+                    </button>
+                    {% endif %}
+                    {% endblock %}
+                </div>
+            </div>
+            {% endblock %}
+            {% endblock %}
+        </div>
+    </div>
+</div>
+
+{% block modal_styles %}{% endblock %}
+{% block modal_scripts %}{% endblock %}

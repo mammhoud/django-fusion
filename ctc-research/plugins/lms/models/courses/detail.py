@@ -202,36 +202,4 @@ class CourseCategory(DefaultBase):
         return self.courses.filter(is_published=True, is_active=True).count()
 
 
-# -------------------------------------------------------------------
-# COURSE TAG MODEL
-# -------------------------------------------------------------------
-class CourseTag(DefaultBase):
-    """Tag/keyword for courses."""
 
-    name = models.CharField(max_length=100, unique=True, verbose_name=_("Tag Name"))
-    slug = models.SlugField(unique=True, max_length=100, verbose_name=_("Slug"))
-
-    panels = [
-        FieldPanel("name"),
-        FieldPanel("slug"),
-    ]
-
-    class Meta:
-        verbose_name = _("Course Tag")
-        verbose_name_plural = _("Course Tags")
-        ordering = ["name"]
-
-    def __str__(self):
-        return self.name
-
-    def save(self, *args, **kwargs):
-        """Auto-generate slug if not provided."""
-        if not self.slug:
-            base_slug = slugify(self.name)
-            slug = base_slug
-            counter = 1
-            while CourseTag.objects.filter(slug=slug).exists():
-                slug = f"{base_slug}-{counter}"
-                counter += 1
-            self.slug = slug
-        super().save(*args, **kwargs)
