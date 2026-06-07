@@ -9,6 +9,14 @@ from .views.enrollment import (
     enrollment_export_csv,
     enrollment_import_csv,
 )
+from .views.payments import (
+    initialize_payment,
+    verify_payment,
+    payment_status,
+    webhook_stripe,
+    webhook_paypal,
+    webhook_paymo,
+)
 
 try:
     from django_rseal.site.payments import (
@@ -78,6 +86,12 @@ urlpatterns = [
     path("api/courses/search/", CourseSearchAPIView.as_view(), name="course_search_api"),
     
     # ===================================================================
-    # Payment Providers
+    # Payment Providers (Phase 7)
     # ===================================================================
+    path("payment/initialize/<int:enrollment_id>/", initialize_payment, name="payment_initialize"),
+    path("payment/verify/<int:transaction_id>/", verify_payment, name="payment_verify"),
+    path("payment/status/<int:transaction_id>/", payment_status, name="payment_status"),
+    path("payment/webhook/stripe/", webhook_stripe, name="webhook_stripe"),
+    path("payment/webhook/paypal/", webhook_paypal, name="webhook_paypal"),
+    path("payment/webhook/paymo/", webhook_paymo, name="webhook_paymo"),
 ] + payment_urls
