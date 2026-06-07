@@ -280,3 +280,50 @@ Create custom versions:
 - [Alpine.js Documentation](https://alpinejs.dev)
 - [Tailwind CSS Documentation](https://tailwindcss.com)
 
+
+
+---
+
+## Per-Site Usage
+
+### ctc-research (LMS)
+- Uses htmx/*, forms/*, modals/*, notifications/*, search/*, tables/*
+- Enrollment modals: packages/ui/modals/base_modal.html
+- Course search: packages/ui/search/search_bar.html
+- Payment forms: packages/ui/forms/htmx_form.html
+
+### lms-demo (LMS Demo)
+- Uses same components as ctc-research (symlinked plugins/components)
+- Course catalog: packages/ui/search/ + packages/ui/tables/
+- Auth flows: packages/ui/forms/ + packages/ui/notifications/
+
+### VResume (Portfolio)
+- Uses notifications/*, modals/*, forms/htmx_form.html
+- Contact form: packages/ui/forms/htmx_form.html
+- Toast alerts: packages/ui/notifications/toast_templates.html
+
+---
+
+## Integration with libs
+
+### With django-osoul (foundation)
+The UI components work with osoul's validators:
+- packages/ui/forms/validation.html shows UniqueFieldValidator errors
+- packages/ui/htmx/error_handler.html displays osoul's ErrorTrackerMiddleware 4xx/5xx errors
+
+### With django-rseal (automation)
+Email templates reference base layout from packages/ui:
+- packages/ui/notifications/ → feeds into rseal's email notification system
+- packages/ui/forms/htmx_form.html → used in rseal's FormSubmissionService submissions
+
+### With django-grep (testing)
+Test all UI components using django-grep's BaseTestCase:
+```python
+from django_grep.tests.base import BaseTestCase
+
+class UIComponentTest(BaseTestCase):
+    def test_htmx_form_renders(self):
+        self.login()
+        response = self.client.get('/some-form-url/')
+        self.assertContains(response, 'hx-post')
+```

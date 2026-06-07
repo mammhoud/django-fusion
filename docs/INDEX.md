@@ -34,6 +34,9 @@ make test
 
 Comprehensive guides for key features and systems.
 
+### Libraries & Integration
+- **[LIBS_INTEGRATION.md](guides/LIBS_INTEGRATION.md)** - django-osoul, django-rseal, django-grep integration guide
+
 ### Course System
 - **[COURSE_SYSTEM_IMPLEMENTATION.md](guides/COURSE_SYSTEM_IMPLEMENTATION.md)** - Complete course system
 - **[COURSE_SYSTEM_QUICK_REFERENCE.md](guides/COURSE_SYSTEM_QUICK_REFERENCE.md)** - Quick reference
@@ -52,6 +55,7 @@ Comprehensive guides for key features and systems.
 ## API & Infrastructure
 
 ### Infrastructure Setup
+- **[INFRASTRUCTURE_GUIDE.md](infrastructure/INFRASTRUCTURE_GUIDE.md)** - Compose stack, networks, databases, ports
 - **[DEPLOYMENT_CHECKLIST.md](infrastructure/DEPLOYMENT_CHECKLIST.md)** - Deployment checklist
 - **[DEPLOYMENT_GUIDE_SSL.md](infrastructure/DEPLOYMENT_GUIDE_SSL.md)** - SSL configuration
 - **[CERTIFICATE_BACKUP_GUIDE.md](infrastructure/CERTIFICATE_BACKUP_GUIDE.md)** - Certificate management
@@ -60,11 +64,11 @@ Comprehensive guides for key features and systems.
 - **[DEPLOYMENT_COMPLETE.md](infrastructure/DEPLOYMENT_COMPLETE.md)** - Deployment status
 
 ### Services
-- **PostgreSQL** - Primary database
-- **Redis** - Caching layer
-- **Prometheus** - Monitoring
-- **Loki** - Logging
-- **Grafana** - Visualization
+- **PostgreSQL** - Primary database (structa-db)
+- **Redis** - Caching layer (structa-cache)
+- **Prometheus** - Monitoring (prometheus.localhost:9090)
+- **Loki** - Logging (loki.localhost:3100)
+- **Grafana** - Visualization (grafana.localhost:3000)
 
 ---
 
@@ -83,10 +87,28 @@ Comprehensive guides for key features and systems.
 - **Search** - Search components
 - **Tables** - Data tables
 
+---
+
+## Frontend & Assets
+
+### Build System & JS Libraries
+- **[assets/ASSETS_GUIDE.md](../assets/ASSETS_GUIDE.md)** - Webpack build, JS libraries, per-site commands
+
+#### Quick Build Reference
+```bash
+npm --prefix assets run build:ctc      # ctc-research
+npm --prefix assets run build:structa  # lms-demo
+npm --prefix assets run build:vresume  # VResume
+npm --prefix assets run build:all      # all sites
+```
+
 ### Test Fixtures
 **Location:** `tests/fixtures/`
 
+- **[tests/fixtures/INDEX.md](../tests/fixtures/INDEX.md)** - Complete fixture index (all sites)
 - **[tests/fixtures/README.md](../tests/fixtures/README.md)** - Fixture documentation
+- **[tests/fixtures/vresume/README.md](../tests/fixtures/vresume/README.md)** - VResume fixtures reference
+- **[tests/fixtures/lms-demo/README.md](../tests/fixtures/lms-demo/README.md)** - lms-demo fixtures reference
 
 #### Available Fixtures
 - **LMS Data** - Courses, tags, specializations
@@ -201,11 +223,13 @@ Historical documentation and phase reports.
 docs/
 ├── INDEX.md                     (this file)
 ├── guides/                      (Feature guides)
+│   ├── LIBS_INTEGRATION.md
 │   ├── COURSE_SYSTEM_*.md
 │   ├── PAYMENT_PROVIDERS.md
 │   ├── WAGTAIL_CMS_INTEGRATION.md
 │   └── MAKEFILE_REFERENCE.md
 ├── infrastructure/              (Infrastructure & deployment)
+│   ├── INFRASTRUCTURE_GUIDE.md
 │   ├── DEPLOYMENT_*.md
 │   ├── CERTIFICATE_*.md
 │   └── ...
@@ -222,6 +246,10 @@ docs/
 │   └── ...
 └── _INDEX.md                    (Master index)
 ```
+
+### Related Docs (outside docs/)
+- `assets/ASSETS_GUIDE.md` — Frontend build & JS library reference
+- `packages/ui/README.md` — UI component library
 
 ---
 
@@ -266,6 +294,6 @@ make load-dumps-site    # Load dumps
 
 ---
 
-**Last Updated:** June 7, 2026  
+**Last Updated:** June 9, 2026  
 **Status:** ✅ COMPLETE & ORGANIZED
 
