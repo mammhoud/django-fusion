@@ -91,21 +91,27 @@
 - [x] Add filtering and export capabilities
 - [x] Create comprehensive documentation
 
-## Phase 10 — Traefik Refactor (IN PROGRESS 🚀)
-- [ ] Create infra/traefik/ directory
-- [ ] Move traefik config to infra/
-- [ ] Update compose references
-- [ ] Verify SSL config
-- [ ] Verify HTTP→HTTPS redirect config
+## Phase 10 — Traefik Refactor (COMPLETE ✅)
+- [x] Create infra/traefik/ directory
+- [x] Move traefik config to infra/
+- [x] Update compose references
+- [x] Verify SSL config
+- [x] Verify HTTP→HTTPS redirect config
 
-## Phase 11 — Warehouses & Utilities Separation
-- [ ] Create warehouses/ directory
-- [ ] Create utilities/ directory
-- [ ] Move warehouse compose
-- [ ] Move utilities compose
-- [ ] Update root docker-compose.yml includes
+## Phase 11 — Warehouses & Utilities Separation (COMPLETE ✅)
+- [x] Create warehouses/ directory
+- [x] Create utilities/ directory
+- [x] Create warehouses/docker-compose.yml
+- [x] Create warehouses/postgres/init/init-databases.sql
+- [x] Create warehouses/redis/redis.conf
+- [x] Create utilities/docker-compose.yml
+- [x] Create utilities/monitoring/prometheus.yml
+- [x] Create utilities/logging/loki.yml
+- [x] Create utilities monitoring alerts
+- [x] Create utilities grafana provisioning
+- [x] All services with health checks and Traefik integration
 
-## Phase 12 — Makefile Refactor
+## Phase 12 — Makefile Refactor (IN PROGRESS 🚀)
 - [ ] Review current targets (already comprehensive)
 - [ ] Add missing targets if any
 - [ ] Create MAKEFILE_REFERENCE.md
@@ -141,7 +147,7 @@
 
 ## Summary
 
-**Completed Phases (12 total):**
+**Completed Phases (13 total):**
 - ✅ Phase A - Docker service naming
 - ✅ Phase B - SSL certificate backup/restore  
 - ✅ Phase C - Template consolidation
@@ -154,11 +160,13 @@
 - ✅ Phase 9 - JavaScript bundle standardization
 - ✅ Phase 7 - Payment providers
 - ✅ Phase 8 - Wagtail CMS integration
+- ✅ Phase 10 - Traefik refactor
+- ✅ Phase 11 - Warehouses & utilities separation
 
 **In Progress (1):**
-- 🚀 Phase 10 - Traefik Refactor
+- 🚀 Phase 12 - Makefile Refactor
 
-**Remaining (4):**
-- Phase 11, 12, 13, 14, 15, 16
+**Remaining (3):**
+- Phase 13, 14, 15, 16
 
-**Estimated Completion:** Today (8-10 hours remaining)
+**Estimated Completion:** Today (4-6 hours remaining)
