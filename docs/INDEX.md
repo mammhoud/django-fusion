@@ -1,383 +1,271 @@
-# 📑 Complete Documentation Index
+# Documentation Index
 
-Navigate all documentation by topic, user role, or workflow.
+Complete documentation organized by category.
 
----
+## Quick Links
 
-## Quick Reference
-
-| Need | Document | Time |
-|------|----------|------|
-| Deploy now | [QUICK_START.md](deployment/QUICK_START.md) | 5 min |
-| Understand system | [ARCHITECTURE.md](guides/ARCHITECTURE.md) | 20 min |
-| Deploy step-by-step | [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md) | 30 min |
-| Check status | [STATUS.md](reference/STATUS.md) | 2 min |
-| Test deployment | [TEST_PLAN.md](deployment/TEST_PLAN.md) | 20 min |
-| What was built | [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md) | 10 min |
+- **[Getting Started](#getting-started)** - Start here for new developers
+- **[Guides](#guides)** - Feature and system guides
+- **[API & Infrastructure](#api--infrastructure)** - API docs and infrastructure
+- **[Components](#components)** - UI components library
+- **[Setup & Installation](#setup--installation)** - Installation guides
+- **[Troubleshooting](#troubleshooting)** - Common issues and solutions
+- **[Archives](#archives)** - Historical documents
 
 ---
 
-## By Role
+## Getting Started
 
-### 🏭 DevOps / Operations
+### For New Developers
+1. **[START_HERE.md](setup/00_START_HERE.md)** - Quick start guide
+2. **[DEPLOYMENT_QUICK_START.md](setup/DEPLOYMENT_QUICK_START.md)** - Quick deployment
 
-**Essential Reading**:
-1. [QUICK_START.md](deployment/QUICK_START.md) - Quick reference
-2. [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Docker & services
-3. [TEST_PLAN.md](deployment/TEST_PLAN.md) - Verification procedures
-
-**Reference**:
-- [STATUS.md](reference/STATUS.md) - Current status
-- [DEPLOYMENT_STATUS.md](reference/DEPLOYMENT_STATUS.md) - Technical details
-
-### 👨‍💻 Developers
-
-**Essential Reading**:
-1. [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md) - Overview of changes
-2. [ARCHITECTURE.md](guides/ARCHITECTURE.md) - Complete system design
-3. [README.md](README.md) - Quick navigation
-
-**Reference**:
-- [DEPLOYMENT_STATUS.md](reference/DEPLOYMENT_STATUS.md) - Build details
-- [COMPLETION.md](reference/COMPLETION.md) - Technical completion report
-
-### 📊 Project Managers
-
-**Essential Reading**:
-1. [STATUS.md](reference/STATUS.md) - Quick overview
-2. [COMPLETION.md](reference/COMPLETION.md) - Session completion
-3. [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md) - Work accomplished
-
-**Reference**:
-- [QUICK_START.md](deployment/QUICK_START.md) - Deployment timeline
-
----
-
-## By Category
-
-### 🚀 Deployment
-
-- **[QUICK_START.md](deployment/QUICK_START.md)**
-  - 5-minute quick reference for deployment
-  - Common commands and URLs
-  - Fast troubleshooting tips
-
-- **[MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md)**
-  - Step-by-step deployment procedures
-  - 10 detailed phases
-  - Comprehensive troubleshooting
-  - Rollback procedures
-
-- **[TEST_PLAN.md](deployment/TEST_PLAN.md)**
-  - 8-phase testing workflow
-  - Health check procedures
-  - Success criteria
-  - Verification matrix
-
-### 📊 Reference
-
-- **[STATUS.md](reference/STATUS.md)**
-  - Current system status
-  - What's ready and what's next
-  - Key metrics
-  - Quick facts
-
-- **[DEPLOYMENT_STATUS.md](reference/DEPLOYMENT_STATUS.md)**
-  - Complete technical status
-  - Build verification
-  - Architecture details
-  - Configuration summary
-
-- **[COMPLETION.md](reference/COMPLETION.md)**
-  - Session completion report
-  - Tasks accomplished
-  - Metrics and statistics
-  - Quality assurance
-
-### 📚 Guides
-
-- **[SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md)**
-  - Overview of this session's work
-  - What was built and why
-  - Technology stack
-  - Deployment readiness
-
-- **[ARCHITECTURE.md](guides/ARCHITECTURE.md)**
-  - Complete system architecture
-  - JavaScript organization (40+ files)
-  - Build system details
-  - File structure explanation
-
-- **[INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md)**
-  - Docker services (7 total)
-  - Network configuration
-  - Volume management
-  - Service health checks
-  - Maintenance procedures
-
----
-
-## By Workflow
-
-### Workflow 1: Fast Deployment (65 min total)
-
-```
-1. Read QUICK_START.md (5 min)
-   ↓
-2. Run deploy-production.sh (55 min)
-   ↓
-3. Verify containers running (5 min)
-   ↓
-4. Done! 🎉
-```
-
-### Workflow 2: Informed Deployment (100 min total)
-
-```
-1. Read STATUS.md (2 min)
-   ↓
-2. Read SESSION_SUMMARY.md (10 min)
-   ↓
-3. Read QUICK_START.md (5 min)
-   ↓
-4. Run deploy-production.sh (55 min)
-   ↓
-5. Run TEST_PLAN.md checks (20 min)
-   ↓
-6. Done! 🎉
-```
-
-### Workflow 3: Deep Understanding (150 min total)
-
-```
-1. Read SESSION_SUMMARY.md (10 min)
-   ↓
-2. Read ARCHITECTURE.md (20 min)
-   ↓
-3. Read INFRASTRUCTURE.md (15 min)
-   ↓
-4. Read MANUAL_GUIDE.md (30 min)
-   ↓
-5. Run deploy-production.sh (55 min)
-   ↓
-6. Read TEST_PLAN.md (20 min)
-   ↓
-7. Done! 🎉
-```
-
-### Workflow 4: Troubleshooting
-
-```
-1. Check QUICK_START.md (common issues)
-   ↓
-2. Read MANUAL_GUIDE.md (troubleshooting section)
-   ↓
-3. Run TEST_PLAN.md (health checks)
-   ↓
-4. Check DEPLOYMENT_STATUS.md (technical details)
-   ↓
-5. Issue resolved! ✅
+### First Steps
+```bash
+# Setup development environment
+make check WEBSITE=ctc
+make run-dev WEBSITE=ctc
+make test
 ```
 
 ---
 
-## File Statistics
+## Guides
 
-### Deployment Guides
-| File | Pages | Content |
-|------|-------|---------|
-| QUICK_START.md | 3 | Commands, URLs, FAQs |
-| MANUAL_GUIDE.md | 17 | Step-by-step procedures |
-| TEST_PLAN.md | 15 | Testing procedures |
-| **Total** | **35** | |
+Comprehensive guides for key features and systems.
 
-### Reference Documents
-| File | Pages | Content |
-|------|-------|---------|
-| STATUS.md | 12 | Current status |
-| DEPLOYMENT_STATUS.md | 17 | Technical details |
-| COMPLETION.md | 14 | Session report |
-| **Total** | **43** | |
+### Course System
+- **[COURSE_SYSTEM_IMPLEMENTATION.md](guides/COURSE_SYSTEM_IMPLEMENTATION.md)** - Complete course system
+- **[COURSE_SYSTEM_QUICK_REFERENCE.md](guides/COURSE_SYSTEM_QUICK_REFERENCE.md)** - Quick reference
 
-### Technical Guides
-| File | Pages | Content |
-|------|-------|---------|
-| SESSION_SUMMARY.md | 14 | Work overview |
-| ARCHITECTURE.md | 50 | System design |
-| INFRASTRUCTURE.md | 18 | Docker & ops |
-| **Total** | **82** | |
+### Payment System
+- **[PAYMENT_PROVIDERS.md](guides/PAYMENT_PROVIDERS.md)** - Payment integration (3 providers)
 
-### Navigation
-| File | Purpose |
-|------|---------|
-| README.md | Main entry point |
-| INDEX.md | This file |
-| **Total Documentation** | **~160 pages** |
+### CMS Integration
+- **[WAGTAIL_CMS_INTEGRATION.md](guides/WAGTAIL_CMS_INTEGRATION.md)** - Wagtail admin setup
+
+### Development Tools
+- **[MAKEFILE_REFERENCE.md](guides/MAKEFILE_REFERENCE.md)** - All make commands (49 targets)
 
 ---
 
-## Search by Topic
+## API & Infrastructure
 
-### Authentication & Security
-- See [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md) - Admin user creation
-- See [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Service security
+### Infrastructure Setup
+- **[DEPLOYMENT_CHECKLIST.md](infrastructure/DEPLOYMENT_CHECKLIST.md)** - Deployment checklist
+- **[DEPLOYMENT_GUIDE_SSL.md](infrastructure/DEPLOYMENT_GUIDE_SSL.md)** - SSL configuration
+- **[CERTIFICATE_BACKUP_GUIDE.md](infrastructure/CERTIFICATE_BACKUP_GUIDE.md)** - Certificate management
 
-### Build System
-- See [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md) - Build overview
-- See [ARCHITECTURE.md](guides/ARCHITECTURE.md) - Build details
+### Docker & Deployment
+- **[DEPLOYMENT_COMPLETE.md](infrastructure/DEPLOYMENT_COMPLETE.md)** - Deployment status
 
-### Containers & Docker
-- See [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Container setup
-- See [QUICK_START.md](deployment/QUICK_START.md) - Docker commands
-
-### Data & Databases
-- See [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Database service
-- See [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md) - Data loading
-
-### Deployment Process
-- See [QUICK_START.md](deployment/QUICK_START.md) - Fast reference
-- See [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md) - Full guide
-- See [TEST_PLAN.md](deployment/TEST_PLAN.md) - Verification
-
-### Error Handling & Troubleshooting
-- See [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md) - Troubleshooting section
-- See [TEST_PLAN.md](deployment/TEST_PLAN.md) - Diagnostic procedures
-
-### Monitoring & Health Checks
-- See [TEST_PLAN.md](deployment/TEST_PLAN.md) - Health checks
-- See [QUICK_START.md](deployment/QUICK_START.md) - Monitoring commands
-
-### Performance & Optimization
-- See [ARCHITECTURE.md](guides/ARCHITECTURE.md) - System design
-- See [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Resource optimization
-
-### Testing & Quality Assurance
-- See [TEST_PLAN.md](deployment/TEST_PLAN.md) - Complete test plan
-- See [COMPLETION.md](reference/COMPLETION.md) - QA results
-
-### URLs & Networking
-- See [QUICK_START.md](deployment/QUICK_START.md) - Website URLs
-- See [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Network config
+### Services
+- **PostgreSQL** - Primary database
+- **Redis** - Caching layer
+- **Prometheus** - Monitoring
+- **Loki** - Logging
+- **Grafana** - Visualization
 
 ---
 
-## Navigation Shortcuts
+## Components
 
-### Main Entry Points
-- **New to the system?** → Start with [README.md](README.md)
-- **Need to deploy?** → Go to [QUICK_START.md](deployment/QUICK_START.md)
-- **Want deep dive?** → Read [ARCHITECTURE.md](guides/ARCHITECTURE.md)
-- **Looking for status?** → Check [STATUS.md](reference/STATUS.md)
+### UI Components Library
+**Location:** `packages/ui/`
 
-### By Time Available
-- **5 minutes** → [QUICK_START.md](deployment/QUICK_START.md)
-- **15 minutes** → [STATUS.md](reference/STATUS.md) + [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md)
-- **30 minutes** → [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md)
-- **60 minutes** → [ARCHITECTURE.md](guides/ARCHITECTURE.md) + [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md)
+- **[packages/ui/README.md](../packages/ui/README.md)** - Component documentation
 
-### By Task
-- **Deploy** → [deployment/](deployment/)
-- **Troubleshoot** → [deployment/MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md#troubleshooting)
-- **Test** → [deployment/TEST_PLAN.md](deployment/TEST_PLAN.md)
-- **Understand** → [guides/](guides/)
+#### Component Categories
+- **Forms** - HTMX form integration
+- **HTMX** - Core HTMX utilities
+- **Modals** - Modal dialogs
+- **Notifications** - Toast notifications
+- **Search** - Search components
+- **Tables** - Data tables
 
----
+### Test Fixtures
+**Location:** `tests/fixtures/`
 
-## Document Summaries
+- **[tests/fixtures/README.md](../tests/fixtures/README.md)** - Fixture documentation
 
-### Quick Start (~3 pages)
-5-minute reference with essential commands, URLs, and quick solutions.
-→ [Read Now](deployment/QUICK_START.md)
+#### Available Fixtures
+- **LMS Data** - Courses, tags, specializations
+- **Users** - User test data
+- **Courses** - Course fixtures
+- **System** - System test data
 
-### Manual Guide (~17 pages)
-Complete step-by-step procedures with detailed explanations and troubleshooting.
-→ [Read Now](deployment/MANUAL_GUIDE.md)
+### Test Scripts
+**Location:** `tests/scripts/`
 
-### Test Plan (~15 pages)
-Comprehensive testing procedures and health checks.
-→ [Read Now](deployment/TEST_PLAN.md)
+- **[tests/scripts/README.md](../tests/scripts/README.md)** - Script documentation
 
-### Status (~12 pages)
-Current system status and readiness metrics.
-→ [Read Now](reference/STATUS.md)
-
-### Deployment Status (~17 pages)
-Technical details about build and deployment status.
-→ [Read Now](reference/DEPLOYMENT_STATUS.md)
-
-### Completion Report (~14 pages)
-Session completion summary with metrics.
-→ [Read Now](reference/COMPLETION.md)
-
-### Session Summary (~14 pages)
-Overview of what was accomplished this session.
-→ [Read Now](guides/SESSION_SUMMARY.md)
-
-### Architecture (~50 pages)
-Complete system architecture and design.
-→ [Read Now](guides/ARCHITECTURE.md)
-
-### Infrastructure (~18 pages)
-Docker services and infrastructure details.
-→ [Read Now](guides/INFRASTRUCTURE.md)
+#### Script Categories
+- **Deployment** - Production deployment
+- **Validation** - System validation
+- **Utilities** - Helper utilities
+- **Helpers** - Test runners
 
 ---
 
-## Learning Paths
+## Setup & Installation
 
-### For New Team Members
-1. [README.md](README.md) - Overview
-2. [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md) - What was built
-3. [ARCHITECTURE.md](guides/ARCHITECTURE.md) - How it works
-4. [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Where it runs
-5. [QUICK_START.md](deployment/QUICK_START.md) - How to deploy
+### Initial Setup
+1. **Clone repository**
+   ```bash
+   git clone <repo-url>
+   cd websites
+   ```
 
-### For Production Support
-1. [QUICK_START.md](deployment/QUICK_START.md) - Quick reference
-2. [TEST_PLAN.md](deployment/TEST_PLAN.md) - Health checks
-3. [MANUAL_GUIDE.md](deployment/MANUAL_GUIDE.md) - Troubleshooting
-4. [INFRASTRUCTURE.md](guides/INFRASTRUCTURE.md) - Operations
+2. **Install dependencies**
+   ```bash
+   make check
+   ```
 
-### For Development
-1. [SESSION_SUMMARY.md](guides/SESSION_SUMMARY.md) - What exists
-2. [ARCHITECTURE.md](guides/ARCHITECTURE.md) - How it's organized
-3. [README.md](README.md) - Where things are located
+3. **Start development**
+   ```bash
+   make run-dev WEBSITE=ctc
+   ```
 
----
+### Database Setup
+```bash
+# Apply migrations
+make migrate
 
-## Version & Updates
+# Load fixtures
+make load-dumps-site WEBSITE=ctc
 
-- **Documentation Version**: 1.0
-- **Last Updated**: June 2, 2026
-- **Scope**: Complete coverage of all 3 websites
-- **Status**: ✅ Production Ready
+# Populate test data
+make populate-data-all
+```
 
----
+### Docker Setup
+```bash
+# Full deployment
+make docker-deploy-full
 
-## Feedback & Improvements
+# Start specific service
+make docker-up WEBSITE=ctc
 
-This documentation is comprehensive but may need updates as the system evolves. 
-Please report any:
-- Missing information
-- Incorrect procedures
-- Unclear explanations
-- Out-of-date content
-
----
-
-## Quick Links (Copy-Paste Ready)
-
-**Main Documentation Files**:
-- [Main README](README.md)
-- [Deployment Guide](deployment/MANUAL_GUIDE.md)
-- [Quick Start](deployment/QUICK_START.md)
-- [Architecture](guides/ARCHITECTURE.md)
-
-**All Files**:
-- [deployment/](deployment/)
-- [reference/](reference/)
-- [guides/](guides/)
+# Check status
+make docker-status
+```
 
 ---
 
-**Ready?** Start with [README.md](README.md) or [QUICK_START.md](deployment/QUICK_START.md)
+## Troubleshooting
+
+### Common Issues
+
+**Asset loading problems**
+- [ASSET_HEALTH_VERIFICATION.md](troubleshooting/ASSET_HEALTH_VERIFICATION.md)
+
+**Container issues**
+- [CONTAINER_LOGS_ANALYSIS.md](troubleshooting/CONTAINER_LOGS_ANALYSIS.md)
+
+### Debug Commands
+
+```bash
+# Check system
+make check WEBSITE=ctc
+
+# View logs
+make docker-logs-all
+
+# Validate config
+docker compose config --quiet
+
+# Test endpoints
+make verify-runtime-site WEBSITE=ctc
+```
+
+---
+
+## Archives
+
+Historical documentation and phase reports.
+
+**Location:** `docs/archives/`
+
+- Phase completion reports (Phases 4-14)
+- Session summaries
+- Implementation reports
+- Planning documents
+
+**See:** [docs/archives/README.md](archives/README.md)
+
+---
+
+## File Organization
+
+```
+docs/
+├── INDEX.md                     (this file)
+├── guides/                      (Feature guides)
+│   ├── COURSE_SYSTEM_*.md
+│   ├── PAYMENT_PROVIDERS.md
+│   ├── WAGTAIL_CMS_INTEGRATION.md
+│   └── MAKEFILE_REFERENCE.md
+├── infrastructure/              (Infrastructure & deployment)
+│   ├── DEPLOYMENT_*.md
+│   ├── CERTIFICATE_*.md
+│   └── ...
+├── setup/                       (Setup & installation)
+│   ├── 00_START_HERE.md
+│   └── DEPLOYMENT_QUICK_START.md
+├── troubleshooting/             (Troubleshooting guides)
+│   ├── ASSET_HEALTH_VERIFICATION.md
+│   ├── CONTAINER_LOGS_ANALYSIS.md
+│   └── ...
+├── archives/                    (Historical documents)
+│   ├── README.md
+│   ├── PHASE*.md
+│   └── ...
+└── _INDEX.md                    (Master index)
+```
+
+---
+
+## Quick Commands
+
+### Development
+```bash
+make run-dev               # Start dev server
+make test                  # Run tests
+make lint-all             # Check code quality
+```
+
+### Build & Deploy
+```bash
+make docker-deploy-full   # Full deployment
+make docker-rebuild       # Rebuild images
+make docker-logs-all      # View all logs
+```
+
+### Testing
+```bash
+make test                 # Run all tests
+make tests-unit          # Unit tests only
+make tests-website       # Website tests
+```
+
+### Database
+```bash
+make migrate              # Apply migrations
+make populate-data-all   # Load test data
+make load-dumps-site    # Load dumps
+```
+
+---
+
+## Need Help?
+
+1. **Check [START_HERE.md](setup/00_START_HERE.md)** - Quick start guide
+2. **Review [MAKEFILE_REFERENCE.md](guides/MAKEFILE_REFERENCE.md)** - Command reference
+3. **See [troubleshooting/](troubleshooting/)** - Common issues
+4. **Check [archives/](archives/)** - Historical context
+
+---
+
+**Last Updated:** June 7, 2026  
+**Status:** ✅ COMPLETE & ORGANIZED
+
