@@ -1,18 +1,20 @@
 # ============================================
 # CTC-RESEARCH.COM CONFIGURATION
-# Domain: ctc-research.com, www.ctc-research.com, arch.ctc-research.com
+# Domains: ctc-research.com, www.ctc-research.com, arch.ctc-research.com
+#          ctc-research.local (local dev)
+# Backend: ctc-research-website:5070
 # ============================================
 http:
   routers:
-    # HTTP to HTTPS redirect for main site
+    # HTTP → HTTPS redirect for main site
     ctc-site-http:
-      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`) || Host(`ctc-research.local`)"
       entryPoints: [web]
       middlewares: [redirect-to-https]
       service: ctc-site-service
       priority: 10
 
-    # Redirect HTTP to HTTPS for media/static/sites files
+    # HTTP → HTTPS for media/static files
     ctc-media-http:
       rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))"
       entryPoints: [web]
@@ -20,7 +22,7 @@ http:
       service: ctc-media-service
       priority: 100
 
-    # HTTPS for media/static/sites files - PRIMARY (nginx media server)
+    # HTTPS for media/static (nginx — highest priority)
     ctc-media-https:
       rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))"
       entryPoints: [web-secure]
@@ -28,12 +30,11 @@ http:
       service: ctc-media-service
       priority: 100
       tls:
-        certResolver: local
         domains:
           - main: "ctc-research.com"
             sans: ["www.ctc-research.com", "arch.ctc-research.com"]
 
-    # FALLBACK for static files not found in nginx - serve from Django
+    # FALLBACK: Django serves static/media when nginx misses
     ctc-static-fallback-https:
       rule: "(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web-secure]
@@ -41,30 +42,29 @@ http:
       service: ctc-site-service
       priority: 50
       tls:
-        certResolver: local
-        domains:
-          - main: "ctc-research.com"
-            sans: ["www.ctc-research.com", "arch.ctc-research.com"]
 
-    # HTTPS for main site
+    # HTTPS for main Django app
     ctc-site-https:
-      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`) || Host(`ctc-research.local`)"
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-site-service
       priority: 10
       tls:
-        certResolver: local
         domains:
           - main: "ctc-research.com"
             sans: ["www.ctc-research.com", "arch.ctc-research.com"]
 
   services:
-    # Django backend
+    # Django backend — container_name = ctc-research-website, port 5070
     ctc-site-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-web:5070"
+          - url: "http://ctc-research-website:5070"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
 
     # Nginx media/static server
     ctc-media-service:

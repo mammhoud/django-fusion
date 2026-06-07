@@ -12,4 +12,3 @@
 #         - security-headers
 #       service: api@internal
 #       tls:
-#         certResolver: letsencrypt

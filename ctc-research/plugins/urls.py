@@ -21,13 +21,15 @@ app_name = "plugins"
 
 urlpatterns = [
     path("accounts/", include("allauth.urls")),
-    # Plugin namespaces
-    path("accounts/", include("plugins.accounts.urls", namespace="accounts")),
+    # Plugin namespaces — accounts is already provided by plugins.accounts.urls
+    # included at the accounts/ prefix; do NOT add namespace="accounts" here
+    # because app_name="accounts" in that module handles it already.
+    path("accounts/", include("plugins.accounts.urls")),
     path("profile/", include("plugins.profile.urls", namespace="profile")),
     path("", include("plugins.products.urls", namespace="products")),
     # LMS plugin (courses, learning, enrollments)
     path("learning/", include("plugins.lms.urls", namespace="lms")),
-    # Auth URL aliases — merged from legacy 'pipelines' namespace
+    # Auth URL aliases
     path("auth/login/", LoginView.as_view(), name="login"),
     path("auth/logout/", LogoutView.as_view(), name="logout"),
     path("auth/register/", SignupView.as_view(), name="register"),

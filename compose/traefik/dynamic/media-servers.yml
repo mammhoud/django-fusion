@@ -25,7 +25,6 @@ http:
       service: shared-media-service
       priority: 10
       tls:
-        certResolver: letsencrypt
         domains:
           - main: "media.structa.cloud"
 
@@ -45,7 +44,6 @@ http:
       service: ctc-media-service
       priority: 10
       tls:
-        certResolver: letsencrypt
         domains:
           - main: "media.ctc-research.com"
 
@@ -65,7 +63,6 @@ http:
       service: lms-media-service
       priority: 10
       tls:
-        certResolver: letsencrypt
         domains:
           - main: "media.lms-demo.com"
 
@@ -85,7 +82,6 @@ http:
       service: vresume-media-service
       priority: 10
       tls:
-        certResolver: letsencrypt
         domains:
           - main: "media.vresume.structa.cloud"
 

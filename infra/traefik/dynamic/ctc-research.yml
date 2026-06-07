@@ -48,7 +48,7 @@ http:
 
     # HTTPS for main site
     ctc-site-https:
-      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      rule: "Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`) || Host(`ctc-research.local`) || Host(`localhost`)"
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-site-service
@@ -60,11 +60,15 @@ http:
             sans: ["www.ctc-research.com", "arch.ctc-research.com"]
 
   services:
-    # Django backend
+    # Django backend — container hostname matches docker-compose service name
     ctc-site-service:
       loadBalancer:
         servers:
-          - url: "http://ctc-web:5070"
+          - url: "http://ctc-research-website:5070"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
 
     # Nginx media/static server
     ctc-media-service:

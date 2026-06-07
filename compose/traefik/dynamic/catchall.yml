@@ -17,7 +17,6 @@ http:
       priority: 1
       service: noop@internal
       tls:
-        certResolver: letsencrypt
 
     # Catch-all for HTTP — redirect to HTTPS, then 404
     catchall-http:

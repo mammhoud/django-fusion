@@ -22,7 +22,6 @@ http:
         - security-headers
       service: docs-service
       tls:
-        certResolver: letsencrypt
         domains:
           - main: "docs.structa.cloud"
 

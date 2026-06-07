@@ -58,9 +58,10 @@ except Exception:
 # Language switching, sitemaps, robots.txt (from debug_tools if available)
 urlpatterns = configure_common_urls(urlpatterns)
 
-# Plugin routing
+# Plugin routing — must pass namespace explicitly so templates can use
+# {% url 'plugins:login' %} etc.
 try:
-    plugin_patterns = [path("", include("plugins.urls"))]
+    plugin_patterns = [path("", include(("plugins.urls", "plugins"), namespace="plugins"))]
 except Exception:
     plugin_patterns = []
 
