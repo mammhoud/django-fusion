@@ -18,28 +18,31 @@ help:
 	@echo "  make vresume-pages     Run VResume page checks (BASE_URL=..., VERBOSE=true|false)"
 
 list:
-	@find . -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) -printf '%f\n' | sort
+	@echo "=== deployment/ ===" && find deployment -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== validation/ ===" && find validation -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== utilities/ ===" && find utilities -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
+	@echo "=== helpers/  ===" && find helpers -maxdepth 1 -type f \( -name '*.sh' -o -name '*.py' \) | sort
 
 health:
-	@./health-check.sh $(BASE_URL)
+	@bash helpers/health-check.sh $(BASE_URL)
 
 websites:
-	@./run_website_tests.sh $(WEBSITE)
+	@bash helpers/run_website_tests.sh $(WEBSITE)
 
 containers:
-	@./run_container_tests.sh $(WEBSITE)
+	@bash helpers/run_container_tests.sh $(WEBSITE)
 
 production:
-	@$(PYTHON) test_production.py
+	@$(PYTHON) validation/test_production.py
 
 production-simple:
-	@$(PYTHON) test_production_simple.py
+	@$(PYTHON) validation/test_production_simple.py
 
 domains:
-	@$(PYTHON) test_domain_urls.py
+	@$(PYTHON) validation/test_domain_urls.py
 
 populate:
-	@$(PYTHON) populate_site_data.py --site $(WEBSITE) $(ARGS)
+	@$(PYTHON) utilities/populate_site_data.py --site $(WEBSITE) $(ARGS)
 
 vresume-pages:
-	@./test_vresume_pages.sh $(BASE_URL) $(VERBOSE)
+	@bash helpers/test_vresume_pages.sh $(BASE_URL) $(VERBOSE)

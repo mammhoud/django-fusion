@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """Compatibility wrapper for the workspace site data populator.
 
-Use ``tests/scripts/populate_site_data.py`` directly or run through Make/npm:
+Use ``tests/scripts/utilities/populate_site_data.py`` directly or run through Make/npm:
 
-  .venv/bin/python tests/scripts/populate_site_data.py --site ctc --dry-run
+  .venv/bin/python tests/scripts/utilities/populate_site_data.py --site ctc --dry-run
   make -C tests/scripts populate WEBSITE=vresume ARGS="--dry-run"
   npm --prefix assets run populate -- --site all --dry-run
 """

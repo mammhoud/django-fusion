@@ -1,8 +1,8 @@
-{# packages/ui/notifications/notification.html #}
+{# assets/templates/generic/_notifications.html #}
 {% load i18n %}
 {% load static %}
 
-<!-- Unified Notification System -->
+<!-- Unified Notification System - All notifications, toasts, alerts, and popups -->
 <div data-notifications-init id="notification-container" class="notification-system notifications-init notification-system--fixed" {% if request.htmx %}hx-swap-oob="true" {% endif %}>
 
     <!-- Django Messages (Fallback for non-JS) -->
@@ -23,15 +23,20 @@
     </div>
     {% endif %}
 
-    <!-- Toast Container -->
+    <!-- Toast Container - For temporary notifications (auto-dismiss) -->
     <div id="toast-container" class="notification-system__toasts toast-container position-fixed p-3"
         style="z-index: 1055; top: 20px; right: 20px;" aria-live="polite" aria-atomic="true">
         <!-- Toasts will be dynamically added here -->
     </div>
 
-    <!-- Alert Container (for inline notifications) -->
+    <!-- Alert Container - For inline persistent notifications -->
     <div id="alert-container" class="notification-system__alerts alert-container mb-3">
         <!-- Alerts will be dynamically added here -->
+    </div>
+
+    <!-- Popup/Modal Container - For modal popups -->
+    <div id="popup-container" class="notification-system__popups" style="z-index: 1050;">
+        <!-- Modals/Popups will be dynamically added here -->
     </div>
 
     <!-- SSE Connection Status Indicator -->
@@ -39,7 +44,7 @@
         sse-connect="{% url 'plugins:notifications' %}" {% endif %} class="notification-system__sse-indicator"
         style="display: none;" aria-hidden="true">
         <div class="sse-indicator__dot"></div>
-        <span class="sse-indicator__text">Live updates</span>
+        <span class="sse-indicator__text">{% trans "Live updates" %}</span>
     </div>
 
     <!-- SSE Connection (HTMX SSE extension) -->
@@ -49,7 +54,7 @@
     {% endif %}
 </div>
 
-<!-- Notification Templates (Hidden) -->
+<!-- Toast Template - For temporary notifications (auto-dismiss after 5 seconds) -->
 <template id="toast-template">
     <div class="notification-system__toast toast" role="alert" aria-live="assertive" aria-atomic="true"
         data-bs-delay="5000">
@@ -60,7 +65,7 @@
                 <small class="toast__time text-white-50 opacity-75">{{ time }}</small>
             </div>
             <button type="button" class="toast__close btn-close btn-close-white ms-2" data-bs-dismiss="toast"
-                aria-label="Close"></button>
+                aria-label="{% trans 'Close' %}"></button>
         </div>
         <div class="toast__body toast-body theme-bg-secondary">
             <div class="toast__message d-flex align-items-center">
@@ -78,6 +83,7 @@
     </div>
 </template>
 
+<!-- Alert Template - For persistent notifications (requires manual dismissal) -->
 <template id="alert-template">
     <div class="notification-system__alert alert alert-{{ level }} alert-dismissible fade show d-flex align-items-center"
         role="alert">
@@ -95,12 +101,39 @@
                 <span class="alert__message">{{ message }}</span>
                 {% if details %}
                 <details class="alert__details mt-2">
-                    <summary class="alert__details-summary btn btn-sm btn-link p-0">Details</summary>
+                    <summary class="alert__details-summary btn btn-sm btn-link p-0">{% trans "Details" %}</summary>
                     <div class="alert__details-content mt-1 small opacity-75">{{ details|safe }}</div>
                 </details>
                 {% endif %}
             </div>
         </div>
-        <button type="button" class="alert__close btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <button type="button" class="alert__close btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+    </div>
+</template>
+
+<!-- Popup Template - For modal popups (requires user interaction) -->
+<template id="popup-template">
+    <div class="notification-system__popup modal fade" role="dialog" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered {{ popup_size|default:'modal-md' }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+                </div>
+                <div class="modal-body">
+                    {{ message|safe }}
+                </div>
+                <div class="modal-footer">
+                    {% if show_cancel %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    {% endif %}
+                    {% if popup_actions %}
+                    {{ popup_actions|safe }}
+                    {% endif %}
+                </div>
+            </div>
+        </div>
     </div>
 </template>

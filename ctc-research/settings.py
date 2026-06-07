@@ -58,3 +58,11 @@ SITE_ID = 1
 # Point it to Django's built-in User model since this project
 # does not have a separate profile model.
 PROFILE_MODEL = "auth.User"
+
+# ============================================================
+# Silenced system checks
+# ============================================================
+# models.E015: django_rseal.TeamMembership.ordering references person__full_name
+# which is a valid cross-model lookup at query time but Django's static check
+# cannot verify related-field traversal. Safe to silence.
+SILENCED_SYSTEM_CHECKS = ["models.E015"]

@@ -19,7 +19,9 @@ TEMPLATES_DIRS = [
     BASE_DIR / "www" / "pages" / "templates",
     BASE_DIR / "assets" / "templates",
     BASE_DIR.parent / "assets" / "templates",
-    BASE_DIR.parent / "packages" / "ui",
+    # Component templates (notifications, modals, forms, htmx utilities, search, tables)
+    # are now located directly inside assets/templates/<category>/
+    # packages/ui is no longer a separate template root.
 ]
 
 # ------------------------------------------------------------------------------

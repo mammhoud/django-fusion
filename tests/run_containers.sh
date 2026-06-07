@@ -80,13 +80,13 @@ if command -v uv >/dev/null 2>&1 && [ "$DJANGO_SITE" != "all" ]; then
     if ! uv run python manage.py --site="$DJANGO_SITE" migrate --noinput 2>&1 | tee "logs/migrate-${DJANGO_SITE}.log"; then
         echo -e "${YELLOW}migrate failed; container startup can retry when RUN_SETUP=true.${NC}"
     fi
-    if ! uv run python tests/scripts/load_dumped_data.py --site "$DJANGO_SITE" 2>&1 | tee "logs/load_dumped_data-${DJANGO_SITE}.log"; then
+    if ! uv run python tests/scripts/utilities/load_dumped_data.py --site "$DJANGO_SITE" 2>&1 | tee "logs/load_dumped_data-${DJANGO_SITE}.log"; then
         echo -e "${YELLOW}dumped data load failed; check logs/load_dumped_data-${DJANGO_SITE}.log.${NC}"
     fi
     if ! uv run python manage.py --site="$DJANGO_SITE" collectstatic --no-input 2>&1 | tee "logs/collectstatic-${DJANGO_SITE}.log"; then
         echo -e "${YELLOW}collectstatic failed; container startup can retry when RUN_SETUP=true.${NC}"
     fi
-    if ! uv run python tests/scripts/verify_runtime.py --site "$DJANGO_SITE" --strict-assets --strict-pages 2>&1 | tee "logs/verify_runtime-${DJANGO_SITE}.log"; then
+    if ! uv run python tests/scripts/validation/verify_runtime.py --site "$DJANGO_SITE" --strict-assets --strict-pages 2>&1 | tee "logs/verify_runtime-${DJANGO_SITE}.log"; then
         echo -e "${YELLOW}runtime verification failed; check logs/verify_runtime-${DJANGO_SITE}.log.${NC}"
     fi
 else

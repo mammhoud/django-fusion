@@ -461,7 +461,7 @@ class Classes(ContentBase):
 
     # Core relationships
     course = models.ForeignKey(
-        "alliance.Course",
+        "lms.Course",
         on_delete=models.CASCADE,
         related_name="classes",
         verbose_name=_("Course"),
@@ -469,7 +469,7 @@ class Classes(ContentBase):
     )
 
     module = models.ForeignKey(
-        "alliance.Module",
+        "lms.Module",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

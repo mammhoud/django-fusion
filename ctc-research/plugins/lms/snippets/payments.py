@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from django.utils.html import format_html
 from django.urls import reverse
 from wagtail.snippets.views.snippets import SnippetViewSet
-from wagtail.admin.panels import FieldPanel, ReadOnlyPanel
+from wagtail.admin.panels import FieldPanel
 
 from plugins.lms.models import PaymentTransaction, PaymentRefund, PaymentWebhookLog
 
@@ -54,15 +54,15 @@ class PaymentTransactionViewSet(SnippetViewSet):
     ]
     
     panels = [
-        ReadOnlyPanel("transaction_id", heading=_("Transaction ID")),
-        ReadOnlyPanel("provider", heading=_("Provider")),
-        ReadOnlyPanel("amount", heading=_("Amount")),
-        ReadOnlyPanel("currency", heading=_("Currency")),
+        FieldPanel("transaction_id", read_only=True, heading=_("Transaction ID")),
+        FieldPanel("provider", read_only=True, heading=_("Provider")),
+        FieldPanel("amount", read_only=True, heading=_("Amount")),
+        FieldPanel("currency", read_only=True, heading=_("Currency")),
         FieldPanel("status", heading=_("Status")),
-        ReadOnlyPanel("payment_method", heading=_("Payment Method")),
-        ReadOnlyPanel("webhook_verified", heading=_("Webhook Verified")),
-        ReadOnlyPanel("created_at", heading=_("Created")),
-        ReadOnlyPanel("completed_at", heading=_("Completed")),
+        FieldPanel("payment_method", read_only=True, heading=_("Payment Method")),
+        FieldPanel("webhook_verified", read_only=True, heading=_("Webhook Verified")),
+        FieldPanel("created_at", read_only=True, heading=_("Created")),
+        FieldPanel("completed_at", read_only=True, heading=_("Completed")),
     ]
     
     def transaction_id(self, obj):
@@ -178,13 +178,13 @@ class PaymentRefundViewSet(SnippetViewSet):
     ]
     
     panels = [
-        ReadOnlyPanel("refund_id", heading=_("Refund ID")),
-        ReadOnlyPanel("transaction", heading=_("Original Transaction")),
-        ReadOnlyPanel("amount", heading=_("Refund Amount")),
+        FieldPanel("refund_id", read_only=True, heading=_("Refund ID")),
+        FieldPanel("transaction", read_only=True, heading=_("Original Transaction")),
+        FieldPanel("amount", read_only=True, heading=_("Refund Amount")),
         FieldPanel("status", heading=_("Status")),
         FieldPanel("reason", heading=_("Reason")),
-        ReadOnlyPanel("created_at", heading=_("Created")),
-        ReadOnlyPanel("completed_at", heading=_("Completed")),
+        FieldPanel("created_at", read_only=True, heading=_("Created")),
+        FieldPanel("completed_at", read_only=True, heading=_("Completed")),
     ]
     
     def refund_id(self, obj):
@@ -272,13 +272,13 @@ class PaymentWebhookLogViewSet(SnippetViewSet):
     ]
     
     panels = [
-        ReadOnlyPanel("event_id", heading=_("Event ID")),
-        ReadOnlyPanel("provider", heading=_("Provider")),
-        ReadOnlyPanel("event_type", heading=_("Event Type")),
-        ReadOnlyPanel("verified", heading=_("Verified")),
-        ReadOnlyPanel("processed", heading=_("Processed")),
-        ReadOnlyPanel("created_at", heading=_("Created")),
-        ReadOnlyPanel("processed_at", heading=_("Processed At")),
+        FieldPanel("event_id", read_only=True, heading=_("Event ID")),
+        FieldPanel("provider", read_only=True, heading=_("Provider")),
+        FieldPanel("event_type", read_only=True, heading=_("Event Type")),
+        FieldPanel("verified", read_only=True, heading=_("Verified")),
+        FieldPanel("processed", read_only=True, heading=_("Processed")),
+        FieldPanel("created_at", read_only=True, heading=_("Created")),
+        FieldPanel("processed_at", read_only=True, heading=_("Processed At")),
     ]
     
     def provider_display(self, obj):

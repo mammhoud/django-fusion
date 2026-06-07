@@ -217,21 +217,21 @@ migrate-site:
 
 load-dumps-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
+	$(PYTHON) tests/scripts/utilities/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
 
 populate-data-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
+	$(PYTHON) tests/scripts/utilities/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
 
 populate-data-all:
 	mkdir -p $(LOG_DIR)
 	@for site in ctc-research lms-demo vresume; do \
-		$(PYTHON) tests/scripts/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
+		$(PYTHON) tests/scripts/utilities/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
 verify-runtime-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
+	$(PYTHON) tests/scripts/validation/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
 
 full-site-check: build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site
 
@@ -254,7 +254,7 @@ tests-websites:
 	$(MAKE) -C tests websites
 
 tests-website:
-	tests/scripts/run_website_tests.sh $(TEST_WEBSITE)
+	tests/scripts/helpers/run_website_tests.sh $(TEST_WEBSITE)
 
 # Delegated subtargets are consumed by nested Makefiles.
 .PHONY: list health containers production production-simple domains vresume-pages
