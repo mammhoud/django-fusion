@@ -12,7 +12,7 @@ concurrency:
 
 jobs:
   tests:
-    name: Python ${{ matrix.python-version }}
+    name: Python ${{ matrix.python-version }} - Tests
     runs-on: ubuntu-latest
     strategy:
       fail-fast: false
@@ -29,5 +29,52 @@ jobs:
         uses: astral-sh/setup-uv@v7
       - name: Install project dependencies
         run: uv sync --all-extras
+      
+      - name: Django system checks for ${{ matrix.python-version }}
+        run: uv run ./manage.py check
+      
       - name: Run pytest for ${{ matrix.python-version }}
-        run: uv run pytest
+        run: uv run pytest --verbose --tb=short
+      
+      - name: Run pytest with coverage for ${{ matrix.python-version }}
+        run: uv run pytest --cov=. --cov-report=xml --cov-report=html
+      
+      - name: Upload coverage to Codecov
+        uses: codecov/codecov-action@v3
+        if: matrix.python-version == '3.12'
+        with:
+          files: ./coverage.xml
+          flags: unittests
+          name: codecov-umbrella
+
+  type-check:
+    name: Type Checking
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install project dependencies
+        run: uv sync --all-extras
+      - name: Install mypy
+        run: uv pip install mypy types-requests types-PyYAML
+      - name: Run mypy type checking
+        run: uv run mypy . --ignore-missing-imports --no-error-summary 2>&1 | head -50 || true
+
+  website-tests:
+    name: Website Tests
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - name: Install uv
+        uses: astral-sh/setup-uv@v7
+      - name: Install project dependencies
+        run: uv sync --all-extras
+      - name: Run website-specific tests
+        run: uv run pytest tests/websites/ -v --tb=short
