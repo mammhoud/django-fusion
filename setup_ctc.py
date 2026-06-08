@@ -40,7 +40,7 @@ if not superusers.exists():
     try:
         user = User.objects.create_superuser(
             username='admin',
-            email='admin@ctc-research.com',
+            email='m.xxai@outlook.com',
             password='mk_pAssWord123'
         )
         print(f"✅ Created: {user.username} ({user.email})")

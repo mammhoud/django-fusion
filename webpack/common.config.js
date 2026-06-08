@@ -20,8 +20,12 @@ const TerserPlugin         = require(require.resolve('terser-webpack-plugin',   
 module.exports = {
   resolve: {
     alias: {
-      '@base': path.resolve(workspaceRoot, 'assets/static/js/base'),
+      '@base':   path.resolve(workspaceRoot, 'assets/static/js/base'),
       '@utility': path.resolve(workspaceRoot, 'assets/static/js/utility'),
+      // SCSS alias: @import '~shared/styles/...' → assets/static/styles/...
+      // The tilde (~) is stripped by sass-loader automatically when using aliases
+      'shared/styles': path.resolve(workspaceRoot, 'assets/static/styles'),
+      'shared':        path.resolve(workspaceRoot, 'assets/static'),
     },
   },
   module: {

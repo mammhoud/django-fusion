@@ -75,7 +75,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-rebuild docker-redeploy docker-deploy deploy rebuild redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config
+.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-redeploy docker-redeploy docker-deploy deploy rebuild redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config
 
 help:
 	@echo "Top-level targets:"
@@ -106,7 +106,7 @@ help:
 	@echo "  server         - Start the ASGI server (container default)"
 	@echo "  docker-build   - Build selected website container image via root compose"
 	@echo "  docker-build-server - Alias for docker-build"
-	@echo "  docker-rebuild - Rebuild selected website image without cache"
+	@echo "  docker-redeploy - Rebuild selected website image without cache"
 	@echo "  docker-redeploy - Build and restart selected website service"
 	@echo "  docker-up      - Build and start selected website containers"
 	@echo "  build-assets-all - Build frontend assets for ctc, structa, and vresume"
@@ -178,7 +178,7 @@ docker-build:
 
 docker-build-server: docker-build
 
-docker-rebuild rebuild:
+docker-redeploy rebuild:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) build --pull --no-cache --build-arg PROJECT_PATH=$(DOCKER_PROJECT_PATH) $(DOCKER_SERVICE)
 
 docker-redeploy docker-deploy deploy redeploy:
@@ -303,11 +303,11 @@ docker-deploy-traefik:
 docker-deploy-websites:
 	@echo "Deploying all websites..."
 	@echo "Building ctc-research..."
-	$(MAKE) docker-rebuild WEBSITE=ctc-research
+	$(MAKE) docker-redeploy WEBSITE=ctc-research
 	@echo "Building lms-demo..."
-	$(MAKE) docker-rebuild WEBSITE=lms-demo
+	$(MAKE) docker-redeploy WEBSITE=lms-demo
 	@echo "Building VResume..."
-	$(MAKE) docker-rebuild WEBSITE=vresume
+	$(MAKE) docker-redeploy WEBSITE=vresume
 	@echo "All websites deployed!"
 	docker compose -f docker-compose.yml ps
 
@@ -440,3 +440,15 @@ show-config: show-vars
 	@echo ""
 
 .PHONY: clean show-targets show-vars show-config
+# Traefik SSL Certificate Operations
+docker-traefik-generate-certs:
+	@echo "Generating Traefik SSL certificates..."
+	bash compose/traefik/generate-certs.sh
+
+docker-traefik-backup-certs:
+	@echo "Backing up Traefik SSL certificates..."
+	bash compose/traefik/scripts/backup-certs.sh
+
+docker-traefik-restore-certs:
+	@echo "Restoring Traefik SSL certificates..."
+	bash compose/traefik/scripts/restore-certs.sh

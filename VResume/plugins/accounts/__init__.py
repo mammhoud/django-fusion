@@ -1,1 +1,1 @@
-"""Account adapter overrides for vResume."""
+"""Accounts app for structa.cloud."""

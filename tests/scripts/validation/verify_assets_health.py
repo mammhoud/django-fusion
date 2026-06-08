@@ -250,7 +250,7 @@ def main():
         print("-" * 40)
         bundled, bundle_info = check_asset_bundles(site_key, site_info)
         bundle_desc = f"{bundle_info['count']} files"
-        if bundle_info['types']:
+        if bundle_info.get('types'):
             type_str = ", ".join([f"{k}={v}" for k, v in bundle_info['types'].items()])
             bundle_desc += f" ({type_str})"
         print_result(bundled, f"  Asset Bundles Built", bundle_desc)

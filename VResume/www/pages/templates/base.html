@@ -34,7 +34,7 @@
     {% endblock favicon %}
 
     {% block styles %}
-        {% render_bundle 'styles' 'css' %}
+        {% render_bundle 'static' 'css' %}
     {% endblock styles %}
 
     {% block extrastyle %}{% endblock %}
@@ -119,16 +119,8 @@
     {# ====================================================== #}
     {% block scripts %}
         {% render_bundle 'static' 'js' %}
-        {% render_bundle 'styles' 'js' %}
-
-        {# ====================================================== #}
-        {# Unified JavaScript Modules (Workspace Root)           #}
-        {# ====================================================== #}
-        <script src="{% static 'js/app.js' %}"></script>
-        <script src="{% static 'js/htmx-config.js' %}"></script>
-        <script src="{% static 'js/notifications.js' %}"></script>
-        <script src="{% static 'js/modals.js' %}"></script>
-        <script src="{% static 'js/forms.js' %}"></script>
+        {% render_bundle 'main' 'js' %}
+        {% render_bundle 'app' 'js' %}
     {% endblock scripts %}
 
     {% block extra_scripts %}{% endblock %}

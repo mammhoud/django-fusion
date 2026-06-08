@@ -55,9 +55,22 @@ module.exports = (env = {}, argv = {}) => {
   // ── Entry points ───────────────────────────────────────────────────────────
   // VResume has its own self-contained core/main.js + static.js bootstrap.
   // CTC-Research and LMS-Demo use the shared core/main.js + their own app.js.
+  //
+  // The "static" entry produces:
+  //   static-[hash].css  ← vendor CSS + site SCSS (MiniCssExtractPlugin)
+  //   static-[hash].js   ← tiny runtime shim
+  // Templates reference it via:  {% render_bundle 'static' 'css' %}
+  //                               {% render_bundle 'static' 'js' %}
   const SITE_ENTRIES = {
     'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/app.js'),
     'lms-demo':     path.resolve(workspaceRoot, 'lms-demo/assets/static/js/app.js'),
+    'VResume':      path.resolve(workspaceRoot, 'VResume/assets/static/js/app.js'),
+  };
+
+  // Static (CSS + vendor) entry — each site provides its own static.js
+  const STATIC_ENTRIES = {
+    'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/static.js'),
+    'lms-demo':     path.resolve(workspaceRoot, 'lms-demo/assets/static/js/static.js'),
     'VResume':      path.resolve(workspaceRoot, 'VResume/assets/static/js/static.js'),
   };
 
@@ -65,6 +78,12 @@ module.exports = (env = {}, argv = {}) => {
   const sharedEntry = isVResume ? {} : {
     main: path.resolve(workspaceRoot, 'assets/static/js/core/main.js'),
   };
+
+  // Include static entry when the file exists for this site
+  const staticEntryPath = STATIC_ENTRIES[siteDir] || path.resolve(workspaceRoot, `${siteDir}/assets/static/js/static.js`);
+  const fs = require('fs');
+  const staticEntry = fs.existsSync(staticEntryPath) ? { static: staticEntryPath } : {};
+
   const siteEntry = {
     app: SITE_ENTRIES[siteDir] || path.resolve(workspaceRoot, `${siteDir}/assets/static/js/app.js`),
   };
@@ -83,7 +102,7 @@ module.exports = (env = {}, argv = {}) => {
 
   return merge(commonConfig, {
     mode,
-    entry: { ...sharedEntry, ...siteEntry },
+    entry: { ...sharedEntry, ...staticEntry, ...siteEntry },
 
     output: {
       path:          outputDir,

@@ -23,14 +23,14 @@ from wagtail.admin import urls as wagtailadmin_urls
 from wagtail.documents import urls as wagtaildocs_urls
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from proxy import assets_health as _assets_health
-from proxy import health as _health
+from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from utilities import get_root_redirect_pattern
 
 urlpatterns = [
-    path("health/", _health, name="health"),
-    path("assets/health/", _assets_health, name="assets-health"),
-    path("health/assets/", _assets_health, name="health-assets"),
+    path("health/", HealthCheckView.as_view(), name="health"),
+    path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
+    path("health/assets/", AssetsHealthView.as_view(), name="health-assets"),
+    path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
     path("django-admin/", admin.site.urls),
     path("accounts/", include("allauth.urls")),
     path("auth/login/", LoginView.as_view(), name="account_login"),

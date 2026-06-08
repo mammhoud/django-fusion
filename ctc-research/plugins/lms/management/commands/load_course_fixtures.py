@@ -36,17 +36,17 @@ class Command(BaseCommand):
         try:
             # Load specializations
             self.stdout.write('Loading specializations...')
-            call_command('loaddata', 'plugins/lms/fixtures/specializations.json', verbosity=2 if verbose else 0)
+            call_command('loaddata', 'assets/fixtures/lms/specializations.json', verbosity=2 if verbose else 0)
             self.stdout.write(self.style.SUCCESS('✓ Specializations loaded\n'))
             
             # Load course tags
             self.stdout.write('Loading course tags...')
-            call_command('loaddata', 'plugins/lms/fixtures/course_tags.json', verbosity=2 if verbose else 0)
+            call_command('loaddata', 'assets/fixtures/lms/course_tags.json', verbosity=2 if verbose else 0)
             self.stdout.write(self.style.SUCCESS('✓ Course tags loaded\n'))
             
             # Load courses
             self.stdout.write('Loading courses...')
-            call_command('loaddata', 'plugins/lms/fixtures/courses.json', verbosity=2 if verbose else 0)
+            call_command('loaddata', 'assets/fixtures/lms/courses.json', verbosity=2 if verbose else 0)
             self.stdout.write(self.style.SUCCESS('✓ Courses loaded\n'))
             
             # Show summary

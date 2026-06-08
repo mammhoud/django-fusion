@@ -31,7 +31,7 @@ class FormSubmission(models.Model):
     page = models.ForeignKey(
         Page,
         on_delete=models.CASCADE,
-        related_name="form_submissions",
+        related_name="connect_form_submissions",
         verbose_name=_("Page"),
         help_text=_("The page where the form was submitted"),
         null=True,

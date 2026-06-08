@@ -92,13 +92,13 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {% endblock scripts %}
 
     {# ====================================================== #}
-    {# Unified JavaScript Modules (Workspace Root)           #}
+    {# Unified JavaScript Modules via Webpack bundles         #}
+    {# main = shared libraries (HTMX, Alpine, etc.)           #}
+    {# app  = site-specific entry point                       #}
     {# ====================================================== #}
-    <script src="{% static 'js/app.js' %}"></script>
-    <script src="{% static 'js/htmx-config.js' %}"></script>
-    <script src="{% static 'js/notifications.js' %}"></script>
-    <script src="{% static 'js/modals.js' %}"></script>
-    <script src="{% static 'js/forms.js' %}"></script>
+    {% render_bundle 'static' 'css' %}
+    {% render_bundle 'main' 'js' %}
+    {% render_bundle 'app' 'js' %}
 
     {% block extra_styles %}
     {% endblock extra_styles %}

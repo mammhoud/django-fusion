@@ -15,6 +15,7 @@ from wagtail.contrib.sitemaps import Sitemap
 from wagtail.contrib.sitemaps.views import index, sitemap
 from wagtail.documents import urls as wagtaildocs_urls
 
+from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from core import views as core_views
 
 # from wagtail_transfer import urls as wagtailtransfer_urls
@@ -23,12 +24,15 @@ from core import views as core_views
 sitemaps_dict = {"pages": Sitemap}
 
 urlpatterns = [
+    # Health checks
+    path("health/", HealthCheckView.as_view(), name="health"),
+    path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
+    path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
     # Admin interfaces (language-neutral)
     path("django-admin/", admin.site.urls),
     path("admin/", include(wagtailadmin_urls)),
     path("documents/", include(wagtaildocs_urls)),
     # Health check (used by Docker/load balancers)
-    path("health/", core_views.health_check, name="health_check"),
     path("media-health/", core_views.media_health_check, name="media_health_check"),
     # Language switching
     path("set-language/", set_language, name="set_language"),

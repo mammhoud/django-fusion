@@ -69,7 +69,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "${TRAEFIK_ACME_EMAIL:-admin@ctc-research.com}"
+      email: "${TRAEFIK_ACME_EMAIL:-m.xxai@outlook.com}"
       storage: /etc/traefik/acme/acme.json
       # PRODUCTION ACME Server - generates valid certificates
       caServer: "https://acme-v02.api.letsencrypt.org/directory"

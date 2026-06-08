@@ -24,7 +24,7 @@ NC='\033[0m'
 
 # Configuration
 ENVIRONMENT="${1:-production}"
-ACME_EMAIL="${TRAEFIK_ACME_EMAIL:-admin@ctc-research.com}"
+ACME_EMAIL="${TRAEFIK_ACME_EMAIL:-m.xxai@outlook.com}"
 
 # Domain configurations
 declare -A DOMAINS=(
@@ -127,7 +127,7 @@ create_traefik_acme_json() {
 {
   "letsencrypt": {
     "Account": {
-      "Email": "admin@ctc-research.com",
+      "Email": "m.xxai@outlook.com",
       "Registration": {},
       "PrivateKey": "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTk..."
     },

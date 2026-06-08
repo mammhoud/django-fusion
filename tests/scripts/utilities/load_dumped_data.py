@@ -15,7 +15,7 @@ from pathlib import Path
 
 def bootstrap_workspace() -> Path:
     """Ensure standalone script execution can import workspace modules."""
-    repo_root = Path(__file__).resolve().parents[2]
+    repo_root = Path(__file__).resolve().parents[3]
     os.chdir(repo_root)
     path_text = str(repo_root)
     # Ensure the workspace root is at the beginning of sys.path
@@ -49,7 +49,7 @@ def fixture_dirs() -> list[Path]:
         if path.exists() and path not in dirs:
             dirs.append(path)
     base_dir = Path(getattr(settings, "BASE_DIR", Path.cwd()))
-    fallback = base_dir / "assets" / "fixtures"
+    fallback = base_dir.parent / "assets" / "fixtures"
     if fallback.exists() and fallback not in dirs:
         dirs.append(fallback)
     return dirs

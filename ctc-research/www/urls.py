@@ -12,9 +12,7 @@ from django.urls import include, path, re_path
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from proxy import assets_health as _assets_health
-from proxy import database_health
-from proxy import health as _health_check
+from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from utilities import get_root_redirect_pattern
 
 # Optional imports with safe fallbacks
@@ -81,7 +79,11 @@ if settings.DEBUG:
     except Exception:
         pass
 
-urlpatterns = [path("health/", _health_check)] + urlpatterns
+urlpatterns = [
+    path("health/", HealthCheckView.as_view(), name="health"),
+    path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
+    path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
+] + urlpatterns
 
 try:
     urlpatterns += [path("health_admin/", include("django_grep.health.urls"))]
@@ -99,9 +101,6 @@ urlpatterns += [
         {"document_root": settings.MEDIA_ROOT},
     )
 ]
-
-# Static/assets health endpoint for deployment smoke tests
-urlpatterns += [path("assets/health/", _assets_health, name="assets-health")]
 
 # Root path redirect to default language (MUST be at the end as catch-all fallback)
 urlpatterns += [get_root_redirect_pattern()]

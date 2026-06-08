@@ -92,13 +92,11 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {% endblock scripts %}
 
     {# ====================================================== #}
-    {# Unified JavaScript Modules (Workspace Root)           #}
+    {# Webpack Bundles — JS only (CSS is in {% block styles %}) #}
+    {# runtime → vendor → common → main → app (load order)    #}
     {# ====================================================== #}
-    <script src="{% static 'js/app.js' %}"></script>
-    <script src="{% static 'js/htmx-config.js' %}"></script>
-    <script src="{% static 'js/notifications.js' %}"></script>
-    <script src="{% static 'js/modals.js' %}"></script>
-    <script src="{% static 'js/forms.js' %}"></script>
+    {% render_bundle 'main' 'js' %}
+    {% render_bundle 'app'  'js' %}
 
     {% block extra_styles %}
     {% endblock extra_styles %}
