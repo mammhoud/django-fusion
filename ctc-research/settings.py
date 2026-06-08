@@ -66,3 +66,4 @@ PROFILE_MODEL = "auth.User"
 # which is a valid cross-model lookup at query time but Django's static check
 # cannot verify related-field traversal. Safe to silence.
 SILENCED_SYSTEM_CHECKS = ["models.E015"]
+WAGTAIL_WORKFLOW_ENABLED = False

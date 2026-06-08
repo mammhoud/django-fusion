@@ -99,32 +99,6 @@ def clear_duplicate_permissions():
     from wagtail.models import GroupPagePermission
     # Remove all existing permissions to ensure a clean import
     GroupPagePermission.objects.all().delete()
-    """Ensure the default Site has a HomePage as root_page."""
-    from wagtail.models import Site, Page
-    from django.contrib.contenttypes.models import ContentType
-    try:
-        site = Site.objects.get(is_default_site=True)
-    except Site.DoesNotExist:
-        print("⚠️ No default Site found")
-        return
-    # If root_page is missing or not a Page, set/create HomePage
-    if not site.root_page_id or not isinstance(site.root_page.specific, Page):
-        try:
-            from www.core.content.models.pages.home import HomePage
-        except Exception as e:
-            print(f"Error importing HomePage: {e}")
-            return
-        homepage_ct = ContentType.objects.get_for_model(HomePage)
-        home = Page.objects.filter(content_type=homepage_ct, depth=2).first()
-        if not home:
-            root = Page.objects.get(depth=1)
-            home = HomePage(title="Home", slug="home")
-            root.add_child(instance=home)
-        site.root_page = home
-        site.save()
-        print(f"✓ Site root set to HomePage: {home.title}")
-    else:
-        print("✓ Site root_page already valid")
 
 
 
@@ -179,10 +153,50 @@ def main() -> int:
         print(f"❌ {failures} fixture(s) failed to load.")
         return 1
     print(f"✅ Loaded {len(fixtures)} fixture(s).")
-
-    # Run homepage fix after loading
     run_fix_homepage()
+    # Run homepage fix after loading
 
+
+def run_fix_homepage() -> int:
+    """Ensure the default Site has a HomePage as root_page, creating it only if needed.
+
+    The function attempts to locate an existing HomePage (slug='home', depth=2).
+    If not found, it creates one under the root page and assigns it to the site's root_page.
+    It safely handles the case where a HomePage already exists to avoid slug duplication errors.
+    """
+    from wagtail.models import Site, Page
+    from django.contrib.contenttypes.models import ContentType
+    try:
+        site = Site.objects.get(is_default_site=True)
+    except Site.DoesNotExist:
+        print("⚠️ No default Site found")
+        return 1
+
+    # Try to find an existing HomePage by slug at depth 2
+    try:
+        home = Page.objects.get(slug="home", depth=2)
+    except Page.DoesNotExist:
+        # Import the concrete HomePage model for creation
+        try:
+            from www.core.content.models.pages.home import HomePage
+        except Exception as e:
+            print(f"Error importing HomePage: {e}")
+            return 1
+        # Create HomePage under the root if not present
+        root = Page.objects.get(depth=1)
+        home = HomePage(title="Home", slug="home")
+        root.add_child(instance=home)
+        print("✅ Created HomePage")
+    else:
+        print("✅ HomePage already exists")
+
+    # Ensure the site points to this HomePage
+    if site.root_page_id != home.id:
+        site.root_page = home
+        site.save()
+        print(f"✓ Site root set to HomePage: {home.title}")
+    else:
+        print("✓ Site root_page already valid")
     return 0
 
 
