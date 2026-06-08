@@ -42,7 +42,7 @@ def configure(site: str) -> None:
 
 def fixture_dirs() -> list[Path]:
     from django.conf import settings
-
+    
     dirs: list[Path] = []
     for raw_path in getattr(settings, "FIXTURE_DIRS", []):
         path = Path(raw_path)
@@ -52,6 +52,11 @@ def fixture_dirs() -> list[Path]:
     fallback = base_dir.parent / "assets" / "fixtures"
     if fallback.exists() and fallback not in dirs:
         dirs.append(fallback)
+    # Add repository assets fixtures directory
+    repo_root = Path(__file__).resolve().parents[3]
+    extra = repo_root / "tests" / "fixtures"
+    if extra.exists() and extra not in dirs:
+        dirs.append(extra)
     return dirs
 
 
@@ -89,13 +94,49 @@ def wagtail_page_count() -> int | None:
         return None
 
 
+def clear_duplicate_permissions():
+    """Delete all GroupPagePermission entries to avoid duplicate key errors before loading fixtures."""
+    from wagtail.models import GroupPagePermission
+    # Remove all existing permissions to ensure a clean import
+    GroupPagePermission.objects.all().delete()
+    """Ensure the default Site has a HomePage as root_page."""
+    from wagtail.models import Site, Page
+    from django.contrib.contenttypes.models import ContentType
+    try:
+        site = Site.objects.get(is_default_site=True)
+    except Site.DoesNotExist:
+        print("⚠️ No default Site found")
+        return
+    # If root_page is missing or not a Page, set/create HomePage
+    if not site.root_page_id or not isinstance(site.root_page.specific, Page):
+        try:
+            from www.core.content.models.pages.home import HomePage
+        except Exception as e:
+            print(f"Error importing HomePage: {e}")
+            return
+        homepage_ct = ContentType.objects.get_for_model(HomePage)
+        home = Page.objects.filter(content_type=homepage_ct, depth=2).first()
+        if not home:
+            root = Page.objects.get(depth=1)
+            home = HomePage(title="Home", slug="home")
+            root.add_child(instance=home)
+        site.root_page = home
+        site.save()
+        print(f"✓ Site root set to HomePage: {home.title}")
+    else:
+        print("✓ Site root_page already valid")
+
+
+
+
+
 def main() -> int:
-    parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("--site", default=os.getenv("DJANGO_SITE") or os.getenv("DJANGO_WEBSITE") or os.getenv("WEBSITE") or "ctc-research.com")
-    parser.add_argument("--force", action="store_true", help="Load dump fixtures even when Wagtail already has content.")
-    parser.add_argument("--include-dumps", action="store_true", help="Load legacy dump fixtures with hard-coded Wagtail/contenttype IDs.")
-    parser.add_argument("--include-extra", action="store_true", help="Also load non-dump bootstrap fixtures such as auth/site/users/choices.")
-    parser.add_argument("--list", action="store_true", help="Only list the fixtures that would be loaded.")
+    parser = argparse.ArgumentParser()
+    parser.add_argument("site")
+    parser.add_argument("--include-extra", action="store_true")
+    parser.add_argument("--include-dumps", action="store_true")
+    parser.add_argument("--force", action="store_true")
+    parser.add_argument("--list", action="store_true")
     args = parser.parse_args()
 
     configure(args.site)
@@ -117,6 +158,9 @@ def main() -> int:
         print(f"✅ Found {len(fixtures)} fixture(s).")
         return 0
 
+    # Clear duplicate permissions before loading
+    clear_duplicate_permissions()
+
     page_count = wagtail_page_count()
     if include_dumps and page_count is not None and page_count > 2 and not args.force:
         print(f"ℹ️  Skipping dump fixture load because Wagtail already has {page_count} pages. Use --force to reload.")
@@ -135,6 +179,10 @@ def main() -> int:
         print(f"❌ {failures} fixture(s) failed to load.")
         return 1
     print(f"✅ Loaded {len(fixtures)} fixture(s).")
+
+    # Run homepage fix after loading
+    run_fix_homepage()
+
     return 0
 
 

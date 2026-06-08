@@ -115,13 +115,10 @@ def main() -> int:
                 return rc
 
         if not args.skip_json:
-            fixtures = fixture_candidates(root, selected, args.include_shared, args.include_dumps)
-            if fixtures:
-                rc = run([py, "manage.py", f"--site={selected}", "loaddata", *[str(p) for p in fixtures]], root, selected, args.dry_run)
-                if rc != 0:
-                    return rc
-            else:
-                print(f"No JSON fixtures found for {selected}; continuing.")
+            # Use the unified data populator that handles duplicate permissions and homepage fixing
+            rc = run([py, "tests/scripts/utilities/load_dumped_data.py", "--site", selected, "--include-dumps" if args.include_dumps else "--force"], root, selected, args.dry_run)
+            if rc != 0:
+                return rc
 
         if args.images or selected == "vresume":
             if selected == "vresume":

@@ -215,6 +215,10 @@ migrate-site:
 	$(MANAGE) makemigrations --noinput 2>&1 | tee $(LOG_DIR)/makemigrations-$(SITE).log
 	$(MANAGE) migrate --noinput 2>&1 | tee $(LOG_DIR)/migrate-$(SITE).log
 
+docker-load-data:
+	@echo "Loading dump data inside Docker container for $(SITE)"
+	$(DOCKER_COMPOSE) exec $(DOCKER_SERVICE) $(PYTHON) tests/scripts/utilities/load_dumped_data.py --site $(SITE) --include-dumps --force
+
 load-dumps-site:
 	mkdir -p $(LOG_DIR)
 	$(PYTHON) tests/scripts/utilities/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
