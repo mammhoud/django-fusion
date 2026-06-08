@@ -1,8 +1,9 @@
 """
 Wagtail hooks for Blog application.
 """
+from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
-from wagtail.snippets.views.snippets import SnippetViewSet
+from wagtail.snippets.views.snippets import SnippetViewSet, SnippetViewSetGroup
 
 from .models import BlogCategory, BlogPost, BlogTag
 
@@ -29,6 +30,15 @@ class BlogPostViewSet(SnippetViewSet):
     search_fields = ["title", "content"]
 
 
-register_snippet(BlogCategoryViewSet)
-register_snippet(BlogTagViewSet)
-register_snippet(BlogPostViewSet)
+class BlogSnippetGroup(SnippetViewSetGroup):
+    menu_label = _("Blog Snippets")
+    menu_icon = "doc-full"
+    menu_order = 160
+    items = (
+        BlogCategoryViewSet,
+        BlogTagViewSet,
+        BlogPostViewSet,
+    )
+
+
+register_snippet(BlogSnippetGroup)

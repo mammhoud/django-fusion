@@ -161,7 +161,6 @@ class PaymentRefundViewSet(SnippetViewSet):
     
     list_display = [
         "refund_id",
-        "transaction_link",
         "amount_display",
         "status_badge",
         "created_at_display",
@@ -251,7 +250,6 @@ class PaymentWebhookLogViewSet(SnippetViewSet):
     
     list_display = [
         "event_id",
-        "provider_display",
         "event_type",
         "verified_badge",
         "processed_badge",

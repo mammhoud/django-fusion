@@ -9,7 +9,7 @@ WAGTAIL HOOKS CONFIGURATION FOR COURSE MANAGEMENT
 ==================================================
 
 This file configures the Wagtail admin interface for all course-related models.
-It provides comprehensive admin views for managing courses, modules, images, 
+It provides comprehensive admin views for managing courses, modules, images,
 specializations, enrollments, and payments.
 
 Menu Organization:
@@ -76,7 +76,9 @@ class EnrollmentSnippetGroup(SnippetViewSetGroup):
         PaymentWebhookLogViewSet,
     )
 
+
 register_snippet(EnrollmentSnippetGroup)
 register_snippet(TracksSnippetViewSetGroup)
 register_snippet(ClassesSnippetViewSetGroup)
+
 
