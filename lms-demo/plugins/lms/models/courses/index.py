@@ -1,6 +1,7 @@
 import logging
 
 from django import forms
+from django.db import models
 from django.utils.translation import gettext_lazy as _
 from modelcluster.fields import ParentalManyToManyField
 from wagtail import blocks
@@ -13,6 +14,7 @@ from www.core.content.models.pages.base import BaseIndexPage
 
 from plugins.lms.models.courses.detail import Specialization
 from plugins.lms.models.courses.info import Course
+from plugins.lms.models.courses.tag import CourseTag
 
 
 class CoursesPage(BaseIndexPage):
@@ -184,32 +186,48 @@ class CoursesPage(BaseIndexPage):
     def get_context(self, request, *args, **kwargs):
         """
         Extend the context with:
-          - Paginated published courses
+          - Filtered & paginated courses based on user input
+          - Filter options (difficulties, tags, price ranges)
           - Specializations
-          - Base context (services, fragment, etc.)
+          - Pagination metadata
           - Publishing statistics for debugging
         """
         context = super().get_context(request, *args, **kwargs)
 
         try:
-            # Reuse the pagination logic from PaginatedBaseView
-            # front_view = PaginatedBaseView()
-            # context = front_view.extend_context(request, context)
+            # Build filter dict from GET parameters
+            filters = {
+                'difficulty': request.GET.get('difficulty', ''),
+                'price_min': request.GET.get('price_min', ''),
+                'price_max': request.GET.get('price_max', ''),
+                'tags': request.GET.getlist('tags') or [],
+                'search': request.GET.get('q', ''),
+                'sort': request.GET.get('sort', '-created_at'),
+            }
 
-            # Get published selected courses for the context
-            published_selected_courses = self.get_published_courses(
-                self.selected_courses.all()
-            )
+            # Get filtered courses
+            filtered_courses = self.get_filtered_courses(request, **filters)
+
+            # Get pagination info
+            pagination_context = self.get_paginated_context(request, filtered_courses, per_page=12)
+
+            # Get filter options for template
+            filter_options = self.get_filter_options()
+
+            # Get specializations
+            specializations = Specialization.objects.filter(is_active=True)
 
             # Inject custom data
             context.update(
                 {
-                    "courses": context.get(
-                        "page_items"
-                    ),  # alias for frontend template (already filtered by get_listed_items)
-                    "specializations": Specialization.objects.all(),
+                    "courses": pagination_context['courses'],
+                    "page_obj": pagination_context['page_obj'],
+                    "paginator": pagination_context['paginator'],
+                    "total_count": pagination_context['total_count'],
+                    "specializations": specializations,
                     "introduction": self.introduction,
-                    "selected_courses": published_selected_courses,  # Only published ones
+                    "filter_options": filter_options,
+                    "active_filters": {k: v for k, v in filters.items() if v},
                     "publishing_stats": {
                         "total_selected": self.get_selected_courses_count(),
                         "published_selected": self.get_published_selected_courses_count(),
@@ -218,19 +236,26 @@ class CoursesPage(BaseIndexPage):
             )
 
             logger.info(
-                f"[{self.title}] Context successfully built with {len(context['courses'])} published courses. "
-                f"Selected: {context['publishing_stats']['published_selected']}/"
-                f"{context['publishing_stats']['total_selected']} published"
+                f"[{self.title}] Context built: {len(context['courses'])} courses on page "
+                f"{pagination_context['page_number']} of {pagination_context['paginator'].num_pages}. "
+                f"Active filters: {context['active_filters']}"
             )
 
         except Exception as e:
-            logger.error(f"[ContextError] CourseIndexPage: {str(e)}", exc_info=True)
+            logger.error(f"[ContextError] CoursesPage.get_context: {str(e)}", exc_info=True)
             context.update(
                 {
                     "courses": [],
+                    "page_obj": None,
+                    "paginator": None,
                     "specializations": [],
                     "introduction": "",
-                    "selected_courses": [],
+                    "filter_options": {
+                        'difficulties': [],
+                        'tags': [],
+                        'price_range': {'min_price': 0, 'max_price': 0},
+                    },
+                    "active_filters": {},
                     "publishing_stats": {
                         "total_selected": 0,
                         "published_selected": 0,
@@ -251,3 +276,111 @@ class CoursesPage(BaseIndexPage):
             return f"{base_title} ({published_count}/{total_count} published)"
         except:
             return base_title
+
+    # === Catalog & Filter Methods ===
+    def get_filtered_courses(self, request, **filters):
+        """
+        Get courses filtered by applied filters (search, difficulty, price, tags, sort).
+        Used by catalog views for dynamic filtering.
+        """
+        courses = self.get_listed_items()
+
+        # Apply difficulty filter
+        if difficulty := filters.get('difficulty'):
+            courses = courses.filter(difficulty_level=difficulty)
+
+        # Apply price range filter
+        if price_min := filters.get('price_min'):
+            try:
+                courses = courses.filter(price__gte=float(price_min))
+            except (ValueError, TypeError):
+                pass
+
+        if price_max := filters.get('price_max'):
+            try:
+                courses = courses.filter(price__lte=float(price_max))
+            except (ValueError, TypeError):
+                pass
+
+        # Apply tags filter
+        if tags := filters.get('tags'):
+            if isinstance(tags, str):
+                tags = [tags]
+            courses = courses.filter(tags__id__in=tags).distinct()
+
+        # Apply search query
+        if search_query := filters.get('search'):
+            from django.db.models import Q
+            courses = courses.filter(
+                Q(title__icontains=search_query)
+                | Q(description__icontains=search_query)
+                | Q(short_description__icontains=search_query)
+            ).distinct()
+
+        # Apply sorting
+        sort_by = filters.get('sort', '-created_at')
+        courses = courses.order_by(sort_by)
+
+        return courses
+
+    def get_paginated_context(self, request, courses, per_page=12):
+        """
+        Return paginated courses with pagination metadata for templates.
+        """
+        from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+
+        page = request.GET.get('page', 1)
+        paginator = Paginator(courses, per_page)
+
+        try:
+            page_obj = paginator.page(page)
+        except PageNotAnInteger:
+            page_obj = paginator.page(1)
+        except EmptyPage:
+            page_obj = paginator.page(paginator.num_pages)
+
+        return {
+            'page_obj': page_obj,
+            'courses': page_obj.object_list,
+            'paginator': paginator,
+            'total_count': paginator.count,
+            'page_number': page_obj.number,
+            'has_next': page_obj.has_next(),
+            'has_previous': page_obj.has_previous(),
+        }
+
+    def get_filter_options(self):
+        """
+        Get available filter options for template rendering.
+        Returns all difficulty levels, tags, price ranges.
+        """
+        from django.db.models import Min, Max, Count
+
+        courses = Course.objects.filter(is_active=True, is_published=True)
+
+        # Get difficulty levels with counts
+        difficulties = (
+            courses.values('difficulty_level')
+            .annotate(count=Count('id'))
+            .order_by('difficulty_level')
+        )
+
+        # Get tags with counts
+        tags = CourseTag.objects.annotate(
+            course_count=Count('courses', filter=models.Q(courses__is_active=True, courses__is_published=True))
+        ).filter(course_count__gt=0).order_by('name')
+
+        # Get price range
+        price_range = courses.aggregate(
+            min_price=Min('price'),
+            max_price=Max('price')
+        )
+
+        return {
+            'difficulties': [
+                {'value': d['difficulty_level'], 'label': dict(Course.DifficultyChoices.choices).get(d['difficulty_level']), 'count': d['count']}
+                for d in difficulties
+            ],
+            'tags': tags,
+            'price_range': price_range,
+        }

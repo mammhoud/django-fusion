@@ -32,6 +32,7 @@ x-django-base: &django-base
     SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
     SERVER_ENV: ${SERVER_ENV:-production}
     DEBUG: ${DEBUG:-False}
+    MODULE: LMS
     DB_TYPE: ${DB_TYPE:-postgres}
     DB_HOST: ${DB_HOST:-structa-db}
     DB_PORT: ${DB_PORT:-5432}

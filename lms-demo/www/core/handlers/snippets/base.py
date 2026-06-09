@@ -15,9 +15,11 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 # SHARED UTILITIES
 # =============================================================================
 
+
 def export_to_csv(filename, headers, rows):
     """Reusable CSV export helper for snippet data exports."""
     import csv
+
     response = HttpResponse(content_type="text/csv")
     response["Content-Disposition"] = f'attachment; filename="{filename}"'
     writer = csv.writer(response)
@@ -30,6 +32,7 @@ def export_to_csv(filename, headers, rows):
 # =============================================================================
 # BASE SNIPPET VIEWSET
 # =============================================================================
+
 
 class BaseSnippetViewSet(SnippetViewSet):
     """
@@ -55,11 +58,11 @@ class BaseSnippetViewSet(SnippetViewSet):
             obj.save()
             duplicated += 1
 
-        messages.success(request, ngettext(
-            "Duplicated %(count)d record",
-            "Duplicated %(count)d records",
-            duplicated
-        ) % {"count": duplicated})
+        messages.success(
+            request,
+            ngettext("Duplicated %(count)d record", "Duplicated %(count)d records", duplicated)
+            % {"count": duplicated},
+        )
 
     duplicate.label = _("Duplicate")
     duplicate.icon = "copy"
@@ -93,11 +96,11 @@ class BaseSnippetViewSet(SnippetViewSet):
             return
 
         count = queryset.update(is_active=True)
-        messages.success(request, ngettext(
-            "Activated %(count)d record",
-            "Activated %(count)d records",
-            count
-        ) % {"count": count})
+        messages.success(
+            request,
+            ngettext("Activated %(count)d record", "Activated %(count)d records", count)
+            % {"count": count},
+        )
 
     activate.label = _("Activate")
     activate.icon = "view"
@@ -108,18 +111,20 @@ class BaseSnippetViewSet(SnippetViewSet):
             return
 
         count = queryset.update(is_active=False)
-        messages.success(request, ngettext(
-            "Deactivated %(count)d record",
-            "Deactivated %(count)d records",
-            count
-        ) % {"count": count})
+        messages.success(
+            request,
+            ngettext("Deactivated %(count)d record", "Deactivated %(count)d records", count)
+            % {"count": count},
+        )
 
     deactivate.label = _("Deactivate")
     deactivate.icon = "hidden"
 
     # --- Display Helpers ---
     @staticmethod
-    def icon_boolean(value, true_icon="✅", false_icon="❌", true_color="#198754", false_color="#dc3545"):
+    def icon_boolean(
+        value, true_icon="✅", false_icon="❌", true_color="#198754", false_color="#dc3545"
+    ):
         """Render a boolean field as colored icon."""
         icon = true_icon if value else false_icon
         color = true_color if value else false_color
@@ -143,7 +148,3 @@ class BaseSnippetViewSet(SnippetViewSet):
         if not value:
             return ""
         return f"{value[:max_length]}..." if len(value) > max_length else value
-
-
-
-

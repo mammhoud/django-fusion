@@ -9,7 +9,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
-from django_rseal.pipelines.models.tags import *
+from django_rseal.models.tags import *
 
 
 class Note(DefaultBase):
@@ -115,7 +115,7 @@ class SharedNote(DefaultBase):
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name="shared_with")
+    note = models.ForeignKey("Note", on_delete=models.CASCADE, related_name="shared_with")
     user = models.ForeignKey(
         settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shared_notes"
     )

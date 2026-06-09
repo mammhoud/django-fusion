@@ -1,1 +1,4 @@
-<span class="post-count">{{ post_count }}</span>
+{# blog/fragments/post_count.html — OOB fragment for post count #}
+<span id="post-count" class="post-count" hx-swap-oob="true">
+  {{ post_count }} post{{ post_count|pluralize }}
+</span>

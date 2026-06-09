@@ -9,7 +9,7 @@ Ported from ``verify-demo-config.sh``.
 
 Usage:
     uv run python manage.py verify_deployment
-    uv run python manage.py verify_deployment --container ctc-django-main
+    uv run python manage.py verify_deployment --container lms-demo-website
 """
 
 import os
@@ -47,13 +47,13 @@ def _warn(msg: str) -> str:
 # ---------------------------------------------------------------------------
 
 _CONTAINER_MAP: dict[str, str] = {
-    "docker": "ctc-django-main",
-    "demo": "ctc-django-demo",
-    "production": "ctc-django-main",
-    "local": "ctc-django-main",
+    "docker": "lms-demo-website",
+    "demo": "lms-demo-website",
+    "production": "lms-demo-website",
+    "local": "lms-demo-website",
 }
 
-_DEFAULT_CONTAINER = "ctc-django-main"
+_DEFAULT_CONTAINER = "lms-demo-website"
 
 
 def _detect_container() -> str:
@@ -214,14 +214,14 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
     """Check 6 — Traefik routing config file."""
     # Try common locations relative to the repo root
     candidates = [
-        Path("/root/site/compose/traefik/dynamic/ctc-demo.yml"),
-        Path("/root/site/compose/traefik/dynamic/structa.cloud.yml"),
-        Path("/root/site/compose/traefik/dynamic/ctc-main.yml"),
+        Path("/root/site/compose/traefik/dynamic/lms-demo.yml"),
+        Path("/root/site/compose/traefik/dynamic/lms-demo.yml"),
+        Path("/root/site/compose/traefik/dynamic/lms-demo.yml"),
     ]
 
     # Also search relative to this file's repo root
     repo_root = Path(__file__).resolve().parents[5]  # workspace root
-    for name in ("ctc-demo.yml", "structa.cloud.yml", "ctc-main.yml"):
+    for name in ("lms-demo.yml", "lms-demo.yml", "lms-demo.yml"):
         candidates.append(repo_root / "compose" / "traefik" / "dynamic" / name)
 
     traefik_file: Path | None = None
@@ -237,7 +237,7 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
 
     content = traefik_file.read_text(encoding="utf-8")
 
-    # Check for a structa.cloud domain
+    # Check for a lms-demo domain
     if "structa.cloud" in content:
         results.append((True, "Domain configured: structa.cloud"))
     else:
@@ -379,7 +379,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("Structa Cloud Deployment Verification")
+        self.stdout.write("LMS Demo Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )
@@ -397,7 +397,7 @@ class Command(BaseCommand):
         # 1. Docker Compose config
         # ------------------------------------------------------------------
         self.stdout.write("1. Checking Docker Compose Configuration...")
-        project_root = Path(__file__).resolve().parents[4]  # structa.cloud/
+        project_root = Path(__file__).resolve().parents[4]  # lms-demo/
         ok, msg = _check_compose_config(project_root)
         if ok:
             self.stdout.write(_pass(msg))
@@ -533,7 +533,7 @@ class Command(BaseCommand):
             "======================================================\n"
         )
         self.stdout.write(f"Container : {container}")
-        self.stdout.write("Project   : structa.cloud")
+        self.stdout.write("Project   : lms-demo")
         self.stdout.write("Domain    : https://structa.cloud\n")
 
         if any_failure:

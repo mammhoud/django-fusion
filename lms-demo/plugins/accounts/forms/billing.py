@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django_rseal.pipelines.models import Person
+from django_rseal.models import Person
 
 
 class BillingSettingsForm(forms.Form):
@@ -13,7 +13,7 @@ class BillingSettingsForm(forms.Form):
         ('business', _('Business Plan - $99.99/month')),
         ('enterprise', _('Enterprise Plan - Custom pricing')),
     ]
-    
+
     plan = forms.ChoiceField(
         label=_("Subscription Plan"),
         choices=PLAN_CHOICES,
@@ -21,13 +21,13 @@ class BillingSettingsForm(forms.Form):
             'class': 'form-select'
         })
     )
-    
+
     # Billing Cycle
     BILLING_CYCLE_CHOICES = [
         ('monthly', _('Monthly')),
         ('yearly', _('Yearly - Save 20%')),
     ]
-    
+
     billing_cycle = forms.ChoiceField(
         label=_("Billing Cycle"),
         choices=BILLING_CYCLE_CHOICES,
@@ -36,14 +36,14 @@ class BillingSettingsForm(forms.Form):
         }),
         initial='monthly'
     )
-    
+
     # Payment Method
     PAYMENT_METHOD_CHOICES = [
         ('credit_card', _('Credit Card')),
         ('paypal', _('PayPal')),
         ('bank_transfer', _('Bank Transfer')),
     ]
-    
+
     payment_method = forms.ChoiceField(
         label=_("Payment Method"),
         choices=PAYMENT_METHOD_CHOICES,
@@ -52,7 +52,7 @@ class BillingSettingsForm(forms.Form):
         }),
         initial='credit_card'
     )
-    
+
     # Auto Renew
     auto_renew = forms.BooleanField(
         label=_("Auto-renew subscription"),
@@ -64,7 +64,7 @@ class BillingSettingsForm(forms.Form):
         }),
         help_text=_("Automatically renew your subscription at the end of each billing period")
     )
-    
+
     # Billing Address
     billing_name = forms.CharField(
         label=_("Billing Name"),
@@ -75,7 +75,7 @@ class BillingSettingsForm(forms.Form):
             'placeholder': _('Name on card')
         })
     )
-    
+
     billing_address = forms.CharField(
         label=_("Billing Address"),
         max_length=300,
@@ -86,7 +86,7 @@ class BillingSettingsForm(forms.Form):
             'placeholder': _('Street address, City, State, ZIP')
         })
     )
-    
+
     # Tax Information
     tax_id = forms.CharField(
         label=_("Tax ID/VAT Number"),
@@ -97,7 +97,7 @@ class BillingSettingsForm(forms.Form):
             'placeholder': _('Enter tax ID if applicable')
         })
     )
-    
+
     # Invoice Preferences
     send_invoices = forms.BooleanField(
         label=_("Email me invoices"),
@@ -108,7 +108,7 @@ class BillingSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     paperless_billing = forms.BooleanField(
         label=_("Paperless billing"),
         required=False,

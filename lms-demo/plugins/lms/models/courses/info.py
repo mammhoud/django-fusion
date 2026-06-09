@@ -12,7 +12,7 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
 from django_rseal.blocks.content.overview import OverviewBlock
-from django_rseal.pipelines.models import ModelCacheMixin
+from django_rseal.models import ModelCacheMixin
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import (
     FieldPanel,
@@ -50,6 +50,18 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
         blank=True,
         related_name="courses",
         verbose_name=_("Specializations"),
+    )
+    categories = models.ManyToManyField(
+        "CourseCategory",
+        blank=True,
+        related_name="courses",
+        verbose_name=_("Categories"),
+    )
+    tags = models.ManyToManyField(
+        "CourseTag",
+        blank=True,
+        related_name="courses",
+        verbose_name=_("Tags"),
     )
 
     # === Visual & Media ===
@@ -260,6 +272,8 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
                 FieldPanel("title"),
                 FieldPanel("slug"),
                 FieldPanel("specializations"),
+                FieldPanel("categories"),
+                FieldPanel("tags"),
                 FieldPanel("instructor"),
                 FieldPanel("image"),
                 FieldPanel("header_image"),
@@ -568,4 +582,3 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
     def get_duration_display(self) -> str:
         """Format duration for display."""
         return f"{self.duration} hours"
-

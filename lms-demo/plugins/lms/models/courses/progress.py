@@ -24,8 +24,8 @@ class ModuleProgress(DefaultBase):
         COMPLETED = 'completed', _('Completed')
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    enrollment = models.ForeignKey("alliance.Enrollment", on_delete=models.CASCADE, related_name='module_progress')
-    module = models.ForeignKey("alliance.Module", on_delete=models.CASCADE, related_name='progress')
+    enrollment = models.ForeignKey("lms.Enrollment", on_delete=models.CASCADE, related_name='module_progress')
+    module = models.ForeignKey("lms.Module", on_delete=models.CASCADE, related_name='progress')
 
     # Progress tracking
     status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.NOT_STARTED)
@@ -124,7 +124,7 @@ class LessonProgress(DefaultBase):
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='lesson_progress')
-    lesson = models.ForeignKey("alliance.Lesson", on_delete=models.CASCADE, related_name='progress')
+    lesson = models.ForeignKey("lms.Lesson", on_delete=models.CASCADE, related_name='progress')
 
     # Progress tracking
     status = models.CharField(max_length=20, choices=StatusChoices.choices, default=StatusChoices.NOT_STARTED)

@@ -1,5 +1,5 @@
 """
-Structa Cloud — Routable Components Site Configuration
+LMS Demo — Routable Components Site Configuration
 ======================================================
 
 Defines the Application and Site hierarchy for the routable-components
@@ -78,7 +78,7 @@ class BlogApp(Application):
 # ---------------------------------------------------------------------------
 
 site = Site(
-    title="Structa Cloud",
+    title="LMS Demo",
     viewsets=[
         LMSApp(),
         BlogApp(),

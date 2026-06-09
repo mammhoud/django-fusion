@@ -6,8 +6,8 @@ Supports three rendering modes:
   - Unpoly overlay / modal  (X-Up-Mode: modal | drawer | popup)
   - HTMX fragment  (HX-Request header)
 
-Consent POST endpoints return an HTMX/Unpoly fragment on XHR and redirect
-with a flash message on plain form submissions.
+Consent POST endpoints return JSON for XHR callers and redirect for plain
+form submissions.
 """
 
 from __future__ import annotations
@@ -30,6 +30,7 @@ from plugins.accounts.models.profiles.privacy import (
 # ---------------------------------------------------------------------------
 
 def _get_client_ip(request: HttpRequest) -> str | None:
+    """Return the best-guess client IP from the request."""
     forwarded = request.META.get("HTTP_X_FORWARDED_FOR")
     if forwarded:
         return forwarded.split(",")[0].strip()
@@ -37,7 +38,9 @@ def _get_client_ip(request: HttpRequest) -> str | None:
 
 
 def _is_overlay(request: HttpRequest) -> bool:
-    return request.headers.get("X-Up-Mode", "") in ("modal", "drawer", "popup", "cover")
+    """Return True when Unpoly is requesting an overlay layer."""
+    mode = request.headers.get("X-Up-Mode", "")
+    return mode in ("modal", "drawer", "popup", "cover")
 
 
 def _is_htmx(request: HttpRequest) -> bool:
@@ -45,6 +48,10 @@ def _is_htmx(request: HttpRequest) -> bool:
 
 
 def _pick_template(base: str, request: HttpRequest) -> str:
+    """
+    Choose between the modal fragment and the full-page template.
+    Modal fragment is used for Unpoly overlays and HTMX requests.
+    """
     if _is_overlay(request) or _is_htmx(request):
         return f"privacy/{base}_fragment.html"
     return f"privacy/{base}_page.html"
@@ -56,7 +63,12 @@ def _pick_template(base: str, request: HttpRequest) -> str:
 
 @require_http_methods(["GET"])
 def privacy_policy(request: HttpRequest) -> HttpResponse:
-    """Display the privacy policy as a full page or overlay fragment."""
+    """
+    Display the privacy policy.
+
+    - Full page when accessed directly.
+    - Fragment (modal body) when requested via Unpoly overlay or HTMX.
+    """
     policy = PrivacyPolicy.objects.filter(is_active=True).first()
 
     if not policy:
@@ -74,7 +86,9 @@ def privacy_policy(request: HttpRequest) -> HttpResponse:
         "accept_url": "privacy:accept_policy",
         "page_title": _("Privacy Policy"),
     }
-    return render(request, _pick_template("privacy_policy", request), context)
+
+    template = _pick_template("privacy_policy", request)
+    return render(request, template, context)
 
 
 @require_http_methods(["POST"])
@@ -84,12 +98,12 @@ def accept_privacy_policy(request: HttpRequest) -> HttpResponse:
     policy = PrivacyPolicy.objects.filter(is_active=True).first()
 
     if not policy:
-        if _is_htmx(request) or _is_overlay(request):
+        if request.headers.get("Accept", "").startswith("application/json") or _is_htmx(request):
             return JsonResponse({"error": str(_("No active privacy policy found."))}, status=404)
         messages.error(request, _("No active privacy policy found."))
         return redirect("privacy:policy")
 
-    PrivacyConsent.record_consent(
+    consent, created = PrivacyConsent.record_consent(
         user=request.user,
         policy=policy,
         ip_address=_get_client_ip(request),
@@ -103,7 +117,8 @@ def accept_privacy_policy(request: HttpRequest) -> HttpResponse:
         })
 
     messages.success(request, _("Privacy policy accepted. Thank you."))
-    return redirect(request.POST.get("next") or request.GET.get("next") or "/")
+    next_url = request.POST.get("next") or request.GET.get("next") or "/"
+    return redirect(next_url)
 
 
 # ---------------------------------------------------------------------------
@@ -112,7 +127,12 @@ def accept_privacy_policy(request: HttpRequest) -> HttpResponse:
 
 @require_http_methods(["GET"])
 def terms_of_service(request: HttpRequest) -> HttpResponse:
-    """Display the terms of service as a full page or overlay fragment."""
+    """
+    Display the terms of service.
+
+    - Full page when accessed directly.
+    - Fragment (modal body) when requested via Unpoly overlay or HTMX.
+    """
     terms = TermsOfService.objects.filter(is_active=True).first()
 
     if not terms:
@@ -130,7 +150,9 @@ def terms_of_service(request: HttpRequest) -> HttpResponse:
         "accept_url": "privacy:accept_terms",
         "page_title": _("Terms of Service"),
     }
-    return render(request, _pick_template("terms_of_service", request), context)
+
+    template = _pick_template("terms_of_service", request)
+    return render(request, template, context)
 
 
 @require_http_methods(["POST"])
@@ -140,12 +162,12 @@ def accept_terms(request: HttpRequest) -> HttpResponse:
     terms = TermsOfService.objects.filter(is_active=True).first()
 
     if not terms:
-        if _is_htmx(request) or _is_overlay(request):
+        if request.headers.get("Accept", "").startswith("application/json") or _is_htmx(request):
             return JsonResponse({"error": str(_("No active terms of service found."))}, status=404)
         messages.error(request, _("No active terms of service found."))
         return redirect("privacy:terms")
 
-    TermsConsent.record_consent(
+    consent, created = TermsConsent.record_consent(
         user=request.user,
         terms=terms,
         ip_address=_get_client_ip(request),
@@ -159,7 +181,8 @@ def accept_terms(request: HttpRequest) -> HttpResponse:
         })
 
     messages.success(request, _("Terms of service accepted. Thank you."))
-    return redirect(request.POST.get("next") or request.GET.get("next") or "/")
+    next_url = request.POST.get("next") or request.GET.get("next") or "/"
+    return redirect(next_url)
 
 
 # ---------------------------------------------------------------------------
@@ -192,7 +215,10 @@ def consent_status(request: HttpRequest) -> JsonResponse:
 
 @require_http_methods(["GET"])
 def consent_required(request: HttpRequest) -> HttpResponse:
-    """Gate page shown when a user must accept policies before continuing."""
+    """
+    Gate page shown when a user must accept policies before continuing.
+    Linked to from middleware or decorators.
+    """
     policy = PrivacyPolicy.objects.filter(is_active=True).first()
     terms = TermsOfService.objects.filter(is_active=True).first()
 
@@ -207,11 +233,12 @@ def consent_required(request: HttpRequest) -> HttpResponse:
         else False
     )
 
-    return render(request, "privacy/consent_required_page.html", {
+    context = {
         "policy": policy,
         "terms": terms,
         "privacy_consented": privacy_consented,
         "terms_consented": terms_consented,
         "next": request.GET.get("next", "/"),
         "page_title": _("Consent Required"),
-    })
+    }
+    return render(request, "privacy/consent_required_page.html", context)

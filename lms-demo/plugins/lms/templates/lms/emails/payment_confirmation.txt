@@ -1,0 +1,30 @@
+{% load i18n %}{% trans "Payment Confirmed!" %}
+==================================================
+
+{% trans "Dear" %} {{ enrollment.name }},
+
+{% trans "Thank you for enrolling in" %} {{ course.name }}.
+{% trans "Your payment has been confirmed and you now have access to the course." %}
+
+{% trans "PAYMENT DETAILS:" %}
+-----------------------
+{% trans "Course:" %} {{ course.name }}
+{% trans "Amount:" %} ${{ payment.amount }} {{ payment.currency }}
+{% trans "Payment Method:" %} {{ payment.get_provider_display }}
+{% trans "Transaction ID:" %} {{ payment.transaction_id }}
+{% trans "Date:" %} {{ payment.completed_at|date:"M d, Y g:i A" }}
+
+{% trans "WHAT'S NEXT?" %}
+-----------------------
+1. {% trans "Log in to your account" %}
+2. {% trans "Go to your course dashboard" %}
+3. {% trans "Start learning!" %}
+
+{% trans "Visit your course:" %} {{ site_url }}/learning/dashboard/
+
+{% trans "Need Help?" %}
+{% trans "If you have any questions about your enrollment or course access, please contact our support team." %}
+
+---
+{% trans "This is an automated email. Please do not reply to this email." %}
+© {% now "Y" %} LMS Demo. {% trans "All rights reserved." %}

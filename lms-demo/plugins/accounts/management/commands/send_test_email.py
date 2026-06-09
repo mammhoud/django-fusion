@@ -12,9 +12,9 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         recipient = options['email']
         self.stdout.write(f"Attempting to send test email to {recipient}...")
-        
+
         success = email_service.send_test(to=recipient)
-        
+
         if success:
             self.stdout.write(self.style.SUCCESS(f"Successfully sent test email to {recipient}"))
         else:

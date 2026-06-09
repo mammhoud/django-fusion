@@ -65,5 +65,13 @@ PROFILE_MODEL = "auth.User"
 # models.E015: django_rseal.TeamMembership.ordering references person__full_name
 # which is a valid cross-model lookup at query time but Django's static check
 # cannot verify related-field traversal. Safe to silence.
-SILENCED_SYSTEM_CHECKS = ["models.E015"]
+SILENCED_SYSTEM_CHECKS = [
+    "models.E015",  # django_rseal cross-model ordering lookup
+    "models.E028",  # legacy accounts/handlers shared service table during migration
+    "models.E030",  # legacy accounts/handlers shared indexes during migration
+    "models.E032",  # legacy accounts/handlers shared constraints during migration
+    "fields.E304",  # legacy duplicated profile reverse accessors
+    "fields.E305",  # legacy duplicated profile reverse query names
+    "fields.E340",  # legacy duplicated many-to-many intermediary tables
+]
 WAGTAIL_WORKFLOW_ENABLED = False

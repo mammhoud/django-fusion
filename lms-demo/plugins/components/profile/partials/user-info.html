@@ -1,0 +1,191 @@
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+<div class="profile-header position-relative">
+    <div class="row align-items-center g-4">
+
+        <!-- Profile Info Column -->
+        <div class="col">
+            <div class="profile-info">
+                <!-- Name and Title -->
+                <div class="d-flex align-items-center justify-content-center justify-content-md-start flex-wrap gap-2 mb-2">
+                    <h1 class="profile-name h2 fw-bold mb-0">
+                        {% if person.first_name or person.last_name %}
+                        {{ person.first_name }} {{ person.last_name }}
+                        {% else %}
+                        {{ user.username|default:"New User" }}
+                        {% endif %}
+                    </h1>
+
+                    <!-- Verified Badge (Inline) -->
+                    {% if person.is_email_verified %}
+                    <span class="verified-text d-inline-flex align-items-center gap-1 text-info fw-medium small">
+                        <i class="bi bi-patch-check-fill"></i>
+                        {% trans "Verified" %}
+                    </span>
+                    {% endif %}
+
+                    <!-- Badges -->
+                    {% if user_profile.is_premium %}
+                    <span class="badge bg-warning bg-gradient text-dark px-3 py-2">
+                        <i class="bi bi-star-fill me-1"></i>
+                        {% trans "Premium" %}
+                    </span>
+                    {% endif %}
+
+                    {% if user_profile.is_instructor %}
+                    <span class="badge bg-info bg-gradient text-white px-3 py-2">
+                        <i class="bi bi-mortarboard-fill me-1"></i>
+                        {% trans "Instructor" %}
+                    </span>
+                    {% endif %}
+                </div>
+
+                <!-- Username -->
+                {% if user.username %}
+                <p class="profile-username text-muted mb-3">
+                    <i class="bi bi-at me-1"></i>
+                    @{{ user.username }}
+                </p>
+                {% endif %}
+
+                <!-- Headline/Bio -->
+                {% if user_profile.headline %}
+                <div class="profile-headline mb-3">
+                    <h2 class="h5 text-body-emphasis mb-1">
+                        <i class="bi bi-award me-2"></i>
+                        {{ user_profile.headline }}
+                    </h2>
+                </div>
+                {% endif %}
+
+                <!-- Stats (Optional - Commented out by default) -->
+                {% comment %}
+                <div class="profile-stats d-flex flex-wrap gap-4 mb-4">
+                    <div class="stat-item text-center">
+                        <div class="stat-number h4 fw-bold text-primary mb-1">102</div>
+                        <div class="stat-label text-muted small">{% trans "Posts" %}</div>
+                    </div>
+                    <div class="stat-item text-center">
+                        <div class="stat-number h4 fw-bold text-primary mb-1">3.2k</div>
+                        <div class="stat-label text-muted small">{% trans "Followers" %}</div>
+                    </div>
+                    <div class="stat-item text-center">
+                        <div class="stat-number h4 fw-bold text-primary mb-1">951</div>
+                        <div class="stat-label text-muted small">{% trans "Following" %}</div>
+                    </div>
+                    <div class="stat-item text-center">
+                        <div class="stat-number h4 fw-bold text-primary mb-1">87%</div>
+                        <div class="stat-label text-muted small">{% trans "Complete" %}</div>
+                    </div>
+                </div>
+                {% endcomment %}
+
+                <!-- Meta Information -->
+                <div class="profile-meta d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-3 mb-4">
+                    <!-- Location -->
+                    {% if user_profile.location %}
+                    <div class="meta-item d-flex align-items-center gap-1 text-body">
+                        <i class="bi bi-geo-alt-fill text-primary"></i>
+                        <span class="small">{{ user_profile.location }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Occupation -->
+                    {% if user_profile.occupation %}
+                    <div class="meta-item d-flex align-items-center gap-1 text-body">
+                        <i class="bi bi-briefcase-fill text-success"></i>
+                        <span class="small">{{ user_profile.occupation }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Organization -->
+                    {% if user_profile.organization %}
+                    <div class="meta-item d-flex align-items-center gap-1 text-body">
+                        <i class="bi bi-building-fill text-info"></i>
+                        <span class="small">{{ user_profile.organization }}</span>
+                    </div>
+                    {% endif %}
+
+                    <!-- Website -->
+                    {% if user_profile.website %}
+                    <div class="meta-item d-flex align-items-center gap-1">
+                        <i class="bi bi-globe text-warning"></i>
+                        <a href="{{ user_profile.website }}" target="_blank" rel="noopener noreferrer"
+                            class="small text-decoration-none">
+                            {% trans "Website" %}
+                        </a>
+                    </div>
+                    {% endif %}
+
+                    <!-- Join Date -->
+                    <div class="meta-item d-flex align-items-center gap-1 text-body">
+                        <i class="bi bi-calendar-check-fill text-secondary"></i>
+                        <span class="small">
+                            {% trans "Joined" %} {{ user.date_joined|date:"F Y" }}
+                        </span>
+                    </div>
+
+                    <!-- Last Seen -->
+                    {% if user_profile.last_seen %}
+                    <div class="meta-item d-flex align-items-center gap-1 text-body">
+                        <i class="bi bi-clock-fill text-muted"></i>
+                        <span class="small">
+                            {% trans "Last seen" %} {{ user_profile.last_seen|timesince }} {% trans "ago" %}
+                        </span>
+                    </div>
+                    {% endif %}
+                </div>
+
+                <!-- Tags/Skills -->
+                {% if user_profile.skills.all %}
+                <div class="profile-tags mb-4">
+                    <h6 class="mb-2 text-body-secondary small">
+                        <i class="bi bi-tags me-1"></i>
+                        {% trans "Skills & Expertise" %}
+                    </h6>
+                    <div class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-start gap-2">
+                        {% for skill in user_profile.skills.all|slice:":10" %}
+                        <span class="badge bg-light text-dark border px-3 py-2 small">
+                            {{ skill.name }}
+                        </span>
+                        {% endfor %}
+                        {% if user_profile.skills.count > 10 %}
+                        <span class="badge bg-light text-muted border px-3 py-2 small">
+                            +{{ user_profile.skills.count|add:"-10" }} more
+                        </span>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endif %}
+
+                <!-- Bio/Description -->
+                {% if user_profile.bio %}
+                <div class="profile-bio mb-4">
+                    <h6 class="mb-2 text-body-secondary small">
+                        <i class="bi bi-card-text me-1"></i>
+                        {% trans "About" %}
+                    </h6>
+                    <p class="text-body mb-0" style="max-width: 600px;">
+                        {{ user_profile.bio|linebreaksbr|truncatewords:100 }}
+                    </p>
+                    {% if user_profile.bio|wordcount > 100 %}
+                    <a href="#" class="small text-decoration-none" data-bs-toggle="modal"
+                        data-bs-target="#bioModal">
+                        {% trans "Read more" %} <i class="bi bi-arrow-right-short"></i>
+                    </a>
+                    {% endif %}
+                </div>
+                {% endif %}
+
+                <!-- Action Buttons (Will be included from separate template) -->
+                <div id="profile-actions-container">
+                    <!-- Profile actions will be inserted here -->
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- CTA -->
+<div class="d-flex justify-content-center justify-content-md-start mt-3 mt-md-0">
+    {% include "profile/partials/banner-options.html" %}
+</div>
+
+</div>

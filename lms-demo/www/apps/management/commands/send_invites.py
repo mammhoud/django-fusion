@@ -105,7 +105,7 @@ class Command(BaseCommand):
                     send_mail(
                         subject,
                         f"Visit {invite_url} to accept your invitation",
-                        "noreply@example.com",
+                        "noreply@structa.cloud",
                         [email],
                         html_message=html_message,
                         fail_silently=False,

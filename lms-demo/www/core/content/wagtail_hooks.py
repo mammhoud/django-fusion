@@ -1,5 +1,5 @@
 """
-Wagtail Hooks for CTC Research Project
+Wagtail Hooks for LMS Demo Project
 Temporarily disabled due to import issues
 """
 

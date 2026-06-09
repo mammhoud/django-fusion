@@ -1,5 +1,5 @@
 """
-Apps module - provides shared logger for ctc-research.com
+Apps module - provides shared logger for structa.cloud
 """
 import logging
 

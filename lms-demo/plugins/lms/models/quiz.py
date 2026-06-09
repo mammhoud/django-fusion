@@ -24,7 +24,7 @@ class Quiz(models.Model):
     """
 
     lesson = models.ForeignKey(
-        "alliance.Lesson",
+        "lms.Lesson",
         on_delete=models.CASCADE,
         related_name="quizzes",
         verbose_name=_("Lesson"),

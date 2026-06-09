@@ -1,0 +1,30 @@
+/*!
+ * Color classes and utilities
+ * File: colors.css
+ * Category: colors
+ * Generated: 2025-12-16 22:01:11
+ * Size: 328 bytes
+ * Lines: 20
+ */
+@import 'master';
+
+.color-white {
+  color: var(--color-named-white) !important;
+}
+
+.color-black {
+  color: var(--color-named-black) !important;
+}
+
+.text-white {
+  color: var(--color-named-white);
+}
+
+.text-white h2,
+.text-white h3,
+.text-white h4,
+.text-white h5 {
+  color: var(--color-named-white) !important;
+}
+
+/* Compact User Dropdown Styles */

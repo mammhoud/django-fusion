@@ -1,4 +1,5 @@
-# Profile views
+# Profile views - migrated from accounts plugin
+
 try:
     from .blog import BlogPostCreateView, BlogPostDeleteView, BlogPostEditView, BlogPostsView
     _blog_views_available = True
@@ -11,14 +12,8 @@ from .courses import CoursesView
 from .dashboard import DashboardView
 from .messages import MessagesView
 from .notes import ContentDashboardView, NotesView
-from .profile import (
-    ProfileEditView,
-    ProfileImageRemoveView,
-    ProfileImageUploadView,
-    ProfileView,
-)
+from .profile import ProfileEditView, ProfileImageRemoveView, ProfileImageUploadView, ProfileView
 from .settings import SettingsView
-from .tags import EnhancedTagsView
 
 __all__ = [
     # Dashboard
@@ -32,18 +27,16 @@ __all__ = [
     "SettingsView",
     # Messages
     "MessagesView",
-    # Notes
-    "NotesView",
-    "ContentDashboardView",
     # Courses
     "CoursesView",
     # Certifications
     "CertificationsView",
+    # Notes
+    "NotesView",
+    "ContentDashboardView",
     # Blog
     "BlogPostsView",
     "BlogPostCreateView",
     "BlogPostEditView",
     "BlogPostDeleteView",
-    # Tags
-    "EnhancedTagsView",
 ]

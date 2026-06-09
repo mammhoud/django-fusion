@@ -1,0 +1,11 @@
+<div id="imageUploadModal" class="modal">
+    <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="up_text">Upload Image</h2>
+        <form id="imageUploadForm" hx-post="{% url 'front:upload-profile-image' %}" hx-encoding="multipart/form-data" hx-target="#avatarImage" hx-swap="outerHTML">
+            <input type="file" name="image" id="imageInput" accept="image/*" required>
+            <button type="submit" class="rbt-btn btn-sm btn-border color-black radius-round-10">Upload</button>
+        </form>
+
+    </div>
+</div>

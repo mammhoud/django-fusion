@@ -11,7 +11,7 @@ except ImportError:
     AuthenticationError = Exception  # type: ignore[assignment,misc]
 
 try:
-    from django_rseal.pipelines.models.token import Token  # type: ignore[import]
+    from django_rseal.workflows.pipelines.models.token import Token  # type: ignore[import]
 except ImportError:
     Token = None  # type: ignore[assignment,misc]
 

@@ -1,4 +1,4 @@
-# robots.txt for ctc-research.com
+# robots.txt for structa.cloud
 # ================================
 
 # --- General Crawling Rules ---

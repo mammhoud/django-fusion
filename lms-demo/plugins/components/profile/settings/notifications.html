@@ -1,0 +1,258 @@
+{% load i18n %}
+<div class="settings-section">
+    <div class="settings-section__header">
+        <h5 class="settings-section__title">{% trans "Notification Preferences" %}</h5>
+        <p class="settings-section__description">
+            {% trans "Configure how and when you receive notifications" %}
+        </p>
+    </div>
+
+    <div class="settings-section__content">
+        <form id="notificationsForm" class="settings-form"
+              hx-post="{% url 'profile:update_settings' section='notifications' %}"
+              hx-target="#notificationsResult"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-envelope me-2"></i>{% trans "Email Notifications" %}
+                </h6>
+
+                <div class="notification-switches">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="course_updates" id="courseUpdates"
+                               {% if person.course_updates_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="courseUpdates">
+                            {% trans "Course updates and announcements" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Important updates about your enrolled courses" %}
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="instructor_messages" id="instructorMessages"
+                               {% if person.instructor_messages_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="instructorMessages">
+                            {% trans "New messages from instructors" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Direct messages from course instructors" %}
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="marketing_emails" id="marketingEmails"
+                               {% if person.marketing_emails %}checked{% endif %}>
+                        <label class="form-check-label" for="marketingEmails">
+                            {% trans "Marketing and promotional emails" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "News about new features, courses, and promotions" %}
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox"
+                               name="weekly_reports" id="weeklyReports"
+                               {% if person.weekly_reports_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="weeklyReports">
+                            {% trans "Weekly progress reports" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Summary of your weekly activity and progress" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-bell me-2"></i>{% trans "Push Notifications" %}
+                </h6>
+
+                <div class="notification-switches">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="assignment_notifications" id="assignmentNotifications"
+                               {% if person.assignment_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="assignmentNotifications">
+                            {% trans "New course assignments" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Alerts for new assignments in your courses" %}
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="forum_activity" id="forumActivity"
+                               {% if person.forum_activity_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="forumActivity">
+                            {% trans "Forum activity" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Replies to your forum posts and discussions" %}
+                        </div>
+                    </div>
+
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox"
+                               name="deadline_reminders" id="deadlineReminders"
+                               {% if person.deadline_reminders_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="deadlineReminders">
+                            {% trans "Deadline reminders" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Reminders for upcoming deadlines and due dates" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-sms me-2"></i>{% trans "SMS Notifications" %}
+                </h6>
+
+                <div class="notification-switches">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="sms_notifications" id="smsNotifications"
+                               {% if person.sms_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="smsNotifications">
+                            {% trans "Enable SMS notifications for urgent updates" %}
+                        </label>
+                        <div class="notification-description">
+                            {% trans "Critical alerts and important system announcements" %}
+                        </div>
+                    </div>
+
+                    {% if not person.phone or not person.phone_verified %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% if not person.phone %}
+                        {% trans "Please add a phone number to enable SMS notifications." %}
+                        {% else %}
+                        {% trans "Please verify your phone number to enable SMS notifications." %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+
+                <small class="text-muted">
+                    <i class="fas fa-info-circle me-1"></i>
+                    {% trans "Standard carrier rates may apply for SMS notifications" %}
+                </small>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-clock me-2"></i>{% trans "Notification Frequency" %}
+                </h6>
+
+                <div class="notification-frequency">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio"
+                               name="notification_frequency" id="frequencyRealtime"
+                               value="realtime"
+                               {% if not person.notification_frequency or person.notification_frequency == 'realtime' %}checked{% endif %}>
+                        <label class="form-check-label" for="frequencyRealtime">
+                            <strong>{% trans "Real-time" %}</strong>
+                            <div class="frequency-description">
+                                {% trans "Receive notifications immediately as they occur" %}
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="radio"
+                               name="notification_frequency" id="frequencyDaily"
+                               value="daily"
+                               {% if person.notification_frequency == 'daily' %}checked{% endif %}>
+                        <label class="form-check-label" for="frequencyDaily">
+                            <strong>{% trans "Daily digest" %}</strong>
+                            <div class="frequency-description">
+                                {% trans "Receive a daily summary of all notifications" %}
+                            </div>
+                        </label>
+                    </div>
+
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio"
+                               name="notification_frequency" id="frequencyWeekly"
+                               value="weekly"
+                               {% if person.notification_frequency == 'weekly' %}checked{% endif %}>
+                        <label class="form-check-label" for="frequencyWeekly">
+                            <strong>{% trans "Weekly summary" %}</strong>
+                            <div class="frequency-description">
+                                {% trans "Receive a weekly summary of important notifications" %}
+                            </div>
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-calendar me-2"></i>{% trans "Quiet Hours" %}
+                </h6>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Start Time" %}</label>
+                        <select class="form-select" name="quiet_hours_start">
+                            <option value="">{% trans "Disabled" %}</option>
+                            {% for hour in "00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23"|split:"|" %}
+                            <option value="{{ hour }}:00"
+                                    {% if person.quiet_hours_start == hour|add:":00" %}selected{% endif %}>
+                                {{ hour }}:00
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "End Time" %}</label>
+                        <select class="form-select" name="quiet_hours_end">
+                            <option value="">{% trans "Disabled" %}</option>
+                            {% for hour in "00|01|02|03|04|05|06|07|08|09|10|11|12|13|14|15|16|17|18|19|20|21|22|23"|split:"|" %}
+                            <option value="{{ hour }}:00"
+                                    {% if person.quiet_hours_end == hour|add:":00" %}selected{% endif %}>
+                                {{ hour }}:00
+                            </option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+
+                <div class="notification-description mt-2">
+                    <small class="text-muted">
+                        {% trans "During quiet hours, you won't receive push notifications. Urgent notifications will still be delivered." %}
+                    </small>
+                </div>
+            </div>
+
+            <div id="notificationsResult" class="mt-4"></div>
+
+            <div class="settings-form__actions mt-4">
+                <button type="submit" class="btn btn-primary btn--settings">
+                    <span class="htmx-indicator">
+                        <span class="spinner-border spinner-border-sm"
+                              role="status" aria-hidden="true"></span>
+                        {% trans "Saving..." %}
+                    </span>
+                    <span class="htmx-request-hidden">
+                        <i class="fas fa-save me-2"></i>{% trans "Save Notification Settings" %}
+                    </span>
+                </button>
+
+
+            </div>
+        </form>
+    </div>
+</div>

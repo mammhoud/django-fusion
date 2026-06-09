@@ -22,7 +22,7 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 # ── Recipients ────────────────────────────────────────────────────────────────
-DEV_TEAM_EMAIL = "structa.cloud@gmail.com"
+DEV_TEAM_EMAIL = "admin@structa.cloud"
 
 
 class Command(BaseCommand):
@@ -170,7 +170,7 @@ class Command(BaseCommand):
     # ── Email builder ──────────────────────────────────────────────────────────
 
     def _build_email(self, errors, since, hours):
-        site_name = getattr(settings, "WAGTAIL_SITE_NAME", "CTC Hub")
+        site_name = getattr(settings, "WAGTAIL_SITE_NAME", "LMS Demo")
         now = timezone.now()
         subject = (
             f"[{site_name}] ⚠️ Error Report — "
@@ -239,7 +239,7 @@ class Command(BaseCommand):
     # ── Sender ─────────────────────────────────────────────────────────────────
 
     def _send(self, subject, html_body, text_body, recipient):
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@example.com")
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@structa.cloud")
         msg = EmailMultiAlternatives(subject, text_body, from_email, [recipient])
         msg.attach_alternative(html_body, "text/html")
         try:

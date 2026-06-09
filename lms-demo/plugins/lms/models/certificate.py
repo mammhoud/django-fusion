@@ -28,7 +28,7 @@ class Certificate(models.Model):
     )
 
     course = models.ForeignKey(
-        "alliance.Course",
+        "lms.Course",
         on_delete=models.CASCADE,
         related_name="certificates",
         verbose_name=_("Course"),
