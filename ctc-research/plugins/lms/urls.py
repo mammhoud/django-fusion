@@ -13,7 +13,6 @@ from .views.lessons import (
     CourseContinueView,
     LessonNavigationView,
 )
-from .views.lessons import LessonNavigationView
 from .views.enrollment import (
     EnrollmentCreateAjaxView,
     enrollment_create_modal,
@@ -29,8 +28,8 @@ from .views.payments import (
     webhook_stripe,
     webhook_paypal,
     webhook_paymo,
-    PaymentHistoryView,
 )
+from .views.cart import PaymentHistoryView
 from .views.cart import EnrollView
 
 # Lazy load django_rseal payment views to avoid import conflicts
