@@ -64,6 +64,7 @@ COPY assets ${APP_HOME}/assets
 COPY compose ${APP_HOME}/compose
 COPY tests ${APP_HOME}/tests
 COPY tasks ${APP_HOME}/tasks
+COPY _shared ${APP_HOME}/_shared
 COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 
 # -----------------------------------------------------
@@ -72,8 +73,8 @@ COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 # Build/collect commands may run at container startup, so install dev tooling
 # explicitly even though NODE_ENV defaults to production. This keeps webpack-cli
 # available non-interactively and avoids npx install prompts.
-RUN cd ${APP_HOME}/assets \
-    && npm install --include=dev --legacy-peer-deps --no-audit --no-fund
+# RUN cd ${APP_HOME}/assets \
+#     && npm install --include=dev --legacy-peer-deps --no-audit --no-fund
 
 # -----------------------------------------------------
 # Entrypoint and helper scripts

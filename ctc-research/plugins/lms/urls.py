@@ -1,6 +1,14 @@
 from django.urls import path
 
-from .views import *
+# Import specific views without importing cart.py which depends on django_rseal.site
+from .views.courses import (
+    FrontCourseDetailView,
+    CourseWatchView,
+    CourseContinueView,
+    CourseSearchAPIView,
+    course_wishlist_toggle,
+)
+from .views.lessons import LessonNavigationView
 from .views.enrollment import (
     EnrollmentCreateAjaxView,
     enrollment_create_modal,
@@ -8,6 +16,8 @@ from .views.enrollment import (
     enrollment_status_update,
     enrollment_export_csv,
     enrollment_import_csv,
+    course_enrollment_form,
+    course_enrollment_create,
 )
 from .views.payments import (
     initialize_payment,
@@ -16,25 +26,29 @@ from .views.payments import (
     webhook_stripe,
     webhook_paypal,
     webhook_paymo,
+    PaymentHistoryView,
 )
+from .views.cart import EnrollView
 
-try:
-    from django_rseal.site.payments import (
-        CartPayPalInitView,
-        CartStripeInitView,
-        PayPalInitView,
-        StripeInitView,
-        StripeWebhookView,
-    )
-    payment_urls = [
-        path("checkout/stripe/init/<slug:slug>/", StripeInitView.as_view(), name="stripe_init"),
-        path("checkout/paypal/init/<slug:slug>/", PayPalInitView.as_view(), name="paypal_init"),
-        path("checkout/stripe/init/", CartStripeInitView.as_view(), name="cart_stripe_init"),
-        path("checkout/paypal/init/", CartPayPalInitView.as_view(), name="cart_paypal_init"),
-        path("checkout/webhook/stripe/", StripeWebhookView.as_view(), name="stripe_webhook"),
-    ]
-except ImportError:
-    payment_urls = []
+# Lazy load django_rseal payment views to avoid import conflicts
+def _get_payment_urls():
+    try:
+        from django_rseal.site.payments import (
+            CartPayPalInitView,
+            CartStripeInitView,
+            PayPalInitView,
+            StripeInitView,
+            StripeWebhookView,
+        )
+        return [
+            path("checkout/stripe/init/<slug:slug>/", StripeInitView.as_view(), name="stripe_init"),
+            path("checkout/paypal/init/<slug:slug>/", PayPalInitView.as_view(), name="paypal_init"),
+            path("checkout/stripe/init/", CartStripeInitView.as_view(), name="cart_stripe_init"),
+            path("checkout/paypal/init/", CartPayPalInitView.as_view(), name="cart_paypal_init"),
+            path("checkout/webhook/stripe/", StripeWebhookView.as_view(), name="stripe_webhook"),
+        ]
+    except (ImportError, RuntimeError):
+        return []
 
 app_name = "lms"
 
@@ -62,7 +76,7 @@ urlpatterns = [
     # Enrollment Management
     # ===================================================================
     path("enroll/<slug:slug>/", EnrollView.as_view(), name="enroll_course"),
-    path("enrollment/success/", EnrollmentSuccessView.as_view(), name="enrollment_success"),
+    path("enrollment/success/", EnrollView.as_view(), name="enrollment_success"),
     path("enrollment/form/<int:course_id>/", course_enrollment_form, name="course_enrollment_form"),
     
     # AJAX Endpoints (v6 additions)
@@ -94,4 +108,4 @@ urlpatterns = [
     path("payment/webhook/stripe/", webhook_stripe, name="webhook_stripe"),
     path("payment/webhook/paypal/", webhook_paypal, name="webhook_paypal"),
     path("payment/webhook/paymo/", webhook_paymo, name="webhook_paymo"),
-] + payment_urls
+] + _get_payment_urls()

@@ -4,9 +4,9 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django.views import View
 from django_osoul.site import NotificationMixin, PageHandler
 from django_rseal.models import Person
-from django_rseal.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 
 from plugins.accounts.services import PersonService
 
@@ -20,7 +20,32 @@ from ..forms import (
 )
 
 
-class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin):
+# Lazy loader for Person model (deferred to avoid django_rseal import conflicts)
+_Person_cache = None
+def _get_person_model():
+    global _Person_cache
+    if _Person_cache is None:
+        from django_rseal.models import Person
+        _Person_cache = Person
+    return _Person_cache
+
+# Add Person to module namespace for type hints
+Person = None# Lazy base class resolution (same pattern as profile.py)
+_BASES_CACHE: dict = {}
+
+def _settings_bases():
+    """Return (PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin) lazily."""
+    if not _BASES_CACHE:
+        from django_rseal.site.mixins import ProfileContextMixin, ProfileOperationsMixin
+        _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin
+        _BASES_CACHE["ProfileOperationsMixin"] = ProfileOperationsMixin
+    return (
+        _BASES_CACHE.get("ProfileContextMixin"),
+        _BASES_CACHE.get("ProfileOperationsMixin"),
+    )
+
+
+class SettingsView(PageHandler, NotificationMixin, View):
     """
     Settings view with tab-based navigation and traditional form submissions.
     All sections are loaded on a single page with Bootstrap tabs.
@@ -40,6 +65,18 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
         "preferences": PreferencesSettingsForm,
         "billing": BillingSettingsForm,
     }
+
+    def dispatch(self, request, *args, **kwargs):
+        """Resolve ProfileContextMixin and ProfileOperationsMixin bases lazily at request time."""
+        ProfileContextMixin, ProfileOperationsMixin = _settings_bases()
+        if ProfileContextMixin and ProfileOperationsMixin:
+            if not isinstance(self, ProfileContextMixin):
+                self.__class__ = type(
+                    self.__class__.__name__,
+                    (PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin, View),
+                    dict(self.__class__.__dict__),
+                )
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
         """Handle GET requests for settings page."""
@@ -100,7 +137,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
                 request=request
             )
 
-        person = Person.objects.filter(user=request.user).first()
+        person = _get_person_model().objects.filter(user=request.user).first()
         if not person:
             return self.show_notification(
                 message=_("User profile not found"),
@@ -174,7 +211,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
 
         if request.user.is_authenticated:
             # Get person record
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
 
             if person:
                 # Get detailed profile information
@@ -198,7 +235,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
 
         return context
 
-    def _get_settings_context(self, person: Person, profile_info: Dict) -> Dict:
+    def _get_settings_context(self, person: "Person", profile_info: Dict) -> Dict:
         """
         Get all context needed for the settings panel template.
         """
@@ -257,7 +294,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             },
         }
 
-    def _get_all_sections_data(self, person: Person, profile_info: Dict) -> Dict:
+    def _get_all_sections_data(self, person: "Person", profile_info: Dict) -> Dict:
         """Get form data for all sections."""
         sections_data = {}
         for section in self.form_classes.keys():
@@ -267,7 +304,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             }
         return sections_data
 
-    def _get_form_initial_data(self, section: str, person: Person, profile_info: Dict) -> Dict:
+    def _get_form_initial_data(self, section: str, person: "Person", profile_info: Dict) -> Dict:
         """Get initial data for form based on section."""
         initial_data = {
             "user_id": person.user.id,
@@ -401,7 +438,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             user.save()
 
             # Update password change timestamp
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if person:
                 person.password_last_changed = timezone.now()
                 person.save()
@@ -431,7 +468,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
     def _handle_enable_2fa(self, request: HttpRequest):
         """Handle 2FA enable request."""
         try:
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if not person:
                 return self.show_notification(
                     message=_("User not found"),
@@ -491,7 +528,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
     def _handle_disable_2fa(self, request: HttpRequest):
         """Handle 2FA disable request."""
         try:
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if not person:
                 return self.show_notification(
                     message=_("User not found"),
@@ -540,7 +577,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
         try:
             code = request.POST.get('code', '')
 
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if not person:
                 return self.show_notification(
                     message=_("User not found"),
@@ -634,7 +671,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
         """Handle data export request."""
         try:
             # Generate data export
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if not person:
                 return self.show_notification(
                     message=_("User not found"),
@@ -779,7 +816,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             plan = request.POST.get('plan', '')
             billing_cycle = request.POST.get('billing_cycle', 'monthly')
 
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if not person:
                 return self.show_notification(
                     message=_("User not found"),
@@ -818,7 +855,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
     def _handle_cancel_subscription(self, request: HttpRequest):
         """Handle subscription cancellation."""
         try:
-            person = Person.objects.filter(user=request.user).first()
+            person = _get_person_model().objects.filter(user=request.user).first()
             if not person:
                 return self.show_notification(
                     message=_("User not found"),
@@ -854,7 +891,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
                 request=request
             )
 
-    def _save_section_data(self, section: str, data: Dict, person: Person):
+    def _save_section_data(self, section: str, data: Dict, person: "Person"):
         """Save data for specific section."""
         if section == "account":
             self._save_account_data(data, person)
@@ -872,7 +909,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
         person.save()
         person.user.save()
 
-    def _save_account_data(self, data: Dict, person: Person):
+    def _save_account_data(self, data: Dict, person: "Person"):
         """Save account data."""
         if "first_name" in data:
             person.user.first_name = data["first_name"]
@@ -887,7 +924,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             if field in data:
                 setattr(person, field, data[field])
 
-    def _save_privacy_data(self, data: Dict, person: Person):
+    def _save_privacy_data(self, data: Dict, person: "Person"):
         """Save privacy data."""
         for field in [
             "profile_visibility",
@@ -900,7 +937,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             if field in data:
                 setattr(person, field, data[field])
 
-    def _save_notification_data(self, data: Dict, person: Person):
+    def _save_notification_data(self, data: Dict, person: "Person"):
         """Save notification data."""
         notification_fields = [
             "course_updates",
@@ -918,12 +955,12 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             if field in data:
                 setattr(person, attr_name, data[field])
 
-    def _save_security_data(self, data: Dict, person: Person):
+    def _save_security_data(self, data: Dict, person: "Person"):
         """Save security data."""
         if "two_factor_enabled" in data:
             person.two_factor_enabled = data["two_factor_enabled"]
 
-    def _save_preferences_data(self, data: Dict, person: Person):
+    def _save_preferences_data(self, data: Dict, person: "Person"):
         """Save preferences data."""
         for field in [
             "language",
@@ -936,7 +973,7 @@ class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileO
             if field in data:
                 setattr(person, field, data[field])
 
-    def _save_billing_data(self, data: Dict, person: Person):
+    def _save_billing_data(self, data: Dict, person: "Person"):
         """Save billing data."""
         for field in ["plan", "payment_method", "auto_renew"]:
             if field in data:

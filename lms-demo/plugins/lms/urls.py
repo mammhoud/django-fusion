@@ -17,7 +17,7 @@ try:
         path("checkout/paypal/init/", CartPayPalInitView.as_view(), name="cart_paypal_init"),
         path("checkout/webhook/stripe/", StripeWebhookView.as_view(), name="stripe_webhook"),
     ]
-except ImportError:
+except (ImportError, RuntimeError):
     payment_urls = []
 
 # from .search import views as search_views
