@@ -1,0 +1,320 @@
+{% load i18n %}
+<div class="settings-section">
+    <div class="settings-section__header">
+        <h5 class="settings-section__title">{% trans "Security Settings" %}</h5>
+        <p class="settings-section__description">
+            {% trans "Manage your security, verification, and account access" %}
+        </p>
+    </div>
+
+    <div class="settings-section__content">
+        <div class="security-overview mb-5">
+            <div class="row g-4">
+                <div class="col-md-4">
+                    <div class="security-card security-card--status">
+                        <div class="security-card__icon">
+                            <i class="fas fa-shield-alt"></i>
+                        </div>
+                        <div class="security-card__content">
+                            <h6 class="security-card__title">{% trans "Security Score" %}</h6>
+                            <div class="security-card__value">
+                                {% if security_score >= 80 %}
+                                    {% trans "Strong" %}
+                                {% elif security_score >= 50 %}
+                                    {% trans "Medium" %}
+                                {% else %}
+                                    {% trans "Weak" %}
+                                {% endif %}
+                            </div>
+                            <div class="security-card__progress">
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar bg-{% if security_score >= 80 %}success{% elif security_score >= 50 %}warning{% else %}danger{% endif %}"
+                                         style="width: {{ security_score }}%"></div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="security-card">
+                        <div class="security-card__icon text-success">
+                            <i class="fas fa-{% if person.email_verified %}check-circle{% else %}times-circle{% endif %}"></i>
+                        </div>
+                        <div class="security-card__content">
+                            <h6 class="security-card__title">{% trans "Email" %}</h6>
+                            <div class="security-card__value">
+                                {% if person.email_verified %}
+                                <span class="badge bg-success">{% trans "Verified" %}</span>
+                                {% else %}
+                                <span class="badge bg-warning">{% trans "Unverified" %}</span>
+                                {% endif %}
+                            </div>
+                            {% if not person.email_verified %}
+                            <button class="btn btn-sm btn-outline-warning mt-2"
+                                    hx-post="{% url 'profile:verify_email' %}"
+                                    hx-target="#securityResult">
+                                {% trans "Verify Now" %}
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-md-4">
+                    <div class="security-card">
+                        <div class="security-card__icon text-{% if person.two_factor_enabled %}success{% else %}secondary{% endif %}">
+                            <i class="fas fa-{% if person.two_factor_enabled %}lock{% else %}unlock{% endif %}"></i>
+                        </div>
+                        <div class="security-card__content">
+                            <h6 class="security-card__title">{% trans "2FA" %}</h6>
+                            <div class="security-card__value">
+                                {% if person.two_factor_enabled %}
+                                <span class="badge bg-success">{% trans "Enabled" %}</span>
+                                {% else %}
+                                <span class="badge bg-secondary">{% trans "Disabled" %}</span>
+                                {% endif %}
+                            </div>
+                            <button class="btn btn-sm btn-outline-{% if person.two_factor_enabled %}danger{% else %}success{% endif %} mt-2"
+                                    data-bs-toggle="modal"
+                                    data-bs-target="#twoFactorModal">
+                                {% if person.two_factor_enabled %}{% trans "Disable" %}{% else %}{% trans "Enable" %}{% endif %} 2FA
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <form id="securityForm" class="settings-form"
+              hx-post="{% url 'profile:update_settings' section='security' %}"
+              hx-target="#securityResult"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-key me-2"></i>{% trans "Password" %}
+                </h6>
+
+                <div class="password-info">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <strong>{% trans "Last changed:" %}</strong>
+                            <span class="ms-2">
+                                {% if person.password_last_changed %}
+                                {{ person.password_last_changed|timesince }} {% trans "ago" %}
+                                {% else %}
+                                {% trans "Never" %}
+                                {% endif %}
+                            </span>
+                        </div>
+                        <button type="button" class="btn btn-outline-primary"
+                                data-bs-toggle="modal"
+                                data-bs-target="#changePasswordModal">
+                            <i class="fas fa-key me-1"></i>{% trans "Change Password" %}
+                        </button>
+                    </div>
+
+                    {% if not person.password_last_changed or person.password_age_days > 90 %}
+                    <div class="alert alert-warning">
+                        <i class="fas fa-exclamation-triangle me-2"></i>
+                        {% if not person.password_last_changed %}
+                        {% trans "You haven't changed your password since account creation." %}
+                        {% else %}
+                        {% blocktrans with days=person.password_age_days %}Your password is {{ days }} days old. Consider changing it for better security.{% endblocktrans %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-mobile-alt me-2"></i>{% trans "Two-Factor Authentication" %}
+                </h6>
+
+                <div class="security-switches">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="two_factor_enabled" id="twoFactorEnabled"
+                               {% if person.two_factor_enabled %}checked{% endif %}
+                               onchange="this.form.requestSubmit()">
+                        <label class="form-check-label" for="twoFactorEnabled">
+                            {% trans "Enable Two-Factor Authentication" %}
+                        </label>
+                        <div class="security-description">
+                            {% trans "Add an extra layer of security to your account" %}
+                        </div>
+                    </div>
+
+                    {% if person.two_factor_enabled %}
+                    <div class="alert alert-success">
+                        <i class="fas fa-check-circle me-2"></i>
+                        {% trans "2FA is enabled. You'll need to enter a verification code when logging in." %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-sign-in-alt me-2"></i>{% trans "Login Notifications" %}
+                </h6>
+
+                <div class="security-switches">
+                    <div class="form-check form-switch mb-3">
+                        <input class="form-check-input" type="checkbox"
+                               name="login_notifications" id="loginNotifications"
+                               {% if person.login_notifications %}checked{% endif %}>
+                        <label class="form-check-label" for="loginNotifications">
+                            {% trans "Send email notification for new logins" %}
+                        </label>
+                        <div class="security-description">
+                            {% trans "Get notified when someone logs into your account from a new device" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-clock me-2"></i>{% trans "Session Management" %}
+                </h6>
+
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Session Timeout" %}</label>
+                        <select class="form-select" name="session_timeout">
+                            <option value="15" {% if person.session_timeout == 15 %}selected{% endif %}>{% trans "15 minutes" %}</option>
+                            <option value="30" {% if person.session_timeout == 30 %}selected{% endif %}>{% trans "30 minutes" %}</option>
+                            <option value="60" {% if person.session_timeout == 60 %}selected{% endif %}>{% trans "1 hour" %}</option>
+                            <option value="1440" {% if not person.session_timeout or person.session_timeout == 1440 %}selected{% endif %}>{% trans "24 hours" %}</option>
+                            <option value="10080" {% if person.session_timeout == 10080 %}selected{% endif %}>{% trans "1 week" %}</option>
+                        </select>
+                        <div class="security-description">
+                            {% trans "How long you stay logged in when inactive" %}
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Password Strength Requirement" %}</label>
+                        <div class="security-options">
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio"
+                                       name="password_strength_requirement" id="passwordLow"
+                                       value="low"
+                                       {% if not person.password_strength_requirement or person.password_strength_requirement == 'low' %}checked{% endif %}>
+                                <label class="form-check-label" for="passwordLow">
+                                    {% trans "Low - Minimum 6 characters" %}
+                                </label>
+                            </div>
+
+                            <div class="form-check mb-2">
+                                <input class="form-check-input" type="radio"
+                                       name="password_strength_requirement" id="passwordMedium"
+                                       value="medium"
+                                       {% if person.password_strength_requirement == 'medium' %}checked{% endif %}>
+                                <label class="form-check-label" for="passwordMedium">
+                                    {% trans "Medium - Minimum 8 characters with letters and numbers" %}
+                                </label>
+                            </div>
+
+                            <div class="form-check">
+                                <input class="form-check-input" type="radio"
+                                       name="password_strength_requirement" id="passwordHigh"
+                                       value="high"
+                                       {% if person.password_strength_requirement == 'high' %}checked{% endif %}>
+                                <label class="form-check-label" for="passwordHigh">
+                                    {% trans "High - Minimum 12 characters with mixed case, numbers, and symbols" %}
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-laptop me-2"></i>{% trans "Active Sessions" %}
+                </h6>
+
+                <div class="sessions-list">
+                    {% for session in active_sessions %}
+                    <div class="session-item">
+                        <div class="session-item__icon">
+                            <i class="fas fa-{{ session.device_type }}"></i>
+                        </div>
+                        <div class="session-item__content">
+                            <div class="session-item__device">
+                                {{ session.browser }} {% trans "on" %} {{ session.os }}
+                            </div>
+                            <div class="session-item__details">
+                                <span class="session-item__ip">{{ session.ip_address }}</span>
+                                <span class="session-item__location">{{ session.location }}</span>
+                                <span class="session-item__time">{{ session.last_activity|timesince }} {% trans "ago" %}</span>
+                            </div>
+                        </div>
+                        <div class="session-item__actions">
+                            {% if session.current %}
+                            <span class="badge bg-success">{% trans "Current" %}</span>
+                            {% else %}
+                            <button class="btn btn-sm btn-outline-danger"
+                                    hx-post="{% url 'profile:revoke_session' session_id=session.id %}"
+                                    hx-confirm="{% trans 'Are you sure you want to revoke this session?' %}">
+                                {% trans "Revoke" %}
+                            </button>
+                            {% endif %}
+                        </div>
+                    </div>
+                    {% empty %}
+                    <div class="text-center py-4 text-muted">
+                        <i class="fas fa-user-clock fa-2x mb-2"></i>
+                        <p>{% trans "No active sessions found" %}</p>
+                    </div>
+                    {% endfor %}
+                </div>
+
+                <div class="session-actions mt-3">
+                    <button type="button" class="btn btn-outline-danger"
+                            hx-post="{% url 'profile:revoke_all_sessions' %}"
+                            hx-confirm="{% trans 'Are you sure you want to log out from all devices?' %}">
+                        <i class="fas fa-sign-out-alt me-1"></i>{% trans "Logout from all devices" %}
+                    </button>
+                </div>
+            </div>
+
+            <div id="securityResult" class="mt-4"></div>
+
+            <div class="settings-form__actions mt-4">
+                <button type="submit" class="btn btn-primary btn--settings">
+                    <span class="htmx-indicator">
+                        <span class="spinner-border spinner-border-sm"
+                              role="status" aria-hidden="true"></span>
+                        {% trans "Saving..." %}
+                    </span>
+                    <span class="htmx-request-hidden">
+                        <i class="fas fa-save me-2"></i>{% trans "Save Security Settings" %}
+                    </span>
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- 2FA Modal -->
+<div class="modal fade" id="twoFactorModal" tabindex="-1">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">{% trans "Two-Factor Authentication" %}</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="twoFactorContent">
+                    {% include "profiles/partials/security/two_factor_setup.html" %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

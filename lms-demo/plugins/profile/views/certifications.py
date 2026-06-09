@@ -15,6 +15,7 @@ logger = logging.getLogger(__name__)
 User = get_user_model()
 
 
+
 class CertificationsView(PageHandler, NotificationMixin):
     """
     Certificates management view.

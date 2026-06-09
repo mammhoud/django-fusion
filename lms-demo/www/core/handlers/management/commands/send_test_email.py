@@ -25,17 +25,17 @@ class Command(BaseCommand):
         recipient = options["email"]
         self.stdout.write(f"Attempting to send test email to {recipient}...")
 
-        subject = "Test Email — Structa Cloud Configuration Check"
+        subject = "Test Email — LMS Demo Configuration Check"
         html_content = (
             "<html><body>"
             "<h2>Test Email</h2>"
-            "<p>This is a test email sent from the Structa Cloud platform to verify"
+            "<p>This is a test email sent from the LMS Demo platform to verify"
             " that the email configuration is working correctly.</p>"
             "</body></html>"
         )
         text_content = (
             "Test Email\n\n"
-            "This is a test email sent from the Structa Cloud platform to verify"
+            "This is a test email sent from the LMS Demo platform to verify"
             " that the email configuration is working correctly."
         )
 

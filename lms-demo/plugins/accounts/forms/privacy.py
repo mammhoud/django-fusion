@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django_rseal.pipelines.models import Person
+from django_rseal.models import Person
 
 
 class PrivacySettingsForm(forms.Form):
@@ -11,7 +11,7 @@ class PrivacySettingsForm(forms.Form):
         ('members', _('Members Only - Only registered members can see your profile')),
         ('private', _('Private - Only you can see your profile')),
     ]
-    
+
     profile_visibility = forms.ChoiceField(
         label=_("Profile Visibility"),
         choices=PROFILE_VISIBILITY_CHOICES,
@@ -19,7 +19,7 @@ class PrivacySettingsForm(forms.Form):
             'class': 'form-check-input'
         })
     )
-    
+
     share_usage_data = forms.BooleanField(
         label=_("Share anonymized usage data to improve our services"),
         required=False,
@@ -28,7 +28,7 @@ class PrivacySettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     allow_search_indexing = forms.BooleanField(
         label=_("Allow search engines to index your profile"),
         required=False,
@@ -37,7 +37,7 @@ class PrivacySettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     show_online_status = forms.BooleanField(
         label=_("Show online status to other users"),
         required=False,
@@ -47,7 +47,7 @@ class PrivacySettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     allow_contact = forms.BooleanField(
         label=_("Allow other members to contact you"),
         required=False,
@@ -57,7 +57,7 @@ class PrivacySettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     show_email = forms.BooleanField(
         label=_("Show email address on profile"),
         required=False,

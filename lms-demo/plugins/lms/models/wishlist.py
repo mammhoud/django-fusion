@@ -25,7 +25,7 @@ class Wishlist(models.Model):
     )
 
     course = models.ForeignKey(
-        "alliance.Course",
+        "lms.Course",
         on_delete=models.CASCADE,
         related_name="wishlisted_by",
         verbose_name=_("Course"),

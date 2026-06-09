@@ -1,7 +1,7 @@
 from django.contrib import messages
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter
-from django_rseal.pipelines.models import Newsletter
+from django_rseal.models.settings.newsletter import Newsletter
 from wagtail.admin.filters import WagtailFilterSet
 
 from ..base import BaseSnippetViewSet

@@ -152,7 +152,7 @@ wheels = [
 [[package]]
 name = "alliance"
 version = "1.0.3"
-source = { editable = "ctc-research.com" }
+source = { editable = "structa.cloud" }
 dependencies = [
     { name = "bumpver" },
     { name = "click" },

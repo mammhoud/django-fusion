@@ -1,7 +1,7 @@
 export const usecaseConfig = {
   debug: false,
   components: {
-    'landing.transparentHeaders': { enabled: false },
+    'landing.transparentHeaders': { enabled: true },
     'landing.scrollTracking': { enabled: true },
     'lms.accordion': { enabled: true },
     'lms.tabs': { enabled: true },
@@ -9,11 +9,14 @@ export const usecaseConfig = {
     'crm.activeLinks': { enabled: false },
   },
   usecases: {
+    landing: {
+      components: {
+        'landing.activeLinks': { options: { activeClass: 'active' } },
+      },
+    },
     lms: {
       components: {
-        'lms.progress': {
-          selectors: ['.lms-shell [data-progress]', '.lms-shell .animated-progress'],
-        },
+        'lms.accordion': { options: { containerSelector: '.lms-shell .accordion' } },
       },
     },
   },

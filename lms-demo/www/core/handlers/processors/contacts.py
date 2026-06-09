@@ -9,12 +9,8 @@ except ImportError:
     ContactEmail = None  # type: ignore[assignment,misc]
     ContactPhone = None  # type: ignore[assignment,misc]
 
-try:
-    from plugins.accounts.models.manage.company import Company
-except ImportError:
-    Company = None  # type: ignore[assignment,misc]
-
 from django.db.models import Q
+from django_rseal.contrib.core.models import Corporate as Company
 
 
 def contacts_list(fields=None, context=None, filters=None, search=None):

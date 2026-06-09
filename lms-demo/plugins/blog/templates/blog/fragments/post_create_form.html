@@ -1,5 +1,131 @@
-<form method="post" hx-post="." class="htmx-post">
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit">Save Post</button>
-</form>
+{# blog/fragments/post_create_form.html — HTMX form for creating blog posts #}
+<div id="post-create-form" data-fragment>
+  <form hx-post="{{ request.path }}"
+        hx-target="#post-create-form"
+        hx-swap="outerHTML"
+        hx-indicator=".htmx-indicator"
+        class="post-create-form">
+    {% csrf_token %}
+
+    {# Success message placeholder (hidden by default) #}
+    <div id="post-create-success" class="alert alert-success" style="display: none;">
+      Post created successfully!
+    </div>
+
+    {# Form errors #}
+    {% if form.non_field_errors %}
+      <div class="alert alert-danger">
+        {% for error in form.non_field_errors %}
+          <p>{{ error }}</p>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Title field #}
+    <div class="mb-3">
+      <label for="{{ form.title.id_for_label }}" class="form-label">Title</label>
+      {{ form.title }}
+      {% if form.title.errors %}
+        <div class="text-danger">
+          {% for error in form.title.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Slug field #}
+    <div class="mb-3">
+      <label for="{{ form.slug.id_for_label }}" class="form-label">Slug</label>
+      {{ form.slug }}
+      {% if form.slug.errors %}
+        <div class="text-danger">
+          {% for error in form.slug.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Excerpt field #}
+    <div class="mb-3">
+      <label for="{{ form.excerpt.id_for_label }}" class="form-label">Excerpt</label>
+      {{ form.excerpt }}
+      {% if form.excerpt.errors %}
+        <div class="text-danger">
+          {% for error in form.excerpt.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Body field #}
+    <div class="mb-3">
+      <label for="{{ form.body.id_for_label }}" class="form-label">Content</label>
+      {{ form.body }}
+      {% if form.body.errors %}
+        <div class="text-danger">
+          {% for error in form.body.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Category field #}
+    <div class="mb-3">
+      <label for="{{ form.category.id_for_label }}" class="form-label">Category</label>
+      {{ form.category }}
+      {% if form.category.errors %}
+        <div class="text-danger">
+          {% for error in form.category.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Status field #}
+    <div class="mb-3">
+      <label for="{{ form.status.id_for_label }}" class="form-label">Status</label>
+      {{ form.status }}
+      {% if form.status.errors %}
+        <div class="text-danger">
+          {% for error in form.status.errors %}
+            <small>{{ error }}</small>
+          {% endfor %}
+        </div>
+      {% endif %}
+    </div>
+
+    {# Submit button with loading indicator #}
+    <div class="d-flex gap-2">
+      <button type="submit" class="btn btn-primary">
+        <span class="htmx-indicator">Creating...</span>
+        <span class="htmx-indicator" style="display: none;">Creating post...</span>
+        <span class="not-htmx-indicator">Create Post</span>
+      </button>
+      <button type="button"
+              class="btn btn-secondary"
+              hx-get="{% url 'blog:post-list-fragment' %}"
+              hx-target="#post-create-form"
+              hx-swap="outerHTML">
+        Cancel
+      </button>
+    </div>
+  </form>
+</div>
+
+{# Loading indicator styles #}
+<style>
+.htmx-indicator {
+  display: none;
+}
+.htmx-request .htmx-indicator {
+  display: inline;
+}
+.htmx-request.htmx-indicator {
+  display: inline;
+}
+</style>

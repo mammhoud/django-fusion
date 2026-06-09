@@ -1,0 +1,53 @@
+{% load blocks static i18n wagtailcore_tags wagtailimages_tags components_field %}
+
+<div id="{{ block_id }}" class="video-block {{ block_classes }}"
+     {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}>
+
+    {% render_unhandled_fields unhandled_fields %}
+
+    <div class="embed-placeholder" data-embedurl="{{ self.video_link }}">
+
+{% if self.video_link %}
+{% if "youtube.com" in self.video_link or "youtu.be" in self.video_link %}
+<!-- YouTube Embed -->
+{% with self.video_link|youtube_embed_url as embed_url %}
+<div class="ratio ratio-16x9">
+        <iframe src="{{ embed_url }}"
+                width="800"
+                height="450"
+                frameborder="0"
+                allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                allowfullscreen>
+        </iframe>
+</div>
+{% endwith %}
+
+{% elif "vimeo.com" in self.video_link %}
+<!-- Vimeo Embed -->
+{% with self.video_link|vimeo_embed_url as embed_url %}
+<div class="ratio ratio-16x9">
+        <iframe src="{{ embed_url }}"
+                width="800"
+                height="450"
+                frameborder="0"
+                allow="autoplay; fullscreen; picture-in-picture"
+                allowfullscreen>
+        </iframe>
+</div>
+{% endwith %}
+
+{% else %}
+<!-- Generic Video Embed -->
+<div class="ratio ratio-16x9">
+        <video controls class="w-100 h-100">
+        <source src="{{ self.video_link }}" type="video/mp4">
+        Your browser does not support the video tag.
+        </video>
+</div>
+{% endif %}
+{% else %}
+<div class="alert alert-warning">
+No video link provided.
+</div>
+{% endif %}
+</div>

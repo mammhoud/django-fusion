@@ -69,6 +69,7 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
+    "laces",
     "webpack_loader",
     "django_htmx",
     "import_export",

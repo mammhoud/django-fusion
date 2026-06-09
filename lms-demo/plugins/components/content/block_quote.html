@@ -1,0 +1,40 @@
+{% load wagtailcore_tags wagtailimages_tags components_field %}
+<div id="{{ block_id }}" class="block-quote-wrapper {{ block_classes }}"
+     {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}>
+
+    {% render_unhandled_fields unhandled_fields %}
+
+    <blockquote class="block-quote block-quote--{{ self.quote_style|default:'default' }} text-{{ self.alignment|default:'left' }}">
+        {% if self.quote_icon %}
+            <div class="quote-icon quote-icon--{{ self.icon_position|default:'top-left' }}">
+                <i class="fas fa-quote-left"></i>
+            </div>
+        {% endif %}
+
+        <div class="quote-text mb-4">
+            {{ self.quote_text|linebreaks }}
+        </div>
+
+        {% if self.citation or self.avatar %}
+            <footer class="quote-footer d-flex align-items-center {% if self.alignment == 'center' %}justify-content-center{% elif self.alignment == 'right' %}justify-content-end{% endif %}">
+                {% if self.avatar %}
+                    <div class="quote-avatar me-3">
+                        {% image self.avatar fill-60x60 class="rounded-circle" %}
+                    </div>
+                {% endif %}
+
+                <div class="quote-citation">
+                    {% if self.citation %}
+                        <cite class="fw-bold d-block">
+                            {% if self.citation_url %}
+                                <a href="{{ self.citation_url }}">{{ self.citation }}</a>
+                            {% else %}
+                                {{ self.citation }}
+                            {% endif %}
+                        </cite>
+                    {% endif %}
+                </div>
+            </footer>
+        {% endif %}
+    </blockquote>
+</div>

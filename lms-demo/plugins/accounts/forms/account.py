@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django_rseal.pipelines.models import Person
+from django_rseal.models import Person
 
 
 class AccountSettingsForm(forms.Form):
@@ -15,7 +15,7 @@ class AccountSettingsForm(forms.Form):
             'placeholder': _('Enter your first name')
         })
     )
-    
+
     last_name = forms.CharField(
         label=_("Last Name"),
         max_length=150,
@@ -25,7 +25,7 @@ class AccountSettingsForm(forms.Form):
             'placeholder': _('Enter your last name')
         })
     )
-    
+
     email = forms.EmailField(
         label=_("Email Address"),
         required=True,
@@ -34,7 +34,7 @@ class AccountSettingsForm(forms.Form):
             'placeholder': _('Enter your email address')
         })
     )
-    
+
     username = forms.CharField(
         label=_("Username"),
         max_length=150,
@@ -46,7 +46,7 @@ class AccountSettingsForm(forms.Form):
             'disabled': True
         })
     )
-    
+
     phone = forms.CharField(
         label=_("Phone Number"),
         max_length=20,
@@ -56,7 +56,7 @@ class AccountSettingsForm(forms.Form):
             'placeholder': _('+1 (555) 123-4567')
         })
     )
-    
+
     location = forms.CharField(
         label=_("Location"),
         max_length=200,
@@ -66,7 +66,7 @@ class AccountSettingsForm(forms.Form):
             'placeholder': _('City, Country')
         })
     )
-    
+
     bio = forms.CharField(
         label=_("Bio"),
         required=False,
@@ -76,7 +76,7 @@ class AccountSettingsForm(forms.Form):
             'placeholder': _('Tell us about yourself...')
         })
     )
-    
+
     public_profile = forms.BooleanField(
         label=_("Make profile public"),
         required=False,
@@ -85,7 +85,7 @@ class AccountSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     def clean_email(self):
         email = self.cleaned_data.get('email')
         # Check if email is already in use by another user
@@ -94,7 +94,7 @@ class AccountSettingsForm(forms.Form):
         if User.objects.filter(email=email).exclude(id=user).exists():
             raise ValidationError(_("This email is already in use."))
         return email
-    
+
     def clean_phone(self):
         phone = self.cleaned_data.get('phone', '').strip()
         if phone and not phone.replace('+', '').replace(' ', '').replace('-', '').replace('(', '').replace(')', '').isdigit():

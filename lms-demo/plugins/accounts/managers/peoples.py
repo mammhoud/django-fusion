@@ -9,7 +9,7 @@ from django.utils import timezone
 from django_osoul.managers import CachedManager
 from www.core.CI.services import *
 
-# from django_rseal.pipelines.models.manage.tags import PersonTag, TaggedPerson
+# from django_rseal.workflows.pipelines.models.manage.tags import PersonTag, TaggedPerson
 
 if TYPE_CHECKING:
     from ..models import Person

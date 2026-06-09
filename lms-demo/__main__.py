@@ -13,6 +13,7 @@ os.environ.setdefault("DJANGO_WEBSITE", "lms-demo")
 os.environ.setdefault("WEBSITE", "lms-demo")
 os.environ.setdefault("WEBSITE_NAME", "lms-demo")
 os.environ.setdefault("PROJECT_PATH", "lms-demo")
+os.environ["MODULE"] = "LMS"
 
 # Ensure workspace root is in path
 workspace_root = Path(__file__).resolve().parent.parent

@@ -15,26 +15,21 @@ from .snippets import (
 )
 
 """
-WAGTAIL HOOKS CONFIGURATION FOR COURSE MANAGEMENT
-==================================================
+WAGTAIL HOOKS — LMS Demo LMS
+=================================
 
 Menu groups:
-- Classes:     ClassesSnippet, ScheduleSnippet
-- Tracks:      ModuleSnippet, CourseSnippet, ReviewViewSet
-- Enrollments: EnrollmentViewSet
-- Payments:    PaymentTransactionViewSet, PaymentRefundViewSet,
-               PaymentWebhookLogViewSet
+  Classes     (100) — ClassesSnippet, ScheduleSnippet
+  Tracks      (140) — ModuleSnippet, CourseSnippet, ReviewViewSet
+  Payments    (150) — EnrollmentViewSet + payment sub-views
 
-Icons use wagtail-font-awesome-svg (solid set) where Wagtail built-ins
-are insufficient.  Group icons follow the same convention:
-  "wagtailfontawesomesvg/solid/<name>.svg"
+Icons: wagtail-font-awesome-svg solid set where built-ins are insufficient.
 """
 
 
 # =============================================================================
-# VIEWSET GROUPS
+# GROUPS
 # =============================================================================
-
 
 class ClassesSnippetViewSetGroup(SnippetViewSetGroup):
     menu_label = _("Classes")
@@ -58,18 +53,12 @@ class TracksSnippetViewSetGroup(SnippetViewSetGroup):
 
 
 class EnrollmentSnippetGroup(SnippetViewSetGroup):
-    menu_label = _("Enrollments")
-    menu_icon = "group"
-    menu_order = 200
-    items = (EnrollmentViewSet,)
-
-
-class PaymentSnippetGroup(SnippetViewSetGroup):
-    menu_label = _("Payments")
+    menu_label = _("Enrollments & Payments")
     # FA solid/wallet
     menu_icon = "wagtailfontawesomesvg/solid/wallet.svg"
-    menu_order = 250
+    menu_order = 150
     items = (
+        EnrollmentViewSet,
         PaymentTransactionViewSet,
         PaymentRefundViewSet,
         PaymentWebhookLogViewSet,
@@ -80,7 +69,6 @@ class PaymentSnippetGroup(SnippetViewSetGroup):
 # REGISTRATION
 # =============================================================================
 
-register_snippet(TracksSnippetViewSetGroup)
 register_snippet(ClassesSnippetViewSetGroup)
+register_snippet(TracksSnippetViewSetGroup)
 register_snippet(EnrollmentSnippetGroup)
-register_snippet(PaymentSnippetGroup)

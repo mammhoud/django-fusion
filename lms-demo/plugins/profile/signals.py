@@ -1,1 +1,1 @@
-"""Profile app signals."""
+# Profile signals will be defined here
