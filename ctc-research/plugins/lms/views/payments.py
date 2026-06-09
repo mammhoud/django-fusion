@@ -9,7 +9,7 @@ from django.shortcuts import render, get_object_or_404, redirect
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.auth import login_required
+from django.contrib.auth.decorators import login_required
 from django.db import transaction
 from django.core.mail import send_mail
 from django.template.loader import render_to_string

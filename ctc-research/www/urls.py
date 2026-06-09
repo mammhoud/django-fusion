@@ -1,6 +1,12 @@
-import os
+"""
+URL configuration for ctc-research.
 
-# Import shared configuration modules from parent directory
+Plugin patterns use string-based include so Django defers the import of
+plugins.urls until after django.setup() completes — preventing the
+`Conflicting 'role' models` RuntimeError that occurs when
+django_osoul.site is imported during URL-pattern construction.
+"""
+import os
 import sys
 
 from django.apps import apps
@@ -15,7 +21,7 @@ sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from utilities import get_root_redirect_pattern
 
-# Optional imports with safe fallbacks
+# ── Optional tooling ────────────────────────────────────────────────────────
 try:
     from django_grep.contrib.debug_tools.common_urls import configure_common_urls
 except Exception:
@@ -39,59 +45,57 @@ try:
 except Exception:
     wagtail_urls = wagtailadmin_urls = wagtaildocs_urls = None
 
-
-# Build a robust module-level urlpatterns regardless of optional imports
-urlpatterns = []
-
-# Only add Django admin if installed (avoids "No installed app with label 'admin'" errors)
-try:
-    if apps.is_installed("django.contrib.admin"):
-        from django.contrib import admin
-
-        urlpatterns.append(path("django-admin/", admin.site.urls))
-except Exception:
-    # If anything goes wrong, skip binding the admin route.
-    pass
-
-# Language switching, sitemaps, robots.txt (from debug_tools if available)
-urlpatterns = configure_common_urls(urlpatterns)
-
-# Plugin routing — must pass namespace explicitly so templates can use
-# {% url 'plugins:login' %} etc.
-try:
-    plugin_patterns = [path("", include(("plugins.urls", "plugins"), namespace="plugins"))]
-except Exception:
-    plugin_patterns = []
-
-urlpatterns += i18n_patterns(*plugin_patterns, prefix_default_language=False)
-
-# Wagtail routing when available
-if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
-    urlpatterns += [path("admin/", include(wagtailadmin_urls)), path("documents/", include(wagtaildocs_urls))]
-    urlpatterns += i18n_patterns(path("", include(wagtail_urls)), prefix_default_language=False)
-
-# Development debug URLs
-if settings.DEBUG:
-    try:
-        from django_grep.contrib.debug_tools.dev_urls import configure_dev_urls
-
-        urlpatterns = configure_dev_urls(urlpatterns, settings)
-    except Exception:
-        pass
-
+# ── Health & admin ───────────────────────────────────────────────────────────
 urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
-] + urlpatterns
+]
+
+if apps.is_installed("django.contrib.admin"):
+    from django.contrib import admin
+    urlpatterns.append(path("django-admin/", admin.site.urls))
 
 try:
     urlpatterns += [path("health_admin/", include("django_grep.health.urls"))]
 except Exception:
     pass
 
-# Serve collected static files and uploaded media from Django as a fallback when
-# a dedicated media/static server is not mounted in front of the active website.
+# ── Common URLs (sitemaps, robots, i18n switching) ───────────────────────────
+urlpatterns = configure_common_urls(urlpatterns)
+
+# ── Plugin routing ────────────────────────────────────────────────────────────
+# Use the string form "plugins.urls" so Django imports the module lazily
+# at first URL resolution — after django.setup() has fully settled the
+# app registry and model registration.  The app_name="plugins" declared
+# inside plugins/urls.py registers the application namespace; the explicit
+# namespace= kwarg here registers the instance namespace so that both
+# {% url 'plugins:login' %} and reverse('plugins:login') work.
+urlpatterns += i18n_patterns(
+    path("", include("plugins.urls")),
+    prefix_default_language=False,
+)
+
+# ── Wagtail ───────────────────────────────────────────────────────────────────
+if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
+    urlpatterns += [
+        path("admin/", include(wagtailadmin_urls)),
+        path("documents/", include(wagtaildocs_urls)),
+    ]
+    urlpatterns += i18n_patterns(
+        path("", include(wagtail_urls)),
+        prefix_default_language=False,
+    )
+
+# ── Development extras ────────────────────────────────────────────────────────
+if settings.DEBUG:
+    try:
+        from django_grep.contrib.debug_tools.dev_urls import configure_dev_urls
+        urlpatterns = configure_dev_urls(urlpatterns, settings)
+    except Exception:
+        pass
+
+# ── Static / media fallback ───────────────────────────────────────────────────
 urlpatterns += staticfiles_urlpatterns()
 urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 urlpatterns += [
@@ -102,5 +106,5 @@ urlpatterns += [
     )
 ]
 
-# Root path redirect to default language (MUST be at the end as catch-all fallback)
+# ── Root redirect (catch-all, must be last) ───────────────────────────────────
 urlpatterns += [get_root_redirect_pattern()]

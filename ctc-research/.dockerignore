@@ -34,7 +34,6 @@ wheels/
 *.egg-info/
 .installed.cfg
 *.egg
-node_modules
 .venv
 .ruff_cache
 .pytest_cache

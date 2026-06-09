@@ -3,10 +3,15 @@ from django.urls import path
 # Import specific views without importing cart.py which depends on django_rseal.site
 from .views.courses import (
     FrontCourseDetailView,
-    CourseWatchView,
-    CourseContinueView,
     CourseSearchAPIView,
     course_wishlist_toggle,
+    course_enrollment_form,
+    course_enrollment_create,
+)
+from .views.lessons import (
+    CourseWatchView,
+    CourseContinueView,
+    LessonNavigationView,
 )
 from .views.lessons import LessonNavigationView
 from .views.enrollment import (
@@ -16,8 +21,6 @@ from .views.enrollment import (
     enrollment_status_update,
     enrollment_export_csv,
     enrollment_import_csv,
-    course_enrollment_form,
-    course_enrollment_create,
 )
 from .views.payments import (
     initialize_payment,

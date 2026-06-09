@@ -3,6 +3,7 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
+from django.views import View
 from django_osoul.site import PageHandler
 
 # Optional coupling to Core plugins
@@ -11,19 +12,22 @@ try:
 except ImportError:
     CartService = None
 
-try:
-    from django_rseal.services.commerce.payments import PayPalGateway, StripeGateway
-    from django_rseal.site.payments import PaymentProcessingMixin
-except ImportError:
-    StripeGateway = None
-    PayPalGateway = None
-    class PaymentProcessingMixin:
-        pass
+
+# Lazy load PaymentProcessingMixin to avoid django_rseal.site import conflicts
+def _get_payment_mixin():
+    try:
+        from django_rseal.site.payments import PaymentProcessingMixin
+        return PaymentProcessingMixin
+    except (ImportError, RuntimeError):
+        # Return a no-op mixin if import fails
+        return type('PaymentProcessingMixin', (), {})
+
 
 from ..models import Course, Enrollment
 
 
-class EnrollView(PaymentProcessingMixin, PageHandler):
+# Base class that will be dynamically updated
+class EnrollView(PageHandler, View):
     """
     Enrollment view with checkout functionality
     """
@@ -31,6 +35,17 @@ class EnrollView(PaymentProcessingMixin, PageHandler):
     template_name = "profile/enroll_course.html"
     fragment_name = "profiles.enroll"
     layout_path = "profile/skeleton.html"
+
+    def dispatch(self, request, *args, **kwargs):
+        """Apply PaymentProcessingMixin bases lazily at request time."""
+        PaymentMixin = _get_payment_mixin()
+        if PaymentMixin and not isinstance(self, PaymentMixin):
+            self.__class__ = type(
+                self.__class__.__name__,
+                (PageHandler, PaymentMixin, View),
+                dict(self.__class__.__dict__),
+            )
+        return super().dispatch(request, *args, **kwargs)
 
     def get(self, request: HttpRequest, *args, **kwargs):
         # Get the course from slug

@@ -1,3 +1,17 @@
-        {% include "partials/auth_buttons.html" %}
-        {% include "partials/language_selector.html" %}
-        {% include "partials/header_toggle.html" %}
+{# partials/header/userActions.html
+   ───────────────────────────────
+   Convenience include that composes the three canonical header action
+   partials in the standard order.  Include this single file in any
+   header template that needs auth + language + toggle.
+
+   Canonical partials:
+     partials/auth_buttons.html    – login/register or user dropdown
+     partials/language_selector.html – language switcher with flags
+     partials/header_toggle.html   – hamburger menu button
+
+   EXAMPLE:
+     {% include "partials/header/userActions.html" %}
+#}
+{% include "partials/auth_buttons.html" %}
+{% include "partials/language_selector.html" %}
+{% include "partials/header_toggle.html" %}

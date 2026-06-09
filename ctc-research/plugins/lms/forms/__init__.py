@@ -1,5 +1,9 @@
 """LMS Forms Package."""
 
-from .enrollment import CourseEnrollmentForm
+from .enrollment import CourseEnrollmentBulkForm, CourseEnrollmentForm, EnrollmentLeadFilterForm
 
-__all__ = ['CourseEnrollmentForm']
+__all__ = [
+    "CourseEnrollmentForm",
+    "CourseEnrollmentBulkForm",
+    "EnrollmentLeadFilterForm",
+]
