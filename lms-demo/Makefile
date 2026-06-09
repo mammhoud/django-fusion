@@ -120,7 +120,7 @@ assets-setup: frontend-install frontend-build ## Full frontend setup (install + 
 
 webpack-validate: ## Validate/rebuild webpack bundles if missing or invalid
 	@echo -e "$(BLUE)Validating webpack bundles...$(NC)"
-	@BUNDLES_JSON=$$(pwd)/assets/bundles/bundles.json; \
+	@BUNDLES_JSON=$$(pwd)/assets/bundles/$(SITE_NAME)/bundles.json; \
 	if [ ! -f "$$BUNDLES_JSON" ]; then \
 		echo -e "$(YELLOW)⚠️  bundles.json not found. Rebuilding frontend...$(NC)"; \
 		$(MAKE) assets-setup; \

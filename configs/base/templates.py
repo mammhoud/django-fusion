@@ -19,10 +19,9 @@ TEMPLATES_DIRS = [
     BASE_DIR / "pages" / "templates",
     BASE_DIR / "www" / "pages" / "templates",
     BASE_DIR / "assets" / "templates",
+    BASE_DIR / "assets" / "templates" / "layout",  # resolves "landing/skeleton.html" etc.
     BASE_DIR.parent / "assets" / "templates",
-    # Component templates (notifications, modals, forms, htmx utilities, search, tables)
-    # are now located directly inside assets/templates/<category>/
-    # packages/ui is no longer a separate template root.
+    BASE_DIR.parent / "assets" / "templates" / "layout",  # workspace-level layout templates
 ]
 
 # ------------------------------------------------------------------------------
@@ -42,6 +41,10 @@ if importlib.util.find_spec("wagtail") is not None:
 _TEMPLATE_BUILTINS = ["django.templatetags.static"]
 if importlib.util.find_spec("heroicons") is not None:
     _TEMPLATE_BUILTINS.append("heroicons.templatetags.heroicons")
+# Register django_osoul component tags (comp, slot, prop, var, css, js) as builtins
+# so templates can use {% comp %} without needing {% load components %} every time.
+if importlib.util.find_spec("django_osoul") is not None:
+    _TEMPLATE_BUILTINS.append("django_osoul.comp.templatetags.components")
 
 TEMPLATES = [
     {

@@ -34,6 +34,7 @@ class ModuleSnippet(BaseSnippetViewSet):
     list_filter = ["course", "has_quiz", "has_assignment"]
     search_fields = ["title", "course__title"]
     inspect_view_enabled = True
+    ordering = ["order"]
 
     panels = Module.panels
 

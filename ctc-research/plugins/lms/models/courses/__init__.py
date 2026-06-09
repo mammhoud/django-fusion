@@ -11,4 +11,8 @@ __all__ = [
     "CourseTag",
     "CourseEnrollmentLead",
     "Specialization",
+    "Lesson",
+    "LessonResource",
+    "ModuleProgress",
+    "LessonProgress",
 ]

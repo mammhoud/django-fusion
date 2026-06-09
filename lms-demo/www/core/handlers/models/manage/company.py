@@ -16,12 +16,13 @@ from wagtail.admin.panels import (
     TabbedInterface,
 )
 from wagtail.search import index
+from wagtail.snippets.models import register_snippet
 
 
 # -------------------------------------------------------------------
 # COMPANY MODEL
 # -------------------------------------------------------------------
-# @register_snippet
+@register_snippet
 class Organization(DefaultBase, ClusterableModel):
     """
     Enhanced Company model supporting clients, suppliers, partners, and educational institutions.

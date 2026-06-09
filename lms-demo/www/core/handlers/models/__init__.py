@@ -1,6 +1,5 @@
 from .example_tagged_model import Article as Article
 from .example_tagged_model import Product as Product
-from .forms import *
 from .manage import *
 from .profiles import *
 from .snippets import *

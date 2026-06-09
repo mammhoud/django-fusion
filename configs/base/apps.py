@@ -91,9 +91,16 @@ LOCAL_APPS = [
     "django_rseal",
     # CTC page/LMS models are required by the bundled Wagtail fixtures.
     "www.core.content.apps.ContentConfig",
+    # handlers app provides the 'handlers' label used by Wagtail StreamFields
+    # (e.g. handlers.Organization, handlers.Service) in page models.
+    "www.core.handlers.apps.AccountsConfig",
     "plugins.accounts.apps.AccountsConfig",
     "plugins.lms.apps.LmsConfig",
     "plugins.blog.apps.BlogConfig",
+    # Products & cart (required for plugins.urls namespace and cart views)
+    "plugins.products.apps.ProductsConfig",
+    # Profile (required for plugins.urls namespace and profile views)
+    "plugins.profile.apps.ProfileConfig",
     # Legacy page apps are optional; AppRegistry filters them when absent.
     "pages.home",
     "pages.about",

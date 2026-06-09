@@ -2,34 +2,37 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.snippets.models import register_snippet
 from wagtail.snippets.views.snippets import SnippetViewSetGroup
 
-from .snippets import *
+from .snippets import (
+    ClassesSnippet,
+    CourseSnippet,
+    EnrollmentViewSet,
+    ModuleSnippet,
+    PaymentRefundViewSet,
+    PaymentTransactionViewSet,
+    PaymentWebhookLogViewSet,
+    ReviewViewSet,
+    ScheduleSnippet,
+)
 
 """
 WAGTAIL HOOKS CONFIGURATION FOR COURSE MANAGEMENT
 ==================================================
 
-This file configures the Wagtail admin interface for all course-related models.
-It provides comprehensive admin views for managing courses, modules, images, and specializations.
+Menu groups:
+- Classes:     ClassesSnippet, ScheduleSnippet
+- Tracks:      ModuleSnippet, CourseSnippet, ReviewViewSet
+- Enrollments: EnrollmentViewSet
+- Payments:    PaymentTransactionViewSet, PaymentRefundViewSet,
+               PaymentWebhookLogViewSet
 
-Menu Company:
-- Courses & Content: Main course management
-- Learning Structure: Modules and curriculum
-- Media & Assets: Course images and media
-- Specializations: Course categories and topics
-
-Icons Reference:
-- book: Courses
-- folder: Modules
-- image: Course images
-- tag: Specializations
-- star: Featured content
+Icons use wagtail-font-awesome-svg (solid set) where Wagtail built-ins
+are insufficient.  Group icons follow the same convention:
+  "wagtailfontawesomesvg/solid/<name>.svg"
 """
 
 
-
-
 # =============================================================================
-# VIEWSET GROUPS - Organizing course models in admin menu
+# VIEWSET GROUPS
 # =============================================================================
 
 
@@ -40,8 +43,6 @@ class ClassesSnippetViewSetGroup(SnippetViewSetGroup):
     items = (
         ClassesSnippet,
         ScheduleSnippet,
-        # CourseImageViewSet,
-        # SpecializationViewSet,
     )
 
 
@@ -50,10 +51,28 @@ class TracksSnippetViewSetGroup(SnippetViewSetGroup):
     menu_icon = "openquote"
     menu_order = 140
     items = (
-        # TrackSnippet,
         ModuleSnippet,
         CourseSnippet,
         ReviewViewSet,
+    )
+
+
+class EnrollmentSnippetGroup(SnippetViewSetGroup):
+    menu_label = _("Enrollments")
+    menu_icon = "group"
+    menu_order = 200
+    items = (EnrollmentViewSet,)
+
+
+class PaymentSnippetGroup(SnippetViewSetGroup):
+    menu_label = _("Payments")
+    # FA solid/wallet
+    menu_icon = "wagtailfontawesomesvg/solid/wallet.svg"
+    menu_order = 250
+    items = (
+        PaymentTransactionViewSet,
+        PaymentRefundViewSet,
+        PaymentWebhookLogViewSet,
     )
 
 
@@ -63,14 +82,5 @@ class TracksSnippetViewSetGroup(SnippetViewSetGroup):
 
 register_snippet(TracksSnippetViewSetGroup)
 register_snippet(ClassesSnippetViewSetGroup)
-
-class EnrollmentSnippetGroup(SnippetViewSetGroup):
-    menu_label = _("Enrollments")
-    menu_icon = "group"
-    menu_order = 200
-    items = (
-        EnrollmentViewSet,
-    )
-
-# register_snippet(EnrollmentSnippetGroup)
-
+register_snippet(EnrollmentSnippetGroup)
+register_snippet(PaymentSnippetGroup)

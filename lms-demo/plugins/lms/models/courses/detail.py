@@ -11,7 +11,6 @@ from wagtail.admin.panels import (
     InlinePanel,
     MultiFieldPanel,
 )
-from wagtail.models import Orderable
 
 from .info import Course
 
@@ -21,7 +20,7 @@ logger = logging.getLogger(__name__)
 # -------------------------------------------------------------------
 # MODULE MODEL
 # -------------------------------------------------------------------
-class Module(DefaultBase, Orderable, ClusterableModel):
+class Module(DefaultBase, ClusterableModel):
     """Course module grouping lessons and activities."""
 
     course = ParentalKey(

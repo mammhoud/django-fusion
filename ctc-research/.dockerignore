@@ -16,7 +16,6 @@ __pycache__
 coverage
 .git
 logs
-libs/*
 # Distribution / packaging
 .Python
 env/

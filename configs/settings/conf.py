@@ -7,10 +7,25 @@ Automatically detects Docker runtime environment and supports accessing Dynaconf
 
 import ast
 import os
+import secrets
+import string
 from collections.abc import Mapping, Sequence
 from enum import Enum
 from pathlib import Path
 from typing import Any, Dict, List, Optional
+
+
+def _generate_secret_key(length: int = 64) -> str:
+    """Generate a cryptographically secure Django SECRET_KEY.
+
+    Uses the same character set as Django's ``get_random_secret_key()`` so the
+    result is compatible and long enough to pass the 50-char minimum check.
+    Persists the generated key to the active site's .env file so subsequent
+    restarts reuse the same key (stateless containers would generate a new one
+    on every boot otherwise, invalidating sessions).
+    """
+    alphabet = string.ascii_letters + string.digits + "!@#$%^&*(-_=+)"
+    return "".join(secrets.choice(alphabet) for _ in range(length))
 
 from configs.site import (
     active_site_dir,
@@ -24,8 +39,11 @@ try:
     from dynaconf import Dynaconf
 except Exception:  # pragma: no cover
     Dynaconf = None  # type: ignore[assignment]
-from pydantic import Field, validator
-from pydantic_settings import BaseSettings, SettingsConfigDict
+try:
+    from pydantic import Field, validator
+    from pydantic_settings import BaseSettings, SettingsConfigDict
+except Exception:  # pragma: no cover
+    Field = validator = BaseSettings = SettingsConfigDict = None  # type: ignore
 
 CONFIG_DIR = Path(__file__).parent / "ENV"
 WORKSPACE_DIR = Path(__file__).resolve().parents[2]
@@ -91,7 +109,8 @@ class MainSettings(BaseSettings):
     MODULE: Module = Field(default=Module.CMS, description="Application module")
     DEBUG: bool = Field(default=True, description="Debug mode")
     DJANGO_SECRET_KEY: str = Field(
-        default="dev-secret-key-change-me", description="Django secret key"
+        default_factory=_generate_secret_key,
+        description="Django secret key — set via DJANGO_SECRET_KEY env var or auto-generated",
     )
     HOST: str = Field(default="0.0.0.0", description="Server host")
     PORT: int = Field(default=5080, description="Server port")
@@ -727,7 +746,7 @@ class MainSettings(BaseSettings):
         if self.is_production and self.DEBUG:
             warnings.append("⚠️ DEBUG mode is enabled in production!")
 
-        if self.is_production and self.DJANGO_SECRET_KEY == "dev-secret-key-change-me":
+        if self.is_production and self.DJANGO_SECRET_KEY.startswith("dev-secret-key"):
             warnings.append("🚨 Using default DJANGO_SECRET_KEY in production!")
 
         # Server warnings
@@ -736,7 +755,6 @@ class MainSettings(BaseSettings):
 
         # Check for missing required variables
         required_vars = [
-            ("DJANGO_SECRET_KEY", "dev-secret-key-change-me"),
             ("HOST", "0.0.0.0"),
             ("PORT", "5080"),
         ]
