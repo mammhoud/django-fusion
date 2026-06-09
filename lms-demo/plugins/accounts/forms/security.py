@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django_rseal.pipelines.models import Person
+from django_rseal.models import Person
 
 
 class SecuritySettingsForm(forms.Form):
@@ -16,7 +16,7 @@ class SecuritySettingsForm(forms.Form):
         }),
         help_text=_("Add an extra layer of security to your account")
     )
-    
+
     # Login Notifications
     login_notifications = forms.BooleanField(
         label=_("Send email notification for new logins"),
@@ -27,7 +27,7 @@ class SecuritySettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     # Session Management
     SESSION_TIMEOUT_CHOICES = [
         (15, _('15 minutes')),
@@ -36,7 +36,7 @@ class SecuritySettingsForm(forms.Form):
         (1440, _('24 hours')),
         (10080, _('1 week')),
     ]
-    
+
     session_timeout = forms.ChoiceField(
         label=_("Session Timeout"),
         choices=SESSION_TIMEOUT_CHOICES,
@@ -45,7 +45,7 @@ class SecuritySettingsForm(forms.Form):
         }),
         initial=1440
     )
-    
+
     # Password Requirements
     password_strength_requirement = forms.ChoiceField(
         label=_("Password Strength Requirement"),
@@ -59,4 +59,3 @@ class SecuritySettingsForm(forms.Form):
         }),
         initial='medium'
     )
-

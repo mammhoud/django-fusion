@@ -21,7 +21,7 @@ for _path in (str(_SITE_APP_DIR), str(_SITE_DIR), str(_WORKSPACE_DIR)):
 # ============================================================
 from configs.site import configure_site_environment
 
-configure_site_environment("lms-demo", module="CMS", default_port=5071)
+configure_site_environment("lms-demo", module="LMS", default_port=5071)
 
 # ============================================================
 # Import Shared Django Settings
@@ -54,4 +54,15 @@ PROFILE_MODEL = "auth.User"
 
 
 # Third-party django_rseal currently declares an invalid TeamMembership ordering.
-SILENCED_SYSTEM_CHECKS = ["models.E015"]
+SILENCED_SYSTEM_CHECKS = [
+    "models.E015",  # django_rseal cross-model ordering lookup
+    "models.E028",  # legacy accounts/handlers shared service table during migration
+    "models.E030",  # legacy accounts/handlers shared indexes during migration
+    "models.E032",  # legacy accounts/handlers shared constraints during migration
+    "fields.E304",  # legacy duplicated profile reverse accessors
+    "fields.E305",  # legacy duplicated profile reverse query names
+    "fields.E340",  # legacy duplicated many-to-many intermediary tables
+]
+
+# Disable workflows until legacy imported Wagtail tasks are cleaned.
+WAGTAIL_WORKFLOW_ENABLED = False

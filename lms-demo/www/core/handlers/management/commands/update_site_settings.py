@@ -8,7 +8,7 @@ Ports logic from base-dir ``update_footer_settings.py``.
 Usage:
     uv run python manage.py update_site_settings --logo-path /path/to/logo.png
     uv run python manage.py update_site_settings --logo-path /path/to/logo.png \\
-        --social-json '[{"platform":"facebook","username":"ctcresearch",...}]'
+        --social-json '[{"platform":"facebook","username":"lmsdemo",...}]'
     uv run python manage.py update_site_settings --logo-path /path/to/logo.png \\
         --social-json /path/to/social_links.json
 """
@@ -38,7 +38,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from django_rseal.pipelines.models import GlobalSettings
+        from django_rseal.models import GlobalSettings
         from wagtail.images.models import Image
 
         logo_path = Path(options["logo_path"])
@@ -67,7 +67,7 @@ class Command(BaseCommand):
             try:
                 with open(logo_path, "rb") as f:
                     image = Image.objects.create(
-                        title="Structa Cloud Logo",
+                        title="LMS Demo Logo",
                         file=File(f, name=logo_path.name),
                     )
                 gs.logo = image

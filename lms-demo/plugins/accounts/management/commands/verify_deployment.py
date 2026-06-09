@@ -7,7 +7,7 @@ services, and container health check.
 
 Usage:
     uv run python manage.py verify_deployment
-    uv run python manage.py verify_deployment --container structa-core
+    uv run python manage.py verify_deployment --container lms-demo-website
 """
 
 import os
@@ -46,12 +46,12 @@ def _warn(msg: str) -> str:
 
 _CONTAINER_MAP: dict[str, str] = {
     "docker": "core",
-    "demo": "structa-core",
-    "production": "structa-core",
+    "demo": "lms-demo-website",
+    "production": "lms-demo-website",
     "local": "core",
 }
 
-_DEFAULT_CONTAINER = "structa-core"
+_DEFAULT_CONTAINER = "lms-demo-website"
 
 
 def _detect_container() -> str:
@@ -212,14 +212,14 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
     """Check 6 — Traefik routing config file."""
     # Try common locations relative to the repo root
     candidates = [
-        Path("/root/site/compose/traefik/dynamic/structa.yml"),
-        Path("/root/site/compose/traefik/dynamic/structa-core.yml"),
-        Path("/root/site/compose/traefik/dynamic/structa-main.yml"),
+        Path("/root/site/compose/traefik/dynamic/lms-demo.yml"),
+        Path("/root/site/compose/traefik/dynamic/lms-demo-website.yml"),
+        Path("/root/site/compose/traefik/dynamic/lms-demo.yml"),
     ]
 
     # Also search relative to this file's repo root
     repo_root = Path(__file__).resolve().parents[6]  # workspace root
-    for name in ("structa.yml", "structa-core.yml", "structa-main.yml"):
+    for name in ("lms-demo.yml", "lms-demo-website.yml", "lms-demo.yml"):
         candidates.append(repo_root / "compose" / "traefik" / "dynamic" / name)
 
     traefik_file: Path | None = None
@@ -308,7 +308,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("Structa.cloud Deployment Verification")
+        self.stdout.write("LMS Demo Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )
@@ -326,7 +326,7 @@ class Command(BaseCommand):
         # 1. Docker Compose config
         # ------------------------------------------------------------------
         self.stdout.write("1. Checking Docker Compose Configuration...")
-        project_root = Path(__file__).resolve().parents[4]  # structa.cloud/core/
+        project_root = Path(__file__).resolve().parents[4]  # structa.cloud/
         ok, msg = _check_compose_config(project_root)
         if ok:
             self.stdout.write(_pass(msg))

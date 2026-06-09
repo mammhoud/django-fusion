@@ -83,7 +83,7 @@ class EmailCSVTester:
         return {
             'email': email,
             'role': role,
-            'site_name': getattr(settings, 'SITE_NAME', 'Structa Cloud'),
+            'site_name': getattr(settings, 'SITE_NAME', 'LMS Demo'),
             'site_url': getattr(settings, 'SITE_URL', 'https://structa.cloud'),
             'current_date': datetime.now().strftime('%B %d, %Y'),
             'support_email': getattr(settings, 'SUPPORT_EMAIL', 'support@example.com')

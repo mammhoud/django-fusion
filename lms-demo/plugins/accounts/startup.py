@@ -1,5 +1,5 @@
 """
-startup.py — AppConfig.ready() startup validation for structa.cloud/core
+startup.py — AppConfig.ready() startup validation for structa.cloud
 =========================================================================
 Validates critical configuration at application startup and logs warnings
 for any issues found. All checks are non-fatal (the app continues to start)

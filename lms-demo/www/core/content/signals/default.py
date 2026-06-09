@@ -6,11 +6,12 @@ from django.dispatch import receiver
 
 logger = logging.getLogger(__name__)
 
+
 @receiver(post_migrate)
 def create_default_groups(sender, **kwargs):
     """
     Create default Django Groups after migrations.
-    
+
     Groups created:
         - Instructors
         - Students
@@ -26,25 +27,22 @@ def create_default_groups(sender, **kwargs):
     DEFAULT_GROUPS = [
         {
             "name": "Instructors",
-            "description": "Users with instructor privileges. Can create and manage courses."
+            "description": "Users with instructor privileges. Can create and manage courses.",
         },
-        {
-            "name": "Students",
-            "description": "Regular users enrolled in courses."
-        },
+        {"name": "Students", "description": "Regular users enrolled in courses."},
         {
             "name": "Supervisors",
-            "description": "Users who can oversee multiple instructors and courses."
+            "description": "Users who can oversee multiple instructors and courses.",
         },
         {
             "name": "Admins",
             "description": "System administrators with full access.",
-            "optional": True  # Only create if not exists
+            "optional": True,  # Only create if not exists
         },
         {
             "name": "Moderators",
             "description": "Users who can moderate content and users.",
-            "optional": True
+            "optional": True,
         },
     ]
 
@@ -60,7 +58,7 @@ def create_default_groups(sender, **kwargs):
         try:
             group, created = Group.objects.get_or_create(
                 name=group_name,
-                defaults={"name": group_name}  # Django Group only has 'name' field
+                defaults={"name": group_name},  # Django Group only has 'name' field
             )
 
             if created:
@@ -113,8 +111,8 @@ def assign_default_permissions(sender, **kwargs):
             for codename in perm_codenames:
                 try:
                     # Permission format: <app_label>.<codename>
-                    if '.' in codename:
-                        app_label, perm_codename = codename.split('.')
+                    if "." in codename:
+                        app_label, perm_codename = codename.split(".")
                     else:
                         # Try to find permission (less precise)
                         perm = Permission.objects.filter(codename=codename).first()

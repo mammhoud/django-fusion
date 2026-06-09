@@ -78,7 +78,7 @@ class Command(BaseCommand):
                     port=443,
                     root_page=home,
                     is_default_site=True,
-                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "Structa Cloud"),
+                    site_name=getattr(settings, "WAGTAIL_SITE_NAME", "LMS Demo"),
                 )
                 self.stdout.write(self.style.SUCCESS(
                     f"✅ Created default site: {hostname} → '{home.title}'"
@@ -103,8 +103,9 @@ class Command(BaseCommand):
 
         # Try project-specific HomePage model first
         for model_path in [
-            "www.apps.content.models.pages.home.HomePage",
+            "www.core.content.models.pages.home.HomePage",
             "www.core.content.models.HomePage",
+            "www.apps.content.models.pages.home.HomePage",
         ]:
             try:
                 module, cls = model_path.rsplit(".", 1)

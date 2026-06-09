@@ -5,16 +5,12 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.site import NotificationMixin, PageHandler
-from django_rseal.pipelines.models import Person
-class ProfileContextMixin:
-    pass
+from django_rseal.models import Person
+from django_rseal.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 
+from plugins.accounts.services import PersonService
 
-class ProfileOperationsMixin:
-    pass
-
-
-from plugins.accounts.forms import (
+from ..forms import (
     AccountSettingsForm,
     BillingSettingsForm,
     NotificationSettingsForm,
@@ -22,7 +18,6 @@ from plugins.accounts.forms import (
     PrivacySettingsForm,
     SecuritySettingsForm,
 )
-from plugins.accounts.services import PersonService
 
 
 class SettingsView(PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin):

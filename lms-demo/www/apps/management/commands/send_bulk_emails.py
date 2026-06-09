@@ -216,12 +216,12 @@ class BulkEmailSender:
         # Create batch record
         if CSVEmailTestBatch is not None:
             self.batch_record = CSVEmailTestBatch.objects.create(
-            batch_id=f"batch_{int(time.time())}",
-            csv_file=str(self.csv_path),
-            total_emails=len(emails),
-            sent_count=0,
-            failed_count=0
-        )
+                batch_id=f"batch_{int(time.time())}",
+                csv_file=str(self.csv_path),
+                total_emails=len(emails),
+                sent_count=0,
+                failed_count=0
+            )
 
         # Process in batches
         results = {

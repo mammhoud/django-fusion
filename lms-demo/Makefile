@@ -20,7 +20,7 @@ CYAN   := \033[0;36m
 NC     := \033[0m
 
 SITE_NAME := $(notdir $(CURDIR))
-DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
+DEFAULT_PORT := $(if $(findstring structa.cloud,$(SITE_NAME)),5070,5071)
 PYTHONPATH := $(CURDIR):$(abspath ..)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)

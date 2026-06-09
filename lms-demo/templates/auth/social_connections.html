@@ -4,10 +4,6 @@
 {% load i18n static %}
 {% load socialaccount %}
 
-<!-- HTMX Context -->
-<input type="hidden" name="strategy" value="{% if request.htmx %}htmx{% else %}document{% endif %}">
-<input type="hidden" name="supports_sse" value="{{ request.supports_sse|yesno:'true,false' }}">
-
 <section class="fragment--form">
   <!-- Social Connections Card -->
   <section class="auth__card card card--form">
@@ -43,6 +39,8 @@
           {% if account in disconnectable_accounts %}
           <form method="post" action="" class="d-inline">
             {% csrf_token %}
+            <input type="hidden" name="strategy" value="{{ strategy|default:'fragment' }}">
+            <input type="hidden" name="supports_sse" value="{{ supports_sse|default:'false' }}">
             <input type="hidden" name="account" value="{{ account.id }}">
             <button type="submit"
                     name="action_remove"

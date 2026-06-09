@@ -6,7 +6,6 @@ Handles the complete email-based registration workflow:
 2. Password creation form (via token link) → sets password → activates user
 """
 
-import json
 import logging
 
 from django.conf import settings
@@ -26,6 +25,7 @@ from django_osoul.site import PageHandler
 from ..emails import send_registration_email
 from ..forms.registration import PasswordCreationForm, RegistrationForm
 from ..tokens import registration_token_generator
+from ..services.notifications import trigger_notification
 
 logger = logging.getLogger("apps.registration")
 User = get_user_model()
@@ -117,33 +117,6 @@ def get_site_url(request=None):
             site_url = ""
     return site_url.rstrip("/")
 
-
-def trigger_notification(response: HttpResponse, message: str, notification_type: str = "success") -> HttpResponse:
-    """
-    Add HX-Trigger header to response for client-side notification display.
-
-    Sets: HX-Trigger: {"showNotification": {"message": "...", "type": "..."}}
-
-    The existing notification bundle (assets/static/js/modules/notifications/notification.js)
-    listens for HTMX trigger headers and handles the "showNotification" event via
-    `processTriggerHeader()`, reading `value.message` and `value.type` fields to
-    display toast notifications. Supported types: "success", "error", "warning", "info".
-
-    Args:
-        response: Django HttpResponse to modify
-        message: Notification message text
-        notification_type: One of "success", "error", "warning", "info"
-
-    Returns:
-        Modified response with HX-Trigger header set
-    """
-    response["HX-Trigger"] = json.dumps({
-        "showNotification": {
-            "message": message,
-            "type": notification_type,
-        }
-    })
-    return response
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -485,7 +458,7 @@ class RegistrationSuccessView(View):
 def _ensure_profile_exists(user):
     """Create a Person profile for the user if it doesn't exist."""
     try:
-        from django_rseal.pipelines.models.users.users import Person
+        from django_rseal.models import Person
 
         _profile, created = Person.objects.get_or_create(
             user=user,

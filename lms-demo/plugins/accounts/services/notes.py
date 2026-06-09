@@ -37,7 +37,6 @@ class NotesService:
 
     @staticmethod
     def update_note(note: Note, title: str = None, content: str = None) -> Note:
-        """Update an existing note."""
         if title is not None:
             note.title = title
         if content is not None:

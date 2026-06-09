@@ -17,5 +17,5 @@ This invitation was sent to {{ recipient_email }}.
 If you did not expect this email, you can safely ignore it.
 
 ---
-CTC Research
+LMS Demo
 This is an automated message. Please do not reply directly to this email.

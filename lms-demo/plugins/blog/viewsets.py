@@ -3,7 +3,8 @@ Blog Viewsets for structa.cloud
 =====================================
 
 Routable ModelViewsets for the Blog application.
-These work alongside the existing URL definitions in apps/blog/urls.py.
+These replace manual URL definitions in apps/blog/urls.py for the
+new routable-components routing system.
 
 Usage::
 
@@ -21,11 +22,11 @@ class BlogPostViewset(ModelViewset):
     Full CRUD interface for blog posts.
 
     Generates:
-      GET  /osoul/blog/posts/              → list
-      GET  /osoul/blog/posts/add/          → create form
-      GET  /osoul/blog/posts/<pk>/detail/  → detail
-      GET  /osoul/blog/posts/<pk>/change/  → update form
-      GET  /osoul/blog/posts/<pk>/delete/  → delete confirm
+      GET  /app/blog/posts/              → list
+      GET  /app/blog/posts/add/          → create form
+      GET  /app/blog/posts/<pk>/detail/  → detail
+      GET  /app/blog/posts/<pk>/change/  → update form
+      GET  /app/blog/posts/<pk>/delete/  → delete confirm
     """
 
     icon = "article"
@@ -35,8 +36,8 @@ class BlogPostViewset(ModelViewset):
         from apps.blog.models import BlogPost
         return BlogPost
 
-    list_columns = ("title", "author", "published_date", "status")
-    list_filter_fields = ("status",)
+    list_columns = ("title", "author", "category", "published_date", "status")
+    list_filter_fields = ("category", "status")
     list_search_fields = ("title", "content")
 
     def has_view_permission(self, user, obj=None):

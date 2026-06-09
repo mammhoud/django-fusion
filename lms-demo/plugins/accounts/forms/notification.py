@@ -2,7 +2,7 @@ from django import forms
 from django.contrib.auth.password_validation import validate_password
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
-from django_rseal.pipelines.models import Person
+from django_rseal.models import Person
 
 
 class NotificationSettingsForm(forms.Form):
@@ -16,7 +16,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     instructor_messages = forms.BooleanField(
         label=_("New messages from instructors"),
         required=False,
@@ -26,7 +26,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     marketing_emails = forms.BooleanField(
         label=_("Marketing and promotional emails"),
         required=False,
@@ -35,7 +35,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     weekly_reports = forms.BooleanField(
         label=_("Weekly progress reports"),
         required=False,
@@ -45,7 +45,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     # Push Notifications
     assignment_notifications = forms.BooleanField(
         label=_("New course assignments"),
@@ -56,7 +56,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     forum_activity = forms.BooleanField(
         label=_("Forum activity"),
         required=False,
@@ -65,7 +65,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     deadline_reminders = forms.BooleanField(
         label=_("Deadline reminders"),
         required=False,
@@ -75,7 +75,7 @@ class NotificationSettingsForm(forms.Form):
             'role': 'switch'
         })
     )
-    
+
     # SMS Notifications
     sms_notifications = forms.BooleanField(
         label=_("Enable SMS notifications for urgent updates"),
@@ -86,14 +86,14 @@ class NotificationSettingsForm(forms.Form):
         }),
         help_text=_("Standard carrier rates may apply")
     )
-    
+
     # Notification Frequency
     NOTIFICATION_FREQUENCY_CHOICES = [
         ('realtime', _('Real-time')),
         ('daily', _('Daily digest')),
         ('weekly', _('Weekly summary')),
     ]
-    
+
     notification_frequency = forms.ChoiceField(
         label=_("Notification Frequency"),
         choices=NOTIFICATION_FREQUENCY_CHOICES,

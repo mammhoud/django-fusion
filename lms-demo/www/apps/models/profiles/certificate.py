@@ -8,7 +8,7 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
-from django_rseal.pipelines.models.tags import *
+from django_rseal.models.tags import *
 
 User = get_user_model()
 
@@ -101,4 +101,3 @@ class Certificate(DefaultBase):
         self.status = self.StatusChoices.REVOKED
         self.verification_status = f'revoked: {reason}'
         self.save()
-

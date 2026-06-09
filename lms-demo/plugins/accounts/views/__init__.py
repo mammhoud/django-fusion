@@ -1,5 +1,7 @@
 """Views for the accounts app."""
 
+from .notes import *  # noqa: F401, F403
+from .privacy import *  # noqa: F401, F403
 from .registration import (  # noqa: F401
     CreatePasswordView,
     RegisterView,
