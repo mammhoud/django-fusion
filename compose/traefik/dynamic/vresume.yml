@@ -1,18 +1,18 @@
 # ============================================
 # VRESUME CONFIGURATION
-# Domain: vresume.structa.cloud, www.vresume.structa.cloud, resume.structa.cloud
+# Domain: vresume.structa.cloud
 # ============================================
 http:
   routers:
     vresume-media-http:
-      rule: "(Host(`vresume.structa.cloud`) || Host(`www.vresume.structa.cloud`) || Host(`resume.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      rule: "Host(`vresume.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web]
       middlewares: [compress, redirect-to-https]
       service: vresume-media-service
       priority: 100
 
     vresume-media-https:
-      rule: "(Host(`vresume.structa.cloud`) || Host(`www.vresume.structa.cloud`) || Host(`resume.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      rule: "Host(`vresume.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: vresume-media-service
@@ -20,20 +20,21 @@ http:
       tls:
         domains:
           - main: "vresume.structa.cloud"
-            sans: ["www.vresume.structa.cloud", "resume.structa.cloud"]
 
     vresume-site-https:
-      rule: "Host(`vresume.structa.cloud`) || Host(`www.vresume.structa.cloud`) || Host(`resume.structa.cloud`)"
+      rule: "Host(`vresume.structa.cloud`)"
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: vresume-site-service
       tls:
+        domains:
+          - main: "vresume.structa.cloud"
 
   services:
     vresume-site-service:
       loadBalancer:
         servers:
-          - url: "http://vresume-web:5072"
+          - url: "http://vresume-website:5072"
 
     vresume-media-service:
       loadBalancer:

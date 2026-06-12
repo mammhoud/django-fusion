@@ -9,8 +9,9 @@ from .base import BasePage
 
 
 class TeamPage(BasePage):
-    fragment_name = "team.main"
     template = "base_page.html"
+    template_name = "team/main.html"
+    fragment_name = "team.main"
     page_title = _("Team Page")
 
     # Page Title Section

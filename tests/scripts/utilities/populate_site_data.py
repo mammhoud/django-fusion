@@ -68,7 +68,7 @@ def run(cmd: list[str], root: Path, site: str, dry_run: bool = False) -> int:
 def fixture_candidates(root: Path, site: str, include_shared: bool, include_dumps: bool) -> list[Path]:
     site_dir = root / SITE_DIRS.get(site, site)
     candidates: list[Path] = []
-    for base in [root / "assets" / "fixtures"]:
+    for base in [site_dir / "assets" / "fixtures", root / "assets" / "fixtures"]:
         if not base.exists():
             print(f"Skipping missing fixture directory: {base.relative_to(root)}")
             continue

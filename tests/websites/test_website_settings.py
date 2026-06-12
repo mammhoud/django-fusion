@@ -154,6 +154,18 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         assert 'COMPOSE_FILE="${COMPOSE_FILE:-docker-compose.yml}"' in runner
         assert 'SERVICE="ctc-research-website"' in runner
 
+    def test_root_makefile_exposes_shared_build_targets_and_log_dirs(self):
+        makefile = (ROOT / "Makefile").read_text()
+        assert "docker-build-ctc" in makefile
+        assert "docker-build-lms" in makefile
+        assert "docker-build-vresume" in makefile
+        assert "docker-build-shared-media" in makefile
+        assert "docker-build-all" in makefile
+        assert "LOG_BUILD_DIR" in makefile
+        assert "LOG_DEPLOY_DIR" in makefile
+        assert "logs/build" in makefile
+        assert "logs/deploy" in makefile
+
 
 class SiteConfigTests(SimpleTestCase):
     def test_site_yaml_aliases_and_security_defaults(self):
@@ -175,6 +187,18 @@ class SiteConfigTests(SimpleTestCase):
             with self.subTest(site=site):
                 assert f"PORT: {port}" in compose
         assert len(set(expected_ports.values())) == len(expected_ports)
+
+    def test_django_compose_mounts_specific_website_sources(self):
+        compose = (ROOT / "compose" / "docker-compose.yml").read_text()
+        assert "../:/app:z" not in compose
+        assert "../ctc-research:/app/ctc-research:z" in compose
+        assert "../lms-demo:/app/lms-demo:z" in compose
+        assert "../VResume:/app/VResume:z" in compose
+        assert "../assets:/app/assets:z" in compose
+
+    def test_populate_script_uses_site_specific_fixture_directories(self):
+        script = (ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
+        assert 'for base in [site_dir / "assets" / "fixtures", root / "assets" / "fixtures"]:' in script
 
     def test_postgres_bootstrap_sql_includes_all_site_databases(self):
         sql = (ROOT / "compose" / "postgres" / "init.d" / "00-create-databases.sql").read_text()

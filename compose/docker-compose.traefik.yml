@@ -32,7 +32,7 @@ services:
       - ./traefik/certs:/etc/traefik/certs:ro
     environment:
       DOCKER_API_VERSION: "1.44"
-      TRAEFIK_ACME_EMAIL: ${TRAEFIK_ACME_EMAIL:-m.xxai@outlook.com}
+      TRAEFIK_ACME_EMAIL: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}
       TRAEFIK_LOG_LEVEL: ${TRAEFIK_LOG_LEVEL:-INFO}
     networks:
       - traefik-net

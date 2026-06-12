@@ -58,7 +58,7 @@ RUN if [ -f uv.lock ]; then \
 # -----------------------------------------------------
 # Copy shared source and the selected website
 # -----------------------------------------------------
-COPY Makefile manage.py __about__.py __main__.py cli.py ${APP_HOME}/
+COPY Makefile manage.py __about__.py __main__.py cli.py utilities.py ${APP_HOME}/
 COPY configs ${APP_HOME}/configs
 COPY assets ${APP_HOME}/assets
 COPY compose ${APP_HOME}/compose

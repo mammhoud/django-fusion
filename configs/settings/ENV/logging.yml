@@ -46,5 +46,3 @@ default:
     LOG_DESTINATION: "elasticsearch"
 
 
-
-    

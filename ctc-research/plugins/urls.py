@@ -21,8 +21,6 @@ class NewsletterSubscribeView(View):
 app_name = "plugins"
 
 urlpatterns = [
-    # allauth built-in views
-    path("accounts/", include("allauth.urls")),
     # accounts plugin — explicit namespace so {% url 'accounts:...' %} resolves
     path("accounts/", include("plugins.accounts.urls", namespace="accounts")),
     path("profile/", include("plugins.profile.urls", namespace="profile")),

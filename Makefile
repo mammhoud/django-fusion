@@ -4,6 +4,9 @@ SHELL := /bin/bash
 WEBSITE ?= ctc
 PYTHON ?= .venv/bin/python
 LOG_DIR ?= logs
+LOG_BUILD_DIR ?= logs/build
+LOG_DEPLOY_DIR ?= logs/deploy
+LOG_TEST_DIR ?= logs/tests
 SERVER_TYPE ?= gunicorn
 
 # Website aliases. Use `make run-dev WEBSITE=structa` or `make docker-up WEBSITE=ctc`.
@@ -75,7 +78,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-redeploy docker-redeploy docker-deploy deploy rebuild redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config
+.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy docker-deploy deploy redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config
 
 help:
 	@echo "Top-level targets:"
@@ -174,18 +177,47 @@ rqworker:
 	/rqworker-start
 
 docker-build:
-	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) build --build-arg PROJECT_PATH=$(DOCKER_PROJECT_PATH) $(DOCKER_SERVICE)
+	@mkdir -p $(LOG_BUILD_DIR) $(LOG_DEPLOY_DIR)
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	 echo "[build] $(DOCKER_SERVICE) -> $(LOG_BUILD_DIR)/docker-build-$(SITE)-$$timestamp.log"; \
+	 $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) build --build-arg PROJECT_PATH=$(DOCKER_PROJECT_PATH) $(DOCKER_SERVICE) 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-$(SITE)-$$timestamp.log
 
 docker-build-server: docker-build
 
-docker-redeploy rebuild:
-	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) build --pull --no-cache --build-arg PROJECT_PATH=$(DOCKER_PROJECT_PATH) $(DOCKER_SERVICE)
+docker-build-ctc:
+	@$(MAKE) docker-build WEBSITE=ctc-research
+
+docker-build-lms:
+	@$(MAKE) docker-build WEBSITE=lms-demo
+
+docker-build-vresume:
+	@$(MAKE) docker-build WEBSITE=vresume
+
+docker-build-shared-media:
+	@mkdir -p $(LOG_BUILD_DIR)
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	 echo "[build] shared-media -> $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log"; \
+	 docker compose -f compose/docker-compose.nginx.yml build shared-media 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log
+
+docker-build-all: docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media
+
+docker-rebuild rebuild:
+	@mkdir -p $(LOG_BUILD_DIR) $(LOG_DEPLOY_DIR)
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	 echo "[rebuild] $(DOCKER_SERVICE) -> $(LOG_BUILD_DIR)/docker-rebuild-$(SITE)-$$timestamp.log"; \
+	 $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) build --pull --no-cache --build-arg PROJECT_PATH=$(DOCKER_PROJECT_PATH) $(DOCKER_SERVICE) 2>&1 | tee $(LOG_BUILD_DIR)/docker-rebuild-$(SITE)-$$timestamp.log
 
 docker-redeploy docker-deploy deploy redeploy:
-	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE)
+	@mkdir -p $(LOG_DEPLOY_DIR)
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	 echo "[deploy] $(DOCKER_SERVICE) -> $(LOG_DEPLOY_DIR)/deploy-$(SITE)-$$timestamp.log"; \
+	 $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) 2>&1 | tee $(LOG_DEPLOY_DIR)/deploy-$(SITE)-$$timestamp.log
 
 docker-up:
-	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE)
+	@mkdir -p $(LOG_DEPLOY_DIR)
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	 echo "[up] $(DOCKER_SERVICE) -> $(LOG_DEPLOY_DIR)/up-$(SITE)-$$timestamp.log"; \
+	 $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) 2>&1 | tee $(LOG_DEPLOY_DIR)/up-$(SITE)-$$timestamp.log
 
 docker-down:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) down --remove-orphans
@@ -305,15 +337,20 @@ docker-deploy-traefik:
 
 # Deploy all three websites
 docker-deploy-websites:
-	@echo "Deploying all websites..."
-	@echo "Building ctc-research..."
-	$(MAKE) docker-redeploy WEBSITE=ctc-research
-	@echo "Building lms-demo..."
-	$(MAKE) docker-redeploy WEBSITE=lms-demo
-	@echo "Building VResume..."
-	$(MAKE) docker-redeploy WEBSITE=vresume
-	@echo "All websites deployed!"
-	docker compose -f docker-compose.yml ps
+	@mkdir -p $(LOG_DEPLOY_DIR) $(LOG_BUILD_DIR)
+	@timestamp=$$(date +%Y%m%d-%H%M%S); \
+	 echo "[deploy-all] writing to $(LOG_DEPLOY_DIR)/deploy-all-$$timestamp.log"; \
+	 { \
+		 echo "Deploying all websites..."; \
+		 echo "Building ctc-research..."; \
+		 $(MAKE) docker-redeploy WEBSITE=ctc-research; \
+		 echo "Building lms-demo..."; \
+		 $(MAKE) docker-redeploy WEBSITE=lms-demo; \
+		 echo "Building VResume..."; \
+		 $(MAKE) docker-redeploy WEBSITE=vresume; \
+		 echo "All websites deployed!"; \
+		 docker compose -f docker-compose.yml ps; \
+	 } 2>&1 | tee $(LOG_DEPLOY_DIR)/deploy-all-$$timestamp.log
 
 # Full deployment: clean, build, and deploy everything
 docker-deploy-full: docker-clean docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites
@@ -433,6 +470,8 @@ show-vars:
 	@echo "COMPOSE_FILE=$(COMPOSE_FILE)"
 	@echo "PYTHON=$(PYTHON)"
 	@echo "LOG_DIR=$(LOG_DIR)"
+	@echo "LOG_BUILD_DIR=$(LOG_BUILD_DIR)"
+	@echo "LOG_DEPLOY_DIR=$(LOG_DEPLOY_DIR)"
 	@echo "SERVER_TYPE=$(SERVER_TYPE)"
 
 # Print all configuration

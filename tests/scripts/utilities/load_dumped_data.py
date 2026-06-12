@@ -153,8 +153,7 @@ def main() -> int:
         print(f"❌ {failures} fixture(s) failed to load.")
         return 1
     print(f"✅ Loaded {len(fixtures)} fixture(s).")
-    run_fix_homepage()
-    # Run homepage fix after loading
+    return run_fix_homepage()
 
 
 def run_fix_homepage() -> int:

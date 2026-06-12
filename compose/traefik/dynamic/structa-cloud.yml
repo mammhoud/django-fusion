@@ -31,13 +31,16 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: structa-site-service
       tls:
+        domains:
+          - main: "structa.cloud"
+            sans: ["*.structa.cloud", "www.structa.cloud", "core.structa.cloud"]
 
   services:
     # Django backend
     structa-site-service:
       loadBalancer:
         servers:
-          - url: "http://lms-web:5071"
+          - url: "http://lms-demo-website:5071"
 
     # Nginx media/static server
     structa-media-service:

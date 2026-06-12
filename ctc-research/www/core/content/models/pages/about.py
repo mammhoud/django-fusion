@@ -12,6 +12,11 @@ from .base import BasePage
 
 class AboutPage(BasePage):
     template = "base_page.html"
+    # Use a concrete inner template for this page instead of a dynamic fragment
+    # to avoid recursive `{% comp %}` resolution when components are not
+    # located under the component directories. This will make `base_page.html`
+    # include `template_name` directly.
+    template_name = "about/main.html"
     fragment_name = "about.main"
     page_title = _("About Page")
     # ✅ Wrap your title section fields in a StructBlock inside a StreamField

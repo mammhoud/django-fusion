@@ -6,8 +6,9 @@ from .base import BaseIndexPage
 class EventPage(BaseIndexPage):
     """A Wagtail page displaying a list of events."""
 
-    fragment_name = "events.main"
     template = "base_page.html"
+    template_name = "events/main.html"
+    fragment_name = "events.main"
     page_title = _("Events Page")
 
     class Meta:

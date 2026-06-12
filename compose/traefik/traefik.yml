@@ -67,40 +67,59 @@ providers:
 # Certificate Resolvers
 # ============================================
 certificatesResolvers:
-  letsencrypt:
+  # Primary resolver: Uses static certificates from file store
+  default:
     acme:
-      email: "${TRAEFIK_ACME_EMAIL:-m.xxai@outlook.com}"
+      # Email for optional Let's Encrypt integration (can leave empty for static certs only)
+      email: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}
       storage: /etc/traefik/acme/acme.json
-      # PRODUCTION ACME Server - generates valid certificates
-      caServer: "https://acme-v02.api.letsencrypt.org/directory"
-      # Use for testing/staging (generates fake certificates, no rate limits)
-      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      
+      # Use production CA for valid Let's Encrypt certificates
+      caServer: ${TRAEFIK_ACME_CASERVER:-https://acme-v02.api.letsencrypt.org/directory}
+      
+      # HTTP challenge (requires port 80 accessible from internet)
       httpChallenge:
         entryPoint: web
-      # Uncomment for DNS challenge (recommended for wildcard certs)
-      # dnsChallenge:
-      #   provider: cloudflare
-      #   delayBeforeCheck: 0
+  
+  # Fallback: Let's Encrypt ACME (optional, can be enabled for automatic renewal)
+  letsencrypt:
+    acme:
+      email: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}
+      storage: /etc/traefik/acme/acme.json
+      caServer: ${TRAEFIK_ACME_CASERVER:-https://acme-v02.api.letsencrypt.org/directory}
+      httpChallenge:
+        entryPoint: web
 
 # ============================================
-# Static Certificates (Local Files)
+# Static Certificates (Local Files) - PRIMARY METHOD
 # ============================================
+# These certificates are used by default for all HTTPS connections.
+# Traefik will match domain names to certificates and serve them.
+# Certificate validity dates:
+#   - ctc-research.crt: Valid until Jun 2, 2027
+#   - structa-cloud.crt: Valid until Jun 2, 2027
+#   - vresume.crt: Valid until Jun 2, 2027
+#
+# To renew certificates, regenerate new certificate files and restart Traefik:
+#   docker compose restart structa-proxy
+#
 tls:
   stores:
     default:
+      # Default certificate when no domain matches
       defaultCertificate:
         certFile: /etc/traefik/certs/ctc-research.crt
         keyFile: /etc/traefik/certs/ctc-research.key
+  
   certificates:
+    # CTC Research certificates (primary + SANs)
     - certFile: /etc/traefik/certs/ctc-research.crt
       keyFile: /etc/traefik/certs/ctc-research.key
-      stores:
-        - default
+    
+    # Structa Cloud certificates (primary + SANs)  
     - certFile: /etc/traefik/certs/structa-cloud.crt
       keyFile: /etc/traefik/certs/structa-cloud.key
-      stores:
-        - default
+    
+    # VResume certificates
     - certFile: /etc/traefik/certs/vresume.crt
       keyFile: /etc/traefik/certs/vresume.key
-      stores:
-        - default

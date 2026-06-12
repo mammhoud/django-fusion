@@ -16,6 +16,7 @@ class ContactPage(BaseFormPage):
     in addition to the core form inherited from BaseFormPage.
     """
     template = "base_page.html"
+    template_name = "contact/main.html"
     fragment_name = "contact.main"
     page_title = _("Contact Page")
 

@@ -7,8 +7,9 @@ from .base import BaseIndexPage
 class ServicesPage(BaseIndexPage):
     """Displays a list of active Services"""
 
-    fragment_name = "services.index"
     template = "base_page.html"
+    template_name = "services/main.html"
+    fragment_name = "services.index"
     page_title = _("Services Page")
 
     class Meta:

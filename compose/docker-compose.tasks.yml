@@ -47,7 +47,12 @@ x-shared-tasks-base: &shared-tasks-base
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
     LOG_DIR: /app/logs
   volumes:
-    - ../:/app:z
+    - ../configs:/app/configs:z
+    - ../assets:/app/assets:z
+    - ../compose:/app/compose:z
+    - ../tests:/app/tests:z
+    - ../tasks:/app/tasks:z
+    - ../_shared:/app/_shared:z
     - ./logs:/app/logs:z
   networks:
     - traefik-net
@@ -91,6 +96,15 @@ services:
   ctc-worker:
     <<: *shared-tasks-base
     container_name: ctc-worker
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../ctc-research:/app/ctc-research:z
+      - ./logs:/app/logs:z
     environment:
       <<: *shared-tasks-env
       DJANGO_SITE: ctc-research
@@ -104,6 +118,15 @@ services:
   ctc-scheduler:
     <<: *shared-tasks-base
     container_name: ctc-scheduler
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../ctc-research:/app/ctc-research:z
+      - ./logs:/app/logs:z
     environment:
       <<: *shared-tasks-env
       DJANGO_SITE: ctc-research
@@ -117,6 +140,15 @@ services:
   lms-worker:
     <<: *shared-tasks-base
     container_name: lms-worker
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../lms-demo:/app/lms-demo:z
+      - ./logs:/app/logs:z
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile
@@ -136,6 +168,15 @@ services:
   lms-scheduler:
     <<: *shared-tasks-base
     container_name: lms-scheduler
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../lms-demo:/app/lms-demo:z
+      - ./logs:/app/logs:z
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile
@@ -155,6 +196,15 @@ services:
   vresume-worker:
     <<: *shared-tasks-base
     container_name: vresume-worker
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../VResume:/app/VResume:z
+      - ./logs:/app/logs:z
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile
@@ -175,6 +225,15 @@ services:
   vresume-scheduler:
     <<: *shared-tasks-base
     container_name: vresume-scheduler
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../VResume:/app/VResume:z
+      - ./logs:/app/logs:z
     build:
       context: ..
       dockerfile: ./compose/django/Dockerfile

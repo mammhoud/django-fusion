@@ -5,10 +5,8 @@
 # lms-demo, vresume) along with shared infrastructure (traefik, db,
 # cache, tasks, media server, nginx).
 #
-# Each website is defined in its own docker-compose.yml:
-#   - ctc-research/docker-compose.yml (primary)
-#   - lms-demo/docker-compose.yml
-#   - VResume/docker-compose.yml
+# Website services are defined in the canonical compose stack under compose/:
+#   - compose/docker-compose.yml
 #
 # Infrastructure is defined in compose/:
 #   - docker-compose.traefik.yml (reverse proxy)
@@ -19,14 +17,10 @@
 # ============================================================
 
 include:
-  # Shared Infrastructure
+  # Shared infrastructure and canonical website services
+  - path: compose/docker-compose.yml
   - path: compose/docker-compose.traefik.yml
   - path: compose/docker-compose.warehouse.yml
   - path: compose/docker-compose.tasks.yml
   - path: compose/docker-compose.utilities.yml
   - path: compose/docker-compose.nginx.yml
-
-  # Per-Site Website Configurations
-  - path: ctc-research/docker-compose.yml
-  - path: lms-demo/docker-compose.yml
-  - path: VResume/docker-compose.yml

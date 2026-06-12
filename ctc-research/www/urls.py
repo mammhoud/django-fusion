@@ -38,6 +38,57 @@ try:
 except Exception:
     handler400 = handler403 = handler404 = handler500 = None
 
+if handler400 is None:
+    from django.http import HttpResponse, JsonResponse
+    from django.shortcuts import render
+
+    def _fallback_error_view(request, exception=None, status_code=500, **kwargs):
+        error_titles = {
+            400: "Bad Request",
+            403: "Permission Denied",
+            404: "Page Not Found",
+            500: "Internal Server Error",
+        }
+        error_title = error_titles.get(status_code, "Error")
+        error_message = str(exception) if exception else "An unexpected error occurred."
+        try:
+            return render(
+                request,
+                "errors/nxx.html",
+                {
+                    "status_code": status_code,
+                    "error_title": error_title,
+                    "error_message": error_message,
+                    "exception": str(exception) if exception else None,
+                },
+                status=status_code,
+            )
+        except Exception:
+            try:
+                return JsonResponse(
+                    {
+                        "status": "error",
+                        "status_code": status_code,
+                        "error_title": error_title,
+                        "error_message": error_message,
+                    },
+                    status=status_code,
+                )
+            except Exception:
+                return HttpResponse(f"Error {status_code}: {error_title}", status=status_code)
+
+    def handler400(request, exception=None, **kwargs):
+        return _fallback_error_view(request, exception, status_code=400, **kwargs)
+
+    def handler403(request, exception=None, **kwargs):
+        return _fallback_error_view(request, exception, status_code=403, **kwargs)
+
+    def handler404(request, exception=None, **kwargs):
+        return _fallback_error_view(request, exception, status_code=404, **kwargs)
+
+    def handler500(request, **kwargs):
+        return _fallback_error_view(request, None, status_code=500, **kwargs)
+
 try:
     from wagtail import urls as wagtail_urls
     from wagtail.admin import urls as wagtailadmin_urls
@@ -50,6 +101,7 @@ urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
+    path("accounts/", include("allauth.urls")),
 ]
 
 if apps.is_installed("django.contrib.admin"):

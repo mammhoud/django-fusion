@@ -20,12 +20,21 @@ TEMPLATES_DIRS = [
     BASE_DIR / "www" / "pages" / "templates",
     BASE_DIR / "assets" / "templates",
     BASE_DIR / "assets" / "templates" / "layout",  # resolves "landing/skeleton.html" etc.
-    BASE_DIR / "plugins" / "components",  # resolve component templates like "components/contact/sections/form/form.html"
+    BASE_DIR.parent / "_shared" / "plugins",  # workspace-level shared plugins
+    BASE_DIR / "plugins",  # resolve component templates like "components/contact/sections/form/form.html"
     BASE_DIR / "plugins" / "templates",  # resolve plugin-level templates like "notifications/notification.html"
     BASE_DIR.parent / "assets" / "templates",
     BASE_DIR.parent / "assets" / "templates" / "layout",  # workspace-level layout templates
 ]
 
+COMPONENTS = {
+    "COMPONENT_DIRS": [
+        *TEMPLATES_DIRS,
+    ],
+    "ENABLE_BLOCK_ATTRS": True,
+    "ADD_ASSET_PREFIX": False,
+}
+# ------------------------------------------------------------------------------
 # ------------------------------------------------------------------------------
 
 _CONTEXT_PROCESSORS = [
