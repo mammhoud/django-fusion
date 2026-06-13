@@ -1,0 +1,15 @@
+{% load i18n static %}
+
+<section class="fragment--form">
+  <section class="auth__card card card--form">
+    <header class="auth__form-header text-center">
+      <h2 class="auth__form-title">{% trans "Verify Phone with Code" %}</h2>
+      <p>{% trans "Enter the verification code sent to your phone." %}</p>
+    </header>
+    <form method="post" action="." hx-post="." hx-target=".fragment--form" hx-swap="innerHTML">
+      {% csrf_token %}
+      <div class="form__group mb-4"><label for="id_code">{% trans "Code" %}</label><input id="id_code" name="code" type="text" class="form-control" required></div>
+      <button class="btn btn-gradient w-100" type="submit">{% trans "Verify" %}</button>
+    </form>
+  </section>
+</section>

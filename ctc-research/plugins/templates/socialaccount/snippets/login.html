@@ -1,0 +1,8 @@
+{% load i18n socialaccount %}
+{% get_providers as socialaccount_providers %}
+{% if socialaccount_providers %}
+  <div class="auth__divider my-3"><hr><span class="px-3 bg-white small">{% trans "or" %}</span></div>
+  <div class="auth__social row g-2">
+    {% include "socialaccount/snippets/provider_list.html" %}
+  </div>
+{% endif %}

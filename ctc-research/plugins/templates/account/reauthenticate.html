@@ -1,0 +1,15 @@
+{% load i18n static %}
+
+<section class="fragment--form">
+  <section class="auth__card card card--form">
+    <header class="auth__form-header text-center">
+      <h2 class="auth__form-title">{% trans "Confirm Access" %}</h2>
+      <p>{% trans "Please re-enter your password to continue." %}</p>
+    </header>
+    <form method="post" action="{% url 'account_reauthenticate' %}" hx-post="{% url 'account_reauthenticate' %}" hx-target=".fragment--form" hx-swap="innerHTML">
+      {% csrf_token %}
+      <div class="form__group mb-4"><label for="id_password">{% trans "Password" %}</label><input id="id_password" name="password" type="password" class="form-control" required></div>
+      <button class="btn btn-gradient w-100" type="submit">{% trans "Confirm" %}</button>
+    </form>
+  </section>
+</section>
