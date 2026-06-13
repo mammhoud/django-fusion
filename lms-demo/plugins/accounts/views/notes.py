@@ -12,7 +12,7 @@ from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
 
 from plugins.accounts.models.profiles.note import Note
-from plugins.accounts.services.notes_service import NotesService
+from plugins.accounts.management.services.notes_service import NotesService
 
 
 @login_required

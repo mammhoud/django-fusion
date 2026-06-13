@@ -6,7 +6,6 @@ from django_osoul.site import PageHandler
 from plugins.lms.models.courses.info import Course
 from plugins.products.services.cart_service import CartService
 
-
 class CartView(PageHandler):
     """
     Shopping cart view handler.

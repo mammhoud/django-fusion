@@ -11,7 +11,7 @@ from django_rseal.site.mixins import (
     ProfileOperationsMixin,
 )
 
-from plugins.accounts.services import PersonService
+from plugins.accounts.management.services import PersonService
 
 
 class ProfileView(PageHandler, ProfileContextMixin, ProfileOperationsMixin):

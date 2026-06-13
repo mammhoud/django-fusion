@@ -9,7 +9,7 @@ logger = logging.getLogger(__name__)
 from django_osoul.site import PageHandler
 
 from ..models import Course, Lesson
-from ..services import CourseService
+from ..management.services.courses import CourseService
 
 
 class CourseWatchView(LoginRequiredMixin, PageHandler):
@@ -91,7 +91,7 @@ class CourseWatchView(LoginRequiredMixin, PageHandler):
         """
         # Example implementation - adjust based on your models
         try:
-            from ..models import LessonCompletion
+            from plugins.lms.models import LessonCompletion
             completed_lessons = LessonCompletion.objects.filter(
                 user=user,
                 lesson__module__course=course
@@ -129,7 +129,7 @@ class LessonNavigationView(LoginRequiredMixin, PageHandler):
         Mark a lesson as completed for the user
         """
         try:
-            from ..models import LessonCompletion
+            from plugins.lms.models import LessonCompletion
             completion, created = LessonCompletion.objects.get_or_create(
                 user=user,
                 lesson=lesson,
@@ -184,7 +184,7 @@ class CourseContinueView(LoginRequiredMixin, PageHandler):
         Get the last watched lesson for user in this course
         """
         try:
-            from ..models import LessonCompletion
+            from plugins.lms.models import LessonCompletion
             # Get the most recently completed lesson
             last_completion = LessonCompletion.objects.filter(
                 user=user,

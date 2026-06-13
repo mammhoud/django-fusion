@@ -20,6 +20,8 @@
     {% endblock favicon %}
     {% block css %}
     {% block layout_css %}
+        {% render_bundle 'static' 'css' %}
+
     {% endblock layout_css %}
 
     {% endblock css %}
@@ -96,10 +98,8 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {# main = shared libraries (HTMX, Alpine, etc.)           #}
     {# app  = site-specific entry point                       #}
     {# ====================================================== #}
-    {% render_bundle 'static' 'css' %}
     {% render_bundle 'main' 'js' %}
     {% render_bundle 'app' 'js' %}
-
     {% block extra_styles %}
     {% endblock extra_styles %}
 

@@ -11,7 +11,7 @@ from .runtime import configure_django_for_website, import_first
 logger = logging.getLogger(__name__)
 
 EMAIL_SERVICE_PATHS = [
-    "plugins.accounts.services.email.service.EmailService",
+    "plugins.accounts.management.services.email.service.EmailService",
     "www.apps.services.email.service.EmailService",
     "www.core.handlers.services.email.service.EmailService",
 ]

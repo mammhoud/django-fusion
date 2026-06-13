@@ -23,3 +23,7 @@ import './js/main.js';
 // ===============================================
 import 'site/styles/main.scss';
 import './fonts/all.min.css';
+
+// ── Site SCSS (compiled from SCSS → CSS by sass-loader) ───────────────────
+// Path is relative to this file: ../styles/main.scss
+import './styles/main.scss';

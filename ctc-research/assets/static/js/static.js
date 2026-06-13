@@ -23,7 +23,3 @@ import 'scrollcue/scrollCue.css';
 import 'glightbox/dist/css/glightbox.min.css';
 import 'slick-carousel/slick/slick.css';
 import 'aos/dist/aos.css';
-
-// ── Site SCSS (compiled from SCSS → CSS by sass-loader) ───────────────────
-// Path is relative to this file: ../styles/main.scss
-import '../styles/main.scss';

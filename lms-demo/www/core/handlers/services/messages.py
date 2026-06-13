@@ -60,7 +60,7 @@ class MessageService:
 
             # Generate notification if recipient is a user
             if hasattr(recipient, 'notifications'):
-                from plugins.accounts.services import NotificationService
+                from plugins.accounts.management.services import NotificationService
 
                 NotificationService.create_notification(
                     recipient,
@@ -125,7 +125,7 @@ class MessageService:
             # Create notifications for recipients
             for recipient in recipients:
                 if hasattr(recipient, 'notifications'):
-                    from plugins.accounts.services import NotificationService
+                    from plugins.accounts.management.services import NotificationService
 
                     NotificationService.create_notification(
                         recipient,

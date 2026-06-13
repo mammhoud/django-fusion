@@ -8,7 +8,7 @@ from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
-from plugins.accounts.services import CertificateService
+from plugins.accounts.management.services import CertificateService
 
 logger = logging.getLogger(__name__)
 from django_osoul.site import NotificationMixin, PageHandler

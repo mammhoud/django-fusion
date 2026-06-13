@@ -17,7 +17,7 @@ from django_rseal.services.infrastructure.base import BaseService
 
 from plugins.lms.models.courses import Course, Lesson, Module
 
-from ..models.enrollment import Enrollment
+from plugins.lms.models.enrollment import Enrollment
 
 User = get_user_model()
 
@@ -156,7 +156,7 @@ class CourseService(BaseService):
 
                 # Issue completion certificate if enabled
                 if enrollment.course.issue_certificate_on_completion:
-                    from plugins.accounts.services import CertificateService
+                    from plugins.accounts.management.services import CertificateService
 
                     CertificateService.issue_certificate(
                         content_object=enrollment.content_object,

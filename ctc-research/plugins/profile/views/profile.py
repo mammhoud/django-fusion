@@ -13,7 +13,7 @@ from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 
-from plugins.accounts.services import PersonService
+from plugins.accounts.management.services import PersonService
 
 logger = logging.getLogger(__name__)
 

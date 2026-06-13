@@ -11,7 +11,7 @@ logger = logging.getLogger(__name__)
 from django_rseal.services.infrastructure.base import BaseService
 from django_rseal.services.infrastructure.token import TokenService
 
-from ..models import Lesson
+from plugins.lms.models import Lesson
 
 
 class LessonsService(BaseService):

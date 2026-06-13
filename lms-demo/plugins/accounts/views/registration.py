@@ -25,7 +25,7 @@ from django_osoul.site import PageHandler
 from ..emails import send_registration_email
 from ..forms.registration import PasswordCreationForm, RegistrationForm
 from ..tokens import registration_token_generator
-from ..services.notifications import trigger_notification
+from ..management.services.notifications import trigger_notification
 
 logger = logging.getLogger("apps.registration")
 User = get_user_model()

@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from plugins.accounts.services.email.service import email_service
+from plugins.accounts.management.services.email.service import email_service
 
 
 class Command(BaseCommand):

@@ -46,7 +46,7 @@ class ProgressManager(BaseManager):
             Tuple of (success, result_data)
         """
         try:
-            from ..models import Lesson
+            from plugins.lms.models import Lesson
 
             lesson = Lesson.objects.select_related("module", "module__course").get(id=lesson_id)
 
@@ -274,7 +274,7 @@ class ProgressManager(BaseManager):
     ) -> models.Model:
         """Update module progress based on lesson completion."""
         # Calculate module progress from all lessons
-        from ..models import Lesson
+        from plugins.lms.models import Lesson
 
         lessons = Lesson.objects.filter(module=module, is_active=True)
         total_lessons = lessons.count()
@@ -298,7 +298,7 @@ class ProgressManager(BaseManager):
 
     def _mark_lessons_completed(self, enrollment, module):
         """Mark all lessons in module as completed."""
-        from ..models import Lesson
+        from plugins.lms.models import Lesson
 
         lessons = Lesson.objects.filter(module=module, is_active=True)
 
@@ -325,7 +325,7 @@ class ProgressManager(BaseManager):
 
     def _update_course_progress_from_lesson(self, enrollment) -> float:
         """Update course progress based on lesson completion."""
-        from ..models import Lesson
+        from plugins.lms.models import Lesson
 
         course = enrollment.course
 
@@ -416,7 +416,7 @@ class ProgressManager(BaseManager):
     def _get_next_lesson(self, current_lesson, enrollment) -> Optional[Dict[str, Any]]:
         """Get next lesson after the current one."""
         try:
-            from ..models import Lesson
+            from plugins.lms.models import Lesson
 
             # Get next lesson in same module
             next_lesson = (

@@ -346,7 +346,7 @@ class PersonService:
         Returns:
             Dict with invitation details
         """
-        from plugins.accounts.services.invitation import InvitationService
+        from plugins.accounts.management.services.invitation import InvitationService
 
         try:
             # Check if person already exists

@@ -16,7 +16,7 @@ from django.template.loader import render_to_string
 from django.conf import settings
 
 from plugins.lms.models import CourseEnrollmentLead, PaymentTransaction
-from plugins.lms.services.payment_providers import PaymentProviderRegistry, PaymentException
+from plugins.lms.management.services.payment_providers import PaymentProviderRegistry, PaymentException
 from plugins.lms.forms.enrollment import CourseEnrollmentForm
 
 logger = logging.getLogger(__name__)

@@ -152,7 +152,7 @@ class EmailService:
         from django_rseal.pipelines.services.jobs import dispatch_job
 
         # Lazy import to break circular dependency with tasks module
-        from plugins.accounts.services.email.tasks import send_email_task
+        from plugins.accounts.management.services.email.tasks import send_email_task
 
         # Note: django-rq uses 'at' or 'in' for delays, we'll use enqueue_in if delay > 0
         if delay > 0:

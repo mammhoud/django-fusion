@@ -25,7 +25,7 @@ from django_osoul.site import PageHandler
 from ..emails import send_registration_email
 from ..forms.registration import PasswordCreationForm, RegistrationForm
 from ..tokens import registration_token_generator
-from ..services.notifications import trigger_notification
+from ..management.services.notifications import trigger_notification
 
 logger = logging.getLogger("apps.registration")
 User = get_user_model()
@@ -55,9 +55,7 @@ def rate_limit_check(request) -> bool:
     try:
         attempts = cache.get(cache_key, 0)
     except Exception as e:
-        logger.warning(
-            f"Cache failure in rate_limit_check for IP {ip}: {e} — failing open"
-        )
+        logger.warning(f"Cache failure in rate_limit_check for IP {ip}: {e} — failing open")
         return True  # fail-open: allow the request
     return attempts < RATE_LIMIT_MAX_ATTEMPTS
 
@@ -85,9 +83,7 @@ def ensure_groups_exist():
     for group_name in required_groups:
         _group, created = Group.objects.get_or_create(name=group_name)
         if created:
-            logger.info(
-                f"Created group: {group_name} at {timezone.now().isoformat()}"
-            )
+            logger.info(f"Created group: {group_name} at {timezone.now().isoformat()}")
 
 
 def assign_default_group(user):
@@ -98,9 +94,7 @@ def assign_default_group(user):
     """
     group, _ = Group.objects.get_or_create(name="Content Manager")
     user.groups.add(group)
-    logger.info(
-        f"Assigned user {user.email} to group '{group.name}'"
-    )
+    logger.info(f"Assigned user {user.email} to group '{group.name}'")
 
 
 def get_site_url(request=None):
@@ -116,7 +110,6 @@ def get_site_url(request=None):
         else:
             site_url = ""
     return site_url.rstrip("/")
-
 
 
 @method_decorator(csrf_protect, name="dispatch")
@@ -204,9 +197,7 @@ class RegisterView(PageHandler):
             user.set_unusable_password()
             user.save()
 
-            logger.info(
-                f"User created (inactive): {email} from IP {get_client_ip(request)}"
-            )
+            logger.info(f"User created (inactive): {email} from IP {get_client_ip(request)}")
 
             # Assign to Content Manager group by default
             assign_default_group(user)
@@ -216,9 +207,7 @@ class RegisterView(PageHandler):
 
             # Build confirmation URL
             site_url = get_site_url(request)
-            confirmation_path = reverse(
-                "handlers:create-password", kwargs={"token": token}
-            )
+            confirmation_path = reverse("handlers:create-password", kwargs={"token": token})
             confirmation_url = f"{site_url}{confirmation_path}"
 
             # Send confirmation email
@@ -383,8 +372,7 @@ class CreatePasswordView(PageHandler):
             # Increment brute-force counter on every invalid token attempt
             cache.set(bf_key, bf_attempts + 1, 3600)
             logger.warning(
-                f"Invalid token attempt ({error}) for IP {ip}, "
-                f"bf_count={bf_attempts + 1}"
+                f"Invalid token attempt ({error}) for IP {ip}, bf_count={bf_attempts + 1}"
             )
             error_messages = {
                 "expired": "This link has expired.",
@@ -424,10 +412,7 @@ class CreatePasswordView(PageHandler):
             user.save()
             _ensure_profile_exists(user)
 
-        logger.info(
-            f"Password set and account activated for user {user.email} "
-            f"from IP {ip}"
-        )
+        logger.info(f"Password set and account activated for user {user.email} from IP {ip}")
 
         # Log the user in
         try:
@@ -450,9 +435,13 @@ class RegistrationSuccessView(View):
     """Display success page after completing registration."""
 
     def get(self, request):
-        return render(request, "registration/success.html", {
-            "user": request.user if request.user.is_authenticated else None,
-        })
+        return render(
+            request,
+            "registration/success.html",
+            {
+                "user": request.user if request.user.is_authenticated else None,
+            },
+        )
 
 
 def _ensure_profile_exists(user):

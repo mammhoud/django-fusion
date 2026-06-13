@@ -8,7 +8,7 @@ from django_osoul.site import NotificationMixin, PageHandler
 from django_rseal.models import Person
 from django_rseal.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 
-from plugins.accounts.services import PersonService
+from plugins.accounts.management.services import PersonService
 
 from ..forms import (
     AccountSettingsForm,

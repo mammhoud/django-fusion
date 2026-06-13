@@ -20,8 +20,8 @@ from django_rseal.services.infrastructure.token import TokenService
 
 logger = logging.getLogger(__name__)
 
-from ..managers import EnrollmentsManager
-from ..models import Course, Enrollment, Lesson, LessonProgress, ModuleProgress
+from plugins.lms.managers import EnrollmentsManager
+from plugins.lms.models import Course, Enrollment, Lesson, LessonProgress, ModuleProgress
 
 User = get_user_model()
 

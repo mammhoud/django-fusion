@@ -23,6 +23,7 @@ TEMPLATES_DIRS = [
     BASE_DIR.parent / "_shared" / "plugins",  # workspace-level shared plugins
     BASE_DIR / "plugins",  # resolve component templates like "components/contact/sections/form/form.html"
     BASE_DIR / "plugins" / "templates",  # resolve plugin-level templates like "notifications/notification.html"
+    BASE_DIR / "plugins" / "components",  # resolve plugin-level templates like "notifications/notification.html"
     BASE_DIR.parent / "assets" / "templates",
     BASE_DIR.parent / "assets" / "templates" / "layout",  # workspace-level layout templates
 ]
