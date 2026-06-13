@@ -1,0 +1,93 @@
+# Database Entity Relationship Diagram
+
+```mermaid
+erDiagram
+    USER ||--o{ PERSON : has
+    USER ||--o{ USER_GROUP : belongs_to
+    USER ||--o{ USER_ROLE : has
+    USER ||--o{ TOKEN : owns
+
+    PERSON ||--o{ ENROLLMENT : has
+    PERSON ||--o{ CERTIFICATE : owns
+    PERSON ||--o{ NOTE : owns
+    PERSON ||--o{ MESSAGE : sends
+
+    COURSE ||--o{ MODULE : contains
+    COURSE ||--o{ ENROLLMENT : has
+    COURSE ||--o{ CERTIFICATE : issues
+
+    MODULE ||--o{ LESSON : contains
+    LESSON ||--o{ ENROLLMENT : tracks
+
+    ENROLLMENT ||--o{ PROGRESS : tracks
+
+    BLOG_POST ||--o{ BLOG_TAG : tagged
+    BLOG_POST ||--o{ COMMENT : has
+
+    USER_GROUP ||--o{ USER_ROLE : contains
+    USER_ROLE ||--o{ PERMISSION : has
+
+    TOKEN ||--o| TOKEN_USAGE : tracks
+
+    USER {
+        int id PK
+        string username
+        string email
+        datetime date_joined
+    }
+
+    PERSON {
+        int id PK
+        int user_id FK
+        string first_name
+        string last_name
+        string phone
+        string avatar
+    }
+
+    COURSE {
+        int id PK
+        string title
+        string slug
+        text description
+        datetime created
+    }
+
+    ENROLLMENT {
+        int id PK
+        int user_id FK
+        int course_id FK
+        string status
+        datetime enrolled_at
+    }
+
+    CERTIFICATE {
+        int id PK
+        int user_id FK
+        int course_id FK
+        string certificate_number
+        datetime issued_at
+    }
+
+    USER_GROUP {
+        int id PK
+        string name
+        string description
+    }
+
+    USER_ROLE {
+        int id PK
+        int group_id FK
+        string name
+        string permissions
+    }
+```
+
+## Key Relationships
+
+- **User → Person**: One-to-One (extended profile)
+- **User → Groups/Roles**: Many-to-Many through junction tables
+- **Course → Enrollment**: One-to-Many
+- **User → Enrollment**: One-to-Many
+- **Course → Certificate**: One-to-Many
+- **User → Certificate**: One-to-Many

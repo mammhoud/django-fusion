@@ -1,0 +1,96 @@
+# Prometheus Alert Rules
+# Generated for Phase 11 - Utilities & Monitoring Infrastructure
+
+groups:
+  - name: containers
+    interval: 30s
+    rules:
+      - alert: HighCPUUsage
+        expr: (rate(container_cpu_usage_seconds_total[5m]) * 100) > 80
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High CPU usage detected on {{ $labels.container_name }}"
+          description: "Container {{ $labels.container_name }} CPU usage is {{ $value }}%"
+
+      - alert: HighMemoryUsage
+        expr: (container_memory_usage_bytes / 1073741824) > 1
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High memory usage detected on {{ $labels.container_name }}"
+          description: "Container {{ $labels.container_name }} memory usage is {{ $value }}GB"
+
+      - alert: ContainerDown
+        expr: up{job="docker"} == 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Container is down: {{ $labels.container_name }}"
+          description: "Container {{ $labels.container_name }} has been down for more than 1 minute"
+
+  - name: database
+    interval: 30s
+    rules:
+      - alert: PostgresConnectionsHigh
+        expr: pg_stat_activity_count > 90
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High PostgreSQL connection count"
+          description: "PostgreSQL active connections: {{ $value }}"
+
+      - alert: PostgresDiskSpaceLow
+        expr: (pg_database_size_bytes / 1073741824) > 10
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "PostgreSQL disk space usage is high"
+          description: "PostgreSQL database size: {{ $value }}GB"
+
+  - name: redis
+    interval: 30s
+    rules:
+      - alert: RedisMemoryHigh
+        expr: (redis_memory_used_bytes / 536870912) > 0.8
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "High Redis memory usage"
+          description: "Redis memory usage: {{ $value | humanize }}B"
+
+      - alert: RedisEvictions
+        expr: increase(redis_evicted_keys_total[5m]) > 0
+        for: 1m
+        labels:
+          severity: critical
+        annotations:
+          summary: "Redis key evictions detected"
+          description: "Redis is evicting keys due to memory pressure"
+
+  - name: prometheus
+    interval: 30s
+    rules:
+      - alert: PrometheusConfigReloadFailed
+        expr: prometheus_config_last_reload_successful == 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prometheus configuration reload failed"
+          description: "Prometheus failed to reload its configuration"
+
+      - alert: PrometheusTSDBReloadsFailed
+        expr: increase(prometheus_tsdb_reloads_failures_total[1h]) > 0
+        for: 5m
+        labels:
+          severity: warning
+        annotations:
+          summary: "Prometheus TSDB reload failures"
+          description: "Prometheus TSDB has experienced {{ $value }} reload failures in the last hour"

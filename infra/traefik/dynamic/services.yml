@@ -1,0 +1,12 @@
+# ============================================
+# Website Services - Main Router Configuration
+# Imports domain-specific configurations from separate files
+# ============================================
+
+# NOTE: Domain-specific configurations are now separated:
+# - ctc-research.yml        => ctc-research.com routers & services
+# - structa-cloud.yml       => core.structa.cloud routers & services
+# - vresume.yml => vresume.structa.cloud routers & services
+
+# This file is retained for Traefik to auto-load separated configurations
+# when using fileProvider.directory configuration in traefik.yml

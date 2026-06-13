@@ -1,0 +1,691 @@
+{
+  // ============================================
+  // 🚀 ULTRA-FAST Python Configuration
+  // ============================================
+  "python.defaultInterpreterPath": "${workspaceFolder}/.venv/bin/python",
+  "python.terminal.activateEnvironment": true,
+  "python.terminal.activateEnvInCurrentTerminal": false,
+  "python.languageServer": "Default",
+  "python.analysis.typeCheckingMode": "off",
+  "python.analysis.autoImportCompletions": true,
+  "python.analysis.indexing": true,
+  "python.analysis.autoSearchPaths": false,
+  "python.analysis.diagnosticMode": "openFilesOnly",
+  "python.analysis.useLibraryCodeForTypes": false,
+  "python.analysis.autoFormatting": "off",
+  "python.analysis.completeFunctionParens": false,
+  "python.terminal.useEnvFile": true,
+  "python.analysis.inlayHints.functionReturnTypes": false,
+  "python.analysis.inlayHints.variableTypes": false,
+  "python.analysis.importFormat": "relative",
+  "python.analysis.diagnosticSeverityOverrides": {
+    "reportMissingImports": "none",
+    "reportMissingModuleSource": "none",
+    "reportShadowedImports": "none",
+    "reportUnusedImport": "none",
+    "reportUnusedVariable": "none",
+    "reportUnusedClass": "none",
+    "reportUnusedFunction": "none",
+    "reportOptionalMemberAccess": "none",
+    "reportOptionalSubscript": "none",
+    "reportOptionalCall": "none",
+    "reportOptionalIterable": "none",
+    "reportOptionalContextManager": "none",
+    "reportOptionalOperand": "none"
+  },
+  "python.analysis.exclude": [
+    "**/node_modules",
+    "**/__pycache__",
+    "**/*.pyc",
+    "**/.venv",
+    "**/.mypy_cache",
+    "**/.pytest_cache",
+    "**/.ruff_cache",
+    "**/migrations/**",
+    "**/staticfiles/**",
+    "**/media/**",
+    "**/logs/**",
+    "**/dist/**",
+    "**/build/**",
+    "**/.git/**",
+    "**/.github/**",
+    "**/.vscode/**",
+    "**/.idea/**",
+    "**/tests/**",
+    "**/test_*.py",
+    "**/*_test.py",
+    "**/conftest.py",
+    "**/fixtures/**",
+    "**/tmp/**",
+    "**/temp/**",
+    "**/cache/**",
+    "**/.coverage*",
+    "**/.tox/**",
+    "**/.hypothesis/**",
+    "**/htmlcov/**",
+    "**/.eggs/**",
+    "**/*.egg-info/**",
+    "**/.ipynb_checkpoints/**",
+    "**/site-packages/**"
+  ],
+  "python.analysis.include": [
+    "${workspaceFolder}/src/**/*.py",
+    "${workspaceFolder}/core/**/*.py",
+    "${workspaceFolder}/apps/**/*.py",
+    "${workspaceFolder}/configs/**/*.py"
+  ],
+  "python.analysis.diagnosticPublishDelay": 1500,
+  "python.analysis.memoryLimit": 512,
+  "python.analysis.logLevel": "Error",
+  // ============================================
+  // 🎯 PYTHON TRACKING & INTELLISENSE
+  // ============================================
+  "python.analysis.typeshedPaths": [],
+  "python.analysis.stubPath": "${workspaceFolder}/typings",
+  "python.analysis.extraPaths": [
+    "${workspaceFolder}/src",
+    "${workspaceFolder}/core",
+    "${workspaceFolder}/apps",
+    "${workspaceFolder}/configs"
+  ],
+  "python.analysis.importStrategy": "fromEnvironment",
+  "python.analysis.autoImportUserSymbols": true,
+  "python.analysis.packageTypeStubLocation": "custom",
+  "python.analysis.symbolsHierarchyDepthLimit": 4,
+  "python.analysis.symbolsExclude": {
+    "class": [],
+    "function": [],
+    "variable": [
+      "^_"
+    ],
+    "module": []
+  },
+  "python.analysis.trackImportCycles": true,
+  "python.analysis.recordVariableTypes": false,
+  "python.analysis.typeEvaluationTimeout": 500,
+  "python.analysis.smartCompletion": true,
+  "python.analysis.showAdvancedSuggestions": true,
+  "python.analysis.completion.showAdvancedItems": true,
+  // ============================================
+  // ⚡ HYPER-FAST Ruff Configuration
+  // ============================================
+  "[python]": {
+    "editor.formatOnSave": false,
+    "editor.codeActionsOnSave": {
+      "source.fixAll.ruff": "explicit",
+      "source.organizeImports.ruff": "explicit"
+    },
+    "editor.defaultFormatter": "charliermarsh.ruff",
+    "editor.foldingStrategy": "indentation",
+    "editor.suggest.snippetsPreventQuickSuggestions": false,
+    "editor.acceptSuggestionOnEnter": "smart",
+    "editor.suggest.showMethods": false,
+    "editor.suggest.showFunctions": false,
+    "editor.suggest.showClasses": true,
+    "editor.suggest.showModules": true
+  },
+  "ruff.organizeImports": true,
+  "ruff.fixAll": false,
+  "ruff.path": [
+    "${workspaceFolder}/.venv/bin/ruff"
+  ],
+  "ruff.interpreter": [
+    "${workspaceFolder}/.venv/bin/python"
+  ],
+  "ruff.lint.enable": true,
+  "ruff.lint.preview": false,
+  // ============================================
+  // 🎨 VISUALLY ENHANCED Editor Settings
+  // ============================================
+  "editor.rulers": [
+    100,
+    190
+  ],
+  "editor.wordWrap": "off",
+  "editor.renderWhitespace": "all",
+  "editor.renderControlCharacters": false,
+  "editor.formatOnPaste": false,
+  "editor.formatOnSave": false,
+  "editor.formatOnType": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.guides.bracketPairs": "active",
+  "editor.minimap.enabled": false,
+  "editor.stickyScroll.enabled": true,
+  "editor.inlineSuggest.enabled": true,
+  "editor.linkedEditing": false,
+  "editor.suggestSelection": "recentlyUsed",
+  "editor.quickSuggestions": {
+    "other": true,
+    "comments": false,
+    "strings": false
+  },
+  "editor.suggest.snippetsPreventQuickSuggestions": false,
+  "editor.quickSuggestionsDelay": 50,
+  "editor.hover.enabled": "on",
+  "editor.hover.delay": 300,
+  "editor.selectionHighlight": true,
+  "editor.occurrencesHighlight": "singleFile",
+  "editor.semanticTokenColorCustomizations": {},
+  "editor.suggest.showIcons": true,
+  "editor.suggest.localityBonus": true,
+  "editor.suggest.preview": true,
+  "editor.suggest.showConstants": true,
+  "editor.suggest.showConstructors": true,
+  "editor.suggest.showFields": true,
+  "editor.suggest.showInterfaces": false,
+  "editor.suggest.showKeywords": true,
+  "editor.suggest.showOperators": false,
+  "editor.suggest.showProperties": true,
+  "editor.suggest.showStructs": false,
+  "editor.suggest.showUnits": false,
+  "editor.suggest.showValues": true,
+  "editor.suggest.showVariables": true,
+  "editor.suggest.showEnums": true,
+  "editor.suggest.showEnumMembers": false,
+  "editor.suggest.showEvents": false,
+  "editor.suggest.showColors": false,
+  "editor.suggest.showFiles": false,
+  "editor.suggest.showFolders": false,
+  "editor.suggest.showReferences": true,
+  "editor.suggest.showIssues": false,
+  "editor.suggest.showUsers": false,
+  "editor.suggest.showWords": false,
+  "editor.suggest.showTypeParameters": false,
+  "editor.suggest.matchOnWordStartOnly": true,
+  "editor.wordSeparators": "`~!@#$%^&*()-=+[{]}\\|;:'\",.<>/?",
+  "editor.largeFileOptimizations": true,
+  "editor.fastScrollSensitivity": 5,
+  "editor.mouseWheelScrollSensitivity": 1,
+  "editor.cursorSmoothCaretAnimation": "explicit",
+  "editor.cursorBlinking": "expand",
+  "editor.cursorStyle": "line",
+  "editor.cursorWidth": 2,
+  "editor.smoothScrolling": true,
+  "editor.scrollAnimation": true,
+  "editor.find.cursorMoveOnType": false,
+  "editor.find.seedSearchStringFromSelection": "never",
+  "editor.find.autoFindInSelection": "never",
+  "editor.find.addExtraSpaceOnTop": false,
+  "editor.folding": true,
+  "editor.foldingHighlight": true,
+  "editor.foldingImportsByDefault": false,
+  "editor.showFoldingControls": "always",
+  "editor.unfoldOnClickAfterEndOfLine": true,
+  "editor.codeLens": false,
+  "editor.colorDecorators": true,
+  "editor.gotoLocation.multipleDefinitions": "gotoAndPeek",
+  "editor.gotoLocation.multipleTypeDefinitions": "gotoAndPeek",
+  "editor.gotoLocation.multipleDeclarations": "gotoAndPeek",
+  "editor.gotoLocation.multipleImplementations": "gotoAndPeek",
+  "editor.gotoLocation.multipleReferences": "peek",
+  "editor.definitionLinkOpensInPeek": false,
+  "editor.suggest.insertMode": "replace",
+  "editor.snippetSuggestions": "inline",
+  "editor.tabCompletion": "off",
+  "editor.acceptSuggestionOnCommitCharacter": true,
+  "editor.acceptSuggestionOnEnter": "smart",
+  "editor.suggest.filterGraceful": true,
+  // Enhanced syntax highlighting
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        "scope": "comment",
+        "settings": {
+          "fontStyle": "italic",
+          "foreground": "#6A9955"
+        }
+      },
+      {
+        "scope": "string",
+        "settings": {
+          "foreground": "#CE9178"
+        }
+      },
+      {
+        "scope": "entity.name.function",
+        "settings": {
+          "foreground": "#dccaaa",
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "scope": "entity.name.type.class",
+        "settings": {
+          "foreground": "#4EC9B0",
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "scope": "keyword",
+        "settings": {
+          "foreground": "#569CD6",
+          "fontStyle": "bold"
+        }
+      },
+      {
+        "scope": "variable.parameter",
+        "settings": {
+          "foreground": "#0b4e9b",
+          "fontStyle": "italic"
+        }
+      }
+    ]
+  },
+  // ============================================
+  // 🌈 THEME & APPEARANCE
+  // ============================================
+  "workbench.sideBar.location": "right",
+  "workbench.tree.indent": 14,
+  "workbench.tree.renderIndentGuides": "always",
+  // Better contrast and accessibility
+  "editor.lineHeight": 22,
+  "editor.fontSize": 13,
+  "editor.fontFamily": "'Cascadia Code', 'Consolas', 'Monaco', 'Courier New', monospace",
+  "editor.fontLigatures": true,
+  "editor.fontWeight": "normal",
+  // Enhanced UI elements
+  "workbench.editor.enablePreview": false,
+  "workbench.startupEditor": "readme",
+  "workbench.editor.empty.hint": "hidden",
+  "workbench.editor.tabSizing": "fixed",
+  "workbench.editor.showTabs": "multiple",
+  "workbench.editor.highlightModifiedTabs": true,
+  "workbench.editor.scrollToSwitchTabs": false,
+  "workbench.editor.pinnedTabSizing": "normal",
+  // Sidebar enhancements
+  "explorer.confirmDelete": true,
+  "explorer.confirmDragAndDrop": true,
+  "explorer.compactFolders": true,
+  "explorer.decorations.colors": true,
+  "explorer.sortOrder": "type",
+  "workbench.activityBar.location": "default",
+  // Status bar
+  "workbench.statusBar.visible": true,
+  "workbench.statusBar.feedback.visible": false,
+  // Breadcrumbs (lightweight navigation)
+  "breadcrumbs.enabled": true,
+  "breadcrumbs.filePath": "on",
+  "breadcrumbs.symbolPath": "on",
+  "breadcrumbs.showFiles": true,
+  "breadcrumbs.showModules": true,
+  "breadcrumbs.showPackages": true,
+  "breadcrumbs.showClasses": true,
+  "breadcrumbs.showMethods": true,
+  "breadcrumbs.showProperties": true,
+  "breadcrumbs.showEvents": true,
+  "breadcrumbs.showOperators": true,
+  "breadcrumbs.showConstants": true,
+  "breadcrumbs.showFunctions": true,
+  "breadcrumbs.showConstructors": true,
+  "breadcrumbs.showVariables": true,
+  "breadcrumbs.showStructs": true,
+  "breadcrumbs.showInterfaces": true,
+  "breadcrumbs.showEnums": true,
+  "breadcrumbs.showEnumMembers": true,
+  "breadcrumbs.showTypeParameters": true,
+  "breadcrumbs.maxBreadcrumbs": 10,
+  // ============================================
+  // 📁 Enhanced File Management
+  // ============================================
+  "files.exclude": {
+    "**/__pycache__": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/.ruff_cache": true,
+    "**/.coverage": true,
+    "**/.DS_Store": true,
+    "**/Thumbs.db": true,
+    "**/*.pyc": true,
+    "**/*.pyo": true,
+    "**/*.pyd": true,
+    "**/.git": false,
+    "**/.github": true,
+    "**/.vscode": false,
+    "**/.idea": true,
+    "**/node_modules": false,
+    "**/bower_components": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.next": true,
+    "**/.nuxt": true,
+    "**/.cache": true,
+    "**/.parcel-cache": true,
+    "**/.svelte-kit": true,
+    "**/.vercel": true,
+    "**/.netlify": true
+  },
+  "files.watcherExclude": {
+    "**/.git/**": true,
+    "**/node_modules/**": true,
+    "**/__pycache__/**": true,
+    "**/.venv/**": true,
+    "**/migrations/**": true,
+    "**/staticfiles/**": true,
+    "**/media/**": true,
+    "**/logs/**": true,
+    "**/.ruff_cache/**": true,
+    "**/*.pyc": true,
+    "**/.pytest_cache/**": true,
+    "**/.mypy_cache/**": true,
+    "**/dist/**": true,
+    "**/build/**": true
+  },
+  "search.exclude": {
+    "**/node_modules": true,
+    "**/__pycache__": true,
+    "**/.venv": true,
+    "**/migrations": true,
+    "**/staticfiles": true,
+    "**/media": true,
+    "**/logs": true,
+    "**/dist": true,
+    "**/build": true,
+    "**/.ruff_cache": true,
+    "**/.pytest_cache": true,
+    "**/.mypy_cache": true,
+    "**/bundles": true,
+    "**/.git": true,
+    "**/.github": true,
+    "**/.vscode": true
+  },
+  "files.autoSave": "off",
+  "files.autoSaveDelay": 3000,
+  "files.trimTrailingWhitespace": true,
+  "files.insertFinalNewline": true,
+  "files.trimFinalNewlines": false,
+  "files.encoding": "utf8",
+  "files.eol": "\n",
+  "files.maxMemoryForLargeFilesMB": 2048,
+  "files.hotExit": "onExit",
+  "files.saveConflictResolution": "askUser",
+  "files.simpleDialog.enable": true,
+  "files.participants.timeout": 5000,
+  "files.associations": {
+    "*.html": "html",
+    "*.jinja": "jinja",
+    "*.jinja2": "jinja",
+    "*.j2": "jinja",
+    "*.py": "python",
+    "**/templates/*.html": "django-html"
+  },
+  // Enhanced file nesting
+  "explorer.fileNesting.enabled": true,
+  "explorer.fileNesting.patterns": {
+    "*.py": "${capture}.pyi, ${capture}_test.py, ${capture}_tests.py, test_${capture}.py, conftest.py, ${capture}.py.md",
+    "*.html": "${capture}.css, ${capture}.js, ${capture}_*.html, ${capture}.html.css",
+    "*.js": "${capture}.js.map, ${capture}.min.js, ${capture}.d.ts, ${capture}.test.js, ${capture}.spec.js",
+    "*.css": "${capture}.css.map, ${capture}.min.css, ${capture}.css.scss",
+    ".env": ".env.*, .env.local, .env.production, .env.development, .env.example, .gitignore",
+    "docker-compose.yml": "docker-compose.*.yml, Dockerfile, .dockerignore, docker-compose.override.yml",
+    "package.json": "package-lock.json, yarn.lock, pnpm-lock.yaml, package.json.old",
+    "pyproject.toml": "poetry.lock,uv.lock, requirements*.txt, .ruff.toml, .python-version, setup.cfg, .pylintrc, MANIFEST.in",
+    "README.md": "CONTRIBUTORS.txt, CONTRIBUTING.md, LICENSE, *.md, CHANGELOG.md, CODE_OF_CONDUCT.md",
+    "Makefile": "makefile, *.mk, *.make, Makefile.*",
+    "com": "*.py, settings.py, urls.py, wsgi.py, asgi.py, requirements.txt"
+  },
+  "explorer.fileNesting.expand": false,
+  // ============================================
+  // 🖥️ Enhanced Terminal Settings
+  // ============================================
+  // Terminal appearance
+  "terminal.integrated.scrollback": 5000,
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.cursorWidth": 1,
+  "terminal.integrated.gpuAcceleration": "on",
+  "terminal.integrated.experimentalTextureCaching": true,
+  "terminal.integrated.smoothScrolling": false,
+  "terminal.integrated.macOptionIsMeta": false,
+  "terminal.integrated.rightClickBehavior": "default",
+  "terminal.integrated.drawBoldTextInBrightColors": true,
+  "terminal.integrated.enableImages": false,
+  "terminal.integrated.tabs.enabled": true,
+  "terminal.integrated.tabs.location": "left",
+  "terminal.integrated.tabs.title": "${process}",
+  "terminal.integrated.tabs.description": "${task}${separator}${local}",
+  "terminal.integrated.tabs.focusMode": "singleClick",
+  "terminal.integrated.tabs.hideCondition": "never",
+  "terminal.integrated.sendKeybindingsToShell": false,
+  "terminal.integrated.profiles.linux": {
+    "zsh": {
+      "path": "zsh",
+      "args": [
+        "-l"
+      ],
+      "icon": "terminal"
+    },
+    "bash": {
+      "path": "bash",
+      "args": [
+        "-l"
+      ],
+      "icon": "terminal-bash"
+    }
+  },
+  // ============================================
+  // 🔧 Performance-Optimized Visual Features
+  // ============================================
+  "editor.semanticHighlighting.enabled": false,
+  "editor.lightbulb.enabled": "onCode",
+  "editor.parameterHints.enabled": true,
+  "editor.parameterHints.cycle": true,
+  "editor.suggest.showStatusBar": false,
+  "editor.wordBasedSuggestions": "matchingDocuments",
+  "editor.wordBasedSuggestionsMode": "allDocuments",
+  // Lightweight visual guides
+  "editor.guides.indentation": true,
+  "editor.guides.highlightActiveIndentation": true,
+  "editor.guides.bracketPairsHorizontal": false,
+  // Enhanced selection and cursor
+  "editor.selectionClipboard": true,
+  "editor.copyWithSyntaxHighlighting": false,
+  "editor.dragAndDrop": true,
+  "editor.emptySelectionClipboard": false,
+  "editor.stickyScroll.maxLineCount": 5,
+  "editor.stickyScroll.defaultModel": "foldingProviderModel",
+  // Unicode handling (lightweight)
+  "editor.unicodeHighlight.ambiguousCharacters": true,
+  "editor.unicodeHighlight.invisibleCharacters": false,
+  "editor.unicodeHighlight.nonBasicASCII": false,
+  // ============================================
+  // 🔍 Enhanced Search & Navigation
+  // ============================================
+  "search.followSymlinks": false,
+  "search.useIgnoreFiles": true,
+  "search.useGlobalIgnoreFiles": true,
+  "search.useParentIgnoreFiles": true,
+  "search.quickOpen.includeHistory": true,
+  "search.quickOpen.includeSymbols": true,
+  "search.searchOnType": false,
+  "search.searchOnTypeDebouncePeriod": 500,
+  "search.collapseResults": "auto",
+  "search.maxResults": 10000,
+  "search.showLineNumbers": true,
+  "search.seedWithNearestWord": false,
+  "search.seedOnFocus": true,
+  "search.smartCase": true,
+  "editor.find.loop": true,
+  // ============================================
+  // 📄 Language-specific Enhancements
+  // ============================================
+  "[json]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    },
+    "editor.suggest.insertMode": "replace"
+  },
+  "[jsonc]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "vscode.json-language-features",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[toml]": {
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[yaml]": {
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    },
+    "editor.tabSize": 2
+  },
+  "[javascript]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.typescript-language-features",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[typescript]": {
+    "editor.formatOnSave": true,
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[css]": {
+    "editor.formatOnSave": true,
+    "editor.defaultFormatter": "vscode.css-language-features",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[html]": {
+    "editor.formatOnSave": false,
+    "editor.defaultFormatter": "vscode.html-language-features",
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  "[markdown]": {
+    "editor.formatOnSave": false,
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    },
+    "editor.wordWrap": "on",
+    "editor.lineHeight": 1.6
+  },
+  "[django-html]": {
+    "editor.formatOnSave": false,
+    "editor.quickSuggestions": {
+      "comments": "on",
+      "strings": "on",
+      "other": "on"
+    }
+  },
+  // ============================================
+  // 🎮 Enhanced Window & UI Settings
+  // ============================================
+  "window.titleBarStyle": "custom",
+  "window.menuBarVisibility": "compact",
+  "window.zoomLevel": 0,
+  "window.dialogStyle": "custom",
+  "window.nativeTabs": false,
+  "window.nativeFullScreen": true,
+  "window.restoreWindows": "none",
+  "window.restoreFullscreen": false,
+  "window.clickThroughInactive": false,
+  // Compact UI for better space usage
+  "window.density.editorTabHeight": "compact",
+  "window.density.editorFontSize": "default",
+  "window.density.activityBar": "default",
+  "window.density.statusBar": "compact",
+  "window.density.panelTitleBarHeight": "compact",
+  "window.density.panelSectionHeaderHeight": "compact",
+  "window.density.sideBarTitleBarHeight": "compact",
+  "window.density.listItemHeight": "compact",
+  "window.density.treeIndent": 16,
+  "window.density.modalTitleBarHeight": "compact",
+  // ============================================
+  // 🔐 Security & Workspace
+  // ============================================
+  "security.workspace.trust.enabled": true,
+  "security.workspace.trust.untrustedFiles": "open",
+  "security.workspace.trust.startupPrompt": "once",
+  "application.shellEnvironmentResolutionTimeout": 10,
+  // ============================================
+  // 📦 Extension Management
+  // ============================================
+  "extensions.autoUpdate": false,
+  "extensions.autoCheckUpdates": false,
+  "extensions.closeExtensionDetailsOnViewChange": true,
+  "extensions.ignoreRecommendations": true,
+  "extensions.supportUntrustedWorkspaces": {
+    "recommendations": false,
+    "extensions": false
+  },
+  // ============================================
+  // ⚙️ Debug & Testing
+  // ============================================
+  "debug.toolBarLocation": "docked",
+  "debug.openDebug": "openOnDebugBreak",
+  "debug.openExplorerOnEnd": false,
+  "debug.enableAllHovers": false,
+  "debug.showInStatusBar": "never",
+  "debug.showSubSessionsInToolBar": false,
+  "debug.console.fontSize": 14,
+  "debug.console.lineHeight": 1.2,
+  "debug.console.wordWrap": false,
+  "debug.internalConsoleOptions": "neverOpen",
+  // ============================================
+  // 📈 Telemetry & Feedback
+  // ============================================
+  "telemetry.telemetryLevel": "off",
+  "workbench.enableExperiments": false,
+  "workbench.settings.editor": "ui",
+  "update.mode": "none",
+  "update.showReleaseNotes": false,
+  // ============================================
+  // 🎛️ Python Tracking Enhancements
+  // ============================================
+  "python.tracking.enabled": true,
+  "python.tracking.imports": true,
+  "python.tracking.functions": true,
+  "python.tracking.classes": true,
+  "python.tracking.variables": false,
+  "python.tracking.codeLens.enable": false,
+  "python.tracking.codeLens.references": false,
+  "python.tracking.codeLens.implementations": false,
+  "python.tracking.patterns": {
+    "imports": "^import\\s+|^from\\s+",
+    "functions": "^def\\s+",
+    "classes": "^class\\s+",
+    "async_functions": "^async\\s+def\\s+",
+    "decorators": "^@"
+  },
+  "workbench.editor.tabActionLocation": "right",
+  "accessibility.signals.terminalBell": {
+    "sound": "off"
+  },
+  "terminal.integrated.enableVisualBell": false,
+  "cSpell.words": [
+    "Ezzat"
+  ],
+  "html.autoClosingTags": false
+
+}

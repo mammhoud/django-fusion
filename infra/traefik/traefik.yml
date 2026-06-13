@@ -1,0 +1,106 @@
+# ============================================
+# Traefik Static Configuration
+# ============================================
+
+# ============================================
+# Global Configuration
+# ============================================
+global:
+  checkNewVersion: true
+  sendAnonymousUsage: false
+
+log:
+  level: INFO
+  format: common
+
+accessLog:
+  format: common
+  bufferingSize: 100
+
+api:
+  dashboard: true
+  insecure: true # Set to false in production!
+
+ping: {}  # Enable /ping health endpoint
+
+# ============================================
+# EntryPoints
+# ============================================
+entryPoints:
+  web:
+    address: ":80"
+    http:
+      redirections:
+        entryPoint:
+          to: web-secure
+          scheme: https
+          permanent: true
+
+  web-secure:
+    address: ":443"
+    http:
+      tls:
+        certResolver: local
+
+# ============================================
+# Providers
+# ============================================
+providers:
+  # Docker provider disabled — Docker 29+ raised minimum API to 1.44
+  # but Traefik's Go client negotiates down to 1.24 (known bug).
+  # All services are configured via the file provider below.
+  # docker:
+  #   endpoint: "unix:///var/run/docker.sock"
+  #   exposedByDefault: false
+  #   network: traefik-net
+  #   watch: true
+
+  file:
+    directory: /etc/traefik/dynamic
+    watch: true
+    # Watches all subdirectories including:
+    # - /etc/traefik/dynamic/ctc-research.yml (ctc-research.com)
+    # - /etc/traefik/dynamic/structa-cloud.yml (core.structa.cloud)
+    # - /etc/traefik/dynamic/vresume/vresume-structa.yml (vresume.structa.cloud)
+
+# ============================================
+# Certificate Resolvers
+# ============================================
+certificatesResolvers:
+  letsencrypt:
+    acme:
+      email: "${TRAEFIK_ACME_EMAIL:-m.xxai@outlook.com}"
+      storage: /etc/traefik/acme/acme.json
+      # PRODUCTION ACME Server - generates valid certificates
+      caServer: "https://acme-v02.api.letsencrypt.org/directory"
+      # Use for testing/staging (generates fake certificates, no rate limits)
+      # caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
+      httpChallenge:
+        entryPoint: web
+      # Uncomment for DNS challenge (recommended for wildcard certs)
+      # dnsChallenge:
+      #   provider: cloudflare
+      #   delayBeforeCheck: 0
+
+# ============================================
+# Static Certificates (Local Files)
+# ============================================
+tls:
+  stores:
+    default:
+      defaultCertificate:
+        certFile: /etc/traefik/certs/ctc-research.crt
+        keyFile: /etc/traefik/certs/ctc-research.key
+  certificates:
+    - certFile: /etc/traefik/certs/ctc-research.crt
+      keyFile: /etc/traefik/certs/ctc-research.key
+      stores:
+        - default
+    - certFile: /etc/traefik/certs/structa-cloud.crt
+      keyFile: /etc/traefik/certs/structa-cloud.key
+      stores:
+        - default
+    - certFile: /etc/traefik/certs/vresume.crt
+      keyFile: /etc/traefik/certs/vresume.key
+      stores:
+        - default

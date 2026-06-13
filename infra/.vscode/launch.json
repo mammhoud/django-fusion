@@ -1,0 +1,85 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "🐍 Django: Run Server",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/com",
+      "args": [
+        "runserver",
+        "127.0.0.1:8000",
+        "--noreload"
+      ],
+      "django": true,
+      "justMyCode": true,
+      "console": "integratedTerminal",
+      "autoStartBrowser": false,
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "DJANGO_SETTINGS_MODULE": "config.settings.local",
+        "DEBUG": "True",
+        "RUFF_CACHE_DIR": "/tmp/ruff_cache_${userName}"
+      },
+      "preLaunchTask": "setup-django"
+    },
+    {
+      "name": "🧪 Django: Run Tests",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/com",
+      "args": [
+        "test",
+        "--keepdb",
+        "--parallel",
+        "4"
+      ],
+      "django": true,
+      "justMyCode": true,
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}",
+        "DJANGO_SETTINGS_MODULE": "config.settings.test"
+      }
+    },
+    {
+      "name": "🔍 Django: Shell Plus",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${workspaceFolder}/com",
+      "args": [
+        "shell_plus",
+        "--ipython"
+      ],
+      "django": true,
+      "justMyCode": false,
+      "console": "integratedTerminal",
+      "env": {
+        "PYTHONPATH": "${workspaceFolder}"
+      }
+    },
+    {
+      "name": "📝 Python: Current File",
+      "type": "debugpy",
+      "request": "launch",
+      "program": "${file}",
+      "console": "integratedTerminal",
+      "justMyCode": true,
+      "env": {
+        "RUFF_CACHE_DIR": "/tmp/ruff_cache_${userName}"
+      }
+    },
+    {
+      "name": "🚀 Django: Run with Debugger",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "django": true,
+      "justMyCode": true
+    }
+  ],
+  "compounds": []
+}

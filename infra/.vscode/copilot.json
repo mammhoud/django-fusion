@@ -1,0 +1,21 @@
+{
+    "chat.autoDocstring.format": "google",
+    "chat.autoDocstring.enabled": true,
+    "chat.editor.mode": "window",
+    "chat.editor.locale": "en-US",
+    "chat.suggestions.workspace": true,
+    "chat.suggestions.enabled": true,
+    "chat.inline.acceptCopilotSuggestionWith": "tab",
+    "inlineChat.mode": "window",
+    "inlineChat.showDiff": true,
+    "inlineChat.streaming": true,
+    "github.copilot.editor.enableAutoCompletions": true,
+    "github.copilot.chat.codeGeneration.instructions": [
+        "Use Python 3.11+ syntax",
+        "Follow Django best practices",
+        "Add type hints where appropriate",
+        "Include docstrings in Google format",
+        "Handle exceptions properly",
+        "Follow PEP 8 with 88 char line limit"
+    ]
+}
