@@ -5,47 +5,87 @@ description = "Shared Django workspace for Structa Cloud and CTC Research websit
 requires-python = ">=3.11"
 dependencies = [
     # Core
-    "click", "colorlog", "fire",
-    "django>=4.2", "twilio>=9.0",
+    "click",
+    "colorlog",
+    "fire",
+    "django>=4.2",
+    "twilio>=9.0",
     # Auth & accounts
     "django-allauth[socialaccount]",
     # UI & templates
-    "django-bird", "django-colorfield",
-    "django-crispy-forms", "django-heroicons", "django-htmx",
+    "django-bird",
+    "django-colorfield",
+    "django-crispy-forms",
+    "django-heroicons",
+    "django-htmx",
     "django-unfold",
     # Dev tools
-    "bumpver", "django-debug-toolbar", "django-extensions", "django-silk",
+    "bumpver",
+    "django-debug-toolbar",
+    "django-extensions",
+    "django-silk",
     "django-stubs",
     # Data & forms
-    "django-embed-video", "django-import-export", "django-simple-history",
-    "django-tables2", "django-webpack-loader",
+    "django-embed-video",
+    "django-import-export",
+    "django-simple-history",
+    "django-tables2",
+    "django-webpack-loader",
     # API
-    "django-ninja", "ninja",
+    "django-ninja",
+    "ninja",
     # Payments
-    "django-paypal", "stripe",
+    "django-paypal",
+    "stripe",
     # Cache & queue
-    "django-redis", "django-rq", "celery[redis]",
-    "django-celery-beat", "django-celery-results",
+    "django-redis",
+    "django-rq",
+    "celery[redis]",
+    "django-celery-beat",
+    "django-celery-results",
     # Storage & media
     "django-storages[boto3]",
     # Config & env
-    "django-environ", "dynaconf[vault]", "environ",
+    "django-environ",
+    "dynaconf[vault]",
+    "environ",
     # Logging & monitoring
-    "django-structlog", "python-json-logger", "structlog",
+    "django-structlog",
+    "python-json-logger",
+    "structlog",
     "sentry-sdk[django]",
     # Wagtail CMS
-    "wagtail", "wagtail-font-awesome-svg", "wagtail-newsletter[mailchimp]",
-    "wagtail-transfer", "wagtailfontawesome",
+    "wagtail",
+    "wagtail-font-awesome-svg",
+    "wagtail-newsletter[mailchimp]",
+    "wagtail-transfer",
+    "wagtailfontawesome",
     # Server
-    "gunicorn", "uvicorn", "watchfiles", "whitenoise",
+    "gunicorn",
+    "uvicorn",
+    "watchfiles",
+    "whitenoise",
     # DB
-    "psycopg", "psycopg-binary",
+    "psycopg",
+    "psycopg-binary",
     # Utilities and tests
-    "draftjs-exporter", "fido2", "hypothesis", "jinja2", "jwt",
-    "livereload", "marshmallow", "pydantic", "pydantic-settings",
-    "pytest", "pytest-django", "virtualenv",
+    "draftjs-exporter",
+    "fido2",
+    "hypothesis",
+    "jinja2",
+    "jwt",
+    "livereload",
+    "marshmallow",
+    "pydantic",
+    "pydantic-settings",
+    "pytest",
+    "pytest-django",
+    "virtualenv",
     # Internal libs (sourced from GitHub — see [tool.uv.sources])
-    "django-grep", "django-osoul", "django-rseal",
+    "django-grep",
+    "django-osoul",
+    "django-rseal",
+    "ollama>=0.6.2",
 ]
 
 [project.optional-dependencies]
