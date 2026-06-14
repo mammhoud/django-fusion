@@ -1,13 +1,10 @@
-# Makefile for Traefik proxy management (Coolify integration)
-# Usage: make <command>
-
 SHELL := /bin/bash
 LIVE_DIR := /data/coolify/proxy
 SOURCE_DIR := $(shell pwd)
 BACKUP_DIR := $(SOURCE_DIR)/backups
 TIMESTAMP := $(shell date +%Y%m%d_%H%M%S)
 
-.PHONY: help deploy validate backup restore restart logs clean-deprecated
+.PHONY: help deploy validate backup restore restart logs clean-deprecated status
 
 help:
 	@echo "Available commands:"
@@ -22,7 +19,9 @@ help:
 
 deploy: validate backup
 	@echo "🚀 Deploying configuration to $(LIVE_DIR)..."
-	@rsync -av --delete --exclude='acme' --exclude='certs' --exclude='backups' ./ $(LIVE_DIR)/
+	@rsync -av --delete --exclude='acme' --exclude='certs' --exclude='backups' \
+		--exclude='scripts' --exclude='Makefile' --exclude='.gitignore' \
+		./ $(LIVE_DIR)/
 	@echo "✅ Config synced. Restarting proxy..."
 	@docker restart coolify-proxy || (echo "❌ Failed to restart proxy" && exit 1)
 	@echo "✅ Deployment complete. Check logs with 'make logs'"
@@ -68,33 +67,16 @@ logs:
 	@docker logs -f coolify-proxy
 
 clean-deprecated:
-	@echo "🗑️  This will delete deprecated files from old location: /root/site/websites/compose/traefik"
+	@echo "🗑️  This will delete deprecated files from old location: $(SOURCE_DIR)"
+	@echo "Files to delete: acme.json, acme copy.json, acme_backup_*.json, backup-metadata.txt, COMPLETION_REPORT.md, old README.md, SSL_CERTIFICATE_MANAGEMENT.md, all *copy.yml, all .sh scripts (except scripts/ folder), docker-compose.*.yml, certs/* (optional)."
 	@read -p "Continue? (y/N) " CONFIRM; \
 	if [ "$$CONFIRM" = "y" ] || [ "$$CONFIRM" = "Y" ]; then \
-		cd /root/site/websites/compose/traefik 2>/dev/null && \
-		rm -f default_redirect_503.yaml \
-		      docker-compose.2026-06-14_01-05-20.7f6c943b.yml \
-		      docker-compose.2026-06-13_22-53-21.1dd471e8.yml \
-		      acme_backup_20260602_180625.json \
-		      backup-metadata.txt \
-		      COMPLETION_REPORT.md \
-		      README.md \
-		      SSL_CERTIFICATE_MANAGEMENT.md \
-		      backup-certs.sh \
-		      cert-backup.sh \
-		      manage-certs.sh \
-		      restore-certs.sh \
-		      generate-certs.sh \
-		      "middlewares copy.yml" \
-		      "media-servers copy.yml" \
-		      "docs copy.yml" \
-		      "ctc-research copy.yml" \
-		      "structa-cloud copy.yml" \
-		      "vresume copy.yml" \
-		      "catchall copy.yml" \
-		      "traefik-dashboard copy.yml" \
-		      "services copy.yml" \
-		      services.yml && \
+		cd $(SOURCE_DIR) && \
+		rm -f acme.json acme\ copy.json acme_backup_*.json backup-metadata.txt COMPLETION_REPORT.md README.md SSL_CERTIFICATE_MANAGEMENT.md; \
+		rm -f backup-certs.sh cert-backup.sh generate-certs.sh manage-certs.sh restore-certs.sh; \
+		rm -f docker-compose.yml docker-compose.*.yml; \
+		rm -f dynamic/*copy.yml dynamic/*\ copy.yml; \
+		rm -rf certs/20260602_* certs/*.tar.gz certs/*.crt certs/*.key certs/*.pem certs/*.csr; \
 		echo "✅ Deprecated files removed."; \
 	else \
 		echo "Cancelled."; \

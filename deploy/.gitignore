@@ -1,0 +1,25 @@
+# Backups
+backups/
+*.tar.gz
+*.log
+
+# Local certificates (managed by Traefik in live dir)
+certs/
+acme/
+acme.json
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Deprecated (keep only new structure)
+**/*copy.yml
+**/*.sh
+**/docker-compose.*.yml
+**/COMPLETION_REPORT.md
+**/SSL_CERTIFICATE_MANAGEMENT.md

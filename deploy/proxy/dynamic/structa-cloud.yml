@@ -39,6 +39,10 @@ http:
       loadBalancer:
         servers:
           - url: "http://lms-web:5071"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
 
     structa-media-service:
       loadBalancer:
