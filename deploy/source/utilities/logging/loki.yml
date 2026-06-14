@@ -1,0 +1,87 @@
+# Loki Configuration
+# Generated for Phase 11 - Utilities & Monitoring Infrastructure
+
+auth_enabled: false
+
+ingester:
+  chunk_idle_period: 3m
+  max_chunk_age: 1h
+  max_streams_per_user: 0
+  lifecycler:
+    ring:
+      kvstore:
+        store: inmemory
+      replication_factor: 1
+    num_tokens: 128
+    heartbeat_timeout: 5m
+
+limits_config:
+  enforce_metric_name: false
+  reject_old_samples: true
+  reject_old_samples_max_age: 168h
+  ingestion_rate_mb: 10
+  ingestion_burst_size_mb: 20
+  max_streams_per_user: 0
+  max_streams_matchers_per_user: 0
+  max_concurrent_tail_requests: 10
+  max_entries_limit_per_minute: 1000
+
+# Schema configuration
+schema_config:
+  configs:
+    - from: 2020-10-24
+      store: boltdb-shipper
+      object_store: filesystem
+      schema:
+        version: v11
+        index:
+          prefix: index_
+          period: 24h
+
+# Storage configuration
+storage_config:
+  boltdb_shipper:
+    active_index_directory: /loki/boltdb-shipper-active
+    shared_store: filesystem
+  filesystem:
+    directory: /loki/chunks
+
+# Chunk cache configuration
+chunk_cache_config:
+  enable_fifocache: true
+  default_validity: 1m
+  background:
+    writeback_goroutines: 10
+    writeback_delay: 5s
+
+# Query configuration
+query_config:
+  max_cache_freshness_per_query: 10m
+  engine: prometheus
+
+# Server configuration
+server:
+  http_listen_port: 3100
+  http_listen_address: 0.0.0.0
+  log_level: info
+  log_format: json
+  grpc_listen_port: 9096
+  grpc_listen_address: 0.0.0.0
+
+# Distributor configuration (for cluster mode)
+distributor:
+  ring:
+    kvstore:
+      store: inmemory
+
+# Querier configuration
+querier:
+  max_concurrent: 20
+  query_timeout: 5m
+
+# Query frontend configuration
+query_frontend:
+  log_queries_longer_than: 10s
+  downstream_url: http://querier:3100
+  compress_responses: true
+  max_cache_freshness_per_query: 10m

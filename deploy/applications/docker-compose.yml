@@ -1,0 +1,177 @@
+# ============================================================
+# Canonical website compose definitions
+# ============================================================
+# This file owns the shared Django base definition and the top-level
+# website services used by the workspace deployment stack.
+# ============================================================
+
+networks:
+  traefik-net:
+    name: traefik-net
+  site_network:
+    name: site_network
+
+x-django-base: &django-base
+  build:
+    context: ..
+    dockerfile: compose/django/Dockerfile
+  restart: unless-stopped
+  working_dir: /app
+  env_file:
+    - path: ../.env
+      required: false
+  environment: &django-env
+    RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-structa-db}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_USER: ${DB_USER:-structa}
+    DB_PASSWORD: ${DB_PASSWORD:-mk_pAssWord123}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@structa-cache:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@structa-cache:6379/1
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+    WORKERS: ${WORKERS:-4}
+    TIMEOUT: ${TIMEOUT:-120}
+  networks:
+    - traefik-net
+    - site_network
+  depends_on:
+    structa-db:
+      condition: service_healthy
+    structa-cache:
+      condition: service_healthy
+
+services:
+  ctc-research-website:
+    <<: *django-base
+    container_name: ctc-research-website
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../ctc-research:/app/ctc-research:z
+    environment:
+      <<: *django-env
+      MODULE: LMS
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
+      PORT: 5070
+      DB_NAME: ${CTC_DB_NAME:-db_ctc}
+      DJANGO_SETTINGS_MODULE: settings
+      ALLOWED_HOSTS: "ctc-research.com,www.ctc-research.com,arch.ctc-research.com,ctc-research-website,ctc-web,ctc-research.local,ctc-website.local,localhost,127.0.0.1"
+      CSRF_TRUSTED_ORIGINS: "https://ctc-research.com,https://www.ctc-research.com,https://arch.ctc-research.com,http://ctc-research-website,http://ctc-web,http://ctc-research.local,http://localhost,http://127.0.0.1"
+      SITE_DOMAIN: "ctc-research.com"
+      WAGTAILADMIN_BASE_URL: "https://ctc-research.com"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.ctc-research.rule=Host(`ctc-research.local`) || Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      - "traefik.http.routers.ctc-research.service=ctc-research-service"
+      - "traefik.http.routers.ctc-research.entrypoints=web,websecure"
+      - "traefik.http.routers.ctc-research.tls=true"
+      - "traefik.http.services.ctc-research-service.loadbalancer.server.port=5070"
+      - "traefik.http.middlewares.ctc-redirect.redirectscheme.scheme=https"
+      - "traefik.http.routers.ctc-research-http.rule=Host(`ctc-research.local`) || Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)"
+      - "traefik.http.routers.ctc-research-http.entrypoints=web"
+      - "traefik.http.routers.ctc-research-http.middlewares=ctc-redirect"
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://127.0.0.1:5070/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+
+  lms-demo-website:
+    <<: *django-base
+    container_name: lms-demo-website
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../lms-demo:/app/lms-demo:z
+    environment:
+      <<: *django-env
+      MODULE: LMS
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      PROJECT_PATH: lms-demo
+      PORT: 5071
+      DB_NAME: ${STRUCTA_DB_NAME:-db_structa}
+      DJANGO_SETTINGS_MODULE: settings
+      ALLOWED_HOSTS: "structa.cloud,www.structa.cloud,core.structa.cloud,lms-demo.local,lms-demo-website,localhost,127.0.0.1"
+      CSRF_TRUSTED_ORIGINS: "https://structa.cloud,https://www.structa.cloud,https://core.structa.cloud,http://lms-demo.local,http://lms-demo-website,http://localhost,http://127.0.0.1"
+      SITE_DOMAIN: "structa.cloud"
+      WAGTAILADMIN_BASE_URL: "https://structa.cloud"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.lms-demo.rule=Host(`lms-demo.local`) || Host(`structa.cloud`)"
+      - "traefik.http.services.lms-demo.loadbalancer.server.port=5071"
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://127.0.0.1:5071/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    profiles: ["lms"]
+
+  vresume-website:
+    <<: *django-base
+    container_name: vresume-website
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../compose:/app/compose:z
+      - ../tests:/app/tests:z
+      - ../tasks:/app/tasks:z
+      - ../_shared:/app/_shared:z
+      - ../VResume:/app/VResume:z
+    environment:
+      <<: *django-env
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      PROJECT_PATH: vresume
+      PORT: 5072
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      DJANGO_SETTINGS_MODULE: settings
+      ALLOWED_HOSTS: "vresume.structa.cloud,www.vresume.structa.cloud,resume.structa.cloud,vresume.local,vresume-website,localhost,127.0.0.1"
+      CSRF_TRUSTED_ORIGINS: "https://vresume.structa.cloud,https://www.vresume.structa.cloud,https://resume.structa.cloud,http://vresume.local,http://vresume-website,http://localhost,http://127.0.0.1"
+      SITE_DOMAIN: "vresume.structa.cloud"
+      WAGTAILADMIN_BASE_URL: "https://vresume.structa.cloud"
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.vresume.rule=Host(`vresume.local`) || Host(`vresume.structa.cloud`)"
+      - "traefik.http.services.vresume.loadbalancer.server.port=5072"
+    healthcheck:
+      test: ["CMD", "curl", "-fL", "http://127.0.0.1:5072/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 90s
+    profiles: ["vresume"]
