@@ -462,7 +462,7 @@ docker exec postgres pg_restore -U ctc_research_user -d ctc_research /backups/ct
 
 # Restore certificate backup
 cd /root/site/websites/compose/traefik/
-tar -xzf cert-backups/production-certs-20260602-180715.tar.gz
+tar -xzf certs-backups/production-certs-20260602-180715.tar.gz
 ```
 
 ### Step 3: Restart Services

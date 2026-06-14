@@ -307,7 +307,7 @@ Domains Covered:
 Backup System:
   ✅ Script: /root/site/websites/compose/traefik/cert-backup.sh
   ✅ Commands: backup, restore, list, cleanup, status
-  ✅ Storage: /root/site/websites/compose/traefik/cert-backups/
+  ✅ Storage: /root/site/websites/compose/traefik/certs-backups/
 ```
 
 ---

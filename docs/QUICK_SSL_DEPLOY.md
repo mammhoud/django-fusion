@@ -166,7 +166,7 @@ If issues occur:
 
 ```bash
 # Restore from backup
-cd /root/site/websites/compose/traefik/cert-backups/
+cd /root/site/websites/compose/traefik/certs-backups/
 tar -xzf production-certs-20260602-180715.tar.gz -C ../
 
 # Restart

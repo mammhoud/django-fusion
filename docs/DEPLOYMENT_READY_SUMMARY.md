@@ -412,7 +412,7 @@ curl -k https://ctc-research.com/ | grep -o '<script[^>]*>'
    ```bash
    bash /root/site/websites/compose/traefik/cert-backup.sh list
    bash /root/site/websites/compose/traefik/cert-backup.sh restore \
-     /root/site/websites/compose/traefik/cert-backups/[backup-timestamp]_certs
+     /root/site/websites/compose/traefik/certs-backups/[backup-timestamp]_certs
    ```
 
 3. **Restart services**:

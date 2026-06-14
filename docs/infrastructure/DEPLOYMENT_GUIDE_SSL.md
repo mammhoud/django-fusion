@@ -158,7 +158,7 @@ If you need to update certificates manually:
 ```bash
 # 1. Backup current certificates
 cd /root/site/websites/compose/traefik/certs/
-tar -czf ../cert-backups/certs-backup-$(date +%s).tar.gz *.crt *.key
+tar -czf ../certs-backups/certs-backup-$(date +%s).tar.gz *.crt *.key
 
 # 2. Replace certificate files (copy your new .crt and .key files)
 cp /path/to/new/certificate.crt ./domain.crt
@@ -180,12 +180,12 @@ docker logs traefik | tail -20
 
 ### View Available Backups
 ```bash
-ls -la /root/site/websites/compose/traefik/cert-backups/
+ls -la /root/site/websites/compose/traefik/certs-backups/
 ```
 
 ### Restore from Backup
 ```bash
-cd /root/site/websites/compose/traefik/cert-backups/
+cd /root/site/websites/compose/traefik/certs-backups/
 tar -xzf production-certs-20260602-180715.tar.gz -C ../
 docker compose restart traefik
 ```
@@ -222,7 +222,7 @@ Shows:
 1. **Private Keys** - Keep .key files secure (600 permissions)
 2. **Certificate Chain** - .pem files include full chain
 3. **Read-Only Mount** - Certificates mounted as read-only in container
-4. **Backup Location** - Backups stored in cert-backups/ directory
+4. **Backup Location** - Backups stored in certs-backups/ directory
 
 ---
 

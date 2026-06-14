@@ -88,12 +88,12 @@ site_network    - Internal network for site communication
 
 **ACME JSON Backup**:
 ```
-/root/site/websites/compose/traefik/cert-backups/20260602_180649_certs/
+/root/site/websites/compose/traefik/certs-backups/20260602_180649_certs/
 ```
 
 **Compressed Archives**:
 ```
-/root/site/websites/compose/traefik/cert-backups/production-certs-*.tar.gz
+/root/site/websites/compose/traefik/certs-backups/production-certs-*.tar.gz
 ```
 
 ### Backup Operations

@@ -47,9 +47,9 @@ All production infrastructure has been successfully deployed and verified:
 
 | Type | Location | Size | Count | Last Created |
 |------|----------|------|-------|--------------|
-| ACME JSON | cert-backups/20260602_180649_certs/ | 24K | 1 | 18:06:49 UTC |
-| Compressed Archive | cert-backups/*.tar.gz | 16K | 2 | 18:07:15 UTC |
-| Total Backup Size | cert-backups/ | ~40K | 3+ | Today |
+| ACME JSON | certs-backups/20260602_180649_certs/ | 24K | 1 | 18:06:49 UTC |
+| Compressed Archive | certs-backups/*.tar.gz | 16K | 2 | 18:07:15 UTC |
+| Total Backup Size | certs-backups/ | ~40K | 3+ | Today |
 
 ---
 
@@ -212,7 +212,7 @@ compose/traefik/
 │   └── vresume.{crt,key,pem,csr,chain.pem}
 ├── acme/
 │   └── acme.json
-├── cert-backups/
+├── certs-backups/
 │   ├── 20260602_180649_certs/
 │   ├── production-certs-20260602-180702.tar.gz
 │   ├── production-certs-20260602-180715.tar.gz
@@ -327,7 +327,7 @@ bash cert-backup.sh list
 ### Monthly Review
 ```bash
 # Verify all backups exist
-ls -lah compose/traefik/cert-backups/
+ls -lah compose/traefik/certs-backups/
 
 # Test restore procedure
 bash compose/traefik/cert-backup.sh restore [backup_path]

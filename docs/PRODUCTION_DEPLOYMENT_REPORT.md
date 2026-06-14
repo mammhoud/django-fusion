@@ -46,7 +46,7 @@ ACME JSON Storage: /root/site/websites/compose/traefik/acme/acme.json
 
 #### Timestamped Backup (ACME JSON)
 ```
-Directory: compose/traefik/cert-backups/20260602_180649_certs/
+Directory: compose/traefik/certs-backups/20260602_180649_certs/
 Size: 24K
 Contents:
   - acme.json (13K)
@@ -67,7 +67,7 @@ Contents per archive:
 
 **All backups stored in**:
 ```
-/root/site/websites/compose/traefik/cert-backups/
+/root/site/websites/compose/traefik/certs-backups/
 ```
 
 **Files included in backups:**
@@ -371,7 +371,7 @@ bash compose/traefik/cert-backup.sh list
 
 # Restore from specific backup
 bash compose/traefik/cert-backup.sh restore \
-  compose/traefik/cert-backups/20260602_180649_certs
+  compose/traefik/certs-backups/20260602_180649_certs
 
 # Restart traefik to apply restored certs
 docker compose restart traefik
@@ -381,7 +381,7 @@ docker compose restart traefik
 
 **Primary Backup**:
 ```
-/root/site/websites/compose/traefik/cert-backups/production-certs-20260602-180702.tar.gz
+/root/site/websites/compose/traefik/certs-backups/production-certs-20260602-180702.tar.gz
 ```
 
 **Extract Command**:

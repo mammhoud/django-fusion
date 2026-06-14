@@ -1,0 +1,12 @@
+Traefik Certificate Backup
+==========================
+Backup Date: 2026-06-02 18:06:49
+Timestamp: 20260602_180649
+Source Directory: /root/site/websites/compose/traefik/acme
+Backup Directory: /root/site/websites/compose/traefik/certs-backups/20260602_180649_certs
+
+Files Backed Up:
+-rw------- 1 root root  13K Jun  2 18:06 acme.json
+-rw-r--r-- 1 root root  280 Jun  2 18:06 backup-metadata.txt
+
+Certificate Information:

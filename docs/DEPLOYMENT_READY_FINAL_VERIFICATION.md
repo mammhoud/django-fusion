@@ -71,7 +71,7 @@
 - ✅ All .pem files: 644 (readable by all)
 
 **Backup Location:**
-- ✅ `/root/site/websites/compose/traefik/cert-backups/` available
+- ✅ `/root/site/websites/compose/traefik/certs-backups/` available
 - ✅ Includes ACME backups and tar.gz archives
 
 ### 4. Configuration Files Updated ✅
@@ -295,7 +295,7 @@ If deployment fails at any point:
 2. Restore database backup (if available)
 3. Restore certificate backup: 
    ```bash
-   tar -xzf compose/traefik/cert-backups/production-certs-20260602-180715.tar.gz
+   tar -xzf compose/traefik/certs-backups/production-certs-20260602-180715.tar.gz
    ```
 4. Review logs for root cause
 5. Consult FIXTURE_LOADING_ERROR_ANALYSIS.md for known issues

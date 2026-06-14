@@ -76,7 +76,7 @@ STATUS: ✅ 100% COMPLETE - READY FOR DEPLOYMENT
 ✅ Backup Features
    - Timestamp Format: YYYYMMDD_HHMMSS
    - Metadata: backup-metadata.txt per backup
-   - Storage: compose/traefik/cert-backups/
+   - Storage: compose/traefik/certs-backups/
    - Recovery: Single command restore with auto-restart
    - Safety: Pre-restore backup before any operation
    - Status: PRODUCTION READY
@@ -183,7 +183,7 @@ CREATED (Documentation):
   ✅ COMPLETION_STATUS.txt (this file)
 
 DIRECTORIES CREATED:
-  ✅ compose/traefik/cert-backups/ (backup storage, created on first run)
+  ✅ compose/traefik/certs-backups/ (backup storage, created on first run)
   ✅ logs/ (test output logs)
 
 ================================================================================

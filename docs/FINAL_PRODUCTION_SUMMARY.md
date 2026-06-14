@@ -45,7 +45,7 @@ All requested production deployment tasks have been successfully completed:
 ### Backup System
 
 ```
-✅ ACME JSON Backup        - compose/traefik/cert-backups/20260602_180649_certs/ (24K)
+✅ ACME JSON Backup        - compose/traefik/certs-backups/20260602_180649_certs/ (24K)
 ✅ Compressed Archive 1    - production-certs-20260602-180702.tar.gz (16K)
 ✅ Compressed Archive 2    - production-certs-20260602-180715.tar.gz (16K)
 ✅ Total Backup Storage    - ~40KB (multiple copies, safe off-site)

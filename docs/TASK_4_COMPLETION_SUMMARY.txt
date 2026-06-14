@@ -90,7 +90,7 @@ resume.structa.cloud          (SAN)                  (same)
 
 Certificate Locations:
   Active: /root/site/websites/compose/traefik/certs/
-  Backup: /root/site/websites/compose/traefik/cert-backups/
+  Backup: /root/site/websites/compose/traefik/certs-backups/
 
 ================================================================================
                        DOCUMENTATION CHANGES
@@ -126,7 +126,7 @@ All components verified and ready for deployment:
   ✓ Verification tests passed (31/31)
 
 Backup & Recovery:
-  ✓ Original certificates available in cert-backups/
+  ✓ Original certificates available in certs-backups/
   ✓ Let's Encrypt fallback configuration maintained
   ✓ Full restore procedure documented
 
@@ -215,12 +215,12 @@ Immediate Actions:
 
 Ongoing Maintenance:
   - Monitor certificate expiration dates
-  - Keep backups in cert-backups/ updated
+  - Keep backups in certs-backups/ updated
   - Check Traefik logs regularly
   - Update certificates before expiration
 
 Emergency Recovery:
-  - Certificates backed up in cert-backups/
+  - Certificates backed up in certs-backups/
   - Full restore procedure documented in DEPLOYMENT_GUIDE_SSL.md
   - Let's Encrypt fallback still configured as backup
 

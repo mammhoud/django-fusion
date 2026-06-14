@@ -21,7 +21,7 @@
 
 ### Primary Backup Directory
 
-**Path**: `/root/site/websites/compose/traefik/cert-backups/`
+**Path**: `/root/site/websites/compose/traefik/certs-backups/`
 
 ### Certificate Source Files
 
@@ -56,7 +56,7 @@
 
 ### Type 1: ACME JSON Backup (Timestamped)
 
-**Location**: `cert-backups/YYYYMMDD_HHMMSS_certs/`
+**Location**: `certs-backups/YYYYMMDD_HHMMSS_certs/`
 
 **Contents**:
 - `acme.json` - Complete Traefik ACME configuration
@@ -71,14 +71,14 @@
 
 **Example**:
 ```
-cert-backups/20260602_180649_certs/
+certs-backups/20260602_180649_certs/
 ├── acme.json
 └── backup-metadata.txt
 ```
 
 ### Type 2: Compressed Archive Backup
 
-**Location**: `cert-backups/production-certs-YYYYMMDD-HHMMSS.tar.gz`
+**Location**: `certs-backups/production-certs-YYYYMMDD-HHMMSS.tar.gz`
 
 **Contents**:
 - Complete `certs/` directory (all certificate, key, and chain files)
@@ -95,8 +95,8 @@ cert-backups/20260602_180649_certs/
 
 **Example**:
 ```
-cert-backups/production-certs-20260602-180702.tar.gz
-cert-backups/production-certs-20260602-180715.tar.gz
+certs-backups/production-certs-20260602-180702.tar.gz
+certs-backups/production-certs-20260602-180715.tar.gz
 ```
 
 ---
@@ -182,7 +182,7 @@ bash cert-backup.sh status
 
 2. **Restore from most recent backup**:
    ```bash
-   bash cert-backup.sh restore cert-backups/20260602_180649_certs
+   bash cert-backup.sh restore certs-backups/20260602_180649_certs
    ```
 
 3. **Restart Traefik**:
@@ -208,7 +208,7 @@ bash cert-backup.sh status
 1. **Extract archive**:
    ```bash
    cd /root/site/websites/compose/traefik
-   tar -xzf cert-backups/production-certs-20260602-180702.tar.gz
+   tar -xzf certs-backups/production-certs-20260602-180702.tar.gz
    ```
 
 2. **Restore permissions**:
@@ -256,7 +256,7 @@ bash cert-backup.sh status
 
 4. **Archive the backup**:
    ```bash
-   tar -czf cert-backups/production-certs-regenerated.tar.gz certs/ acme/
+   tar -czf certs-backups/production-certs-regenerated.tar.gz certs/ acme/
    ```
 
 **Time to Recovery**: ~3 minutes
@@ -288,7 +288,7 @@ crontab -e
 #!/bin/bash
 # backup-to-remote.sh
 
-BACKUP_DIR="/root/site/websites/compose/traefik/cert-backups"
+BACKUP_DIR="/root/site/websites/compose/traefik/certs-backups"
 REMOTE_HOST="backup-server.example.com"
 REMOTE_PATH="/backups/traefik-certs"
 
@@ -319,7 +319,7 @@ echo "Backup copied to remote: $(basename ${LATEST})"
 #### Step 1: Assess Damage
 ```bash
 # Check if backups exist
-ls -la /root/site/websites/compose/traefik/cert-backups/
+ls -la /root/site/websites/compose/traefik/certs-backups/
 
 # Check if off-site backups exist
 ls -la /backups/traefik-certs/ (if remote backup configured)
@@ -332,11 +332,11 @@ dig @8.8.8.8 ctc-research.com
 ```bash
 # If local backups exist:
 cd /root/site/websites/compose/traefik
-bash cert-backup.sh restore cert-backups/[LATEST_BACKUP]
+bash cert-backup.sh restore certs-backups/[LATEST_BACKUP]
 
 # If using archive backup:
 cd /root/site/websites/compose/traefik
-tar -xzf cert-backups/production-certs-*.tar.gz
+tar -xzf certs-backups/production-certs-*.tar.gz
 chmod 600 acme/acme.json
 ```
 
@@ -401,7 +401,7 @@ curl http://localhost:8080/ping
 
 3. Verify backup integrity:
    ```bash
-   for backup in compose/traefik/cert-backups/*.tar.gz; do
+   for backup in compose/traefik/certs-backups/*.tar.gz; do
      tar -tzf "$backup" > /dev/null && echo "✓ $(basename $backup)" || echo "✗ $(basename $backup)"
    done
    ```
@@ -413,7 +413,7 @@ curl http://localhost:8080/ping
 1. Extract test backup:
    ```bash
    mkdir -p /tmp/cert-test
-   tar -xzf compose/traefik/cert-backups/production-certs-*.tar.gz -C /tmp/cert-test
+   tar -xzf compose/traefik/certs-backups/production-certs-*.tar.gz -C /tmp/cert-test
    ```
 
 2. Verify certificate files:
@@ -447,7 +447,7 @@ curl http://localhost:8080/ping
 ### Monthly
 - [ ] Review certificate expiry dates
 - [ ] Run cleanup to remove old backups: `bash cert-backup.sh cleanup 30`
-- [ ] Check backup directory size: `du -sh cert-backups/`
+- [ ] Check backup directory size: `du -sh certs-backups/`
 
 ### Quarterly
 - [ ] Perform restore test
@@ -464,7 +464,7 @@ curl http://localhost:8080/ping
 
 ### Local Backup Storage
 
-**Location**: `/root/site/websites/compose/traefik/cert-backups/`  
+**Location**: `/root/site/websites/compose/traefik/certs-backups/`  
 **Retention**: 30 days  
 **Size**: ~500KB total (20 backups)
 
@@ -479,7 +479,7 @@ curl http://localhost:8080/ping
 **Script for AWS S3**:
 ```bash
 #!/bin/bash
-aws s3 sync /root/site/websites/compose/traefik/cert-backups/ \
+aws s3 sync /root/site/websites/compose/traefik/certs-backups/ \
   s3://my-backup-bucket/traefik-certs/ \
   --sse AES256 \
   --delete

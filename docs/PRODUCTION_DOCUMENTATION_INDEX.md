@@ -273,7 +273,7 @@ This production deployment includes 7 comprehensive documentation files covering
 Location: /root/site/websites/compose/traefik/
 ├── certs/          - Individual certificate files
 ├── acme/           - Traefik ACME JSON
-└── cert-backups/   - Backup archives
+└── certs-backups/   - Backup archives
 ```
 
 ### Configuration

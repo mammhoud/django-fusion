@@ -36,7 +36,7 @@ Successfully completed Task 4 with 100% verification pass rate. All markdown doc
   - vresume.structa.cloud (+ www, resume subdomains)
 - **File Locations:**
   - Active certs: `/root/site/websites/compose/traefik/certs/`
-  - Backups: `/root/site/websites/compose/traefik/cert-backups/`
+  - Backups: `/root/site/websites/compose/traefik/certs-backups/`
 - **Status:** COMPLETE
 
 ### ✅ 4. Docker Compose Rebuild
@@ -201,11 +201,11 @@ tls:
 - Status: ✅ Configured
 
 ### Certificate Backup Locations
-- `compose/traefik/cert-backups/acme_backup_20260602_180601.json`
-- `compose/traefik/cert-backups/acme_backup_20260602_180625.json`
-- `compose/traefik/cert-backups/production-certs-20260602-180702.tar.gz`
-- `compose/traefik/cert-backups/production-certs-20260602-180715.tar.gz`
-- `compose/traefik/cert-backups/20260602_180649_certs/`
+- `compose/traefik/certs-backups/acme_backup_20260602_180601.json`
+- `compose/traefik/certs-backups/acme_backup_20260602_180625.json`
+- `compose/traefik/certs-backups/production-certs-20260602-180702.tar.gz`
+- `compose/traefik/certs-backups/production-certs-20260602-180715.tar.gz`
+- `compose/traefik/certs-backups/20260602_180649_certs/`
 
 ---
 
@@ -240,7 +240,7 @@ tls:
 
 - **Monitor:** Traefik dashboard at `http://localhost:8080`
 - **Renew:** Replace certificate files in `/etc/traefik/certs/` when expired
-- **Backup:** Use `cert-backups/` directory for safe storage
+- **Backup:** Use `certs-backups/` directory for safe storage
 - **Restore:** Extract from tar.gz or copy from `20260602_180649_certs/`
 
 ---

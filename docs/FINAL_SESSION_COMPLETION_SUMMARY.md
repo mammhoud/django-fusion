@@ -138,7 +138,7 @@ $ find /root/site/websites -maxdepth 1 ( -name "*.md" -o -name "*.log" ) -type f
 │   │   ├── certs/                        (SSL certificates)
 │   │   ├── dynamic/                      (domain configs - updated)
 │   │   ├── docker-compose.traefik.yml    (updated for SSL)
-│   │   └── cert-backups/                 (SSL certificate backups)
+│   │   └── certs-backups/                 (SSL certificate backups)
 │   └── [other compose files]
 │
 ├── ctc-research/                          ← Website code

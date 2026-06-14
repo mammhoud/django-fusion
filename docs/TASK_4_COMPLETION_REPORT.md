@@ -98,7 +98,7 @@ Located at: `/root/site/websites/compose/traefik/certs/`
 
 ### Backup Location
 
-Original backups preserved at: `/root/site/websites/compose/traefik/cert-backups/`
+Original backups preserved at: `/root/site/websites/compose/traefik/certs-backups/`
 
 ---
 
@@ -314,7 +314,7 @@ The following environment variables are used in Traefik configuration:
 
 ### Current Backups Available
 
-**Location:** `/root/site/websites/compose/traefik/cert-backups/`
+**Location:** `/root/site/websites/compose/traefik/certs-backups/`
 
 **Files:**
 - `acme_backup_20260602_180601.json` - Let's Encrypt ACME account backup
@@ -328,7 +328,7 @@ The following environment variables are used in Traefik configuration:
 If needed to restore from backup:
 
 ```bash
-cd /root/site/websites/compose/traefik/cert-backups/
+cd /root/site/websites/compose/traefik/certs-backups/
 
 # Option 1: Extract from tar.gz
 tar -xzf production-certs-20260602-180715.tar.gz -C ../

@@ -136,7 +136,7 @@ All production fixtures are organized by model and ready to load:
 ✅ Domains: ctc-research.com, www.ctc-research.com, arch.ctc-research.com
 ✅ Storage: /compose/traefik/certs/ and /compose/traefik/acme/
 ✅ Format: ACME JSON (Traefik compatible) + PEM backups
-✅ Backup System: Timestamped archives in /compose/traefik/cert-backups/
+✅ Backup System: Timestamped archives in /compose/traefik/certs-backups/
 ```
 
 ### Current Mode
