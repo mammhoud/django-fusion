@@ -1,7 +1,3 @@
-# ============================================
-# VRESUME CONFIGURATION
-# Domain: vresume.structa.cloud
-# ============================================
 http:
   routers:
     vresume-media-http:
@@ -18,8 +14,14 @@ http:
       service: vresume-media-service
       priority: 100
       tls:
-        domains:
-          - main: "vresume.structa.cloud"
+        certResolver: letsencrypt
+
+    vresume-site-http:
+      rule: "Host(`vresume.structa.cloud`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: vresume-site-service
+      priority: 10
 
     vresume-site-https:
       rule: "Host(`vresume.structa.cloud`)"
@@ -27,14 +29,13 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: vresume-site-service
       tls:
-        domains:
-          - main: "vresume.structa.cloud"
+        certResolver: letsencrypt
 
   services:
     vresume-site-service:
       loadBalancer:
         servers:
-          - url: "http://vresume-website:5072"
+          - url: "http://vresume-web:5072"
 
     vresume-media-service:
       loadBalancer:

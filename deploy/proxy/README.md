@@ -1,8 +1,8 @@
 # Traefik Reverse Proxy Configuration
 
-**Location:** `/infra/traefik/`  
-**Purpose:** Reverse proxy, SSL/TLS termination, request routing  
-**Moved From:** `compose/traefik/` (Phase 10 refactor)  
+**Location:** `/infra/traefik/`
+**Purpose:** Reverse proxy, SSL/TLS termination, request routing
+**Moved From:** `compose/traefik/` (Phase 10 refactor)
 
 ---
 
@@ -24,7 +24,7 @@ infra/traefik/
 ├── letsencrypt/            (Let's Encrypt configuration)
 ├── dynamic/                (Dynamic configuration files)
 ├── acme/                   (ACME protocol files)
-└── certs-backups/           (Certificate backups)
+└── certs/           (Certificate backups)
 ```
 
 ---
@@ -112,7 +112,7 @@ bash infra/traefik/scripts/backup-certs.sh
 
 **Backup location:**
 ```
-infra/traefik/certs-backups/
+infra/traefik/certs/
 └── acme_YYYYMMDD_HHMMSS.json
 ```
 
@@ -236,7 +236,7 @@ docker compose -f docker-compose.traefik.yml restart traefik
 
 ### Certificate Issues
 
-**Problem:** SSL certificate not generated  
+**Problem:** SSL certificate not generated
 **Solution:**
 ```bash
 # Check ACME configuration
@@ -433,7 +433,7 @@ networks:
 - Configuration: `infra/traefik/traefik.yml`
 - Scripts: `infra/traefik/scripts/`
 - Certificates: `infra/traefik/certs/`
-- Backups: `infra/traefik/certs-backups/`
+- Backups: `infra/traefik/certs/`
 
 **Ready for:**
 - Docker deployment
@@ -443,7 +443,7 @@ networks:
 
 ---
 
-**Status:** ✅ COMPLETE  
-**Quality:** 100/100  
-**Production Ready:** YES ✅  
+**Status:** ✅ COMPLETE
+**Quality:** 100/100
+**Production Ready:** YES ✅
 

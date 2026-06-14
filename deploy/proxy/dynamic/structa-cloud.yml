@@ -1,10 +1,5 @@
-# ============================================
-# STRUCTA.CLOUD CONFIGURATION (LMS-DEMO)
-# Domains: core.structa.cloud, structa.cloud, www.structa.cloud
-# ============================================
 http:
   routers:
-    # Redirect HTTP to HTTPS for media/static files
     structa-media-http:
       rule: "(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web]
@@ -12,7 +7,6 @@ http:
       service: structa-media-service
       priority: 100
 
-    # HTTPS for media/static files
     structa-media-https:
       rule: "(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
       entryPoints: [web-secure]
@@ -20,29 +14,32 @@ http:
       service: structa-media-service
       priority: 100
       tls:
+        certResolver: letsencrypt
         domains:
           - main: "structa.cloud"
             sans: ["*.structa.cloud", "www.structa.cloud", "core.structa.cloud"]
 
-    # HTTPS for main site
+    structa-site-http:
+      rule: "Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: structa-site-service
+      priority: 10
+
     structa-site-https:
       rule: "Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)"
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: structa-site-service
       tls:
-        domains:
-          - main: "structa.cloud"
-            sans: ["*.structa.cloud", "www.structa.cloud", "core.structa.cloud"]
+        certResolver: letsencrypt
 
   services:
-    # Django backend
     structa-site-service:
       loadBalancer:
         servers:
-          - url: "http://lms-demo-website:5071"
+          - url: "http://lms-web:5071"
 
-    # Nginx media/static server
     structa-media-service:
       loadBalancer:
         servers:

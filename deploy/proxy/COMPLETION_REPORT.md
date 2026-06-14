@@ -1,7 +1,7 @@
 # SSL Certificate and ACME Configuration - Completion Report
 
-**Date**: June 12, 2026  
-**Status**: ✅ COMPLETE  
+**Date**: June 12, 2026
+**Status**: ✅ COMPLETE
 **All Domains**: HTTPS Ready with Valid Certificates
 
 ---
@@ -54,7 +54,7 @@ TRAEFIK_ACME_CASERVER=https://acme-v02.api.letsencrypt.org/directory
 
 All routers now use `tls.domains` configuration without explicit certResolver, allowing Traefik to match domains to static certificates automatically.
 
-**Files**: 
+**Files**:
 - `/root/site/websites/compose/traefik/dynamic/ctc-research.yml`
 - `/root/site/websites/compose/traefik/dynamic/structa-cloud.yml`
 - `/root/site/websites/compose/traefik/dynamic/vresume.yml`
@@ -94,11 +94,11 @@ All routers now use `tls.domains` configuration without explicit certResolver, a
 
 ### Certificate Backup
 
-**Backup Created**: `certs-backups/certs-backup-20260612-000236.tar.gz`
+**Backup Created**: `certs/certs-backup-20260612-000236.tar.gz`
 - Size: 7.9 KB
-- Location: `/root/site/websites/compose/traefik/certs-backups/`
+- Location: `/root/site/websites/compose/traefik/certs/`
 - Contains: All certificates, keys, and signing requests
-- Can be restored with: `./manage-certs.sh restore certs-backups/certs-backup-20260612-000236.tar.gz`
+- Can be restored with: `./manage-certs.sh restore certs/certs-backup-20260612-000236.tar.gz`
 
 ---
 
@@ -253,7 +253,7 @@ Container: structa-proxy
 Image: traefik-proxy (custom build)
 Status: Up and Healthy ✅
 Ports: 80, 443, 8080
-Volumes: 
+Volumes:
   - /etc/traefik/acme (volume mount)
   - /etc/traefik/traefik.yml (read-only)
   - /etc/traefik/dynamic (read-only)
@@ -351,7 +351,7 @@ docker compose -f docker-compose.traefik.yml restart structa-proxy
 
 ```bash
 cd /root/site/websites/compose/traefik
-./manage-certs.sh restore certs-backups/certs-backup-20260612-000236.tar.gz
+./manage-certs.sh restore certs/certs-backup-20260612-000236.tar.gz
 ```
 
 ---
@@ -368,7 +368,7 @@ cd /root/site/websites/compose/traefik
 
 1. `/root/site/websites/compose/traefik/manage-certs.sh` - Certificate management script (executable)
 2. `/root/site/websites/compose/traefik/SSL_CERTIFICATE_MANAGEMENT.md` - Comprehensive guide
-3. `/root/site/websites/compose/traefik/certs-backups/certs-backup-20260612-000236.tar.gz` - Certificate backup
+3. `/root/site/websites/compose/traefik/certs/certs-backup-20260612-000236.tar.gz` - Certificate backup
 
 ---
 

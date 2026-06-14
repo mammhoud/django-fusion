@@ -83,14 +83,14 @@ Ensures certificate and key pairs match (validates modulus):
 ```
 
 Creates a dated backup archive:
-- Location: `certs-backups/certs-backup-YYYYMMDD-HHMMSS.tar.gz`
+- Location: `certs/certs-backup-YYYYMMDD-HHMMSS.tar.gz`
 - Contains: All certificates and keys
 - Recommended: Before major Traefik changes
 
 ### Restore from Backup
 
 ```bash
-./manage-certs.sh restore certs-backups/certs-backup-20260611-120000.tar.gz
+./manage-certs.sh restore certs/certs-backup-20260611-120000.tar.gz
 ```
 
 Restores certificates from a backup:
@@ -131,7 +131,7 @@ tls:
       defaultCertificate:
         certFile: /etc/traefik/certs/ctc-research.crt
         keyFile: /etc/traefik/certs/ctc-research.key
-  
+
   certificates:
     - certFile: /etc/traefik/certs/ctc-research.crt
       keyFile: /etc/traefik/certs/ctc-research.key
@@ -217,10 +217,10 @@ If certificates are lost or corrupted:
 cd compose/traefik
 
 # List available backups
-ls -lh certs-backups/
+ls -lh certs/
 
 # Restore specific backup
-./manage-certs.sh restore certs-backups/certs-backup-20260611-120000.tar.gz
+./manage-certs.sh restore certs/certs-backup-20260611-120000.tar.gz
 ```
 
 ## Monitoring and Alerts
@@ -327,7 +327,7 @@ openssl rsa -noout -modulus -in /root/site/websites/compose/traefik/certs/ctc-re
    ```bash
    # Edit .env
    TRAEFIK_ACME_CASERVER=https://acme-staging-v02.api.letsencrypt.org/directory
-   
+
    # Restart
    docker compose restart structa-proxy
    ```
@@ -347,7 +347,7 @@ openssl rsa -noout -modulus -in /root/site/websites/compose/traefik/certs/ctc-re
    # Delete ACME storage to force renewal
    docker exec structa-proxy rm -f /etc/traefik/acme/acme.json
    docker compose restart structa-proxy
-   
+
    # Monitor logs
    docker logs -f structa-proxy
    ```
@@ -444,7 +444,7 @@ cd /root/site/websites/compose/traefik && ./manage-certs.sh list
 ./manage-certs.sh generate-self-signed
 
 # Restore from backup
-./manage-certs.sh restore certs-backups/certs-backup-YYYYMMDD-HHMMSS.tar.gz
+./manage-certs.sh restore certs/certs-backup-YYYYMMDD-HHMMSS.tar.gz
 
 # View certificate details
 openssl x509 -in certs/ctc-research.crt -noout -text
