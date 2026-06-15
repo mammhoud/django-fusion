@@ -70,6 +70,7 @@ class TestConfigureDefaultSite:
     def test_configure_default_site_is_called_on_import(self):
         """_configure_default_site runs at module import time and sets DJANGO_SETTINGS_MODULE."""
         import os
+
         import tasks.celery
         # After importing, DJANGO_SETTINGS_MODULE should be set
         assert "DJANGO_SETTINGS_MODULE" in os.environ

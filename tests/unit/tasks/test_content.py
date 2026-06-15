@@ -1,6 +1,6 @@
 """Unit tests for tasks/content.py — get_users_count, welcome notification tasks."""
 
-from unittest.mock import MagicMock, patch, PropertyMock
+from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
@@ -9,7 +9,6 @@ from tasks.content import (
     send_user_welcome_notification,
     send_user_welcome_notification_task,
 )
-
 
 # ---------------------------------------------------------------------------
 # get_users_count
