@@ -1,10 +1,13 @@
 """
 VResume Settings Template Tags
 """
+import logging
+
 from django import template
 from django.core.cache import cache
 from wagtail.models import Site
 
+logger = logging.getLogger(__name__)
 register = template.Library()
 
 
@@ -24,6 +27,7 @@ def get_vresume_settings(context):
     try:
         site = Site.find_for_request(request)
     except Exception:
+        logger.debug("Could not find site for request in get_vresume_settings")
         return {}
     
     # Try to get from cache first
@@ -41,7 +45,7 @@ def get_vresume_settings(context):
                 settings_dict["communications"] = {}
             settings_dict["communications"]["VResumeSettings"] = vresume
         except Exception as e:
-            print(f"⚠️ Error loading VResumeSettings: {e}")
+            logger.warning("Error loading VResumeSettings: %s", e)
         
         # Cache for 1 hour
         cache.set(cache_key, settings_dict, 3600)
@@ -66,6 +70,7 @@ def vresume_settings(context):
     try:
         site = Site.find_for_request(request)
     except Exception:
+        logger.debug("Could not find site for request in vresume_settings")
         return None
     
     # Try cache first
@@ -78,7 +83,7 @@ def vresume_settings(context):
             vresume = VResumeSettings.for_site(site)
             cache.set(cache_key, vresume, 3600)
         except Exception as e:
-            print(f"❌ Error loading VResumeSettings: {e}")
+            logger.warning("Error loading VResumeSettings: %s", e)
             return None
     
     return vresume

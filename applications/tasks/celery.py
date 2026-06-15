@@ -4,8 +4,11 @@ from __future__ import annotations
 
 import importlib
 import importlib.util
+import logging
 import os
 import sys
+
+logger = logging.getLogger(__name__)
 
 
 def _configure_default_site() -> None:
@@ -18,7 +21,8 @@ def _configure_default_site() -> None:
     )
     try:
         site_module = importlib.import_module("configs.site")
-    except Exception:
+    except (ImportError, ModuleNotFoundError) as exc:
+        logger.info("configs.site not available (%s), falling back to default settings", exc)
         os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
         return
 
