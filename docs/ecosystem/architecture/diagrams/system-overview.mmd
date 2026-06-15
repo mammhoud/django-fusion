@@ -1,0 +1,66 @@
+# System Overview Diagram
+
+```mermaid
+graph TB
+    subgraph "Websites"
+        CTC[ctc-research.com]
+        STRUCTA[structa.cloud]
+    end
+
+    subgraph "django-rseal"
+        RSEAL[django-rseal<br/>Automation Layer]
+        EMAIL[Email Services]
+        PIPELINES[Pipelines]
+        CHAT[Chat]
+    end
+
+    subgraph "django-osoul"
+        OSOUL[django-osoul<br/>Foundation Layer]
+        COMP[Components]
+        MODELS[Models]
+        SERVICES[Services]
+    end
+
+    subgraph "django-grep"
+        GREP[django-grep<br/>Test Infrastructure]
+        HEALTH[Health Checks]
+        TESTS[Testing Utils]
+    end
+
+    subgraph "Third Party"
+        WAGTAIL[Wagtail CMS]
+        ALLAUTH[AllAuth]
+        DJANGO[Django Core]
+    end
+
+    CTC --> RSEAL
+    STRUCTA --> RSEAL
+    CTC --> OSOUL
+    STRUCTA --> OSOUL
+    CTC --> GREP
+    STRUCTA --> GREP
+
+    RSEAL --> OSOUL
+    RSEAL --> WAGTAIL
+    RSEAL --> ALLAUTH
+
+    OSOUL --> DJANGO
+
+    GREP --> DJANGO
+
+    style CTC fill:#f9f,stroke:#333
+    style STRUCTA fill:#f9f,stroke:#333
+    style RSEAL fill:#bbf,stroke:#333
+    style OSOUL fill:#bfb,stroke:#333
+    style GREP fill:#ffb,stroke:#333
+```
+
+## Package Dependencies
+
+| Package | Depends On | Used By |
+|---------|-----------|---------|
+| django-grep | Django | Both websites, django-rseal |
+| django-osoul | Django, Wagtail | django-rseal, Both websites |
+| django-rseal | django-osoul, django-grep | Both websites |
+| ctc-research.com | django-rseal, django-osoul, django-grep | - |
+| structa.cloud | django-rseal, django-osoul, django-grep | - |
