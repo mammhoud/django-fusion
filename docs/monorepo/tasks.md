@@ -1,63 +1,258 @@
-# Implementation Plan: Monorepo Frontend Infrastructure
+# Implementation Plan: Monorepo Enhancement Phases
 
 ## Overview
 
-Six task groups implement the specification in dependency order: architectural cleanup must precede the governance pipeline (which checks for the stale aliases), log isolation must precede the Docker compose overlay (which declares the log volumes), and Docsify content creation must precede the Dockerfile replacement. All groups can proceed in parallel except where noted.
+This document tracks the progressive enhancement of the monorepo infrastructure through discrete, reviewable phases. Each phase addresses a specific aspect of the architecture with clear deliverables.
 
-## Tasks
+See [PHASES.md](./PHASES.md) for detailed phase tracking and dependencies.
 
-### Group 1: Architectural Cleanup
+## Phases
 
-- [ ] 1.1 Remove stale `@theme`, `@layouts`, `@usecases` aliases from `webpack/main.config.js`; update `@theme` → `@modules` pointing to `assets/static/js/modules` if any existing code references it
-- [ ] 1.2 Consolidate duplicated `SILENCED_SYSTEM_CHECKS` list from `ctc-research/settings.py` and `lms-demo/settings.py` into `configs/settings.py`
-- [ ] 1.3 Run `npm run build:ctc && npm run build:structa && npm run build:vresume` and confirm all three builds pass with no new errors
+### Phase 1: Import Resolution & Package Initialization ✅
 
-### Group 2: Log Directory Isolation
+**Status:** Completed
+**Date:** 2026-06-15
 
-- [ ] 2.1 Add `WEBSITE_IDENTIFIER`-keyed `LOG_DIR` derivation to `configs/settings.py` LOGGING configuration (depends on: none)
-- [ ] 2.2 Add `LOG_DIR.mkdir(parents=True, exist_ok=True)` guard immediately before the `LOGGING` dict
-- [ ] 2.3 Update all `FileHandler` `filename` values to reference `LOG_DIR / "application.log"`, `LOG_DIR / "debug.log"`, `LOG_DIR / "error.log"`
-- [ ] 2.4 Add `mkdir -p /app/logs/$WEBSITE_IDENTIFIER` to `deploy/applications/django/entrypoint` before the final `exec` call
-- [ ] 2.5 Verify isolation locally: start each Django server with its `WEBSITE_IDENTIFIER` set and confirm log files appear in the correct subdirectory
+**Tasks:**
+- [x] 1.1 Fix `__main__.py` import to reference `cli` instead of `site_cli`
+- [x] 1.2 Create `applications/__init__.py` to make cli a proper package
+- [x] 1.3 Clone django-grep from GitHub repository
+- [x] 1.4 Clone django-rseal from GitHub repository
+- [x] 1.5 Clone django-osoul from GitHub repository
 
-### Group 3: Docsify Migration
+**Deliverables:**
+- Fixed `__main__.py` that correctly imports from `cli`
+- Package structure with proper `__init__.py`
+- All three library packages cloned and ready for enhancement
 
-- [ ] 3.1 Create `docs/index.html` with the Docsify CDN bootstrap page (content specified in design.md)
-- [ ] 3.2 Create `docs/architecture-notes.md` with the architectural hint notes from design.md §Architecture
-- [ ] 3.3 Create `docs/error-resolution-log.md` with the error resolution table (single entry: `mnagement` typo in lessons.py line 12)
-- [ ] 3.4 Create `docs/migration-record.md` with the ctc-research → lms-demo structural diff and theme migration facts from design.md §Migration Log
-- [ ] 3.5 Update `docs/_sidebar.md` to add the Monorepo section (Architecture Notes, Error Resolution Log, Migration Record) at the top, retaining all existing sections
-- [ ] 3.6 Replace `/data/docs/Dockerfile` with the Docsify `nginx:1.27-alpine` Dockerfile from design.md §Docsify Dockerfile
-- [ ] 3.7 Replace `/data/deploy/compose/docs/Dockerfile` with the same Docsify Dockerfile
-- [ ] 3.8 Update `/data/deploy/applications/docker-compose.docs.yml`: use the new image, remove `mkdocs.yml` and `README.md` volume mounts, change docs bind mount to `/data/docs:/usr/share/nginx/html:ro`, update healthcheck to use `wget`
+**Pull Request:** #1 - Phase 1: Import Resolution & Package Initialization
 
-### Group 4: Docker-Compose Overlay
+---
 
-- [ ] 4.1 Create `deploy/applications/docker-compose.infra.yml` with: named volume declarations (`ctc-research-logs`, `lms-demo-logs`, `vresume-logs`), `structa-docs` Docsify service with `:ro` bind mount, `lms-demo-website` log volume addition (depends on: 2.5, 3.8)
-- [ ] 4.2 Add `- ctc-research-logs:/app/logs/ctc-research` to the `ctc-research-website` volumes list in `docker-compose.yml`
-- [ ] 4.3 Add `- vresume-logs:/app/logs/vresume` to the `vresume-website` volumes list in `docker-compose.yml`
+### Phase 2: CLI/Make Command Enhancement ✅
 
-### Group 5: Governance Pipeline
+**Status:** Completed
+**Date:** 2026-06-15
 
-- [ ] 5.1 Install `husky`, `markdownlint-cli`, `size-limit`, `@size-limit/webpack`, `lint-staged` in `assets/devDependencies` (run `npm install --save-dev` in `assets/`)
-- [ ] 5.2 Run `npx husky init` from `assets/` to create `assets/.husky/` directory
-- [ ] 5.3 Create `assets/.husky/pre-commit` with lint-staged, import-check, and bundle-audit steps (content in design.md §Husky Pre-Commit Hooks)
-- [ ] 5.4 Create `assets/.lintstagedrc.json` with markdownlint for `*.md` and eslint for `*.js`
-- [ ] 5.5 Create `assets/eslint.config.mjs` (flat ESLint 9 config) covering all four JS source trees
-- [ ] 5.6 Create `assets/.markdownlintrc.json` with MD013 line-length 120, MD033/MD041 disabled
-- [ ] 5.7 Create `assets/.size-limit.json` with client (25 kB), admin (120 kB), marketing (15 kB) budgets pointing to `bundles/` output globs
-- [ ] 5.8 Add `"build:audit": "size-limit"` to `assets/package.json` scripts
-- [ ] 5.9 Create `scripts/check-imports.mjs` at `/data/structa.cloud/scripts/` (content in design.md §Import Reachability Check); verify it exits 1 before alias cleanup and 0 after (depends on: 1.1)
-- [ ] 5.10 Add CI steps to `.github/workflows/` for import reachability, eslint, markdownlint, and bundle audit (content in design.md §CI Integration)
+**Tasks:**
+- [x] 2.1 Merge `manage.py` and `cli.py` functionality into enhanced `manage.py`
+- [x] 2.2 Add `validate-commands` method to `SiteCLI`
+- [x] 2.3 Add `make-check` validation for dry-run make commands
+- [ ] 2.4 Add make command error checking
+- [ ] 2.5 Create command to validate all commands across sites
+md` volume mounts, change docs bind mount to `/data/docs:/usr/share/nginx/html:ro`, update healthcheck to use `wget`
 
-### Group 6: Verification
+**Deliverables:**
+- Unified `manage.py` entry point
+- `validate-commands` command for comprehensive validation
+- `make-check` command for dry-run validation
 
-- [ ] 6.1 Confirm `ctc-research/plugins/lms/views/lessons.py` line 12 reads `from ..management.services.courses import CourseService` (no code change needed — verify only)
-- [ ] 6.2 Run `docker compose -f applications/docker-compose.yml -f applications/docker-compose.infra.yml up structa-docs -d` and confirm `http://localhost:80/` returns 200 with Docsify HTML
-- [ ] 6.3 Start ctc-research and lms-demo with `WEBSITE_IDENTIFIER` set correctly and confirm log files appear in `logs/ctc-research/` and `logs/lms-demo/` respectively, not the root `logs/` directory
-- [ ] 6.4 Run `node scripts/check-imports.mjs` and confirm exit 0 (all aliases resolve)
-- [ ] 6.5 Run `npm run build:audit` and review the size-limit report; document any budgets that currently exceed the target (expected: app bundles may be oversized until vendor splitting is implemented as a follow-on task)
+**Usage:**
+```bash
+# Validate commands for all sites
+python manage.py validate-commands --all
 
+# Validate commands for specific site
+python manage.py validate-commands --site=ctc-research
+
+# Validate make commands
+python manage.py make-check --all
+
+# Show all sites
+python manage.py sites
+```
+
+**Pull Request:** #2 - Phase 2: CLI/Make Command Enhancement
+
+---
+
+### Phase 3: Utilities Migration
+
+**Status:** Pending
+**Date:** 2026-06-15
+
+**Tasks:**
+- [ ] 3.1 Read and analyze current `applications/utilities.py`
+- [ ] 3.2 Extract file utility functions to django-osoul
+- [ ] 3.3 Extract language utility functions to django-osoul
+- [ ] 3.4 Update imports across the monorepo
+- [ ] 3.5 Delete `applications/utilities.py` after successful migration
+
+**Deliverables:**
+- Functionality moved to appropriate packages
+- `applications/utilities.py` removed
+- All imports updated to use package equivalents
+
+**Pull Request:** #3 - Phase 3: Utilities Migration
+
+---
+
+### Phase 4: Docker Compose Structure
+
+**Status:** Pending
+**Date:** 2026-06-15
+
+**Tasks:**
+- [ ] 4.1 Create docker-compose files from backup templates
+- [ ] 4.2 Ensure all networks are bridged
+- [ ] 4.3 Link services correctly with proper network configuration
+- [ ] 4.4 Add correct environment variables to all services
+- [ ] 4.5 Add configurations from backups to main repo
+- [ ] 4.6 Delete `backups/deploy` after verification
+
+**Deliverables:**
+- Complete docker-compose configuration for each application
+- All services properly networked
+- Environment configurations synced
+
+**Pull Request:** #4 - Phase 4: Docker Compose Structure
+
+---
+
+### Phase 5: Documentation Enhancement
+
+**Status:** Pending
+**Date:** 2026-06-15
+
+**Tasks:**
+- [ ] 5.1 Create `docs/index.html` with the Docsify CDN bootstrap page (content specified in design.md)
+- [ ] 5.2 Create `docs/architecture-notes.md` with the architectural hint notes from design.md §Architecture
+- [ ] 5.3 Create `docs/error-resolution-log.md` with the error resolution table (single entry: `mnagement` typo in lessons.py line 12)
+- [ ] 5.4 Create `docs/migration-record.md` with the ctc-research → lms-demo structural diff and theme migration facts from design.md §Migration Log
+- [ ] 5.5 Update `docs/_sidebar.md` to add the Monorepo section (Architecture Notes, Error Resolution Log, Migration Record) at the top, retaining all existing sections
+- [ ] 5.6 Replace `/data/docs/Dockerfile` with the Docsify `nginx:1.27-alpine` Dockerfile from design.md §Docsify Dockerfile
+- [ ] 5.7 Replace `/data/deploy/compose/docs/Dockerfile` with the same Docsify Dockerfile
+- [ ] 5.8 Update `/data/deploy/applications/docker-compose.docs.yml`: use the new image, remove `mkdocs.yml` and `README.- [ ] 5.9 Create usage.md files for each component
+- [ ] 5.10 Organize documentation for task tracking and remove duplecated files and enhance the content structures and files lowwer case snake case
+- [ ] 5.11 Add detailed deployment guides
+- [ ] 5.12 Create migration guides for each phase
+- [ ] 5.13 enhance and improve with project contents guides coolify/docs/ai with the script to give a context with the configs structures and website build and notes with each component args and usage and what data could be added as section and how to replace component with another at some tasks with hints and note as prompts on tasks
+
+
+**Deliverables:**
+- Complete phase documentation
+- Usage guides for all components
+- Organized documentation structure
+
+**Pull Request:** #5 - Phase 5: Documentation Enhancement
+
+---
+
+### Phase 6: Language Support Enhancement
+
+**Status:** Pending
+**Date:** 2026-06-15
+
+**Tasks:**
+- [ ] 6.1 Implement _language.py with proper language detection
+- [ ] 6.2 Add language switcher component
+- [ ] 6.3 Create language context processor
+- [ ] 6.4 Add language toggle UI component
+- [ ] 6.5 Test language switching across all sites
+
+**Deliverables:**
+- Working language switching in django-osoul
+- Language toggle UI
+- Context processor for templates
+
+**Pull Request:** #6 - Phase 6: Language Support Enhancement
+
+---
+
+### Phase 7: Deployment Verification
+
+**Status:** Pending
+**Date:** 2026-06-15
+
+**Tasks:**
+- [ ] 7.1 Check deployment logs for all services
+- [ ] 7.2 Deploy all containers
+- [ ] 7.3 Verify configurations are correct
+- [ ] 7.4 Verify services are linked properly
+- [ ] 7.5 Run integration tests
+
+**Deliverables:**
+- All containers running successfully
+- Correct configurations verified
+- Integration tests passing
+
+**Pull Request:** #7 - Phase 7: Deployment Verification
+
+---
+
+## Task Progress Summary
+
+| Phase | Tasks | Completed | Pending |
+|-------|-------|-----------|---------|
+| 1 | 5 | 5 | 0 |
+| 2 | 3 | 3 | 0 |
+| 3 | 5 | 0 | 5 |
+| 4 | 6 | 0 | 6 |
+| 5 | 5 | 1 | 4 |
+| 6 | 5 | 0 | 5 |
+| 7 | 5 | 0 | 5 |
+| **Total** | **34** | **9** | **25** |
+
+---
+
+## Phase Dependencies
+
+```
+Phase 1 → Phase 2, Phase 3
+Phase 2 → Phase 4, Phase 7
+Phase 3 → Phase 4, Phase 7
+Phase 4 → Phase 7
+Phase 5 → Phase 7
+Phase 6 → Phase 7
+```
+
+---
+
+## Notes
+
+- Each phase should be completed before moving to the next
+- Phases can be worked on in parallel if they don't share dependencies
+- Documentation updates should happen throughout the process
+- Testing should occur after each phase
+- Each phase is delivered as a separate pull request for review
+
+---
+
+## Previous Task History
+
+The following tasks were from the original tasks.md and have been replaced by the phased approach:
+
+### Group 1: Architectural Cleanup (REPLACED)
+- Removed stale aliases
+- Consolidated settings
+- Build verification
+
+### Group 2: Log Directory Isolation (REPLACED)
+- Added WEBSITE_IDENTIFIER derivation
+- Added mkdir guards
+- Updated FileHandler paths
+
+### Group 3: Docsify Migration (REPLACED)
+- Created Docsify bootstrap
+- Created architecture notes
+- Created migration record
+
+### Group 4: Docker-Compose Overlay (REPLACED)
+- Created docker-compose.infra.yml
+- Added named volumes
+- Added log volume mounts
+
+### Group 5: Governance Pipeline (REPLACED)
+- Installed husky, lint-staged, etc.
+- Created pre-commit hooks
+- Created import check script
+
+### Group 6: Verification (REPLACED)
+- Verified file content
+- Verified Docsify service
+- Verified log isolation
+
+All previous tasks have been incorporated into the phased approach above.
 ## Task Dependency Graph
 
 ```json

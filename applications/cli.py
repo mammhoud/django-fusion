@@ -1,476 +1,541 @@
+#!/usr/bin/env python3
 """
-🎯 Unified Django CLI — check + deploy + push libs
-Usage:
-  python cli.py check lms-demo
-  python cli.py deploy lms-demo
-  python cli.py deploy ctc-research
-  python cli.py push                        # commit & push all libs to generic
-  python cli.py push --lib django-osoul     # push a single lib
-  python -m websites check lms-demo
-  python -m websites deploy ctc-research
+Core site management logic for the multi‑site Django monorepo.
+
+Provides:
+  - Site resolution (--site flag, env vars, aliases)
+  - Environment setup for Django and Docker
+  - Utility commands: deploy, logs, push, test, make, etc.
+  - Local and container checks using __main__.py
 """
 
+from __future__ import annotations
+
+import argparse
 import os
+import re
 import subprocess
 import sys
 from pathlib import Path
+from typing import Any, Callable, Dict, List, Optional, Tuple
 
-import fire
+# ----------------------------------------------------------------------
+#  Configuration
+# ----------------------------------------------------------------------
+REPO_ROOT = Path(__file__).resolve().parent
+ROOT_COMPOSE = REPO_ROOT / "docker-compose.yml"
 
-SCRIPT_DIR = Path(__file__).resolve().parent
-WORKSPACE_ROOT = SCRIPT_DIR.parent  # root of the monorepo
-
-ROOT_COMPOSE = SCRIPT_DIR / "docker-compose.yml"
-
-WEBSITE_ALIASES = {
-    "ctc": "ctc-research",
-    "ctc-website": "ctc-research",
-    "ctc-research.com": "ctc-research",
-    "structa": "lms-demo",
-    "structa.cloud": "lms-demo",
-    "lms": "lms-demo",
-    "core": "lms-demo",
-    "VResume": "vresume",
-    "resume": "vresume",
-    "vresume.structa.cloud": "vresume",
-}
-
-WEBSITES = {
-    "lms-demo": {
-        "compose": ROOT_COMPOSE,
-        "port": 5071,
-        "container": "lms-demo-website",
-    },
+SITES = {
     "ctc-research": {
-        "compose": ROOT_COMPOSE,
+        "path": "ctc-research",
+        "project_path": "ctc-research",
+        "service": "ctc-research-website",
         "port": 5070,
-        "container": "ctc-research-website",
+        "db_name": "db_ctc",
+    },
+    "lms-demo": {
+        "path": "lms-demo",
+        "project_path": "lms-demo",
+        "service": "lms-demo-website",
+        "port": 5071,
+        "db_name": "db_structa",
     },
     "vresume": {
-        "compose": ROOT_COMPOSE,
+        "path": "VResume",
+        "project_path": "VResume",
+        "service": "vresume-website",
         "port": 5072,
-        "container": "vresume-website",
+        "db_name": "vresume",
     },
 }
 
-# Internal libs that live under libs/ and are pushed to GitHub
+SITE_ALIASES = {
+    "ctc": "ctc-research",
+    "ctc-research": "ctc-research",
+    "ctc-research.com": "ctc-research",
+    "ctc-website": "ctc-research",
+    "structa": "lms-demo",
+    "structa.cloud": "lms-demo",
+    "core": "lms-demo",
+    "lms": "lms-demo",
+    "lms-demo": "lms-demo",
+    "resume": "vresume",
+    "vresume": "vresume",
+    "vresume.structa.cloud": "vresume",
+    "VResume": "vresume",
+}
+
 LIBS = {
-    "django-osoul": WORKSPACE_ROOT / "libs" / "django-osoul",
-    "django-rseal": WORKSPACE_ROOT / "libs" / "django-rseal",
-    "django-grep":  WORKSPACE_ROOT / "libs" / "django-grep",
+    "django-osoul": REPO_ROOT / "libs" / "django-osoul",
+    "django-rseal": REPO_ROOT / "libs" / "django-rseal",
+    "django-grep": REPO_ROOT / "libs" / "django-grep",
+}
+
+SKIPPED_MAKE_TARGETS = {
+    "deploy",
+    "docker-clean",
+    "docker-clean-all",
+    "docker-deploy",
+    "docker-deploy-full",
+    "docker-down",
+    "docker-prune-containers",
+    "docker-prune-data",
+    "docker-redeploy",
+    "docker-rebuild",
+    "docker-restart-all",
+    "docker-start-all",
+    "docker-stop-all",
+    "docker-up",
+    "redeploy",
+    "rebuild",
 }
 
 
-# ─────────────────────────────────────────────
-# Helpers
-# ─────────────────────────────────────────────
+# ----------------------------------------------------------------------
+#  Core class
+# ----------------------------------------------------------------------
+class SiteCLI:
+    """Main controller for site‑aware operations."""
 
-def _run(cmd: list[str], cwd=None, check=True) -> subprocess.CompletedProcess:
-    return subprocess.run(cmd, cwd=cwd or SCRIPT_DIR, check=check,
-                          capture_output=False)
+    def __init__(self, site: Optional[str] = None) -> None:
+        """
+        Initialize with an optional site name.
+        If not provided, it will be resolved later.
+        """
+        self._site: Optional[str] = site
+        self._site_config: Optional[Dict] = None
 
+    @property
+    def site(self) -> str:
+        """Resolve and return the canonical site name."""
+        if self._site is None:
+            self._site = self.resolve_site()
+        return self._site
 
-def _website_env(website: str) -> dict:
-    """Minimal env vars needed to run manage.py check without a real DB."""
-    env = os.environ.copy()
-    database_names = {
-        "ctc-research": "db_ctc",
-        "lms-demo": "db_structa",
-        "vresume": "vresume",
-    }
-    env.update({
-        "DJANGO_SETTINGS_MODULE": "configs.settings",
-        "RUNNING_ENV": "docker",
-        "SERVER_ENV": "production",
-        "DB_HOST": env.get("DB_HOST", "postgres"),
-        "DB_NAME": env.get("DB_NAME", database_names.get(website, "db_ctc")),
-        "REDIS_URL": env.get("REDIS_URL", "redis://redis:6379/3"),
-        "ALLOWED_HOSTS": "*",
-    })
-    # Remove DJANGO_SECRET_KEY — production.py reads from secret.key.txt
-    env.pop("DJANGO_SECRET_KEY", None)
-    return env
+    @property
+    def config(self) -> Dict:
+        """Return the configuration dict for the current site."""
+        if self._site_config is None:
+            self._site_config = SITES[self.site]
+        return self._site_config
 
+    # ------------------------------------------------------------------
+    #  Resolution and environment
+    # ------------------------------------------------------------------
+    @classmethod
+    def resolve_site(cls, site_arg: Optional[str] = None) -> str:
+        """Resolve site from CLI argument, env vars, or default."""
+        requested = (
+            site_arg
+            or os.environ.get("DJANGO_SITE")
+            or os.environ.get("DJANGO_WEBSITE")
+            or os.environ.get("WEBSITE")
+            or os.environ.get("SITE")
+            or "ctc-research"
+        )
+        resolved = SITE_ALIASES.get(requested.lower(), requested)
+        if resolved not in SITES:
+            choices = ", ".join(sorted(set(SITES) | set(SITE_ALIASES)))
+            raise SystemExit(f"Unknown site '{requested}'. Choose from: {choices}")
+        return resolved
 
-def _resolve(website: str) -> str:
-    resolved = WEBSITE_ALIASES.get(website, website)
-    if resolved not in WEBSITES:
-        choices = sorted(set(WEBSITES) | set(WEBSITE_ALIASES))
-        print(f"❌ Unknown website '{website}'. Choose: {', '.join(choices)}")
-        sys.exit(1)
-    return resolved
+    def site_env(self) -> Dict[str, str]:
+        """Return a complete environment dict for the current site."""
+        cfg = self.config
+        env = os.environ.copy()
+        env.update(
+            {
+                "DJANGO_SITE": self.site,
+                "DJANGO_WEBSITE": self.site,
+                "WEBSITE": self.site,
+                "WEBSITE_NAME": self.site,
+                "PROJECT_PATH": cfg["project_path"],
+                "DJANGO_WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
+                "WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
+                "DB_NAME": env.get("DB_NAME", cfg["db_name"]),
+                "DB_HOST": env.get("DB_HOST", "postgres"),
+                "REDIS_URL": env.get("REDIS_URL", "redis://redis:6379/0"),
+                "DJANGO_SETTINGS_MODULE": "configs.settings",
+                "RUNNING_ENV": "docker",
+                "SERVER_ENV": "production",
+                "ALLOWED_HOSTS": "*",
+            }
+        )
+        env.pop("DJANGO_SECRET_KEY", None)  # read from file in production
+        return env
 
+    def configure_django(self) -> None:
+        """Set up sys.path and environment so Django can run for this site."""
+        cfg = self.config
+        site_dir = REPO_ROOT / cfg["path"]
+        if not site_dir.exists():
+            raise SystemExit(f"Site directory not found: {site_dir}")
 
-# ─────────────────────────────────────────────
-# Per-website __main__.py check (local)
-# ─────────────────────────────────────────────
+        for path in (site_dir / "www", site_dir, REPO_ROOT):
+            path_str = str(path)
+            if path_str not in sys.path:
+                sys.path.insert(0, path_str)
 
-def _local_check(website: str) -> bool:
-    """
-    Run `python <website>/__main__.py check` locally.
-    Uses the website's .venv if present, otherwise system python.
-    Returns True if checks pass.
-    """
-    main_py = SCRIPT_DIR / website / "__main__.py"
-    if not main_py.exists():
-        print(f"⚠️  No __main__.py found at {main_py}, skipping local check")
+        os.environ.update(self.site_env())
+        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+        print(f"Using site '{self.site}' (site path: {site_dir})", file=sys.stderr)
+
+    # ------------------------------------------------------------------
+    #  Helpers (run, pop site arg)
+    # ------------------------------------------------------------------
+    @staticmethod
+    def _run(
+        cmd: List[str],
+        cwd: Optional[Path] = None,
+        env: Optional[Dict[str, str]] = None,
+        check: bool = True,
+    ) -> subprocess.CompletedProcess:
+        """Run a command, print it to stderr."""
+        print(f"+ {cmd}", file=sys.stderr)
+        return subprocess.run(
+            cmd, cwd=str(cwd or REPO_ROOT), env=env, check=check
+        )
+
+    @staticmethod
+    def pop_site_arg(argv: List[str]) -> Optional[str]:
+        """Remove --site argument from argv and return its value."""
+        for idx, arg in enumerate(argv[1:], start=1):
+            if arg.startswith("--site="):
+                value = arg.split("=", 1)[1]
+                del argv[idx]
+                return value
+            if arg == "--site" and idx + 1 < len(argv):
+                value = argv[idx + 1]
+                del argv[idx : idx + 2]
+                return value
+        return None
+
+    # ------------------------------------------------------------------
+    #  Site‑specific checks
+    # ------------------------------------------------------------------
+    def local_check(self) -> bool:
+        """Run `python <site>/__main__.py check` locally."""
+        main_py = REPO_ROOT / self.config["path"] / "__main__.py"
+        if not main_py.exists():
+            print(f"⚠️  No __main__.py found at {main_py}, skipping local check")
+            return True
+
+        venv_python = REPO_ROOT / ".venv" / "bin" / "python"
+        python = str(venv_python) if venv_python.exists() else sys.executable
+        site_dir = REPO_ROOT / self.config["path"]
+        env = self.site_env()
+
+        print(f"\n🔍 Running local Django check via {self.site}/__main__.py ...")
+        result = subprocess.run(
+            [python, str(main_py), "check"],
+            cwd=str(site_dir),
+            env=env,
+            capture_output=False,
+        )
+        if result.returncode != 0:
+            print(f"❌ Local check FAILED for {self.site}")
+            return False
+        print(f"✅ Local check PASSED for {self.site}")
         return True
 
-    # Prefer the workspace .venv python which has all deps installed
-    venv_python = SCRIPT_DIR / ".venv" / "bin" / "python"
-    python = str(venv_python) if venv_python.exists() else sys.executable
+    def container_check(self) -> bool:
+        """Run `manage.py check` inside the built container."""
+        image = self.config["service"]
+        env = self.site_env()
 
-    print(f"\n🔍 Running local Django check via {website}/__main__.py ...")
-    site_dir = SCRIPT_DIR / website
-    env = _website_env(website)
+        print(f"\n🔍 Running container Django check on service '{image}' ...")
+        cmd = [
+            "docker",
+            "compose",
+            "-f",
+            str(ROOT_COMPOSE),
+            "run",
+            "--rm",
+            "-e",
+            f"DJANGO_SETTINGS_MODULE={env['DJANGO_SETTINGS_MODULE']}",
+            "-e",
+            f"RUNNING_ENV={env['RUNNING_ENV']}",
+            "-e",
+            f"SERVER_ENV={env['SERVER_ENV']}",
+            "-e",
+            f"DB_HOST={env['DB_HOST']}",
+            "-e",
+            f"DB_NAME={env['DB_NAME']}",
+            "-e",
+            f"REDIS_URL={env['REDIS_URL']}",
+            "-e",
+            f"ALLOWED_HOSTS={env['ALLOWED_HOSTS']}",
+            image,
+            "python",
+            "manage.py",
+            "--site",
+            self.site,
+            "check",
+        ]
+        result = subprocess.run(cmd, capture_output=False)
+        if result.returncode != 0:
+            print(f"❌ Container check FAILED for {self.site}")
+            return False
+        print(f"✅ Container check PASSED for {self.site}")
+        return True
 
-    result = subprocess.run(
-        [python, str(main_py), "check"],
-        cwd=str(site_dir),
-        env=env,
-        capture_output=False,
-    )
-    if result.returncode != 0:
-        print(f"❌ Local check FAILED for {website}")
-        return False
-    print(f"✅ Local check PASSED for {website}")
-    return True
+    # ------------------------------------------------------------------
+    #  Utility commands
+    # ------------------------------------------------------------------
+    def sites(self, args: List[str]) -> int:
+        """List all sites with their paths, services, and aliases."""
+        parser = argparse.ArgumentParser(prog="sites")
+        parser.parse_args(args)
+        for name, cfg in SITES.items():
+            aliases = sorted(
+                alias for alias, target in SITE_ALIASES.items()
+                if target == name and alias != name
+            )
+            print(
+                f"{name:13} path={cfg['path']:12} service={cfg['service']:22} "
+                f"port={cfg['port']} aliases={', '.join(aliases)}"
+            )
+        return 0
 
+    def make(self, args: List[str]) -> int:
+        """Run a make target for the current site."""
+        parser = argparse.ArgumentParser(prog="make")
+        parser.add_argument("target", nargs="?", default="help")
+        parser.add_argument("make_args", nargs=argparse.REMAINDER)
+        parsed = parser.parse_args(args)
+        cmd = ["make", parsed.target, f"WEBSITE={self.site}", *parsed.make_args]
+        return self._run(cmd, env=self.site_env(), check=False).returncode
 
-# ─────────────────────────────────────────────
-# Container check (after build)
-# ─────────────────────────────────────────────
+    def make_check(self, args: List[str]) -> int:
+        """Dry‑run all make targets (or only safe ones) to validate them."""
+        parser = argparse.ArgumentParser(prog="make-check")
+        parser.add_argument("--all", action="store_true", help="Include destructive targets")
+        parsed = parser.parse_args(args)
 
-def _container_check(website: str) -> bool:
-    """Run manage.py check inside the built container image."""
-    cfg = WEBSITES[website]
-    image = cfg["container"]
-    env = _website_env(website)
+        # Get list of targets
+        result = subprocess.run(
+            ["make", "show-targets"],
+            cwd=str(REPO_ROOT),
+            text=True,
+            stdout=subprocess.PIPE,
+            stderr=subprocess.STDOUT,
+            check=False,
+        )
+        if result.returncode != 0:
+            raise SystemExit(result.stdout)
+        targets = [line.strip() for line in result.stdout.splitlines() if line.strip()]
 
-    print(f"\n🔍 Running container Django check on service '{image}' ...")
-    cmd = [
-        "docker", "compose", "-f", str(cfg["compose"]), "run", "--rm",
-        "-e", f"DJANGO_SETTINGS_MODULE={env['DJANGO_SETTINGS_MODULE']}",
-        "-e", f"RUNNING_ENV={env['RUNNING_ENV']}",
-        "-e", f"SERVER_ENV={env['SERVER_ENV']}",
-        "-e", f"DB_HOST={env['DB_HOST']}",
-        "-e", f"DB_NAME={env['DB_NAME']}",
-        "-e", f"REDIS_URL={env['REDIS_URL']}",
-        "-e", f"ALLOWED_HOSTS={env['ALLOWED_HOSTS']}",
-        image,
-        "python", "manage.py", "--site", website, "check",
-    ]
-    result = subprocess.run(cmd, capture_output=False)
-    if result.returncode != 0:
-        print(f"❌ Container check FAILED for {website}")
-        return False
-    print(f"✅ Container check PASSED for {website}")
-    return True
-
-
-# ─────────────────────────────────────────────
-# CLI Commands
-# ─────────────────────────────────────────────
-
-class CLI:
-    """
-    Websites CLI — check, deploy, push libs.
-
-    Examples:
-      python cli.py check lms-demo
-      python cli.py deploy lms-demo
-      python cli.py deploy ctc-research --skip-local-check
-      python cli.py push                        # commit & push all libs
-      python cli.py push --lib django-osoul     # push a single lib
-      python cli.py logs lms-demo
-      python cli.py down lms-demo
-    """
-
-    def check(self, website: str):
-        """
-        Run Django system checks locally via <website>/__main__.py.
-
-        Args:
-            website: 'lms-demo', 'ctc-research', or 'vresume'
-        """
-        website = _resolve(website)
-        ok = _local_check(website)
-        sys.exit(0 if ok else 1)
-
-    def deploy(self, website: str, skip_local_check: bool = False,
-               skip_container_check: bool = False, no_cache: bool = False):
-        """
-        Build, check, and deploy a website.
-
-        Steps:
-          1. Local check via <website>/__main__.py check  (skippable)
-          2. docker compose build [--no-cache]
-          3. Container check via docker run manage.py check  (skippable)
-          4. docker compose up -d
-
-        Args:
-            website:              'lms-demo' or 'ctc-research'
-            skip_local_check:     Skip step 1
-            skip_container_check: Skip step 3
-            no_cache:             Pass --no-cache to docker build
-        """
-        website = _resolve(website)
-        cfg = WEBSITES[website]
-        compose = str(cfg["compose"])
-
-        # ── Step 1: local check ──────────────────────────────────────────
-        if not skip_local_check:
-            if not _local_check(website):
-                print("\n💥 Aborting deploy — local check failed.")
-                sys.exit(1)
-
-        # ── Step 2: build ────────────────────────────────────────────────
-        build_cmd = ["docker", "compose", "-f", compose, "build"]
-        if no_cache:
-            build_cmd.append("--no-cache")
-        build_cmd.append(cfg["container"])
-        print(f"\n🏗️  Building {website} ...")
-        _run(build_cmd)
-
-        # ── Step 3: container check ──────────────────────────────────────
-        if not skip_container_check:
-            if not _container_check(website):
-                print("\n💥 Aborting deploy — container check failed.")
-                sys.exit(1)
-
-        # ── Step 4: up ───────────────────────────────────────────────────
-        print(f"\n🚀 Deploying {website} ...")
-        _run(["docker", "compose", "-f", compose, "up", "-d", "--build", cfg["container"]])
-        print(f"\n✅ {website} deployed. Health: http://localhost:{cfg['port']}/health/")
-
-    def logs(self, website: str, tail: int = 30, service: str = None):
-        """
-        Show container logs.
-
-        Args:
-            website: 'lms-demo', 'ctc-research', or 'vresume'
-            tail:    Number of lines (default 30)
-            service: Specific service name (optional)
-        """
-        website = _resolve(website)
-        cfg = WEBSITES[website]
-        cmd = ["docker", "compose", "-f", str(cfg["compose"]), "logs", f"--tail={tail}"]
-        if service:
-            cmd.append(service)
-        _run(cmd, check=False)
-
-    def down(self, website: str):
-        """
-        Stop and remove containers for a website.
-
-        Args:
-            website: 'lms-demo', 'ctc-research', or 'vresume'
-        """
-        website = _resolve(website)
-        cfg = WEBSITES[website]
-        _run(["docker", "compose", "-f", str(cfg["compose"]), "down", "--remove-orphans"])
-
-    def ps(self):
-        """Show status of all website containers."""
-        _run(["docker", "ps", "--format",
-              "table {{.Names}}\t{{.Status}}\t{{.Ports}}",
-              "--filter", "name=lms-demo-website",
-              "--filter", "name=ctc-research-website",
-              "--filter", "name=vresume-website"], check=False)
-
-    def build_assets(self, website: str = "all", production: bool = True, clean: bool = False):
-        """
-        Build static assets for a website.
-
-        Runs webpack bundling and Django collectstatic.
-
-        Args:
-            website:     'lms-demo', 'ctc-research', or 'all'
-            production:  Run production build (default True)
-            clean:       Clean bundles directory before building
-        """
-        if website != "all":
-            website = _resolve(website)
-
-        targets = [website] if website != "all" else WEBSITES.keys()
-
-        for site in targets:
-            site_dir = SCRIPT_DIR / site
-            manage_py = site_dir / "manage.py"
-
-            if not manage_py.exists():
-                print(f"⚠️  No manage.py found at {site_dir}, skipping")
+        failures = []
+        for target in targets:
+            if not parsed.all and target in SKIPPED_MAKE_TARGETS:
                 continue
-
-            print(f"\n🔨 Building assets for {site}...")
-
-            # Build the command
-            venv_python = site_dir / ".venv" / "bin" / "python"
-            python = str(venv_python) if venv_python.exists() else sys.executable
-
-            cmd = [
-                python,
-                str(manage_py),
-                "build_assets",
-            ]
-
-            if production:
-                cmd.append("--production")
-            else:
-                cmd.append("--development")
-
-            if clean:
-                cmd.append("--clean")
-
-            cmd.append("--no-input")
-
-            result = subprocess.run(cmd, cwd=str(site_dir), capture_output=False)
+            result = subprocess.run(
+                ["make", "--dry-run", target, f"WEBSITE={self.site}"],
+                cwd=str(REPO_ROOT),
+                env=self.site_env(),
+                text=True,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                check=False,
+            )
             if result.returncode != 0:
-                print(f"❌ Asset build failed for {site}")
-                sys.exit(1)
+                failures.append(f"{target}: {result.stdout.strip()}")
 
-            print(f"✅ Assets built for {site}")
+        compose_result = self._run(
+            ["docker", "compose", "-f", str(ROOT_COMPOSE), "config", "--quiet"],
+            check=False,
+        )
+        if compose_result.returncode != 0:
+            failures.append("docker compose config failed")
 
-    def test(self, website: str = "all", live: bool = False):
-        """
-        Run tests against running containers.
+        if failures:
+            print("\nMake command validation failed:", file=sys.stderr)
+            for failure in failures:
+                print(f"- {failure}", file=sys.stderr)
+            return 1
+        print("Make command dry-run validation and compose config completed without errors.")
+        return 0
 
-        Steps:
-          1. Container tests via tests/scripts/run_container_tests.sh
-          2. HTTP integration tests via pytest tests/test_sites.py
+    def check_sites(self, args: List[str]) -> int:
+        """Run Django system check on one or more sites."""
+        parser = argparse.ArgumentParser(prog="check-sites")
+        parser.add_argument("sites", nargs="*", default=list(SITES))
+        parsed = parser.parse_args(args)
+        failed = []
+        for site_name in parsed.sites:
+            site = self.resolve_site(site_name)
+            cli = SiteCLI(site)
+            cli.configure_django()
+            result = self._run(
+                [sys.executable, str(REPO_ROOT / "manage.py"), "check"],
+                env=cli.site_env(),
+                check=False,
+            )
+            if result.returncode != 0:
+                failed.append(site)
+        if failed:
+            print(f"Failed site checks: {', '.join(failed)}", file=sys.stderr)
+            return 1
+        return 0
 
-        Args:
-            website: 'lms-demo', 'ctc-research', or 'all'
-            live:    Use live domains (core.lms-demo / www.ctc-research)
-        """
-        if website != "all":
-            website = _resolve(website)
+    def deploy(self, args: List[str]) -> int:
+        """Build, check, and deploy the current site."""
+        parser = argparse.ArgumentParser(prog="deploy")
+        parser.add_argument("--no-cache", action="store_true")
+        parser.add_argument("--skip-local-check", action="store_true")
+        parser.add_argument("--skip-container-check", action="store_true")
+        parsed = parser.parse_args(args)
+        cfg = self.config
 
-        script = SCRIPT_DIR / "tests" / "scripts" / "run_container_tests.sh"
-        env = os.environ.copy()
-        if live:
+        if not parsed.skip_local_check:
+            if not self.local_check():
+                print("\n💥 Aborting deploy — local check failed.", file=sys.stderr)
+                return 1
+
+        build_cmd = ["docker", "compose", "-f", str(ROOT_COMPOSE), "build"]
+        if parsed.no_cache:
+            build_cmd.append("--no-cache")
+        build_cmd.append(cfg["service"])
+        print(f"\n🏗️  Building {self.site} ...")
+        result = self._run(build_cmd, check=False)
+        if result.returncode != 0:
+            return result.returncode
+
+        if not parsed.skip_container_check:
+            if not self.container_check():
+                print("\n💥 Aborting deploy — container check failed.", file=sys.stderr)
+                return 1
+
+        print(f"\n🚀 Deploying {self.site} ...")
+        result = self._run(
+            ["docker", "compose", "-f", str(ROOT_COMPOSE), "up", "-d", "--build", cfg["service"]],
+            check=False,
+        )
+        if result.returncode == 0:
+            print(f"\n✅ {self.site} deployed. Health: http://localhost:{cfg['port']}/health/")
+        return result.returncode
+
+    def logs(self, args: List[str]) -> int:
+        """Show container logs for the current site."""
+        parser = argparse.ArgumentParser(prog="logs")
+        parser.add_argument("--tail", default="100")
+        parser.add_argument("--service", help="Specific service name (optional)")
+        parsed = parser.parse_args(args)
+        cfg = self.config
+        cmd = ["docker", "compose", "-f", str(ROOT_COMPOSE), "logs", f"--tail={parsed.tail}"]
+        if parsed.service:
+            cmd.append(parsed.service)
+        else:
+            cmd.append(cfg["service"])
+        return self._run(cmd, check=False).returncode
+
+    def down(self, args: List[str]) -> int:
+        """Stop and remove containers for the current site (or all if no site set)."""
+        parser = argparse.ArgumentParser(prog="down")
+        parser.add_argument("--all", action="store_true", help="Stop all sites (ignores current site)")
+        parsed = parser.parse_args(args)
+        if parsed.all:
+            cmd = ["docker", "compose", "-f", str(ROOT_COMPOSE), "down", "--remove-orphans"]
+        else:
+            cmd = [
+                "docker",
+                "compose",
+                "-f",
+                str(ROOT_COMPOSE),
+                "down",
+                "--remove-orphans",
+                self.config["service"],
+            ]
+        return self._run(cmd, check=False).returncode
+
+    def ps(self, args: List[str]) -> int:
+        """Show status of website containers."""
+        parser = argparse.ArgumentParser(prog="ps")
+        parser.parse_args(args)
+        filters = [f"--filter=name={cfg['service']}" for cfg in SITES.values()]
+        cmd = ["docker", "ps", "--format", "table {{.Names}}\t{{.Status}}\t{{.Ports}}"] + filters
+        return self._run(cmd, check=False).returncode
+
+    def build_assets(self, args: List[str]) -> int:
+        """Build static assets (webpack + collectstatic) for a site."""
+        parser = argparse.ArgumentParser(prog="build-assets")
+        parser.add_argument("--production", action="store_true", default=True)
+        parser.add_argument("--development", action="store_true")
+        parser.add_argument("--clean", action="store_true")
+        parsed = parser.parse_args(args)
+
+        production = parsed.production if not parsed.development else False
+        site_dir = REPO_ROOT / self.config["path"]
+        manage_py = site_dir / "manage.py"
+        if not manage_py.exists():
+            print(f"⚠️  No manage.py found at {site_dir}, skipping")
+            return 1
+
+        print(f"\n🔨 Building assets for {self.site}...")
+        venv_python = site_dir / ".venv" / "bin" / "python"
+        python = str(venv_python) if venv_python.exists() else sys.executable
+
+        cmd = [python, str(manage_py), "build_assets"]
+        if production:
+            cmd.append("--production")
+        else:
+            cmd.append("--development")
+        if parsed.clean:
+            cmd.append("--clean")
+        cmd.append("--no-input")
+
+        result = subprocess.run(cmd, cwd=str(site_dir), capture_output=False)
+        if result.returncode != 0:
+            print(f"❌ Asset build failed for {self.site}")
+            return 1
+        print(f"✅ Assets built for {self.site}")
+        return 0
+
+    def test(self, args: List[str]) -> int:
+        """Run tests against running containers."""
+        parser = argparse.ArgumentParser(prog="test")
+        parser.add_argument("--live", action="store_true", help="Use live domains")
+        parsed = parser.parse_args(args)
+
+        script = REPO_ROOT / "tests" / "scripts" / "run_container_tests.sh"
+        env = self.site_env()
+        if parsed.live:
             env["USE_LIVE_DOMAINS"] = "1"
 
         # Container-level tests
-        print(f"\n🧪 Running container tests for: {website}")
-        _run(["bash", str(script), website], cwd=str(SCRIPT_DIR))
+        print(f"\n🧪 Running container tests for: {self.site}")
+        result = self._run(["bash", str(script), self.site], env=env, check=False)
+        if result.returncode != 0:
+            return result.returncode
 
         # HTTP integration tests
         print("\n🌐 Running HTTP integration tests ...")
         pytest_cmd = [
-            sys.executable, "-m", "pytest",
-            "tests/test_sites.py", "-v", "--tb=short", "--no-header",
+            sys.executable,
+            "-m",
+            "pytest",
+            "tests/test_sites.py",
+            "-v",
+            "--tb=short",
+            "--no-header",
         ]
-        result = subprocess.run(pytest_cmd, cwd=str(SCRIPT_DIR), env=env)
+        result = subprocess.run(pytest_cmd, cwd=str(REPO_ROOT), env=env, check=False)
         if result.returncode != 0:
-            print("❌ HTTP tests failed")
-            sys.exit(result.returncode)
+            print("❌ HTTP tests failed", file=sys.stderr)
+            return result.returncode
         print("✅ All tests passed")
+        return 0
 
-
-    def push(self, lib: str = "all", message: str = "", branch: str = "generic"):
-        """
-        Commit and push local lib changes to their GitHub branch.
-
-        Stages all modified tracked files in each lib, commits with an
-        auto-generated message (or the one you provide), then pushes to
-        the target branch.  After pushing, updates the commit SHAs in
-        websites/ctc-research/uv.lock so the next Docker build picks
-        up the new versions.
-
-        Args:
-            lib:     'django-osoul', 'django-rseal', 'django-grep', or 'all'
-            message: Commit message (auto-generated if omitted)
-            branch:  Target branch (default: 'generic')
-
-        Examples:
-            python cli.py push
-            python cli.py push --lib django-osoul --message "fix: add WagtailPageMixin"
-            python cli.py push --lib django-rseal
-        """
-        targets = (
-            {lib: LIBS[lib]} if lib != "all" else LIBS
-        )
-
-        if lib != "all" and lib not in LIBS:
-            print(f"❌ Unknown lib '{lib}'. Choose: {', '.join(LIBS)} or 'all'")
-            sys.exit(1)
-
-        pushed: dict[str, str] = {}
-
-        for name, path in targets.items():
-            print(f"\n📦 Processing {name} at {path} ...")
-
-            # Check for any changes (tracked modified + untracked new files)
-            status = subprocess.run(
-                ["git", "status", "--porcelain"],
-                cwd=str(path), capture_output=True, text=True
-            )
-            if not status.stdout.strip():
-                print(f"  ✓ No changes in {name}, skipping.")
-                continue
-
-            # Stage all tracked modifications (not untracked)
-            subprocess.run(["git", "add", "-u"], cwd=str(path), check=True)
-
-            # Also stage any new files under src/
-            subprocess.run(
-                ["git", "add", "src/"],
-                cwd=str(path), check=False  # non-fatal if src/ doesn't exist
-            )
-
-            # Build commit message
-            commit_msg = message or f"chore({name}): sync local changes to {branch}"
-
-            # Commit (skip if nothing staged)
-            staged = subprocess.run(
-                ["git", "diff", "--cached", "--quiet"],
-                cwd=str(path)
-            )
-            if staged.returncode == 0:
-                print(f"  ✓ Nothing staged in {name}, skipping commit.")
-                continue
-
-            subprocess.run(
-                ["git", "commit", "-m", commit_msg],
-                cwd=str(path), check=True
-            )
-
-            # Push
-            print(f"  🚀 Pushing {name} → origin/{branch} ...")
-            subprocess.run(
-                ["git", "push", "origin", branch],
-                cwd=str(path), check=True
-            )
-
-            # Capture new SHA
-            sha = subprocess.run(
-                ["git", "rev-parse", "HEAD"],
-                cwd=str(path), capture_output=True, text=True
-            ).stdout.strip()
-            pushed[name] = sha
-            print(f"  ✅ {name} pushed at {sha[:12]}")
-
-        if not pushed:
-            print("\n✓ Nothing to push.")
-            return
-
-        # Update uv.lock files with new SHAs
-        self._update_lock_shas(pushed)
-        print(f"\n✅ Pushed {len(pushed)} lib(s). Lock files updated.")
-        print("   Run `docker compose build --no-cache` to pick up the changes.")
-
-    def _update_lock_shas(self, pushed: dict[str, str]):
+    def _update_lock_shas(self, pushed: Dict[str, str]) -> None:
         """Update commit SHAs in all uv.lock files for pushed libs."""
-        lock_files = list(SCRIPT_DIR.glob("*/uv.lock"))
+        lock_files = list(REPO_ROOT.glob("*/uv.lock"))
         if not lock_files:
             return
 
-        # Map lib name → GitHub repo slug (as it appears in the lock file)
         repo_map = {
             "django-osoul": "django-osoul",
             "django-rseal": "django-rseal",
-            "django-grep":  "django-grep",
+            "django-grep": "django-grep",
         }
 
         for lock_path in lock_files:
@@ -481,22 +546,187 @@ class CLI:
                 repo = repo_map.get(lib_name)
                 if not repo:
                     continue
-                # Replace any existing 40-char SHA for this repo
-                import re
-                pattern = (
-                    rf'(git = "https://github\.com/mammhoud/{re.escape(repo)}'
-                    rf'\?branch=generic#)[0-9a-f]{{40}}'
-                )
+                pattern = rf'(git = "https://github\.com/mammhoud/{re.escape(repo)}\?branch=generic#)[0-9a-f]{{40}}'
                 content = re.sub(pattern, rf'\g<1>{new_sha}', content)
 
             if content != original:
                 lock_path.write_text(content)
-                print(f"  📝 Updated {lock_path.relative_to(SCRIPT_DIR)}")
+                print(f"  📝 Updated {lock_path.relative_to(REPO_ROOT)}")
+
+    def push(self, args: List[str]) -> int:
+        """Commit and push local lib changes to GitHub, update uv.lock SHAs."""
+        parser = argparse.ArgumentParser(prog="push")
+        parser.add_argument("--lib", default="all", help="Library name or 'all'")
+        parser.add_argument("--message", default="", help="Commit message")
+        parser.add_argument("--branch", default="generic", help="Target branch")
+        parsed = parser.parse_args(args)
+
+        if parsed.lib != "all" and parsed.lib not in LIBS:
+            print(f"❌ Unknown lib '{parsed.lib}'. Choose: {', '.join(LIBS)} or 'all'", file=sys.stderr)
+            return 1
+
+        targets = {parsed.lib: LIBS[parsed.lib]} if parsed.lib != "all" else LIBS
+        pushed: Dict[str, str] = {}
+
+        for name, path in targets.items():
+            print(f"\n📦 Processing {name} at {path} ...")
+
+            status = subprocess.run(
+                ["git", "status", "--porcelain"],
+                cwd=str(path),
+                capture_output=True,
+                text=True,
+                check=False,
+            )
+            if not status.stdout.strip():
+                print(f"  ✓ No changes in {name}, skipping.")
+                continue
+
+            subprocess.run(["git", "add", "-u"], cwd=str(path), check=True)
+            subprocess.run(["git", "add", "src/"], cwd=str(path), check=False)
+
+            commit_msg = parsed.message or f"chore({name}): sync local changes to {parsed.branch}"
+            staged = subprocess.run(["git", "diff", "--cached", "--quiet"], cwd=str(path))
+            if staged.returncode == 0:
+                print(f"  ✓ Nothing staged in {name}, skipping commit.")
+                continue
+
+            subprocess.run(["git", "commit", "-m", commit_msg], cwd=str(path), check=True)
+            print(f"  🚀 Pushing {name} → origin/{parsed.branch} ...")
+            subprocess.run(["git", "push", "origin", parsed.branch], cwd=str(path), check=True)
+
+            sha = subprocess.run(
+                ["git", "rev-parse", "HEAD"],
+                cwd=str(path),
+                capture_output=True,
+                text=True,
+                check=True,
+            ).stdout.strip()
+            pushed[name] = sha
+            print(f"  ✅ {name} pushed at {sha[:12]}")
+
+        if not pushed:
+            print("\n✓ Nothing to push.")
+            return 0
+
+        self._update_lock_shas(pushed)
+        print(f"\n✅ Pushed {len(pushed)} lib(s). Lock files updated.")
+        print("   Run `docker compose build --no-cache` to pick up the changes.")
+        return 0
+
+    # ------------------------------------------------------------------
+    #  Command validation
+    # ------------------------------------------------------------------
+    def validate_commands(self, args: List[str]) -> int:
+        """Validate all make commands and check for errors."""
+        parser = argparse.ArgumentParser(prog="validate-commands")
+        parser.add_argument("--site", help="Validate for specific site")
+        parser.add_argument("--all", action="store_true", help="Validate all sites")
+        parser.add_argument("--verbose", action="store_true", help="Show detailed output")
+        parsed = parser.parse_args(args)
+
+        failed = []
+        passed = []
+
+        # Determine which sites to validate
+        if parsed.all:
+            sites_to_check = list(SITES.keys())
+        elif parsed.site:
+            sites_to_check = [parsed.site]
+        else:
+            sites_to_check = ["ctc-research"]
+
+        for site_name in sites_to_check:
+            try:
+                site = self.resolve_site(site_name)
+                cli = SiteCLI(site)
+                env = cli.site_env()
+
+                # Get all make targets
+                result = subprocess.run(
+                    ["make", "show-targets"],
+                    cwd=str(REPO_ROOT),
+                    env=env,
+                    text=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    check=False,
+                )
+
+                if result.returncode != 0:
+                    failed.append(f"{site_name}: Failed to list targets")
+                    continue
+
+                targets = [line.strip() for line in result.stdout.splitlines() if line.strip()]
+
+                site_passed = 0
+                site_failed = 0
+
+                for target in targets:
+                    result = subprocess.run(
+                        ["make", "--dry-run", target, f"WEBSITE={site}"],
+                        cwd=str(REPO_ROOT),
+                        env=env,
+                        text=True,
+                        stdout=subprocess.PIPE,
+                        stderr=subprocess.STDOUT,
+                        check=False,
+                    )
+                    if result.returncode == 0:
+                        site_passed += 1
+                        if parsed.verbose:
+                            print(f"  ✅ {target}")
+                    else:
+                        site_failed += 1
+                        failed.append(f"{site_name}/{target}: {result.stdout.strip()}")
+                        if parsed.verbose:
+                            print(f"  ❌ {target}: {result.stdout.strip()}")
+
+                passed.append(f"{site_name}: {site_passed} passed, {site_failed} failed")
+                if parsed.verbose:
+                    print(f"\n{site_name}: {site_passed} passed, {site_failed} failed")
+
+            except Exception as e:
+                failed.append(f"{site_name}: {str(e)}")
+
+        print("\n" + "=" * 60)
+        print("COMMAND VALIDATION SUMMARY")
+        print("=" * 60)
+
+        if passed:
+            print("\nSites Passed:")
+            for p in passed:
+                print(f"  {p}")
+
+        if failed:
+            print("\nFailures:")
+            for f in failed:
+                print(f"  {f}")
+            return 1
+
+        print("\n✅ All commands validated successfully!")
+        return 0
+
+    # ------------------------------------------------------------------
+    #  Django command runner
+    # ------------------------------------------------------------------
+    def run_django_command(self, argv: List[str]) -> None:
+        """Configure environment and execute a Django management command."""
+        self.configure_django()
+        try:
+            from django.core.management import execute_from_command_line
+        except ImportError as exc:
+            raise ImportError(
+                "Couldn't import Django. Are you sure it's installed and "
+                "available on your PYTHONPATH environment variable?"
+            ) from exc
+        execute_from_command_line(argv)
 
 
-def main():
-    fire.Fire(CLI)
-
-
+# ----------------------------------------------------------------------
+#  Command line interface for direct use (optional)
+# ----------------------------------------------------------------------
 if __name__ == "__main__":
-    main()
+    # Allow running site_cli.py as a script for testing
+    cli = SiteCLI()
+    print(f"Current site: {cli.site}")
