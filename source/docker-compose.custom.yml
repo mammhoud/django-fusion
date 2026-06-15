@@ -1,0 +1,243 @@
+# ============================================================
+# Coolify Custom Compose Overrides
+# https://coolify.io/docs/knowledge-base/custom-compose-overrides
+# ============================================================
+# This file includes all utility and warehouse services.
+# It allows you to persist custom configurations without
+# losing them on Coolify upgrades.
+#
+# Merge order (later files override earlier):
+# 1. docker-compose.yml (base)
+# 2. docker-compose.override.yml (development)
+# 3. docker-compose.prod.yml (production)
+# 4. docker-compose.custom.yml (your customizations)
+# ============================================================
+
+# ============================================================
+# External Include Files
+# ============================================================
+# Services from utilities/ - Monitoring, logging, and utilities
+include:
+  - utilities/docker-compose.yml
+
+  # Services from warehouses/ - Database and caching
+  - warehouses/docker-compose.yml
+
+services:
+  # ============================================================
+  # Enhanced Coolify Service
+  # ============================================================
+  coolify:
+    container_name: coolify
+    restart: always
+    working_dir: /var/www/html
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_URL=${APP_URL:-http://localhost:8000}
+      - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-512M}
+      - PHP_FPM_PM_CONTROL=${PHP_FPM_PM_CONTROL:-dynamic}
+      - PHP_FPM_PM_START_SERVERS=${PHP_FPM_PM_START_SERVERS:-4}
+      - PHP_FPM_PM_MIN_SPARE_SERVERS=${PHP_FPM_PM_MIN_SPARE_SERVERS:-2}
+      - PHP_FPM_PM_MAX_SPARE_SERVERS=${PHP_FPM_PM_MAX_SPARE_SERVERS:-10}
+    volumes:
+      - type: bind
+        source: .env
+        target: /var/www/html/.env
+        read_only: true
+      - ${DATA_DIR:-/data/coolify}/ssh:/var/www/html/storage/app/ssh
+      - ${DATA_DIR:-/data/coolify}/applications:/var/www/html/storage/app/applications
+      - ${DATA_DIR:-/data/coolify}/databases:/var/www/html/storage/app/databases
+      - ${DATA_DIR:-/data/coolify}/services:/var/www/html/storage/app/services
+      - ${DATA_DIR:-/data/coolify}/backups:/var/www/html/storage/app/backups
+    ports:
+      - "${APP_PORT:-8000}:8080"
+    expose:
+      - "${APP_PORT:-8000}"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:8080/api/health || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      soketi:
+        condition: service_healthy
+    networks:
+      - coolify
+      - internal
+      - utilities-net
+      - warehouse-net
+
+  # ============================================================
+  # PostgreSQL Database (Coolify)
+  # ============================================================
+  postgres:
+    image: postgres:15-alpine
+    container_name: coolify-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-coolify}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
+      POSTGRES_DB: ${DB_DATABASE:-coolify}
+    volumes:
+      - coolify-db:/var/lib/postgresql/data
+      - coolify-db-backups:/backups
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+      - warehouse-net
+
+  # ============================================================
+  # Redis Cache (Coolify)
+  # ============================================================
+  redis:
+    image: redis:7-alpine
+    container_name: coolify-redis
+    restart: always
+    command: >
+      redis-server
+      --save 20 1
+      --loglevel warning
+      --requirepass ${REDIS_PASSWORD:-redis_password}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - coolify-redis:/data
+      - coolify-redis-backups:/backups
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - internal
+      - warehouse-net
+
+  # ============================================================
+  # Soketi (Real-time)
+  # ============================================================
+  soketi:
+    image: '${REGISTRY_URL:-ghcr.io}/coollabsio/coolify-realtime:1.0.16'
+    container_name: coolify-realtime
+    restart: always
+    extra_hosts:
+      - host.docker.internal:host-gateway
+    environment:
+      APP_NAME: ${APP_NAME:-Coolify}
+      SOKETI_DEBUG: ${SOKETI_DEBUG:-false}
+      SOKETI_DEFAULT_APP_ID: ${PUSHER_APP_ID}
+      SOKETI_DEFAULT_APP_KEY: ${PUSHER_APP_KEY}
+      SOKETI_DEFAULT_APP_SECRET: ${PUSHER_APP_SECRET}
+      SOKETI_HOST: ${SOKETI_HOST:-0.0.0.0}
+      SOKETI_METRICS_ENABLED: "true"
+      SOKETI_METRICS_HTTP_PORT: "9601"
+    ports:
+      - "${SOKETI_PORT:-6001}:6001"
+      - "6002:6002"
+      - "9601:9601"
+    volumes:
+      - ${DATA_DIR:-/data/coolify}/ssh:/var/www/html/storage/app/ssh
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6001/ready && wget -qO- http://127.0.0.1:6002/ready || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - coolify
+      - internal
+      - utilities-net
+
+  # ============================================================
+  # Adminer (Database Admin UI) - Merge with warehouses
+  # ============================================================
+  adminer:
+    container_name: coolify-adminer
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.${DOMAIN_NAME:-localhost}`)"
+      - "traefik.http.routers.adminer.entrypoints=web"
+      - "traefik.http.routers.adminer.tls=true"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"
+
+# ============================================================
+# Networks
+# ============================================================
+networks:
+  coolify:
+    name: coolify
+    driver: bridge
+    external: false
+  internal:
+    name: coolify-internal
+    driver: bridge
+    internal: true
+    external: false
+  utilities-net:
+    name: utilities-net
+    driver: bridge
+    external: false
+  warehouse-net:
+    name: warehouse-net
+    driver: bridge
+    external: false
+  code-server:
+    name: code-server
+    external: true
+  mailpit:
+    name: mailpit
+    external: true
+  ollama:
+    name: ollama
+    external: true
+
+# ============================================================
+# Volumes
+# ============================================================
+volumes:
+  coolify-db:
+    name: coolify-db
+    external: false
+  coolify-db-backups:
+    name: coolify-db-backups
+    external: false
+  coolify-redis:
+    name: coolify-redis
+    external: false
+  coolify-redis-backups:
+    name: coolify-redis-backups
+    external: false
+
+  # Service-specific named volumes (unique, referenced by service compose files)
+  code-server-config:
+    name: code-server-config
+    external: false
+
+  mailpit-data:
+    name: mailpit-data
+    external: false
+
+  ollama:
+    name: ollama
+    external: false
+
+  open-webui:
+    name: open-webui
+    external: false
+
+# x-rundum mapping removed — service metadata cleaned up

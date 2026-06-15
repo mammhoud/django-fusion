@@ -1,0 +1,133 @@
+#!/usr/bin/env bash
+
+### Database management utilities.
+###
+### Commands:
+###     list        List all databases
+###     users       List all users
+###     size        Show database sizes
+###     connections Show active connections
+###     vacuum      Run VACUUM on all databases
+###     analyze     Run ANALYZE on all databases
+###
+### Usage:
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres db-manage list
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres db-manage size
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+# Set connection variables
+export PGHOST="$POSTGRES_HOST"
+export PGPORT="$POSTGRES_PORT"
+export PGUSER="$POSTGRES_USER"
+export PGPASSWORD="$POSTGRES_PASSWORD"
+
+# Commands
+case "${1:-}" in
+    list)
+        message_welcome "List of all databases:"
+        psql -c "
+        SELECT 
+            d.datname as \"Database\",
+            pg_size_pretty(pg_database_size(d.datname)) as \"Size\",
+            d.datcollate as \"Collation\",
+            d.datconnlimit as \"Conn Limit\",
+            CASE WHEN d.datallowconn THEN 'Yes' ELSE 'No' END as \"Conn Allowed\"
+        FROM pg_database d
+        WHERE d.datname NOT IN ('template0', 'template1')
+        ORDER BY d.datname;
+        " postgres
+        ;;
+    
+    users)
+        message_welcome "List of all users:"
+        psql -c "
+        SELECT 
+            u.usename as \"Username\",
+            u.usesysid as \"User ID\",
+            CASE WHEN u.usesuper THEN 'Yes' ELSE 'No' END as \"Superuser\",
+            CASE WHEN u.usecreatedb THEN 'Yes' ELSE 'No' END as \"Create DB\",
+            CASE WHEN u.userepl THEN 'Yes' ELSE 'No' END as \"Replication\",
+            u.valuntil as \"Password Expires\"
+        FROM pg_user u
+        ORDER BY u.usename;
+        " postgres
+        ;;
+    
+    size)
+        message_welcome "Database sizes:"
+        psql -c "
+        SELECT 
+            d.datname as \"Database\",
+            pg_size_pretty(pg_database_size(d.datname)) as \"Size\",
+            pg_size_pretty(pg_database_size(d.datname) - pg_stat_file('base/' || d.oid || '/PG_VERSION').size) as \"Data Size\",
+            t.spcname as \"Tablespace\"
+        FROM pg_database d
+        JOIN pg_tablespace t ON d.dattablespace = t.oid
+        WHERE d.datname NOT IN ('template0', 'template1')
+        ORDER BY pg_database_size(d.datname) DESC;
+        " postgres
+        ;;
+    
+    connections)
+        message_welcome "Active connections:"
+        psql -c "
+        SELECT 
+            pid as \"PID\",
+            usename as \"User\",
+            datname as \"Database\",
+            client_addr as \"Client Address\",
+            application_name as \"Application\",
+            state as \"State\",
+            backend_start as \"Backend Start\",
+            query_start as \"Query Start\",
+            query as \"Query\"
+        FROM pg_stat_activity
+        WHERE datname IS NOT NULL
+        ORDER BY query_start;
+        " postgres
+        ;;
+    
+    vacuum)
+        message_welcome "Running VACUUM on all databases..."
+        for db in "${ALL_DATABASES[@]}"; do
+            message_info "Running VACUUM on database '$db'..."
+            psql -c "VACUUM (VERBOSE, ANALYZE);" "$db" || true
+        done
+        message_success "VACUUM completed on all databases"
+        ;;
+    
+    analyze)
+        message_welcome "Running ANALYZE on all databases..."
+        for db in "${ALL_DATABASES[@]}"; do
+            message_info "Running ANALYZE on database '$db'..."
+            psql -c "ANALYZE VERBOSE;" "$db" || true
+        done
+        message_success "ANALYZE completed on all databases"
+        ;;
+    
+    *)
+        echo "Database Management Utilities"
+        echo ""
+        echo "Usage: db-manage <command>"
+        echo ""
+        echo "Commands:"
+        echo "  list        - List all databases"
+        echo "  users       - List all users"
+        echo "  size        - Show database sizes"
+        echo "  connections - Show active connections"
+        echo "  vacuum      - Run VACUUM on all databases"
+        echo "  analyze     - Run ANALYZE on all databases"
+        echo ""
+        echo "Examples:"
+        echo "  docker compose exec postgres db-manage list"
+        echo "  docker compose exec postgres db-manage size"
+        exit 1
+        ;;
+esac

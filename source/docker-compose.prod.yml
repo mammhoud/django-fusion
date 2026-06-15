@@ -1,0 +1,85 @@
+# ============================================================
+# Coolify Production Docker Compose Overrides
+# ============================================================
+# These settings override docker-compose.yml for production
+# ============================================================
+
+services:
+  coolify:
+    image: "${REGISTRY_URL:-ghcr.io}/coollabsio/coolify:${LATEST_IMAGE:-latest}"
+    environment:
+      - APP_ENV=${APP_ENV:-production}
+      - PHP_MEMORY_LIMIT=${PHP_MEMORY_LIMIT:-256M}
+      - PHP_FPM_PM_CONTROL=${PHP_FPM_PM_CONTROL:-dynamic}
+      - PHP_FPM_PM_START_SERVERS=${PHP_FPM_PM_START_SERVERS:-1}
+      - PHP_FPM_PM_MIN_SPARE_SERVERS=${PHP_FPM_PM_MIN_SPARE_SERVERS:-1}
+      - PHP_FPM_PM_MAX_SPARE_SERVERS=${PHP_FPM_PM_MAX_SPARE_SERVERS:-10}
+    env_file:
+      - .env
+    ports:
+      - "${APP_PORT:-8000}:8080"
+    expose:
+      - "${APP_PORT:-8000}"
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://127.0.0.1:8080/api/health || exit 1"]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+      soketi:
+        condition: service_healthy
+
+  postgres:
+    volumes:
+      - coolify-db:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: ${DB_USERNAME:-coolify}
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
+      POSTGRES_DB: ${DB_DATABASE:-coolify}
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-coolify}", "-d", "${DB_DATABASE:-coolify}"]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+
+  redis:
+    command: redis-server --save 20 1 --loglevel warning --requirepass ${REDIS_PASSWORD:-redis_password}
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - coolify-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+
+  soketi:
+    image: '${REGISTRY_URL:-ghcr.io}/coollabsio/coolify-realtime:1.0.16'
+    ports:
+      - "${SOKETI_PORT:-6001}:6001"
+      - "6002:6002"
+    volumes:
+      - ${DATA_DIR:-/data/coolify}/ssh:/var/www/html/storage/app/ssh
+    environment:
+      APP_NAME: ${APP_NAME:-Coolify}
+      SOKETI_DEBUG: ${SOKETI_DEBUG:-false}
+      SOKETI_DEFAULT_APP_ID: ${PUSHER_APP_ID}
+      SOKETI_DEFAULT_APP_KEY: ${PUSHER_APP_KEY}
+      SOKETI_DEFAULT_APP_SECRET: ${PUSHER_APP_SECRET}
+      SOKETI_HOST: ${SOKETI_HOST:-0.0.0.0}
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1:6001/ready && wget -qO- http://127.0.0.1:6002/ready || exit 1"]
+      interval: 5s
+      retries: 10
+      timeout: 2s
+
+volumes:
+  coolify-db:
+    name: coolify-db
+  coolify-redis:
+    name: coolify-redis

@@ -1,0 +1,63 @@
+services:
+  mailpit:
+    image: axllent/mailpit
+    ports:
+      - '1025:1025'
+    volumes:
+      - 'mailpit-data:/data'
+      - '/data/coolify/services/h11re92ovi95kmochj7znz8y/htpasswd:/data/htpasswd'
+    environment:
+      SERVICE_URL_MAILPIT_8025: 'http://mailpit-h11re92ovi95kmochj7znz8y.72.61.82.167.sslip.io:8025'
+      MP_MAX_MESSAGES: '5000'
+      MP_DATABASE: /data/mailpit.db
+      MP_SMTP_AUTH_ACCEPT_ANY: '1'
+      MP_SMTP_AUTH_ALLOW_INSECURE: '1'
+      MP_UI_AUTH_FILE: /data/htpasswd
+      COOLIFY_RESOURCE_UUID: h11re92ovi95kmochj7znz8y
+      COOLIFY_CONTAINER_NAME: mailpit-h11re92ovi95kmochj7znz8y
+      COOLIFY_FQDN: mailpit-h11re92ovi95kmochj7znz8y.72.61.82.167.sslip.io
+      COOLIFY_URL: 'http://mailpit-h11re92ovi95kmochj7znz8y.72.61.82.167.sslip.io'
+      SERVICE_NAME_MAILPIT: mailpit
+    healthcheck:
+      test:
+        - CMD
+        - /mailpit
+        - readyz
+      interval: 5s
+      timeout: 20s
+      retries: 10
+    container_name: mailpit-h11re92ovi95kmochj7znz8y
+    restart: unless-stopped
+    labels:
+      - coolify.managed=true
+      - coolify.version=4.1.2
+      - coolify.serviceId=5
+      - coolify.type=service
+      - coolify.name=mailpit-h11re92ovi95kmochj7znz8y
+      - coolify.resourceName=mailpit
+      - coolify.projectName=websites
+      - coolify.serviceName=mailpit
+      - coolify.environmentName=utilities
+      - coolify.pullRequestId=0
+      - coolify.service.subId=14
+      - coolify.service.subType=application
+      - coolify.service.subName=mailpit
+      - traefik.enable=true
+      - traefik.http.middlewares.gzip.compress=true
+      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
+      - traefik.http.routers.http-0-h11re92ovi95kmochj7znz8y-mailpit.entryPoints=http
+      - traefik.http.routers.http-0-h11re92ovi95kmochj7znz8y-mailpit.middlewares=gzip
+      - 'traefik.http.routers.http-0-h11re92ovi95kmochj7znz8y-mailpit.rule=Host(`mailpit-h11re92ovi95kmochj7znz8y.72.61.82.167.sslip.io`) && PathPrefix(`/`)'
+      - traefik.http.routers.http-0-h11re92ovi95kmochj7znz8y-mailpit.service=http-0-h11re92ovi95kmochj7znz8y-mailpit
+      - traefik.http.services.http-0-h11re92ovi95kmochj7znz8y-mailpit.loadbalancer.server.port=8025
+    networks:
+      mailpit: null
+    env_file:
+      - .env
+volumes:
+  mailpit-data:
+    name: mailpit-data
+networks:
+  mailpit:
+    name: mailpit
+    external: true

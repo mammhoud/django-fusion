@@ -1,0 +1,47 @@
+http:
+  routers:
+    vresume-media-http:
+      rule: "Host(`vresume.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: vresume-media-service
+      priority: 100
+
+    vresume-media-https:
+      rule: "Host(`vresume.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))"
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: vresume-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+
+    vresume-site-http:
+      rule: "Host(`vresume.structa.cloud`)"
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: vresume-site-service
+      priority: 10
+
+    vresume-site-https:
+      rule: "Host(`vresume.structa.cloud`)"
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: vresume-site-service
+      tls:
+        certResolver: letsencrypt
+
+  services:
+    vresume-site-service:
+      loadBalancer:
+        servers:
+          - url: "http://vresume-web:5072"
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+
+    vresume-media-service:
+      loadBalancer:
+        servers:
+          - url: "http://shared-media:80"
