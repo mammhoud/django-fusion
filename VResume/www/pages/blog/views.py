@@ -10,7 +10,6 @@ from django.shortcuts import get_object_or_404, render, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 from django.views.generic import DetailView, ListView
 from django.contrib import messages
@@ -119,7 +118,6 @@ def blog_search(request):
 class TrackReadView(View):
     """Track article read — record read duration and scroll depth"""
     
-    @csrf_exempt
     def post(self, request, post_id):
         try:
             post = get_object_or_404(BlogPost, id=post_id)

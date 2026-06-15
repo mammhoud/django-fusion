@@ -85,7 +85,7 @@ def _website_env(website: str) -> dict:
         "DB_HOST": env.get("DB_HOST", "postgres"),
         "DB_NAME": env.get("DB_NAME", database_names.get(website, "db_ctc")),
         "REDIS_URL": env.get("REDIS_URL", "redis://redis:6379/3"),
-        "ALLOWED_HOSTS": "*",
+        "ALLOWED_HOSTS": "localhost,127.0.0.1",
     })
     # Remove DJANGO_SECRET_KEY — production.py reads from secret.key.txt
     env.pop("DJANGO_SECRET_KEY", None)

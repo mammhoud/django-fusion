@@ -4,7 +4,6 @@ import logging
 
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_osoul.site import NotificationMixin, PageHandler
 
@@ -77,7 +76,6 @@ class CoursesView(PageHandler, NotificationMixin):
         ]
 
     @require_POST
-    @csrf_exempt
     @login_required
     def enroll_course(self, request: HttpRequest) -> JsonResponse:
         """

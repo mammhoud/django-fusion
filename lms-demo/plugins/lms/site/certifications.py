@@ -6,7 +6,6 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from plugins.accounts.management.services import CertificateService
 
@@ -80,7 +79,6 @@ class CertificationsView(PageHandler, NotificationMixin):
         )
 
     @require_POST
-    @csrf_exempt
     @login_required
     def upload_certificate(self, request: HttpRequest) -> JsonResponse:
         """

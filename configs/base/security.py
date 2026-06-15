@@ -43,7 +43,7 @@ if _env_allowed_hosts:
 else:
     ALLOWED_HOSTS = _as_list(_security_map["ALLOWED_HOSTS"])
 CORS_ALLOW_ALL_ORIGINS = _security_map["CORS_ALLOW_ALL_ORIGINS"]
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_CREDENTIALS = not CORS_ALLOW_ALL_ORIGINS
 CORS_ALLOWED_ORIGINS = _as_list(_security_map["CORS_ALLOWED_ORIGINS"])
 CSRF_TRUSTED_ORIGINS = _as_list(_security_map["CSRF_TRUSTED_ORIGINS"])
 CSRF_COOKIE_SECURE = _security_map["CSRF_COOKIE_SECURE"]
@@ -79,28 +79,25 @@ PASSWORD_HASHERS = [
     "django.contrib.auth.hashers.BCryptSHA256PasswordHasher",
 ]
 
-# Password validators only in production
-AUTH_PASSWORD_VALIDATORS = []
-if settings.is_production:
-    AUTH_PASSWORD_VALIDATORS = [
-        {
-            "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
-            "OPTIONS": {"min_length": 8},
-        },
-        {
-            "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
-        },
-    ]
+AUTH_PASSWORD_VALIDATORS = [
+    {
+        "NAME": "django.contrib.auth.password_validation.UserAttributeSimilarityValidator",
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.MinimumLengthValidator",
+        "OPTIONS": {"min_length": 8},
+    },
+    {
+        "NAME": "django.contrib.auth.password_validation.CommonPasswordValidator",
+    },
+]
 
 # -------------------------------
 # JWT Settings
 # -------------------------------
 JWT_AUTH = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(days=30),
-    "REFRESH_TOKEN_LIFETIME": timedelta(days=365),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=30),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=7),
     "ALGORITHM": "HS256",
     "SIGNING_KEY": SECRET_KEY,
     "AUTH_HEADER_TYPES": ("Bearer",),

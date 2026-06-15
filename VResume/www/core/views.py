@@ -10,7 +10,6 @@ from django.conf import settings
 from django.db import connection
 from django.http import JsonResponse
 from django.middleware.csrf import get_token
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_http_methods
 
 from .cookies import CookiePreferences
@@ -58,7 +57,6 @@ def media_health_check(request):
 
 
 @require_http_methods(["POST"])
-@csrf_exempt
 def set_cookie_preferences(request):
     """
     API endpoint to set cookie preferences
@@ -123,7 +121,6 @@ def get_cookie_preferences(request):
 
 
 @require_http_methods(["POST"])
-@csrf_exempt
 def set_theme(request):
     """
     API endpoint to set user's theme preference

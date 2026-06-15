@@ -3,6 +3,8 @@ Payment Views for Course Enrollment
 
 Handles payment initialization, verification, and webhook processing.
 """
+import hashlib
+import hmac
 import json
 import logging
 from django.shortcuts import render, get_object_or_404, redirect
@@ -206,8 +208,21 @@ def webhook_stripe(request):
     Webhook URL: /learning/payment/webhook/stripe/
     """
     try:
-        payload = json.loads(request.body)
-        
+        sig_header = request.META.get("HTTP_STRIPE_SIGNATURE", "")
+        webhook_secret = getattr(settings, "STRIPE_WEBHOOK_SECRET", "")
+        if webhook_secret:
+            import stripe
+            try:
+                payload = stripe.Webhook.construct_event(
+                    request.body, sig_header, webhook_secret
+                )
+            except (stripe.error.SignatureVerificationError, ValueError):
+                logger.warning("Stripe webhook signature verification failed")
+                return JsonResponse({"error": "Invalid signature"}, status=400)
+        else:
+            logger.warning("STRIPE_WEBHOOK_SECRET not configured — skipping signature verification")
+            payload = json.loads(request.body)
+
         # Log webhook
         webhook_log = _log_webhook('stripe', payload)
         
@@ -254,6 +269,17 @@ def webhook_paypal(request):
     Webhook URL: /learning/payment/webhook/paypal/
     """
     try:
+        webhook_id = getattr(settings, "PAYPAL_WEBHOOK_ID", "")
+        if webhook_id:
+            transmission_id = request.META.get("HTTP_PAYPAL_TRANSMISSION_ID", "")
+            timestamp = request.META.get("HTTP_PAYPAL_TRANSMISSION_TIME", "")
+            actual_sig = request.META.get("HTTP_PAYPAL_TRANSMISSION_SIG", "")
+            if not (transmission_id and timestamp and actual_sig):
+                logger.warning("PayPal webhook missing signature headers")
+                return JsonResponse({"error": "Missing signature headers"}, status=400)
+        else:
+            logger.warning("PAYPAL_WEBHOOK_ID not configured — skipping signature verification")
+
         payload = json.loads(request.body)
         
         # Log webhook
@@ -302,6 +328,18 @@ def webhook_paymo(request):
     Webhook URL: /learning/payment/webhook/paymo/
     """
     try:
+        webhook_secret = getattr(settings, "PAYMO_WEBHOOK_SECRET", "")
+        if webhook_secret:
+            sig_header = request.META.get("HTTP_X_PAYMO_SIGNATURE", "")
+            expected_sig = hmac.new(
+                webhook_secret.encode(), request.body, hashlib.sha256
+            ).hexdigest()
+            if not hmac.compare_digest(sig_header, expected_sig):
+                logger.warning("Paymo webhook signature verification failed")
+                return JsonResponse({"error": "Invalid signature"}, status=400)
+        else:
+            logger.warning("PAYMO_WEBHOOK_SECRET not configured — skipping signature verification")
+
         payload = json.loads(request.body)
         
         # Log webhook

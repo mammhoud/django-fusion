@@ -14,7 +14,15 @@ test_db.sqlite3
 
 # Secrets
 *.env
+*.env.backup*
 secret.key.txt
+
+# SSL/TLS private keys and certificates
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
 assets/media
 # Node / frontend build artifacts
 node_modules/
