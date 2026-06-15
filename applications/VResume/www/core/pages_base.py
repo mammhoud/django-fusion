@@ -101,6 +101,7 @@ class BasePage(Page):
             site = Site.find_for_request(request)
             context["vresume_settings"] = VResumeSettings.for_site(site)
         except Exception:
+            logger.debug("Could not load VResumeSettings for request")
             context["vresume_settings"] = None
 
         context["tabs"] = getattr(self, "VCARD_TABS", [
@@ -140,6 +141,7 @@ class BasePage(Page):
             )
             data["services_summary"] = list(services_qs)
         except Exception as e:
+            logger.debug("Could not load services summary: %s", e)
             data["services_summary"] = []
         
         return data

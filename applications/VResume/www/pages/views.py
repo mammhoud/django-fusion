@@ -90,6 +90,7 @@ def tab_view(request, tab_name):
         try:
             context["vresume_settings"] = VResumeSettings.for_site(site)
         except Exception:
+            logger.debug("Could not load VResumeSettings for tab_view")
             context["vresume_settings"] = None
 
     is_htmx = request.headers.get('HX-Request') == 'true'

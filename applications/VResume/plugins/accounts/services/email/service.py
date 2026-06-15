@@ -59,9 +59,10 @@ class EmailService:
             try:
                 text_content = render_to_string(f"{template}.txt", context)
             except Exception:
-                # Fall back to stripping HTML
+                # Fall back to stripping HTML if .txt template unavailable
                 import re
                 text_content = re.sub(r"<[^>]+>", "", html_content)
+                logger.debug("Plain text template %s.txt not found, stripping HTML", template)
 
             # Create email
             email = EmailMultiAlternatives(
@@ -85,7 +86,7 @@ class EmailService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send email to {to}: {e}")
+            logger.error("Failed to send email to %s: %s", to, e, exc_info=True)
             return False
 
     def send_simple(
@@ -134,7 +135,7 @@ class EmailService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send simple email to {to}: {e}")
+            logger.error("Failed to send simple email to %s: %s", to, e, exc_info=True)
             return False
 
     def queue(

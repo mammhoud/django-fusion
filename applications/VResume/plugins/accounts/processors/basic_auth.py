@@ -30,7 +30,7 @@ class AuthUtils:
         try:
             parts = token.split(".")
             return len(parts) == 3
-        except Exception:
+        except AttributeError:
             return False
 
     @staticmethod
@@ -119,6 +119,8 @@ class BasicAuthWithToken(HttpBasicAuth):
 
             return user, token_info
 
+        except AuthenticationException:
+            raise
         except Exception as e:
-            logger.error(f"Basic auth error: {e!s}")
+            logger.error("Basic auth error: %s", e, exc_info=True)
             return None, {}
