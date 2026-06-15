@@ -1,0 +1,165 @@
+---------------------------------------------
+| Operating System  | ubuntu 24.04
+| Docker            | latest
+| Coolify           | 4.1.2
+| Helper            | 1.0.14
+| Realtime          | 1.0.16
+| Docker Pool       | 172.17.0.0/12 (size 24)
+| Registry URL      | ghcr.io
+---------------------------------------------
+
+
+============================================================
+[2026-06-13 22:52:31] Step 1/9: Installing required packages
+============================================================
+1/9 Installing required packages (curl, wget, git, jq, openssl)...
+[2026-06-13 22:52:31] All required packages already installed, skipping installation
+ - All required packages already installed.
+     Done.
+
+============================================================
+[2026-06-13 22:52:31] Step 2/9: Checking OpenSSH server configuration
+============================================================
+2/9 Checking OpenSSH server configuration...
+ - OpenSSH server is installed.
+ - SSH PermitRootLogin is enabled.
+
+============================================================
+[2026-06-13 22:52:31] Step 3/9: Checking Docker installation
+============================================================
+3/9 Checking Docker installation...
+ - Docker is installed.
+ - Docker version 29.5.3 meets minimum requirement (24+).
+
+============================================================
+[2026-06-13 22:52:31] Step 4/9: Checking Docker configuration
+============================================================
+4/9 Checking Docker configuration...
+ - Network pool configuration: 172.17.0.0/12/24
+ - To override existing configuration: DOCKER_POOL_FORCE_OVERRIDE=true
+ - Log configuration is up to date
+ - Configuration is up to date
+
+============================================================
+[2026-06-13 22:52:31] Step 5/9: Downloading required files from CDN
+============================================================
+5/9 Downloading required files from CDN...
+[2026-06-13 22:52:31] Downloading configuration files in parallel...
+[2026-06-13 22:52:31] All configuration files downloaded successfully
+     Done.
+
+============================================================
+[2026-06-13 22:52:31] Step 6/9: Setting up environment variable file
+============================================================
+6/9 Setting up environment variable file...
+ - No .env file found, copying .env.production to .env
+[2026-06-13 22:52:31] Environment file setup completed
+     Done.
+
+============================================================
+[2026-06-13 22:52:31] Step 7/9: Checking and updating environment variables
+============================================================
+7/9 Checking and updating environment variables...
+ - Updated value of APP_ID as the current value was empty
+ - Updated value of APP_KEY as the current value was empty
+ - Updated value of DB_PASSWORD as the current value was empty
+ - Updated value of REDIS_PASSWORD as the current value was empty
+ - Updated value of PUSHER_APP_ID as the current value was empty
+ - Updated value of PUSHER_APP_KEY as the current value was empty
+ - Updated value of PUSHER_APP_SECRET as the current value was empty
+ - Added DOCKER_ADDRESS_POOL_BASE and it's value as the variable was missing
+ - Added DOCKER_ADDRESS_POOL_SIZE and it's value as the variable was missing
+[2026-06-13 22:52:31] Environment variables check completed
+     Done.
+
+============================================================
+[2026-06-13 22:52:31] Step 8/9: Checking SSH key for localhost access
+============================================================
+8/9 Checking SSH key for localhost access...
+ - Generating SSH key.
+[2026-06-13 22:52:31] SSH key check completed
+     Done.
+
+============================================================
+[2026-06-13 22:52:31] Step 9/9: Installing Coolify
+============================================================
+9/9 Installing Coolify (4.1.2)...
+ - It could take a while based on your server's performance, network speed, stars, etc.
+ - Please wait.
+ - Until then, here's a joke for you:
+
+Java and C were telling jokes. It was C's turn, so he writes something on the wall, points to it and says "Do you get the reference?" But Java didn't.
+
+
+==========================================
+   Coolify Upgrade - 2026-06-13-22-52-31
+==========================================
+
+1/6 Downloading latest configuration files...
+     Done.
+
+2/6 Updating environment configuration...
+     Done.
+1593b6a8473264b750dd9d0ff57599c8b11b9aff639f44fd1b5ee8e957fd49af
+
+3/6 Pulling Docker images...
+     This may take a few minutes depending on your connection.
+     - Pulling ghcr.io/coollabsio/coolify-helper:1.0.14...
+     - Pulling ghcr.io/coollabsio/coolify-realtime:1.0.16...
+     - Pulling ghcr.io/coollabsio/coolify:4.1.2...
+     - Pulling postgres:15-alpine...
+     - Pulling redis:7-alpine...
+     All images pulled successfully.
+
+4/6 Stopping containers and starting new ones...
+     This step will restart all Coolify containers.
+     Check the log file for details: /data/coolify/source/upgrade-2026-06-13-22-52-31.log
+
+5/6 Containers are being restarted in the background...
+6/6 Upgrade process initiated!
+
+==========================================
+   Coolify upgrade to 4.1.2 in progress
+==========================================
+
+   The upgrade will continue in the background.
+   Coolify will be available again shortly.
+   Log file: /data/coolify/source/upgrade-2026-06-13-22-52-31.log
+ - Coolify installed successfully.
+ - Waiting for Coolify to be ready...
+ - Upgrade in progress: Starting new containers (0s)
+[2026-06-13 22:53:14] Upgrade completed: Upgrade complete
+ - Upgrade complete!
+ - Verifying Coolify is healthy...
+[2026-06-13 22:53:14] Coolify container is healthy
+ - Coolify is ready!
+[0;35m
+   ____                            _         _       _   _                 _
+  / ___|___  _ __   __ _ _ __ __ _| |_ _   _| | __ _| |_(_) ___  _ __  ___| |
+ | |   / _ \| '_ \ / _` | '__/ _` | __| | | | |/ _` | __| |/ _ \| '_ \/ __| |
+ | |__| (_) | | | | (_| | | | (_| | |_| |_| | | (_| | |_| | (_) | | | \__ \_|
+  \____\___/|_| |_|\__, |_|  \__,_|\__|\__,_|_|\__,_|\__|_|\___/|_| |_|___(_)
+                   |___/
+[0m
+
+Your instance is ready to use!
+
+You can access Coolify through your Public IPV4: http://72.61.82.167:8000
+You can access Coolify through your Public IPv6: http://[2a02:4780:41:3f58::1]:8000
+
+If your Public IP is not accessible, you can use the following Private IPs:
+
+http://172.16.0.1:8000
+http://172.16.1.1:8000
+http://2a02:4780:41:3f58::1:8000
+http://fd02:d0e1:6ae8::1:8000
+
+WARNING: It is highly recommended to backup your Environment variables file (/data/coolify/source/.env) to a safe location, outside of this server (e.g. into a Password Manager).
+
+
+============================================================
+[2026-06-13 22:53:15] Installation Complete
+============================================================
+[2026-06-13 22:53:15] Coolify installation completed successfully
+[2026-06-13 22:53:15] Version: 4.1.2
+[2026-06-13 22:53:15] Log file: /data/coolify/source/installation-20260613-225231.log

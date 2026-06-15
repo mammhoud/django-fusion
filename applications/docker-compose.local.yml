@@ -1,0 +1,142 @@
+# ============================================================
+# Local Development Docker Compose Configuration
+# ============================================================
+# This file is used by the VS Code Dev Container for local development
+# with SQLite database to match GitHub Actions testing environment.
+#
+# Features:
+#   - SQLite database (no PostgreSQL needed)
+#   - Django development server with auto-reload
+#   - Hot-reload for code changes
+#   - Same environment as GitHub Actions tests
+# ============================================================
+
+version: '3.8'
+
+services:
+  # ─────────────────────────────────────────────────────────────
+  # Django Development Service
+  # ─────────────────────────────────────────────────────────────
+  django:
+    build:
+      context: .
+      dockerfile: ../compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
+
+    # ─────────────────────────────────────────────────────────────
+    # Service Configuration
+    # ─────────────────────────────────────────────────────────────
+    container_name: django-dev
+    working_dir: /app
+    restart: unless-stopped
+
+    # ─────────────────────────────────────────────────────────────
+    # Development Environment Variables
+    # ─────────────────────────────────────────────────────────────
+    environment:
+      # ─── Core Environment ───
+      RUNNING_ENV: local
+      SERVER_ENV: development
+      MODULE: CMS
+      DEBUG: "true"
+
+      # ─── Server Configuration ───
+      SERVER_TYPE: django         # Use 'django' runserver, not gunicorn
+      HOST: 0.0.0.0
+      PORT: 8000
+      WORKERS: 1
+      TIMEOUT: 120
+      RELOAD: "true"
+
+      # ─── Database Configuration (SQLite) ───
+      # Matches GitHub Actions testing environment exactly
+      DB_TYPE: sqlite
+      DATABASE_URL: sqlite:///db.sqlite3
+
+      # ─── Django Configuration ───
+      DJANGO_SETTINGS_MODULE: settings
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
+
+      # ─── Site-Specific Settings ───
+      DOMAIN: localhost:8000
+      SITE_DOMAIN: localhost:8000
+      ALLOWED_HOSTS: "localhost,127.0.0.1,django-dev"
+      CSRF_TRUSTED_ORIGINS: "http://localhost:8000,http://127.0.0.1:8000"
+      CORS_ALLOWED_ORIGINS: "http://localhost:8000,http://127.0.0.1:8000"
+
+      # ─── Django Secret & Security ───
+      DJANGO_SECRET_KEY: dev-secret-key-not-for-production
+      SECRET_KEY: dev-secret-key-not-for-production
+
+      # ─── Superuser Setup ───
+      SUPERUSER_USERNAME: admin
+      SUPERUSER_EMAIL: admin@localhost
+      SUPERUSER_PASSWORD: admin123
+
+      # ─── Setup Flags ───
+      # Enable this to automatically run migrations and setup on container start
+      RUN_SETUP: "true"
+
+      # ─── Asset Building ───
+      BUILD_ASSETS_ON_START: "auto"  # auto = only if webpack is installed
+
+      # ─── Logging ───
+      LOG_DIR: /app/logs
+      LOG_LEVEL: debug
+
+    # ─────────────────────────────────────────────────────────────
+    # Volume Mounts
+    # ─────────────────────────────────────────────────────────────
+    volumes:
+      # Main application code
+      - .:/app:z
+      # Media files
+      - ./assets/media:/app/assets/media:z
+      # Logs directory
+      - ./logs:/app/logs:z
+      # SQLite database (persisted between container restarts)
+      - django-db-volume:/app/db-data:z
+
+    # ─────────────────────────────────────────────────────────────
+    # Port Mappings
+    # ─────────────────────────────────────────────────────────────
+    ports:
+      # Django development server
+      - "8000:8000"
+
+    # ─────────────────────────────────────────────────────────────
+    # Health Check
+    # ─────────────────────────────────────────────────────────────
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:8000/health/"]
+      interval: 10s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+    # ─────────────────────────────────────────────────────────────
+    # Resource Limits
+    # ─────────────────────────────────────────────────────────────
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 1G
+        reservations:
+          cpus: '1'
+          memory: 512M
+
+# ─────────────────────────────────────────────────────────────
+# Named Volumes
+# ─────────────────────────────────────────────────────────────
+volumes:
+  django-db-volume:
+    driver: local
+    driver_opts:
+      type: none
+      o: bind
+      device: ./db-data

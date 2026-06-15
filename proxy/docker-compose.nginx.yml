@@ -1,0 +1,51 @@
+# ============================================================
+# Workspace Shared Media Frontend
+# ============================================================
+# Provides one canonical static/media server for shared files and isolated
+# per-site mount points under /var/www/sites/<site>/.
+# ============================================================
+
+networks:
+  traefik-net:
+    name: traefik-net
+
+x-media-base: &media-base
+  build:
+    context: ..
+    dockerfile: ./services/media/Dockerfile
+  restart: unless-stopped
+  networks:
+    - traefik-net
+  healthcheck:
+    test: ["CMD", "nginx", "-t"]
+    interval: 30s
+    timeout: 10s
+    retries: 3
+
+services:
+  shared-media:
+    <<: *media-base
+    container_name: shared-media
+    # command: >
+    #     cd ${APP_HOME}/assets \
+    #     && npm install --include=dev --legacy-peer-deps --no-audit --no-fund
+
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms-demo.com`) || Host(`media.vresume.structa.cloud`)"
+      - "traefik.http.services.shared-media.loadbalancer.server.port=80"
+    volumes:
+      - ../assets/staticfiles:/var/www/static:ro
+      - ../assets/media:/var/www/media:ro
+      - ../ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
+      - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
+      - ./media/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M

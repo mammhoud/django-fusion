@@ -1,0 +1,132 @@
+version: '3.8'
+
+# ============================================================
+# Networks – all networks from both files are kept
+# ============================================================
+networks:
+  traefik-net:
+    external: true
+    name: traefik-net
+  warehouse-net:
+    driver: bridge
+    name: warehouse-net
+  site_network:
+    name: site_network
+
+# ============================================================
+# Volumes – both named volumes from second file
+# ============================================================
+volumes:
+  postgres_data:
+    name: postgres_data
+  redis_data:
+    name: redis_data
+
+# ============================================================
+# Services
+# ============================================================
+services:
+  # ----------------------------------------------------------
+  # PostgreSQL – merged 'postgres' (first) + 'structa-db' (second)
+  # ----------------------------------------------------------
+  postgres:
+    # Use official image (first) – custom build from second is replaced
+    # by an init script that reads INITDB_MULTIPLE_DATABASES (see below)
+    image: postgres:14-alpine
+    restart: unless-stopped                 # from first
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"       # from second (with default)
+    environment:
+      # === From first file ===
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: app_db
+      # === From second file ===
+      POSTGRES_USER_ALT: ${POSTGRES_USER:-postgres}     # kept as separate var
+      POSTGRES_PASSWORD_ALT: ${POSTGRES_PASSWORD:-mk_pAssWord123}
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko}"
+      PGDATA: /var/lib/postgresql/data/pgdata   # from second
+    volumes:
+      # Named volume (second) – more portable than ./postgres/data (first)
+      - postgres_data:/var/lib/postgresql/data
+      # Init scripts from first – we add a custom script that reads INITDB_MULTIPLE_DATABASES
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      # Backups mount from second
+      - ./postgres/backups:/backups:Z
+    networks:
+      - warehouse-net      # from first
+      - traefik-net        # both
+      - site_network       # from second
+    healthcheck:
+      # Combined: check using admin user (first) but generic database
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s        # from first (shorter)
+      timeout: 5s
+      retries: 5
+    deploy:
+      # Resource limits from second
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # ----------------------------------------------------------
+  # Redis – merged 'redis' (first) + 'structa-cache' (second)
+  # ----------------------------------------------------------
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped                 # from first
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-redis_password}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"          # from second (with default)
+    volumes:
+      # Config file from first
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      # Named volume from second (replaces ./redis/data from first)
+      - redis_data:/data
+    networks:
+      - warehouse-net      # from first
+      - traefik-net        # both
+      - site_network       # from second
+    healthcheck:
+      # From second (with password)
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      interval: 10s        # from first (shorter)
+      timeout: 5s
+      retries: 5
+    deploy:
+      # Resource limits from second
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+  # ----------------------------------------------------------
+  # Adminer – unchanged from first, added to all networks
+  # ----------------------------------------------------------
+  adminer:
+    image: adminer:latest
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    networks:
+      - warehouse-net
+      - traefik-net
+      - site_network
+    depends_on:
+      postgres:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.adminer.rule=Host(`adminer.localhost`)"
+      - "traefik.http.routers.adminer.entrypoints=web"
+      - "traefik.http.services.adminer.loadbalancer.server.port=8080"

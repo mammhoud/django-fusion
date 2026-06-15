@@ -1,0 +1,231 @@
+# ============================================================
+# Shared Background Task Server
+# ============================================================
+# Runs Celery worker/beat pairs for all three workspace websites. Each service uses
+# the same shared task app but seeds DJANGO_SITE/DJANGO_WEBSITE so site-aware
+# tasks render templates, settings, and URLs for the correct website.
+#
+# Usage:
+#   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up shared-tasks-worker shared-tasks-beat
+#   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up ctc-research-tasks-worker ctc-research-tasks-beat
+#   docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up lms-demo-tasks-worker lms-demo-tasks-beat
+# ============================================================
+
+networks:
+  traefik-net:
+    name: traefik-net
+
+x-shared-tasks-base: &shared-tasks-base
+  build:
+    context: .
+    dockerfile: ../compose/django/Dockerfile
+    args:
+      PROJECT_PATH: ${TASKS_PROJECT_PATH:-ctc-research}
+  restart: unless-stopped
+  working_dir: /app
+  env_file:
+    - path: .env
+      required: false
+  environment: &shared-tasks-env
+    RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+    DJANGO_SITE: ${DJANGO_SITE:-ctc-research}
+    DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research}
+    WEBSITE: ${WEBSITE:-ctc-research}
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-coolify-db}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_NAME: ${DB_NAME:-db_ctc}
+    DB_USER: ${DB_USER:-coolify}
+    DB_PASSWORD: ${DB_PASSWORD:-coolify_password}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@coolify-redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@coolify-redis:6379/1
+    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@coolify-redis:6379/1
+    CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
+    LOG_DIR: /app/logs
+  volumes:
+    - ./configs:/app/configs:z
+    - ./assets:/app/assets:z
+    - ./libs:/app/libs:z
+    - ./logs:/app/logs:z
+  networks:
+    - traefik-net
+  depends_on:
+    coolify-db:
+      condition: service_healthy
+    coolify-redis:
+      condition: service_healthy
+
+x-worker-command: &worker-command >
+  celery -A tasks.celery:app worker
+  --loglevel=${CELERY_LOG_LEVEL:-info}
+  --queues=${CELERY_QUEUES:-shared,email,default}
+  --concurrency=${CELERY_WORKER_CONCURRENCY:-2}
+  --prefetch-multiplier=${CELERY_PREFETCH_MULTIPLIER:-1}
+  --without-gossip
+  --without-mingle
+  -O fair
+
+x-beat-command: &beat-command >
+  celery -A tasks.celery:app beat
+  --loglevel=${CELERY_LOG_LEVEL:-info}
+  --scheduler django_celery_beat.schedulers:DatabaseScheduler
+  --pidfile=/tmp/celerybeat.pid
+
+services:
+  shared-worker:
+    <<: *shared-tasks-base
+    container_name: shared-worker
+    command: *worker-command
+    ports: []
+    labels: {}
+
+  shared-scheduler:
+    <<: *shared-tasks-base
+    container_name: shared-scheduler
+    command: *beat-command
+    ports: []
+    labels: {}
+
+  ctc-worker:
+    <<: *shared-tasks-base
+    container_name: ctc-worker
+    volumes:
+      - ./configs:/app/configs:z
+      - ./assets:/app/assets:z
+      - ./libs:/app/libs:z
+      - ./ctc-research:/app/ctc-research:z
+      - ./logs:/app/logs:z
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      CELERY_TASK_DEFAULT_QUEUE: ctc-research
+    command: *worker-command
+    ports: []
+    labels: {}
+
+  ctc-scheduler:
+    <<: *shared-tasks-base
+    container_name: ctc-scheduler
+    volumes:
+      - ./configs:/app/configs:z
+      - ./assets:/app/assets:z
+      - ./libs:/app/libs:z
+      - ./ctc-research:/app/ctc-research:z
+      - ./logs:/app/logs:z
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      WEBSITE: ctc-research
+      CELERY_TASK_DEFAULT_QUEUE: ctc-research
+    command: *beat-command
+    ports: []
+    labels: {}
+
+  lms-worker:
+    <<: *shared-tasks-base
+    container_name: lms-worker
+    volumes:
+      - ./configs:/app/configs:z
+      - ./assets:/app/assets:z
+      - ./libs:/app/libs:z
+      - ./lms-demo:/app/lms-demo:z
+      - ./logs:/app/logs:z
+    build:
+      context: .
+      dockerfile: ../compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      CELERY_TASK_DEFAULT_QUEUE: lms-demo
+    command: *worker-command
+    ports: []
+    labels: {}
+    profiles: ["lms"]  # disabled — start with: docker compose --profile lms up
+
+  lms-scheduler:
+    <<: *shared-tasks-base
+    container_name: lms-scheduler
+    volumes:
+      - ./configs:/app/configs:z
+      - ./assets:/app/assets:z
+      - ./libs:/app/libs:z
+      - ./lms-demo:/app/lms-demo:z
+      - ./logs:/app/logs:z
+    build:
+      context: .
+      dockerfile: ../compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      WEBSITE: lms-demo
+      CELERY_TASK_DEFAULT_QUEUE: lms-demo
+    command: *beat-command
+    ports: []
+    labels: {}
+    profiles: ["lms"]  # disabled — start with: docker compose --profile lms up
+
+  vresume-worker:
+    <<: *shared-tasks-base
+    container_name: vresume-worker
+    volumes:
+      - ./configs:/app/configs:z
+      - ./assets:/app/assets:z
+      - ./libs:/app/libs:z
+      - ./VResume:/app/VResume:z
+      - ./logs:/app/logs:z
+    build:
+      context: .
+      dockerfile: ../compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      CELERY_TASK_DEFAULT_QUEUE: vresume
+    command: *worker-command
+    ports: []
+    labels: {}
+    profiles: ["vresume"]  # disabled — start with: docker compose --profile vresume up
+
+  vresume-scheduler:
+    <<: *shared-tasks-base
+    container_name: vresume-scheduler
+    volumes:
+      - ./configs:/app/configs:z
+      - ./assets:/app/assets:z
+      - ./libs:/app/libs:z
+      - ./VResume:/app/VResume:z
+      - ./logs:/app/logs:z
+    build:
+      context: .
+      dockerfile: ../compose/django/Dockerfile
+      args:
+        PROJECT_PATH: VResume
+    environment:
+      <<: *shared-tasks-env
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      WEBSITE: vresume
+      DB_NAME: ${VRESUME_DB_NAME:-vresume}
+      CELERY_TASK_DEFAULT_QUEUE: vresume
+    command: *beat-command
+    ports: []
+    labels: {}
+    profiles: ["vresume"]  # disabled — start with: docker compose --profile vresume up
