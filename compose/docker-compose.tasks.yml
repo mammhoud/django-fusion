@@ -1,0 +1,63 @@
+# ============================================================
+# Celery Workers Docker Compose Configuration
+# ============================================================
+
+services:
+  ctc-research-worker:
+    image: ctc-research-worker:latest
+    container_name: ctc-research-worker
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: ctc-research
+    command: celery -A tasks worker --loglevel=info
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
+      - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
+    networks:
+      - warehouse-net
+
+  lms-demo-worker:
+    image: lms-demo-worker:latest
+    container_name: lms-demo-worker
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: lms-demo
+    command: celery -A tasks worker --loglevel=info
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
+      - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
+    networks:
+      - warehouse-net
+
+  vresume-worker:
+    image: vresume-worker:latest
+    container_name: vresume-worker
+    build:
+      context: ..
+      dockerfile: compose/django/Dockerfile
+      args:
+        PROJECT_PATH: vresume
+    command: celery -A tasks worker --loglevel=info
+    restart: unless-stopped
+    working_dir: /app
+    environment:
+      - DJANGO_SETTINGS_MODULE=configs.settings
+      - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
+      - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
+    networks:
+      - warehouse-net
+
+networks:
+  warehouse-net:
+    name: warehouse-net
+    external: true

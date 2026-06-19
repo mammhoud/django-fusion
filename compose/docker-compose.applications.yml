@@ -1,0 +1,164 @@
+# ============================================================
+# Website Applications — ctc-research, lms-demo, VResume
+# ============================================================
+# Container names and ports MUST match proxy/dynamic/*.yml:
+#   ctc-research-website → port 5070   (ctc-research.yml)
+#   lms-web              → port 5071   (structa-cloud.yml)
+#   vresume-web          → port 5072   (vresume.yml)
+#
+# All app containers join the 'coolify' network so default-proxy
+# (Traefik) can reach them by container name.
+# ============================================================
+
+networks:
+  coolify:
+    name: coolify
+    external: true
+  warehouse-net:
+    name: warehouse-net
+    external: true
+
+volumes:
+  ctc-research-static:
+    name: ctc-research-static
+  ctc-research-media:
+    name: ctc-research-media
+  lms-demo-static:
+    name: lms-demo-static
+  lms-demo-media:
+    name: lms-demo-media
+  vresume-static:
+    name: vresume-static
+  vresume-media:
+    name: vresume-media
+
+x-website-base: &website-base
+  build:
+    context: ..
+    dockerfile: compose/Dockerfile
+  restart: unless-stopped
+  working_dir: /app
+  env_file:
+    - path: ../.env
+      required: false
+  environment: &website-env
+    RUNNING_ENV: docker
+    SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+    SERVER_ENV: ${SERVER_ENV:-production}
+    DEBUG: ${DEBUG:-False}
+    DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
+    DB_TYPE: ${DB_TYPE:-postgres}
+    DB_HOST: ${DB_HOST:-pstg-database}
+    DB_PORT: ${DB_PORT:-5432}
+    DB_USER: ${DB_USER:-coolify}
+    DB_PASSWORD: ${DB_PASSWORD:-default_password}
+    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/1
+    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/2
+    LOG_DIR: /app/logs
+    USE_X_FORWARDED_HOST: "true"
+    SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
+  networks:
+    - coolify
+    - warehouse-net
+
+services:
+
+  # ── CTC Research ─────────────────────────────────────────
+  ctc-research-website:
+    <<: *website-base
+    image: ctc-research-website:latest
+    container_name: ctc-research-website
+    environment:
+      <<: *website-env
+      WEBSITE: ctc-research
+      DJANGO_SITE: ctc-research
+      DJANGO_WEBSITE: ctc-research
+      PROJECT_PATH: ctc-research
+      WEBSITE_HOST: ${CTC_RESEARCH_HOST:-ctc-research.com}
+      ALLOWED_HOSTS: ctc-research.com,www.ctc-research.com,arch.ctc-research.com,localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://ctc-research.com,https://www.structa.cloud,https://www.ctc-research.com,https://arch.ctc-research.com
+      DB_NAME: ${DB_NAME_CTC:-db_ctc_research}
+      PORT: "5070"
+      CELERY_TASK_DEFAULT_QUEUE: ctc-research
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5070/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../ctc-research:/app/ctc-research:z
+      - ctc-research-static:/app/ctc-research/static:rw
+      - ctc-research-media:/app/ctc-research/media:rw
+      - ../logs:/app/logs:z
+    expose:
+      - "5070"
+
+  # ── LMS Demo (structa.cloud) ─────────────────────────────
+  lms-web:
+    <<: *website-base
+    image: lms-web:latest
+    container_name: lms-web
+    environment:
+      <<: *website-env
+      WEBSITE: lms-demo
+      DJANGO_SITE: lms-demo
+      DJANGO_WEBSITE: lms-demo
+      PROJECT_PATH: lms-demo
+      WEBSITE_HOST: ${LMS_DEMO_HOST:-structa.cloud}
+      ALLOWED_HOSTS: structa.cloud,www.structa.cloud,core.structa.cloud,localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,https://core.structa.cloud
+      DB_NAME: ${DB_NAME_LMS:-db_lms_demo}
+      PORT: "5071"
+      CELERY_TASK_DEFAULT_QUEUE: lms-demo
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5071/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../lms-demo:/app/lms-demo:z
+      - lms-demo-static:/app/lms-demo/static:rw
+      - lms-demo-media:/app/lms-demo/media:rw
+      - ../logs:/app/logs:z
+    expose:
+      - "5071"
+
+  # ── VResume ──────────────────────────────────────────────
+  vresume-web:
+    <<: *website-base
+    image: vresume-web:latest
+    container_name: vresume-web
+    environment:
+      <<: *website-env
+      WEBSITE: vresume
+      DJANGO_SITE: vresume
+      DJANGO_WEBSITE: vresume
+      PROJECT_PATH: VResume
+      WEBSITE_HOST: ${VRESUME_HOST:-vresume.structa.cloud}
+      ALLOWED_HOSTS: vresume.structa.cloud,www.vresume.structa.cloud,resume.structa.cloud,localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://vresume.structa.cloud,https://www.vresume.structa.cloud,https://resume.structa.cloud
+      DB_NAME: ${DB_NAME_VRESUME:-db_vresume}
+      PORT: "5072"
+      CELERY_TASK_DEFAULT_QUEUE: vresume
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5072/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../VResume:/app/VResume:z
+      - vresume-static:/app/VResume/static:rw
+      - vresume-media:/app/VResume/media:rw
+      - ../logs:/app/logs:z
+    expose:
+      - "5072"
