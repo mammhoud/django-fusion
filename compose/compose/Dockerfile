@@ -56,26 +56,32 @@ RUN if [ -f uv.lock ]; then \
     fi
 
 # -----------------------------------------------------
+# Copy required application files
+COPY Makefile manage.py __about__.py __main__.py cli.py ${APP_HOME}/
+COPY configs ${APP_HOME}/configs
+COPY assets ${APP_HOME}/assets
+COPY compose ${APP_HOME}/compose
+COPY ${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 
-# Copy required files for app to function
-COPY Makefile manage.py __about__.py __main__.py cli.py /app/
-COPY configs /app/configs
-COPY assets /app/assets
-COPY compose /app/compose
-COPY libs /app/libs
-COPY tasks /app/tasks
-COPY ${PROJECT_PATH} /app/${PROJECT_PATH}
+
+# -----------------------------------------------------
+# Install the shared frontend toolchain in the image.
+# -----------------------------------------------------
+# Build/collect commands may run at container startup, so install dev tooling
+# explicitly even though NODE_ENV defaults to production. This keeps webpack-cli
+# available non-interactively and avoids npx install prompts.
+# RUN cd ${APP_HOME}/assets \
+#     && npm install --include=dev --legacy-peer-deps --no-audit --no-fund
 
 # -----------------------------------------------------
 # Entrypoint and helper scripts
-# Scripts are at compose/entrypoint (no django/ subdir)
-# -----------------------------------------------------
+# Check if scripts exist in expected locations and use them
 RUN mkdir -p ${APP_HOME}/logs \
-    && sed -i 's/\r$//g' /app/compose/entrypoint /app/compose/start /app/compose/rqworker-start /app/compose/flower /app/Makefile \
-    && cp /app/compose/entrypoint /entrypoint \
-    && cp /app/compose/start /start \
-    && cp /app/compose/rqworker-start /rqworker-start \
-    && cp /app/compose/flower /flower \
+    && sed -i 's/\r$//g' /app/compose/django/entrypoint /app/compose/django/start /app/compose/django/rqworker-start /app/compose/django/flower /app/Makefile \
+    && cp /app/compose/django/entrypoint /entrypoint \
+    && cp /app/compose/django/start /start \
+    && cp /app/compose/django/rqworker-start /rqworker-start \
+    && cp /app/compose/django/flower /flower \
     && chmod +x /entrypoint /start /rqworker-start /flower
 
 ENTRYPOINT ["/entrypoint"]

@@ -1,0 +1,12 @@
+[submodule "libs/django-grep"]
+	path = applications/libs/django-grep
+	url = https://github.com/mammhoud/django-grep
+	branch = generic
+[submodule "libs/django-osoul"]
+	path = applications/libs/django-osoul
+	url = https://github.com/mammhoud/django-osoul
+	branch = generic
+[submodule "libs/django-rseal"]
+	path = applications/libs/django-rseal
+	url = https://github.com/mammhoud/django-rseal
+	branch = generic

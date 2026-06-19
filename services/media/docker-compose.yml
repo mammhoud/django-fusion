@@ -1,0 +1,69 @@
+# ============================================================
+# Shared Media/Static Server
+# ============================================================
+# Container name 'shared-media' matches all proxy configs:
+#   url: "http://shared-media:80"
+#
+# Serves static files, media files, and per-site assets for all
+# three websites. HTTPS handled by coolify-proxy (Traefik).
+#
+# Build context must be /data/coolify/applications because
+# the Dockerfile COPYs compose/media/nginx.conf and
+# compose/media/entrypoint.sh relative to that context.
+
+networks:
+  coolify:
+    name: coolify
+    external: true
+
+volumes:
+  ctc-research-static:
+    name: ctc-research-static
+    external: true
+  ctc-research-media:
+    name: ctc-research-media
+    external: true
+  lms-demo-static:
+    name: lms-demo-static
+    external: true
+  lms-demo-media:
+    name: lms-demo-media
+    external: true
+  vresume-static:
+    name: vresume-static
+    external: true
+  vresume-media:
+    name: vresume-media
+    external: true
+
+services:
+  shared-media:
+    build:
+      # Dockerfile COPYs compose/media/nginx.conf and compose/media/entrypoint.sh
+      # which exist at /data/coolify/compose/media/ — so context is /data/coolify/
+      context: /data/coolify
+      dockerfile: services/media/Dockerfile
+    image: shared-media:latest
+    container_name: shared-media
+    restart: unless-stopped
+    networks:
+      - coolify
+    volumes:
+      # Mount static volumes from each site
+      - ctc-research-static:/var/www/sites/ctc-research/static:ro
+      - ctc-research-media:/var/www/media/ctc-research:ro
+      - lms-demo-static:/var/www/sites/lms-demo/static:ro
+      - lms-demo-media:/var/www/media/lms-demo:ro
+      - vresume-static:/var/www/sites/vresume/static:ro
+      - vresume-media:/var/www/media/vresume:ro
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/health/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+    deploy:
+      resources:
+        limits:
+          cpus: '0.25'
+          memory: 128M

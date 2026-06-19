@@ -11,8 +11,6 @@
 #   - Same environment as GitHub Actions tests
 # ============================================================
 
-version: '3.8'
-
 services:
   # ─────────────────────────────────────────────────────────────
   # Django Development Service

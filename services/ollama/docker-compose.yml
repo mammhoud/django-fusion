@@ -1,46 +1,38 @@
 services:
   ollama-api:
     image: 'ollama/ollama:latest'
+    container_name: ollama-api
     volumes:
       - 'ollama:/root/.ollama'
     ports:
       - '22333:11434'
     environment:
       OLLAMA_HOST: '0.0.0.0:11434'
-      COOLIFY_RESOURCE_UUID: caooqcvaol7g1e0k5zvlrk7t
-      COOLIFY_CONTAINER_NAME: ollama-api-caooqcvaol7g1e0k5zvlrk7t
       SERVICE_NAME_OLLAMA_API: ollama-api
       SERVICE_NAME_OPEN_WEBUI: open-webui
     healthcheck:
-      test:
-        - CMD
-        - ollama
-        - list
+      test: [CMD, ollama, list]
       interval: 5s
       timeout: 30s
       retries: 10
     restart: unless-stopped
-    container_name: ollama-api-caooqcvaol7g1e0k5zvlrk7t
     labels:
       - coolify.managed=true
       - coolify.version=4.1.2
       - coolify.serviceId=4
       - coolify.type=service
-      - coolify.name=ollama-api-caooqcvaol7g1e0k5zvlrk7t
       - coolify.resourceName=ollama
       - coolify.projectName=websites
       - coolify.serviceName=ollama-api
       - coolify.environmentName=utilities
-      - coolify.pullRequestId=0
-      - coolify.service.subId=12
-      - coolify.service.subType=application
-      - coolify.service.subName=ollama-api
     networks:
-      caooqcvaol7g1e0k5zvlrk7t: null
+      - ollama-net
     env_file:
       - .env
+
   open-webui:
     image: 'ghcr.io/open-webui/open-webui:main'
+    container_name: open-webui
     volumes:
       - 'open-webui:/app/backend/data'
     ports:
@@ -49,55 +41,44 @@ services:
       - ollama-api
     environment:
       OLLAMA_BASE_URL: 'http://ollama-api:11434'
-      COOLIFY_RESOURCE_UUID: caooqcvaol7g1e0k5zvlrk7t
-      COOLIFY_CONTAINER_NAME: open-webui-caooqcvaol7g1e0k5zvlrk7t
-      COOLIFY_FQDN: 72.61.82.167
-      COOLIFY_URL: 'http://72.61.82.167'
       SERVICE_NAME_OLLAMA_API: ollama-api
       SERVICE_NAME_OPEN_WEBUI: open-webui
     healthcheck:
-      test:
-        - CMD
-        - curl
-        - '-f'
-        - 'http://localhost:8080'
+      test: [CMD, curl, '-f', 'http://localhost:8080']
       interval: 5s
       timeout: 30s
       retries: 10
     restart: unless-stopped
-    container_name: open-webui-caooqcvaol7g1e0k5zvlrk7t
     labels:
       - coolify.managed=true
       - coolify.version=4.1.2
       - coolify.serviceId=4
       - coolify.type=service
-      - coolify.name=open-webui-caooqcvaol7g1e0k5zvlrk7t
       - coolify.resourceName=ollama
       - coolify.projectName=websites
       - coolify.serviceName=open-webui
       - coolify.environmentName=utilities
-      - coolify.pullRequestId=0
-      - coolify.service.subId=13
-      - coolify.service.subType=application
-      - coolify.service.subName=open-webui
       - traefik.enable=true
-      - traefik.http.middlewares.gzip.compress=true
-      - traefik.http.middlewares.redirect-to-https.redirectscheme.scheme=https
-      - traefik.http.routers.http-0-caooqcvaol7g1e0k5zvlrk7t-open-webui.entryPoints=http
-      - traefik.http.routers.http-0-caooqcvaol7g1e0k5zvlrk7t-open-webui.middlewares=gzip
-      - 'traefik.http.routers.http-0-caooqcvaol7g1e0k5zvlrk7t-open-webui.rule=Host(`72.61.82.167`) && PathPrefix(`/`)'
-      - traefik.http.routers.http-0-caooqcvaol7g1e0k5zvlrk7t-open-webui.service=http-0-caooqcvaol7g1e0k5zvlrk7t-open-webui
-      - traefik.http.services.http-0-caooqcvaol7g1e0k5zvlrk7t-open-webui.loadbalancer.server.port=8080
+      - traefik.http.routers.open-webui.entryPoints=http
+      - traefik.http.routers.open-webui.rule=Host(`open-webui.${SERVER_IP:-72.61.82.167}.sslip.io`)
+      - traefik.http.routers.open-webui.service=open-webui
+      - traefik.http.services.open-webui.loadbalancer.server.port=8080
     networks:
-      caooqcvaol7g1e0k5zvlrk7t: null
+      - ollama-net
+      - coolify
     env_file:
       - .env
+
 volumes:
   ollama:
     name: ollama
   open-webui:
     name: open-webui
+
 networks:
-  ollama:
-    name: ollama
+  ollama-net:
+    name: ollama-net
+    driver: bridge
+  coolify:
+    name: coolify
     external: true

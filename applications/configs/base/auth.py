@@ -107,3 +107,10 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_LOGOUT_ON_GET = True
 ACCOUNT_ADAPTER = settings.get("ACCOUNT_ADAPTER", "plugins.accounts.adapters.RegistrationAdapter")
 ACCOUNT_FORMS = settings.get("ACCOUNT_FORMS", {})
+
+# =============================================================================
+# 👤 PROFILE MODEL — required by django_rseal and django_osoul ForeignKey refs
+# =============================================================================
+# This must be set at the base config level so it is available when Django
+# loads model classes from installed apps (before site settings are applied).
+PROFILE_MODEL = settings.get("PROFILE_MODEL", "auth.User")

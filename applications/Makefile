@@ -317,12 +317,13 @@ docker-clean-all: docker-clean
 	@echo "Removing all Docker volumes..."
 	docker volume prune -f
 
-# Deploy warehouse services (postgres, redis, adminer, blinko)
+# Deploy warehouse services (postgres, redis)
 docker-deploy-warehouse:
-	@echo "Deploying warehouse services (postgres, redis, adminer, blinko)..."
+	@echo "Deploying warehouse services (postgres, redis)..."
+	docker network create warehouse-net 2>/dev/null || true
 	docker network create traefik-net 2>/dev/null || true
 	docker network create site_network 2>/dev/null || true
-	docker compose -f docker-compose.yml up -d postgres redis adminer blinko
+	docker compose -f docker-compose.yml up -d postgres redis
 	@echo "Waiting for warehouse services to be healthy..."
 	@sleep 10
 	docker compose -f docker-compose.yml ps

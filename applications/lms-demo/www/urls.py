@@ -13,7 +13,7 @@ from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
-from utilities import get_root_redirect_pattern
+from django_osoul.site.utils import get_root_redirect_pattern
 
 # Optional imports with safe fallbacks
 try:

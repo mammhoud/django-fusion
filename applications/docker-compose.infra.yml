@@ -1,0 +1,59 @@
+# ============================================================
+# Infrastructure Overlay — Docs Service + Log Volumes
+# ============================================================
+# Extends docker-compose.yml with the Docsify docs container
+# and named log volumes for each website.
+#
+# Container name 'docs' matches proxy/dynamic/docs.yml:
+#   url: "http://docs:80"
+# ============================================================
+
+networks:
+  coolify:
+    name: coolify
+    external: true
+  warehouse-net:
+    name: warehouse-net
+    external: true
+
+volumes:
+  ctc-research-logs:
+  lms-demo-logs:
+  vresume-logs:
+
+services:
+  # ── Docsify documentation server ────────────────────────
+  # Proxy target: http://docs:80  (proxy/dynamic/docs.yml)
+  docs:
+    image: structa-docs:latest
+    container_name: docs
+    restart: unless-stopped
+    build:
+      context: ../docs
+      dockerfile: /data/coolify/compose/docs/Dockerfile
+    networks:
+      - coolify
+    deploy:
+      resources:
+        limits:
+          cpus: "0.25"
+          memory: 64M
+    healthcheck:
+      test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s
+
+  # ── Log volume attachments ───────────────────────────────
+  lms-web:
+    volumes:
+      - lms-demo-logs:/app/logs/lms-demo
+
+  ctc-research-website:
+    volumes:
+      - ctc-research-logs:/app/logs/ctc-research
+
+  vresume-web:
+    volumes:
+      - vresume-logs:/app/logs/vresume

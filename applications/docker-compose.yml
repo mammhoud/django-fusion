@@ -1,26 +1,15 @@
 # ============================================================
-# Main Orchestration - Includes All Sites & Shared Infrastructure
+# Main Orchestration — Website Services
 # ============================================================
-# This file orchestrates deployment of all websites (ctc-research,
-# lms-demo, vresume) along with shared infrastructure (traefik, db,
-# cache, tasks, media server, nginx).
+# Traefik  → managed by Coolify (coolify-proxy, traefik:v3.6)
+# Postgres → managed by Coolify (coolify-db, postgres:15-alpine)
+# Redis    → managed by Coolify (coolify-redis, redis:7-alpine)
 #
-# Website services are defined in the canonical compose stack under compose/:
-#   - compose/docker-compose.yml
-#
-# Infrastructure is defined in compose/:
-#   - docker-compose.traefik.yml (reverse proxy)
-#   - docker-compose.warehouse.yml (database & cache)
-#   - docker-compose.tasks.yml (celery workers)
-#   - docker-compose.utilities.yml (utilities)
-#   - docker-compose.nginx.yml (media server)
+# This file only manages application containers that need rebuilding:
+#   - ctc-research-website, lms-web, vresume-web
+#   - structa-docs (Docsify)
 # ============================================================
 
 include:
-  # Shared infrastructure and canonical website services
-  - path: compose/docker-compose.yml
-  - path: compose/docker-compose.traefik.yml
-  - path: compose/docker-compose.warehouse.yml
-  - path: compose/docker-compose.tasks.yml
-  - path: compose/docker-compose.utilities.yml
-  - path: compose/docker-compose.nginx.yml
+  - path: compose/docker-compose.applications.yml
+  - path: docker-compose.infra.yml

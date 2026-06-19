@@ -12,8 +12,12 @@
 # ============================================================
 
 networks:
-  traefik-net:
-    name: traefik-net
+  coolify:
+    name: coolify
+    external: true
+  warehouse-net:
+    name: warehouse-net
+    external: true
 
 x-shared-tasks-base: &shared-tasks-base
   build:
@@ -41,9 +45,9 @@ x-shared-tasks-base: &shared-tasks-base
     DB_NAME: ${DB_NAME:-db_ctc}
     DB_USER: ${DB_USER:-coolify}
     DB_PASSWORD: ${DB_PASSWORD:-coolify_password}
-    REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@coolify-redis:6379/0
-    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@coolify-redis:6379/1
-    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@coolify-redis:6379/1
+    REDIS_URL: redis://:${REDIS_PASSWORD:-coolify_password}@coolify-redis:6379/0
+    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-coolify_password}@coolify-redis:6379/1
+    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-coolify_password}@coolify-redis:6379/1
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
     LOG_DIR: /app/logs
   volumes:
@@ -52,12 +56,11 @@ x-shared-tasks-base: &shared-tasks-base
     - ./libs:/app/libs:z
     - ./logs:/app/logs:z
   networks:
-    - traefik-net
-  depends_on:
-    coolify-db:
-      condition: service_healthy
-    coolify-redis:
-      condition: service_healthy
+    - coolify
+    - warehouse-net
+  # Note: coolify-db and coolify-redis are external warehouse services.
+  # depends_on cannot reference cross-file/external services in Docker Compose.
+  # Services discover each other via network names (coolify-db, coolify-redis).
 
 x-worker-command: &worker-command >
   celery -A tasks.celery:app worker

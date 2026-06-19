@@ -102,7 +102,7 @@ packages = ["configs", "tasks"]
 # GitHub sources for internal libs — used by all websites.
 # Pin to the 'generic' branch; uv resolves the exact commit at lock/sync time.
 [tool.uv.sources]
-django-osoul = { git = "https://github.com/mammhoud/django-osoul", branch = "generic" }
+django-osoul = { path = "libs/django-osoul", editable = true }
 django-rseal = { git = "https://github.com/mammhoud/django-rseal", branch = "generic" }
 django-grep  = { git = "https://github.com/mammhoud/django-grep",  branch = "generic" }
 

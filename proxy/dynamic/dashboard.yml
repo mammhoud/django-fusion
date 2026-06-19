@@ -1,8 +1,8 @@
 http:
   routers:
     traefik-dashboard:
-      rule: "Host(`traefik.structa.cloud`)"   # change to your subdomain
-      entryPoints: [web-secure]
+      rule: 'Host(`traefik.structa.cloud`)'
+      entryPoints: [https]
       service: api@internal
       middlewares: [basic-auth]
       tls:
