@@ -11,8 +11,8 @@
 # ============================================================
 
 networks:
-  coolify:
-    name: coolify
+  common:
+    name: common
     external: true
   warehouse-net:
     name: warehouse-net
@@ -48,7 +48,7 @@ x-website-base: &website-base
     DEBUG: ${DEBUG:-False}
     DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
     DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-pstg-database}
+    DB_HOST: ${DB_HOST:-database-server}
     DB_PORT: ${DB_PORT:-5432}
     DB_USER: ${DB_USER:-coolify}
     DB_PASSWORD: ${DB_PASSWORD:-default_password}
@@ -59,7 +59,7 @@ x-website-base: &website-base
     USE_X_FORWARDED_HOST: "true"
     SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
   networks:
-    - coolify
+    - common
     - warehouse-net
 
 services:

@@ -12,8 +12,8 @@
 # ============================================================
 
 networks:
-  coolify:
-    name: coolify
+  common:
+    name: common
     external: true
   warehouse-net:
     name: warehouse-net
@@ -40,7 +40,7 @@ x-shared-tasks-base: &shared-tasks-base
     DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research}
     WEBSITE: ${WEBSITE:-ctc-research}
     DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-pstg-database}
+    DB_HOST: ${DB_HOST:-database-server}
     DB_PORT: ${DB_PORT:-5432}
     DB_NAME: ${DB_NAME:-db_ctc}
     DB_USER: ${DB_USER:-coolify}
@@ -56,11 +56,11 @@ x-shared-tasks-base: &shared-tasks-base
     - ./libs:/app/libs:z
     - ./logs:/app/logs:z
   networks:
-    - coolify
+    - common
     - warehouse-net
   # Note: postgres and redis are external warehouse services.
   # depends_on cannot reference cross-file/external services in Docker Compose.
-  # Services discover each other via network names (pstg-database, redis).
+  # Services discover each other via network names (database-server, redis).
 
 x-worker-command: &worker-command >
   celery -A tasks.celery:app worker

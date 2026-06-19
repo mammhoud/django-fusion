@@ -131,21 +131,21 @@ deploy-databases:
 	@$(MAKE) -C $(DATABASES_DIR) deploy-db
 
 # Coolify specific
-deploy-coolify:
+deploy-common:
 	@echo "🚀 Deploying Coolify..."
 	@docker network rm coolify 2>/dev/null || true
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml up -d --remove-orphans
 
-restart-coolify:
+restart-common:
 	@echo "🔄 Restarting Coolify..."
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml restart coolify
 
-build-coolify:
+build-common:
 	@echo "🔧 Building Coolify images..."
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml build --no-cache
 	@echo "✅ Build complete"
 
-list-coolify:
+list-common:
 	@echo "📦 Listing Coolify containers..."
 	@docker ps --filter name=coolify --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
@@ -187,7 +187,7 @@ logs:
 	@echo "Coolify Logs (tail 200):"
 	@docker logs coolify --tail 200 2>/dev/null || echo "  (Coolify not found)"
 
-logs-coolify:
+logs-common:
 	@echo "📝 Coolify logs (tail 200)..."
 	@docker logs coolify --tail 200 -f
 

@@ -11,8 +11,8 @@
 #   docker compose -f applications/compose/docker-compose.docs.yml up -d
 
 networks:
-  coolify:
-    name: coolify
+  common:
+    name: common
     external: true
 
 services:
@@ -26,7 +26,7 @@ services:
     container_name: docs
     restart: unless-stopped
     networks:
-      - coolify
+      - common
     environment:
       - TZ=${TZ:-UTC}
     deploy:

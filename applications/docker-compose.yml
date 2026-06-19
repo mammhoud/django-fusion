@@ -2,7 +2,7 @@
 # Main Orchestration — Website Services
 # ============================================================
 # Traefik  → managed by Coolify (default-proxy, traefik:v3.6)
-# Postgres → managed by Coolify (pstg-database, postgres:15-alpine)
+# Postgres → managed by Coolify (database-server, postgres:15-alpine)
 # Redis    → managed by Coolify (default-redis, redis:7-alpine)
 #
 # This file only manages application containers that need rebuilding:

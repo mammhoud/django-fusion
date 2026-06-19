@@ -9,8 +9,8 @@
 # ============================================================
 
 networks:
-  coolify:
-    name: coolify
+  common:
+    name: common
     external: true
   warehouse-net:
     name: warehouse-net
@@ -32,7 +32,7 @@ services:
       context: ../docs
       dockerfile: /data/coolify/compose/docs/Dockerfile
     networks:
-      - coolify
+      - common
     deploy:
       resources:
         limits:
