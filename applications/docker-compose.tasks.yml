@@ -58,9 +58,9 @@ x-shared-tasks-base: &shared-tasks-base
   networks:
     - coolify
     - warehouse-net
-  # Note: coolify-db and coolify-redis are external warehouse services.
+  # Note: postgres and redis are external warehouse services.
   # depends_on cannot reference cross-file/external services in Docker Compose.
-  # Services discover each other via network names (coolify-db, coolify-redis).
+  # Services discover each other via network names (coolify-db, redis).
 
 x-worker-command: &worker-command >
   celery -A tasks.celery:app worker

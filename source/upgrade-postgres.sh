@@ -125,15 +125,15 @@ mount_path_for_major() {
 }
 
 current_postgres_mount_name() {
-    docker inspect coolify-db --format '{{range .Mounts}}{{if or (eq .Destination "/var/lib/postgresql/data") (eq .Destination "/var/lib/postgresql")}}{{.Name}}{{end}}{{end}}' 2>/dev/null
+    docker inspect postgres --format '{{range .Mounts}}{{if or (eq .Destination "/var/lib/postgresql/data") (eq .Destination "/var/lib/postgresql")}}{{.Name}}{{end}}{{end}}' 2>/dev/null
 }
 
 current_postgres_mount_path() {
-    docker inspect coolify-db --format '{{range .Mounts}}{{if or (eq .Destination "/var/lib/postgresql/data") (eq .Destination "/var/lib/postgresql")}}{{.Destination}}{{end}}{{end}}' 2>/dev/null
+    docker inspect postgres --format '{{range .Mounts}}{{if or (eq .Destination "/var/lib/postgresql/data") (eq .Destination "/var/lib/postgresql")}}{{.Destination}}{{end}}{{end}}' 2>/dev/null
 }
 
 current_postgres_image() {
-    docker inspect coolify-db --format '{{.Config.Image}}' 2>/dev/null
+    docker inspect postgres --format '{{.Config.Image}}' 2>/dev/null
 }
 
 current_coolify_image_tag() {
@@ -160,9 +160,9 @@ services:
   postgres:
     image: "${image}"
     volumes:
-      - coolify-db:${mount_path}
+      - postgres:${mount_path}
 volumes:
-  coolify-db:
+  postgres:
     name: "${volume}"
     external: true
 YAML
@@ -248,8 +248,8 @@ rollback_postgres() {
     log "Stopping Coolify application container before rollback."
     docker stop coolify >>"$LOGFILE" 2>&1 || true
 
-    log "Removing current coolify-db container. Current upgraded volume is kept untouched."
-    docker rm -f coolify-db >>"$LOGFILE" 2>&1 || true
+    log "Removing current postgres container. Current upgraded volume is kept untouched."
+    docker rm -f postgres >>"$LOGFILE" 2>&1 || true
 
     if [ "$PREVIOUS_OVERRIDE_PRESENT" = "true" ]; then
         log "Restoring previous PostgreSQL compose override."
@@ -290,13 +290,13 @@ upgrade_postgres() {
     fi
 
     if ! docker ps --format '{{.Names}}' | grep -qx 'coolify-db'; then
-        log "Starting existing coolify-db container for version detection and dump."
-        docker start coolify-db >>"$LOGFILE" 2>&1 || fail "Could not start coolify-db."
+        log "Starting existing postgres container for version detection and dump."
+        docker start postgres >>"$LOGFILE" 2>&1 || fail "Could not start postgres."
     fi
 
-    wait_for_postgres coolify-db "$DB_USERNAME" "$DB_DATABASE" || fail "Existing coolify-db is not ready."
+    wait_for_postgres postgres "$DB_USERNAME" "$DB_DATABASE" || fail "Existing postgres is not ready."
 
-    SERVER_VERSION_NUM=$(docker exec coolify-db psql -U "$DB_USERNAME" -d "$DB_DATABASE" -Atc 'SHOW server_version_num;' | tr -d '[:space:]')
+    SERVER_VERSION_NUM=$(docker exec postgres psql -U "$DB_USERNAME" -d "$DB_DATABASE" -Atc 'SHOW server_version_num;' | tr -d '[:space:]')
     CURRENT_MAJOR=$((SERVER_VERSION_NUM / 10000))
     PREVIOUS_VOLUME=$(current_postgres_mount_name)
     PREVIOUS_MOUNT_PATH=$(current_postgres_mount_path)
@@ -336,7 +336,7 @@ upgrade_postgres() {
     docker stop coolify >>"$LOGFILE" 2>&1 || true
 
     log "Creating compressed dump at ${DUMP_FILE}."
-    docker exec coolify-db pg_dumpall -U "$DB_USERNAME" | gzip -c > "$DUMP_FILE"
+    docker exec postgres pg_dumpall -U "$DB_USERNAME" | gzip -c > "$DUMP_FILE"
     chmod 600 "$DUMP_FILE"
 
     if [ ! -s "$DUMP_FILE" ]; then
@@ -374,8 +374,8 @@ upgrade_postgres() {
     log "Stopping temporary restore container."
     docker rm -f "$TEMP_CONTAINER" >>"$LOGFILE" 2>&1 || true
 
-    log "Stopping old coolify-db container. Previous volume '${PREVIOUS_VOLUME}' will be kept for rollback."
-    docker rm -f coolify-db >>"$LOGFILE" 2>&1 || true
+    log "Stopping old postgres container. Previous volume '${PREVIOUS_VOLUME}' will be kept for rollback."
+    docker rm -f postgres >>"$LOGFILE" 2>&1 || true
 
     log "Starting Coolify stack with PostgreSQL ${TARGET_MAJOR}."
     start_stack "$CURRENT_COOLIFY_IMAGE_TAG" >>"$LOGFILE" 2>&1 || fail "Could not start Coolify stack with upgraded PostgreSQL. See ${LOGFILE}."

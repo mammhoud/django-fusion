@@ -80,15 +80,15 @@ services:
   # ============================================================
   postgres:
     image: postgres:15-alpine
-    container_name: coolify-db
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_USER: ${DB_USERNAME:-coolify}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
       POSTGRES_DB: ${DB_DATABASE:-coolify}
     volumes:
-      - coolify-db:/var/lib/postgresql/data
-      - coolify-db-backups:/backups
+      - postgres:/var/lib/postgresql/data
+      - postgres-backups:/backups
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify}"]
       interval: 10s
@@ -103,7 +103,7 @@ services:
   # ============================================================
   redis:
     image: redis:7-alpine
-    container_name: coolify-redis
+    container_name: redis
     restart: always
     command: >
       redis-server
@@ -115,8 +115,8 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
     volumes:
-      - coolify-redis:/data
-      - coolify-redis-backups:/backups
+      - redis:/data
+      - redis-backups:/backups
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -210,17 +210,17 @@ networks:
 # Volumes
 # ============================================================
 volumes:
-  coolify-db:
-    name: coolify-db
+  postgres:
+    name: postgres
     external: false
-  coolify-db-backups:
-    name: coolify-db-backups
+  postgres-backups:
+    name: postgres-backups
     external: false
-  coolify-redis:
-    name: coolify-redis
+  redis:
+    name: redis
     external: false
-  coolify-redis-backups:
-    name: coolify-redis-backups
+  redis-backups:
+    name: redis-backups
     external: false
 
   # Service-specific named volumes (unique, referenced by service compose files)

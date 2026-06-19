@@ -42,14 +42,14 @@ services:
 
   postgres:
     image: postgres:15-alpine
-    container_name: coolify-db
+    container_name: postgres
     restart: always
     environment:
       POSTGRES_USER: ${DB_USERNAME:-coolify}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
       POSTGRES_DB: ${DB_DATABASE:-coolify}
     volumes:
-      - coolify-db:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify}"]
       interval: 10s
@@ -60,7 +60,7 @@ services:
 
   redis:
     image: redis:7-alpine
-    container_name: coolify-redis
+    container_name: redis
     restart: always
     command: >
       redis-server
@@ -70,7 +70,7 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
     volumes:
-      - coolify-redis:/data
+      - redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 10s
@@ -118,7 +118,7 @@ networks:
     external: false
 
 volumes:
-  coolify-db:
-    name: coolify-db
-  coolify-redis:
-    name: coolify-redis
+  postgres:
+    name: postgres
+  redis:
+    name: redis

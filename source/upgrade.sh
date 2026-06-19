@@ -234,7 +234,7 @@ nohup bash -c "
     }
 
     # Stop and remove containers
-    for container in coolify coolify-db coolify-redis coolify-realtime; do
+    for container in coolify postgres redis coolify-realtime; do
         if docker ps -a --format '{{.Names}}' | grep -q \"^\${container}\$\"; then
             log \"Stopping container: \${container}\"
             docker stop \"\$container\" >>\"\$LOGFILE\" 2>&1 || true

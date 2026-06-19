@@ -348,8 +348,8 @@ docker.io/library/redis:7-alpine
 ============================================================
 [2026-06-13 22:53:02] Starting container restart sequence (detached)...
 [2026-06-13 22:53:02] Container coolify not found (skipping)
-[2026-06-13 22:53:02] Container coolify-db not found (skipping)
-[2026-06-13 22:53:02] Container coolify-redis not found (skipping)
+[2026-06-13 22:53:02] Container postgres not found (skipping)
+[2026-06-13 22:53:02] Container redis not found (skipping)
 [2026-06-13 22:53:02] Container coolify-realtime not found (skipping)
 [2026-06-13 22:53:02] Container cleanup complete
 
@@ -361,35 +361,35 @@ docker.io/library/redis:7-alpine
  Volume "coolify-db"  Created
  Volume "coolify-redis"  Creating
  Volume "coolify-redis"  Created
- Container coolify-redis  Creating
+ Container redis  Creating
  Container coolify-realtime  Creating
- Container coolify-db  Creating
+ Container postgres  Creating
  Container coolify-realtime  Created
- Container coolify-redis  Created
- Container coolify-db  Created
+ Container redis  Created
+ Container postgres  Created
  Container coolify  Creating
  Container coolify  Created
  Container coolify-realtime  Starting
- Container coolify-db  Starting
- Container coolify-redis  Starting
- Container coolify-redis  Started
- Container coolify-db  Started
+ Container postgres  Starting
+ Container redis  Starting
+ Container redis  Started
+ Container postgres  Started
  Container coolify-realtime  Started
- Container coolify-db  Waiting
- Container coolify-redis  Waiting
+ Container postgres  Waiting
+ Container redis  Waiting
  Container coolify-realtime  Waiting
 [2026-06-13 22:53:04] Container restart sequence started in background (PID: 14151)
- Container coolify-redis  Healthy
+ Container redis  Healthy
  Container coolify-realtime  Healthy
- Container coolify-db  Healthy
+ Container postgres  Healthy
  Container coolify  Starting
  Container coolify  Started
- Container coolify-db  Waiting
- Container coolify-redis  Waiting
+ Container postgres  Waiting
+ Container redis  Waiting
  Container coolify-realtime  Waiting
  Container coolify  Waiting
- Container coolify-redis  Healthy
- Container coolify-db  Healthy
+ Container redis  Healthy
+ Container postgres  Healthy
  Container coolify-realtime  Healthy
  Container coolify  Healthy
 [2026-06-13 22:53:14] Docker compose up completed

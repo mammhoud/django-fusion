@@ -6,11 +6,11 @@
 SHELL := /bin/bash
 .PHONY: help
 
-# Include sub-makes for specific components
-include deploy/applications/Makefile
-include deploy/proxy/Makefile
-include deploy/services/Makefile
-include deploy/source/Makefile
+# Include sub-makes for specific components (ignore if missing)
+-include deploy/applications/Makefile
+-include deploy/proxy/Makefile
+-include deploy/services/Makefile
+-include deploy/source/Makefile
 
 help:
 	@echo "🚀 Structa Cloud Deployment System"
@@ -48,29 +48,31 @@ help:
 # Deployment targets
 # ──────────────────────────────────────────────────────────────
 
-deploy: deploy:all
-	@$(MAKE) --no-print-directory deploy:all
+deploy: deploy-all
+	@$(MAKE) --no-print-directory deploy-all
 
-deploy:all:
+deploy-all:
 	@echo "🚀 Deploying all services..."
-	@$(MAKE) --no-print-directory deploy:proxy
-	@$(MAKE) --no-print-directory deploy:app
-	@$(MAKE) --no-print-directory deploy:media
+	@$(MAKE) --no-print-directory deploy-proxy
+	@$(MAKE) --no-print-directory deploy-app
+	@$(MAKE) --no-print-directory deploy-media
+	@$(MAKE) --no-print-directory deploy-tasks
+	@$(MAKE) --no-print-directory deploy-docs
 	@echo "✅ All services deployed"
 
-deploy:app:
+deploy-app:
 	@cd applications && $(MAKE) up
 
-deploy:tasks:
-	@cd applications && $(MAKE) -f docker-compose.tasks.yml up -d
+deploy-tasks:
+	@cd applications && docker compose -f docker-compose.tasks.yml up -d
 
-deploy:media:
-	@cd services && $(MAKE) -f docker-compose.media.yml up -d
+deploy-media:
+	@cd services && docker compose -f docker-compose.media.yml up -d
 
-deploy:docs:
-	@cd applications && $(MAKE) -f docker-compose.docs.yml up -d
+deploy-docs:
+	@cd applications && docker compose -f docker-compose.docs.yml up -d
 
-deploy:proxy:
+deploy-proxy:
 	@cd proxy && $(MAKE) deploy
 
 # ──────────────────────────────────────────────────────────────
@@ -123,25 +125,25 @@ restart:
 # Pruning targets
 # ──────────────────────────────────────────────────────────────
 
-prune: prune:all
-	@$(MAKE) --no-print-directory prune:all
+prune: prune-all
+	@$(MAKE) --no-print-directory prune-all
 
-prune:all:
-	@$(MAKE) --no-print-directory prune:containers
-	@$(MAKE) --no-print-directory prune:volumes
-	@$(MAKE) --no-print-directory prune:images
+prune-all:
+	@$(MAKE) --no-print-directory prune-containers
+	@$(MAKE) --no-print-directory prune-volumes
+	@$(MAKE) --no-print-directory prune-images
 
-prune:containers:
+prune-containers:
 	@echo "🗑️  Removing stopped containers..."
 	@docker container prune -f
 	@echo "✅ Containers pruned"
 
-prune:volumes:
+prune-volumes:
 	@echo "🗑️  Removing unused volumes..."
 	@docker volume prune -f
 	@echo "✅ Volumes pruned"
 
-prune:images:
+prune-images:
 	@echo "🗑️  Removing unused images..."
 	@docker image prune -f
 	@echo "✅ Images pruned"
@@ -150,19 +152,19 @@ prune:images:
 # Certificate management
 # ──────────────────────────────────────────────────────────────
 
-cert: cert:generate
-	@$(MAKE) --no-print-directory cert:generate
+cert: cert-generate
+	@$(MAKE) --no-print-directory cert-generate
 
-cert:generate:
+cert-generate:
 	@cd proxy/scripts && ./generate-certs.sh production
 	@cd proxy && $(MAKE) restart
 	@echo "✅ Certificates generated and proxy restarted"
 
-cert:backup:
+cert-backup:
 	@cd proxy/scripts && ./manage-certs.sh backup
 	@echo "✅ Certificates backed up"
 
-cert:restore:
+cert-restore:
 	@read -p "Enter backup filename to restore: " FILE; \
 	if [ -f "proxy/scripts/certs/$$FILE" ]; then \
 		cd proxy/scripts && ./manage-certs.sh restore certs/"$$FILE"; \
@@ -172,11 +174,11 @@ cert:restore:
 		ls -1 proxy/scripts/certs/certs-backup-*.tar.gz 2>/dev/null || echo "  None found"; \
 	fi
 
-cert:validate:
+cert-validate:
 	@cd proxy/scripts && ./manage-certs.sh validate
 	@echo "✅ Certificates validated"
 
-cert:check:
+cert-check:
 	@cd proxy/scripts && ./manage-certs.sh check-expiry
 	@echo "✅ Certificate check complete"
 
@@ -184,22 +186,22 @@ cert:check:
 # Build and development
 # ──────────────────────────────────────────────────────────────
 
-build: build:all
-	@$(MAKE) --no-print-directory build:all
+build: build-all
+	@$(MAKE) --no-print-directory build-all
 
-build:all:
-	@$(MAKE) --no-print-directory build:app
-	@$(MAKE) --no-print-directory build:media
-	@$(MAKE) --no-print-directory build:docs
+build-all:
+	@$(MAKE) --no-print-directory build-app
+	@$(MAKE) --no-print-directory build-media
+	@$(MAKE) --no-print-directory build-docs
 
-build:app:
+build-app:
 	@cd applications && $(MAKE) build
 
-build:media:
-	@cd services && $(MAKE) -f docker-compose.media.yml build
+build-media:
+	@cd services && docker compose -f docker-compose.media.yml build
 
-build:docs:
-	@cd applications && $(MAKE) -f docker-compose.docs.yml build
+build-docs:
+	@cd applications && docker compose -f docker-compose.docs.yml build
 
 # ──────────────────────────────────────────────────────────────
 # Utility commands
@@ -210,7 +212,7 @@ validate:
 	@cd proxy && $(MAKE) validate || echo "  (Proxy validation skipped)"
 	@echo "✅ Configuration validation complete"
 
-help:all:
+help-all:
 	@$(MAKE) --no-print-directory help
 	@echo ""
 	@echo "═══════════════════════════════════════════════════════════════"

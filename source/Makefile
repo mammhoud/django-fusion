@@ -90,8 +90,8 @@ upgrade:postgres: _docker_check
 	@cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) stop coolify
 	@echo "Creating database backup..."
 	@mkdir -p $(DATA_DIR)/backups
-	@docker exec coolify-db pg_dump -U ${DB_USERNAME:-coolify} ${DB_DATABASE:-coolify} > $(DATA_DIR)/backups/coolify-db-$(TIMESTAMP).sql 2>/dev/null || \
-		docker exec coolify-db pg_dumpall -U ${DB_USERNAME:-coolify} > $(DATA_DIR)/backups/coolify-all-$(TIMESTAMP).sql
+	@docker exec postgres pg_dump -U ${DB_USERNAME:-coolify} ${DB_DATABASE:-coolify} > $(DATA_DIR)/backups/coolify-db-$(TIMESTAMP).sql 2>/dev/null || \
+		docker exec postgres pg_dumpall -U ${DB_USERNAME:-coolify} > $(DATA_DIR)/backups/coolify-all-$(TIMESTAMP).sql
 	@echo "Starting database upgrade..."
 	@cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) up -d postgres
 	@echo "Waiting for PostgreSQL to be ready..."
@@ -144,8 +144,8 @@ logs: _docker_check
 logs:all: _docker_check
 	@echo "📝 All Coolify logs (tail 200)..."
 	@docker logs coolify --tail 200 -f
-	@docker logs coolify-db --tail 200 -f
-	@docker logs coolify-redis --tail 200 -f
+	@docker logs postgres --tail 200 -f
+	@docker logs redis --tail 200 -f
 	@docker logs coolify-realtime --tail 200 -f
 
 backup: _docker_check
@@ -162,7 +162,7 @@ backup: _docker_check
 	@echo "Backing up SSL certificates..."
 	@cp -r $(DATA_DIR)/ssl $(DATA_DIR)/backups/$(TIMESTAMP)/ 2>/dev/null || true
 	@echo "Backing up database data..."
-	@docker exec coolify-db pg_dumpall -U ${DB_USERNAME:-coolify} > $(DATA_DIR)/backups/$(TIMESTAMP)/database.sql 2>/dev/null || true
+	@docker exec postgres pg_dumpall -U ${DB_USERNAME:-coolify} > $(DATA_DIR)/backups/$(TIMESTAMP)/database.sql 2>/dev/null || true
 	@echo "✅ Backup complete: $(DATA_DIR)/backups/$(TIMESTAMP)"
 
 backup:restore:
@@ -180,7 +180,7 @@ backup:restore:
 			echo "Restoring services..."; \
 			cp -r $(DATA_DIR)/backups/$$BACKUP/services/* $(DATA_DIR)/services/ 2>/dev/null || true; \
 			echo "Restoring database..."; \
-			docker exec -i coolify-db psql -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify} < $(DATA_DIR)/backups/$$BACKUP/database.sql 2>/dev/null || true; \
+			docker exec -i postgres psql -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify} < $(DATA_DIR)/backups/$$BACKUP/database.sql 2>/dev/null || true; \
 			echo "Starting services..."; \
 			cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) up -d; \
 			echo "✅ Restore complete"; \

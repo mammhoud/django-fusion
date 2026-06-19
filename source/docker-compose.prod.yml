@@ -35,7 +35,7 @@ services:
 
   postgres:
     volumes:
-      - coolify-db:/var/lib/postgresql/data
+      - postgres:/var/lib/postgresql/data
     environment:
       POSTGRES_USER: ${DB_USERNAME:-coolify}
       POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
@@ -51,7 +51,7 @@ services:
     environment:
       REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
     volumes:
-      - coolify-redis:/data
+      - redis:/data
     healthcheck:
       test: ["CMD", "redis-cli", "ping"]
       interval: 5s
@@ -79,7 +79,7 @@ services:
       timeout: 2s
 
 volumes:
-  coolify-db:
-    name: coolify-db
-  coolify-redis:
-    name: coolify-redis
+  postgres:
+    name: postgres
+  redis:
+    name: redis
