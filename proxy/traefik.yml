@@ -46,7 +46,7 @@ certificatesResolvers:
   letsencrypt:
     acme:
       email: "admin@structa.cloud"
-      storage: /traefik/acme/acme.json
+      storage: /traefik/certs/acme.json
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
@@ -54,7 +54,7 @@ certificatesResolvers:
   letsencrypt-staging:
     acme:
       email: "admin@structa.cloud"
-      storage: /traefik/acme/acme-staging.json
+      storage: /traefik/certs/acme-staging.json
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web

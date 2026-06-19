@@ -4,8 +4,8 @@
 
 set -e
 
-ACME_FILE="/etc/traefik/acme/acme.json"
-BACKUP_DIR="/etc/traefik/acme/backups"
+ACME_FILE="/etc/traefik/certs/acme.json"
+BACKUP_DIR="/etc/traefik/certs/backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # Create backup directory

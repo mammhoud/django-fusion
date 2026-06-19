@@ -58,8 +58,6 @@ services:
       retries: 5
       start_period: 60s
     depends_on:
-      postgres:
-        condition: service_healthy
       redis:
         condition: service_healthy
       soketi:
@@ -68,35 +66,14 @@ services:
       - coolify
       - internal
 
-  # ============================================================
-  # PostgreSQL Database
-  # ============================================================
-  postgres:
-    image: postgres:15-alpine
-    container_name: postgres
-    restart: always
-    environment:
-      POSTGRES_USER: ${DB_USERNAME:-coolify}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
-      POSTGRES_DB: ${DB_DATABASE:-coolify}
-    volumes:
-      - postgres:/var/lib/postgresql/data
-      # Optional: Backup volume
-      - postgres-backups:/backups
-    healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify}"]
-      interval: 10s
-      timeout: 5s
-      retries: 5
-    networks:
-      - internal
+
 
   # ============================================================
   # Redis Cache
   # ============================================================
-  redis:
+  coolify-redis:
     image: redis:7-alpine
-    container_name: redis
+    container_name: coolify-redis
     restart: always
     command: >
       redis-server
@@ -115,7 +92,7 @@ services:
       retries: 5
     networks:
       - internal
-
+      - coolify
   # ============================================================
   # Soketi (Real-time)
   # ============================================================
@@ -156,7 +133,6 @@ networks:
   coolify:
     name: coolify
     driver: bridge
-    external: false
   internal:
     name: coolify-internal
     driver: bridge

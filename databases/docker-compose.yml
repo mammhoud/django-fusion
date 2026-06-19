@@ -1,0 +1,56 @@
+# docker-compose.yml for coolify/databases
+# Define database services (e.g., PostgreSQL, Redis) specific to this group.
+# This file will be merged by the root compose when building.
+services:
+  coolify-db:
+    container_name: coolify-db
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-coolify}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-coolify_password}
+      POSTGRES_DB: ${POSTGRES_DB:-coolify}
+    volumes:
+      - coolify-db-data:/var/lib/postgresql/data
+    networks:
+      - coolify
+  # Example PostgreSQL service
+  # postgres-db:
+  #   image: postgres:15-alpine
+  #   environment:
+  #     POSTGRES_USER: user
+  #     POSTGRES_PASSWORD: password
+  #   volumes:
+  #     - db-data:/var/lib/postgresql/data
+  #   networks:
+  #     - coolify
+
+
+
+  # ============================================================
+  # PostgreSQL Database
+  # # ============================================================
+  # postgres:
+  #   image: postgres:15-alpine
+  #   container_name: postgres
+  #   restart: always
+  #   environment:
+  #     POSTGRES_USER: ${DB_USERNAME:-coolify}
+  #     POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
+  #     POSTGRES_DB: ${DB_DATABASE:-coolify}
+  #   volumes:
+  #     - postgres:/var/lib/postgresql/data
+  #     # Optional: Backup volume
+  #     - postgres-backups:/backups
+  #   healthcheck:
+  #     test: ["CMD-SHELL", "pg_isready -U ${DB_USERNAME:-coolify} -d ${DB_DATABASE:-coolify}"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   networks:
+  #     - internal
+volumes:
+  coolify-db-data:
+    driver: local
+networks:
+  coolify:
+    external: true

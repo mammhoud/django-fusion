@@ -1,0 +1,9 @@
+include:
+  - /data/coolify/proxy/docker-compose.nginx.yml
+  - /data/coolify/proxy/docker-compose.caddy.yml
+  - /data/coolify/proxy/docker-compose.traefik.yml
+
+
+networks:
+  proxy:
+    external: true

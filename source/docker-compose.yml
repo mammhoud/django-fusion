@@ -1,5 +1,6 @@
 services:
   coolify:
+    image: "${REGISTRY_URL:-ghcr.io}/coollabsio/coolify:${LATEST_IMAGE:-latest}"
     container_name: coolify
     restart: always
     working_dir: /var/www/html
@@ -30,7 +31,7 @@ services:
       retries: 5
       start_period: 60s
     depends_on:
-      postgres:
+      coolify-db:
         condition: service_healthy
       redis:
         condition: service_healthy
@@ -40,9 +41,9 @@ services:
       - coolify
       - internal
 
-  postgres:
+  coolify-db:
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: coolify-db
     restart: always
     environment:
       POSTGRES_USER: ${DB_USERNAME:-coolify}
@@ -110,7 +111,6 @@ networks:
   coolify:
     name: coolify
     driver: bridge
-    external: false
   internal:
     name: coolify-internal
     driver: bridge

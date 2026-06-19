@@ -16,7 +16,7 @@ BASE_COMPOSE := docker-compose.yml
 PROD_COMPOSE := docker-compose.prod.yml
 CUSTOM_COMPOSE := docker-compose.custom.yml
 
-.PHONY: help deploy upgrade upgrade:postgres restart stop status
+.PHONY: help deploy upgrade upgrade-postgres restart stop status
 
 help:
 	@echo "📋 Source Deployment Makefile"
@@ -24,9 +24,9 @@ help:
 	@echo ""
 	@echo "Available commands:"
 	@echo "  make deploy           - Deploy Coolify from source"
-	@echo "  make deploy:prod      - Deploy Coolify in production mode"
+	@echo "  make deploy-prod      - Deploy Coolify in production mode"
 	@echo "  make upgrade          - Upgrade Coolify to latest version"
-	@echo "  make upgrade:postgres - Upgrade PostgreSQL database"
+	@echo "  make upgrade-postgres - Upgrade PostgreSQL database"
 	@echo "  make restart          - Restart Coolify services"
 	@echo "  make stop             - Stop Coolify services"
 	@echo "  make start            - Start Coolify services"
@@ -36,7 +36,7 @@ help:
 	@echo ""
 	@echo "Maintenance:"
 	@echo "  make backup           - Backup Coolify data"
-	@echo "  make backup:restore   - Restore from backup"
+	@echo "  make backup-restore   - Restore from backup"
 	@echo ""
 	@echo "Environment:"
 	@echo "  - DATA_DIR            - Data directory (default: /data/coolify)"
@@ -66,7 +66,7 @@ deploy: _docker_check
 	@sleep 5
 	@$(MAKE) status
 
-deploy:prod: _docker_check
+deploy-prod: _docker_check
 	@echo "🚀 Deploying Coolify in production mode..."
 	@cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) up -d --remove-orphans
 	@echo "✅ Coolify production deployment started"
@@ -84,7 +84,7 @@ upgrade: _docker_check
 	@sleep 5
 	@$(MAKE) status
 
-upgrade:postgres: _docker_check
+upgrade-postgres: _docker_check
 	@echo "🔄 Upgrading PostgreSQL..."
 	@echo "Stopping services..."
 	@cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) stop coolify
@@ -109,13 +109,20 @@ restart: _docker_check
 
 stop: _docker_check
 	@echo "🛑 Stopping Coolify services..."
-	@cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) down
+	@cd $(SOURCE_DIR) && docker compose --env-file .env -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) down
 	@echo "✅ Services stopped"
 
 start: _docker_check
 	@echo "🚀 Starting Coolify services..."
-	@cd $(SOURCE_DIR) && docker compose -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) up -d
+	@cd $(SOURCE_DIR) && docker compose --env-file .env -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) up -d
 	@echo "✅ Services started"
+	@sleep 5
+	@$(MAKE) status
+
+run-infra: _docker_check
+	@echo "🚀 Deploying Full Coolify Infrastructure..."
+	@cd $(SOURCE_DIR) && docker compose --env-file .env -f $(BASE_COMPOSE) -f $(PROD_COMPOSE) -f $(CUSTOM_COMPOSE) up -d --build
+	@echo "✅ Full Infrastructure Deployed"
 	@sleep 5
 	@$(MAKE) status
 
@@ -141,7 +148,7 @@ logs: _docker_check
 	@echo "📝 Coolify logs (tail 200)..."
 	@docker logs coolify --tail 200 -f
 
-logs:all: _docker_check
+logs-all: _docker_check
 	@echo "📝 All Coolify logs (tail 200)..."
 	@docker logs coolify --tail 200 -f
 	@docker logs postgres --tail 200 -f
@@ -165,7 +172,7 @@ backup: _docker_check
 	@docker exec postgres pg_dumpall -U ${DB_USERNAME:-coolify} > $(DATA_DIR)/backups/$(TIMESTAMP)/database.sql 2>/dev/null || true
 	@echo "✅ Backup complete: $(DATA_DIR)/backups/$(TIMESTAMP)"
 
-backup:restore:
+backup-restore:
 	@read -p "Enter backup timestamp to restore (e.g., 20260613_225231): " BACKUP; \
 	if [ -d "$(DATA_DIR)/backups/$$BACKUP" ]; then \
 		echo "⚠️  This will overwrite current data. Continue? (y/N) "; \

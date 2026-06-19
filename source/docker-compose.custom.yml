@@ -78,13 +78,13 @@ services:
   # ============================================================
   # PostgreSQL Database (Coolify)
   # ============================================================
-  postgres:
+  coolify-db:
     image: postgres:15-alpine
-    container_name: postgres
+    container_name: coolify-db
     restart: always
     environment:
       POSTGRES_USER: ${DB_USERNAME:-coolify}
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-coolify_password}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-coolify_password}
       POSTGRES_DB: ${DB_DATABASE:-coolify}
     volumes:
       - postgres:/var/lib/postgresql/data
@@ -94,6 +94,22 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
+    networks:
+      - internal
+      - warehouse-net
+      - coolify-warehouse
+      - coolify
+  # Additional analytics DB (minimal)
+  analytics-db:
+    image: postgres:15-alpine
+    container_name: analytics-db
+    restart: always
+    environment:
+      POSTGRES_USER: ${ANALYTICS_DB_USER:-analytics}
+      POSTGRES_PASSWORD: ${ANALYTICS_DB_PASSWORD:-analytics_pass}
+      POSTGRES_DB: ${ANALYTICS_DB_NAME:-analytics}
+    volumes:
+      - analytics-db:/var/lib/postgresql/data
     networks:
       - internal
       - warehouse-net
@@ -159,7 +175,6 @@ services:
       - coolify
       - internal
       - utilities-net
-
   # ============================================================
   # Adminer (Database Admin UI) - Merge with warehouses
   # ============================================================
@@ -174,7 +189,8 @@ services:
       - "traefik.http.routers.adminer.entrypoints=web"
       - "traefik.http.routers.adminer.tls=true"
       - "traefik.http.services.adminer.loadbalancer.server.port=8080"
-
+    networks:
+      - coolify
 # ============================================================
 # Networks
 # ============================================================
@@ -182,7 +198,6 @@ networks:
   coolify:
     name: coolify
     driver: bridge
-    external: false
   internal:
     name: coolify-internal
     driver: bridge
@@ -212,6 +227,9 @@ networks:
 volumes:
   postgres:
     name: postgres
+    external: false
+  analytics-db:
+    name: analytics-db
     external: false
   postgres-backups:
     name: postgres-backups

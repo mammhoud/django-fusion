@@ -12,8 +12,9 @@
 # compose/media/entrypoint.sh relative to that context.
 
 networks:
+  traefik-net:
+    external: true
   coolify:
-    name: coolify
     external: true
 
 volumes:
@@ -48,6 +49,7 @@ services:
     restart: unless-stopped
     networks:
       - coolify
+
     volumes:
       # Mount static volumes from each site
       - ctc-research-static:/var/www/sites/ctc-research/static:ro

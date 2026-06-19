@@ -63,8 +63,9 @@ docs/
     ├── docker/        # Docker setup
     ├── nginx/         # Nginx config
     ├── traefik/       # Traefik config
-    └── postgres/      # Database
-```
+    ├── postgres/      # Database
+    ├── MAKEFILE_DELEGATION_TREE.md # Orchestration docs
+    └── SHARED_TASKS_RECOMMENDATIONS.md # Shared Services Docs
 
 ---
 

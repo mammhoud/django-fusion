@@ -12,4 +12,4 @@
 
 include:
   - path: compose/docker-compose.applications.yml
-  - path: docker-compose.infra.yml
+  - path: compose/docker-compose.infra.yml

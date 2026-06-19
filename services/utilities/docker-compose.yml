@@ -19,6 +19,7 @@ services:
     networks:
       - utilities-net
       - traefik-net
+      - coolify
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:9090"]
       interval: 10s
@@ -44,6 +45,7 @@ services:
     networks:
       - utilities-net
       - traefik-net
+      - coolify
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3100/loki/api/v1/status/buildinfo"]
       interval: 10s
@@ -73,6 +75,7 @@ services:
     networks:
       - utilities-net
       - traefik-net
+      - coolify
     depends_on:
       prometheus:
         condition: service_healthy
@@ -104,6 +107,7 @@ services:
     networks:
       - utilities-net
       - traefik-net
+      - coolify
     healthcheck:
       test: ["CMD", "wget", "--spider", "-q", "http://localhost:3010/health"]
       interval: 10s
@@ -119,6 +123,12 @@ networks:
   utilities-net:
     driver: bridge
     name: utilities-net
+  internal:
+    external: true
+    name: internal
+  coolify:
+    external: true
+    name: coolify
   traefik-net:
     external: true
     name: traefik-net

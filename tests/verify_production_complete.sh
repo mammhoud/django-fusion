@@ -191,7 +191,7 @@ echo "═" | tee -a "$REPORT"
 echo "7️⃣ SSL/TLS CERTIFICATE CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-if [ -f /root/site/websites/compose/traefik/acme/acme.json ]; then
+if [ -f /root/site/websites/compose/traefik/certs/acme.json ]; then
     test_pass "Traefik ACME configuration exists"
 else
     test_warn "ACME configuration not found"

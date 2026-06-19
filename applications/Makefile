@@ -150,6 +150,7 @@ check:
 	$(MANAGE) check
 
 validate-config:
+	@docker compose -f $(COMPOSE_FILE) config -q && echo "Compose config valid" || echo "Compose config invalid"
 	@if $(MANAGE) help | grep -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
 
 build-assets:
@@ -222,10 +223,26 @@ docker-up:
 docker-down:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) down --remove-orphans
 
+up: docker-up
+.PHONY: up
+
 docker-logs:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) logs -f --tail=200 $(DOCKER_SERVICE)
 
 docker-prune-containers:
+	$(DOCKER_COMPOSE) down --remove-orphans
+
+# -----------------------------------------------------------------
+# Site‑specific shortcuts – invoke docker‑up with the appropriate WEBSITE
+# -----------------------------------------------------------------
+ctc-research-up:
+	@$(MAKE) docker-up WEBSITE=ctc-research
+
+structa-up:
+	@$(MAKE) docker-up WEBSITE=structa
+
+vresume-up:
+	@$(MAKE) docker-up WEBSITE=vresume
 	$(DOCKER_COMPOSE) down --remove-orphans
 	docker container prune -f
 
@@ -483,6 +500,30 @@ show-config: show-vars
 	@echo "  SITE_PATH=$(SITE)"
 	@echo "  DOCKER_BUILD_ARGS=$(DOCKER_BUILD_ARGS)"
 	@echo ""
+
+# Production and Custom Compose Overrides
+
+# Build containers using production overrides
+docker-rebuild-prod:
+	@$(MAKE) docker-rebuild COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Build containers using custom overrides
+docker-rebuild-custom:
+	@$(MAKE) docker-rebuild COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Deploy using production overrides
+docker-up-prod:
+	@$(MAKE) docker-up COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Deploy using custom overrides
+docker-up-custom:
+	@$(MAKE) docker-up COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Run all deployment steps as per Coolify docs (warehouse, traefik, websites)
+run-all:
+	@$(MAKE) docker-deploy-warehouse && $(MAKE) docker-deploy-traefik && $(MAKE) docker-deploy-websites
+
+# Note: For full deployment steps, refer to Coolify documentation at https://coolify.io/docs/knowledge-base
 
 .PHONY: clean show-targets show-vars show-config
 # Traefik SSL Certificate Operations

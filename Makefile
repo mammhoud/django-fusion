@@ -4,7 +4,7 @@
 # ============================================================
 
 SHELL := /bin/bash
-.PHONY: help
+.PHONY: help logs-coolify deploy-coolify restart-coolify build-coolify list-coolify
 
 # Include sub-makes for specific components (ignore if missing)
 -include deploy/applications/Makefile
@@ -23,6 +23,10 @@ help:
 	@echo "  make deploy:tasks     - Start background task workers"
 	@echo "  make deploy:docs      - Start documentation service"
 	@echo "  make deploy:all       - Deploy all services"
+	@echo "  make deploy-coolify   - Deploy Coolify using its docker compose"
+	@echo "  make restart-coolify  - Restart Coolify service"
+	@echo "  make build-coolify    - Rebuild Coolify containers"
+	@echo "  make list-coolify     - List running Coolify containers"
 	@echo ""
 	@echo "Management commands:"
 	@echo "  make status           - Show deployment status"
@@ -53,6 +57,20 @@ deploy: deploy-all
 
 deploy-all:
 	@echo "🚀 Deploying all services..."
+	@$(MAKE) --no-print-directory deploy-proxy
+	@$(MAKE) --no-print-directory deploy-app
+	@$(MAKE) --no-print-directory deploy-media
+	@$(MAKE) --no-print-directory deploy-tasks
+	@$(MAKE) --no-print-directory deploy-docs
+	@$(MAKE) --no-print-directory deploy-db
+	@echo "✅ All services deployed"
+	@$(MAKE) --no-print-directory deploy-proxy
+	@$(MAKE) --no-print-directory deploy-app
+	@$(MAKE) --no-print-directory deploy-media
+	@$(MAKE) --no-print-directory deploy-tasks
+	@$(MAKE) --no-print-directory deploy-docs
+	@$(MAKE) --no-print-directory deploy-db
+	@echo "✅ All services deployed"
 	@$(MAKE) --no-print-directory deploy-proxy
 	@$(MAKE) --no-print-directory deploy-app
 	@$(MAKE) --no-print-directory deploy-media
@@ -93,10 +111,35 @@ status:
 	@echo "Media Server:"
 	@docker ps --filter "name=shared-media" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Media server not running)"
 
+logs-coolify:
+	@echo "📝 Coolify logs (tail 200)..."
+	@docker logs coolify --tail 200 -f
+
 logs:
 	@echo "📝 Service Logs"
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo ""
+
+# Deploy Coolify using its Docker Compose file
+deploy-coolify:
+	@echo "🚀 Deploying Coolify..."
+	@docker compose -f source/docker-compose.yml up -d --remove-orphans
+
+# Restart Coolify service
+restart-coolify:
+	@echo "🔄 Restarting Coolify..."
+	@docker compose -f source/docker-compose.yml restart coolify
+
+# Build/rebuild Coolify containers
+build-coolify:
+	@echo "🔧 Building Coolify images..."
+	@docker compose -f source/docker-compose.yml build --no-cache
+	@echo "✅ Build complete"
+
+list-coolify:
+	@echo "📦 Listing Coolify containers..."
+	@docker ps --filter name=coolify --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
+
 	@echo "Proxy Logs (tail 50):"
 	@docker logs coolify-proxy --tail 50 2>/dev/null || echo "  (Proxy container not found)"
 	@echo ""
@@ -195,7 +238,7 @@ build-all:
 	@$(MAKE) --no-print-directory build-docs
 
 build-app:
-	@cd applications && $(MAKE) build
+	@cd applications && docker compose build   # or docker-compose
 
 build-media:
 	@cd services && docker compose -f docker-compose.media.yml build

@@ -1,16 +1,18 @@
-name: coolify-proxy
 networks:
   coolify:
-    external: true
+    name: coolify
+  traefik-net:
+    external: false
 services:
-  traefik:
+  coolify-proxy:
     container_name: coolify-proxy
-    image: 'traefik:v3.6'
     restart: unless-stopped
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     networks:
       - coolify
+      - traefik-net
+      - shared-media
     ports:
       - '80:80'
       - '443:443'

@@ -6,15 +6,22 @@
 networks:
   traefik-net:
     external: false   # create automatically if not exists
+  coolify:
+    external: true
 
 volumes:
   traefik_acme:
 
+x-proxy-common: &proxy-common
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - coolify
+
 services:
-  structa-proxy:
-    image: traefik:v3.6
-    container_name: structa-proxy
-    restart: unless-stopped
+  coolify-proxy:
+    <<: *proxy-common
+    container_name: coolify-proxy
     security_opt:
       - no-new-privileges:true
     ports:
@@ -31,6 +38,7 @@ services:
       TRAEFIK_LOG_LEVEL: INFO
     networks:
       - traefik-net
+      - coolify
     command:
       - "--configFile=/etc/traefik/traefik.yml"
     deploy:

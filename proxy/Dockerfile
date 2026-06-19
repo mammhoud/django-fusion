@@ -5,8 +5,8 @@ RUN apk add --no-cache apache2-utils
 
 # Create ACME directory with proper permissions
 RUN mkdir -p /etc/traefik/acme \
-    && touch /etc/traefik/acme/acme.json \
-    && chmod 600 /etc/traefik/acme/acme.json
+    && touch /etc/traefik/certs/acme.json \
+    && chmod 600 /etc/traefik/certs/acme.json
 
 # Ensure ownership is writable by a non-root Traefik process if necessary
 RUN chown -R 1000:1000 /etc/traefik/acme || true

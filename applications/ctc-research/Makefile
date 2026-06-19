@@ -21,7 +21,7 @@ NC     := \033[0m
 
 SITE_NAME := $(notdir $(CURDIR))
 DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
-PYTHONPATH := $(CURDIR):$(abspath ..)
+PYTHONPATH := $(CURDIR):$(abspath ..):$(abspath ../libs/django-osoul/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ..
@@ -136,6 +136,10 @@ install: ## Install Python dependencies
 	@echo -e "$(BLUE)Installing Python deps...$(NC)"
 	@$(UV) sync
 	@echo -e "$(GREEN)✅ Installed$(NC)"
+	# Install local django_osoul library in editable mode
+	@echo -e "$(BLUE)Installing local django_osoul library...$(NC)"
+	@cd $(abspath ../libs/django-osoul) && $(UV) pip install -e .
+	@echo -e "$(GREEN)✅ Local library installed$(NC)"
 
 install-internal: ## Refresh mammhoud GitHub packages (django-osoul/rseal/grep)
 	$(call clean_broken_venv)

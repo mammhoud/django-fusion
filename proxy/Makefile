@@ -49,8 +49,11 @@ deploy: validate backup
 		--exclude='Makefile' \
 		--exclude='.gitignore' \
 		./ $(LIVE_DIR)/
-	@echo "✅ Config synced. Restarting proxy..."
-	@docker restart coolify-proxy || { echo "❌ Failed to restart proxy"; exit 1; }
+	@echo "✅ Config synced. Starting/updating proxy..."
+	@docker rm -f shared-media 2>/dev/null || true
+	@docker compose -f docker-compose.yml up -d --remove-orphans || { echo "❌ Failed to start proxy 0"; exit 1; }
+	@docker compose -f docker-compose.custom.yml up -d --remove-orphans || { echo "❌ Failed to start proxy 1"; exit 1; }
+	@docker restart coolify-proxy 2>/dev/null || true
 	@echo "✅ Deployment complete"
 	@sleep 2
 	@echo "📊 Checking status..."
@@ -58,22 +61,34 @@ deploy: validate backup
 
 validate:
 	@echo "🔍 Validating YAML syntax..."
-	@python3 -c "import yaml" 2>/dev/null || { echo "⚠️  PyYAML not installed, skipping YAML validation"; }
-	@if command -v python3 >/dev/null 2>&1; then \
-		for file in $$(find . -name "*.yml" -o -name "*.yaml" | grep -v backups); do \
-			echo "  Checking $$file"; \
-			python3 -c "import yaml; yaml.safe_load(open('$$file'))" || exit 1; \
-		done; \
-	fi
+	@docker compose -f docker-compose.custom.yml config -q || exit 1
 	@echo "✅ All YAML files are valid"
+
+media-nginx:
+	@echo "🚀 Deploying Nginx media service..."
+	@docker compose -f docker-compose.nginx.yml up -d --remove-orphans
+
+media-traefik:
+	@echo "🚀 Deploying Traefik proxy..."
+	@docker compose -f docker-compose.traefik.yml up -d --remove-orphans
+
+media-caddy:
+	@echo "🚀 Deploying Caddy proxy..."
+	@docker compose -f docker-compose.caddy.yml up -d --remove-orphans
+
+media-all:
+	@echo "🚀 Deploying all proxy services..."
+	@docker compose -f docker-compose.custom.yml up -d --remove-orphans
+
 
 backup:
 	@echo "💾 Backing up current live configuration..."
 	@mkdir -p $(BACKUP_DIR)
 	@tar -czf $(BACKUP_DIR)/proxy-backup-$(TIMESTAMP).tar.gz \
-		-C $(LIVE_DIR) . \
 		--exclude=acme \
-		--exclude=certs
+		--exclude=certs \
+		--exclude=backups \
+		-C $(LIVE_DIR) .
 	@echo "✅ Backup saved: $(BACKUP_DIR)/proxy-backup-$(TIMESTAMP).tar.gz"
 
 restore:
@@ -105,8 +120,8 @@ logs:
 	@echo "📝 Proxy logs (tail 200)..."
 	@docker logs coolify-proxy --tail 200 -f
 
-logs:tail?=_docker_check
-logs:tail:
+tail ?= 200
+logs-tail:
 	@echo "📝 Proxy logs (last $(tail) lines)..."
 	@docker logs coolify-proxy --tail $(tail)
 
@@ -122,7 +137,7 @@ status:
 	@docker ps --filter name=coolify-proxy --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 	@echo ""
 	@echo "🔐 Certificate Expiry (from live acme.json):"
-	@docker exec coolify-proxy cat /traefik/acme/acme.json 2>/dev/null | \
+	@docker exec coolify-proxy cat /traefik/certs/acme.json 2>/dev/null | \
 		jq -r '.letsencrypt.Certificates[] | "\(.domain.main) expires: \(.certificate.notAfter)"' \
 		2>/dev/null || echo "  (jq not available or no certificates yet)"
 	@echo ""
@@ -139,34 +154,34 @@ status:
 # Certificate management (aliases to scripts)
 # ──────────────────────────────────────────────────────────────
 
-cert: cert:generate
-	@$(MAKE) --no-print-directory cert:generate
+cert: cert-generate
+	@$(MAKE) --no-print-directory cert-generate
 
-cert:generate:
+cert-generate:
 	@echo "🔐 Generating certificates..."
 	@$(SOURCE_DIR)/scripts/generate-certs.sh production
 	@echo "✅ Certificates generated"
 	@$(MAKE) restart
 
-cert:backup:
+cert-backup:
 	@echo "💾 Backing up certificates..."
 	@$(SOURCE_DIR)/scripts/manage-certs.sh backup
 	@echo "✅ Certificates backed up"
 
-cert:restore:
+cert-restore:
 	@read -p "Enter backup filename: " FILE; \
 	if [ -f "$(SOURCE_DIR)/scripts/certs/$$FILE" ]; then \
 		$(SOURCE_DIR)/scripts/manage-certs.sh restore certs/"$$FILE"; \
 	else \
-		echo "�� File not found: $(SOURCE_DIR)/scripts/certs/$$FILE"; \
+		echo "  File not found: $(SOURCE_DIR)/scripts/certs/$$FILE"; \
 	fi
 
-cert:validate:
+cert-validate:
 	@echo "🔍 Validating certificates..."
 	@$(SOURCE_DIR)/scripts/manage-certs.sh validate
 	@echo "✅ Certificates validated"
 
-cert:check:
+cert-check:
 	@echo "📅 Checking certificate expiry..."
 	@$(SOURCE_DIR)/scripts/manage-certs.sh check-expiry
 	@echo "✅ Certificate check complete"
