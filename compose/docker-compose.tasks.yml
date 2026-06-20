@@ -19,7 +19,7 @@ services:
       - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
       - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
     networks:
-      - warehouse-net
+      - common
 
   lms-demo-worker:
     image: lms-demo-worker:latest
@@ -37,7 +37,7 @@ services:
       - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
       - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
     networks:
-      - warehouse-net
+      - common
 
   vresume-worker:
     image: vresume-worker:latest
@@ -55,9 +55,9 @@ services:
       - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
       - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
     networks:
-      - warehouse-net
+      - common
 
 networks:
-  warehouse-net:
-    name: warehouse-net
+  common:
+    name: common
     external: true

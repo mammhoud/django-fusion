@@ -71,7 +71,7 @@ warehouses/
 
 - ✅ Health checks on all services
 - ✅ Traefik integration for Adminer
-- ✅ Network isolation (warehouse-net, traefik-net)
+- ✅ Network isolation (common, traefik-net)
 - ✅ Volume persistence for data and configurations
 - ✅ Environment variable support for passwords
 - ✅ Proper restart policies (unless-stopped)
@@ -236,7 +236,7 @@ docker compose -f utilities/docker-compose.yml config
 
 ### Network Integration ✅
 
-- Warehouses services on `warehouse-net` bridge
+- Warehouses services on `common` bridge
 - Utilities services on `utilities-net` bridge
 - Both connected to external `traefik-net`
 - Proper service naming and discovery

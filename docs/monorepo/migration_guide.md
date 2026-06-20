@@ -40,7 +40,7 @@ All website services now live in `compose/docker-compose.applications.yml`. The 
 
 ### Network migration
 
-All services now share `warehouse-net` for internal communication. Cross-file `depends_on` references were removed (Docker Compose include limitation — services discover each other via network names).
+All services now share `common` for internal communication. Cross-file `depends_on` references were removed (Docker Compose include limitation — services discover each other via network names).
 
 ### Upgrade steps
 

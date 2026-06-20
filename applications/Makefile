@@ -337,7 +337,7 @@ docker-clean-all: docker-clean
 # Deploy warehouse services (postgres, redis)
 docker-deploy-warehouse:
 	@echo "Deploying warehouse services (postgres, redis)..."
-	docker network create warehouse-net 2>/dev/null || true
+	docker network create common 2>/dev/null || true
 	docker network create traefik-net 2>/dev/null || true
 	docker network create site_network 2>/dev/null || true
 	docker compose -f docker-compose.yml up -d postgres redis

@@ -15,3 +15,20 @@ exec uv run celery \
     -b "${REDIS_URL}" \
     flower \
     --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"
+#!/bin/bash
+set -euo pipefail
+
+APP_HOME="${APP_HOME:-/app}"
+cd "$APP_HOME"
+
+until timeout 10 uv run celery -A tasks inspect ping; do
+    >&2 echo "Celery workers not available"
+done
+
+echo "Starting flower"
+
+exec uv run celery \
+    -A tasks \
+    -b "${REDIS_URL}" \
+    flower \
+    --basic_auth="${CELERY_FLOWER_USER}:${CELERY_FLOWER_PASSWORD}"

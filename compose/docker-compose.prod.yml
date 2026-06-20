@@ -15,9 +15,6 @@ networks:
   common:
     name: common
     external: true
-  warehouse-net:
-    name: warehouse-net
-    external: true
 
 x-shared-tasks-base: &shared-tasks-base
   build:
@@ -57,7 +54,7 @@ x-shared-tasks-base: &shared-tasks-base
     - ./logs:/app/logs:z
   networks:
     - common
-    - warehouse-net
+    - common
   # Note: postgres and redis are external warehouse services.
   # depends_on cannot reference cross-file/external services in Docker Compose.
   # Services discover each other via network names (database-server, redis).

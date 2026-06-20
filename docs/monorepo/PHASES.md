@@ -162,7 +162,7 @@ python manage.py sites
 - Removed duplicate per-site compose files from `compose/` folder
 - Consolidated website services into `compose/docker-compose.applications.yml`
 - Removed `depends_on` cross-file references (docker-compose include limitation)
-- All services share the `warehouse-net` network for database/redis access
+- All services share the `common` network for database/redis access
 - Services use Docker's automatic service discovery via network names
 - Docker Compose configuration validated successfully with `docker compose config`
 

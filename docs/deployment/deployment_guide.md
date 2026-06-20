@@ -47,7 +47,7 @@ traefik          → Reverse proxy (ports 80/443)
 ├── vresume      → Django/Wagtail portfolio (vresume.structa.cloud)
 └── docs         → Docsify docs site (docs.structa.cloud)
 
-warehouse-net (internal)
+common (internal)
 ├── postgres     → PostgreSQL database
 └── redis        → Redis broker/cache
 
