@@ -1,0 +1,14 @@
+http:
+  routers:
+    catchall-http:
+      rule: 'HostRegexp(`{host:.+}`)'
+      entryPoints: [http]
+      priority: 1
+      middlewares: [redirect-to-https]
+      service: noop@internal
+    catchall-https:
+      rule: 'HostRegexp(`{host:.+}`)'
+      entryPoints: [https]
+      priority: 1
+      service: noop@internal
+      tls: {}

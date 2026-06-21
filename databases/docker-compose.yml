@@ -1,0 +1,89 @@
+# ============================================================
+# Databases – PostgreSQL + Redis (single source of truth)
+# ============================================================
+services:
+  postgres:
+    image: postgres:15-alpine
+    container_name: postgres
+    restart: always
+    environment:
+      POSTGRES_USER: ${POSTGRES_USER:-admin}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      POSTGRES_DB: ${POSTGRES_DB:-app_db}
+      POSTGRES_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko}"
+      PGDATA: /var/lib/postgresql/data/pgdata
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./init:/docker-entrypoint-initdb.d
+      - ./backups:/backups:Z
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    networks:
+      - common
+      - warehouse-net
+      - internal
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-admin}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  redis:
+    image: redis:7-alpine
+    container_name: redis
+    restart: always
+    command: >
+      redis-server
+      --save 20 1
+      --loglevel warning
+      --requirepass ${REDIS_PASSWORD:-redis_password}
+      --maxmemory 256mb
+      --maxmemory-policy allkeys-lru
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-redis_password}
+    volumes:
+      - redis_data:/data
+    ports:
+      # - "${REDIS_PORT:-6379}:6379"
+      - "${REDIS_HOST_PORT:-6380}:6379"
+
+    networks:
+      - common
+      - warehouse-net
+      - internal
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  internal:
+    external: true
+
+# Volumes are defined in root compose – do NOT mark as external
+volumes:
+  postgres_data:
+    name: postgres_data
+  redis_data:
+    name: redis_data

@@ -1,0 +1,60 @@
+# ============================================================
+# Proxy – Traefik (default-proxy)
+# ============================================================
+# Static config: ./traefik/defaults.yml
+# Dynamic routers: ./traefik/dynamic/*.yml
+# ============================================================
+
+x-proxy-common: &proxy-common
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
+
+services:
+  default-proxy:
+    image: traefik:latest
+    <<: *proxy-common
+    container_name: default-proxy
+    security_opt:
+      - no-new-privileges:true
+    ports:
+      - "81:80"
+      - "443:443"
+      - "443:443/udp"
+      - "8080:8080"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./certs:/etc/traefik/certs:ro
+      - traefik_acme:/etc/traefik/acme
+    environment:
+      - TRAEFIK_ACME_EMAIL=admin@structa.cloud
+      - TRAEFIK_LOG_LEVEL=INFO
+    command:
+      - "--configFile=/etc/dynamic/defaults.yml"
+    healthcheck:
+      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/ping"]
+      interval: 4s
+      timeout: 2s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+volumes:
+  traefik_acme:
+    name: traefik_acme
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true

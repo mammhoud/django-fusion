@@ -1,0 +1,182 @@
+#!/usr/bin/env bash
+
+### Restore database from a backup.
+###
+### Parameters:
+###     <1> filename of an existing backup (optional with --database)
+###     --database <name>  Specify database name (required if not in filename)
+###     --create-user      Create database user if it doesn't exist
+###
+### Usage:
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres restore backup_file.sql.gz
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres restore --database db_staging backup_file.sql.gz
+###     $ docker compose -f <environment>.yml (exec |run --rm) postgres restore --database db_staging --create-user backup_file.sql.gz
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+# Parse command line arguments
+RESTORE_DB=""
+BACKUP_FILENAME=""
+CREATE_USER=false
+POSITIONAL_ARGS=()
+
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --database)
+            RESTORE_DB="$2"
+            shift 2
+            ;;
+        --create-user)
+            CREATE_USER=true
+            shift
+            ;;
+        -*)
+            message_error "Unknown option: $1"
+            echo "Usage: restore [--database <name>] [--create-user] <backup_file>"
+            exit 1
+            ;;
+        *)
+            POSITIONAL_ARGS+=("$1")
+            shift
+            ;;
+    esac
+done
+
+set -- "${POSITIONAL_ARGS[@]}"
+
+# Get backup filename
+if [[ -z ${1+x} ]] && [[ -z "$RESTORE_DB" ]]; then
+    message_error "Backup filename is not specified. Please provide a backup file."
+    echo "Usage: restore [--database <name>] <backup_file>"
+    exit 1
+elif [[ -z ${1+x} ]] && [[ -n "$RESTORE_DB" ]]; then
+    # Find latest backup for the specified database
+    latest_backup=$(find "$BACKUP_DIR_PATH" -name "${RESTORE_DB}_*.sql.gz" -type f -exec ls -t {} + 2>/dev/null | head -n1)
+    
+    if [ -z "$latest_backup" ]; then
+        message_error "No backups found for database '$RESTORE_DB'"
+        exit 1
+    fi
+    
+    BACKUP_FILENAME="$(basename "$latest_backup")"
+    message_info "Using latest backup for '$RESTORE_DB': $BACKUP_FILENAME"
+else
+    BACKUP_FILENAME="${1}"
+fi
+
+# Full path to backup file
+backup_file_path="${BACKUP_DIR_PATH}/${BACKUP_FILENAME}"
+if [[ ! -f "${backup_file_path}" ]]; then
+    message_error "No backup with the specified filename found: ${BACKUP_FILENAME}"
+    message_info "Check available backups with: docker compose exec postgres backups"
+    exit 1
+fi
+
+# Determine database name from filename if not specified
+if [ -z "$RESTORE_DB" ]; then
+    # Extract database name from filename pattern: dbname_backup_YYYY_MM_DDTHH_MM_SS.sql.gz
+    if [[ "$BACKUP_FILENAME" =~ ^([a-zA-Z0-9_]+)_${BACKUP_FILE_PREFIX}_ ]]; then
+        RESTORE_DB="${BASH_REMATCH[1]}"
+    elif [[ "$BACKUP_FILENAME" =~ ^full_cluster_ ]]; then
+        message_error "Full cluster backup detected. Please specify target database with --database option."
+        exit 1
+    else
+        message_error "Cannot determine database name from filename. Please specify with --database option."
+        exit 1
+    fi
+fi
+
+message_welcome "Restoring database '${RESTORE_DB}' from backup '${BACKUP_FILENAME}'..."
+
+# Get database-specific credentials
+DB_USER="$POSTGRES_USER"
+DB_PASSWORD="$POSTGRES_PASSWORD"
+
+db_upper=$(echo "$RESTORE_DB" | tr '[:lower:]' '[:upper:]' | tr '-' '_')
+user_var="DB_${db_upper}_USER"
+pass_var="DB_${db_upper}_PASSWORD"
+
+if [ -n "${!user_var:-}" ]; then
+    DB_USER="${!user_var}"
+    if [ -n "${!pass_var:-}" ]; then
+        DB_PASSWORD="${!pass_var}"
+    fi
+fi
+
+# Set PostgreSQL connection variables
+export PGHOST="$POSTGRES_HOST"
+export PGPORT="$POSTGRES_PORT"
+export PGUSER="$POSTGRES_USER"  # Use superuser for DROP/CREATE
+export PGPASSWORD="$POSTGRES_PASSWORD"
+
+# Check if database exists
+DB_EXISTS=$(psql -t -c "SELECT 1 FROM pg_database WHERE datname = '$RESTORE_DB'" postgres 2>/dev/null || echo "")
+
+if [ "$CREATE_USER" = true ] || [ -n "$DB_EXISTS" ]; then
+    # Create or update user
+    message_info "Setting up user '${DB_USER}'..."
+    
+    if [ "$CREATE_USER" = true ]; then
+        # Create user with password
+        psql -v ON_ERROR_STOP=1 -c "DO \$\$
+        BEGIN
+            IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = '$DB_USER') THEN
+                CREATE USER $DB_USER WITH ENCRYPTED PASSWORD '$DB_PASSWORD';
+            ELSE
+                ALTER USER $DB_USER WITH ENCRYPTED PASSWORD '$DB_PASSWORD';
+            END IF;
+        END
+        \$\$;" postgres
+    fi
+fi
+
+# Drop and recreate database
+message_info "Recreating database '${RESTORE_DB}'..."
+
+# Disconnect all other sessions
+psql -c "SELECT pg_terminate_backend(pid) FROM pg_stat_activity WHERE datname = '$RESTORE_DB' AND pid <> pg_backend_pid();" postgres 2>/dev/null || true
+
+# Drop database if exists
+if [ -n "$DB_EXISTS" ]; then
+    dropdb "$RESTORE_DB"
+fi
+
+# Create new database with owner
+createdb --owner="$DB_USER" "$RESTORE_DB"
+
+# Grant privileges
+psql -c "GRANT ALL PRIVILEGES ON DATABASE $RESTORE_DB TO $DB_USER;" postgres
+
+# Restore the backup
+message_info "Restoring data from backup..."
+
+# Switch to database user for restore
+export PGUSER="$DB_USER"
+export PGPASSWORD="$DB_PASSWORD"
+
+# Check backup type and restore appropriately
+if file "$backup_file_path" | grep -q "gzip compressed data"; then
+    gunzip -c "$backup_file_path" | psql "$RESTORE_DB"
+else
+    psql "$RESTORE_DB" < "$backup_file_path"
+fi
+
+# Set default privileges
+message_info "Setting up privileges..."
+psql -c "
+GRANT ALL ON SCHEMA public TO $DB_USER;
+GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO $DB_USER;
+GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO $DB_USER;
+GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO $DB_USER;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO $DB_USER;
+ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO $DB_USER;
+" "$RESTORE_DB"
+
+message_success "Database '${RESTORE_DB}' has been successfully restored from '${BACKUP_FILENAME}'"

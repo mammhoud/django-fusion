@@ -1,0 +1,74 @@
+# ============================================================
+# Root Docker Compose – includes all sub‑compose files
+# All networks and volumes are defined here to avoid conflicts.
+# ============================================================
+
+include:
+  - databases/docker-compose.yml
+  - proxy/docker-compose.yml
+  - services/media/docker-compose.yml
+  # - services/utilities/docker-compose.yml
+  # - services/ollama/docker-compose.yml
+  # - services/mailpit/docker-compose.yml
+  - structa.cloud/compose/docker-compose.applications.yml
+  # - structa.cloud/compose/docker-compose.docs.yml
+
+
+# Global networks – all services will use these
+networks:
+  common:
+    name: common
+    driver: bridge
+  traefik-net:
+    name: traefik-net
+    driver: bridge
+  internal:
+    name: internal
+    driver: bridge
+    internal: true
+  utilities-net:
+    name: utilities-net
+    driver: bridge
+  warehouse-net:
+    name: warehouse-net
+    driver: bridge
+  ollama-net:
+    name: ollama-net
+    driver: bridge
+
+# Global volumes – shared across services
+volumes:
+  postgres_data:
+    name: postgres_data
+  redis_data:
+    name: redis_data
+  ctc-research-static:
+    name: ctc-research-static
+  ctc-research-media:
+    name: ctc-research-media
+  lms-demo-static:
+    name: lms-demo-static
+  lms-demo-media:
+    name: lms-demo-media
+  vresume-static:
+    name: vresume-static
+  vresume-media:
+    name: vresume-media
+  prometheus_data:
+    name: prometheus_data
+  loki_data:
+    name: loki_data
+  grafana_data:
+    name: grafana_data
+  mailpit-data:
+    name: mailpit-data
+  ollama:
+    name: ollama
+  open-webui:
+    name: open-webui
+  traefik_acme:
+    name: traefik_acme
+  caddy_data:
+    name: caddy_data
+  caddy_config:
+    name: caddy_config

@@ -1,0 +1,35 @@
+http:
+  routers:
+    shared-media-http:
+      rule: 'Host(`media.structa.cloud`)'
+      entryPoints: [http]
+      middlewares: [redirect-to-https]
+      service: shared-media-service
+    shared-media-https:
+      rule: 'Host(`media.structa.cloud`)'
+      entryPoints: [https]
+      middlewares: [compress, security-headers]
+      service: shared-media-service
+      tls:
+        certResolver: letsencrypt
+    ctc-media-http:
+      rule: 'Host(`media.ctc-research.com`)'
+      entryPoints: [http]
+      middlewares: [redirect-to-https]
+      service: ctc-media-service
+    ctc-media-https:
+      rule: 'Host(`media.ctc-research.com`)'
+      entryPoints: [https]
+      middlewares: [compress, security-headers]
+      service: ctc-media-service
+      tls:
+        certResolver: letsencrypt
+  services:
+    shared-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-media:80'
+    ctc-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-media:80'

@@ -361,3 +361,255 @@ databases:
 # -----------------------------------------------------------------
 %:
 	@$(MAKE) -C $(APPLICATIONS_DIR) $*
+
+
+
+
+# ============================================================
+# Root Makefile – orchestrates all components
+# Includes full stack deployment + Coolify management
+# ============================================================
+SHELL := /bin/bash
+COMPOSE_CMD := docker compose -f docker-compose.yml
+
+# List of all networks required by the stack
+NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
+
+# Coolify source directory (relative to root)
+COOLIFY_SRC := source
+
+.PHONY: help create-networks deploy deploy-proxy deploy-app deploy-media deploy-databases deploy-utilities deploy-ollama deploy-mailpit
+.PHONY: status logs stop restart
+.PHONY: prune prune-containers prune-volumes prune-images clean
+.PHONY: build build-app build-media build-docs validate
+.PHONY: cert-generate cert-backup cert-restore cert-validate cert-check
+.PHONY: coolify-deploy coolify-deploy-prod coolify-upgrade coolify-upgrade-postgres
+.PHONY: coolify-restart coolify-stop coolify-start coolify-status coolify-logs coolify-logs-all
+.PHONY: coolify-backup coolify-backup-restore coolify-validate coolify-run-infra
+
+help:
+	@echo "🚀 Structa Cloud Deployment System"
+	@echo "═══════════════════════════════════════════════════════════════"
+	@echo ""
+	@echo "📦 Stack Management:"
+	@echo "  make create-networks    - Create all required Docker networks"
+	@echo "  make deploy             - Create networks and deploy all services"
+	@echo "  make deploy-proxy       - Deploy Traefik proxy"
+	@echo "  make deploy-app         - Deploy applications (ctc, lms, vresume, docs, tasks)"
+	@echo "  make deploy-media       - Deploy shared media server"
+	@echo "  make deploy-databases   - Deploy PostgreSQL and Redis"
+	@echo "  make deploy-utilities   - Deploy monitoring (Prometheus, Loki, Grafana, Blinko)"
+	@echo "  make deploy-ollama      - Deploy Ollama + Open WebUI"
+	@echo "  make deploy-mailpit     - Deploy Mailpit"
+	@echo ""
+	@echo "🔧 Stack Management:"
+	@echo "  make status             - Show container status"
+	@echo "  make logs               - Tail logs from all services"
+	@echo "  make stop               - Stop all services"
+	@echo "  make restart            - Restart all services"
+	@echo ""
+	@echo "🧹 Maintenance:"
+	@echo "  make prune              - Remove stopped containers, unused volumes, images"
+	@echo "  make prune-containers   - Remove stopped containers"
+	@echo "  make prune-volumes      - Remove unused volumes"
+	@echo "  make prune-images       - Remove unused images"
+	@echo "  make clean              - Stop and remove all containers, volumes, and images"
+	@echo ""
+	@echo "🔐 Certificate management (Proxy):"
+	@echo "  make cert-generate      - Generate self-signed certificates"
+	@echo "  make cert-backup        - Backup certificates"
+	@echo "  make cert-restore       - Restore certificates"
+	@echo "  make cert-validate      - Validate certificates"
+	@echo "  make cert-check         - Check certificate expiry"
+	@echo ""
+	@echo "🏗️  Build:"
+	@echo "  make build              - Build all images (app, media, docs)"
+	@echo "  make build-app          - Build application images"
+	@echo "  make build-media        - Build media image"
+	@echo "  make build-docs         - Build docs image"
+	@echo "  make validate           - Validate compose files"
+	@echo ""
+	@echo "☕ Coolify (source deployment):"
+	@echo "  make coolify-deploy     - Deploy Coolify from source"
+	@echo "  make coolify-deploy-prod - Deploy Coolify in production mode"
+	@echo "  make coolify-upgrade    - Upgrade Coolify to latest version"
+	@echo "  make coolify-upgrade-postgres - Upgrade PostgreSQL database"
+	@echo "  make coolify-restart    - Restart Coolify services"
+	@echo "  make coolify-stop       - Stop Coolify services"
+	@echo "  make coolify-start      - Start Coolify services"
+	@echo "  make coolify-status     - Show Coolify status"
+	@echo "  make coolify-logs       - Show Coolify logs"
+	@echo "  make coolify-logs-all   - Show logs for all Coolify components"
+	@echo "  make coolify-backup     - Backup Coolify data"
+	@echo "  make coolify-backup-restore - Restore from backup"
+	@echo "  make coolify-validate   - Validate Coolify compose files"
+	@echo "  make coolify-run-infra  - Deploy full Coolify infrastructure"
+
+# -----------------------------------------------------------------
+# Network creation – idempotent
+# -----------------------------------------------------------------
+create-networks:
+	@echo "🌐 Creating Docker networks..."
+	@for net in $(NETWORKS); do \
+		if ! docker network inspect $$net >/dev/null 2>&1; then \
+			echo "  ✅ Creating network: $$net"; \
+			docker network create $$net; \
+		else \
+			echo "  ⏭️  Network $$net already exists"; \
+		fi; \
+	done
+	@echo "✅ All networks are ready"
+
+# -----------------------------------------------------------------
+# Deployment targets – create networks first
+# -----------------------------------------------------------------
+deploy: create-networks deploy-databases deploy-proxy  deploy-media deploy-app # deploy-utilities deploy-ollama deploy-mailpit
+	@echo "✅ All services deployed"
+
+deploy-proxy:
+	@$(MAKE) -C proxy up
+
+deploy-databases:
+	@$(MAKE) -C databases up
+
+deploy-media:
+	@$(MAKE) -C services/media up
+
+deploy-app:
+	@$(MAKE) -C structa.cloud/compose up
+
+deploy-utilities:
+	@$(MAKE) -C services/utilities up
+
+deploy-ollama:
+	@$(MAKE) -C services/ollama up
+
+deploy-mailpit:
+	@$(MAKE) -C services/mailpit up
+
+# -----------------------------------------------------------------
+# Stack Management
+# -----------------------------------------------------------------
+status:
+	@echo "📊 Deployment Status"
+	@echo "═══════════════════════════════════════════════════════════════"
+	@$(COMPOSE_CMD) ps
+
+logs:
+	@echo "📝 Tailing logs from all services..."
+	@$(COMPOSE_CMD) logs --tail=50 -f
+
+stop:
+	@echo "🛑 Stopping all services..."
+	@$(COMPOSE_CMD) down
+	@echo "✅ All services stopped"
+
+restart: stop deploy
+	@echo "✅ All services restarted"
+
+# -----------------------------------------------------------------
+# Pruning
+# -----------------------------------------------------------------
+prune: prune-containers prune-volumes prune-images
+
+prune-containers:
+	@echo "🗑️  Removing stopped containers..."
+	@docker container prune -f
+	@echo "✅ Containers pruned"
+
+prune-volumes:
+	@echo "🗑️  Removing unused volumes..."
+	@docker volume prune -f
+	@echo "✅ Volumes pruned"
+
+prune-images:
+	@echo "🗑️  Removing unused images..."
+	@docker image prune -f
+	@echo "✅ Images pruned"
+
+clean:
+	@echo "🧹 Removing all containers, volumes, and images..."
+	@$(COMPOSE_CMD) down -v --rmi all
+	@echo "✅ Clean complete"
+
+# -----------------------------------------------------------------
+# Build
+# -----------------------------------------------------------------
+build: build-app build-media # build-docs
+
+build-app:
+	@$(MAKE) -C structa.cloud/compose build
+
+build-media:
+	@$(MAKE) -C services/media build
+
+build-docs:
+	@$(MAKE) -C structa.cloud/compose build-docs
+
+validate:
+	@echo "🔍 Validating compose files..."
+	@$(COMPOSE_CMD) config
+	@echo "✅ Validation successful"
+
+# -----------------------------------------------------------------
+# Certificate commands (delegate to proxy)
+# -----------------------------------------------------------------
+cert-generate:
+	@$(MAKE) -C proxy cert-generate
+
+cert-backup:
+	@$(MAKE) -C proxy cert-backup
+
+cert-restore:
+	@$(MAKE) -C proxy cert-restore
+
+cert-validate:
+	@$(MAKE) -C proxy cert-validate
+
+cert-check:
+	@$(MAKE) -C proxy cert-check
+
+# -----------------------------------------------------------------
+# Coolify Source Management (delegates to source/Makefile)
+# -----------------------------------------------------------------
+coolify-deploy:
+	@$(MAKE) -C $(COOLIFY_SRC) deploy
+
+coolify-deploy-prod:
+	@$(MAKE) -C $(COOLIFY_SRC) deploy-prod
+
+coolify-upgrade:
+	@$(MAKE) -C $(COOLIFY_SRC) upgrade
+
+coolify-upgrade-postgres:
+	@$(MAKE) -C $(COOLIFY_SRC) upgrade-postgres
+
+coolify-restart:
+	@$(MAKE) -C $(COOLIFY_SRC) restart
+
+coolify-stop:
+	@$(MAKE) -C $(COOLIFY_SRC) stop
+
+coolify-start:
+	@$(MAKE) -C $(COOLIFY_SRC) start
+
+coolify-status:
+	@$(MAKE) -C $(COOLIFY_SRC) status
+
+coolify-logs:
+	@$(MAKE) -C $(COOLIFY_SRC) logs
+
+coolify-logs-all:
+	@$(MAKE) -C $(COOLIFY_SRC) logs-all
+
+coolify-backup:
+	@$(MAKE) -C $(COOLIFY_SRC) backup
+
+coolify-backup-restore:
+	@$(MAKE) -C $(COOLIFY_SRC) backup-restore
+
+coolify-validate:
+	@$(MAKE) -C $(COOLIFY_SRC) validate
+
+coolify-run-infra:
+	@$(MAKE) -C $(COOLIFY_SRC) run-infra
