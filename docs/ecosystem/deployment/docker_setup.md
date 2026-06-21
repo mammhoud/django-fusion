@@ -99,7 +99,7 @@ services:
   ctc-research:
     build:
       context: ./ctc-research.com
-      dockerfile: compose/django/Dockerfile
+      dockerfile: compose/Dockerfile
       target: production
     container_name: ctc-research
     restart: unless-stopped
@@ -131,7 +131,7 @@ services:
   structa-cloud:
     build:
       context: ./structa.cloud
-      dockerfile: compose/django/Dockerfile
+      dockerfile: compose/Dockerfile
       target: production
     container_name: structa-cloud
     restart: unless-stopped
@@ -182,7 +182,7 @@ services:
   ctc-worker:
     build:
       context: ./ctc-research.com
-      dockerfile: compose/django/Dockerfile
+      dockerfile: compose/Dockerfile
       target: production
     container_name: ctc-worker
     restart: unless-stopped
@@ -206,7 +206,7 @@ services:
   structa-worker:
     build:
       context: ./structa.cloud
-      dockerfile: compose/django/Dockerfile
+      dockerfile: compose/Dockerfile
       target: production
     container_name: structa-worker
     restart: unless-stopped
@@ -293,7 +293,7 @@ services:
 
 ### Multi-stage Django Dockerfile
 ```dockerfile
-# ctc-research.com/compose/django/Dockerfile
+# ctc-research.com/compose/Dockerfile
 FROM python:3.11-slim as base
 
 # Set environment variables

@@ -84,7 +84,7 @@ npm install --include=dev --prefer-offline --no-audit --no-fund
 |---|---|
 | `websites/ctc-research.com/configs/base/assets.py` | Added Docker env detection, fixed `BUNDLES_DIR` |
 | `websites/structa.cloud/configs/base/assets.py` | Added Docker env detection, fixed `BUNDLES_DIR` |
-| `websites/compose/django/Dockerfile` | Updated `npm install` to include dev dependencies |
+| `websites/compose/Dockerfile` | Updated `npm install` to include dev dependencies |
 
 ---
 

@@ -19,7 +19,7 @@ This document summarizes all errors found during deployment and the fixes applie
 - Updated Dockerfile to include `_shared` directory in COPY command
 
 **Files Modified:**
-- `compose/django/Dockerfile` - Added `COPY _shared /app/_shared`
+- `compose/Dockerfile` - Added `COPY _shared /app/_shared`
 - Created `_shared/plugins/components/contact/sections/form/form.html`
 
 ### 2. crafts_ai Model Conflict Error
@@ -189,7 +189,7 @@ All changes have been committed:
 ## File Changes Summary
 
 ### Modified Files
-- `compose/django/Dockerfile`
+- `compose/Dockerfile`
 - `configs/base/apps.py`
 - `ctc-research/plugins/profile/views/settings.py`
 - `ctc-research/plugins/lms/urls.py`

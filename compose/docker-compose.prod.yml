@@ -19,7 +19,7 @@ networks:
 x-shared-tasks-base: &shared-tasks-base
   build:
     context: .
-    dockerfile: ../compose/django/Dockerfile
+    dockerfile: ./Dockerfile
     args:
       PROJECT_PATH: ${TASKS_PROJECT_PATH:-ctc-research}
   restart: unless-stopped
@@ -134,7 +134,7 @@ services:
       - ./logs:/app/logs:z
     build:
       context: .
-      dockerfile: ../compose/django/Dockerfile
+      dockerfile: ./Dockerfile
       args:
         PROJECT_PATH: lms-demo
     environment:
@@ -159,7 +159,7 @@ services:
       - ./logs:/app/logs:z
     build:
       context: .
-      dockerfile: ../compose/django/Dockerfile
+      dockerfile: ./Dockerfile
       args:
         PROJECT_PATH: lms-demo
     environment:
@@ -184,7 +184,7 @@ services:
       - ./logs:/app/logs:z
     build:
       context: .
-      dockerfile: ../compose/django/Dockerfile
+      dockerfile: ./Dockerfile
       args:
         PROJECT_PATH: VResume
     environment:
@@ -210,7 +210,7 @@ services:
       - ./logs:/app/logs:z
     build:
       context: .
-      dockerfile: ../compose/django/Dockerfile
+      dockerfile: ./Dockerfile
       args:
         PROJECT_PATH: VResume
     environment:

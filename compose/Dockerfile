@@ -46,13 +46,8 @@ RUN python -m pip install --no-cache-dir --upgrade pip uv \
 # ----------------------------------------------------------------------------
 # Install Python dependencies from the shared root manifest
 # ----------------------------------------------------------------------------
-COPY applications/pyproject.toml applications/uv.lock* ${APP_HOME}/
+COPY applications/pyproject.toml ${APP_HOME}/
 
-RUN if [ -f uv.lock ]; then \
-        uv sync --frozen --no-install-project; \
-    else \
-        uv sync --no-install-project; \
-    fi
 
 # ----------------------------------------------------------------------------
 # Copy shared application code (always needed, regardless of PROJECT_PATH)

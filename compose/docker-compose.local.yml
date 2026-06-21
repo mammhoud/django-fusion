@@ -18,7 +18,7 @@ services:
   django:
     build:
       context: .
-      dockerfile: ../compose/django/Dockerfile
+      dockerfile: ./Dockerfile
       args:
         PROJECT_PATH: ctc-research
 

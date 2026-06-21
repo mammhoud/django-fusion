@@ -102,7 +102,7 @@ From container startup:
 | `assets/package.json` | ✅ Updated | Package name corrected |
 | `assets/package-lock.json` | ✅ Added | Generated & committed |
 | `assets/static/js/core/vendor-packages.js` | ✅ Updated | Import path updated |
-| `compose/django/Dockerfile` | ✅ Updated | npm ci → npm install |
+| `compose/Dockerfile` | ✅ Updated | npm ci → npm install |
 | `run_containers.sh` | ✅ Verified | No changes needed |
 
 ---

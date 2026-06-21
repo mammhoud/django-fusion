@@ -101,7 +101,7 @@ deploy-all:
 	@$(MAKE) --no-print-directory deploy-tasks
 	@$(MAKE) --no-print-directory deploy-docs
 	@$(MAKE) --no-print-directory deploy-databases
-	@$(MAKE) --no-print-directory deploy-coolify
+# 	@$(MAKE) --no-print-directory deploy-coolify
 	@echo "✅ All services deployed"
 
 deploy-app:

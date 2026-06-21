@@ -73,7 +73,7 @@
 - Maintains deterministic builds through `package-lock.json` while being more flexible
 
 **Files Changed**:
-- ✅ Modified: `compose/django/Dockerfile` (line 75-76)
+- ✅ Modified: `compose/Dockerfile` (line 75-76)
 
 **Details**:
 ```dockerfile
@@ -145,7 +145,7 @@ To stop:         docker compose down --remove-orphans
 | `assets/package.json` | Corrected package name | ✅ |
 | `assets/package-lock.json` | Generated and committed | ✅ |
 | `assets/static/js/core/vendor-packages.js` | Updated import | ✅ |
-| `compose/django/Dockerfile` | Changed npm ci → npm install | ✅ |
+| `compose/Dockerfile` | Changed npm ci → npm install | ✅ |
 
 ---
 

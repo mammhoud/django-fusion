@@ -346,7 +346,7 @@ bash /root/site/websites/fix_modelsearch_errors.sh
 - `.env` - Environment variables
 - `/app/settings.py` - Django settings
 - `/app/docker-compose.yml` - Service configuration
-- `/app/compose/django/Dockerfile` - Container definition
+- `/app/compose/Dockerfile` - Container definition
 
 ---
 

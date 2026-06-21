@@ -16,8 +16,8 @@ services:
     container_name: docs
     restart: unless-stopped
     build:
-      context: ../../docs          # points to the docs/ directory
-      dockerfile: /data/coolify/compose/docs/Dockerfile   # adjust if needed
+      context: ../docs          # points to the docs/ directory
+      dockerfile: ./Dockerfile   # adjust if needed
     networks:
       - common
     environment:
@@ -36,4 +36,4 @@ services:
       timeout: 5s
       retries: 3
       start_period: 10s
-    # No Traefik labels needed – routing is handled by proxy/dynamic/docs.yml
+
