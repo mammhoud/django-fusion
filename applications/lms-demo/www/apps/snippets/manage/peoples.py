@@ -1,9 +1,9 @@
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter
-from crafts_ai.rseal.handlers.models.manage_company import Organization as Corporate
-from crafts_ai.rseal.models.users.team import Team
-from crafts_ai.rseal.models import Person
-from crafts_ai.rseal.workflows.pipelines.models.workspace import Workspace
+from crafts_ai.handlers.models.manage_company import Organization as Corporate
+from crafts_ai.models.users.team import Team
+from crafts_ai.models import Person
+from crafts_ai.workflows.pipelines.models.workspace import Workspace
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.panels import FieldPanel
 from wagtail.snippets.views.snippets import SnippetViewSet
@@ -11,7 +11,7 @@ from wagtail.snippets.views.snippets import SnippetViewSet
 from www.apps.filters.revision import RevisionFilterSetMixin
 from www.apps.models import Service
 
-# from crafts_ai.rseal.workflows.pipelines.models.locations.branch import Branch
+# from crafts_ai.workflows.pipelines.models.locations.branch import Branch
 
 # =============================================================================
 # FILTERSET CLASSES

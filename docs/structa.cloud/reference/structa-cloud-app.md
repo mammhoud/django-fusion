@@ -132,7 +132,7 @@ Via `allauth.mfa`:
 GET /health/  →  {"status": "ok"}
 ```
 
-Served by `django_grep.pipelines`.
+Served by `django_osoul.pipelines`.
 
 ---
 

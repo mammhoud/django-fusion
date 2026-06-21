@@ -47,9 +47,9 @@ WEBSITE_IDENTIFIER = "vresume"
 SITE_ID = 3
 
 # ============================================================
-# crafts_ai.rseal required settings
+# crafts_ai required settings
 # ============================================================
-# PROFILE_MODEL is a required ForeignKey target in crafts_ai.rseal models.
+# PROFILE_MODEL is a required ForeignKey target in crafts_ai models.
 # Point it to Django's built-in User model since this project
 # does not have a separate profile model.
 PROFILE_MODEL = "auth.User"
@@ -57,7 +57,7 @@ PROFILE_MODEL = "auth.User"
 # ============================================================
 # Silenced system checks
 # ============================================================
-# models.E015: crafts_ai.rseal.TeamMembership.ordering references person__full_name
+# models.E015: crafts_ai.TeamMembership.ordering references person__full_name
 # which is a valid cross-model lookup at query time but Django's static check
 # cannot verify related-field traversal. Safe to silence.
 SILENCED_SYSTEM_CHECKS = ["models.E015"]

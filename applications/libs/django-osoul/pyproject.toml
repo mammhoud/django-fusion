@@ -12,11 +12,13 @@ dependencies = [
 test = ["pytest"]
 
 [build-system]
-requires = ["hatchling"]
-build-backend = "hatchling.build"
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
 
-[tool.hatch.build.targets.wheel]
-packages = ["src/django_osoul", "src/django_grep"]
+[tool.setuptools]
+package-dir = {"" = "src"}
+packages = {find = {where = ["src"], include = ["django_osoul*", "django_grep*"]}}
+include-package-data = true
 
 [tool.pytest.ini_options]
 addopts = ["-v"]

@@ -2,7 +2,7 @@
 
 This module keeps framework-agnostic package metadata and import migration
 rules in ``crafts_ai``.  Django-specific runtime code should remain in the
-``crafts_ai.rseal`` package until it can be extracted behind explicit adapters.
+``crafts_ai`` package until it can be extracted behind explicit adapters.
 """
 
 from .inventory import ImportRule, RSEAL_IMPORT_RULES, classify_import

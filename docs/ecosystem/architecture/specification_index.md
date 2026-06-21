@@ -163,7 +163,7 @@
 
 - **Phase 3:** Testing framework consolidation
   - Step 3.1: Audit testing code
-  - Step 3.2: Create django-grep structure
+  - Step 3.2: Create django-osoul structure
   - Step 3.3: Move testing code
   - Step 3.4: Create base test classes
   - Step 3.5: Create factory definitions
@@ -318,7 +318,7 @@ IMPLEMENTATION_GUIDE.md (Step-by-step instructions)
 - Reorganizing 4 packages into 2 core packages
 - Moving foundation code to django-osoul
 - Extracting AI code to nawaai
-- Consolidating testing utilities to django-grep
+- Consolidating testing utilities to django-osoul
 - Maintaining backward compatibility
 
 ### Why It Matters

@@ -146,12 +146,12 @@ python manage.py --site=ctc-research dumpdata --indent 2 --natural-foreign --nat
 
 ---
 
-## Using Fixtures in Tests (django-grep)
+## Using Fixtures in Tests (django-osoul)
 
-With `django-grep`'s `BaseTestCase`, fixtures load automatically via the standard Django mechanism:
+With `django-osoul`'s `BaseTestCase`, fixtures load automatically via the standard Django mechanism:
 
 ```python
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class CourseListTest(BaseTestCase):
     fixtures = [

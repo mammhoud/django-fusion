@@ -21,7 +21,7 @@ flowchart LR
     App --> SiteB[lms-demo]
     SiteA --> Shared[Root configs, tasks, assets, plugins]
     SiteB --> Shared
-    Shared --> Libs[django-osoul / django-rseal / django-grep]
+    Shared --> Libs[django-osoul / crafts-ai / django-osoul]
     Shared --> Postgres[(PostgreSQL)]
     Shared --> Redis[(Redis)]
 ```

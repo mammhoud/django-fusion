@@ -1,9 +1,9 @@
 """
-Social account adapter for django_rseal.
+Social account adapter for crafts_ai.
 
 Provides a minimal SocialAccountAdapter that delegates to allauth's default.
 
-Canonical import: from django_rseal.adapters import SocialAccountAdapter
+Canonical import: from crafts_ai.adapters import SocialAccountAdapter
 """
 try:
     from allauth.socialaccount.adapter import DefaultSocialAccountAdapter

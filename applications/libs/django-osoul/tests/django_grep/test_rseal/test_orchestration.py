@@ -18,12 +18,12 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
-from django_rseal.communication.email.models import EmailLog
-from django_rseal.workflows.pipelines.models.users.group import UserGroup
-from django_rseal.workflows.pipelines.models.users.role import UserRole
-from django_rseal.services.communication.invitation_service import InvitationService
-from django_rseal.services.email.email_service import EmailService
-from django_rseal.communication.tasks import (
+from crafts_ai.communication.email.models import EmailLog
+from crafts_ai.workflows.pipelines.models.users.group import UserGroup
+from crafts_ai.workflows.pipelines.models.users.role import UserRole
+from crafts_ai.services.communication.invitation_service import InvitationService
+from crafts_ai.services.email.email_service import EmailService
+from crafts_ai.communication.tasks import (
     check_registrations_task,
     generate_weekly_report_task,
     setup_periodic_tasks,

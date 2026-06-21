@@ -19,8 +19,8 @@ This document tracks the progressive enhancement of the monorepo infrastructure 
 
 - [x] 1.1 Fix `__main__.py` import to reference `cli` instead of `site_cli`
 - [x] 1.2 Create `applications/__init__.py` to make cli a proper package
-- [x] 1.3 Clone django-grep from GitHub repository
-- [x] 1.4 Clone django-rseal from GitHub repository
+- [x] 1.3 Clone django-osoul from GitHub repository
+- [x] 1.4 Clone crafts-ai from GitHub repository
 - [x] 1.5 Clone django-osoul from GitHub repository
 - [ ] 1.6 Enhance django-osoul package with language switching technique
 - [ ] 1.7 Integrate _language.py from references with proper language detection
@@ -36,7 +36,7 @@ This document tracks the progressive enhancement of the monorepo infrastructure 
 
 - Import resolution now works correctly
 - Package can be imported as `from cli import SiteCLI`
-- All three libraries (django-grep, django-rseal, django-osoul) are available for enhancement
+- All three libraries (django-osoul, crafts-ai, django-osoul) are available for enhancement
 
 ---
 
@@ -299,7 +299,7 @@ python manage.py sites
 - [x] 9.6 Replace `docs/Dockerfile` with the Docsify nginx:1.27-alpine
 - [x] 9.7 Replace `compose/docs/Dockerfile` with the same Docsify Dockerfile
 - [x] 9.8 Create `applications/compose/docker-compose.docs.yml` for Docsify service
-- [x] 9.9 Create `usage.md` files for django-osoul, django-rseal, django-grep
+- [x] 9.9 Create `usage.md` files for django-osoul, crafts-ai, django-osoul
 - [x] 9.10 Reorganize docs/: collapse docs/docs/ and docs/docs/docs/ into docs/ root
 - [x] 9.11 Add detailed deployment guide (`docs/deployment/deployment_guide.md`)
 - [x] 9.12 Create monorepo migration guide (`docs/monorepo/migration_guide.md`)
@@ -315,7 +315,7 @@ python manage.py sites
 - ✅ Docs Dockerfile — nginx:1.27-alpine (`docs/Dockerfile`)
 - ✅ Compose Dockerfile — nginx:1.27-alpine (`compose/docs/Dockerfile`)
 - ✅ Docker Compose for docs service (`applications/compose/docker-compose.docs.yml`)
-- ✅ Package usage guides (`packages/django-osoul/usage.md`, `django-rseal/usage.md`, `django-grep/usage.md`)
+- ✅ Package usage guides (`packages/django-osoul/usage.md`, `crafts-ai/usage.md`, `django-osoul/usage.md`)
 - ✅ Directory restructure: docs/docs/ and docs/docs/docs/ collapsed into docs/
 - ✅ Deployment guide (`docs/deployment/deployment_guide.md`)
 - ✅ Migration guide (`docs/monorepo/migration_guide.md`)

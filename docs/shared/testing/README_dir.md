@@ -26,8 +26,8 @@ tests/
 │   └── ...
 └── venv/libs/
     ├── django-osoul/tests/  # django_osoul package tests
-    ├── django-rseal/tests/ # django_rseal package tests
-    ├── django-grep/tests/  # django_grep package tests
+    ├── crafts-ai/tests/ # crafts_ai package tests
+    ├── django-osoul/tests/  # django_osoul package tests
     └── nawaai/tests/       # nawaai package tests
 ```
 
@@ -72,12 +72,12 @@ uv run pytest tests/ -v
 cd venv/libs/django-osoul
 uv run pytest tests/ -v
 
-# Test django_rseal
-cd venv/libs/django-rseal
+# Test crafts_ai
+cd venv/libs/crafts-ai
 uv run pytest tests/ -v
 
-# Test django_grep
-cd venv/libs/django-grep
+# Test django_osoul
+cd venv/libs/django-osoul
 uv run pytest tests/ -v
 
 # Test nawaai
@@ -109,7 +109,7 @@ pytest -k "test_login" -v  # Tests with "test_login" in name
 
 ### BaseTestCase
 
-All tests extend `django_grep.tests.base.BaseTestCase` which provides:
+All tests extend `django_osoul.tests.base.BaseTestCase` which provides:
 
 - Hypothesis strategies: `st_email()`, `st_slug()`, `st_uuid()`
 - Custom assertions: `assert_redirects_to()`, `assert_json_response()`, `assert_htmx_response()`
@@ -117,7 +117,7 @@ All tests extend `django_grep.tests.base.BaseTestCase` which provides:
 - Authentication helpers
 
 ```python
-from django_grep.tests.base import BaseTestCase, st_email, st_slug
+from django_osoul.tests.base import BaseTestCase, st_email, st_slug
 from hypothesis import given, strategies as st
 
 class TestAuthentication(BaseTestCase):
@@ -130,7 +130,7 @@ class TestAuthentication(BaseTestCase):
 
 ### Factories
 
-Reusable factory classes in `django_grep.tests.factories`:
+Reusable factory classes in `django_osoul.tests.factories`:
 
 - `UserFactory` - Create test users
 - `GroupFactory` - Create test groups
@@ -139,7 +139,7 @@ Reusable factory classes in `django_grep.tests.factories`:
 - `EnrollmentFactory` - Create test enrollments
 
 ```python
-from django_grep.tests.factories import UserFactory, CourseFactory
+from django_osoul.tests.factories import UserFactory, CourseFactory
 
 def test_course_enrollment(self):
     user = UserFactory()
@@ -151,7 +151,7 @@ def test_course_enrollment(self):
 
 ### Assertions
 
-Custom assertion helpers in `django_grep.tests.assertions`:
+Custom assertion helpers in `django_osoul.tests.assertions`:
 
 - `assert_redirects_to(response, expected_url)` - Assert redirect to specific URL
 - `assert_json_response(response, expected_data)` - Assert JSON response matches expected data
@@ -159,7 +159,7 @@ Custom assertion helpers in `django_grep.tests.assertions`:
 - `assert_form_errors(response, field, expected_error)` - Assert form field errors
 
 ```python
-from django_grep.tests.assertions import assert_json_response, assert_redirects_to
+from django_osoul.tests.assertions import assert_json_response, assert_redirects_to
 
 def test_api_endpoint(self):
     response = self.client.get('/api/users/')
@@ -232,7 +232,7 @@ The project uses Hypothesis for property-based testing:
 
 ```python
 from hypothesis import given, strategies as st
-from django_grep.tests.base import st_email, st_slug
+from django_osoul.tests.base import st_email, st_slug
 
 @given(st_email())
 def test_email_property(self, email):
@@ -310,8 +310,8 @@ After running tests, `TEST_REPORT.json` is generated:
   },
   "packages": {
     "django_osoul": {"total": 50, "passed": 50, "failed": 0},
-    "django_rseal": {"total": 40, "passed": 40, "failed": 0},
-    "django_grep": {"total": 30, "passed": 30, "failed": 0},
+    "crafts_ai": {"total": 40, "passed": 40, "failed": 0},
+    "django_osoul": {"total": 30, "passed": 30, "failed": 0},
     "nawaai": {"total": 20, "passed": 20, "failed": 0}
   },
   "summary": {

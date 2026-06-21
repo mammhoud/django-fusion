@@ -16,7 +16,7 @@ if TYPE_CHECKING:
     from plugins.lms.models import Course, Enrollment, Lesson, Module
 
 try:
-    from crafts_ai.rseal.models import Person as Profile
+    from crafts_ai.models import Person as Profile
 except ImportError:
     Profile = None  # type: ignore[assignment,misc]
 

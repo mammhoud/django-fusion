@@ -81,7 +81,7 @@ Full Docker-based installation guide including:
 - `.env` setup
 - `docker compose` commands
 - First-run steps
-- `django-grep` source-clone configuration
+- `django-osoul` source-clone configuration
 
 #### [NEW] `core/docs/config/settings.md`
 Expand the previously empty `configs/settings/readme.md` into a proper settings documentation with environment variable reference.

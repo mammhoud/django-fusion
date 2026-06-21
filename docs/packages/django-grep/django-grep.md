@@ -1,7 +1,7 @@
-# django-grep Library Reference
+# django-osoul Library Reference
 
-**Location**: `libs/django-grep/`
-**Package**: `django_grep`
+**Location**: `libs/django-osoul/`
+**Package**: `django_osoul`
 **Purpose**: Generic Reusable Enhanced Pipelines — a utility library for Django/Wagtail projects providing components, pipelines, and MCP integration.
 
 ---
@@ -10,20 +10,20 @@
 
 ```bash
 # Via uv (workspace)
-uv pip install -e ../libs/django-grep
+uv pip install -e ../libs/django-osoul
 
 # Via pip
-pip install django-grep
+pip install django-osoul
 ```
 
 Add to `INSTALLED_APPS`:
 
 ```python
 INSTALLED_APPS = [
-    "django_grep.pipelines",
-    "django_grep.comp",
+    "django_osoul.pipelines",
+    "django_osoul.comp",
     # optional:
-    "django_grep.mcp_designer",
+    "django_osoul.mcp_designer",
 ]
 ```
 
@@ -31,7 +31,7 @@ INSTALLED_APPS = [
 
 ## Modules
 
-### `django_grep.comp` — Component System
+### `django_osoul.comp` — Component System
 
 Reusable Wagtail StreamField blocks and template tag integration.
 
@@ -49,7 +49,7 @@ Reusable Wagtail StreamField blocks and template tag integration.
 
 ```python
 from wagtail.fields import StreamField
-from django_grep.comp.blocks import streamBlocks
+from django_osoul.comp.blocks import streamBlocks
 
 class ContentPage(Page):
     body = StreamField(streamBlocks, use_json_field=True)
@@ -63,7 +63,7 @@ class ContentPage(Page):
 
 ---
 
-### `django_grep.pipelines` — Model Pipelines
+### `django_osoul.pipelines` — Model Pipelines
 
 Abstract base models and routing utilities.
 
@@ -76,7 +76,7 @@ Abstract base models and routing utilities.
 **Usage**:
 
 ```python
-from django_grep.pipelines.models import DefaultBase
+from django_osoul.pipelines.models import DefaultBase
 
 class MyModel(DefaultBase):
     title = models.CharField(max_length=255)
@@ -85,7 +85,7 @@ class MyModel(DefaultBase):
 
 ---
 
-### `django_grep.mcp_designer` — MCP Server Integration
+### `django_osoul.mcp_designer` — MCP Server Integration
 
 Model Context Protocol server for AI-assisted template and style editing.
 
@@ -104,7 +104,7 @@ mcp-django-server
 
 ---
 
-### `django_grep.contrib` — Utilities
+### `django_osoul.contrib` — Utilities
 
 Configuration and helper utilities.
 

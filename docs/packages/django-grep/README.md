@@ -1,7 +1,7 @@
-# django-grep Documentation
+# django-osoul Documentation
 
 ## Overview
-django-grep is the unified testing framework for the ecosystem. It provides test base classes, fixtures, factories, pytest plugins, and health check endpoints.
+django-osoul is the unified testing framework for the ecosystem. It provides test base classes, fixtures, factories, pytest plugins, and health check endpoints.
 
 ## Key Principles
 - **Test-only imports** - Must not be imported by production code
@@ -33,7 +33,7 @@ Data seeding utilities for testing and development
 ## Installation
 
 ```bash
-cd venv/libs/django-grep
+cd venv/libs/django-osoul
 uv sync
 ```
 
@@ -41,7 +41,7 @@ uv sync
 
 ### In Tests
 ```python
-from django_grep import BaseTestCase
+from django_osoul import BaseTestCase
 
 class MyTest(BaseTestCase):
     def test_something(self):
@@ -53,15 +53,15 @@ class MyTest(BaseTestCase):
 ```python
 # In your urls.py
 urlpatterns = [
-    path("health/", include("django_grep.health.urls")),
+    path("health/", include("django_osoul.health.urls")),
 ]
 ```
 
 ## Documentation Links
-- [django-grep README](../../../venv/libs/django-grep/README.md)
-- [django-grep Overview](django-grep-overview.md)
-- [Usage Analysis](django-grep-usage-analysis.md)
+- [django-osoul README](../../../venv/libs/django-osoul/README.md)
+- [django-osoul Overview](django-osoul-overview.md)
+- [Usage Analysis](django-osoul-usage-analysis.md)
 
 ## Related Packages
 - [django-osoul](../django-osoul/) - Pure Django foundation
-- [django-rseal](../django-rseal/) - Wagtail automation
+- [crafts-ai](../crafts-ai/) - Wagtail automation

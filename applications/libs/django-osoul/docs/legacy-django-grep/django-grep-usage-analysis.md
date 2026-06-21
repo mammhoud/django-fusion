@@ -1,6 +1,6 @@
 # Django-Grep Usage Analysis
 **Spec:** Django Project Reorganization & Email Automation
-**Task:** 2.3 - Create django-grep usage analysis document
+**Task:** 2.3 - Create django-osoul usage analysis document
 **Requirements:** 15.3-15.6
 **Date:** 2025-01-XX
 
@@ -8,10 +8,10 @@
 
 ## Executive Summary
 
-This document provides a comprehensive mapping of django-grep usage across both ctc-research.com and structa.cloud websites. The analysis identifies which components are used by each website, shared features, and website-specific dependencies.
+This document provides a comprehensive mapping of django-osoul usage across both ctc-research.com and structa.cloud websites. The analysis identifies which components are used by each website, shared features, and website-specific dependencies.
 
 **Key Findings:**
-- **Total Files Using django-grep:** 100+ files across both websites
+- **Total Files Using django-osoul:** 100+ files across both websites
 - **Shared Components:** DefaultBase, Person, PageHandler, NotificationMixin, CachedManager, BaseStreamBlock
 - **ctc-research.com Specific:** LMS payment integrations, course-specific blocks
 - **structa.cloud Specific:** Workspace/Team models, invitation system, more extensive configuration usage
@@ -354,7 +354,7 @@ These features have minimal usage and could be inlined or replaced:
 ## 8. Consolidation Recommendations
 
 ### 8.1 Keep as Dependency
-**Recommendation:** Keep these as django-grep dependencies due to complexity and heavy usage:
+**Recommendation:** Keep these as django-osoul dependencies due to complexity and heavy usage:
 
 1. **DefaultBase, Person** - Core models with extensive usage
 2. **PageHandler, NotificationMixin** - Core view infrastructure
@@ -470,8 +470,8 @@ These features have minimal usage and could be inlined or replaced:
 - configs/settings/conf.py
 
 ### 10.3 Template Files
-- **ctc-research.com:** No django-grep template tag usage found
-- **structa.cloud:** No django-grep template tag usage found
+- **ctc-research.com:** No django-osoul template tag usage found
+- **structa.cloud:** No django-osoul template tag usage found
 
 ---
 
@@ -490,10 +490,10 @@ These features have minimal usage and could be inlined or replaced:
 
 ## 12. Conclusion
 
-Both ctc-research.com and structa.cloud have extensive integration with django-grep, with approximately 50% of components shared between the two websites. The core models (DefaultBase, Person), views (PageHandler, NotificationMixin), and managers (CachedManager) are heavily used and should be maintained as dependencies. Website-specific features (payment integration for ctc-research.com, organization models for structa.cloud) should be extracted to site-specific code. Low-usage features (signals, contrib models, template tags) can be evaluated for removal or inlining.
+Both ctc-research.com and structa.cloud have extensive integration with django-osoul, with approximately 50% of components shared between the two websites. The core models (DefaultBase, Person), views (PageHandler, NotificationMixin), and managers (CachedManager) are heavily used and should be maintained as dependencies. Website-specific features (payment integration for ctc-research.com, organization models for structa.cloud) should be extracted to site-specific code. Low-usage features (signals, contrib models, template tags) can be evaluated for removal or inlining.
 
 The recommended approach is to:
-1. **Keep core shared components** as django-grep dependencies
+1. **Keep core shared components** as django-osoul dependencies
 2. **Extract website-specific features** to site code
 3. **Inline or remove low-usage features** to reduce complexity
 4. **Execute changes incrementally** with thorough testing at each phase

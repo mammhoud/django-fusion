@@ -26,7 +26,7 @@ Given the extensive cross-domain leakage (127+ modules in structa.cloud, 139+ in
 #### 3. accounts ↔ messaging Leakage
 **Issue**: accounts/email_templates.py, accounts/services/email/ import messaging
 **Root Cause**: Email functionality is in accounts but should be in messaging
-**Solution**: Create messaging domain or move email to django_rseal
+**Solution**: Create messaging domain or move email to crafts_ai
 
 #### 4. content ↔ forms Leakage
 **Issue**: content/models/contact.py, content/models/pages/base.py import forms
@@ -96,7 +96,7 @@ structa.cloud/apps/content/models/contact.py
 #### Step 4: Fix accounts ↔ messaging Leakage
 
 **File**: structa.cloud/apps/accounts/services/email/
-**Action**: Move to messaging domain or django_rseal
+**Action**: Move to messaging domain or crafts_ai
 
 ```
 structa.cloud/apps/accounts/services/email/
@@ -112,7 +112,7 @@ structa.cloud/apps/accounts/services/email/
    - Move LMS profile creation to lms/signals.py
 
 2. **accounts/services/email/** (both projects)
-   - Move to messaging domain or django_rseal
+   - Move to messaging domain or crafts_ai
 
 3. **content/models/contact.py** (both projects)
    - Move to forms domain

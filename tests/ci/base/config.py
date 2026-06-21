@@ -39,7 +39,7 @@ class AuthURLs:
     PASSWORD_RESET_KEY = "/accounts/password/reset/key/{key}/"
     PASSWORD_CHANGE = "/accounts/password/change/"
 
-    # Custom project paths (django_rseal pipelines)
+    # Custom project paths (crafts_ai pipelines)
     SIGN_IN = "/auth/sign-in/"
     SIGN_UP = "/auth/sign-up/"
     SIGN_OUT = "/auth/sign-out/"
@@ -102,7 +102,7 @@ class Credentials:
     SUPERUSER_PASSWORD = "mk_pAssWord123"
     SUPERUSER_EMAIL = "admin@example.com"
 
-    # django-grep BaseTestCase built-in credentials
+    # django-osoul BaseTestCase built-in credentials
     BASE_USER_EMAIL = "test@example.com"
     BASE_USER_PASSWORD = "testpass123"
     BASE_ADMIN_EMAIL = "admin@example.com"

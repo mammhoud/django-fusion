@@ -71,11 +71,11 @@ class Group(django_osoul.models.Group):
 #### Services
 
 ```python
-class UserService(django_rseal.pipelines.services.UserServiceBase):
+class UserService(crafts_ai.pipelines.services.UserServiceBase):
     """
     Structa Alliance user service.
 
-    Delegates to django_rseal.pipelines.services.UserServiceBase.
+    Delegates to crafts_ai.pipelines.services.UserServiceBase.
 
     Methods:
         create_user(username, email, password, **kwargs): Create new user
@@ -90,11 +90,11 @@ class UserService(django_rseal.pipelines.services.UserServiceBase):
     """
     pass
 
-class GroupService(django_rseal.pipelines.services.GroupServiceBase):
+class GroupService(crafts_ai.pipelines.services.GroupServiceBase):
     """
     Structa Alliance group service.
 
-    Delegates to django_rseal.pipelines.services.GroupServiceBase.
+    Delegates to crafts_ai.pipelines.services.GroupServiceBase.
 
     Methods:
         create_group(name, **kwargs): Create new group
@@ -116,11 +116,11 @@ Learning management system with courses, lessons, enrollments, and progress trac
 #### Models
 
 ```python
-class Course(django_rseal.models.BasePage):
+class Course(crafts_ai.models.BasePage):
     """
     Course model for Alliance LMS.
 
-    Extends django_rseal.models.BasePage with course-specific fields.
+    Extends crafts_ai.models.BasePage with course-specific fields.
 
     Attributes:
         title (str): Course title
@@ -139,7 +139,7 @@ class Course(django_rseal.models.BasePage):
     """
     pass
 
-class Lesson(django_rseal.models.BasePage):
+class Lesson(crafts_ai.models.BasePage):
     """
     Lesson model for Alliance LMS.
 
@@ -198,11 +198,11 @@ class Cart(django_osoul.models.TimestampedModel):
 #### Services
 
 ```python
-class CartService(django_rseal.pipelines.services.CartServiceBase):
+class CartService(crafts_ai.pipelines.services.CartServiceBase):
     """
     Structa Alliance cart service.
 
-    Delegates to django_rseal.pipelines.services.CartServiceBase.
+    Delegates to crafts_ai.pipelines.services.CartServiceBase.
 
     Methods:
         add_to_cart(user, item, quantity): Add item to cart
@@ -216,7 +216,7 @@ class CartService(django_rseal.pipelines.services.CartServiceBase):
     """
     pass
 
-class EnrollmentService(django_rseal.pipelines.services.EnrollmentServiceBase):
+class EnrollmentService(crafts_ai.pipelines.services.EnrollmentServiceBase):
     """
     Structa Alliance enrollment service.
 
@@ -240,7 +240,7 @@ CMS content management with Wagtail pages.
 #### Models
 
 ```python
-class HomePage(django_rseal.models.BasePage):
+class HomePage(crafts_ai.models.BasePage):
     """
     Home page model for structa.cloud.
 
@@ -255,7 +255,7 @@ class HomePage(django_rseal.models.BasePage):
     """
     pass
 
-class ContentPage(django_rseal.models.BasePage):
+class ContentPage(crafts_ai.models.BasePage):
     """
     Generic content page model.
 
@@ -279,7 +279,7 @@ Blog functionality with posts, tags, and categories.
 #### Models
 
 ```python
-class BlogPost(django_rseal.models.BasePage):
+class BlogPost(crafts_ai.models.BasePage):
     """
     Blog post model for structa.cloud.
 
@@ -368,7 +368,7 @@ Additional Settings:
 ### Health Endpoints
 
 ```python
-# Health check endpoints provided by django_grep
+# Health check endpoints provided by django_osoul
 
 def health_check(request):
     """
@@ -417,13 +417,13 @@ def health_media(request):
 
 ```python
 # tests/base.py
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class StructaTestCase(BaseTestCase):
     """
     Base test case for structa.cloud tests.
 
-    Extends django_grep.tests.base.BaseTestCase with
+    Extends django_osoul.tests.base.BaseTestCase with
     project-specific test utilities.
 
     Features:

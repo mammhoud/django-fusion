@@ -55,3 +55,4 @@ __all__ = [
     "PersonTagManager",
     "TaggedPersonManager",
 ]
+from django_osoul.cache import CachedManager, CachedModelManager

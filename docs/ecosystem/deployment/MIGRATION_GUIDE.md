@@ -209,7 +209,7 @@ App renames align with domain-driven architecture:
 | `from apps.handlers.mixins.group import GroupMixin` | `from django_osoul.mixins import GroupMixin` |
 | `from apps.handlers.mixins.views import ...` | `from django_osoul.mixins import ...` |
 | `from apps.handlers.mixins.models import ...` | `from django_osoul.mixins import ...` |
-| `from apps.handlers.mixins.service import ServiceMixin` | `from django_rseal.pipelines.mixins.service import ServiceMixin` |
+| `from apps.handlers.mixins.service import ServiceMixin` | `from crafts_ai.pipelines.mixins.service import ServiceMixin` |
 | `from apps.handlers.mixins import CacheMixin` | `from django_osoul.mixins import CacheMixin` |
 | `from apps.handlers.mixins import CacheSearchMixin` | `from django_osoul.mixins import CacheSearchMixin` |
 
@@ -219,7 +219,7 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.middleware.error_tracker import ErrorTrackerMiddleware` | `from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware` |
 | `from apps.handlers.middleware import ErrorTrackerMiddleware` | `from django_osoul.middlewares import ErrorTrackerMiddleware` |
-| `from apps.handlers.middleware.privacy import PrivacyConsentMiddleware` | `from django_rseal.contrib.privacy.middleware import PrivacyConsentMiddleware` |
+| `from apps.handlers.middleware.privacy import PrivacyConsentMiddleware` | `from crafts_ai.contrib.privacy.middleware import PrivacyConsentMiddleware` |
 | `from apps.handlers.middleware import SiteMiddleware` | `from django_osoul.middlewares import SiteMiddleware` |
 | `from apps.handlers.middleware import ReadonlyExceptionHandlerMiddleware` | `from django_osoul.middlewares import ReadonlyExceptionHandlerMiddleware` |
 
@@ -244,10 +244,10 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.services.user import UserService` | `from django_osoul.services.user import UserService` |
 | `from apps.handlers.services.group import GroupService` | `from django_osoul.services.group import GroupService` |
-| `from apps.LMS.services.cart import CartService` | `from apps.lms.services.cart import CartService` (thin subclass of `django_rseal.pipelines.services.cart.CartServiceBase`) |
-| `from apps.LMS.services.person import PersonService` | `from apps.lms.services.person import PersonService` (thin subclass of `django_rseal.pipelines.services.person.PersonServiceBase`) |
-| `from apps.LMS.services.message import MessageService` | `from apps.lms.services.message import MessageService` (thin subclass of `django_rseal.pipelines.services.message.MessageServiceBase`) |
-| `from apps.LMS.services.form_submission import FormSubmissionService` | `from apps.lms.services.form_submission import FormSubmissionService` (thin subclass of `django_rseal.pipelines.services.form_submission.FormSubmissionServiceBase`) |
+| `from apps.LMS.services.cart import CartService` | `from apps.lms.services.cart import CartService` (thin subclass of `crafts_ai.pipelines.services.cart.CartServiceBase`) |
+| `from apps.LMS.services.person import PersonService` | `from apps.lms.services.person import PersonService` (thin subclass of `crafts_ai.pipelines.services.person.PersonServiceBase`) |
+| `from apps.LMS.services.message import MessageService` | `from apps.lms.services.message import MessageService` (thin subclass of `crafts_ai.pipelines.services.message.MessageServiceBase`) |
+| `from apps.LMS.services.form_submission import FormSubmissionService` | `from apps.lms.services.form_submission import FormSubmissionService` (thin subclass of `crafts_ai.pipelines.services.form_submission.FormSubmissionServiceBase`) |
 
 ### Handlers
 
@@ -258,9 +258,9 @@ App renames align with domain-driven architecture:
 | `from apps.handlers.handlers.search import ...` | `from django_osoul.handlers.search import ...` |
 | `from apps.handlers.handlers.mixins.fragment import ...` | `from django_osoul.handlers.mixins.fragment import ...` |
 | `from apps.handlers.handlers.mixins.page import ...` | `from django_osoul.handlers.mixins.page import ...` |
-| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from django_rseal.handlers.mixins.wagtail_page import ...` |
-| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from django_rseal.handlers.mixins.wagtail_fragment import ...` |
-| `from apps.handlers.handlers.search import ...` (Wagtail) | `from django_rseal.handlers.search import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from crafts_ai.handlers.mixins.wagtail_page import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from crafts_ai.handlers.mixins.wagtail_fragment import ...` |
+| `from apps.handlers.handlers.search import ...` (Wagtail) | `from crafts_ai.handlers.search import ...` |
 
 ### Forms
 
@@ -302,41 +302,41 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.pages.comp.blocks import MediaBlock` | `from django_rseal.comp.blocks import MediaBlock` |
-| `from apps.pages.comp.blocks import ContentBlock` | `from django_rseal.comp.blocks import ContentBlock` |
-| `from apps.pages.snippets import ...` | `from django_rseal.contrib.snippets import ...` |
-| `from apps.pages.wagtail_hooks import ...` | `from django_rseal.contrib.wagtail_hooks import ...` |
-| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from django_rseal.comp.blocks import OrganizationChooserBlock` |
-| `from apps.handlers.comp.blocks import EventSectionBlock` | `from django_rseal.comp.blocks import EventSectionBlock` |
-| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from django_rseal.comp.blocks import ServicesSectionBlock` |
+| `from apps.pages.comp.blocks import MediaBlock` | `from crafts_ai.comp.blocks import MediaBlock` |
+| `from apps.pages.comp.blocks import ContentBlock` | `from crafts_ai.comp.blocks import ContentBlock` |
+| `from apps.pages.snippets import ...` | `from crafts_ai.contrib.snippets import ...` |
+| `from apps.pages.wagtail_hooks import ...` | `from crafts_ai.contrib.wagtail_hooks import ...` |
+| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from crafts_ai.comp.blocks import OrganizationChooserBlock` |
+| `from apps.handlers.comp.blocks import EventSectionBlock` | `from crafts_ai.comp.blocks import EventSectionBlock` |
+| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from crafts_ai.comp.blocks import ServicesSectionBlock` |
 
 ### Email Components
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.email.selectors import RoleBasedEmailTemplateSelector` | `from django_rseal.email.selectors import RoleBasedEmailTemplateSelector` |
-| `from apps.handlers.email.registry import EmailTemplateRegistry` | `from django_rseal.email.registry import EmailTemplateRegistry` |
+| `from apps.handlers.email.selectors import RoleBasedEmailTemplateSelector` | `from crafts_ai.email.selectors import RoleBasedEmailTemplateSelector` |
+| `from apps.handlers.email.registry import EmailTemplateRegistry` | `from crafts_ai.email.registry import EmailTemplateRegistry` |
 
 ### Testing Infrastructure
 
 | Before | After |
 |--------|-------|
-| `from django.test import TestCase` | `from django_grep.tests.base import BaseTestCase` |
-| `from apps.handlers.tests.factories import ...` | `from django_grep.tests.factories import ...` |
-| `from apps.handlers.tests.assertions import ...` | `from django_grep.tests.assertions import ...` |
-| `from apps.handlers.tests.fixtures import ...` | `from django_grep.tests.fixtures import ...` |
-| `from apps.handlers.tests.mixins import ...` | `from django_grep.tests.mixins import ...` |
-| Custom Hypothesis strategies | `from django_grep.tests.base import st_email, st_slug, st_uuid` |
+| `from django.test import TestCase` | `from django_osoul.tests.base import BaseTestCase` |
+| `from apps.handlers.tests.factories import ...` | `from django_osoul.tests.factories import ...` |
+| `from apps.handlers.tests.assertions import ...` | `from django_osoul.tests.assertions import ...` |
+| `from apps.handlers.tests.fixtures import ...` | `from django_osoul.tests.fixtures import ...` |
+| `from apps.handlers.tests.mixins import ...` | `from django_osoul.tests.mixins import ...` |
+| Custom Hypothesis strategies | `from django_osoul.tests.base import st_email, st_slug, st_uuid` |
 
 ### Health Checks
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.views.health import HealthCheckView` | `from django_grep.health.views import HealthCheckView` |
-| `from apps.handlers.views.health import DatabaseHealthView` | `from django_grep.health.views import DatabaseHealthView` |
-| `from apps.handlers.views.health import AssetsHealthView` | `from django_grep.health.views import AssetsHealthView` |
-| `from apps.handlers.views.health import MediaHealthView` | `from django_grep.health.views import MediaHealthView` |
-| Custom health check URLs | `path('health/', include('django_grep.health.urls'))` |
+| `from apps.handlers.views.health import HealthCheckView` | `from django_osoul.health.views import HealthCheckView` |
+| `from apps.handlers.views.health import DatabaseHealthView` | `from django_osoul.health.views import DatabaseHealthView` |
+| `from apps.handlers.views.health import AssetsHealthView` | `from django_osoul.health.views import AssetsHealthView` |
+| `from apps.handlers.views.health import MediaHealthView` | `from django_osoul.health.views import MediaHealthView` |
+| Custom health check URLs | `path('health/', include('django_osoul.health.urls'))` |
 
 ### UI Components
 
@@ -366,20 +366,20 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.rendering import TemplateRenderer` | `from django_osoul.rendering import TemplateRenderer` |
 
-### Package-Level Shims (django_rseal re-exports from django_osoul)
+### Package-Level Shims (crafts_ai re-exports from django_osoul)
 
-These django_rseal paths re-export from django_osoul for backward compatibility:
+These crafts_ai paths re-export from django_osoul for backward compatibility:
 
-| django_rseal path | Actual source |
+| crafts_ai path | Actual source |
 |-------------------|---------------|
-| `django_rseal.pipelines.backends` | `django_osoul.backends` |
-| `django_rseal.pipelines.filters` | `django_osoul.filters` |
-| `django_rseal.pipelines.managers` | `django_osoul.managers` |
-| `django_rseal.pipelines.middlewares` | `django_osoul.middlewares` |
-| `django_rseal.pipelines.mixins` | `django_osoul.mixins` |
-| `django_rseal.logging_config` | `django_osoul.logging_config` |
-| `django_rseal.forms` | `django_osoul.forms` |
-| `django_rseal.contrib` | `django_osoul.contrib` |
+| `crafts_ai.pipelines.backends` | `django_osoul.backends` |
+| `crafts_ai.pipelines.filters` | `django_osoul.filters` |
+| `crafts_ai.pipelines.managers` | `django_osoul.managers` |
+| `crafts_ai.pipelines.middlewares` | `django_osoul.middlewares` |
+| `crafts_ai.pipelines.mixins` | `django_osoul.mixins` |
+| `crafts_ai.logging_config` | `django_osoul.logging_config` |
+| `crafts_ai.forms` | `django_osoul.forms` |
+| `crafts_ai.contrib` | `django_osoul.contrib` |
 
 Prefer the canonical `django_osoul.*` paths in new code.
 
@@ -389,12 +389,12 @@ Prefer the canonical `django_osoul.*` paths in new code.
 
 This section documents all deprecated APIs, their replacements, migration paths, and common errors encountered during migration.
 
-### 1. ServiceMixin (Moved from django_osoul to django_rseal)
+### 1. ServiceMixin (Moved from django_osoul to crafts_ai)
 
 **Deprecated**: `django_osoul.mixins.service.ServiceMixin`
-**Replacement**: `django_rseal.pipelines.mixins.service.ServiceMixin`
+**Replacement**: `crafts_ai.pipelines.mixins.service.ServiceMixin`
 
-**Why it was deprecated**: ServiceMixin contained Wagtail dependencies, violating the `django_osoul` package's "no Wagtail" boundary rule. All Wagtail-related code must reside in `django_rseal` to maintain clean separation between pure Django foundation logic and Wagtail automation logic.
+**Why it was deprecated**: ServiceMixin contained Wagtail dependencies, violating the `django_osoul` package's "no Wagtail" boundary rule. All Wagtail-related code must reside in `crafts_ai` to maintain clean separation between pure Django foundation logic and Wagtail automation logic.
 
 **Before/After Example**:
 
@@ -409,7 +409,7 @@ class MyService(ServiceMixin):
         return self._wagtail_dependent_method()
 
 # AFTER (Replacement)
-from django_rseal.pipelines.mixins.service import ServiceMixin
+from crafts_ai.pipelines.mixins.service import ServiceMixin
 
 class MyService(ServiceMixin):
     """Service using correct ServiceMixin location."""
@@ -419,38 +419,38 @@ class MyService(ServiceMixin):
 ```
 
 **Migration Path**:
-1. Update import statement from `django_osoul.mixins.service` to `django_rseal.pipelines.mixins.service`
+1. Update import statement from `django_osoul.mixins.service` to `crafts_ai.pipelines.mixins.service`
 2. Verify no other `django_osoul` code imports Wagtail components
 3. Run boundary checker to ensure compliance: `python scripts/check_boundaries.py`
 
 **Common Migration Errors and Fixes**:
 - **ImportError**: `Cannot import name 'ServiceMixin' from 'django_osoul.mixins'`
-  - **Fix**: Update import to `from django_rseal.pipelines.mixins.service import ServiceMixin`
+  - **Fix**: Update import to `from crafts_ai.pipelines.mixins.service import ServiceMixin`
 - **Boundary Violation**: `django_osoul imports wagtail`
-  - **Fix**: Move all Wagtail-dependent code from `django_osoul` to `django_rseal`
-- **Circular Dependency**: ServiceMixin now in `django_rseal` but code needs pure Django version
-  - **Fix**: Extract pure Django functionality to separate mixin in `django_osoul`, keep Wagtail-dependent parts in `django_rseal`
+  - **Fix**: Move all Wagtail-dependent code from `django_osoul` to `crafts_ai`
+- **Circular Dependency**: ServiceMixin now in `crafts_ai` but code needs pure Django version
+  - **Fix**: Extract pure Django functionality to separate mixin in `django_osoul`, keep Wagtail-dependent parts in `crafts_ai`
 
-### 2. Seeder Shim (django_rseal.seeder → django_grep.seeder)
+### 2. Seeder Shim (crafts_ai.seeder → django_osoul.seeder)
 
-**Deprecated**: `django_rseal.seeder` (shim module that imported `django_grep.seeder`)
-**Replacement**: `django_grep.seeder` directly
+**Deprecated**: `crafts_ai.seeder` (shim module that imported `django_osoul.seeder`)
+**Replacement**: `django_osoul.seeder` directly
 
-**Why it was deprecated**: The shim violated the "grep-test-only" boundary rule. `django_grep` is a testing-only package and must not be imported by production code (`django_rseal`). The shim created an indirect dependency that broke this rule.
+**Why it was deprecated**: The shim violated the "grep-test-only" boundary rule. `django_osoul` is a testing-only package and must not be imported by production code (`crafts_ai`). The shim created an indirect dependency that broke this rule.
 
 **Before/After Example**:
 
 ```python
 # BEFORE (Deprecated)
-from django_rseal.seeder import DatabaseSeeder  # Indirect import via shim
+from crafts_ai.seeder import DatabaseSeeder  # Indirect import via shim
 
 seeder = DatabaseSeeder()
 seeder.seed_test_data()  # Production code importing test infrastructure
 
 # AFTER (Replacement)
 # Production code should NOT import seeder functionality
-# Test code imports directly from django_grep
-from django_grep.seeder import DatabaseSeeder
+# Test code imports directly from django_osoul
+from django_osoul.seeder import DatabaseSeeder
 
 # Only in test files, never in production code
 class MyTests(BaseTestCase):
@@ -460,18 +460,18 @@ class MyTests(BaseTestCase):
 ```
 
 **Migration Path**:
-1. Remove all imports of `django_rseal.seeder` from production code
-2. Update test code to import `django_grep.seeder` directly
-3. Ensure no production code imports `django_grep` modules
+1. Remove all imports of `crafts_ai.seeder` from production code
+2. Update test code to import `django_osoul.seeder` directly
+3. Ensure no production code imports `django_osoul` modules
 4. Run boundary checker: `python scripts/check_boundaries.py --rule grep-test-only`
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `No module named 'django_rseal.seeder'`
-  - **Fix**: Update test code to use `django_grep.seeder`, remove from production code
-- **Boundary Violation**: `django_rseal imports django_grep`
+- **ImportError**: `No module named 'crafts_ai.seeder'`
+  - **Fix**: Update test code to use `django_osoul.seeder`, remove from production code
+- **Boundary Violation**: `crafts_ai imports django_osoul`
   - **Fix**: Remove the shim module and update all imports
 - **Production Code Dependency**: Production code needs seeding functionality
-  - **Fix**: Move seeding logic to `django_osoul` or `django_rseal` with proper boundaries
+  - **Fix**: Move seeding logic to `django_osoul` or `crafts_ai` with proper boundaries
 
 ### 3. Direct CartService/PersonService/MessageService (Replaced by Thin Subclass Pattern)
 
@@ -504,12 +504,12 @@ class CartService:
 
 # AFTER (Replacement - Thin subclass pattern)
 # apps/lms/services/cart.py
-from django_rseal.pipelines.services.cart import CartServiceBase
+from crafts_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
     """
-    Thin subclass delegating to django_rseal.pipelines.services.CartServiceBase.
+    Thin subclass delegating to crafts_ai.pipelines.services.CartServiceBase.
     Only contains project-specific overrides.
     """
     cart_model = Cart
@@ -532,7 +532,7 @@ class CartService(CartServiceBase):
 
 **Migration Path**:
 1. Identify all service classes in project apps (`CartService`, `PersonService`, `MessageService`, `FormSubmissionService`)
-2. Replace with thin subclasses of corresponding base classes in `django_rseal.pipelines.services`
+2. Replace with thin subclasses of corresponding base classes in `crafts_ai.pipelines.services`
 3. Move business logic to package base classes
 4. Keep only project-specific overrides in project services
 5. Update all imports to use new service classes
@@ -540,7 +540,7 @@ class CartService(CartServiceBase):
 
 **Common Migration Errors and Fixes**:
 - **Missing Base Class**: `ImportError: cannot import name 'CartServiceBase'`
-  - **Fix**: Ensure `django_rseal` is installed and import path is correct: `from django_rseal.pipelines.services.cart import CartServiceBase`
+  - **Fix**: Ensure `crafts_ai` is installed and import path is correct: `from crafts_ai.pipelines.services.cart import CartServiceBase`
 - **Method Signature Mismatch**: Base class methods have different signatures
   - **Fix**: Update project service methods to match base class signatures, use `super()` to call base implementation
 - **Broken Tests**: Tests fail after migration to thin subclass pattern
@@ -548,12 +548,12 @@ class CartService(CartServiceBase):
 - **Missing Project-Specific Logic**: Business logic lost during migration
   - **Fix**: Carefully extract project-specific logic to overrides, keep common logic in base classes
 
-### 4. Direct TestCase Usage (Replaced by BaseTestCase from django_grep)
+### 4. Direct TestCase Usage (Replaced by BaseTestCase from django_osoul)
 
 **Deprecated**: `from django.test import TestCase`
-**Replacement**: `from django_grep.tests.base import BaseTestCase`
+**Replacement**: `from django_osoul.tests.base import BaseTestCase`
 
-**Why it was deprecated**: `BaseTestCase` provides unified testing infrastructure including Hypothesis helpers (`st_email`, `st_slug`, `st_uuid`), consistent setup/teardown patterns, and integration with `django_grep` test ecosystem.
+**Why it was deprecated**: `BaseTestCase` provides unified testing infrastructure including Hypothesis helpers (`st_email`, `st_slug`, `st_uuid`), consistent setup/teardown patterns, and integration with `django_osoul` test ecosystem.
 
 **Before/After Example**:
 
@@ -573,11 +573,11 @@ class UserTest(TestCase):
         self.assertTrue(re.match(pattern, email) is not None)
 
 # AFTER (Replacement)
-from django_grep.tests.base import BaseTestCase
-from django_grep.tests.base import st_email
+from django_osoul.tests.base import BaseTestCase
+from django_osoul.tests.base import st_email
 
 class UserTest(BaseTestCase):
-    """Test using BaseTestCase with django_grep Hypothesis helpers."""
+    """Test using BaseTestCase with django_osoul Hypothesis helpers."""
 
     @given(st_email())
     def test_email_validation(self, email):
@@ -586,28 +586,28 @@ class UserTest(BaseTestCase):
 ```
 
 **Migration Path**:
-1. Replace all `from django.test import TestCase` with `from django_grep.tests.base import BaseTestCase`
+1. Replace all `from django.test import TestCase` with `from django_osoul.tests.base import BaseTestCase`
 2. Update test class inheritance: `class MyTest(TestCase):` → `class MyTest(BaseTestCase):`
-3. Replace custom Hypothesis strategies with `django_grep` helpers (`st_email`, `st_slug`, `st_uuid`)
+3. Replace custom Hypothesis strategies with `django_osoul` helpers (`st_email`, `st_slug`, `st_uuid`)
 4. Update imports for test utilities (`factories`, `assertions`, `fixtures`, `mixins`)
 5. Run test suite to verify all tests pass
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `No module named 'django_grep'`
-  - **Fix**: Install `django_grep` package: `cd venv/libs/django-grep && uv install`
+- **ImportError**: `No module named 'django_osoul'`
+  - **Fix**: Install `django_osoul` package: `cd venv/libs/django-osoul && uv install`
 - **Missing Hypothesis Helpers**: `st_email not found`
-  - **Fix**: Import from correct location: `from django_grep.tests.base import st_email, st_slug, st_uuid`
+  - **Fix**: Import from correct location: `from django_osoul.tests.base import st_email, st_slug, st_uuid`
 - **Test Method Conflicts**: BaseTestCase has different setUp/tearDown behavior
   - **Fix**: Review BaseTestCase implementation and adjust test setup accordingly
 - **Deprecated Assertions**: Custom assertions no longer available
-  - **Fix**: Update to use `django_grep.tests.assertions` or standard unittest assertions
+  - **Fix**: Update to use `django_osoul.tests.assertions` or standard unittest assertions
 
-### 5. Direct Import of Project-Specific Handlers/Blocks (Moved to django_rseal)
+### 5. Direct Import of Project-Specific Handlers/Blocks (Moved to crafts_ai)
 
 **Deprecated**: Direct imports from project apps for Wagtail components
-**Replacement**: Imports from `django_rseal` package
+**Replacement**: Imports from `crafts_ai` package
 
-**Why it was deprecated**: Wagtail-specific components (handlers, blocks, snippets, hooks) belong in `django_rseal` package, not in project apps. This ensures reusability across projects and clean separation of concerns.
+**Why it was deprecated**: Wagtail-specific components (handlers, blocks, snippets, hooks) belong in `crafts_ai` package, not in project apps. This ensures reusability across projects and clean separation of concerns.
 
 **Before/After Examples**:
 
@@ -619,44 +619,44 @@ from apps.pages.snippets import FeaturedSnippet
 from apps.pages.wagtail_hooks import register_custom_hooks
 
 # AFTER (Replacement - Package imports)
-from django_rseal.handlers.mixins.wagtail_page import WagtailPageHandlerMixin
-from django_rseal.comp.blocks import OrganizationChooserBlock
-from django_rseal.contrib.snippets import FeaturedSnippet
-from django_rseal.contrib.wagtail_hooks import register_custom_hooks
+from crafts_ai.handlers.mixins.wagtail_page import WagtailPageHandlerMixin
+from crafts_ai.comp.blocks import OrganizationChooserBlock
+from crafts_ai.contrib.snippets import FeaturedSnippet
+from crafts_ai.contrib.wagtail_hooks import register_custom_hooks
 ```
 
 **Specific Replacements**:
 
 | Deprecated Import | Replacement Import |
 |-------------------|-------------------|
-| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from django_rseal.handlers.mixins.wagtail_page import ...` |
-| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from django_rseal.handlers.mixins.wagtail_fragment import ...` |
-| `from apps.handlers.handlers.search import ...` (Wagtail) | `from django_rseal.handlers.search import ...` |
-| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from django_rseal.comp.blocks import OrganizationChooserBlock` |
-| `from apps.handlers.comp.blocks import EventSectionBlock` | `from django_rseal.comp.blocks import EventSectionBlock` |
-| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from django_rseal.comp.blocks import ServicesSectionBlock` |
-| `from apps.pages.comp.blocks import MediaBlock` | `from django_rseal.comp.blocks import MediaBlock` |
-| `from apps.pages.comp.blocks import ContentBlock` | `from django_rseal.comp.blocks import ContentBlock` |
-| `from apps.pages.snippets import ...` | `from django_rseal.contrib.snippets import ...` |
-| `from apps.pages.wagtail_hooks import ...` | `from django_rseal.contrib.wagtail_hooks import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from crafts_ai.handlers.mixins.wagtail_page import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from crafts_ai.handlers.mixins.wagtail_fragment import ...` |
+| `from apps.handlers.handlers.search import ...` (Wagtail) | `from crafts_ai.handlers.search import ...` |
+| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from crafts_ai.comp.blocks import OrganizationChooserBlock` |
+| `from apps.handlers.comp.blocks import EventSectionBlock` | `from crafts_ai.comp.blocks import EventSectionBlock` |
+| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from crafts_ai.comp.blocks import ServicesSectionBlock` |
+| `from apps.pages.comp.blocks import MediaBlock` | `from crafts_ai.comp.blocks import MediaBlock` |
+| `from apps.pages.comp.blocks import ContentBlock` | `from crafts_ai.comp.blocks import ContentBlock` |
+| `from apps.pages.snippets import ...` | `from crafts_ai.contrib.snippets import ...` |
+| `from apps.pages.wagtail_hooks import ...` | `from crafts_ai.contrib.wagtail_hooks import ...` |
 
 **Migration Path**:
 1. Identify all Wagtail component imports in project code
-2. Update import statements to use `django_rseal` paths
-3. Verify components exist in `django_rseal` package
-4. Move any missing components from projects to `django_rseal`
+2. Update import statements to use `crafts_ai` paths
+3. Verify components exist in `crafts_ai` package
+4. Move any missing components from projects to `crafts_ai`
 5. Update templates referencing Wagtail components
 6. Run tests to verify functionality preserved
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `No module named 'django_rseal.handlers.mixins.wagtail_page'`
-  - **Fix**: Ensure `django_rseal` is installed and the component exists in the package
-- **Missing Component**: Component not yet moved to `django_rseal`
-  - **Fix**: Move the component from project to `django_rseal`, update all references
+- **ImportError**: `No module named 'crafts_ai.handlers.mixins.wagtail_page'`
+  - **Fix**: Ensure `crafts_ai` is installed and the component exists in the package
+- **Missing Component**: Component not yet moved to `crafts_ai`
+  - **Fix**: Move the component from project to `crafts_ai`, update all references
 - **Template Errors**: Templates reference old import paths
   - **Fix**: Update template `{% load %}` tags and component references
-- **Circular Dependencies**: `django_rseal` imports project-specific code
-  - **Fix**: Ensure `django_rseal` has no project imports, move shared code to packages
+- **Circular Dependencies**: `crafts_ai` imports project-specific code
+  - **Fix**: Ensure `crafts_ai` has no project imports, move shared code to packages
 
 ### 6. Additional Deprecated Patterns
 
@@ -673,7 +673,7 @@ from django_osoul.managers import UserManager
 ```
 
 **Deprecated**: Project-specific middleware implementations
-**Replacement**: Import middleware from `django_osoul.middlewares` or `django_rseal.contrib`
+**Replacement**: Import middleware from `django_osoul.middlewares` or `crafts_ai.contrib`
 
 **Example**:
 ```python
@@ -703,7 +703,7 @@ from django_osoul.forms import BaseStyledForm
 After updating deprecated APIs, verify:
 
 1. **Boundary Rules**: Run `python scripts/check_boundaries.py` - zero violations
-2. **Import Errors**: Run `python -c "import django_osoul; import django_rseal; import django_grep"` - no errors
+2. **Import Errors**: Run `python -c "import django_osoul; import crafts_ai; import django_osoul"` - no errors
 3. **Test Suite**: Run full test suite for all packages and projects - all tests pass
 4. **Template Resolution**: Verify all templates render correctly
 5. **Service Functionality**: Test key service methods (cart operations, user management, messaging)
@@ -732,7 +732,7 @@ MIDDLEWARE = [
 MIDDLEWARE = [
     ...
     "django_osoul.middlewares.error_tracker.ErrorTrackerMiddleware",
-    "django_rseal.contrib.privacy.middleware.PrivacyConsentMiddleware",
+    "crafts_ai.contrib.privacy.middleware.PrivacyConsentMiddleware",
     ...
 ]
 ```
@@ -771,11 +771,11 @@ urlpatterns = [
     path("health/", views.health_check),
 ]
 
-# After — unified health check from django_grep
+# After — unified health check from django_osoul
 from django.urls import path, include
 
 urlpatterns = [
-    path("health/", include("django_grep.health.urls")),
+    path("health/", include("django_osoul.health.urls")),
 ]
 ```
 
@@ -825,30 +825,30 @@ from apps.pages.models import HomePage
 from apps.content.models import HomePage
 ```
 
-#### ImportError: ModuleNotFoundError for django_osoul, django_rseal, or django_grep
+#### ImportError: ModuleNotFoundError for django_osoul, crafts_ai, or django_osoul
 
 Ensure packages are installed and in your Python path:
 
 ```bash
 # Install all packages
 cd venv/libs/django-osoul && uv install
-cd venv/libs/django-rseal && uv install
-cd venv/libs/django-grep && uv install
+cd venv/libs/crafts-ai && uv install
+cd venv/libs/django-osoul && uv install
 
 # Verify imports work
-python -c "import django_osoul; import django_rseal; import django_grep; print('All imports successful')"
+python -c "import django_osoul; import crafts_ai; import django_osoul; print('All imports successful')"
 ```
 
 #### ImportError: Cannot import name 'ServiceMixin' from 'django_osoul.mixins'
 
-`ServiceMixin` was moved to `django_rseal` due to Wagtail dependencies:
+`ServiceMixin` was moved to `crafts_ai` due to Wagtail dependencies:
 
 ```python
 # Before
 from django_osoul.mixins.service import ServiceMixin
 
 # After
-from django_rseal.pipelines.mixins.service import ServiceMixin
+from crafts_ai.pipelines.mixins.service import ServiceMixin
 ```
 
 ### 2. Migration Reversal Issues
@@ -910,7 +910,7 @@ Static files follow the same pattern as templates:
 
 Templatetags placement:
 
-1. Reusable templatetags moved to packages (`django_osoul/templatetags/` or `django_rseal/templatetags/`)
+1. Reusable templatetags moved to packages (`django_osoul/templatetags/` or `crafts_ai/templatetags/`)
 2. Project-specific templatetags remain in project `templatetags/` directories
 3. Update `{% load %}` statements with new module names
 
@@ -921,17 +921,17 @@ Templatetags placement:
 If you see `django_osoul imports wagtail` error:
 
 1. Run `python scripts/check_boundaries.py` to find all violations
-2. Move Wagtail-dependent code from `django_osoul` to `django_rseal`
+2. Move Wagtail-dependent code from `django_osoul` to `crafts_ai`
 3. Update all imports in both packages and projects
 4. Common violations: `ServiceMixin`, Wagtail block classes, Wagtail-specific handlers
 
-#### django_grep imported by production code (grep-test-only violation)
+#### django_osoul imported by production code (grep-test-only violation)
 
-`django_grep` is for testing only. If production code imports it:
+`django_osoul` is for testing only. If production code imports it:
 
-1. Find the production file importing `django_grep`
+1. Find the production file importing `django_osoul`
 2. Move the import to a test file, or
-3. Use the production equivalent (e.g., `django_osoul.middlewares` instead of `django_grep.tests`)
+3. Use the production equivalent (e.g., `django_osoul.middlewares` instead of `django_osoul.tests`)
 
 #### nawaai imports Django (nawaai-no-django violation)
 
@@ -939,7 +939,7 @@ If you see `django_osoul imports wagtail` error:
 
 1. Refactor Django-dependent code out of `nawaai`
 2. Use dependency injection or pure Python alternatives
-3. Move Django integration to `django_osoul` or `django_rseal`
+3. Move Django integration to `django_osoul` or `crafts_ai`
 
 #### Circular import detected
 
@@ -947,68 +947,68 @@ Circular dependencies break the dependency direction:
 
 1. Run `python scripts/detect_cycles.py` to find all cycles
 2. Apply suggested break strategies: extract interface, dependency injection, or event-based communication
-3. Common cycles: between `django_osoul` and `django_rseal`, or within domain modules
+3. Common cycles: between `django_osoul` and `crafts_ai`, or within domain modules
 
 ### 5. Test Failures After Migration
 
 #### TestCase import errors
 
-All tests should use `django_grep` infrastructure:
+All tests should use `django_osoul` infrastructure:
 
 ```python
 # Before
 from django.test import TestCase
 
 # After
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 ```
 
 #### Factory import errors
 
-Factories moved to `django_grep`:
+Factories moved to `django_osoul`:
 
 ```python
 # Before
 from apps.handlers.tests.factories import UserFactory
 
 # After
-from django_grep.tests.factories import UserFactory
+from django_osoul.tests.factories import UserFactory
 ```
 
 #### Assertion import errors
 
-Assertions moved to `django_grep`:
+Assertions moved to `django_osoul`:
 
 ```python
 # Before
 from apps.handlers.tests.assertions import assert_user_has_role
 
 # After
-from django_grep.tests.assertions import assert_user_has_role
+from django_osoul.tests.assertions import assert_user_has_role
 ```
 
 #### Hypothesis strategy errors
 
-Use `django_grep` Hypothesis helpers:
+Use `django_osoul` Hypothesis helpers:
 
 ```python
 # Before: Custom strategies
 from hypothesis import strategies as st
 
-# After: Use django_grep helpers
-from django_grep.tests.base import st_email, st_slug, st_uuid
+# After: Use django_osoul helpers
+from django_osoul.tests.base import st_email, st_slug, st_uuid
 ```
 
 #### Health check test failures
 
-Health checks unified in `django_grep`:
+Health checks unified in `django_osoul`:
 
 ```python
 # Before: Custom health check views
 path('health/', views.health_check)
 
-# After: Use django_grep health URLs
-path('health/', include('django_grep.health.urls'))
+# After: Use django_osoul health URLs
+path('health/', include('django_osoul.health.urls'))
 ```
 
 ### 6. Database Migration Issues
@@ -1096,11 +1096,11 @@ class CartService:
         pass
 
 # After: Thin subclass
-from django_rseal.pipelines.services.cart import CartServiceBase
+from crafts_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
-    """Delegates to django_rseal.pipelines.services.CartServiceBase."""
+    """Delegates to crafts_ai.pipelines.services.CartServiceBase."""
     cart_model = Cart
     # Only project-specific overrides here
 ```
@@ -1139,8 +1139,8 @@ import-linter --config .importlinter
 
 # Run all tests
 cd venv/libs/django-osoul && uv run pytest tests/ -v
-cd venv/libs/django-rseal && uv run pytest tests/ -v
-cd venv/libs/django-grep && uv run pytest tests/ -v
+cd venv/libs/crafts-ai && uv run pytest tests/ -v
+cd venv/libs/django-osoul && uv run pytest tests/ -v
 cd ctc-research.com && uv run pytest tests/ -v
 cd structa.cloud && uv run pytest tests/ -v
 ```
@@ -1187,8 +1187,8 @@ import-linter --config .importlinter
 
 # Run tests for all packages
 cd venv/libs/django-osoul && uv run pytest tests/ -v
-cd venv/libs/django-rseal && uv run pytest tests/ -v
-cd venv/libs/django-grep && uv run pytest tests/ -v
+cd venv/libs/crafts-ai && uv run pytest tests/ -v
+cd venv/libs/django-osoul && uv run pytest tests/ -v
 cd venv/libs/nawaai && uv run pytest tests/ -v
 
 # Run tests for projects
@@ -1235,11 +1235,11 @@ class CartService:
 **After:**
 ```python
 # apps/lms/services/cart.py
-from django_rseal.pipelines.services.cart import CartServiceBase
+from crafts_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
-    """Delegates to django_rseal.pipelines.services.CartServiceBase."""
+    """Delegates to crafts_ai.pipelines.services.CartServiceBase."""
     cart_model = Cart
 
     # Only project-specific overrides
@@ -1268,8 +1268,8 @@ class MyTest(TestCase):
 
 **After:**
 ```python
-from django_grep.tests.base import BaseTestCase
-from django_grep.tests.factories import UserFactory
+from django_osoul.tests.base import BaseTestCase
+from django_osoul.tests.factories import UserFactory
 
 class MyTest(BaseTestCase):
     def test_user_creation(self):
@@ -1296,7 +1296,7 @@ urlpatterns = [
 from django.urls import path, include
 
 urlpatterns = [
-    path('health/', include('django_grep.health.urls')),
+    path('health/', include('django_osoul.health.urls')),
 ]
 ```
 
@@ -1305,10 +1305,10 @@ urlpatterns = [
 ## Summary of Key Changes
 
 1. **App Renames**: `handlers` → `accounts`, `LMS` → `lms`/`alliance`, `pages` → `content`
-2. **Package Extraction**: Business logic moved to `django_osoul` (pure Django) and `django_rseal` (Wagtail + automation)
+2. **Package Extraction**: Business logic moved to `django_osoul` (pure Django) and `crafts_ai` (Wagtail + automation)
 3. **Thin Layer Pattern**: Projects now delegate to package base classes
-4. **Testing Unification**: All tests use `django_grep` infrastructure
-5. **Health Check Unification**: Health endpoints provided by `django_grep.health`
+4. **Testing Unification**: All tests use `django_osoul` infrastructure
+5. **Health Check Unification**: Health endpoints provided by `django_osoul.health`
 6. **Boundary Enforcement**: Strict import rules enforced by import-linter
 7. **Zero Duplication**: All shared logic in packages, no duplication across projects
 

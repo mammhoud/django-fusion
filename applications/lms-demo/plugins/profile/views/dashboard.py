@@ -5,7 +5,7 @@ from django.db.models.aggregates import Count
 from django.http import HttpRequest
 from django.utils import timezone
 from django_osoul.site import PageHandler
-from crafts_ai.rseal.models import (
+from crafts_ai.models import (
     PersonTag,
 )
 

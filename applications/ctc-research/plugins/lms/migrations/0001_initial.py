@@ -4,8 +4,8 @@ import datetime
 import django.core.validators
 import django.db.models.deletion
 import django_osoul.site._context_mixins
-import crafts_ai.rseal.models.cache
-import crafts_ai.rseal.models.default
+import crafts_ai.models.cache
+import crafts_ai.models.default
 import embed_video.fields
 import modelcluster.fields
 import modelsearch.index
@@ -131,7 +131,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Courses',
                 'ordering': ['-publication_date', '-created_at'],
             },
-            bases=(modelsearch.index.Indexed, crafts_ai.rseal.models.cache.ModelCacheMixin, models.Model),
+            bases=(modelsearch.index.Indexed, crafts_ai.models.cache.ModelCacheMixin, models.Model),
         ),
         migrations.CreateModel(
             name='CourseEnrollmentLead',
@@ -542,7 +542,7 @@ class Migration(migrations.Migration):
                 'verbose_name_plural': 'Classes',
                 'ordering': ['course', 'sequence', 'created_at'],
             },
-            bases=(models.Model, crafts_ai.rseal.models.default.TemplateRenderMixin),
+            bases=(models.Model, crafts_ai.models.default.TemplateRenderMixin),
         ),
         migrations.CreateModel(
             name='Specialization',

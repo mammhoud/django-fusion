@@ -19,7 +19,7 @@ Generate unique slug for a model instance.
 
 **Usage:**
 ```python
-from django_grep.utils import slugify_unique
+from django_osoul.utils import slugify_unique
 from myapp.models import Article
 
 slug = slugify_unique(Article, "My Article Title")
@@ -42,7 +42,7 @@ Truncate text to specified number of words.
 
 **Usage:**
 ```python
-from django_grep.utils import truncate_words
+from django_osoul.utils import truncate_words
 
 text = "This is a very long text that needs to be truncated"
 result = truncate_words(text, 5)
@@ -66,7 +66,7 @@ Validate email format using regex.
 
 **Usage:**
 ```python
-from django_grep.utils import validate_email_format
+from django_osoul.utils import validate_email_format
 
 is_valid = validate_email_format("user@example.com")
 # Returns: True
@@ -88,7 +88,7 @@ Validate email domain against whitelist.
 
 **Usage:**
 ```python
-from django_grep.utils import validate_email_domain
+from django_osoul.utils import validate_email_domain
 
 allowed = ["example.com", "test.com"]
 is_valid = validate_email_domain("user@example.com", allowed)
@@ -114,7 +114,7 @@ Format datetime as relative time (e.g., '2 hours ago').
 
 **Usage:**
 ```python
-from django_grep.utils import format_relative_time
+from django_osoul.utils import format_relative_time
 from django.utils import timezone
 from datetime import timedelta
 
@@ -144,7 +144,7 @@ Format seconds as human-readable duration.
 
 **Usage:**
 ```python
-from django_grep.utils import format_duration
+from django_osoul.utils import format_duration
 
 result = format_duration(3665)
 # Returns: "1h 1m 5s"
@@ -171,7 +171,7 @@ Return standardized success JSON response.
 
 **Usage:**
 ```python
-from django_grep.utils import success_response
+from django_osoul.utils import success_response
 
 return success_response(
     data={"id": 1, "name": "John"},
@@ -201,7 +201,7 @@ Return standardized error JSON response.
 
 **Usage:**
 ```python
-from django_grep.utils import error_response
+from django_osoul.utils import error_response
 
 return error_response(
     message="Validation failed",
@@ -231,7 +231,7 @@ return error_response(
 ### Article Slug Generation
 
 ```python
-from django_grep.utils import slugify_unique
+from django_osoul.utils import slugify_unique
 from myapp.models import Article
 
 def create_article(title, content):
@@ -247,7 +247,7 @@ def create_article(title, content):
 ### Email Validation
 
 ```python
-from django_grep.utils import validate_email_format, validate_email_domain
+from django_osoul.utils import validate_email_format, validate_email_domain
 
 def validate_user_email(email):
     # Check format
@@ -265,7 +265,7 @@ def validate_user_email(email):
 ### API Response Handling
 
 ```python
-from django_grep.utils import success_response, error_response
+from django_osoul.utils import success_response, error_response
 from django.views import View
 
 class UserAPIView(View):

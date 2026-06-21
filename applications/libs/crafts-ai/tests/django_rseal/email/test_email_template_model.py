@@ -24,7 +24,7 @@ import django
 
 django.setup()
 
-from django_rseal.email.models.models import EmailTemplate
+from crafts_ai.email.models.models import EmailTemplate
 
 
 @pytest.fixture

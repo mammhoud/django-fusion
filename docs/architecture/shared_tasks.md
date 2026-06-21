@@ -21,8 +21,8 @@ The root `tasks/` package is the canonical place for shared background jobs:
 - `tasks.email` contains templated, bulk, and raw email tasks.
 - `tasks.content` contains content/account utility tasks, including user counts
   and welcome email delivery.
-- `tasks.django_rseal` records the django-rseal task modules the shared worker
-  should import/autodiscover when django-rseal is installed in production.
+- `tasks.crafts_ai` records the crafts-ai task modules the shared worker
+  should import/autodiscover when crafts-ai is installed in production.
 
 Website-local task modules now act as compatibility imports.  Existing imports
 such as `plugins.accounts.services.email.tasks.send_email_task` still work, but
@@ -75,9 +75,9 @@ back across the known service import paths for the two site layouts.  Raw email
 sending uses Django's `EmailMultiAlternatives` after the selected site's Django
 settings are initialized.
 
-## django-rseal tasks
+## crafts-ai tasks
 
-`django-rseal` is an optional production dependency.  The shared worker keeps
-its imports deferred so local environments without django-rseal still boot.  The
-expected django-rseal task modules are listed in `tasks/django_rseal.py` and can
+`crafts-ai` is an optional production dependency.  The shared worker keeps
+its imports deferred so local environments without crafts-ai still boot.  The
+expected crafts-ai task modules are listed in `tasks/crafts_ai.py` and can
 be added to as upstream exposes more task modules.

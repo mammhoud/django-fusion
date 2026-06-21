@@ -6,9 +6,9 @@ Scope: this file applies to `applications/libs/crafts-ai/`.
   project website modules from this package.
 - Do not wrap imports in `try`/`except`; use `importlib.util.find_spec` and
   `importlib.import_module` for optional dependencies.
-- Put django-rseal migration metadata under `crafts_ai.rseal` only when it is
+- Put crafts-ai migration metadata under `crafts_ai` only when it is
   static or framework agnostic.
 - Leave Django models, Wagtail blocks, middleware, snippets, and queue dispatch
-  in `django-rseal` until they have explicit non-Django adapters.
+  in `crafts-ai` until they have explicit non-Django adapters.
 - Add tests for CLI output and migration classification whenever public metadata
   changes.

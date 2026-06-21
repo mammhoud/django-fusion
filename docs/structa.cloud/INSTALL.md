@@ -84,22 +84,22 @@ STRIPE_SECRET_KEY=
 
 ---
 
-## 3. Set Up `django-grep` (Source Clone)
+## 3. Set Up `django-osoul` (Source Clone)
 
-Alliance uses `django-grep` installed from a local source clone as configured in `pyproject.toml`:
+Alliance uses `django-osoul` installed from a local source clone as configured in `pyproject.toml`:
 
 ```toml
 [tool.uv.sources]
-django-grep = { path = "/libs/django-grep", editable = true }
+django-osoul = { path = "/libs/django-osoul", editable = true }
 ```
 
-Clone `django-grep` into the expected path:
+Clone `django-osoul` into the expected path:
 
 ```bash
 # On your host machine (mounted into containers)
 sudo mkdir -p /libs
 cd /libs
-git clone https://github.com/<org>/django-grep.git
+git clone https://github.com/<org>/django-osoul.git
 ```
 
 > If you prefer a different path, update the `path` in `pyproject.toml` and the matching Docker volume mount in `compose/`.
@@ -253,8 +253,8 @@ docker compose down --rmi all
 
 ## Troubleshooting
 
-### `django-grep` not found
-Ensure `/libs/django-grep` exists and is accessible inside the container via the volume mount. Check `compose/` service definitions for the bind mount declaration.
+### `django-osoul` not found
+Ensure `/libs/django-osoul` exists and is accessible inside the container via the volume mount. Check `compose/` service definitions for the bind mount declaration.
 
 ### Database connection refused
 Verify `DATABASE_URL` matches the `db` service credentials in `.env`. Services sometimes need a few seconds to be ready; retry after `docker compose up -d`.

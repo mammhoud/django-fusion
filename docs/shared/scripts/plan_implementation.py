@@ -91,7 +91,7 @@ class ImplementationPlanner:
         "2.13": 6.0,    # Extract foundation models
         "2.14": 4.0,    # Boundary check
 
-        # Phase 3: django_rseal extractions
+        # Phase 3: crafts_ai extractions
         "3.1": 8.0,     # Extract Wagtail handlers
         "3.2": 8.0,     # Extract CartServiceBase
         "3.3": 6.0,     # Extract PersonServiceBase
@@ -110,7 +110,7 @@ class ImplementationPlanner:
         "3.16": 4.0,    # Extract orchestrator
         "3.17": 4.0,    # Boundary check
 
-        # Phase 4: django_grep
+        # Phase 4: django_osoul
         "4.1": 4.0,     # Create BaseTestCase
         "4.2": 6.0,     # Create factories
         "4.3": 4.0,     # Create fixtures
@@ -187,8 +187,8 @@ class ImplementationPlanner:
         "14.1": 6.0,    # Create ARCHITECTURE.md
         "14.2": 4.0,    # Create MIGRATION_GUIDE.md
         "14.3": 4.0,    # Write django_osoul README
-        "14.4": 4.0,    # Write django_rseal README
-        "14.5": 4.0,    # Write django_grep README
+        "14.4": 4.0,    # Write crafts_ai README
+        "14.5": 4.0,    # Write django_osoul README
         "14.6": 3.0,    # Write nawaai README
         "14.7": 4.0,    # Write ctc-research README
         "14.8": 4.0,    # Write structa.cloud README
@@ -363,8 +363,8 @@ class ImplementationPlanner:
     PHASE_DESCRIPTIONS = {
         1: "Analysis and Planning",
         2: "django_osoul — Extract Pure Django/Python Foundation",
-        3: "django_rseal — Extract Wagtail + Automation Logic",
-        4: "django_grep — Extract Testing Infrastructure and Health Checks",
+        3: "crafts_ai — Extract Wagtail + Automation Logic",
+        4: "django_osoul — Extract Testing Infrastructure and Health Checks",
         5: "nawaai — Verify Pure Python Boundary",
         6: "Domain Restructuring — App Renames and Module Reorganization",
         7: "Project Simplification — Thin Layer Pattern",
@@ -500,9 +500,9 @@ class ImplementationPlanner:
             "  ↓",
             "Phase 2: django_osoul (Pure Django Foundation)",
             "  ↓",
-            "Phase 3: django_rseal (Wagtail + Automation)",
+            "Phase 3: crafts_ai (Wagtail + Automation)",
             "  ↓",
-            "Phase 4: django_grep (Testing Infrastructure)",
+            "Phase 4: django_osoul (Testing Infrastructure)",
             "  ↓",
             "Phase 5: nawaai (Pure Python Boundary)",
             "  ↓",

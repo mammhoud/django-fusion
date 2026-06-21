@@ -93,7 +93,7 @@ def get_logging_config(
     Args:
         log_dir:           Directory where log files will be written.
                            Created automatically if it does not exist.
-        log_level:         Log level for django_rseal loggers (default INFO).
+        log_level:         Log level for crafts_ai loggers (default INFO).
         django_log_level:  Log level for Django's own loggers (default WARNING).
 
     Returns:

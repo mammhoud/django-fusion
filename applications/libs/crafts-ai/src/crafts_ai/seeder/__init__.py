@@ -4,7 +4,7 @@ craftsai.seeder
 
 Faker-based data generation utilities — **no Django required**.
 
-For seeding Django models use ``django_rseal.seeder`` which wraps these
+For seeding Django models use ``crafts_ai.seeder`` which wraps these
 utilities with Django ORM support.
 
 Classes

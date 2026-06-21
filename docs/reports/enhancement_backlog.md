@@ -6,7 +6,7 @@ The `.plans/` directory was retired after consolidating its active requirements 
 
 | Priority | Enhancement | Source plan context | Acceptance criteria |
 |---|---|---|---|
-| High | Confirm `django-grep`, `django-osoul`, and `django-rseal` imports in every active environment. | Generic branch execution plan was blocked by missing `django_grep` during URL import checks. | `uv sync` completes, `python -c "import django_grep, django_osoul, django_rseal"` succeeds, and both site URL modules import without errors. |
+| High | Confirm `django-osoul`, `django-osoul`, and `crafts-ai` imports in every active environment. | Generic branch execution plan was blocked by missing `django_osoul` during URL import checks. | `uv sync` completes, `python -c "import django_osoul, django_osoul, crafts_ai"` succeeds, and both site URL modules import without errors. |
 | High | Run targeted site test suites after dependencies are available. | Alliance targeted pytest was blocked by missing/unavailable pytest dependencies in the active environment. | `uv run pytest tests/websites tests/unit` completes or has documented, reproducible failures. |
 | High | Add CI smoke checks for Docker build and compose configuration. | Docker deployment plans required stable deployment verification. | CI runs `docker compose ... config`, builds `compose/django/Dockerfile`, and fails on missing workspace paths. |
 | Medium | Integrate notification/SSE JavaScript modules into the real asset tree. | JS asset plan kept prototype modules in `.plans/.js.plans`. | Notification modules live under the tracked frontend source tree, are included in webpack entries, and `npm run build` emits bundles. |

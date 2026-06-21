@@ -51,10 +51,10 @@ class ThinLayerReport:
 PACKAGE_BASES = {
     # django_osoul
     "django_osoul",
-    # django_rseal
-    "django_rseal",
-    # django_grep
-    "django_grep",
+    # crafts_ai
+    "crafts_ai",
+    # django_osoul
+    "django_osoul",
     # nawaai
     "nawaai",
 }

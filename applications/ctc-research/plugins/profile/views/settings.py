@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_osoul.site import NotificationMixin, PageHandler
-from crafts_ai.rseal.models import Person
+from crafts_ai.models import Person
 
 from plugins.accounts.management.services import PersonService
 
@@ -20,12 +20,12 @@ from ..forms import (
 )
 
 
-# Lazy loader for Person model (deferred to avoid crafts_ai.rseal import conflicts)
+# Lazy loader for Person model (deferred to avoid crafts_ai import conflicts)
 _Person_cache = None
 def _get_person_model():
     global _Person_cache
     if _Person_cache is None:
-        from crafts_ai.rseal.models import Person
+        from crafts_ai.models import Person
         _Person_cache = Person
     return _Person_cache
 
@@ -36,7 +36,7 @@ _BASES_CACHE: dict = {}
 def _settings_bases():
     """Return (PageHandler, NotificationMixin, ProfileContextMixin, ProfileOperationsMixin) lazily."""
     if not _BASES_CACHE:
-        from crafts_ai.rseal.site.mixins import ProfileContextMixin, ProfileOperationsMixin
+        from crafts_ai.site.mixins import ProfileContextMixin, ProfileOperationsMixin
         _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin
         _BASES_CACHE["ProfileOperationsMixin"] = ProfileOperationsMixin
     return (

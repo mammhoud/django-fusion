@@ -6,7 +6,7 @@
 
 ## Overview
 
-This guide covers verification of all assets (CSS, JS, images, media) loaded through Django URLs. Uses django-grep style testing to ensure:
+This guide covers verification of all assets (CSS, JS, images, media) loaded through Django URLs. Uses django-osoul style testing to ensure:
 
 - ✅ Static files properly collected
 - ✅ Asset bundles built correctly
@@ -48,7 +48,7 @@ CTC Research (Port 5070)
 ✓ /media/ - HTTP 404 (OK)
 ✓ /assets/health/ - HTTP 200
 
-5️⃣  Template Asset References (django-grep)
+5️⃣  Template Asset References (django-osoul)
 ✓ Static Tags - 150 references found
 ✓ Media URLs - 45 references found
 ✓ CSS Links - 85 references found
@@ -130,7 +130,7 @@ for port in 5070 5071 5072; do
 done
 ```
 
-### 5. Template Asset References (django-grep)
+### 5. Template Asset References (django-osoul)
 **Tests**: Template file scanning for asset tags  
 **Types Scanned**:
 - `{% static %}` tags
@@ -139,7 +139,7 @@ done
 - `<script>` tags
 
 ```bash
-# Manual django-grep style verification
+# Manual django-osoul style verification
 for site in ctc-research lms-demo VResume; do
   echo "$site:"
   grep -r "{% static" $site/assets/templates | wc -l

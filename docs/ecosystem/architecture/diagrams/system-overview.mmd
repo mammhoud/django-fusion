@@ -7,8 +7,8 @@ graph TB
         STRUCTA[structa.cloud]
     end
 
-    subgraph "django-rseal"
-        RSEAL[django-rseal<br/>Automation Layer]
+    subgraph "crafts-ai"
+        RSEAL[crafts-ai<br/>Automation Layer]
         EMAIL[Email Services]
         PIPELINES[Pipelines]
         CHAT[Chat]
@@ -21,8 +21,8 @@ graph TB
         SERVICES[Services]
     end
 
-    subgraph "django-grep"
-        GREP[django-grep<br/>Test Infrastructure]
+    subgraph "django-osoul"
+        GREP[django-osoul<br/>Test Infrastructure]
         HEALTH[Health Checks]
         TESTS[Testing Utils]
     end
@@ -59,8 +59,8 @@ graph TB
 
 | Package | Depends On | Used By |
 |---------|-----------|---------|
-| django-grep | Django | Both websites, django-rseal |
-| django-osoul | Django, Wagtail | django-rseal, Both websites |
-| django-rseal | django-osoul, django-grep | Both websites |
-| ctc-research.com | django-rseal, django-osoul, django-grep | - |
-| structa.cloud | django-rseal, django-osoul, django-grep | - |
+| django-osoul | Django | Both websites, crafts-ai |
+| django-osoul | Django, Wagtail | crafts-ai, Both websites |
+| crafts-ai | django-osoul, django-osoul | Both websites |
+| ctc-research.com | crafts-ai, django-osoul, django-osoul | - |
+| structa.cloud | crafts-ai, django-osoul, django-osoul | - |

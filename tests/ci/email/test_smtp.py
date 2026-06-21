@@ -15,7 +15,7 @@ from __future__ import annotations
 import pytest
 from django.conf import settings as django_settings
 from django.core.mail import send_mail
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 from ..base.config import Credentials, Domain
 

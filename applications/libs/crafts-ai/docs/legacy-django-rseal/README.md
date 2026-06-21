@@ -1,7 +1,7 @@
-# django-rseal Documentation
+# crafts-ai Documentation
 
 ## Overview
-django-rseal is the Wagtail automation layer that builds on top of django-osoul. It provides pipelines, services, workflows, email handling, and Wagtail-specific components.
+crafts-ai is the Wagtail automation layer that builds on top of django-osoul. It provides pipelines, services, workflows, email handling, and Wagtail-specific components.
 
 ## Key Principles
 - **Depends on django-osoul** - Uses base classes from django-osoul
@@ -46,7 +46,7 @@ Wagtail hooks
 ## Installation
 
 ```bash
-cd venv/libs/django-rseal
+cd venv/libs/crafts-ai
 uv sync
 ```
 
@@ -56,17 +56,17 @@ uv sync
 # In your Django settings
 INSTALLED_APPS = [
     ...
-    'django_rseal',
+    'crafts_ai',
     ...
 ]
 ```
 
 ## Thin Layer Pattern
-Projects should use thin subclasses of django-rseal services:
+Projects should use thin subclasses of crafts-ai services:
 
 ```python
 # In your project
-from django_rseal.services import CartServiceBase
+from crafts_ai.services import CartServiceBase
 
 class CartService(CartServiceBase):
     # Project-specific customizations only
@@ -74,8 +74,8 @@ class CartService(CartServiceBase):
 ```
 
 ## Documentation Links
-- [django-rseal README](../../../venv/libs/django-rseal/README.md)
+- [crafts-ai README](../../../venv/libs/crafts-ai/README.md)
 
 ## Related Packages
-- [django-osoul](../django-osoul/) - Base layer (django-rseal depends on this)
-- [django-grep](../django-grep/) - Testing infrastructure
+- [django-osoul](../django-osoul/) - Base layer (crafts-ai depends on this)
+- [django-osoul](../django-osoul/) - Testing infrastructure

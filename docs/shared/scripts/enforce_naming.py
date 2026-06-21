@@ -19,8 +19,8 @@ SCAN_DIRS = [
     "ctc-research.com/apps/",
     "structa.cloud/apps/",
     "venv/libs/django-osoul/src/",
-    "venv/libs/django-rseal/src/",
-    "venv/libs/django-grep/src/",
+    "venv/libs/crafts-ai/src/",
+    "venv/libs/django-osoul/src/",
     "applications/libs/crafts-ai/src/",
 ]
 

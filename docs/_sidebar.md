@@ -52,10 +52,10 @@
 * **Packages**
   * [django-osoul](packages/django-osoul/README.md)
     * [Usage](packages/django-osoul/usage.md)
-  * [django-rseal](packages/django-rseal/README.md)
-    * [Usage](packages/django-rseal/usage.md)
-  * [django-grep](packages/django-grep/README.md)
-    * [Usage](packages/django-grep/usage.md)
+  * [crafts-ai](packages/crafts-ai/README.md)
+    * [Usage](packages/crafts-ai/usage.md)
+  * [django-osoul](packages/django-osoul/README.md)
+    * [Usage](packages/django-osoul/usage.md)
   * [nawaai](packages/nawaai/)
 
 * **Ecosystem**

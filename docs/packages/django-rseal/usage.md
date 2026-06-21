@@ -1,17 +1,17 @@
-# django-rseal Usage Guide
+# crafts-ai Usage Guide
 
-`django-rseal` is the email and notification service library for the structa.cloud monorepo. It provides templated email sending, bulk delivery, and newsletter subscription management.
+`crafts-ai` is the email and notification service library for the structa.cloud monorepo. It provides templated email sending, bulk delivery, and newsletter subscription management.
 
 ## Installation
 
 ```bash
-uv pip install -e applications/libs/django-rseal/
+uv pip install -e applications/libs/crafts-ai/
 ```
 
 ## Email Tasks
 
 ```python
-from django_rseal.tasks import send_email_task
+from crafts_ai.tasks import send_email_task
 
 send_email_task.delay(
     to="user@example.com",
@@ -25,7 +25,7 @@ send_email_task.delay(
 ## Newsletter Subscription
 
 ```python
-from django_rseal.newsletter import subscribe, unsubscribe
+from crafts_ai.newsletter import subscribe, unsubscribe
 
 subscribe(email="user@example.com", list_id="ctc-research-newsletter")
 unsubscribe(email="user@example.com", list_id="ctc-research-newsletter")
@@ -47,8 +47,8 @@ All email templates receive these base variables automatically:
 The shared tasks worker handles rseal task modules. It is included in `compose/docker-compose.tasks.yml`:
 
 ```yaml
-# Tasks worker autodiscovers django_rseal task modules
-# See applications/tasks/django_rseal.py for registered modules
+# Tasks worker autodiscovers crafts_ai task modules
+# See applications/tasks/crafts_ai.py for registered modules
 ```
 
 ## Notes

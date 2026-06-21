@@ -11,7 +11,7 @@ This guide explains how to integrate Django GREP into your Django project.
 ## Installation
 
 ```bash
-pip install django-grep
+pip install django-osoul
 ```
 
 ## Configuration
@@ -35,8 +35,8 @@ INSTALLED_APPS = [
     "wagtail.locales",
 
     # Django GREP Packages
-    "django_grep.comp",
-    "django_grep.pipelines",
+    "django_osoul.comp",
+    "django_osoul.pipelines",
     # ...
 ]
 
@@ -54,7 +54,7 @@ To use the components in a Wagtail Page:
 ```python
 from wagtail.models import Page
 from wagtail.fields import StreamField
-from django_grep.comp.blocks import streamBlocks
+from django_osoul.comp.blocks import streamBlocks
 
 class MyPage(Page):
     content = StreamField(streamBlocks, use_json_field=True)
@@ -69,7 +69,7 @@ class MyPage(Page):
 Inherit from the enhanced base models:
 
 ```python
-from django_grep.pipelines.models import DefaultBase
+from django_osoul.pipelines.models import DefaultBase
 
 class Article(DefaultBase):
     title = models.CharField(max_length=200)

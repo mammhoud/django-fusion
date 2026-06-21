@@ -159,8 +159,8 @@ class TestRunner:
 
         packages = [
             ("django_osoul", "venv/libs/django-osoul"),
-            ("django_rseal", "venv/libs/django-rseal"),
-            ("django_grep", "venv/libs/django-grep"),
+            ("crafts_ai", "venv/libs/crafts-ai"),
+            ("django_osoul", "venv/libs/django-osoul"),
             ("crafts_ai", "applications/libs/crafts-ai")
         ]
 

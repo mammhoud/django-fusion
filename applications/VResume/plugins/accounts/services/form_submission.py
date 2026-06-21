@@ -1,8 +1,8 @@
 """
 Form Submission Service for handling contact form submissions.
 
-Delegates to crafts_ai.rseal.pipelines.services.FormSubmissionService
-Canonical import: from crafts_ai.rseal.pipelines.services import FormSubmissionService
+Delegates to crafts_ai.pipelines.services.FormSubmissionService
+Canonical import: from crafts_ai.pipelines.services import FormSubmissionService
 """
 import logging
 from typing import Any, Optional

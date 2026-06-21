@@ -1,6 +1,6 @@
 # Django-grep Documentation
 
-Documentation for the django-grep library — a Django testing framework and utilities collection.
+Documentation for the django-osoul library — a Django testing framework and utilities collection.
 
 ## Contents
 
@@ -10,9 +10,9 @@ Documentation for the django-grep library — a Django testing framework and uti
 - [examples.md](examples.md) - Code examples
 - [utils.md](utils.md) - Utility functions
 
-## What is django-grep?
+## What is django-osoul?
 
-django-grep is a Django testing framework providing:
+django-osoul is a Django testing framework providing:
 - Property-based testing utilities
 - Test fixtures and factories
 - Assertion helpers for Django models and views
@@ -21,9 +21,9 @@ django-grep is a Django testing framework providing:
 ## Installation
 
 ```bash
-pip install git+https://github.com/mammhoud/django-grep.git@main
+pip install git+https://github.com/mammhoud/django-osoul.git@main
 # or with uv
-uv add "django-grep @ git+https://github.com/mammhoud/django-grep.git@main"
+uv add "django-osoul @ git+https://github.com/mammhoud/django-osoul.git@main"
 ```
 
 ## Quick Start

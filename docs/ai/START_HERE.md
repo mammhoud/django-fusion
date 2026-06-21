@@ -128,9 +128,9 @@ pages. Use this workflow before replacing markup.
 4. Verify that JavaScript selectors, HTMX attributes, analytics hooks, and tests
    still target the expected elements.
 
-## 4. django-grep MCP setup and configuration
+## 4. django-osoul MCP setup and configuration
 
-`django-grep` is documented under `docs/packages/django-grep/`. In this
+`django-osoul` is documented under `docs/packages/django-osoul/`. In this
 repository it is treated as local reusable infrastructure and should stay out of
 production application logic unless the existing docs explicitly call for it.
 
@@ -141,16 +141,16 @@ Current Kilo MCP configuration is in `.kilo/config.json`:
 - `crafts-ai` MCP server runs `uvicorn crafts_ai.mcp_server:app --host
   127.0.0.1 --port 8002` with `PYTHONPATH=applications/libs/crafts-ai/src`.
 
-There is no separate `django-grep` MCP server entry in `.kilo/config.json` at the
+There is no separate `django-osoul` MCP server entry in `.kilo/config.json` at the
 moment. If one is added later, document it beside the existing MCP entries,
 include its command, environment, port, and whether it is safe for local-only or
 shared deployments.
 
 Useful references:
 
-- `docs/packages/django-grep/README.md`
-- `docs/packages/django-grep/usage.md`
-- `docs/packages/django-grep/django-grep-overview.md`
+- `docs/packages/django-osoul/README.md`
+- `docs/packages/django-osoul/usage.md`
+- `docs/packages/django-osoul/django-osoul-overview.md`
 - `docs/guides/LIBS_INTEGRATION.md`
 
 ## 5. `crafts-ai` package usage

@@ -83,8 +83,8 @@ The AI tasks use these files as context via `@codebase` and `@folder docs`:
 applications/
 ├── configs/settings/     ← YAML settings for all sites
 ├── libs/django-osoul/    ← Language & file utilities
-├── libs/django-rseal/    ← Email & notification tasks
-├── libs/django-grep/     ← Search indexing
+├── libs/crafts-ai/    ← Email & notification tasks
+├── libs/django-osoul/     ← Search indexing
 └── tasks/                ← Shared Celery tasks
 
 docs/

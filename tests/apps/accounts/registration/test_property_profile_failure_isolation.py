@@ -64,7 +64,7 @@ def _ensure_mock(name: str) -> types.ModuleType:
 
 
 # django_osoul.comp.site — needs a PageHandler class
-_ensure_mock("django_grep")
+_ensure_mock("django_osoul")
 _ensure_mock("django_osoul.comp")
 _site_mod = _ensure_mock("django_osoul.comp.site")
 if not hasattr(_site_mod, "PageHandler"):
@@ -213,7 +213,7 @@ class TestProfileCreationFailureIsolation(unittest.TestCase):
             objects = _RaisingManager()
 
         # Patch the Person import inside _ensure_profile_exists
-        _users_mod = _ensure_mock("django_rseal.pipelines.models.users.users")
+        _users_mod = _ensure_mock("crafts_ai.pipelines.models.users.users")
         original_person = getattr(_users_mod, "Person", None)
         _users_mod.Person = _RaisingPerson
 
@@ -285,7 +285,7 @@ class TestProfileCreationFailureIsolation(unittest.TestCase):
         class _RaisingPerson:
             objects = _RaisingManager()
 
-        _users_mod = _ensure_mock("django_rseal.pipelines.models.users.users")
+        _users_mod = _ensure_mock("crafts_ai.pipelines.models.users.users")
         original_person = getattr(_users_mod, "Person", None)
         _users_mod.Person = _RaisingPerson
 

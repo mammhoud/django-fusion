@@ -16,7 +16,7 @@ Reduce duplicated website-local code without breaking imports that still point t
 ## Safe removal sequence
 
 1. Keep `www.core` installed only for management commands such as `setup_wagtail_home`.
-2. Do not install `www.apps`, `plugins.accounts`, `plugins.profile`, `plugins.products`, `plugins.lms`, or `plugins.blog` until package imports are updated away from removed `django_osoul.core.*` and `django_rseal.http.*` paths.
+2. Do not install `www.apps`, `plugins.accounts`, `plugins.profile`, `plugins.products`, `plugins.lms`, or `plugins.blog` until package imports are updated away from removed `django_osoul.core.*` and `crafts_ai.http.*` paths.
 3. Move actively used URL/view code to `plugins.*` or shared packages first.
 4. Add import-compatibility tests before removing any legacy module.
 5. Delete duplicate modules in small batches and run:
@@ -29,5 +29,5 @@ Reduce duplicated website-local code without breaking imports that still point t
 - Replace `django_osoul.core.models` with current `django_osoul.models` exports where available.
 - Replace `django_osoul.core.managers` with current `django_osoul.managers` exports where available.
 - Replace `django_osoul.core.services` with current `django_osoul.services` exports where available.
-- Replace `django_rseal.http.*` imports with the current `django_rseal.workflows.*`, `django_rseal.services.*`, or package-documented paths.
-- Keep `django_grep` limited to tests and health/debug URLs.
+- Replace `crafts_ai.http.*` imports with the current `crafts_ai.workflows.*`, `crafts_ai.services.*`, or package-documented paths.
+- Keep `django_osoul` limited to tests and health/debug URLs.

@@ -3,7 +3,7 @@ import pytest
 
 
 def test_rseal_renderer_import():
-    from django_rseal.renderer import TemplateRenderer
+    from crafts_ai.renderer import TemplateRenderer
     renderer = TemplateRenderer()
     assert renderer is not None
     assert hasattr(renderer, "render")
@@ -14,7 +14,7 @@ def test_rseal_renderer_import():
 
 
 def test_rseal_newsletter_import():
-    from django_rseal.communication.newsletter import EmailDesigner, NewsletterEnhancer
+    from crafts_ai.communication.newsletter import EmailDesigner, NewsletterEnhancer
     enhancer = NewsletterEnhancer()
     designer = EmailDesigner()
     assert enhancer is not None
@@ -27,12 +27,12 @@ def test_rseal_seeder_import():
 
 
 def test_rseal_email_models_completeness():
-    from django_rseal.communication.email.models import EmailLog, EmailTemplate, UserGroup, UserRole
+    from crafts_ai.communication.email.models import EmailLog, EmailTemplate, UserGroup, UserRole
     assert all([EmailLog, EmailTemplate, UserRole, UserGroup])
 
 
 def test_rseal_ai_import():
-    from django_rseal.ai.integrations import (
+    from crafts_ai.ai.integrations import (
         AIIntegrationRegistry,
         ClaudeIntegration,
         OpenAIIntegration,

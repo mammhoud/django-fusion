@@ -73,4 +73,4 @@ These files are still actively used by the handlers app:
 
 ## Newsletter Snippets (Keep in handlers)
 
-The newsletter snippets in `snippets/newsletter/` are Wagtail admin interfaces for managing newsletters. They are different from `django-rseal/newsletter/` which handles public subscription flows. Keep these in handlers.
+The newsletter snippets in `snippets/newsletter/` are Wagtail admin interfaces for managing newsletters. They are different from `crafts-ai/newsletter/` which handles public subscription flows. Keep these in handlers.

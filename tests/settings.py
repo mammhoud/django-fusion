@@ -21,7 +21,7 @@ _workspace_root = _websites_dir.parent
 _ctc_path = _websites_dir / "ctc-research"
 _structa_path = _websites_dir / "lms-demo"
 _vresume_path = _websites_dir / "VResume"
-_rseal_tests = _workspace_root / "libs" / "django-rseal" / "tests"
+_rseal_tests = _workspace_root / "libs" / "crafts-ai" / "tests"
 
 # Support both monorepo layout (websites/<site>) and single-site layout (repo root).
 _repo_root = _websites_dir
@@ -253,11 +253,11 @@ for _mod_path in [
     "apps.pages",
     "www.apps.accounts.models.manage.service",
     # Missing sub-modules referenced by accounts models
-    "django_rseal.pipelines.models.tags",
-    "django_rseal.pipelines.models.users.role",
+    "crafts_ai.pipelines.models.tags",
+    "crafts_ai.pipelines.models.users.role",
     # Missing generic.search module
     "django_osoul.site.generic.search",
-    # www.core.content.models — stub to avoid pulling in django_rseal models
+    # www.core.content.models — stub to avoid pulling in crafts_ai models
     "www.core.content",
     "www.core.content.models",
     "www.core.content.models.pages",
@@ -344,7 +344,7 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    # Remove django_rseal to avoid table conflicts with email_log
+    # Remove crafts_ai to avoid table conflicts with email_log
     # Blog app only — accounts/rseal have complex deps needing full project setup
     "apps.blog",
     # Skip apps.accounts to avoid admin autodiscover issues with www.apps.accounts.models.tags
@@ -423,7 +423,7 @@ PROFILE_MODEL = "auth.User"
 # Disable migrations for test apps to speed up test DB creation
 MIGRATION_MODULES = {
     # Main apps
-    "django_rseal": None,
+    "crafts_ai": None,
     "django_osoul": None,
     "pipelines": None,
     "accounts": None,

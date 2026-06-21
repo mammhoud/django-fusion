@@ -9,7 +9,7 @@ Development URL helpers for Django projects.
 Usage in urls.py::
 
     if settings.DEBUG:
-        from django_grep.contrib.debug_tools.dev_urls import configure_dev_urls
+        from django_osoul.contrib.debug_tools.dev_urls import configure_dev_urls
         urlpatterns = configure_dev_urls(urlpatterns, settings)
 """
 
