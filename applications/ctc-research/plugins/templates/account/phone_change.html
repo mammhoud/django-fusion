@@ -1,5 +1,7 @@
+{% extends "base_auth.html" %}
 {% load i18n static %}
 
+{% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form">
     <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Phone Numbers" %}</h2></header>
@@ -25,3 +27,4 @@
     </div>
   </section>
 </section>
+{% endblock auth_content %}

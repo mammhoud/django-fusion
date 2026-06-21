@@ -1,5 +1,7 @@
+{% extends "base_auth.html" %}
 {% load i18n static %}
 
+{% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form text-center">
     <div class="auth__logo mb-4"><a href="/"><img src="{% static 'images/logo.png' %}" style="max-height:60px" alt="Logo"></a></div>
@@ -16,3 +18,4 @@
     {% endif %}
   </section>
 </section>
+{% endblock auth_content %}

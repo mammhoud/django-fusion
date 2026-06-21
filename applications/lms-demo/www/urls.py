@@ -14,6 +14,7 @@ from django.views.static import serve
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_osoul.site.utils import get_root_redirect_pattern
+from www.core.routes import site
 
 # Optional imports with safe fallbacks
 try:
@@ -64,6 +65,9 @@ except Exception:
     plugin_patterns = []
 
 urlpatterns += i18n_patterns(*plugin_patterns, prefix_default_language=False)
+
+# Routable component site (documented under docs/routable-site-urls.md)
+urlpatterns += [path("osoul/", include(site.urls))]
 
 # Wagtail routing when available
 if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:

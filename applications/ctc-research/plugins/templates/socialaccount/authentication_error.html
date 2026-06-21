@@ -1,5 +1,7 @@
+{% extends "base_auth.html" %}
 {% load i18n static %}
 
+{% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form text-center">
     <div class="auth__logo mb-4"><img src="{% static 'images/logo.png' %}" style="max-height:60px"></div>
@@ -8,3 +10,4 @@
     <a href="{% url 'account_login' %}" class="btn btn-primary" hx-get="{% url 'account_login' %}" hx-target=".fragment--form" hx-swap="innerHTML">{% trans "Back to Login" %}</a>
   </section>
 </section>
+{% endblock auth_content %}

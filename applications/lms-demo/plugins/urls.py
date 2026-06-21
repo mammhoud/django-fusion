@@ -3,7 +3,33 @@ from allauth.account.views import LoginView, LogoutView, PasswordResetView, Sign
 from django.http import JsonResponse
 from django.urls import include, path
 from django.views import View
-from django.views.generic import TemplateView
+from django.views.generic import DetailView, ListView, TemplateView
+
+
+class EventListView(ListView):
+    """Public event listing backed by the shared Event snippet model."""
+
+    template_name = "events/events.html"
+    context_object_name = "events"
+
+    def get_queryset(self):
+        from plugins.accounts.models import Event
+
+        return Event.objects.filter(is_active=True, is_visible=True).order_by(
+            "start_date", "title"
+        )
+
+
+class EventDetailView(DetailView):
+    """Public event detail backed by the shared Event snippet model."""
+
+    template_name = "events/detail.html"
+    context_object_name = "event"
+
+    def get_queryset(self):
+        from plugins.accounts.models import Event
+
+        return Event.objects.filter(is_active=True, is_visible=True)
 
 
 class NewsletterSubscribeView(View):
@@ -20,6 +46,8 @@ class NewsletterSubscribeView(View):
 app_name = "plugins"
 
 urlpatterns = [
+    path("events/", EventListView.as_view(), name="events"),
+    path("events/<int:pk>/", EventDetailView.as_view(), name="event-detail"),
     path("accounts/", include("allauth.urls")),
     # Plugin namespaces — accounts is already provided by plugins.accounts.urls
     # included at the accounts/ prefix; do NOT add namespace="accounts" here
