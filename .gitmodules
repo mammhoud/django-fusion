@@ -10,3 +10,7 @@
 	path = applications/libs/django-rseal
 	url = https://github.com/mammhoud/django-rseal
 	branch = generic
+[submodule "libs/https://github.com/mammhoud/crafts-ai/"]
+	path = applications/libs/crafts-ai
+	url = https://github.com/mammhoud/crafts-ai
+	branch = generic
