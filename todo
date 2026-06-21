@@ -1,178 +1,118 @@
-Project Todo List – Master
-Includes all tasks from the original list, the detailed bullet points, and the new directives (merged packages, Docker env consolidation, error fixing, testing, agents, docs, and component enhancements).
+Here is the **definitive English action plan and technical report** focusing exclusively on **MCP tasks, customizer tools, and the deep enhancements for `django-osoul` and `crafts-ai`**, including the explicit strategy for **replacing all old package names**.
 
-0. Global Pre‑Requisites
-Confirmed applications/libs/ref was removed after package merge
-Merge its two packages fully into:
+---
 
-applications/libs/django-osoul
+## 1. MCP (Model Context Protocol) Integration Focus
 
-applications/libs/crafts-ai
-with all content, code, and logic organised and no remaining references to ref.
+**Objective:** Enable AI agents (Claude, Cursor) to directly interact with your Django project, databases, and templates.
 
-Solve all errors in ctc-research/gunicorn-error.log
-Redeploy and run the project locally, execute the full test suite, and make sure all tests pass and all issues are resolved.
+- **Implementation:** Integrate `django-mcp-server` into `crafts-ai`.
+- **Location:** Create a dedicated `mcp/` module inside `applications/libs/crafts-ai`.
+- **Tools to Expose via MCP:**
+  - **Template Analyzer:** Scan the theme directory and map static components to Django `{% comp %}` tags.
+  - **Component Mapper:** Automatically match website-specific components (vresume, lms-demo) to the central `assets/templates`.
+  - **Database Query Tool:** Allow AI to fetch model data to inject into components during rendering.
+  - **Config Inspector:** Read site-env variables and Docker configurations for debugging.
+- **Fallback Mechanism:** Ensure the MCP server gracefully handles non-AI requests without breaking standard HTTP flows.
 
-Fix any import errors that may appear (even if not yet visible).
+---
 
-1. Docker & Configuration
-Consolidate Docker environment variables
-In every docker‑compose file, create a site-env (or x-env) section that contains all configuration from the corresponding .env files. This keeps containers lightweight and easy to read.
+## 2. Customizer Tools Development
 
-Verify all relative paths in Docker Compose (especially VResume)
-Point them to the central applications/ directory structure.
+**Objective:** Build tools that allow developers (and AI) to customize designs and component behavior effortlessly.
 
-Docker container env vars & passwords
-Check that all passwords are correctly linked across services, and that all make commands and service delegations (in docker/makefile at ../services) work for deployments.
+- **Centralized Style Pipeline:**
+  - Move all SCSS to `theme`.
+  - Convert all existing CSS to **strict BEM** using the customizer tool.
+  - The customizer tool will watch the theme directory and auto-convert legacy class names to BEM standards.
 
-Fix mount points and config copying
+- **Smart Component Loader (Loader/Fallback Mechanism):**
+  - Implement a decorator or mixin in `django-osoul` for component views.
+  - **Logic:** If a component’s database/context fetch exceeds a threshold (e.g., 500ms), immediately return a **Loader HTML fragment**.
+  - Once the data is ready, the system pushes the final rendered component via an HTMX swap.
+  - **Logging:** Every fallback trigger is logged with the component path, fetch duration, and any context errors.
 
-Mount configs, CLI, and commands from the main applications/ directory instead of copying per‑website (ctc-research, vresume, lms-demo).
+- **OOP Component Integration:**
+  - Create a base `ComponentViewSet` in `django-osoul` that links directly to template components.
+  - The customizer tool will auto-generate these ViewSets by parsing the template directory structure.
 
-Ensure lms-demo assets and ctc-research configs are properly linked/copied from applications/.
+---
 
-Logs directory
+## 3. Enhancements for `django-osoul` (Merged Library)
 
-Logs must be website‑specific (no sharing).
+**Objective:** Turn this into the ultimate Django core toolkit.
 
-The shared logs directory under applications/ should have daily‑updated names.
+- **Merge `django-grep` completely:**
+  - Move all search/query utilities into `django-osoul.contrib.search`.
+  - Remove all references to `grep` in imports.
 
-Implement make commands to clean up logs (both per‑site and global).
+- **Cache Enhancement (Priority):**
+  - Create base `CacheManager` and `CachedModelManager` classes.
+  - These will inherit from Django's default managers but add automatic Redis/DB caching layers with TTL configuration.
+  - Copy the caching logic currently in `ctc-research` into `django-osoul.cache`.
 
-2. Template & SCSS – BEM Customization (MCP/AI tasks)
-Wagtail admin customisation
-Apply the static styles from applications/assets/static/styles (same colours as the main website).
+- **Component Error Logging System:**
+  - Add a middleware/logging handler specifically for components.
+  - Logs will store:
+    - Template file path.
+    - Context dictionary.
+    - Exception traceback (if any).
+    - Request metadata.
+  - These logs will live in `applications/logs/components/` with daily rotation.
 
-Merge duplicated templates
-Combine them into single, fully optimised templates that share the same styles.
+- **Naming Replacement Strategy:**
+  - **Replace `ref` with `django-osoul`.** All imports like `from libs.ref.x` must become `from django_osoul.x`.
+  - Ensure the package is installable via `pip install -e applications/libs/django-osoul`.
 
-Update lms-demo assets/styles to meet BEM requirements.
+---
 
-Theme conversion
+## 4. Enhancements for `crafts-ai` (AI & Agent Toolkit)
 
-Copy the latest theme styles and convert them to BEM format.
+**Objective:** Centralize all AI capabilities and agent configurations.
 
-After conversion, update the corresponding components.
+- **Merge `django-rseal` completely:**
+  - Move encryption/sealing utilities into `crafts_ai.security`.
+  - **Duplication Check:** If a utility already exists in `django-osoul`, delete it from `crafts-ai` and import from `osoul` to avoid duplication.
 
-Integrate AI / Crafts file tasks with .kilo/mcp_server.py
+- **Agent Configuration Generator:**
+  - Create a management command (`python manage.py generate_agents`).
+  - This will scan `applications/assets/templates` and generate `.kilo/agent` config files for every unique component.
+  - Agent configs define:
+    - Which model to use for data fetching.
+    - Which template to render.
+    - Which ViewSet to attach to.
 
-Analyse the theme directory with the MCP server.
+- **MCP Server Hosting:**
+  - The MCP server logic (`mcp_server.py`) will live inside `crafts_ai.mcp`.
+  - It will call the customizer tools and template analyzers to perform replacements.
+  - **Key Tool:** "Map Component to Website" – analyzes the theme and suggests/replaces the correct Django tags for vresume and lms-demo.
 
-Map components to the appropriate websites.
+- **Naming Replacement Strategy:**
+  - **Replace `rseal` with `crafts-ai`.** All imports like `from libs.rseal.x` must become `from crafts_ai.x`.
+  - Update `requirements.txt` and `setup.py` for both packages.
 
-Replace the components with the correct Django tags, adding necessary data.
+---
 
-Update the styles of applications/lms-demo/assets/static/styles accordingly.
+## 5. Explicit Name Replacement Mapping
 
-3. Accounts / Auth
-Refactor plugins/accounts/allauth_views.py
-Move it to plugins/accounts/views/ and split it into separate, named files.
+To completely eradicate old names, apply this exact mapping across all files (ctc-research, vresume, lms-demo):
 
-Management files
-Verify that all files moved in the last commit can still be imported from their old paths (e.g. accounts or accounts/registration). Update any imports that broke.
-
-Auth templates relocation
-
-Update any templates that were moved from auth to account.
-
-Make the sign‑in page match the login template and reuse the fragment‑loaded page_auth layout.
-
-Enhance allauth / htmx integration
-Both fragmented htmx auth pages must use the same mechanism and functionality.
-If the request is not an htmx request, fall back gracefully to a normal full‑page request.
-
-4. Template Organization
-Centralise templates/components
-The base location is applications/assets/templates.
-All organised components, comp tags, and OOP components must be placed there.
-
-Remove duplicated files
-Delete any duplicates from vresume and lms-demo – they must use the centralised versions under ctc-research.
-
-Fix all template paths for components, {% comp %} tags, and OOP components.
-
-Update lms-demo templates to match the ctc-research structure.
-
-Ensure structural consistency across all websites (vresume, lms-demo)
-Any file that now exists in the base assets directory should be removed from website‑specific directories, and all references must be updated.
-
-5. Library Merge & Code Organisation
-Merged django-osoul compatibility plan → final location: applications/libs/django-osoul
-
-Merged crafts-ai compatibility plan → final location: applications/libs/crafts-ai
-
-Check for duplicated configurations
-If any component or configuration from crafts-ai already exists in django-osoul, consolidate them into django-osoul.
-
-Organise directories and namespaces
-Use effective, use‑case‑based names, and follow Django conventions (contrib, models, managers, management/services, etc.).
-
-Update all imports across every website
-Any references to the old rseal or grep packages must be corrected.
-
-6. Post‑Merge Enhancements & Recommendations
-Once libraries are merged and tests pass:
-
-Write a recommendations document (agents.md)
-
-Describe how to enhance django-osoul and crafts-ai using .kilo files and the MCP server.
-
-Include guidelines for customising designs across all websites.
-
-Ensure the todo list itself remains aware of these enhancements.
-
-Generate agent configurations
-
-Create agents at template paths and model paths.
-
-For any component templates that are part of django-osoul, move them to assets/templates and merge properly.
-
-Add a markdown file detailing the enhancements and proposed new features.
-
-Enhance documentation
-Improve the full project documentation to reflect the new merged structure and all recent changes.
-
-Test the merged packages
-
-Run all tests after merging.
-
-Add cache enhancements to django-osoul — create base classes for managers and caches similar to what is already in ctc-research.
-
-Enhance component tags
-
-Fix any errors that appear in component rendering.
-
-Integrate components with viewsets and with the OOP components.
-
-Document the full featured usage.
-
-Add error logging to the component system:
-
-Track where an HTML file is rendered.
-
-Log any context errors that occur.
-
-Implement a loader/fallback mechanism – if the main response takes too long, show a loader for the same component before the final response.
-
-7. Testing & Final Verification
-Solve all errors from ctc-research/gunicorn-error.log.
-
-Run the full test suite locally and ensure every test passes.
-
-Fix any remaining import errors across all websites.
-
-Re‑deploy and confirm everything works end‑to‑end.
-
-Path References (for quick lookup)
-applications/ctc-research/plugins/accounts/todo
-
-applications/assets/templates/todo
-
-applications/ctc-research/todo
-
-applications/lms-demo/todo
-
-applications/libs/todo
-
-todo (root)
-
+| **Old Name** | **New Name** | **Final Package** |
+| :--- | :--- | :--- |
+| `applications/libs/ref` | `django-osoul` | `applications/libs/django-osoul` |
+| `django-grep` | Merged into `osoul.contrib` | `applications/libs/django-osoul` |
+| `django-rseal` | `crafts-ai` | `applications/libs/crafts-ai` |
+| `from libs.ref...` | `from django_osoul...` | Global Import Update |
+| `from libs.rseal...` | `from crafts_ai...` | Global Import Update |
+| `import grep` | `import django_osoul.contrib.search` | Search Module |
+
+---
+
+## 6. Execution Workflow for These Specific Tasks
+
+1.  **Merge Libraries:** Run the merges for `grep` and `rseal` first. **Do not proceed** until all duplicate configs are consolidated.
+2.  **Search and Replace:** Use `grep -rl 'libs.ref' .` and `grep -rl 'libs.rseal' .` across the entire monorepo and replace them with the new paths.
+3.  **Install MCP Server:** Add `django-mcp-server` to `crafts-ai` dependencies.
+4.  **Build the Loader:** Implement the fallback component loader in `django-osoul` and test it with a slow-query component in `ctc-research`.
+5.  **Generate Agents:** Run the agent generation command and verify the `.kilo` files are created in the correct template paths.
+6.  **Update Documentation:** Write `agents.md` inside `crafts-ai/docs/` detailing exactly how these tools are used together.
