@@ -9,6 +9,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
@@ -56,6 +57,21 @@ except Exception:
 
 # Language switching, sitemaps, robots.txt (from debug_tools if available)
 urlpatterns = configure_common_urls(urlpatterns)
+
+
+# Redirect duplicated sitemap crawler noise before the CMS catch-all handles it.
+urlpatterns += [
+    path(
+        "sitemap.xml/sitemap.xml",
+        RedirectView.as_view(url="/sitemap.xml", permanent=True),
+        name="redirect-duplicated-sitemap-index",
+    ),
+    path(
+        "sitemap-news.xml/sitemap-news.xml",
+        RedirectView.as_view(url="/sitemap-news.xml", permanent=True),
+        name="redirect-duplicated-sitemap-news",
+    ),
+]
 
 # Plugin routing — must pass namespace explicitly so templates can use
 # {% url 'plugins:login' %} etc.

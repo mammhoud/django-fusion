@@ -17,6 +17,7 @@ services:
         required: false
     environment:
       RUNNING_ENV: docker
+      APP_MODULE: ${APP_MODULE:-server:application}
       SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
@@ -29,7 +30,7 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
       CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
       CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
-      LOG_DIR: /app/logs
+      LOG_DIR: /app/logs/ctc-research
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
       WEBSITE: ctc-research
@@ -49,9 +50,17 @@ services:
       retries: 3
       start_period: 60s
     volumes:
-      - ../../configs:/app/configs:z
-      - ../../assets:/app/assets:z
-      - ../../ctc-research:/app/ctc-research:z
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../tasks:/app/tasks:z
+      - ../www:/app/www:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../ctc-research:/app/ctc-research:z
       - ctc-research-static:/app/ctc-research/static:rw
       - ctc-research-media:/app/ctc-research/media:rw
       - ../../logs:/app/logs:z
@@ -89,7 +98,7 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
       CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
       CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
-      LOG_DIR: /app/logs
+      LOG_DIR: /app/logs/ctc-research
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
       WEBSITE: ctc-research
@@ -101,9 +110,17 @@ services:
       CELERY_TASK_DEFAULT_QUEUE: ctc-research
     command: celery -A tasks.celery:app worker --loglevel=info --queues=ctc-research
     volumes:
-      - ../../configs:/app/configs:z
-      - ../../assets:/app/assets:z
-      - ../../ctc-research:/app/ctc-research:z
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../tasks:/app/tasks:z
+      - ../www:/app/www:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../ctc-research:/app/ctc-research:z
       - ../../logs:/app/logs:z
     networks:
       - common
