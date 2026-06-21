@@ -10,25 +10,25 @@ This guide provides comprehensive procedures for enforcing architectural boundar
 **Rule**: nawaai must be pure Python with zero Django imports
 **Purpose**: Keep AI/MCP toolkit framework-agnostic and reusable across any Python project
 **Allowed Imports**: Python standard library only
-**Forbidden Imports**: Django, Wagtail, Celery, django_osoul, django_rseal, django_grep
+**Forbidden Imports**: Django, Wagtail, Celery, django_osoul, crafts_ai, django_osoul
 
 ### 2. osoul-no-wagtail
-**Rule**: django_osoul must not import wagtail, celery, or django_rseal
+**Rule**: django_osoul must not import wagtail, celery, or crafts_ai
 **Purpose**: Keep foundation layer pure Django for maximum reusability across Django projects
 **Allowed Imports**: Python standard library, Django framework
-**Forbidden Imports**: Wagtail, Celery, django_rseal, django_grep
+**Forbidden Imports**: Wagtail, Celery, crafts_ai, django_osoul
 
 ### 3. rseal-no-projects
-**Rule**: django_rseal must not import project-specific code
+**Rule**: crafts_ai must not import project-specific code
 **Purpose**: Keep automation layer reusable across all Django+Wagtail projects
 **Allowed Imports**: django_osoul, Wagtail, Celery, nawaai
 **Forbidden Imports**: `apps.*`, `ctc_research.*`, `structa.*`
 
 ### 4. grep-test-only
-**Rule**: django_grep must not be imported by production code
+**Rule**: django_osoul must not be imported by production code
 **Purpose**: Keep testing infrastructure separate from production code
 **Allowed Imports**: Test files only, health URLs in project configuration
-**Forbidden Imports**: Production code importing django_grep modules
+**Forbidden Imports**: Production code importing django_osoul modules
 
 ## Enforcement Mechanisms
 
@@ -40,8 +40,8 @@ The primary enforcement mechanism is import-linter with configuration in `.impor
 root_packages =
     crafts_ai
     django_osoul
-    django_rseal
-    django_grep
+    crafts_ai
+    django_osoul
 include_external_packages = True
 contracts = nawaai-no-django,osoul-no-wagtail,rseal-no-projects,grep-test-only,dependency-direction
 
@@ -56,39 +56,39 @@ forbidden_modules =
     celery
 
 [importlinter:contract:osoul-no-wagtail]
-name = django_osoul must not import Wagtail, Celery, or django_rseal
+name = django_osoul must not import Wagtail, Celery, or crafts_ai
 type = forbidden
 source_modules =
     django_osoul
 forbidden_modules =
     wagtail
     celery
-    django_rseal
+    crafts_ai
 
 [importlinter:contract:rseal-no-projects]
-name = django_rseal must not import project-specific code
+name = crafts_ai must not import project-specific code
 type = forbidden
 source_modules =
-    django_rseal
+    crafts_ai
 forbidden_modules =
     apps
     ctc_research
     structa
 
 [importlinter:contract:grep-test-only]
-name = django_grep must not be imported by production code
+name = django_osoul must not be imported by production code
 type = forbidden
 source_modules =
     django_osoul
-    django_rseal
+    crafts_ai
 forbidden_modules =
-    django_grep
+    django_osoul
 
 [importlinter:contract:dependency-direction]
-name = Dependency direction: crafts_ai -> django_osoul -> django_rseal
+name = Dependency direction: crafts_ai -> django_osoul -> crafts_ai
 type = layers
 layers =
-    django_rseal
+    crafts_ai
     django_osoul
     crafts_ai
 ```
@@ -181,10 +181,10 @@ def check_grep_test_only():
     """Check grep-test-only violations."""
     print("Checking grep-test-only violations...")
 
-    # Find django_grep imports in production code
+    # Find django_osoul imports in production code
     cmd = [
         "grep", "-r",
-        "from django_grep\\|import django_grep",
+        "from django_osoul\\|import django_osoul",
         "--include=*.py",
         ".",
         "|", "grep", "-v", "test",
@@ -206,11 +206,11 @@ def check_rseal_no_projects():
     """Check rseal-no-projects violations."""
     print("Checking rseal-no-projects violations...")
 
-    # Find project imports in django_rseal
+    # Find project imports in crafts_ai
     cmd = [
         "grep", "-r",
         "from apps\\|import apps",
-        "venv/libs/django-rseal/src/django_rseal/",
+        "venv/libs/crafts-ai/src/crafts_ai/",
         "|", "grep", "-v", ".pyc",
         "|", "wc", "-l"
     ]
@@ -262,13 +262,13 @@ grep -r "from django\|import django" venv/libs/nawaai/src/crafts_ai/
 
 # Check osoul-no-wagtail violations
 grep -r "from wagtail\|import wagtail" venv/libs/django-osoul/src/django_osoul/
-grep -r "from django_rseal\|import django_rseal" venv/libs/django-osoul/src/django_osoul/
+grep -r "from crafts_ai\|import crafts_ai" venv/libs/django-osoul/src/django_osoul/
 
 # Check rseal-no-projects violations
-grep -r "from apps\.\|import apps\." venv/libs/django-rseal/src/django_rseal/
+grep -r "from apps\.\|import apps\." venv/libs/crafts-ai/src/crafts_ai/
 
 # Check grep-test-only violations
-grep -r "from django_grep\|import django_grep" --include="*.py" . \
+grep -r "from django_osoul\|import django_osoul" --include="*.py" . \
     | grep -v "/tests/" \
     | grep -v "test_" \
     | grep -v ".pyc"
@@ -388,7 +388,7 @@ class DjangoTask(models.Model):
 **Root Cause**: Foundation logic needs Wagtail functionality
 **Resolution Strategies**:
 
-#### Strategy 1: Move Wagtail Logic to django_rseal
+#### Strategy 1: Move Wagtail Logic to crafts_ai
 ```python
 # BEFORE (Violation)
 # django_osoul/handlers/mixins/wagtail_page.py
@@ -399,8 +399,8 @@ class WagtailPageMixin:
         return Page.objects.all()
 
 # AFTER (Resolution)
-# django_rseal/handlers/mixins/wagtail_page.py (Correct location)
-from wagtail.models import Page  # ALLOWED in django_rseal
+# crafts_ai/handlers/mixins/wagtail_page.py (Correct location)
+from wagtail.models import Page  # ALLOWED in crafts_ai
 
 class WagtailPageMixin:
     def get_page_tree(self):
@@ -429,7 +429,7 @@ class BaseContentBlock:
     def render(self, context):
         raise NotImplementedError
 
-# django_rseal/comp/blocks.py (Wagtail implementation)
+# crafts_ai/comp/blocks.py (Wagtail implementation)
 from wagtail.blocks import StructBlock
 from django_osoul.comp.blocks import BaseContentBlock
 
@@ -441,14 +441,14 @@ class ContentBlock(BaseContentBlock, StructBlock):
 
 ### 3. rseal-no-projects Violation Resolution
 
-**Common Violation**: django_rseal importing project-specific models
+**Common Violation**: crafts_ai importing project-specific models
 **Root Cause**: Reusable logic needs project model data
 **Resolution Strategies**:
 
 #### Strategy 1: Extract Reusable Logic
 ```python
 # BEFORE (Violation)
-# django_rseal/pipelines/services/cart.py
+# crafts_ai/pipelines/services/cart.py
 from apps.lms.models import Cart  # VIOLATION
 
 class CartService:
@@ -458,7 +458,7 @@ class CartService:
         return cart
 
 # AFTER (Resolution)
-# django_rseal/pipelines/services/cart.py (Abstract base)
+# crafts_ai/pipelines/services/cart.py (Abstract base)
 class CartServiceBase:
     cart_model = None  # Abstract attribute
 
@@ -469,7 +469,7 @@ class CartServiceBase:
         return cart
 
 # apps/lms/services/cart.py (Project-specific subclass)
-from django_rseal.pipelines.services.cart import CartServiceBase
+from crafts_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
@@ -479,14 +479,14 @@ class CartService(CartServiceBase):
 #### Strategy 2: Use Generic Types
 ```python
 # BEFORE (Violation)
-# django_rseal/pipelines/models/users/team.py
+# crafts_ai/pipelines/models/users/team.py
 from apps.handlers.models.manage.company import Organization  # VIOLATION
 
 class Team:
     organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
 
 # AFTER (Resolution)
-# django_rseal/pipelines/models/users/team.py (Generic)
+# crafts_ai/pipelines/models/users/team.py (Generic)
 class Team:
     organization_model = None  # Generic foreign key
 
@@ -494,7 +494,7 @@ class Team:
         self.organization = org_instance
 
 # apps/accounts/models/manage/company.py (Project model)
-from django_rseal.pipelines.models.users.team import Team as BaseTeam
+from crafts_ai.pipelines.models.users.team import Team as BaseTeam
 
 class Organization(models.Model):
     name = models.CharField(max_length=255)
@@ -509,7 +509,7 @@ class Team(BaseTeam):
 
 ### 4. grep-test-only Violation Resolution
 
-**Common Violation**: Production code importing django_grep
+**Common Violation**: Production code importing django_osoul
 **Root Cause**: Test utilities used in production
 **Resolution Strategies**:
 
@@ -517,7 +517,7 @@ class Team(BaseTeam):
 ```python
 # BEFORE (Violation)
 # apps/accounts/views.py (Production code)
-from django_grep.tests.factories import UserFactory  # VIOLATION
+from django_osoul.tests.factories import UserFactory  # VIOLATION
 
 class UserView:
     def create_test_user(self):
@@ -532,7 +532,7 @@ class UserView:
         return User.objects.create(username=username, email=email)
 
 # tests/test_accounts.py (Test file - allowed)
-from django_grep.tests.factories import UserFactory
+from django_osoul.tests.factories import UserFactory
 
 class TestUserView:
     def test_user_creation(self):
@@ -543,7 +543,7 @@ class TestUserView:
 ```python
 # BEFORE (Violation)
 # apps/content/services.py
-from django_grep.tests.assertions import assert_json_response  # VIOLATION
+from django_osoul.tests.assertions import assert_json_response  # VIOLATION
 
 class ContentService:
     def validate_response(self, response):
@@ -582,19 +582,19 @@ class ContentService:
 - [ ] No `import wagtail` statements in django_osoul
 - [ ] No `from wagtail.` imports in django_osoul
 - [ ] No `import celery` statements in django_osoul
-- [ ] No `import django_rseal` statements in django_osoul
+- [ ] No `import crafts_ai` statements in django_osoul
 - [ ] All foundation logic is pure Django
 
 #### rseal-no-projects Prevention
-- [ ] No `from apps.` imports in django_rseal
-- [ ] No `import apps` statements in django_rseal
-- [ ] No `ctc_research` or `structa` imports in django_rseal
+- [ ] No `from apps.` imports in crafts_ai
+- [ ] No `import apps` statements in crafts_ai
+- [ ] No `ctc_research` or `structa` imports in crafts_ai
 - [ ] All automation logic is project-agnostic
 - [ ] Model injection pattern used for project-specific models
 
 #### grep-test-only Prevention
-- [ ] No `import django_grep` in production code
-- [ ] No `from django_grep.` imports outside test files
+- [ ] No `import django_osoul` in production code
+- [ ] No `from django_osoul.` imports outside test files
 - [ ] Test utilities only used in test files
 - [ ] Health check imports only in URL configuration
 
@@ -609,7 +609,7 @@ python scripts/check_boundaries.py
 # Step 2: Run import-linter
 import-linter --config .importlinter
 
-# Step 3: Run tests (which should not import django_grep in production)
+# Step 3: Run tests (which should not import django_osoul in production)
 python manage.py test --exclude-tag=slow
 
 # Step 4: If all checks pass, allow commit
@@ -630,8 +630,8 @@ Configure IDE to warn about boundary violations:
 {
   "python.analysis.extraPaths": [
     "./venv/libs/django-osoul/src",
-    "./venv/libs/django-rseal/src",
-    "./venv/libs/django-grep/src",
+    "./venv/libs/crafts-ai/src",
+    "./venv/libs/django-osoul/src",
     "./venv/libs/nawaai/src"
   ],
   "python.analysis.exclude": [
@@ -725,7 +725,7 @@ class BoundaryDashboard:
 
         if self.metrics["violations_by_rule"].get("rseal-no-projects", 0) > 5:
             recommendations.append(
-                "High rseal-no-projects violations: Review django_rseal imports and extract reusable logic"
+                "High rseal-no-projects violations: Review crafts_ai imports and extract reusable logic"
             )
 
         return recommendations
@@ -833,11 +833,11 @@ class BoundaryAlertSystem:
 #### Q: Why can't django_osoul import Wagtail?
 **A**: django_osoul is the pure Django foundation layer that should work with or without Wagtail. Keeping it Wagtail-free allows it to be used in Django projects that don't use Wagtail.
 
-#### Q: Why can't django_rseal import project code?
-**A**: django_rseal is the reusable automation layer that should work across all Django+Wagtail projects. Keeping it project-agnostic ensures it can be reused in new projects.
+#### Q: Why can't crafts_ai import project code?
+**A**: crafts_ai is the reusable automation layer that should work across all Django+Wagtail projects. Keeping it project-agnostic ensures it can be reused in new projects.
 
-#### Q: Why can't production code import django_grep?
-**A**: django_grep is the testing framework and should only be used in test environments. Keeping it separate from production code ensures clean separation of concerns.
+#### Q: Why can't production code import django_osoul?
+**A**: django_osoul is the testing framework and should only be used in test environments. Keeping it separate from production code ensures clean separation of concerns.
 
 #### Q: How do I know if my code violates boundaries?
 **A**: Run `python scripts/check_boundaries.py` or `import-linter --config .importlinter`. The CI pipeline will also catch violations.
@@ -878,18 +878,18 @@ Continuously improve boundary enforcement tooling:
 | Rule | Source Modules | Forbidden Modules | Purpose |
 |------|---------------|-------------------|---------|
 | nawaai-no-django | crafts_ai | django, wagtail, celery | Keep AI toolkit framework-agnostic |
-| osoul-no-wagtail | django_osoul | wagtail, celery, django_rseal | Keep foundation layer pure Django |
-| rseal-no-projects | django_rseal | apps, ctc_research, structa | Keep automation layer project-agnostic |
-| grep-test-only | django_osoul, django_rseal | django_grep | Keep testing infrastructure separate |
+| osoul-no-wagtail | django_osoul | wagtail, celery, crafts_ai | Keep foundation layer pure Django |
+| rseal-no-projects | crafts_ai | apps, ctc_research, structa | Keep automation layer project-agnostic |
+| grep-test-only | django_osoul, crafts_ai | django_osoul | Keep testing infrastructure separate |
 
 ### Appendix B: Common Fix Patterns
 
 | Violation Pattern | Fix Pattern | Example |
 |-------------------|------------|---------|
 | nawaai importing Django | Extract pure logic, create adapter | See Strategy 1 |
-| osoul importing Wagtail | Move to django_rseal, create abstract base | See Strategy 1 |
+| osoul importing Wagtail | Move to crafts_ai, create abstract base | See Strategy 1 |
 | rseal importing apps | Use model injection, extract reusable logic | See Strategy 1 |
-| Production importing django_grep | Move to test files, create production equivalent | See Strategy 1 |
+| Production importing django_osoul | Move to test files, create production equivalent | See Strategy 1 |
 
 ### Appendix C: Command Reference
 
@@ -901,8 +901,8 @@ python scripts/check_boundaries.py
 # Manual checking commands
 grep -r "from django" venv/libs/nawaai/src/crafts_ai/
 grep -r "from wagtail" venv/libs/django-osoul/src/django_osoul/
-grep -r "from apps" venv/libs/django-rseal/src/django_rseal/
-grep -r "from django_grep" --include="*.py" . | grep -v test
+grep -r "from apps" venv/libs/crafts-ai/src/crafts_ai/
+grep -r "from django_osoul" --include="*.py" . | grep -v test
 
 # Fix commands
 python scripts/fix_boundary_violations.py --rule grep-test-only

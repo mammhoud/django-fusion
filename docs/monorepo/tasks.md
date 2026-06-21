@@ -18,8 +18,8 @@ See [PHASES.md](./PHASES.md) for detailed phase tracking and dependencies.
 **Completed Tasks:**
 - [x] 1.1 Fix `__main__.py` import to reference `cli` instead of `site_cli`
 - [x] 1.2 Create `applications/__init__.py` to make cli a proper package
-- [x] 1.3 Clone django-grep from GitHub repository
-- [x] 1.4 Clone django-rseal from GitHub repository
+- [x] 1.3 Clone django-osoul from GitHub repository
+- [x] 1.4 Clone crafts-ai from GitHub repository
 - [x] 1.5 Clone django-osoul from GitHub repository
 
 **Deliverables:**
@@ -30,7 +30,7 @@ See [PHASES.md](./PHASES.md) for detailed phase tracking and dependencies.
 **Notes:**
 - Import resolution now works correctly
 - Package can be imported as `from cli import SiteCLI`
-- All three libraries (django-grep, django-rseal, django-osoul) are available for enhancement
+- All three libraries (django-osoul, crafts-ai, django-osoul) are available for enhancement
 
 ---
 
@@ -262,7 +262,7 @@ python manage.py sites
 - [x] 9.6 Replace `docs/Dockerfile` with Docsify nginx:1.27-alpine
 - [x] 9.7 Replace `compose/docs/Dockerfile` with the same Docsify Dockerfile
 - [x] 9.8 Create `applications/compose/docker-compose.docs.yml` for Docsify service
-- [x] 9.9 Create `usage.md` files for django-osoul, django-rseal, django-grep
+- [x] 9.9 Create `usage.md` files for django-osoul, crafts-ai, django-osoul
 - [x] 9.10 Reorganize docs/: remove docs/docs/ and docs/docs/docs/ nesting (duplicate collapse)
 - [x] 9.11 Add detailed deployment guide (`docs/deployment/deployment_guide.md`)
 - [x] 9.12 Create monorepo migration guide (`docs/monorepo/migration_guide.md`)
@@ -327,8 +327,8 @@ Phase 9 → Phase 8
 | `applications/manage.py` | Enhanced manage.py with CLI functionality | 2026-06-15 |
 | `applications/cli.py` | Added `validate_commands` method | 2026-06-15 |
 | `applications/utilities.py` | Deleted (functionality migrated to packages) | 2026-06-15 |
-| `applications/libs/django-grep/` | Cloned from GitHub | 2026-06-15 |
-| `applications/libs/django-rseal/` | Cloned from GitHub | 2026-06-15 |
+| `applications/libs/django-osoul/` | Cloned from GitHub | 2026-06-15 |
+| `applications/libs/crafts-ai/` | Cloned from GitHub | 2026-06-15 |
 | `applications/libs/django-osoul/` | Cloned from GitHub | 2026-06-15 |
 | `applications/validate_makefile.sh` | Makefile validation script | 2026-06-15 |
 | `docs/monorepo/PHASES.md` | Phase tracking documentation | 2026-06-15 |
@@ -354,8 +354,8 @@ Phase 9 → Phase 8
 | `docs/reports/` | 3 docs moved from docs/docs/reports/ | 2026-06-16 |
 | `docs/user_guide/` | 6 docs moved from docs/docs/user_guide/ | 2026-06-16 |
 | `docs/packages/django-osoul/usage.md` | django-osoul usage guide | 2026-06-16 |
-| `docs/packages/django-rseal/usage.md` | django-rseal usage guide | 2026-06-16 |
-| `docs/packages/django-grep/usage.md` | django-grep usage guide | 2026-06-16 |
+| `docs/packages/crafts-ai/usage.md` | crafts-ai usage guide | 2026-06-16 |
+| `docs/packages/django-osoul/usage.md` | django-osoul usage guide | 2026-06-16 |
 | `docs/deployment/deployment_guide.md` | Full deployment guide | 2026-06-16 |
 | `docs/monorepo/migration_guide.md` | Phase-by-phase migration guide | 2026-06-16 |
 | `docs/ai/tasks.md` | Complete AI task reference | 2026-06-16 |

@@ -73,8 +73,8 @@
 ### 📦 Package-Aligned
 - Code fits clear package use cases
 - django-osoul: Base models, forms, utilities
-- django-rseal: Email, tasks, workflows
-- django-grep: Testing utilities
+- crafts-ai: Email, tasks, workflows
+- django-osoul: Testing utilities
 - nawaai: AI/MCP (standalone)
 
 ---
@@ -90,7 +90,7 @@
 ✅ Permission helpers
 ```
 
-### django-rseal (Email & Tasks)
+### crafts-ai (Email & Tasks)
 ```
 ✅ Email sending logic and templates
 ✅ Task base classes and scheduling
@@ -98,7 +98,7 @@
 ✅ Workflow orchestration
 ```
 
-### django-grep (Testing)
+### django-osoul (Testing)
 ```
 ✅ Reusable factories (UserFactory, etc.)
 ✅ Common fixtures and test data
@@ -129,12 +129,12 @@
 - Extract form base classes to django-osoul
 
 ### Weeks 4-5: Extract Email & Task Logic
-- Extract email logic to django-rseal
-- Extract task logic to django-rseal
+- Extract email logic to crafts-ai
+- Extract task logic to crafts-ai
 
 ### Week 6: Extract Testing Utilities
-- Extract factories to django-grep
-- Extract fixtures to django-grep
+- Extract factories to django-osoul
+- Extract fixtures to django-osoul
 
 ### Weeks 7-8: Cleanup & Documentation
 - Remove duplication from websites

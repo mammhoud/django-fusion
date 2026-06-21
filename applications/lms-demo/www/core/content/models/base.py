@@ -1,6 +1,6 @@
 """
-Local DefaultBase stub for environments where crafts_ai.rseal is not installed.
-Provides the same abstract fields as crafts_ai.rseal.content.models.default.DefaultBase.
+Local DefaultBase stub for environments where crafts_ai is not installed.
+Provides the same abstract fields as crafts_ai.content.models.default.DefaultBase.
 """
 import uuid
 
@@ -12,7 +12,7 @@ from django.utils.translation import gettext_lazy as _
 class DefaultBase(models.Model):
     """
     Abstract base model providing UUID pk, timestamps, audit fields,
-    and a live flag – mirrors crafts_ai.rseal.content.models.default.DefaultBase.
+    and a live flag – mirrors crafts_ai.content.models.default.DefaultBase.
     """
 
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)

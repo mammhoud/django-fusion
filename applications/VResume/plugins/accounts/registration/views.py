@@ -72,7 +72,7 @@ def assign_default_group(user):
 
 def _ensure_profile_exists(user):
     try:
-        from crafts_ai.rseal.pipelines.models.users.users import Person
+        from crafts_ai.pipelines.models.users.users import Person
 
         Person.objects.get_or_create(
             user=user,

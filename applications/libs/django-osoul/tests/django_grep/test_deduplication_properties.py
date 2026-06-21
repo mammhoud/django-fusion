@@ -21,11 +21,11 @@ DEDUPLICATION_MAP: dict[str, str] = {
     "django-osoul/src/django_osoul/utils/responses.py": "django_grep.utils.responses",
     "django-osoul/src/django_osoul/utils/datetime_utils.py": "django_grep.utils.datetime_utils",
     "django-osoul/src/django_osoul/models/mixins.py": "django_grep.models.mixins",
-    "django-rseal/src/django_rseal/email/services.py": "django_seed.services.email_service",
-    "django-rseal/src/django_rseal/management/commands/send_invitations_from_csv.py": (
+    "django-rseal/src/crafts_ai/email/services.py": "django_seed.services.email_service",
+    "django-rseal/src/crafts_ai/management/commands/send_invitations_from_csv.py": (
         "django_seed.management.commands.send_invitations_from_csv"
     ),
-    "django-rseal/src/django_rseal/workflows/orchestrator.py": "django_seed.orchestrator",
+    "django-rseal/src/crafts_ai/workflows/orchestrator.py": "django_seed.orchestrator",
 }
 
 

@@ -14,7 +14,7 @@ This section contains documentation for shared packages used by all projects.
 Abstract models, managers, mixins, utilities, and components
 - No Wagtail dependencies
 - No Celery dependencies
-- No django-rseal dependencies
+- No crafts-ai dependencies
 
 **Sub-modules:**
 - `handlers/` - Page handlers
@@ -30,7 +30,7 @@ Abstract models, managers, mixins, utilities, and components
 - `adapters/` - Third-party adapters
 - `services/` - Service layer
 
-### [django-rseal](django-rseal/)
+### [crafts-ai](crafts-ai/)
 **Wagtail automation layer**
 
 Pipelines, services, workflows, email handling, and Wagtail components
@@ -51,7 +51,7 @@ Pipelines, services, workflows, email handling, and Wagtail components
 - `snippets/` - Wagtail snippets
 - `hooks/` - Wagtail hooks
 
-### [django-grep](django-grep/)
+### [django-osoul](django-osoul/)
 **Unified testing framework**
 
 Test base classes, fixtures, factories, pytest plugins, and health checks
@@ -87,8 +87,8 @@ AI integrations, chat functionality, and MCP server support
 ```bash
 # Install all packages
 cd venv/libs/django-osoul && uv sync
-cd venv/libs/django-rseal && uv sync
-cd venv/libs/django-grep && uv sync
+cd venv/libs/crafts-ai && uv sync
+cd venv/libs/django-osoul && uv sync
 uv pip install -e applications/libs/crafts-ai/
 ```
 
@@ -103,19 +103,19 @@ INSTALLED_APPS = [
 ]
 ```
 
-### django-rseal
+### crafts-ai
 ```python
 # Thin layer pattern
-from django_rseal.services import CartServiceBase
+from crafts_ai.services import CartServiceBase
 
 class CartService(CartServiceBase):
     # Project-specific customizations only
     pass
 ```
 
-### django-grep
+### django-osoul
 ```python
-from django_grep import BaseTestCase
+from django_osoul import BaseTestCase
 
 class MyTest(BaseTestCase):
     def test_something(self):
@@ -134,10 +134,10 @@ info = package_info()
 ## Dependency Direction
 
 ```
-ctc-research.com  →  django-osoul, django-grep, django-rseal, crafts-ai
-structa.cloud     →  django-osoul, django-grep, django-rseal, crafts-ai
-django-rseal      →  django-osoul
-django-grep       →  (standalone)
+ctc-research.com  →  django-osoul, django-osoul, crafts-ai, crafts-ai
+structa.cloud     →  django-osoul, django-osoul, crafts-ai, crafts-ai
+crafts-ai      →  django-osoul
+django-osoul       →  (standalone)
 crafts-ai         →  (standalone)
 ```
 

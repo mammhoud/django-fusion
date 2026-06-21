@@ -50,7 +50,7 @@ _CSV_PARSER_PATH = os.path.join(
     "..",  # libs
     "django-rseal",
     "src",
-    "django_rseal",
+    "crafts_ai",
     "services",
     "csv_parser.py",
 )

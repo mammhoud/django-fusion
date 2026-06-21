@@ -1,6 +1,6 @@
-"""Unit tests for tasks/django_rseal.py — constant definitions."""
+"""Unit tests for tasks/crafts_ai.py — constant definitions."""
 
-from tasks.django_rseal import DJANGO_RSEAL_TASK_MODULES
+from tasks.crafts_ai import DJANGO_RSEAL_TASK_MODULES
 
 
 class TestDjangoRsealConstants:
@@ -13,4 +13,4 @@ class TestDjangoRsealConstants:
     def test_all_entries_are_dotted_paths(self):
         for module_path in DJANGO_RSEAL_TASK_MODULES:
             assert "." in module_path, f"Expected dotted path, got: {module_path}"
-            assert module_path.startswith("django_rseal.")
+            assert module_path.startswith("crafts_ai.")

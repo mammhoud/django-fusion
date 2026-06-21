@@ -15,8 +15,8 @@ from django.db import models, transaction
 from django.db.models import F, Q
 from django.db.models.aggregates import Avg, Count
 from django.utils import timezone
-from crafts_ai.rseal.services.infrastructure.base import BaseService
-from crafts_ai.rseal.services.infrastructure.token import TokenService
+from crafts_ai.services.infrastructure.base import BaseService
+from crafts_ai.services.infrastructure.token import TokenService
 
 logger = logging.getLogger(__name__)
 

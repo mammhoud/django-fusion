@@ -4,9 +4,9 @@ Boundary Checker for Ecosystem Architectural Refactoring
 
 This script checks for boundary violations across the ecosystem:
 1. crafts-ai-no-django: crafts-ai must be pure Python with zero Django imports
-2. osoul-no-wagtail: django_osoul must not import wagtail, celery, or django_rseal
-3. rseal-no-projects: django_rseal must not import project-specific code
-4. grep-test-only: django_grep must not be imported by production code
+2. osoul-no-wagtail: django_osoul must not import wagtail, celery, or crafts_ai
+3. rseal-no-projects: crafts_ai must not import project-specific code
+4. grep-test-only: django_osoul must not be imported by production code
 """
 
 import ast
@@ -35,23 +35,23 @@ class BoundaryChecker:
         self.rules = {
             "crafts-ai-no-django": {
                 "source": "crafts-ai",
-                "forbidden_modules": ["django", "wagtail", "celery", "django_rseal"],
+                "forbidden_modules": ["django", "wagtail", "celery", "crafts_ai"],
                 "message": "crafts-ai must be pure Python with zero Django imports"
             },
             "osoul-no-wagtail": {
                 "source": "django_osoul",
-                "forbidden_modules": ["wagtail", "celery", "django_rseal"],
-                "message": "django_osoul must not import wagtail, celery, or django_rseal"
+                "forbidden_modules": ["wagtail", "celery", "crafts_ai"],
+                "message": "django_osoul must not import wagtail, celery, or crafts_ai"
             },
             "rseal-no-projects": {
-                "source": "django_rseal",
+                "source": "crafts_ai",
                 "forbidden_modules": ["apps.", "ctc-research", "structa.cloud"],
-                "message": "django_rseal must not import project-specific code"
+                "message": "crafts_ai must not import project-specific code"
             },
             "grep-test-only": {
-                "source": ["django_osoul", "django_rseal", "apps"],
-                "forbidden_modules": ["django_grep"],
-                "message": "django_grep is test-only and must not be imported by production code"
+                "source": ["django_osoul", "crafts_ai", "apps"],
+                "forbidden_modules": ["django_osoul"],
+                "message": "django_osoul is test-only and must not be imported by production code"
             }
         }
 
@@ -108,19 +108,19 @@ class BoundaryChecker:
                 if "django_osoul" not in source_package:
                     continue
             elif rule_name == "rseal-no-projects":
-                if "django_rseal" not in source_package:
+                if "crafts_ai" not in source_package:
                     continue
             elif rule_name == "grep-test-only":
-                # Check if this is production code importing django_grep
-                if "django_grep" in source_package or "test" in source_package:
-                    continue  # django_grep can import itself or test code can import it
-                if "django_grep" in import_name:
+                # Check if this is production code importing django_osoul
+                if "django_osoul" in source_package or "test" in source_package:
+                    continue  # django_osoul can import itself or test code can import it
+                if "django_osoul" in import_name:
                     violations.append(BoundaryViolation(
                         filepath=filepath,
                         line_number=line_no,
                         import_statement=import_name,
                         rule_violated=rule_name,
-                        fix_suggestion=f"Remove import of django_grep from production code"
+                        fix_suggestion=f"Remove import of django_osoul from production code"
                     ))
                 continue
 
@@ -146,10 +146,10 @@ class BoundaryChecker:
             return "crafts-ai"
         elif "django_osoul" in path_str:
             return "django_osoul"
-        elif "django_rseal" in path_str:
-            return "django_rseal"
-        elif "django_grep" in path_str:
-            return "django_grep"
+        elif "crafts_ai" in path_str:
+            return "crafts_ai"
+        elif "django_osoul" in path_str:
+            return "django_osoul"
         elif "apps" in path_str or "ctc-research" in path_str or "structa.cloud" in path_str:
             return "apps"
         return "unknown"

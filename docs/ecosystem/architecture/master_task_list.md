@@ -70,7 +70,7 @@ Generated: 2026-04-14 21:34:45
 
 - [ ] No subtasks defined
 
-#### 11.2 Update imports for django-rseal classes in both websites
+#### 11.2 Update imports for crafts-ai classes in both websites
 
 - [ ] No subtasks defined
 
@@ -82,7 +82,7 @@ Generated: 2026-04-14 21:34:45
 
 - [ ] No subtasks defined
 
-#### 13.1 Add missing test utilities to django-grep
+#### 13.1 Add missing test utilities to django-osoul
 
 - [ ] No subtasks defined
 
@@ -130,7 +130,7 @@ Generated: 2026-04-14 21:34:45
 
 - [ ] No subtasks defined
 
-#### 21.3 Update `README.md` files for `django-osoul`, `django-rseal`, and `django-grep`
+#### 21.3 Update `README.md` files for `django-osoul`, `crafts-ai`, and `django-osoul`
 
 - [ ] No subtasks defined
 
@@ -229,8 +229,8 @@ Generated: 2026-04-14 21:34:45
 - [ ] 10.2.1 Update ctc-research.com/pyproject.toml with unified versions
 - [ ] 10.2.2 Update structa.cloud/pyproject.toml with unified versions
 - [ ] 10.2.3 Update venv/libs/django-osoul/pyproject.toml with unified versions
-- [ ] 10.2.4 Update venv/libs/django-rseal/pyproject.toml with unified versions
-- [ ] 10.2.5 Update venv/libs/django-grep/pyproject.toml with unified versions
+- [ ] 10.2.4 Update venv/libs/crafts-ai/pyproject.toml with unified versions
+- [ ] 10.2.5 Update venv/libs/django-osoul/pyproject.toml with unified versions
 - [ ] 10.2.6 Update venv/libs/nawaai/pyproject.toml with unified versions
 
 #### 10.3 Remove unused dependencies from all pyproject.toml files
@@ -244,8 +244,8 @@ Generated: 2026-04-14 21:34:45
 
 **Subtasks:**
 - [ ] 10.4.1 Verify django_osoul/pyproject.toml lists all its direct dependencies
-- [ ] 10.4.2 Verify django_rseal/pyproject.toml lists all its direct dependencies including django_osoul
-- [ ] 10.4.3 Verify django_grep/pyproject.toml lists all its direct dependencies
+- [ ] 10.4.2 Verify crafts_ai/pyproject.toml lists all its direct dependencies including django_osoul
+- [ ] 10.4.3 Verify django_osoul/pyproject.toml lists all its direct dependencies
 - [ ] 10.4.4 Verify nawaai/pyproject.toml lists only pure Python dependencies
 
 #### 10.5 Update uv.lock files after all dependency changes
@@ -345,7 +345,7 @@ Generated: 2026-04-14 21:34:45
 #### 14.1 Create ARCHITECTURE.md at workspace root
 
 **Subtasks:**
-- [ ] 14.1.1 Document the package dependency graph as a Mermaid diagram: stdlib → nawaai → django_osoul → django_rseal → projects
+- [ ] 14.1.1 Document the package dependency graph as a Mermaid diagram: stdlib → nawaai → django_osoul → crafts_ai → projects
 - [ ] 14.1.2 Document each package's responsibilities and what it contains
 - [ ] 14.1.3 Document all boundary rules with examples of allowed and forbidden imports
 - [ ] 14.1.4 Document domain organization (accounts, content, lms/alliance, messaging, cart, forms)
@@ -371,10 +371,10 @@ Generated: 2026-04-14 21:34:45
 **Subtasks:**
 - [ ] 14.3.1 Document package purpose: "Pure Django foundation layer — models, managers, mixins, utils, comp, contrib"
 - [ ] 14.3.2 Document installation, quick start, and all public APIs with usage examples
-- [ ] 14.3.3 Document boundary rules: must not import wagtail, celery, or django_rseal
+- [ ] 14.3.3 Document boundary rules: must not import wagtail, celery, or crafts_ai
 - [ ] 14.3.4 Document all sub-modules: handlers/, managers/, mixins/, utils/, comp/, contrib/, middlewares/, filters/, forms/, backends/, adapters/, services/
 
-#### 14.4 Write comprehensive README.md for django_rseal
+#### 14.4 Write comprehensive README.md for crafts_ai
 
 **Subtasks:**
 - [ ] 14.4.1 Document package purpose: "Automation layer — pipelines, services, workflows, email, signals, admin, cache, commands"
@@ -382,12 +382,12 @@ Generated: 2026-04-14 21:34:45
 - [ ] 14.4.3 Document CartServiceBase thin subclass pattern with full code example
 - [ ] 14.4.4 Document all Wagtail components: blocks, snippets, hooks, admin customizations
 
-#### 14.5 Write comprehensive README.md for django_grep
+#### 14.5 Write comprehensive README.md for django_osoul
 
 **Subtasks:**
 - [ ] 14.5.1 Document package purpose: "Unified testing framework — seeder, test base, fixtures, factories, assertions, pytest plugin, health checks"
 - [ ] 14.5.2 Document BaseTestCase usage and all Hypothesis helpers (st_email, st_slug, st_uuid)
-- [ ] 14.5.3 Document health check endpoints and project integration via include('django_grep.health.urls')
+- [ ] 14.5.3 Document health check endpoints and project integration via include('django_osoul.health.urls')
 - [ ] 14.5.4 Document pytest plugin registration
 
 #### 14.6 Write comprehensive README.md for nawaai
@@ -415,7 +415,7 @@ Generated: 2026-04-14 21:34:45
 
 **Subtasks:**
 - [ ] 14.9.1 For every class moved to a package, add docstring: "Canonical import: from django_osoul.managers import RoleHierarchyManager"
-- [ ] 14.9.2 For every thin subclass in projects, add docstring: "Delegates to django_rseal.pipelines.services.CartServiceBase"
+- [ ] 14.9.2 For every thin subclass in projects, add docstring: "Delegates to crafts_ai.pipelines.services.CartServiceBase"
 - [ ] 14.9.3 Run grep to verify all moved classes have canonical import docstrings
 
 #### 15.1 Verify all migrations have reverse operations
@@ -474,8 +474,8 @@ Generated: 2026-04-14 21:34:45
 
 **Subtasks:**
 - [ ] 16.3.1 Run uv run pytest tests/ -v in venv/libs/django-osoul/
-- [ ] 16.3.2 Run uv run pytest tests/ -v in venv/libs/django-rseal/
-- [ ] 16.3.3 Run uv run pytest tests/ -v in venv/libs/django-grep/
+- [ ] 16.3.2 Run uv run pytest tests/ -v in venv/libs/crafts-ai/
+- [ ] 16.3.3 Run uv run pytest tests/ -v in venv/libs/django-osoul/
 - [ ] 16.3.4 Run uv run pytest tests/ -v in venv/libs/nawaai/
 - [ ] 16.3.5 Run uv run pytest tests/ -v in ctc-research.com/
 - [ ] 16.3.6 Run uv run pytest tests/ -v in structa.cloud/
@@ -496,8 +496,8 @@ Generated: 2026-04-14 21:34:45
 
 **Subtasks:**
 - [ ] 16.5.1 Run python -c "import django_osoul" — verify no ImportError
-- [ ] 16.5.2 Run python -c "import django_rseal" — verify no ImportError
-- [ ] 16.5.3 Run python -c "import django_grep" — verify no ImportError
+- [ ] 16.5.2 Run python -c "import crafts_ai" — verify no ImportError
+- [ ] 16.5.3 Run python -c "import django_osoul" — verify no ImportError
 - [ ] 16.5.4 Run python -c "import nawaai" — verify no ImportError
 - [ ] 16.5.5 Run python manage.py check in ctc-research.com — verify zero errors
 - [ ] 16.5.6 Run python manage.py check in structa.cloud — verify zero errors
@@ -577,7 +577,7 @@ Generated: 2026-04-14 21:34:45
 #### 2.14 Run full boundary check on django_osoul after all extractions
 
 **Subtasks:**
-- [ ] 2.14.1 Run scripts/check_boundaries.py — verify zero wagtail, celery, django_rseal imports in django_osoul
+- [ ] 2.14.1 Run scripts/check_boundaries.py — verify zero wagtail, celery, crafts_ai imports in django_osoul
 - [ ] 2.14.2 Fix any violations found
 - [ ] 2.14.3 Run full test suite for django_osoul package
 - [ ] 2.14.4 Commit with message: "feat(osoul): extract all pure Django foundation logic"
@@ -603,7 +603,7 @@ Generated: 2026-04-14 21:34:45
 #### 2.4 Extract pure Django model mixins (UserMixin, GroupMixin, and non-Wagtail model mixins) to django_osoul
 
 **Subtasks:**
-- [ ] 2.4.1 Audit all mixins in both projects — flag any that import from wagtail (those go to django_rseal)
+- [ ] 2.4.1 Audit all mixins in both projects — flag any that import from wagtail (those go to crafts_ai)
 - [ ] 2.4.2 Copy UserMixin to venv/libs/django-osoul/src/django_osoul/mixins/user.py
 - [ ] 2.4.3 Copy GroupMixin to venv/libs/django-osoul/src/django_osoul/mixins/group.py
 - [ ] 2.4.4 Copy all other pure Django model mixins to venv/libs/django-osoul/src/django_osoul/mixins/models.py
@@ -634,7 +634,7 @@ Generated: 2026-04-14 21:34:45
 **Subtasks:**
 - [ ] 2.7.1 Copy UserService to venv/libs/django-osoul/src/django_osoul/services/user.py
 - [ ] 2.7.2 Copy GroupService to venv/libs/django-osoul/src/django_osoul/services/group.py
-- [ ] 2.7.3 Verify neither service imports wagtail, celery, or django_rseal
+- [ ] 2.7.3 Verify neither service imports wagtail, celery, or crafts_ai
 - [ ] 2.7.4 Update all imports in both projects and delete originals
 - [ ] 2.7.5 Run tests
 
@@ -654,209 +654,209 @@ Generated: 2026-04-14 21:34:45
 - [ ] 2.9.2 Update all imports in both projects and delete originals
 - [ ] 2.9.3 Run tests
 
-#### 3.1 Extract all Wagtail-related handler mixins and page handlers to django_rseal
+#### 3.1 Extract all Wagtail-related handler mixins and page handlers to crafts_ai
 
 **Subtasks:**
 - [ ] 3.1.1 Identify all handler classes in both projects that inherit from wagtail.core.models.Page or import from wagtail
-- [ ] 3.1.2 Copy Wagtail page handler mixins to venv/libs/django-rseal/src/django_rseal/handlers/mixins/wagtail_page.py
-- [ ] 3.1.3 Copy Wagtail-specific fragment handlers to venv/libs/django-rseal/src/django_rseal/handlers/mixins/wagtail_fragment.py
-- [ ] 3.1.4 Copy Wagtail search integration to venv/libs/django-rseal/src/django_rseal/handlers/search.py
+- [ ] 3.1.2 Copy Wagtail page handler mixins to venv/libs/crafts-ai/src/crafts_ai/handlers/mixins/wagtail_page.py
+- [ ] 3.1.3 Copy Wagtail-specific fragment handlers to venv/libs/crafts-ai/src/crafts_ai/handlers/mixins/wagtail_fragment.py
+- [ ] 3.1.4 Copy Wagtail search integration to venv/libs/crafts-ai/src/crafts_ai/handlers/search.py
 - [ ] 3.1.5 Update all imports in both projects and delete originals
 - [ ] 3.1.6 Run tests
 
-#### 3.10 Extract Unfold admin and Wagtail admin customizations to django_rseal/contrib/admin_site/
+#### 3.10 Extract Unfold admin and Wagtail admin customizations to crafts_ai/contrib/admin_site/
 
 **Subtasks:**
-- [ ] 3.10.1 Copy Unfold admin customizations to venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py
-- [ ] 3.10.2 Copy Wagtail admin customizations to venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py
+- [ ] 3.10.1 Copy Unfold admin customizations to venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py
+- [ ] 3.10.2 Copy Wagtail admin customizations to venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py
 - [ ] 3.10.3 Update all imports in both projects and delete originals
 - [ ] 3.10.4 Run tests
 
-#### 3.11 Extract PrivacyConsentMiddleware to django_rseal
+#### 3.11 Extract PrivacyConsentMiddleware to crafts_ai
 
 **Subtasks:**
-- [ ] 3.11.1 Copy PrivacyConsentMiddleware to venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py
+- [ ] 3.11.1 Copy PrivacyConsentMiddleware to venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py
 - [ ] 3.11.2 Update MIDDLEWARE settings in both projects
 - [ ] 3.11.3 Update all imports and delete originals
 - [ ] 3.11.4 Run tests
 
-#### 3.12 Extract cache utilities to django_rseal/contrib/cache/
+#### 3.12 Extract cache utilities to crafts_ai/contrib/cache/
 
 **Subtasks:**
-- [ ] 3.12.1 Copy cache utility classes and decorators to venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py
+- [ ] 3.12.1 Copy cache utility classes and decorators to venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py
 - [ ] 3.12.2 Update all imports in both projects and delete originals
 - [ ] 3.12.3 Run tests
 
-#### 3.13 Extract Django signals to django_rseal/contrib/signals/
+#### 3.13 Extract Django signals to crafts_ai/contrib/signals/
 
 **Subtasks:**
-- [ ] 3.13.1 Copy reusable signal definitions to venv/libs/django-rseal/src/django_rseal/contrib/signals/
+- [ ] 3.13.1 Copy reusable signal definitions to venv/libs/crafts-ai/src/crafts_ai/contrib/signals/
 - [ ] 3.13.2 Update all imports in both projects and delete originals
 - [ ] 3.13.3 Run tests
 
-#### 3.14 Extract debug tools to django_rseal/contrib/debug_tools/
+#### 3.14 Extract debug tools to crafts_ai/contrib/debug_tools/
 
 **Subtasks:**
-- [ ] 3.14.1 Copy debug utility classes to venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/
+- [ ] 3.14.1 Copy debug utility classes to venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/
 - [ ] 3.14.2 Update all imports in both projects and delete originals
 - [ ] 3.14.3 Run tests
 
-#### 3.15 Extract email configuration utilities to django_rseal/contrib/email_config/
+#### 3.15 Extract email configuration utilities to crafts_ai/contrib/email_config/
 
 **Subtasks:**
-- [ ] 3.15.1 Copy email config helpers to venv/libs/django-rseal/src/django_rseal/contrib/email_config/
+- [ ] 3.15.1 Copy email config helpers to venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/
 - [ ] 3.15.2 Update all imports in both projects and delete originals
 - [ ] 3.15.3 Run tests
 
-#### 3.16 Extract Orchestrator CLI to django_rseal/workflows/
+#### 3.16 Extract Orchestrator CLI to crafts_ai/workflows/
 
 **Subtasks:**
-- [ ] 3.16.1 Copy orchestrator CLI code to venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py
+- [ ] 3.16.1 Copy orchestrator CLI code to venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py
 - [ ] 3.16.2 Update all imports in both projects and delete originals
 - [ ] 3.16.3 Run tests
 
-#### 3.17 Run full boundary check on django_rseal after all extractions
+#### 3.17 Run full boundary check on crafts_ai after all extractions
 
 **Subtasks:**
-- [ ] 3.17.1 Run scripts/check_boundaries.py — verify django_rseal has no project-specific imports
+- [ ] 3.17.1 Run scripts/check_boundaries.py — verify crafts_ai has no project-specific imports
 - [ ] 3.17.2 Fix any violations found
-- [ ] 3.17.3 Run full test suite for django_rseal package
+- [ ] 3.17.3 Run full test suite for crafts_ai package
 - [ ] 3.17.4 Commit with message: "feat(rseal): extract all Wagtail and automation logic"
 
-#### 3.2 Extract CartServiceBase to django_rseal
+#### 3.2 Extract CartServiceBase to crafts_ai
 
 **Subtasks:**
-- [ ] 3.2.1 Create venv/libs/django-rseal/src/django_rseal/pipelines/services/cart.py with CartServiceBase class
+- [ ] 3.2.1 Create venv/libs/crafts-ai/src/crafts_ai/pipelines/services/cart.py with CartServiceBase class
 - [ ] 3.2.2 Implement add_to_cart, remove_from_cart, get_cart, clear_cart base methods with cart_model injection pattern
 - [ ] 3.2.3 Replace ctc-research.com CartService with thin subclass: class CartService(CartServiceBase): cart_model = Cart
 - [ ] 3.2.4 Replace structa.cloud CartService with thin subclass: class CartService(CartServiceBase): cart_model = Cart
 - [ ] 3.2.5 Update all imports in both projects and delete original service files
 - [ ] 3.2.6 Run tests
 
-#### 3.3 Extract PersonServiceBase to django_rseal
+#### 3.3 Extract PersonServiceBase to crafts_ai
 
 **Subtasks:**
-- [ ] 3.3.1 Create venv/libs/django-rseal/src/django_rseal/pipelines/services/person.py with PersonServiceBase
+- [ ] 3.3.1 Create venv/libs/crafts-ai/src/crafts_ai/pipelines/services/person.py with PersonServiceBase
 - [ ] 3.3.2 Replace both project PersonService implementations with thin subclasses
 - [ ] 3.3.3 Update all imports and delete originals
 - [ ] 3.3.4 Run tests
 
-#### 3.4 Extract MessageServiceBase to django_rseal
+#### 3.4 Extract MessageServiceBase to crafts_ai
 
 **Subtasks:**
-- [ ] 3.4.1 Create venv/libs/django-rseal/src/django_rseal/pipelines/services/message.py with MessageServiceBase
+- [ ] 3.4.1 Create venv/libs/crafts-ai/src/crafts_ai/pipelines/services/message.py with MessageServiceBase
 - [ ] 3.4.2 Replace both project MessageService implementations with thin subclasses
 - [ ] 3.4.3 Update all imports and delete originals
 - [ ] 3.4.4 Run tests
 
-#### 3.5 Extract FormSubmissionService to django_rseal
+#### 3.5 Extract FormSubmissionService to crafts_ai
 
 **Subtasks:**
-- [ ] 3.5.1 Create venv/libs/django-rseal/src/django_rseal/pipelines/services/form_submission.py
+- [ ] 3.5.1 Create venv/libs/crafts-ai/src/crafts_ai/pipelines/services/form_submission.py
 - [ ] 3.5.2 Replace both project implementations with thin subclasses
 - [ ] 3.5.3 Update all imports and delete originals
 - [ ] 3.5.4 Run tests
 
-#### 3.6 Extract RoleBasedEmailTemplateSelector and EmailTemplateRegistry to django_rseal
+#### 3.6 Extract RoleBasedEmailTemplateSelector and EmailTemplateRegistry to crafts_ai
 
 **Subtasks:**
-- [ ] 3.6.1 Create venv/libs/django-rseal/src/django_rseal/email/selectors.py with RoleBasedEmailTemplateSelector
-- [ ] 3.6.2 Create venv/libs/django-rseal/src/django_rseal/email/registry.py with EmailTemplateRegistry
+- [ ] 3.6.1 Create venv/libs/crafts-ai/src/crafts_ai/email/selectors.py with RoleBasedEmailTemplateSelector
+- [ ] 3.6.2 Create venv/libs/crafts-ai/src/crafts_ai/email/registry.py with EmailTemplateRegistry
 - [ ] 3.6.3 Update all imports in both projects and delete originals
 - [ ] 3.6.4 Run tests
 
-#### 3.7 Extract Wagtail blocks (StructBlock, StreamBlock, etc.) to django_rseal/comp/
+#### 3.7 Extract Wagtail blocks (StructBlock, StreamBlock, etc.) to crafts_ai/comp/
 
 **Subtasks:**
 - [ ] 3.7.1 Audit all comp/ directories in both projects for Wagtail block classes
-- [ ] 3.7.2 Copy all Wagtail blocks to venv/libs/django-rseal/src/django_rseal/comp/blocks.py
-- [ ] 3.7.3 Copy StreamField block definitions to venv/libs/django-rseal/src/django_rseal/comp/stream_blocks.py
+- [ ] 3.7.2 Copy all Wagtail blocks to venv/libs/crafts-ai/src/crafts_ai/comp/blocks.py
+- [ ] 3.7.3 Copy StreamField block definitions to venv/libs/crafts-ai/src/crafts_ai/comp/stream_blocks.py
 - [ ] 3.7.4 Update all imports in both projects and delete originals
 - [ ] 3.7.5 Run tests
 
-#### 3.8 Extract Wagtail snippets to django_rseal
+#### 3.8 Extract Wagtail snippets to crafts_ai
 
 **Subtasks:**
-- [ ] 3.8.1 Copy reusable Wagtail snippet classes to venv/libs/django-rseal/src/django_rseal/contrib/snippets/
+- [ ] 3.8.1 Copy reusable Wagtail snippet classes to venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/
 - [ ] 3.8.2 Update all imports in both projects and delete originals
 - [ ] 3.8.3 Run tests
 
-#### 3.9 Extract Wagtail hooks to django_rseal
+#### 3.9 Extract Wagtail hooks to crafts_ai
 
 **Subtasks:**
-- [ ] 3.9.1 Copy reusable wagtail_hooks.py logic to venv/libs/django-rseal/src/django_rseal/contrib/wagtail_hooks.py
-- [ ] 3.9.2 Update both projects to import hooks from django_rseal
+- [ ] 3.9.1 Copy reusable wagtail_hooks.py logic to venv/libs/crafts-ai/src/crafts_ai/contrib/wagtail_hooks.py
+- [ ] 3.9.2 Update both projects to import hooks from crafts_ai
 - [ ] 3.9.3 Run tests
 
-#### 4.1 Create unified BaseTestCase in django_grep
+#### 4.1 Create unified BaseTestCase in django_osoul
 
 **Subtasks:**
-- [ ] 4.1.1 Create venv/libs/django-grep/src/django_grep/tests/base.py with BaseTestCase extending django.test.TestCase
+- [ ] 4.1.1 Create venv/libs/django-osoul/src/django_osoul/tests/base.py with BaseTestCase extending django.test.TestCase
 - [ ] 4.1.2 Add st_email() Hypothesis strategy to base.py
 - [ ] 4.1.3 Add st_slug() Hypothesis strategy to base.py
 - [ ] 4.1.4 Add st_uuid() Hypothesis strategy to base.py
-- [ ] 4.1.5 Run django_grep package tests to verify helpers work
+- [ ] 4.1.5 Run django_osoul package tests to verify helpers work
 
-#### 4.10 Run full boundary check — verify django_grep not imported by production code
+#### 4.10 Run full boundary check — verify django_osoul not imported by production code
 
 **Subtasks:**
 - [ ] 4.10.1 Run scripts/check_boundaries.py grep-test-only rule
-- [ ] 4.10.2 Fix any production code that imports django_grep
+- [ ] 4.10.2 Fix any production code that imports django_osoul
 - [ ] 4.10.3 Commit with message: "feat(grep): extract unified testing infrastructure and health checks"
 
-#### 4.2 Create unified factories in django_grep
+#### 4.2 Create unified factories in django_osoul
 
 **Subtasks:**
 - [ ] 4.2.1 Audit all factory_boy factory classes in both projects and packages
-- [ ] 4.2.2 Copy reusable factories to venv/libs/django-grep/src/django_grep/tests/factories/
-- [ ] 4.2.3 Update all test imports in both projects to use django_grep.tests.factories
+- [ ] 4.2.2 Copy reusable factories to venv/libs/django-osoul/src/django_osoul/tests/factories/
+- [ ] 4.2.3 Update all test imports in both projects to use django_osoul.tests.factories
 - [ ] 4.2.4 Delete duplicate factory files from projects
 - [ ] 4.2.5 Run tests
 
-#### 4.3 Create unified fixtures in django_grep
+#### 4.3 Create unified fixtures in django_osoul
 
 **Subtasks:**
-- [ ] 4.3.1 Copy reusable test fixtures to venv/libs/django-grep/src/django_grep/tests/fixtures/
-- [ ] 4.3.2 Update all test imports in both projects to use django_grep.tests.fixtures
+- [ ] 4.3.1 Copy reusable test fixtures to venv/libs/django-osoul/src/django_osoul/tests/fixtures/
+- [ ] 4.3.2 Update all test imports in both projects to use django_osoul.tests.fixtures
 - [ ] 4.3.3 Delete duplicate fixture files from projects
 - [ ] 4.3.4 Run tests
 
-#### 4.4 Create unified assertions in django_grep
+#### 4.4 Create unified assertions in django_osoul
 
 **Subtasks:**
-- [ ] 4.4.1 Copy custom assertion helpers to venv/libs/django-grep/src/django_grep/tests/assertions/
-- [ ] 4.4.2 Update all test imports in both projects to use django_grep.tests.assertions
+- [ ] 4.4.1 Copy custom assertion helpers to venv/libs/django-osoul/src/django_osoul/tests/assertions/
+- [ ] 4.4.2 Update all test imports in both projects to use django_osoul.tests.assertions
 - [ ] 4.4.3 Delete duplicate assertion files from projects
 - [ ] 4.4.4 Run tests
 
-#### 4.5 Create unified test mixins in django_grep
+#### 4.5 Create unified test mixins in django_osoul
 
 **Subtasks:**
-- [ ] 4.5.1 Copy reusable test mixin classes to venv/libs/django-grep/src/django_grep/tests/mixins/
+- [ ] 4.5.1 Copy reusable test mixin classes to venv/libs/django-osoul/src/django_osoul/tests/mixins/
 - [ ] 4.5.2 Update all test imports in both projects
 - [ ] 4.5.3 Delete duplicate mixin files from projects
 - [ ] 4.5.4 Run tests
 
-#### 4.6 Register pytest plugin in django_grep
+#### 4.6 Register pytest plugin in django_osoul
 
 **Subtasks:**
-- [ ] 4.6.1 Create venv/libs/django-grep/src/django_grep/tests/pytest_plugin.py with plugin registration
+- [ ] 4.6.1 Create venv/libs/django-osoul/src/django_osoul/tests/pytest_plugin.py with plugin registration
 - [ ] 4.6.2 Register plugin in pyproject.toml under [tool.pytest11]
 - [ ] 4.6.3 Verify plugin loads correctly in both projects
 
-#### 4.7 Create health check system in django_grep
+#### 4.7 Create health check system in django_osoul
 
 **Subtasks:**
-- [ ] 4.7.1 Create venv/libs/django-grep/src/django_grep/health/__init__.py
-- [ ] 4.7.2 Create venv/libs/django-grep/src/django_grep/health/views.py with HealthCheckView, DatabaseHealthView, AssetsHealthView, MediaHealthView
-- [ ] 4.7.3 Create venv/libs/django-grep/src/django_grep/health/urls.py with urlpatterns for all four endpoints
-- [ ] 4.7.4 Add path('health/', include('django_grep.health.urls')) to ctc-research.com/configs/urls.py
-- [ ] 4.7.5 Add path('health/', include('django_grep.health.urls')) to structa.cloud/configs/urls.py
+- [ ] 4.7.1 Create venv/libs/django-osoul/src/django_osoul/health/__init__.py
+- [ ] 4.7.2 Create venv/libs/django-osoul/src/django_osoul/health/views.py with HealthCheckView, DatabaseHealthView, AssetsHealthView, MediaHealthView
+- [ ] 4.7.3 Create venv/libs/django-osoul/src/django_osoul/health/urls.py with urlpatterns for all four endpoints
+- [ ] 4.7.4 Add path('health/', include('django_osoul.health.urls')) to ctc-research.com/configs/urls.py
+- [ ] 4.7.5 Add path('health/', include('django_osoul.health.urls')) to structa.cloud/configs/urls.py
 - [ ] 4.7.6 Remove any existing health check views/urls from both projects
 - [ ] 4.7.7 Test GET /health/ returns 200, GET /health/database/ returns 200, GET /health/assets/ returns 200, GET /health/media/ returns 200
 - [ ] 4.7.8 Test GET /health/database/ returns 503 when database is unreachable
 
-#### 4.8 Migrate all existing tests in both projects to use django_grep infrastructure
+#### 4.8 Migrate all existing tests in both projects to use django_osoul infrastructure
 
 **Subtasks:**
 - [ ] 4.8.1 Write scripts/migrate_tests.py implementing TestMigrator
@@ -866,11 +866,11 @@ Generated: 2026-04-14 21:34:45
 - [ ] 4.8.5 Delete duplicate test infrastructure files from projects
 - [ ] 4.8.6 Run full test suite and verify all tests pass
 
-#### 4.9 Move seeder infrastructure to django_grep
+#### 4.9 Move seeder infrastructure to django_osoul
 
 **Subtasks:**
-- [ ] 4.9.1 Copy database seeder classes to venv/libs/django-grep/src/django_grep/seeder/
-- [ ] 4.9.2 Copy management commands (backup_db, backup_media, load_fixtures) to venv/libs/django-grep/src/django_grep/management/commands/
+- [ ] 4.9.1 Copy database seeder classes to venv/libs/django-osoul/src/django_osoul/seeder/
+- [ ] 4.9.2 Copy management commands (backup_db, backup_media, load_fixtures) to venv/libs/django-osoul/src/django_osoul/management/commands/
 - [ ] 4.9.3 Update all imports in both projects and delete originals
 - [ ] 4.9.4 Run tests
 
@@ -970,9 +970,9 @@ Generated: 2026-04-14 21:34:45
 #### 7.2 Convert remaining project services to thin subclasses of package base classes
 
 **Subtasks:**
-- [ ] 7.2.1 For each service in ctc-research.com that has a corresponding base in django_rseal, replace with thin subclass pattern
-- [ ] 7.2.2 For each service in structa.cloud that has a corresponding base in django_rseal, replace with thin subclass pattern
-- [ ] 7.2.3 Add module-level docstrings documenting canonical import path: "Delegates to django_rseal.pipelines.services.CartServiceBase"
+- [ ] 7.2.1 For each service in ctc-research.com that has a corresponding base in crafts_ai, replace with thin subclass pattern
+- [ ] 7.2.2 For each service in structa.cloud that has a corresponding base in crafts_ai, replace with thin subclass pattern
+- [ ] 7.2.3 Add module-level docstrings documenting canonical import path: "Delegates to crafts_ai.pipelines.services.CartServiceBase"
 - [ ] 7.2.4 Run tests
 
 #### 7.3 Remove all remaining duplicate managers from projects
@@ -985,7 +985,7 @@ Generated: 2026-04-14 21:34:45
 #### 7.4 Remove all remaining duplicate mixins from projects
 
 **Subtasks:**
-- [ ] 7.4.1 Verify all mixins now imported from django_osoul.mixins or django_rseal
+- [ ] 7.4.1 Verify all mixins now imported from django_osoul.mixins or crafts_ai
 - [ ] 7.4.2 Delete any remaining duplicate mixin files from both projects
 - [ ] 7.4.3 Run tests
 
@@ -999,7 +999,7 @@ Generated: 2026-04-14 21:34:45
 #### 7.6 Remove all remaining duplicate middleware from projects
 
 **Subtasks:**
-- [ ] 7.6.1 Verify all middleware now imported from django_osoul.middlewares or django_rseal.contrib
+- [ ] 7.6.1 Verify all middleware now imported from django_osoul.middlewares or crafts_ai.contrib
 - [ ] 7.6.2 Delete any remaining duplicate middleware files from both projects
 - [ ] 7.6.3 Run tests
 
@@ -1063,8 +1063,8 @@ Generated: 2026-04-14 21:34:45
 - [ ] 8.5.1 Create or update ctc-research.com/CHANGELOG.md with all changes from this refactoring
 - [ ] 8.5.2 Create or update structa.cloud/CHANGELOG.md with all changes from this refactoring
 - [ ] 8.5.3 Create or update venv/libs/django-osoul/CHANGELOG.md
-- [ ] 8.5.4 Create or update venv/libs/django-rseal/CHANGELOG.md
-- [ ] 8.5.5 Create or update venv/libs/django-grep/CHANGELOG.md
+- [ ] 8.5.4 Create or update venv/libs/crafts-ai/CHANGELOG.md
+- [ ] 8.5.5 Create or update venv/libs/django-osoul/CHANGELOG.md
 - [ ] 8.5.6 Create or update venv/libs/nawaai/CHANGELOG.md
 
 #### 9.1 Verify no templates exist in any venv/libs/ package
@@ -1093,7 +1093,7 @@ Generated: 2026-04-14 21:34:45
 
 **Subtasks:**
 - [ ] 9.4.1 Audit all templatetags directories — reusable tags belong in packages, project-specific tags stay in projects
-- [ ] 9.4.2 Move reusable templatetags to appropriate package (django_osoul or django_rseal)
+- [ ] 9.4.2 Move reusable templatetags to appropriate package (django_osoul or crafts_ai)
 - [ ] 9.4.3 Update all {% load %} tags in templates
 - [ ] 9.4.4 Run tests
 

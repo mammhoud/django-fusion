@@ -48,14 +48,14 @@ ERROR_TRACKER_STORE_DB = True  # Store in database
 
 ## Privacy Consent Middleware
 
-**Location**: `django_rseal/pipelines/middlewares/privacy_consent.py`
+**Location**: `crafts_ai/pipelines/middlewares/privacy_consent.py`
 
 Enforces privacy consent for protected paths.
 
 ```python
 MIDDLEWARE = [
     # ...
-    'django_rseal.pipelines.middlewares.PrivacyConsentMiddleware',
+    'crafts_ai.pipelines.middlewares.PrivacyConsentMiddleware',
     # ...
 ]
 ```

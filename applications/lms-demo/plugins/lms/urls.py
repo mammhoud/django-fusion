@@ -19,7 +19,7 @@ from .views.payments import (
 )
 
 try:
-    from crafts_ai.rseal.site.payments import (
+    from crafts_ai.site.payments import (
         CartPayPalInitView,
         CartStripeInitView,
         PayPalInitView,

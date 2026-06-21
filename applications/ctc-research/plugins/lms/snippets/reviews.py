@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from crafts_ai.rseal.contrib.snippets.base import BaseSnippetViewSet
+from crafts_ai.contrib.snippets.base import BaseSnippetViewSet
 
 from plugins.lms.models import Review
 

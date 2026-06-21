@@ -23,7 +23,7 @@ TEMPLATES_DIRS = [
 - Root cause: `django_osoul` defines `Role` in two places:
   - `django_osoul.models.auth.Role`  
   - `django_osoul.site.auth.models.role.Role`
-- Triggered when `django_rseal.site` is imported (imports `django_osoul.site.auth`)
+- Triggered when `crafts_ai.site` is imported (imports `django_osoul.site.auth`)
 
 **Fixes Applied**:
 
@@ -43,7 +43,7 @@ TEMPLATES_DIRS = [
 4. **LMS URLs (plugins/lms/urls.py)**:
    - Removed `from .views import *` which imported all views eagerly
    - Split into targeted imports from specific modules
-   - Added `_get_payment_urls()` function for django_rseal payment views
+   - Added `_get_payment_urls()` function for crafts_ai payment views
 
 ## Outstanding Issues
 
@@ -56,7 +56,7 @@ plugins/urls.py
   → plugins/profile/urls.py (FIXED - lazy bases)
   → plugins/lms/urls.py (FIXED - removed star import)
     → plugins/lms/views/cart.py (FIXED - lazy mixin)
-    → django_rseal.site.payments (CONFLICT)
+    → crafts_ai.site.payments (CONFLICT)
 ```
 
 **Current Status**: Container keeps restarting with "make: *** [Makefile:165: server] Error 1"
@@ -91,7 +91,7 @@ plugins/urls.py
 
 5. `/root/site/websites/ctc-research/plugins/lms/views/cart.py`
    - Added lazy payment mixin loading
-   - Removed eager django_rseal.site.payments import
+   - Removed eager crafts_ai.site.payments import
 
 ## Next Steps
 
@@ -136,7 +136,7 @@ make docker-deploy-websites
 
 1. **Template Loading Fixed**: Added plugin template directories to Django configuration
 2. **Django OSoul Conflict Partially Mitigated**: Implemented lazy base class loading pattern for views
-3. **LMS URL Refactoring**: Removed problematic star imports that triggered django_rseal conflicts
+3. **LMS URL Refactoring**: Removed problematic star imports that triggered crafts_ai conflicts
 4. **Disk Space**: Freed 36GB of Docker artifacts to enable restarts
 
 ### Current Blocker: Container Startup Failure
@@ -241,15 +241,15 @@ The ctc-research site is now:
 
 ### Final Fixes Applied
 
-1. **Added django_rseal to INSTALLED_APPS** (`/root/site/websites/configs/base/apps.py`)
-   - Required because lms-demo imports from `django_rseal.models.default.DefaultBase`
+1. **Added crafts_ai to INSTALLED_APPS** (`/root/site/websites/configs/base/apps.py`)
+   - Required because lms-demo imports from `crafts_ai.models.default.DefaultBase`
 
 2. **Fixed lms/urls.py imports** (`/root/site/websites/ctc-research/plugins/lms/urls.py`)
    - Moved imports from star import to specific module-based imports
    - Fixed incorrect module assignments for views:
      - `CourseWatchView`, `CourseContinueView`, `LessonNavigationView` → from lessons.py (not courses.py)
      - `PaymentHistoryView`, `EnrollView` → from cart.py (not payments.py)
-   - Added lazy `_get_payment_urls()` for django_rseal payment views
+   - Added lazy `_get_payment_urls()` for crafts_ai payment views
 
 3. **Template Configuration** (`/root/site/websites/configs/base/templates.py`)
    - Added `plugins/components` and `plugins/templates` to TEMPLATES_DIRS
@@ -261,7 +261,7 @@ The ctc-research site is now:
 
 1. **Homepage/Root URL**: The root URL `/` returns a 500 error through the error handler. This appears to be a template rendering issue in the error handler, not the app itself.
 
-2. **Error Handler Templates**: The custom error handlers from django_grep may not be properly configured or available.
+2. **Error Handler Templates**: The custom error handlers from django_osoul may not be properly configured or available.
 
 ### Verification Commands
 
@@ -281,7 +281,7 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 | File | Changes |
 |------|---------|
 | `/root/site/websites/configs/base/templates.py` | Added plugin template directories |
-| `/root/site/websites/configs/base/apps.py` | Added django_rseal to INSTALLED_APPS |
+| `/root/site/websites/configs/base/apps.py` | Added crafts_ai to INSTALLED_APPS |
 | `/root/site/websites/ctc-research/plugins/urls.py` | Re-enabled LMS URLs |
 | `/root/site/websites/ctc-research/plugins/lms/urls.py` | Fixed view imports, added lazy payment URLs |
 | `/root/site/websites/ctc-research/plugins/profile/views/settings.py` | Added lazy mixin loading pattern |
@@ -310,7 +310,7 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
    - Uses Django's TEMPLATES_DIRS configuration
 
 2. **Import Chain Management**:
-   - Implemented lazy loading pattern for django_rseal-dependent views
+   - Implemented lazy loading pattern for crafts_ai-dependent views
    - Prevents model registry conflicts during URL pattern loading
    - Uses dispatch() method to bind mixins at request time
 

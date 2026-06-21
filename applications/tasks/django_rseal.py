@@ -7,8 +7,8 @@ runtime so local/minimal environments can still boot.
 """
 
 DJANGO_RSEAL_TASK_MODULES = [
-    "crafts_ai.rseal.tasks",
-    "crafts_ai.rseal.workflows.tasks",
-    "crafts_ai.rseal.workflows.pipelines.tasks",
-    "crafts_ai.rseal.services.communication.tasks",
+    "crafts_ai.tasks",
+    "crafts_ai.workflows.tasks",
+    "crafts_ai.workflows.pipelines.tasks",
+    "crafts_ai.services.communication.tasks",
 ]

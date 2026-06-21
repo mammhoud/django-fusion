@@ -28,7 +28,7 @@ INSTALLED_APPS = [
     "taggit",
     "modelcluster",
     "django_osoul",
-    "django_rseal",
+    "crafts_ai",
     "django_grep",
 ]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"

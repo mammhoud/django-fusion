@@ -2,7 +2,7 @@
 
 ## 🔴 Current Status
 - **Container**: ctc-web is running but workers keep crashing
-- **Root Cause**: Dependency chain failure: `django_rseal` → `django_osoul` → `twilio`
+- **Root Cause**: Dependency chain failure: `crafts_ai` → `django_osoul` → `twilio`
 - **Blocker**: Cannot install `twilio` due to OOM (Out of Memory) errors
 - **Workaround**: Creating fake `django_osoul` module with dynamic attribute resolution
 
@@ -10,7 +10,7 @@
 
 ### 1. **Dependency Chain Issue**
 ```
-django_rseal (installed in container)
+crafts_ai (installed in container)
   └─ depends on django_osoul
        └─ depends on twilio (SMS/Voice service)
             └─ Installation FAILS due to memory constraints
@@ -23,10 +23,10 @@ django_rseal (installed in container)
 - `ModuleNotFoundError: No module named 'django_osoul.managers'; 'django_osoul' is not a package`
 - `AttributeError: module 'django_osoul.site.enums.upload' has no attribute 'FileUploadStrategy'`
 
-### 3. **Why We Can't Just Remove django_rseal**
-- Code directly imports: `from django_rseal.models.default import DefaultBase`
+### 3. **Why We Can't Just Remove crafts_ai**
+- Code directly imports: `from crafts_ai.models.default import DefaultBase`
 - Models need to be registered in Django's app registry (INSTALLED_APPS)
-- Removing from INSTALLED_APPS causes: `Model class django_rseal.models.settings.email.EmailSettings doesn't declare an explicit app_label`
+- Removing from INSTALLED_APPS causes: `Model class crafts_ai.models.settings.email.EmailSettings doesn't declare an explicit app_label`
 
 ## Current Workaround
 
@@ -68,7 +68,7 @@ django_osoul/
 docker exec ctc-web pip install twilio --no-cache-dir
 
 # Option B: Install in Dockerfile with memory swap
-# Add before django_rseal: RUN pip install --no-cache-dir twilio
+# Add before crafts_ai: RUN pip install --no-cache-dir twilio
 
 # Option C: Use lightweight alternative
 # Create slim twilio mock that only has Client class
@@ -79,25 +79,25 @@ docker exec ctc-web pip install twilio --no-cache-dir
 
 ---
 
-### **SOLUTION 2: Replace django_rseal Entirely (Best long-term)**
+### **SOLUTION 2: Replace crafts_ai Entirely (Best long-term)**
 **Status**: Requires architectural changes
 
 **Steps**:
-1. Remove django_rseal dependency from:
+1. Remove crafts_ai dependency from:
    - `/root/site/websites/ctc-research/www/core/content/models/contact.py`
-   - Any other imports from django_rseal
+   - Any other imports from crafts_ai
 
 2. Replace `DefaultBase` with:
    ```python
    from django.db import models
    
    class DefaultBase(models.Model):
-       # Implement required fields/methods from django_rseal.DefaultBase
+       # Implement required fields/methods from crafts_ai.DefaultBase
        class Meta:
            abstract = True
    ```
 
-3. Migrate all django_rseal.GenericSetting models to Django's native approach
+3. Migrate all crafts_ai.GenericSetting models to Django's native approach
 
 4. Create custom admin interfaces where needed
 
@@ -150,7 +150,7 @@ sys.modules['twilio'] = twilio
 sys.modules['twilio.rest'] = twilio.rest
 ```
 
-Then install this BEFORE django_rseal in requirements.
+Then install this BEFORE crafts_ai in requirements.
 
 **Pros**: Lightweight, specific to our needs
 **Cons**: Breaks if code actually tries to use Twilio features
@@ -162,7 +162,7 @@ Then install this BEFORE django_rseal in requirements.
 ### Currently Missing Attributes to Add
 - `django_osoul.managers.*` (various manager classes)
 - `django_osoul.site.enums.env.Direction`
-- Potentially more as django_rseal loads additional models
+- Potentially more as crafts_ai loads additional models
 
 ### Pattern to Follow
 When new `AttributeError` occurs:
@@ -191,7 +191,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 1. **`/root/site/websites/ctc-research/settings.py`**
    - Added fake django_osoul module hierarchy
    - Added DJANGO_SETTINGS_MODULE=ctc-research.settings (fixed import path)
-   - Kept django_rseal in INSTALLED_APPS (required for models)
+   - Kept crafts_ai in INSTALLED_APPS (required for models)
 
 2. **`/root/site/websites/ctc-research/.env`**
    - Updated DJANGO_SETTINGS_MODULE
@@ -201,12 +201,12 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
    - Updated ALLOWED_HOSTS
 
 4. **`/root/site/websites/ctc-research/www/core/content/models/_compat.py`**
-   - Created compatibility module for django_rseal imports
+   - Created compatibility module for crafts_ai imports
    - Maps old import paths to correct locations
 
 5. **`/root/site/websites/configs/base/apps.py`**
    - Fixed AppRegistry module resolution
-   - Added django_rseal to INSTALLED_APPS
+   - Added crafts_ai to INSTALLED_APPS
 
 ---
 
@@ -251,7 +251,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 
 ## Additional Websites to Check
 
-- **LMS (lms-demo)**: Check if same django_rseal/django_osoul issues exist
+- **LMS (lms-demo)**: Check if same crafts_ai/django_osoul issues exist
 - **VResume (VResume)**: Check if same issues exist when enabled
 - **structa-cloud**: Check if disabled correctly with profiles
 
@@ -259,7 +259,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 
 ## References
 
-- **django_rseal**: https://github.com/your-repo/django_rseal (check actual location)
+- **crafts_ai**: https://github.com/your-repo/crafts_ai (check actual location)
 - **django_osoul**: Appears to be internal package, requires twilio
 - **Issue**: Circular dependency chain with memory-intensive package
 
@@ -272,7 +272,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 ### Problem with Fake Module Approach
 The fake `django_osoul` module approach creates a cascading problem:
 1. Add fake module → Works briefly
-2. Django imports more of django_rseal → New missing module error
+2. Django imports more of crafts_ai → New missing module error
 3. Repeat infinitely...
 
 **Missing modules discovered so far**:
@@ -282,7 +282,7 @@ The fake `django_osoul` module approach creates a cascading problem:
 - And more will follow...
 
 ### Why This Is Happening
-- `django_rseal` was designed to work with complete `django_osoul` package
+- `crafts_ai` was designed to work with complete `django_osoul` package
 - Different parts of the code import from different submodules
 - We don't have complete `django_osoul` documentation to know all required submodules
 - Each workaround reveals another missing piece
@@ -336,9 +336,9 @@ sys.modules['twilio'] = twilio
 sys.modules['twilio.rest'] = twilio.rest
 ```
 
-Install this package BEFORE running `pip install django_rseal` in the Dockerfile.
+Install this package BEFORE running `pip install crafts_ai` in the Dockerfile.
 
-### **LONG-TERM**: Option C - Remove django_rseal Dependency
+### **LONG-TERM**: Option C - Remove crafts_ai Dependency
 Requires code refactoring but provides sustainable solution.
 
 ---

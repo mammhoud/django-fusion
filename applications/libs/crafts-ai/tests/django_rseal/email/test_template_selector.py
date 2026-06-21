@@ -21,7 +21,7 @@ import django
 
 django.setup()
 
-from django_rseal.email.templates.template_selector import RoleBasedEmailTemplateSelector
+from crafts_ai.email.templates.template_selector import RoleBasedEmailTemplateSelector
 
 
 @pytest.mark.django_db
@@ -147,7 +147,7 @@ class TestRoleBasedEmailTemplateSelector:
         assert user_context["role_color"] == "#ff9800"
         assert user_context["user_name"] == "Test User"
 
-    @patch('django_rseal.email.templates.template_selector.render_to_string')
+    @patch('crafts_ai.email.templates.template_selector.render_to_string')
     def test_render_email_success(self, mock_render, selector):
         """Test successful email rendering."""
         # Mock template rendering
@@ -171,7 +171,7 @@ class TestRoleBasedEmailTemplateSelector:
         assert html == "<h1>Admin Email</h1><p>Test content</p>"
         assert text == "Admin EmailTest content"  # Stripped HTML
 
-    @patch('django_rseal.email.templates.template_selector.render_to_string')
+    @patch('crafts_ai.email.templates.template_selector.render_to_string')
     def test_render_email_fallback(self, mock_render, selector):
         """Test email rendering with fallback."""
         # Mock first render to fail
@@ -206,7 +206,7 @@ class TestRoleBasedEmailTemplateSelector:
         assert html == "<h1>Default Email</h1><p>Fallback content</p>"
         assert text == "Default EmailFallback content"
 
-    @patch('django_rseal.email.templates.template_selector.render_to_string')
+    @patch('crafts_ai.email.templates.template_selector.render_to_string')
     def test_render_email_legacy(self, mock_render, selector):
         """Test email rendering with legacy templates."""
         mock_render.return_value = "<h1>Legacy Email</h1><p>Legacy content</p>"
@@ -227,7 +227,7 @@ class TestRoleBasedEmailTemplateSelector:
         assert html == "<h1>Legacy Email</h1><p>Legacy content</p>"
         assert text == "Legacy EmailLegacy content"
 
-    @patch('django_rseal.email.templates.template_selector.render_to_string')
+    @patch('crafts_ai.email.templates.template_selector.render_to_string')
     def test_render_email_complete_flow(self, mock_render, selector):
         """Test complete email rendering flow."""
         mock_render.return_value = """
@@ -360,7 +360,7 @@ class TestRoleBasedEmailTemplateSelector:
 
         # This context and template path can now be used with EmailService
         # Example:
-        # from django_rseal.email.services import EmailService
+        # from crafts_ai.email.services import EmailService
         # service = EmailService()
         # service.send_email(
         #     recipient=context["email"],
@@ -370,7 +370,7 @@ class TestRoleBasedEmailTemplateSelector:
         #     queue=True,
         # )
 
-    @patch('django_rseal.email.templates.template_selector.render_to_string')
+    @patch('crafts_ai.email.templates.template_selector.render_to_string')
     def test_performance_with_multiple_renders(self, mock_render, selector):
         """Test selector performance with multiple renders."""
         import time

@@ -2,7 +2,7 @@ Project Todo List – Master
 Includes all tasks from the original list, the detailed bullet points, and the new directives (merged packages, Docker env consolidation, error fixing, testing, agents, docs, and component enhancements).
 
 0. Global Pre‑Requisites
-Finish the deprecation of applications/libs/ref
+Confirmed applications/libs/ref was removed after package merge
 Merge its two packages fully into:
 
 applications/libs/django-osoul
@@ -97,12 +97,12 @@ Ensure structural consistency across all websites (vresume, lms-demo)
 Any file that now exists in the base assets directory should be removed from website‑specific directories, and all references must be updated.
 
 5. Library Merge & Code Organisation
-Merge django-grep into django-osoul → final location: applications/libs/django-osoul
+Merged django-osoul compatibility plan → final location: applications/libs/django-osoul
 
-Merge django-rseal into crafts-ai → final location: applications/libs/crafts-ai
+Merged crafts-ai compatibility plan → final location: applications/libs/crafts-ai
 
 Check for duplicated configurations
-If any component or configuration from django-rseal already exists in django-osoul, consolidate them into django-osoul.
+If any component or configuration from crafts-ai already exists in django-osoul, consolidate them into django-osoul.
 
 Organise directories and namespaces
 Use effective, use‑case‑based names, and follow Django conventions (contrib, models, managers, management/services, etc.).

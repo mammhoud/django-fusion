@@ -1,8 +1,8 @@
 """
-Auth flow tests for ctc-research.com using django-grep test utilities.
+Auth flow tests for ctc-research.com using django-osoul test utilities.
 
-Uses django_grep.tests.base.BaseTestCase (Django test client — browser-style)
-and django_grep.tests.mixins.AssertHTMLMixin for HTML assertions.
+Uses django_osoul.tests.base.BaseTestCase (Django test client — browser-style)
+and django_osoul.tests.mixins.AssertHTMLMixin for HTML assertions.
 
 Covers:
 - Login with valid credentials
@@ -41,8 +41,8 @@ _WEBPACK_OVERRIDE = {
     }
 }
 from django.urls import reverse
-from django_grep.tests.base import BaseTestCase
-from django_grep.tests.mixins import AssertHTMLMixin
+from django_osoul.tests.base import BaseTestCase
+from django_osoul.tests.mixins import AssertHTMLMixin
 
 User = get_user_model()
 
@@ -66,7 +66,7 @@ ADMIN_LOGIN_REDIRECT_PATTERNS = ("login", "sign-in", "signin")
 # ---------------------------------------------------------------------------
 
 class AuthLoginTest(AssertHTMLMixin, BaseTestCase):
-    """Test login flow using django-grep BaseTestCase client."""
+    """Test login flow using django-osoul BaseTestCase client."""
 
     def test_login_page_loads(self):
         """GET /accounts/login/ returns 200."""
@@ -223,7 +223,7 @@ class AuthProtectedRedirectTest(AssertHTMLMixin, BaseTestCase):
 
 
 class AdminPanelAuthTest(AssertHTMLMixin, BaseTestCase):
-    """Test admin panel access using django-grep admin_user fixture."""
+    """Test admin panel access using django-osoul admin_user fixture."""
 
     def test_admin_panel_accessible_for_superuser(self):
         """

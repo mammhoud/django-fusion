@@ -4,7 +4,7 @@
 - [ ] Merge django-grep dependency layout into django-osoul (applications/libs/django-osoul)
 - [ ] Merge django-rseal dependency layout into applications/libs/crafts-ai
 - [ ] Update imports across all websites to merged namespaces
-- [ ] full merge of the packages using the source at applications/libs/ref and make sure all files merged and organized  
+- [ ] full merge of the packages using the merged django_osoul and crafts_ai source layout  
 - [ ] Check for remaining component/configuration overlaps between django-osoul and crafts-ai
 - [ ] Organize directories and namespaces effectively (use case/namespace or Django naming: contrib/models/managers/services)
 ## Reference

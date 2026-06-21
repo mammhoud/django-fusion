@@ -1,6 +1,6 @@
 from django.db.models import Q
-from crafts_ai.rseal.contrib.core.models import Contact, ContactEmail, ContactPhone
-from crafts_ai.rseal.contrib.core.models import Corporate as Company
+from crafts_ai.contrib.core.models import Contact, ContactEmail, ContactPhone
+from crafts_ai.contrib.core.models import Corporate as Company
 
 # from commons.contact.models.profile import Company
 

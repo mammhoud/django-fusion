@@ -48,7 +48,7 @@ class DeprecatedCodeScanner:
 
     def scan_all_packages(self) -> DeprecationReport:
         """Scan all packages for deprecated code."""
-        packages = ["django-osoul", "django-rseal", "django-seed", "django-grep"]
+        packages = ["django-osoul", "crafts-ai", "django-seed", "django-osoul"]
 
         for package in packages:
             package_path = self.root_dir / package

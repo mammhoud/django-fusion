@@ -7,10 +7,10 @@ import sys
 from pathlib import Path
 
 # Add libs to path
-sys.path.insert(0, str(Path(__file__).parent / "libs" / "django-grep" / "src"))
+sys.path.insert(0, str(Path(__file__).parent / "libs" / "django-osoul" / "src"))
 
-from django_grep.email_tools.csv_manager import EmailCSVManager
-from django_grep.email_tools.extractor import EmailExtractor
+from django_osoul.email_tools.csv_manager import EmailCSVManager
+from django_osoul.email_tools.extractor import EmailExtractor
 
 
 def test_email_extraction():

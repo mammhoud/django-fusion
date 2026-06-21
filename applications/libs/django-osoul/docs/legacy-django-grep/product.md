@@ -18,4 +18,4 @@ By including this plugin, your AI assistant gains the ability to:
 - Propose and apply architectural changes.
 - Generate specialized Wagtail hooks and models based on existing patterns.
 
-To enable MCP, ensure `django_grep.mcp_designer` is in your `INSTALLED_APPS`.
+To enable MCP, ensure `django_osoul.mcp_designer` is in your `INSTALLED_APPS`.

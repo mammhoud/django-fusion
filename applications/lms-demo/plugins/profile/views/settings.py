@@ -5,8 +5,8 @@ from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_osoul.site import NotificationMixin, PageHandler
-from crafts_ai.rseal.models import Person
-from crafts_ai.rseal.site.mixins import ProfileContextMixin, ProfileOperationsMixin
+from crafts_ai.models import Person
+from crafts_ai.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 
 from plugins.accounts.management.services import PersonService
 

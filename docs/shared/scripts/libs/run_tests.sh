@@ -1,13 +1,13 @@
 #!/usr/bin/env bash
-# Run the centralized test suite from django-grep.
+# Run the centralized test suite from django-osoul.
 # Usage: ./scripts/libs/run_tests.sh [pytest-args]
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 REPO_ROOT="$(cd "$SCRIPT_DIR/../.." && pwd)"
-GREP_DIR="$REPO_ROOT/libs/django-grep"
+GREP_DIR="$REPO_ROOT/libs/django-osoul"
 
-echo "=== django-grep centralized test suite ==="
+echo "=== django-osoul centralized test suite ==="
 cd "$GREP_DIR"
 
 # Activate venv if present

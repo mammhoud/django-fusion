@@ -34,7 +34,7 @@ INSTALLED_APPS = [
     "taggit",
     "modelcluster",
     "fake_accounts.apps.FakeAccountsConfig",  # Stub for accounts app
-    "django_rseal",
+    "crafts_ai",
 ]
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 USE_TZ = True
@@ -78,7 +78,7 @@ PROFILE_MODEL = 'auth.User'
 
 # Skip migrations that depend on external apps not in test environment
 MIGRATION_MODULES = {
-    'django_rseal': None,  # Use in-memory schema creation instead
+    'crafts_ai': None,  # Use in-memory schema creation instead
     'pipelines': None,     # Use in-memory schema creation instead
     'accounts': None,      # Fake accounts app - no migrations needed
 }

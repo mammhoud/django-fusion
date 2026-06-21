@@ -27,7 +27,7 @@
 
 **Sample Symbols:**
 - import Course
-- from django_rseal.pipelines.site.payments import
+- from crafts_ai.pipelines.site.payments import
 
 ## 4. structa.cloud/apps/accounts/email_templates.py
 **Primary Domain:** accounts

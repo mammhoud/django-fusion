@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
-from django_rseal.communication.email.models import EmailLog
-from django_rseal.communication.tasks import (
+from crafts_ai.communication.email.models import EmailLog
+from crafts_ai.communication.tasks import (
     check_registrations_task,
     email_sent_hook,
     generate_weekly_report_task,

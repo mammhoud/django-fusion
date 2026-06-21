@@ -22,8 +22,8 @@ import django
 
 django.setup()
 
-from django_rseal.email.models import EmailLog
-from django_rseal.email.services import BulkEmailService, EmailService  # noqa: E402
+from crafts_ai.email.models import EmailLog
+from crafts_ai.email.services import BulkEmailService, EmailService  # noqa: E402
 
 
 @pytest.fixture
@@ -298,7 +298,7 @@ class TestBulkEmailService:
             assert log.template_used == "emails/batch_test.html"
             assert log.status == EmailLog.Status.QUEUED
 
-    @patch('django_rseal.email.services.EmailService.send_email')
+    @patch('crafts_ai.email.services.EmailService.send_email')
     def test_send_batch_immediate(self, mock_send_email, bulk_email_service, recipient_list):
         """Test batch email sending with queue=False."""
         # Mock individual email sends
@@ -428,7 +428,7 @@ class TestEmailServiceIntegration:
     @pytest.fixture
     def email_template(self):
         """Fixture providing email template."""
-        from django_rseal.email.models.models import EmailTemplate
+        from crafts_ai.email.models.models import EmailTemplate
 
         return EmailTemplate.objects.create(
             name="Integration Test Template",

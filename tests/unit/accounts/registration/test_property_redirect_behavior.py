@@ -17,7 +17,7 @@ Specifically:
   4. The HTTP 302 redirect location is always a non-empty string.
 
 These tests are standalone — they configure Django minimally and mock
-the heavy django_grep / wagtail import chain so that only the pure
+the heavy django_osoul / wagtail import chain so that only the pure
 redirect decision logic is exercised.
 """
 
@@ -61,7 +61,7 @@ def _ensure_mock(name: str) -> types.ModuleType:
 
 
 # django_osoul.comp.site — needs a PageHandler class
-_ensure_mock("django_grep")
+_ensure_mock("django_osoul")
 _ensure_mock("django_osoul.comp")
 _site_mod = _ensure_mock("django_osoul.comp.site")
 if not hasattr(_site_mod, "PageHandler"):

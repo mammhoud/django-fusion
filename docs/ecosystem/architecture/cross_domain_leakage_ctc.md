@@ -17,7 +17,7 @@
 - import SnippetViewSetGroup
 - class ManagementsSnippetGroup
 - import Form
-- from django_rseal.pipelines.snippets.manage.submissions import
+- from crafts_ai.pipelines.snippets.manage.submissions import
 - import FormSubmission
 
 ## 3. ctc-research.com/apps/lms/wagtail_hooks.py
@@ -39,7 +39,7 @@
 
 **Sample Symbols:**
 - import Course
-- from django_rseal.pipelines.site.payments import
+- from crafts_ai.pipelines.site.payments import
 
 ## 5. ctc-research.com/apps/accounts/apps.py
 **Primary Domain:** accounts
@@ -1411,9 +1411,9 @@
 **Leaked Domains:** forms
 
 **Sample Symbols:**
-- from django_rseal.handlers.models.forms.submission import
+- from crafts_ai.handlers.models.forms.submission import
 - import Form
-- from django_rseal.handlers.models.forms.submission import
+- from crafts_ai.handlers.models.forms.submission import
 - import FormSubmission
 
 ## 134. ctc-research.com/apps/accounts/management/commands/setup_wagtail_home.py

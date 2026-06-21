@@ -15,7 +15,7 @@ class Phase3ImportUpdater:
         self.workspace_root = Path("/root/site")
         self.ctc_project = self.workspace_root / "ctc-research.com"
         self.structa_project = self.workspace_root / "structa.cloud"
-        self.django_rseal_src = self.workspace_root / "venv/libs/django-rseal/src/django_rseal"
+        self.crafts_ai_src = self.workspace_root / "venv/libs/crafts-ai/src/crafts_ai"
         self.updates_count = 0
 
     def log(self, message: str):
@@ -23,34 +23,34 @@ class Phase3ImportUpdater:
         print(f"[IMPORT_UPDATE] {message}")
 
     def fix_boundary_violations(self) -> int:
-        """Fix project-specific imports in django_rseal files."""
-        self.log("\n=== Fixing Boundary Violations in django_rseal ===")
+        """Fix project-specific imports in crafts_ai files."""
+        self.log("\n=== Fixing Boundary Violations in crafts_ai ===")
 
         violations_fixed = 0
 
         # Files with project-specific imports that should be removed or abstracted
         files_to_fix = [
-            self.django_rseal_src / "pipelines/managers/user.py",
-            self.django_rseal_src / "pipelines/models/users/team.py",
-            self.django_rseal_src / "pipelines/models/locations/branch.py",
-            self.django_rseal_src / "pipelines/models/workspace.py",
-            self.django_rseal_src / "pipelines/services/certificate.py",
-            self.django_rseal_src / "pipelines/site/mixins.py",
-            self.django_rseal_src / "pipelines/site/payments.py",
-            self.django_rseal_src / "pipelines/site/tags.py",
-            self.django_rseal_src / "pipelines/signals/utils.py",
-            self.django_rseal_src / "pipelines/snippets/tags.py",
-            self.django_rseal_src / "pipelines/snippets/manage/services.py",
-            self.django_rseal_src / "pipelines/snippets/manage/peoples.py",
-            self.django_rseal_src / "pipelines/snippets/manage/partners.py",
-            self.django_rseal_src / "pipelines/snippets/manage/events.py",
-            self.django_rseal_src / "pipelines/snippets/manage/team.py",
-            self.django_rseal_src / "contrib/snippets/services.py",
-            self.django_rseal_src / "contrib/snippets/peoples.py",
-            self.django_rseal_src / "contrib/snippets/tags.py",
-            self.django_rseal_src / "handlers/models/manage_company.py",
-            self.django_rseal_src / "handlers/models/blog_index.py",
-            self.django_rseal_src / "comp/blocks.py",
+            self.crafts_ai_src / "pipelines/managers/user.py",
+            self.crafts_ai_src / "pipelines/models/users/team.py",
+            self.crafts_ai_src / "pipelines/models/locations/branch.py",
+            self.crafts_ai_src / "pipelines/models/workspace.py",
+            self.crafts_ai_src / "pipelines/services/certificate.py",
+            self.crafts_ai_src / "pipelines/site/mixins.py",
+            self.crafts_ai_src / "pipelines/site/payments.py",
+            self.crafts_ai_src / "pipelines/site/tags.py",
+            self.crafts_ai_src / "pipelines/signals/utils.py",
+            self.crafts_ai_src / "pipelines/snippets/tags.py",
+            self.crafts_ai_src / "pipelines/snippets/manage/services.py",
+            self.crafts_ai_src / "pipelines/snippets/manage/peoples.py",
+            self.crafts_ai_src / "pipelines/snippets/manage/partners.py",
+            self.crafts_ai_src / "pipelines/snippets/manage/events.py",
+            self.crafts_ai_src / "pipelines/snippets/manage/team.py",
+            self.crafts_ai_src / "contrib/snippets/services.py",
+            self.crafts_ai_src / "contrib/snippets/peoples.py",
+            self.crafts_ai_src / "contrib/snippets/tags.py",
+            self.crafts_ai_src / "handlers/models/manage_company.py",
+            self.crafts_ai_src / "handlers/models/blog_index.py",
+            self.crafts_ai_src / "comp/blocks.py",
         ]
 
         for filepath in files_to_fix:
@@ -100,25 +100,25 @@ class Phase3ImportUpdater:
         return violations_fixed
 
     def update_project_imports(self, project_path: Path) -> int:
-        """Update imports in a project to use new django_rseal locations."""
+        """Update imports in a project to use new crafts_ai locations."""
         self.log(f"\n=== Updating imports in {project_path.name} ===")
 
         # Import replacements mapping
         replacements = {
             # Email templates
-            r'from apps\.handlers\.email_templates import': 'from django_rseal.email.selectors import',
+            r'from apps\.handlers\.email_templates import': 'from crafts_ai.email.selectors import',
             # Wagtail blocks
-            r'from apps\.handlers\.blocks import': 'from django_rseal.comp.blocks import',
+            r'from apps\.handlers\.blocks import': 'from crafts_ai.comp.blocks import',
             # Wagtail hooks
-            r'from apps\.handlers\.registration\.wagtail_hooks import': 'from django_rseal.contrib.wagtail_hooks import',
+            r'from apps\.handlers\.registration\.wagtail_hooks import': 'from crafts_ai.contrib.wagtail_hooks import',
             # Snippets
-            r'from apps\.handlers\.snippets\.base import': 'from django_rseal.contrib.snippets.base import',
-            r'from apps\.handlers\.snippets\.tags import': 'from django_rseal.contrib.snippets.tags import',
+            r'from apps\.handlers\.snippets\.base import': 'from crafts_ai.contrib.snippets.base import',
+            r'from apps\.handlers\.snippets\.tags import': 'from crafts_ai.contrib.snippets.tags import',
             # Services
-            r'from apps\.handlers\.services\.cart import': 'from django_rseal.pipelines.services.cart import',
-            r'from apps\.handlers\.services\.person import': 'from django_rseal.pipelines.services.person import',
-            r'from apps\.handlers\.services\.message import': 'from django_rseal.pipelines.services.message import',
-            r'from apps\.handlers\.services\.form_submission import': 'from django_rseal.pipelines.services.form_submission import',
+            r'from apps\.handlers\.services\.cart import': 'from crafts_ai.pipelines.services.cart import',
+            r'from apps\.handlers\.services\.person import': 'from crafts_ai.pipelines.services.person import',
+            r'from apps\.handlers\.services\.message import': 'from crafts_ai.pipelines.services.message import',
+            r'from apps\.handlers\.services\.form_submission import': 'from crafts_ai.pipelines.services.form_submission import',
         }
 
         updated_count = 0
@@ -143,7 +143,7 @@ class Phase3ImportUpdater:
         self.log("=" * 70)
 
         try:
-            # Fix boundary violations in django_rseal
+            # Fix boundary violations in crafts_ai
             violations_fixed = self.fix_boundary_violations()
 
             # Update imports in both projects

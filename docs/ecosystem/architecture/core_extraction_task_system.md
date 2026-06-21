@@ -9,7 +9,7 @@
 
 ## Executive Overview
 
-This task system focuses on extracting **only core, reusable code** from Django websites into django-osoul and django-rseal packages. Project-specific logic remains in websites. The system eliminates duplication and ensures code fits clear package use cases.
+This task system focuses on extracting **only core, reusable code** from Django websites into django-osoul and crafts-ai packages. Project-specific logic remains in websites. The system eliminates duplication and ensures code fits clear package use cases.
 
 ### Core Principles
 - **Extract Only Core Code:** Reusable across multiple projects
@@ -101,8 +101,8 @@ This task system focuses on extracting **only core, reusable code** from Django 
    grep -r "send_mail\|EmailMessage" ctc-research.com structa.cloud --include="*.py"
 
    # Categorize:
-   # - Email sending logic → Core (django-rseal)
-   # - Email templates → Core (django-rseal)
+   # - Email sending logic → Core (crafts-ai)
+   # - Email templates → Core (crafts-ai)
    # - Project-specific emails → Stays
    ```
 
@@ -112,8 +112,8 @@ This task system focuses on extracting **only core, reusable code** from Django 
    grep -r "@task\|@periodic_task\|celery" ctc-research.com structa.cloud --include="*.py"
 
    # Categorize:
-   # - Task base classes → Core (django-rseal)
-   # - Task utilities → Core (django-rseal)
+   # - Task base classes → Core (crafts-ai)
+   # - Task utilities → Core (crafts-ai)
    # - Project tasks → Stays
    ```
 
@@ -398,12 +398,12 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 ## Phase 3: Extract Email & Task Logic (Weeks 4-5)
 
-### Task 3.1: Extract Email Logic to django-rseal
+### Task 3.1: Extract Email Logic to crafts-ai
 
-**Objective:** Move reusable email logic to django-rseal
+**Objective:** Move reusable email logic to crafts-ai
 
 **Deliverables:**
-- [ ] Email logic in django-rseal
+- [ ] Email logic in crafts-ai
 - [ ] Email templates organized
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
@@ -420,9 +420,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Email tracking
    ```
 
-2. **Create in django-rseal**
+2. **Create in crafts-ai**
    ```bash
-   venv/libs/django-rseal/src/django_rseal/email/
+   venv/libs/crafts-ai/src/crafts_ai/email/
    ```
 
 3. **Move Code**
@@ -433,7 +433,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 4. **Organize Email Templates**
    ```bash
-   # Move reusable email templates to django-rseal
+   # Move reusable email templates to crafts-ai
    # Keep project-specific templates in websites
    ```
 
@@ -453,19 +453,19 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Email logic in django-rseal
+- Email logic in crafts-ai
 - Websites still work
 - All tests passing
 - No duplication
 
 ---
 
-### Task 3.2: Extract Task Logic to django-rseal
+### Task 3.2: Extract Task Logic to crafts-ai
 
-**Objective:** Move reusable task logic to django-rseal
+**Objective:** Move reusable task logic to crafts-ai
 
 **Deliverables:**
-- [ ] Task logic in django-rseal
+- [ ] Task logic in crafts-ai
 - [ ] Task base classes created
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
@@ -482,9 +482,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Task error handling
    ```
 
-2. **Create in django-rseal**
+2. **Create in crafts-ai**
    ```bash
-   venv/libs/django-rseal/src/django_rseal/tasks/
+   venv/libs/crafts-ai/src/crafts_ai/tasks/
    ```
 
 3. **Move Code**
@@ -509,7 +509,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Task logic in django-rseal
+- Task logic in crafts-ai
 - Websites still work
 - All tests passing
 - No duplication
@@ -518,12 +518,12 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 ## Phase 4: Extract Testing Utilities (Week 6)
 
-### Task 4.1: Extract Testing Factories to django-grep
+### Task 4.1: Extract Testing Factories to django-osoul
 
-**Objective:** Move reusable test factories to django-grep
+**Objective:** Move reusable test factories to django-osoul
 
 **Deliverables:**
-- [ ] Factories in django-grep
+- [ ] Factories in django-osoul
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -538,9 +538,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Common fixtures
    ```
 
-2. **Create in django-grep**
+2. **Create in django-osoul**
    ```bash
-   venv/libs/django-grep/src/django_grep/factories/
+   venv/libs/django-osoul/src/django_osoul/factories/
    ```
 
 3. **Move Code**
@@ -565,19 +565,19 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Factories in django-grep
+- Factories in django-osoul
 - Websites still work
 - All tests passing
 - No duplication
 
 ---
 
-### Task 4.2: Extract Test Fixtures to django-grep
+### Task 4.2: Extract Test Fixtures to django-osoul
 
-**Objective:** Move reusable test fixtures to django-grep
+**Objective:** Move reusable test fixtures to django-osoul
 
 **Deliverables:**
-- [ ] Fixtures in django-grep
+- [ ] Fixtures in django-osoul
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -592,9 +592,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Common assertions
    ```
 
-2. **Create in django-grep**
+2. **Create in django-osoul**
    ```bash
-   venv/libs/django-grep/src/django_grep/fixtures/
+   venv/libs/django-osoul/src/django_osoul/fixtures/
    ```
 
 3. **Move Code**
@@ -619,7 +619,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Fixtures in django-grep
+- Fixtures in django-osoul
 - Websites still work
 - All tests passing
 - No duplication
@@ -724,8 +724,8 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 **Deliverables:**
 - [ ] django-osoul documentation
-- [ ] django-rseal documentation
-- [ ] django-grep documentation
+- [ ] crafts-ai documentation
+- [ ] django-osoul documentation
 - [ ] API documentation
 
 **Steps:**
@@ -736,16 +736,16 @@ This task system focuses on extracting **only core, reusable code** from Django 
    venv/libs/django-osoul/docs/
    ```
 
-2. **Create django-rseal docs**
+2. **Create crafts-ai docs**
    ```bash
    # Document email, tasks, workflows
-   venv/libs/django-rseal/docs/
+   venv/libs/crafts-ai/docs/
    ```
 
-3. **Create django-grep docs**
+3. **Create django-osoul docs**
    ```bash
    # Document factories, fixtures, assertions
-   venv/libs/django-grep/docs/
+   venv/libs/django-osoul/docs/
    ```
 
 4. **Generate API docs**
@@ -819,7 +819,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
 - Permission decorators
 - Caching decorators
 
-### django-rseal (Email & Tasks)
+### crafts-ai (Email & Tasks)
 
 **Email:**
 - Email sending utilities
@@ -837,7 +837,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
 - Workflow orchestration
 - Pipeline utilities
 
-### django-grep (Testing)
+### django-osoul (Testing)
 
 **Factories:**
 - UserFactory

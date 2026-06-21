@@ -5,7 +5,7 @@ Property-based tests for RoleBasedEmailTemplateSelector.
 # Feature: core-logic-consolidation-and-app-restructure, Property 2: build_context always contains required keys
 """
 
-from django_rseal.email.templates.template_selector import RoleBasedEmailTemplateSelector
+from crafts_ai.email.templates.template_selector import RoleBasedEmailTemplateSelector
 from hypothesis import given, settings
 from hypothesis import strategies as st
 

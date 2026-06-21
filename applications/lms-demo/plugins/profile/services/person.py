@@ -10,7 +10,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
-from crafts_ai.rseal.models import Person
+from crafts_ai.models import Person
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

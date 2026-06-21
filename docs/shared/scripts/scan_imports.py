@@ -10,7 +10,7 @@ RULES = {
     "django-osoul": {
         "path": LIBS / "django-osoul/src/django_osoul",
         "forbidden": [r"^from wagtail", r"^import wagtail", r"^from celery",
-                      r"^import celery", r"^from django_rseal", r"^import django_rseal"],
+                      r"^import celery", r"^from crafts_ai", r"^import crafts_ai"],
     },
     "crafts-ai": {
         "path": LIBS / "crafts-ai/src/crafts_ai",

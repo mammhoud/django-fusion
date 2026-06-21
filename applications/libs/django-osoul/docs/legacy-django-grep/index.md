@@ -1,6 +1,6 @@
 # Django-grep Documentation Index
 
-django-grep is a Django testing framework and utilities library.
+django-osoul is a Django testing framework and utilities library.
 
 ## Table of Contents
 
@@ -18,8 +18,8 @@ django-grep is a Django testing framework and utilities library.
 
 ## Getting Started
 
-1. Install: `pip install django-grep`
-2. Add `django_grep` to `INSTALLED_APPS`
-3. Import test utilities from `django_grep.testing`
+1. Install: `pip install django-osoul`
+2. Add `django_osoul` to `INSTALLED_APPS`
+3. Import test utilities from `django_osoul.testing`
 
 See [usage.md](usage.md) for detailed instructions.

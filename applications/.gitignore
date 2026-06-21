@@ -60,3 +60,5 @@ docs/*.log
 
 # Local virtual environments in nested workspaces
 libs/.venv/
+/media/email_templates/
+**/media/email_templates/

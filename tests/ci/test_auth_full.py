@@ -1,5 +1,5 @@
 """
-Comprehensive auth flow tests for ctc-research.com using django-grep test utilities.
+Comprehensive auth flow tests for ctc-research.com using django-osoul test utilities.
 
 Tests cover:
 - Registration with mahmoud.ezzat.moustafa@gmail.com
@@ -13,8 +13,8 @@ Tests cover:
 - Logout
 - Admin panel access
 
-Uses django_grep.tests.base.BaseTestCase (Django test client — browser-style)
-and django_grep.tests.mixins.AssertHTMLMixin + AssertEmailMixin.
+Uses django_osoul.tests.base.BaseTestCase (Django test client — browser-style)
+and django_osoul.tests.mixins.AssertHTMLMixin + AssertEmailMixin.
 
 Email backend is overridden to locmem for all tests EXCEPT the live SMTP test
 which explicitly uses the real backend to confirm server-side sending.
@@ -36,8 +36,8 @@ from allauth.account.models import EmailAddress, EmailConfirmation, EmailConfirm
 from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import Client, override_settings
-from django_grep.tests.base import BaseTestCase
-from django_grep.tests.mixins import AssertEmailMixin, AssertHTMLMixin
+from django_osoul.tests.base import BaseTestCase
+from django_osoul.tests.mixins import AssertEmailMixin, AssertHTMLMixin
 
 User = get_user_model()
 
@@ -653,7 +653,7 @@ class LiveEmailSendTest(BaseTestCase):
 # ---------------------------------------------------------------------------
 
 class AdminPanelAuthTest(AssertHTMLMixin, BaseTestCase):
-    """Test admin panel access using django-grep admin_user fixture."""
+    """Test admin panel access using django-osoul admin_user fixture."""
 
     def test_admin_panel_accessible_for_superuser(self):
         """Superuser can access /admin/ and see admin UI markers."""

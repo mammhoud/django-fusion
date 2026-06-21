@@ -46,7 +46,7 @@ The cross-domain leakage is expected and reflects the current architecture where
 1. **Extract shared interfaces**: Create abstract base classes in django_osoul for common patterns
 2. **Use dependency injection**: Pass dependencies rather than importing directly
 3. **Event-based communication**: Use Django signals or event systems to decouple domains
-4. **Service layer abstraction**: Move cross-domain logic to service classes in django_rseal
+4. **Service layer abstraction**: Move cross-domain logic to service classes in crafts_ai
 
 ## Task 6.8: Circular Dependency Detection
 
@@ -127,11 +127,11 @@ The domain restructuring work (tasks 6.1-6.6) has been completed:
 ### Verification Steps for Task 6.9
 
 #### 6.9.1: Run `python manage.py check` in both projects
-**Status**: Cannot verify due to missing django_rseal package in development environment
+**Status**: Cannot verify due to missing crafts_ai package in development environment
 **Note**: This should be run in the Docker environment where all packages are installed
 
 #### 6.9.2: Run `python manage.py showmigrations` in both projects
-**Status**: Cannot verify due to missing django_rseal package in development environment
+**Status**: Cannot verify due to missing crafts_ai package in development environment
 **Note**: This should be run in the Docker environment where all packages are installed
 
 #### 6.9.3: Commit with message
@@ -189,7 +189,7 @@ The domain restructuring analysis reveals:
 These findings are expected given the current architecture and indicate areas for improvement in Phase 7 (Project Simplification) and beyond. The app renames and sub-module reorganization (tasks 6.1-6.6) have been completed successfully and are ready for final commit.
 
 The cross-domain leakage and circular dependencies will be addressed through:
-1. Extracting shared logic to django_osoul and django_rseal packages
+1. Extracting shared logic to django_osoul and crafts_ai packages
 2. Using dependency injection and event-based communication
 3. Converting projects to thin layers that delegate to packages
 4. Enforcing strict package boundaries with import-linter

@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from crafts_ai.rseal.blocks.pages.event import EventSectionBlock
+from crafts_ai.blocks.pages.event import EventSectionBlock
 
 # Base and reusable block imports
 from django_osoul.models import BaseModel as DefaultBase

@@ -37,7 +37,7 @@ def build_parser() -> argparse.ArgumentParser:
         "root",
         nargs="?",
         default=".",
-        help="Project root to scan for crafts_ai.rseal imports.",
+        help="Project root to scan for crafts_ai imports.",
     )
     return parser
 

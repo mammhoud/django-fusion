@@ -616,14 +616,14 @@ import-linter --config .importlinter
 
 # Check for grep-test-only violations
 echo "Checking grep-test-only violations..."
-grep -r "from django_grep\|import django_grep" --include="*.py" . \
+grep -r "from django_osoul\|import django_osoul" --include="*.py" . \
     | grep -v "test" \
     | grep -v ".pyc" \
     | wc -l
 
-# Check for project-specific imports in django_rseal
+# Check for project-specific imports in crafts_ai
 echo "Checking rseal-no-projects violations..."
-grep -r "from apps\|import apps" venv/libs/django-rseal/src/django_rseal/ \
+grep -r "from apps\|import apps" venv/libs/crafts-ai/src/crafts_ai/ \
     | grep -v ".pyc" \
     | wc -l
 ```

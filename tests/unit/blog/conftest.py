@@ -2,7 +2,7 @@
 Pytest configuration for blog app tests.
 
 Sets up a minimal Django environment with only the apps needed for blog tests,
-avoiding the complex dependency chain of apps.pages and django_rseal.
+avoiding the complex dependency chain of apps.pages and crafts_ai.
 """
 import sys
 from pathlib import Path

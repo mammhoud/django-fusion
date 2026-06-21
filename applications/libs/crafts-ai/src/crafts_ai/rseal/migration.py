@@ -26,9 +26,9 @@ class MigrationItem:
 
 def _extract_import_path(line: str) -> str | None:
     stripped = line.strip()
-    if stripped.startswith("from crafts_ai.rseal"):
+    if stripped.startswith("from crafts_ai"):
         return stripped.removeprefix("from ").split(" import ", 1)[0]
-    if stripped.startswith("import crafts_ai.rseal"):
+    if stripped.startswith("import crafts_ai"):
         return stripped.removeprefix("import ").split(" as ", 1)[0]
     return None
 

@@ -16,9 +16,9 @@ Phase 1: Analysis and Planning
   ↓
 Phase 2: django_osoul (Pure Django Foundation)
   ↓
-Phase 3: django_rseal (Wagtail + Automation)
+Phase 3: crafts_ai (Wagtail + Automation)
   ↓
-Phase 4: django_grep (Testing Infrastructure)
+Phase 4: django_osoul (Testing Infrastructure)
   ↓
 Phase 5: nawaai (Pure Python Boundary)
   ↓
@@ -150,7 +150,7 @@ git reset --hard <rollback-tag>
 - [ ] No import errors
 - [ ] Changes committed
 
-### Phase 3: django_rseal — Extract Wagtail + Automation Logic
+### Phase 3: crafts_ai — Extract Wagtail + Automation Logic
 
 **Rollback Point**: `rollback-phase-3-start`
 
@@ -186,7 +186,7 @@ git reset --hard <rollback-tag>
 - [ ] No import errors
 - [ ] Changes committed
 
-### Phase 4: django_grep — Extract Testing Infrastructure and Health Checks
+### Phase 4: django_osoul — Extract Testing Infrastructure and Health Checks
 
 **Rollback Point**: `rollback-phase-4-start`
 

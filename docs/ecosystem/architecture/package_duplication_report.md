@@ -38,7 +38,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0013_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0013_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0013_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0013_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -52,7 +52,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0002_contactpage_form_background_color_and_more.py`
 - `structa.cloud/apps/pages/migrations/0002_contactpage_form_background_color_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0002_contactpage_form_background_color_and_more`
+**Target**: `crafts_ai.pages.migrations.0002_contactpage_form_background_color_and_more`
 
 **Category**: extract-to-rseal
 
@@ -66,7 +66,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0014_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0014_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0014_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0014_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -80,7 +80,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0015_alter_aboutpage_facts.py`
 - `structa.cloud/apps/pages/migrations/0015_alter_aboutpage_facts.py`
 
-**Target**: `django_rseal.pages.migrations.0015_alter_aboutpage_facts`
+**Target**: `crafts_ai.pages.migrations.0015_alter_aboutpage_facts`
 
 **Category**: extract-to-rseal
 
@@ -94,7 +94,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0012_alter_aboutpage_facts_alter_homepage_cta.py`
 - `structa.cloud/apps/pages/migrations/0012_alter_aboutpage_facts_alter_homepage_cta.py`
 
-**Target**: `django_rseal.pages.migrations.0012_alter_aboutpage_facts_alter_homepage_cta`
+**Target**: `crafts_ai.pages.migrations.0012_alter_aboutpage_facts_alter_homepage_cta`
 
 **Category**: extract-to-rseal
 
@@ -122,7 +122,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0021_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0021_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0021_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0021_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -136,7 +136,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0005_add_advanced_form_settings.py`
 - `structa.cloud/apps/pages/migrations/0005_add_advanced_form_settings.py`
 
-**Target**: `django_rseal.pages.migrations.0005_add_advanced_form_settings`
+**Target**: `crafts_ai.pages.migrations.0005_add_advanced_form_settings`
 
 **Category**: extract-to-rseal
 
@@ -150,7 +150,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0022_alter_homepage_cta.py`
 - `structa.cloud/apps/pages/migrations/0022_alter_homepage_cta.py`
 
-**Target**: `django_rseal.pages.migrations.0022_alter_homepage_cta`
+**Target**: `crafts_ai.pages.migrations.0022_alter_homepage_cta`
 
 **Category**: extract-to-rseal
 
@@ -164,7 +164,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0007_homepage_contact_details_homepage_contact_info_and_more.py`
 - `structa.cloud/apps/pages/migrations/0007_homepage_contact_details_homepage_contact_info_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0007_homepage_contact_details_homepage_contact_info_and_more`
+**Target**: `crafts_ai.pages.migrations.0007_homepage_contact_details_homepage_contact_info_and_more`
 
 **Category**: extract-to-rseal
 
@@ -178,7 +178,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0008_alter_homepage_cta_alter_homepage_summary.py`
 - `structa.cloud/apps/pages/migrations/0008_alter_homepage_cta_alter_homepage_summary.py`
 
-**Target**: `django_rseal.pages.migrations.0008_alter_homepage_cta_alter_homepage_summary`
+**Target**: `crafts_ai.pages.migrations.0008_alter_homepage_cta_alter_homepage_summary`
 
 **Category**: extract-to-rseal
 
@@ -192,7 +192,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0010_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0010_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -248,7 +248,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0018_alter_aboutpage_facts_alter_aboutpage_head.py`
 - `structa.cloud/apps/pages/migrations/0018_alter_aboutpage_facts_alter_aboutpage_head.py`
 
-**Target**: `django_rseal.pages.migrations.0018_alter_aboutpage_facts_alter_aboutpage_head`
+**Target**: `crafts_ai.pages.migrations.0018_alter_aboutpage_facts_alter_aboutpage_head`
 
 **Category**: extract-to-rseal
 
@@ -262,7 +262,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0006_homepage_button_text_and_more.py`
 - `structa.cloud/apps/pages/migrations/0006_homepage_button_text_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0006_homepage_button_text_and_more`
+**Target**: `crafts_ai.pages.migrations.0006_homepage_button_text_and_more`
 
 **Category**: extract-to-rseal
 
@@ -276,7 +276,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0020_eventpage_servicespage.py`
 - `structa.cloud/apps/pages/migrations/0020_eventpage_servicespage.py`
 
-**Target**: `django_rseal.pages.migrations.0020_eventpage_servicespage`
+**Target**: `crafts_ai.pages.migrations.0020_eventpage_servicespage`
 
 **Category**: extract-to-rseal
 
@@ -290,7 +290,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0004_simplify_contact_form_settings.py`
 - `structa.cloud/apps/pages/migrations/0004_simplify_contact_form_settings.py`
 
-**Target**: `django_rseal.pages.migrations.0004_simplify_contact_form_settings`
+**Target**: `crafts_ai.pages.migrations.0004_simplify_contact_form_settings`
 
 **Category**: extract-to-rseal
 
@@ -304,7 +304,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0017_alter_contactpage_contact_form_and_more.py`
 - `structa.cloud/apps/pages/migrations/0017_alter_contactpage_contact_form_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0017_alter_contactpage_contact_form_and_more`
+**Target**: `crafts_ai.pages.migrations.0017_alter_contactpage_contact_form_and_more`
 
 **Category**: extract-to-rseal
 
@@ -318,7 +318,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0019_alter_aboutpage_facts_alter_homepage_cta.py`
 - `structa.cloud/apps/pages/migrations/0019_alter_aboutpage_facts_alter_homepage_cta.py`
 
-**Target**: `django_rseal.pages.migrations.0019_alter_aboutpage_facts_alter_homepage_cta`
+**Target**: `crafts_ai.pages.migrations.0019_alter_aboutpage_facts_alter_homepage_cta`
 
 **Category**: extract-to-rseal
 
@@ -388,7 +388,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/about.py`
 - `structa.cloud/apps/pages/models/pages/about.py`
 
-**Target**: `django_rseal.pages.models.pages.about`
+**Target**: `crafts_ai.pages.models.pages.about`
 
 **Category**: extract-to-rseal
 
@@ -402,7 +402,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/home.py`
 - `structa.cloud/apps/pages/models/pages/home.py`
 
-**Target**: `django_rseal.pages.models.pages.home`
+**Target**: `crafts_ai.pages.models.pages.home`
 
 **Category**: extract-to-rseal
 
@@ -458,7 +458,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/search/views.py`
 - `structa.cloud/apps/pages/search/views.py`
 
-**Target**: `django_rseal.pages.search.views`
+**Target**: `crafts_ai.pages.search.views`
 
 **Category**: extract-to-rseal
 
@@ -542,7 +542,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/forms.py`
 - `structa.cloud/apps/blog/forms.py`
 
-**Target**: `django_rseal.blog.forms`
+**Target**: `crafts_ai.blog.forms`
 
 **Category**: extract-to-rseal
 
@@ -556,7 +556,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/wagtail_hooks.py`
 - `structa.cloud/apps/blog/wagtail_hooks.py`
 
-**Target**: `django_rseal.blog.wagtail_hooks`
+**Target**: `crafts_ai.blog.wagtail_hooks`
 
 **Category**: extract-to-rseal
 
@@ -598,7 +598,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/migrations/0001_initial.py`
 - `structa.cloud/apps/blog/migrations/0001_initial.py`
 
-**Target**: `django_rseal.blog.migrations.0001_initial`
+**Target**: `crafts_ai.blog.migrations.0001_initial`
 
 **Category**: extract-to-rseal
 
@@ -696,7 +696,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/pages.py`
 - `structa.cloud/apps/blog/models/pages.py`
 
-**Target**: `django_rseal.blog.models.pages`
+**Target**: `crafts_ai.blog.models.pages`
 
 **Category**: extract-to-rseal
 
@@ -710,7 +710,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/post.py`
 - `structa.cloud/apps/blog/models/post.py`
 
-**Target**: `django_rseal.blog.models.post`
+**Target**: `crafts_ai.blog.models.post`
 
 **Category**: extract-to-rseal
 
@@ -778,9 +778,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/email_templates.py`
-- `venv/libs/django-rseal/src/django_rseal/email/selectors.py`
+- `venv/libs/crafts-ai/src/crafts_ai/email/selectors.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -808,19 +808,19 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/blocks.py`
 - `structa.cloud/apps/handlers/blocks.py`
 
-**Target**: `django_rseal.handlers.blocks`
+**Target**: `crafts_ai.handlers.blocks`
 
 **Category**: extract-to-rseal
 
 ---
 
-### 58. 0004_move_formsubmission_to_django_grep.py ↔ 0004_move_formsubmission_to_django_grep.py
+### 58. 0004_move_formsubmission_to_django_osoul.py ↔ 0004_move_formsubmission_to_django_osoul.py
 
 **Similarity**: 100.0%
 
 **Locations**:
-- `ctc-research.com/apps/handlers/migrations/0004_move_formsubmission_to_django_grep.py`
-- `structa.cloud/apps/handlers/migrations/0004_move_formsubmission_to_django_grep.py`
+- `ctc-research.com/apps/handlers/migrations/0004_move_formsubmission_to_django_osoul.py`
+- `structa.cloud/apps/handlers/migrations/0004_move_formsubmission_to_django_osoul.py`
 
 **Target**: `django_osoul.handlers`
 
@@ -836,7 +836,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/migrations/0003_authemailtemplate.py`
 - `structa.cloud/apps/handlers/migrations/0003_authemailtemplate.py`
 
-**Target**: `django_rseal.handlers.migrations.0003_authemailtemplate`
+**Target**: `crafts_ai.handlers.migrations.0003_authemailtemplate`
 
 **Category**: extract-to-rseal
 
@@ -850,7 +850,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/migrations/0002_service_content_alter_organization_company_type.py`
 - `structa.cloud/apps/handlers/migrations/0002_service_content_alter_organization_company_type.py`
 
-**Target**: `django_rseal.handlers.migrations.0002_service_content_alter_organization_company_type`
+**Target**: `crafts_ai.handlers.migrations.0002_service_content_alter_organization_company_type`
 
 **Category**: extract-to-rseal
 
@@ -878,7 +878,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/tags.py`
 - `structa.cloud/apps/handlers/snippets/tags.py`
 
-**Target**: `django_rseal.handlers.snippets.tags`
+**Target**: `crafts_ai.handlers.snippets.tags`
 
 **Category**: extract-to-rseal
 
@@ -906,7 +906,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/base.py`
 - `structa.cloud/apps/handlers/snippets/base.py`
 
-**Target**: `django_rseal.handlers.snippets.base`
+**Target**: `crafts_ai.handlers.snippets.base`
 
 **Category**: extract-to-rseal
 
@@ -918,9 +918,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/snippets_base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/snippets_base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -932,9 +932,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -946,9 +946,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -962,7 +962,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/content.py`
 - `structa.cloud/apps/handlers/snippets/newsletter/content.py`
 
-**Target**: `django_rseal.handlers.snippets.newsletter.content`
+**Target**: `crafts_ai.handlers.snippets.newsletter.content`
 
 **Category**: extract-to-rseal
 
@@ -974,9 +974,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/newsletter/content.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/content.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/content.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1004,7 +1004,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/template.py`
 - `structa.cloud/apps/handlers/snippets/newsletter/template.py`
 
-**Target**: `django_rseal.handlers.snippets.newsletter.template`
+**Target**: `crafts_ai.handlers.snippets.newsletter.template`
 
 **Category**: extract-to-rseal
 
@@ -1016,9 +1016,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/newsletter/template.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/template.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/template.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1074,7 +1074,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/manage/services.py`
 - `structa.cloud/apps/handlers/snippets/manage/services.py`
 
-**Target**: `django_rseal.handlers.snippets.manage.services`
+**Target**: `crafts_ai.handlers.snippets.manage.services`
 
 **Category**: extract-to-rseal
 
@@ -1116,7 +1116,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/company.py`
 - `structa.cloud/apps/handlers/processors/company.py`
 
-**Target**: `django_rseal.handlers.processors.company`
+**Target**: `crafts_ai.handlers.processors.company`
 
 **Category**: extract-to-rseal
 
@@ -1158,7 +1158,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/filters/revision.py`
 - `structa.cloud/apps/handlers/filters/revision.py`
 
-**Target**: `django_rseal.handlers.filters.revision`
+**Target**: `crafts_ai.handlers.filters.revision`
 
 **Category**: extract-to-rseal
 
@@ -1170,9 +1170,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/filters/revision.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/filters_revision.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/filters_revision.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1270,7 +1270,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/wagtail_hooks.py`
 - `structa.cloud/apps/handlers/registration/wagtail_hooks.py`
 
-**Target**: `django_rseal.handlers.registration.wagtail_hooks`
+**Target**: `crafts_ai.handlers.registration.wagtail_hooks`
 
 **Category**: extract-to-rseal
 
@@ -1282,9 +1282,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/registration/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1296,9 +1296,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/registration/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1338,9 +1338,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/manage/service.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/manage_service.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/manage_service.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1352,9 +1352,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/manage/event.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/manage_event.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/manage_event.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1368,7 +1368,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/blog/tags.py`
 - `structa.cloud/apps/handlers/models/blog/tags.py`
 
-**Target**: `django_rseal.handlers.models.blog.tags`
+**Target**: `crafts_ai.handlers.models.blog.tags`
 
 **Category**: extract-to-rseal
 
@@ -1380,9 +1380,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/blog/tags.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/blog_tags.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/blog_tags.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1394,9 +1394,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/blog/post.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/blog_post.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/blog_post.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -1424,7 +1424,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/blog/index.py`
 - `structa.cloud/apps/handlers/models/blog/index.py`
 
-**Target**: `django_rseal.handlers.models.blog.index`
+**Target**: `crafts_ai.handlers.models.blog.index`
 
 **Category**: extract-to-rseal
 
@@ -1494,7 +1494,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/wagtail_hooks.py`
 - `structa.cloud/apps/LMS/wagtail_hooks.py`
 
-**Target**: `django_rseal.LMS.wagtail_hooks`
+**Target**: `crafts_ai.LMS.wagtail_hooks`
 
 **Category**: extract-to-rseal
 
@@ -1508,7 +1508,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services_legacy.py`
 - `structa.cloud/apps/LMS/services_legacy.py`
 
-**Target**: `django_rseal.LMS.services_legacy`
+**Target**: `crafts_ai.LMS.services_legacy`
 
 **Category**: extract-to-rseal
 
@@ -1522,7 +1522,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/urls.py`
 - `structa.cloud/apps/LMS/urls.py`
 
-**Target**: `django_rseal.LMS.urls`
+**Target**: `crafts_ai.LMS.urls`
 
 **Category**: extract-to-rseal
 
@@ -1578,7 +1578,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/snippets/specialization.py`
 - `structa.cloud/apps/LMS/snippets/specialization.py`
 
-**Target**: `django_rseal.LMS.snippets.specialization`
+**Target**: `crafts_ai.LMS.snippets.specialization`
 
 **Category**: extract-to-rseal
 
@@ -1592,7 +1592,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/snippets/enrollment.py`
 - `structa.cloud/apps/LMS/snippets/enrollment.py`
 
-**Target**: `django_rseal.LMS.snippets.enrollment`
+**Target**: `crafts_ai.LMS.snippets.enrollment`
 
 **Category**: extract-to-rseal
 
@@ -1606,7 +1606,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/snippets/reviews.py`
 - `structa.cloud/apps/LMS/snippets/reviews.py`
 
-**Target**: `django_rseal.LMS.snippets.reviews`
+**Target**: `crafts_ai.LMS.snippets.reviews`
 
 **Category**: extract-to-rseal
 
@@ -1718,7 +1718,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/cart.py`
 - `structa.cloud/apps/LMS/views/cart.py`
 
-**Target**: `django_rseal.LMS.views.cart`
+**Target**: `crafts_ai.LMS.views.cart`
 
 **Category**: extract-to-rseal
 
@@ -1732,7 +1732,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/courses.py`
 - `structa.cloud/apps/LMS/views/courses.py`
 
-**Target**: `django_rseal.LMS.views.courses`
+**Target**: `crafts_ai.LMS.views.courses`
 
 **Category**: extract-to-rseal
 
@@ -1760,7 +1760,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/blocks/form.py`
 - `structa.cloud/apps/pages/models/blocks/form.py`
 
-**Target**: `django_rseal.LMS.blocks.form`
+**Target**: `crafts_ai.LMS.blocks.form`
 
 **Category**: extract-to-rseal
 
@@ -1774,7 +1774,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/blocks/form.py`
 - `structa.cloud/apps/LMS/blocks/form.py`
 
-**Target**: `django_rseal.LMS.blocks.form`
+**Target**: `crafts_ai.LMS.blocks.form`
 
 **Category**: extract-to-rseal
 
@@ -1816,7 +1816,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/courses.py`
 - `structa.cloud/apps/LMS/services/courses.py`
 
-**Target**: `django_rseal.LMS.services.courses`
+**Target**: `crafts_ai.LMS.services.courses`
 
 **Category**: extract-to-rseal
 
@@ -1830,7 +1830,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/lessons.py`
 - `structa.cloud/apps/LMS/services/lessons.py`
 
-**Target**: `django_rseal.LMS.services.lessons`
+**Target**: `crafts_ai.LMS.services.lessons`
 
 **Category**: extract-to-rseal
 
@@ -1844,7 +1844,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/enrollments.py`
 - `structa.cloud/apps/LMS/services/enrollments.py`
 
-**Target**: `django_rseal.LMS.services.enrollments`
+**Target**: `crafts_ai.LMS.services.enrollments`
 
 **Category**: extract-to-rseal
 
@@ -1956,7 +1956,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/detail.py`
 - `structa.cloud/apps/LMS/models/courses/detail.py`
 
-**Target**: `django_rseal.LMS.models.courses.detail`
+**Target**: `crafts_ai.LMS.models.courses.detail`
 
 **Category**: extract-to-rseal
 
@@ -1998,7 +1998,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/specification.py`
 - `structa.cloud/apps/LMS/models/courses/specification.py`
 
-**Target**: `django_rseal.LMS.models.courses.specification`
+**Target**: `crafts_ai.LMS.models.courses.specification`
 
 **Category**: extract-to-rseal
 
@@ -2012,7 +2012,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/info.py`
 - `structa.cloud/apps/LMS/models/courses/info.py`
 
-**Target**: `django_rseal.LMS.models.courses.info`
+**Target**: `crafts_ai.LMS.models.courses.info`
 
 **Category**: extract-to-rseal
 
@@ -2026,7 +2026,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/index.py`
 - `structa.cloud/apps/LMS/models/courses/index.py`
 
-**Target**: `django_rseal.LMS.models.courses.index`
+**Target**: `crafts_ai.LMS.models.courses.index`
 
 **Category**: extract-to-rseal
 
@@ -2068,7 +2068,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/blocks/assignment.py`
 - `structa.cloud/apps/LMS/models/blocks/assignment.py`
 
-**Target**: `django_rseal.LMS.models.blocks.assignment`
+**Target**: `crafts_ai.LMS.models.blocks.assignment`
 
 **Category**: extract-to-rseal
 
@@ -2194,7 +2194,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/blocks/form.py`
 - `structa.cloud/apps/LMS/blocks/form.py`
 
-**Target**: `django_rseal.pages.models.blocks.form`
+**Target**: `crafts_ai.pages.models.blocks.form`
 
 **Category**: extract-to-rseal
 
@@ -2206,9 +2206,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/email_templates.py`
-- `venv/libs/django-rseal/src/django_rseal/email/selectors.py`
+- `venv/libs/crafts-ai/src/crafts_ai/email/selectors.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2220,9 +2220,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/snippets_base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/snippets_base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2234,9 +2234,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2248,9 +2248,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2262,9 +2262,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/newsletter/content.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/content.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/content.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2276,9 +2276,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/newsletter/template.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/template.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/template.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2290,9 +2290,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/filters/revision.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/filters_revision.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/filters_revision.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2304,9 +2304,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/site/health.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/health.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/health.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2346,9 +2346,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2360,9 +2360,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2374,9 +2374,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2388,9 +2388,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2402,9 +2402,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2416,9 +2416,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2430,9 +2430,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2444,9 +2444,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2458,9 +2458,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2472,9 +2472,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2486,9 +2486,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2500,9 +2500,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2514,9 +2514,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2528,9 +2528,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2542,9 +2542,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2556,9 +2556,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2570,9 +2570,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2584,9 +2584,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2598,9 +2598,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2612,9 +2612,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2626,9 +2626,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_grep.`
+**Target**: `django_osoul.`
 
 **Category**: already-extracted
 
@@ -2654,9 +2654,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/registration/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2668,9 +2668,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/registration/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2682,9 +2682,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/blog/tags.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/blog_tags.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/blog_tags.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -2710,7 +2710,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/middlewares/site.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/middlewares/site.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/site.py`
 
 **Target**: `django_osoul.`
 
@@ -2724,7 +2724,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/middlewares/freeze.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/middlewares/freeze.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/freeze.py`
 
 **Target**: `django_osoul.`
 
@@ -2738,7 +2738,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/middlewares/language.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/middlewares/language.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/language.py`
 
 **Target**: `django_osoul.`
 
@@ -2752,7 +2752,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/middlewares/service.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/middlewares/service.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/service.py`
 
 **Target**: `django_osoul.`
 
@@ -2766,7 +2766,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/filters/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/filters/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/filters/base.py`
 
 **Target**: `django_osoul.`
 
@@ -2780,7 +2780,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/filters/cache.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/filters/cache.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/filters/cache.py`
 
 **Target**: `django_osoul.`
 
@@ -2794,7 +2794,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/managers/tags.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/managers/tags.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/tags.py`
 
 **Target**: `django_osoul.`
 
@@ -2808,7 +2808,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/managers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/managers/search.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/search.py`
 
 **Target**: `django_osoul.`
 
@@ -2822,7 +2822,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/managers/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/managers/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/base.py`
 
 **Target**: `django_osoul.`
 
@@ -2864,7 +2864,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -2878,7 +2878,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -2892,7 +2892,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -2906,7 +2906,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -2920,7 +2920,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -2934,7 +2934,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -2948,7 +2948,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
 **Target**: `django_osoul.`
 
@@ -2962,7 +2962,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
 **Target**: `django_osoul.`
 
@@ -2976,7 +2976,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
 **Target**: `django_osoul.`
 
@@ -2990,7 +2990,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
 **Target**: `django_osoul.`
 
@@ -3004,7 +3004,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3018,7 +3018,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3032,7 +3032,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3046,7 +3046,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3060,7 +3060,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3074,7 +3074,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3088,7 +3088,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3102,7 +3102,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3116,7 +3116,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3130,7 +3130,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
 **Target**: `django_osoul.`
 
@@ -3144,7 +3144,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3172,7 +3172,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/mixins/search.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/mixins/search.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/search.py`
 
 **Target**: `django_osoul.`
 
@@ -3186,7 +3186,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/mixins/service.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/mixins/service.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/service.py`
 
 **Target**: `django_osoul.`
 
@@ -3200,7 +3200,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/mixins/token.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/mixins/token.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/token.py`
 
 **Target**: `django_osoul.`
 
@@ -3214,7 +3214,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/mixins/cache.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/mixins/cache.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/cache.py`
 
 **Target**: `django_osoul.`
 
@@ -3228,7 +3228,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3242,7 +3242,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3256,7 +3256,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3270,7 +3270,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3284,7 +3284,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3298,7 +3298,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3312,7 +3312,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
 **Target**: `django_osoul.`
 
@@ -3326,7 +3326,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
 **Target**: `django_osoul.`
 
@@ -3340,7 +3340,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
 **Target**: `django_osoul.`
 
@@ -3354,7 +3354,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
 **Target**: `django_osoul.`
 
@@ -3368,7 +3368,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3382,7 +3382,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3396,7 +3396,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3410,7 +3410,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3424,7 +3424,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3438,7 +3438,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3452,7 +3452,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3466,7 +3466,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3480,7 +3480,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3494,7 +3494,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
 **Target**: `django_osoul.`
 
@@ -3508,7 +3508,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
 **Target**: `django_osoul.`
 
@@ -3535,10 +3535,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/routes/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/routes/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/routes/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3549,10 +3549,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/routes/sites.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/routes/sites.py`
+- `venv/libs/crafts-ai/src/crafts_ai/routes/sites.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/sites.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3563,10 +3563,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/routes/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/routes/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/routes/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3577,10 +3577,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/routes/other.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/routes/other.py`
+- `venv/libs/crafts-ai/src/crafts_ai/routes/other.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/other.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3591,10 +3591,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3605,10 +3605,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3619,10 +3619,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3633,10 +3633,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3647,10 +3647,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3661,10 +3661,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3675,10 +3675,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3689,10 +3689,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3703,10 +3703,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3717,10 +3717,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3731,10 +3731,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3745,10 +3745,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3759,10 +3759,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3773,10 +3773,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3787,10 +3787,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3801,10 +3801,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3815,10 +3815,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3829,10 +3829,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3843,10 +3843,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3857,10 +3857,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3871,10 +3871,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3885,10 +3885,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3899,10 +3899,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3913,10 +3913,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3927,10 +3927,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3941,10 +3941,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3955,10 +3955,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3969,10 +3969,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3983,10 +3983,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -3997,10 +3997,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4011,10 +4011,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4025,10 +4025,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4039,10 +4039,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4053,10 +4053,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4067,10 +4067,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4081,10 +4081,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4095,10 +4095,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4109,10 +4109,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4123,10 +4123,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4137,10 +4137,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4151,10 +4151,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/templatetags/components/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4165,10 +4165,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/map.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/map.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/map.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/map.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4179,10 +4179,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/hours.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/hours.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/hours.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/hours.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4193,10 +4193,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4207,10 +4207,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/socialLinks.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/socialLinks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/socialLinks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/socialLinks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4221,10 +4221,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contactMethods.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/contactMethods.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contactMethods.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/contactMethods.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4235,10 +4235,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/streamBlocks.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/streamBlocks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/streamBlocks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/streamBlocks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4249,10 +4249,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4263,10 +4263,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4277,10 +4277,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4291,10 +4291,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4305,10 +4305,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4319,10 +4319,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4333,10 +4333,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4347,10 +4347,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4361,10 +4361,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4375,10 +4375,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4389,10 +4389,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4403,10 +4403,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4417,10 +4417,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4431,10 +4431,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4445,10 +4445,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4459,10 +4459,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4473,10 +4473,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4487,10 +4487,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4501,10 +4501,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4515,10 +4515,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/seeder/providers.py`
-- `venv/libs/django-grep/src/django_grep/seeder/providers.py`
+- `venv/libs/crafts-ai/src/crafts_ai/seeder/providers.py`
+- `venv/libs/django-osoul/src/django_osoul/seeder/providers.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4529,10 +4529,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/seeder/guessers.py`
-- `venv/libs/django-grep/src/django_grep/seeder/guessers.py`
+- `venv/libs/crafts-ai/src/crafts_ai/seeder/guessers.py`
+- `venv/libs/django-osoul/src/django_osoul/seeder/guessers.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4543,10 +4543,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/seeder/exceptions.py`
-- `venv/libs/django-grep/src/django_grep/seeder/exceptions.py`
+- `venv/libs/crafts-ai/src/crafts_ai/seeder/exceptions.py`
+- `venv/libs/django-osoul/src/django_osoul/seeder/exceptions.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4557,10 +4557,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/handlers/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4571,10 +4571,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/handlers/snippets_base.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/snippets_base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4585,10 +4585,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/handlers/snippets_base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/snippets_base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4599,10 +4599,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4613,10 +4613,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4627,10 +4627,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4641,10 +4641,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4655,10 +4655,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4669,10 +4669,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4683,10 +4683,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4697,10 +4697,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4711,10 +4711,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4725,10 +4725,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4739,10 +4739,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4753,10 +4753,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4767,10 +4767,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4781,10 +4781,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4795,10 +4795,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4809,10 +4809,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4823,10 +4823,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4837,10 +4837,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/signals/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4851,10 +4851,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/base.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4865,10 +4865,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4879,10 +4879,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4893,10 +4893,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4907,10 +4907,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4921,10 +4921,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4935,10 +4935,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4949,10 +4949,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4963,10 +4963,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4977,10 +4977,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -4991,10 +4991,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5005,10 +5005,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5019,10 +5019,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5033,10 +5033,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5047,10 +5047,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5061,10 +5061,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5075,10 +5075,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5089,10 +5089,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/email_config/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5103,10 +5103,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5117,10 +5117,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5131,10 +5131,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5145,10 +5145,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5159,10 +5159,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5173,10 +5173,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5187,10 +5187,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5201,10 +5201,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5215,10 +5215,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5229,10 +5229,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5243,10 +5243,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5257,10 +5257,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5271,10 +5271,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5285,10 +5285,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5299,10 +5299,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5313,10 +5313,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/debug_tools/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5327,10 +5327,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5341,10 +5341,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5355,10 +5355,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5369,10 +5369,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5383,10 +5383,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5397,10 +5397,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5411,10 +5411,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5425,10 +5425,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5439,10 +5439,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5453,10 +5453,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5467,10 +5467,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5481,10 +5481,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5495,10 +5495,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5509,10 +5509,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5523,10 +5523,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/privacy/middleware.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5537,10 +5537,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5551,10 +5551,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5565,10 +5565,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5579,10 +5579,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5593,10 +5593,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5607,10 +5607,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5621,10 +5621,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5635,10 +5635,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5649,10 +5649,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5663,10 +5663,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5677,10 +5677,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5691,10 +5691,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5705,10 +5705,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5719,10 +5719,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/cache/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5733,10 +5733,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5747,10 +5747,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5761,10 +5761,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5775,10 +5775,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5789,10 +5789,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5803,10 +5803,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5817,10 +5817,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5831,10 +5831,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5845,10 +5845,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5859,10 +5859,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5873,10 +5873,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5887,10 +5887,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5901,10 +5901,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/unfold.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5915,10 +5915,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5929,10 +5929,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5943,10 +5943,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5957,10 +5957,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5971,10 +5971,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5985,10 +5985,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -5999,10 +5999,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6013,10 +6013,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6027,10 +6027,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6041,10 +6041,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6055,10 +6055,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6069,10 +6069,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/admin_site/wagtail.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6083,10 +6083,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6097,10 +6097,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6111,10 +6111,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6125,10 +6125,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6139,10 +6139,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6153,10 +6153,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6167,10 +6167,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6181,10 +6181,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6195,10 +6195,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6209,10 +6209,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6223,10 +6223,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6237,10 +6237,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6251,10 +6251,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6265,10 +6265,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6279,10 +6279,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6293,10 +6293,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6307,10 +6307,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6321,10 +6321,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6335,10 +6335,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6349,10 +6349,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6363,10 +6363,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/management/commands/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6377,10 +6377,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6391,10 +6391,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6405,10 +6405,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6419,10 +6419,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6433,10 +6433,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6447,10 +6447,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6461,10 +6461,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6475,10 +6475,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6489,10 +6489,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6503,10 +6503,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6517,10 +6517,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6531,10 +6531,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6545,10 +6545,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6559,10 +6559,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6573,10 +6573,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6587,10 +6587,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6601,10 +6601,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6615,10 +6615,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6629,10 +6629,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6643,10 +6643,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6657,10 +6657,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6671,10 +6671,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6685,10 +6685,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6699,10 +6699,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6713,10 +6713,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6727,10 +6727,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6741,10 +6741,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6755,10 +6755,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6769,10 +6769,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6783,10 +6783,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6797,10 +6797,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6811,10 +6811,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6825,10 +6825,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6839,10 +6839,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6853,10 +6853,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6867,10 +6867,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6881,10 +6881,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6895,10 +6895,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6909,10 +6909,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6923,10 +6923,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6937,10 +6937,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6951,10 +6951,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6965,10 +6965,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6979,10 +6979,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -6993,10 +6993,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7007,10 +7007,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7021,10 +7021,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7035,10 +7035,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7049,10 +7049,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7063,10 +7063,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7077,10 +7077,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7091,10 +7091,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7105,10 +7105,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7119,10 +7119,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7133,10 +7133,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7147,10 +7147,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7161,10 +7161,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7175,10 +7175,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7189,10 +7189,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7203,10 +7203,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7217,10 +7217,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7231,10 +7231,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7245,10 +7245,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7259,10 +7259,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7273,10 +7273,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7287,10 +7287,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7301,10 +7301,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7315,10 +7315,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7329,10 +7329,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7343,10 +7343,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7357,10 +7357,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7371,10 +7371,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7385,10 +7385,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7399,10 +7399,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7413,10 +7413,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7427,10 +7427,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7441,10 +7441,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7455,10 +7455,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7469,10 +7469,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/__init__.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7483,10 +7483,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7497,10 +7497,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7511,10 +7511,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/config.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/config.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/config.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7525,10 +7525,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/interfaces.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/interfaces.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/interfaces.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7539,10 +7539,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/tracker.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/tracker.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/tracker.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7553,10 +7553,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/cli.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/cli.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/cli.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7567,10 +7567,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/progress.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/progress.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/progress.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7581,10 +7581,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/compatibility.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/compatibility.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/compatibility.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7595,10 +7595,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/orchestrator.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/orchestrator.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/orchestrator.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7609,10 +7609,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/scanner.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/scanner.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/scanner.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7623,10 +7623,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/filter.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/filter.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/filter.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7637,10 +7637,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/parser.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/parser.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/parser.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7651,10 +7651,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/management.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/management.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/management.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7665,10 +7665,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/pbt.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/pbt.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/pbt.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7679,10 +7679,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/models.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/models.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/models.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7693,10 +7693,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/executor.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/executor.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/executor.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7707,10 +7707,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/workflows/orchestrator/errors.py`
+- `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator/errors.py`
 - `venv/libs/nawaai/crafts_ai/orchestrator/errors.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7721,10 +7721,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-grep/src/django_grep/__init__.py`
+- `venv/libs/django-osoul/src/django_osoul/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_grep.`
+**Target**: `django_osoul.`
 
 **Category**: already-extracted
 
@@ -7736,7 +7736,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/routes/base.py`
-- `venv/libs/django-rseal/src/django_rseal/routes/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/routes/base.py`
 
 **Target**: `django_osoul.`
 
@@ -7750,7 +7750,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/routes/base.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/routes/base.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/base.py`
 
 **Target**: `django_osoul.`
 
@@ -7766,7 +7766,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/migrations/0001_initial.py`
 - `structa.cloud/apps/LMS/migrations/0001_initial.py`
 
-**Target**: `django_rseal.LMS.migrations.0001_initial`
+**Target**: `crafts_ai.LMS.migrations.0001_initial`
 
 **Category**: extract-to-rseal
 
@@ -7794,7 +7794,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0001_initial.py`
 - `structa.cloud/apps/pages/migrations/0001_initial.py`
 
-**Target**: `django_rseal.pages.migrations.0001_initial`
+**Target**: `crafts_ai.pages.migrations.0001_initial`
 
 **Category**: extract-to-rseal
 
@@ -7836,7 +7836,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/views.py`
 - `structa.cloud/apps/handlers/registration/views.py`
 
-**Target**: `django_rseal.handlers.registration.views`
+**Target**: `crafts_ai.handlers.registration.views`
 
 **Category**: extract-to-rseal
 
@@ -7847,10 +7847,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 99.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/seeder/seeder.py`
-- `venv/libs/django-grep/src/django_grep/seeder/seeder.py`
+- `venv/libs/crafts-ai/src/crafts_ai/seeder/seeder.py`
+- `venv/libs/django-osoul/src/django_osoul/seeder/seeder.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7862,7 +7862,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/managers/token.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/managers/token.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/token.py`
 
 **Target**: `django_osoul.`
 
@@ -7875,10 +7875,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 99.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contactCard.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/contactCard.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contactCard.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/contactCard.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7906,7 +7906,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/team.py`
 - `structa.cloud/apps/pages/models/pages/team.py`
 
-**Target**: `django_rseal.pages.models.pages.team`
+**Target**: `crafts_ai.pages.models.pages.team`
 
 **Category**: extract-to-rseal
 
@@ -7918,9 +7918,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/manage/team.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/team.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/team.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7932,9 +7932,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/manage/team.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/team.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/team.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7946,9 +7946,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/tags.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/tags.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/tags.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7960,9 +7960,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/tags.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/tags.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/tags.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -7988,9 +7988,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/forms/submission.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/forms/submission.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/forms/submission.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8002,7 +8002,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/filters/token.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/filters/token.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/filters/token.py`
 
 **Target**: `django_osoul.`
 
@@ -8018,7 +8018,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/contact.py`
 - `structa.cloud/apps/pages/models/pages/contact.py`
 
-**Target**: `django_rseal.pages.models.pages.contact`
+**Target**: `crafts_ai.pages.models.pages.contact`
 
 **Category**: extract-to-rseal
 
@@ -8032,7 +8032,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/manage/peoples.py`
 - `structa.cloud/apps/handlers/snippets/manage/peoples.py`
 
-**Target**: `django_rseal.handlers.snippets.manage.peoples`
+**Target**: `crafts_ai.handlers.snippets.manage.peoples`
 
 **Category**: extract-to-rseal
 
@@ -8046,7 +8046,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/contact.py`
 - `structa.cloud/apps/pages/models/contact.py`
 
-**Target**: `django_rseal.pages.models.contact`
+**Target**: `crafts_ai.pages.models.contact`
 
 **Category**: extract-to-rseal
 
@@ -8058,9 +8058,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/manage/company.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/manage_company.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/manage_company.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8088,7 +8088,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/company.py`
 - `structa.cloud/apps/handlers/models/manage/company.py`
 
-**Target**: `django_rseal.handlers.models.manage.company`
+**Target**: `crafts_ai.handlers.models.manage.company`
 
 **Category**: extract-to-rseal
 
@@ -8102,7 +8102,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/registration/models.py`
 - `structa.cloud/apps/handlers/models/snippets.py`
 
-**Target**: `django_rseal.handlers.registration.models`
+**Target**: `crafts_ai.handlers.registration.models`
 
 **Category**: extract-to-rseal
 
@@ -8127,10 +8127,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 98.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/routes/model.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/routes/model.py`
+- `venv/libs/crafts-ai/src/crafts_ai/routes/model.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/model.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8156,9 +8156,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/manage/company.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/manage_company.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/manage_company.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8170,7 +8170,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/django-osoul/src/django_osoul/contrib/utils.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/utils.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/utils.py`
 
 **Target**: `django_osoul.`
 
@@ -8184,9 +8184,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/blog/index.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/blog_index.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/blog_index.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8198,9 +8198,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/blog/index.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/blog_index.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/blog_index.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8212,9 +8212,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/manage/service.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/manage_service.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/manage_service.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8228,7 +8228,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services_legacy.py`
 - `ctc-research.com/apps/LMS/services/enrollments.py`
 
-**Target**: `django_rseal.LMS.services_legacy`
+**Target**: `crafts_ai.LMS.services_legacy`
 
 **Category**: extract-to-rseal
 
@@ -8242,7 +8242,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services_legacy.py`
 - `structa.cloud/apps/LMS/services/enrollments.py`
 
-**Target**: `django_rseal.LMS.services_legacy`
+**Target**: `crafts_ai.LMS.services_legacy`
 
 **Category**: extract-to-rseal
 
@@ -8256,7 +8256,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/LMS/services_legacy.py`
 - `structa.cloud/apps/LMS/services/enrollments.py`
 
-**Target**: `django_rseal.LMS.services_legacy`
+**Target**: `crafts_ai.LMS.services_legacy`
 
 **Category**: extract-to-rseal
 
@@ -8270,7 +8270,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/blog/post.py`
 - `structa.cloud/apps/handlers/models/blog/post.py`
 
-**Target**: `django_rseal.handlers.models.blog.post`
+**Target**: `crafts_ai.handlers.models.blog.post`
 
 **Category**: extract-to-rseal
 
@@ -8282,9 +8282,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/blog/post.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/blog_post.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/blog_post.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8296,9 +8296,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/manage/peoples.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/peoples.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/peoples.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8312,7 +8312,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/profiles/certificate.py`
 - `structa.cloud/apps/handlers/models/profiles/certificate.py`
 
-**Target**: `django_rseal.handlers.models.profiles.certificate`
+**Target**: `crafts_ai.handlers.models.profiles.certificate`
 
 **Category**: extract-to-rseal
 
@@ -8324,9 +8324,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/manage/events.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/events.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/events.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8338,9 +8338,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/manage/events.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/events.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/events.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8354,7 +8354,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/profiles/message.py`
 - `structa.cloud/apps/handlers/models/profiles/message.py`
 
-**Target**: `django_rseal.handlers.models.profiles.message`
+**Target**: `crafts_ai.handlers.models.profiles.message`
 
 **Category**: extract-to-rseal
 
@@ -8368,7 +8368,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/services/form_submission.py`
 - `structa.cloud/apps/handlers/services/form_submission.py`
 
-**Target**: `django_rseal.handlers.services.form_submission`
+**Target**: `crafts_ai.handlers.services.form_submission`
 
 **Category**: extract-to-rseal
 
@@ -8382,7 +8382,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/company.py`
 - `structa.cloud/apps/handlers/processors/contacts.py`
 
-**Target**: `django_rseal.handlers.processors.company`
+**Target**: `crafts_ai.handlers.processors.company`
 
 **Category**: extract-to-rseal
 
@@ -8396,7 +8396,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/processors/company.py`
 - `structa.cloud/apps/handlers/processors/contacts.py`
 
-**Target**: `django_rseal.handlers.processors.company`
+**Target**: `crafts_ai.handlers.processors.company`
 
 **Category**: extract-to-rseal
 
@@ -8410,7 +8410,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/service.py`
 - `structa.cloud/apps/handlers/models/manage/service.py`
 
-**Target**: `django_rseal.handlers.models.manage.service`
+**Target**: `crafts_ai.handlers.models.manage.service`
 
 **Category**: extract-to-rseal
 
@@ -8424,7 +8424,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/base.py`
 - `structa.cloud/apps/pages/models/pages/base.py`
 
-**Target**: `django_rseal.pages.models.pages.base`
+**Target**: `crafts_ai.pages.models.pages.base`
 
 **Category**: extract-to-rseal
 
@@ -8438,7 +8438,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/enrollments.py`
 - `structa.cloud/apps/LMS/services_legacy.py`
 
-**Target**: `django_rseal.LMS.services.enrollments`
+**Target**: `crafts_ai.LMS.services.enrollments`
 
 **Category**: extract-to-rseal
 
@@ -8449,10 +8449,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 97.4%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0004_alter_newsletter_body_alter_person_profile_content.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0006_alter_newsletter_body_alter_person_profile_content.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0004_alter_newsletter_body_alter_person_profile_content.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0006_alter_newsletter_body_alter_person_profile_content.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8466,7 +8466,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/settings.py`
 - `structa.cloud/apps/handlers/site/settings.py`
 
-**Target**: `django_rseal.handlers.site.settings`
+**Target**: `crafts_ai.handlers.site.settings`
 
 **Category**: extract-to-rseal
 
@@ -8480,7 +8480,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/account.py`
 - `structa.cloud/apps/handlers/forms/account.py`
 
-**Target**: `django_rseal.handlers.forms.account`
+**Target**: `crafts_ai.handlers.forms.account`
 
 **Category**: extract-to-rseal
 
@@ -8494,7 +8494,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/wagtail_hooks.py`
 - `structa.cloud/apps/handlers/wagtail_hooks.py`
 
-**Target**: `django_rseal.handlers.registration.wagtail_hooks`
+**Target**: `crafts_ai.handlers.registration.wagtail_hooks`
 
 **Category**: extract-to-rseal
 
@@ -8508,7 +8508,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/wagtail_hooks.py`
 - `structa.cloud/apps/handlers/registration/wagtail_hooks.py`
 
-**Target**: `django_rseal.handlers.wagtail_hooks`
+**Target**: `crafts_ai.handlers.wagtail_hooks`
 
 **Category**: extract-to-rseal
 
@@ -8520,9 +8520,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8534,9 +8534,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/wagtail_hooks.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/wagtail_hooks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/wagtail_hooks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8548,9 +8548,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/manage/event.py`
-- `venv/libs/django-rseal/src/django_rseal/handlers/models/manage_event.py`
+- `venv/libs/crafts-ai/src/crafts_ai/handlers/models/manage_event.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8561,10 +8561,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 97.2%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0019_alter_newsletter_body_alter_person_profile_content_and_more.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0006_alter_newsletter_body_alter_person_profile_content.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0019_alter_newsletter_body_alter_person_profile_content_and_more.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0006_alter_newsletter_body_alter_person_profile_content.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8592,7 +8592,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/profiles/note.py`
 - `structa.cloud/apps/handlers/models/profiles/note.py`
 
-**Target**: `django_rseal.handlers.models.profiles.note`
+**Target**: `crafts_ai.handlers.models.profiles.note`
 
 **Category**: extract-to-rseal
 
@@ -8606,7 +8606,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/company.py`
 - `ctc-research.com/apps/handlers/processors/contacts.py`
 
-**Target**: `django_rseal.handlers.processors.company`
+**Target**: `crafts_ai.handlers.processors.company`
 
 **Category**: extract-to-rseal
 
@@ -8620,7 +8620,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/classes.py`
 - `structa.cloud/apps/LMS/models/classes.py`
 
-**Target**: `django_rseal.LMS.models.classes`
+**Target**: `crafts_ai.LMS.models.classes`
 
 **Category**: extract-to-rseal
 
@@ -8634,7 +8634,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/auth_utils.py`
 - `structa.cloud/apps/handlers/processors/auth_utils.py`
 
-**Target**: `django_rseal.handlers.processors.auth_utils`
+**Target**: `crafts_ai.handlers.processors.auth_utils`
 
 **Category**: extract-to-rseal
 
@@ -8646,9 +8646,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/manage/services.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/services.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/services.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8660,9 +8660,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/manage/services.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/services.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/services.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8674,9 +8674,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/manage/peoples.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/peoples.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/peoples.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8715,10 +8715,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 96.5%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/services.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/services.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/services.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/services.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8732,7 +8732,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/billing.py`
 - `structa.cloud/apps/handlers/forms/billing.py`
 
-**Target**: `django_rseal.handlers.forms.billing`
+**Target**: `crafts_ai.handlers.forms.billing`
 
 **Category**: extract-to-rseal
 
@@ -8760,7 +8760,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/preferences.py`
 - `structa.cloud/apps/handlers/forms/preferences.py`
 
-**Target**: `django_rseal.handlers.forms.preferences`
+**Target**: `crafts_ai.handlers.forms.preferences`
 
 **Category**: extract-to-rseal
 
@@ -8774,7 +8774,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/event.py`
 - `structa.cloud/apps/handlers/models/manage/event.py`
 
-**Target**: `django_rseal.handlers.models.manage.event`
+**Target**: `crafts_ai.handlers.models.manage.event`
 
 **Category**: extract-to-rseal
 
@@ -8788,7 +8788,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/notification.py`
 - `structa.cloud/apps/handlers/forms/notification.py`
 
-**Target**: `django_rseal.handlers.forms.notification`
+**Target**: `crafts_ai.handlers.forms.notification`
 
 **Category**: extract-to-rseal
 
@@ -8802,7 +8802,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/migrations/0003_authemailtemplate.py`
 - `structa.cloud/apps/handlers/registration/migrations/0001_initial.py`
 
-**Target**: `django_rseal.handlers.migrations.0003_authemailtemplate`
+**Target**: `crafts_ai.handlers.migrations.0003_authemailtemplate`
 
 **Category**: extract-to-rseal
 
@@ -8816,7 +8816,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/migrations/0003_authemailtemplate.py`
 - `structa.cloud/apps/handlers/registration/migrations/0001_initial.py`
 
-**Target**: `django_rseal.handlers.migrations.0003_authemailtemplate`
+**Target**: `crafts_ai.handlers.migrations.0003_authemailtemplate`
 
 **Category**: extract-to-rseal
 
@@ -8827,10 +8827,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 95.7%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0019_alter_newsletter_body_alter_person_profile_content_and_more.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0004_alter_newsletter_body_alter_person_profile_content.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0019_alter_newsletter_body_alter_person_profile_content_and_more.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0004_alter_newsletter_body_alter_person_profile_content.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8844,7 +8844,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/profile.py`
 - `structa.cloud/apps/handlers/site/profile.py`
 
-**Target**: `django_rseal.handlers.site.profile`
+**Target**: `crafts_ai.handlers.site.profile`
 
 **Category**: extract-to-rseal
 
@@ -8855,10 +8855,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 95.3%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0018_alter_emailsettings_default_from_email.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0017_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0018_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0017_alter_emailsettings_default_from_email.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8872,7 +8872,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/services/email/service.py`
 - `structa.cloud/apps/handlers/services/email/service.py`
 
-**Target**: `django_rseal.handlers.services.email.service`
+**Target**: `crafts_ai.handlers.services.email.service`
 
 **Category**: extract-to-rseal
 
@@ -8886,7 +8886,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/privacy.py`
 - `structa.cloud/apps/handlers/forms/privacy.py`
 
-**Target**: `django_rseal.handlers.forms.privacy`
+**Target**: `crafts_ai.handlers.forms.privacy`
 
 **Category**: extract-to-rseal
 
@@ -8914,7 +8914,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/security.py`
 - `structa.cloud/apps/handlers/forms/security.py`
 
-**Target**: `django_rseal.handlers.forms.security`
+**Target**: `crafts_ai.handlers.forms.security`
 
 **Category**: extract-to-rseal
 
@@ -8926,9 +8926,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/manage/services.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/services.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/services.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8940,9 +8940,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/manage/services.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/snippets/services.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/snippets/services.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -8956,7 +8956,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/basic_auth.py`
 - `structa.cloud/apps/handlers/processors/basic_auth.py`
 
-**Target**: `django_rseal.handlers.processors.basic_auth`
+**Target**: `crafts_ai.handlers.processors.basic_auth`
 
 **Category**: extract-to-rseal
 
@@ -9054,7 +9054,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/wagtail_hooks.py`
 - `structa.cloud/apps/pages/.wagtail_hooks.py`
 
-**Target**: `django_rseal.pages.wagtail_hooks`
+**Target**: `crafts_ai.pages.wagtail_hooks`
 
 **Category**: extract-to-rseal
 
@@ -9065,10 +9065,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 88.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/form.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/form.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/form.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/form.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9093,10 +9093,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 86.7%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0016_alter_emailsettings_default_from_email.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0018_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0016_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0018_alter_emailsettings_default_from_email.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9110,7 +9110,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/signals.py`
 - `structa.cloud/apps/handlers/signals.py`
 
-**Target**: `django_rseal.handlers.signals`
+**Target**: `crafts_ai.handlers.signals`
 
 **Category**: extract-to-rseal
 
@@ -9219,10 +9219,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 84.5%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/contacts.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/contacts.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/email.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9233,10 +9233,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 84.4%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/generic/create.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/generic/update.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/generic/create.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/generic/update.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9247,10 +9247,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 84.2%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/contacts.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/contacts.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/social.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9262,9 +9262,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/pages/models/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9276,9 +9276,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/pages/models/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9331,10 +9331,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 82.9%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/contrib/migrations/0004_alter_options_ordering_domain.py`
-- `venv/libs/django-rseal/src/django_rseal/contrib/migrations/0003_alter_domain_max_length.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/migrations/0004_alter_options_ordering_domain.py`
+- `venv/libs/crafts-ai/src/crafts_ai/contrib/migrations/0003_alter_domain_max_length.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9345,10 +9345,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 82.7%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/chat/apps.py`
-- `venv/libs/django-rseal/src/django_rseal/email_tools/apps.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/apps.py`
+- `venv/libs/crafts-ai/src/crafts_ai/email_tools/apps.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9373,10 +9373,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 82.4%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0016_alter_emailsettings_default_from_email.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0017_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0016_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0017_alter_emailsettings_default_from_email.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9387,10 +9387,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 81.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0020_alter_emailsettings_default_from_email_and_more.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0017_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0020_alter_emailsettings_default_from_email_and_more.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0017_alter_emailsettings_default_from_email.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9402,9 +9402,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/manage/partners.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/partners.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/partners.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9416,9 +9416,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/manage/partners.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/partners.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/partners.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9432,7 +9432,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/tests/test_property_htmx_headers.py`
 - `ctc-research.com/apps/handlers/registration/tests/test_property_hx_trigger_validity.py`
 
-**Target**: `django_grep.handlers.registration.tests.test_property_htmx_headers`
+**Target**: `django_osoul.handlers.registration.tests.test_property_htmx_headers`
 
 **Category**: extract-to-grep
 
@@ -9486,9 +9486,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/pages/models/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9542,9 +9542,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/pages/models/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9600,7 +9600,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/basic_auth.py`
 - `ctc-research.com/apps/handlers/processors/auth_utils.py`
 
-**Target**: `django_rseal.handlers.processors.basic_auth`
+**Target**: `crafts_ai.handlers.processors.basic_auth`
 
 **Category**: extract-to-rseal
 
@@ -9611,10 +9611,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 79.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9737,10 +9737,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 79.2%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0016_alter_emailsettings_default_from_email.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0020_alter_emailsettings_default_from_email_and_more.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0016_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0020_alter_emailsettings_default_from_email_and_more.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9810,7 +9810,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/basic_auth.py`
 - `structa.cloud/apps/handlers/processors/auth_utils.py`
 
-**Target**: `django_rseal.handlers.processors.basic_auth`
+**Target**: `crafts_ai.handlers.processors.basic_auth`
 
 **Category**: extract-to-rseal
 
@@ -9821,10 +9821,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 78.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -9866,7 +9866,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/processors/auth_utils.py`
 - `structa.cloud/apps/handlers/processors/basic_auth.py`
 
-**Target**: `django_rseal.handlers.processors.auth_utils`
+**Target**: `crafts_ai.handlers.processors.auth_utils`
 
 **Category**: extract-to-rseal
 
@@ -9961,10 +9961,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 78.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/contacts/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/contacts/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10031,10 +10031,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 77.9%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/social.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/social.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/email.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10045,10 +10045,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 77.9%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0018_alter_emailsettings_default_from_email.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/migrations/0020_alter_emailsettings_default_from_email_and_more.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0018_alter_emailsettings_default_from_email.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/migrations/0020_alter_emailsettings_default_from_email_and_more.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10101,10 +10101,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 77.6%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/media/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/partials/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/media/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/partials/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10172,9 +10172,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10186,9 +10186,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10200,9 +10200,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10311,10 +10311,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 75.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/websiteLinks.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/contact/contact/websiteLinks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/websiteLinks.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/contact/contact/websiteLinks.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10325,10 +10325,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 74.8%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/mcp_designer/apps.py`
-- `venv/libs/django-rseal/src/django_rseal/chat/apps.py`
+- `venv/libs/crafts-ai/src/crafts_ai/mcp_designer/apps.py`
+- `venv/libs/crafts-ai/src/crafts_ai/chat/apps.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10370,7 +10370,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0014_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0013_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0014_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0014_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -10410,9 +10410,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10424,9 +10424,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/views/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10452,9 +10452,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/site/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/media/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/media/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10549,10 +10549,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 73.6%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/renderer.py`
-- `venv/libs/django-grep/src/django_grep/typing.py`
+- `venv/libs/crafts-ai/src/crafts_ai/renderer.py`
+- `venv/libs/django-osoul/src/django_osoul/typing.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10591,10 +10591,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 73.3%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/services/person.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/services/cart.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/services/person.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/services/cart.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10606,9 +10606,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10620,9 +10620,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10633,10 +10633,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 73.2%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/services/message.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/services/form_submission.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/services/message.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/services/form_submission.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10648,9 +10648,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/services/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/media/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/media/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10662,9 +10662,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/services/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/media/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/media/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10676,9 +10676,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/site/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/partials/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/partials/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10690,9 +10690,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10718,9 +10718,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10731,10 +10731,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 72.9%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/mcp_designer/apps.py`
-- `venv/libs/django-rseal/src/django_rseal/email_tools/apps.py`
+- `venv/libs/crafts-ai/src/crafts_ai/mcp_designer/apps.py`
+- `venv/libs/crafts-ai/src/crafts_ai/email_tools/apps.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10746,9 +10746,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/managers/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10760,9 +10760,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/managers/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10788,9 +10788,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10802,9 +10802,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10844,9 +10844,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10858,9 +10858,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/snippets/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10872,9 +10872,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/snippets/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10886,9 +10886,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/contacts/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/contacts/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10900,9 +10900,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/contacts/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/contacts/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10914,9 +10914,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10983,10 +10983,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 71.6%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/settings/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/settings/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -10998,9 +10998,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/managers/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11012,9 +11012,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/managers/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/enums/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/enums/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11026,9 +11026,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/services/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11040,9 +11040,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/services/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11053,10 +11053,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 71.4%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/contacts/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/settings/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/contacts/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/settings/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11068,9 +11068,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/site/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11081,10 +11081,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 71.3%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/site/auth/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/settings/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/site/auth/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/settings/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11236,9 +11236,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/profile/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/profile/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11250,9 +11250,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11264,9 +11264,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/profile/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/profile/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11278,9 +11278,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/site/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/site/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11294,7 +11294,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0019_alter_aboutpage_facts_alter_homepage_cta.py`
 - `structa.cloud/apps/pages/migrations/0014_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0019_alter_aboutpage_facts_alter_homepage_cta`
+**Target**: `crafts_ai.pages.migrations.0019_alter_aboutpage_facts_alter_homepage_cta`
 
 **Category**: extract-to-rseal
 
@@ -11308,7 +11308,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0010_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0001_initial.py`
 
-**Target**: `django_rseal.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -11322,7 +11322,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/migrations/0010_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `structa.cloud/apps/pages/migrations/0001_initial.py`
 
-**Target**: `django_rseal.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -11364,7 +11364,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0010_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 - `ctc-research.com/apps/pages/migrations/0001_initial.py`
 
-**Target**: `django_rseal.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
+**Target**: `crafts_ai.pages.migrations.0010_alter_aboutpage_facts_alter_aboutpage_head_and_more`
 
 **Category**: extract-to-rseal
 
@@ -11390,9 +11390,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11404,9 +11404,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/users/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/users/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11432,9 +11432,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/LMS/services/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/partials/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/partials/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11446,9 +11446,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/LMS/services/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/comp/blocks/partials/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/comp/blocks/partials/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11460,9 +11460,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11474,9 +11474,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/snippets/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 
@@ -11490,7 +11490,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0001_initial.py`
 - `structa.cloud/apps/pages/migrations/0010_alter_aboutpage_facts_alter_aboutpage_head_and_more.py`
 
-**Target**: `django_rseal.pages.migrations.0001_initial`
+**Target**: `crafts_ai.pages.migrations.0001_initial`
 
 **Category**: extract-to-rseal
 
@@ -11501,10 +11501,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 70.0%
 
 **Locations**:
-- `venv/libs/django-rseal/src/django_rseal/pipelines/snippets/manage/__init__.py`
-- `venv/libs/django-rseal/src/django_rseal/pipelines/models/contacts/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/snippets/manage/__init__.py`
+- `venv/libs/crafts-ai/src/crafts_ai/pipelines/models/contacts/__init__.py`
 
-**Target**: `django_rseal.`
+**Target**: `crafts_ai.`
 
 **Category**: already-extracted
 

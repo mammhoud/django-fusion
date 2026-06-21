@@ -46,22 +46,22 @@ This document is the result of a final duplication scan performed after all cons
 
 | Component | Consolidated To | Status |
 |-----------|----------------|--------|
-| `utils/validators.py` | `libs/django-grep/src/django_grep/utils/validators.py` | ✅ Done |
-| `utils/text.py` | `libs/django-grep/src/django_grep/utils/text.py` | ✅ Done |
-| `utils/responses.py` | `libs/django-grep/src/django_grep/utils/responses.py` | ✅ Done |
-| `utils/datetime.py` | `libs/django-grep/src/django_grep/utils/datetime_utils.py` | ✅ Done |
-| `views/mixins.py` | `libs/django-grep/src/django_grep/views/mixins.py` | ✅ Done |
-| `templatetags/` | `libs/django-grep/src/django_grep/templatetags/` | ✅ Done |
-| `filters/` | Identical in both sites — shared via django-grep | ✅ Acceptable |
-| `snippets/` | Identical in both sites — shared via django-grep | ✅ Acceptable |
-| `blocks.py` | Identical in both sites — shared via django-grep | ✅ Acceptable |
+| `utils/validators.py` | `libs/django-osoul/src/django_osoul/utils/validators.py` | ✅ Done |
+| `utils/text.py` | `libs/django-osoul/src/django_osoul/utils/text.py` | ✅ Done |
+| `utils/responses.py` | `libs/django-osoul/src/django_osoul/utils/responses.py` | ✅ Done |
+| `utils/datetime.py` | `libs/django-osoul/src/django_osoul/utils/datetime_utils.py` | ✅ Done |
+| `views/mixins.py` | `libs/django-osoul/src/django_osoul/views/mixins.py` | ✅ Done |
+| `templatetags/` | `libs/django-osoul/src/django_osoul/templatetags/` | ✅ Done |
+| `filters/` | Identical in both sites — shared via django-osoul | ✅ Acceptable |
+| `snippets/` | Identical in both sites — shared via django-osoul | ✅ Acceptable |
+| `blocks.py` | Identical in both sites — shared via django-osoul | ✅ Acceptable |
 | `managers/peoples.py` | Near-identical, only import path differs (`core` vs `alliance`) | ✅ Acceptable |
 
 ---
 
 ## 2. Cleanup Decisions
 
-### Category A: Requires Deletion (Exact Duplicates → Move to django-grep)
+### Category A: Requires Deletion (Exact Duplicates → Move to django-osoul)
 
 ---
 
@@ -69,15 +69,15 @@ This document is the result of a final duplication scan performed after all cons
 - **Files:**
   - `ctc-research.com/core/CI/models/interaction/call.py` (87 lines)
   - `structa.cloud/alliance/CI/models/interaction/call.py` (87 lines)
-- **Decision:** DELETE both, move to `libs/django-grep/src/django_grep/CI/models/interaction/call.py`
+- **Decision:** DELETE both, move to `libs/django-osoul/src/django_osoul/CI/models/interaction/call.py`
 - **Justification:** Files are byte-for-byte identical. No site-specific logic.
 - **Effort:** Low
 - **Priority:** High
 - **Risk:** Medium — requires Django migration in both sites
 - **Steps:**
-  1. Create `libs/django-grep/src/django_grep/CI/models/interaction/` directory
-  2. Copy `call.py` to django-grep
-  3. Add `Call` to django-grep's `__init__.py` exports
+  1. Create `libs/django-osoul/src/django_osoul/CI/models/interaction/` directory
+  2. Copy `call.py` to django-osoul
+  3. Add `Call` to django-osoul's `__init__.py` exports
   4. Update import in `ctc-research.com/core/CI/models/interaction/__init__.py`
   5. Update import in `structa.cloud/alliance/CI/models/interaction/__init__.py`
   6. Create migration in both sites: `python manage.py makemigrations --empty core` / `alliance`
@@ -92,13 +92,13 @@ This document is the result of a final duplication scan performed after all cons
 - **Files:**
   - `ctc-research.com/core/CI/models/interaction/notification.py` (124 lines)
   - `structa.cloud/alliance/CI/models/interaction/notification.py` (124 lines)
-- **Decision:** DELETE both, move to `libs/django-grep/src/django_grep/CI/models/interaction/notification.py`
+- **Decision:** DELETE both, move to `libs/django-osoul/src/django_osoul/CI/models/interaction/notification.py`
 - **Justification:** Files are byte-for-byte identical. No site-specific logic.
 - **Effort:** Low
 - **Priority:** High
 - **Risk:** Medium — requires Django migration in both sites
 - **Steps:**
-  1. Copy `notification.py` to `libs/django-grep/src/django_grep/CI/models/interaction/`
+  1. Copy `notification.py` to `libs/django-osoul/src/django_osoul/CI/models/interaction/`
   2. Update imports in both sites
   3. Create and run migrations in both sites
   4. Delete both original files
@@ -110,14 +110,14 @@ This document is the result of a final duplication scan performed after all cons
 - **Files:**
   - `ctc-research.com/apps/handlers/models/forms/submission.py` (121 lines)
   - `structa.cloud/apps/handlers/models/forms/submission.py` (121 lines)
-- **Decision:** DELETE both, move to `libs/django-grep/src/django_grep/handlers/models/forms/submission.py`
+- **Decision:** DELETE both, move to `libs/django-osoul/src/django_osoul/handlers/models/forms/submission.py`
 - **Justification:** Files are byte-for-byte identical. No site-specific logic.
 - **Effort:** Low
 - **Priority:** Medium
 - **Risk:** Medium — requires Django migration in both sites
 - **Steps:**
-  1. Create `libs/django-grep/src/django_grep/handlers/models/forms/` directory
-  2. Copy `submission.py` to django-grep
+  1. Create `libs/django-osoul/src/django_osoul/handlers/models/forms/` directory
+  2. Copy `submission.py` to django-osoul
   3. Update imports in both sites
   4. Create and run migrations in both sites
   5. Delete both original files
@@ -129,13 +129,13 @@ This document is the result of a final duplication scan performed after all cons
 - **Files:**
   - `ctc-research.com/core/CI/models/integrations.py` (178 lines)
   - `structa.cloud/alliance/CI/models/integrations.py` (178 lines)
-- **Decision:** DELETE both, move to `libs/django-grep/src/django_grep/CI/models/integrations.py`
+- **Decision:** DELETE both, move to `libs/django-osoul/src/django_osoul/CI/models/integrations.py`
 - **Justification:** Files are byte-for-byte identical. No site-specific logic.
 - **Effort:** Low
 - **Priority:** Medium
 - **Risk:** Medium — requires Django migration in both sites
 - **Steps:**
-  1. Copy `integrations.py` to `libs/django-grep/src/django_grep/CI/models/`
+  1. Copy `integrations.py` to `libs/django-osoul/src/django_osoul/CI/models/`
   2. Update imports in both sites
   3. Create and run migrations in both sites
   4. Delete both original files
@@ -151,7 +151,7 @@ This document is the result of a final duplication scan performed after all cons
 - **Files:**
   - `ctc-research.com/apps/handlers/site/mixins.py` (907 lines)
   - `structa.cloud/apps/handlers/site/mixins.py` (907 lines)
-- **Decision:** MERGE into django-grep, keep site-specific subclasses if needed
+- **Decision:** MERGE into django-osoul, keep site-specific subclasses if needed
 - **Difference:** Only import ordering differs (lines 13-16). Functionally identical.
 - **Justification:** 907 lines of duplicated view/model mixin logic. High value consolidation.
 - **Effort:** Medium
@@ -159,8 +159,8 @@ This document is the result of a final duplication scan performed after all cons
 - **Risk:** High — 20+ views in each site inherit from these mixins
 - **Steps:**
   1. Normalize import order in both files (trivial fix — 2 lines)
-  2. Move unified `mixins.py` to `libs/django-grep/src/django_grep/pipelines/site/mixins.py`
-  3. Update `from apps.handlers.site.mixins import X` → `from django_grep.pipelines.site.mixins import X` in both sites
+  2. Move unified `mixins.py` to `libs/django-osoul/src/django_osoul/pipelines/site/mixins.py`
+  3. Update `from apps.handlers.site.mixins import X` → `from django_osoul.pipelines.site.mixins import X` in both sites
   4. Run full test suite in both sites
   5. Delete both original files
   6. **⚠️ Do not execute without running tests first**
@@ -176,7 +176,7 @@ This document is the result of a final duplication scan performed after all cons
 - **Justification:** The cart logic is fundamentally different between sites. ctc-research is LMS-focused; structa is generic e-commerce. Merging would require complex abstraction.
 - **Effort:** High (if merged)
 - **Priority:** Low
-- **Recommendation:** Keep separate. Document the shared base pattern in django-grep as an abstract `BaseCartMixin`.
+- **Recommendation:** Keep separate. Document the shared base pattern in django-osoul as an abstract `BaseCartMixin`.
 
 ---
 
@@ -242,14 +242,14 @@ Before executing model consolidation, the following must be confirmed:
 **Prerequisites:**
 - [ ] Database backups taken for both sites
 - [ ] Staging environment available for testing
-- [ ] django-grep CI/models directory structure created
+- [ ] django-osoul CI/models directory structure created
 - [ ] Both sites' test suites passing before migration
 
 **Migration Steps (per model):**
 ```bash
-# 1. Add model to django-grep
+# 1. Add model to django-osoul
 # 2. In each site, create empty migration:
-python manage.py makemigrations core --empty --name="move_call_to_django_grep"
+python manage.py makemigrations core --empty --name="move_call_to_django_osoul"
 
 # 3. Edit migration to use SeparateDatabaseAndState:
 # This keeps the DB table but changes Django's model reference
@@ -271,7 +271,7 @@ class Migration(migrations.Migration):
 python manage.py migrate
 
 # 5. Verify data intact
-python manage.py shell -c "from django_grep.CI.models.interaction.call import Call; print(Call.objects.count())"
+python manage.py shell -c "from django_osoul.CI.models.interaction.call import Call; print(Call.objects.count())"
 ```
 
 ---
@@ -289,12 +289,12 @@ python manage.py shell -c "from django_grep.CI.models.interaction.call import Ca
 
 ## 6. Success Criteria
 
-- [ ] `call.py` consolidated to django-grep, deleted from both sites
-- [ ] `notification.py` consolidated to django-grep, deleted from both sites
-- [ ] `submission.py` consolidated to django-grep, deleted from both sites
-- [ ] `integrations.py` consolidated to django-grep, deleted from both sites
+- [ ] `call.py` consolidated to django-osoul, deleted from both sites
+- [ ] `notification.py` consolidated to django-osoul, deleted from both sites
+- [ ] `submission.py` consolidated to django-osoul, deleted from both sites
+- [ ] `integrations.py` consolidated to django-osoul, deleted from both sites
 - [x] `mixins.py` import order normalized ✅ (completed in Task 16.3)
-- [ ] `mixins.py` consolidated to django-grep (after testing)
+- [ ] `mixins.py` consolidated to django-osoul (after testing)
 - [ ] All tests passing in both sites after each consolidation
 - [ ] No broken imports in either site
 - [ ] Database migrations successful in both sites

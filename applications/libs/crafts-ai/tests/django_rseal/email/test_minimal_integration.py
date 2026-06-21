@@ -20,12 +20,12 @@ django.setup()
 import pytest
 
 
-def test_django_rseal_import():
+def test_crafts_ai_import():
     """Test that django-rseal modules can be imported."""
     # Test importing key modules
     try:
-        from django_rseal.email.services import BulkEmailService, EmailService
-        from django_rseal.email.templates.template_selector import RoleBasedEmailTemplateSelector
+        from crafts_ai.email.services import BulkEmailService, EmailService
+        from crafts_ai.email.templates.template_selector import RoleBasedEmailTemplateSelector
 
         # Verify modules can be imported
         assert RoleBasedEmailTemplateSelector is not None
@@ -40,7 +40,7 @@ def test_django_rseal_import():
 
 def test_template_selector_basic():
     """Test basic template selector functionality."""
-    from django_rseal.email.templates.template_selector import RoleBasedEmailTemplateSelector
+    from crafts_ai.email.templates.template_selector import RoleBasedEmailTemplateSelector
 
     # Create selector
     selector = RoleBasedEmailTemplateSelector(
@@ -69,7 +69,7 @@ def test_template_selector_basic():
 
 def test_email_service_basic():
     """Test basic email service functionality."""
-    from django_rseal.email.services import EmailService
+    from crafts_ai.email.services import EmailService
 
     # Create service
     service = EmailService()
@@ -82,7 +82,7 @@ def test_email_service_basic():
 
 def test_build_context():
     """Test context building."""
-    from django_rseal.email.templates.template_selector import RoleBasedEmailTemplateSelector
+    from crafts_ai.email.templates.template_selector import RoleBasedEmailTemplateSelector
 
     selector = RoleBasedEmailTemplateSelector(
         site_name="Test Site",
@@ -110,7 +110,7 @@ def test_build_context():
 
 if __name__ == "__main__":
     # Run tests
-    test_django_rseal_import()
+    test_crafts_ai_import()
     test_template_selector_basic()
     test_email_service_basic()
     test_build_context()

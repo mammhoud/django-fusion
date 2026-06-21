@@ -39,7 +39,7 @@ node assets/scripts/workspace.mjs load-dumps --site vresume
 ## In Tests
 
 ```python
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class VResumePageTest(BaseTestCase):
     fixtures = [
@@ -63,8 +63,8 @@ images, blog posts) using Pillow for image generation. It is a standalone script
 python manage.py --site=vresume shell < VResume/www/tests/data_populator.py
 ```
 
-For full integration with `django-grep`, consider migrating data_populator to use
-`BaseTestCase` fixtures or the `django_grep.tests.pytest_plugin` so test data is
+For full integration with `django-osoul`, consider migrating data_populator to use
+`BaseTestCase` fixtures or the `django_osoul.tests.pytest_plugin` so test data is
 managed consistently with the rest of the workspace.
 
 ---

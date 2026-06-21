@@ -10,18 +10,18 @@ from django.utils import timezone
 
 def test_both_import_paths_work():
     """Both import paths should reference the same class."""
-    from django_rseal.communication.email.models import EmailTemplate as EmailTemplate1
-    from django_rseal.workflows.pipelines.models import EmailTemplate as EmailTemplate2
-    from django_rseal.workflows.pipelines.models.settings.templates import EmailTemplate as EmailTemplate3
+    from crafts_ai.communication.email.models import EmailTemplate as EmailTemplate1
+    from crafts_ai.workflows.pipelines.models import EmailTemplate as EmailTemplate2
+    from crafts_ai.workflows.pipelines.models.settings.templates import EmailTemplate as EmailTemplate3
 
     # All three should be the same class (or proxy to same class)
     assert EmailTemplate1.__name__ == EmailTemplate2.__name__ == EmailTemplate3.__name__
-    assert EmailTemplate1._meta.app_label == 'django_rseal'
+    assert EmailTemplate1._meta.app_label == 'crafts_ai'
 
 
 def test_simple_usage_backward_compatible():
     """Simple usage pattern should work (backward compatibility)."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     template = EmailTemplate.objects.create(
         name="test_simple_usage",
@@ -42,7 +42,7 @@ def test_simple_usage_backward_compatible():
 
 def test_advanced_features_available():
     """Advanced features should be available through simple import."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     future = timezone.now() + timedelta(days=1)
 
@@ -74,7 +74,7 @@ def test_advanced_features_available():
 
 def test_advanced_rendering_works():
     """Advanced rendering methods should work."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     template = EmailTemplate.objects.create(
         name="test_rendering",
@@ -100,7 +100,7 @@ def test_advanced_rendering_works():
 
 def test_class_methods_available():
     """Class methods should be available."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     # Create a default template
     template = EmailTemplate.objects.create(
@@ -128,7 +128,7 @@ def test_class_methods_available():
 
 def test_scheduling_methods_work():
     """Scheduling methods should work."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     template = EmailTemplate.objects.create(
         name="test_scheduling",
@@ -154,7 +154,7 @@ def test_scheduling_methods_work():
 
 def test_file_upload_methods_available():
     """File upload methods should be available."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     template = EmailTemplate.objects.create(
         name="test_file_methods",
@@ -179,7 +179,7 @@ def test_file_upload_methods_available():
 
 def test_performance_metrics_available():
     """Performance metrics should be available."""
-    from django_rseal.communication.email.models import EmailTemplate
+    from crafts_ai.communication.email.models import EmailTemplate
 
     template = EmailTemplate.objects.create(
         name="test_metrics",
@@ -212,7 +212,7 @@ def test_performance_metrics_available():
 
 def test_website_signal_compatibility():
     """Verify compatibility with website signal handlers."""
-    from django_rseal.workflows.pipelines.models import EmailTemplate
+    from crafts_ai.workflows.pipelines.models import EmailTemplate
 
     # This is how websites import it
     template = EmailTemplate.objects.create(
@@ -234,12 +234,12 @@ def test_website_signal_compatibility():
 
 
 def test_app_label_is_canonical():
-    """Verify app_label is django_rseal (canonical)."""
-    from django_rseal.communication.email.models import EmailTemplate
-    from django_rseal.workflows.pipelines.models import EmailTemplate as PipelinesEmailTemplate
+    """Verify app_label is crafts_ai (canonical)."""
+    from crafts_ai.communication.email.models import EmailTemplate
+    from crafts_ai.workflows.pipelines.models import EmailTemplate as PipelinesEmailTemplate
 
-    assert EmailTemplate._meta.app_label == 'django_rseal'
-    assert PipelinesEmailTemplate._meta.app_label == 'django_rseal'
+    assert EmailTemplate._meta.app_label == 'crafts_ai'
+    assert PipelinesEmailTemplate._meta.app_label == 'crafts_ai'
 
 
 if __name__ == "__main__":

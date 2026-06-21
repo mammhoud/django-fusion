@@ -45,16 +45,16 @@ class IntelligentMerger:
             "path": "applications/libs/crafts-ai",
         },
         "django_osoul": {
-            "forbidden": ["wagtail", "celery", "django_rseal"],
+            "forbidden": ["wagtail", "celery", "crafts_ai"],
             "path": "venv/libs/django-osoul",
         },
-        "django_rseal": {
+        "crafts_ai": {
             "forbidden": [],  # No project-specific imports
-            "path": "venv/libs/django-rseal",
+            "path": "venv/libs/crafts-ai",
         },
-        "django_grep": {
+        "django_osoul": {
             "forbidden": [],  # Should not be imported by production code
-            "path": "venv/libs/django-grep",
+            "path": "venv/libs/django-osoul",
         },
     }
 

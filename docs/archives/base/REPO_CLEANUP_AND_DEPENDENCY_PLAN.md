@@ -23,12 +23,12 @@
    - Removed the fake-module setup call from `ctc-research/settings.py`.
    - Added `twilio>=9.0` to the root Python dependencies so the installed `django_osoul` package can import its Twilio-backed interaction modules normally.
    - Replaced legacy application imports from fake-only paths such as `django_osoul.core.*`, `django_osoul.web.*`, and `django_osoul.comp.site` with canonical package paths (`django_osoul.models`, `django_osoul.managers`, `django_osoul.handlers`, `django_osoul.services`, `django_osoul.site`, `django_osoul.site.routes`, and `django_osoul.views`).
-   - Replaced legacy `django_rseal.http.*` imports with installed package paths under `django_rseal.handlers` and `django_rseal.middlewares`.
-   - Replaced stale `django_rseal.contrib.models` imports with `django_rseal.contrib.core.models`.
+   - Replaced legacy `crafts_ai.http.*` imports with installed package paths under `crafts_ai.handlers` and `crafts_ai.middlewares`.
+   - Replaced stale `crafts_ai.contrib.models` imports with `crafts_ai.contrib.core.models`.
 
 6. **Cleaned library workspace metadata**
    - Removed non-existent workspace members and sources (`crafts-ai`, `django-osoul-stub`, `nawaai`) from `libs/pyproject.toml`.
-   - Restored `.gitmodules` entries for the tracked `libs/django-grep`, `libs/django-osoul`, and `libs/django-rseal` gitlinks so submodule commands have path mappings.
+   - Restored `.gitmodules` entries for the tracked `libs/django-osoul`, `libs/django-osoul`, and `libs/crafts-ai` gitlinks so submodule commands have path mappings.
 
 7. **Documented website apps**
    - Added `docs/WEBSITE_APPLICATION_INVENTORY.md` with the apps discovered for `ctc-research`, `lms-demo`, and `VResume`.
@@ -64,15 +64,15 @@ This indicates at least one admin inline model has a foreign key whose `remote_f
 3. Replace stale string model references with valid `app_label.ModelName` references that resolve in the installed app registry, or move the inline registration until after the target app/model is installed.
 4. Add a regression check that fails if an admin inline has unresolved remote models.
 
-### `django_rseal` architecture drift
+### `crafts_ai` architecture drift
 
-Several apps were importing old paths such as `django_rseal.http.handlers.*`, while the installed package exposes handlers under `django_rseal.handlers.*`.
+Several apps were importing old paths such as `crafts_ai.http.handlers.*`, while the installed package exposes handlers under `crafts_ai.handlers.*`.
 
 **Enhancement plan:**
 
-1. Add compatibility tests that import all project modules containing `django_rseal` imports.
+1. Add compatibility tests that import all project modules containing `crafts_ai` imports.
 2. Prefer canonical installed-package paths instead of adding local shims.
-3. If compatibility is required for older deployments, implement a small upstream compatibility module inside `django_rseal` itself, not in this website repo.
+3. If compatibility is required for older deployments, implement a small upstream compatibility module inside `crafts_ai` itself, not in this website repo.
 4. Pin internal library commits in the lock file and document the expected package API surface.
 
 ## Dependency shim policy going forward
@@ -81,7 +81,7 @@ Several apps were importing old paths such as `django_rseal.http.handlers.*`, wh
 2. **Use real dependencies.** If a package import fails because an optional dependency is missing, add that dependency to `pyproject.toml` or make the upstream package lazy-import the optional provider.
 3. **Local fallbacks must be narrow.** A fallback may be acceptable only for optional runtime integrations (for example, not sending SMS when Twilio settings are absent), but it must not fake Django models, managers, or app packages.
 4. **Canonical imports only.** Website code should import from the current public API of internal libraries. Legacy import paths should be fixed or supported upstream.
-5. **Automated import checks.** Add CI coverage for `python manage.py --site=<site> check` for every website and a static import scan for banned fake-module patterns (`sys.modules[...] =`, `types.ModuleType`, `django_osoul.core`, `django_osoul.web`, `django_osoul.comp.site`, `django_rseal.http`).
+5. **Automated import checks.** Add CI coverage for `python manage.py --site=<site> check` for every website and a static import scan for banned fake-module patterns (`sys.modules[...] =`, `types.ModuleType`, `django_osoul.core`, `django_osoul.web`, `django_osoul.comp.site`, `crafts_ai.http`).
 
 ## Next steps
 
@@ -94,5 +94,5 @@ Several apps were importing old paths such as `django_rseal.http.handlers.*`, wh
 ### Cross-site check results
 
 - `ctc-research`: dependency shims are removed and import path cleanup now reaches Django admin checks. Remaining blocker is an unresolved admin inline relation (`AttributeError: 'str' object has no attribute '_meta'`) plus insecure development `SECRET_KEY` warnings.
-- `lms-demo`: startup fails because `django_rseal.models.settings.subscription.NewsletterSubscription` requires `settings.PROFILE_MODEL`, but `lms-demo` settings do not define it. Add the same explicit `PROFILE_MODEL` used by `ctc-research` or wire the real profile model if the site has one.
+- `lms-demo`: startup fails because `crafts_ai.models.settings.subscription.NewsletterSubscription` requires `settings.PROFILE_MODEL`, but `lms-demo` settings do not define it. Add the same explicit `PROFILE_MODEL` used by `ctc-research` or wire the real profile model if the site has one.
 - `vresume`: startup fails because `INSTALLED_APPS` references `plugins.accounts.apps`, but that module does not exist under `VResume/plugins`. Either add the real accounts app package for VResume, remove that app from VResume settings, or point the app entry to the correct shared/plugin module.

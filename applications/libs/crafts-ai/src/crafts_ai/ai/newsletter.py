@@ -13,7 +13,7 @@ class NewsletterAI:
     """
     AI-powered newsletter content enhancement.
 
-    No Django dependencies — can be used standalone or via django_rseal.newsletter.enhancer.
+    No Django dependencies — can be used standalone or via crafts_ai.newsletter.enhancer.
     """
 
     def __init__(self, client: Any = None) -> None:

@@ -1,6 +1,6 @@
 # Real-World Examples
 
-This document provides complete, real-world examples of using django-grep in your Django projects.
+This document provides complete, real-world examples of using django-osoul in your Django projects.
 
 ## Table of Contents
 
@@ -14,15 +14,15 @@ This document provides complete, real-world examples of using django-grep in you
 
 ## Blog Application
 
-Complete blog application using django-grep mixins and utilities.
+Complete blog application using django-osoul mixins and utilities.
 
 ### Models
 
 ```python
 from django.db import models
 from django.contrib.auth.models import User
-from django_grep.models import TimestampedModel, SoftDeleteModel, NoteMixin
-from django_grep.utils import slugify_unique
+from django_osoul.models import TimestampedModel, SoftDeleteModel, NoteMixin
+from django_osoul.utils import slugify_unique
 
 class Article(TimestampedModel, SoftDeleteModel, NoteMixin):
     """Blog article with timestamps, soft delete, and notes."""
@@ -44,7 +44,7 @@ class Article(TimestampedModel, SoftDeleteModel, NoteMixin):
         if not self.slug:
             self.slug = slugify_unique(Article, self.title)
         if not self.excerpt:
-            from django_grep.utils import truncate_words
+            from django_osoul.utils import truncate_words
             self.excerpt = truncate_words(self.content, 50)
         super().save(*args, **kwargs)
 
@@ -56,7 +56,7 @@ class Article(TimestampedModel, SoftDeleteModel, NoteMixin):
 
 ```python
 from django.views.generic import ListView, DetailView, CreateView
-from django_grep.views import MessageMixin, ProfileContextMixin
+from django_osoul.views import MessageMixin, ProfileContextMixin
 from .models import Article
 
 class ArticleListView(ListView):
@@ -100,7 +100,7 @@ class ArticleCreateView(MessageMixin, ProfileContextMixin, CreateView):
 ### Templates
 
 ```django
-{% load django_grep_tags %}
+{% load django_osoul_tags %}
 
 <!-- article_list.html -->
 <div class="articles">
@@ -131,7 +131,7 @@ Product catalog with pricing and inventory.
 
 ```python
 from django.db import models
-from django_grep.models import TimestampedModel, SoftDeleteModel, UUIDPrimaryKeyModel
+from django_osoul.models import TimestampedModel, SoftDeleteModel, UUIDPrimaryKeyModel
 
 class Product(TimestampedModel, SoftDeleteModel, UUIDPrimaryKeyModel):
     """Product with UUID primary key and soft delete."""
@@ -162,8 +162,8 @@ class Product(TimestampedModel, SoftDeleteModel, UUIDPrimaryKeyModel):
 
 ```python
 from django.views.generic import ListView, DetailView
-from django_grep.views import JSONResponseMixin
-from django_grep.utils import success_response, error_response
+from django_osoul.views import JSONResponseMixin
+from django_osoul.utils import success_response, error_response
 from .models import Product
 
 class ProductListView(ListView):
@@ -205,7 +205,7 @@ class ProductAPIView(JSONResponseMixin, DetailView):
 ### Templates
 
 ```django
-{% load django_grep_tags %}
+{% load django_osoul_tags %}
 
 <!-- product_list.html -->
 <div class="products">
@@ -248,7 +248,7 @@ Complete user profile with certifications and courses.
 ```python
 from django.db import models
 from django.contrib.auth.models import User
-from django_grep.models import (
+from django_osoul.models import (
     TimestampedModel,
     CertificateMixin,
     CourseMixin,
@@ -284,7 +284,7 @@ class UserProfile(
 
 ```python
 from django.views.generic import TemplateView, UpdateView
-from django_grep.views import ProfileDashboardMixin, MessageMixin
+from django_osoul.views import ProfileDashboardMixin, MessageMixin
 from .models import UserProfile
 
 class ProfileDashboardView(ProfileDashboardMixin, TemplateView):
@@ -320,7 +320,7 @@ class ProfileUpdateView(MessageMixin, UpdateView):
 ### Templates
 
 ```django
-{% load django_grep_tags %}
+{% load django_osoul_tags %}
 
 <!-- dashboard.html -->
 <div class="dashboard">
@@ -369,12 +369,12 @@ class ProfileUpdateView(MessageMixin, UpdateView):
 
 ## API Endpoints
 
-RESTful API using django-grep utilities.
+RESTful API using django-osoul utilities.
 
 ```python
 from django.views import View
-from django_grep.views import JSONResponseMixin
-from django_grep.utils import (
+from django_osoul.views import JSONResponseMixin
+from django_osoul.utils import (
     success_response,
     error_response,
     validate_email_format
@@ -461,7 +461,7 @@ class UserAPIView(JSONResponseMixin, View):
 Data import/export commands.
 
 ```python
-from django_grep.management import LoggingCommand
+from django_osoul.management import LoggingCommand
 from myapp.models import Product
 import csv
 

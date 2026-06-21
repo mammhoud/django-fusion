@@ -2,7 +2,7 @@
 
 > Part of **django-osoul** — Django foundation layer
 
-Privacy utilities for django_rseal.
+Privacy utilities for crafts_ai.
 
 ## Contents
 

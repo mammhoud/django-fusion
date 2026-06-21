@@ -18,8 +18,8 @@ LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 PACKAGES = {
     "django-osoul":  ("django_osoul",  "Django foundation layer"),
-    "django-rseal":  ("django_rseal",  "Django automation engine"),
-    "django-grep":   ("django_grep",   "Django testing framework"),
+    "crafts-ai":  ("crafts_ai",  "Django automation engine"),
+    "django-osoul":   ("django_osoul",   "Django testing framework"),
     "crafts-ai":     ("crafts_ai",     "Standalone AI/MCP toolkit"),
 }
 
