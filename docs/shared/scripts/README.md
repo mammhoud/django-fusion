@@ -138,7 +138,7 @@ python3 scripts/analyze_duplication.py --threshold 0.70 --output-format markdown
 python3 scripts/check_boundaries.py
 
 # Check specific boundary rule
-python3 scripts/check_boundaries.py --rule nawaai-no-django
+python3 scripts/check_boundaries.py --rule crafts-ai-no-django
 python3 scripts/check_boundaries.py --rule osoul-no-wagtail
 python3 scripts/check_boundaries.py --rule rseal-no-projects
 python3 scripts/check_boundaries.py --rule grep-test-only
@@ -259,7 +259,7 @@ Most scripts support these common parameters:
 - `--output-format`: Output format (json, markdown, text)
 
 #### `check_boundaries.py`
-- `--rule`: Specific boundary rule to check (nawaai-no-django, osoul-no-wagtail, rseal-no-projects, grep-test-only)
+- `--rule`: Specific boundary rule to check (crafts-ai-no-django, osoul-no-wagtail, rseal-no-projects, grep-test-only)
 - `--fix`: Attempt to fix violations automatically
 - `--report-only`: Generate report without failing
 

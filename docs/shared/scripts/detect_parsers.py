@@ -25,7 +25,7 @@ SCAN_DIRS = [
     "venv/libs/django-osoul/src",
     "venv/libs/django-rseal/src",
     "venv/libs/django-grep/src",
-    "venv/libs/nawaai/crafts_ai",
+    "applications/libs/crafts-ai/src/crafts_ai",
 ]
 
 # Class name patterns that indicate a parser

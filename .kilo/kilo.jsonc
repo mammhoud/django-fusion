@@ -140,6 +140,17 @@
         "bash": "deny"
       }
     },
+    "crafts-ai-toolsmith": {
+      "description": "Standalone AI/MCP package specialist – crafts_ai CLI, MCP endpoints, pure Python boundaries",
+      "mode": "subagent",
+      "model": "ollama/qwen2.5-coder:3b",
+      "prompt": "You are a standalone Python AI/MCP package expert. Focus on: - Maintaining applications/libs/crafts-ai with import package crafts_ai - Keeping the package free of Django and Wagtail imports - Building CLI commands and MCP integration points - Documenting package boundaries and local installation. Provide clean typed Python code and boundary-safe guidance.",
+      "temperature": 0.2,
+      "permission": {
+        "edit": "allow",
+        "bash": "allow"
+      }
+    },
     "product-manager": {
       "description": "Product management – requirements, user stories, prioritization, roadmaps",
       "mode": "subagent",
@@ -191,9 +202,14 @@
           "refactoring-specialist": "allow",
           "product-manager": "allow",
           "performance-optimizer": "allow",
-          "data-engineer": "allow"
+          "data-engineer": "allow",
+          "crafts-ai-toolsmith": "allow"
         }
       }
     }
+  },
+  "commands": {
+    "crafts-ai": ".kilo/commands/crafts-ai.md"
   }
+
 }

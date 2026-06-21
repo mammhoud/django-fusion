@@ -7,7 +7,7 @@ import ast
 import sys
 from pathlib import Path
 
-LIBS = Path(__file__).parent.parent.parent / "libs"
+LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 RULES = {
     "django-osoul": {
@@ -15,7 +15,7 @@ RULES = {
         "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "django_rseal", "django_grep", "crafts_ai"],
     },
     "crafts-ai": {
-        "src": "nawaai/crafts_ai",
+        "src": "crafts-ai/src",
         "forbidden": ["django"],
     },
     "django-rseal": {
