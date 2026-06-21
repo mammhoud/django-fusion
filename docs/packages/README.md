@@ -65,7 +65,7 @@ Test base classes, fixtures, factories, pytest plugins, and health checks
 - Health check endpoints
 - Data seeding utilities
 
-### [nawaai](nawaai/)
+### [crafts-ai](crafts-ai/)
 **Pure Python AI/MCP toolkit**
 
 AI integrations, chat functionality, and MCP server support
@@ -89,7 +89,7 @@ AI integrations, chat functionality, and MCP server support
 cd venv/libs/django-osoul && uv sync
 cd venv/libs/django-rseal && uv sync
 cd venv/libs/django-grep && uv sync
-cd venv/libs/nawaai && uv sync
+uv pip install -e applications/libs/crafts-ai/
 ```
 
 ## Usage
@@ -122,12 +122,11 @@ class MyTest(BaseTestCase):
         pass
 ```
 
-### nawaai
+### crafts-ai
 ```python
-from nawaai.ai import AIEngine
+from crafts_ai import package_info
 
-engine = AIEngine()
-response = engine.process("Hello!")
+info = package_info()
 ```
 
 ---
@@ -135,11 +134,11 @@ response = engine.process("Hello!")
 ## Dependency Direction
 
 ```
-ctc-research.com  →  django-osoul, django-grep, django-rseal, nawaai
-structa.cloud     →  django-osoul, django-grep, django-rseal, nawaai
+ctc-research.com  →  django-osoul, django-grep, django-rseal, crafts-ai
+structa.cloud     →  django-osoul, django-grep, django-rseal, crafts-ai
 django-rseal      →  django-osoul
 django-grep       →  (standalone)
-nawaai            →  (standalone)
+crafts-ai         →  (standalone)
 ```
 
 ---

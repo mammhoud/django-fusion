@@ -22,8 +22,8 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
-WORKSPACE_ROOT = Path(__file__).parent.parent
-VENV_LIBS = WORKSPACE_ROOT / "venv" / "libs"
+WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
+VENV_LIBS = WORKSPACE_ROOT / "applications" / "libs"
 CTC_PROJECT = WORKSPACE_ROOT / "ctc-research.com"
 STRUCTA_PROJECT = WORKSPACE_ROOT / "structa.cloud"
 
@@ -32,7 +32,7 @@ PACKAGES = [
     VENV_LIBS / "django-osoul" / "src" / "django_osoul",
     VENV_LIBS / "django-rseal" / "src" / "django_rseal",
     VENV_LIBS / "django-grep" / "src" / "django_grep",
-    VENV_LIBS / "nawaai" / "crafts_ai",
+    VENV_LIBS / "crafts-ai" / "src" / "crafts_ai",
 ]
 
 # Template directories in each project

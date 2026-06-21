@@ -227,8 +227,8 @@ class DuplicationAnalyzer:
             return "already-extracted", "django_rseal", ""
         elif 'venv/libs/django-grep' in file_a or 'venv/libs/django-grep' in file_b:
             return "already-extracted", "django_grep", ""
-        elif 'venv/libs/nawaai' in file_a or 'venv/libs/nawaai' in file_b:
-            return "already-extracted", "nawaai", ""
+        elif 'applications/libs/crafts-ai' in file_a or 'applications/libs/crafts-ai' in file_b:
+            return "already-extracted", "crafts-ai", ""
 
         # Analyze imports to determine category
         imports_a = set(self.modules[file_a].imports)
@@ -356,7 +356,7 @@ def main():
         'venv/libs/django-osoul/',
         'venv/libs/django-rseal/',
         'venv/libs/django-grep/',
-        'venv/libs/nawaai/'
+        'applications/libs/crafts-ai/'
     ]
 
     # Filter out directories that don't exist

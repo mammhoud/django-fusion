@@ -21,7 +21,7 @@ SCAN_DIRS = [
     "venv/libs/django-osoul/src/",
     "venv/libs/django-rseal/src/",
     "venv/libs/django-grep/src/",
-    "venv/libs/nawaai/src/",
+    "applications/libs/crafts-ai/src/",
 ]
 
 # Directories to skip

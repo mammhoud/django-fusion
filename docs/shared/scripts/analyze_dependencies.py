@@ -44,10 +44,10 @@ DEPENDENCY_RULES = {
     },
     "django-rseal": {
         "required": ["Django", "django-osoul", "wagtail", "celery", "faker", "toposort"],
-        "optional": {"ai": ["nawaai"], "mcp": ["mcp"]},
+        "optional": {"ai": ["crafts-ai"], "mcp": ["mcp"]},
         "can_import_from": ["django-osoul"]
     },
-    "nawaai": {
+    "crafts-ai": {
         "required": ["Faker", "toposort", "hypothesis"],
         "optional": {"openai": ["openai"], "anthropic": ["anthropic"], "mcp": ["mcp"]},
         "forbidden": ["Django"],
@@ -56,7 +56,7 @@ DEPENDENCY_RULES = {
     "django-grep": {
         "required": ["Django", "django-osoul", "django-rseal", "pytest", "pytest-django"],
         "optional": {"selenium": ["selenium"], "playwright": ["playwright"]},
-        "can_import_from": ["django-osoul", "django-rseal", "nawaai"]
+        "can_import_from": ["django-osoul", "django-rseal", "crafts-ai"]
     }
 }
 
@@ -598,7 +598,7 @@ PYPROJECT_FILES = [
     "venv/libs/django-osoul/pyproject.toml",
     "venv/libs/django-rseal/pyproject.toml",
     "venv/libs/django-grep/pyproject.toml",
-    "venv/libs/nawaai/pyproject.toml",
+    "applications/libs/crafts-ai/pyproject.toml",
 ]
 
 # Map pyproject path → source root(s) to scan for imports
@@ -608,7 +608,7 @@ SOURCE_ROOTS: Dict[str, List[str]] = {
     "venv/libs/django-osoul/pyproject.toml": ["venv/libs/django-osoul/src"],
     "venv/libs/django-rseal/pyproject.toml": ["venv/libs/django-rseal/src"],
     "venv/libs/django-grep/pyproject.toml": ["venv/libs/django-grep/src"],
-    "venv/libs/nawaai/pyproject.toml": ["venv/libs/nawaai"],
+    "applications/libs/crafts-ai/pyproject.toml": ["applications/libs/crafts-ai"],
 }
 
 
@@ -849,7 +849,7 @@ class DependencyAnalyzer:
             "wagtail-newsletter", "wagtail-transfer",
             "wagtailfontawesome",
             "celery",
-            "django-osoul", "django-rseal", "django-grep", "nawaai",
+            "django-osoul", "django-rseal", "django-grep", "crafts-ai",
         }
 
         # Map package name → typical Python import name
