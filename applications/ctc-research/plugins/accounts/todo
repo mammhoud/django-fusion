@@ -1,2 +1,14 @@
-- separate plugins/accounts/allauth_views.py to be at plugins/accounts/views as files separated with names
-- check the managements file all has bee moved files at last commit make sure all files is could be imported at old path as accounts app or accounts/registration s what moved files and used update its imports 
+# Accounts Plugin Todo
+
+## View Organization
+- [ ] Split `allauth_views.py` into individual files under `plugins/accounts/views/`
+  - Keep naming consistent with allauth view names
+  - Ensure each file exports only the required view class/function
+
+## Management Commands
+- [ ] Verify all management files were moved correctly
+  - Check that imports still work from the old path (`accounts` and `accounts/registration`)
+  - Update any internal imports if the file structure changed
+
+## Path References
+- See main project todo at `/home/websites/structa.cloud/todo`
