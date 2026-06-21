@@ -2,12 +2,14 @@
 
 from __future__ import annotations
 
-try:
-    from fastapi import FastAPI
-except ImportError:  # pragma: no cover - optional runtime dependency
-    FastAPI = None  # type: ignore[assignment]
+from importlib import import_module, util
+from typing import Any
 
 from .cli import package_info
+
+FastAPI: Any = None
+if util.find_spec("fastapi") is not None:
+    FastAPI = import_module("fastapi").FastAPI
 
 if FastAPI is not None:
     app = FastAPI(title="crafts-ai MCP")
