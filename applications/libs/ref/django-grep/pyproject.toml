@@ -1,0 +1,76 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "django-grep"
+version = "0.1.1"
+description = "Centralized testing framework for Django projects"
+readme = "README.md"
+license = {text = "MIT"}
+authors = [
+    {name = "Mahmoud", email = "mahmoud@example.com"}
+]
+keywords = ["django", "testing", "pytest", "property-based", "framework"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Environment :: Web Environment",
+    "Framework :: Django",
+    "Framework :: Django :: 4.0",
+    "Framework :: Django :: 4.1",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Software Development :: Testing",
+]
+requires-python = ">=3.9"
+dependencies = [
+    "Django>=4.2",
+    "pytest>=9.0.2",
+    "pytest-django>=4.12.0",
+]
+
+[project.optional-dependencies]
+selenium = ["selenium>=4.0"]
+playwright = ["playwright>=1.0"]
+pydoll = ["pydoll>=1.0"]
+cov = ["pytest-cov"]
+dev = [
+    "sphinx>=7.0",
+    "myst-parser>=2.0",
+    "furo>=2024.0",
+    "pytest-asyncio>=0.24",
+]
+
+[project.entry-points."pytest11"]
+django_grep = "django_grep.tests.pytest_plugin"
+
+[project.urls]
+Homepage = "https://github.com/mammhoud/django-grep"
+Repository = "https://github.com/mammhoud/django-grep.git"
+Documentation = "https://github.com/mammhoud/django-grep#readme"
+Issues = "https://github.com/mammhoud/django-grep/issues"
+
+[tool.setuptools.packages.find]
+where = ["src"]
+include = ["django_grep*"]
+
+[tool.setuptools.package-dir]
+"" = "src"
+
+[tool.pytest.ini_options]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+python_files = ["tests.py", "test_*.py", "*_tests.py"]
+testpaths = ["src/django_grep"]
+
+[tool.uv.sources]
+django-osoul = { git = "https://github.com/mammhoud/django-osoul", branch = "generic" }
+django-rseal = { git = "https://github.com/mammhoud/django-rseal", branch = "generic" }
