@@ -19,6 +19,12 @@ SOURCE_DIR       := source                # Coolify source (docker-compose.yml)
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
 # -----------------------------------------------------------------
+# Application targets are delegated via the generic forwarder below so
+# applications/Makefile recipes run relative to applications/.
+-include $(wildcard $(PROXY_DIR)/Makefile)
+-include $(wildcard $(SERVICES_DIR)/Makefile)
+-include $(wildcard $(DATABASES_DIR)/Makefile)
+-include $(wildcard $(SOURCE_DIR)/Makefile)
 
 # -----------------------------------------------------------------
 # PHONY targets – always run
@@ -336,10 +342,10 @@ ctc-research:
 	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=ctc-research
 
 structa:
-	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=structa
+	@$(MAKE) -C $(APPLICATIONS_DIR)/lms-demo
 
 vresume:
-	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=vresume
+	@$(MAKE) -C $(APPLICATIONS_DIR)/VResume
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)
