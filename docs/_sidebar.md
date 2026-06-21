@@ -98,7 +98,7 @@
 
 * **Reports**
   * [Enhancement Backlog](reports/enhancement_backlog.md)
-  * [Audit Report](AUDIT_REPORT.md)
+  * [Audit Report](archives/AUDIT_REPORT.md)
   * [Themeforest Submission](reports/themeforest_submission.md)
   * [Unused Files Plan](reports/unused_files_plan.md)
 
