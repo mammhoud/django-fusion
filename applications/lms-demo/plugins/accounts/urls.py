@@ -3,6 +3,7 @@ from django.urls import path
 
 from .views.auth import AllauthLoginView, AllauthSignupView
 from .apps import AccountsConfig
+from .views.allauth import AllauthLoginView, AllauthSignupView
 
 app_name = AccountsConfig.label
 
