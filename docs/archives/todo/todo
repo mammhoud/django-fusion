@@ -1,0 +1,3 @@
+- check all relative paths to docker compose as VResume
+lms-demoa ssets ctc-research configs and correct its pind to be from the applications and make it copy configs and all related to main applications dirs as configs and cli and commands at applications and mount instead of copy website such as ctc-research or vresume and lms-demo also check the logs dirs is related to each website not shared between each other only the shared dir of logs at applications daily update name and could be clean up with make commands and could make a cleanup of logs from makes
+- check all docker container env vars has correct linked passwords with each services and commands of running correct fully for deployments with make and delegations of services docker/makefile at ../services 
