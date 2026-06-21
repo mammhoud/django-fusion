@@ -20,6 +20,7 @@ from django.views.static import serve
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_osoul.site.utils import get_root_redirect_pattern
+from www.core.routes import site
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
@@ -127,6 +128,10 @@ urlpatterns += i18n_patterns(
     path("", include("plugins.urls")),
     prefix_default_language=False,
 )
+
+# ── Routable component site ─────────────────────────────────────────────
+# Documented under docs/routable-site-urls.md. Mount before Wagtail catch-all.
+urlpatterns += [path("osoul/", include(site.urls))]
 
 # ── Wagtail ───────────────────────────────────────────────────────────────────
 if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
