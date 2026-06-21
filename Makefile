@@ -476,7 +476,7 @@ deploy-media:
 	@$(MAKE) -C services/media up
 
 deploy-app:
-	@$(MAKE) -C structa.cloud/compose up
+	@$(MAKE) -C compose up
 
 deploy-utilities:
 	@$(MAKE) -C services/utilities up
@@ -538,13 +538,13 @@ clean:
 build: build-app build-media # build-docs
 
 build-app:
-	@$(MAKE) -C structa.cloud/compose build
+	@$(MAKE) -C compose build
 
 build-media:
 	@$(MAKE) -C services/media build
 
 build-docs:
-	@$(MAKE) -C structa.cloud/compose build-docs
+	@$(MAKE) -C compose build-docs
 
 validate:
 	@echo "🔍 Validating compose files..."
