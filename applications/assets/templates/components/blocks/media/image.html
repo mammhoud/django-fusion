@@ -1,0 +1,11 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Simplified Image Block Template #}
+{% firstof value self as img %}
+{% if img and img.image %}
+<figure class="image-block mb-4 {% if img.alignment == 'center' %}text-center{% elif img.alignment == 'left' %}text-start{% elif img.alignment == 'right' %}text-end{% endif %}">
+    {% image img.image width-1200 class="img-fluid rounded shadow-sm" alt=img.alternative_text %}
+    {% if img.caption %}
+        <figcaption class="blockquote-footer mt-2">{{ img.caption|richtext }}</figcaption>
+    {% endif %}
+</figure>
+{% endif %}

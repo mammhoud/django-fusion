@@ -1,0 +1,23 @@
+{% load i18n wagtailcore_tags wagtailimages_tags %}
+{# Services section block #}
+<section class="services-section py-5">
+    <div class="container">
+        <div class="row g-4">
+            {% for service in block.value.services %}
+            <div class="col-md-6 col-lg-4">
+                <div class="service-card h-100 p-4 border rounded shadow-sm">
+                    {% if service.icon %}
+                    <div class="service-card__icon mb-3">
+                        <i class="{{ service.icon }} fs-2 text-primary" aria-hidden="true"></i>
+                    </div>
+                    {% endif %}
+                    <h3 class="service-card__title h5">{{ service.title }}</h3>
+                    {% if service.description %}
+                    <p class="service-card__desc text-muted">{{ service.description }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
