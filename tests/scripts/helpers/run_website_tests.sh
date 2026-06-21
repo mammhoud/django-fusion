@@ -7,17 +7,17 @@ if [[ ! -x "$PYTHON_BIN" ]]; then
   PYTHON_BIN="python"
 fi
 
-COMMON_ARGS=(tests -k "not hypothesis" --ignore=tests/apps/accounts/registration --ignore=tests/unit/accounts/registration)
+COMMON_ARGS=(../tests/websites/test_cross_site_smoke.py --confcutdir=../tests/websites -k "not hypothesis")
 
 case "$WEBSITE" in
   ctc)
-    "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}" -k "ctc and not hypothesis"
+    "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}" -k "ctc or shared"
     ;;
   structa)
-    "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}" -k "structa and not hypothesis"
+    "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}" -k "structa or shared"
     ;;
   vresume)
-    "$PYTHON_BIN" manage.py --site=vresume check
+    "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}" -k "vresume or shared"
     ;;
   all)
     "$PYTHON_BIN" -m pytest "${COMMON_ARGS[@]}"
