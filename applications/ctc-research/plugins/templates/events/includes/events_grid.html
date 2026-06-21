@@ -8,10 +8,10 @@
                 <div class="event-card h-100 border rounded shadow-sm overflow-hidden">
                     <div class="event-card__body p-4">
                         <h3 class="event-card__title h5">{{ event.title }}</h3>
-                        {% if event.date %}
+                        {% if event.start_date %}
                         <p class="event-card__date text-muted small">
                             <i class="bi bi-calendar me-1" aria-hidden="true"></i>
-                            {{ event.date|date:"M d, Y" }}
+                            {{ event.start_date|date:"M d, Y" }}
                         </p>
                         {% endif %}
                         {% if event.location %}
@@ -20,11 +20,10 @@
                             {{ event.location }}
                         </p>
                         {% endif %}
-                        {% if event.url %}
-                        <a href="{{ event.url }}" class="btn btn-sm btn-outline-primary mt-2">
+
+                        <a href="{% url 'plugins:event-detail' event.pk %}" class="btn btn-sm btn-outline-primary mt-2">
                             {% trans "Learn More" %}
                         </a>
-                        {% endif %}
                     </div>
                 </div>
             </div>
