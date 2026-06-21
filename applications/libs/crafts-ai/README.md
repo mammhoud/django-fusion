@@ -1,12 +1,12 @@
 # crafts-ai
 
-`crafts-ai` is the standalone AI/MCP toolkit vendored into the structa.cloud monorepo.
-It exposes the import package `crafts_ai` and the console command `crafts-ai`.
+`crafts-ai` is the standalone AI/MCP toolkit vendored into the structa.cloud
+monorepo. It exposes the import package `crafts_ai` and the console command
+`crafts-ai`.
 
-The package is also the migration home for framework-agnostic AI, MCP, prompt,
-and orchestration code that used to be planned under `crafts-ai`. Django,
-Wagtail, middleware, model, snippet, and queue-dispatch runtime code must remain
-in `crafts-ai` until it is extracted behind non-Django adapters.
+The legacy reference checkout has been retired: the former
+`crafts-ai` package content and the former `django-rseal` runtime package now
+live directly in this package.
 
 ## Install
 
@@ -23,15 +23,22 @@ crafts-ai projects
 crafts-ai rseal-plan applications
 ```
 
-## crafts-ai migration boundary
+## Merged namespaces
 
-Use `crafts-ai rseal-plan <root>` before changing website imports. It classifies
-`crafts_ai.rseal` imports as one of:
+- Framework-agnostic AI, MCP, chat, seeding, and orchestration helpers should be
+  organized under `crafts_ai`.
+- The legacy `django_rseal` top-level import path is still packaged from
+  `applications/libs/crafts-ai/src/django_rseal/` so existing Django/Wagtail
+  runtime imports remain available while they are adapted into stable
+  `crafts_ai` APIs.
+- The `crafts_ai.rseal` migration inventory records which import families can be
+  moved immediately and which Django/Wagtail families require adapter work first.
+- Do not restore the legacy reference checkout; add AI/MCP work and migrated rseal
+  runtime support here instead.
 
-- `move-to-crafts-ai` for framework-agnostic AI, MCP, or orchestrator code.
-- `keep-in-crafts-ai` for Django/Wagtail models, blocks, middleware, snippets,
-  pipelines, and job dispatchers.
-- `needs-review` for import families that do not yet have an explicit rule.
+## Local checks
 
-This keeps CTC Research, LMS Demo, and VResume imports stable while the AI parts
-are organized under `crafts_ai`.
+```bash
+python -m compileall -q applications/libs/crafts-ai/src
+python -m pytest applications/libs/crafts-ai/tests
+```
