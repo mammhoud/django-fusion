@@ -1,9 +1,5 @@
-"""
-Core snippet utilities and base classes
-"""
-from .base import BaseSnippetViewSet, export_to_csv
+"""Core snippet compatibility re-exports for VResume."""
 
-__all__ = [
-    'BaseSnippetViewSet',
-    'export_to_csv',
-]
+from django_osoul.wagtail.viewsets import BaseSnippetViewSet, export_to_csv
+
+__all__ = ["BaseSnippetViewSet", "export_to_csv"]
