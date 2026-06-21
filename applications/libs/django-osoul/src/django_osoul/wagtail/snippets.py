@@ -1,4 +1,4 @@
-"""Compatibility exports for reusable Wagtail snippet helpers."""
+"""Reusable Wagtail snippet helpers."""
 
 from django_osoul.wagtail.viewsets import BaseSnippetViewSet, export_to_csv
 
