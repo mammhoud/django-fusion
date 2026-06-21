@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "deployment": {
+      "command": "python",
+      "args": ["mcp_server.py"],
+      "env": {
+        "DJANGO_SETTINGS_MODULE": "core.settings"
+      }
+    }
+  }
+}
