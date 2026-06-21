@@ -9,22 +9,15 @@ SHELL := /bin/bash
 # Directory layout – adjust these if your structure differs
 # -----------------------------------------------------------------
 WORKSPACE_ROOT   := .
-DEPLOY_DIR       := deploy
 APPLICATIONS_DIR := applications
-PROXY_DIR        := $(DEPLOY_DIR)/proxy
-SERVICES_DIR     := $(DEPLOY_DIR)/services
-DATABASES_DIR    := $(DEPLOY_DIR)/databases
-SOURCE_DIR       := source                # Coolify source (docker-compose.yml)
+PROXY_DIR        := proxy
+SERVICES_DIR     := services
+DATABASES_DIR    := databases
+SOURCE_DIR       := source
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
-# -----------------------------------------------------------------
-# Application targets are delegated via the generic forwarder below so
-# applications/Makefile recipes run relative to applications/.
--include $(wildcard $(PROXY_DIR)/Makefile)
--include $(wildcard $(SERVICES_DIR)/Makefile)
--include $(wildcard $(DATABASES_DIR)/Makefile)
--include $(wildcard $(SOURCE_DIR)/Makefile)
+# Do not include nested Makefiles here; doing so overrides root targets.
 
 # -----------------------------------------------------------------
 # PHONY targets – always run
@@ -47,13 +40,13 @@ help:
 	@echo ""
 	@echo "Available commands:"
 	@echo "  make deploy            - Deploy all components (proxy, apps, media, databases, Coolify)"
-	@echo "  make deploy:app        - Build and start application services"
-	@echo "  make deploy:proxy      - Deploy and restart reverse proxy"
-	@echo "  make deploy:media      - Build and start media server"
-	@echo "  make deploy:tasks      - Start background task workers"
-	@echo "  make deploy:docs       - Start documentation service"
-	@echo "  make deploy:db         - Deploy databases (Postgres, Redis)"
-	@echo "  make deploy:all        - Deploy all services (alias for deploy)"
+	@echo "  make deploy-app        - Build and start application services"
+	@echo "  make deploy-proxy      - Deploy and restart reverse proxy"
+	@echo "  make deploy-media      - Build and start media server"
+	@echo "  make deploy-tasks      - Start background task workers"
+	@echo "  make deploy-docs       - Start documentation service"
+	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
+	@echo "  make deploy-all        - Deploy all services (alias for deploy)"
 	@echo ""
 	@echo "Coolify management:"
 	@echo "  make deploy-coolify    - Deploy Coolify using its docker compose"
@@ -74,16 +67,16 @@ help:
 	@echo "  make restart           - Restart all services"
 	@echo ""
 	@echo "Maintenance commands:"
-	@echo "  make prune:containers  - Remove stopped containers"
-	@echo "  make prune:volumes     - Remove unused volumes"
-	@echo "  make prune:images      - Remove unused images"
+	@echo "  make prune-containers  - Remove stopped containers"
+	@echo "  make prune-volumes     - Remove unused volumes"
+	@echo "  make prune-images      - Remove unused images"
 	@echo ""
 	@echo "Certificate management (Proxy component):"
-	@echo "  make cert:generate     - Generate self-signed certificates"
-	@echo "  make cert:backup       - Backup current certificates"
-	@echo "  make cert:restore      - Restore certificates from backup"
-	@echo "  make cert:validate     - Validate certificate/key pairs"
-	@echo "  make cert:check        - Check certificate expiry status"
+	@echo "  make cert-generate     - Generate self-signed certificates"
+	@echo "  make cert-backup       - Backup current certificates"
+	@echo "  make cert-restore      - Restore certificates from backup"
+	@echo "  make cert-validate     - Validate certificate/key pairs"
+	@echo "  make cert-check        - Check certificate expiry status"
 	@echo ""
 	@echo "Per‑app shortcuts (if each has its own Makefile):"
 	@echo "  make ctc-research      - Delegate to applications/Makefile with WEBSITE=ctc-research"
@@ -112,10 +105,10 @@ deploy-all:
 	@echo "✅ All services deployed"
 
 deploy-app:
-	@cd $(APPLICATIONS_DIR) && $(MAKE) up
+	@$(MAKE) -C $(APPLICATIONS_DIR) docker-up
 
 deploy-tasks:
-	@cd $(APPLICATIONS_DIR) && docker compose -f docker-compose.tasks.yml up -d
+	@docker compose -f compose/docker-compose.tasks.yml up -d
 
 deploy-media:
 	@docker rm -f shared-media 2>/dev/null || true
@@ -123,7 +116,7 @@ deploy-media:
 	@docker compose -f $(SERVICES_DIR)/docker-compose.media.yml up -d
 
 deploy-docs:
-	@cd $(APPLICATIONS_DIR) && docker compose -f docker-compose.docs.yml up -d
+	@docker compose -f compose/docker-compose.docs.yml up -d
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -132,21 +125,33 @@ deploy-databases:
 	@$(MAKE) -C $(DATABASES_DIR) deploy-db
 
 # Coolify specific
-deploy-common:
+deploy-coolify:
 	@echo "🚀 Deploying Coolify..."
-	@docker network rm coolify 2>/dev/null || true
-	@docker compose -f $(SOURCE_DIR)/docker-compose.yml up -d --remove-orphans
+	@if [ -f "$(SOURCE_DIR)/docker-compose.yml" ]; then \
+		docker network rm coolify 2>/dev/null || true; \
+		docker compose -f $(SOURCE_DIR)/docker-compose.yml up -d --remove-orphans; \
+	else \
+		echo "  (Coolify compose not available at $(SOURCE_DIR)/docker-compose.yml)"; \
+	fi
 
-restart-common:
+restart-coolify:
 	@echo "🔄 Restarting Coolify..."
-	@docker compose -f $(SOURCE_DIR)/docker-compose.yml restart coolify
+	@if [ -f "$(SOURCE_DIR)/docker-compose.yml" ]; then \
+		docker compose -f $(SOURCE_DIR)/docker-compose.yml restart coolify; \
+	else \
+		echo "  (Coolify compose not available at $(SOURCE_DIR)/docker-compose.yml)"; \
+	fi
 
-build-common:
+build-coolify:
 	@echo "🔧 Building Coolify images..."
-	@docker compose -f $(SOURCE_DIR)/docker-compose.yml build --no-cache
-	@echo "✅ Build complete"
+	@if [ -f "$(SOURCE_DIR)/docker-compose.yml" ]; then \
+		docker compose -f $(SOURCE_DIR)/docker-compose.yml build --no-cache; \
+		echo "✅ Build complete"; \
+	else \
+		echo "  (Coolify compose not available at $(SOURCE_DIR)/docker-compose.yml)"; \
+	fi
 
-list-common:
+list-coolify:
 	@echo "📦 Listing Coolify containers..."
 	@docker ps --filter name=coolify --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
@@ -161,7 +166,7 @@ status:
 	@cd $(PROXY_DIR) && $(MAKE) status || echo "  (Proxy not available)"
 	@echo ""
 	@echo "Application Services:"
-	@cd $(APPLICATIONS_DIR) && $(MAKE) config || echo "  (Config not available)"
+	@$(MAKE) -C $(APPLICATIONS_DIR) show-config || echo "  (Config not available)"
 	@docker ps --filter "name=structa-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "  (No containers running)"
 	@echo ""
 	@echo "Media Server:"
@@ -195,7 +200,7 @@ logs-common:
 stop:
 	@echo "🛑 Stopping all services..."
 	@cd $(PROXY_DIR) && $(MAKE) stop || true
-	@cd $(APPLICATIONS_DIR) && $(MAKE) down || true
+	@$(MAKE) -C $(APPLICATIONS_DIR) docker-down || true
 	@docker compose -f $(SERVICES_DIR)/docker-compose.media.yml down 2>/dev/null || true
 	@docker compose -f $(DATABASES_DIR)/docker-compose.yml down 2>/dev/null || true
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml down 2>/dev/null || true
@@ -265,13 +270,13 @@ cert-check:
 build: build-app build-media build-docs
 
 build-app:
-	@cd $(APPLICATIONS_DIR) && docker compose build
+	@$(MAKE) -C $(APPLICATIONS_DIR) docker-build
 
 build-media:
 	@cd $(SERVICES_DIR) && docker compose -f docker-compose.media.yml build
 
 build-docs:
-	@cd $(APPLICATIONS_DIR) && docker compose -f docker-compose.docs.yml build
+	@docker compose -f compose/docker-compose.docs.yml build
 
 # -----------------------------------------------------------------
 # Validation
@@ -342,10 +347,10 @@ ctc-research:
 	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=ctc-research
 
 structa:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/lms-demo
+	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=structa
 
 vresume:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/VResume
+	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=vresume
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)
@@ -361,255 +366,3 @@ databases:
 # -----------------------------------------------------------------
 %:
 	@$(MAKE) -C $(APPLICATIONS_DIR) $*
-
-
-
-
-# ============================================================
-# Root Makefile – orchestrates all components
-# Includes full stack deployment + Coolify management
-# ============================================================
-SHELL := /bin/bash
-COMPOSE_CMD := docker compose -f docker-compose.yml
-
-# List of all networks required by the stack
-NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
-
-# Coolify source directory (relative to root)
-COOLIFY_SRC := source
-
-.PHONY: help create-networks deploy deploy-proxy deploy-app deploy-media deploy-databases deploy-utilities deploy-ollama deploy-mailpit
-.PHONY: status logs stop restart
-.PHONY: prune prune-containers prune-volumes prune-images clean
-.PHONY: build build-app build-media build-docs validate
-.PHONY: cert-generate cert-backup cert-restore cert-validate cert-check
-.PHONY: coolify-deploy coolify-deploy-prod coolify-upgrade coolify-upgrade-postgres
-.PHONY: coolify-restart coolify-stop coolify-start coolify-status coolify-logs coolify-logs-all
-.PHONY: coolify-backup coolify-backup-restore coolify-validate coolify-run-infra
-
-help:
-	@echo "🚀 Structa Cloud Deployment System"
-	@echo "═══════════════════════════════════════════════════════════════"
-	@echo ""
-	@echo "📦 Stack Management:"
-	@echo "  make create-networks    - Create all required Docker networks"
-	@echo "  make deploy             - Create networks and deploy all services"
-	@echo "  make deploy-proxy       - Deploy Traefik proxy"
-	@echo "  make deploy-app         - Deploy applications (ctc, lms, vresume, docs, tasks)"
-	@echo "  make deploy-media       - Deploy shared media server"
-	@echo "  make deploy-databases   - Deploy PostgreSQL and Redis"
-	@echo "  make deploy-utilities   - Deploy monitoring (Prometheus, Loki, Grafana, Blinko)"
-	@echo "  make deploy-ollama      - Deploy Ollama + Open WebUI"
-	@echo "  make deploy-mailpit     - Deploy Mailpit"
-	@echo ""
-	@echo "🔧 Stack Management:"
-	@echo "  make status             - Show container status"
-	@echo "  make logs               - Tail logs from all services"
-	@echo "  make stop               - Stop all services"
-	@echo "  make restart            - Restart all services"
-	@echo ""
-	@echo "🧹 Maintenance:"
-	@echo "  make prune              - Remove stopped containers, unused volumes, images"
-	@echo "  make prune-containers   - Remove stopped containers"
-	@echo "  make prune-volumes      - Remove unused volumes"
-	@echo "  make prune-images       - Remove unused images"
-	@echo "  make clean              - Stop and remove all containers, volumes, and images"
-	@echo ""
-	@echo "🔐 Certificate management (Proxy):"
-	@echo "  make cert-generate      - Generate self-signed certificates"
-	@echo "  make cert-backup        - Backup certificates"
-	@echo "  make cert-restore       - Restore certificates"
-	@echo "  make cert-validate      - Validate certificates"
-	@echo "  make cert-check         - Check certificate expiry"
-	@echo ""
-	@echo "🏗️  Build:"
-	@echo "  make build              - Build all images (app, media, docs)"
-	@echo "  make build-app          - Build application images"
-	@echo "  make build-media        - Build media image"
-	@echo "  make build-docs         - Build docs image"
-	@echo "  make validate           - Validate compose files"
-	@echo ""
-	@echo "☕ Coolify (source deployment):"
-	@echo "  make coolify-deploy     - Deploy Coolify from source"
-	@echo "  make coolify-deploy-prod - Deploy Coolify in production mode"
-	@echo "  make coolify-upgrade    - Upgrade Coolify to latest version"
-	@echo "  make coolify-upgrade-postgres - Upgrade PostgreSQL database"
-	@echo "  make coolify-restart    - Restart Coolify services"
-	@echo "  make coolify-stop       - Stop Coolify services"
-	@echo "  make coolify-start      - Start Coolify services"
-	@echo "  make coolify-status     - Show Coolify status"
-	@echo "  make coolify-logs       - Show Coolify logs"
-	@echo "  make coolify-logs-all   - Show logs for all Coolify components"
-	@echo "  make coolify-backup     - Backup Coolify data"
-	@echo "  make coolify-backup-restore - Restore from backup"
-	@echo "  make coolify-validate   - Validate Coolify compose files"
-	@echo "  make coolify-run-infra  - Deploy full Coolify infrastructure"
-
-# -----------------------------------------------------------------
-# Network creation – idempotent
-# -----------------------------------------------------------------
-create-networks:
-	@echo "🌐 Creating Docker networks..."
-	@for net in $(NETWORKS); do \
-		if ! docker network inspect $$net >/dev/null 2>&1; then \
-			echo "  ✅ Creating network: $$net"; \
-			docker network create $$net; \
-		else \
-			echo "  ⏭️  Network $$net already exists"; \
-		fi; \
-	done
-	@echo "✅ All networks are ready"
-
-# -----------------------------------------------------------------
-# Deployment targets – create networks first
-# -----------------------------------------------------------------
-deploy: create-networks deploy-databases deploy-proxy  deploy-media deploy-app # deploy-utilities deploy-ollama deploy-mailpit
-	@echo "✅ All services deployed"
-
-deploy-proxy:
-	@$(MAKE) -C proxy up
-
-deploy-databases:
-	@$(MAKE) -C databases up
-
-deploy-media:
-	@$(MAKE) -C services/media up
-
-deploy-app:
-	@$(MAKE) -C structa.cloud/compose up
-
-deploy-utilities:
-	@$(MAKE) -C services/utilities up
-
-deploy-ollama:
-	@$(MAKE) -C services/ollama up
-
-deploy-mailpit:
-	@$(MAKE) -C services/mailpit up
-
-# -----------------------------------------------------------------
-# Stack Management
-# -----------------------------------------------------------------
-status:
-	@echo "📊 Deployment Status"
-	@echo "═══════════════════════════════════════════════════════════════"
-	@$(COMPOSE_CMD) ps
-
-logs:
-	@echo "📝 Tailing logs from all services..."
-	@$(COMPOSE_CMD) logs --tail=50 -f
-
-stop:
-	@echo "🛑 Stopping all services..."
-	@$(COMPOSE_CMD) down
-	@echo "✅ All services stopped"
-
-restart: stop deploy
-	@echo "✅ All services restarted"
-
-# -----------------------------------------------------------------
-# Pruning
-# -----------------------------------------------------------------
-prune: prune-containers prune-volumes prune-images
-
-prune-containers:
-	@echo "🗑️  Removing stopped containers..."
-	@docker container prune -f
-	@echo "✅ Containers pruned"
-
-prune-volumes:
-	@echo "🗑️  Removing unused volumes..."
-	@docker volume prune -f
-	@echo "✅ Volumes pruned"
-
-prune-images:
-	@echo "🗑️  Removing unused images..."
-	@docker image prune -f
-	@echo "✅ Images pruned"
-
-clean:
-	@echo "🧹 Removing all containers, volumes, and images..."
-	@$(COMPOSE_CMD) down -v --rmi all
-	@echo "✅ Clean complete"
-
-# -----------------------------------------------------------------
-# Build
-# -----------------------------------------------------------------
-build: build-app build-media # build-docs
-
-build-app:
-	@$(MAKE) -C structa.cloud/compose build
-
-build-media:
-	@$(MAKE) -C services/media build
-
-build-docs:
-	@$(MAKE) -C structa.cloud/compose build-docs
-
-validate:
-	@echo "🔍 Validating compose files..."
-	@$(COMPOSE_CMD) config
-	@echo "✅ Validation successful"
-
-# -----------------------------------------------------------------
-# Certificate commands (delegate to proxy)
-# -----------------------------------------------------------------
-cert-generate:
-	@$(MAKE) -C proxy cert-generate
-
-cert-backup:
-	@$(MAKE) -C proxy cert-backup
-
-cert-restore:
-	@$(MAKE) -C proxy cert-restore
-
-cert-validate:
-	@$(MAKE) -C proxy cert-validate
-
-cert-check:
-	@$(MAKE) -C proxy cert-check
-
-# -----------------------------------------------------------------
-# Coolify Source Management (delegates to source/Makefile)
-# -----------------------------------------------------------------
-coolify-deploy:
-	@$(MAKE) -C $(COOLIFY_SRC) deploy
-
-coolify-deploy-prod:
-	@$(MAKE) -C $(COOLIFY_SRC) deploy-prod
-
-coolify-upgrade:
-	@$(MAKE) -C $(COOLIFY_SRC) upgrade
-
-coolify-upgrade-postgres:
-	@$(MAKE) -C $(COOLIFY_SRC) upgrade-postgres
-
-coolify-restart:
-	@$(MAKE) -C $(COOLIFY_SRC) restart
-
-coolify-stop:
-	@$(MAKE) -C $(COOLIFY_SRC) stop
-
-coolify-start:
-	@$(MAKE) -C $(COOLIFY_SRC) start
-
-coolify-status:
-	@$(MAKE) -C $(COOLIFY_SRC) status
-
-coolify-logs:
-	@$(MAKE) -C $(COOLIFY_SRC) logs
-
-coolify-logs-all:
-	@$(MAKE) -C $(COOLIFY_SRC) logs-all
-
-coolify-backup:
-	@$(MAKE) -C $(COOLIFY_SRC) backup
-
-coolify-backup-restore:
-	@$(MAKE) -C $(COOLIFY_SRC) backup-restore
-
-coolify-validate:
-	@$(MAKE) -C $(COOLIFY_SRC) validate
-
-coolify-run-infra:
-	@$(MAKE) -C $(COOLIFY_SRC) run-infra
