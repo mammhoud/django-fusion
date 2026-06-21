@@ -17,6 +17,7 @@ services:
         required: false
     environment:
       RUNNING_ENV: docker
+      APP_MODULE: ${APP_MODULE:-server:application}
       SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
