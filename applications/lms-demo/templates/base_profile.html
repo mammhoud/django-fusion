@@ -2,7 +2,7 @@
 {% load laces %}
 {% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
 
-{% block contant %}
+{% block content %}
 <!-- =======================
 Page Banner START -->
 <section class="profile__banner banner banner--minimal pt-0">
@@ -79,4 +79,4 @@ Page content START -->
 {% if user == request.user %}
 {% include 'profile/partials/modals/profile_image.html' with modal_id="profileImageModal" %}
 {% endif %}
-{% endblock contant %}
+{% endblock content %}
