@@ -1,6 +1,17 @@
 # ============================================================
 # VResume Website + Worker
 # ============================================================
+x-site-infra-env: &site-infra-env
+  DB_TYPE: ${DB_TYPE:-postgres}
+  DB_HOST: ${DB_HOST:-database-server}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+  DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+  DB_NAME: ${DB_NAME_VRESUME:-vresume}
+  REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/0
+  CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/1
+  CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/2
+
 services:
   vresume-web:
     build:
@@ -21,14 +32,7 @@ services:
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
-      DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-postgres}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_USER: ${POSTGRES_USER:-admin}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
+      <<: *site-infra-env
       LOG_DIR: /app/logs
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
@@ -39,7 +43,6 @@ services:
       WEBSITE_HOST: ${VRESUME_HOST:-vresume.structa.cloud}
       ALLOWED_HOSTS: vresume.structa.cloud,www.vresume.structa.cloud,resume.structa.cloud,localhost,127.0.0.1
       CSRF_TRUSTED_ORIGINS: https://vresume.structa.cloud,https://www.vresume.structa.cloud,https://resume.structa.cloud
-      DB_NAME: ${DB_NAME_VRESUME:-vresume}
       PORT: "5072"
       CELERY_TASK_DEFAULT_QUEUE: vresume
     healthcheck:
@@ -81,14 +84,7 @@ services:
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
-      DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-postgres}
-      DB_PORT: ${DB_PORT:-5432}
-      DB_USER: ${POSTGRES_USER:-admin}
-      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
+      <<: *site-infra-env
       LOG_DIR: /app/logs
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
@@ -97,7 +93,6 @@ services:
       DJANGO_WEBSITE: vresume
       PROJECT_PATH: VResume
       WEBSITE_HOST: ${VRESUME_HOST:-vresume.structa.cloud}
-      DB_NAME: ${DB_NAME_VRESUME:-vresume}
       CELERY_TASK_DEFAULT_QUEUE: vresume
     command: celery -A tasks.celery:app worker --loglevel=info --queues=vresume
     volumes:

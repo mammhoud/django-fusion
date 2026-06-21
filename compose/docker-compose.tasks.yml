@@ -2,6 +2,11 @@
 # Celery Workers Docker Compose Configuration
 # ============================================================
 
+x-task-redis-env: &task-redis-env
+  REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/0
+  CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/1
+  CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/2
+
 services:
   ctc-research-worker:
     image: ctc-research-worker:latest
@@ -15,9 +20,8 @@ services:
     restart: unless-stopped
     working_dir: /app
     environment:
-      - DJANGO_SETTINGS_MODULE=configs.settings
-      - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
-      - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
+      <<: *task-redis-env
+      DJANGO_SETTINGS_MODULE: configs.settings
     networks:
       - common
 
@@ -33,9 +37,8 @@ services:
     restart: unless-stopped
     working_dir: /app
     environment:
-      - DJANGO_SETTINGS_MODULE=configs.settings
-      - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
-      - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
+      <<: *task-redis-env
+      DJANGO_SETTINGS_MODULE: configs.settings
     networks:
       - common
 
@@ -51,9 +54,8 @@ services:
     restart: unless-stopped
     working_dir: /app
     environment:
-      - DJANGO_SETTINGS_MODULE=configs.settings
-      - REDIS_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/0
-      - CELERY_BROKER_URL=redis://${REDIS_USER:-django}:${REDIS_PASSWORD:-default_password}@default-redis:6379/1
+      <<: *task-redis-env
+      DJANGO_SETTINGS_MODULE: configs.settings
     networks:
       - common
 

@@ -78,7 +78,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check validate-config validate-compose-env build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -100,6 +100,7 @@ help:
 		'  docker-up      - Build and start selected website containers' \
 		'  docker-down    - Stop selected website containers' \
 		'  docker-logs    - Follow logs for the selected website service' \
+		'  validate-compose-env - Print compose service/env wiring without secret values' \
 		'  docker-status  - Show Docker service status and resource usage' \
 		'  full-site-check- Build assets, collectstatic, migrate, load dumps, and verify runtime' \
 		'' \
@@ -156,7 +157,17 @@ check:
 
 validate-config:
 	@docker compose -f $(COMPOSE_FILE) config -q && echo "Compose config valid" || echo "Compose config invalid"
-	@if $(MANAGE) help | grep -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
+	@if $(MANAGE) help | rg -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
+
+validate-compose-env:
+	@printf '%s\n' 'Compose infrastructure wiring (secret values are not printed):'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'site-service' 'db-service' 'redis-service' 'db-name-env' 'db-credential-envs' 'redis-secret-env'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'ctc-research-website' 'database-server' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'database-server' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'database-server' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%s\n' ''
+	@printf '%s\n' 'Required runtime env names: DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME REDIS_URL CELERY_BROKER_URL CELERY_RESULT_BACKEND'
+	@printf '%s\n' 'Redis database indexes: REDIS_URL=/0, CELERY_BROKER_URL=/1, CELERY_RESULT_BACKEND=/2'
 
 build-assets:
 	PROJECT_PATH=$(SITE) $(MAKE) -C assets build
