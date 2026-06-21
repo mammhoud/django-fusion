@@ -40,11 +40,6 @@ x-shared-tasks-base: &shared-tasks-base
     DB_HOST: ${DB_HOST:-database-server}
     DB_PORT: ${DB_PORT:-5432}
     DB_NAME: ${DB_NAME:-db_ctc}
-    DB_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
-    DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
-    REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/0
-    CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/1
-    CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/2
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
     LOG_DIR: /app/logs
   volumes:

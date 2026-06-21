@@ -478,7 +478,7 @@ deploy-databases:
 	@$(MAKE) -C databases up
 
 deploy-media:
-	@$(MAKE) -C services/media up
+	@$(MAKE) -C ../services/media up
 
 deploy-app:
 	@$(MAKE) -C compose up
@@ -546,7 +546,7 @@ build-app:
 	@$(MAKE) -C compose build
 
 build-media:
-	@$(MAKE) -C services/media build
+	@$(MAKE) -C ../services/media build
 
 build-docs:
 	@$(MAKE) -C compose build-docs

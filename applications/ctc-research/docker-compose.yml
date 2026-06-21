@@ -5,12 +5,8 @@ x-site-infra-env: &site-infra-env
   DB_TYPE: ${DB_TYPE:-postgres}
   DB_HOST: ${DB_HOST:-database-server}
   DB_PORT: ${DB_PORT:-5432}
-  DB_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
-  DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
   DB_NAME: ${DB_NAME_CTC:-db_ctc}
-  REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/0
-  CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/1
-  CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/2
+  POSTGRES_USER: ${POSTGRES_USER:-admin}
 
 services:
   ctc-research-website:
@@ -33,8 +29,6 @@ services:
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
-      <<: *site-infra-env
-      LOG_DIR: /app/logs
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
@@ -102,8 +96,6 @@ services:
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
-      <<: *site-infra-env
-      LOG_DIR: /app/logs
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}

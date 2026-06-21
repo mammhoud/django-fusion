@@ -1,70 +1,178 @@
-# Project Todo List
+Project Todo List – Master
+Includes all tasks from the original list, the detailed bullet points, and the new directives (merged packages, Docker env consolidation, error fixing, testing, agents, docs, and component enhancements).
 
-## Docker & Configuration Tasks
-- [ ] Check all relative paths to docker compose as VResume
-- [ ] Check docker container env vars have correct linked passwords
-- [ ] Check configs and mount points for lms-demo assets, ctc-research configs
-- [ ] Verify logs dirs are website-specific (not shared); implement cleanup make commands
+0. Global Pre‑Requisites
+Finish the deprecation of applications/libs/ref
+Merge its two packages fully into:
 
-## Template & CSS Tasks
-- [ ] Check all templates and wagtail admin customization with static styles from applications/assets/static/styles
-- [ ] Merge duplicated templates into single optimized templates with shared styles
-- [ ] Update lms-demo assets/styles with BEM requirements
-- [ ] Copy and convert new theme styles to BEM format
+applications/libs/django-osoul
 
-## Accounts/Auth Tasks
-- [ ] Separate plugins/accounts/allauth_views.py into plugins/accounts/views/ with named files
-- [ ] Check management files moved correctly; ensure imports work at old paths
-- [ ] Check auth templates moved from auth to account; update sign-in page as login template
-- [ ] Enhance allauth integrations with fragmented htmx auth pages; ensure fallback works
+applications/libs/crafts-ai
+with all content, code, and logic organised and no remaining references to ref.
 
-## Template Organization Tasks
-- [ ] Organize templates/components moved to base repo dir at applications/assets/templates
-- [ ] Remove duplicated files across vresume and lms-demo; use organized versions at ctc-research
-- [ ] Fix template paths for components, comp tags, and OOP components
-- [ ] Update lms-demo templates to match ctc-research structure
+Solve all errors in ctc-research/gunicorn-error.log
+Redeploy and run the project locally, execute the full test suite, and make sure all tests pass and all issues are resolved.
 
-## Library Merge Tasks
-- [ ] Merge django-grep into django-osoul at applications/libs/django-osoul
-- [ ] Merge django-rseal into applications/libs/crafts-ai
-- [ ] Check and update all imports related to rseal/grep across all websites
+Fix any import errors that may appear (even if not yet visible).
 
-## Path References
-- applications/ctc-research/plugins/accounts/todo
-- applications/assets/templates/todo
-- applications/ctc-research/todo
-- applications/lms-demo/todo
-- applications/libs/todo
-- todo (root)
+1. Docker & Configuration
+Consolidate Docker environment variables
+In every docker‑compose file, create a site-env (or x-env) section that contains all configuration from the corresponding .env files. This keeps containers lightweight and easy to read.
 
+Verify all relative paths in Docker Compose (especially VResume)
+Point them to the central applications/ directory structure.
 
+Docker container env vars & passwords
+Check that all passwords are correctly linked across services, and that all make commands and service delegations (in docker/makefile at ../services) work for deployments.
 
-- check all relative paths to docker compose as VResume
-lms-demoa ssets ctc-research configs and correct its pind to be from the applications and make it copy configs and all related to main applications dirs as configs and cli and commands at applications and mount instead of copy website such as ctc-research or vresume and lms-demo also check the logs dirs is related to each website not shared between each other only the shared dir of logs at applications daily update name and could be clean up with make commands and could make a cleanup of logs from makes
-- check all docker container env vars has correct linked passwords with each services and commands of running correct fully for deployments with make and delegations of services docker/makefile at ../services 
-- check all templates and wagtail admin check how to customize it with the static applications/assets/static/styles colors as same as added at the main website styles 
-- also check all copied templates and added with duplecated to be merged with one template with full optimizes with the same styles added 
+Fix mount points and config copying
 
+Mount configs, CLI, and commands from the main applications/ directory instead of copying per‑website (ctc-research, vresume, lms-demo).
 
+Ensure lms-demo assets and ctc-research configs are properly linked/copied from applications/.
 
-- separate plugins/accounts/allauth_views.py to be at plugins/accounts/views as files separated with names
-- check the managements file all has bee moved files at last commit make sure all files is could be imported at old path as accounts app or accounts/registration s what moved files and used update its imports 
+Logs directory
 
+Logs must be website‑specific (no sharing).
 
+The shared logs directory under applications/ should have daily‑updated names.
 
-- all changes here and could be file organize as organized right now templates and components and what moved to base repo dir of assets make sure to make the same files organizes at another websites and some files removed to be used at base asssets templates dir and not changed as usage as plugins/tables or forms or some blocks make sure to remove what duplecated at another website suchas vresume and lms-demo and make sure to delete and use with the same organized at ctc-research websites and making it working with the corrected paths as well as this 
-- make sure all templates move and organized components and comp tags or oop components is correct path 
-- check all auth templates some templates are moved from auth to account make sure to update sign in page to be as login template as same as fragment loaded page_auth page as layout and enahance allauth integrations with the fragmented htmx auth pages to make one of it work and other is fallback default htmx pages make both has same mechanism and same functionalitis as htmx adde to both and if not htmx request send normal reuqest 
+Implement make commands to clean up logs (both per‑site and global).
 
-- update the last changes at lms-demo as changes at templates organizes or files moved to managements 
+2. Template & SCSS – BEM Customization (MCP/AI tasks)
+Wagtail admin customisation
+Apply the static styles from applications/assets/static/styles (same colours as the main website).
 
-- update the last changes as organize or move files as same as ctc-research and also what related to templates as accounts and making all with the same stuctures 
-- at theme there are some changes needed at the agents and ai crafts files tasks integrated with .kilo/mcp_server.py to make theme dir analyzed with the files related components with the websites added to customizes it and replaces the components with hte same django tags of data related could be added to fount components and make sure to update the styles of the websites assets at applications/lms-demo/assets/static/styles with the bem requirements and make the same styles as cloned from new theme with latest and make it copy and make it as bem and update the component after copy to be bem styling 
+Merge duplicated templates
+Combine them into single, fully optimised templates that share the same styles.
 
+Update lms-demo assets/styles to meet BEM requirements.
 
+Theme conversion
 
-- merge all with organize and check comp and components configurations on django osoul if there are the same at django rseal and move it to django osoul
-- also organize the dirs and dirs namespaces and make sure the tree effictive irganized with usecaase name and reletive namespace name or with django naming namespace as contrib or models or managers or managements/services as well as added already 
-- merge repos of django-grep with django osoul at one repo dir applications/libs/django-osoul
-- merge repos of applications/libs/django-rseal to be with applications/libs/crafts-ai
-- after merge check all imports related to rseal or grep and make sure to update with correct imports at all websites at the main repo
+Copy the latest theme styles and convert them to BEM format.
+
+After conversion, update the corresponding components.
+
+Integrate AI / Crafts file tasks with .kilo/mcp_server.py
+
+Analyse the theme directory with the MCP server.
+
+Map components to the appropriate websites.
+
+Replace the components with the correct Django tags, adding necessary data.
+
+Update the styles of applications/lms-demo/assets/static/styles accordingly.
+
+3. Accounts / Auth
+Refactor plugins/accounts/allauth_views.py
+Move it to plugins/accounts/views/ and split it into separate, named files.
+
+Management files
+Verify that all files moved in the last commit can still be imported from their old paths (e.g. accounts or accounts/registration). Update any imports that broke.
+
+Auth templates relocation
+
+Update any templates that were moved from auth to account.
+
+Make the sign‑in page match the login template and reuse the fragment‑loaded page_auth layout.
+
+Enhance allauth / htmx integration
+Both fragmented htmx auth pages must use the same mechanism and functionality.
+If the request is not an htmx request, fall back gracefully to a normal full‑page request.
+
+4. Template Organization
+Centralise templates/components
+The base location is applications/assets/templates.
+All organised components, comp tags, and OOP components must be placed there.
+
+Remove duplicated files
+Delete any duplicates from vresume and lms-demo – they must use the centralised versions under ctc-research.
+
+Fix all template paths for components, {% comp %} tags, and OOP components.
+
+Update lms-demo templates to match the ctc-research structure.
+
+Ensure structural consistency across all websites (vresume, lms-demo)
+Any file that now exists in the base assets directory should be removed from website‑specific directories, and all references must be updated.
+
+5. Library Merge & Code Organisation
+Merge django-grep into django-osoul → final location: applications/libs/django-osoul
+
+Merge django-rseal into crafts-ai → final location: applications/libs/crafts-ai
+
+Check for duplicated configurations
+If any component or configuration from django-rseal already exists in django-osoul, consolidate them into django-osoul.
+
+Organise directories and namespaces
+Use effective, use‑case‑based names, and follow Django conventions (contrib, models, managers, management/services, etc.).
+
+Update all imports across every website
+Any references to the old rseal or grep packages must be corrected.
+
+6. Post‑Merge Enhancements & Recommendations
+Once libraries are merged and tests pass:
+
+Write a recommendations document (agents.md)
+
+Describe how to enhance django-osoul and crafts-ai using .kilo files and the MCP server.
+
+Include guidelines for customising designs across all websites.
+
+Ensure the todo list itself remains aware of these enhancements.
+
+Generate agent configurations
+
+Create agents at template paths and model paths.
+
+For any component templates that are part of django-osoul, move them to assets/templates and merge properly.
+
+Add a markdown file detailing the enhancements and proposed new features.
+
+Enhance documentation
+Improve the full project documentation to reflect the new merged structure and all recent changes.
+
+Test the merged packages
+
+Run all tests after merging.
+
+Add cache enhancements to django-osoul — create base classes for managers and caches similar to what is already in ctc-research.
+
+Enhance component tags
+
+Fix any errors that appear in component rendering.
+
+Integrate components with viewsets and with the OOP components.
+
+Document the full featured usage.
+
+Add error logging to the component system:
+
+Track where an HTML file is rendered.
+
+Log any context errors that occur.
+
+Implement a loader/fallback mechanism – if the main response takes too long, show a loader for the same component before the final response.
+
+7. Testing & Final Verification
+Solve all errors from ctc-research/gunicorn-error.log.
+
+Run the full test suite locally and ensure every test passes.
+
+Fix any remaining import errors across all websites.
+
+Re‑deploy and confirm everything works end‑to‑end.
+
+Path References (for quick lookup)
+applications/ctc-research/plugins/accounts/todo
+
+applications/assets/templates/todo
+
+applications/ctc-research/todo
+
+applications/lms-demo/todo
+
+applications/libs/todo
+
+todo (root)
+
