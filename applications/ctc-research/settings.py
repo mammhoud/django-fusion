@@ -39,8 +39,9 @@ from configs.settings import *  # noqa: E402,F401,F403
 # ============================================================
 ROOT_URLCONF = "www.urls"
 
-# ASGI/WSGI applications are now in server.py
-# This is referenced by the start script as: ctc-research.server:application
+# ASGI/WSGI applications live in the site-local server.py.
+# The start script places this site directory on PYTHONPATH and launches
+# server:application, so Django can keep the same import path.
 ASGI_APPLICATION = "server.application"
 WSGI_APPLICATION = "server.application"
 

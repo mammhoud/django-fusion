@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-LIBS = Path("/root/site/libs")
+LIBS = Path(__file__).resolve().parents[3] / "applications" / "libs"
 
 RULES = {
     "django-osoul": {
@@ -12,8 +12,8 @@ RULES = {
         "forbidden": [r"^from wagtail", r"^import wagtail", r"^from celery",
                       r"^import celery", r"^from django_rseal", r"^import django_rseal"],
     },
-    "nawaai": {
-        "path": LIBS / "crafts-ai/crafts_ai",
+    "crafts-ai": {
+        "path": LIBS / "crafts-ai/src/crafts_ai",
         "forbidden": [r"^from django", r"^import django"],
     },
 }

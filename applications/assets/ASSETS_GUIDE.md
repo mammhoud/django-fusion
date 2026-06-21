@@ -184,22 +184,34 @@ Each site has its own static source files and compiled output:
 
 ## Media Configuration
 
-Media files (user-uploaded content) are stored separately from static files:
+Media files (user-uploaded content) are stored separately from static files and are
+scoped to the active site. The shared workspace `assets/` directory is reserved for
+shared static sources, shared bundles, locales, and npm dependencies; it is not the
+default upload location.
 
 | Site | Media directory | Django setting |
 |------|----------------|----------------|
-| ctc-research | `assets/media/` (workspace-level) | `MEDIA_ROOT` |
+| ctc-research | `ctc-research/assets/media/` | `MEDIA_ROOT` |
 | lms-demo | `lms-demo/assets/media/` | `MEDIA_ROOT` |
 | VResume | `VResume/assets/media/` | `MEDIA_ROOT` |
 
-In Docker, the workspace media directory is mounted:
+`MEDIA_URL` remains `/media/` by default for all sites. Use routing, hostnames, or
+container volume mappings to isolate requests per deployment rather than changing
+the URL namespace.
+
+In Docker, mount each site's media directory to that site's application assets
+path, for example:
 ```yaml
 volumes:
-  - ../assets/media:/app/assets/media:z
+  - ../ctc-research/assets/media:/app/ctc-research/assets/media:z
+  - ../lms-demo/assets/media:/app/lms-demo/assets/media:z
+  - ../VResume/assets/media:/app/VResume/assets/media:z
 ```
 
 VResume has `MediaRequestLoggingMiddleware` which logs all requests to `MEDIA_URL` paths
-for debugging media serving issues (see `VResume/www/core/middleware.py`).
+for debugging media serving issues (see `VResume/www/core/middleware.py`). Asset and media
+health handlers should continue to inspect `settings.MEDIA_ROOT` so they follow the active
+site's configured media directory.
 
 ---
 

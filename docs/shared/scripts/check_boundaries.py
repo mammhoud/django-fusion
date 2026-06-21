@@ -3,7 +3,7 @@
 Boundary Checker for Ecosystem Architectural Refactoring
 
 This script checks for boundary violations across the ecosystem:
-1. nawaai-no-django: nawaai must be pure Python with zero Django imports
+1. crafts-ai-no-django: crafts-ai must be pure Python with zero Django imports
 2. osoul-no-wagtail: django_osoul must not import wagtail, celery, or django_rseal
 3. rseal-no-projects: django_rseal must not import project-specific code
 4. grep-test-only: django_grep must not be imported by production code
@@ -33,10 +33,10 @@ class BoundaryChecker:
     def __init__(self):
         self.violations: List[BoundaryViolation] = []
         self.rules = {
-            "nawaai-no-django": {
-                "source": "nawaai",
+            "crafts-ai-no-django": {
+                "source": "crafts-ai",
                 "forbidden_modules": ["django", "wagtail", "celery", "django_rseal"],
-                "message": "nawaai must be pure Python with zero Django imports"
+                "message": "crafts-ai must be pure Python with zero Django imports"
             },
             "osoul-no-wagtail": {
                 "source": "django_osoul",
@@ -101,8 +101,8 @@ class BoundaryChecker:
         # Check each rule
         for rule_name, rule in self.rules.items():
             # Check if this file is from a source that has this rule
-            if rule_name == "nawaai-no-django":
-                if "nawaai" not in source_package:
+            if rule_name == "crafts-ai-no-django":
+                if "crafts-ai" not in source_package:
                     continue
             elif rule_name == "osoul-no-wagtail":
                 if "django_osoul" not in source_package:
@@ -142,8 +142,8 @@ class BoundaryChecker:
         """Extract package name from filepath."""
         path_str = str(filepath)
 
-        if "nawaai" in path_str:
-            return "nawaai"
+        if "crafts-ai" in path_str:
+            return "crafts-ai"
         elif "django_osoul" in path_str:
             return "django_osoul"
         elif "django_rseal" in path_str:

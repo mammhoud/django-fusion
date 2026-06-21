@@ -12,13 +12,13 @@ SITE_NAME = BASE_DIR.name
 # one dependency tree: ``assets/node_modules``.
 BASE_ASSETS_DIR = WORKSPACE_DIR / "assets"
 SHARED_STATIC_DIR = BASE_ASSETS_DIR / "static"
-MEDIA_DIR = BASE_ASSETS_DIR / "media"
 LOCALE_DIRS = BASE_ASSETS_DIR / "locale"
 
 # Per-site assets and build outputs. Webpack writes selected website bundles to
 # ``<site>/assets/bundles/<site-name>`` so collectstatic can preserve a stable
 # URL namespace: ``/static/bundles/<site-name>/...``.
 ASSETS_DIR = BASE_DIR / "assets"
+MEDIA_DIR = ASSETS_DIR / "media"
 STATIC_DIR = ASSETS_DIR / "static"
 FIXTURES_DIR = ASSETS_DIR / "fixtures"
 SITE_STATIC_DIR = STATIC_DIR

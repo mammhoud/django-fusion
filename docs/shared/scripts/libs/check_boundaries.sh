@@ -3,7 +3,7 @@
 # Usage: ./scripts/libs/check_boundaries.sh
 set -e
 
-LIBS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/libs"
+LIBS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/applications/libs"
 PASS=0; FAIL=0
 
 check() {
@@ -38,8 +38,8 @@ check "osoul" "django-osoul/src" "import django_rseal"
 
 echo ""
 echo "--- crafts-ai: must not import django ---"
-check "crafts_ai" "nawaai/crafts_ai" "^from django"
-check "crafts_ai" "nawaai/crafts_ai" "^import django"
+check "crafts_ai" "crafts-ai/src/crafts_ai" "^from django"
+check "crafts_ai" "crafts-ai/src/crafts_ai" "^import django"
 
 echo ""
 echo "--- django-rseal: must not import django-grep ---"

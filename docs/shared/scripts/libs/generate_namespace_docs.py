@@ -14,7 +14,7 @@ import ast
 import sys
 from pathlib import Path
 
-LIBS = Path("/root/site/libs")
+LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 PACKAGES = {
     "django-osoul":  ("django_osoul",  "Django foundation layer"),
@@ -155,7 +155,7 @@ def process_package(pkg_dir_name: str, pkg_namespace: str, pkg_desc: str) -> Non
     # Find src root
     src_root = pkg_dir / "src" / pkg_namespace
     if not src_root.exists():
-        # nawaai uses flat layout
+        # crafts-ai uses src layout
         src_root = pkg_dir / pkg_namespace
     if not src_root.exists():
         print(f"  skip {pkg_dir_name} (src root not found)")

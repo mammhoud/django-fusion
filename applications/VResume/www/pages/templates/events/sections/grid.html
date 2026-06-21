@@ -1,0 +1,8 @@
+{% load i18n %}
+<div class="events-grid">
+    {% for event in events %}
+        {% include "events/includes/event_card.html" with event=event %}
+    {% empty %}
+        <p class="events-grid__empty">{% trans "No upcoming events." %}</p>
+    {% endfor %}
+</div>

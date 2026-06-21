@@ -10,20 +10,21 @@ SHELL := /bin/bash
 # -----------------------------------------------------------------
 WORKSPACE_ROOT   := .
 DEPLOY_DIR       := deploy
-APPLICATIONS_DIR := $(DEPLOY_DIR)/applications
+APPLICATIONS_DIR := applications
 PROXY_DIR        := $(DEPLOY_DIR)/proxy
 SERVICES_DIR     := $(DEPLOY_DIR)/services
 DATABASES_DIR    := $(DEPLOY_DIR)/databases
 SOURCE_DIR       := source                # Coolify source (docker-compose.yml)
 
 # -----------------------------------------------------------------
-# Include sub‑Makefiles (ignore if missing)
+# Component Makefiles are invoked explicitly via delegation targets below.
 # -----------------------------------------------------------------
--include $(APPLICATIONS_DIR)/Makefile
--include $(PROXY_DIR)/Makefile
--include $(SERVICES_DIR)/Makefile
--include $(DATABASES_DIR)/Makefile
--include $(SOURCE_DIR)/Makefile
+# Application targets are delegated via the generic forwarder below so
+# applications/Makefile recipes run relative to applications/.
+-include $(wildcard $(PROXY_DIR)/Makefile)
+-include $(wildcard $(SERVICES_DIR)/Makefile)
+-include $(wildcard $(DATABASES_DIR)/Makefile)
+-include $(wildcard $(SOURCE_DIR)/Makefile)
 
 # -----------------------------------------------------------------
 # PHONY targets – always run
@@ -85,9 +86,9 @@ help:
 	@echo "  make cert:check        - Check certificate expiry status"
 	@echo ""
 	@echo "Per‑app shortcuts (if each has its own Makefile):"
-	@echo "  make ctc-research      - Run ctc-research's Makefile"
-	@echo "  make structa           - Run structa's Makefile"
-	@echo "  make vresume           - Run vresume's Makefile"
+	@echo "  make ctc-research      - Delegate to applications/Makefile with WEBSITE=ctc-research"
+	@echo "  make structa           - Delegate to applications/Makefile with WEBSITE=structa"
+	@echo "  make vresume           - Delegate to applications/Makefile with WEBSITE=vresume"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -338,13 +339,13 @@ compose-merged-down:
 # Per‑app shortcuts (forward to individual Makefiles)
 # -----------------------------------------------------------------
 ctc-research:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/ctc-research
+	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=ctc-research
 
 structa:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/structa
+	@$(MAKE) -C $(APPLICATIONS_DIR)/lms-demo
 
 vresume:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/vresume
+	@$(MAKE) -C $(APPLICATIONS_DIR)/VResume
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)

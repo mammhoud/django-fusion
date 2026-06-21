@@ -8,7 +8,7 @@
   {% render_bundle 'main' 'css' %}
 </head>
 <body hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'>
-  {% block contant %}{% block content %}{% endblock content %}{% endblock contant %}
+  {% block content %}{% block content %}{% endblock content %}{% endblock content %}
   {% render_bundle 'main' 'js' %}
 </body>
 </html>

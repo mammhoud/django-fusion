@@ -1,0 +1,20 @@
+[project]
+name = "crafts-ai"
+version = "0.1.0"
+description = "Standalone AI/MCP toolkit for the structa.cloud monorepo."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.optional-dependencies]
+mcp = ["fastapi>=0.110"]
+
+[project.scripts]
+crafts-ai = "crafts_ai.cli:main"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/crafts_ai"]
