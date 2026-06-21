@@ -39,7 +39,7 @@ class Migration(migrations.Migration):
                 ('show_page_at_footer', models.BooleanField(default=False, help_text='If enabled, this page will appear as a link in the footer menu.', verbose_name='Show Page at Footer')),
                 ('intro', wagtail.fields.RichTextField(blank=True, help_text='Introduction text displayed at the top of the blog index', verbose_name='Introduction')),
                 ('posts_per_page', models.PositiveIntegerField(default=10, help_text='Number of posts to display per page', verbose_name='Posts per Page')),
-                ('head', wagtail.fields.StreamField([('page_title', 3)], blank=True, block_lookup={0: ('wagtail.images.blocks.ImageChooserBlock', (), {'template': 'django_grep/comp/blocks/media/simple_image.html'}), 1: ('wagtail.blocks.CharBlock', (), {'max_length': 200, 'required': True}), 2: ('wagtail.blocks.CharBlock', (), {'default': 'Home', 'max_length': 50}), 3: ('wagtail.blocks.StructBlock', [[('page_title_background', 0), ('page_title', 1), ('breadcrumb_home_text', 2)]], {'icon': 'image', 'label': 'Page Title Section'})}, null=True)),
+                ('head', wagtail.fields.StreamField([('page_title', 3)], blank=True, block_lookup={0: ('wagtail.images.blocks.ImageChooserBlock', (), {'template': 'blocks/media/image_lite.html'}), 1: ('wagtail.blocks.CharBlock', (), {'max_length': 200, 'required': True}), 2: ('wagtail.blocks.CharBlock', (), {'default': 'Home', 'max_length': 50}), 3: ('wagtail.blocks.StructBlock', [[('page_title_background', 0), ('page_title', 1), ('breadcrumb_home_text', 2)]], {'icon': 'image', 'label': 'Page Title Section'})}, null=True)),
             ],
             options={
                 'verbose_name': 'Blog Index Page',

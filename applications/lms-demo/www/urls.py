@@ -13,19 +13,19 @@ from django.views.generic.base import RedirectView
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
+from django_osoul.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_osoul.site.utils import get_root_redirect_pattern
 from www.core.routes import site
 
 # Optional imports with safe fallbacks
 try:
-    from django_grep.contrib.debug_tools.common_urls import configure_common_urls
+    from django_osoul.contrib.debug_tools.common_urls import configure_common_urls
 except Exception:
     def configure_common_urls(urlpatterns):
         return urlpatterns
 
 try:
-    from django_grep.contrib.debug_tools.error_views import (
+    from django_osoul.contrib.debug_tools.error_views import (
         handler400,
         handler403,
         handler404,
@@ -93,7 +93,7 @@ if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
 # Development debug URLs
 if settings.DEBUG:
     try:
-        from django_grep.contrib.debug_tools.dev_urls import configure_dev_urls
+        from django_osoul.contrib.debug_tools.dev_urls import configure_dev_urls
 
         urlpatterns = configure_dev_urls(urlpatterns, settings)
     except Exception:
@@ -106,7 +106,7 @@ urlpatterns = [
 ] + urlpatterns
 
 try:
-    urlpatterns += [path("health_admin/", include("django_grep.health.urls"))]
+    urlpatterns += [path("health_admin/", include("django_osoul.health.urls"))]
 except Exception:
     pass
 

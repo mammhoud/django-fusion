@@ -1,11 +1,11 @@
 # Libraries Todo
 
 ## Django-Osoul & Related Packages
-- [ ] Merge django-grep into django-osoul (applications/libs/django-osoul)
-- [ ] Check for component/configuration overlaps between django-osoul and django-rseal
-- [ ] Move overlapping components to django-osoul
-- [ ] Merge django-rseal into applications/libs/crafts-ai
-- [ ] After merges, update all imports across all websites
+- [x] Merge django-grep dependency layout into django-osoul (applications/libs/django-osoul)
+- [x] Merge django-rseal dependency layout into applications/libs/crafts-ai
+- [x] Remove obsolete GitHub sources for django-grep and django-rseal
+- [x] Update imports across all websites to merged namespaces
+- [ ] Check for remaining component/configuration overlaps between django-osoul and crafts-ai
 - [ ] Organize directories and namespaces effectively (use case/namespace or Django naming: contrib/models/managers/services)
 
 ## Reference

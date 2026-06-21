@@ -4,9 +4,9 @@
 It exposes the import package `crafts_ai` and the console command `crafts-ai`.
 
 The package is also the migration home for framework-agnostic AI, MCP, prompt,
-and orchestration code that used to be planned under `django-rseal`. Django,
+and orchestration code that used to be planned under `crafts-ai`. Django,
 Wagtail, middleware, model, snippet, and queue-dispatch runtime code must remain
-in `django-rseal` until it is extracted behind non-Django adapters.
+in `crafts-ai` until it is extracted behind non-Django adapters.
 
 ## Install
 
@@ -23,13 +23,13 @@ crafts-ai projects
 crafts-ai rseal-plan applications
 ```
 
-## django-rseal migration boundary
+## crafts-ai migration boundary
 
 Use `crafts-ai rseal-plan <root>` before changing website imports. It classifies
-`django_rseal` imports as one of:
+`crafts_ai.rseal` imports as one of:
 
 - `move-to-crafts-ai` for framework-agnostic AI, MCP, or orchestrator code.
-- `keep-in-django-rseal` for Django/Wagtail models, blocks, middleware, snippets,
+- `keep-in-crafts-ai` for Django/Wagtail models, blocks, middleware, snippets,
   pipelines, and job dispatchers.
 - `needs-review` for import families that do not yet have an explicit rule.
 
