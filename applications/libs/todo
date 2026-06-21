@@ -1,0 +1,5 @@
+- merge all with organize and check comp and components configurations on django osoul if there are the same at django rseal and move it to django osoul
+- also organize the dirs and dirs namespaces and make sure the tree effictive irganized with usecaase name and reletive namespace name or with django naming namespace as contrib or models or managers or managements/services as well as added already 
+- merge repos of django-grep with django osoul at one repo dir applications/libs/django-osoul
+- merge repos of applications/libs/django-rseal to be with applications/libs/crafts-ai
+- after merge check all imports related to rseal or grep and make sure to update with correct imports at all websites at the main repo
