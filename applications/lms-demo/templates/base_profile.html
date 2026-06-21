@@ -57,7 +57,13 @@ Page content START -->
 
             <!-- RIGHT : HTMX targetable panel -->
             <div class="col-xl-9" id="panel-content">
+                {% if fragment_name %}
                     {% comp fragment_name /%}
+                {% else %}
+                    <div class="profile__content-fallback" role="status">
+                        {% trans "No profile panel is currently configured." %}
+                    </div>
+                {% endif %}
             </div>
         </div>
     </div>
