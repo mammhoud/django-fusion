@@ -1,0 +1,109 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+
+<!-- testimonial area start -->
+<section class="testimonial__area-2 grey-bg-3 pt-110 pb-120">
+    <div class="container">
+        <div class="row">
+            <div class="col-xl-7 col-lg-9">
+                <div class="section__title mb-65">
+                    <div class="section__icon mb-10">
+                        <span class="section__sub-title section__sub-title-2 section__sub-title-3">{{ block.value.subtitle }}</span>
+                    </div>
+                    <h1 class="mb-100">{{ block.value.title }}</h1>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xl-12">
+                <div class="testimonial__slider-2 testimonial__slider-4">
+                    <div class="testimonial__slider-2-active owl-carousel">
+                        {% for testimonial in block.value.testimonials %}
+                        <div class="testimonial__item-2">
+                            <div class="testimonial__item-inner green-bg-2 p-relative fix">
+                                <p>{{ testimonial.value.content }}</p>
+                                <div class="testimonial__person testimonial__person-2 d-flex align-items-center">
+                                    {% if testimonial.value.client_photo %}
+                                    <div class="testimonial__avater">
+                                        <img src="{{ testimonial.value.client_photo.url }}" alt="{{ testimonial.value.client_name }}">
+                                    </div>
+                                    {% endif %}
+                                    <div class="testimonial__info">
+                                        <h3>{{ testimonial.value.client_name }}</h3>
+                                        <span>{{ testimonial.value.client_position }}</span>
+                                    </div>
+                                </div>
+                                <div class="testimonial__quote-2 p-absolute">
+                                    <span class="icon flaticon-quotation"></span>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- testimonial area end -->
+
+
+
+<!-- testimonial area start -->
+<section class="testimonial__area pt-120 pb-120 grey-bg-3 box-105">
+    <div class="testimonial__inner p-relative">
+
+        {% image block.value.background_image fill-724x560 as bg_img %}
+ 
+        <div class="testimonial__img border-radius-8 p-absolute fix" data-background="{{ bg_img.url }}">
+            <div class="testimonial__video p-absolute fix">
+                <div class="testimonial__shape p-absolute">
+                    <img src="/static/assets/img/testimonial/shape-1.png" alt="">
+                </div>
+                <div class="testimonial__shape testimonial__shape-2 p-absolute">
+                    <img src="/static/assets/img/testimonial/shape-2.png" alt="">
+                </div>
+                <h3>{% trans "See Our Success Story" %}</h3>
+                {% if block.value.video_url %}
+                <a href="{{ block.value.video_url }}" data-fancybox class="play-btn play-btn-sm play-btn-pink play-btn-pink-white">
+                    <i class="far fa-play"></i>
+                </a>
+                {% endif %}
+            </div>
+        </div>
+        <div class="container">
+            <div class="row">
+                <div class="col-xl-7 offset-xl-5 col-lg-7 offset-lg-5">
+                    <div class="testimonial__wrapper testimonial__wrapper-3 pl-30 pt-50 pb-35">
+                        <div class="section__title mb-20">
+                            <div class="section__icon mb-10">
+                                <span class="section__sub-title section__sub-title-2 section__sub-title-3">{{ block.value.subtitle }}</span>
+                            </div>
+                            <h1>{{ block.value.title }}</h1>
+                        </div>
+                        <div class="testimonial__slider-3 owl-carousel">
+                            {% for testimonial in block.value.testimonials %}
+                            <div class="testimonial__item-3">
+                                <p>{{ testimonial.value.content }}</p>
+                                <div class="testimonial__person testimonial__person-3 d-flex align-items-center">
+                                    {% if testimonial.value.client_photo %}
+                                    <div class="testimonial__avater">
+                                        
+                                        <img src="{{ testimonial.value.client_photo.url }}" alt="{{ testimonial.value.client_name }}">
+                                    </div>
+                                    {% endif %}
+                                    <div class="testimonial__info testimonial__info-3">
+                                        <h3>{{ testimonial.value.client_name }}</h3>
+                                        <span>{{ testimonial.value.client_position }}</span>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+<!-- testimonial area end -->

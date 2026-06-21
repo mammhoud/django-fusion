@@ -56,8 +56,8 @@ class Lesson(Orderable, ClusterableModel):
                     label=_("Rich Text"),
                 ),
             ),
-            ("video", SimpleVideoBlock(template="django_grep/comp/blocks/media/simple_video.html")),
-            ("image", SimpleImageBlock(template="django_grep/comp/blocks/media/simple_image.html")),
+            ("video", SimpleVideoBlock(template="blocks/media/video_lite.html")),
+            ("image", SimpleImageBlock(template="blocks/media/image_lite.html")),
             (
                 "code",
                 blocks.TextBlock(

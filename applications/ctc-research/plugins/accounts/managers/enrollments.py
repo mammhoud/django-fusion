@@ -15,7 +15,7 @@ from django_osoul.managers import CachedManager
 from plugins.lms.models import Course, Enrollment, Lesson, Module
 
 try:
-    from django_rseal.models import Person as Profile
+    from crafts_ai.rseal.models import Person as Profile
 except ImportError:
     Profile = None  # type: ignore[assignment,misc]
 

@@ -2,8 +2,8 @@ from django.db import models
 from django.template.defaultfilters import truncatewords
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from django_rseal.blocks.stream_blocks import BaseStreamBlock
-from django_rseal.models import Person
+from crafts_ai.rseal.blocks.stream_blocks import BaseStreamBlock
+from crafts_ai.rseal.models import Person
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import (

@@ -1,6 +1,6 @@
 from django.urls import path
 
-# Import specific views without importing cart.py which depends on django_rseal.site
+# Import specific views without importing cart.py which depends on crafts_ai.rseal.site
 from .views.courses import (
     FrontCourseDetailView,
     CourseSearchAPIView,
@@ -33,10 +33,10 @@ from .views.cart import PaymentHistoryView
 from .views.cart import EnrollView
 
 
-# Lazy load django_rseal payment views to avoid import conflicts
+# Lazy load crafts_ai.rseal payment views to avoid import conflicts
 def _get_payment_urls():
     try:
-        from django_rseal.site.payments import (
+        from crafts_ai.rseal.site.payments import (
             CartPayPalInitView,
             CartStripeInitView,
             PayPalInitView,

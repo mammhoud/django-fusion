@@ -1,4 +1,4 @@
-"""Utilities for planning django-rseal import migration work."""
+"""Utilities for planning crafts-ai import migration work."""
 
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from .inventory import classify_import
 
 @dataclass(frozen=True)
 class MigrationItem:
-    """One discovered django-rseal import and its migration decision."""
+    """One discovered crafts-ai import and its migration decision."""
 
     path: str
     line: int
@@ -26,15 +26,15 @@ class MigrationItem:
 
 def _extract_import_path(line: str) -> str | None:
     stripped = line.strip()
-    if stripped.startswith("from django_rseal"):
+    if stripped.startswith("from crafts_ai.rseal"):
         return stripped.removeprefix("from ").split(" import ", 1)[0]
-    if stripped.startswith("import django_rseal"):
+    if stripped.startswith("import crafts_ai.rseal"):
         return stripped.removeprefix("import ").split(" as ", 1)[0]
     return None
 
 
 def migration_plan(root: Path) -> list[MigrationItem]:
-    """Build a static migration plan for django-rseal imports under ``root``."""
+    """Build a static migration plan for crafts-ai imports under ``root``."""
     items: list[MigrationItem] = []
     for path in sorted(root.rglob("*.py")):
         if any(part in {".venv", "venv", "node_modules", "__pycache__"} for part in path.parts):

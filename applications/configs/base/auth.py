@@ -109,7 +109,7 @@ ACCOUNT_ADAPTER = settings.get("ACCOUNT_ADAPTER", "plugins.accounts.adapters.Reg
 ACCOUNT_FORMS = settings.get("ACCOUNT_FORMS", {})
 
 # =============================================================================
-# 👤 PROFILE MODEL — required by django_rseal and django_osoul ForeignKey refs
+# 👤 PROFILE MODEL — required by crafts_ai.rseal and django_osoul ForeignKey refs
 # =============================================================================
 # This must be set at the base config level so it is available when Django
 # loads model classes from installed apps (before site settings are applied).

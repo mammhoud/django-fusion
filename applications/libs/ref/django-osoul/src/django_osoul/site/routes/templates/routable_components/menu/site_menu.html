@@ -1,0 +1,16 @@
+<nav class="site-menu" aria-label="{{ site.title }} navigation">
+  {% for app in apps %}
+    <div class="site-menu__app">
+      <div class="site-menu__app-header">
+        {% if app.icon %}
+          <span class="site-menu__icon material-icons" aria-hidden="true">{{ app.icon }}</span>
+        {% endif %}
+        <span class="site-menu__app-title">{{ app.title }}</span>
+      </div>
+      {% load routable_components %}
+      {% app_menu app user %}
+    </div>
+  {% empty %}
+    <p class="site-menu__empty">No applications available.</p>
+  {% endfor %}
+</nav>

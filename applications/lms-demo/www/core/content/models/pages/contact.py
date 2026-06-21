@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.blocks.contact.contact_methods import ContactMethodBlock
-from django_rseal.blocks.partials.faq import FAQSectionBlock
+from crafts_ai.rseal.blocks.contact.contact_methods import ContactMethodBlock
+from crafts_ai.rseal.blocks.partials.faq import FAQSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import StreamField
@@ -31,7 +31,7 @@ class ContactPage(BaseFormPage):
                         (
                             "page_title_background",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/simple_image.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Page Title Background"),
                             ),
                         ),
