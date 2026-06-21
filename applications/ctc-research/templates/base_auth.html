@@ -52,7 +52,11 @@
         </div>
         {% endif %}
         <div class="auth__component">
-          {% comp fragment_name /%}
+          {% block auth_content %}
+            {% if fragment_name %}
+              {% comp fragment_name /%}
+            {% endif %}
+          {% endblock auth_content %}
         </div>
       </div>
     </div>

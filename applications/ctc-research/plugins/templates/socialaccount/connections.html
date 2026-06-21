@@ -1,5 +1,7 @@
+{% extends "base_auth.html" %}
 {% load i18n static socialaccount %}
 
+{% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form">
     <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Social Connections" %}</h2><p class="auth__form-subtitle">{% trans "Manage your connected social accounts" %}</p></header>
@@ -22,3 +24,4 @@
     </div>
   </section>
 </section>
+{% endblock auth_content %}

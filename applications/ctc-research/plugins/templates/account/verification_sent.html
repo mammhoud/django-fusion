@@ -1,7 +1,9 @@
+{% extends "base_auth.html" %}
 {% load i18n static wagtailcore_tags wagtailimages_tags %}
 {% get_site_root as site_root %}
 {% image BrandSettings.logo original as logo %}
 
+{% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form">
     <header class="auth__form-header text-center">
@@ -121,3 +123,4 @@
   });
 })();
 </script>
+{% endblock auth_content %}
