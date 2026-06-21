@@ -1,0 +1,44 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+
+<!-- Features Section -->
+<div class="section py-5 py-lg-6">
+    <div class="container">
+        <div class="row g-4 justify-content-center" data-cues="fadeIn">
+            {% for feature in block.value %}
+            <div class="col-12 col-md-6 col-lg-4 mb-4">
+                <div class="card border-0 h-100 p-4 shadow-sm hover-lift bg-white rounded-4 transition-all">
+                    
+                    <!-- Icon or Image -->
+                    <div class="mb-4">
+                        {% if feature.value.image %}
+                            {% image feature.value.image fill-400x300 as feature_img %}
+                            <div class="rounded-3 overflow-hidden mb-4" style="height: 200px;">
+                                <img src="{{ feature_img.url }}" 
+                                     alt="{{ feature.value.title }}" 
+                                     class="img-fluid w-100 h-100 object-fit-cover">
+                                <div class="rounded-4 position-absolute top-0 start-0 w-100 h-100 bg-primary bg-opacity-10"></div>
+                            </div>
+                        {% else %}
+                            <div class="d-flex justify-content-center align-items-center mb-4">
+                                <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
+                                     style="width: 80px; height: 80px;">
+                                    {% if feature.value.icon_class %}
+                                    <i class="{{ feature.value.icon_class }} fs-3"></i>
+                                    {% else %}
+                                    <i class="fas fa-star fs-3"></i>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        {% endif %}
+                    </div>
+
+                    <!-- Content -->
+                    <h5 class="fw-bold mb-3 text-dark">{{ feature.value.title }}</h5>
+                    <p class="text-muted mb-0">{{ feature.value.description }}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+

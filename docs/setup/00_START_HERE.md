@@ -21,26 +21,26 @@ This document will guide you through what's been built and how to use it.
 ## Quick Actions
 
 ### I want to DEPLOY immediately
-→ Read [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md) (5 min)  
-→ Run `./deploy-production.sh` (55 min)  
+→ Read [../deployment/QUICK_START.md](../deployment/QUICK_START.md) (5 min)
+→ Run `./deploy-production.sh` (55 min)
 → Done! 🎉
 
 ### I want to UNDERSTAND the system
-→ Read [docs/guides/SESSION_SUMMARY.md](docs/guides/SESSION_SUMMARY.md) (10 min)  
-→ Read [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) (20 min)  
+→ Read [../archives/SESSION_SUMMARY.md](../archives/SESSION_SUMMARY.md) (10 min)
+→ Read [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) (20 min)
 → Then decide if you want to deploy
 
 ### I want to EXPLORE the documentation
-→ Go to [docs/README.md](docs/README.md) for navigation  
-→ Go to [docs/INDEX.md](docs/INDEX.md) for complete index  
+→ Go to [docs/README.md](docs/README.md) for navigation
+→ Go to [docs/INDEX.md](docs/INDEX.md) for complete index
 
 ### I need TECHNICAL DETAILS
-→ See [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) - JavaScript system  
-→ See [docs/guides/INFRASTRUCTURE.md](docs/guides/INFRASTRUCTURE.md) - Docker services  
+→ See [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) - JavaScript system
+→ See [docs/guides/INFRASTRUCTURE.md](docs/guides/INFRASTRUCTURE.md) - Docker services
 
 ### I need to TROUBLESHOOT
-→ See [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md) - Common issues  
-→ See [docs/deployment/MANUAL_GUIDE.md](docs/deployment/MANUAL_GUIDE.md) - Full troubleshooting  
+→ See [../deployment/QUICK_START.md](../deployment/QUICK_START.md) - Common issues
+→ See [docs/deployment/MANUAL_GUIDE.md](docs/deployment/MANUAL_GUIDE.md) - Full troubleshooting
 
 ---
 
@@ -114,9 +114,9 @@ This document will guide you through what's been built and how to use it.
 
 ### Core Files
 - **[docs/README.md](docs/README.md)** - Main navigation hub
-- **[docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md)** - 5-min deploy guide
+- **[../deployment/QUICK_START.md](../deployment/QUICK_START.md)** - 5-min deploy guide
 - **[docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md)** - Complete system design
-- **[docs/guides/SESSION_SUMMARY.md](docs/guides/SESSION_SUMMARY.md)** - What was built
+- **[../archives/SESSION_SUMMARY.md](../archives/SESSION_SUMMARY.md)** - What was built
 
 ### Technical Details
 - **[SESSION_FINAL_SUMMARY.md](SESSION_FINAL_SUMMARY.md)** - Comprehensive overview
@@ -133,18 +133,18 @@ This document will guide you through what's been built and how to use it.
 ## By Role
 
 ### 👨‍💼 Project Manager
-- Read: [docs/reference/STATUS.md](docs/reference/STATUS.md) - Status overview
+- Read: [../archives/STATUS.md](../archives/STATUS.md) - Status overview
 - Read: [SESSION_FINAL_SUMMARY.md](SESSION_FINAL_SUMMARY.md) - What was done
 - Time: 15 minutes
 
 ### 👨‍💻 Developer
 - Read: [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) - System design
-- Read: [docs/guides/SESSION_SUMMARY.md](docs/guides/SESSION_SUMMARY.md) - What was built
+- Read: [../archives/SESSION_SUMMARY.md](../archives/SESSION_SUMMARY.md) - What was built
 - Reference: [docs/INDEX.md](docs/INDEX.md) - Find anything
 - Time: 30 minutes to understand
 
 ### 🏭 DevOps / Operations
-- Read: [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md) - Quick deploy
+- Read: [../deployment/QUICK_START.md](../deployment/QUICK_START.md) - Quick deploy
 - Read: [docs/guides/INFRASTRUCTURE.md](docs/guides/INFRASTRUCTURE.md) - Container setup
 - Have: [docs/deployment/TEST_PLAN.md](docs/deployment/TEST_PLAN.md) - Verification
 - Time: 60 minutes to deploy
@@ -184,19 +184,19 @@ This document will guide you through what's been built and how to use it.
 ## Next Steps
 
 ### Option 1: Deploy Now (65 min total)
-1. Read: [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md)
+1. Read: [../deployment/QUICK_START.md](../deployment/QUICK_START.md)
 2. Execute: `./deploy-production.sh`
 3. Verify: websites accessible
 
 ### Option 2: Learn Then Deploy (120 min total)
-1. Read: [docs/guides/SESSION_SUMMARY.md](docs/guides/SESSION_SUMMARY.md)
+1. Read: [../archives/SESSION_SUMMARY.md](../archives/SESSION_SUMMARY.md)
 2. Read: [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md)
-3. Read: [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md)
+3. Read: [../deployment/QUICK_START.md](../deployment/QUICK_START.md)
 4. Execute: `./deploy-production.sh`
 
 ### Option 3: Full Understanding (180 min total)
 1. Read: [docs/README.md](docs/README.md) - Overview
-2. Read: [docs/guides/SESSION_SUMMARY.md](docs/guides/SESSION_SUMMARY.md) - Overview
+2. Read: [../archives/SESSION_SUMMARY.md](../archives/SESSION_SUMMARY.md) - Overview
 3. Read: [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md) - Details
 4. Read: [docs/guides/INFRASTRUCTURE.md](docs/guides/INFRASTRUCTURE.md) - Ops
 5. Read: [docs/deployment/MANUAL_GUIDE.md](docs/deployment/MANUAL_GUIDE.md) - Procedures
@@ -231,7 +231,7 @@ docker exec -it web-ctc-research python manage.py createsuperuser
 
 ### Documentation Quick Links
 - **Main Hub**: [docs/README.md](docs/README.md)
-- **Deploy**: [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md)
+- **Deploy**: [../deployment/QUICK_START.md](../deployment/QUICK_START.md)
 - **Architecture**: [docs/guides/ARCHITECTURE.md](docs/guides/ARCHITECTURE.md)
 - **Index**: [docs/INDEX.md](docs/INDEX.md)
 
@@ -240,7 +240,7 @@ docker exec -it web-ctc-research python manage.py createsuperuser
 ## Support & Questions
 
 ### Deployment Help
-→ [docs/deployment/QUICK_START.md](docs/deployment/QUICK_START.md)
+→ [../deployment/QUICK_START.md](../deployment/QUICK_START.md)
 
 ### Troubleshooting
 → [docs/deployment/MANUAL_GUIDE.md](docs/deployment/MANUAL_GUIDE.md#troubleshooting)
@@ -266,10 +266,10 @@ This platform is **production-ready** with:
 
 ---
 
-**Status**: 🟢 Ready  
-**Updated**: June 2, 2026  
-**Confidence**: High (95%)  
+**Status**: 🟢 Ready
+**Updated**: June 2, 2026
+**Confidence**: High (95%)
 
 ---
 
-### 👉 [Start with Quick Deploy](docs/deployment/QUICK_START.md) or [Learn the System](docs/guides/SESSION_SUMMARY.md)
+### 👉 [Start with Quick Deploy](../deployment/QUICK_START.md) or [Learn the System](../archives/SESSION_SUMMARY.md)

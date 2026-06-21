@@ -1,0 +1,36 @@
+# robots.txt for ctc-research.com
+# ================================
+
+# --- General Crawling Rules ---
+User-Agent: *
+Disallow: /privatestuff/
+Disallow: /Admin/
+Disallow: /backup/
+Disallow: /tmp/
+Disallow: /*?*                # Block crawling of all URLs with parameters
+Allow: /public-research/$      # Allow the specific research index page
+
+# --- Crawl Rate Management (for non-Google bots) ---
+Crawl-delay: 2                 # Request a 2-second wait between crawls
+
+# --- AI Crawler Management ---
+User-agent: Google-Extended
+Allow: /                        # Allow AI training, but you can Disallow: / to block
+
+User-agent: GPTBot
+Allow: /                        # Allow OpenAI's crawler
+
+User-agent: ClaudeBot
+Allow: /                        # Allow Anthropic's crawler
+
+User-agent: PerplexityBot
+Allow: /                        # Allow Perplexity's real-time search bot
+
+# --- Restrict generic "Bot" from admin area ---
+User-Agent: Bot
+Disallow: /Admin/
+
+# --- Sitemap References ---
+Sitemap: /sitemap.xml
+Sitemap: /sitemap-publications.xml
+Sitemap: /sitemap-news.xml

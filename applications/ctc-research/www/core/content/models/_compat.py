@@ -1,41 +1,41 @@
 """
-Compatibility shims for django_rseal blocks and models.
+Compatibility shims for crafts_ai.rseal blocks and models.
 
-Resolves the old 'django_rseal.content.*' API paths to the correct
-locations in the installed version of django_rseal.
+Resolves the old 'crafts_ai.rseal.content.*' API paths to the correct
+locations in the installed version of crafts_ai.rseal.
 
 Block locations (installed version):
-  ContactCardBlock  → django_rseal.blocks.contact.contact_card
-  PageLinkBlock     → django_rseal.blocks.partials.button
-  ContactMethodBlock → django_rseal.blocks.contact.contact_methods
-  FAQSectionBlock   → django_rseal.blocks.partials.faq
-  MediaGalleryBlock → django_rseal.blocks.media.gallery
+  ContactCardBlock  → crafts_ai.rseal.blocks.contact.contact_card
+  PageLinkBlock     → crafts_ai.rseal.blocks.partials.button
+  ContactMethodBlock → crafts_ai.rseal.blocks.contact.contact_methods
+  FAQSectionBlock   → crafts_ai.rseal.blocks.partials.faq
+  MediaGalleryBlock → crafts_ai.rseal.blocks.media.gallery
 
 Model locations:
-  DefaultBase       → django_rseal.models.default
-  Organization      → django_rseal.handlers.models.manage_company
-  Contact / Corporate → django_rseal.contrib.core.models
-  Team              → django_rseal.models.users.team
-  Person            → django_rseal.models.users.users
+  DefaultBase       → crafts_ai.rseal.models.default
+  Organization      → crafts_ai.rseal.handlers.models.manage_company
+  Contact / Corporate → crafts_ai.rseal.contrib.core.models
+  Team              → crafts_ai.rseal.models.users.team
+  Person            → crafts_ai.rseal.models.users.users
 """
 
 # ---------------------------------------------------------------------------
 # Blocks — import directly from the correct installed paths
 # ---------------------------------------------------------------------------
-from django_rseal.blocks.contact.contact_card import ContactCardBlock
-from django_rseal.blocks.contact.contact_methods import ContactMethodBlock
-from django_rseal.blocks.media.gallery import MediaGalleryBlock
-from django_rseal.blocks.partials.button import PageLinkBlock
-from django_rseal.blocks.partials.faq import FAQSectionBlock
+from crafts_ai.rseal.blocks.contact.contact_card import ContactCardBlock
+from crafts_ai.rseal.blocks.contact.contact_methods import ContactMethodBlock
+from crafts_ai.rseal.blocks.media.gallery import MediaGalleryBlock
+from crafts_ai.rseal.blocks.partials.button import PageLinkBlock
+from crafts_ai.rseal.blocks.partials.faq import FAQSectionBlock
 
 # ---------------------------------------------------------------------------
 # Models
 # ---------------------------------------------------------------------------
 # Import DefaultBase directly from the submodule to avoid triggering
-# django_rseal.models.__init__ which tries to register EmailSettings
-# (a Wagtail GenericSetting) before django_rseal is in INSTALLED_APPS.
-from django_rseal.models.default import DefaultBase
-from django_rseal.handlers.models.manage_company import Organization
+# crafts_ai.rseal.models.__init__ which tries to register EmailSettings
+# (a Wagtail GenericSetting) before crafts_ai.rseal is in INSTALLED_APPS.
+from crafts_ai.rseal.models.default import DefaultBase
+from crafts_ai.rseal.handlers.models.manage_company import Organization
 
 __all__ = [
     "ContactCardBlock",

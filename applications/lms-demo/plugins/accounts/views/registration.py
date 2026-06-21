@@ -25,7 +25,7 @@ from django_osoul.site import PageHandler
 from ..emails import send_registration_email
 from ..forms.registration import PasswordCreationForm, RegistrationForm
 from ..tokens import registration_token_generator
-from ..management.services.notifications import trigger_notification
+from ..services.notifications import trigger_notification
 
 logger = logging.getLogger("apps.registration")
 User = get_user_model()
@@ -458,7 +458,7 @@ class RegistrationSuccessView(View):
 def _ensure_profile_exists(user):
     """Create a Person profile for the user if it doesn't exist."""
     try:
-        from django_rseal.models import Person
+        from crafts_ai.rseal.models import Person
 
         _profile, created = Person.objects.get_or_create(
             user=user,

@@ -1,5 +1,8 @@
 # Archives - Phase Completion Reports
 
+> **Warning:** Archived files are historical snapshots. They may describe obsolete paths, commands, statuses, or deployment procedures and should not be treated as current documentation.
+
+
 This directory contains all phase completion reports and session summaries from the project modernization initiative.
 
 ## Phase Reports (14 files)

@@ -11,8 +11,8 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
-from django_rseal.blocks.content.overview import OverviewBlock
-from django_rseal.models import ModelCacheMixin
+from crafts_ai.rseal.blocks.content.overview import OverviewBlock
+from crafts_ai.rseal.models import ModelCacheMixin
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import (
     FieldPanel,
@@ -85,7 +85,7 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
     )
 
     preview_video = StreamField(
-        [("preview_video", SimpleVideoBlock(template="django_grep/comp/blocks/media/simple_video.html"))],
+        [("preview_video", SimpleVideoBlock(template="blocks/media/video_lite.html"))],
         null=True,
         blank=True,
         verbose_name=_("Preview Video"),
@@ -95,7 +95,7 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
 
     # === Content & Description ===
     overview = StreamField(
-        OverviewBlock(template="django_grep/comp/blocks/content/heading_block.html"),
+        OverviewBlock(template="blocks/content/heading_block.html"),
         blank=True,
         use_json_field=True,
         verbose_name=_("Course Overview"),

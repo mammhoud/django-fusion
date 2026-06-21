@@ -81,10 +81,9 @@ dependencies = [
     "pytest",
     "pytest-django",
     "virtualenv",
-    # Internal libs (sourced from GitHub — see [tool.uv.sources])
-    "django-grep",
+    # Internal libs (local workspace sources — see [tool.uv.sources])
     "django-osoul",
-    "django-rseal",
+    "crafts-ai",
     "ollama>=0.6.2",
 ]
 
@@ -99,12 +98,11 @@ build-backend = "hatchling.build"
 [tool.hatch.build.targets.wheel]
 packages = ["configs", "tasks"]
 
-# GitHub sources for internal libs — used by all websites.
-# Pin to the 'generic' branch; uv resolves the exact commit at lock/sync time.
+# Local sources for internal libs used by all websites.
+# django-grep is merged into libs/django-osoul; django-rseal is merged into libs/crafts-ai.
 [tool.uv.sources]
 django-osoul = { path = "libs/django-osoul", editable = true }
-django-rseal = { git = "https://github.com/mammhoud/django-rseal", branch = "generic" }
-django-grep  = { git = "https://github.com/mammhoud/django-grep",  branch = "generic" }
+crafts-ai = { path = "libs/crafts-ai", editable = true }
 
 [tool.pytest.ini_options]
 minversion = "7.0"

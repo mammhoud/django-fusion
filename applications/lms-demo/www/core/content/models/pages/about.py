@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.blocks.media.gallery import MediaGalleryBlock
+from crafts_ai.rseal.blocks.media.gallery import MediaGalleryBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
@@ -24,7 +24,7 @@ class AboutPage(BasePage):
                         (
                             "page_title_background",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/image_lite.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Page Title Background"),
                             ),
                         ),
@@ -60,7 +60,7 @@ class AboutPage(BasePage):
                         (
                             "background_image",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/image_lite.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Background Image"),
                             ),
                         ),
@@ -94,7 +94,7 @@ class AboutPage(BasePage):
                             MediaGalleryBlock(
                                 required=False,
                                 label=_("Team / Media Gallery"),
-                                template="django_grep/comp/blocks/media/gallery.html",
+                                template="blocks/media/gallery.html",
                             ),
                         ),
                         (
@@ -155,7 +155,7 @@ class AboutPage(BasePage):
                         (
                             "background_image",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/image_lite.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Background Image"),
                             ),
                         ),
@@ -189,7 +189,7 @@ class AboutPage(BasePage):
                                                 (
                                                     "client_photo",
                                                     SimpleImageBlock(
-                                                        template="django_grep/comp/blocks/media/image_lite.html",
+                                                        template="blocks/media/image_lite.html",
                                                         label=_("Client Photo"),
                                                     ),
                                                 ),

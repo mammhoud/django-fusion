@@ -1,4 +1,4 @@
-from core.snippets import BaseSnippetViewSet
+from django_osoul.wagtail.viewsets import BaseSnippetViewSet
 from django.utils.translation import gettext_lazy as _
 
 from pages.connect.models import EmailDelivery

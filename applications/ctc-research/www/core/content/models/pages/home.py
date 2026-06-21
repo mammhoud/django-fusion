@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from django_rseal.blocks.contact.contact_card import ContactCardBlock
-from django_rseal.blocks.partials.button import PageLinkBlock
+from crafts_ai.rseal.blocks.contact.contact_card import ContactCardBlock
+from crafts_ai.rseal.blocks.partials.button import PageLinkBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.blocks import PageChooserBlock
@@ -39,7 +39,7 @@ class HomePage(BaseFormPage):
                                     (
                                         "background_image",
                                         SimpleImageBlock(
-                                            template="django_grep/comp/blocks/media/simple_image.html",
+                                            template="blocks/media/image_lite.html",
                                             label=_("Background Image"),
                                         ),
                                     ),
@@ -94,7 +94,7 @@ class HomePage(BaseFormPage):
                                     (
                                         "image",
                                         SimpleImageBlock(
-                                            template="django_grep/comp/blocks/media/simple_image.html",
+                                            template="blocks/media/image_lite.html",
                                             label=_("Image"),
                                         ),
                                     ),
@@ -136,7 +136,7 @@ class HomePage(BaseFormPage):
                         (
                             "background_image",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/simple_image.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Background Image"),
                             ),
                         ),
@@ -297,7 +297,7 @@ class HomePage(BaseFormPage):
                         (
                             "image",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/simple_image.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Image"),
                             ),
                         ),
