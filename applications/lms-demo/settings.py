@@ -46,17 +46,17 @@ WEBSITE_NAME = "lms-demo"
 WEBSITE_IDENTIFIER = "lms-demo"
 SITE_ID = 2
 # ============================================================
-# django_rseal required settings
+# crafts_ai.rseal required settings
 # ============================================================
-# PROFILE_MODEL is a required ForeignKey target in django_rseal models.
+# PROFILE_MODEL is a required ForeignKey target in crafts_ai.rseal models.
 # Point it to Django's built-in User model since this project
 # does not have a separate profile model.
 PROFILE_MODEL = "auth.User"
 
 
-# Third-party django_rseal currently declares an invalid TeamMembership ordering.
+# Third-party crafts_ai.rseal currently declares an invalid TeamMembership ordering.
 SILENCED_SYSTEM_CHECKS = [
-    "models.E015",  # django_rseal cross-model ordering lookup
+    "models.E015",  # crafts_ai.rseal cross-model ordering lookup
     "models.E028",  # legacy accounts/handlers shared service table during migration
     "models.E030",  # legacy accounts/handlers shared indexes during migration
     "models.E032",  # legacy accounts/handlers shared constraints during migration

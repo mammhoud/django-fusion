@@ -1,16 +1,16 @@
 # from plugins.accounts.models import Company
 # from commons.contact.models import Contact, ContactEmail, ContactPhone
-# NOTE: commons.contact is not a local module; these models come from django_rseal.contrib.core.models
-# Importing from django_rseal when available, with a fallback stub for environments without it.
+# NOTE: commons.contact is not a local module; these models come from crafts_ai.rseal.contrib.core.models
+# Importing from crafts_ai.rseal when available, with a fallback stub for environments without it.
 try:
-    from django_rseal.contrib.core.models import Contact, ContactEmail, ContactPhone
+    from crafts_ai.rseal.contrib.core.models import Contact, ContactEmail, ContactPhone
 except ImportError:
     Contact = None  # type: ignore[assignment,misc]
     ContactEmail = None  # type: ignore[assignment,misc]
     ContactPhone = None  # type: ignore[assignment,misc]
 
 from django.db.models import Q
-from django_rseal.contrib.core.models import Corporate as Company
+from crafts_ai.rseal.contrib.core.models import Corporate as Company
 
 
 def contacts_list(fields=None, context=None, filters=None, search=None):

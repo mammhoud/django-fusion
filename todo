@@ -1,3 +1,70 @@
+# Project Todo List
+
+## Docker & Configuration Tasks
+- [ ] Check all relative paths to docker compose as VResume
+- [ ] Check docker container env vars have correct linked passwords
+- [ ] Check configs and mount points for lms-demo assets, ctc-research configs
+- [ ] Verify logs dirs are website-specific (not shared); implement cleanup make commands
+
+## Template & CSS Tasks
+- [ ] Check all templates and wagtail admin customization with static styles from applications/assets/static/styles
+- [ ] Merge duplicated templates into single optimized templates with shared styles
+- [ ] Update lms-demo assets/styles with BEM requirements
+- [ ] Copy and convert new theme styles to BEM format
+
+## Accounts/Auth Tasks
+- [ ] Separate plugins/accounts/allauth_views.py into plugins/accounts/views/ with named files
+- [ ] Check management files moved correctly; ensure imports work at old paths
+- [ ] Check auth templates moved from auth to account; update sign-in page as login template
+- [ ] Enhance allauth integrations with fragmented htmx auth pages; ensure fallback works
+
+## Template Organization Tasks
+- [ ] Organize templates/components moved to base repo dir at applications/assets/templates
+- [ ] Remove duplicated files across vresume and lms-demo; use organized versions at ctc-research
+- [ ] Fix template paths for components, comp tags, and OOP components
+- [ ] Update lms-demo templates to match ctc-research structure
+
+## Library Merge Tasks
+- [ ] Merge django-grep into django-osoul at applications/libs/django-osoul
+- [ ] Merge django-rseal into applications/libs/crafts-ai
+- [ ] Check and update all imports related to rseal/grep across all websites
+
+## Path References
+- applications/ctc-research/plugins/accounts/todo
+- applications/assets/templates/todo
+- applications/ctc-research/todo
+- applications/lms-demo/todo
+- applications/libs/todo
+- todo (root)
+
+
+
 - check all relative paths to docker compose as VResume
 lms-demoa ssets ctc-research configs and correct its pind to be from the applications and make it copy configs and all related to main applications dirs as configs and cli and commands at applications and mount instead of copy website such as ctc-research or vresume and lms-demo also check the logs dirs is related to each website not shared between each other only the shared dir of logs at applications daily update name and could be clean up with make commands and could make a cleanup of logs from makes
 - check all docker container env vars has correct linked passwords with each services and commands of running correct fully for deployments with make and delegations of services docker/makefile at ../services 
+- check all templates and wagtail admin check how to customize it with the static applications/assets/static/styles colors as same as added at the main website styles 
+- also check all copied templates and added with duplecated to be merged with one template with full optimizes with the same styles added 
+
+
+
+- separate plugins/accounts/allauth_views.py to be at plugins/accounts/views as files separated with names
+- check the managements file all has bee moved files at last commit make sure all files is could be imported at old path as accounts app or accounts/registration s what moved files and used update its imports 
+
+
+
+- all changes here and could be file organize as organized right now templates and components and what moved to base repo dir of assets make sure to make the same files organizes at another websites and some files removed to be used at base asssets templates dir and not changed as usage as plugins/tables or forms or some blocks make sure to remove what duplecated at another website suchas vresume and lms-demo and make sure to delete and use with the same organized at ctc-research websites and making it working with the corrected paths as well as this 
+- make sure all templates move and organized components and comp tags or oop components is correct path 
+- check all auth templates some templates are moved from auth to account make sure to update sign in page to be as login template as same as fragment loaded page_auth page as layout and enahance allauth integrations with the fragmented htmx auth pages to make one of it work and other is fallback default htmx pages make both has same mechanism and same functionalitis as htmx adde to both and if not htmx request send normal reuqest 
+
+- update the last changes at lms-demo as changes at templates organizes or files moved to managements 
+
+- update the last changes as organize or move files as same as ctc-research and also what related to templates as accounts and making all with the same stuctures 
+- at theme there are some changes needed at the agents and ai crafts files tasks integrated with .kilo/mcp_server.py to make theme dir analyzed with the files related components with the websites added to customizes it and replaces the components with hte same django tags of data related could be added to fount components and make sure to update the styles of the websites assets at applications/lms-demo/assets/static/styles with the bem requirements and make the same styles as cloned from new theme with latest and make it copy and make it as bem and update the component after copy to be bem styling 
+
+
+
+- merge all with organize and check comp and components configurations on django osoul if there are the same at django rseal and move it to django osoul
+- also organize the dirs and dirs namespaces and make sure the tree effictive irganized with usecaase name and reletive namespace name or with django naming namespace as contrib or models or managers or managements/services as well as added already 
+- merge repos of django-grep with django osoul at one repo dir applications/libs/django-osoul
+- merge repos of applications/libs/django-rseal to be with applications/libs/crafts-ai
+- after merge check all imports related to rseal or grep and make sure to update with correct imports at all websites at the main repo

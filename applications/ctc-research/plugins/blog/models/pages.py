@@ -53,7 +53,7 @@ class BlogIndexPage(RoutablePageMixin, BasePage):
                         (
                             "page_title_background",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/simple_image.html"
+                                template="blocks/media/image_lite.html"
                             ),
                         ),
                         ("page_title", blocks.CharBlock(required=True, max_length=200)),

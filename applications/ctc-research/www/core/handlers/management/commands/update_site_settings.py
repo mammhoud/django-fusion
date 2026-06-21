@@ -38,7 +38,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from django_rseal.models import GlobalSettings
+        from crafts_ai.rseal.models import GlobalSettings
         from wagtail.images.models import Image
 
         logo_path = Path(options["logo_path"])

@@ -72,13 +72,13 @@ MANAGE ?= uv run $(SITE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),VResume,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
-DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-demo-website,$(if $(filter $(SITE),vresume),vresume-website,$(SITE))))
+DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(SITE))))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config validate-compose-env build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -125,7 +125,9 @@ help:
 		'  docker-rebuild - Rebuild selected website image without cache' \
 		'  docker-redeploy - Build and restart selected website service' \
 		'  docker-prune-containers - Remove stopped containers/orphans' \
-		'  docker-prune-data - Remove generated compose data (dangerous)'
+		'  docker-prune-data - Remove generated compose data (dangerous)' \
+		'  clean-site-logs - Remove logs for the selected website under $(LOG_DIR)/$(SITE)' \
+		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep'
 
 compose:
 	$(MAKE) -C compose $(filter-out $@,$(MAKECMDGOALS))
@@ -341,6 +343,18 @@ list health containers production production-simple domains vresume-pages:
 # COMPREHENSIVE DEPLOYMENT TARGETS
 ###############################################################################
 
+
+
+clean-site-logs:
+	@echo "Cleaning logs for $(SITE) under $(LOG_DIR)/$(SITE)..."
+	@mkdir -p $(LOG_DIR)/$(SITE)
+	@find $(LOG_DIR)/$(SITE) -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null || true
+
+clean-logs:
+	@echo "Cleaning all generated logs under $(LOG_DIR), preserving .gitkeep..."
+	@mkdir -p $(LOG_DIR)
+	@find $(LOG_DIR) -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null || true
+	@touch $(LOG_DIR)/.gitkeep
 
 # Clean all docker resources (containers, images, volumes)
 docker-clean:
