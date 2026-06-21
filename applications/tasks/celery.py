@@ -40,7 +40,7 @@ _configure_default_site()
 TASK_IMPORTS = (
     "tasks.email",
     "tasks.content",
-    "tasks.django_rseal",
+    "tasks.crafts_ai.rseal",
 )
 
 if importlib.util.find_spec("celery") is not None:

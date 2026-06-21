@@ -20,6 +20,14 @@ fi
 # directory as a dotted package (hyphenated names are not importable).
 export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
 APP_MODULE="${APP_MODULE:-server:application}"
+case "$APP_MODULE" in
+    "${SITE_NAME}.server:application"|\
+    "${SITE_DIR_NAME}.server:application"|\
+    "${PROJECT_PATH:-}.server:application")
+        echo "⚠️  Normalizing APP_MODULE=${APP_MODULE} to server:application; site names are paths, not Python packages."
+        APP_MODULE="server:application"
+        ;;
+esac
 WATCH_DIRS="${WATCH_DIRS:-${APP_HOME}/${SITE_DIR_NAME}/www,${APP_HOME}/configs}"
 SERVER_TYPE="${SERVER_TYPE:-${RUNSERVER:-gunicorn}}"
 LOG_DIR="${LOG_DIR:-${APP_HOME}/logs}"

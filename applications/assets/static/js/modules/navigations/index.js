@@ -198,7 +198,7 @@ if (typeof window !== 'undefined') {
     });
 }
 
-// Export django_grep.comp for manual use
+// Export navigation components for manual use
 export {
     NavigationTracker,
     HeaderMenu,

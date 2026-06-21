@@ -1,6 +1,17 @@
 # ============================================================
 # LMS Demo (structa.cloud) Website + Worker
 # ============================================================
+x-site-infra-env: &site-infra-env
+  DB_TYPE: ${DB_TYPE:-postgres}
+  DB_HOST: ${DB_HOST:-database-server}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_USER: ${POSTGRES_USER:?Set POSTGRES_USER in .env}
+  DB_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+  DB_NAME: ${DB_NAME_LMS:-db_structa}
+  REDIS_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/0
+  CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/1
+  CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:?Set REDIS_PASSWORD in .env}@default-redis:6379/2
+
 services:
   lms-web:
     build:
@@ -17,10 +28,13 @@ services:
         required: false
     environment:
       RUNNING_ENV: docker
+      APP_MODULE: ${APP_MODULE:-server:application}
       SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
+      <<: *site-infra-env
+      LOG_DIR: /app/logs
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
@@ -29,7 +43,7 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
       CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
       CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
-      LOG_DIR: /app/logs
+      LOG_DIR: /app/logs/lms-demo
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
       WEBSITE: lms-demo
@@ -39,7 +53,6 @@ services:
       WEBSITE_HOST: ${LMS_DEMO_HOST:-structa.cloud}
       ALLOWED_HOSTS: structa.cloud,www.structa.cloud,core.structa.cloud,localhost,127.0.0.1
       CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,https://core.structa.cloud
-      DB_NAME: ${DB_NAME_LMS:-db_structa}
       PORT: "5071"
       CELERY_TASK_DEFAULT_QUEUE: lms-demo
     healthcheck:
@@ -49,9 +62,17 @@ services:
       retries: 3
       start_period: 60s
     volumes:
-      - ../../configs:/app/configs:z
-      - ../../assets:/app/assets:z
-      - ../../lms-demo:/app/lms-demo:z
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../tasks:/app/tasks:z
+      - ../www:/app/www:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../lms-demo:/app/lms-demo:z
       - lms-demo-static:/app/lms-demo/static:rw
       - lms-demo-media:/app/lms-demo/media:rw
       - ../../logs:/app/logs:z
@@ -81,6 +102,8 @@ services:
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
+      <<: *site-infra-env
+      LOG_DIR: /app/logs
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
@@ -89,7 +112,7 @@ services:
       REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
       CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
       CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
-      LOG_DIR: /app/logs
+      LOG_DIR: /app/logs/lms-demo
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
       WEBSITE: lms-demo
@@ -97,13 +120,20 @@ services:
       DJANGO_WEBSITE: lms-demo
       PROJECT_PATH: lms-demo
       WEBSITE_HOST: ${LMS_DEMO_HOST:-structa.cloud}
-      DB_NAME: ${DB_NAME_LMS:-db_structa}
       CELERY_TASK_DEFAULT_QUEUE: lms-demo
     command: celery -A tasks.celery:app worker --loglevel=info --queues=lms-demo
     volumes:
-      - ../../configs:/app/configs:z
-      - ../../assets:/app/assets:z
-      - ../../lms-demo:/app/lms-demo:z
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../tasks:/app/tasks:z
+      - ../www:/app/www:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../lms-demo:/app/lms-demo:z
       - ../../logs:/app/logs:z
     networks:
       - common

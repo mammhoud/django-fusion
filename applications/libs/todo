@@ -1,2 +1,12 @@
-Tracked in `docs/tasks/local-libraries.md`.
-Original archived at `docs/archives/todo/applications/libs/todo`.
+# Libraries Todo
+
+## Django-Osoul & Related Packages
+- [x] Merge django-grep dependency layout into django-osoul (applications/libs/django-osoul)
+- [x] Merge django-rseal dependency layout into applications/libs/crafts-ai
+- [x] Remove obsolete GitHub sources for django-grep and django-rseal
+- [x] Update imports across all websites to merged namespaces
+- [ ] Check for remaining component/configuration overlaps between django-osoul and crafts-ai
+- [ ] Organize directories and namespaces effectively (use case/namespace or Django naming: contrib/models/managers/services)
+
+## Reference
+- See main todo file at /home/websites/structa.cloud/todo for cross-cutting tasks
