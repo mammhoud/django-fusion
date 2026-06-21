@@ -9,22 +9,15 @@ SHELL := /bin/bash
 # Directory layout – adjust these if your structure differs
 # -----------------------------------------------------------------
 WORKSPACE_ROOT   := .
-DEPLOY_DIR       := deploy
 APPLICATIONS_DIR := applications
-PROXY_DIR        := $(DEPLOY_DIR)/proxy
-SERVICES_DIR     := $(DEPLOY_DIR)/services
-DATABASES_DIR    := $(DEPLOY_DIR)/databases
-SOURCE_DIR       := source                # Coolify source (docker-compose.yml)
+PROXY_DIR        := proxy
+SERVICES_DIR     := services
+DATABASES_DIR    := databases
+SOURCE_DIR       := source
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
-# -----------------------------------------------------------------
-# Application targets are delegated via the generic forwarder below so
-# applications/Makefile recipes run relative to applications/.
--include $(wildcard $(PROXY_DIR)/Makefile)
--include $(wildcard $(SERVICES_DIR)/Makefile)
--include $(wildcard $(DATABASES_DIR)/Makefile)
--include $(wildcard $(SOURCE_DIR)/Makefile)
+# Do not include nested Makefiles here; doing so overrides root targets.
 
 # -----------------------------------------------------------------
 # PHONY targets – always run
@@ -47,13 +40,13 @@ help:
 	@echo ""
 	@echo "Available commands:"
 	@echo "  make deploy            - Deploy all components (proxy, apps, media, databases, Coolify)"
-	@echo "  make deploy:app        - Build and start application services"
-	@echo "  make deploy:proxy      - Deploy and restart reverse proxy"
-	@echo "  make deploy:media      - Build and start media server"
-	@echo "  make deploy:tasks      - Start background task workers"
-	@echo "  make deploy:docs       - Start documentation service"
-	@echo "  make deploy:db         - Deploy databases (Postgres, Redis)"
-	@echo "  make deploy:all        - Deploy all services (alias for deploy)"
+	@echo "  make deploy-app        - Build and start application services"
+	@echo "  make deploy-proxy      - Deploy and restart reverse proxy"
+	@echo "  make deploy-media      - Build and start media server"
+	@echo "  make deploy-tasks      - Start background task workers"
+	@echo "  make deploy-docs       - Start documentation service"
+	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
+	@echo "  make deploy-all        - Deploy all services (alias for deploy)"
 	@echo ""
 	@echo "Coolify management:"
 	@echo "  make deploy-coolify    - Deploy Coolify using its docker compose"
@@ -74,16 +67,16 @@ help:
 	@echo "  make restart           - Restart all services"
 	@echo ""
 	@echo "Maintenance commands:"
-	@echo "  make prune:containers  - Remove stopped containers"
-	@echo "  make prune:volumes     - Remove unused volumes"
-	@echo "  make prune:images      - Remove unused images"
+	@echo "  make prune-containers  - Remove stopped containers"
+	@echo "  make prune-volumes     - Remove unused volumes"
+	@echo "  make prune-images      - Remove unused images"
 	@echo ""
 	@echo "Certificate management (Proxy component):"
-	@echo "  make cert:generate     - Generate self-signed certificates"
-	@echo "  make cert:backup       - Backup current certificates"
-	@echo "  make cert:restore      - Restore certificates from backup"
-	@echo "  make cert:validate     - Validate certificate/key pairs"
-	@echo "  make cert:check        - Check certificate expiry status"
+	@echo "  make cert-generate     - Generate self-signed certificates"
+	@echo "  make cert-backup       - Backup current certificates"
+	@echo "  make cert-restore      - Restore certificates from backup"
+	@echo "  make cert-validate     - Validate certificate/key pairs"
+	@echo "  make cert-check        - Check certificate expiry status"
 	@echo ""
 	@echo "Per‑app shortcuts (if each has its own Makefile):"
 	@echo "  make ctc-research      - Delegate to applications/Makefile with WEBSITE=ctc-research"
@@ -112,10 +105,10 @@ deploy-all:
 	@echo "✅ All services deployed"
 
 deploy-app:
-	@cd $(APPLICATIONS_DIR) && $(MAKE) up
+	@$(MAKE) -C $(APPLICATIONS_DIR) docker-up
 
 deploy-tasks:
-	@cd $(APPLICATIONS_DIR) && docker compose -f docker-compose.tasks.yml up -d
+	@docker compose -f compose/docker-compose.tasks.yml up -d
 
 deploy-media:
 	@docker rm -f shared-media 2>/dev/null || true
@@ -123,7 +116,7 @@ deploy-media:
 	@docker compose -f $(SERVICES_DIR)/docker-compose.media.yml up -d
 
 deploy-docs:
-	@cd $(APPLICATIONS_DIR) && docker compose -f docker-compose.docs.yml up -d
+	@docker compose -f compose/docker-compose.docs.yml up -d
 
 deploy-proxy:
 	@cd $(PROXY_DIR) && $(MAKE) deploy
@@ -132,21 +125,33 @@ deploy-databases:
 	@$(MAKE) -C $(DATABASES_DIR) deploy-db
 
 # Coolify specific
-deploy-common:
+deploy-coolify:
 	@echo "🚀 Deploying Coolify..."
-	@docker network rm coolify 2>/dev/null || true
-	@docker compose -f $(SOURCE_DIR)/docker-compose.yml up -d --remove-orphans
+	@if [ -f "$(SOURCE_DIR)/docker-compose.yml" ]; then \
+		docker network rm coolify 2>/dev/null || true; \
+		docker compose -f $(SOURCE_DIR)/docker-compose.yml up -d --remove-orphans; \
+	else \
+		echo "  (Coolify compose not available at $(SOURCE_DIR)/docker-compose.yml)"; \
+	fi
 
-restart-common:
+restart-coolify:
 	@echo "🔄 Restarting Coolify..."
-	@docker compose -f $(SOURCE_DIR)/docker-compose.yml restart coolify
+	@if [ -f "$(SOURCE_DIR)/docker-compose.yml" ]; then \
+		docker compose -f $(SOURCE_DIR)/docker-compose.yml restart coolify; \
+	else \
+		echo "  (Coolify compose not available at $(SOURCE_DIR)/docker-compose.yml)"; \
+	fi
 
-build-common:
+build-coolify:
 	@echo "🔧 Building Coolify images..."
-	@docker compose -f $(SOURCE_DIR)/docker-compose.yml build --no-cache
-	@echo "✅ Build complete"
+	@if [ -f "$(SOURCE_DIR)/docker-compose.yml" ]; then \
+		docker compose -f $(SOURCE_DIR)/docker-compose.yml build --no-cache; \
+		echo "✅ Build complete"; \
+	else \
+		echo "  (Coolify compose not available at $(SOURCE_DIR)/docker-compose.yml)"; \
+	fi
 
-list-common:
+list-coolify:
 	@echo "📦 Listing Coolify containers..."
 	@docker ps --filter name=coolify --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 
@@ -161,7 +166,7 @@ status:
 	@cd $(PROXY_DIR) && $(MAKE) status || echo "  (Proxy not available)"
 	@echo ""
 	@echo "Application Services:"
-	@cd $(APPLICATIONS_DIR) && $(MAKE) config || echo "  (Config not available)"
+	@$(MAKE) -C $(APPLICATIONS_DIR) show-config || echo "  (Config not available)"
 	@docker ps --filter "name=structa-" --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}" 2>/dev/null || echo "  (No containers running)"
 	@echo ""
 	@echo "Media Server:"
@@ -195,7 +200,7 @@ logs-common:
 stop:
 	@echo "🛑 Stopping all services..."
 	@cd $(PROXY_DIR) && $(MAKE) stop || true
-	@cd $(APPLICATIONS_DIR) && $(MAKE) down || true
+	@$(MAKE) -C $(APPLICATIONS_DIR) docker-down || true
 	@docker compose -f $(SERVICES_DIR)/docker-compose.media.yml down 2>/dev/null || true
 	@docker compose -f $(DATABASES_DIR)/docker-compose.yml down 2>/dev/null || true
 	@docker compose -f $(SOURCE_DIR)/docker-compose.yml down 2>/dev/null || true
@@ -265,13 +270,13 @@ cert-check:
 build: build-app build-media build-docs
 
 build-app:
-	@cd $(APPLICATIONS_DIR) && docker compose build
+	@$(MAKE) -C $(APPLICATIONS_DIR) docker-build
 
 build-media:
 	@cd $(SERVICES_DIR) && docker compose -f docker-compose.media.yml build
 
 build-docs:
-	@cd $(APPLICATIONS_DIR) && docker compose -f docker-compose.docs.yml build
+	@docker compose -f compose/docker-compose.docs.yml build
 
 # -----------------------------------------------------------------
 # Validation
@@ -342,10 +347,10 @@ ctc-research:
 	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=ctc-research
 
 structa:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/lms-demo
+	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=structa
 
 vresume:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/VResume
+	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=vresume
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)

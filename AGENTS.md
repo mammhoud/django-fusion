@@ -55,6 +55,7 @@ Treat these as first-class local packages. Make reusable framework-level changes
 - Preserve existing website aliases in `applications/Makefile`; do not invent new canonical site names without updating the dispatcher.
 
 ## Template Conventions
+- Component template categories should not repeat the same folder name twice; for example, use `components/blocks/contact/contact_profile.html` instead of `components/blocks/contact/contact/contact_profile.html`.
 Template locations are intentionally layered. Check all relevant paths before adding or moving templates:
 - Shared templates: `applications/assets/templates/`.
 - Site root templates: `applications/<site>/templates/`.

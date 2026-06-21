@@ -17,6 +17,7 @@ Run `make task-list` to see all tasks. Key tasks:
 
 | File | Description |
 |------|-------------|
+| [START_HERE.md](START_HERE.md) | Unified first-stop guide for Kilo, AGENTS.md, template customization, MCP, crafts-ai, Ollama, tasks, Rasa planning, and site docs |
 | [setup.md](setup.md) | Install Ollama, pull models, configure VS Code Continue |
 | [customizer.md](customizer.md) | Full guide for `ai_customizer.py` – interactive CLI, priority search, changelogs |
 | [config.md](config.md) | All configuration options (Continue config, ai/config.json) |
