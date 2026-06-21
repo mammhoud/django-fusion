@@ -14,28 +14,25 @@ Complete guide for deploying the structa.cloud monorepo to production.
 ```bash
 # 1. Clone and enter repo
 git clone <repo-url>
-cd applications
+cd structa.cloud
 
 # 2. Set up environment
 cp .env.example .env
 # Edit .env with production values
 
-# 3. Create external network
-docker network create traefik-net
+# 3. Validate root compose configuration
+docker compose -f docker-compose.yml config
 
-# 4. Start infrastructure
-docker compose -f compose/docker-compose.warehouse.yml up -d
+# 4. Start all services from the repository root
+make compose-up
 
-# 5. Start all services
-docker compose up -d --build
+# 5. Run migrations
+docker compose -f docker-compose.yml exec ctc-research python manage.py migrate
+docker compose -f docker-compose.yml exec lms-demo python manage.py migrate
 
-# 6. Run migrations
-docker compose exec ctc-research python manage.py migrate
-docker compose exec lms-demo python manage.py migrate
-
-# 7. Collect static files
-docker compose exec ctc-research python manage.py collectstatic --noinput
-docker compose exec lms-demo python manage.py collectstatic --noinput
+# 6. Collect static files
+docker compose -f docker-compose.yml exec ctc-research python manage.py collectstatic --noinput
+docker compose -f docker-compose.yml exec lms-demo python manage.py collectstatic --noinput
 ```
 
 ## Service Architecture
@@ -109,14 +106,14 @@ Traefik auto-provisions Let's Encrypt certificates when:
 
 ```bash
 # All services
-docker compose logs -f
+docker compose -f docker-compose.yml logs -f
 
 # Specific service
-docker compose logs -f ctc-research
-docker compose logs -f docs
+docker compose -f docker-compose.yml logs -f ctc-research
+docker compose -f docker-compose.yml logs -f docs
 
 # Traefik access log
-docker compose logs -f traefik
+docker compose -f docker-compose.yml logs -f traefik
 ```
 
 ## Health Checks
