@@ -10,7 +10,7 @@ SHELL := /bin/bash
 # -----------------------------------------------------------------
 WORKSPACE_ROOT   := .
 DEPLOY_DIR       := deploy
-APPLICATIONS_DIR := $(DEPLOY_DIR)/applications
+APPLICATIONS_DIR := applications
 PROXY_DIR        := $(DEPLOY_DIR)/proxy
 SERVICES_DIR     := $(DEPLOY_DIR)/services
 DATABASES_DIR    := $(DEPLOY_DIR)/databases
@@ -19,11 +19,12 @@ SOURCE_DIR       := source                # Coolify source (docker-compose.yml)
 # -----------------------------------------------------------------
 # Include sub‑Makefiles (ignore if missing)
 # -----------------------------------------------------------------
--include $(APPLICATIONS_DIR)/Makefile
--include $(PROXY_DIR)/Makefile
--include $(SERVICES_DIR)/Makefile
--include $(DATABASES_DIR)/Makefile
--include $(SOURCE_DIR)/Makefile
+# Application targets are delegated via the generic forwarder below so
+# applications/Makefile recipes run relative to applications/.
+-include $(wildcard $(PROXY_DIR)/Makefile)
+-include $(wildcard $(SERVICES_DIR)/Makefile)
+-include $(wildcard $(DATABASES_DIR)/Makefile)
+-include $(wildcard $(SOURCE_DIR)/Makefile)
 
 # -----------------------------------------------------------------
 # PHONY targets – always run
@@ -341,10 +342,10 @@ ctc-research:
 	@$(MAKE) -C $(APPLICATIONS_DIR)/ctc-research
 
 structa:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/structa
+	@$(MAKE) -C $(APPLICATIONS_DIR)/lms-demo
 
 vresume:
-	@$(MAKE) -C $(APPLICATIONS_DIR)/vresume
+	@$(MAKE) -C $(APPLICATIONS_DIR)/VResume
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)
