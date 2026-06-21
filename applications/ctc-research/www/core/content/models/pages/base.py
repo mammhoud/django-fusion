@@ -379,7 +379,7 @@ class BaseIndexPage(BasePage):
                     [
                         (
                             "background_image",
-                            SimpleImageBlock(template="django_grep/comp/blocks/media/simple_image.html")
+                            SimpleImageBlock(template="blocks/media/image_lite.html")
                         ),
                         (
                             "subtitle",
@@ -416,7 +416,7 @@ class BaseIndexPage(BasePage):
                     [
                         (
                             "background_image",
-                            SimpleImageBlock(template="django_grep/comp/blocks/media/simple_image.html")
+                            SimpleImageBlock(template="blocks/media/image_lite.html")
                         ),
                         (
                             "title",

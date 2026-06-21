@@ -1,8 +1,8 @@
 """
 PrivacyConsentMiddleware
 
-Re-exports PrivacyConsentMiddleware from django_rseal.
-Canonical import: from django_rseal.middlewares import PrivacyConsentMiddleware
+Re-exports PrivacyConsentMiddleware from crafts_ai.rseal.
+Canonical import: from crafts_ai.rseal.middlewares import PrivacyConsentMiddleware
 
 Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
 
@@ -16,6 +16,6 @@ Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
     }
 """
 
-from django_rseal.middlewares import PrivacyConsentMiddleware
+from crafts_ai.rseal.middlewares import PrivacyConsentMiddleware
 
 __all__ = ["PrivacyConsentMiddleware"]

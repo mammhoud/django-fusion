@@ -72,7 +72,7 @@ def assign_default_group(user):
 
 def _ensure_profile_exists(user):
     try:
-        from django_rseal.models import Person
+        from crafts_ai.rseal.models import Person
 
         Person.objects.get_or_create(
             user=user,

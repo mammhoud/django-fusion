@@ -1,5 +1,5 @@
-from django_rseal.contrib.core.models import Contact as branchModel
-from django_rseal.contrib.core.models import Corporate as corporateModel
+from crafts_ai.rseal.contrib.core.models import Contact as branchModel
+from crafts_ai.rseal.contrib.core.models import Corporate as corporateModel
 
 # from ..models.schemas import Branch, Corporate
 # from .filters import BranchFilter, CorporateFilter

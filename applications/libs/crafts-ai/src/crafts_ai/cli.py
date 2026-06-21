@@ -31,13 +31,13 @@ def build_parser() -> argparse.ArgumentParser:
     subparsers.add_parser("projects", help="Print website package usage as JSON.")
     rseal_parser = subparsers.add_parser(
         "rseal-plan",
-        help="Print a django-rseal import migration plan as JSON.",
+        help="Print a crafts-ai import migration plan as JSON.",
     )
     rseal_parser.add_argument(
         "root",
         nargs="?",
         default=".",
-        help="Project root to scan for django_rseal imports.",
+        help="Project root to scan for crafts_ai.rseal imports.",
     )
     return parser
 

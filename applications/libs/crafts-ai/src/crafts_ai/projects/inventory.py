@@ -17,17 +17,17 @@ class ProjectPackageUse:
 _PROJECT_USES: tuple[ProjectPackageUse, ...] = (
     ProjectPackageUse(
         website="ctc-research",
-        package="django-rseal",
+        package="crafts-ai",
         usage="Django/Wagtail models, blocks, middleware, snippets, and service adapters.",
     ),
     ProjectPackageUse(
         website="lms-demo",
-        package="django-rseal",
+        package="crafts-ai",
         usage="Shared Django/Wagtail automation when enabled by installed apps and plugins.",
     ),
     ProjectPackageUse(
         website="VResume",
-        package="django-rseal",
+        package="crafts-ai",
         usage="Accounts plugin models, blocks, snippets, privacy middleware, and profile forms.",
     ),
     ProjectPackageUse(

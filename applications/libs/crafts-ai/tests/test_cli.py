@@ -19,6 +19,6 @@ def test_projects_command(capsys) -> None:
 
 def test_rseal_plan_command(tmp_path, capsys) -> None:
     sample = tmp_path / "sample.py"
-    sample.write_text("from django_rseal.ai.integrations import AIIntegration\n", encoding="utf-8")
+    sample.write_text("from crafts_ai.rseal.ai.integrations import AIIntegration\n", encoding="utf-8")
     assert main(["rseal-plan", str(tmp_path)]) == 0
     assert '"status": "move-to-crafts-ai"' in capsys.readouterr().out

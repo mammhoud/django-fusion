@@ -159,7 +159,7 @@ DEV_GOALS = {
     "MINIMAL_DEPS": True,
 }
 
-# from django_rseal.contrib.debug_tools import quick_setup
+# from crafts_ai.rseal.contrib.debug_tools import quick_setup
 
 # config = quick_setup(
 #     installed_apps=INSTALLED_APPS,
