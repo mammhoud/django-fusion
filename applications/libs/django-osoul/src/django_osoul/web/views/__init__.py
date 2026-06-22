@@ -15,7 +15,7 @@ Classes:
     SearchMixin: Mixin for search functionality.
 """
 
-from django_osoul.views.mixins import (
+from .mixins import (
     AjaxResponseMixin,
     BaseCartMixin,
     BaseDashboardMixin,

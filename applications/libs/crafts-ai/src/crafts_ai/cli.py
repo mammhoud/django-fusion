@@ -7,6 +7,7 @@ import json
 from collections.abc import Sequence
 from pathlib import Path
 
+from .components import extract_components_from_file, write_component_files
 from .projects import project_package_uses
 from .rseal import migration_plan
 
@@ -39,6 +40,13 @@ def build_parser() -> argparse.ArgumentParser:
         default=".",
         help="Project root to scan for crafts_ai imports.",
     )
+    extract_parser = subparsers.add_parser(
+        "extract-components",
+        help="Extract low-depth HTML components for theme/Ollama indexing tasks.",
+    )
+    extract_parser.add_argument("html_file", help="HTML file to inspect.")
+    extract_parser.add_argument("--max-depth", type=int, default=2)
+    extract_parser.add_argument("--output-dir", help="Write each component HTML snippet to this directory.")
     return parser
 
 
@@ -62,6 +70,16 @@ def main(argv: Sequence[str] | None = None) -> int:
 
     if args.command == "rseal-plan":
         payload = [item.as_dict() for item in migration_plan(Path(args.root))]
+        print(json.dumps(payload, sort_keys=True))
+        return 0
+
+    if args.command == "extract-components":
+        components = extract_components_from_file(args.html_file, max_depth=args.max_depth)
+        payload = [component.as_dict() for component in components]
+        if args.output_dir:
+            written = write_component_files(components, args.output_dir)
+            for item, path in zip(payload, written):
+                item["output_file"] = str(path)
         print(json.dumps(payload, sort_keys=True))
         return 0
 

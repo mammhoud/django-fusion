@@ -5,12 +5,6 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from twilio.rest import Client
 
-# Import Integration from the correct location
-try:
-    from django_osoul.models.integrations import Integration
-except ImportError:
-    # Fallback if integrations module doesn't exist
-    Integration = None
 
 
 # ---------------------------------------------------------------------
@@ -39,7 +33,7 @@ class Notification(models.Model):
         related_name="notifications",
     )
     integration = models.ForeignKey(
-        Integration,
+        "CI.Integration",
         on_delete=models.SET_NULL,
         null=True,
         blank=True,

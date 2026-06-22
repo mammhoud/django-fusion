@@ -33,7 +33,7 @@ class BlogPostViewset(ModelViewset):
 
     @property
     def model(self):
-        from apps.blog.models import BlogPost
+        from plugins.blog.models import BlogPost
         return BlogPost
 
     list_columns = ("title", "author", "category", "published_date", "status")
@@ -60,7 +60,7 @@ class BlogCategoryViewset(ModelViewset):
 
     @property
     def model(self):
-        from apps.blog.models import BlogCategory
+        from plugins.blog.models import BlogCategory
         return BlogCategory
 
     list_columns = ("name", "slug")
