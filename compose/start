@@ -16,6 +16,9 @@ SITE_DIR_NAME="${PROJECT_PATH:-$SITE_NAME}"
 if [ ! -d "${APP_HOME}/${SITE_DIR_NAME}" ] && [ "$SITE_NAME" = "vresume" ]; then
     SITE_DIR_NAME="VResume"
 fi
+
+
+   
 # Import the site-local server.py via PYTHONPATH instead of using the site
 # directory as a dotted package (hyphenated names are not importable).
 export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
@@ -35,6 +38,12 @@ ACCESS_LOG="${ACCESS_LOG:-${LOG_DIR}/${SERVER_TYPE}-access.log}"
 ERROR_LOG="${ERROR_LOG:-${LOG_DIR}/${SERVER_TYPE}-error.log}"
 
 mkdir -p "$LOG_DIR"
+
+if [ -f uv.lock ]; then \
+    uv sync --frozen --no-install-project; \
+else \
+    uv sync --no-install-project; \
+fi
 
 echo "🚀 Starting ${SERVER_TYPE}: ${APP_MODULE} on ${HOST}:${PORT}"
 echo "🏥 Health: http://${HOST}:${PORT}/health/"

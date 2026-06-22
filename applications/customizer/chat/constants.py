@@ -29,3 +29,4 @@ ERROR_MESSAGES = {
 # Model Display Names
 AI_DISPLAY_NAME = "Gemma 3 4B"
 AI_AVATAR_TEXT = "G3"
+

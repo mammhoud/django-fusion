@@ -1,0 +1,67 @@
+#!/bin/bash
+set -e
+
+# ------------------------------------------------------------
+# 1. Determine if we need to run init scripts
+# ------------------------------------------------------------
+INIT_MARKER="/var/lib/postgresql/data/.init_done"
+RUN_INIT="false"
+
+if [ "${FORCE_REINIT:-false}" = "true" ]; then
+    echo "FORCE_REINIT=true – removing marker and re‑running init."
+    rm -f "$INIT_MARKER"
+    RUN_INIT="true"
+elif [ ! -f "$INIT_MARKER" ]; then
+    RUN_INIT="true"
+fi
+
+# ------------------------------------------------------------
+# 2. If init is required, start PostgreSQL in background,
+#    run the scripts, then stop it.
+# ------------------------------------------------------------
+if [ "$RUN_INIT" = "true" ]; then
+    echo "Running initialization scripts in /docker-entrypoint-initdb.d/ ..."
+
+    # Start PostgreSQL in background using the official entrypoint
+    /usr/local/bin/docker-entrypoint.sh postgres &
+    
+    # Wait for PostgreSQL to be ready
+    echo "Waiting for PostgreSQL to start..."
+    until pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h localhost -p 5432; do
+        sleep 1
+    done
+    echo "PostgreSQL is ready."
+
+    # Execute all scripts in the init directory
+    for f in /docker-entrypoint-initdb.d/*; do
+        case "$f" in
+            *.sh)
+                echo "Executing $f"
+                . "$f"
+                ;;
+            *.sql)
+                echo "Executing $f"
+                psql -v ON_ERROR_STOP=1 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -h localhost -f "$f"
+                ;;
+            *)
+                echo "Ignoring $f"
+                ;;
+        esac
+    done
+
+    # Stop the background PostgreSQL server gracefully using the postgres user
+    echo "Stopping background PostgreSQL..."
+    gosu postgres pg_ctl -D "$PGDATA" stop -m fast
+    wait
+
+    # Mark initialization as done
+    touch "$INIT_MARKER"
+    echo "Initialization complete."
+else
+    echo "Init already done; skipping."
+fi
+
+# ------------------------------------------------------------
+# 3. Execute the official PostgreSQL entrypoint (foreground)
+# ------------------------------------------------------------
+exec /usr/local/bin/docker-entrypoint.sh postgres

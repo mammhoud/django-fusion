@@ -65,6 +65,7 @@ server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var
 	@echo -e "$(BLUE)Populating initial data before server start...$(NC)"; \
 	$(MAKE) populate-data || true
 	@HOST=$${HOST:-0.0.0.0}; \
+	DB_NAME=$${DB_NAME_LMS:-db_structa}; \ 
 	PORT=$${PORT:-$(DEFAULT_PORT)}; \
 	WORKERS=$${WORKERS:-4}; \
 	TIMEOUT=$${TIMEOUT:-120}; \

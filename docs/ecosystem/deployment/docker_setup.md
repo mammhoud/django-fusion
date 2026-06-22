@@ -62,7 +62,7 @@ services:
       POSTGRES_DB: ${DB_NAME:-ctc_ecosystem}
       POSTGRES_USER: ${DB_USER:-postgres}
       POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_MULTIPLE_DATABASES: ctc_research,structa_cloud
+      INITDB_MULTIPLE_DATABASES: ctc_research,structa_cloud
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./compose/postgres/init.d:/docker-entrypoint-initdb.d:ro

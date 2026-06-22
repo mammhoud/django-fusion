@@ -1,0 +1,29 @@
+Metadata-Version: 2.4
+Name: crafts-ai
+Version: 0.1.0
+Summary: Standalone AI/MCP and Django customizer toolkit for the structa.cloud monorepo.
+Requires-Python: >=3.11
+Description-Content-Type: text/markdown
+Requires-Dist: django>=4.2
+Requires-Dist: django-mcp-server>=0.1.0
+Requires-Dist: watchdog>=4.0
+Provides-Extra: mcp
+Requires-Dist: fastapi>=0.110; extra == "mcp"
+Provides-Extra: test
+Requires-Dist: pytest; extra == "test"
+
+# crafts-ai
+
+`crafts-ai` is the merged Structa AI, MCP, customizer, and former rseal toolkit. Source code uses the `src/` layout under `src/crafts_ai/`.
+
+## Editable install
+
+```bash
+pip install -e applications/libs/crafts-ai
+```
+
+## Key workflows
+
+- `python manage.py generate_agents` scans component templates and writes `.kilo/agent` configs.
+- `python manage.py convert_to_bem` rewrites template/style class and ID names to strict BEM.
+- `crafts_ai.mcp.server` exposes Theme Analyzer, Component Mapper, Config Inspector, and agent-config loading tools.

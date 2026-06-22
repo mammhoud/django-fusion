@@ -60,7 +60,7 @@ services:
     environment:
       - POSTGRES_USER=postgres
       - POSTGRES_PASSWORD=postgres_password
-      - POSTGRES_MULTIPLE_DATABASES=ctc_research,structa_cloud,shared
+      - INITDB_MULTIPLE_DATABASES=ctc_research,structa_cloud,shared
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./postgres/init.d:/docker-entrypoint-initdb.d

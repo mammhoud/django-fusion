@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 COMPOSE_FILE := docker-compose.yml
 
-.PHONY: up down build logs status restart clean
+.PHONY: up down build logs status restart clean deploy-db deploy-db-force
 
 up:
 	@echo "🟢 Starting databases..."
@@ -14,7 +14,7 @@ down:
 	@echo "✅ Databases stopped"
 
 build:
-	@echo "🔨 Building database images (using official images)"
+	@echo "🔨 Building database images..."
 	@docker compose -f $(COMPOSE_FILE) build --pull
 
 logs:
@@ -29,3 +29,11 @@ clean:
 	@echo "🧹 Removing databases containers, volumes, and images..."
 	@docker compose -f $(COMPOSE_FILE) down -v --rmi all
 	@echo "✅ Clean complete"
+
+deploy-db: build up
+	@echo "🚀 Databases deployed successfully"
+
+deploy-db-force:
+	@echo "🚀 Deploying databases with forced re‑init..."
+	@FORCE_REINIT=true docker compose -f $(COMPOSE_FILE) up -d --build postgres
+	@echo "✅ Databases deployed (forced re‑init)"
