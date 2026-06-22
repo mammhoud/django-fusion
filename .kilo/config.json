@@ -6,7 +6,8 @@
         "mcp_server.py"
       ],
       "env": {
-        "DJANGO_SETTINGS_MODULE": "core.settings"
+        "DJANGO_SETTINGS_MODULE": "core.settings",
+        "PYTHONPATH": "applications/libs/crafts-ai/src"
       }
     },
     "crafts-ai": {

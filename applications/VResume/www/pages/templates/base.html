@@ -101,18 +101,18 @@
     {# Include the unified modal component once for all pages #}
     {# This provides a single `#unified-modal-container` target #}
     {% block modal %}
-        {% include 'components/modals/unified-modal.html' %}
+        {% comp 'modals.unified-modal' / %}
 
         {# Cookie Consent Templates (cloned into bootbox dialogs by main.js) #}
-        {% include 'components/modals/cookie-consent.html' %}
-        {% include 'components/modals/privacy-policy.html' %}
-        {% include 'components/modals/cookie-policy.html' %}
+        {% comp 'modals.cookie-consent' / %}
+        {% comp 'modals.privacy-policy' / %}
+        {% comp 'modals.cookie-policy' / %}
     {% endblock modal %}
 
     {# ====================================================== #}
     {# JS i18n — exposes {% trans %} strings to front-end    #}
     {# ====================================================== #}
-    {% include 'components/js_i18n.html' %}
+    {% comp 'js_i18n' / %}
 
     {# ====================================================== #}
     {# Scripts                                               #}

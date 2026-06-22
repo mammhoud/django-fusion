@@ -1,39 +1,36 @@
-"""Template discovery helpers for the customizer UI."""
+"""Page catalog helpers for the customizer UI."""
 
 from __future__ import annotations
 
 from pathlib import Path
 
 from django.conf import settings
-
-SECTION_DIRS = {"sections", "components", "blocks", "layout"}
-
-
-def template_tree(root: Path) -> list[dict[str, object]]:
-    """Return a small JSON-serializable tree of sections/components."""
-    if not root.exists():
-        return []
-    items: list[dict[str, object]] = []
-    for path in sorted(root.rglob("*.html")):
-        rel = path.relative_to(root)
-        if not (set(rel.parts) & SECTION_DIRS):
-            continue
-        items.append(
-            {
-                "path": str(rel),
-                "name": path.stem.replace("_", " ").title(),
-                "category": rel.parts[0] if rel.parts else "templates",
-            }
-        )
-    return items
+from django_osoul.site.pages import PageCatalog, TemplateRoot
 
 
 def customizer_apps() -> list[dict[str, object]]:
+    """Return configured apps with page data from the shared page catalog."""
     apps = []
     for app in settings.CUSTOMIZER_APPS:
         app_data = dict(app)
         root = Path(app_data.pop("template_root"))
+        catalog = PageCatalog(
+            template_roots=[
+                TemplateRoot(
+                    name=str(app_data.get("name") or app_data.get("label") or root),
+                    path=root,
+                    customizer_base_url=str(
+                        app_data.get("customizer_url", "/customizer/")
+                    ),
+                )
+            ]
+        )
         app_data["template_root"] = str(root)
-        app_data["templates"] = template_tree(root)
+        app_data["pages"] = [page.to_dict() for page in catalog.pages()]
+        app_data["templates"] = [
+            section.to_dict()
+            for page in catalog.template_pages()
+            for section in page.sections
+        ]
         apps.append(app_data)
     return apps

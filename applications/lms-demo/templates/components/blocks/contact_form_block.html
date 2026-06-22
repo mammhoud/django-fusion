@@ -37,7 +37,7 @@
 
     <div class="contact-form__fields">
       {% for field in value.fields %}
-      {% include "components/blocks/partials/form_field.html" with field=field show_icons=value.show_icons icon_style=value.icon_style show_labels=value.show_labels %}
+      {% comp "blocks.partials.form_field" field=field show_icons=value.show_icons icon_style=value.icon_style show_labels=value.show_labels / %}
       {% endfor %}
     </div>
 
