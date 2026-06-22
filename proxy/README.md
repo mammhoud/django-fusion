@@ -49,7 +49,7 @@ Main Traefik configuration file.
 - Docker provider enabled
 - File-based dynamic config enabled
 - ACME/Let's Encrypt configured
-- Dashboard available at `/dashboard/`
+- Dashboard available at `https://traefik.structa.cloud/dashboard/`
 
 ### Docker Compose Reference
 
@@ -155,7 +155,7 @@ http:
 
 ## Dashboard Access
 
-**URL:** `http://localhost:8080/dashboard/`
+**URL:** `https://traefik.structa.cloud/dashboard/`
 
 **Features:**
 - View all configured routers
@@ -263,7 +263,7 @@ docker compose -f docker-compose.traefik.yml restart traefik
 docker logs traefik
 
 # View dashboard
-http://localhost:8080/dashboard/
+https://traefik.structa.cloud/dashboard/
 ```
 
 ### Routing Issues
