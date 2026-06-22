@@ -85,6 +85,9 @@ dependencies = [
     "django-osoul",
     "crafts-ai",
     "ollama>=0.6.2",
+    "httpx>=0.25.0",
+    "markdown>=3.5",
+
 ]
 
 [project.optional-dependencies]
