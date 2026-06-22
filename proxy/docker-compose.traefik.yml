@@ -22,8 +22,10 @@ services:
     security_opt:
       - no-new-privileges:true
     ports:
-      # - "80:80"
-      # - "443:443"
+      # Ensure host firewall/security groups allow inbound TCP 80 and 443.
+      - "80:80"
+      - "443:443"
+      # Enable only when HTTP/3 or explicit UDP routing is configured.
       # - "443:443/udp"
       - "8080:8080"
     extra_hosts:
