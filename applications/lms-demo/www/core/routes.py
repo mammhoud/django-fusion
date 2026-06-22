@@ -8,7 +8,7 @@ routing system. Coexists with the existing manual URL routing in apps/urls.py.
 Wire into core/urls.py::
 
     from www.core.routes import site
-    urlpatterns += [path("osoul/", include(site.urls))]
+    urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
 
 Generated URL prefix: /osoul/
   /osoul/lms/dashboard/

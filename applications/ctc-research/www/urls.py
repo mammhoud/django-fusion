@@ -147,7 +147,7 @@ urlpatterns += i18n_patterns(
 
 # ── Routable component site ─────────────────────────────────────────────
 # Documented under docs/routable-site-urls.md. Mount before Wagtail catch-all.
-urlpatterns += [path("osoul/", include(site.urls))]
+urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
 
 # ── Wagtail ───────────────────────────────────────────────────────────────────
 if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:

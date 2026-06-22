@@ -68,7 +68,8 @@ else
   COMPOSE_FILE ?= docker-compose.yml
 endif
 
-MANAGE ?= uv run $(SITE)
+RUN_MODULE := $(if $(filter $(SITE),vresume),VResume,$(SITE))
+MANAGE ?= uv run $(RUN_MODULE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),VResume,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
@@ -78,7 +79,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -90,6 +91,7 @@ help:
 		'  COMPOSE_FILE=$(COMPOSE_FILE)' \
 		'  DOCKER_SERVICE=$(DOCKER_SERVICE)' \
 		'  DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)' \
+		'  RUN_MODULE=$(RUN_MODULE)' \
 		'' \
 		'Common workflows:' \
 		'  check          - Run Django system checks for the selected website' \
@@ -115,6 +117,9 @@ help:
 		'' \
 		'Development and server:' \
 		'  run-dev        - Run Django dev server for selected website' \
+		'  run-local      - Alias for run-dev for local machine use' \
+		'  check-all      - Run Django checks for ctc, structa, and vresume' \
+		'  test-local     - Run local pytest via uv' \
 		'  server         - Start the ASGI server (container default)' \
 		'  migrations     - Create Django migrations for selected website' \
 		'  migrate        - Apply Django migrations for selected website' \
@@ -157,6 +162,12 @@ projects:
 check:
 	$(MANAGE) check
 
+check-all:
+	@for website in ctc structa vresume; do \
+		echo "==> check WEBSITE=$$website"; \
+		$(MAKE) check WEBSITE=$$website; \
+	done
+
 validate-config:
 	@docker compose -f $(COMPOSE_FILE) config -q && echo "Compose config valid" || echo "Compose config invalid"
 	@if $(MANAGE) help | rg -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
@@ -180,7 +191,13 @@ build-assets-all:
 test:
 	$(PYTHON) -m pytest
 
+test-local tests-local:
+	uv run pytest
+
 run-dev:
+	$(MANAGE) runserver
+
+run-local runserver-local:
 	$(MANAGE) runserver
 
 server:
@@ -518,6 +535,7 @@ show-vars:
 	@echo "SITE=$(SITE)"
 	@echo "TEST_WEBSITE=$(TEST_WEBSITE)"
 	@echo "MANAGE=$(MANAGE)"
+	@echo "RUN_MODULE=$(RUN_MODULE)"
 	@echo "DOCKER_SERVICE=$(DOCKER_SERVICE)"
 	@echo "DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)"
 	@echo "COMPOSE_FILE=$(COMPOSE_FILE)"

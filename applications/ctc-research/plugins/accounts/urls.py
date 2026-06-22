@@ -1,4 +1,5 @@
 # type: ignore NOQA
+from . import views
 from django.urls import path
 
 from .views.auth import AllauthLoginView, AllauthSignupView
