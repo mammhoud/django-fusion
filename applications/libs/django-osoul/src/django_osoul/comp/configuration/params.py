@@ -7,7 +7,7 @@ from django import template
 from django.template.context import Context
 from django.utils.safestring import SafeString, mark_safe
 
-from django_osoul.comp.templatetags.tags.block import BlockNode
+from django_osoul.comp.templatetags.tags.block import METADATA_ARGUMENTS, BlockNode
 from django_osoul.comp.templatetags.tags.prop import PropNode
 
 if TYPE_CHECKING:
@@ -18,6 +18,7 @@ if TYPE_CHECKING:
 class Params:
     attrs: list[Param] = field(default_factory=list)
     props: list[Param] = field(default_factory=list)
+    metadata: list[Param] = field(default_factory=list)
 
     def render_props(self, component: Component, context: Context):
         if component.nodelist is None:
@@ -45,16 +46,19 @@ class Params:
 
         return {prop.name: prop.render_prop(context) for prop in self.props}
 
+    def render_metadata(self, context: Context) -> dict[str, Any]:
+        return {param.name: param.value.resolve(context) for param in self.metadata}
+
     def render_attrs(self, context: Context) -> SafeString:
         rendered = " ".join(attr.render_attr(context) for attr in self.attrs)
         return mark_safe(rendered)
 
     @classmethod
     def from_node(cls, node: BlockNode) -> Params:
-        return cls(
-            attrs=[Param.from_bit(bit) for bit in node.attrs],
-            props=[],
-        )
+        params = [Param.from_bit(bit) for bit in node.attrs]
+        metadata = [param for param in params if param.name in METADATA_ARGUMENTS]
+        attrs = [param for param in params if param.name not in METADATA_ARGUMENTS]
+        return cls(attrs=attrs, props=[], metadata=metadata)
 
 
 @dataclass
