@@ -70,8 +70,6 @@ services:
       - ctc-research-static:/app/ctc-research/static:rw
       - ctc-research-media:/app/ctc-research/media:rw
       - ../../logs:/app/logs:z
-    expose:
-      - "5070"
     networks:
       - common
       - warehouse-net

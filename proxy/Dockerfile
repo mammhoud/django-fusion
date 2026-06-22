@@ -1,20 +1,34 @@
 FROM docker.io/traefik:latest
 
-# Install apache2-utils for htpasswd
-RUN apk add --no-cache apache2-utils
+# Install utilities
+RUN apk add --no-cache apache2-utils curl
 
-# Create ACME directory with proper permissions
-RUN mkdir -p /etc/traefik/acme \
-    && touch /etc/traefik/certs/acme.json \
-    && chmod 600 /etc/traefik/certs/acme.json
+# Create required directories
+RUN mkdir -p /etc/traefik/acme /etc/traefik/certs /etc/traefik/dynamic
 
-# Ensure ownership is writable by a non-root Traefik process if necessary
-RUN chown -R 1000:1000 /etc/traefik/acme || true
+# Create ACME storage files with correct permissions
+# These must be writable by Traefik (user 1000)
+RUN touch /etc/traefik/acme/acme.json \
+    && touch /etc/traefik/acme/acme-staging.json \
+    && chmod 600 /etc/traefik/acme/acme.json \
+    && chmod 600 /etc/traefik/acme/acme-staging.json
 
-# Copy static configuration (dynamic dir is volume-mounted at runtime)
-COPY ./traefik/defaults.yml /etc/traefik/traefik.yml
-COPY ./traefik /etc/traefik/dynamic
+# Copy static configuration (dynamic.yml → dynamic.yml)
+COPY ./traefik/dynamic.yml /etc/traefik/dynamic.yml
 
-# Health check — Traefik 3.x uses /ping endpoint
-HEALTHCHECK --interval=60s --timeout=3s --start-period=5s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:8080/ping || exit 1
+# (Optional) Copy dynamic config files if you have them
+# If you prefer to mount them as a volume, skip this and mount ./traefik/dynamic
+COPY ./traefik/*.yml /etc/traefik/dynamic/
+
+# Copy custom certificates (if any)
+COPY ./certs/ /etc/traefik/
+
+# Set ownership to non‑root user (UID 1000)
+# RUN chown -R 1000:1000 /etc/traefik
+
+# Health check
+HEALTHCHECK --interval=30s --timeout=3s --start-period=5s --retries=3 \
+  CMD curl --fail http://localhost:8080/ping || exit 1
+
+# Switch to non‑root user
+# USER 1000:1000

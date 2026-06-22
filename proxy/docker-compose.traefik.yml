@@ -1,7 +1,7 @@
 # ============================================================
 # Proxy – Traefik (default-proxy)
 # ============================================================
-# Static config: ./traefik/defaults.yml
+# Static config: ./traefik/dynamic.yml
 # Dynamic routers: ./traefik/dynamic/*.yml
 # ============================================================
 
@@ -13,20 +13,24 @@ x-proxy-common: &proxy-common
 
 services:
   default-proxy:
-    image: traefik:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: default-proxy:latest
     <<: *proxy-common
     container_name: default-proxy
     security_opt:
       - no-new-privileges:true
     ports:
-      - "81:80"
-      - "443:443"
-      - "443:443/udp"
+      # - "80:80"
+      # - "443:443"
+      # - "443:443/udp"
       - "8080:8080"
     extra_hosts:
       - 'host.docker.internal:host-gateway'
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
       - ./certs:/etc/traefik/certs:ro
       - traefik_acme:/etc/traefik/acme
@@ -34,12 +38,13 @@ services:
       - TRAEFIK_ACME_EMAIL=admin@structa.cloud
       - TRAEFIK_LOG_LEVEL=INFO
     command:
-      - "--configFile=/etc/dynamic/defaults.yml"
+      - "--configFile=/etc/traefik/dynamic.yml"   # matches the copy in Dockerfile
+
     healthcheck:
-      test: ["CMD", "wget", "--spider", "-q", "http://localhost:80/ping"]
-      interval: 4s
-      timeout: 2s
-      retries: 5
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
     deploy:
       resources:
         limits:
@@ -52,7 +57,7 @@ services:
 volumes:
   traefik_acme:
     name: traefik_acme
-
+  
 networks:
   traefik-net:
     external: true

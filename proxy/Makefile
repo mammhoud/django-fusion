@@ -81,7 +81,6 @@ deploy: create-networks validate backup
 	@echo "✅ Config synced. Starting/updating proxy..."
 	@docker rm -f shared-media 2>/dev/null || true
 	@docker compose -f docker-compose.yml up -d --remove-orphans || { echo "❌ Failed to start proxy (main)"; exit 1; }
-	@docker compose -f docker-compose.custom.yml up -d --remove-orphans || { echo "❌ Failed to start proxy (custom)"; exit 1; }
 	@docker restart default-proxy 2>/dev/null || true
 	@echo "✅ Deployment complete"
 	@sleep 2
@@ -90,7 +89,7 @@ deploy: create-networks validate backup
 
 validate:
 	@echo "🔍 Validating YAML syntax..."
-	@docker compose -f docker-compose.custom.yml config -q || exit 1
+	@docker compose -f docker-compose.yml config -q || exit 1
 	@echo "✅ All YAML files are valid"
 
 backup:
@@ -189,7 +188,7 @@ status:
 	@docker ps --filter name=default-proxy --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 	@echo ""
 	@echo "🔐 Certificate Expiry (from live acme.json):"
-	@docker exec default-proxy cat /traefik/certs/acme.json 2>/dev/null | \
+	@docker exec default-proxy cat /etc/traefik/acme/acme.json 2>/dev/null | \
 		jq -r '.letsencrypt.Certificates[] | "\(.domain.main) expires: \(.certificate.notAfter)"' \
 		2>/dev/null || echo "  (jq not available or no certificates yet)"
 	@echo ""
@@ -254,7 +253,7 @@ media-caddy:
 
 media-all:
 	@echo "🚀 Deploying all proxy services..."
-	@docker compose -f docker-compose.custom.yml up -d --remove-orphans
+	@docker compose -f docker-compose.yml up -d --remove-orphans
 
 # -----------------------------------------------------------------
 # Development – watch for config changes (requires inotifywait)

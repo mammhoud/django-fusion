@@ -1,5 +1,5 @@
 # ============================================
-# Traefik Static Configuration for Coolify Proxy
+# Traefik Static Configuration (full)
 # ============================================
 
 global:
@@ -17,9 +17,9 @@ accessLog:
 api:
   dashboard: true
   debug: false
-  insecure: false          # dashboard is not exposed by default
+  insecure: false          # dashboard is not exposed by default; use secure entrypoint
 
-ping: {}                   # health check endpoint
+ping: {}                   # health check endpoint – exposed on :8080
 
 entryPoints:
   web:
@@ -37,16 +37,20 @@ entryPoints:
       tls:
         certResolver: letsencrypt
 
+  # Optional UDP entrypoint (if you need explicit UDP routing)
+  # web-secure-udp:
+  #   address: ":443/udp"
+
 providers:
   file:
-    directory: /traefik/dynamic
+    directory: /etc/traefik/dynamic   # correct path for dynamic configs
     watch: true
 
 certificatesResolvers:
   letsencrypt:
     acme:
       email: "admin@structa.cloud"
-      storage: /traefik/certs/acme.json
+      storage: /etc/traefik/acme/acme.json   # correct path
       caServer: "https://acme-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
@@ -54,17 +58,17 @@ certificatesResolvers:
   letsencrypt-staging:
     acme:
       email: "admin@structa.cloud"
-      storage: /traefik/certs/acme-staging.json
+      storage: /etc/traefik/acme/acme-staging.json
       caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
       httpChallenge:
         entryPoint: web
 
-Optional static certificates (uncomment if needed)
-tls:
-  certificates:
-    - certFile: /traefik/certs/ctc-research.crt
-      keyFile: /traefik/certs/ctc-research.key
-    - certFile: /traefik/certs/structa-cloud.crt
-      keyFile: /traefik/certs/structa-cloud.key
-    - certFile: /traefik/certs/vresume.crt
-      keyFile: /traefik/certs/vresume.key
+# Optional static certificates (uncomment if you have custom certs)
+# tls:
+#   certificates:
+#     - certFile: /etc/traefik/certs/ctc-research.crt
+#       keyFile: /etc/traefik/certs/ctc-research.key
+#     - certFile: /etc/traefik/certs/structa-cloud.crt
+#       keyFile: /etc/traefik/certs/structa-cloud.key
+#     - certFile: /etc/traefik/certs/vresume.crt
+#       keyFile: /etc/traefik/certs/vresume.key

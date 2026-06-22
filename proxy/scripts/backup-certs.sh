@@ -4,8 +4,19 @@
 
 set -e
 
-ACME_FILE="/etc/traefik/certs/acme.json"
-BACKUP_DIR="/etc/traefik/certs/backups"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ACME_ROOT="${TRAEFIK_ACME_DIR:-/etc/traefik/acme}"
+
+if [ ! -d "$ACME_ROOT" ]; then
+    if [ -d "${SCRIPT_DIR}/acme" ]; then
+        ACME_ROOT="${SCRIPT_DIR}/acme"
+    elif [ -d "${SCRIPT_DIR}/../acme" ]; then
+        ACME_ROOT="${SCRIPT_DIR}/../acme"
+    fi
+fi
+
+ACME_FILE="${ACME_ROOT}/acme.json"
+BACKUP_DIR="${ACME_ROOT}/backups"
 TIMESTAMP=$(date +%Y%m%d_%H%M%S)
 
 # Create backup directory
@@ -30,7 +41,7 @@ backup_certificates() {
 
 # Function to show backup info
 show_backup_info() {
-    if [ -d "$BACKUP_DIR" ] && [ "$(ls -A $BACKUP_DIR)" ]; then
+    if [ -d "$BACKUP_DIR" ] && [ -n "$(ls -A "$BACKUP_DIR" 2>/dev/null)" ]; then
         echo "[$(date +'%Y-%m-%d %H:%M:%S')] Certificate backups available:"
         ls -lh "$BACKUP_DIR"/acme_*.json | awk '{print "  - " $9 " (" $5 ")"}'
     fi

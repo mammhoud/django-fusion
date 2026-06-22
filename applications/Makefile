@@ -580,12 +580,12 @@ run-all:
 # Traefik SSL Certificate Operations
 docker-traefik-generate-certs:
 	@echo "Generating Traefik SSL certificates..."
-	bash compose/traefik/generate-certs.sh
+	bash proxy/scripts/generate-certs.sh
 
 docker-traefik-backup-certs:
 	@echo "Backing up Traefik SSL certificates..."
-	bash compose/traefik/scripts/backup-certs.sh
+	bash proxy/scripts/backup-certs.sh
 
 docker-traefik-restore-certs:
 	@echo "Restoring Traefik SSL certificates..."
-	bash compose/traefik/scripts/restore-certs.sh
+	bash proxy/scripts/restore-certs.sh
