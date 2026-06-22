@@ -8,3 +8,7 @@ Modules:
 from .templates import *  # noqa: F401, F403
 
 __all__ = []
+
+from .discovery import discover_sections
+
+__all__.append("discover_sections")

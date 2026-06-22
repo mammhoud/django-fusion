@@ -115,3 +115,7 @@ __all__ = [
     "CartServiceBase",
     "PersonServiceBase",
 ]
+
+from .ollama import OllamaService
+
+__all__.append("OllamaService")

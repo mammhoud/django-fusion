@@ -2,6 +2,9 @@
 
 import httpx
 import json
+import sys
+from importlib.util import module_from_spec, spec_from_file_location
+from pathlib import Path
 from django.utils import timezone
 
 from .models import Conversation, Message
@@ -16,8 +19,16 @@ from .constants import (
 from .exceptions import OllamaConnectionError, OllamaResponseError
 
 
+_OLLAMA_PATH = Path(__file__).resolve().parents[2] / "libs" / "crafts-ai" / "src" / "crafts_ai" / "services" / "ollama.py"
+_OLLAMA_SPEC = spec_from_file_location("crafts_ai_ollama_service", _OLLAMA_PATH.resolve())
+_OLLAMA_MODULE = module_from_spec(_OLLAMA_SPEC)
+sys.modules[_OLLAMA_SPEC.name] = _OLLAMA_MODULE
+_OLLAMA_SPEC.loader.exec_module(_OLLAMA_MODULE)
+CraftsOllamaService = _OLLAMA_MODULE.OllamaService
+
+
 class OllamaService:
-    """Service for interacting with Ollama API"""
+    """Django adapter around the shared crafts_ai Ollama service."""
     
     @staticmethod
     def format_messages(conversation, limit=CONVERSATION_CONTEXT_LIMIT):
@@ -31,29 +42,15 @@ class OllamaService:
     @staticmethod
     async def get_completion(messages):
         """Get a completion from Ollama (non-streaming)"""
-        async with httpx.AsyncClient(timeout=OLLAMA_TIMEOUT) as client:
-            try:
-                response = await client.post(
-                    OLLAMA_CHAT_ENDPOINT,
-                    json={
-                        "model": OLLAMA_MODEL,
-                        "messages": messages,
-                        "stream": False,
-                    },
-                )
-                
-                if response.status_code != 200:
-                    raise OllamaResponseError(ERROR_MESSAGES["OLLAMA_ERROR"])
-                
-                data = response.json()
-                return data.get("message", {}).get("content", "")
-                
-            except httpx.ConnectError as e:
-                raise OllamaConnectionError(f"{ERROR_MESSAGES['OLLAMA_CONNECTION']}: {str(e)}")
-            except httpx.TimeoutException:
-                raise OllamaConnectionError("Request to Ollama timed out")
-            except Exception as e:
-                raise OllamaResponseError(f"Unexpected error: {str(e)}")
+        service = CraftsOllamaService(default_model=OLLAMA_MODEL, timeout=OLLAMA_TIMEOUT)
+        try:
+            return service.chat(messages)
+        except httpx.ConnectError as e:
+            raise OllamaConnectionError(f"{ERROR_MESSAGES['OLLAMA_CONNECTION']}: {str(e)}")
+        except httpx.TimeoutException as e:
+            raise OllamaConnectionError("Request to Ollama timed out") from e
+        except Exception as e:
+            raise OllamaResponseError(f"Unexpected error: {str(e)}") from e
     
     @staticmethod
     def stream_completion(messages):
