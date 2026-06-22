@@ -23,7 +23,7 @@
         <div class="media-gallery__col col"
              data-media-type="{{ item.media_type|default:'image' }}"
              data-category="{{ item.category|slugify|default:'uncategorized' }}">
-            {% include "components/blocks/media/gallery_item.html" with value=item %}
+            {% comp "blocks.media.gallery_item" value=item / %}
         </div>
         {% endfor %}
     </div>
