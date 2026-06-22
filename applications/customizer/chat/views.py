@@ -189,3 +189,106 @@ class ChatView(DetailView):
         """
         )
 
+
+class WebsiteListView(ListView):
+    """List websites available to the customizer."""
+
+    template_name = "websites.html"
+    context_object_name = "websites"
+
+    def get_queryset(self):
+        from .site_data import configured_websites
+
+        return configured_websites()
+
+
+class PagesEndpointView(DetailView):
+    """Return page cards with sections linked to each page."""
+
+    template_name = "pages.html"
+
+    def get(self, request, *args, **kwargs):
+        from django.http import JsonResponse
+
+        from .site_data import pages_for_website
+
+        data = pages_for_website(kwargs["website_slug"])
+        if data is None:
+            return JsonResponse({"error": "Unknown website"}, status=404)
+        wants_json = (
+            request.headers.get("Accept") == "application/json"
+            or request.GET.get("format") == "json"
+        )
+        if wants_json:
+            return JsonResponse(data)
+        return self.render_to_response(data)
+
+
+class PageNavigatorFragmentView(ListView):
+    """HTMX fragment containing website navigation links."""
+
+    template_name = "fragments/page_navigator.html"
+    context_object_name = "websites"
+
+    def get_queryset(self):
+        from .site_data import configured_websites
+
+        return configured_websites()
+
+
+class PageCardGridFragmentView(DetailView):
+    """HTMX fragment containing page cards for a selected website."""
+
+    template_name = "fragments/page_card_grid.html"
+
+    def get(self, request, *args, **kwargs):
+        from django.http import Http404
+
+        from .site_data import pages_for_website
+
+        data = pages_for_website(kwargs["website_slug"])
+        if data is None:
+            raise Http404("Unknown website")
+        return self.render_to_response(data)
+
+
+class PageSectionListFragmentView(DetailView):
+    """HTMX fragment containing sections linked to one page card."""
+
+    template_name = "fragments/page_section_list.html"
+
+    def get(self, request, *args, **kwargs):
+        from django.http import Http404
+
+        from .site_data import pages_for_website
+
+        data = pages_for_website(kwargs["website_slug"])
+        if data is None:
+            raise Http404("Unknown website")
+        page_path = kwargs["page_path"]
+        page = next(
+            (item for item in data["pages"] if item["path"] == page_path),
+            None,
+        )
+        if page is None:
+            raise Http404("Unknown page")
+        return self.render_to_response({"website": data["website"], "page": page})
+
+
+class MessageSendResultFragmentView(FormMixin, ListView):
+    """HTMX fragment showing the result of a message-send action."""
+
+    form_class = MessageForm
+    template_name = "fragments/message_send_result.html"
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_form()
+        context = {
+            "form": form,
+            "message": (
+                request.POST.get("content")
+                or request.POST.get("message", "")
+            ),
+            "is_success": form.is_valid(),
+        }
+        return self.render_to_response(context, status=200 if form.is_valid() else 400)
