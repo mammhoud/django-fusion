@@ -2,26 +2,26 @@ http:
   routers:
     ctc-site-http:
       rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
-      entryPoints: [http]
+      entryPoints: [web]
       middlewares: [redirect-to-https]
       service: ctc-site-service
       priority: 10
     ctc-site-https:
       rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
-      entryPoints: [https]
+      entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-site-service
       tls:
         certResolver: letsencrypt
     ctc-media-http:
       rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
-      entryPoints: [http]
+      entryPoints: [web]
       middlewares: [compress, redirect-to-https]
       service: ctc-media-service
       priority: 100
     ctc-media-https:
       rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
-      entryPoints: [https]
+      entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: ctc-media-service
       priority: 100
