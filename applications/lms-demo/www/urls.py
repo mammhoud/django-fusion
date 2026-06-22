@@ -83,7 +83,7 @@ except Exception:
 urlpatterns += i18n_patterns(*plugin_patterns, prefix_default_language=False)
 
 # Routable component site (documented under docs/routable-site-urls.md)
-urlpatterns += [path("osoul/", include(site.urls))]
+urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
 
 # Wagtail routing when available
 if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:

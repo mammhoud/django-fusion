@@ -618,3 +618,10 @@ coolify-validate:
 
 coolify-run-infra:
 	@$(MAKE) -C $(COOLIFY_SRC) run-infra
+
+# -----------------------------------------------------------------
+# Local development delegation
+# -----------------------------------------------------------------
+.PHONY: check check-all test-local tests-local run-local runserver-local
+check check-all test-local tests-local run-local runserver-local:
+	@$(MAKE) -C $(APPLICATIONS_DIR) $@ $(filter-out $@,$(MAKECMDGOALS))
