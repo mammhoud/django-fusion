@@ -2,13 +2,13 @@ http:
   routers:
     catchall-http:
       rule: 'HostRegexp(`{host:.+}`)'
-      entryPoints: [http]
+      entryPoints: [web]
       priority: 1
       middlewares: [redirect-to-https]
       service: noop@internal
     catchall-https:
       rule: 'HostRegexp(`{host:.+}`)'
-      entryPoints: [https]
+      entryPoints: [web-secure]
       priority: 1
       service: noop@internal
       tls: {}

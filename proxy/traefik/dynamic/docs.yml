@@ -2,12 +2,12 @@ http:
   routers:
     docs-http:
       rule: 'Host(`docs.structa.cloud`)'
-      entryPoints: [http]
+      entryPoints: [web]
       middlewares: [redirect-to-https]
       service: docs-service
     docs-https:
       rule: 'Host(`docs.structa.cloud`)'
-      entryPoints: [https]
+      entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: docs-service
       tls:

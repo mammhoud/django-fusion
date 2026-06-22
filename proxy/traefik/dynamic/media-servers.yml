@@ -2,24 +2,24 @@ http:
   routers:
     shared-media-http:
       rule: 'Host(`media.structa.cloud`)'
-      entryPoints: [http]
+      entryPoints: [web]
       middlewares: [redirect-to-https]
       service: shared-media-service
     shared-media-https:
       rule: 'Host(`media.structa.cloud`)'
-      entryPoints: [https]
+      entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: shared-media-service
       tls:
         certResolver: letsencrypt
     ctc-media-http:
       rule: 'Host(`media.ctc-research.com`)'
-      entryPoints: [http]
+      entryPoints: [web]
       middlewares: [redirect-to-https]
       service: ctc-media-service
     ctc-media-https:
       rule: 'Host(`media.ctc-research.com`)'
-      entryPoints: [https]
+      entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: ctc-media-service
       tls:
