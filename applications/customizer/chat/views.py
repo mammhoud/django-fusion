@@ -1,4 +1,3 @@
-import markdown
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse
 from django.views.generic import ListView, DetailView
@@ -12,6 +11,7 @@ from django.utils.safestring import mark_safe
 from .models import Conversation, Message
 from .forms import ConversationStartForm, MessageForm
 from .services import ConversationService
+from .customizer import customizer_apps
 from .constants import (
     RECENT_CONVERSATIONS_LIMIT,
     ERROR_MESSAGES,
@@ -22,14 +22,7 @@ from .constants import (
 
 def render_markdown(content):
     """Convert markdown to HTML safely"""
-    md = markdown.Markdown(
-        extensions=[
-            "fenced_code",
-            "tables",
-            "nl2br",
-        ]
-    )
-    return mark_safe(md.convert(escape(content)))
+    return linebreaksbr(escape(content))
 
 
 @method_decorator(csrf_exempt, name="dispatch")
@@ -41,6 +34,11 @@ class HomepageView(ListView):
     context_object_name = "recent_conversations"
     queryset = Conversation.objects.all().order_by("-updated_at")[:5]
     
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context["customizer_apps"] = customizer_apps()
+        return context
+
     def post(self, request, *args, **kwargs):
         """Handle new conversation creation from homepage"""
         message_content = request.POST.get("message", "").strip()
@@ -97,6 +95,7 @@ class ChatView(DetailView):
         context.update({
             "messages": conversation.messages.all(),
             "messages_with_content": messages_with_content,
+            "customizer_apps": customizer_apps(),
         })
         return context
 

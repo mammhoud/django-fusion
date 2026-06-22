@@ -54,9 +54,9 @@ SITE_ID = 2
 PROFILE_MODEL = "auth.User"
 
 
-# Third-party crafts_ai currently declares an invalid TeamMembership ordering.
+# Keep only legacy duplicated app/model checks silenced; the previous
+# TeamMembership ordering check is fixed in crafts_ai.
 SILENCED_SYSTEM_CHECKS = [
-    "models.E015",  # crafts_ai cross-model ordering lookup
     "models.E028",  # legacy accounts/handlers shared service table during migration
     "models.E030",  # legacy accounts/handlers shared indexes during migration
     "models.E032",  # legacy accounts/handlers shared constraints during migration

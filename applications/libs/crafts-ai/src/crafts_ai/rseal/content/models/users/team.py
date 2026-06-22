@@ -115,7 +115,7 @@ class TeamMembership(DefaultBase):
         verbose_name_plural = _("Team Memberships")
         db_table = "team_memberships"
         unique_together = ("person", "team")
-        ordering = ["team", "-is_primary_team", "role", "person__full_name"]
+        ordering = ["team", "-is_primary_team", "role", "person"]
         indexes = [
             models.Index(fields=["person", "team"]),
             # models.Index(fields=["role"]),
