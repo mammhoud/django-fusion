@@ -64,7 +64,7 @@
                     <!-- Button -->
                     {% if block.value.button %}
                     <div class="mt-6 pt-4" data-aos="fade-up" data-aos-delay="500">
-                        {% include "components/blocks/button_block.html" with value=block.value.button extra_class="btn btn-primary btn-lg px-5 py-3 shadow-lg" %}
+                        {% comp "blocks.button_block" value=block.value.button extra_class="btn btn-primary btn-lg px-5 py-3 shadow-lg" / %}
                     </div>
                     {% endif %}
 

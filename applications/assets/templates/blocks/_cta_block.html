@@ -37,7 +37,7 @@
             {# Badge #}
             {% if self.badge.text %}
             <div class="cta-block__badge">
-                {% include "components/blocks/badge_block.html" with value=self.badge %}
+                {% comp "blocks.badge_block" value=self.badge / %}
             </div>
             {% endif %}
 
@@ -80,11 +80,11 @@
             {% if has_buttons %}
             <div class="cta-block__buttons d-flex flex-wrap gap-3 {% if self.button_group_alignment == 'center' %}justify-content-center{% elif self.button_group_alignment == 'right' %}justify-content-end{% elif self.button_group_alignment == 'space-between' %}justify-content-between{% endif %}">
                 {% if has_primary_button and self.primary_button.text %}
-                {% include "components/blocks/button_block.html" with value=self.primary_button extra_class="btn btn-primary btn-lg" %}
+                {% comp "blocks.button_block" value=self.primary_button extra_class="btn btn-primary btn-lg" / %}
                 {% endif %}
 
                 {% if has_secondary_button and self.secondary_button.text %}
-                {% include "components/blocks/button_block.html" with value=self.secondary_button extra_class="btn btn-outline-primary btn-lg" %}
+                {% comp "blocks.button_block" value=self.secondary_button extra_class="btn btn-outline-primary btn-lg" / %}
                 {% endif %}
             </div>
             {% endif %}

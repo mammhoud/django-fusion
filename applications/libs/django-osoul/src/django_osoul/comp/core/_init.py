@@ -24,7 +24,7 @@ from django_osoul.comp.templates.templates import (
     get_component_directories,
     get_template_names,
 )
-from django_osoul.comp.templatetags.tags.block import BlockNode
+from django_osoul.comp.templatetags.tags.block import BlockNode, validate_fragment_name
 from django_osoul.comp.templatetags.tags.slot import DEFAULT_SLOT, SlotNode
 
 
@@ -73,7 +73,9 @@ class Component:
 
     @classmethod
     def from_name(cls, name: str) -> Component:
-        template_names = get_template_names(name)
+        template_names = (
+            [name] if "/" in name or name.endswith(".html") else get_template_names(name)
+        )
         template = select_template(template_names)
         return cls.from_template(template)
 
@@ -121,6 +123,14 @@ class SequenceGenerator:
         return current
 
 
+@dataclass(frozen=True, slots=True)
+class ComponentRenderMetadata:
+    name: str
+    source: Any = None
+    requested_by: Any = None
+    fragment_name: str | None = None
+
+
 @dataclass
 class BoundComponent:
     component: Component
@@ -139,6 +149,16 @@ class BoundComponent:
             ]
             self.params.attrs.extend(data_attrs)
 
+        metadata_values = self.params.render_metadata(context)
+        validate_fragment_name(metadata_values.get("fragment_name"))
+        render_metadata = ComponentRenderMetadata(
+            name=self.component.name,
+            source=metadata_values.get("source"),
+            requested_by=metadata_values.get("requested_by"),
+            fragment_name=metadata_values.get("fragment_name"),
+        )
+        components.record_render(render_metadata)
+
         props = self.params.render_props(self.component, context)
         attrs = self.params.render_attrs(context)
         slots = self.fill_slots(context)
@@ -150,6 +170,8 @@ class BoundComponent:
                 "slot": slots.get(DEFAULT_SLOT),
                 "slots": slots,
                 "vars": {},
+                "component": render_metadata,
+                "component_context": render_metadata,
             }
         ):
             return self.component.template.template.render(context)
@@ -183,12 +205,20 @@ class ComponentRegistry:
         self._component_usage: dict[str, set[Path]] = defaultdict(set)
         self._components: dict[str, Component] = {}
         self._template_usage: dict[Path, set[str]] = defaultdict(set)
+        self._render_history: list[ComponentRenderMetadata] = []
 
     def reset(self) -> None:
         """Reset the registry, used for testing."""
         self._component_usage = defaultdict(set)
         self._components = {}
         self._template_usage = defaultdict(set)
+        self._render_history = []
+
+    def record_render(self, metadata: ComponentRenderMetadata) -> None:
+        self._render_history.append(metadata)
+
+    def get_render_history(self) -> tuple[ComponentRenderMetadata, ...]:
+        return tuple(self._render_history)
 
     def get_assets(self, asset_type: AssetType | None = None) -> frozenset[Asset]:
         return frozenset(
