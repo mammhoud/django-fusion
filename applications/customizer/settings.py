@@ -10,7 +10,12 @@ BASE_DIR = Path(__file__).resolve().parent
 APPLICATIONS_DIR = BASE_DIR.parent
 REPO_ROOT = APPLICATIONS_DIR.parent
 
-for path in (APPLICATIONS_DIR, APPLICATIONS_DIR / "libs" / "crafts-ai" / "src"):
+for path in (
+    REPO_ROOT,
+    APPLICATIONS_DIR,
+    APPLICATIONS_DIR / "libs" / "crafts-ai" / "src",
+    APPLICATIONS_DIR / "libs" / "django-osoul" / "src",
+):
     path_str = str(path)
     if path_str not in sys.path:
         sys.path.insert(0, path_str)
@@ -74,9 +79,21 @@ STATICFILES_DIRS = [BASE_DIR / "static"] if (BASE_DIR / "static").exists() else 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
 CUSTOMIZER_APPS = [
-    {"slug": "ctc-research", "name": "CTC Research", "template_root": APPLICATIONS_DIR / "ctc-research" / "templates"},
-    {"slug": "lms-demo", "name": "Structa LMS Demo", "template_root": APPLICATIONS_DIR / "lms-demo" / "templates"},
-    {"slug": "vresume", "name": "VResume", "template_root": APPLICATIONS_DIR / "VResume" / "www" / "pages" / "templates"},
+    {
+        "slug": "ctc-research",
+        "name": "CTC Research",
+        "template_root": APPLICATIONS_DIR / "ctc-research" / "templates",
+    },
+    {
+        "slug": "lms-demo",
+        "name": "Structa LMS Demo",
+        "template_root": APPLICATIONS_DIR / "lms-demo" / "templates",
+    },
+    {
+        "slug": "VResume",
+        "name": "VResume",
+        "template_root": APPLICATIONS_DIR / "VResume" / "www" / "pages" / "templates",
+    },
 ]
 
 OLLAMA_BASE_URL = os.environ.get("OLLAMA_BASE_URL", "http://localhost:11434")

@@ -1,0 +1,13 @@
+<nav class="list-group" aria-label="Customizer websites">
+  {% for website in websites %}
+    <button class="list-group-item list-group-item-action"
+            type="button"
+            hx-get="{% url 'fragment_page_card_grid' website.slug %}"
+            hx-target="#customizer-page-grid"
+            hx-swap="innerHTML"
+            hx-push-url="{% url 'customizer_pages' website.slug %}">
+      <span class="fw-semibold">{{ website.name }}</span>
+      <code class="d-block small">{{ website.slug }}</code>
+    </button>
+  {% endfor %}
+</nav>
