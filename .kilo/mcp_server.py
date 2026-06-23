@@ -2,7 +2,7 @@
 
 This module is intentionally import-safe: it does not configure Django, execute
 Django management commands, or call external AI providers at import time.
-"""FastAPI endpoints for project-local MCP helpers.
+FastAPI endpoints for project-local MCP helpers.
 
 Run with the crafts-ai source package on the import path, for example:
 
@@ -16,6 +16,14 @@ import os
 from importlib import import_module, util
 from io import StringIO
 from typing import Any
+
+
+from django.core.management import call_command
+from fastapi import FastAPI
+
+from crafts_ai.cli import package_info
+
+app = FastAPI(title="Structa Cloud MCP")
 
 
 JSONResponse: Any | None = None
@@ -204,15 +212,6 @@ if app is not None:
                 missing_environment=missing,
             )
         return {"ok": True, "configured": True}
-from io import StringIO
-from typing import Any
-
-from django.core.management import call_command
-from fastapi import FastAPI
-
-from crafts_ai.cli import package_info
-
-app = FastAPI(title="Structa Cloud MCP")
 
 
 @app.get("/health")

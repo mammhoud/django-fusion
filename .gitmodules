@@ -2,7 +2,7 @@
 # Django core utilities – merged from 'ref' and 'grep'
 # ====================================================
 [submodule "libs/django-osoul"]
-	path = applications/libs/django-osoul
+	path = libs/django-osoul
 	url = https://github.com/mammhoud/django-osoul
 	branch = generic
 	ignore = dirty
@@ -12,7 +12,7 @@
 # AI / Agent toolkit – merged from 'rseal'
 # ====================================================
 [submodule "libs/crafts-ai"]
-	path = applications/libs/crafts-ai
+	path = libs/crafts-ai
 	url = https://github.com/mammhoud/crafts-ai
 	branch = generic
 	ignore = dirty
@@ -22,7 +22,7 @@
 # (Optional) MCP server – if you decouple it from crafts-ai
 # ====================================================
 # [submodule "libs/django-mcp-server"]
-# 	path = applications/libs/django-mcp-server
+# 	path = libs/django-mcp-server
 # 	url = https://github.com/mammhoud/django-mcp-server
 # 	branch = main
 # 	ignore = dirty
