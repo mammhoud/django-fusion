@@ -10,9 +10,9 @@ The workspace uses three internal Python libraries installed as git submodules u
 They follow a strict layered dependency order:
 
 ```
-django-grep  (testing only — never in production code)
+django-osoul  (testing only — never in production code)
      ↑
-django-rseal (automation layer — depends on django-osoul)
+crafts-ai (automation layer — depends on django-osoul)
      ↑
 django-osoul (foundation layer — zero external lib dependencies)
 ```
@@ -23,8 +23,8 @@ Each library is installed into the workspace virtual environment via `uv`:
 # pyproject.toml (workspace root)
 [tool.uv.sources]
 django-osoul = { path = "libs/django-osoul", editable = true }
-django-rseal = { path = "libs/django-rseal", editable = true }
-django-grep  = { path = "libs/django-grep",  editable = true }
+crafts-ai = { path = "libs/crafts-ai", editable = true }
+django-osoul  = { path = "libs/django-osoul",  editable = true }
 ```
 
 ---
@@ -168,10 +168,10 @@ __all__ = ["ErrorTrackerMiddleware"]
 
 ---
 
-## django-rseal (Automation)
+## crafts-ai (Automation)
 
-**Location:** `libs/django-rseal/`
-**PyPI:** `django-rseal`
+**Location:** `libs/crafts-ai/`
+**PyPI:** `crafts-ai`
 
 ### What It Provides
 
@@ -188,13 +188,13 @@ Automation layer for pipelines, email, workflows, and privacy. Depends on `djang
 ```python
 INSTALLED_APPS = [
     # ...
-    "django_rseal.pipelines",
-    "django_rseal.chat",
-    "django_rseal.email_tools",
-    "django_rseal.newsletter",
-    "django_rseal.tasks",
-    "django_rseal.seeder",
-    "django_rseal.ai",
+    "crafts_ai.pipelines",
+    "crafts_ai.chat",
+    "crafts_ai.email_tools",
+    "crafts_ai.newsletter",
+    "crafts_ai.tasks",
+    "crafts_ai.seeder",
+    "crafts_ai.ai",
 ]
 ```
 
@@ -218,7 +218,7 @@ PRIVACY_CONSENT_MIDDLEWARE = {
 Selects and renders role-based email templates. Falls back to settings for site name/URL/email:
 
 ```python
-from django_rseal.email import RoleBasedEmailTemplateSelector
+from crafts_ai.email import RoleBasedEmailTemplateSelector
 
 selector = RoleBasedEmailTemplateSelector(
     site_name="CTC Research",
@@ -249,7 +249,7 @@ class CTCEmailSelector(RoleBasedEmailTemplateSelector):
 Class-level registry for named email templates:
 
 ```python
-from django_rseal.email import EmailTemplateRegistry
+from crafts_ai.email import EmailTemplateRegistry
 
 # Register templates at app startup (e.g. in AppConfig.ready())
 EmailTemplateRegistry.register("welcome", "emails/welcome.html", role="user")
@@ -263,7 +263,7 @@ info = EmailTemplateRegistry.get("welcome")
 #### CertificateServiceBase
 
 ```python
-from django_rseal.pipelines.services import CertificateServiceBase
+from crafts_ai.pipelines.services import CertificateServiceBase
 from apps.lms.models import Certificate
 
 class CertificateService(CertificateServiceBase):
@@ -289,7 +289,7 @@ ctc-research wraps `CertificateServiceBase` in `www/apps/services/certificates.p
 
 ```python
 # ctc-research/www/apps/services/certificates.py
-from django_rseal.pipelines.services import CertificateServiceBase
+from crafts_ai.pipelines.services import CertificateServiceBase
 from apps.lms.models import Certificate
 
 class CertificateService(CertificateServiceBase):
@@ -306,7 +306,7 @@ class CertificateService(CertificateServiceBase):
 
 2. Register them at startup (in an `AppConfig.ready()` method):
    ```python
-   from django_rseal.email import EmailTemplateRegistry
+   from crafts_ai.email import EmailTemplateRegistry
 
    class MyAppConfig(AppConfig):
        def ready(self):
@@ -319,7 +319,7 @@ class CertificateService(CertificateServiceBase):
 
 3. Use the selector in a view or task:
    ```python
-   from django_rseal.email import RoleBasedEmailTemplateSelector
+   from crafts_ai.email import RoleBasedEmailTemplateSelector
    from django.core.mail import send_mail
 
    selector = RoleBasedEmailTemplateSelector()
@@ -329,10 +329,10 @@ class CertificateService(CertificateServiceBase):
 
 ---
 
-## django-grep (Testing)
+## django-osoul (Testing)
 
-**Location:** `libs/django-grep/`
-**PyPI:** `django-grep`
+**Location:** `libs/django-osoul/`
+**PyPI:** `django-osoul`
 
 ### What It Provides
 
@@ -349,20 +349,20 @@ Unified testing framework. **Never import in production code.**
 In `conftest.py` at the repo root:
 
 ```python
-pytest_plugins = ["django_grep.tests.pytest_plugin"]
+pytest_plugins = ["django_osoul.tests.pytest_plugin"]
 ```
 
 Or in `pyproject.toml`:
 
 ```toml
 [tool.pytest.ini_options]
-plugins = ["django_grep.tests.pytest_plugin"]
+plugins = ["django_osoul.tests.pytest_plugin"]
 ```
 
 ### BaseTestCase Usage
 
 ```python
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class CoursePageTest(BaseTestCase):
     # self.user (testuser/testpass123) and self.admin_user available automatically
@@ -381,7 +381,7 @@ class CoursePageTest(BaseTestCase):
 ### BaseAPITestCase Usage
 
 ```python
-from django_grep.tests.base import BaseAPITestCase
+from django_osoul.tests.base import BaseAPITestCase
 
 class CourseAPITest(BaseAPITestCase):
     def test_create_course(self):
@@ -402,7 +402,7 @@ class CourseAPITest(BaseAPITestCase):
 ### Property-Based Testing with st_email, st_slug, st_uuid
 
 ```python
-from django_grep.tests.base import BaseTestCase, st_email, st_slug, st_uuid
+from django_osoul.tests.base import BaseTestCase, st_email, st_slug, st_uuid
 from hypothesis import given, settings
 
 class EmailValidationPropertyTest(BaseTestCase):
@@ -429,7 +429,7 @@ class EmailValidationPropertyTest(BaseTestCase):
 ### Replacing VResume's data_populator.py
 
 `VResume/www/tests/data_populator.py` is a standalone script that uses Pillow and Wagtail
-directly to create test content. The django-grep pattern replaces ad-hoc scripts with
+directly to create test content. The django-osoul pattern replaces ad-hoc scripts with
 managed fixtures and seeder helpers:
 
 **Current approach (standalone script):**
@@ -440,7 +440,7 @@ python manage.py --site=vresume shell < VResume/www/tests/data_populator.py
 **Recommended approach (BaseTestCase + fixtures):**
 ```python
 # VResume/www/tests/test_portfolio.py
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class PortfolioPageTest(BaseTestCase):
     fixtures = [
@@ -459,9 +459,9 @@ class PortfolioPageTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 ```
 
-For generating dummy images (previously Pillow-based), use `django-grep`'s seeder:
+For generating dummy images (previously Pillow-based), use `django-osoul`'s seeder:
 ```python
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class PortfolioTest(BaseTestCase):
     def test_portfolio_page(self):
@@ -480,12 +480,12 @@ class PortfolioTest(BaseTestCase):
 | django-osoul (RoleHierarchyManager) | ✅ thin wrapper | ✅ | — |
 | django-osoul (GroupAccessControl) | ✅ thin wrapper | ✅ | — |
 | django-osoul (BaseModel/mixins) | ✅ | ✅ | ✅ |
-| django-rseal (PrivacyConsentMiddleware) | ✅ thin wrapper | ✅ | — |
-| django-rseal (CertificateServiceBase) | ✅ wrapped | ✅ | — |
-| django-rseal (EmailTemplateRegistry) | ✅ | ✅ | partial |
-| django-rseal (FormSubmissionService) | ✅ | ✅ | ✅ |
-| django-grep (BaseTestCase) | ✅ | ✅ | partial |
-| django-grep (property-based testing) | ✅ | partial | — |
+| crafts-ai (PrivacyConsentMiddleware) | ✅ thin wrapper | ✅ | — |
+| crafts-ai (CertificateServiceBase) | ✅ wrapped | ✅ | — |
+| crafts-ai (EmailTemplateRegistry) | ✅ | ✅ | partial |
+| crafts-ai (FormSubmissionService) | ✅ | ✅ | ✅ |
+| django-osoul (BaseTestCase) | ✅ | ✅ | partial |
+| django-osoul (property-based testing) | ✅ | partial | — |
 
 Legend: ✅ integrated, partial = partially used, — = not applicable
 
@@ -494,7 +494,7 @@ Legend: ✅ integrated, partial = partially used, — = not applicable
 ## See Also
 
 - `libs/django-osoul/README.md` — full osoul API reference
-- `libs/django-rseal/README.md` — full rseal API reference
-- `libs/django-grep/README.md` — full grep API reference
+- `libs/crafts-ai/README.md` — full rseal API reference
+- `libs/django-osoul/README.md` — full grep API reference
 - `assets/ASSETS_GUIDE.md` — frontend build reference
 - `docs/infrastructure/INFRASTRUCTURE_GUIDE.md` — Docker/compose stack

@@ -99,8 +99,8 @@ LOCAL_APPS = [
     "plugins.products.apps.ProductsConfig",
     # Profile (required for plugins.urls namespace and profile views)
     "plugins.profile.apps.ProfileConfig",
-    # django_rseal models (EmailSettings, etc.) need this app registered
-    "django_rseal",
+    # crafts_ai models (EmailSettings, etc.) need this app registered
+    "crafts_ai",
     # Legacy page apps are optional; AppRegistry filters them when absent.
     "pages.home",
     "pages.about",

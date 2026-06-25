@@ -198,13 +198,13 @@ COMPLETE_TASK_SYSTEM_INDEX.md (You are here)
 - Middleware and decorators
 - Permission helpers
 
-### django-rseal
+### crafts-ai
 - Email sending logic and templates
 - Task base classes and scheduling
 - Task monitoring and error handling
 - Workflow orchestration
 
-### django-grep
+### django-osoul
 - Reusable factories
 - Common fixtures
 - Reusable assertions

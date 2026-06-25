@@ -15,21 +15,23 @@ from django.conf.urls.i18n import i18n_patterns
 from django.conf.urls.static import static
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
+from django.views.generic.base import RedirectView
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from django_grep.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
-from utilities import get_root_redirect_pattern
+from django_osoul.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
+from django_osoul.site.utils import get_root_redirect_pattern
+from www.core.routes import site
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
-    from django_grep.contrib.debug_tools.common_urls import configure_common_urls
+    from django_osoul.contrib.debug_tools.common_urls import configure_common_urls
 except Exception:
     def configure_common_urls(urlpatterns):
         return urlpatterns
 
 try:
-    from django_grep.contrib.debug_tools.error_views import (
+    from django_osoul.contrib.debug_tools.error_views import (
         handler400,
         handler403,
         handler404,
@@ -109,12 +111,27 @@ if apps.is_installed("django.contrib.admin"):
     urlpatterns.append(path("django-admin/", admin.site.urls))
 
 try:
-    urlpatterns += [path("health_admin/", include("django_grep.health.urls"))]
+    urlpatterns += [path("health_admin/", include("django_osoul.health.urls"))]
 except Exception:
     pass
 
 # ── Common URLs (sitemaps, robots, i18n switching) ───────────────────────────
 urlpatterns = configure_common_urls(urlpatterns)
+
+
+# Redirect duplicated sitemap crawler noise before the CMS catch-all handles it.
+urlpatterns += [
+    path(
+        "sitemap.xml/sitemap.xml",
+        RedirectView.as_view(url="/sitemap.xml", permanent=True),
+        name="redirect-duplicated-sitemap-index",
+    ),
+    path(
+        "sitemap-news.xml/sitemap-news.xml",
+        RedirectView.as_view(url="/sitemap-news.xml", permanent=True),
+        name="redirect-duplicated-sitemap-news",
+    ),
+]
 
 # ── Plugin routing ────────────────────────────────────────────────────────────
 # Use the string form "plugins.urls" so Django imports the module lazily
@@ -127,6 +144,10 @@ urlpatterns += i18n_patterns(
     path("", include("plugins.urls")),
     prefix_default_language=False,
 )
+
+# ── Routable component site ─────────────────────────────────────────────
+# Documented under docs/routable-site-urls.md. Mount before Wagtail catch-all.
+urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
 
 # ── Wagtail ───────────────────────────────────────────────────────────────────
 if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
@@ -142,7 +163,7 @@ if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
 # ── Development extras ────────────────────────────────────────────────────────
 if settings.DEBUG:
     try:
-        from django_grep.contrib.debug_tools.dev_urls import configure_dev_urls
+        from django_osoul.contrib.debug_tools.dev_urls import configure_dev_urls
         urlpatterns = configure_dev_urls(urlpatterns, settings)
     except Exception:
         pass

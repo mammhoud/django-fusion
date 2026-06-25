@@ -1,15 +1,15 @@
 """
-Integration tests for django-rseal email features with websites.
+Integration tests for crafts-ai email features with websites.
 
-These tests verify that django-rseal email features work correctly
+These tests verify that crafts-ai email features work correctly
 when integrated with ctc-research.com and structa.cloud.
 
-Note: Tests requiring django_rseal.pipelines need the full project environment
+Note: Tests requiring crafts_ai.pipelines need the full project environment
 with apps.handlers module. They are skipped if not available.
 
 IMPORTANT: These tests have a model conflict between:
-- django_rseal.email.models.EmailTemplate
-- django_rseal.pipelines.models.settings.templates.EmailTemplate
+- crafts_ai.email.models.EmailTemplate
+- crafts_ai.pipelines.models.settings.templates.EmailTemplate
 
 Run these tests in the project's own test environment where the correct
 model is configured.
@@ -31,20 +31,20 @@ structa_path = project_root / "structa.cloud"
 # These tests require the full project environment
 # Skip all tests in this module when running in workspace test environment
 pytestmark = pytest.mark.skip(
-    reason="django_rseal.pipelines has model conflicts in workspace environment. "
+    reason="crafts_ai.pipelines has model conflicts in workspace environment. "
            "Run these tests in the project's own test environment."
 )
 
 
 class TestDjangoRsealIntegration:
-    """Test django-rseal integration with websites."""
+    """Test crafts-ai integration with websites."""
 
-    def test_django_rseal_available_in_ctc(self):
-        """Test that django-rseal modules can be imported for CTC Research."""
+    def test_crafts_ai_available_in_ctc(self):
+        """Test that crafts-ai modules can be imported for CTC Research."""
         pass  # Skipped by module marker
 
-    def test_django_rseal_available_in_structa(self):
-        """Test that django-rseal modules can be imported for Structa Cloud."""
+    def test_crafts_ai_available_in_structa(self):
+        """Test that crafts-ai modules can be imported for Structa Cloud."""
         pass  # Skipped by module marker
 
     def test_email_template_usage_in_ctc(self):

@@ -21,7 +21,7 @@ NC     := \033[0m
 
 SITE_NAME := $(notdir $(CURDIR))
 DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
-PYTHONPATH := $(CURDIR):$(abspath ..)
+PYTHONPATH := $(CURDIR):$(abspath ..):$(abspath ../libs/django-osoul/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ..
@@ -64,7 +64,8 @@ server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var
 	@$(MAKE) webpack-validate
 	@echo -e "$(BLUE)Populating initial data before server start...$(NC)"; \
 	$(MAKE) populate-data || true
-	@HOST=$${HOST:-0.0.0.0}; \
+	@DB_NAME=$${DB_NAME_CTC:-db_ctc}; \ 
+	HOST=$${HOST:-0.0.0.0}; \
 	PORT=$${PORT:-$(DEFAULT_PORT)}; \
 	WORKERS=$${WORKERS:-4}; \
 	TIMEOUT=$${TIMEOUT:-120}; \
@@ -136,11 +137,15 @@ install: ## Install Python dependencies
 	@echo -e "$(BLUE)Installing Python deps...$(NC)"
 	@$(UV) sync
 	@echo -e "$(GREEN)✅ Installed$(NC)"
+	# Install local django_osoul library in editable mode
+	@echo -e "$(BLUE)Installing local django_osoul library...$(NC)"
+	@cd $(abspath ../libs/django-osoul) && $(UV) pip install -e .
+	@echo -e "$(GREEN)✅ Local library installed$(NC)"
 
 install-internal: ## Refresh mammhoud GitHub packages (django-osoul/rseal/grep)
 	$(call clean_broken_venv)
 	@echo -e "$(BLUE)Installing mammhoud GitHub packages...$(NC)"
-	@$(UV) sync --upgrade-package django-osoul --upgrade-package django-rseal --upgrade-package django-grep
+	@$(UV) sync --upgrade-package django-osoul --upgrade-package crafts-ai
 	@echo -e "$(GREEN)✅ Internal packages refreshed from GitHub$(NC)"
 
 setup: ## Full setup (frontend, migrations, static, checks, superuser, data)

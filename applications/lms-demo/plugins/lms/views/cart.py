@@ -12,8 +12,8 @@ except ImportError:
     CartService = None
 
 try:
-    from django_rseal.services.commerce.payments import PayPalGateway, StripeGateway
-    from django_rseal.site.payments import PaymentProcessingMixin
+    from crafts_ai.services.commerce.payments import PayPalGateway, StripeGateway
+    from crafts_ai.site.payments import PaymentProcessingMixin
 except ImportError:
     StripeGateway = None
     PayPalGateway = None

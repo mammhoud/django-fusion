@@ -149,7 +149,7 @@ class EmailService:
         Queue an email for async sending via django-rq.
         """
         # Import here to avoid circular imports
-        from django_rseal.services.infrastructure.jobs import dispatch_job
+        from crafts_ai.services.infrastructure.jobs import dispatch_job
 
         # Lazy import to break circular dependency with tasks module
         from plugins.accounts.management.services.email.tasks import send_email_task

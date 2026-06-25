@@ -8,19 +8,23 @@
 networks:
   traefik-net:
     name: traefik-net
+  common:
+    name: common
+
+x-proxy-common: &proxy-common
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
 
 services:
-
-  # # --- Option 2: Caddy Proxy ---
-  vresume-caddy:
+  caddy:
+    <<: *proxy-common
     image: caddy:2-alpine
-    container_name: vresume-caddy
-    restart: unless-stopped
-    depends_on:
-      - vresume-django
+    container_name: caddy
     ports:
-      - "80:80"
-      - "443:443"
+      - "8081:80"
+      - "8443:443"
     environment:
       - DOMAIN_NAME=${DOMAIN_NAME:-localhost}
     volumes:
@@ -29,13 +33,7 @@ services:
       - ../assets/media:/var/www/media:ro
       - caddy_data:/data
       - caddy_config:/config
-    networks:
-      - traefik-net
-    deploy:
-      resources:
-        limits:
-          cpus: '0.5'
-          memory: 256M
-        reservations:
-          cpus: '0.25'
-          memory: 128M
+
+volumes:
+  caddy_data:
+  caddy_config:

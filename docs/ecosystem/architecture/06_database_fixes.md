@@ -33,7 +33,7 @@ profile_visibility = models.CharField(
 )
 ```
 
-**Location**: `/root/xellent/django_grep.pipelines/models/users/users.py` (Line ~204)
+**Location**: `/root/xellent/django_osoul.pipelines/models/users/users.py` (Line ~204)
 
 ## How to Apply Fix
 
@@ -96,9 +96,9 @@ To prevent similar issues in the future:
 
 ## Related Files
 
-- **Model**: `/root/xellent/django_grep.pipelines/models/users/users.py`
-- **Initial Migration**: `/root/xellent/django_grep.pipelines/migrations/0001_initial.py`
-- **Fix Migration**: `/root/xellent/django_grep.pipelines/migrations/0002_add_missing_profile_fields.py`
+- **Model**: `/root/xellent/django_osoul.pipelines/models/users/users.py`
+- **Initial Migration**: `/root/xellent/django_osoul.pipelines/migrations/0001_initial.py`
+- **Fix Migration**: `/root/xellent/django_osoul.pipelines/migrations/0002_add_missing_profile_fields.py`
 - **Error Location**: `/root/xellent/assets/templates/partials/auth_buttons.html:9`
 
 ## Status

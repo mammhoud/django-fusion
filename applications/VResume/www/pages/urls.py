@@ -18,6 +18,8 @@ urlpatterns = [
     path("contact/submit/", contact_submit, name="contact_submit"),
     path("subscribe/", subscribe_view, name="subscribe"),
     
+    path("events/", include(("pages.events.urls", "events"), namespace="events")),
+
     # Search endpoints (HTMX)
     path("blog/search/", blog_search, name="blog_search"),
     path("portfolio/search/", portfolio_search, name="portfolio_search"),

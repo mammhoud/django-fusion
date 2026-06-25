@@ -41,7 +41,7 @@ class CoursesPage(BaseIndexPage):
                         (
                             "page_title_background",
                             SimpleImageBlock(
-                                template="django_grep/comp/blocks/media/simple_image.html",
+                                template="blocks/media/image_lite.html",
                                 label=_("Page Title Background"),
                             ),
                         ),

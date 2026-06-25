@@ -18,7 +18,7 @@ Specifically:
   5e. The type field in the JSON matches the input notification_type.
 
 These tests are standalone — they configure Django minimally and mock
-the heavy django_grep / wagtail import chain so that only the pure
+the heavy django_osoul / wagtail import chain so that only the pure
 `trigger_notification` helper is exercised.
 """
 
@@ -63,7 +63,7 @@ def _ensure_mock(name: str) -> types.ModuleType:
 
 
 # django_osoul.comp.site — needs a PageHandler class with a dispatch method
-_ensure_mock("django_grep")
+_ensure_mock("django_osoul")
 _ensure_mock("django_osoul.comp")
 _site_mod = _ensure_mock("django_osoul.comp.site")
 if not hasattr(_site_mod, "PageHandler"):

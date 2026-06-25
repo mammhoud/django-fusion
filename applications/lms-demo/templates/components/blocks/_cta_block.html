@@ -1,0 +1,158 @@
+{% load wagtailcore_tags wagtailimages_tags components_field %}
+{# Call to Action Block Template - Wagtail Bakery Style #}
+
+<section class="cta-block {{ block_classes }} {{ css_classes }}"
+         id="{{ block_id }}"
+         {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}
+         {% if inline_styles %}style="{{ inline_styles }}"{% endif %}
+         {% if self.animation and self.animation != 'none' %}data-aos="{{ self.animation }}"{% endif %}>
+
+    {# Unhandled Model Fields Usage #}
+    {% render_unhandled_fields unhandled_fields %}
+
+
+
+    {# Background Image/Video #}
+    {% if self.background_type == 'image' and self.background_image %}
+    <div class="cta-block__bg">
+        {% image self.background_image fill-1920x800 as bg_img %}
+        <img src="{{ bg_img.url }}" alt="" class="cta-block__bg-image" loading="lazy">
+    </div>
+    {% endif %}
+
+    {% if self.background_overlay and self.background_overlay != 'none' %}
+    <div class="cta-block__overlay cta-block__overlay--{{ self.background_overlay }}"></div>
+    {% endif %}
+
+    <div class="cta-block__content {% if self.width == 'container' %}container{% elif self.width == 'narrow' %}container-sm{% endif %}">
+
+        {# Split Layout Media #}
+        {% if is_split_layout and has_media and self.media_position == 'left' %}
+        <div class="cta-block__media cta-block__media--{{ self.media_position }}">
+            {% include "blocks/partials/cta_media.html" %}
+        </div>
+        {% endif %}
+
+        <div class="cta-block__text">
+            {# Badge #}
+            {% if self.badge.text %}
+            <div class="cta-block__badge">
+                {% comp "blocks.badge_block" value=self.badge / %}
+            </div>
+            {% endif %}
+
+            {# Title #}
+            {% if self.title %}
+            <{{ self.title_tag|default:'h2' }} class="cta-block__title">
+                {{ self.title }}
+            </{{ self.title_tag|default:'h2' }}>
+            {% endif %}
+
+            {# Subtitle #}
+            {% if self.subtitle %}
+            <p class="cta-block__subtitle lead">{{ self.subtitle }}</p>
+            {% endif %}
+
+            {# Content #}
+            {% if self.content %}
+            <div class="cta-block__body">
+                {{ self.content|richtext }}
+            </div>
+            {% endif %}
+
+            {# Statistics #}
+            {% if self.statistics %}
+            <div class="cta-block__stats row g-4 my-4">
+                {% for stat in self.statistics %}
+                <div class="col-6 col-md-3">
+                    <div class="stat-item text-center">
+                        <div class="stat-item__number h2 mb-0">
+                            {{ stat.prefix }}{{ stat.number }}{{ stat.suffix }}
+                        </div>
+                        <div class="stat-item__label text-muted">{{ stat.label }}</div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {# Buttons #}
+            {% if has_buttons %}
+            <div class="cta-block__buttons d-flex flex-wrap gap-3 {% if self.button_group_alignment == 'center' %}justify-content-center{% elif self.button_group_alignment == 'right' %}justify-content-end{% elif self.button_group_alignment == 'space-between' %}justify-content-between{% endif %}">
+                {% if has_primary_button and self.primary_button.text %}
+                {% comp "blocks.button_block" value=self.primary_button extra_class="btn btn-primary btn-lg" / %}
+                {% endif %}
+
+                {% if has_secondary_button and self.secondary_button.text %}
+                {% comp "blocks.button_block" value=self.secondary_button extra_class="btn btn-outline-primary btn-lg" / %}
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# Trust Indicators #}
+            {% if self.trust_indicators %}
+            <div class="cta-block__trust d-flex flex-wrap gap-4 mt-4">
+                {% for indicator in self.trust_indicators %}
+                <div class="trust-indicator d-flex align-items-center">
+                    {% if indicator.icon %}
+                    <i class="{{ indicator.icon }} me-2"></i>
+                    {% endif %}
+                    <span class="text-muted small">{{ indicator.text }}</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {# Embedded Form #}
+            {% if self.include_form %}
+            <div class="cta-block__form mt-4">
+                {% if self.form_title %}
+                <h4 class="form-title">{{ self.form_title }}</h4>
+                {% endif %}
+                <form class="cta-inline-form row g-3">
+                    {% csrf_token %}
+                    {% for field_type in self.form_fields %}
+                    <div class="col-md-6">
+                        {% if field_type == 'name' %}
+                        <input type="text" name="name" class="form-control" placeholder="Your Name" required>
+                        {% elif field_type == 'email' %}
+                        <input type="email" name="email" class="form-control" placeholder="Email Address" required>
+                        {% elif field_type == 'phone' %}
+                        <input type="tel" name="phone" class="form-control" placeholder="Phone Number">
+                        {% elif field_type == 'company' %}
+                        <input type="text" name="company" class="form-control" placeholder="Company">
+                        {% elif field_type == 'message' %}
+                        <textarea name="message" class="form-control" rows="3" placeholder="Your Message"></textarea>
+                        {% endif %}
+                    </div>
+                    {% endfor %}
+                    <div class="col-12">
+                        <button type="submit" class="btn btn-primary">
+                            {{ self.form_submit_text|default:"Submit" }}
+                        </button>
+                    </div>
+                </form>
+            </div>
+            {% endif %}
+        </div>
+
+        {# Split Layout Media (Right/Bottom) #}
+        {% if is_split_layout and has_media and self.media_position != 'left' %}
+        <div class="cta-block__media cta-block__media--{{ self.media_position }}">
+            {% include "blocks/partials/cta_media.html" %}
+        </div>
+        {% endif %}
+
+    </div>
+
+    {# Dividers #}
+    {% if self.show_divider %}
+        {% if self.divider_position == 'top' or self.divider_position == 'both' %}
+        <div class="cta-block__divider cta-block__divider--top"></div>
+        {% endif %}
+        {% if self.divider_position == 'bottom' or self.divider_position == 'both' %}
+        <div class="cta-block__divider cta-block__divider--bottom"></div>
+        {% endif %}
+    {% endif %}
+
+</section>

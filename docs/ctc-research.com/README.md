@@ -9,8 +9,8 @@ Welcome to the Alliance platform documentation. This directory is the single sou
 |---|---|
 | [PRODUCT.md](./PRODUCT.md) | Platform overview, modules, and tech stack |
 | [INSTALL.md](./INSTALL.md) | Docker-based installation and first-run guide |
-| [CORE_DIRECTORY_REMOVAL_REPORT.md](./CORE_DIRECTORY_REMOVAL_REPORT.md) | Core directory removal report and migration details |
-| [MIGRATION_VERIFICATION_REPORT.md](./MIGRATION_VERIFICATION_REPORT.md) | Migration verification report |
+| [CORE_DIRECTORY_REMOVAL_REPORT.md](../archives/ctc-research.com_CORE_DIRECTORY_REMOVAL_REPORT.md) | Core directory removal report and migration details |
+| [MIGRATION_VERIFICATION_REPORT.md](../archives/ctc-research.com_MIGRATION_VERIFICATION_REPORT.md) | Migration verification report |
 
 ### 🏗️ Architecture
 | Document | Description |

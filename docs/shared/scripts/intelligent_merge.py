@@ -40,21 +40,21 @@ class IntelligentMerger:
     """
 
     BOUNDARY_RULES = {
-        "nawaai": {
+        "crafts-ai": {
             "forbidden": ["django", "wagtail", "celery"],
-            "path": "venv/libs/nawaai",
+            "path": "applications/libs/crafts-ai",
         },
         "django_osoul": {
-            "forbidden": ["wagtail", "celery", "django_rseal"],
+            "forbidden": ["wagtail", "celery", "crafts_ai"],
             "path": "venv/libs/django-osoul",
         },
-        "django_rseal": {
+        "crafts_ai": {
             "forbidden": [],  # No project-specific imports
-            "path": "venv/libs/django-rseal",
+            "path": "venv/libs/crafts-ai",
         },
-        "django_grep": {
+        "django_osoul": {
             "forbidden": [],  # Should not be imported by production code
-            "path": "venv/libs/django-grep",
+            "path": "venv/libs/django-osoul",
         },
     }
 
@@ -383,7 +383,7 @@ def write_merge_report(
         "All merge candidates were verified against the architecture constraints:",
         "",
         "- No old architecture patterns (`apps/handlers/`, `apps/LMS/`, `apps/pages/`)",
-        "- No boundary violations (nawaai-no-django, osoul-no-wagtail, rseal-no-projects, grep-test-only)",
+        "- No boundary violations (crafts-ai-no-django, osoul-no-wagtail, rseal-no-projects, grep-test-only)",
         "- No duplication introduced",
         "- No test regressions",
         "",

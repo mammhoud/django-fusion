@@ -1,0 +1,136 @@
+version: '3.8'
+
+# ============================================================
+# Networks – all networks from both files
+# ============================================================
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  internal:
+    external: true
+  traefik-net:
+    external: true
+    name: traefik-net
+  site_network:
+    name: site_network
+
+# ============================================================
+# Volumes – named volumes from both files
+# ============================================================
+volumes:
+  postgres_data:
+    name: postgres_data
+  # redis_data:
+  #   name: redis_data
+
+# ============================================================
+# Services
+# ============================================================
+services:
+  # ----------------------------------------------------------
+  # PostgreSQL – merged & fixed
+  # ----------------------------------------------------------
+  postgres:
+    build:
+      context: ./postgres
+      dockerfile: Dockerfile          # uses your custom entrypoint
+    container_name: postgres
+    restart: always
+    ports:
+      - "${POSTGRES_PORT:-5432}:5432"
+    environment:
+      # Core PostgreSQL settings
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_DB: app_db
+      PGDATA: /var/lib/postgresql/data/pgdata
+      
+      # Multiple databases – comma‑separated list: db:owner:password
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko:structa:mk_pAssWord123}"
+      
+      # ---- NEW: Force re‑initialization on every start ----
+      # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again
+      FORCE_REINIT: "${FORCE_REINIT:-false}"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./postgres/init:/docker-entrypoint-initdb.d
+      - ./postgres/backups:/backups:Z
+    networks:
+      - common
+      - warehouse-net
+      - internal
+      - traefik-net
+      - site_network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '2'
+          memory: 2G
+        reservations:
+          cpus: '1'
+          memory: 1G
+
+  # ----------------------------------------------------------
+  # Redis – merged & fixed
+  # ----------------------------------------------------------
+  # redis:
+  #   image: redis:7-alpine
+  #   container_name: redis
+  #   restart: always
+  #   command: >
+  #     redis-server /usr/local/etc/redis/redis.conf
+  #     --appendonly yes
+  #     --requirepass ${REDIS_PASSWORD:-redis_password}
+  #   ports:
+  #     - "${REDIS_PORT:-6379}:6379"
+  #   volumes:
+  #     - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+  #     - redis_data:/data
+  #   networks:
+  #     - common
+  #     - warehouse-net
+  #     - internal
+  #     - traefik-net
+  #     - site_network
+  #   healthcheck:
+  #     test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 5
+  #   deploy:
+  #     resources:
+  #       limits:
+  #         cpus: '1'
+  #         memory: 512M
+  #       reservations:
+  #         cpus: '0.5'
+  #         memory: 256M
+
+  # # ----------------------------------------------------------
+  # # Adminer – optional database UI
+  # # ----------------------------------------------------------
+  # adminer:
+  #   image: adminer:latest
+  #   container_name: adminer
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8081:8080"
+  #   networks:
+  #     - common
+  #     - traefik-net
+  #     - site_network
+  #   depends_on:
+  #     postgres:
+  #       condition: service_healthy
+  #   labels:
+  #     - "traefik.enable=true"
+  #     - "traefik.http.routers.adminer.rule=Host(`adminer.localhost`)"
+  #     - "traefik.http.routers.adminer.entrypoints=web"
+  #     - "traefik.http.services.adminer.loadbalancer.server.port=8080"

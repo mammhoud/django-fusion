@@ -322,13 +322,13 @@ The PostgreSQL service provides persistent data storage for both Frontend and AP
   - Rotate periodically in production
   - Store securely in secrets management system
 
-#### `POSTGRES_MULTIPLE_DATABASES`
+#### `INITDB_MULTIPLE_DATABASES`
 - **Type:** Comma-separated string
 - **Required:** Yes
 - **Valid Values:** Database names
 - **Default:** None (must be provided)
 - **Purpose:** Creates multiple databases on initialization
-- **Example:** `POSTGRES_MULTIPLE_DATABASES=frontend_db,api_db`
+- **Example:** `INITDB_MULTIPLE_DATABASES=frontend_db,api_db`
 - **Impact:** Allows separate databases for Frontend and API services
 
 ### Optional Variables
@@ -521,7 +521,7 @@ CORS_ALLOWED_ORIGINS=http://localhost:3000,http://localhost:8000
 # PostgreSQL
 POSTGRES_USER=postgres
 POSTGRES_PASSWORD=dev_password
-POSTGRES_MULTIPLE_DATABASES=frontend_db,api_db
+INITDB_MULTIPLE_DATABASES=frontend_db,api_db
 
 # Nginx Reverse Proxy
 NGINX_HOST=structa.cloud
@@ -569,7 +569,7 @@ CORS_ALLOWED_ORIGINS=https://staging.structa.cloud
 # PostgreSQL
 POSTGRES_USER=staging_user
 POSTGRES_PASSWORD=staging_secure_password
-POSTGRES_MULTIPLE_DATABASES=frontend_db,api_db
+INITDB_MULTIPLE_DATABASES=frontend_db,api_db
 
 # Nginx Reverse Proxy
 NGINX_HOST=staging.structa.cloud
@@ -619,7 +619,7 @@ CORS_ALLOWED_ORIGINS=https://site.structa.cloud,https://www.site.structa.cloud
 # PostgreSQL
 POSTGRES_USER=prod_user
 POSTGRES_PASSWORD=<generate-secure-random-password>
-POSTGRES_MULTIPLE_DATABASES=frontend_db,api_db
+INITDB_MULTIPLE_DATABASES=frontend_db,api_db
 
 # Nginx Reverse Proxy
 NGINX_HOST=structa.cloud

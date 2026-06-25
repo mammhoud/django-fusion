@@ -1,0 +1,45 @@
+{% extends 'layout/auth/skeleton.html' %}
+{% load i18n %}
+
+{% block title %}Sign In — CTC Research{% endblock %}
+
+{% block content %}
+<div class="auth auth--split-layout" id="login-form-container">
+  <div class="auth__container--split">
+
+    {# Welcome panel #}
+    <div class="auth__welcome--split">
+      <div class="auth__welcome-inner">
+        <div class="auth__logo">
+          <h3>{% trans "🎓 CTC Research" %}</h3>
+        </div>
+        <h1 class="auth__welcome-title">{% trans "Welcome Back" %}</h1>
+        <p class="auth__welcome-text">
+          {% trans "Sign in to continue your research journey, access your courses, and connect with your peers." %}
+        </p>
+        <div class="auth__social-proof">
+          <ul class="auth__features-list" style="list-style:none;padding:0;margin-top:1.5rem;">
+            <li class="auth__feature-item">✓ {% trans "Resume where you left off" %}</li>
+            <li class="auth__feature-item">✓ {% trans "Access your certificates" %}</li>
+            <li class="auth__feature-item">✓ {% trans "Collaborate with researchers" %}</li>
+            <li class="auth__feature-item">✓ {% trans "Track your progress" %}</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+
+    {# Form panel #}
+    <div class="auth__form-section--split">
+      <div class="auth__form-container">
+        <div class="auth__form-header">
+          <h2 class="auth__form-title">{% trans "Sign In" %}</h2>
+          <p class="auth__form-subtitle">{% trans "Enter your credentials to continue" %}</p>
+        </div>
+
+        {% include "registration/fragments/login_form.html" %}
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}

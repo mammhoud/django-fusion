@@ -1,120 +1,76 @@
 #!/usr/bin/env python3
-"""Django's command-line utility for administrative tasks.
+"""
+Django's command-line utility with multi-site support and DevOps commands.
 
-This manage.py supports switching between multiple website instances placed
-under this repository. Use the `--site` option or the
-`DJANGO_SITE`/`SITE` environment variable to select which site's
-`configs.settings` module will be used.
+This file is the main entry point for both Django management commands and
+the extended utility commands (deploy, logs, push, etc.).
 
 Examples:
-  python manage.py --site=ctc-research migrate
-  SITE=lms-demo python manage.py runserver
+  python manage.py --site=lms-demo migrate
+  python manage.py sites
+  python manage.py deploy ctc-research --no-cache
+  python manage.py validate-commands
+  python manage.py make-check --all
 """
 
+from __future__ import annotations
+
+import argparse
 import os
+import re
+import subprocess
 import sys
 from pathlib import Path
+from typing import Dict, List, Optional
 
-# Map short names to actual site directory names.
-SITES = {
-    "ctc-research": "ctc-research",
-    "lms-demo": "lms-demo",
-    "vresume": "VResume",
+# Add the repository root to sys.path
+REPO_ROOT = Path(__file__).resolve().parent
+ROOT_COMPOSE = REPO_ROOT / "docker-compose.yml"
+
+# Import SiteCLI from cli module
+from cli import SiteCLI
+
+# Mapping of utility command names to SiteCLI methods
+UTILITY_COMMANDS = {
+    "sites": "sites",
+    "make": "make",
+    "make-check": "make_check",
+    "check-sites": "check_sites",
+    "local-check": "local_check",
+    "deploy": "deploy",
+    "logs": "logs",
+    "down": "down",
+    "ps": "ps",
+    "build-assets": "build_assets",
+    "test": "test",
+    "push": "push",
+    "validate-commands": "validate_commands",
 }
 
-ALIASES = {
-    "ctc": "ctc-research",
-    "ctc-research": "ctc-research",
-    "ctc-research.com": "ctc-research",
-    "structa": "lms-demo",
-    "core": "lms-demo",
-    "lms": "lms-demo",
-    "lms-demo": "lms-demo",
-    "structa.cloud": "lms-demo",
-    "vresume": "VResume",
-    "vresume.structa.cloud": "VResume",
-    "resume": "VResume",
-}
 
-
-def _pop_site_arg(argv):
-    """Pop a `--site` argument from argv and return its value.
-
-    Supported forms: `--site=NAME` or `--site NAME`.
-    If found, the arg (and its value) are removed from `argv` so Django
-    receives the remaining args normally.
-    """
-    for idx, a in enumerate(argv[1:], start=1):
-        if a.startswith("--site="):
-            val = a.split("=", 1)[1]
-            del argv[idx]
-            return val
-        if a == "--site" and idx + 1 < len(argv):
-            val = argv[idx + 1]
-            del argv[idx: idx + 2]
-            return val
-    return None
-
-
-def _print_sites() -> None:
-    print("Available sites:")
-    print("  ctc-research  aliases: ctc, ctc-research.com")
-    print("  lms-demo      aliases: structa, structa.cloud, lms")
-    print("  vresume       aliases: resume, VResume, vresume.structa.cloud")
-
-
-def main():
+def main() -> None:
+    # Support old --list-sites flag (maps to 'sites' command)
     if "--list-sites" in sys.argv:
         sys.argv.remove("--list-sites")
-        _print_sites()
-        return
+        cli = SiteCLI()
+        sys.exit(cli.sites([]))
 
-    # Allow CLI arg to override env vars.
-    site_arg = _pop_site_arg(sys.argv) or os.environ.get("DJANGO_SITE") or os.environ.get("DJANGO_WEBSITE") or os.environ.get("WEBSITE") or os.environ.get("SITE")
-    if site_arg:
-        selected = ALIASES.get(site_arg.lower(), site_arg)
-    else:
-        # sensible default when nothing is provided
-        selected = "ctc-research"
-    logical_site = "vresume" if selected == "VResume" else selected
+    # If the first argument is a utility command, dispatch it
+    if len(sys.argv) > 1 and sys.argv[1] in UTILITY_COMMANDS:
+        cmd_name = sys.argv[1]
+        # Extract site from --site argument if present
+        site_arg = SiteCLI.pop_site_arg(sys.argv)
+        site = SiteCLI.resolve_site(site_arg) if site_arg else None
+        cli = SiteCLI(site)
+        method = getattr(cli, UTILITY_COMMANDS[cmd_name])
+        sys.exit(method(sys.argv[2:]))
 
-    repo_root = Path(__file__).resolve().parent
-    source_dir = repo_root / selected
-    site_dir = source_dir
-
-    if site_dir.exists():
-        # Ensure the repo root and selected site directory are on sys.path. The
-        # repo root exposes shared configs; the site directory exposes website
-        # apps, templates, static assets, and website-local settings.py.
-        site_app_dir = site_dir / "www"
-        for path in (str(site_app_dir), str(site_dir), str(repo_root)):
-            if path not in sys.path:
-                sys.path.insert(0, path)
-        os.environ.setdefault("DJANGO_SITE", logical_site)
-        os.environ.setdefault("DJANGO_WEBSITE", logical_site)
-        os.environ.setdefault("WEBSITE", logical_site)
-        os.environ.setdefault("WEBSITE_NAME", logical_site)
-        os.environ.setdefault("PROJECT_PATH", logical_site)
-        os.environ.setdefault("DJANGO_WEBSITE_DIR", str(site_dir))
-        os.environ.setdefault("WEBSITE_DIR", str(site_dir))
-        print(f"Using site '{logical_site}' (site path: {site_dir})", file=sys.stderr)
-    else:
-        print(f"Warning: site directory '{site_dir}' not found; continuing with current PYTHONPATH", file=sys.stderr)
-
-    # Prefer website-local settings.py; wrapper configs/settings.py remains
-    # available for deployments that explicitly use configs.settings.
-    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
-
-    try:
-        from django.core.management import execute_from_command_line
-    except ImportError as exc:
-        raise ImportError(
-            "Couldn't import Django. Are you sure it's installed and "
-            "available on your PYTHONPATH environment variable?"
-        ) from exc
-
-    execute_from_command_line(sys.argv)
+    # Otherwise, treat as Django command
+    site_arg = SiteCLI.pop_site_arg(sys.argv)
+    site = SiteCLI.resolve_site(site_arg) if site_arg else None
+    cli = SiteCLI(site)
+    cli.run_django_command(sys.argv)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()

@@ -32,16 +32,16 @@ pip install poetry  # For package management
 
 ### Step 1.1: Audit Current Code
 
-**Objective:** Identify all foundation code in django-rseal
+**Objective:** Identify all foundation code in crafts-ai
 
 ```bash
-# List all files in django-rseal
-find venv/libs/django-rseal/src/django_rseal -type f -name "*.py" | sort
+# List all files in crafts-ai
+find venv/libs/crafts-ai/src/crafts_ai -type f -name "*.py" | sort
 
 # Identify foundation modules
-grep -r "class BaseModel" venv/libs/django-rseal/
-grep -r "class.*Mixin" venv/libs/django-rseal/
-grep -r "def.*route" venv/libs/django-rseal/
+grep -r "class BaseModel" venv/libs/crafts-ai/
+grep -r "class.*Mixin" venv/libs/crafts-ai/
+grep -r "def.*route" venv/libs/crafts-ai/
 ```
 
 **Foundation Modules to Move:**
@@ -73,11 +73,11 @@ touch venv/libs/django-osoul/src/django_osoul/routes/__init__.py
 
 ```bash
 # Copy files
-cp venv/libs/django-rseal/src/django_rseal/models/*.py \
+cp venv/libs/crafts-ai/src/crafts_ai/models/*.py \
    venv/libs/django-osoul/src/django_osoul/models/
 
 # Update imports in moved files
-# OLD: from django_rseal.utils import helper
+# OLD: from crafts_ai.utils import helper
 # NEW: from django_osoul.utils import helper
 ```
 
@@ -111,19 +111,19 @@ for root, dirs, files in os.walk('venv/libs/django-osoul/src/django_osoul'):
     for file in files:
         if file.endswith('.py'):
             file_path = os.path.join(root, file)
-            update_imports(file_path, 'django_rseal', 'django_osoul')
+            update_imports(file_path, 'crafts_ai', 'django_osoul')
 ```
 
 ### Step 1.4: Create Deprecation Shims
 
-**File: `venv/libs/django-rseal/src/django_rseal/compat/__init__.py`**
+**File: `venv/libs/crafts-ai/src/crafts_ai/compat/__init__.py`**
 
 ```python
 """
 Backward compatibility layer for moved modules.
 
 This module provides deprecation shims for code that has been moved to
-django-osoul. These imports will be removed in django-rseal 3.0.0.
+django-osoul. These imports will be removed in crafts-ai 3.0.0.
 """
 
 import warnings
@@ -133,7 +133,7 @@ def _deprecation_warning(old_path, new_path):
     warnings.warn(
         f"Importing from {old_path} is deprecated. "
         f"Use {new_path} instead. "
-        f"This will be removed in django-rseal 3.0.0.",
+        f"This will be removed in crafts-ai 3.0.0.",
         DeprecationWarning,
         stacklevel=3
     )
@@ -156,7 +156,7 @@ __all__ = [
 ]
 ```
 
-**File: `venv/libs/django-rseal/src/django_rseal/models/__init__.py`**
+**File: `venv/libs/crafts-ai/src/crafts_ai/models/__init__.py`**
 
 ```python
 """
@@ -170,9 +170,9 @@ import warnings
 from django_osoul.models import *
 
 warnings.warn(
-    "Importing from django_rseal.models is deprecated. "
+    "Importing from crafts_ai.models is deprecated. "
     "Use django_osoul.models instead. "
-    "This will be removed in django-rseal 3.0.0.",
+    "This will be removed in crafts-ai 3.0.0.",
     DeprecationWarning,
     stacklevel=2
 )
@@ -180,17 +180,17 @@ warnings.warn(
 
 ### Step 1.5: Update Internal Imports
 
-**Update all imports in django-rseal:**
+**Update all imports in crafts-ai:**
 
 ```bash
 # Find all imports of moved modules
-grep -r "from django_rseal.models import" venv/libs/django-rseal/
-grep -r "from django_rseal.routes import" venv/libs/django-rseal/
-grep -r "from django_rseal.forms import" venv/libs/django-rseal/
+grep -r "from crafts_ai.models import" venv/libs/crafts-ai/
+grep -r "from crafts_ai.routes import" venv/libs/crafts-ai/
+grep -r "from crafts_ai.forms import" venv/libs/crafts-ai/
 
 # Update to use django_osoul
-sed -i 's/from django_rseal\.models/from django_osoul.models/g' \
-    venv/libs/django-rseal/src/django_rseal/**/*.py
+sed -i 's/from crafts_ai\.models/from django_osoul.models/g' \
+    venv/libs/crafts-ai/src/crafts_ai/**/*.py
 ```
 
 ### Step 1.6: Run Tests
@@ -200,9 +200,9 @@ sed -i 's/from django_rseal\.models/from django_osoul.models/g' \
 cd venv/libs/django-osoul
 pytest tests/ -v --cov=src/django_osoul
 
-# Run django-rseal tests
-cd venv/libs/django-rseal
-pytest tests/ -v --cov=src/django_rseal
+# Run crafts-ai tests
+cd venv/libs/crafts-ai
+pytest tests/ -v --cov=src/crafts_ai
 
 # Run integration tests
 cd venv/libs
@@ -222,8 +222,8 @@ def check_circular_imports():
     """Check for circular imports."""
     modules = [
         'django_osoul',
-        'django_rseal',
-        'django_grep',
+        'crafts_ai',
+        'django_osoul',
         'nawaai',
     ]
 
@@ -254,9 +254,9 @@ if __name__ == '__main__':
 
 ```bash
 # Find all AI-related code
-find venv/libs/django-rseal -name "*ai*" -o -name "*llm*" -o -name "*mcp*"
-grep -r "from openai import" venv/libs/django-rseal/
-grep -r "from anthropic import" venv/libs/django-rseal/
+find venv/libs/crafts-ai -name "*ai*" -o -name "*llm*" -o -name "*mcp*"
+grep -r "from openai import" venv/libs/crafts-ai/
+grep -r "from anthropic import" venv/libs/crafts-ai/
 ```
 
 ### Step 2.2: Create nawaai Structure
@@ -277,11 +277,11 @@ touch venv/libs/nawaai/src/nawaai/utils/__init__.py
 
 ```bash
 # Copy AI files
-cp venv/libs/django-rseal/src/django_rseal/ai/*.py \
+cp venv/libs/crafts-ai/src/crafts_ai/ai/*.py \
    venv/libs/nawaai/src/nawaai/ai/
 
 # Copy MCP files
-cp venv/libs/django-rseal/src/django_rseal/mcp/*.py \
+cp venv/libs/crafts-ai/src/crafts_ai/mcp/*.py \
    venv/libs/nawaai/src/nawaai/mcp/
 
 # Remove Django imports from moved files
@@ -325,7 +325,7 @@ for root, dirs, files in os.walk('venv/libs/nawaai/src/nawaai'):
 
 ### Step 2.5: Create Deprecation Shims
 
-**File: `venv/libs/django-rseal/src/django_rseal/ai/__init__.py`**
+**File: `venv/libs/crafts-ai/src/crafts_ai/ai/__init__.py`**
 
 ```python
 """
@@ -339,9 +339,9 @@ import warnings
 from nawaai.ai import *
 
 warnings.warn(
-    "Importing from django_rseal.ai is deprecated. "
+    "Importing from crafts_ai.ai is deprecated. "
     "Use nawaai.ai instead. "
-    "This will be removed in django-rseal 3.0.0.",
+    "This will be removed in crafts-ai 3.0.0.",
     DeprecationWarning,
     stacklevel=2
 )
@@ -350,14 +350,14 @@ warnings.warn(
 ### Step 2.6: Update Imports
 
 ```bash
-# Update imports in django-rseal
-sed -i 's/from django_rseal\.ai/from nawaai.ai/g' \
-    venv/libs/django-rseal/src/django_rseal/**/*.py
+# Update imports in crafts-ai
+sed -i 's/from crafts_ai\.ai/from nawaai.ai/g' \
+    venv/libs/crafts-ai/src/crafts_ai/**/*.py
 
 # Update imports in projects
-sed -i 's/from django_rseal\.ai/from nawaai.ai/g' \
+sed -i 's/from crafts_ai\.ai/from nawaai.ai/g' \
     ctc-research.com/**/*.py
-sed -i 's/from django_rseal\.ai/from nawaai.ai/g' \
+sed -i 's/from crafts_ai\.ai/from nawaai.ai/g' \
     structa.cloud/**/*.py
 ```
 
@@ -371,9 +371,9 @@ pytest tests/ -v --cov=src/nawaai
 # Verify no Django imports
 grep -r "from django" venv/libs/nawaai/src/nawaai/ && echo "ERROR: Django imports found" || echo "✓ No Django imports"
 
-# Run django-rseal tests
-cd venv/libs/django-rseal
-pytest tests/ -v --cov=src/django_rseal
+# Run crafts-ai tests
+cd venv/libs/crafts-ai
+pytest tests/ -v --cov=src/crafts_ai
 ```
 
 ---
@@ -384,19 +384,19 @@ pytest tests/ -v --cov=src/django_rseal
 
 ```bash
 # Find all testing code
-find venv/libs/django-rseal -name "*test*" -o -name "*factory*" -o -name "*fixture*"
+find venv/libs/crafts-ai -name "*test*" -o -name "*factory*" -o -name "*fixture*"
 find venv/libs/django-seed -name "*seed*" -o -name "*factory*"
 ```
 
-### Step 3.2: Create django-grep Structure
+### Step 3.2: Create django-osoul Structure
 
 ```bash
 # Create directory structure
-mkdir -p venv/libs/django-grep/src/django_grep/{factories,assertions,fixtures,helpers,mocks,runners}
+mkdir -p venv/libs/django-osoul/src/django_osoul/{factories,assertions,fixtures,helpers,mocks,runners}
 
 # Create __init__.py files
-touch venv/libs/django-grep/src/django_grep/__init__.py
-touch venv/libs/django-grep/src/django_grep/factories/__init__.py
+touch venv/libs/django-osoul/src/django_osoul/__init__.py
+touch venv/libs/django-osoul/src/django_osoul/factories/__init__.py
 # ... repeat for all directories
 ```
 
@@ -404,21 +404,21 @@ touch venv/libs/django-grep/src/django_grep/factories/__init__.py
 
 ```bash
 # Copy factory files
-cp venv/libs/django-rseal/src/django_rseal/seeder/*.py \
-   venv/libs/django-grep/src/django_grep/factories/
+cp venv/libs/crafts-ai/src/crafts_ai/seeder/*.py \
+   venv/libs/django-osoul/src/django_osoul/factories/
 
 # Copy fixture files
 cp venv/libs/django-seed/src/django_seed/seeding/*.py \
-   venv/libs/django-grep/src/django_grep/fixtures/
+   venv/libs/django-osoul/src/django_osoul/fixtures/
 
 # Copy test utilities
-cp venv/libs/django-rseal/src/django_rseal/tests/*.py \
-   venv/libs/django-grep/src/django_grep/helpers/
+cp venv/libs/crafts-ai/src/crafts_ai/tests/*.py \
+   venv/libs/django-osoul/src/django_osoul/helpers/
 ```
 
 ### Step 3.4: Create Base Test Classes
 
-**File: `venv/libs/django-grep/src/django_grep/base.py`**
+**File: `venv/libs/django-osoul/src/django_osoul/base.py`**
 
 ```python
 """Base test classes for Django projects."""
@@ -485,7 +485,7 @@ class BaseAPITestCase(TestCase):
 
 ### Step 3.5: Create Factory Definitions
 
-**File: `venv/libs/django-grep/src/django_grep/factories/__init__.py`**
+**File: `venv/libs/django-osoul/src/django_osoul/factories/__init__.py`**
 
 ```python
 """Factory definitions for testing."""
@@ -522,7 +522,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 ### Step 3.6: Create Assertion Helpers
 
-**File: `venv/libs/django-grep/src/django_grep/assertions.py`**
+**File: `venv/libs/django-osoul/src/django_osoul/assertions.py`**
 
 ```python
 """Custom assertion helpers for testing."""
@@ -561,9 +561,9 @@ def assert_status_code(response, expected_code):
 ### Step 3.7: Run Tests
 
 ```bash
-# Run django-grep tests
-cd venv/libs/django-grep
-pytest tests/ -v --cov=src/django_grep
+# Run django-osoul tests
+cd venv/libs/django-osoul
+pytest tests/ -v --cov=src/django_osoul
 
 # Run all tests
 cd venv/libs
@@ -579,17 +579,17 @@ pytest tests/ -v --cov
 **File: `MIGRATION_GUIDE.md`**
 
 ```markdown
-# Migration Guide: django-rseal 2.0.0
+# Migration Guide: crafts-ai 2.0.0
 
-This guide helps you migrate from django-rseal 1.x to 2.0.0.
+This guide helps you migrate from crafts-ai 1.x to 2.0.0.
 
 ## What Changed
 
-In django-rseal 2.0.0, we reorganized the codebase to improve maintainability and reusability:
+In crafts-ai 2.0.0, we reorganized the codebase to improve maintainability and reusability:
 
 - Foundation code moved to `django-osoul`
 - AI code moved to `nawaai`
-- Testing utilities moved to `django-grep`
+- Testing utilities moved to `django-osoul`
 
 ## Migration Steps
 
@@ -597,16 +597,16 @@ In django-rseal 2.0.0, we reorganized the codebase to improve maintainability an
 
 **Before (1.x):**
 ```python
-from django_rseal.models import BaseModel
-from django_rseal.ai import LLMClient
-from django_rseal.seeder import Seeder
+from crafts_ai.models import BaseModel
+from crafts_ai.ai import LLMClient
+from crafts_ai.seeder import Seeder
 ```
 
 **After (2.0.0):**
 ```python
 from django_osoul.models import BaseModel
 from nawaai.ai import LLMClient
-from django_grep.factories import Seeder
+from django_osoul.factories import Seeder
 ```
 
 ### 2. Update Dependencies
@@ -616,8 +616,8 @@ Update your `pyproject.toml`:
 ```toml
 [dependencies]
 django-osoul = "^2.0.0"
-django-rseal = "^2.0.0"
-django-grep = "^2.0.0"
+crafts-ai = "^2.0.0"
+django-osoul = "^2.0.0"
 nawaai = "^1.0.0"
 ```
 
@@ -636,7 +636,7 @@ pytest tests/ -v
 ## Need Help?
 
 - Check the [API Documentation](https://docs.example.com)
-- Open an [Issue](https://github.com/example/django-rseal/issues)
+- Open an [Issue](https://github.com/example/crafts-ai/issues)
 - Join our [Community](https://community.example.com)
 ```
 
@@ -668,31 +668,31 @@ def deprecated(old_path, new_path, version='3.0.0'):
 **Update README files:**
 
 ```markdown
-# django-rseal 2.0.0
+# crafts-ai 2.0.0
 
 ## Migration from 1.x
 
-If you're upgrading from django-rseal 1.x, please see the [Migration Guide](../deployment/MIGRATION_GUIDE.md).
+If you're upgrading from crafts-ai 1.x, please see the [Migration Guide](../deployment/MIGRATION_GUIDE.md).
 
 ## New Package Structure
 
 - **django-osoul:** Foundation layer (models, forms, middleware, etc.)
-- **django-rseal:** Automation layer (email, tasks, workflows, etc.)
-- **django-grep:** Testing framework (factories, assertions, fixtures, etc.)
+- **crafts-ai:** Automation layer (email, tasks, workflows, etc.)
+- **django-osoul:** Testing framework (factories, assertions, fixtures, etc.)
 - **nawaai:** AI/MCP toolkit (standalone, zero Django)
 
 ## Installation
 
 ```bash
-pip install django-osoul django-rseal django-grep nawaai
+pip install django-osoul crafts-ai django-osoul nawaai
 ```
 
 ## Quick Start
 
 ```python
 from django_osoul.models import BaseModel
-from django_rseal.email import send_email
-from django_grep.factories import UserFactory
+from crafts_ai.email import send_email
+from django_osoul.factories import UserFactory
 from nawaai.ai import LLMClient
 ```
 ```
@@ -743,7 +743,7 @@ make html
 
 ### Added
 - New `django-osoul` package for foundation layer
-- New `django-grep` package for testing framework
+- New `django-osoul` package for testing framework
 - New `nawaai` package for AI/MCP toolkit
 - Comprehensive API documentation
 - Migration guide for upgrading from 1.x
@@ -752,12 +752,12 @@ make html
 - Reorganized package structure
 - Moved foundation code to `django-osoul`
 - Moved AI code to `nawaai`
-- Moved testing utilities to `django-grep`
+- Moved testing utilities to `django-osoul`
 
 ### Deprecated
-- Importing from `django_rseal.models` (use `django_osoul.models`)
-- Importing from `django_rseal.ai` (use `nawaai.ai`)
-- Importing from `django_rseal.seeder` (use `django_grep.factories`)
+- Importing from `crafts_ai.models` (use `django_osoul.models`)
+- Importing from `crafts_ai.ai` (use `nawaai.ai`)
+- Importing from `crafts_ai.seeder` (use `django_osoul.factories`)
 
 ### Removed
 - Nothing in this release (backward compatibility maintained)
@@ -790,11 +790,11 @@ version = "2.0.0"
 description = "Foundation layer for Django projects"
 ```
 
-**File: `venv/libs/django-rseal/pyproject.toml`**
+**File: `venv/libs/crafts-ai/pyproject.toml`**
 
 ```toml
 [project]
-name = "django-rseal"
+name = "crafts-ai"
 version = "2.0.0"
 description = "Automation layer for Django projects"
 dependencies = [
@@ -803,16 +803,16 @@ dependencies = [
 ]
 ```
 
-**File: `venv/libs/django-grep/pyproject.toml`**
+**File: `venv/libs/django-osoul/pyproject.toml`**
 
 ```toml
 [project]
-name = "django-grep"
+name = "django-osoul"
 version = "2.0.0"
 description = "Testing framework for Django projects"
 dependencies = [
     "django-osoul>=2.0.0",
-    "django-rseal>=2.0.0",
+    "crafts-ai>=2.0.0",
 ]
 ```
 
@@ -831,8 +831,8 @@ description = "AI/MCP toolkit"
 # Create git tags
 git tag -a v2.0.0 -m "Release version 2.0.0"
 git tag -a django-osoul-2.0.0 -m "django-osoul 2.0.0"
-git tag -a django-rseal-2.0.0 -m "django-rseal 2.0.0"
-git tag -a django-grep-2.0.0 -m "django-grep 2.0.0"
+git tag -a crafts-ai-2.0.0 -m "crafts-ai 2.0.0"
+git tag -a django-osoul-2.0.0 -m "django-osoul 2.0.0"
 git tag -a nawaai-1.0.0 -m "nawaai 1.0.0"
 
 # Push tags
@@ -846,10 +846,10 @@ git push origin --tags
 cd venv/libs/django-osoul
 poetry build
 
-cd ../django-rseal
+cd ../crafts-ai
 poetry build
 
-cd ../django-grep
+cd ../django-osoul
 poetry build
 
 cd ../nawaai
@@ -872,9 +872,9 @@ poetry publish
 
 ### Architecture
 - [ ] Foundation layer (django-osoul) has zero automation imports
-- [ ] Automation layer (django-rseal) depends only on foundation
+- [ ] Automation layer (crafts-ai) depends only on foundation
 - [ ] AI layer (nawaai) has zero Django imports
-- [ ] Testing layer (django-grep) depends on foundation + automation
+- [ ] Testing layer (django-osoul) depends on foundation + automation
 
 ### Documentation
 - [ ] API documentation complete
@@ -948,7 +948,7 @@ After completing all phases:
 For questions or issues:
 
 - Check the [API Documentation](https://docs.example.com)
-- Open an [Issue](https://github.com/example/django-rseal/issues)
+- Open an [Issue](https://github.com/example/crafts-ai/issues)
 - Join our [Community](https://community.example.com)
 - Email support@example.com
 

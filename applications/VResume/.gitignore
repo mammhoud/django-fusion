@@ -317,3 +317,5 @@ build/
 # Python venv
 .venv/
 venv/
+/media/email_templates/
+**/media/email_templates/

@@ -4,8 +4,19 @@
 
 set -e
 
-ACME_FILE="/etc/traefik/acme/acme.json"
-BACKUP_DIR="/etc/traefik/acme/backups"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+ACME_ROOT="${TRAEFIK_ACME_DIR:-/etc/traefik/acme}"
+
+if [ ! -d "$ACME_ROOT" ]; then
+    if [ -d "${SCRIPT_DIR}/acme" ]; then
+        ACME_ROOT="${SCRIPT_DIR}/acme"
+    elif [ -d "${SCRIPT_DIR}/../acme" ]; then
+        ACME_ROOT="${SCRIPT_DIR}/../acme"
+    fi
+fi
+
+ACME_FILE="${ACME_ROOT}/acme.json"
+BACKUP_DIR="${ACME_ROOT}/backups"
 
 echo "=========================================="
 echo "Traefik SSL Certificate Restore/Init"
@@ -44,9 +55,19 @@ fi
 echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Certificate initialization complete"
 echo "=========================================="
 
-# Run backup script to ensure current certificates are backed up
+backup_current_certificates() {
+    mkdir -p "$BACKUP_DIR"
+
+    if [ -f "$ACME_FILE" ]; then
+        BACKUP_FILE="$BACKUP_DIR/acme_$(date +%Y%m%d_%H%M%S).json"
+        cp "$ACME_FILE" "$BACKUP_FILE"
+        chmod 600 "$BACKUP_FILE"
+        echo "[$(date +'%Y-%m-%d %H:%M:%S')] ✓ Backed up current certificates: $BACKUP_FILE"
+    fi
+}
+
 echo "[$(date +'%Y-%m-%d %H:%M:%S')] Running backup after initialization..."
-/backup-certs.sh
+backup_current_certificates
 
 # Launch Traefik
 echo "[$(date +'%Y-%m-%d %H:%M:%S')] Starting Traefik..."

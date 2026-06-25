@@ -3,7 +3,7 @@ from django.utils.translation import gettext_lazy as _
 from modelcluster.models import ClusterableModel
 
 try:
-    from django_rseal.models.default import DefaultBase
+    from crafts_ai.models.default import DefaultBase
 except ImportError:
     from .base import DefaultBase
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface

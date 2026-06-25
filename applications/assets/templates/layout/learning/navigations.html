@@ -62,16 +62,16 @@ onload="{{ jsFunction }}"
 <div class="flex wrapper">
 
   {% block side_nav %}
-  {% include 'side-nav/side_nav.html' %}
+  {% include 'layout/navigation/side_nav.html' %}
   {% endblock side_nav %}
 
   <div class="page-content">
     {% block top_nav %}
-    <div class="top-nav">{% include 'top-nav/container.html' %}</div>
+    <div class="top-nav">{% include 'layout/navigation/top_nav.html' %}</div>
     {% endblock top_nav %}
     <main class="page-layout__main flex-grow p-6 bg-base-100">
       {% block top_header %}
-      <div class="breadcrumbs">{% include 'ui/headers/breadcrumbs.html' %}</div>
+      <div class="breadcrumbs">{% include 'layout/headers/breadcrumbs.html' %}</div>
       {% endblock top_header %}
       {% block content %}
       {% comment %} HERE A FRAGMENT FOR THE PAGE WILL BE {% endcomment %}

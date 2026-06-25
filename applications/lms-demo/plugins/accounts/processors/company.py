@@ -1,8 +1,13 @@
+import logging
+
+from django.core.exceptions import FieldError
 from django.db.models import Q
-from django_rseal.contrib.core.models import Contact, ContactEmail, ContactPhone
-from django_rseal.contrib.core.models import Corporate as Company
+from crafts_ai.contrib.core.models import Contact, ContactEmail, ContactPhone
+from crafts_ai.contrib.core.models import Corporate as Company
 
 # from commons.contact.models.profile import Company
+
+logger = logging.getLogger(__name__)
 
 
 def contacts_list(fields=None, context=None, filters=None, search=None):
@@ -21,8 +26,8 @@ def contacts_list(fields=None, context=None, filters=None, search=None):
     if filters:
         try:
             contacts = contacts.filter(**filters)
-        except Exception as e:
-            print(f"Error applying filters: {e}")
+        except (TypeError, ValueError, FieldError) as e:
+            logger.warning("Error applying filters: %s", e)
             return None
 
     # Apply search if provided
@@ -33,16 +38,16 @@ def contacts_list(fields=None, context=None, filters=None, search=None):
                 | Q(emails__email__icontains=search)  # Search in related emails
                 | Q(phones__phone_number__icontains=search)  # Search in related phone numbers
             ).distinct()
-        except Exception as e:
-            print(f"Error applying search: {e}")
+        except (TypeError, ValueError, FieldError) as e:
+            logger.warning("Error applying search: %s", e)
             return None
 
     # Select specific fields if provided
     if fields:
         try:
             contacts = contacts.values(*fields)
-        except Exception as e:
-            print(f"Error selecting fields: {e}")
+        except (TypeError, FieldError) as e:
+            logger.warning("Error selecting fields: %s", e)
             return None
 
     # Update the context if provided
@@ -65,7 +70,7 @@ def contact_details(contact, fields=None):
         try:
             contact = Contact.objects.get(pk=contact)
         except Contact.DoesNotExist:
-            print(f"Contact with id {contact} does not exist.")
+            logger.warning("Contact with id %s does not exist.", contact)
             return None
 
     emails = ContactEmail.objects.filter(contact=contact).values_list("email", flat=True)
@@ -95,7 +100,7 @@ def contact_company(contact):
         try:
             contact = Contact.objects.get(pk=contact)
         except Contact.DoesNotExist:
-            print(f"Contact with id {contact} does not exist.")
+            logger.warning("Contact with id %s does not exist.", contact)
             return None
 
     company = Company.objects.filter(pk=contact.added_company).first()
@@ -114,7 +119,7 @@ def company_contacts(company):
         try:
             company = Company.objects.get(pk=company)
         except Company.DoesNotExist:
-            print(f"Company with id {company} does not exist.")
+            logger.warning("Company with id %s does not exist.", company)
             return None
 
     contacts = Contact.objects.filter(added_company=company)
@@ -133,7 +138,7 @@ def company_contacts_details(company):
         try:
             company = Company.objects.get(pk=company)
         except Company.DoesNotExist:
-            print(f"Company with id {company} does not exist.")
+            logger.warning("Company with id %s does not exist.", company)
             return None
 
     contacts = company_contacts(company)

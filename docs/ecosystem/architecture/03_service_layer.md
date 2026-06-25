@@ -16,7 +16,7 @@ from django_osoul.comp.payloads.services import BaseService, TokenService
 
 ### Certificate Service
 
-**Location**: `django_rseal/pipelines/services/certificate.py`
+**Location**: `crafts_ai/pipelines/services/certificate.py`
 
 ```python
 class CertificateServiceBase:
@@ -39,7 +39,7 @@ class CertificateServiceBase:
 
 ### Person Service
 
-**Location**: `django_rseal/pipelines/services/person.py`
+**Location**: `crafts_ai/pipelines/services/person.py`
 
 ```python
 class PersonServiceBase:
@@ -68,7 +68,7 @@ class PersonServiceBase:
 
 ### Message Service
 
-**Location**: `django_rseal/pipelines/services/message.py`
+**Location**: `crafts_ai/pipelines/services/message.py`
 
 ```python
 class MessageServiceBase:
@@ -95,7 +95,7 @@ class MessageServiceBase:
 
 ### Form Submission Service
 
-**Location**: `django_rseal/pipelines/services/form_submission.py`
+**Location**: `crafts_ai/pipelines/services/form_submission.py`
 
 ```python
 class FormSubmissionService:
@@ -125,7 +125,7 @@ class FormSubmissionService:
 ### In Views
 
 ```python
-from django_rseal.pipelines.services import CertificateServiceBase
+from crafts_ai.pipelines.services import CertificateServiceBase
 
 class MyView(View):
     def get(self, request):

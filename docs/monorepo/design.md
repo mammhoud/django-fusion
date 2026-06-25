@@ -208,8 +208,8 @@ docs/
   - [ctc-research.com](ctc-research.com/)
 - **Packages**
   - [django-osoul](packages/django-osoul/)
-  - [django-rseal](packages/django-rseal/)
-  - [django-grep](packages/django-grep/)
+  - [crafts-ai](packages/crafts-ai/)
+  - [django-osoul](packages/django-osoul/)
 - **Infrastructure**
   - [Docker](infrastructure/docker/)
   - [Traefik](infrastructure/traefik/)

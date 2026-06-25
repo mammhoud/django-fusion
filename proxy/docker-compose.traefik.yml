@@ -1,38 +1,51 @@
 # ============================================================
-# Local Traefik Reverse Proxy (standalone)
-# Reads the same traefik.yml and dynamic/ folder as Coolify.
+# Proxy – Traefik (default-proxy)
+# ============================================================
+# Static config: ./traefik/dynamic.yml
+# Dynamic routers: ./traefik/dynamic/*.yml
 # ============================================================
 
-networks:
-  traefik-net:
-    external: false   # create automatically if not exists
-
-volumes:
-  traefik_acme:
+x-proxy-common: &proxy-common
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
 
 services:
-  structa-proxy:
-    image: traefik:v3.6
-    container_name: structa-proxy
-    restart: unless-stopped
+  default-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: default-proxy:latest
+    <<: *proxy-common
+    container_name: default-proxy
     security_opt:
       - no-new-privileges:true
     ports:
+      # Ensure host firewall/security groups allow inbound TCP 80 and 443.
       - "80:80"
       - "443:443"
-      - "8080:8080"       # dashboard (secured via basic-auth in middlewares)
+      # Enable only when HTTP/3 or explicit UDP routing is configured.
+      - "443:443/udp"
+      - "8080:8080"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
     volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./certs:/etc/traefik/certs:ro
       - traefik_acme:/etc/traefik/acme
-      - ./traefik.yml:/etc/traefik/traefik.yml:ro
-      - ./dynamic:/etc/traefik/dynamic:ro
-      - ./certs:/etc/traefik/certs:ro     # optional, only if you use static certs
     environment:
-      TRAEFIK_ACME_EMAIL: admin@structa.cloud
-      TRAEFIK_LOG_LEVEL: INFO
-    networks:
-      - traefik-net
+      - TRAEFIK_ACME_EMAIL=admin@structa.cloud
+      - TRAEFIK_LOG_LEVEL=INFO
     command:
-      - "--configFile=/etc/traefik/traefik.yml"
+      - "--configFile=/etc/traefik/dynamic.yml"   # matches the copy in Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
     deploy:
       resources:
         limits:
@@ -41,3 +54,13 @@ services:
         reservations:
           cpus: '0.5'
           memory: 256M
+
+volumes:
+  traefik_acme:
+    name: traefik_acme
+  
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true

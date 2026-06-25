@@ -34,7 +34,7 @@ This document outlines the strategy for eliminating cross-domain leakage detecte
 
 6. **lms ↔ content**: LMS imports content (pages, blocks)
    - **Root Cause**: Course pages and content blocks are shared
-   - **Solution**: Create shared interfaces in django_rseal for page/block abstractions
+   - **Solution**: Create shared interfaces in crafts_ai for page/block abstractions
 
 ## Elimination Strategy
 

@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    from django_rseal.workflows.pipelines.models.token import Token  # type: ignore[import]
+    from crafts_ai.workflows.pipelines.models.token import Token  # type: ignore[import]
 except ImportError:
     Token = None  # type: ignore[assignment,misc]
 

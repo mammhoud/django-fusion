@@ -47,13 +47,13 @@ A high-level overview of what was delivered and key takeaways.
 
 **4-Package Monorepo:**
 - django-osoul (45% of code) - Foundation layer
-- django-rseal (35% of code) - Automation layer
-- django-grep (12% of code) - Testing framework
+- crafts-ai (35% of code) - Automation layer
+- django-osoul (12% of code) - Testing framework
 - django-seed (8% of code) - Email automation
 - nawaai (0% Django) - AI/MCP toolkit
 
 **Issues Identified:**
-- Foundation code mixed with automation code in django-rseal
+- Foundation code mixed with automation code in crafts-ai
 - AI code tightly coupled with Django
 - Testing utilities scattered across packages
 - Circular import risks
@@ -63,8 +63,8 @@ A high-level overview of what was delivered and key takeaways.
 
 **2-Core Package Architecture:**
 - django-osoul (60% of code) - Foundation layer (models, forms, middleware, signals, decorators, validators, admin)
-- django-rseal (40% of code) - Automation layer (email, tasks, workflows, AI integration, seeding, pipelines, integrations)
-- django-grep (10% of code) - Testing framework (factories, assertions, fixtures, helpers, mocks)
+- crafts-ai (40% of code) - Automation layer (email, tasks, workflows, AI integration, seeding, pipelines, integrations)
+- django-osoul (10% of code) - Testing framework (factories, assertions, fixtures, helpers, mocks)
 - nawaai (0% Django) - AI/MCP toolkit (standalone, zero Django imports)
 
 **Benefits:**
@@ -85,7 +85,7 @@ A high-level overview of what was delivered and key takeaways.
 |------|-------|-------------|
 | 1-2 | Foundation Layer Consolidation | django-osoul contains all foundation code |
 | 3-4 | AI/MCP Extraction | nawaai is standalone (zero Django imports) |
-| 5-6 | Testing Framework Consolidation | django-grep contains all testing utilities |
+| 5-6 | Testing Framework Consolidation | django-osoul contains all testing utilities |
 | 7-8 | Deprecation Shims & Backward Compatibility | Backward compatibility verified |
 | 9-10 | Documentation & Release | v2.0.0 released to PyPI |
 
@@ -105,33 +105,33 @@ A high-level overview of what was delivered and key takeaways.
 
 ```python
 # OLD → NEW
-from django_rseal.models import BaseModel → from django_osoul.models import BaseModel
-from django_rseal.routes import path_helper → from django_osoul.routes import path_helper
-from django_rseal.forms import BaseForm → from django_osoul.forms import BaseForm
-from django_rseal.middleware import * → from django_osoul.middleware import *
-from django_rseal.signals import * → from django_osoul.signals import *
-from django_rseal.decorators import * → from django_osoul.decorators import *
-from django_rseal.validators import * → from django_osoul.validators import *
-from django_rseal.admin import BaseAdmin → from django_osoul.admin import BaseAdmin
+from crafts_ai.models import BaseModel → from django_osoul.models import BaseModel
+from crafts_ai.routes import path_helper → from django_osoul.routes import path_helper
+from crafts_ai.forms import BaseForm → from django_osoul.forms import BaseForm
+from crafts_ai.middleware import * → from django_osoul.middleware import *
+from crafts_ai.signals import * → from django_osoul.signals import *
+from crafts_ai.decorators import * → from django_osoul.decorators import *
+from crafts_ai.validators import * → from django_osoul.validators import *
+from crafts_ai.admin import BaseAdmin → from django_osoul.admin import BaseAdmin
 ```
 
 ### AI/MCP Layer (nawaai)
 
 ```python
 # OLD → NEW
-from django_rseal.ai import LLMClient → from nawaai.ai import LLMClient
-from django_rseal.mcp import MCPServer → from nawaai.mcp import MCPServer
+from crafts_ai.ai import LLMClient → from nawaai.ai import LLMClient
+from crafts_ai.mcp import MCPServer → from nawaai.mcp import MCPServer
 ```
 
-### Testing Layer (django-grep)
+### Testing Layer (django-osoul)
 
 ```python
 # NEW
-from django_grep.factories import UserFactory, ModelFactory
-from django_grep.assertions import assert_model_created, assert_email_sent
-from django_grep.fixtures import load_fixture, create_test_data
-from django_grep.helpers import create_user, create_post
-from django_grep.mocks import mock_email, mock_celery_task
+from django_osoul.factories import UserFactory, ModelFactory
+from django_osoul.assertions import assert_model_created, assert_email_sent
+from django_osoul.fixtures import load_fixture, create_test_data
+from django_osoul.helpers import create_user, create_post
+from django_osoul.mocks import mock_email, mock_celery_task
 ```
 
 ---
@@ -149,9 +149,9 @@ from django_grep.mocks import mock_email, mock_celery_task
 ### Architecture ✅
 - Clear separation of concerns
 - Foundation layer (django-osoul) has zero automation imports
-- Automation layer (django-rseal) depends only on foundation
+- Automation layer (crafts-ai) depends only on foundation
 - AI layer (nawaai) has zero Django imports
-- Testing layer (django-grep) depends on foundation + automation
+- Testing layer (django-osoul) depends on foundation + automation
 
 ### Documentation ✅
 - All public APIs documented

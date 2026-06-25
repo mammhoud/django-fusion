@@ -3,7 +3,7 @@ Partner snippet admin configuration using BaseSnippetViewSet.
 """
 
 from django.utils.translation import gettext_lazy as _
-from django_rseal.handlers.models.manage_company import Organization
+from crafts_ai.handlers.models.manage_company import Organization
 
 from ..base import BaseSnippetViewSet
 

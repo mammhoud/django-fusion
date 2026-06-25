@@ -34,7 +34,7 @@
 - **Modular "Handlers" System:** Orchestrates user identity, security, settings, and profile flows.
 - **Wagtail 5.x Integration:** Professional content management with nested blocks and reusable components.
 - **Enterprise Background Jobs:** Supported by **Temporal** for "set and forget" reliable orchestration.
-- **AI Tooling (MCP):** Direct integration with `django-grep` for AI-agent-assisted development.
+- **AI Tooling (MCP):** Direct integration with `django-osoul` for AI-agent-assisted development.
 - **Cloud-Ready Storage:** Pre-configured for AWS S3 and other S3-compatible providers.
 - **Production Infrastructure:** Full Docker Compose setup including Traefik, PostgreSQL, Redis, and Nginx.
 

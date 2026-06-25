@@ -68,58 +68,71 @@ else
   COMPOSE_FILE ?= docker-compose.yml
 endif
 
-MANAGE ?= uv run $(SITE)
+RUN_MODULE := $(if $(filter $(SITE),vresume),VResume,$(SITE))
+MANAGE ?= uv run $(RUN_MODULE)
 DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),VResume,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
-DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-demo-website,$(if $(filter $(SITE),vresume),vresume-website,$(SITE))))
+DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(SITE))))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy docker-deploy deploy redeploy docker-up docker-down docker-logs docker-prune-containers docker-prune-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config
+.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
-	@echo "Top-level targets:"
-	@echo "  make <target> WEBSITE=ctc|structa|vresume|<site-dir>"
-	@echo ""
-	@echo "Website selection:"
-	@echo "  WEBSITE=$(WEBSITE) -> SITE=$(SITE)"
-	@echo "  COMPOSE_FILE=$(COMPOSE_FILE)"
-	@echo "  DOCKER_SERVICE=$(DOCKER_SERVICE)"
-	@echo "  DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)"
-	@echo ""
-	@echo "Targets:"
-	@echo "  compose        - Delegate to compose/Makefile"
-	@echo "  assets         - Delegate to assets/Makefile"
-	@echo "  scripts        - Delegate to tests/scripts/Makefile"
-	@echo "  scripts        - Delegate to tests/scripts/Makefile"
-	@echo "  website-ctc    - Delegate to ctc-research/Makefile"
-	@echo "  website-structa- Delegate to lms-demo/Makefile"
-	@echo "  website-vresume- Delegate to VResume/Makefile"
-	@echo "  projects       - Run a delegated target in every project Makefile"
-	@echo "  website-vresume- Delegate to VResume/Makefile"
-	@echo "  projects       - Run a delegated target in every project Makefile"
-	@echo "  check          - Django checks for selected website"
-	@echo "  test           - Pytest from repo-level tests/"
-	@echo "  tests-website  - Run tests for WEBSITE=ctc|structa|vresume|all"
-	@echo "  tests-website  - Run tests for WEBSITE=ctc|structa|vresume|all"
-	@echo "  run-dev        - Run Django dev server for selected website"
-	@echo "  server         - Start the ASGI server (container default)"
-	@echo "  docker-build   - Build selected website container image via root compose"
-	@echo "  docker-build-server - Alias for docker-build"
-	@echo "  docker-redeploy - Rebuild selected website image without cache"
-	@echo "  docker-redeploy - Build and restart selected website service"
-	@echo "  docker-up      - Build and start selected website containers"
-	@echo "  build-assets-all - Build frontend assets for ctc, structa, and vresume"
-	@echo "  build-assets-all - Build frontend assets for ctc, structa, and vresume"
-	@echo "  docker-down    - Stop selected website containers"
-	@echo "  docker-prune-containers - Remove stopped containers/orphans"
-	@echo "  docker-prune-data - Remove generated compose data (dangerous)"
-	@echo "  docker-prune-containers - Remove stopped containers/orphans"
-	@echo "  docker-prune-data - Remove generated compose data (dangerous)"
-	@echo "  full-site-check- Build assets, collectstatic, migrate, load dumps, verify pages/assets"
+	@printf '%s\n' \
+		'Top-level targets:' \
+		'  make <target> WEBSITE=ctc|structa|vresume|<site-dir>' \
+		'' \
+		'Website selection:' \
+		'  WEBSITE=$(WEBSITE) -> SITE=$(SITE)' \
+		'  COMPOSE_FILE=$(COMPOSE_FILE)' \
+		'  DOCKER_SERVICE=$(DOCKER_SERVICE)' \
+		'  DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)' \
+		'  RUN_MODULE=$(RUN_MODULE)' \
+		'' \
+		'Common workflows:' \
+		'  check          - Run Django system checks for the selected website' \
+		'  test           - Run the default pytest suite' \
+		'  tests-website  - Run website tests for WEBSITE=ctc|structa|vresume|all' \
+		'  build-assets   - Build frontend assets for the selected website' \
+		'  build-assets-all - Build frontend assets for ctc, structa, and vresume' \
+		'  docker-up      - Build and start selected website containers' \
+		'  docker-down    - Stop selected website containers' \
+		'  docker-logs    - Follow logs for the selected website service' \
+		'  validate-compose-env - Print compose service/env wiring without secret values' \
+		'  docker-status  - Show Docker service status and resource usage' \
+		'  full-site-check- Build assets, collectstatic, migrate, load dumps, and verify runtime' \
+		'' \
+		'Delegation:' \
+		'  compose        - Delegate to compose/Makefile' \
+		'  assets         - Delegate to assets/Makefile' \
+		'  scripts        - Delegate to tests/scripts/Makefile' \
+		'  website-ctc    - Delegate to ctc-research/Makefile' \
+		'  website-structa- Delegate to lms-demo/Makefile' \
+		'  website-vresume- Delegate to VResume/Makefile' \
+		'  projects       - Run a delegated target in every project Makefile' \
+		'' \
+		'Development and server:' \
+		'  run-dev        - Run Django dev server for selected website' \
+		'  run-local      - Alias for run-dev for local machine use' \
+		'  check-all      - Run Django checks for ctc, structa, and vresume' \
+		'  test-local     - Run local pytest via uv' \
+		'  server         - Start the ASGI server (container default)' \
+		'  migrations     - Create Django migrations for selected website' \
+		'  migrate        - Apply Django migrations for selected website' \
+		'' \
+		'Docker build/deploy:' \
+		'  docker-build   - Build selected website container image via compose' \
+		'  docker-build-server - Alias for docker-build' \
+		'  docker-rebuild - Rebuild selected website image without cache' \
+		'  docker-redeploy - Build and restart selected website service' \
+		'  docker-prune-containers - Remove stopped containers/orphans' \
+		'  docker-prune-data - Remove generated compose data (dangerous)' \
+		'  clean-site-logs - Remove logs for the selected website under $(LOG_DIR)/$(SITE)' \
+		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep'
 
 compose:
 	$(MAKE) -C compose $(filter-out $@,$(MAKECMDGOALS))
@@ -149,8 +162,25 @@ projects:
 check:
 	$(MANAGE) check
 
+check-all:
+	@for website in ctc structa vresume; do \
+		echo "==> check WEBSITE=$$website"; \
+		$(MAKE) check WEBSITE=$$website; \
+	done
+
 validate-config:
-	@if $(MANAGE) help | grep -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
+	@docker compose -f $(COMPOSE_FILE) config -q && echo "Compose config valid" || echo "Compose config invalid"
+	@if $(MANAGE) help | rg -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
+
+validate-compose-env:
+	@printf '%s\n' 'Compose infrastructure wiring (secret values are not printed):'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'site-service' 'db-service' 'redis-service' 'db-name-env' 'db-credential-envs' 'redis-secret-env'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'ctc-research-website' 'database-server' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'database-server' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'database-server' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%s\n' ''
+	@printf '%s\n' 'Required runtime env names: DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME REDIS_URL CELERY_BROKER_URL CELERY_RESULT_BACKEND'
+	@printf '%s\n' 'Redis database indexes: REDIS_URL=/0, CELERY_BROKER_URL=/1, CELERY_RESULT_BACKEND=/2'
 
 build-assets:
 	PROJECT_PATH=$(SITE) $(MAKE) -C assets build
@@ -161,7 +191,13 @@ build-assets-all:
 test:
 	$(PYTHON) -m pytest
 
+test-local tests-local:
+	uv run pytest
+
 run-dev:
+	$(MANAGE) runserver
+
+run-local runserver-local:
 	$(MANAGE) runserver
 
 server:
@@ -222,10 +258,25 @@ docker-up:
 docker-down:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) down --remove-orphans
 
+up: docker-up
+
 docker-logs:
 	$(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) logs -f --tail=200 $(DOCKER_SERVICE)
 
 docker-prune-containers:
+	$(DOCKER_COMPOSE) down --remove-orphans
+
+# -----------------------------------------------------------------
+# Site‑specific shortcuts – invoke docker‑up with the appropriate WEBSITE
+# -----------------------------------------------------------------
+ctc-research-up:
+	@$(MAKE) docker-up WEBSITE=ctc-research
+
+structa-up:
+	@$(MAKE) docker-up WEBSITE=structa
+
+vresume-up:
+	@$(MAKE) docker-up WEBSITE=vresume
 	$(DOCKER_COMPOSE) down --remove-orphans
 	docker container prune -f
 
@@ -250,27 +301,35 @@ migrate-site:
 
 docker-load-data:
 	@echo "Loading dump data inside Docker container for $(SITE)"
-	$(DOCKER_COMPOSE) exec $(DOCKER_SERVICE) $(PYTHON) tests/scripts/utilities/load_dumped_data.py --site $(SITE) --include-dumps --force
+	$(DOCKER_COMPOSE) exec $(DOCKER_SERVICE) $(PYTHON) ../tests/scripts/utilities/load_dumped_data.py --site $(SITE) --include-dumps --force
 
 load-dumps-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/utilities/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
+	$(PYTHON) ../tests/scripts/utilities/load_dumped_data.py --site $(SITE) 2>&1 | tee $(LOG_DIR)/load_dumped_data-$(SITE).log
 
 populate-data-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/utilities/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
+	$(PYTHON) ../tests/scripts/utilities/populate_site_data.py --site $(SITE) --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$(SITE).log
 
 populate-data-all:
 	mkdir -p $(LOG_DIR)
 	@for site in ctc-research lms-demo vresume; do \
-		$(PYTHON) tests/scripts/utilities/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
+		$(PYTHON) ../tests/scripts/utilities/populate_site_data.py --site $$site --include-shared 2>&1 | tee $(LOG_DIR)/populate_site_data-$$site.log; \
 	done
 
 verify-runtime-site:
 	mkdir -p $(LOG_DIR)
-	$(PYTHON) tests/scripts/validation/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
+	$(PYTHON) ../tests/scripts/validation/verify_runtime.py --site $(SITE) --strict-assets --strict-pages 2>&1 | tee $(LOG_DIR)/verify_runtime-$(SITE).log
 
-full-site-check: build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site
+full-site-check:
+	@if [[ "$(TEST_WEBSITE)" == "all" ]]; then \
+		for website in ctc structa vresume; do \
+			echo "==> full-site-check WEBSITE=$$website"; \
+			$(MAKE) full-site-check WEBSITE=$$website; \
+		done; \
+	else \
+		$(MAKE) build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site tests-website WEBSITE=$(WEBSITE); \
+	fi
 
 migrations:
 	$(MANAGE) makemigrations
@@ -291,10 +350,9 @@ tests-websites:
 	$(MAKE) -C tests websites
 
 tests-website:
-	tests/scripts/helpers/run_website_tests.sh $(TEST_WEBSITE)
+	../tests/scripts/helpers/run_website_tests.sh $(TEST_WEBSITE)
 
 # Delegated subtargets are consumed by nested Makefiles.
-.PHONY: list health containers production production-simple domains vresume-pages
 list health containers production production-simple domains vresume-pages:
 	@:
 
@@ -302,7 +360,18 @@ list health containers production production-simple domains vresume-pages:
 # COMPREHENSIVE DEPLOYMENT TARGETS
 ###############################################################################
 
-.PHONY: docker-clean docker-clean-all docker-deploy-full docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-status docker-logs-all
+
+
+clean-site-logs:
+	@echo "Cleaning logs for $(SITE) under $(LOG_DIR)/$(SITE)..."
+	@mkdir -p $(LOG_DIR)/$(SITE)
+	@find $(LOG_DIR)/$(SITE) -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null || true
+
+clean-logs:
+	@echo "Cleaning all generated logs under $(LOG_DIR), preserving .gitkeep..."
+	@mkdir -p $(LOG_DIR)
+	@find $(LOG_DIR) -mindepth 1 ! -name .gitkeep -exec rm -rf {} + 2>/dev/null || true
+	@touch $(LOG_DIR)/.gitkeep
 
 # Clean all docker resources (containers, images, volumes)
 docker-clean:
@@ -317,12 +386,13 @@ docker-clean-all: docker-clean
 	@echo "Removing all Docker volumes..."
 	docker volume prune -f
 
-# Deploy warehouse services (postgres, redis, adminer, blinko)
+# Deploy warehouse services (postgres, redis)
 docker-deploy-warehouse:
-	@echo "Deploying warehouse services (postgres, redis, adminer, blinko)..."
+	@echo "Deploying warehouse services (postgres, redis)..."
+	docker network create common 2>/dev/null || true
 	docker network create traefik-net 2>/dev/null || true
 	docker network create site_network 2>/dev/null || true
-	docker compose -f docker-compose.yml up -d postgres redis adminer blinko
+	docker compose -f docker-compose.yml up -d postgres redis
 	@echo "Waiting for warehouse services to be healthy..."
 	@sleep 10
 	docker compose -f docker-compose.yml ps
@@ -422,7 +492,6 @@ docker-start-all:
 # ADDITIONAL UTILITY TARGETS
 ###############################################################################
 
-.PHONY: lint format typecheck docs lint-all format-all typecheck-all
 
 # Lint all Python code
 lint:
@@ -466,6 +535,7 @@ show-vars:
 	@echo "SITE=$(SITE)"
 	@echo "TEST_WEBSITE=$(TEST_WEBSITE)"
 	@echo "MANAGE=$(MANAGE)"
+	@echo "RUN_MODULE=$(RUN_MODULE)"
 	@echo "DOCKER_SERVICE=$(DOCKER_SERVICE)"
 	@echo "DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)"
 	@echo "COMPOSE_FILE=$(COMPOSE_FILE)"
@@ -483,16 +553,39 @@ show-config: show-vars
 	@echo "  DOCKER_BUILD_ARGS=$(DOCKER_BUILD_ARGS)"
 	@echo ""
 
-.PHONY: clean show-targets show-vars show-config
+# Production and Custom Compose Overrides
+
+# Build containers using production overrides
+docker-rebuild-prod:
+	@$(MAKE) docker-rebuild COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Build containers using custom overrides
+docker-rebuild-custom:
+	@$(MAKE) docker-rebuild COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Deploy using production overrides
+docker-up-prod:
+	@$(MAKE) docker-up COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Deploy using custom overrides
+docker-up-custom:
+	@$(MAKE) docker-up COMPOSE_FILE="docker-compose.yml -f docker-compose.custom.yml"
+
+# Run all deployment steps as per Coolify docs (warehouse, traefik, websites)
+run-all:
+	@$(MAKE) docker-deploy-warehouse && $(MAKE) docker-deploy-traefik && $(MAKE) docker-deploy-websites
+
+# Note: For full deployment steps, refer to Coolify documentation at https://coolify.io/docs/knowledge-base
+
 # Traefik SSL Certificate Operations
 docker-traefik-generate-certs:
 	@echo "Generating Traefik SSL certificates..."
-	bash compose/traefik/generate-certs.sh
+	bash proxy/scripts/generate-certs.sh
 
 docker-traefik-backup-certs:
 	@echo "Backing up Traefik SSL certificates..."
-	bash compose/traefik/scripts/backup-certs.sh
+	bash proxy/scripts/backup-certs.sh
 
 docker-traefik-restore-certs:
 	@echo "Restoring Traefik SSL certificates..."
-	bash compose/traefik/scripts/restore-certs.sh
+	bash proxy/scripts/restore-certs.sh

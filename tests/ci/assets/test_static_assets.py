@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import json
 
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 from ..base.config import Domain
 from ..base.mixins import ResponseAssertMixin, StaticAssetMixin

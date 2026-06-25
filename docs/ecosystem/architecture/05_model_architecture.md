@@ -27,12 +27,12 @@ class MyModel(BaseModel):
 
 ### Person
 
-**Location**: `django_rseal/pipelines/models/users/users.py`
+**Location**: `crafts_ai/pipelines/models/users/users.py`
 
 Extended user profile with additional fields.
 
 ```python
-from django_rseal.pipelines.models import Person
+from crafts_ai.pipelines.models import Person
 
 class Person(BaseModel):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
@@ -45,7 +45,7 @@ class Person(BaseModel):
 
 ### UserGroup
 
-**Location**: `django_rseal/pipelines/models/users/group.py`
+**Location**: `crafts_ai/pipelines/models/users/group.py`
 
 User groups for organization.
 
@@ -58,7 +58,7 @@ class UserGroup(BaseModel):
 
 ### UserRole
 
-**Location**: `django_rseal/pipelines/models/users/role.py`
+**Location**: `crafts_ai/pipelines/models/users/role.py`
 
 User roles with permissions.
 
@@ -181,7 +181,7 @@ UserRole N:N Permission (via JSONField)
 Provides caching functionality for models.
 
 ```python
-from django_rseal.pipelines.models import CachingStorage
+from crafts_ai.pipelines.models import CachingStorage
 
 class MyModel(BaseModel, CachingStorage):
     # Automatic cache invalidation on save/delete
@@ -192,7 +192,7 @@ class MyModel(BaseModel, CachingStorage):
 Base class for content models with publishing capabilities.
 
 ```python
-from django_rseal.pipelines.models import ContentBase
+from crafts_ai.pipelines.models import ContentBase
 
 class MyContent(ContentBase):
     title = models.CharField(max_length=200)

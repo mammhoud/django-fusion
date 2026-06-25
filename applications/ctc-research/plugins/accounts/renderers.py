@@ -1,10 +1,3 @@
-"""
-Renderer utilities for ctc-research.com.
+"""Compatibility wrapper for account component renderers."""
 
-Delegates to django_osoul.handlers.core.DynamicComponentRenderer
-"""
-
-from django_osoul.handlers.core import DynamicComponentRenderer
-
-# Singleton instance for easy access
-dynamic_renderer = DynamicComponentRenderer()
+from plugins.accounts.management.renderers import *  # noqa: F401,F403

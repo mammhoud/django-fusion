@@ -3,7 +3,7 @@
 # Usage: ./scripts/libs/check_boundaries.sh
 set -e
 
-LIBS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../.." && pwd)/libs"
+LIBS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/applications/libs"
 PASS=0; FAIL=0
 
 check() {
@@ -33,18 +33,18 @@ check "osoul" "django-osoul/src/django_osoul/views" "from wagtail"
 check "osoul" "django-osoul/src" "import celery"
 check "osoul" "django-osoul/src" "import openai"
 check "osoul" "django-osoul/src" "import anthropic"
-check "osoul" "django-osoul/src" "from django_rseal"
-check "osoul" "django-osoul/src" "import django_rseal"
+check "osoul" "django-osoul/src" "from crafts_ai"
+check "osoul" "django-osoul/src" "import crafts_ai"
 
 echo ""
 echo "--- crafts-ai: must not import django ---"
-check "crafts_ai" "nawaai/crafts_ai" "^from django"
-check "crafts_ai" "nawaai/crafts_ai" "^import django"
+check "crafts_ai" "crafts-ai/src/crafts_ai" "^from django"
+check "crafts_ai" "crafts-ai/src/crafts_ai" "^import django"
 
 echo ""
-echo "--- django-rseal: must not import django-grep ---"
-check "rseal" "django-rseal/src" "from django_grep"
-check "rseal" "django-rseal/src" "import django_grep"
+echo "--- crafts-ai: must not import django-osoul ---"
+check "rseal" "crafts-ai/src" "from django_osoul"
+check "rseal" "crafts-ai/src" "import django_osoul"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

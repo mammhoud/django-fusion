@@ -26,7 +26,7 @@ class AuthUtils:
         try:
             parts = token.split(".")
             return len(parts) == 3
-        except Exception:
+        except AttributeError:
             return False
 
     @staticmethod

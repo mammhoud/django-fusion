@@ -1,5 +1,7 @@
+{% extends "base_auth.html" %}
 {% load i18n static socialaccount %}
 
+{% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form">
     <header class="auth__form-header text-center">
@@ -67,3 +69,4 @@
 </section>
 
 <script>document.querySelectorAll('.toggle-password').forEach(btn=>btn.addEventListener('click',function(){let inp=this.closest('.input-group').querySelector('input'),ico=this.querySelector('i');if(inp.type==='password'){inp.type='text';ico.classList.replace('fa-eye','fa-eye-slash');}else{inp.type='password';ico.classList.replace('fa-eye-slash','fa-eye');}}));</script>
+{% endblock auth_content %}

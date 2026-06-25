@@ -39,7 +39,7 @@ node assets/scripts/workspace.mjs load-dumps --site structa
 ## In Tests
 
 ```python
-from django_grep.tests.base import BaseTestCase
+from django_osoul.tests.base import BaseTestCase
 
 class LMSDemoTest(BaseTestCase):
     fixtures = [

@@ -1,3 +1,5 @@
+import logging
+
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, TabbedInterface, ObjectList
@@ -7,6 +9,8 @@ from wagtail.snippets.blocks import SnippetChooserBlock
 
 from core.pages_base import BasePage
 from pages.home.models.snippets import Slider, TeamMember, Service, VResumeSettings
+
+logger = logging.getLogger(__name__)
 
 
 class HomePage(BasePage):
@@ -64,6 +68,7 @@ class HomePage(BasePage):
             site = Site.find_for_request(request)
             context["vresume_settings"] = VResumeSettings.for_site(site)
         except Exception:
+            logger.debug("Could not load VResumeSettings in HomePage")
             context["vresume_settings"] = None
 
         context["tabs"] = self.VCARD_TABS
@@ -90,6 +95,7 @@ class HomePage(BasePage):
                 qs = qs.filter(locale=locale)
             context["blog_posts"] = list(qs.order_by("-first_published_at")[:6])
         except Exception:
+            logger.debug("Could not load blog posts for HomePage")
             context["blog_posts"] = []
 
         return context

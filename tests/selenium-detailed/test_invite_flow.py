@@ -114,7 +114,7 @@ def test_send_invite_to_valid_email(base_url, selenium_driver):
 @pytest.mark.nondestructive
 def test_invite_record_created(base_url, selenium_driver):
     """Test invite record is created in database."""
-    # Invite model not available in django_grep
+    # Invite model not available in django_osoul
     pytest.skip("Invite model not available")
 
 
@@ -122,5 +122,5 @@ def test_invite_record_created(base_url, selenium_driver):
 @pytest.mark.nondestructive
 def test_invite_acceptance_flow(base_url, selenium_driver):
     """Test invite acceptance flow (if applicable)."""
-    # Invite model not available in django_grep
+    # Invite model not available in django_osoul
     pytest.skip("Invite model not available")

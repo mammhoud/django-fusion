@@ -1,3 +1,5 @@
+import logging
+
 from django.http import HttpRequest, JsonResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils.translation import gettext_lazy as _
@@ -5,6 +7,8 @@ from django.views import View
 from django_osoul.site import PageHandler
 
 from plugins.products.services.cart_service import CartService
+
+logger = logging.getLogger(__name__)
 
 
 class CartView(PageHandler):
@@ -119,8 +123,10 @@ class CartUpdateQuantityView(View):
                 elif action == 'decrease':
                     item.quantity = max(1, item.quantity - 1)
                 item.save()
-            except Exception:
-                pass
+            except cart.items.model.DoesNotExist:
+                logger.warning("Cart item %s not found for user %s", item_id, request.user.pk)
+            except Exception as e:
+                logger.error("Failed to update cart item %s: %s", item_id, e, exc_info=True)
         else:
             # Handle session items
             cart = request.session.get('cart', {})

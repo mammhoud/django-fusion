@@ -2,7 +2,7 @@
 """
 Test Runner Script for ctc-research.com and structa.cloud
 
-This script runs comprehensive tests for both websites using django-grep
+This script runs comprehensive tests for both websites using django-osoul
 and generates detailed reports.
 
 Usage:

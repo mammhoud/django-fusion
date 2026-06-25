@@ -130,7 +130,7 @@ if [ "$SUPERUSER_COUNT" -gt 0 ]; then
     log_success "Superuser already exists ($SUPERUSER_COUNT found)"
 else
     log_step "Creating superuser..."
-    docker exec $CONTAINER_NAME python -m django_rseal.scripts.superuser 2>&1 | grep -i "✅\|successfully\|created" || echo "Superuser created"
+    docker exec $CONTAINER_NAME python -m crafts_ai.scripts.superuser 2>&1 | grep -i "✅\|successfully\|created" || echo "Superuser created"
     log_success "Superuser created"
 fi
 

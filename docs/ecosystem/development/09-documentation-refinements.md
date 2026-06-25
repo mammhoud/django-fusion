@@ -29,7 +29,7 @@ The following fields were removed from `BaseFormPage`. These represent features 
 
 ## 3. Profile, Person, and Wagtail User Linking
 
-A critical part of the system is the association between system users and their profiles. This is handled via the `Person` model (defined in `django-grep`).
+A critical part of the system is the association between system users and their profiles. This is handled via the `Person` model (defined in `django-osoul`).
 
 ### Model Relationships:
 - **`django.contrib.auth.models.User`**: The standard Wagtail/Django user account.

@@ -65,6 +65,7 @@ server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var
 	@echo -e "$(BLUE)Populating initial data before server start...$(NC)"; \
 	$(MAKE) populate-data || true
 	@HOST=$${HOST:-0.0.0.0}; \
+	DB_NAME=$${DB_NAME_LMS:-db_structa}; \ 
 	PORT=$${PORT:-$(DEFAULT_PORT)}; \
 	WORKERS=$${WORKERS:-4}; \
 	TIMEOUT=$${TIMEOUT:-120}; \
@@ -140,7 +141,7 @@ install: ## Install Python dependencies
 install-internal: ## Refresh mammhoud GitHub packages (django-osoul/rseal/grep)
 	$(call clean_broken_venv)
 	@echo -e "$(BLUE)Installing mammhoud GitHub packages...$(NC)"
-	@$(UV) sync --upgrade-package django-osoul --upgrade-package django-rseal --upgrade-package django-grep
+	@$(UV) sync --upgrade-package django-osoul --upgrade-package crafts-ai
 	@echo -e "$(GREEN)✅ Internal packages refreshed from GitHub$(NC)"
 
 setup: ## Full setup (frontend, migrations, static, checks, superuser, data)

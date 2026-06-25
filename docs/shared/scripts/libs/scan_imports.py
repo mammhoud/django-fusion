@@ -7,23 +7,23 @@ import ast
 import sys
 from pathlib import Path
 
-LIBS = Path(__file__).parent.parent.parent / "libs"
+LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 RULES = {
     "django-osoul": {
         "src": "django-osoul/src",
-        "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "django_rseal", "django_grep", "crafts_ai"],
+        "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "crafts_ai", "django_osoul", "crafts_ai"],
     },
     "crafts-ai": {
-        "src": "nawaai/crafts_ai",
+        "src": "crafts-ai/src",
         "forbidden": ["django"],
     },
-    "django-rseal": {
-        "src": "django-rseal/src",
-        "forbidden": ["django_grep"],
+    "crafts-ai": {
+        "src": "crafts-ai/src",
+        "forbidden": ["django_osoul"],
     },
-    "django-grep": {
-        "src": "django-grep/src",
+    "django-osoul": {
+        "src": "django-osoul/src",
         "forbidden": [],  # can import from all
     },
 }

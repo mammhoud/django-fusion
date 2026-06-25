@@ -181,9 +181,9 @@ networks:
   - site_network
 ```
 
-### warehouse-net (dev only)
+### common (dev only)
 
-The `warehouses/` stack uses its own `warehouse-net` for internal communication between
+The `warehouses/` stack uses its own `common` for internal communication between
 `warehouse-postgres`, `warehouse-redis`, and `warehouse-adminer`. It also joins `traefik-net`
 so Traefik can expose Adminer at `adminer.localhost`.
 
@@ -201,7 +201,7 @@ These serve different purposes:
 | **DB user** | `django` | `structa` |
 | **Includes Adminer** | Yes (port 8081) | No |
 | **Naming** | `warehouse-postgres`, `warehouse-redis` | `structa-db`, `structa-cache` |
-| **Network** | `warehouse-net` + `traefik-net` | `traefik-net` + `site_network` |
+| **Network** | `common` + `traefik-net` | `traefik-net` + `site_network` |
 | **Data persistence** | `./postgres/data/` (local volume mount) | Named Docker volume `postgres_data` |
 
 **When to use which:**

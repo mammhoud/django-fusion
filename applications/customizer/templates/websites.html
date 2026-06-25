@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% block title %}Customizer Websites{% endblock %}
+{% block content %}
+<h1 class="mb-3">Available websites</h1>
+{% include "fragments/page_navigator.html" with websites=websites only %}
+<div id="customizer-page-grid" class="mt-4"></div>
+{% endblock %}

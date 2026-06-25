@@ -1,8 +1,8 @@
 """
 Form Submission Service for handling contact form submissions.
 
-Delegates to django_rseal.pipelines.services.FormSubmissionService
-Canonical import: from django_rseal.pipelines.services import FormSubmissionService
+Delegates to crafts_ai.pipelines.services.FormSubmissionService
+Canonical import: from crafts_ai.pipelines.services import FormSubmissionService
 """
 import logging
 from typing import Any, Optional
@@ -95,8 +95,8 @@ class FormSubmissionService:
             # Render email body
             try:
                 html_content = render_to_string(template_name, context)
-            except Exception:
-                # Fallback to plain text if template not found
+            except Exception as e:
+                logger.warning("Template %s rendering failed, using fallback: %s", template_name, e)
                 html_content = FormSubmissionService._build_plain_email(submission)
 
             # Create and send email
@@ -115,7 +115,7 @@ class FormSubmissionService:
             return True
 
         except Exception as e:
-            logger.error(f"Failed to send notification email for submission {submission.id}: {e}")
+            logger.error("Failed to send notification email for submission %s: %s", submission.id, e, exc_info=True)
             return False
 
     @staticmethod

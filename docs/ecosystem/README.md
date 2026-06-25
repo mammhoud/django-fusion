@@ -62,8 +62,8 @@ Development workflow and coding standards
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
 | django-osoul | Django foundation | [packages/django-osoul/](../packages/django-osoul/) |
-| django-rseal | Wagtail automation | [packages/django-rseal/](../packages/django-rseal/) |
-| django-grep | Testing | [packages/django-grep/](../packages/django-grep/) |
+| crafts-ai | Wagtail automation | [packages/crafts-ai/](../packages/crafts-ai/) |
+| django-osoul | Testing | [packages/django-osoul/](../packages/django-osoul/) |
 | nawaai | AI toolkit | [packages/nawaai/](../packages/nawaai/) |
 
 ---

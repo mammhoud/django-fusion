@@ -13,7 +13,7 @@ This unified specification consolidates all existing phase specs, architectural 
 
 ### Key Objectives
 
-1. **Consolidate 4 packages into 2 core packages** (django-osoul + django-rseal)
+1. **Consolidate 4 packages into 2 core packages** (django-osoul + crafts-ai)
 2. **Establish clear separation of concerns** (foundation vs. automation)
 3. **Create reusable, modular components** for any Django website project
 4. **Eliminate circular dependencies** and import conflicts
@@ -37,7 +37,7 @@ venv/libs/
 │   ├── signals/           (Django signals handlers)
 │   └── utils/             (Helper functions, decorators)
 │
-├── django-rseal/          (Automation layer - 35% of code)
+├── crafts-ai/          (Automation layer - 35% of code)
 │   ├── email/             (Email templates, sending)
 │   ├── tasks/             (Celery tasks, scheduling)
 │   ├── workflows/         (Business logic orchestration)
@@ -46,7 +46,7 @@ venv/libs/
 │   ├── pipelines/         (Data processing pipelines)
 │   └── integrations/      (Third-party service connectors)
 │
-├── django-grep/           (Testing framework - 12% of code)
+├── django-osoul/           (Testing framework - 12% of code)
 │   ├── factories/         (Factory Boy factories)
 │   ├── assertions/        (Custom test assertions)
 │   ├── fixtures/          (Test data fixtures)
@@ -70,11 +70,11 @@ stdlib/Django
     ↓
 django-osoul (foundation only)
     ↓
-django-rseal (automation, depends on osoul)
+crafts-ai (automation, depends on osoul)
     ↓
 nawaai (optional AI, zero Django imports)
 
-django-grep (testing, depends on osoul + rseal)
+django-osoul (testing, depends on osoul + rseal)
 
 ctc-research.com & structa.cloud (depend on osoul + rseal)
 ```
@@ -83,21 +83,21 @@ ctc-research.com & structa.cloud (depend on osoul + rseal)
 
 **django-osoul (Foundation Layer):**
 - ✅ Can import: Django, stdlib, third-party utilities
-- ❌ Cannot import: Wagtail, Celery, AI libraries, django-rseal
+- ❌ Cannot import: Wagtail, Celery, AI libraries, crafts-ai
 - Purpose: Provide base models, mixins, utilities for any Django project
 
-**django-rseal (Automation Layer):**
+**crafts-ai (Automation Layer):**
 - ✅ Can import: Django, django-osoul, Wagtail, Celery, AI libraries
 - ❌ Cannot import: Project-specific code, circular imports
 - Purpose: Provide automation, email, tasks, AI integration
 
 **nawaai (AI/MCP Toolkit):**
 - ✅ Can import: stdlib, AI libraries, MCP libraries
-- ❌ Cannot import: Django, django-osoul, django-rseal
+- ❌ Cannot import: Django, django-osoul, crafts-ai
 - Purpose: Standalone AI/MCP utilities, reusable across projects
 
-**django-grep (Testing Framework):**
-- ✅ Can import: Django, django-osoul, django-rseal, pytest, factory-boy
+**django-osoul (Testing Framework):**
+- ✅ Can import: Django, django-osoul, crafts-ai, pytest, factory-boy
 - ❌ Cannot import: Project-specific code
 - Purpose: Provide testing utilities for any Django project
 
@@ -126,7 +126,7 @@ venv/libs/
 │   ├── serializers/       (DRF serializers base)
 │   └── tests/             (Base test classes)
 │
-├── django-rseal/          (Automation - 40% of code)
+├── crafts-ai/          (Automation - 40% of code)
 │   ├── email/             (Email templates, sending, scheduling)
 │   ├── tasks/             (Celery tasks, scheduling, monitoring)
 │   ├── workflows/         (Business logic orchestration)
@@ -138,7 +138,7 @@ venv/libs/
 │   ├── signals/           (Advanced signal handlers)
 │   └── monitoring/        (Task monitoring, logging)
 │
-├── django-grep/           (Testing - 10% of code)
+├── django-osoul/           (Testing - 10% of code)
 │   ├── factories/         (Factory Boy factories)
 │   ├── assertions/        (Custom test assertions)
 │   ├── fixtures/          (Test data fixtures)
@@ -162,9 +162,9 @@ nawaai (standalone, zero Django)
     ↓
 django-osoul (foundation, depends on nawaai optionally)
     ↓
-django-rseal (automation, depends on osoul + nawaai)
+crafts-ai (automation, depends on osoul + nawaai)
 
-django-grep (testing, depends on osoul + rseal)
+django-osoul (testing, depends on osoul + rseal)
 
 ctc-research.com & structa.cloud (depend on osoul + rseal)
 ```
@@ -174,26 +174,26 @@ ctc-research.com & structa.cloud (depend on osoul + rseal)
 **Foundation Layer (django-osoul):**
 ```python
 # OLD → NEW
-from django_rseal.models import BaseModel → from django_osoul.models import BaseModel
-from django_rseal.routes import path_helper → from django_osoul.routes import path_helper
-from django_rseal.forms import BaseForm → from django_osoul.forms import BaseForm
-from django_rseal.middleware import * → from django_osoul.middleware import *
-from django_rseal.signals import * → from django_osoul.signals import *
-from django_rseal.decorators import * → from django_osoul.decorators import *
-from django_rseal.validators import * → from django_osoul.validators import *
-from django_rseal.admin import BaseAdmin → from django_osoul.admin import BaseAdmin
+from crafts_ai.models import BaseModel → from django_osoul.models import BaseModel
+from crafts_ai.routes import path_helper → from django_osoul.routes import path_helper
+from crafts_ai.forms import BaseForm → from django_osoul.forms import BaseForm
+from crafts_ai.middleware import * → from django_osoul.middleware import *
+from crafts_ai.signals import * → from django_osoul.signals import *
+from crafts_ai.decorators import * → from django_osoul.decorators import *
+from crafts_ai.validators import * → from django_osoul.validators import *
+from crafts_ai.admin import BaseAdmin → from django_osoul.admin import BaseAdmin
 ```
 
-**Automation Layer (django-rseal):**
+**Automation Layer (crafts-ai):**
 ```python
-# Remains in django-rseal
-from django_rseal.email import send_email, EmailTemplate
-from django_rseal.tasks import celery_task, schedule_task
-from django_rseal.workflows import Workflow, WorkflowStep
-from django_rseal.ai import AIClient, Prompt
-from django_rseal.seeder import Seeder, Factory
-from django_rseal.pipelines import Pipeline, PipelineStep
-from django_rseal.integrations import SlackIntegration, StripeIntegration
+# Remains in crafts-ai
+from crafts_ai.email import send_email, EmailTemplate
+from crafts_ai.tasks import celery_task, schedule_task
+from crafts_ai.workflows import Workflow, WorkflowStep
+from crafts_ai.ai import AIClient, Prompt
+from crafts_ai.seeder import Seeder, Factory
+from crafts_ai.pipelines import Pipeline, PipelineStep
+from crafts_ai.integrations import SlackIntegration, StripeIntegration
 ```
 
 **AI/MCP Layer (nawaai):**
@@ -205,14 +205,14 @@ from nawaai.tools import Tool, Agent
 from nawaai.utils import parse_response, format_prompt
 ```
 
-**Testing Layer (django-grep):**
+**Testing Layer (django-osoul):**
 ```python
 # NEW - Testing utilities
-from django_grep.factories import UserFactory, ModelFactory
-from django_grep.assertions import assert_model_created, assert_email_sent
-from django_grep.fixtures import load_fixture, create_test_data
-from django_grep.helpers import create_user, create_post
-from django_grep.mocks import mock_email, mock_celery_task
+from django_osoul.factories import UserFactory, ModelFactory
+from django_osoul.assertions import assert_model_created, assert_email_sent
+from django_osoul.fixtures import load_fixture, create_test_data
+from django_osoul.helpers import create_user, create_post
+from django_osoul.mocks import mock_email, mock_celery_task
 ```
 
 ---
@@ -224,30 +224,30 @@ from django_grep.mocks import mock_email, mock_celery_task
 **Objective:** Move all foundation code to django-osoul
 
 **Tasks:**
-1. Identify all foundation modules in django-rseal
+1. Identify all foundation modules in crafts-ai
    - models/, routes/, forms/, middleware/, signals/, decorators/, validators/, admin/
 2. Create corresponding directories in django-osoul
 3. Move files with import updates
-4. Create deprecation shims in django-rseal
+4. Create deprecation shims in crafts-ai
 5. Update all internal imports
 6. Run tests to verify functionality
 
 **Deliverables:**
 - django-osoul contains all foundation code
-- django-rseal has deprecation shims for backward compatibility
+- crafts-ai has deprecation shims for backward compatibility
 - All tests pass
 - No circular imports
 
 **Files to Move:**
 ```
-django-rseal/models/ → django-osoul/models/
-django-rseal/routes/ → django-osoul/routes/
-django-rseal/forms/ → django-osoul/forms/
-django-rseal/middleware/ → django-osoul/middleware/
-django-rseal/signals/ → django-osoul/signals/
-django-rseal/decorators/ → django-osoul/decorators/
-django-rseal/validators/ → django-osoul/validators/
-django-rseal/admin/ → django-osoul/admin/
+crafts-ai/models/ → django-osoul/models/
+crafts-ai/routes/ → django-osoul/routes/
+crafts-ai/forms/ → django-osoul/forms/
+crafts-ai/middleware/ → django-osoul/middleware/
+crafts-ai/signals/ → django-osoul/signals/
+crafts-ai/decorators/ → django-osoul/decorators/
+crafts-ai/validators/ → django-osoul/validators/
+crafts-ai/admin/ → django-osoul/admin/
 ```
 
 ### Phase 2: AI/MCP Extraction (Weeks 3-4)
@@ -255,32 +255,32 @@ django-rseal/admin/ → django-osoul/admin/
 **Objective:** Extract AI code to standalone nawaai package
 
 **Tasks:**
-1. Identify all AI/LLM code in django-rseal
+1. Identify all AI/LLM code in crafts-ai
 2. Extract to nawaai package
 3. Remove Django imports from nawaai
-4. Create deprecation shims in django-rseal
-5. Update imports in django-rseal
+4. Create deprecation shims in crafts-ai
+5. Update imports in crafts-ai
 6. Run tests to verify functionality
 
 **Deliverables:**
 - nawaai is standalone (zero Django imports)
-- django-rseal has deprecation shims
+- crafts-ai has deprecation shims
 - All tests pass
 - Clear API for AI utilities
 
 **Files to Move:**
 ```
-django-rseal/ai/ → nawaai/ai/
-django-rseal/mcp/ → nawaai/mcp/
+crafts-ai/ai/ → nawaai/ai/
+crafts-ai/mcp/ → nawaai/mcp/
 ```
 
 ### Phase 3: Testing Framework Consolidation (Weeks 5-6)
 
-**Objective:** Consolidate testing utilities into django-grep
+**Objective:** Consolidate testing utilities into django-osoul
 
 **Tasks:**
-1. Identify all testing code in django-rseal and django-seed
-2. Move to django-grep
+1. Identify all testing code in crafts-ai and django-seed
+2. Move to django-osoul
 3. Create base test classes
 4. Create factory definitions
 5. Create assertion helpers
@@ -288,16 +288,16 @@ django-rseal/mcp/ → nawaai/mcp/
 7. Run tests to verify functionality
 
 **Deliverables:**
-- django-grep contains all testing utilities
+- django-osoul contains all testing utilities
 - Clear API for test factories, assertions, fixtures
 - All tests pass
 - Documentation for testing utilities
 
 **Files to Move:**
 ```
-django-rseal/seeder/ → django-grep/factories/
-django-rseal/tests/ → django-grep/base/
-django-seed/seeding/ → django-grep/fixtures/
+crafts-ai/seeder/ → django-osoul/factories/
+crafts-ai/tests/ → django-osoul/base/
+django-seed/seeding/ → django-osoul/fixtures/
 ```
 
 ### Phase 4: Deprecation Shims & Backward Compatibility (Weeks 7-8)
@@ -305,7 +305,7 @@ django-seed/seeding/ → django-grep/fixtures/
 **Objective:** Ensure backward compatibility during transition
 
 **Tasks:**
-1. Create deprecation shims in django-rseal for moved code
+1. Create deprecation shims in crafts-ai for moved code
 2. Add deprecation warnings to old import paths
 3. Create migration guide for users
 4. Update documentation
@@ -320,12 +320,12 @@ django-seed/seeding/ → django-grep/fixtures/
 
 **Deprecation Shim Example:**
 ```python
-# django-rseal/models/__init__.py
+# crafts-ai/models/__init__.py
 import warnings
 from django_osoul.models import BaseModel, TimestampedModel
 
 warnings.warn(
-    "Importing from django_rseal.models is deprecated. "
+    "Importing from crafts_ai.models is deprecated. "
     "Use django_osoul.models instead.",
     DeprecationWarning,
     stacklevel=2
@@ -507,11 +507,11 @@ django-osoul/
 └── README.md
 ```
 
-**django-rseal Structure:**
+**crafts-ai Structure:**
 ```
-django-rseal/
+crafts-ai/
 ├── src/
-│   └── django_rseal/
+│   └── crafts_ai/
 │       ├── __init__.py
 │       ├── email/
 │       ├── tasks/
@@ -535,8 +535,8 @@ django-rseal/
 **Absolute Imports (Preferred):**
 ```python
 from django_osoul.models import BaseModel
-from django_rseal.email import send_email
-from django_grep.factories import UserFactory
+from crafts_ai.email import send_email
+from django_osoul.factories import UserFactory
 from nawaai.ai import LLMClient
 ```
 
@@ -548,8 +548,8 @@ from ..utils import helper_function
 
 **Avoid:**
 ```python
-from django_rseal.models import BaseModel  # After Phase 1
-from django_rseal.ai import LLMClient  # After Phase 2
+from crafts_ai.models import BaseModel  # After Phase 1
+from crafts_ai.ai import LLMClient  # After Phase 2
 ```
 
 ### 5.3 Testing Strategy
@@ -627,9 +627,9 @@ tests/
 
 - ✅ Clear separation of concerns
 - ✅ Foundation layer (django-osoul) has zero automation imports
-- ✅ Automation layer (django-rseal) depends only on foundation
+- ✅ Automation layer (crafts-ai) depends only on foundation
 - ✅ AI layer (nawaai) has zero Django imports
-- ✅ Testing layer (django-grep) depends on foundation + automation
+- ✅ Testing layer (django-osoul) depends on foundation + automation
 
 ### 6.3 Documentation Metrics
 
@@ -706,7 +706,7 @@ tests/
 - Update imports
 
 **Week 5-6: Testing Framework Consolidation**
-- Move testing code to django-grep
+- Move testing code to django-osoul
 - Create base test classes
 - Create factory definitions
 - Create assertion helpers
@@ -777,8 +777,8 @@ tests/
 ### A. Glossary
 
 - **django-osoul:** Foundation layer package
-- **django-rseal:** Automation layer package
-- **django-grep:** Testing framework package
+- **crafts-ai:** Automation layer package
+- **django-osoul:** Testing framework package
 - **nawaai:** AI/MCP toolkit package
 - **Deprecation shim:** Backward compatibility layer
 - **Circular import:** When module A imports B and B imports A

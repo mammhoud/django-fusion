@@ -15,9 +15,9 @@ All four libraries live in `/root/site/libs` as a unified uv workspace.
 uv sync --directory /root/site/libs
 
 # Or install individually as editable
-uv pip install -e /root/site/libs/django-grep
 uv pip install -e /root/site/libs/django-osoul
-uv pip install -e /root/site/libs/django-rseal
+uv pip install -e /root/site/libs/django-osoul
+uv pip install -e /root/site/libs/crafts-ai
 uv pip install -e /root/site/libs/django-seed
 ```
 
@@ -26,9 +26,9 @@ Workspace layout:
 ```
 /root/site/libs/
 ├── pyproject.toml      # uv workspace root
-├── django-grep/        # canonical base utilities
-├── django-osoul/       # abstract models, managers, validators (depends on django-grep)
-├── django-rseal/       # AI integrations, Celery tasks, email models (depends on django-seed)
+├── django-osoul/        # canonical base utilities
+├── django-osoul/       # abstract models, managers, validators (depends on django-osoul)
+├── crafts-ai/       # AI integrations, Celery tasks, email models (depends on django-seed)
 └── django-seed/        # email automation, orchestration, seeding
 ```
 
@@ -43,7 +43,7 @@ Workspace layout:
 uv sync --directory /root/site/libs
 
 # Or add to a site's pyproject.toml as workspace dependencies
-uv add django-grep django-seed django-osoul django-rseal
+uv add django-osoul django-seed django-osoul crafts-ai
 ```
 
 ### 1.2 Required Settings
@@ -52,9 +52,9 @@ Add to `INSTALLED_APPS` in your site's `settings/base.py`:
 
 ```
 # See settings/base.py — add these app labels:
-# django_grep
-# django_grep.pipelines
-# django_grep.comp
+# django_osoul
+# django_osoul.pipelines
+# django_osoul.comp
 # django_seed
 ```
 
@@ -92,7 +92,7 @@ ANTHROPIC_API_KEY=your-anthropic-key
 |---------|-------------|
 | `python manage.py invite_user --email user@example.com --role instructor` | Queue an invitation email |
 | `python manage.py send_pending_invitations` | Process all pending invitations |
-| `python manage.py send_emails` | Send all queued emails (django-rseal) |
+| `python manage.py send_emails` | Send all queued emails (crafts-ai) |
 | `python manage.py seed` | Seed the database with test data |
 
 ### 1.5 Setting Up Email Automation
@@ -118,26 +118,26 @@ python manage.py qcluster
 
 ## 2. Library Overview
 
-### 2.1 django-grep (Tier 1 — Canonical Base Utilities)
+### 2.1 django-osoul (Tier 1 — Canonical Base Utilities)
 
-**GitHub:** https://github.com/mammhoud/django-grep
+**GitHub:** https://github.com/mammhoud/django-osoul
 
 Provides:
-- `django_grep.utils.text` — `slugify_unique`, `truncate_words`, `strip_html_tags`
-- `django_grep.utils.responses` — `success_response`, `error_response`, `created_response`, `forbidden_response`
-- `django_grep.utils.datetime_utils` — `format_relative_time`, `format_duration`
-- `django_grep.utils.validators` — `validate_email_format`, `validate_email_domain`
-- `django_grep.models.mixins` — `TimestampedModel`, `SoftDeleteModel`, `UUIDPrimaryKeyModel`
-- `django_grep.views.mixins` — `AjaxResponseMixin`, `MessageMixin`
-- `django_grep.management.base` — `BaseCommand` with logging
-- `django_grep.templatetags.django_grep_tags` — `format_duration`, `render_widget`
+- `django_osoul.utils.text` — `slugify_unique`, `truncate_words`, `strip_html_tags`
+- `django_osoul.utils.responses` — `success_response`, `error_response`, `created_response`, `forbidden_response`
+- `django_osoul.utils.datetime_utils` — `format_relative_time`, `format_duration`
+- `django_osoul.utils.validators` — `validate_email_format`, `validate_email_domain`
+- `django_osoul.models.mixins` — `TimestampedModel`, `SoftDeleteModel`, `UUIDPrimaryKeyModel`
+- `django_osoul.views.mixins` — `AjaxResponseMixin`, `MessageMixin`
+- `django_osoul.management.base` — `BaseCommand` with logging
+- `django_osoul.templatetags.django_osoul_tags` — `format_duration`, `render_widget`
 
 ### 2.2 django-osoul (Tier 2 — Abstract Models & Validators)
 
 **GitHub:** https://github.com/mammhoud/django-osoul
-**Depends on:** django-grep
+**Depends on:** django-osoul
 
-Unique modules (not in django-grep):
+Unique modules (not in django-osoul):
 - `django_osoul.models.base` — `BaseModel`, `TimeStampedModel`, `UUIDModel`
 - `django_osoul.models.managers` — `SoftDeleteQuerySet`, `SoftDeleteManager`
 - `django_osoul.services.validators` — `validate_phone_number`, `validate_url`, `validate_username`
@@ -160,38 +160,38 @@ Provides:
 - `django_seed.orchestrator` — full workflow orchestration
 - `django_seed.tasks` — `send_email_task`, `check_registrations_task`, `generate_weekly_report_task`
 
-### 2.4 django-rseal (Tier 2 — AI & Celery Automation)
+### 2.4 crafts-ai (Tier 2 — AI & Celery Automation)
 
-**GitHub:** https://github.com/mammhoud/django-rseal
+**GitHub:** https://github.com/mammhoud/crafts-ai
 **Depends on:** django-seed
 
 Unique modules (not in django-seed):
-- `django_rseal.ai.integrations` — `OpenAIIntegration`, `ClaudeIntegration`, `AIIntegrationRegistry`
-- `django_rseal.email.models` — `EmailLog` (rseal variant with token expiry), `EmailTemplate`
-- `django_rseal.tasks.celery` — `send_email_task`, `process_queued_emails`, `retry_failed_emails`
-- `django_rseal.management.commands.send_emails` — CLI to send queued emails
-- `django_rseal.exceptions` — `RelayException`, `EmailSendError`, `WorkflowError`, `AIIntegrationError`
+- `crafts_ai.ai.integrations` — `OpenAIIntegration`, `ClaudeIntegration`, `AIIntegrationRegistry`
+- `crafts_ai.email.models` — `EmailLog` (rseal variant with token expiry), `EmailTemplate`
+- `crafts_ai.tasks.celery` — `send_email_task`, `process_queued_emails`, `retry_failed_emails`
+- `crafts_ai.management.commands.send_emails` — CLI to send queued emails
+- `crafts_ai.exceptions` — `RelayException`, `EmailSendError`, `WorkflowError`, `AIIntegrationError`
 
 ---
 
 ## 3. Deduplication Map
 
-Modules removed from django-osoul (use django-grep instead):
+Modules removed from django-osoul (use django-osoul instead):
 
 | Removed from django-osoul | Use instead |
 |---|---|
-| `django_osoul.utils.text` | `django_grep.utils.text` |
-| `django_osoul.utils.responses` | `django_grep.utils.responses` |
-| `django_osoul.utils.datetime_utils` | `django_grep.utils.datetime_utils` |
-| `django_osoul.models.mixins` | `django_grep.models.mixins` |
+| `django_osoul.utils.text` | `django_osoul.utils.text` |
+| `django_osoul.utils.responses` | `django_osoul.utils.responses` |
+| `django_osoul.utils.datetime_utils` | `django_osoul.utils.datetime_utils` |
+| `django_osoul.models.mixins` | `django_osoul.models.mixins` |
 
-Modules removed from django-rseal (use django-seed instead):
+Modules removed from crafts-ai (use django-seed instead):
 
-| Removed from django-rseal | Use instead |
+| Removed from crafts-ai | Use instead |
 |---|---|
-| `django_rseal.email.services` | `django_seed.services.email_service` |
-| `django_rseal.management.commands.send_invitations_from_csv` | `django_seed.management.commands.send_invitations_from_csv` |
-| `django_rseal.workflows.orchestrator` | `django_seed.orchestrator` |
+| `crafts_ai.email.services` | `django_seed.services.email_service` |
+| `crafts_ai.management.commands.send_invitations_from_csv` | `django_seed.management.commands.send_invitations_from_csv` |
+| `crafts_ai.workflows.orchestrator` | `django_seed.orchestrator` |
 
 ---
 
@@ -236,11 +236,11 @@ Modules removed from django-rseal (use django-seed instead):
 
 | # | Item | From | To | Lines | Priority |
 |---|------|------|----|-------|----------|
-| 1 | `mixins.py` | Both sites | `django_grep.pipelines.site.mixins` | 907 | High |
-| 2 | `call.py` | Both sites | `django_grep.CI.models.interaction.call` | 87 | High |
-| 3 | `notification.py` | Both sites | `django_grep.CI.models.interaction.notification` | 124 | High |
-| 4 | `submission.py` | Both sites | `django_grep.handlers.models.forms.submission` | 121 | Medium |
-| 5 | `integrations.py` | Both sites | `django_grep.CI.models.integrations` | 178 | Medium |
+| 1 | `mixins.py` | Both sites | `django_osoul.pipelines.site.mixins` | 907 | High |
+| 2 | `call.py` | Both sites | `django_osoul.CI.models.interaction.call` | 87 | High |
+| 3 | `notification.py` | Both sites | `django_osoul.CI.models.interaction.notification` | 124 | High |
+| 4 | `submission.py` | Both sites | `django_osoul.handlers.models.forms.submission` | 121 | Medium |
+| 5 | `integrations.py` | Both sites | `django_osoul.CI.models.integrations` | 178 | Medium |
 
 ---
 

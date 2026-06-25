@@ -17,8 +17,8 @@ compatible constraint (highest lower bound).
 | `ctc-research.com/pyproject.toml` | *(unpinned)* |
 | `structa.cloud/pyproject.toml` | *(unpinned)* |
 | `venv/libs/django-osoul/pyproject.toml` | `>=4.0` |
-| `venv/libs/django-rseal/pyproject.toml` | `>=4.0` |
-| `venv/libs/django-grep/pyproject.toml` | *(unpinned)* |
+| `venv/libs/crafts-ai/pyproject.toml` | `>=4.0` |
+| `venv/libs/django-osoul/pyproject.toml` | *(unpinned)* |
 
 **Recommended unified version:** `>=4.2`
 *(Both projects require Python ≥3.11 and use Django 5.x features; >=4.2 is the
@@ -45,7 +45,7 @@ sufficient for the packages.)*
 | File | Constraint |
 |------|-----------|
 | `structa.cloud/pyproject.toml` | `>=9.0.2` |
-| `venv/libs/django-grep/pyproject.toml` | `>=7.0` |
+| `venv/libs/django-osoul/pyproject.toml` | `>=7.0` |
 
 **Recommended unified version:** `>=9.0.2`
 *(Application projects already require 9.x; align the package to match.)*
@@ -58,7 +58,7 @@ sufficient for the packages.)*
 |------|-----------|
 | `ctc-research.com/pyproject.toml` | `>=4.12.0` |
 | `structa.cloud/pyproject.toml` | `>=4.12.0` |
-| `venv/libs/django-grep/pyproject.toml` | `>=4.5` |
+| `venv/libs/django-osoul/pyproject.toml` | `>=4.5` |
 
 **Recommended unified version:** `>=4.12.0`
 *(Use the highest lower bound declared by the application projects.)*
@@ -83,7 +83,7 @@ excluded from this analysis.
 | `pytest-django` | Used as a pytest plugin (no direct import needed) — **keep** |
 | `pytest-selenium` | Used as a pytest plugin (no direct import needed) — **keep** |
 | `python-json-logger` | Used as a string reference in `LOGGING` settings (`pythonjsonlogger.jsonlogger.JsonFormatter`) — **keep** |
-| `stripe` | Stripe is used indirectly via `django_rseal.pipelines.services.payments` — **keep** |
+| `stripe` | Stripe is used indirectly via `crafts_ai.pipelines.services.payments` — **keep** |
 | `twilio` | No import found in source tree — **candidate for removal** |
 | `yml` | No import found in source tree — **candidate for removal** |
 
@@ -96,7 +96,7 @@ excluded from this analysis.
 | `python-json-logger` | Used in `LOGGING` settings — **keep** |
 | `yml` | No import found in source tree — **candidate for removal** |
 
-### `venv/libs/django-grep/pyproject.toml`
+### `venv/libs/django-osoul/pyproject.toml`
 
 | Package | Finding |
 |---------|---------|
@@ -106,7 +106,7 @@ excluded from this analysis.
 
 | Package | Finding |
 |---------|---------|
-| `toposort` | Not imported in nawaai source; used in `django-rseal` — **candidate for removal from nawaai** |
+| `toposort` | Not imported in nawaai source; used in `crafts-ai` — **candidate for removal from nawaai** |
 
 ---
 
@@ -143,6 +143,6 @@ runtime-only usage:
 **Not removed (kept despite no direct import):**
 - `environ` — may be used as `environ.Env()` in settings files
 - `python-json-logger` — referenced as string in `LOGGING` config
-- `stripe` — used transitively via `django_rseal`
+- `stripe` — used transitively via `crafts_ai`
 - `pytest-django`, `pytest-selenium` — pytest plugins (no direct import)
 - All runtime-only packages (DB backends, WSGI servers, etc.)

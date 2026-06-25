@@ -54,27 +54,27 @@
 
 | Component | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| Email sending logic | ✅ Yes | django-rseal | Core email utilities |
-| Email templates (base) | ✅ Yes | django-rseal | Reusable templates |
-| Email scheduling | ✅ Yes | django-rseal | Task scheduling |
+| Email sending logic | ✅ Yes | crafts-ai | Core email utilities |
+| Email templates (base) | ✅ Yes | crafts-ai | Reusable templates |
+| Email scheduling | ✅ Yes | crafts-ai | Task scheduling |
 | Project emails | ❌ No | Website | Project-specific |
 
 ### Tasks
 
 | Component | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| Task base classes | ✅ Yes | django-rseal | Base task class |
-| Task scheduling | ✅ Yes | django-rseal | Scheduling utilities |
-| Task monitoring | ✅ Yes | django-rseal | Monitoring logic |
+| Task base classes | ✅ Yes | crafts-ai | Base task class |
+| Task scheduling | ✅ Yes | crafts-ai | Scheduling utilities |
+| Task monitoring | ✅ Yes | crafts-ai | Monitoring logic |
 | Project tasks | ❌ No | Website | Project-specific |
 
 ### Testing
 
 | Component | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| UserFactory | ✅ Yes | django-grep | Reusable factory |
-| BaseModelFactory | ✅ Yes | django-grep | Base factory |
-| Common fixtures | ✅ Yes | django-grep | Reusable fixtures |
+| UserFactory | ✅ Yes | django-osoul | Reusable factory |
+| BaseModelFactory | ✅ Yes | django-osoul | Base factory |
+| Common fixtures | ✅ Yes | django-osoul | Reusable fixtures |
 | Project tests | ❌ No | Website | Project-specific |
 
 ---
@@ -99,8 +99,8 @@ Is this code duplicated across projects?
 ```
 Which package does this belong to?
 ├─ Base models/forms/utilities → django-osoul
-├─ Email/tasks/workflows → django-rseal
-├─ Testing utilities → django-grep
+├─ Email/tasks/workflows → crafts-ai
+├─ Testing utilities → django-osoul
 └─ AI/MCP → nawaai
 ```
 
@@ -254,7 +254,7 @@ def send_welcome_email(user):
     user.email_user(subject, message)
 ```
 
-**Action:** Extract to django-rseal, remove from both websites
+**Action:** Extract to crafts-ai, remove from both websites
 
 ---
 
@@ -335,10 +335,10 @@ class BaseUser(models.Model):
 ### ❌ Mistake 2: Creating Circular Dependencies
 ```python
 # DON'T do this
-# django-osoul imports from django-rseal
-from django_rseal.email import send_email
+# django-osoul imports from crafts-ai
+from crafts_ai.email import send_email
 
-# django-rseal imports from django-osoul
+# crafts-ai imports from django-osoul
 from django_osoul.models import BaseModel
 ```
 
@@ -346,7 +346,7 @@ from django_osoul.models import BaseModel
 ```
 django-osoul (foundation)
     ↓
-django-rseal (automation, depends on osoul)
+crafts-ai (automation, depends on osoul)
     ↓
 nawaai (AI, optional)
 ```
@@ -390,7 +390,7 @@ grep -r "^def " ctc-research.com structa.cloud --include="*.py" | \
 ### Check for Circular Imports
 ```bash
 # Test imports
-python -c "import django_osoul; import django_rseal"
+python -c "import django_osoul; import crafts_ai"
 
 # Check specific module
 python -m py_compile venv/libs/django-osoul/src/django_osoul/__init__.py
@@ -426,8 +426,8 @@ Is this code reusable?
     │
     └─ Which package?
        ├─ Base models/forms/utilities → django-osoul
-       ├─ Email/tasks/workflows → django-rseal
-       ├─ Testing utilities → django-grep
+       ├─ Email/tasks/workflows → crafts-ai
+       ├─ Testing utilities → django-osoul
        └─ AI/MCP → nawaai
 ```
 
