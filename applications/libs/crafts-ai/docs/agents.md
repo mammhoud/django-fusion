@@ -57,3 +57,19 @@ class FeaturePage(Page):
 ```
 
 Use exact field names whenever possible so component matching can prioritize components with the full required data set.
+
+
+## MCP metadata endpoints
+
+`crafts_ai.mcp_server` is the source of truth for framework-agnostic MCP
+metadata. Keep these endpoints synchronized with `docs/ai/latest_features.md`
+and `docs/ai/mcp_reference.md`:
+
+- `/health` for readiness checks.
+- `/info` for shared package metadata.
+- `/features` for the latest AI/MCP feature inventory.
+- `/file-structure` for canonical package, docs, and Kilo paths.
+
+Do not import Django, Wagtail, Celery, databases, or website modules in the MCP
+metadata module. Optional dependencies must use `importlib.util.find_spec` and
+`importlib.import_module`.

@@ -153,6 +153,20 @@ Useful references:
 - `docs/packages/django-osoul/django-osoul-overview.md`
 - `docs/guides/LIBS_INTEGRATION.md`
 
+## 4.1 Latest AI/MCP attachments
+
+When sharing the latest AI and MCP feature context with an agent or external
+assistant, include these files as the canonical attachment set:
+
+- `docs/ai/START_HERE.md`
+- `docs/ai/latest_features.md`
+- `docs/ai/mcp_reference.md`
+- `applications/libs/crafts-ai/docs/agents.md`
+- `applications/libs/crafts-ai/src/crafts_ai/mcp_server.py`
+
+The MCP server exposes the same high-level inventory at `/features` and the
+canonical path map at `/file-structure`.
+
 ## 5. `crafts-ai` package usage
 
 The local `crafts-ai` package is available under `applications/libs/crafts-ai/`.
