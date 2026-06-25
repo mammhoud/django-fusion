@@ -180,6 +180,7 @@ src/django_osoul/site/_context_mixins.py
 src/django_osoul/site/context.py
 src/django_osoul/site/notifications.py
 src/django_osoul/site/page_handler.py
+src/django_osoul/site/pages.py
 src/django_osoul/site/paginators.py
 src/django_osoul/site/plugins.py
 src/django_osoul/site/response.py
@@ -271,9 +272,11 @@ src/django_osoul/web/routes/__init__.py
 src/django_osoul/web/routes/base.py
 src/django_osoul/web/views/__init__.py
 src/django_osoul/web/views/mixins.py
+tests/test_component_tag.py
 tests/test_error_tracker_middleware.py
 tests/test_group_access_control.py
 tests/test_imports.py
+tests/test_page_catalog.py
 tests/test_role_hierarchy_properties.py
 tests/test_validators.py
 tests/test_viewsets.py

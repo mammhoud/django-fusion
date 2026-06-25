@@ -55,6 +55,8 @@ services:
       timeout: 10s
       retries: 3
       start_period: 60s
+    ports:
+      - "5070:5070"
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
