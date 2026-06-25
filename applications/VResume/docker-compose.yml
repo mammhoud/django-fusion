@@ -28,15 +28,17 @@ services:
       SERVER_ENV: ${SERVER_ENV:-production}
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
+      RUN_SETUP: ${RUN_SETUP:-true}
 
       DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-postgres}
+      DB_HOST: ${DB_HOST:-database-server}
       DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_VRESUME:-vresume}
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/2
       LOG_DIR: /app/logs/vresume
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
@@ -98,13 +100,14 @@ services:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
 
       DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-postgres}
+      DB_HOST: ${DB_HOST:-database-server}
       DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_VRESUME:-vresume}
       DB_USER: ${POSTGRES_USER:-admin}
       DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
-      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/0
-      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/1
-      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@redis:6379/2
+      REDIS_URL: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/0
+      CELERY_BROKER_URL: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://:${REDIS_PASSWORD:-redis_password}@default-redis:6379/2
       LOG_DIR: /app/logs/vresume
       USE_X_FORWARDED_HOST: "true"
       SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
