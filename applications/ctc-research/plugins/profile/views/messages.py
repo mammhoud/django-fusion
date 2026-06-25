@@ -4,7 +4,6 @@ import logging
 from django.contrib.auth import get_user_model
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_osoul.site import NotificationMixin, PageHandler
 
@@ -72,7 +71,6 @@ class MessagesView(PageHandler, NotificationMixin):
         return context
 
     @require_POST
-    @csrf_exempt
     @login_required
     def send_message(self, request: HttpRequest) -> JsonResponse:
         """

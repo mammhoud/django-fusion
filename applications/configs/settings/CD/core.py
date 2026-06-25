@@ -1,6 +1,7 @@
 # ====================================
 # 🛠️ Development Environment Settings
 # ====================================
+import os
 from pathlib import Path
 
 from configs.base import *
@@ -61,11 +62,11 @@ ENABLE_API_DOCS = True
 # ====================================
 # 🔗 External Services
 # ====================================
-# Development API keys
-GOOGLE_MAP_API_KEY = "dev_google_map_key"
-GOOGLE_ANALYTICS_ID = "UA-XXXXX-Y-DEV"
-STRIPE_PUBLIC_KEY = "pk_test_dev_key"
-STRIPE_SECRET_KEY = "sk_test_dev_key"
+# Development API keys — load from environment, never hardcode
+GOOGLE_MAP_API_KEY = os.environ.get("GOOGLE_MAP_API_KEY", "")
+GOOGLE_ANALYTICS_ID = os.environ.get("GOOGLE_ANALYTICS_ID", "")
+STRIPE_PUBLIC_KEY = os.environ.get("STRIPE_PUBLIC_KEY", "")
+STRIPE_SECRET_KEY = os.environ.get("STRIPE_SECRET_KEY", "")
 
 # ====================================
 # 📄 Template Configuration

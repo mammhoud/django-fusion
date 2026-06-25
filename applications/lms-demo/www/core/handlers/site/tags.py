@@ -5,7 +5,6 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.http import HttpRequest, JsonResponse
-from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_GET, require_POST
 from django_osoul.site import NotificationMixin, PageHandler
 from plugins.accounts.models import (
@@ -189,7 +188,6 @@ class EnhancedTagsView(PageHandler, NotificationMixin):
             }, status=500)
 
     @require_POST
-    @csrf_exempt
     @login_required
     def merge_tags_api(self, request: HttpRequest) -> JsonResponse:
         """
