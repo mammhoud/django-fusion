@@ -37,7 +37,7 @@ class PrivacyConsent(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        related_name="privacy_consent",
+        related_name="%(app_label)s_privacy_consent",
         verbose_name=_("user"),
     )
     policy = models.ForeignKey(
@@ -125,7 +125,7 @@ class TermsConsent(models.Model):
     user = models.OneToOneField(
         User,
         on_delete=models.CASCADE,
-        related_name="terms_consent",
+        related_name="%(app_label)s_terms_consent",
         verbose_name=_("user"),
     )
     terms = models.ForeignKey(

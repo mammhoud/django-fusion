@@ -29,7 +29,7 @@ class Certificate(DefaultBase):
     certificate_url = models.URLField(blank=True)
 
     # Generic foreign key
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_set")
     object_id = models.UUIDField(default=uuid.uuid4, editable=False)
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -48,7 +48,7 @@ class Certificate(DefaultBase):
 
     # Metadata
     is_verified = models.BooleanField(default=False)
-    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
+    verified_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, related_name="%(app_label)s_%(class)s_verified_set")
     # tags = models.ManyToManyField(Tag, blank=True, related_name='certificates')
 
     created_at = models.DateTimeField(auto_now_add=True)

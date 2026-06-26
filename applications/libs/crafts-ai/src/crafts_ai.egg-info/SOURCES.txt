@@ -680,4 +680,5 @@ src/crafts_ai/workflows/temporal/__init__.py
 src/crafts_ai/workflows/temporal/activities.py
 src/crafts_ai/workflows/temporal/workflows.py
 tests/test_cli.py
+tests/test_mcp_metadata.py
 tests/test_rseal_migration.py

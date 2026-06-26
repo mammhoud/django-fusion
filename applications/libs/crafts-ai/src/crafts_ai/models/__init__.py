@@ -15,6 +15,6 @@ for _module_path in _CONTENT_MODELS.glob("*.py"):
     if _module_path.stem == "__init__":
         continue
     _name = _module_path.stem
-    sys.modules.setdefault(
-        f"{__name__}.{_name}", importlib.import_module(f"crafts_ai.content.models.{_name}")
-    )
+    _module = importlib.import_module(f"crafts_ai.content.models.{_name}")
+    sys.modules.setdefault(f"{__name__}.{_name}", _module)
+    setattr(sys.modules[__name__], _name, _module)

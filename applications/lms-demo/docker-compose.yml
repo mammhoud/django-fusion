@@ -3,7 +3,7 @@
 # ============================================================
 x-site-infra-env: &site-infra-env
   DB_TYPE: ${DB_TYPE:-postgres}
-  DB_HOST: ${DB_HOST:-database-server}
+  DB_HOST: ${DB_HOST:-postgres}
   DB_PORT: ${DB_PORT:-5432}
   DB_NAME: ${DB_NAME_LMS:-db_structa}
 
@@ -31,7 +31,7 @@ services:
       RUN_SETUP: ${RUN_SETUP:-true}
 
       DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-database-server}
+      DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME_LMS:-db_structa}
       DB_USER: ${POSTGRES_USER:-admin}
@@ -72,6 +72,7 @@ services:
       - lms-demo-static:/app/lms-demo/static:rw
       - lms-demo-media:/app/lms-demo/media:rw
       - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
     expose:
       - "5071"
     networks:
@@ -100,7 +101,7 @@ services:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
 
       DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-database-server}
+      DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME_LMS:-db_structa}
       DB_USER: ${POSTGRES_USER:-admin}
@@ -131,6 +132,7 @@ services:
       - ../__about__.py:/app/__about__.py:z
       - ../lms-demo:/app/lms-demo:z
       - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
     networks:
       - common
       - warehouse-net

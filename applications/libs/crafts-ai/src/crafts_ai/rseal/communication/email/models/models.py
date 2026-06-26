@@ -26,7 +26,7 @@ class EmailLog(models.Model):
         BOUNCED = 'bounced', 'Bounced'
 
     # Core fields
-    timestamp = models.DateTimeField(default=timezone.now, db_index=True)
+    timestamp = models.DateTimeField(auto_now_add=True, db_index=True)
     recipient = models.EmailField(db_index=True)
     subject = models.CharField(max_length=255)
     status = models.CharField(
@@ -1183,6 +1183,8 @@ class UserRole(models.Model):
     user = models.ForeignKey(
         'auth.User',
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name='roles'
     )
     role = models.CharField(

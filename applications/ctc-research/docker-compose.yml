@@ -3,7 +3,7 @@
 # ============================================================
 x-site-infra-env: &site-infra-env
   DB_TYPE: ${DB_TYPE:-postgres}
-  DB_HOST: ${DB_HOST:-database-server}
+  DB_HOST: ${DB_HOST:-postgres}
   DB_PORT: ${DB_PORT:-5432}
   DB_NAME: ${DB_NAME_CTC:-db_ctc}
   POSTGRES_USER: ${POSTGRES_USER:-admin}
@@ -31,7 +31,7 @@ services:
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
       RUN_SETUP: ${RUN_SETUP:-true}
       DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-database-server}
+      DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME_CTC:-db_ctc}
       DB_USER: ${POSTGRES_USER:-admin}
@@ -74,6 +74,7 @@ services:
       - ctc-research-static:/app/ctc-research/static:rw
       - ctc-research-media:/app/ctc-research/media:rw
       - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
     networks:
       - common
       - warehouse-net
@@ -99,7 +100,7 @@ services:
       DEBUG: ${DEBUG:-False}
       DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-configs.settings}
       DB_TYPE: ${DB_TYPE:-postgres}
-      DB_HOST: ${DB_HOST:-database-server}
+      DB_HOST: ${DB_HOST:-postgres}
       DB_PORT: ${DB_PORT:-5432}
       DB_NAME: ${DB_NAME_CTC:-db_ctc}
       DB_USER: ${POSTGRES_USER:-admin}
@@ -130,6 +131,7 @@ services:
       - ../__about__.py:/app/__about__.py:z
       - ../ctc-research:/app/ctc-research:z
       - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
     networks:
       - common
       - warehouse-net

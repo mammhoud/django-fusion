@@ -21,8 +21,8 @@ else
 fi
 
 TARGET_IMAGE="${DEFAULT_POSTGRES_TARGET_IMAGE:-postgres:${TARGET_MAJOR}-alpine}"
-TARGET_VOLUME="${DEFAULT_POSTGRES_TARGET_VOLUME:-database-server-pg${TARGET_MAJOR}}"
-TEMP_CONTAINER="database-server-pg${TARGET_MAJOR:-rollback}-restore-${DATE}"
+TARGET_VOLUME="${DEFAULT_POSTGRES_TARGET_VOLUME:-postgres-pg${TARGET_MAJOR}}"
+TEMP_CONTAINER="postgres-pg${TARGET_MAJOR:-rollback}-restore-${DATE}"
 DUMP_FILE="${BACKUP_DIR}/postgres-upgrade-${DATE}.sql.gz"
 
 log() {
@@ -46,7 +46,7 @@ Examples:
 
 Environment overrides:
   DEFAULT_POSTGRES_TARGET_IMAGE=postgres:18-alpine
-  DEFAULT_POSTGRES_TARGET_VOLUME=database-server-pg18
+  DEFAULT_POSTGRES_TARGET_VOLUME=postgres-pg18
 EOF
 }
 
@@ -285,11 +285,11 @@ upgrade_postgres() {
     DB_USERNAME=$(get_env_var DB_USERNAME coolify)
     DB_DATABASE=$(get_env_var DB_DATABASE coolify)
 
-    if ! docker ps -a --format '{{.Names}}' | grep -qx 'database-server'; then
-        fail "Container 'database-server' was not found. Start Coolify before running this script."
+    if ! docker ps -a --format '{{.Names}}' | grep -qx 'postgres'; then
+        fail "Container 'postgres' was not found. Start Coolify before running this script."
     fi
 
-    if ! docker ps --format '{{.Names}}' | grep -qx 'database-server'; then
+    if ! docker ps --format '{{.Names}}' | grep -qx 'postgres'; then
         log "Starting existing postgres container for version detection and dump."
         docker start postgres >>"$LOGFILE" 2>&1 || fail "Could not start postgres."
     fi

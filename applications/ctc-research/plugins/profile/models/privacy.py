@@ -34,7 +34,7 @@ class PrivacyConsent(models.Model):
     """Tracks user consent to privacy policies."""
 
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="privacy_consent"
+        User, on_delete=models.CASCADE, related_name="%(app_label)s_privacy_consent"
     )
     policy = models.ForeignKey(
         PrivacyPolicy, on_delete=models.PROTECT, related_name="consents"
@@ -112,7 +112,7 @@ class TermsConsent(models.Model):
     """Tracks user consent to terms of service."""
 
     user = models.OneToOneField(
-        User, on_delete=models.CASCADE, related_name="terms_consent"
+        User, on_delete=models.CASCADE, related_name="%(app_label)s_terms_consent"
     )
     terms = models.ForeignKey(
         TermsOfService, on_delete=models.PROTECT, related_name="consents"

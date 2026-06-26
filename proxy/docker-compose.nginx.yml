@@ -16,8 +16,8 @@ x-proxy-common: &proxy-common
     - common
 x-media-base: &media-base
   build:
-    context: ..
-    dockerfile: ../services/media/Dockerfile
+    context: ../services/media
+    dockerfile: Dockerfile
   restart: unless-stopped
   networks:
     - traefik-net

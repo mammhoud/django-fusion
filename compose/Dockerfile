@@ -46,7 +46,7 @@ RUN python -m pip install --no-cache-dir --upgrade pip uv \
 # ----------------------------------------------------------------------------
 # Install Python dependencies from the shared root manifest
 # ----------------------------------------------------------------------------
-COPY applications/pyproject.toml ${APP_HOME}/
+COPY applications/pyproject.toml applications/uv.lock ${APP_HOME}/
 
 
 # ----------------------------------------------------------------------------
@@ -63,6 +63,8 @@ COPY applications/configs ${APP_HOME}/configs
 COPY applications/assets  ${APP_HOME}/assets
 COPY applications/libs    ${APP_HOME}/libs
 COPY applications/tasks   ${APP_HOME}/tasks
+
+RUN uv sync --frozen --no-install-project
 
 # ----------------------------------------------------------------------------
 # Copy the specific website code (build-time)

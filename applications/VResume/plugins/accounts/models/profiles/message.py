@@ -33,14 +33,14 @@ class Message(DefaultBase):
 
     # Sender (generic foreign key)
     sender_content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE, related_name="sent_messages"
+        ContentType, on_delete=models.CASCADE, related_name="%(app_label)s_sent_messages"
     )
     sender_object_id = models.UUIDField()
     sender_content_object = GenericForeignKey("sender_content_type", "sender_object_id")
 
     # Recipient (generic foreign key)
     recipient_content_type = models.ForeignKey(
-        ContentType, on_delete=models.CASCADE, related_name="received_messages"
+        ContentType, on_delete=models.CASCADE, related_name="%(app_label)s_received_messages"
     )
     recipient_object_id = models.UUIDField()
     recipient_content_object = GenericForeignKey("recipient_content_type", "recipient_object_id")

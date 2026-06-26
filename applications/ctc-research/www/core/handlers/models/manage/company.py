@@ -279,7 +279,7 @@ class Organization(DefaultBase, ClusterableModel):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="managed_companies",
+        related_name="%(app_label)s_managed_companies",
         verbose_name=_("Relationship Manager"),
         help_text=_("Primary contact person within our organization")
     )
@@ -306,7 +306,7 @@ class Organization(DefaultBase, ClusterableModel):
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
-        db_table = "companies"
+        db_table = "handlers_companies" if "handlers" in __name__ else "crafts_ai_companies" if "crafts_ai" in __name__ else "companies"
         ordering = ["name"]
         indexes = [
             models.Index(fields=["slug"]),
@@ -664,7 +664,7 @@ class Department(DefaultBase, ClusterableModel):
         null=True,
         blank=True,
         limit_choices_to={"type": "EMP", "is_active": True},
-        related_name="managed_departments",
+        related_name="%(app_label)s_managed_departments",
         verbose_name=_("Department Manager"),
         help_text=_("Primary manager responsible for the department")
     )
@@ -675,7 +675,7 @@ class Department(DefaultBase, ClusterableModel):
         null=True,
         blank=True,
         limit_choices_to={"type": "EMP", "is_active": True},
-        related_name="deputy_managed_departments",
+        related_name="%(app_label)s_deputy_managed_departments",
         verbose_name=_("Deputy Manager"),
         help_text=_("Secondary manager supporting the department head")
     )
@@ -756,12 +756,12 @@ class Department(DefaultBase, ClusterableModel):
     class Meta:
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
-        db_table = "departments"
+        db_table = "handlers_departments" if "handlers" in __name__ else "crafts_ai_departments" if "crafts_ai" in __name__ else "departments"
         ordering = ["company", "function", "name"]
         constraints = [
             models.UniqueConstraint(
                 fields=["company", "name"],
-                name="unique_department_name_per_company"
+                name=f"{'handlers' if 'handlers' in __name__ else 'crafts_ai' if 'crafts_ai' in __name__ else 'app'}_unique_dept_name_per_company"
             )
         ]
         indexes = [

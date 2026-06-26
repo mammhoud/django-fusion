@@ -6,8 +6,8 @@
 # ============================================================
 
 include:
-  - ../applications/ctc-research/docker-compose.yml
-  - ../applications/lms-demo/docker-compose.yml
-  - ../applications/VResume/docker-compose.yml
+  - ./../applications/ctc-research/docker-compose.yml
+  - ./../applications/lms-demo/docker-compose.yml
+  - ./../applications/VResume/docker-compose.yml
 
 # Networks and volumes are defined in the root compose.

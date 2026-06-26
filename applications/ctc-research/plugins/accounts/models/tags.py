@@ -89,7 +89,7 @@ class TaggedItem(models.Model):
     tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
-        related_name="tagged_items",
+        related_name="%(app_label)s_%(class)s_tagged_items",
         verbose_name=_("Tag"),
     )
     content_type = models.ForeignKey(
@@ -104,7 +104,7 @@ class TaggedItem(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name="tagged_items",
+        related_name="%(app_label)s_%(class)s_tagged_items",
         verbose_name=_("Tagged By"),
     )
     tagged_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Tagged At"))

@@ -25,13 +25,13 @@ class Note(DefaultBase):
     summary = models.TextField(blank=True)
 
     # Generic foreign key to any model
-    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE)
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_set")
     object_id = models.UUIDField()
     content_object = GenericForeignKey("content_type", "object_id")
 
     # Relationships
     created_by = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="created_notes"
+        settings.AUTH_USER_MODEL, on_delete=models.SET_NULL, null=True, related_name="%(app_label)s_created_notes"
     )
     # tags = models.ManyToManyField(Tag, blank=True, related_name="notes")
 
@@ -115,7 +115,7 @@ class SharedNote(DefaultBase):
     id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
     note = models.ForeignKey(Note, on_delete=models.CASCADE, related_name="shared_with")
     user = models.ForeignKey(
-        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="shared_notes"
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="%(app_label)s_shared_notes"
     )
     can_edit = models.BooleanField(default=False)
     can_delete = models.BooleanField(default=False)

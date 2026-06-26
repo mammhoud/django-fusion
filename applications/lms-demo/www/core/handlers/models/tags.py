@@ -53,12 +53,9 @@ class TaggedItem(models.Model):
     tag = models.ForeignKey(
         Tag,
         on_delete=models.CASCADE,
-        related_name='tagged_items'
+        related_name='%(app_label)s_%(class)s_tagged_items'
     )
-    content_type = models.ForeignKey(
-        ContentType,
-        on_delete=models.CASCADE
-    )
+    content_type = models.ForeignKey(ContentType, on_delete=models.CASCADE, related_name="%(app_label)s_%(class)s_set")
     object_id = models.PositiveIntegerField()
     content_object = GenericForeignKey('content_type', 'object_id')
 
@@ -68,7 +65,7 @@ class TaggedItem(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='tagged_items',
+        related_name='%(app_label)s_%(class)s_tagged_items',
         help_text=_("User who added this tag")
     )
     tagged_at = models.DateTimeField(auto_now_add=True)

@@ -177,7 +177,7 @@ class Service(DefaultBase):
     class Meta:
         verbose_name = _("Service")
         verbose_name_plural = _("Services")
-        db_table = "services"
+        db_table = "handlers_services" if "handlers" in __name__ else "accounts_services" if "accounts" in __name__ else "services"
         ordering = ["name"]
         indexes = [
             models.Index(fields=["name"]),

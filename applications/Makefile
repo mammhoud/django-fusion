@@ -175,9 +175,9 @@ validate-config:
 validate-compose-env:
 	@printf '%s\n' 'Compose infrastructure wiring (secret values are not printed):'
 	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'site-service' 'db-service' 'redis-service' 'db-name-env' 'db-credential-envs' 'redis-secret-env'
-	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'ctc-research-website' 'database-server' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
-	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'database-server' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
-	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'database-server' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'ctc-research-website' 'postgres' 'default-redis' 'DB_NAME_CTC' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'lms-web' 'postgres' 'default-redis' 'DB_NAME_LMS' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
+	@printf '%-22s %-18s %-18s %-18s %-34s %-18s\n' 'vresume-web' 'postgres' 'default-redis' 'DB_NAME_VRESUME' 'POSTGRES_USER,POSTGRES_PASSWORD' 'REDIS_PASSWORD'
 	@printf '%s\n' ''
 	@printf '%s\n' 'Required runtime env names: DB_HOST DB_PORT DB_USER DB_PASSWORD DB_NAME REDIS_URL CELERY_BROKER_URL CELERY_RESULT_BACKEND'
 	@printf '%s\n' 'Redis database indexes: REDIS_URL=/0, CELERY_BROKER_URL=/1, CELERY_RESULT_BACKEND=/2'

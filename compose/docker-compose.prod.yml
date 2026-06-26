@@ -37,7 +37,7 @@ x-shared-tasks-base: &shared-tasks-base
     DJANGO_WEBSITE: ${DJANGO_WEBSITE:-ctc-research}
     WEBSITE: ${WEBSITE:-ctc-research}
     DB_TYPE: ${DB_TYPE:-postgres}
-    DB_HOST: ${DB_HOST:-database-server}
+    DB_HOST: ${DB_HOST:-postgres}
     DB_PORT: ${DB_PORT:-5432}
     DB_NAME: ${DB_NAME:-db_ctc}
     CELERY_TASK_DEFAULT_QUEUE: ${CELERY_TASK_DEFAULT_QUEUE:-shared}
@@ -52,7 +52,7 @@ x-shared-tasks-base: &shared-tasks-base
     - common
   # Note: postgres and redis are external warehouse services.
   # depends_on cannot reference cross-file/external services in Docker Compose.
-  # Services discover each other via network names (database-server, default-redis).
+  # Services discover each other via network names (postgres, default-redis).
 
 x-worker-command: &worker-command >
   celery -A tasks.celery:app worker

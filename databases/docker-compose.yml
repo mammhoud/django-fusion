@@ -40,13 +40,14 @@ services:
     restart: always
     ports:
       - "${POSTGRES_PORT:-5432}:5432"
+    env_file:
+      - ../.env
     environment:
       # Core PostgreSQL settings
       POSTGRES_USER: admin
-      POSTGRES_PASSWORD: ${DB_PASSWORD:-postgres}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
       POSTGRES_DB: app_db
       PGDATA: /var/lib/postgresql/data/pgdata
-      
       # Multiple databases – comma‑separated list: db:owner:password
       INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko:structa:mk_pAssWord123}"
       
@@ -64,7 +65,7 @@ services:
       - traefik-net
       - site_network
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d app_db"]
       interval: 10s
       timeout: 5s
       retries: 5

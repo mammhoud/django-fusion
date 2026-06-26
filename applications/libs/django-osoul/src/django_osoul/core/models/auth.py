@@ -32,6 +32,8 @@ class UserRole(models.Model):
     user = models.ForeignKey(
         'auth.User',
         on_delete=models.CASCADE,
+        null=True,
+        blank=True,
         related_name='roles'
     )
     role = models.CharField(
