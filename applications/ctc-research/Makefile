@@ -21,7 +21,8 @@ NC     := \033[0m
 
 SITE_NAME := $(notdir $(CURDIR))
 DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
-PYTHONPATH := $(CURDIR):$(abspath ..):$(abspath ../libs/django-osoul/src)
+# PYTHONPATH includes site root, workspace root, www subdirectory, and libs
+PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../libs/django-osoul/src):$(abspath ../libs/crafts-ai/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ..

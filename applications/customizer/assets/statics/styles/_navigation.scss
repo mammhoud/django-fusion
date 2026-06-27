@@ -1,0 +1,48 @@
+// ================================================================
+//   SLIDE NAVIGATION (floating)
+// ================================================================
+
+.slide-nav {
+    position: absolute;
+    right: 20px;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    z-index: 10;
+    pointer-events: none;
+
+    &__btn {
+        pointer-events: auto;
+        background: #ffffff;
+        border: 1px solid $input-border;
+        border-radius: 50%;
+        width: 44px;
+        height: 44px;
+        font-size: 18px;
+        color: #0f172a;
+        cursor: pointer;
+        box-shadow: $shadow;
+        transition: $transition;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        &:hover:not(:disabled) {
+            background: #f1f5f9;
+            box-shadow: 0 4px 14px rgba(0, 0, 0, 0.12);
+            transform: scale(1.04);
+        }
+
+        &:active:not(:disabled) {
+            transform: scale(0.95);
+        }
+
+        &:disabled {
+            opacity: 0.3;
+            cursor: not-allowed;
+            pointer-events: none;
+        }
+    }
+}

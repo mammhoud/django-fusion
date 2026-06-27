@@ -1,0 +1,57 @@
+// ================================================================
+//   INPUT AREA
+// ================================================================
+
+.chat-input-area {
+    padding: 16px 30px 24px 30px;
+    background: #ffffff;
+    border-top: 1px solid $input-border;
+    display: flex;
+    gap: 12px;
+    align-items: flex-end;
+    flex-shrink: 0;
+
+    &__textarea {
+        flex: 1;
+        border: 1px solid $input-border;
+        border-radius: $radius;
+        padding: 12px 16px;
+        font-family: inherit;
+        font-size: 15px;
+        resize: none;
+        outline: none;
+        transition: $transition;
+        min-height: 52px;
+        max-height: 120px;
+        background: $input-bg;
+        color: #0f172a;
+
+        &:focus {
+            border-color: $input-focus;
+            box-shadow: 0 0 0 3px rgba(56, 189, 248, 0.2);
+            background: #ffffff;
+        }
+    }
+
+    &__send-btn {
+        background: #0f172a;
+        border: none;
+        color: #ffffff;
+        width: 52px;
+        height: 52px;
+        border-radius: $radius;
+        font-size: 20px;
+        cursor: pointer;
+        transition: $transition;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        flex-shrink: 0;
+
+        &:hover { background: #1e293b; }
+        &:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+    }
+}

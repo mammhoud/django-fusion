@@ -15,6 +15,7 @@ from __future__ import annotations
 import os
 from importlib import import_module, util
 from io import StringIO
+from pathlib import Path
 from typing import Any
 
 
@@ -87,6 +88,58 @@ def _django_status() -> dict[str, Any]:
     }
 
 
+def get_django_osoul_info() -> dict[str, Any]:
+    """Return django-osoul package metadata."""
+    if _find_spec("django_osoul") is None:
+        return {
+            "available": False,
+            "error": "Optional package 'django_osoul' is not importable.",
+        }
+    
+    osoul = import_module("django_osoul")
+    return {
+        "available": True,
+        "version": getattr(osoul, "__version__", "unknown"),
+        "path": str(Path(osoul.__file__).parent),
+        "modules": ["site", "wagtail", "views", "comp", "routes"]
+    }
+
+
+def get_django_osoul_viewsets() -> dict[str, Any]:
+    """Get available django-osoul viewsets."""
+    if _find_spec("django_osoul") is None:
+        return {"available": False, "error": "django-osoul not installed"}
+    
+    try:
+        viewsets = import_module("django_osoul.site")
+        
+        component_views = getattr(viewsets, "ComponentViews", None)
+        page_handler = getattr(viewsets, "PageHandler", None)
+        htmx_pagination = getattr(viewsets, "HTMXPaginationMixin", None)
+        
+        return {
+            "available": True,
+            "ComponentViews": component_views is not None,
+            "PageHandler": page_handler is not None,
+            "HTMXPaginationMixin": htmx_pagination is not None,
+        }
+    except Exception as e:
+        return {"available": False, "error": str(e)}
+
+
+def get_traefik_status() -> dict[str, Any]:
+    """Return Traefik configuration status."""
+    traefik_dir = Path("/home/websites/structa.cloud/proxy/traefik")
+    
+    return {
+        "config_dir": str(traefik_dir),
+        "dynamic_exists": (traefik_dir / "dynamic.yml").exists(),
+        "ctc_research": (traefik_dir / "ctc-research.yml").exists(),
+        "structa_cloud": (traefik_dir / "structa-cloud.yml").exists(),
+        "vresume": (traefik_dir / "vresume.yml").exists(),
+    }
+
+
 def get_migration_status() -> dict[str, Any]:
     """Run Django's showmigrations command when Django is configured."""
     status = _django_status()
@@ -152,17 +205,24 @@ def list_crafts_ai_agents() -> dict[str, Any]:
 
 if app is not None:
 
+    @app.get("/viewsets")
+    async def viewsets() -> Any:
+        """Return available viewsets."""
+        return {"ok": True, **get_django_osoul_viewsets()}
+
     @app.get("/health")
     async def health() -> dict[str, Any]:
-        """Return service health without touching optional integrations."""
+        """Return service health with all integrations."""
         return {
             "ok": True,
             "status": "ok",
             "django": _django_status(),
             "optional_dependencies": {
                 "crafts_ai": _find_spec("crafts_ai") is not None,
+                "django_osoul": _find_spec("django_osoul") is not None,
                 "openai": _find_spec("openai") is not None,
             },
+            "traefik": get_traefik_status(),
         }
 
     @app.get("/migrations/status")
@@ -192,6 +252,27 @@ if app is not None:
         if not result["available"]:
             return _json_error(result["error"], 503, agents=result["agents"])
         return {"ok": True, **result}
+
+    @app.get("/django-osoul/info")
+    async def django_osoul_info() -> Any:
+        """Return django-osoul metadata."""
+        result = get_django_osoul_info()
+        if not result["available"]:
+            return _json_error(result["error"], 503)
+        return {"ok": True, **result}
+
+    @app.get("/django-osoul/viewsets")
+    async def django_osoul_viewsets() -> Any:
+        """Return django-osoul viewsets info."""
+        result = get_django_osoul_viewsets()
+        if not result["available"]:
+            return _json_error(result["error"], 503)
+        return {"ok": True, **result}
+
+    @app.get("/traefik/status")
+    async def traefik_status() -> Any:
+        """Return Traefik configuration status."""
+        return {"ok": True, **get_traefik_status()}
 
     @app.get("/openrouter/status")
     async def openrouter_status() -> Any:

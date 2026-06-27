@@ -79,6 +79,11 @@ if [ "$SERVER_TYPE" = "uvicorn" ]; then
 fi
 
 if [ "$SERVER_TYPE" = "gunicorn" ]; then
+    # Set PYTHONPATH for workers - use --env to pass it explicitly
+    # Note: Gunicorn's --env flag passes the environment variable to workers
+    export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}"
+    # Remove duplicate entries and trailing colons
+    PYTHONPATH=$(echo "$PYTHONPATH" | tr ':' '\n' | awk '!seen[$0]++' | tr '\n' ':' | sed 's/:$//')
     ARGS=(
         "$APP_MODULE"
         "--bind" "${HOST}:${PORT}"
@@ -88,6 +93,7 @@ if [ "$SERVER_TYPE" = "gunicorn" ]; then
         "--access-logfile" "$ACCESS_LOG"
         "--error-logfile" "$ERROR_LOG"
         "--capture-output"
+        "--env" "PYTHONPATH=${PYTHONPATH}"
     )
     [ "$RELOAD" = "true" ] && ARGS+=("--reload")
     exec gunicorn "${ARGS[@]}"

@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+{% load i18n wagtailcore_tags %}
+
+{% block bodyclass %}page-home{% endblock %}
+
+{% block body %}
+    <main id="main-content">
+        {% block content %}
+            {# Page content will be rendered by the home page template #}
+            {% include "home/main.html" %}
+        {% endblock content %}
+    </main>
+{% endblock body %}

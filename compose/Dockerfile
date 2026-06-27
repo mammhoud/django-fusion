@@ -67,6 +67,11 @@ COPY applications/tasks   ${APP_HOME}/tasks
 RUN uv sync --frozen --no-install-project
 
 # ----------------------------------------------------------------------------
+# Install the specific website as an editable package
+# ----------------------------------------------------------------------------
+RUN uv pip install --editable /app/${PROJECT_PATH}
+
+# ----------------------------------------------------------------------------
 # Copy the specific website code (build-time)
 # ----------------------------------------------------------------------------
 # For production, this embeds the site code. For development, you can

@@ -7,8 +7,6 @@
 <!DOCTYPE html>
 <html class="{% if theme %}{{ theme }}{% endif %}{% block html_class %}{% endblock %}" dir="{{ LANGUAGE_BIDI|yesno:"rtl,ltr,auto" }}" lang="{{ LANGUAGE_CODE|default:" en-us" }}" {% block html_attr %}
     data-sidenav-view="{{ sidenav }}" {% endblock html_attr %}>
-{% with site=request.resolver_match.site app=request.resolver_match.app viewset=request.resolver_match.viewset %}
-
 <head>
     {% block meta_tags %}{% endblock %}
     {% block meta %}
@@ -85,10 +83,10 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {% block extra_body %}
     {% endblock extra_body %}
 
-    {% block modal %}
-        {% include "ui/notifications/notification.html" %}
-        <div id="modal-container"></div>
-    {% endblock modal %}
+    {# Notification system #}
+    {% block notifications %}
+        {# {% include "ui/notifications/notification.html" %} #}
+    {% endblock notifications %}
 
     {% block scripts %}
     {% endblock scripts %}
@@ -107,8 +105,6 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {% endblock extra_scripts %}
 
 </body>
-
-{% endwith %}
 
 {% block extra_assets %}{% endblock extra_assets %}
 

@@ -1,7 +1,5 @@
-{% load i18n static %}
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load i18n static wagtailcore_tags wagtailimages_tags %}
 {% image BrandSettings.logo original as logo %}
-{% get_site_root as site_root %}
 
 {# Context fields: confirmation, request, user #}
 {# Placeholders: none #}
@@ -11,7 +9,7 @@
 <section class="auth__card card card--form">
     <header class="auth__form-header">
         <div class="auth__logo mb-4 text-center">
-            <a href="{{ site_root.url }}" class="auth__logo-link">
+            <a href="{% url 'index' %}" class="auth__logo-link">
                 <img src="{{ logo.url }}"
                      alt="{% trans 'Logo' %}"
                      class="auth__logo-image">

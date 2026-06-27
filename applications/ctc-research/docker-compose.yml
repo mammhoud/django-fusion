@@ -78,6 +78,7 @@ services:
     networks:
       - common
       - warehouse-net
+      - traefik-net
 
   ctc-worker:
     build:
@@ -135,11 +136,14 @@ services:
     networks:
       - common
       - warehouse-net
+      - traefik-net
 
 networks:
   common:
     external: true
   warehouse-net:
+    external: true
+  traefik-net:
     external: true
 
 volumes:
