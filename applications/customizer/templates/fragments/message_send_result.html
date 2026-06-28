@@ -1,7 +1,8 @@
-<div class="alert {% if is_success %}alert-success{% else %}alert-danger{% endif %}" role="status">
-  {% if is_success %}
-    Message queued: {{ message }}
-  {% else %}
-    Message could not be sent. {{ form.errors }}
-  {% endif %}
-</div>
+{# applications/customizer/templates/fragments/message_send_result.html #}
+{% load comp %}
+
+{% comp "customizer/alert" with 
+  is_success=is_success 
+  message=message 
+  errors=form.errors 
+%}

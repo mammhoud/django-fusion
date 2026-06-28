@@ -1,0 +1,8 @@
+{# applications/customizer/components/customizer/alert.html #}
+<div class="alert {% if is_success %}alert-success{% else %}alert-danger{% endif %}" role="status">
+  {% if is_success %}
+    Message queued: {{ message }}
+  {% else %}
+    Message could not be sent. {{ errors }}
+  {% endif %}
+</div>

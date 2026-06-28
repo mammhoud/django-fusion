@@ -1,0 +1,10 @@
+{# applications/customizer/components/customizer/nav_item.html #}
+<button class="list-group-item list-group-item-action"
+        type="button"
+        hx-get="{% url 'fragment_page_card_grid' slug %}"
+        hx-target="#customizer-page-grid"
+        hx-swap="innerHTML"
+        hx-push-url="{% url 'customizer_pages' slug %}">
+  <span class="fw-semibold">{{ name }}</span>
+  <code class="d-block small">{{ slug }}</code>
+</button>
