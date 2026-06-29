@@ -4,6 +4,32 @@ All notable changes to this Composite Action are documented here.
 The format is based on [Keep a Changelog](https://keepachangelog.com/)
 and this project adheres to [Semantic Versioning](https://semver.org/).
 
+## [v1.0.1] — fix makefile verify-release ❌ rendering
+
+### Fixed
+
+- `make verify-release` no longer prints a literal `\u274c` text
+  string when the tag is missing on origin — the diagnostic echo
+  line now uses raw UTF-8 ❌ to match the existing 🛡️ convention
+  on the `deploy-ci` recipe. This was an oversight from the v1.0.0
+  publish cleanup: one of the byte-escape-to-UTF8 anchors in the
+  multi-line replace didn't match the actual byte layout, leaving
+  a single `\u274c` literal in the file. The unfixed output would
+  have made the missing-tag failure mode invisible in `make -n`
+  dry-run review of CI logs (cosmetic only: the recipe still exits
+  1 on a missing tag and the verify-release smoke still surfaces
+  genuine deploy-ci failures).
+
+### Notes
+
+- The **published `action.yml`** is byte-identical between `v1.0.0`
+  and `v1.0.1`; this patch bumps the tag purely to record the
+  post-publish hygiene fix in repo-internal release-verification
+  tooling. Consumers resolving `@v1` will now land on `v1.0.1`;
+  consumers pinned at `@v1.0.0` continue to resolve the pre-fix
+  commit (no behaviour difference for them — they get the same
+  action.yml either way).
+
 ## [v1.0.0] — initial public release
 
 ### Features
