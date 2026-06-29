@@ -74,6 +74,8 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
 .PHONY: ctc-research structa vresume proxy services databases
+.PHONY: bump-action-patch bump-action-minor bump-action-major
+.PHONY: bump-app-patch bump-app-minor bump-app-major
 
 # -----------------------------------------------------------------
 # Help – comprehensive overview
@@ -133,6 +135,8 @@ help:
 	@echo "  make prune-images      - Remove unused images"
 	@echo "  make clean             - Stop and remove all containers, volumes, and images"
 	@echo "  make verify-release    - Sanity-check a published Composite Action tag (default v1.0.0) end-to-end"
+	@echo "  make bump-action-{patch|minor|major} - Bump the deploy-preflight Composite Action version (uvx bumpver)"
+	@echo "  make bump-app-{patch|minor|major}    - Bump the applications workspace version (uvx bumpver)"
 	@echo ""
 	@echo "Certificate management (Proxy component):"
 	@echo "  make cert-generate     - Generate self-signed certificates"
@@ -749,6 +753,38 @@ verify-release:
 	echo "  🧪 Now running local smoke: make deploy-ci (the action's actual recipe)" ; \
 	$(MAKE) deploy-ci || { echo "❌ deploy-ci failed - the published action would also fail for consumers"; exit 1; }
 	@echo "✅ verify-release OK on tag $(or $(TAG),v1.0.0)"
+
+# -----------------------------------------------------------------
+# Versioning Shortcuts (require uv / uvx; bumpver config lives in
+# .github/actions/deploy-preflight/bumpver.toml for the action and
+# in applications/pyproject.toml [tool.bumpver] for the workspace).
+#
+# Pattern rules (`bump-action-%` / `bump-app-%`) match the trailing
+# {patch|minor|major} and forward it via `$(*)` to bumpver's
+# `--patch|--minor|--major` flag. bumpver reads the local bumpver.toml,
+# updates the VERSION source-of-truth, commits, tags, and pushes.
+# -----------------------------------------------------------------
+.PHONY: bump-action-patch bump-action-minor bump-action-major
+bump-action-%:
+	@cd .github/actions/deploy-preflight && \
+	if command -v uvx >/dev/null 2>&1; then \
+		uvx bumpver update --$(*); \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv run --with bumpver bumpver update --$(*); \
+	else \
+		echo "❌ install uv (https://docs.astral.sh/uv/) or bumpver manually"; exit 1; \
+	fi
+
+.PHONY: bump-app-patch bump-app-minor bump-app-major
+bump-app-%:
+	@cd $(APPLICATIONS_DIR) && \
+	if command -v uvx >/dev/null 2>&1; then \
+		uvx bumpver update --$(*); \
+	elif command -v uv >/dev/null 2>&1; then \
+		uv run --with bumpver bumpver update --$(*); \
+	else \
+		echo "❌ install uv (https://docs.astral.sh/uv/) or bumpver manually"; exit 1; \
+	fi
 
 # -----------------------------------------------------------------
 # Extended help (component-specific)
