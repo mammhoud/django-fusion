@@ -1,1 +1,19 @@
 /media/email_templates/
+
+# Python bytecode
+__pycache__/
+*.pyc
+*.pyo
+
+# Logs
+*.log
+logs/
+**/logs/*.log
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.claude/

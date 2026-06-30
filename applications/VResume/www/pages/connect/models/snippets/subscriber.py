@@ -135,6 +135,7 @@ class Subscriber(models.Model):
     )
     
     class Meta:
+        app_label = "connect"
         verbose_name = _("Subscriber")
         verbose_name_plural = _("Subscribers")
         ordering = ["-created_at"]

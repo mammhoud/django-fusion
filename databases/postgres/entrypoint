@@ -62,6 +62,61 @@ else
 fi
 
 # ------------------------------------------------------------
-# 3. Execute the official PostgreSQL entrypoint (foreground)
+# 3. Always-on idempotent migration for the Coder platform DB
+#    Runs on EVERY container start (not gated by .init_done) so that an
+#    existing postgres_data volume picks up the new INITDB_MULTIPLE_DATABASES
+#    entry without requiring a destructive FORCE_REINIT.
+# ------------------------------------------------------------
+ensure_coder_database() {
+    echo "Ensuring Coder database and role exist (idempotent)…"
+    /usr/local/bin/docker-entrypoint.sh postgres >/dev/null 2>&1 &
+    local bg_pid=$!
+    trap 'kill -TERM "$bg_pid" 2>/dev/null || true; wait "$bg_pid" 2>/dev/null || true' RETURN
+
+    # Wait until the cluster is ready
+    for _ in $(seq 1 30); do
+        if pg_isready -U "$POSTGRES_USER" -d "$POSTGRES_DB" -h localhost -p 5432 >/dev/null 2>&1; then
+            break
+        fi
+        sleep 1
+    done
+
+    # Create the role + DB only if missing; errors are non-fatal because the
+    # bash init script will already have done this on first boot.
+    psql -v ON_ERROR_STOP=0 --username "$POSTGRES_USER" --dbname "$POSTGRES_DB" -h localhost <<-EOSQL || true
+        DO \$\$
+        BEGIN
+            IF NOT EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'coder') THEN
+                CREATE USER coder WITH ENCRYPTED PASSWORD 'mk_pAssWord123';
+            END IF;
+        END \$\$;
+        SELECT 'CREATE DATABASE coder'
+        WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'coder')\gexec
+        GRANT ALL PRIVILEGES ON DATABASE coder TO coder;
+EOSQL
+
+    # Schema-level wiring inside the coder database (only if it now exists).
+    psql -v ON_ERROR_STOP=0 --username "$POSTGRES_USER" --dbname coder -h localhost <<-EOSQL || true
+        GRANT ALL ON SCHEMA public TO coder;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON TABLES TO coder;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON SEQUENCES TO coder;
+        ALTER DEFAULT PRIVILEGES IN SCHEMA public GRANT ALL ON FUNCTIONS TO coder;
+        GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO coder;
+        GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO coder;
+        GRANT ALL PRIVILEGES ON ALL FUNCTIONS IN SCHEMA public TO coder;
+EOSQL
+
+    # Stop the background PostgreSQL cleanly so the foreground exec below
+    # handles the actual server startup.
+    gosu postgres pg_ctl -D "$PGDATA" stop -m fast >/dev/null 2>&1 || true
+    wait "$bg_pid" 2>/dev/null || true
+    trap - RETURN
+    echo "Coder DB ready."
+}
+
+ensure_coder_database
+
+# ------------------------------------------------------------
+# 4. Execute the official PostgreSQL entrypoint (foreground)
 # ------------------------------------------------------------
 exec /usr/local/bin/docker-entrypoint.sh postgres

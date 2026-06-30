@@ -30,6 +30,7 @@ class Skill(models.Model):
     ]
 
     class Meta:
+        app_label = "connect"
         ordering = ["order", "name"]
         verbose_name = _("Skill")
         verbose_name_plural = _("Skills")

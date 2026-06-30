@@ -21,7 +21,7 @@ class Migration(migrations.Migration):
         ('auth', '0012_alter_user_first_name_max_length'),
         ('contenttypes', '0002_remove_content_type_name'),
         ('crafts_ai', '0003_userrole_add_user_fields'),
-        ('sites', '0006_initial'),
+        ('sites', '0001_initial'),
         ('wagtailcore', '0096_referenceindex_referenceindex_source_object_and_more'),
         ('wagtailimages', '0027_image_description'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),

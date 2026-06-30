@@ -276,6 +276,9 @@ src/crafts_ai/mcp/__init__.py
 src/crafts_ai/mcp/server.py
 src/crafts_ai/migrations/0001_initial.py
 src/crafts_ai/migrations/0002_enhance_email_template.py
+src/crafts_ai/migrations/0003_userrole_add_user_fields.py
+src/crafts_ai/migrations/0004_announcementbanner_backgroundtasklog_campaign_and_more.py
+src/crafts_ai/migrations/0005_delete_backgroundtasklog_delete_campaign_and_more.py
 src/crafts_ai/migrations/__init__.py
 src/crafts_ai/models/__init__.py
 src/crafts_ai/orchestrator/__init__.py

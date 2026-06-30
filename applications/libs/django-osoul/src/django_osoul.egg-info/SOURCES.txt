@@ -16,6 +16,13 @@ src/django_osoul.egg-info/SOURCES.txt
 src/django_osoul.egg-info/dependency_links.txt
 src/django_osoul.egg-info/requires.txt
 src/django_osoul.egg-info/top_level.txt
+src/django_osoul/analyzer/__init__.py
+src/django_osoul/analyzer/apps.py
+src/django_osoul/analyzer/parser.py
+src/django_osoul/analyzer/scanner.py
+src/django_osoul/analyzer/schemas.py
+src/django_osoul/analyzer/urls.py
+src/django_osoul/analyzer/views.py
 src/django_osoul/cache/__init__.py
 src/django_osoul/comp/__init__.py
 src/django_osoul/comp/adapters.py

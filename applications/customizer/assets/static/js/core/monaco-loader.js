@@ -27,10 +27,14 @@ export class MonacoLoader {
             const script = document.createElement('script');
             script.src = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs/loader.js';
             script.onload = () => {
-                require.config({
+                // Use window.require (Monaco's AMD loader attaches itself to the global scope)
+                // instead of bare require() so webpack's static analysis doesn't try to
+                // resolve Monaco's internal module paths during bundling.
+                const mr = /** @type {any} */ (window).require;
+                mr.config({
                     paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs' },
                 });
-                require(['vs/editor/editor.main'], () => {
+                mr(['vs/editor/editor.main'], () => {
                     this.isLoaded = true;
                     resolve(window.monaco);
                 });

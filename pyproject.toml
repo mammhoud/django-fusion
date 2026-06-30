@@ -1,0 +1,64 @@
+# Repo-root pytest wiring for django-osoul analyzer tests.
+#
+# Required so that ``pytest`` invoked from /home/structa.cloud/ can
+# resolve the analyzer tests without an absolute path (running ``pytest``
+# with no args or with a relative path under the repo root).
+#
+# Layout note: there are TWO top-level pytest-testable trees in
+# this repo, and they live on opposite sides of ``applications/``:
+#   - /home/structa.cloud/tests/                    (workspace tests, sibling of applications/)
+#   - /home/structa.cloud/applications/libs/django-osoul/tests/analyzer/
+#                                                  (django-osoul analyzer tests, *inside* applications/)
+# This file targets BOTH via ``testpaths`` so ``pytest`` from the
+# repo root discovers either.
+#
+# Design notes:
+# - testpaths adds ``applications/libs/django-osoul/tests/analyzer``
+#   so the analyzer sub-package is auto-discovered. We point at the
+#   narrow subdir (not the wider libs/django-osoul/tests/) because
+#   the wider tree relies on the library-local conftest.py that
+#   configures Django with a different settings module -- pulling
+#   it into the same pytest run as the workspace tests would
+#   double-configure Django.
+# - DJANGO_SETTINGS_MODULE = "tests.settings" is set here so that
+#   pytest-django auto-configures Django at session start. Without
+#   it, ``pytest --collect-only`` from the literal repo root hits
+#   ``django.core.exceptions.AppRegistryNotReady: Apps aren't loaded
+#   yet.`` inside the workspace conftest's ``_register_aliases`` ->
+#   ``importlib.import_module("apps.blog.urls")`` import chain --
+#   because ``tests/apps/blog/urls.py`` references
+#   ``django.contrib.admin.site.urls`` before Django.setup() has run.
+#   The same value lives in ``applications/pyproject.toml``; adding
+#   it here makes pytest behavior IDENTICAL whether invoked from
+#   /home/structa.cloud/ or /home/structa.cloud/applications/.
+#   ``tests/settings.py`` conditionally strips any optional app
+#   whose ``find_spec`` returns None from ``INSTALLED_APPS``, so
+#   workspace deps that aren't installed in the active interpreter
+#   (e.g. django-allauth or django-osoul) are tolerated.
+# - pythonpath lists ``.`` (= repo root) FIRST so ``tests/settings.py``
+#   resolves when DJANGO_SETTINGS_MODULE = "tests.settings" is read
+#   by pytest-django. Then ``applications/libs/django-osoul/src`` so
+#   ``from django_osoul.analyzer.parser import ...`` resolves
+#   independent of any editable-install state.
+#
+# No [project] / [build-system] sections -- this is a config-only
+# file. The actual project metadata lives in
+# applications/pyproject.toml.
+
+[tool.pytest.ini_options]
+testpaths = [
+    "tests",
+    "applications/libs/django-osoul/tests/analyzer",
+]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+
+# Explicit test discovery (matches pytest's standard defaults on purpose)
+# so ``tests/analyzer/test_layout.py``'s ``TestNoLegacyFlatAnalyzerTests``
+# class is always discoverable from the repo root.
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+pythonpath = [
+    ".",
+    "applications/libs/django-osoul/src",
+]

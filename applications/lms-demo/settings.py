@@ -45,6 +45,13 @@ WSGI_APPLICATION = "server.application"
 WEBSITE_NAME = "lms-demo"
 WEBSITE_IDENTIFIER = "lms-demo"
 SITE_ID = 2
+
+# ── Local apps (site-specific plugins, www packages, and page apps) ──
+# Uses the shared LMS_LOCAL_APPS constant from configs.base.apps (already
+# imported via `from configs.settings import *` above).
+# ctc-research and lms-demo share the same plugin/www structure.
+LOCAL_APPS = LMS_LOCAL_APPS
+INSTALLED_APPS += LOCAL_APPS
 # ============================================================
 # crafts_ai required settings
 # ============================================================

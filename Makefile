@@ -13,6 +13,7 @@ APPLICATIONS_DIR  := applications
 PROXY_DIR         := proxy
 SERVICES_DIR      := services
 DATABASES_DIR     := databases
+CUSTOMIZER_DIR    := applications/customizer
 SOURCE_DIR        := source
 
 # -----------------------------------------------------------------
@@ -64,7 +65,8 @@ PREFLIGHT_COMPOSE_FILES := \
 # PHONY targets – always run
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-media deploy-tasks deploy-docs
-.PHONY: deploy-databases deploy-coder deploy-utilities deploy-ollama deploy-mailpit
+.PHONY: deploy-databases deploy-coder deploy-customizer build-customizer clean-customizer
+.PHONY: deploy-utilities deploy-ollama deploy-mailpit
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
 .PHONY: backup-coolify backup-restore-coolify validate-coolify run-infra-coolify
@@ -102,6 +104,7 @@ help:
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
+	@echo "  make deploy-customizer - Build, collectstatic, and migrate the template customizer"
 	@echo "  make create-networks   - Create all required Docker networks (idempotent)"
 	@echo "  make deploy-all        - Deploy all services (alias for deploy)"
 	@echo ""
@@ -149,6 +152,7 @@ help:
 	@echo "  make ctc-research      - Delegate to applications/Makefile with WEBSITE=ctc-research"
 	@echo "  make structa           - Delegate to applications/Makefile with WEBSITE=structa"
 	@echo "  make vresume           - Delegate to applications/Makefile with WEBSITE=vresume"
+	@echo "  make customizer        - Delegate to applications/customizer/Makefile"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -231,6 +235,7 @@ deploy-all: preflight-network deploy-preflight
 		$(MAKE) --no-print-directory deploy-docs; \
 		$(MAKE) --no-print-directory deploy-proxy; \
 	fi
+	@$(MAKE) --no-print-directory deploy-customizer
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
 	@$(MAKE) --no-print-directory deploy-mailpit
@@ -262,6 +267,21 @@ deploy-coder:
 	@echo "🚀 Deploying Coder platform..."
 	@$(MAKE) -C $(DATABASES_DIR) deploy-coder
 	@echo "✅ Coder platform deployed"
+
+deploy-customizer:
+	@echo "🚀 Deploying customizer (build → collectstatic → migrate)..."
+	@$(MAKE) -C $(CUSTOMIZER_DIR) deploy
+	@echo "✅ Customizer deployed"
+
+build-customizer:
+	@echo "🔨 Building customizer webpack bundles..."
+	@$(MAKE) -C $(CUSTOMIZER_DIR) build
+	@echo "✅ Customizer built"
+
+clean-customizer:
+	@echo "🧹 Cleaning customizer bundles..."
+	@$(MAKE) -C $(CUSTOMIZER_DIR) clean
+	@echo "✅ Customizer cleaned"
 
 # -----------------------------------------------------------------
 # Aspirational deploy targets — component directories not in repo yet.
@@ -755,18 +775,25 @@ verify-release:
 	@echo "✅ verify-release OK on tag $(or $(TAG),v1.0.0)"
 
 # -----------------------------------------------------------------
-# Versioning Shortcuts (require uv / uvx; bumpver config lives in
-# .github/actions/deploy-preflight/bumpver.toml for the action and
-# in applications/pyproject.toml [tool.bumpver] for the workspace).
+# Versioning Shortcuts (require uv / uvx). bumpver config lives at
+# `.github/actions/deploy-preflight/bumpver.toml` for the action;
+# `.bumpversion.toml` is the legacy-name alias kept as an option for
+# projects that pre-date the bumpver rename (the actively-installed
+# bumpver 2026.1132 reads `bumpver.toml` directly). The applications
+# workspace uses `applications/pyproject.toml [tool.bumpver]` for
+# its own config (currently v1.0.3, separately tracked).
 #
 # Pattern rules (`bump-action-%` / `bump-app-%`) match the trailing
 # {patch|minor|major} and forward it via `$(*)` to bumpver's
-# `--patch|--minor|--major` flag. bumpver reads the local bumpver.toml,
+# `--patch|--minor|--major` flag. bumpver reads the local config,
 # updates the VERSION source-of-truth, commits, tags, and pushes.
 # -----------------------------------------------------------------
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 bump-action-%:
 	@cd .github/actions/deploy-preflight && \
+	if [ ! -f bumpver.toml ] && [ ! -f .bumpversion.toml ]; then \
+		echo "❌ no bumpver config in .github/actions/deploy-preflight (expected bumpver.toml or .bumpversion.toml)"; exit 1; \
+	fi && \
 	if command -v uvx >/dev/null 2>&1; then \
 		uvx bumpver update --$(*); \
 	elif command -v uv >/dev/null 2>&1; then \
@@ -778,6 +805,9 @@ bump-action-%:
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 bump-app-%:
 	@cd $(APPLICATIONS_DIR) && \
+	if [ ! -f pyproject.toml ]; then \
+		echo "❌ no pyproject.toml in $(APPLICATIONS_DIR) (expected [tool.bumpver] in it)"; exit 1; \
+	fi && \
 	if command -v uvx >/dev/null 2>&1; then \
 		uvx bumpver update --$(*); \
 	elif command -v uv >/dev/null 2>&1; then \
@@ -851,6 +881,10 @@ structa:
 
 vresume:
 	@$(MAKE) -C $(APPLICATIONS_DIR) WEBSITE=vresume
+
+customizer:
+	@echo "📋 Customizer targets:"
+	@$(MAKE) -C $(CUSTOMIZER_DIR) help
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)

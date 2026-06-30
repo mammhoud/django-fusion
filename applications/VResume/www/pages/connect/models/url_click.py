@@ -87,6 +87,7 @@ class URLClick(models.Model):
     )
 
     class Meta:
+        app_label = "connect"
         verbose_name = _("URL Click")
         verbose_name_plural = _("URL Clicks")
         ordering = ["-clicked_at"]

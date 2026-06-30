@@ -142,6 +142,7 @@ class EmailDelivery(models.Model):
     )
 
     class Meta:
+        app_label = "connect"
         verbose_name = _("Email Delivery")
         verbose_name_plural = _("Email Deliveries")
         ordering = ["-created_at"]

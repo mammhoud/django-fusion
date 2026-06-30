@@ -87,6 +87,7 @@ class FormSubmission(models.Model):
     )
     
     class Meta:
+        app_label = "connect"
         verbose_name = _("Form Submission")
         verbose_name_plural = _("Form Submissions")
         ordering = ["-submitted_at"]

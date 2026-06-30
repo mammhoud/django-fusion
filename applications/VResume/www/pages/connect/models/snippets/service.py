@@ -22,6 +22,7 @@ class Service(models.Model):
     ]
 
     class Meta:
+        app_label = "connect"
         ordering = ["order", "name"]
         verbose_name = _("Service")
         verbose_name_plural = _("Services")

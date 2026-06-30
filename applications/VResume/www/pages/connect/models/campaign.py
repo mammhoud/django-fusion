@@ -158,6 +158,7 @@ class Campaign(models.Model):
     )
     
     class Meta:
+        app_label = "connect"
         verbose_name = _("Campaign")
         verbose_name_plural = _("Campaigns")
         ordering = ["-created_at"]

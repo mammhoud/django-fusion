@@ -83,43 +83,39 @@ THIRD_PARTY_APPS = [
     "django_celery_results",
 ]
 
-LOCAL_APPS = [
-    # Website-local infrastructure. www.core exposes shared management commands
-    # such as setup_wagtail_home without importing legacy duplicated models.
+# ── LOCAL_APPS ──────────────────────────────────────────────────────
+# Each website defines its own LOCAL_APPS in its site-level settings.py
+# because each site ships a different set of plugins, page apps, and
+# www sub-packages.  See:
+#   applications/ctc-research/settings.py
+#   applications/lms-demo/settings.py
+#   applications/VResume/settings.py
+#
+# LMS_LOCAL_APPS is a reusable constant for sites that share the same
+# plugin/www structure (ctc-research and lms-demo).  VResume defines its
+# own inline list since its app set differs.
+LMS_LOCAL_APPS = [
     "www.core",
-    # CTC page/LMS models are required by the bundled Wagtail fixtures.
     "www.core.content.apps.ContentConfig",
-    # handlers app provides the 'handlers' label used by Wagtail StreamFields
-    # (e.g. handlers.Organization, handlers.Service) in page models.
     "www.core.handlers.apps.AccountsConfig",
     "plugins.accounts.apps.AccountsConfig",
     "plugins.lms.apps.LmsConfig",
     "plugins.blog.apps.BlogConfig",
-    # Products & cart (required for plugins.urls namespace and cart views)
     "plugins.products.apps.ProductsConfig",
-    # Profile (required for plugins.urls namespace and profile views)
     "plugins.profile.apps.ProfileConfig",
-    # crafts_ai models (EmailSettings, etc.) need this app registered
     "crafts_ai",
-    # Legacy page apps are optional; AppRegistry filters them when absent.
-    "pages.home",
-    "pages.about",
-    "pages.cv",
-    "pages.connect",
-    "pages.portfolio",
-    "pages.blog",
+    "django_osoul.analyzer.apps.AnalyzerAppConfig",
 ]
-
 
 OPTIONAL_APP_MAP = {}
 
 _registry = AppRegistry()
 EFFECTIVE_THIRD_PARTY_APPS = _registry.available_apps(THIRD_PARTY_APPS)
-EFFECTIVE_LOCAL_APPS = _registry.available_apps(LOCAL_APPS)
 
 INSTALLED_APPS: list[str] = AppRegistry.merge(
     APPS,
     EFFECTIVE_WAGTAIL_APPS,
     EFFECTIVE_THIRD_PARTY_APPS,
-    EFFECTIVE_LOCAL_APPS,
 )
+# Per-site LOCAL_APPS are appended by each website's settings.py after
+# the `from configs.settings import *` line.

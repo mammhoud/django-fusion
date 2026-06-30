@@ -41,6 +41,13 @@
     "analyze": "node scripts/workspace.mjs analyze",
     "start": "npm run dev",
     "build:assets": "node scripts/workspace.mjs build --site all",
+    "build:customizer": "node scripts/workspace.mjs build --site customizer",
+    "build:dev:customizer": "node scripts/workspace.mjs build-dev --site customizer",
+    "watch:customizer": "node scripts/workspace.mjs watch --site customizer",
+    "dev:customizer": "node scripts/workspace.mjs dev --site customizer",
+    "clean:customizer": "node scripts/workspace.mjs clean --site customizer",
+    "collectstatic:customizer": "node scripts/workspace.mjs collectstatic --site customizer",
+    "build:collect:customizer": "node scripts/workspace.mjs build-collect --site customizer",
     "build:ctc-website": "node scripts/workspace.mjs build --site ctc-website"
   },
   "dependencies": {

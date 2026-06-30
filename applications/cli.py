@@ -152,11 +152,7 @@ class SiteCLI:
                 "DJANGO_WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
                 "WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
                 "DB_NAME": env.get("DB_NAME", cfg["db_name"]),
-                "DB_HOST": env.get("DB_HOST", "postgres"),
-                "REDIS_URL": env.get("REDIS_URL", "redis://redis:6379/0"),
-                "DJANGO_SETTINGS_MODULE": "configs.settings",
-                "RUNNING_ENV": "docker",
-                "SERVER_ENV": "production",
+                "DJANGO_SETTINGS_MODULE": "settings",
                 "ALLOWED_HOSTS": "*",
             }
         )
@@ -176,7 +172,6 @@ class SiteCLI:
                 sys.path.insert(0, path_str)
 
         os.environ.update(self.site_env())
-        os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
         print(f"Using site '{self.site}' (site path: {site_dir})", file=sys.stderr)
 
     # ------------------------------------------------------------------
@@ -253,15 +248,15 @@ class SiteCLI:
             "-e",
             f"DJANGO_SETTINGS_MODULE={env['DJANGO_SETTINGS_MODULE']}",
             "-e",
-            f"RUNNING_ENV={env['RUNNING_ENV']}",
+            "RUNNING_ENV=docker",
             "-e",
-            f"SERVER_ENV={env['SERVER_ENV']}",
+            "SERVER_ENV=production",
             "-e",
-            f"DB_HOST={env['DB_HOST']}",
+            "DB_HOST=postgres",
             "-e",
             f"DB_NAME={env['DB_NAME']}",
             "-e",
-            f"REDIS_URL={env['REDIS_URL']}",
+            "REDIS_URL=redis://redis:6379/0",
             "-e",
             f"ALLOWED_HOSTS={env['ALLOWED_HOSTS']}",
             image,

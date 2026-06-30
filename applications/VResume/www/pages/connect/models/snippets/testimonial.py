@@ -30,6 +30,7 @@ class Testimonial(models.Model):
     ]
 
     class Meta:
+        app_label = "connect"
         ordering = ["order", "name"]
         verbose_name = _("Testimonial")
         verbose_name_plural = _("Testimonials")

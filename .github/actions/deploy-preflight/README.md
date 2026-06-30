@@ -101,10 +101,69 @@ convention).
   the docs match the released code (no "the docs say v1.1 but the
   code is v1.0" drift).
 
+### Hygiene fixes
+
+Hygiene fixes are repo-internal changes that **do not affect the
+published `action.yml`** — e.g. fixing a cosmetic bug in the repo's
+own `make verify-release` Makefile target, updating the companion
+`deploy-ci.yml` workflow, or amending this README. Hygiene is **not**
+a SemVer bump.
+
+**Default: no tag.** Land hygiene commits as ordinary commits on the
+default branch with a `### Hygiene` sub-section in `CHANGELOG.md` (not
+a top-level `## [vX.Y.Z]` header — those are reserved for SemVer
+releases). The fix is implicitly carried by the next real SemVer
+bump of the same line. `uses: ...@v1` skips hygiene entirely and
+behaves identically to the prior real SemVer release.
+
+**Why not a `vX.Y.Z+hyg.N` SemVer build-metadata tag by default?**
+SemVer build metadata (the `+suffix` suffix per the [v2.0.0
+spec](https://semver.org/#spec-item-10)) does not change version
+precedence — `v1.0.0` and `v1.0.0+hyg.1` are precedence-equal, and
+the spec was designed with exactly this use case in mind. Major
+tooling (Renovate, Dependabot, npm semver) handles `+suffix` correctly
+out of the box per the spec. The reason we still prefer "no tag" by
+default is **cognitive overhead, not tool compatibility**: for an
+action this small (one input pair, ~30 lines of `action.yml`), the
+parallel naming axis buys policy clarity at the cost of forcing
+every reader to mentally check the build-metadata suffix on every
+`git tag --list` and `CHANGELOG` entry. The trade-off flips if the
+action grows to a size where hygiene events become more interesting
+than release events.
+
+**Hygiene CHANGELOG entry shape.** Hygiene commits append a
+`### Hygiene` block at the top of `CHANGELOG.md` (above the
+top-level `## [vX.Y.Z]` SemVer-release headers, which remain the
+canonical record for SemVer bumps). The shape:
+
+```markdown
+### Hygiene
+
+- **2024-XX-YY** — short one-line title (matches the commit subject).
+  One short paragraph describing what changed and why it doesn't
+  affect the published `action.yml` (e.g. "Fix `\\u274c` rendering
+  in the repo's `make verify-release` diagnostic output; published
+  `action.yml` is unchanged").
+- **earlier-date** — next hygiene entry, same shape.
+```
+
+> **Tip:** prefix hygiene commit subjects with `hyg:` (no space before
+> description, mirroring the repo's existing Conventional-Commits
+> prefix style) so `git log --grep='^hyg:'` recovers them in bulk.
+> Example forward-looking subject:
+> `hyg: clarify verify-release success-path output wording`.
+
+**Exception — pointer tags.** If a hygiene fix needs a permanent
+citation (third-party issue, ticket reference, audit trail), promote
+it to a real SemVer PATCH bump with an explicit "no consumer-visible
+behavior change" note in the `### Notes` block. The precedent is
+`v1.0.1`, which recorded a one-line `Makefile` formatting fix; future
+hygiene-to-pointer promotions follow the same shape.
+
 ### Changelog
 
 See [CHANGELOG.md](./CHANGELOG.md) for a per-version history of
-behavior changes, additions, and bug fixes.
+behavior changes, additions, bug fixes, and hygiene entries.
 
 ## Why a Composite Action?
 

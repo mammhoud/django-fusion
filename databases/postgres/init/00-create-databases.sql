@@ -21,6 +21,9 @@ END $$;
 -- -----------------------------------------------------------------------------
 -- 2. Create all required databases (if they don't already exist)
 --    Use the \gexec trick to conditionally create databases.
+--    The `coder` database is intentionally NOT created here — its owner and
+--    credentials come from 00.initdb-multiple-databases.sh via the
+--    INITDB_MULTIPLE_DATABASES env var, so we leave it for that script to own.
 -- -----------------------------------------------------------------------------
 SELECT 'CREATE DATABASE ctc_research'
 WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'ctc_research')\gexec
@@ -40,6 +43,10 @@ WHERE NOT EXISTS (SELECT FROM pg_database WHERE datname = 'blinko')\gexec
 --    We grant all privileges to the 'django' user and make it the owner
 --    of each database (so it can create schemas, etc.).
 --    Then we connect to each DB and grant schema/public permissions.
+--    The `coder` database is intentionally excluded from the OWNER TO django
+--    loop — its owner and schema grants are wired up by
+--    00.initdb-multiple-databases.sh so the Coder role remains intact on
+--    FORCE_REINIT re-runs.
 -- -----------------------------------------------------------------------------
 DO $$
 DECLARE
@@ -51,6 +58,11 @@ BEGIN
       EXECUTE format('ALTER DATABASE %I OWNER TO django', db_name);
    END LOOP;
 END $$;
+
+-- The `coder` DB is created by 00.initdb-multiple-databases.sh (via
+-- INITDB_MULTIPLE_DATABASES env var), so it won't exist when this SQL script
+-- runs. Grants for the coder DB are handled by that script and by the
+-- entrypoint's ensure_coder_database() function. Keep the `coder` role intact.
 
 -- Now connect to each database and grant schema-level privileges,
 -- create extensions, and set default privileges.

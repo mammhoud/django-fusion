@@ -11,6 +11,7 @@
 The `warehouses` directory contains all data infrastructure services:
 - **PostgreSQL** - Primary database
 - **Redis** - Caching and session store
+- **Coder** - Self-hosted cloud development environments (coder.com)
 - **Adminer** - Database administration UI
 
 ---
@@ -77,6 +78,44 @@ GRANT ALL PRIVILEGES ON ALL DATABASES TO django;
 
 **Volumes:**
 - `redis/data/` - Persistence files
+
+### Coder (coder.com) — self-hosted cloud dev environments
+
+**Purpose:** Self-hosted cloud development environments. Workspaces run in containers, accessible from a browser.  
+**Image:** `ghcr.io/coder/coder`  
+**Container:** `coder`  
+**Ports:** `7080` (HTTP) / `7443` (HTTPS) — overridable via `CODER_HTTP_PORT` / `CODER_HTTPS_PORT`
+
+**Database:** A dedicated `coder` database and `coder` role are created automatically by `00.initdb-multiple-databases.sh` via the `INITDB_MULTIPLE_DATABASES` env var. The connection URL is wired into the Coder container as `CODER_PG_CONNECTION_URL`:
+
+```
+postgres://coder:mk_pAssWord123@postgres:5432/coder?sslmode=disable
+```
+
+Values are templated from `CODER_DB_USER`, `CODER_DB_PASSWORD`, `CODER_DB_NAME` (defaults: `coder` / `mk_pAssWord123` / `coder`).
+
+**Exported environment variables** (set on the `coder` service in `databases/docker-compose.yml`):
+
+| Variable | Purpose | Default |
+|---|---|---|
+| `CODER_PG_CONNECTION_URL` | PostgreSQL connection | `postgres://coder:mk_pAssWord123@postgres:5432/coder?sslmode=disable` |
+| `CODER_ACCESS_URL` | Public URL users hit | `http://localhost:7080` |
+| `CODER_HTTP_ADDRESS` | Bind address (HTTP) | `0.0.0.0:7080` |
+| `CODER_HTTPS_ADDRESS` | Bind address (HTTPS) | `0.0.0.0:7443` |
+| `CODER_TLS_ENABLED` | Enable HTTPS routes inside the container | `false` |
+| `CODER_HOSTNAME` | Traefik `Host()` rule | `coder.localhost` |
+
+**Bring it up** (after databases are already running):
+
+```bash
+cd databases
+make up-coder          # or: make deploy-coder
+make logs-coder        # tail logs
+make status-coder      # show container
+make down-coder        # stop and remove
+```
+
+Existing volumes are untouched. On a brand-new cluster with no `coder` database in the existing Postgres volume, run `make deploy-db-force` first so `00.initdb-multiple-databases.sh` can create the role and schema with the right grants — the `coder` database is created idempotently by the dynamic init script rather than by the static SQL bootstrap (which only grants connect).
 
 ### Adminer
 

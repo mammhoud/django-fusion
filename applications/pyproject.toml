@@ -55,11 +55,16 @@ dependencies = [
     "structlog",
     "sentry-sdk[django]",
     # Wagtail CMS
-    "wagtail",
+    "wagtail>=7.4.2",
     "wagtail-font-awesome-svg",
     "wagtail-newsletter[mailchimp]",
     "wagtail-transfer",
     "wagtailfontawesome",
+    # Wagtail transitive deps (installed together with wagtail; pinned here
+    # so a fresh `pip install` on a clean clone recovers the exact versions
+    # the analyzer suite + workspace tests have been validated against).
+    "django-taggit>=6.1.0",
+    "django-modelcluster>=6.5",
     # Server
     "gunicorn",
     "uvicorn",
@@ -102,26 +107,40 @@ build-backend = "hatchling.build"
 packages = ["configs", "tasks"]
 
 # Local sources for internal libs used by all websites.
-# django-grep is merged into libs/django-osoul; django-rseal is merged into libs/crafts-ai.
-[tool.uv.sources]
+# django-grep is merged into libs/django-osoul; django-rseal is merged into libs/crafts-ai.[tool.uv.sources]
 django-osoul = { path = "libs/django-osoul", editable = true }
 crafts-ai = { path = "libs/crafts-ai", editable = true }
 
-[tool.pytest.ini_options]
+[tool.pytest.ini_options]        
 minversion = "7.0"
 addopts = ["--strict-markers", "--strict-config", "-v", "--tb=short", "--no-header", "--import-mode=importlib"]
 DJANGO_SETTINGS_MODULE = "tests.settings"
-testpaths = ["tests"]
+# django-osoul analyzer tests live in their own sub-package so they can be
+# picked up from the workspace without dragging the rest of the
+# django-osoul test corpus (which uses a different Django settings config)
+# into the same collection pass.
+testpaths = [
+    "tests",
+    "libs/django-osoul/tests/analyzer",
+]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-pythonpath = ["."]
+# ``.`` so ``from apps.*`` imports resolve (workspace tests rely on this).
+# ``libs/django-osoul/src`` so ``from django_osoul.analyzer.*`` resolves
+# when pytest is invoked from the workspace root, independent of whether
+# the editable install has materialised the .pth file.
+pythonpath = [
+    ".",
+    "libs/django-osoul/src",
+]
 markers = [
     "slow: marks tests as slow",
     "integration: integration tests",
     "unit: unit tests",
     "django_db: enable database access for tests",
 ]
+
 
 [tool.bumpver]
 current_version = "1.0.3"
@@ -134,3 +153,4 @@ push = true
 [tool.bumpver.file_patterns]
 "pyproject.toml" = ['version = "{version}"']
 "__about__.py"   = ['^__version__ = "{version}"']
+"VERSION"        = ['^{version}$']

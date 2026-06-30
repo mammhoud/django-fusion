@@ -71,6 +71,7 @@ class TrackedURL(models.Model):
     )
 
     class Meta:
+        app_label = "connect"
         verbose_name = _("Tracked URL")
         verbose_name_plural = _("Tracked URLs")
         ordering = ["-created_at"]

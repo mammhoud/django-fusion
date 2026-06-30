@@ -22,23 +22,27 @@ const siteAliases = {
   VResume: 'vresume',
   resume: 'vresume',
   'vresume.structa.cloud': 'vresume',
+  customizer: 'customizer',
+  cust: 'customizer',
 };
 
-const sites = ['ctc-research', 'lms-demo', 'vresume'];
+const sites = ['ctc-research', 'lms-demo', 'vresume', 'customizer'];
 const siteDirs = {
   'ctc-research': 'ctc-research',
   'lms-demo': 'lms-demo',
   vresume: 'VResume',
+  customizer: 'customizer',
 };
 const cleanDirs = {
   'ctc-research': ['ctc-research/assets/bundles/ctc-research'],
   'lms-demo': ['lms-demo/assets/bundles/lms-demo'],
   vresume: ['VResume/assets/bundles/vresume'],
+  customizer: ['customizer/assets/bundles/customizer'],
   shared: ['assets/bundles/shared'],
 };
 
 function usage() {
-  console.log(`Workspace asset CLI\n\nUsage:\n  npm --prefix assets run <script> -- [--site ctc|structa|vresume|all]\n  node assets/scripts/workspace.mjs <command> [--site SITE] [-- <extra args>]\n\nCommands:\n  build            Production webpack build for one site (default ctc-research)\n  build-dev        Development webpack build for one site\n  watch            Webpack watch for one site\n  dev              Webpack dev server for one site\n  analyze          Emit webpack stats for one site\n  clean            Remove generated bundles for one site or all sites\n  collectstatic    Run Django collectstatic for one site or all sites\n  build-collect    Build assets then collect static for one site or all sites\n  load-dumps       Load JSON dump fixtures for one site or all sites\n  populate         Run fixture loading and site-specific Python content/image population\n  manage           Run workspace manage.py for one site; pass Django args after --\n  sites            Print supported site names\n`);
+  console.log(`Workspace asset CLI\n\nUsage:\n  npm --prefix assets run <script> -- [--site ctc|structa|vresume|customizer|all]\n  node assets/scripts/workspace.mjs <command> [--site SITE] [-- <extra args>]\n\nSites:\n  ctc, ctc-research       CTC Research website\n  structa, lms-demo       Structa LMS Demo\n  vresume                 VResume resume builder\n  customizer, cust        Structa template customizer (standalone webpack)\n\nCommands:\n  build            Production webpack build for one site (default ctc-research)\n  build-dev        Development webpack build for one site\n  watch            Webpack watch for one site\n  dev              Webpack dev server for one site\n  analyze          Emit webpack stats for one site (not supported for customizer)\n  clean            Remove generated bundles for one site or all sites\n  collectstatic    Run Django collectstatic for one site or all sites\n  build-collect    Build assets then collect static for one site or all sites\n  load-dumps       Load JSON dump fixtures for one site or all sites\n  populate         Run fixture loading and site-specific Python content/image population\n  manage           Run workspace manage.py for one site; pass Django args after --\n  sites            Print supported site names\n`);
 }
 
 function parse(argv) {
@@ -122,6 +126,45 @@ function clean(site) {
   }
 }
 
+// ── Customizer helpers (standalone app, not the shared webpack/config) ─────
+
+const isCustomizer = (site) => site === 'customizer';
+
+function customizerBuild(mode) {
+  const script = mode === 'production' ? 'build' : 'build:dev';
+  run('npm', ['--prefix', 'customizer/assets', 'run', script], { cwd: workspaceRoot });
+}
+
+function customizerWatch() {
+  run('npm', ['--prefix', 'customizer/assets', 'run', 'watch'], { cwd: workspaceRoot });
+}
+
+function customizerDev() {
+  run('npm', ['--prefix', 'customizer/assets', 'run', 'dev'], { cwd: workspaceRoot });
+}
+
+function customizerClean() {
+  const dirs = cleanDirs['customizer'];
+  for (const relative of dirs) {
+    rmSync(path.join(workspaceRoot, relative), { recursive: true, force: true });
+    console.log(`Removed ${relative}`);
+  }
+}
+
+function customizerCollectstatic() {
+  const managePy = path.join(workspaceRoot, 'customizer', 'manage.py');
+  if (!existsSync(managePy)) {
+    console.error('Customizer manage.py not found — cannot collectstatic.');
+    process.exit(1);
+  }
+  run(pythonBin(), [managePy, 'collectstatic', '--noinput'], { cwd: workspaceRoot });
+}
+
+function customizerBuildCollect() {
+  customizerBuild('production');
+  customizerCollectstatic();
+}
+
 function populate(site, extra) {
   for (const selected of selectedSites(site)) {
     run(pythonBin(), ['tests/scripts/populate_site_data.py', '--site', selected, ...extra], { cwd: workspaceRoot, env: { PROJECT_PATH: selected, DJANGO_SITE: selected, WEBSITE: selected } });
@@ -140,30 +183,49 @@ switch (command) {
     console.log(sites.join('\n'));
     break;
   case 'build':
-    for (const selected of selectedSites(site)) webpack(selected, 'production', extra);
+    for (const selected of selectedSites(site)) {
+      if (isCustomizer(selected)) { customizerBuild('production'); }
+      else { webpack(selected, 'production', extra); }
+    }
     break;
   case 'build-dev':
-    for (const selected of selectedSites(site)) webpack(selected, 'development', extra);
+    for (const selected of selectedSites(site)) {
+      if (isCustomizer(selected)) { customizerBuild('development'); }
+      else { webpack(selected, 'development', extra); }
+    }
     break;
   case 'watch':
+    if (isCustomizer(site)) { customizerWatch(); break; }
     webpack(site, 'development', ['watch', ...extra]);
     break;
   case 'dev':
+    if (isCustomizer(site)) { customizerDev(); break; }
     webpack(site, 'development', ['serve', ...extra]);
     break;
   case 'analyze':
+    if (isCustomizer(site)) {
+      console.log('analyze is not supported for customizer (uses standalone webpack config). Use `npm --prefix customizer/assets run build -- --profile --json` instead.');
+      break;
+    }
     webpack(site, 'production', ['--profile', '--json', ...extra]);
     break;
   case 'clean':
+    if (isCustomizer(site)) { customizerClean(); break; }
     clean(site);
     break;
   case 'collectstatic':
-    for (const selected of selectedSites(site)) manage(selected, ['collectstatic', '--noinput', ...extra]);
+    for (const selected of selectedSites(site)) {
+      if (isCustomizer(selected)) { customizerCollectstatic(); }
+      else { manage(selected, ['collectstatic', '--noinput', ...extra]); }
+    }
     break;
   case 'build-collect':
     for (const selected of selectedSites(site)) {
-      webpack(selected, 'production');
-      manage(selected, ['collectstatic', '--noinput', ...extra]);
+      if (isCustomizer(selected)) { customizerBuildCollect(); }
+      else {
+        webpack(selected, 'production');
+        manage(selected, ['collectstatic', '--noinput', ...extra]);
+      }
     }
     break;
   case 'load-dumps':

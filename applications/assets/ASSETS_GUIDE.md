@@ -17,6 +17,7 @@ Site aliases are resolved in `workspace.mjs`:
 - `ctc` / `ctc-research` / `ctc-research.com` → `ctc-research`
 - `structa` / `lms` / `lms-demo` / `structa.cloud` → `lms-demo`
 - `vresume` / `VResume` / `resume` → `vresume`
+- `customizer` / `cust` → `customizer` (standalone webpack)
 
 ---
 
@@ -43,6 +44,12 @@ npm --prefix assets run watch -- --site ctc
 # Dev server (webpack-dev-server with HMR)
 npm --prefix assets run dev -- --site ctc
 
+# Customizer (standalone webpack — different config than the 3 main sites)
+npm --prefix assets run build:customizer
+npm --prefix assets run build:collect:customizer
+npm --prefix assets run collectstatic:customizer
+npm --prefix assets run clean:customizer
+
 # Build then run Django collectstatic
 npm --prefix assets run build:collect:ctc
 npm --prefix assets run build:collect:structa
@@ -56,6 +63,14 @@ npm --prefix assets run collectstatic:all
 # Clean bundles
 npm --prefix assets run clean:ctc
 npm --prefix assets run clean:all
+
+### customizer
+- Source JS: `customizer/assets/static/js/`
+- Source SCSS: `customizer/assets/static/styles/`
+- Compiled bundles: `customizer/assets/bundles/customizer/`
+- Collectstatic output: `customizer/staticfiles/`
+- Build command: `node assets/scripts/workspace.mjs build --site customizer`
+- Has its own standalone webpack config (`customizer/assets/webpack.config.js`) and `package.json`
 
 # Analyze bundle sizes
 npm --prefix assets run analyze -- --site ctc

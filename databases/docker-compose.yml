@@ -24,6 +24,8 @@ volumes:
     name: postgres_data
   # redis_data:
   #   name: redis_data
+  coder_data:
+    name: coder_data
 
 # ============================================================
 # Services
@@ -49,8 +51,8 @@ services:
       POSTGRES_DB: app_db
       PGDATA: /var/lib/postgresql/data/pgdata
       # Multiple databases – comma‑separated list: db:owner:password
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko:structa:mk_pAssWord123}"
-      
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko:structa:mk_pAssWord123,coder:coder:mk_pAssWord123}"
+
       # ---- NEW: Force re‑initialization on every start ----
       # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again
       FORCE_REINIT: "${FORCE_REINIT:-false}"
@@ -113,6 +115,61 @@ services:
   #       reservations:
   #         cpus: '0.5'
   #         memory: 256M
+
+  # ----------------------------------------------------------
+  # Coder – self‑hosted cloud development environments (coder.com)
+  # Uses the `coder` database created above by INITDB_MULTIPLE_DATABASES.
+  # Connection env vars are exported straight into the Coder container.
+  # ----------------------------------------------------------
+  coder:
+    image: ghcr.io/coder/coder:${CODER_VERSION:-latest}
+    container_name: coder
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      # Database connection — exported to Coder's env
+      CODER_PG_CONNECTION_URL: "postgres://${CODER_DB_USER:-coder}:${CODER_DB_PASSWORD:-mk_pAssWord123}@postgres:5432/${CODER_DB_NAME:-coder}?sslmode=disable"
+      # Public URL users hit in their browser
+      CODER_ACCESS_URL: "${CODER_ACCESS_URL:-http://localhost:7080}"
+      # Network bind (HTTP only by default; flip CODER_TLS_ENABLED=true behind a reverse proxy)
+      CODER_HTTP_ADDRESS: "0.0.0.0:${CODER_HTTP_PORT:-7080}"
+      CODER_HTTPS_ADDRESS: "0.0.0.0:${CODER_HTTPS_PORT:-7443}"
+      CODER_TLS_ENABLED: "${CODER_TLS_ENABLED:-false}"
+      # Wildcard URL is optional — only set when explicitly provided, because an
+      # empty value makes Coder reject startup.
+    ports:
+      - "${CODER_HTTP_PORT:-7080}:7080"
+      - "${CODER_HTTPS_PORT:-7443}:7443"
+    volumes:
+      - coder_data:/home/coder
+    networks:
+      - common
+      - warehouse-net
+      - internal
+      - traefik-net
+      - site_network
+    # NOTE: ghcr.io/coder/coder is a distroless image (no shell, no curl/wget),
+    # so a shell-style healthcheck would always fail with exit 127. We rely on
+    # `depends_on: condition: service_healthy` for postgres plus the Coder
+    # container's own logs; if you ever need a Docker-level healthcheck, bake
+    # one into a derived image (e.g. FROM coder COPY healthcheck.sh).
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.coder.rule=Host(`${CODER_HOSTNAME:-coder.localhost}`)"
+      - "traefik.http.routers.coder.entrypoints=web"
+      # `server.port` is intentionally omitted — Traefik will route to the first
+      # published port (CODER_HTTP_PORT, default 7080), so changing the env var
+      # in one place still works.
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 1G
+        reservations:
+          cpus: '0.25'
+          memory: 256M
 
   # # ----------------------------------------------------------
   # # Adminer – optional database UI
