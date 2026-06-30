@@ -88,6 +88,8 @@ class ChatView(DetailView):
         context = super().get_context_data(**kwargs)
         conversation = self.object
         model_id = self.request.GET.get("model_id", "gemma3-4b")
+        apps = customizer_apps()
+        default_website_slug = apps[0]["slug"] if apps else "ctc-research"
         
         # Process messages for display
         messages_with_content = []
@@ -106,8 +108,9 @@ class ChatView(DetailView):
         context.update({
             "messages": conversation.messages.all(),
             "messages_with_content": messages_with_content,
-            "customizer_apps": customizer_apps(),
+            "customizer_apps": apps,
             "model_id": model_id,
+            "default_website_slug": default_website_slug,
         })
         return context
 

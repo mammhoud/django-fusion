@@ -114,7 +114,7 @@ Wired up by customizer/chat/views.py ChatView.
             </li>
             <li class="nav-item">
               <a class="nav-link"
-                 href="{% url 'customizer_pages' website_slug='ctc-research' %}">
+                 href="{% url 'customizer_pages' website_slug=default_website_slug %}">
                 <i class="bi bi-files me-2"></i> {% trans "Pages" %}
               </a>
             </li>
@@ -129,7 +129,7 @@ Wired up by customizer/chat/views.py ChatView.
                       type="button"
                       hx-post="{% url 'analyzer_analyze' %}"
                       hx-ext="json-enc"
-                      hx-vals='{"website_slug": "ctc-research", "depth": 2}'
+                      hx-vals='{"website_slug": "{{ default_website_slug }}", "depth": 2}'
                       hx-target="#chat-messages"
                       hx-swap="beforeend">
                 <i class="bi bi-search me-2"></i> {% trans "Analyze Templates" %}
