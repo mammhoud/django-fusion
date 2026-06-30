@@ -114,7 +114,7 @@ class ChatView(DetailView):
     def post(self, request, conversation_id):
         """Handle new messages in existing chat - returns HTML with SSE endpoint info"""
         message_content = request.POST.get("message", "").strip()
-        model_id = request.GET.get("model_id", "gemma3-4b")
+        model_id = request.POST.get("model_id") or request.GET.get("model_id", "gemma3-4b")
         model_name = (get_model(model_id) or {}).get("name", "AI")
 
         if not message_content:

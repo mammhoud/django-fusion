@@ -215,6 +215,7 @@ Wired up by customizer/chat/views.py ChatView.
                 hx-on::after-request="if(event.detail.successful) this.reset()"
                 class="d-flex">
             {% csrf_token %}
+            <input type="hidden" name="model_id" value="{{ model_id }}">
             <div class="input-group">
               <input type="text"
                      name="message"
