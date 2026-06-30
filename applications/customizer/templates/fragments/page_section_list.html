@@ -1,7 +1,6 @@
 {# applications/customizer/templates/fragments/page_section_list.html #}
-{% load comp %}
 
-{% comp "customizer/section_list" with 
+{% include "components/section_list.html" with 
   page_title=page.title 
   sections=page.sections 
 %}

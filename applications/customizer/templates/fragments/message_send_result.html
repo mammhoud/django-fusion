@@ -1,7 +1,6 @@
 {# applications/customizer/templates/fragments/message_send_result.html #}
-{% load comp %}
 
-{% comp "customizer/alert" with 
+{% include "components/alert.html" with 
   is_success=is_success 
   message=message 
   errors=form.errors 

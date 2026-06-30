@@ -1,9 +1,8 @@
 {# applications/customizer/templates/fragments/page_navigator.html #}
-{% load comp %}
 
-<nav class="list-group" aria-label="Customizer websites">
+<nav class="list-group" aria-label="TemplateTinker websites">
   {% for website in websites %}
-    {% comp "customizer/nav_item" with 
+    {% include "components/nav_item.html" with 
       website=website 
       slug=website.slug 
       name=website.name 
