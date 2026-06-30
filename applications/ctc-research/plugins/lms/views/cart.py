@@ -13,10 +13,10 @@ except ImportError:
     CartService = None
 
 
-# Lazy load PaymentProcessingMixin to avoid crafts_ai.site import conflicts
+# Lazy load PaymentProcessingMixin to avoid ceptor_ai.site import conflicts
 def _get_payment_mixin():
     try:
-        from crafts_ai.site.payments import PaymentProcessingMixin
+        from ceptor_ai.site.payments import PaymentProcessingMixin
         return PaymentProcessingMixin
     except (ImportError, RuntimeError):
         # Return a no-op mixin if import fails

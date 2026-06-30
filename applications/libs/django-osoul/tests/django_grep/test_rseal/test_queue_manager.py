@@ -10,8 +10,8 @@ Coverage target: queue_manager.py ≥ 80%
 from unittest.mock import MagicMock, Mock, call, patch
 
 from django.test import TestCase
-from crafts_ai.communication.email.models import EmailLog
-from crafts_ai.services.email.queue_manager import EmailQueueManager
+from ceptor_ai.communication.email.models import EmailLog
+from ceptor_ai.services.email.queue_manager import EmailQueueManager
 
 # ---------------------------------------------------------------------------
 # Helpers

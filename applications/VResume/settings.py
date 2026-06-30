@@ -26,7 +26,7 @@ configure_site_environment("vresume", module="CMS", default_port=5072)
 # ============================================================
 # Internal Dependency Handling
 # ============================================================
-# django_osoul and crafts_ai are real workspace dependencies. Do not install
+# django_osoul and ceptor_ai are real workspace dependencies. Do not install
 # fake sys.modules shims here; dependency failures should surface during checks.
 
 # ============================================================
@@ -58,7 +58,7 @@ SITE_ID = 3
 LOCAL_APPS = [
     "www.core",
     "plugins.accounts.apps.AccountsConfig",
-    "crafts_ai",
+    "ceptor_ai",
     "django_osoul.analyzer.apps.AnalyzerAppConfig",
     "pages.home",
     "pages.about",
@@ -71,9 +71,9 @@ LOCAL_APPS = [
 INSTALLED_APPS += LOCAL_APPS
 
 # ============================================================
-# crafts_ai required settings
+# ceptor_ai required settings
 # ============================================================
-# PROFILE_MODEL is a required ForeignKey target in crafts_ai models.
+# PROFILE_MODEL is a required ForeignKey target in ceptor_ai models.
 # Point it to Django's built-in User model since this project
 # does not have a separate profile model.
 PROFILE_MODEL = "auth.User"
@@ -81,9 +81,214 @@ PROFILE_MODEL = "auth.User"
 # ============================================================
 # Silenced system checks
 # ============================================================
-# The previous TeamMembership ordering check is fixed in crafts_ai.
+# The previous TeamMembership ordering check is fixed in ceptor_ai.
 SILENCED_SYSTEM_CHECKS = []
 
 # Disable workflows until legacy imported Wagtail tasks are cleaned.
 WAGTAIL_WORKFLOW_ENABLED = False
+
+# ============================================================
+# VResume Admin Sidebar (Unfold)
+# ============================================================
+# Override the shared minimal UNFOLD sidebar with VResume's curated
+# navigation including page-specific model admin links.
+from django.templatetags.static import static
+from django.urls import reverse_lazy
+from django.utils.translation import gettext_lazy as _
+
+UNFOLD["SITE_HEADER"] = _("VResume")
+UNFOLD["SITE_TITLE"] = _("VResume Admin")
+UNFOLD["SITE_SYMBOL"] = "person"
+UNFOLD["LOGIN"] = {
+    "image": lambda request: static("images/avatar/01.jpg"),
+}
+# ============================================================
+# Celery Beat Schedule — VResume-specific periodic tasks
+# ============================================================
+# These tasks reference VResume page apps (pages.connect, pages.blog)
+# that don't exist in LMS sites.  Inlined here so each site controls
+# its own schedule.
+from celery.schedules import crontab
+
+CELERY_BEAT_SCHEDULE = {
+    # ── Campaign Tasks ──
+    "process-scheduled-campaigns": {
+        "task": "pages.connect.services.campaign_tasks.process_scheduled_campaigns",
+        "schedule": 300.0,  # Every 5 minutes
+        "options": {"queue": "default", "priority": 5},
+    },
+    "cleanup-old-campaigns": {
+        "task": "pages.connect.services.campaign_tasks.cleanup_old_campaigns",
+        "schedule": crontab(hour=2, minute=0),  # Daily at 2:00 AM UTC
+        "options": {"queue": "default", "priority": 3},
+        "kwargs": {"days_old": 30},
+    },
+    # ── Analytics Tasks ──
+    "update-article-engagement-metrics": {
+        "task": "pages.blog.services.analytics_tasks.update_article_engagement_metrics",
+        "schedule": crontab(hour="*/4", minute=0),  # Every 4 hours
+        "options": {"queue": "default", "priority": 2},
+    },
+    "generate-trending-articles": {
+        "task": "pages.blog.services.analytics_tasks.generate_trending_articles",
+        "schedule": crontab(hour=0, minute=0),  # Daily at midnight UTC
+        "options": {"queue": "default", "priority": 2},
+        "kwargs": {"days": 7, "limit": 10},
+    },
+    "cleanup-old-article-reads": {
+        "task": "pages.blog.services.analytics_tasks.cleanup_old_article_reads",
+        "schedule": crontab(hour=3, minute=0),  # Daily at 3:00 AM UTC
+        "options": {"queue": "default", "priority": 1},
+        "kwargs": {"days_old": 90},
+    },
+}
+
+UNFOLD["SIDEBAR"] = {
+    "show_search": True,
+    "show_all_applications": False,
+    "navigation": [
+        {
+            "title": _("Dashboard"),
+            "separator": False,
+            "items": [
+                {
+                    "title": _("Dashboard"),
+                    "icon": "dashboard",
+                    "link": reverse_lazy("admin:index"),
+                },
+            ],
+        },
+        {
+            "title": _("Content"),
+            "separator": True,
+            "items": [
+                {
+                    "title": _("Blog Posts"),
+                    "icon": "article",
+                    "link": reverse_lazy("admin:blog_blogpost_changelist"),
+                },
+                {
+                    "title": _("Blog Authors"),
+                    "icon": "person",
+                    "link": reverse_lazy("admin:blog_blogauthor_changelist"),
+                },
+                {
+                    "title": _("Blog Tags"),
+                    "icon": "label",
+                    "link": reverse_lazy("admin:blog_blogtag_changelist"),
+                },
+            ],
+        },
+        {
+            "title": _("Portfolio"),
+            "separator": True,
+            "items": [
+                {
+                    "title": _("Projects"),
+                    "icon": "work",
+                    "link": reverse_lazy("admin:portfolio_project_changelist"),
+                },
+                {
+                    "title": _("Portfolio Tags"),
+                    "icon": "sell",
+                    "link": reverse_lazy("admin:portfolio_portfoliotag_changelist"),
+                },
+            ],
+        },
+        {
+            "title": _("Connect"),
+            "separator": True,
+            "items": [
+                {
+                    "title": _("Form Submissions"),
+                    "icon": "inbox",
+                    "link": reverse_lazy("admin:connect_formsubmission_changelist"),
+                },
+                {
+                    "title": _("Subscribers"),
+                    "icon": "group",
+                    "link": reverse_lazy("admin:connect_subscriber_changelist"),
+                },
+                {
+                    "title": _("Campaigns"),
+                    "icon": "campaign",
+                    "link": reverse_lazy("admin:connect_campaign_changelist"),
+                },
+                {
+                    "title": _("Email Deliveries"),
+                    "icon": "mail",
+                    "link": reverse_lazy("admin:connect_emaildelivery_changelist"),
+                },
+            ],
+        },
+        {
+            "title": _("Site Settings"),
+            "separator": True,
+            "items": [
+                {
+                    "title": _("vResume Settings"),
+                    "icon": "settings",
+                    "link": reverse_lazy("admin:home_vresumesettings_changelist"),
+                },
+                {
+                    "title": _("Services"),
+                    "icon": "build",
+                    "link": reverse_lazy("admin:home_service_changelist"),
+                },
+                {
+                    "title": _("Testimonials"),
+                    "icon": "format_quote",
+                    "link": reverse_lazy("admin:home_testimonial_changelist"),
+                },
+                {
+                    "title": _("Team Members"),
+                    "icon": "people",
+                    "link": reverse_lazy("admin:home_teammember_changelist"),
+                },
+                {
+                    "title": _("Sliders"),
+                    "icon": "view_carousel",
+                    "link": reverse_lazy("admin:home_slider_changelist"),
+                },
+            ],
+        },
+        {
+            "title": _("Automation"),
+            "separator": True,
+            "items": [
+                {
+                    "title": _("Periodic Tasks"),
+                    "icon": "schedule",
+                    "link": reverse_lazy("admin:django_celery_beat_periodictask_changelist"),
+                },
+                {
+                    "title": _("Crontab Schedules"),
+                    "icon": "timer",
+                    "link": reverse_lazy("admin:django_celery_beat_crontabschedule_changelist"),
+                },
+                {
+                    "title": _("Interval Schedules"),
+                    "icon": "repeat",
+                    "link": reverse_lazy("admin:django_celery_beat_intervalschedule_changelist"),
+                },
+            ],
+        },
+        {
+            "title": _("Users & Auth"),
+            "separator": True,
+            "items": [
+                {
+                    "title": _("Users"),
+                    "icon": "manage_accounts",
+                    "link": reverse_lazy("admin:auth_user_changelist"),
+                },
+                {
+                    "title": _("Groups"),
+                    "icon": "group_work",
+                    "link": reverse_lazy("admin:auth_group_changelist"),
+                },
+            ],
+        },
+    ],
+}
 

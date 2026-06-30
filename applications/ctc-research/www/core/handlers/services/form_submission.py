@@ -10,7 +10,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 
 try:
-    from crafts_ai.handlers.models.forms.submission import FormSubmission
+    from ceptor_ai.handlers.models.forms.submission import FormSubmission
 except ImportError:
     FormSubmission = None  # type: ignore[assignment,misc]
 

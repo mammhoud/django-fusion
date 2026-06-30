@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from crafts_ai.blocks.contact.contact_methods import ContactMethodBlock
-from crafts_ai.blocks.partials.faq import FAQSectionBlock
+from ceptor_ai.blocks.contact.contact_methods import ContactMethodBlock
+from ceptor_ai.blocks.partials.faq import FAQSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import StreamField

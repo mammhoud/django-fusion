@@ -1,6 +1,7 @@
 from pathlib import Path
 from types import SimpleNamespace
 
+import pytest
 from django.test import override_settings
 
 from django_osoul.site.pages import PageCatalog, TemplateRoot
@@ -12,6 +13,7 @@ def write_template(root: Path, name: str, content: str = "") -> None:
     path.write_text(content, encoding="utf-8")
 
 
+@pytest.mark.django_db
 def test_catalog_discovers_plain_template_pages_and_sections(tmp_path):
     write_template(
         tmp_path,
@@ -23,7 +25,8 @@ def test_catalog_discovers_plain_template_pages_and_sections(tmp_path):
 
     catalog = PageCatalog(template_roots=[TemplateRoot("demo", tmp_path)])
 
-    pages = catalog.pages()
+    # Use template_pages() to avoid Wagtail pages from the test database
+    pages = catalog.template_pages()
 
     assert len(pages) == 1
     page = pages[0]
@@ -35,6 +38,7 @@ def test_catalog_discovers_plain_template_pages_and_sections(tmp_path):
     assert page.customizer_url == "/customizer/?template=index.html"
 
 
+@pytest.mark.django_db
 def test_catalog_uses_customizer_settings_as_template_roots(tmp_path):
     write_template(tmp_path, "about.html", '{% include "blocks/profile.html" %}')
     write_template(tmp_path, "blocks/profile.html", "Profile")
@@ -48,7 +52,10 @@ def test_catalog_uses_customizer_settings_as_template_roots(tmp_path):
             }
         ]
     ):
-        page = PageCatalog().pages()[0]
+        # Use template_pages() to avoid Wagtail pages from the test database
+        pages = PageCatalog().template_pages()
+        assert len(pages) == 1
+        page = pages[0]
 
     assert page.slug == "about"
     assert page.path == "/about/"

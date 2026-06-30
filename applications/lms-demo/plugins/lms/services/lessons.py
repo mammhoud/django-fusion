@@ -8,8 +8,8 @@ from django.db import models
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-from crafts_ai.services.infrastructure.base import BaseService
-from crafts_ai.services.infrastructure.token import TokenService
+from ceptor_ai.services.infrastructure.base import BaseService
+from ceptor_ai.services.infrastructure.token import TokenService
 
 from plugins.lms.models import Lesson
 

@@ -1,3 +1,4 @@
+from pathlib import Path
 from types import SimpleNamespace
 
 import pytest
@@ -7,10 +8,12 @@ from django.test import override_settings
 
 from django_osoul.comp.core._init import components
 
+_test_templates_dir = Path(__file__).resolve().parent / "test_templates"
+
 TEMPLATES = [
     {
         "BACKEND": "django.template.backends.django.DjangoTemplates",
-        "DIRS": ["tests/test_templates"],
+        "DIRS": [str(_test_templates_dir)],
         "APP_DIRS": True,
         "OPTIONS": {
             "context_processors": [],

@@ -306,7 +306,7 @@ class Organization(DefaultBase, ClusterableModel):
     class Meta:
         verbose_name = _("Company")
         verbose_name_plural = _("Companies")
-        db_table = "handlers_companies" if "handlers" in __name__ else "crafts_ai_companies" if "crafts_ai" in __name__ else "companies"
+        db_table = "handlers_companies" if "handlers" in __name__ else "ceptor_ai_companies" if "ceptor_ai" in __name__ else "companies"
         ordering = ["name"]
         indexes = [
             models.Index(fields=["slug"]),
@@ -756,12 +756,12 @@ class Department(DefaultBase, ClusterableModel):
     class Meta:
         verbose_name = _("Department")
         verbose_name_plural = _("Departments")
-        db_table = "handlers_departments" if "handlers" in __name__ else "crafts_ai_departments" if "crafts_ai" in __name__ else "departments"
+        db_table = "handlers_departments" if "handlers" in __name__ else "ceptor_ai_departments" if "ceptor_ai" in __name__ else "departments"
         ordering = ["company", "function", "name"]
         constraints = [
             models.UniqueConstraint(
                 fields=["company", "name"],
-                name=f"{'handlers' if 'handlers' in __name__ else 'crafts_ai' if 'crafts_ai' in __name__ else 'app'}_unique_dept_name_per_company"
+                name=f"{'handlers' if 'handlers' in __name__ else 'ceptor_ai' if 'ceptor_ai' in __name__ else 'app'}_unique_dept_name_per_company"
             )
         ]
         indexes = [

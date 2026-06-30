@@ -7,7 +7,7 @@ Django context processor that provides empty context for site settings.
 This is a base context processor that provides empty dictionaries for
 ``brand_settings``, ``social_settings``, and ``announcement_banner``.
 
-Projects that use ``crafts_ai`` should override this context processor
+Projects that use ``ceptor_ai`` should override this context processor
 with their own implementation that populates these values from the database.
 
 Usage
@@ -38,7 +38,7 @@ def SETTINGS(request=None) -> dict:  # noqa: N802  (uppercase matches Django con
     Context processor — provides empty context for site settings.
 
     This base implementation returns empty dictionaries. Projects that use
-    ``crafts_ai`` should override this in their own context processor
+    ``ceptor_ai`` should override this in their own context processor
     to populate these values from the database.
 
     Args:

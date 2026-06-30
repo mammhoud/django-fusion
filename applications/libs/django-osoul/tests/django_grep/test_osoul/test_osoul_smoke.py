@@ -3,12 +3,12 @@ import pytest
 
 
 def test_osoul_imports():
-    from django_osoul import BaseModel, TimeStampedModel, UUIDModel
+    from django_osoul.core.models.base import BaseModel, TimeStampedModel, UUIDModel
     assert BaseModel is not None
 
 def test_osoul_utils():
-    from django_osoul.core.utils.text import slugify_unique, truncate_words
-    from django_osoul.core.utils.validators import validate_email_format
+    from django_osoul.core.utils.formatting.text import slugify_unique, truncate_words
+    from django_osoul.core.utils.security.validators import validate_email_format
     assert validate_email_format("test@example.com") is True
     assert validate_email_format("not-an-email") is False
 

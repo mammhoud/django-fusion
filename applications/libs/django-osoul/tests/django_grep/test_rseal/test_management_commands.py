@@ -13,7 +13,7 @@ from django.core.management import call_command
 from django.core.management.base import CommandError
 from django.test import TestCase
 from django.utils import timezone
-from crafts_ai.communication.email.models import EmailLog
+from ceptor_ai.communication.email.models import EmailLog
 
 User = get_user_model()
 
@@ -37,7 +37,7 @@ class InviteUserCommandTestCase(TestCase):
     # Happy-path
     # ------------------------------------------------------------------
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_valid_inputs_queues_invitation(self, MockService):
         """Command succeeds and prints success message for valid inputs."""
         mock_log = MagicMock()
@@ -53,7 +53,7 @@ class InviteUserCommandTestCase(TestCase):
         self.assertIn("42", stdout)
         self.assertEqual(stderr, "")
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_force_flag_passed_to_service(self, MockService):
         """--force flag is forwarded to InvitationService.invite_user()."""
         mock_log = MagicMock()
@@ -81,7 +81,7 @@ class InviteUserCommandTestCase(TestCase):
         with self.assertRaises(CommandError):
             call_command("invite_user", "--email", "user@example.com")
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_already_registered_user_raises_command_error(self, MockService):
         """Command raises CommandError when user is already registered."""
         MockService.return_value.invite_user.side_effect = ValueError(
@@ -93,7 +93,7 @@ class InviteUserCommandTestCase(TestCase):
 
         self.assertIn("already registered", str(cm.exception))
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_recently_invited_user_raises_command_error(self, MockService):
         """Command raises CommandError when user was recently invited."""
         MockService.return_value.invite_user.side_effect = ValueError(
@@ -105,7 +105,7 @@ class InviteUserCommandTestCase(TestCase):
 
         self.assertIn("7 days", str(cm.exception))
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_force_bypasses_duplicate_prevention(self, MockService):
         """--force flag allows re-inviting a recently invited user."""
         mock_log = MagicMock()
@@ -123,7 +123,7 @@ class InviteUserCommandTestCase(TestCase):
         )
         self.assertIn("99", stdout)
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_unexpected_exception_raises_command_error(self, MockService):
         """Unexpected exceptions are wrapped in CommandError."""
         MockService.return_value.invite_user.side_effect = RuntimeError("DB is down")
@@ -137,7 +137,7 @@ class InviteUserCommandTestCase(TestCase):
     # Database / logging integration
     # ------------------------------------------------------------------
 
-    @patch("crafts_ai.management.commands.invite_user.InvitationService")
+    @patch("ceptor_ai.management.commands.invite_user.InvitationService")
     def test_email_log_created_by_service(self, MockService):
         """EmailLog record is created (via service) when invitation is queued."""
         log = EmailLog.objects.create(
@@ -179,7 +179,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
     # Happy-path
     # ------------------------------------------------------------------
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_processes_all_queued_logs(self, MockEmailService):
         """Command processes every QUEUED EmailLog entry."""
         log1 = self._make_queued_log("a@example.com")
@@ -193,7 +193,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
         self.assertEqual(mock_service._send_now.call_count, 2)
         self.assertIn("Total: 2", stdout)
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_limit_parameter_restricts_processing(self, MockEmailService):
         """--limit N processes at most N pending invitations."""
         for i in range(5):
@@ -207,7 +207,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
         self.assertEqual(mock_service._send_now.call_count, 3)
         self.assertIn("Total: 3", stdout)
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_no_pending_invitations(self, MockEmailService):
         """Command handles empty queue gracefully."""
         stdout, _ = self._call()
@@ -215,7 +215,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
         MockEmailService.return_value._send_now.assert_not_called()
         self.assertIn("0", stdout)
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_skips_non_queued_logs(self, MockEmailService):
         """Command only processes QUEUED logs, not SENT or FAILED ones."""
         EmailLog.objects.create(
@@ -246,7 +246,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
     # Error handling
     # ------------------------------------------------------------------
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_failed_send_does_not_abort_remaining(self, MockEmailService):
         """A failure for one email does not stop processing of subsequent ones."""
         self._make_queued_log("fail@example.com")
@@ -272,7 +272,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
         self.assertIn("Failed: 1", stdout)
         self.assertIn("Sent: 1", stdout)
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_database_updated_after_send(self, MockEmailService):
         """EmailLog status is updated to SENT after successful send."""
         log = self._make_queued_log("update@example.com")
@@ -289,7 +289,7 @@ class SendPendingInvitationsCommandTestCase(TestCase):
         log.refresh_from_db()
         self.assertEqual(log.status, EmailLog.Status.SENT)
 
-    @patch("crafts_ai.management.commands.send_pending_invitations.EmailService")
+    @patch("ceptor_ai.management.commands.send_pending_invitations.EmailService")
     def test_summary_printed_to_stdout(self, MockEmailService):
         """Command prints a summary line with sent/failed/total counts."""
         self._make_queued_log("x@example.com")

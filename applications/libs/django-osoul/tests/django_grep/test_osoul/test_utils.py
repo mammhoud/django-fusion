@@ -4,17 +4,19 @@ from datetime import datetime, timedelta
 
 import pytest
 from django.utils import timezone
-from django_osoul.core.utils import (
+from django_osoul.core.utils.formatting.text import (
     capitalize_words,
+    slugify_unique,
+    strip_html_tags,
+    truncate_chars,
+    truncate_words,
+)
+from django_osoul.core.utils.data.datetime_utils import (
     format_date_range,
     format_duration,
     format_relative_time,
     get_time_until,
     is_business_day,
-    slugify_unique,
-    strip_html_tags,
-    truncate_chars,
-    truncate_words,
 )
 
 
@@ -104,40 +106,40 @@ class TestValidators:
 
     def test_validate_email_format_valid(self):
         """Test valid email format."""
-        from django_osoul.core.services import validate_email_format
+        from django_osoul.core.utils.security.validators import validate_email_format
         assert validate_email_format("user@example.com") is True
 
     def test_validate_email_format_invalid(self):
         """Test invalid email format."""
-        from django_osoul.core.services import validate_email_format
+        from django_osoul.core.utils.security.validators import validate_email_format
         assert validate_email_format("invalid-email") is False
 
     def test_validate_phone_number_valid(self):
         """Test valid phone number."""
-        from django_osoul.core.services import validate_phone_number
+        from django_osoul.core.utils.security.validators import validate_phone_number
         assert validate_phone_number("+1-555-123-4567") is True
 
     def test_validate_phone_number_invalid(self):
         """Test invalid phone number."""
-        from django_osoul.core.services import validate_phone_number
+        from django_osoul.core.utils.security.validators import validate_phone_number
         assert validate_phone_number("invalid") is False
 
     def test_validate_url_valid(self):
         """Test valid URL."""
-        from django_osoul.core.services import validate_url
+        from django_osoul.core.utils.security.validators import validate_url
         assert validate_url("https://example.com") is True
 
     def test_validate_url_invalid(self):
         """Test invalid URL."""
-        from django_osoul.core.services import validate_url
+        from django_osoul.core.utils.security.validators import validate_url
         assert validate_url("not-a-url") is False
 
     def test_validate_username_valid(self):
         """Test valid username."""
-        from django_osoul.core.services import validate_username
+        from django_osoul.core.utils.security.validators import validate_username
         assert validate_username("john_doe") is True
 
     def test_validate_username_too_short(self):
         """Test username too short."""
-        from django_osoul.core.services import validate_username
+        from django_osoul.core.utils.security.validators import validate_username
         assert validate_username("ab") is False

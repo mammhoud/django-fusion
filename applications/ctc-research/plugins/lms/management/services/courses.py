@@ -13,7 +13,7 @@ from django.db.models import Prefetch, Q, QuerySet
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-from crafts_ai.services.infrastructure.base import BaseService
+from ceptor_ai.services.infrastructure.base import BaseService
 
 from plugins.lms.models.courses import Course, Lesson, Module
 

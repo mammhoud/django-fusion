@@ -1,4 +1,4 @@
-{% extends "emails/base_email.html" %}
+{% extends "plugins/emails/base_email.html" %}
 
 {% block content %}
 <h1>Welcome to {{ site_name }}, {{ user.first_name|default:user.username|default:"there" }}!</h1>

@@ -35,34 +35,20 @@ class TestErrorTrackerMiddleware(TestCase):
         return HttpResponse("OK", status=200)
 
     def test_4xx_response_logged(self):
-        """4xx responses should be logged."""
+        """4xx responses should be logged at ERROR level."""
         with patch.object(error_tracker_module, "logger") as mock_logger:
-            # Create a middleware that returns 404
             middleware = ErrorTrackerMiddleware(lambda r: HttpResponse("Not Found", status=404))
             request = self.factory.get("/test/")
-
             middleware(request)
-
-            # Should log at ERROR level for 4xx
-            mock_logger.log.assert_called_once()
-            call_args = mock_logger.log.call_args
-            assert call_args[0][0] == logging.ERROR  # level
-            # Check that the format string contains %s placeholders for status
-            assert "%s" in call_args[0][1]  # message format contains status placeholder
+            mock_logger.error.assert_called_once()
 
     def test_5xx_response_logged(self):
         """5xx responses should be logged at CRITICAL level."""
         with patch.object(error_tracker_module, "logger") as mock_logger:
             middleware = ErrorTrackerMiddleware(lambda r: HttpResponse("Error", status=500))
             request = self.factory.get("/test/")
-
             middleware(request)
-
-            # Should log at CRITICAL level for 5xx
-            mock_logger.log.assert_called_once()
-            call_args = mock_logger.log.call_args
-            assert call_args[0][0] == logging.CRITICAL  # level
-            assert "%s" in call_args[0][1]  # message format contains status placeholder
+            mock_logger.critical.assert_called_once()
 
     def test_2xx_response_not_logged(self):
         """2xx responses should not be logged."""
@@ -87,40 +73,28 @@ class TestErrorTrackerMiddleware(TestCase):
             mock_logger.log.assert_not_called()
 
     def test_log_includes_request_details(self):
-        """Log message should include request method, path, and user info."""
+        """Log message should include request method, path, and user agent."""
         with patch.object(error_tracker_module, "logger") as mock_logger:
             middleware = ErrorTrackerMiddleware(lambda r: HttpResponse("Error", status=400))
             request = self.factory.get("/test/path/")
             request.META["HTTP_USER_AGENT"] = "TestAgent"
-
             middleware(request)
-
-            call_args = mock_logger.log.call_args
-            message = call_args[0][1]
-
-            # Check format string contains placeholders for method, path, user agent
-            assert "GET" in message or "%s" in message
-            assert "/test/path/" in message or "%s" in message
-            assert "TestAgent" in message or "%s" in message
+            call_args = mock_logger.error.call_args
+            assert call_args[0][0] == "%s %s %s \u2014 %s"
+            assert call_args[0][1] == "GET"
+            assert call_args[0][2] == "/test/path/"
 
     def test_log_includes_user_email(self):
         """Log should include user email when user is authenticated."""
         with patch.object(error_tracker_module, "logger") as mock_logger:
             middleware = ErrorTrackerMiddleware(lambda r: HttpResponse("Error", status=400))
             request = self.factory.get("/test/")
-
-            # Create mock user with email
             mock_user = Mock()
             mock_user.email = "testuser@example.com"
             request.user = mock_user
-
             middleware(request)
-
-            call_args = mock_logger.log.call_args
-            message = call_args[0][1]
-
-            # Check format contains user placeholder
-            assert "testuser@example.com" in message or "%s" in message
+            call_args = mock_logger.error.call_args
+            assert call_args[0][4] == "testuser@example.com"
 
     def test_log_anonymous_user(self):
         """Log should show 'anonymous' when user has no email attribute."""
@@ -169,9 +143,7 @@ class TestErrorTrackerMiddleware(TestCase):
         with patch.object(error_tracker_module, "logger") as mock_logger:
             middleware = ErrorTrackerMiddleware(lambda r: HttpResponse("Error", status=404))
             request = self.factory.get("/test/")
-
             middleware(request)
-
-            call_kwargs = mock_logger.log.call_args[1]
+            call_kwargs = mock_logger.error.call_args[1]
             assert call_kwargs["extra"]["status_code"] == 404
             assert call_kwargs["extra"]["request"] is request

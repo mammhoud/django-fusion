@@ -18,12 +18,12 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
-from crafts_ai.communication.email.models import EmailLog
-from crafts_ai.workflows.pipelines.models.users.group import UserGroup
-from crafts_ai.workflows.pipelines.models.users.role import UserRole
-from crafts_ai.services.communication.invitation_service import InvitationService
-from crafts_ai.services.email.email_service import EmailService
-from crafts_ai.communication.tasks import (
+from ceptor_ai.communication.email.models import EmailLog
+from ceptor_ai.workflows.pipelines.models.users.group import UserGroup
+from ceptor_ai.workflows.pipelines.models.users.role import UserRole
+from ceptor_ai.services.communication.invitation_service import InvitationService
+from ceptor_ai.services.email.email_service import EmailService
+from ceptor_ai.communication.tasks import (
     check_registrations_task,
     generate_weekly_report_task,
     setup_periodic_tasks,

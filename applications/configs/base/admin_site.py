@@ -1,8 +1,6 @@
 # ====================================
 # 👑 Django Admin Configuration (Unfold)
 # ====================================
-from django.templatetags.static import static
-from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
 
 from ..settings.setup import settings
@@ -40,190 +38,42 @@ MIGRATION_MODULES = settings.get("MIGRATION_MODULES", {})
 # -------------------------------
 # Admin Template Configuration (Unfold)
 # -------------------------------
+# This is a minimal shared baseline.  Each website overrides branding,
+# sidebar navigation, and site-specific items in its own settings.py
+# (after ``from configs.settings import *``).  See:
+#   applications/VResume/settings.py  — full VResume sidebar with page-model links
+#   applications/ctc-research/settings.py
+#   applications/lms-demo/settings.py
 UNFOLD = {
-    # ── Branding ──────────────────────────────────────────────────────────────
-    "SITE_HEADER": _("VResume"),
-    "SITE_TITLE": _("VResume Admin"),
+    # ── Branding ──────────────────────────────────────────────────────────
+    "SITE_HEADER": _("Admin"),
+    "SITE_TITLE": _("Site Admin"),
     "INDEX_TITLE": _("Dashboard"),
-    "SITE_SYMBOL": "person",
+    "SITE_SYMBOL": "school",
 
-    # ── Display Options ────────────────────────────────────────────────────────
+    # ── Display Options ────────────────────────────────────────────────────
     "SHOW_LANGUAGES": True,
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": True,
     "SHOW_BACK_BUTTON": True,
 
-    # ── Site URL & Dropdown ────────────────────────────────────────────────────
+    # ── Site URL & Dropdown ────────────────────────────────────────────────
     "SITE_URL": "/",
     "SITE_DROPDOWN": [
-        {
-            "icon": "home",
-            "title": _("View Site"),
-            "link": "/",
-        },
-        {
-            "icon": "edit_note",
-            "title": _("Wagtail CMS"),
-            "link": "/admin/",
-        },
+        {"icon": "home", "title": _("View Site"), "link": "/"},
+        {"icon": "edit_note", "title": _("Wagtail CMS"), "link": "/admin/"},
     ],
 
-    # ── Login Page ─────────────────────────────────────────────────────────────
-    "LOGIN": {
-        "image": lambda request: static("images/avatar/01.jpg"),
-    },
-
-    # ── Sidebar Navigation ─────────────────────────────────────────────────────
+    # ── Sidebar Navigation ─────────────────────────────────────────────────
+    # ``show_all_applications=True`` lets Django auto-discover registered
+    # apps so LMS sites get a correct sidebar without hardcoded model links.
+    # VResume overrides this in its settings.py with a curated navigation.
     "SIDEBAR": {
         "show_search": True,
-        "show_all_applications": False,
-        "navigation": [
-            {
-                "title": _("Dashboard"),
-                "separator": False,
-                "items": [
-                    {
-                        "title": _("Dashboard"),
-                        "icon": "dashboard",
-                        "link": reverse_lazy("admin:index"),
-                    },
-                ],
-            },
-            {
-                "title": _("Content"),
-                "separator": True,
-                "items": [
-                    {
-                        "title": _("Blog Posts"),
-                        "icon": "article",
-                        "link": reverse_lazy("admin:blog_blogpost_changelist"),
-                    },
-                    {
-                        "title": _("Blog Authors"),
-                        "icon": "person",
-                        "link": reverse_lazy("admin:blog_blogauthor_changelist"),
-                    },
-                    {
-                        "title": _("Blog Tags"),
-                        "icon": "label",
-                        "link": reverse_lazy("admin:blog_blogtag_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Portfolio"),
-                "separator": True,
-                "items": [
-                    {
-                        "title": _("Projects"),
-                        "icon": "work",
-                        "link": reverse_lazy("admin:portfolio_project_changelist"),
-                    },
-                    {
-                        "title": _("Portfolio Tags"),
-                        "icon": "sell",
-                        "link": reverse_lazy("admin:portfolio_portfoliotag_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Connect"),
-                "separator": True,
-                "items": [
-                    {
-                        "title": _("Form Submissions"),
-                        "icon": "inbox",
-                        "link": reverse_lazy("admin:connect_formsubmission_changelist"),
-                    },
-                    {
-                        "title": _("Subscribers"),
-                        "icon": "group",
-                        "link": reverse_lazy("admin:connect_subscriber_changelist"),
-                    },
-                    {
-                        "title": _("Campaigns"),
-                        "icon": "campaign",
-                        "link": reverse_lazy("admin:connect_campaign_changelist"),
-                    },
-                    {
-                        "title": _("Email Deliveries"),
-                        "icon": "mail",
-                        "link": reverse_lazy("admin:connect_emaildelivery_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Site Settings"),
-                "separator": True,
-                "items": [
-                    {
-                        "title": _("vResume Settings"),
-                        "icon": "settings",
-                        "link": reverse_lazy("admin:home_vresumesettings_changelist"),
-                    },
-                    {
-                        "title": _("Services"),
-                        "icon": "build",
-                        "link": reverse_lazy("admin:home_service_changelist"),
-                    },
-                    {
-                        "title": _("Testimonials"),
-                        "icon": "format_quote",
-                        "link": reverse_lazy("admin:home_testimonial_changelist"),
-                    },
-                    {
-                        "title": _("Team Members"),
-                        "icon": "people",
-                        "link": reverse_lazy("admin:home_teammember_changelist"),
-                    },
-                    {
-                        "title": _("Sliders"),
-                        "icon": "view_carousel",
-                        "link": reverse_lazy("admin:home_slider_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Automation"),
-                "separator": True,
-                "items": [
-                    {
-                        "title": _("Periodic Tasks"),
-                        "icon": "schedule",
-                        "link": reverse_lazy("admin:django_celery_beat_periodictask_changelist"),
-                    },
-                    {
-                        "title": _("Crontab Schedules"),
-                        "icon": "timer",
-                        "link": reverse_lazy("admin:django_celery_beat_crontabschedule_changelist"),
-                    },
-                    {
-                        "title": _("Interval Schedules"),
-                        "icon": "repeat",
-                        "link": reverse_lazy("admin:django_celery_beat_intervalschedule_changelist"),
-                    },
-                ],
-            },
-            {
-                "title": _("Users & Auth"),
-                "separator": True,
-                "items": [
-                    {
-                        "title": _("Users"),
-                        "icon": "manage_accounts",
-                        "link": reverse_lazy("admin:auth_user_changelist"),
-                    },
-                    {
-                        "title": _("Groups"),
-                        "icon": "group_work",
-                        "link": reverse_lazy("admin:auth_group_changelist"),
-                    },
-                ],
-            },
-        ],
+        "show_all_applications": True,
     },
 
-    # ── Color Palette (purple primary) ─────────────────────────────────────────
+    # ── Color Palette (purple primary) ─────────────────────────────────────
     "COLORS": {
         "base": {
             "50":  "249 250 251",
@@ -261,12 +111,11 @@ UNFOLD = {
         },
     },
 
-    # ── Custom Scripts & Styles ────────────────────────────────────────────────
-    # Only include files that actually exist in static/
+    # ── Custom Scripts & Styles ────────────────────────────────────────────
     "SCRIPTS": [],
     "STYLES": [],
 
-    # ── Callbacks ─────────────────────────────────────────────────────────────
+    # ── Callbacks ─────────────────────────────────────────────────────────
     "ENVIRONMENT_CALLBACK": None,
     "DASHBOARD_CALLBACK": None,
 }

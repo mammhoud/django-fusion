@@ -313,7 +313,7 @@ class BaseIndexPage(BasePage):
                     [
                         (
                             "background_image",
-                            SimpleImageBlock()
+                            SimpleImageBlock(template="blocks/media/image_lite.html")
                         ),
                         (
                             "subtitle",
@@ -350,7 +350,7 @@ class BaseIndexPage(BasePage):
                     [
                         (
                             "background_image",
-                            SimpleImageBlock()
+                            SimpleImageBlock(template="blocks/media/image_lite.html")
                         ),
                         (
                             "title",

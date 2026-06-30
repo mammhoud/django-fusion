@@ -1,9 +1,9 @@
 # from www.apps.company.models import Company
 # from commons.contact.models import Contact, ContactEmail, ContactPhone
-# NOTE: commons.contact is not a local module; these models come from crafts_ai.contrib.core.models
-# Importing from crafts_ai when available, with a fallback stub for environments without it.
+# NOTE: commons.contact is not a local module; these models come from ceptor_ai.contrib.core.models
+# Importing from ceptor_ai when available, with a fallback stub for environments without it.
 try:
-    from crafts_ai.contrib.core.models import Contact, ContactEmail, ContactPhone
+    from ceptor_ai.contrib.core.models import Contact, ContactEmail, ContactPhone
 except ImportError:
     Contact = None  # type: ignore[assignment,misc]
     ContactEmail = None  # type: ignore[assignment,misc]

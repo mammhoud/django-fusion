@@ -1,3 +1,0 @@
-[console_scripts]
-crafts-ai = crafts_ai.cli:main
-

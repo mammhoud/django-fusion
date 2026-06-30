@@ -1,5 +1,5 @@
-from crafts_ai.contrib.core.models import Contact as branchModel
-from crafts_ai.contrib.core.models import Corporate as corporateModel
+from ceptor_ai.contrib.core.models import Contact as branchModel
+from ceptor_ai.contrib.core.models import Corporate as corporateModel
 
 # from ..models.schemas import Branch, Corporate
 # from .filters import BranchFilter, CorporateFilter

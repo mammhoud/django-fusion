@@ -12,8 +12,8 @@ except ImportError:
     CartService = None
 
 try:
-    from crafts_ai.services.commerce.payments import PayPalGateway, StripeGateway
-    from crafts_ai.site.payments import PaymentProcessingMixin
+    from ceptor_ai.services.commerce.payments import PayPalGateway, StripeGateway
+    from ceptor_ai.site.payments import PaymentProcessingMixin
 except ImportError:
     StripeGateway = None
     PayPalGateway = None

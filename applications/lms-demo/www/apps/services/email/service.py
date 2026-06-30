@@ -142,7 +142,7 @@ class EmailService:
         """
         Queue an email for async sending via django-rq.
         """
-        from crafts_ai.services.infrastructure.jobs import dispatch_job
+        from ceptor_ai.services.infrastructure.jobs import dispatch_job
 
         from www.apps.services.email.tasks import send_email_task
 

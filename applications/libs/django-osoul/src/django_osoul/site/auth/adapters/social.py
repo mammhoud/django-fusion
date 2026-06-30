@@ -1,9 +1,9 @@
 """
-Social account adapter for crafts_ai.
+Social account adapter for ceptor_ai.
 
 Provides a minimal SocialAccountAdapter that delegates to allauth's default.
 
-Canonical import: from crafts_ai.adapters import SocialAccountAdapter
+Canonical import: from ceptor_ai.adapters import SocialAccountAdapter
 """
 try:
     from allauth.socialaccount.adapter import DefaultSocialAccountAdapter

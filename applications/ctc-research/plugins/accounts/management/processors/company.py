@@ -2,8 +2,8 @@ import logging
 
 from django.core.exceptions import FieldError
 from django.db.models import Q
-from crafts_ai.contrib.core.models import Contact, ContactEmail, ContactPhone
-from crafts_ai.contrib.core.models import Corporate as Company
+from ceptor_ai.contrib.core.models import Contact, ContactEmail, ContactPhone
+from ceptor_ai.contrib.core.models import Corporate as Company
 
 # from commons.contact.models.profile import Company
 

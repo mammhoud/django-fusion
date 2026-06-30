@@ -160,7 +160,7 @@ DEV_GOALS = {
     "MINIMAL_DEPS": True,
 }
 
-# from crafts_ai.contrib.debug_tools import quick_setup
+# from ceptor_ai.contrib.debug_tools import quick_setup
 
 # config = quick_setup(
 #     installed_apps=INSTALLED_APPS,

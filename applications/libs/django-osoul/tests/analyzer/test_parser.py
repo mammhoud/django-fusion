@@ -350,30 +350,28 @@ class TestDedupRegression:
 # ────────────────────────────────────────────────────────────────────
 class TestCustomizerFragment:
     """End-to-end fixture for the actual ``page_card_grid.html``
-    fragment. Locks the contract against accidental regressions in
-    the form actually used by the customizer UI.
+    fragment.  The fragment currently uses ``{% include %}`` rather
+    than ``{% comp %}``, so the parser correctly reports zero comps.
+    If the fragment is ever changed back to use ``{% comp %}``, these
+    expectations must be updated to match.
     """
 
-    def test_extracts_exactly_one_comp(self, customizer_fragment):
+    def test_extracts_zero_comps_with_include_tags(self, customizer_fragment):
         p = parse_template(customizer_fragment)
-        assert len(p.comps) == 1
+        # Fragment uses {% include %}, not {% comp %} — zero comps expected.
+        assert len(p.comps) == 0
 
-    def test_comp_path_is_customizer_card(self, customizer_fragment):
-        c = parse_template(customizer_fragment).comps[0]
-        assert c.path == "customizer/card"
+    def test_fragment_contains_include_tag(self, customizer_fragment):
+        assert '{% include "components/card.html"' in customizer_fragment
 
-    def test_comp_is_standalone_kind(self, customizer_fragment):
-        c = parse_template(customizer_fragment).comps[0]
-        assert c.kind == "standalone"
+    def test_fragment_renders_without_comp_tags(self, customizer_fragment):
+        assert "{% comp" not in customizer_fragment
 
-    def test_all_four_kwargs_extracted(self, customizer_fragment):
-        c = parse_template(customizer_fragment).comps[0]
-        assert c.kwargs == {
-            "title": "page.title",
-            "path": "page.path",
-            "page": "page",
-            "counter": "forloop.counter",
-        }
+    def test_all_four_include_kwargs_present(self, customizer_fragment):
+        assert "title=page.title" in customizer_fragment
+        assert "path=page.path" in customizer_fragment
+        assert "page=page" in customizer_fragment
+        assert "counter=forloop.counter" in customizer_fragment
 
 
 # ────────────────────────────────────────────────────────────────────

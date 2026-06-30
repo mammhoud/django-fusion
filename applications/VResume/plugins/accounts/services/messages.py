@@ -22,7 +22,7 @@ User = get_user_model()
 class MessageService:
     """
     Service for message operations.
-    Delegates to crafts_ai.pipelines.services.MessageServiceBase
+    Delegates to ceptor_ai.pipelines.services.MessageServiceBase
     """
 
     @staticmethod

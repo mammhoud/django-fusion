@@ -14,13 +14,13 @@ from django.contrib.auth import get_user_model
 from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
-from crafts_ai.communication.email.models import EmailLog
-from crafts_ai.workflows.pipelines.models.users.group import UserGroup
-from crafts_ai.services.communication.invitation_service import InvitationService
-from crafts_ai.services.email.csv_parser import CSVParser, EmailRecord
-from crafts_ai.services.email.email_service import EmailService
-from crafts_ai.services.email.queue_manager import EmailQueueManager
-from crafts_ai.services.email.report_generator import ReportGenerator
+from ceptor_ai.communication.email.models import EmailLog
+from ceptor_ai.workflows.pipelines.models.users.group import UserGroup
+from ceptor_ai.services.communication.invitation_service import InvitationService
+from ceptor_ai.services.email.csv_parser import CSVParser, EmailRecord
+from ceptor_ai.services.email.email_service import EmailService
+from ceptor_ai.services.email.queue_manager import EmailQueueManager
+from ceptor_ai.services.email.report_generator import ReportGenerator
 
 User = get_user_model()
 
@@ -114,7 +114,7 @@ class EmailQueueManagerTestCase(TestCase):
     def setUp(self):
         self.manager = EmailQueueManager()
 
-    @patch('crafts_ai.services.email_service.render_to_string', return_value='<html>Test</html>')
+    @patch('ceptor_ai.services.email_service.render_to_string', return_value='<html>Test</html>')
     def test_queue_email_creates_log(self, mock_render):
         """Test that queuing email creates EmailLog entry."""
         log = self.manager.queue_email(
@@ -191,7 +191,7 @@ class EmailServiceTestCase(TestCase):
 
     def test_send_invitation_queued(self):
         """Test sending invitation with queueing."""
-        with patch('crafts_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
+        with patch('ceptor_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
             log = self.service.send_invitation(
                 recipient='test@example.com',
                 context={'subject': 'Test Invitation'},
@@ -225,7 +225,7 @@ class EmailServiceTestCase(TestCase):
         group = UserGroup.objects.create(name='test_group')
         group.users.add(user1, user2)
 
-        with patch('crafts_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
+        with patch('ceptor_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
             logs = self.service.send_group_email(
                 group_name='test_group',
                 subject='Group Email',
@@ -287,7 +287,7 @@ class InvitationServiceTestCase(TestCase):
 
     def test_send_invitations_from_csv(self):
         """Test sending invitations from CSV."""
-        with patch('crafts_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
+        with patch('ceptor_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
             logs = self.service.send_invitations_from_csv()
 
         # Only unregistered user should receive invitation
@@ -330,7 +330,7 @@ class InvitationServiceTestCase(TestCase):
 
     def test_invite_user(self):
         """Test inviting single user."""
-        with patch('crafts_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
+        with patch('ceptor_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
             log = self.service.invite_user(
                 email='newuser@example.com',
                 role='instructor'
@@ -380,7 +380,7 @@ class InvitationServiceTestCase(TestCase):
         )
 
         # Should succeed with force=True
-        with patch('crafts_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
+        with patch('ceptor_ai.services.email_service.render_to_string', return_value='<html>Test</html>'):
             log = self.service.invite_user(
                 email='recent@example.com',
                 role='instructor',

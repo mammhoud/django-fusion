@@ -90,22 +90,6 @@ THIRD_PARTY_APPS = [
 #   applications/ctc-research/settings.py
 #   applications/lms-demo/settings.py
 #   applications/VResume/settings.py
-#
-# LMS_LOCAL_APPS is a reusable constant for sites that share the same
-# plugin/www structure (ctc-research and lms-demo).  VResume defines its
-# own inline list since its app set differs.
-LMS_LOCAL_APPS = [
-    "www.core",
-    "www.core.content.apps.ContentConfig",
-    "www.core.handlers.apps.AccountsConfig",
-    "plugins.accounts.apps.AccountsConfig",
-    "plugins.lms.apps.LmsConfig",
-    "plugins.blog.apps.BlogConfig",
-    "plugins.products.apps.ProductsConfig",
-    "plugins.profile.apps.ProfileConfig",
-    "crafts_ai",
-    "django_osoul.analyzer.apps.AnalyzerAppConfig",
-]
 
 OPTIONAL_APP_MAP = {}
 

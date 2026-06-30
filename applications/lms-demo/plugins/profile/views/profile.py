@@ -4,8 +4,8 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django_osoul.site import PageHandler
-from crafts_ai.models import Person
-from crafts_ai.site.mixins import (
+from ceptor_ai.models import Person
+from ceptor_ai.site.mixins import (
     ProfileContextMixin,
     ProfileDashboardMixin,
     ProfileOperationsMixin,

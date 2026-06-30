@@ -67,7 +67,7 @@ SITE_ALIASES = {
 
 LIBS = {
     "django-osoul": REPO_ROOT / "libs" / "django-osoul",
-    "crafts-ai": REPO_ROOT / "libs" / "crafts-ai",
+    "ceptor-ai": REPO_ROOT / "libs" / "ceptor-ai",
 }
 
 SKIPPED_MAKE_TARGETS = {
@@ -528,7 +528,7 @@ class SiteCLI:
 
         repo_map = {
             "django-osoul": "django-osoul",
-            "crafts-ai": "crafts-ai",
+            "ceptor-ai": "ceptor-ai",
         }
 
         for lock_path in lock_files:

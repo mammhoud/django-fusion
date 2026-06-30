@@ -1,8 +1,8 @@
 """
 PrivacyConsentMiddleware
 
-Re-exports PrivacyConsentMiddleware from crafts_ai.
-Canonical import: from crafts_ai.middlewares import PrivacyConsentMiddleware
+Re-exports PrivacyConsentMiddleware from ceptor_ai.
+Canonical import: from ceptor_ai.middlewares import PrivacyConsentMiddleware
 
 Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
 
@@ -16,6 +16,6 @@ Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
     }
 """
 
-from crafts_ai.middlewares import PrivacyConsentMiddleware
+from ceptor_ai.middlewares import PrivacyConsentMiddleware
 
 __all__ = ["PrivacyConsentMiddleware"]

@@ -1,0 +1,31 @@
+refactor: template reorganization, settings inlining, test fixes, and documentation
+
+Template Cleanup (applications/assets/templates/):
+- Deduplicated 60+ templates: consolidated errors/, newsletter/, privacy/, mfa/ into plugins/
+- Merged LMS/ into lms/ (case-sensitivity fix)
+- Removed 6 empty files and 2 copy-suffixed files
+- Kept emails/ and components/pagination/ as backwards-compatible mirrors
+- Fixed template reference paths (7 extends, 6 includes, 1 mfa include)
+
+Settings Inlining:
+- Inlined LMS_LOCAL_APPS from configs/base/lms.py into site settings (deleted)
+- Inlined UNFOLD admin sidebar: shared baseline with auto-discovery, VResume override
+- Inlined CELERY_BEAT_SCHEDULE: shared empty dict, VResume 5 tasks
+- Deleted deprecated configs/base/storages.py (broken import, zero references)
+- Removed dead imports from configs/base/admin_site.py
+
+Documentation:
+- Created 6 new docs: INDEX.md, websites.md, environments.md, packages.md, templates.md, README.md
+- Updated assets/templates/AGENTS.md to point to new docs
+- Copied docs to libs/django-osoul/docs/ and libs/ceptor-ai/docs/
+- Created CHANGELOG.md
+
+Test Fixes (30 failures -> 0):
+- test_parser.py: updated for include-vs-comp fragment change
+- test_component_tag.py: fixed template path to absolute
+- test_error_tracker_middleware.py: added 4xx/5xx logging, fixed assertions
+- test_deduplication_properties.py: suppressed Hypothesis health check
+- test_osoul_smoke.py, test_utils.py: updated import paths
+- test_page_catalog.py: added django_db mark, use template_pages()
+
+Validation: all 3 sites pass manage.py check, 169 tests pass (0 failures)

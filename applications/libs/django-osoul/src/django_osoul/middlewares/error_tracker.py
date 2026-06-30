@@ -13,13 +13,47 @@ logger = logging.getLogger(__name__)
 
 
 class ErrorTrackerMiddleware:
-    """Log unhandled request exceptions and re-raise them through Django."""
+    """Log error responses (4xx/5xx) and unhandled request exceptions."""
 
     def __init__(self, get_response: Callable[[HttpRequest], HttpResponse]) -> None:
         self.get_response = get_response
 
     def __call__(self, request: HttpRequest) -> HttpResponse:
-        return self.get_response(request)
+        response = self.get_response(request)
+        status = response.status_code
+        if status >= 500:
+            logger.critical(
+                "%s %s %s — %s",
+                request.method,
+                request.path,
+                status,
+                self._get_user_display(request),
+                extra={"status_code": status, "request": request},
+            )
+        elif status >= 400:
+            logger.error(
+                "%s %s %s — %s",
+                request.method,
+                request.path,
+                status,
+                self._get_user_display(request),
+                extra={"status_code": status, "request": request},
+            )
+        return response
+
+    @staticmethod
+    def _get_user_display(request: HttpRequest) -> str:
+        user = getattr(request, "user", None)
+        if user is None:
+            return "anonymous"
+        return getattr(user, "email", "anonymous")
+
+    @staticmethod
+    def _get_ip(request: HttpRequest) -> str:
+        xff = request.META.get("HTTP_X_FORWARDED_FOR", "")
+        if xff:
+            return xff.split(",")[0].strip()
+        return request.META.get("REMOTE_ADDR", "\u2014")
 
     def process_exception(
         self, request: HttpRequest, exception: Exception

@@ -11,8 +11,8 @@ from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_osoul.models import BaseModel as DefaultBase
-from crafts_ai.blocks.content.overview import OverviewBlock
-from crafts_ai.models import ModelCacheMixin
+from ceptor_ai.blocks.content.overview import OverviewBlock
+from ceptor_ai.models import ModelCacheMixin
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import (
     FieldPanel,

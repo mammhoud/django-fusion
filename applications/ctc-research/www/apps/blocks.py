@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from crafts_ai.handlers.models.manage_company import Organization
+from ceptor_ai.handlers.models.manage_company import Organization
 from wagtail.snippets.blocks import SnippetChooserBlock
 
 

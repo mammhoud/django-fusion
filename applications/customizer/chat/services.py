@@ -24,21 +24,21 @@ from .constants import (
 from .exceptions import OllamaConnectionError, OllamaResponseError
 from .models import Conversation, Message
 
-# ── Shared crafts_ai Ollama adapter (legacy path) ──────────────
-_OLLAMA_PATH = (
+# ── Shared ceptor_ai Ollama adapter ────────────────────────
+_CEPTOR_PATH = (
     Path(__file__).resolve().parents[2]
     / "libs"
-    / "crafts-ai"
+    / "ceptor-ai"
     / "src"
-    / "crafts_ai"
+    / "ceptor_ai"
     / "services"
     / "ollama.py"
 )
-_OLLAMA_SPEC = spec_from_file_location("crafts_ai_ollama_service", str(_OLLAMA_PATH.resolve()))
-_OLLAMA_MODULE = module_from_spec(_OLLAMA_SPEC)
-sys.modules[_OLLAMA_SPEC.name] = _OLLAMA_MODULE
-_OLLAMA_SPEC.loader.exec_module(_OLLAMA_MODULE)
-CraftsOllamaService = _OLLAMA_MODULE.OllamaService
+_CEPTOR_SPEC = spec_from_file_location("ceptor_ai_ollama_service", str(_CEPTOR_PATH.resolve()))
+_CEPTOR_MODULE = module_from_spec(_CEPTOR_SPEC)
+sys.modules[_CEPTOR_SPEC.name] = _CEPTOR_MODULE
+_CEPTOR_SPEC.loader.exec_module(_CEPTOR_MODULE)
+CeptorOllamaService = _CEPTOR_MODULE.OllamaService
 
 
 # ═══════════════════════════════════════════════════════════════
@@ -94,7 +94,7 @@ class AIService:
 # ═══════════════════════════════════════════════════════════════
 
 def _ollama_chat(model: dict, messages: list[dict]) -> str:
-    service = CraftsOllamaService(
+    service = CeptorOllamaService(
         default_model=model["model"],
         timeout=float(model.get("timeout", OLLAMA_TIMEOUT)),
     )

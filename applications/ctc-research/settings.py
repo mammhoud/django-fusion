@@ -26,7 +26,7 @@ configure_site_environment("ctc-research", module="LMS", default_port=5070)
 # ============================================================
 # Internal Dependency Handling
 # ============================================================
-# django_osoul and crafts_ai are real workspace dependencies. Do not install
+# django_osoul and ceptor_ai are real workspace dependencies. Do not install
 # fake sys.modules shims here; dependency failures should surface during checks.
 
 # ============================================================
@@ -53,16 +53,24 @@ WEBSITE_IDENTIFIER = "ctc-research"
 SITE_ID = 1
 
 # ── Local apps (site-specific plugins, www packages, and page apps) ──
-# Uses the shared LMS_LOCAL_APPS constant from configs.base.apps (already
-# imported via `from configs.settings import *` above).
-# ctc-research and lms-demo share the same plugin/www structure.
-LOCAL_APPS = LMS_LOCAL_APPS
+LOCAL_APPS = [
+    "www.core",
+    "www.core.content.apps.ContentConfig",
+    "www.core.handlers.apps.AccountsConfig",
+    "plugins.accounts.apps.AccountsConfig",
+    "plugins.lms.apps.LmsConfig",
+    "plugins.blog.apps.BlogConfig",
+    "plugins.products.apps.ProductsConfig",
+    "plugins.profile.apps.ProfileConfig",
+    "ceptor_ai",
+    "django_osoul.analyzer.apps.AnalyzerAppConfig",
+]
 INSTALLED_APPS += LOCAL_APPS
 
 # ============================================================
-# crafts_ai required settings
+# ceptor_ai required settings
 # ============================================================
-# PROFILE_MODEL is a required ForeignKey target in crafts_ai models.
+# PROFILE_MODEL is a required ForeignKey target in ceptor_ai models.
 # Point it to Django's built-in User model since this project
 # does not have a separate profile model.
 PROFILE_MODEL = "auth.User"
@@ -71,7 +79,7 @@ PROFILE_MODEL = "auth.User"
 # Silenced system checks
 # ============================================================
 # Keep only legacy duplicated app/model checks silenced; the previous
-# TeamMembership ordering check is fixed in crafts_ai.
+# TeamMembership ordering check is fixed in ceptor_ai.
 SILENCED_SYSTEM_CHECKS = [
     "models.E028",  # legacy accounts/handlers shared service table during migration
     "models.E030",  # legacy accounts/handlers shared indexes during migration

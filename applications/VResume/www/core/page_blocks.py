@@ -14,6 +14,7 @@ class TestimonialBlock(blocks.StructBlock):
         required=False,
         label=_("Avatar"),
         help_text=_("Client's avatar image"),
+        template="blocks/media/image_lite.html",
     )
     name = blocks.CharBlock(
         max_length=200,
@@ -41,6 +42,7 @@ class ClientBlock(blocks.StructBlock):
         required=True,
         label=_("Logo"),
         help_text=_("Client's logo image"),
+        template="blocks/media/image_lite.html",
     )
     name = blocks.CharBlock(
         max_length=200,

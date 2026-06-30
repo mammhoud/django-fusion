@@ -9,7 +9,7 @@ Validates: Requirements 3.1, 3.2, 3.3, 3.4
 import pathlib
 
 import pytest
-from hypothesis import given, settings
+from hypothesis import HealthCheck, given, settings
 from hypothesis import strategies as st
 
 # ---------------------------------------------------------------------------
@@ -21,11 +21,11 @@ DEDUPLICATION_MAP: dict[str, str] = {
     "django-osoul/src/django_osoul/utils/responses.py": "django_grep.utils.responses",
     "django-osoul/src/django_osoul/utils/datetime_utils.py": "django_grep.utils.datetime_utils",
     "django-osoul/src/django_osoul/models/mixins.py": "django_grep.models.mixins",
-    "django-rseal/src/crafts_ai/email/services.py": "django_seed.services.email_service",
-    "django-rseal/src/crafts_ai/management/commands/send_invitations_from_csv.py": (
+    "django-rseal/src/ceptor_ai/email/services.py": "django_seed.services.email_service",
+    "django-rseal/src/ceptor_ai/management/commands/send_invitations_from_csv.py": (
         "django_seed.management.commands.send_invitations_from_csv"
     ),
-    "django-rseal/src/crafts_ai/workflows/orchestrator.py": "django_seed.orchestrator",
+    "django-rseal/src/ceptor_ai/workflows/orchestrator.py": "django_seed.orchestrator",
 }
 
 
@@ -63,7 +63,7 @@ def apply_deduplication(base_path: pathlib.Path, paths: list[str]) -> None:
         min_size=1,
     )
 )
-@settings(max_examples=100)
+@settings(max_examples=100, suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_deferred_modules_absent(tmp_path: pathlib.Path, deferred_paths: list[str]) -> None:
     """
     **Validates: Requirements 3.1, 3.2, 3.3, 3.4**
@@ -92,7 +92,7 @@ def test_deferred_modules_absent(tmp_path: pathlib.Path, deferred_paths: list[st
         min_size=1,
     )
 )
-@settings(max_examples=50)
+@settings(max_examples=50, suppress_health_check=[HealthCheck.function_scoped_fixture])
 def test_apply_deduplication_is_idempotent(
     tmp_path: pathlib.Path, deferred_paths: list[str]
 ) -> None:

@@ -1,6 +1,6 @@
 from django.utils.translation import gettext_lazy as _
-from crafts_ai.blocks.contact.contact_card import ContactCardBlock
-from crafts_ai.blocks.partials.button import PageLinkBlock
+from ceptor_ai.blocks.contact.contact_card import ContactCardBlock
+from ceptor_ai.blocks.partials.button import PageLinkBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.blocks import PageChooserBlock

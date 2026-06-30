@@ -26,6 +26,7 @@ class ProjectBlock(blocks.StructBlock):
         required=False,
         label=_("Image"),
         help_text=_("Project thumbnail image"),
+        template="blocks/media/image_lite.html",
     )
     description = blocks.TextBlock(
         required=False,

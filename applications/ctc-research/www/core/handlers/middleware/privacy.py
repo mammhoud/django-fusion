@@ -13,6 +13,6 @@ Configure via settings.PRIVACY_CONSENT_MIDDLEWARE:
     }
 """
 
-from crafts_ai.middlewares.privacy_consent import PrivacyConsentMiddleware
+from ceptor_ai.middlewares.privacy_consent import PrivacyConsentMiddleware
 
 __all__ = ["PrivacyConsentMiddleware"]

@@ -1,7 +1,9 @@
+import json
+
 from django.shortcuts import redirect, get_object_or_404
-from django.http import HttpResponse
+from django.http import HttpResponse, StreamingHttpResponse
 from django.urls import reverse
-from django.views.generic import ListView, DetailView
+from django.views.generic import ListView, DetailView, View
 from django.views.generic.edit import FormMixin
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
@@ -105,12 +107,35 @@ class ChatView(DetailView):
                 {"original": message, "formatted_content": formatted_content}
             )
         
+        # Sidebar: recent conversations for history
+        recent_conversations = (
+            Conversation.objects.all()
+            .order_by("-updated_at")[:RECENT_CONVERSATIONS_LIMIT]
+        )
+        
+        # Sidebar: templates for the first/default website
+        from .site_data import pages_for_website
+        sidebar_website_slug = self.request.GET.get(
+            "website_slug", default_website_slug
+        )
+        sidebar_data = pages_for_website(sidebar_website_slug)
+        sidebar_templates = sidebar_data["sections"] if sidebar_data else []
+        sidebar_website_name = (
+            sidebar_data["website"]["name"]
+            if sidebar_data
+            else default_website_slug
+        )
+        
         context.update({
             "messages": conversation.messages.all(),
             "messages_with_content": messages_with_content,
             "customizer_apps": apps,
             "model_id": model_id,
             "default_website_slug": default_website_slug,
+            "recent_conversations": recent_conversations,
+            "sidebar_templates": sidebar_templates,
+            "sidebar_website_name": sidebar_website_name,
+            "sidebar_website_slug": sidebar_website_slug,
         })
         return context
 
@@ -133,6 +158,17 @@ class ChatView(DetailView):
         # Format user content
         user_formatted = linebreaksbr(escape(user_message.content))
 
+        # Determine stream endpoint based on model
+        if model_id == "ceptor-chat":
+            stream_url = f"/chat/{conversation.id}/ceptor-stream/?message_id={user_message.id}"
+            model_display = "Ceptor Chat"
+        elif model_id in ("ceptor-openai", "ceptor-claude", "ceptor-gemini"):
+            stream_url = f"/chat/{conversation.id}/ceptor-ai-stream/?message_id={user_message.id}&model_id={model_id}"
+            model_display = model_name
+        else:
+            stream_url = f"/chat/{conversation.id}/stream/?message_id={user_message.id}&model_id={model_id}"
+            model_display = model_name
+
         # Return user message HTML and placeholder for AI response with SSE
         return HttpResponse(
             f"""
@@ -148,7 +184,7 @@ class ChatView(DetailView):
             <div class="d-flex justify-content-start mb-3 fade-in" id="ai-response-{user_message.id}">
                 <div class="me-2">
                     <div class="ai-avatar rounded-circle d-flex align-items-center justify-content-center fw-bold">
-                        G3
+                        {model_display[:2]}
                     </div>
                 </div>
                 <div class="message-bubble ai-message rounded-3 px-3 py-2">
@@ -159,7 +195,7 @@ class ChatView(DetailView):
 
             <!-- SSE Script for Streaming -->
             <script>
-                const eventSource = new EventSource('/chat/{conversation.id}/stream/?message_id={user_message.id}&model_id={model_id}');
+                const eventSource = new EventSource('{stream_url}');
                 let aiContent = '';
                 const contentDiv = document.getElementById('ai-content-{user_message.id}');
                 const timestampDiv = document.getElementById('ai-timestamp-{user_message.id}');
@@ -171,7 +207,7 @@ class ChatView(DetailView):
                         aiContent += data.content;
                         contentDiv.textContent = aiContent;
                     }} else if (data.type === 'done') {{
-                        timestampDiv.innerHTML = data.timestamp + ' • {model_name}';
+                        timestampDiv.innerHTML = data.timestamp + ' • {model_display}';
                         eventSource.close();
                         // Convert markdown to HTML
                         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');
@@ -187,20 +223,23 @@ class ChatView(DetailView):
                             .then(response => response.text())
                             .then(html => {{
                                 contentDiv.innerHTML = html;
-                                hljs.highlightAll();
+                                if (window.hljs) {{ hljs.highlightAll(); }}
                             }});
                         }} else {{
-                            // Fallback if no CSRF token - just display raw content
                             contentDiv.innerHTML = aiContent;
                         }}
+                    }} else if (data.type === 'error') {{
+                        contentDiv.innerHTML = '<em>' + data.content + '</em>';
+                        eventSource.close();
                     }}
                 }};
                 
                 eventSource.onerror = function(event) {{
                     console.error('SSE error:', event);
-                    console.error('ReadyState:', eventSource.readyState);
                     eventSource.close();
-                    contentDiv.innerHTML = '<em>Error: Connection lost. Check console for details.</em>';
+                    if (!aiContent) {{
+                        contentDiv.innerHTML = '<em>Connection lost. Is the ceptor chat server running?</em>';
+                    }}
                 }};
             </script>
         """
@@ -309,3 +348,199 @@ class MessageSendResultFragmentView(FormMixin, ListView):
             "is_success": form.is_valid(),
         }
         return self.render_to_response(context, status=200 if form.is_valid() else 400)
+
+
+class TemplateSidebarFragmentView(View):
+    """HTMX fragment: refresh the template sidebar for a website."""
+
+    template_name = "fragments/template_sidebar.html"
+
+    def get(self, request, website_slug):
+        from .site_data import pages_for_website
+
+        apps = customizer_apps()
+        default_website_slug = apps[0]["slug"] if apps else "ctc-research"
+        model_id = request.GET.get("model_id", "gemma3-4b")
+
+        data = pages_for_website(website_slug)
+        website_templates = data["sections"] if data else []
+        website_name = data["website"]["name"] if data else website_slug
+
+        from django.shortcuts import render
+
+        return render(
+            request,
+            self.template_name,
+            {
+                "website_templates": website_templates,
+                "website_name": website_name,
+                "website_slug": website_slug,
+                "default_website_slug": default_website_slug,
+                "model_id": model_id,
+            },
+        )
+
+
+# ═══════════════════════════════════════════════════════════
+#  Ceptor-AI API Endpoints
+# ═══════════════════════════════════════════════════════════
+
+@method_decorator(csrf_exempt, name="dispatch")
+class CeptorHealthView(View):
+    """Health check for ceptor-ai integration."""
+
+    def get(self, request):
+        from django.http import JsonResponse
+
+        status = {"package": "ceptor-ai", "installed": False, "services": {}}
+
+        try:
+            import ceptor_ai  # noqa: F401
+
+            status["installed"] = True
+            status["version"] = getattr(ceptor_ai, "__version__", "unknown")
+        except ImportError:
+            pass
+
+        # Check AI backends
+        try:
+            from .ceptor import get_ai_service
+
+            ai = get_ai_service()
+            status["services"]["ai_backends"] = ai.list_backends()
+        except Exception:
+            status["services"]["ai_backends"] = []
+
+        # Check MCP tools
+        try:
+            from .ceptor import get_mcp_service
+
+            mcp = get_mcp_service()
+            status["services"]["mcp_tools"] = mcp.list_tools()
+        except Exception:
+            status["services"]["mcp_tools"] = []
+
+        return JsonResponse(status)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class CeptorConfigPreloadView(View):
+    """Preload and return ceptor-ai configurations."""
+
+    def get(self, request):
+        from django.http import JsonResponse
+
+        from .ceptor import get_config_loader
+
+        # Use project root (three levels up: chat/ → customizer/ → applications/ → root)
+        # so .kilo/agent/*.json is found
+        from pathlib import Path
+
+        project_root = Path(__file__).resolve().parents[3]
+        loader = get_config_loader(root=str(project_root))
+        loader.clear_cache()  # Reset any cached empty load
+
+        result = {
+            "agent_configs": loader.load_agent_configs(),
+            "models": loader.load_models_config(),
+        }
+        return JsonResponse(result)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class CeptorMCPToolView(View):
+    """Execute an MCP tool via ceptor-ai."""
+
+    def get(self, request, tool_name):
+        from django.http import JsonResponse
+
+        from .ceptor import get_mcp_service
+
+        try:
+            mcp = get_mcp_service()
+            kwargs = {k: v for k, v in request.GET.items() if k != "csrfmiddlewaretoken"}
+            result = mcp.run_tool(tool_name, **kwargs)
+            return JsonResponse({"tool": tool_name, "result": result})
+        except ValueError as e:
+            return JsonResponse({"error": str(e)}, status=404)
+        except ImportError as e:
+            return JsonResponse({"error": str(e)}, status=503)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=500)
+
+
+@method_decorator(csrf_exempt, name="dispatch")
+class CeptorAICompleteView(View):
+    """API endpoint for AI completions via CeptorAIService.
+
+    POST /api/ceptor/ai/complete/
+    Body: {"backend": "openai", "prompt": "...", "model": "gpt-4o"}
+
+    Supports both streaming (``?stream=1``) and non-streaming responses."""
+
+    def post(self, request):
+        from django.http import JsonResponse
+
+        try:
+            body = json.loads(request.body)
+        except (json.JSONDecodeError, TypeError):
+            return JsonResponse(
+                {"error": "Invalid JSON body"}, status=400
+            )
+
+        backend = body.get("backend", "openai")
+        prompt = body.get("prompt", "")
+        model = body.get("model")
+        stream_mode = request.GET.get("stream") == "1"
+
+        if not prompt:
+            return JsonResponse(
+                {"error": "Missing 'prompt' field"}, status=400
+            )
+
+        try:
+            from .ceptor import get_ai_service
+
+            ai = get_ai_service()
+
+            if backend not in ai.list_backends():
+                return JsonResponse(
+                    {
+                        "error": f"Unknown backend: {backend}. "
+                        f"Available: {', '.join(ai.list_backends())}"
+                    },
+                    status=400,
+                )
+
+            if stream_mode:
+                # Streaming response via SSE
+                def sse_stream():
+                    for chunk in ai.stream(backend, prompt, model=model):
+                        if chunk:
+                            yield f"data: {json.dumps({'token': chunk})}\n\n"
+                    yield f"data: {json.dumps({'done': True})}\n\n"
+
+                response = StreamingHttpResponse(
+                    sse_stream(), content_type="text/event-stream"
+                )
+                response["Cache-Control"] = "no-cache"
+                response["X-Accel-Buffering"] = "no"
+                return response
+
+            # Non-streaming: return complete response
+            reply = ai.generate(backend, prompt, model=model)
+            return JsonResponse({
+                "backend": backend,
+                "model": model or "default",
+                "reply": reply,
+            })
+
+        except ImportError:
+            return JsonResponse(
+                {"error": "ceptor-ai is not installed. Install with: pip install ceptor-ai"},
+                status=503,
+            )
+        except Exception as e:
+            return JsonResponse(
+                {"error": f"Ceptor AI error: {str(e)}"}, status=500
+            )

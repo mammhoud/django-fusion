@@ -3,8 +3,8 @@
 import pytest
 from django.contrib.auth.models import Group, User
 from django.test import TestCase, override_settings
-from crafts_ai.communication.email.models import EmailLog, EmailTemplate
-from crafts_ai.communication.email.services import BulkEmailService, EmailService
+from ceptor_ai.communication.email.models import EmailLog, EmailTemplate
+from ceptor_ai.communication.email.services import BulkEmailService, EmailService
 
 
 class EmailLogTests(TestCase):

@@ -72,7 +72,7 @@ def assign_default_group(user):
 
 def _ensure_profile_exists(user):
     try:
-        from crafts_ai.models import Person
+        from ceptor_ai.models import Person
 
         Person.objects.get_or_create(
             user=user,

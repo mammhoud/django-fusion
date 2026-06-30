@@ -38,7 +38,7 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from crafts_ai.models import GlobalSettings
+        from ceptor_ai.models import GlobalSettings
         from wagtail.images.models import Image
 
         logo_path = Path(options["logo_path"])

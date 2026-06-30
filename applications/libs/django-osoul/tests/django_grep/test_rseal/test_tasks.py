@@ -11,8 +11,8 @@ from unittest.mock import MagicMock, patch
 
 from django.core import mail
 from django.test import TestCase, override_settings
-from crafts_ai.communication.email.models import EmailLog
-from crafts_ai.communication.tasks import (
+from ceptor_ai.communication.email.models import EmailLog
+from ceptor_ai.communication.tasks import (
     check_registrations_task,
     email_sent_hook,
     generate_weekly_report_task,

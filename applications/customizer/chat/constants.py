@@ -32,6 +32,43 @@ def available_models() -> list[dict]:
 
 def get_model(model_id: str) -> dict | None:
     """Look up a single model by its id."""
+    # Virtual ceptor-chat model entry
+    if model_id == "ceptor-chat":
+        return {
+            "id": "ceptor-chat",
+            "name": "Ceptor Chat Server",
+            "provider": "ceptor",
+            "model": "ceptor-chat",
+            "base_url": "http://localhost:8765",
+            "timeout": 30,
+        }
+    if model_id == "ceptor-openai":
+        return {
+            "id": "ceptor-openai",
+            "name": "Ceptor AI — OpenAI",
+            "provider": "ceptor-ai",
+            "model": "gpt-4o",
+            "base_url": "https://api.openai.com/v1",
+            "timeout": 90,
+        }
+    if model_id == "ceptor-claude":
+        return {
+            "id": "ceptor-claude",
+            "name": "Ceptor AI — Claude",
+            "provider": "ceptor-ai",
+            "model": "claude-sonnet-4-20250514",
+            "base_url": "https://api.anthropic.com",
+            "timeout": 90,
+        }
+    if model_id == "ceptor-gemini":
+        return {
+            "id": "ceptor-gemini",
+            "name": "Ceptor AI — Gemini",
+            "provider": "ceptor-ai",
+            "model": "gemini-2.5-flash",
+            "base_url": "https://generativelanguage.googleapis.com",
+            "timeout": 90,
+        }
     for m in available_models():
         if m["id"] == model_id:
             return m
@@ -48,13 +85,24 @@ def default_model_id() -> str:
 
 def model_choices() -> list[tuple[str, str]]:
     """Return (id, display_name) pairs grouped by provider."""
-    groups: dict[str, list[tuple[str, str]]] = {"ollama": [], "openai_compatible": []}
+    groups: dict[str, list[tuple[str, str]]] = {
+        "ollama": [],
+        "openai_compatible": [],
+        "ceptor": [],
+    }
     for m in available_models():
         provider = m.get("provider", "ollama")
         if provider in groups:
             groups[provider].append((m["id"], m["name"]))
         else:
             groups.setdefault(provider, []).append((m["id"], m["name"]))
+    # Add virtual ceptor model entries
+    groups["ceptor"].append(("ceptor-chat", "🤖 Ceptor Chat Server (localhost:8765)"))
+    groups["ceptor-ai"] = [
+        ("ceptor-openai", "🧠 Ceptor AI — OpenAI (GPT-4o)"),
+        ("ceptor-claude", "🧠 Ceptor AI — Claude (Sonnet)"),
+        ("ceptor-gemini", "🧠 Ceptor AI — Gemini (Flash)"),
+    ]
     return groups
 
 
