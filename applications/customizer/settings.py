@@ -1,4 +1,4 @@
-"""Website-local Django settings for the Structa template customizer."""
+"""Website-local Django settings for TemplateTinker."""
 
 from __future__ import annotations
 
@@ -26,7 +26,7 @@ for _path in (
 # ============================================================
 from configs.site import configure_site_environment
 
-configure_site_environment("customizer", module="CMS", default_port=5073)
+configure_site_environment("templatetinker", module="CMS", default_port=5073)
 
 # ============================================================
 # Import Shared Django Settings
@@ -43,12 +43,12 @@ ASGI_APPLICATION = "server.asgi_application"
 # ============================================================
 # Website-Specific Settings
 # ============================================================
-WEBSITE_NAME = "customizer"
-WEBSITE_IDENTIFIER = "customizer"
+WEBSITE_NAME = "templatetinker"
+WEBSITE_IDENTIFIER = "templatetinker"
 SITE_ID = 4
 
 # ── Preserve backwards compatibility with CUSTOMIZER_SECRET_KEY ──
-SECRET_KEY = os.environ.get("CUSTOMIZER_SECRET_KEY", SECRET_KEY)
+SECRET_KEY = os.environ.get("TINKER_SECRET_KEY", SECRET_KEY)
 
 # ── Keep UTC timezone (shared i18n.py switches to Africa/Cairo in dev) ──
 TIME_ZONE = "UTC"

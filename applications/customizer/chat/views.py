@@ -1,5 +1,6 @@
 from django.shortcuts import redirect, get_object_or_404
 from django.http import HttpResponse
+from django.urls import reverse
 from django.views.generic import ListView, DetailView
 from django.views.generic.edit import FormMixin
 from django.views.decorators.csrf import csrf_exempt
@@ -17,6 +18,9 @@ from .constants import (
     ERROR_MESSAGES,
     AI_DISPLAY_NAME,
     AI_AVATAR_TEXT,
+    get_model,
+    default_model_id,
+    model_choices,
 )
 
 
@@ -27,7 +31,7 @@ def render_markdown(content):
 
 @method_decorator(csrf_exempt, name="dispatch")
 class HomepageView(ListView):
-    """Claude.ai-style homepage showing recent conversations"""
+    """TemplateTinker homepage showing recent conversations."""
     
     model = Conversation
     template_name = "homepage.html"
@@ -37,11 +41,17 @@ class HomepageView(ListView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context["customizer_apps"] = customizer_apps()
+        context["model_choices"] = model_choices()
+        context["default_model_id"] = default_model_id()
+        context["default_model_name"] = (
+            get_model(default_model_id()) or {}
+        ).get("name", "Gemma 3 4B")
         return context
 
     def post(self, request, *args, **kwargs):
-        """Handle new conversation creation from homepage"""
+        """Handle new conversation creation from homepage."""
         message_content = request.POST.get("message", "").strip()
+        model_id = request.POST.get("model_id", "gemma3-4b")
 
         if not message_content:
             return HttpResponse("Message cannot be empty", status=400)
@@ -61,7 +71,7 @@ class HomepageView(ListView):
         )
 
         # Redirect to the new chat where streaming will occur
-        return redirect("chat", conversation_id=conversation.id)
+        return redirect(f"{reverse('chat', kwargs={'conversation_id': conversation.id})}?model_id={model_id}")
 
 
 
@@ -77,6 +87,7 @@ class ChatView(DetailView):
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         conversation = self.object
+        model_id = self.request.GET.get("model_id", "gemma3-4b")
         
         # Process messages for display
         messages_with_content = []
@@ -96,12 +107,15 @@ class ChatView(DetailView):
             "messages": conversation.messages.all(),
             "messages_with_content": messages_with_content,
             "customizer_apps": customizer_apps(),
+            "model_id": model_id,
         })
         return context
 
     def post(self, request, conversation_id):
         """Handle new messages in existing chat - returns HTML with SSE endpoint info"""
         message_content = request.POST.get("message", "").strip()
+        model_id = request.GET.get("model_id", "gemma3-4b")
+        model_name = (get_model(model_id) or {}).get("name", "AI")
 
         if not message_content:
             return HttpResponse(ERROR_MESSAGES["EMPTY_MESSAGE"], status=400)
@@ -142,7 +156,7 @@ class ChatView(DetailView):
 
             <!-- SSE Script for Streaming -->
             <script>
-                const eventSource = new EventSource('/chat/{conversation.id}/stream/?message_id={user_message.id}');
+                const eventSource = new EventSource('/chat/{conversation.id}/stream/?message_id={user_message.id}&model_id={model_id}');
                 let aiContent = '';
                 const contentDiv = document.getElementById('ai-content-{user_message.id}');
                 const timestampDiv = document.getElementById('ai-timestamp-{user_message.id}');
@@ -154,7 +168,7 @@ class ChatView(DetailView):
                         aiContent += data.content;
                         contentDiv.textContent = aiContent;
                     }} else if (data.type === 'done') {{
-                        timestampDiv.innerHTML = data.timestamp + ' • Gemma 3 4B';
+                        timestampDiv.innerHTML = data.timestamp + ' • {model_name}';
                         eventSource.close();
                         // Convert markdown to HTML
                         const csrfToken = document.querySelector('[name=csrfmiddlewaretoken]');

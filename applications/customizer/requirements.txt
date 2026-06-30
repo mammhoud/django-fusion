@@ -7,3 +7,4 @@ httpx>=0.28
 markdown>=3.5
 psycopg-binary>=3.1  # optional — for PostgreSQL connections
 whitenoise>=6.0       # static file serving
+pyyaml>=6.0           # model registry (configs/models.yml)

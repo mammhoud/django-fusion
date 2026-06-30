@@ -1,19 +1,89 @@
 {% extends "base.html" %}
-{% block title %}Structa Template Customizer{% endblock %}
+{% block title %}TemplateTinker — Tinker with Templates{% endblock %}
 {% block content %}
-<h1 class="mb-3">Structa Template Customizer</h1>
-<form method="post" class="card card-body mb-4">{% csrf_token %}
-  <label class="form-label" for="message">Customize with chat</label>
-  <div class="input-group"><input id="message" name="message" class="form-control" placeholder="Ask Gemma 3 4B to customize templates…" required><button class="btn btn-primary">Start</button></div>
+<h1 class="mb-2">TemplateTinker <small class="text-muted fs-6">— AI-powered template customization</small></h1>
+
+{# ── Chat form with model selector ──────────────────────────── #}
+<form method="post" class="card card-body mb-4 shadow-sm">
+  {% csrf_token %}
+  <div class="row g-3 align-items-end">
+    <div class="col-md-2">
+      <label class="form-label fw-semibold" for="model-select">Model</label>
+      <select id="model-select" name="model_id" class="form-select">
+        <optgroup label="🖥️ Ollama (local)">
+        {% for id, name in model_choices.ollama %}
+          <option value="{{ id }}"{% if default_model_id == id %} selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+        </optgroup>
+        <optgroup label="☁️ Cloud APIs">
+        {% for id, name in model_choices.openai_compatible %}
+          <option value="{{ id }}"{% if default_model_id == id %} selected{% endif %}>{{ name }}</option>
+        {% endfor %}
+        </optgroup>
+      </select>
+    </div>
+    <div class="col-md-8">
+      <label class="form-label fw-semibold" for="message">Customize with chat</label>
+      <input id="message" name="message" class="form-control"
+             placeholder="Ask {{ default_model_name }} to customize templates…" required>
+    </div>
+    <div class="col-md-2">
+      <button class="btn btn-primary w-100">
+        <i class="bi bi-send me-1"></i> Start
+      </button>
+    </div>
+  </div>
 </form>
+
+{# ── Template catalog cards (clickable — opens chat with context) #}
 <div class="row g-3 mb-4">
   {% for app in customizer_apps %}
-  <div class="col-md-4"><article class="card h-100"><div class="card-body"><h2 class="h5">{{ app.name }}</h2><p class="small text-muted">{{ app.template_root }}</p><span class="badge text-bg-secondary">{{ app.templates|length }} sections/components</span></div></article></div>
+  <div class="col-md-4">
+    <form method="post" action="" style="cursor:pointer;" class="h-100">
+      {% csrf_token %}
+      <input type="hidden" name="message"
+             value="Show me the component templates for {{ app.name }}">
+      <input type="hidden" name="model_id" value="{{ default_model_id }}">
+      <button type="submit" class="card h-100 w-100 text-start border-0 shadow-sm hover-shadow"
+              style="transition: box-shadow 0.2s, transform 0.2s;"
+              onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 .5rem 1rem rgba(0,0,0,.15)!important'"
+              onmouseout="this.style.transform=''; this.style.boxShadow=''">
+        <div class="card-body">
+          <h2 class="h5">{{ app.name }}</h2>
+          <p class="small text-muted mb-2">{{ app.template_root }}</p>
+          <span class="badge text-bg-secondary">{{ app.templates|length }} sections/components</span>
+        </div>
+      </button>
+    </form>
+  </div>
   {% endfor %}
 </div>
+
+{# ── Accordion: browse sections & components ────────────────── #}
 <h2 class="h4">Sections and components</h2>
 <div class="accordion" id="templateTree">
-  {% for app in customizer_apps %}<div class="accordion-item"><h3 class="accordion-header"><button class="accordion-button collapsed" data-bs-toggle="collapse" data-bs-target="#app{{ forloop.counter }}">{{ app.name }}</button></h3><div id="app{{ forloop.counter }}" class="accordion-collapse collapse"><div class="accordion-body"><ul class="list-group list-group-flush">{% for template in app.templates %}<li class="list-group-item d-flex justify-content-between"><code>{{ template.path }}</code><span>{{ template.category }}</span></li>{% empty %}<li class="list-group-item">No component templates discovered.</li>{% endfor %}</ul></div></div></div>{% endfor %}
+  {% for app in customizer_apps %}
+  <div class="accordion-item">
+    <h3 class="accordion-header">
+      <button class="accordion-button collapsed" data-bs-toggle="collapse"
+              data-bs-target="#app{{ forloop.counter }}">{{ app.name }}</button>
+    </h3>
+    <div id="app{{ forloop.counter }}" class="accordion-collapse collapse">
+      <div class="accordion-body">
+        <ul class="list-group list-group-flush">
+          {% for template in app.templates %}
+          <li class="list-group-item d-flex justify-content-between">
+            <code>{{ template.path }}</code>
+            <span>{{ template.category }}</span>
+          </li>
+          {% empty %}
+          <li class="list-group-item">No component templates discovered.</li>
+          {% endfor %}
+        </ul>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
 </div>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 {% endblock %}
