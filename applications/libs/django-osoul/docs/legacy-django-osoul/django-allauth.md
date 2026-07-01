@@ -21,7 +21,7 @@ MIDDLEWARE = [
 
 ## Custom Adapter
 
-Both sites use `AuthHTMXAdapter` to integrate allauth with the HTMX fragment system. See [Auth Adapter](../auth/adapter.md).
+Both sites use `AuthHTMXAdapter` to integrate allauth with the HTMX fragment system.
 
 ## Key Settings
 
@@ -47,4 +47,4 @@ urlpatterns = [
 
 ## Template Override
 
-allauth templates are overridden via `AuthHTMXAdapter.TEMPLATE_MAP`. See [Auth Templates](../auth/templates.md) for the full mapping.
+allauth templates are overridden via `AuthHTMXAdapter.TEMPLATE_MAP`.

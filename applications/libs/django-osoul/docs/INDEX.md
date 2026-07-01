@@ -62,3 +62,35 @@ uv run pytest
 | `applications/configs/base/apps.py` | Shared Django app registry |
 | `applications/Makefile` | Build, deploy, and development commands |
 | `applications/pyproject.toml` | Package metadata and `uv` dependencies |
+
+## Canonical Imports
+
+One canonical-imports block per public surface, kept short so consumers can
+adopt new code without scrolling through tutorials. The full API reference
+for each surface lives in **[packages.md](packages.md)**.
+
+### CRUD (`django-osoul`)
+
+```python
+from django_osoul.core.services.crud import (
+    # Bulk
+    bulk_create, bulk_update, bulk_delete, upsert,
+    # Single-row
+    get_or_create, get_by_pk, get_one, update_one, delete_one,
+    # Batch dispatch
+    execute_batch,
+    # Primary-key introspection
+    get_pk_info, normalize_pk_kwargs, get_pk_value_from_data,
+    PrimaryKeyInfo,
+)
+```
+
+Full reference: **[packages.md → CRUD Free Functions](packages.md#crud-free-functions-django_osoulcoreservicescrud)**
+
+## Surface Map
+
+| Surface | Module | Doc |
+|---|---|---|
+| CRUD free functions | `django_osoul.core.services.crud` | [packages.md](packages.md#crud-free-functions-django_osoulcoreservicescrud) |
+| Component system | `django_osoul.comp` | [packages.md](packages.md#component-system) |
+| Analyzer | `django_osoul.analyzer` | [packages.md](packages.md#analyzer-django_osoulanalyzer) |

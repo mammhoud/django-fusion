@@ -1,14 +1,13 @@
-"""
-Contrib module for ceptor_ai.
+"""Contrib — shared admin, cache, privacy, and signal helpers.
 
-Organized by category:
-- admin: Wagtail admin customizations
-- email: Email configuration
-- core: Core utilities (cache, context, enums, models, utils)
-- privacy: Privacy and consent management
-
-Import directly from submodules:
-    from ceptor_ai.contrib.admin import admin_site
-    from ceptor_ai.contrib.core import cache_get_or_set
-    from ceptor_ai.contrib.privacy import get_privacy_html
+Sub-packages
+------------
+contrib.admin           Custom admin site and Wagtail admin hook registrations.
+contrib.cache           Cache utility functions (invalidation helpers, decorators).
+contrib.core            Shared context processors, enums, model mixins, utils.
+contrib.email           Email configuration contrib helpers.
+contrib.email_config    Email template configuration registry.
+contrib.privacy         Privacy middleware and consent enforcement.
+contrib.signals         Shared signal utility functions and connection helpers.
+contrib.snippets        Snippet base classes shared across content and contrib.
 """

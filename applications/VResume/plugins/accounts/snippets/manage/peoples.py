@@ -1,9 +1,9 @@
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter, DateFilter
 from ceptor_ai.handlers.models.manage_company import Organization as Corporate
-from ceptor_ai.pipelines.models.users.team import Team
-from ceptor_ai.pipelines.models.users.users import Person
-from ceptor_ai.pipelines.models.workspace import Workspace
+from ceptor_ai.models.users.team import Team
+from ceptor_ai.models.users.users import Person
+from ceptor_ai.content.models.workspace import Workspace
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.snippets.views.snippets import SnippetViewSet

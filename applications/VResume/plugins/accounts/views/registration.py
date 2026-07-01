@@ -485,7 +485,7 @@ class RegistrationSuccessView(View):
 def _ensure_profile_exists(user):
     """Create a Person profile for the user if it doesn't exist."""
     try:
-        from ceptor_ai.pipelines.models.users.users import Person
+        from ceptor_ai.models.users.users import Person
 
         _profile, created = Person.objects.get_or_create(
             user=user,

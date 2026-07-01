@@ -150,7 +150,7 @@ class EmailService:
         Queue an email for async sending via django-rq.
         """
         # Import here to avoid circular imports
-        from ceptor_ai.pipelines.services.jobs import dispatch_job
+        from ceptor_ai.services.infrastructure.jobs import dispatch_job
 
         # Lazy import to break circular dependency with tasks module
         from plugins.accounts.management.services.email.tasks import send_email_task

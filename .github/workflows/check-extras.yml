@@ -1,0 +1,40 @@
+# check-extras: fail the build if any Markdown install command under
+# applications/libs/**/docs/ references an extras key that does not exist
+# in the matching libs/<pkg>/pyproject.toml [project.optional-dependencies].
+#
+# Companion to applications/scripts/check_extras_in_docs.py — that script
+# is the source of truth for what counts as an install command and which
+# extras are real. This workflow's job is to run it on the appropriate
+# triggers.
+name: check-extras
+
+on:
+  pull_request:
+    paths:
+      - 'applications/libs/**/*.md'
+      - 'applications/libs/**/docs/**'
+      - '**/pyproject.toml'
+      - '.github/workflows/check-extras.yml'
+      - 'applications/scripts/check_extras_in_docs.py'
+  push:
+    branches: ['**']
+    paths:
+      - 'applications/libs/**/*.md'
+      - 'applications/libs/**/docs/**'
+      - '**/pyproject.toml'
+      - '.github/workflows/check-extras.yml'
+      - 'applications/scripts/check_extras_in_docs.py'
+  workflow_dispatch:
+
+jobs:
+  check-extras:
+    name: Validate install extras against pyproject.toml
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check Markdown install extras
+        run: python3 applications/scripts/check_extras_in_docs.py

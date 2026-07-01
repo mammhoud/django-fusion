@@ -9,6 +9,5 @@ runtime so local/minimal environments can still boot.
 DJANGO_RSEAL_TASK_MODULES = [
     "ceptor_ai.tasks",
     "ceptor_ai.workflows.tasks",
-    "ceptor_ai.workflows.pipelines.tasks",
     "ceptor_ai.services.communication.tasks",
 ]

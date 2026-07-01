@@ -66,7 +66,7 @@ def _get_ai_registry(backend: str):
             )
             return None
 
-    # Default: try ceptorai first (nawaai), then fall back to rseal's re-export
+    # Default: try ceptorai first (ceptor-ai), then fall back to rseal's re-export
     try:
         from ceptorai.ai.integrations import AIIntegrationRegistry  # noqa: PLC0415
         return AIIntegrationRegistry

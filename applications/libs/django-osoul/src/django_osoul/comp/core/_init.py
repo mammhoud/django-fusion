@@ -31,7 +31,14 @@ from django_osoul.comp.templatetags.tags.slot import DEFAULT_SLOT, SlotNode
 @dataclass(frozen=True, slots=True)
 class Component:
     name: str
-    template: DjangoTemplate
+    # ``template`` is ``DjangoTemplate`` for the common path-style case
+    # (resolved at include time). ``registry._LazyIncludeTemplate`` is
+    # the duck-typed alternative returned by
+    # ``IncludePathComponent.from_include_path``; it defers
+    # ``select_template`` until first render so partials that depend on
+    # tag libraries unavailable in the current settings (e.g.
+    # wagtailimages_tags) don't blow up the registry at import time.
+    template: DjangoTemplate | "_LazyIncludeTemplate"
     assets: frozenset[Asset] = field(default_factory=frozenset)
 
     def get_asset(self, asset_filename: str) -> Asset | None:

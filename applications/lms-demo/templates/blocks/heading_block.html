@@ -1,8 +1,0 @@
-{% load wagtailcore_tags %}
-{# Heading Block Template - Wagtail Bakery Style #}
-
-{% with heading_tag=self.size|default:'h2' %}
-<{{ heading_tag }} class="heading-block heading-block--{{ heading_tag }}">
-    {{ self.text }}
-</{{ heading_tag }}>
-{% endwith %}

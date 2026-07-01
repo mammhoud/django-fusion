@@ -6,7 +6,7 @@ django-osoul is the pure Django foundation layer for the ecosystem. It provides 
 ## Key Principles
 - **No Wagtail dependencies** - Must not import wagtail
 - **No Celery dependencies** - Must not import celery
-- **No crafts-ai dependencies** - Must remain independent
+- **No ceptor-ai dependencies** - Must remain independent
 
 ## Sub-modules
 
@@ -65,8 +65,7 @@ INSTALLED_APPS = [
 ```
 
 ## Documentation Links
-- [django-osoul README](../../../venv/libs/django-osoul/README.md)
+- [django-osoul README](../../README.md)
 
-## Related Packages
-- [crafts-ai](../crafts-ai/) - Wagtail automation (depends on django-osoul)
-- [django-osoul](../django-osoul/) - Testing infrastructure
+## Related Package
+- [ceptor-ai](../../../ceptor-ai/) — downstream lib (depends on django-osoul)

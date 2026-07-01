@@ -1,20 +1,31 @@
+"""components — Django component system with slot/prop/var template tags.
+
+The ``comp`` package provides a lightweight server-side component model for
+Django templates, inspired by Vue SFC and Livewire but rendered server-side
+via Django template tags.
+
+Sub-packages
+------------
+comp.configuration  Component manifest, options schema, and config helpers.
+comp.core           Component init and lifecycle (up.py = component bootstrap).
+comp.forms          Form layout helpers for component-based form rendering.
+comp.loaders        Lazy/HTMX-safe component loader decorator.
+comp.management     Management commands (generate_asset_manifest).
+comp.payloads       Component payload service (JSON data for HTMX responses).
+comp.plugins        Pluggy-based hook system for extending component behavior.
+comp.static         Static file discovery and manifest helpers.
+comp.templates      Template discovery, URL registration, and rendering engine.
+comp.templatetags   Django template tags: comp, slot, prop, var, css, js,
+                    plus UI tags: card, field, menu, modal, table, notification.
+
+Usage::
+
+    # In templates (registered as builtins):
+    {% comp "my_component" param1="value" %}
+        {% slot "body" %}Content{% endslot %}
+    {% endcomp %}
+
+    # In Python:
+    from django_osoul.comp.loaders import component_loader
+    from django_osoul.comp.payloads.services import ComponentPayloadService
 """
-Component module for django_osoul.
-
-Organized by category:
-- core: Core component initialization
-- configuration: Component configuration
-- static: Static files management
-- templates: Template management
-"""
-from pluggy import HookimplMarker as _HookimplMarker
-
-# hookimpl marker for django_osoul.comp plugins
-hookimpl = _HookimplMarker("django_osoul.comp")
-
-from .configuration import *  # noqa: F401, F403
-from .core import *  # noqa: F401, F403
-from .static import *  # noqa: F401, F403
-from .templates import *  # noqa: F401, F403
-
-__all__ = ["hookimpl"]

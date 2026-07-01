@@ -3,7 +3,7 @@ from django_filters import BooleanFilter, CharFilter, ChoiceFilter
 from ceptor_ai.handlers.models.manage_company import Organization as Corporate
 from ceptor_ai.models.users.team import Team
 from ceptor_ai.models import Person
-from ceptor_ai.workflows.pipelines.models.workspace import Workspace
+from ceptor_ai.content.models.workspace import Workspace
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.panels import FieldPanel
 from wagtail.snippets.views.snippets import SnippetViewSet

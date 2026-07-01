@@ -2,7 +2,7 @@
 
 > Part of **django-osoul** — Django foundation layer
 
-Admin integration for crafts_ai.
+Admin integration for ceptor_ai.
 
 ## Contents
 

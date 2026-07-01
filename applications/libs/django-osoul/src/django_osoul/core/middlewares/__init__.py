@@ -1,21 +1,22 @@
-"""
-django_osoul.middlewares — generic Django middleware.
+"""Request/response middleware for Django sites.
 
-Canonical imports::
+Modules
+-------
+error_tracker       Captures unhandled exceptions and logs structured error reports.
+privacy             Redirects unauthenticated users who have not accepted the policy.
+language            Sets the active language from a cookie or Accept-Language header.
+freeze              Blocks write operations during read-only maintenance windows.
+service             Injects a per-request service registry into the request object.
+site                Resolves the active Wagtail Site object for multi-site setups.
+component_error     Returns HTMX-friendly error fragments on component render failure.
 
-    from django_osoul.core.middlewares import ErrorTrackerMiddleware
-    from django_osoul.core.middlewares import SiteMiddleware
-    from django_osoul.core.middlewares import DefaultLanguageMiddleware
-    from django_osoul.core.middlewares import ReadonlyExceptionHandlerMiddleware
+Usage::
 
-Settings usage::
-
-    MIDDLEWARE = [
-        "django_osoul.middlewares.error_tracker.ErrorTrackerMiddleware",
-        "django_osoul.middlewares.site.SiteMiddleware",
+    MIDDLEWARE += [
+        "django_osoul.core.middlewares.error_tracker.ErrorTrackerMiddleware",
+        "django_osoul.core.middlewares.language.LanguageMiddleware",
     ]
 """
-from .error_tracker import ErrorTrackerMiddleware  # noqa: F401
-from .freeze import ReadonlyExceptionHandlerMiddleware  # noqa: F401
-from .language import DefaultLanguageMiddleware  # noqa: F401
-from .site import SiteMiddleware  # noqa: F401
+from .error_tracker import ErrorTrackerMiddleware
+
+__all__ = ["ErrorTrackerMiddleware"]

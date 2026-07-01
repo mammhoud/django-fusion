@@ -8,14 +8,13 @@ import pytest
 from django.utils import timezone
 
 
-def test_both_import_paths_work():
-    """Both import paths should reference the same class."""
+def test_canonical_import_paths_work():
+    """Canonical import paths should reference the same class."""
     from ceptor_ai.communication.email.models import EmailTemplate as EmailTemplate1
-    from ceptor_ai.workflows.pipelines.models import EmailTemplate as EmailTemplate2
-    from ceptor_ai.workflows.pipelines.models.settings.templates import EmailTemplate as EmailTemplate3
+    from ceptor_ai.communication.email.models.models import EmailTemplate as EmailTemplate2
 
-    # All three should be the same class (or proxy to same class)
-    assert EmailTemplate1.__name__ == EmailTemplate2.__name__ == EmailTemplate3.__name__
+    # Both must resolve to the same EmailTemplate class
+    assert EmailTemplate1.__name__ == EmailTemplate2.__name__
     assert EmailTemplate1._meta.app_label == 'ceptor_ai'
 
 
@@ -212,7 +211,7 @@ def test_performance_metrics_available():
 
 def test_website_signal_compatibility():
     """Verify compatibility with website signal handlers."""
-    from ceptor_ai.workflows.pipelines.models import EmailTemplate
+    from ceptor_ai.communication.email.models import EmailTemplate
 
     # This is how websites import it
     template = EmailTemplate.objects.create(
@@ -236,10 +235,8 @@ def test_website_signal_compatibility():
 def test_app_label_is_canonical():
     """Verify app_label is ceptor_ai (canonical)."""
     from ceptor_ai.communication.email.models import EmailTemplate
-    from ceptor_ai.workflows.pipelines.models import EmailTemplate as PipelinesEmailTemplate
 
     assert EmailTemplate._meta.app_label == 'ceptor_ai'
-    assert PipelinesEmailTemplate._meta.app_label == 'ceptor_ai'
 
 
 if __name__ == "__main__":

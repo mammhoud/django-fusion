@@ -18,7 +18,7 @@ import logging
 logger = logging.getLogger(__name__)
 
 try:
-    from ceptor_ai.workflows.pipelines.models.token import Token  # type: ignore[import]
+    from ceptor_ai.models.token import Token  # type: ignore[import]
 except ImportError:
     Token = None  # type: ignore[assignment,misc]
 

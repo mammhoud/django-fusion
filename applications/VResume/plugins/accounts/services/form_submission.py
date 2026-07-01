@@ -1,8 +1,8 @@
 """
 Form Submission Service for handling contact form submissions.
 
-Delegates to ceptor_ai.pipelines.services.FormSubmissionService
-Canonical import: from ceptor_ai.pipelines.services import FormSubmissionService
+Delegates to ceptor_ai.services.content.form_submission.FormSubmissionService
+Canonical import: from ceptor_ai.services.content.form_submission import FormSubmissionService
 """
 import logging
 from typing import Any, Optional

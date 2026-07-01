@@ -1,11 +1,35 @@
-"""Configuration management."""
+"""Configuration management — pure operators over :class:`OrchestratorConfig`.
+
+Decomposed from the legacy :class:`ConfigLoader` class. The dataclass
+:class:`OrchestratorConfig` keeps the canonical configuration state (held on
+``state.config`` in :class:`~.operators.OrchestratorState`); these operators
+load and validate it from various sources without holding any hidden per-call
+state.
+
+Naming intentionally omits the parent directory: callers do
+``config.load_from_file(path)`` rather than ``config.config_load_from_file``.
+The parent package already implies the domain.
+
+Each loader function returns ``(OrchestratorConfig, List[str])`` so callers can
+accumulate warnings explicitly. :func:`validate_config` returns the list of
+errors it would raise — a small helper, ``validate_or_raise``, calls
+:func:`validate_config` and raises ``ValueError`` when the list is non-empty
+so existing CLI entry points keep their fail-fast behaviour.
+"""
+
+from __future__ import annotations
 
 import json
 import os
 from dataclasses import dataclass, field
-from typing import Any, Dict
+from typing import Any, Dict, List, Optional, Tuple
 
 from .models import TaskStatus
+
+
+# ---------------------------------------------------------------------------
+# Configuration dataclass — canonical state
+# ---------------------------------------------------------------------------
 
 
 @dataclass
@@ -61,129 +85,169 @@ class OrchestratorConfig:
         )
 
 
-class ConfigLoader:
-    """Loads configuration from various sources."""
+# ---------------------------------------------------------------------------
+# Loaders — each returns ``(config, warnings)`` so callers accumulate explicitly
+# ---------------------------------------------------------------------------
 
-    def __init__(self):
-        """Initialize the config loader."""
-        self.config = OrchestratorConfig()
-        self.warnings: list[str] = []
 
-    def load_from_file(self, file_path: str) -> OrchestratorConfig:
-        """Load configuration from .config.kiro file."""
-        if not os.path.isfile(file_path):
-            self.warnings.append(f"Config file not found: {file_path}")
-            return self.config
+# Map of ``ORCHESTRATOR_*`` environment variables to ``OrchestratorConfig`` keys.
+_ENV_MAPPING: Dict[str, str] = {
+    "ORCHESTRATOR_BASE_PATH": "base_path",
+    "ORCHESTRATOR_DEFAULT_STATUS": "default_status",
+    "ORCHESTRATOR_PBT_FRAMEWORK": "pbt_framework",
+    "ORCHESTRATOR_PBT_ITERATIONS": "pbt_iterations",
+    "ORCHESTRATOR_REPORT_OUTPUT_DIR": "report_output_dir",
+    "ORCHESTRATOR_LOG_LEVEL": "log_level",
+    "ORCHESTRATOR_MAX_RETRIES": "max_retries",
+    "ORCHESTRATOR_ENABLE_PARALLEL": "enable_parallel",
+    "ORCHESTRATOR_ENABLE_ROLLBACK": "enable_rollback",
+    "ORCHESTRATOR_ENABLE_CACHING": "enable_caching",
+    "ORCHESTRATOR_CACHE_TTL": "cache_ttl",
+}
 
-        try:
-            with open(file_path, "r") as f:
-                data = json.load(f)
-            self.config = OrchestratorConfig.from_dict(data)
-        except json.JSONDecodeError as e:
-            self.warnings.append(f"Error parsing config file: {e}")
-        except Exception as e:
-            self.warnings.append(f"Error loading config file: {e}")
+_INT_KEYS = {"pbt_iterations", "max_retries", "cache_ttl"}
+_BOOL_KEYS = {"enable_parallel", "enable_rollback", "enable_caching"}
 
-        return self.config
 
-    def load_from_env(self) -> OrchestratorConfig:
-        """Load configuration from environment variables."""
-        env_mapping = {
-            "ORCHESTRATOR_BASE_PATH": "base_path",
-            "ORCHESTRATOR_DEFAULT_STATUS": "default_status",
-            "ORCHESTRATOR_PBT_FRAMEWORK": "pbt_framework",
-            "ORCHESTRATOR_PBT_ITERATIONS": "pbt_iterations",
-            "ORCHESTRATOR_REPORT_OUTPUT_DIR": "report_output_dir",
-            "ORCHESTRATOR_LOG_LEVEL": "log_level",
-            "ORCHESTRATOR_MAX_RETRIES": "max_retries",
-            "ORCHESTRATOR_ENABLE_PARALLEL": "enable_parallel",
-            "ORCHESTRATOR_ENABLE_ROLLBACK": "enable_rollback",
-            "ORCHESTRATOR_ENABLE_CACHING": "enable_caching",
-            "ORCHESTRATOR_CACHE_TTL": "cache_ttl",
-        }
+def load_from_file(
+    file_path: str,
+    config: Optional[OrchestratorConfig] = None,
+) -> Tuple[OrchestratorConfig, List[str]]:
+    """Load configuration from a ``.config.kiro`` JSON file.
 
-        config_dict = self.config.to_dict()
+    Returns ``(new_config, warnings)``. When ``file_path`` is missing or
+    malformed, the existing ``config`` is returned unchanged with a warning
+    appended — loaders never raise for parse failures.
+    """
+    config = config or OrchestratorConfig()
+    warnings: List[str] = []
 
-        for env_var, config_key in env_mapping.items():
-            if env_var in os.environ:
-                value = os.environ[env_var]
+    if not os.path.isfile(file_path):
+        warnings.append(f"Config file not found: {file_path}")
+        return config, warnings
 
-                # Type conversion
-                if config_key in ("pbt_iterations", "max_retries", "cache_ttl"):
-                    try:
-                        value = int(value)
-                    except ValueError:
-                        self.warnings.append(
-                            f"Invalid value for {env_var}: {value} (expected int)"
-                        )
-                        continue
-                elif config_key in ("enable_parallel", "enable_rollback", "enable_caching"):
-                    value = value.lower() in ("true", "1", "yes")
+    try:
+        with open(file_path, "r") as fh:
+            data = json.load(fh)
+        config = OrchestratorConfig.from_dict(data)
+    except json.JSONDecodeError as exc:
+        warnings.append(f"Error parsing config file: {exc}")
+    except Exception as exc:
+        warnings.append(f"Error loading config file: {exc}")
 
-                config_dict[config_key] = value
+    return config, warnings
 
-        self.config = OrchestratorConfig.from_dict(config_dict)
-        return self.config
 
-    def load_from_args(self, args: Dict[str, Any]) -> OrchestratorConfig:
-        """Load configuration from command-line arguments."""
-        config_dict = self.config.to_dict()
+def load_from_env(
+    config: Optional[OrchestratorConfig] = None,
+) -> Tuple[OrchestratorConfig, List[str]]:
+    """Overlay configuration from ``ORCHESTRATOR_*`` environment variables.
 
-        for key, value in args.items():
-            if key in config_dict and value is not None:
-                config_dict[key] = value
+    Variables that fail type conversion produce a warning rather than failing
+    the load — callers can choose whether to keep the default value or raise.
+    """
+    config = config or OrchestratorConfig()
+    warnings: List[str] = []
+    if not os.environ:
+        return config, warnings
 
-        self.config = OrchestratorConfig.from_dict(config_dict)
-        return self.config
+    config_dict = config.to_dict()
 
-    def validate_config(self) -> bool:
-        """Validate configuration."""
-        errors = []
+    for env_var, config_key in _ENV_MAPPING.items():
+        if env_var not in os.environ:
+            continue
+        value = os.environ[env_var]
 
-        # Validate base_path
-        if not self.config.base_path:
-            errors.append("base_path is required")
+        if config_key in _INT_KEYS:
+            try:
+                value = int(value)
+            except ValueError:
+                warnings.append(
+                    f"Invalid value for {env_var}: {value} (expected int)"
+                )
+                continue
+        elif config_key in _BOOL_KEYS:
+            value = value.lower() in ("true", "1", "yes")
 
-        # Validate default_status
-        try:
-            TaskStatus(self.config.default_status)
-        except ValueError:
-            errors.append(f"Invalid default_status: {self.config.default_status}")
+        config_dict[config_key] = value
 
-        # Validate pbt_framework
-        if self.config.pbt_framework not in ("hypothesis", "pytest", "fast-check"):
-            self.warnings.append(
-                f"Unknown PBT framework: {self.config.pbt_framework}"
-            )
+    return OrchestratorConfig.from_dict(config_dict), warnings
 
-        # Validate pbt_iterations
-        if self.config.pbt_iterations < 1:
-            errors.append("pbt_iterations must be >= 1")
 
-        # Validate max_retries
-        if self.config.max_retries < 0:
-            errors.append("max_retries must be >= 0")
+def load_from_args(
+    args: Dict[str, Any],
+    config: Optional[OrchestratorConfig] = None,
+) -> Tuple[OrchestratorConfig, List[str]]:
+    """Overlay configuration from CLI argument dict."""
+    config = config or OrchestratorConfig()
+    warnings: List[str] = []
+    config_dict = config.to_dict()
 
-        # Validate cache_ttl
-        if self.config.cache_ttl < 0:
-            errors.append("cache_ttl must be >= 0")
+    for key, value in args.items():
+        if key in config_dict and value is not None:
+            config_dict[key] = value
 
-        if errors:
-            raise ValueError(f"Configuration validation failed: {'; '.join(errors)}")
+    return OrchestratorConfig.from_dict(config_dict), warnings
 
-        return True
 
-    def get_config(self) -> OrchestratorConfig:
-        """Get current configuration."""
-        return self.config
+# ---------------------------------------------------------------------------
+# Validation
+# ---------------------------------------------------------------------------
 
-    def get_warnings(self) -> list[str]:
-        """Get configuration warnings."""
-        return self.warnings
 
-    def log_config_summary(self) -> str:
-        """Get configuration summary."""
-        summary = "Configuration Summary:\n"
-        for key, value in self.config.to_dict().items():
-            summary += f"  {key}: {value}\n"
-        return summary
+def validate_config(config: OrchestratorConfig) -> List[str]:
+    """Validate configuration and return a list of error messages.
+
+    Empty list means valid. Use :func:`validate_or_raise` for the legacy
+    raise-on-invalid behaviour.
+    """
+    errors: List[str] = []
+
+    if not config.base_path:
+        errors.append("base_path is required")
+
+    try:
+        TaskStatus(config.default_status)
+    except ValueError:
+        errors.append(f"Invalid default_status: {config.default_status}")
+
+    if config.pbt_iterations < 1:
+        errors.append("pbt_iterations must be >= 1")
+
+    if config.max_retries < 0:
+        errors.append("max_retries must be >= 0")
+
+    if config.cache_ttl < 0:
+        errors.append("cache_ttl must be >= 0")
+
+    return errors
+
+
+def validate_warnings(config: OrchestratorConfig) -> List[str]:
+    """Non-fatal advisories about the configuration (e.g. unknown frameworks)."""
+    warnings: List[str] = []
+    if config.pbt_framework not in ("hypothesis", "pytest", "fast-check"):
+        warnings.append(f"Unknown PBT framework: {config.pbt_framework}")
+    return warnings
+
+
+def validate_or_raise(config: OrchestratorConfig) -> None:
+    """Raise ``ValueError`` when :func:`validate_config` finds any errors."""
+    errors = validate_config(config)
+    if errors:
+        raise ValueError(
+            f"Configuration validation failed: {'; '.join(errors)}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Presentation
+# ---------------------------------------------------------------------------
+
+
+def format_summary(config: OrchestratorConfig) -> str:
+    """Return a human-readable configuration summary."""
+    lines = ["Configuration Summary:"]
+    for key, value in config.to_dict().items():
+        lines.append(f"  {key}: {value}")
+    return "\n".join(lines) + "\n"

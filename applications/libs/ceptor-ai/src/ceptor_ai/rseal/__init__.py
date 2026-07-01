@@ -1,12 +1,18 @@
-"""ceptor-ai migration helpers for ceptor-ai.
+"""Compatibility shim — ``ceptor_ai.rseal`` is now ``ceptor_ai.tools.migration``.
 
-This module keeps framework-agnostic package metadata and import migration
-rules in ``ceptor_ai``.  Django-specific runtime code should remain in the
-``ceptor_ai`` package until it can be extracted behind explicit adapters.
+Import from the canonical path instead::
+
+    from ceptor_ai.tools.migration import classify_import, migration_plan
+    from ceptor_ai.tools.migration import RSEAL_IMPORT_RULES, ImportRule, MigrationItem
 """
-
-from .inventory import ImportRule, RSEAL_IMPORT_RULES, classify_import
-from .migration import MigrationItem, migration_plan
+from __future__ import annotations
+from ceptor_ai.tools.migration import (  # noqa: F401
+    RSEAL_IMPORT_RULES,
+    ImportRule,
+    MigrationItem,
+    classify_import,
+    migration_plan,
+)
 
 __all__ = [
     "ImportRule",

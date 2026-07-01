@@ -1,53 +1,185 @@
+{# ui/forms/form.html — unified Django form (standard POST + HTMX)
+   ──────────────────────────────────────────────────────────────────────
+   Handles all common widget types, field/non-field errors, file uploads,
+   cancel button, inline HTMX spinner, and optional per-field success msg.
+
+   PARAMETERS:
+     form            : Django form object (required)
+     hx_post / hx_url: HTMX POST endpoint; falls back to method="POST" if absent
+     hx_target       : HTMX target selector (e.g. '#result', 'this')
+     hx_swap         : HTMX swap strategy (default: 'outerHTML')
+     hx_indicator    : HTMX loading indicator selector (e.g. '#my-spinner')
+     is_multipart    : bool — force multipart/form-data (auto-detected when possible)
+     form_class      : extra CSS classes on <form>
+     form_id         : HTML id attribute for the <form> element (optional)
+     submit_label    : submit button text (default: "Submit")
+     submit_attrs    : raw HTML attrs string for submit button (optional, safe)
+     show_cancel     : bool — show a cancel button (default: False)
+     cancel_label    : cancel button text (default: "Cancel")
+     cancel_onclick  : JS onclick for cancel; default is data-bs-dismiss="modal"
+     field_success   : field name (string) to display a success hint on
+     success_message : hint text shown next to field_success field
+
+   USAGE — standard form:
+     {% include "ui/forms/form.html" with form=my_form %}
+
+   USAGE — HTMX form:
+     {% include "ui/forms/form.html" with
+         form=my_form
+         hx_post="/api/endpoint/"
+         hx_target="#result"
+         hx_swap="outerHTML"
+         submit_label="Save"
+     %}
+
+   USAGE — with cancel (in modal):
+     {% include "ui/forms/form.html" with
+         form=my_form
+         show_cancel=True
+         cancel_label="Discard"
+     %}
+
+   USAGE — with field-level success hint:
+     {% include "ui/forms/form.html" with
+         form=my_form
+         hx_post="/validate/"
+         field_success="username"
+         success_message="Username available!"
+     %}
+#}
 {% load i18n %}
 
-<form method="{{ form_method|default:'post' }}"
-      {% if form.get_form_attrs %}{% for key, value in form.get_form_attrs.items %} {{ key }}="{{ value }}"{% endfor %}{% endif %}
-      {% if action %}action="{{ action }}"{% endif %}
-      {% if id %}id="{{ id }}"{% endif %}
-      class="{{ class|default:'' }}"
-      {% if enctype %}enctype="{{ enctype }}"{% endif %}
+<form {% if hx_post %}hx-post="{{ hx_post }}"
+      {% elif hx_url %}hx-post="{{ hx_url }}"
+      {% else %}method="POST"{% endif %}
+      {% if hx_target %}hx-target="{{ hx_target }}"{% endif %}
+      {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %}
+      {% if hx_indicator %}hx-indicator="{{ hx_indicator }}"{% endif %}
+      {% if is_multipart or form.is_multipart %}enctype="multipart/form-data"{% endif %}
+      {% if form_id %}id="{{ form_id }}"{% endif %}
+      class="form-container {{ form_class|default:'' }}"
       novalidate>
-
     {% csrf_token %}
 
+    {# ── Non-field errors ─────────────────────────────────────────────── #}
     {% if form.non_field_errors %}
-        <div class="alert alert-danger">
-            {% for error in form.non_field_errors %}
-                <p class="mb-0">{{ error }}</p>
-            {% endfor %}
+    <div class="alert alert-danger shadow-sm border-0 mb-4" role="alert">
+        <div class="d-flex align-items-start gap-2">
+            <i class="bi bi-exclamation-octagon-fill text-danger flex-shrink-0 mt-1"></i>
+            <div class="flex-grow-1">
+                <strong class="d-block mb-2">{% trans "Please fix the following errors:" %}</strong>
+                {% for error in form.non_field_errors %}
+                <div class="text-danger small mb-1">{{ error }}</div>
+                {% endfor %}
+            </div>
         </div>
+    </div>
     {% endif %}
 
-    {% for field in form %}
-        <div class="mb-3 {% if field.errors %}has-error{% endif %}">
-            {% if field.label %}
-                <label for="{{ field.id_for_label }}" class="form-label">
+    {# ── Form fields ──────────────────────────────────────────────────── #}
+    <div class="form-fields-container">
+        {% for field in form %}
+            {% if field.widget.input_type != "hidden" %}
+            <div class="form-group mb-3{% if field.errors %} has-error{% endif %}">
+
+                <label for="{{ field.id_for_label }}"
+                       class="form-label fw-semibold text-secondary small mb-1">
                     {{ field.label }}
-                    {% if field.field.required %}<span class="text-danger">*</span>{% endif %}
+                    {% if field.field.required %}
+                    <span class="text-danger" title="{% trans 'Required field' %}">*</span>
+                    {% endif %}
                 </label>
-            {% endif %}
 
-            {{ field }}
+                <div class="form-input-wrapper position-relative">
+                    {% if field.field.widget.input_type == "checkbox" %}
+                        <div class="form-check">
+                            {{ field }}
+                            {% if field.help_text %}
+                            <label class="form-check-label text-muted small"
+                                   for="{{ field.id_for_label }}">{{ field.help_text|safe }}</label>
+                            {% endif %}
+                        </div>
 
-            {% if field.help_text %}
-                <div class="form-text text-muted">{{ field.help_text|safe }}</div>
-            {% endif %}
+                    {% elif field.field.widget.input_type == "radio" %}
+                        <div class="form-check">
+                            {{ field }}
+                            {% if field.help_text %}
+                            <label class="form-check-label text-muted small"
+                                   for="{{ field.id_for_label }}">{{ field.help_text|safe }}</label>
+                            {% endif %}
+                        </div>
 
-            {% if field.errors %}
-                <div class="invalid-feedback d-block">
+                    {% elif field.field.widget.input_type == "file" %}
+                        <div class="input-group">
+                            {{ field }}
+                            <label class="input-group-text" for="{{ field.id_for_label }}">
+                                <i class="bi bi-cloud-upload me-1"></i>
+                                {% trans "Choose file" %}
+                            </label>
+                        </div>
+                        {% if field.help_text %}
+                        <div class="form-text text-muted small mt-1">{{ field.help_text|safe }}</div>
+                        {% endif %}
+
+                    {% else %}
+                        {# textarea, select, select-multiple, text, email, password, number… #}
+                        {{ field }}
+                        {% if field.help_text %}
+                        <div class="form-text text-muted small mt-1">{{ field.help_text|safe }}</div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+
+                {# Field errors #}
+                {% if field.errors %}
+                <div class="invalid-feedback d-block mt-2">
                     {% for error in field.errors %}
-                        {{ error }}
+                    <div class="text-danger small d-flex align-items-center gap-1 mb-1">
+                        <i class="bi bi-exclamation-circle"></i>{{ error }}
+                    </div>
                     {% endfor %}
                 </div>
-            {% endif %}
-        </div>
-    {% endfor %}
+                {% endif %}
 
-    <div class="form-actions mt-4">
-        {% block actions %}
-            <button type="submit" class="btn btn-primary">
-                {{ submit_text|default:_("Submit") }}
-            </button>
-        {% endblock %}
+                {# Per-field success hint (e.g. live availability check) #}
+                {% if field_success == field.html_name and not field.errors %}
+                <div class="valid-feedback d-block mt-1 text-success small">
+                    <i class="bi bi-check-circle me-1"></i>
+                    {{ success_message }}
+                </div>
+                {% endif %}
+
+            </div>
+            {% else %}
+                {{ field }}
+            {% endif %}
+        {% endfor %}
     </div>
+
+    {# ── Form actions ─────────────────────────────────────────────────── #}
+    {% block form_actions %}
+    <div class="form-actions d-flex justify-content-end gap-2 mt-4">
+        {% if show_cancel|default:False %}
+        <button type="button"
+                class="btn btn-secondary"
+                {% if cancel_onclick %}onclick="{{ cancel_onclick }}"
+                {% else %}data-bs-dismiss="modal"{% endif %}>
+            {{ cancel_label|default:_("Cancel") }}
+        </button>
+        {% endif %}
+
+        <button type="submit"
+                class="btn btn-primary d-flex align-items-center gap-2"
+                {% if submit_attrs %}{{ submit_attrs|safe }}{% endif %}>
+            <span>{{ submit_label|default:_("Submit") }}</span>
+            {% if hx_indicator %}
+            <div class="spinner-border spinner-border-sm htmx-indicator"
+                 role="status"
+                 id="{{ hx_indicator|cut:'#' }}">
+                <span class="visually-hidden">{% trans "Loading" %}</span>
+            </div>
+            {% endif %}
+        </button>
+    </div>
+    {% endblock form_actions %}
 </form>

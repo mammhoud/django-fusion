@@ -11,13 +11,12 @@ or request/response dependency:
 
 - `ceptor_ai.ai.*` → `ceptor_ai.ai.*`
 - `ceptor_ai.mcp.*` → `ceptor_ai.mcp_server` or future `ceptor_ai.mcp.*`
-- `ceptor_ai.workflows.orchestrator` → future `ceptor_ai.orchestrator.*`
+- `ceptor_ai.workflows.orchestrator` → `ceptor_ai.orchestrator.*` (migrated; legacy path removed)
 
 Keep in `ceptor_ai`:
 
 - `ceptor_ai.blocks.*`
 - `ceptor_ai.models.*`
-- `ceptor_ai.pipelines.models.*`
 - `ceptor_ai.middlewares.*`
 - `ceptor_ai.services.infrastructure.jobs`
 

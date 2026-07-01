@@ -2,7 +2,7 @@
 
 > Part of **ceptor-ai** — Django automation engine
 
-ceptor_ai.chat ================= Bubble chat integration — Django views + nawaai backend.
+ceptor_ai.chat ================= Bubble chat integration — Django views + ceptor-ai backend.
 
 ## Contents
 

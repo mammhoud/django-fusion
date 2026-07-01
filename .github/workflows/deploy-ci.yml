@@ -7,7 +7,7 @@
 # Composite Action so other repos in this workspace (and external
 # consumers) can drop in a single `uses: ./deploy-preflight` line
 # without duplicating the inline 3-step workflow.
-name: deploy-ci (preflight only)
+name: deploy-ci (preflight + docs validation)
 
 on:
   pull_request:
@@ -18,6 +18,8 @@ on:
       - '.github/actions/deploy-preflight/**'
       - '**/docker-compose*.yml'
       - '**/docker-compose*.yaml'
+      - 'applications/libs/**/*.md'
+      - 'applications/scripts/check_markdown_links.py'
   push:
     branches: ['**']
     paths:
@@ -27,6 +29,8 @@ on:
       - '.github/actions/deploy-preflight/**'
       - '**/docker-compose*.yml'
       - '**/docker-compose*.yaml'
+      - 'applications/libs/**/*.md'
+      - 'applications/scripts/check_markdown_links.py'
   workflow_dispatch:
 
 jobs:
@@ -37,3 +41,16 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: ./.github/actions/deploy-preflight
+  markdown-links:
+    name: Validate Markdown cross-links
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+      - name: Check Markdown links
+        run: python3 applications/scripts/check_markdown_links.py
+        env:
+          CI: 'true'

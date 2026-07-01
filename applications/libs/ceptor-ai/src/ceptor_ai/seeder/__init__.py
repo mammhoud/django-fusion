@@ -1,33 +1,12 @@
+"""Compatibility shim — ``ceptor_ai.seeder`` is now ``ceptor_ai.content.seeder``.
+
+Import from the canonical path instead::
+
+    from ceptor_ai.content.seeder import SimpleSeeder
+    from ceptor_ai.content.seeder.providers import PersonProvider
 """
-ceptorai.seeder
-===============
+from __future__ import annotations
+from ceptor_ai.content.seeder import SimpleSeeder  # noqa: F401
+from ceptor_ai.content.seeder.providers import *   # noqa: F401,F403
 
-Faker-based data generation utilities — **no Django required**.
-
-For seeding Django models use ``ceptor_ai.seeder`` which wraps these
-utilities with Django ORM support.
-
-Classes
--------
-SimpleSeeder
-    Framework-agnostic seeder that generates fake data dicts via Faker.
-FakerProvider
-    Extended Faker provider with extra data types (UUID, duration, binary).
-
-Usage::
-
-    from faker import Faker
-    from ceptorai.seeder import SimpleSeeder
-
-    seeder = SimpleSeeder(Faker())
-    records = seeder.generate(count=10, schema={
-        "name": "name",
-        "email": "email",
-        "age": lambda f: f.random_int(18, 80),
-    })
-"""
-
-from .providers import FakerProvider
-from .simple_seeder import SimpleSeeder
-
-__all__ = ["SimpleSeeder", "FakerProvider"]
+__all__ = ["SimpleSeeder"]

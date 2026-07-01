@@ -1,5 +1,5 @@
 """
-Chat backends — thin adapters over nawaai.
+Chat backends — thin adapters over ceptor-ai.
 
 Each backend receives a message + session context and returns a reply string.
 """
@@ -40,7 +40,7 @@ def _build_prompt(session: "ChatSession", message: str) -> str:
 
 
 def openai_backend(session: "ChatSession", message: str) -> str:
-    """Send message to OpenAI via nawaai."""
+    """Send message to OpenAI via ceptor-ai."""
     try:
         from ceptor_ai.ai.integrations import OpenAIIntegration
 
@@ -50,7 +50,7 @@ def openai_backend(session: "ChatSession", message: str) -> str:
         )
         return ai.generate(prompt)
     except ImportError:
-        logger.warning("nawaai not installed; falling back to echo backend")
+        logger.warning("ceptor-ai not installed; falling back to echo backend")
         return echo_backend(session, message)
     except Exception as exc:
         logger.error("openai_backend error: %s", exc)
@@ -58,7 +58,7 @@ def openai_backend(session: "ChatSession", message: str) -> str:
 
 
 def rasa_backend(session: "ChatSession", message: str) -> str:
-    """Send message to Rasa via nawaai."""
+    """Send message to Rasa via ceptor-ai."""
     try:
         from ceptor_ai.chat.rasa import RasaClient
 
@@ -70,7 +70,7 @@ def rasa_backend(session: "ChatSession", message: str) -> str:
         )
         return response.text or "…"
     except ImportError:
-        logger.warning("nawaai not installed; falling back to echo backend")
+        logger.warning("ceptor-ai not installed; falling back to echo backend")
         return echo_backend(session, message)
     except Exception as exc:
         logger.error("rasa_backend error: %s", exc)

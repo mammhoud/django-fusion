@@ -1,11 +1,17 @@
-"""django_osoul.contrib.context — context processors."""
-from .auth import AUTH_SETTINGS  # noqa: F401
-from .cookies import COOKIES  # noqa: F401
-from .htmx import CONTEXT as HTMX  # noqa: F401
-from .languages import LANGUAGES  # noqa: F401
-from .settings import SETTINGS  # noqa: F401
+"""Request context processors and context data builders.
 
-# Aliases for backward compatibility
-LANGUAGES_CONTEXT = LANGUAGES
+Modules
+-------
+context.auth        Injects authentication state and user role into template context.
+context.cookies     Reads and normalises cookie consent state.
+context.htmx        Provides HTMX request metadata (hx-target, hx-trigger, etc.).
+context.languages   Builds language switcher data for i18n-enabled sites.
+context.settings    Exposes selected Django settings as template variables.
 
-__all__ = ["AUTH_SETTINGS", "COOKIES", "HTMX", "LANGUAGES", "LANGUAGES_CONTEXT", "SETTINGS"]
+Usage::
+
+    # In TEMPLATES context_processors:
+    "django_osoul.site.context.auth.auth_context",
+    "django_osoul.site.context.htmx.htmx_context",
+    "django_osoul.site.context.languages.language_context",
+"""

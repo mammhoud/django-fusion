@@ -17,7 +17,7 @@ from django.template.utils import get_app_template_dirs
 from pluggy import HookimplMarker as _HookimplMarker
 
 from django_osoul.comp.configuration.conf import _settings
-from django_osoul.contrib import get_files_from_dirs, unique_ordered
+from django_osoul.site.utils import get_files_from_dirs, unique_ordered
 
 hookimpl = _HookimplMarker("django_osoul.comp")
 from django_osoul.comp.templatetags.tags.block import BlockNode  # noqa: E402

@@ -1,58 +1,57 @@
-"""
-Managers module for django_osoul.
+"""Django model manager classes with caching, role hierarchy, and search support.
 
-Provides custom Django model managers and QuerySet classes for common
-data access patterns including caching, role hierarchy, group access,
-search, tagging, and token-aware queries.
+All imports here are lazy-safe. Managers that depend on ``CachedManager``
+(e.g. ``TokenCachedManager``) import it from ``django_osoul.core.cache``
+directly in their own module to avoid circular-import issues.
 
-Classes:
-    BaseManager: Base manager with common query utilities.
-    CachedManager: Manager with built-in caching support.
-    CacheSupportMixin: Mixin adding cache support to managers.
-    UncachedManager: Manager that bypasses caching.
-    TokenAwareManagerMixin: Mixin for token-based access control.
-    UserManager: Custom manager for user models.
-    SearchManagerMixin: Mixin adding full-text search capabilities.
-    TokenCachedManager: Cached manager with token-aware queries.
-    RoleHierarchyManager: Manager for role-based hierarchy access.
-    GroupAccessControl: Manager for group-based access control.
-    PersonTagCategoryManager: Manager for person tag categories.
-    PersonTagManager: Manager for person tags.
-    TaggedPersonManager: Manager for tagged person records.
+Available managers
+------------------
+BaseManager             Thin manager base with common queryset shortcuts.
+CacheSupportMixin       Mixin adding cache invalidation to any manager.
+UncachedManager         Bypass-cache manager for admin and internal tooling.
+TokenAwareManagerMixin  Token-based queryset filtering.
+TokenCachedManager      Combined token-aware and cached manager.
+UserManager             Custom user manager with create_user/create_superuser.
+SearchManagerMixin      Full-text and trigram search on any manager.
+RoleHierarchyManager    Role inheritance resolution.
+GroupAccessControl      Group-based object permission scoping.
+PersonTagCategoryManager, PersonTagManager, TaggedPersonManager  (tagging)
 
-Functions:
-    cached_method: Decorator for caching manager method results.
+``CachedManager`` is available at ``django_osoul.core.cache.CachedManager``.
 
-Canonical imports::
+Usage::
 
-    from django_osoul.core.managers import RoleHierarchyManager
-    from django_osoul.core.managers import GroupAccessControl
-    from django_osoul.core.managers import UserManager
-    from django_osoul.core.managers import GroupManager
-    from django_osoul.core.managers import BaseManager, CachedManager
+    from django_osoul.core.managers import BaseManager, RoleHierarchyManager
+    from django_osoul.core.cache import CachedManager   # avoid cycle
 """
 
-from .base import BaseManager, CachedManager, CacheSupportMixin, UncachedManager, cached_method
+from .base import BaseManager, CacheSupportMixin, UncachedManager
 from .group_access import GroupAccessControl
 from .role_hierarchy import RoleHierarchyManager
 from .search import SearchManagerMixin
 from .tags import PersonTagCategoryManager, PersonTagManager, TaggedPersonManager
-from .token import TokenAwareManagerMixin, TokenCachedManager
 from .user import UserManager
+
+# token.py imports CachedManager from core.cache, not from here, so it is safe
+from .token import TokenAwareManagerMixin, TokenCachedManager  # noqa: E402
+
+# cached_method lives in core.managers.base — re-export it from here
+from .base import cached_method  # noqa: E402
+# CachedManager lives in core.cache — import after token to avoid cycle
+from django_osoul.core.cache import CachedManager  # noqa: E402
 
 __all__ = [
     "BaseManager",
     "CachedManager",
     "CacheSupportMixin",
-    "UncachedManager",
-    "TokenAwareManagerMixin",
-    "UserManager",
-    "SearchManagerMixin",
-    "TokenCachedManager",
-    "RoleHierarchyManager",
     "GroupAccessControl",
     "PersonTagCategoryManager",
     "PersonTagManager",
+    "RoleHierarchyManager",
+    "SearchManagerMixin",
     "TaggedPersonManager",
+    "TokenAwareManagerMixin",
+    "TokenCachedManager",
+    "UncachedManager",
+    "UserManager",
 ]
-from django_osoul.cache import CachedManager, CachedModelManager

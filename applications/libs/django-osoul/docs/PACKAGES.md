@@ -57,6 +57,84 @@ from django_osoul.analyzer.apps import AnalyzerAppConfig
 
 Reusable Django REST/ViewSet patterns. See `DJANGO_OSOUL_VIEWSETS.md` for detailed API.
 
+### CRUD Free Functions (`django_osoul.core.services.crud`)
+
+Functional-style CRUD on Django models. The freestanding functions mirror
+:class:`CRUDService` and :class:`BatchCRUDService`. New code should prefer
+calling the functions directly — they compose well, don't require
+instantiating a service, and skip the model-introspection overhead on the hot
+path. The service classes remain as thin facades for backwards compatibility.
+
+**Canonical imports**
+
+```python
+from django_osoul.core.services.crud import (
+    # Bulk operations
+    bulk_create, bulk_update, bulk_delete, upsert,
+    # Single-row operations
+    get_or_create, get_by_pk, get_one, update_one, delete_one,
+    # Batch dispatch
+    execute_batch,
+    # Primary-key introspection
+    get_pk_info, normalize_pk_kwargs, get_pk_value_from_data,
+    PrimaryKeyInfo,
+)
+```
+
+**Functions**
+
+| Group | Function | Purpose |
+|---|---|---|
+| Bulk | `bulk_create(model, objects_data, batch_size=1000)` | Insert rows in batches; returns `(success, created_objs, message)` |
+| Bulk | `bulk_update(model, objects, update_fields, batch_size=1000)` | Update rows with explicit field list; returns `(success, count, message)` |
+| Bulk | `bulk_delete(model, identifiers, field=None)` | Delete rows whose `field` value matches; returns `(success, count, message)` |
+| Bulk | `upsert(model, data, match_fields=None, update_fields=None)` | Update if `match_fields` matches, otherwise create; returns `(success, obj, message)` |
+| Single-row | `get_or_create(model, defaults=None, **kwargs)` | `Model.objects.get_or_create` with `id` / `uuid` aliases; returns `(obj, created)` |
+| Single-row | `get_by_pk(model, value)` | Look up one row by PK; returns `None` on miss |
+| Single-row | `get_one(model, identifier=None, **kwargs)` | Alias for `get_first` (kept for historical imports) |
+| Single-row | `get_first(model, identifier=None, **kwargs)` | `filter().first()` with PK aliases |
+| Single-row | `update_one(model, identifier, data, **kwargs)` | Save a partial update to one row |
+| Single-row | `delete_one(model, identifier, **kwargs)` | Delete one row by PK |
+| Batch dispatch | `execute_batch(model, operations)` | Run a list of `create` / `update` / `delete` ops sequentially |
+| PK introspection | `get_pk_info(model)` | Resolve PK name + type (`'id'` or `'uuid'`) |
+| PK introspection | `normalize_pk_kwargs(model, kwargs)` | Map `id` / `uuid` aliases to the actual PK field |
+| PK introspection | `get_pk_value_from_data(model, data)` | Extract the PK value from a data dict |
+
+**Common usage**
+
+```python
+from django_osoul.core.services.crud import (
+    bulk_create, get_first, upsert, delete_one,
+)
+
+# Bulk insert
+ok, articles, msg = bulk_create(Article, [{"title": "a"}, {"title": "b"}])
+
+# Fetch by primary key (PK alias 'id' or 'uuid' is auto-routed)
+article = get_first(Article, id=42)
+
+# Upsert
+ok, article, msg = upsert(Article, {"title": "Hi", "id": 42}, match_fields=["id"])
+
+# Delete
+delete_one(Article, 42)
+```
+
+**Backwards-compatible service classes**
+
+```python
+# Works as before — thin facade over the free functions.
+from django_osoul.core.services import CRUDService, BatchCRUDService
+
+service = CRUDService(Article)
+service.bulk_create([{"title": "Hi"}])
+batch = BatchCRUDService(Article)
+batch.execute_batch([{"type": "create", "data": {"title": "x"}}])
+```
+
+Use the service wrappers only when you need to preserve an existing
+plugin / subclass override surface; prefer the bare functions for new code.
+
 ## ceptor-ai
 
 ### Model Integration

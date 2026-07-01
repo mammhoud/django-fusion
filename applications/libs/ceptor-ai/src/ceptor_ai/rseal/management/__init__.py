@@ -1,1 +1,0 @@
-"""Django Relay management commands."""

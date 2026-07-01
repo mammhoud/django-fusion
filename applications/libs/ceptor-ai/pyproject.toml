@@ -12,9 +12,10 @@ dependencies = [
 
 [project.optional-dependencies]
 mcp = ["fastapi>=0.110"]
-test = ["pytest"]
+test = ["pytest", "hypothesis>=6.0"]
 
-[project.scripts]
+
+[project.scripts] 
 ceptor-ai = "ceptor_ai.cli:main"
 
 [build-system]

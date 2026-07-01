@@ -20,7 +20,7 @@ from django.core.files.storage import FileSystemStorage
 from pluggy import HookimplMarker as _HookimplMarker
 
 from django_osoul.comp.configuration.conf import _settings
-from django_osoul.contrib import get_files_from_dirs
+from django_osoul.site.utils import get_files_from_dirs
 
 hookimpl = _HookimplMarker("django_osoul.comp")
 from django_osoul.comp.apps import CoreExtAppConfig

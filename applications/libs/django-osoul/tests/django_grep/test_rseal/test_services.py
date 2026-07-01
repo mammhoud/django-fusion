@@ -15,7 +15,7 @@ from django.core import mail
 from django.test import TestCase, override_settings
 from django.utils import timezone
 from ceptor_ai.communication.email.models import EmailLog
-from ceptor_ai.workflows.pipelines.models.users.group import UserGroup
+from ceptor_ai.models.users import UserGroup
 from ceptor_ai.services.communication.invitation_service import InvitationService
 from ceptor_ai.services.email.csv_parser import CSVParser, EmailRecord
 from ceptor_ai.services.email.email_service import EmailService

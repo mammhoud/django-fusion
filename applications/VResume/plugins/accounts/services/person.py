@@ -2,8 +2,8 @@
 """
 Service for complex person operations.
 
-Delegates to ceptor_ai.pipelines.services.PersonServiceBase
-Canonical import: from ceptor_ai.pipelines.services import PersonServiceBase
+Delegates to ceptor_ai.services.infrastructure.base.BaseService
+Canonical import: from ceptor_ai.services.infrastructure.base import BaseService
 """
 
 import logging
@@ -13,7 +13,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
-from ceptor_ai.pipelines.models import Person
+from ceptor_ai.models import Person
 
 logger = logging.getLogger(__name__)
 User = get_user_model()

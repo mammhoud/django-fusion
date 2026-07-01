@@ -54,4 +54,4 @@ settings.load_profile("ci")
 | `st.emails()` | Generate valid email addresses |
 | `st.integers()` | Generate integers |
 
-See [Auth Testing](../auth/testing.md) for full test patterns.
+(Full auth-template test patterns are described in the project's test suite.)

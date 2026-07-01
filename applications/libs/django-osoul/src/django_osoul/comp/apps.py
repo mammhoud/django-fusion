@@ -9,12 +9,19 @@ class CoreExtAppConfig(AppConfig):
 
     def ready(self):
         from .plugins import pm
+        from .registry import register_default_partials
         from .static.staticfiles import asset_types
 
         for pre_ready in pm.hook.pre_ready():
             pre_ready()
 
         pm.hook.register_asset_types(register_type=asset_types.register_type)
+
+        # Pre-warm the include-path-to-component registry so the first
+        # render of `{% comp "partials/..." %}` does not pay the
+        # lazy-load cost. Sites extend this list with the
+        # ``COMPONENTS_INCLUDE_PATH_ROOTS`` Django setting.
+        register_default_partials()
 
         for ready in pm.hook.ready():
             ready()

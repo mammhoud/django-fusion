@@ -1,5 +1,4 @@
-{% load laces %}
-{% load wagtailcore_tags i18n components %}
+{% load wagtailcore_tags i18n %}
 
 <div class="contact-form-section" id="{{ value.form_id }}"
      style="background-color: {{ page.form_background_color|default:'#ffffff' }}; color: {{ page.form_text_color|default:'#000000' }};">
@@ -32,7 +31,27 @@
         <input type="hidden" name="form_id" value="{{ value.form_id }}">
 
         {% for field in value.fields %}
-            {% comp "contact.sections.field" field=field / %}
+            <div class="form-group mb-3">
+                <label for="{{ field.name }}-{{ value.form_id }}" class="form-label">
+                    {{ field.label }}
+                    {% if field.required %}<span class="text-danger">*</span>{% endif %}
+                </label>
+
+                {% if field.field_type == 'textarea' %}
+                    <textarea name="{{ field.name }}"
+                              id="{{ field.name }}-{{ value.form_id }}"
+                              class="form-control"
+                              placeholder="{{ field.placeholder }}"
+                              {% if field.required %}required{% endif %}></textarea>
+                {% else %}
+                    <input type="{{ field.field_type }}"
+                           name="{{ field.name }}"
+                           id="{{ field.name }}-{{ value.form_id }}"
+                           class="form-control"
+                           placeholder="{{ field.placeholder }}"
+                           {% if field.required %}required{% endif %}>
+                {% endif %}
+            </div>
         {% endfor %}
 
         <button type="submit"

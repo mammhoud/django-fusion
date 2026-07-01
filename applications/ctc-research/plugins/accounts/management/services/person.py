@@ -3,7 +3,7 @@
 Service for complex person operations.
 
 Delegates to ceptor_ai.pipelines.services.PersonServiceBase
-Canonical import: from ceptor_ai.workflows.pipelines.services import PersonServiceBase
+Canonical import: from ceptor_ai.services.infrastructure import BaseService
 """
 
 import logging

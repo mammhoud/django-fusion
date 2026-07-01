@@ -1,11 +1,15 @@
-{% load static i18n wagtailcore_tags %}
+{% load static i18n wagtailcore_tags components_field %}
 {# Contact Form Block Template - Enhanced for Wagtail Blocks #}
 
-<div class="contact-form-block {{ value.custom_css_class }}"
-     id="{{ value.form_id }}"
-     data-form-style="{{ value.form_style }}"
-     data-background="{{ value.background_style }}">
-  
+<div class="contact-form-block {{ block_classes }}"
+     id="{{ block_id }}"
+     {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}
+     data-form-style="{{ self.form_style }}"
+     data-background="{{ self.background_style }}">
+
+  {% render_unhandled_fields unhandled_fields %}
+
+
   <!-- Form Header -->
   {% if value.form_title %}
   <div class="contact-form__header">
@@ -28,12 +32,12 @@
         hx-swap="innerHTML"
         hx-indicator="#{{ value.form_id }}-spinner"
         {% endif %}>
-    
+
     {% csrf_token %}
-    
+
     <div class="contact-form__fields">
       {% for field in value.fields %}
-      {% include "components/blocks/partials/form_field.html" with field=field show_icons=value.show_icons icon_style=value.icon_style show_labels=value.show_labels %}
+      {% comp "blocks.partials.form_field" field=field show_icons=value.show_icons icon_style=value.icon_style show_labels=value.show_labels / %}
       {% endfor %}
     </div>
 
@@ -41,8 +45,8 @@
     {% if value.show_privacy_notice %}
     <div class="contact-form__privacy">
       <label class="contact-form__checkbox-group">
-        <input type="checkbox" 
-               name="privacy_consent" 
+        <input type="checkbox"
+               name="privacy_consent"
                class="contact-form__checkbox"
                {% if value.require_consent %}required{% endif %}>
         <span class="contact-form__checkbox-label">
@@ -54,7 +58,7 @@
 
     <!-- Submit Button -->
     <div class="contact-form__submit contact-form__submit--{{ value.button_position }}">
-      <button type="submit" 
+      <button type="submit"
               class="contact-form__button {{ button_class }}">
         <span class="btn__text">{{ value.button_text }}</span>
         <span class="btn__spinner htmx-indicator" id="{{ value.form_id }}-spinner"></span>

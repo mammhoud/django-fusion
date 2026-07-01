@@ -1,13 +1,27 @@
 """
-CRUD services for database operations.
+Functional-style CRUD operations on Django models.
+
+The bare functions in this module mirror :class:`CRUDService` and
+:class:`BatchCRUDService`. New code should prefer the functions because they
+compose well and don't require instantiating a service class with model
+introspection.
 
 Canonical imports::
+
     from django_osoul.core.services import CRUDService
     from django_osoul.core.services import BatchCRUDService
+    from django_osoul.core.services.crud import (
+        bulk_create, bulk_update, bulk_delete, upsert,
+        get_or_create, get_by_pk, get_one, update_one, delete_one,
+        execute_batch, get_pk_info, PrimaryKeyInfo,
+    )
 """
 
+from __future__ import annotations
+
 import logging
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any, Dict, List, Optional, Tuple, Type
 
 from django.db import models
 from django.db.models import UUIDField
@@ -17,95 +31,358 @@ from .base import BaseService
 logger = logging.getLogger(__name__)
 
 
+# ---------------------------------------------------------------------------
+# Primary-key introspection (pure)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PrimaryKeyInfo:
+    """Resolved primary-key metadata for a model."""
+
+    name: str
+    type: str  # 'id' or 'uuid'
+
+
+def get_pk_info(model: Type[models.Model]) -> PrimaryKeyInfo:
+    """Inspect a model's primary key without any class-level state."""
+    pk = model._meta.pk
+    return PrimaryKeyInfo(
+        name=pk.name,
+        type='uuid' if isinstance(pk, UUIDField) else 'id',
+    )
+
+
+def normalize_pk_kwargs(model: Type[models.Model], kwargs: Dict[str, Any]) -> Dict[str, Any]:
+    """Map ``id`` / ``uuid`` aliases to the actual PK field name."""
+    info = get_pk_info(model)
+    normalized = kwargs.copy()
+    if info.name not in normalized:
+        if info.type == 'uuid' and 'id' in normalized:
+            normalized[info.name] = normalized.pop('id')
+        elif info.type == 'id' and 'uuid' in normalized:
+            normalized[info.name] = normalized.pop('uuid')
+    return normalized
+
+
+def get_pk_value_from_data(
+    model: Type[models.Model],
+    data: Dict[str, Any],
+    _pk_info: Optional[PrimaryKeyInfo] = None,
+) -> Optional[Any]:
+    """Find the PK value inside a data dict, falling back to ``id`` / ``uuid`` aliases.
+
+    ``_pk_info`` is an internal optimisation: pass a pre-resolved
+    :class:`PrimaryKeyInfo` to avoid a second ``get_pk_info`` introspection.
+    """
+    info = _pk_info or get_pk_info(model)
+    if info.name in data:
+        return data[info.name]
+    if info.type == 'uuid' and 'id' in data:
+        return data['id']
+    if info.type == 'id' and 'uuid' in data:
+        return data['uuid']
+    return None
+
+
+# ---------------------------------------------------------------------------
+# Functional CRUD operations
+# ---------------------------------------------------------------------------
+
+
+def bulk_create(
+    model: Type[models.Model],
+    objects_data: List[Dict[str, Any]],
+    batch_size: int = 1000,
+) -> Tuple[bool, List[models.Model], str]:
+    """Bulk-create objects in batches."""
+    try:
+        created: List[models.Model] = []
+        for index in range(0, len(objects_data), batch_size):
+            batch = objects_data[index:index + batch_size]
+            objs = [model(**data) for data in batch]
+            created.extend(model.objects.bulk_create(objs, batch_size))
+        return True, created, f"Created {len(created)} objects"
+    except Exception as exc:
+        logger.error(f"Bulk create failed for {model.__name__}: {exc}")
+        return False, [], str(exc)
+
+
+def bulk_update(
+    model: Type[models.Model],
+    objects: List[models.Model],
+    update_fields: List[str],
+    batch_size: int = 1000,
+) -> Tuple[bool, int, str]:
+    """Bulk-update existing objects, batching by ``batch_size``."""
+    try:
+        updated = 0
+        for index in range(0, len(objects), batch_size):
+            batch = objects[index:index + batch_size]
+            model.objects.bulk_update(batch, update_fields, batch_size)
+            updated += len(batch)
+        return True, updated, f"Updated {updated} objects"
+    except Exception as exc:
+        logger.error(f"Bulk update failed for {model.__name__}: {exc}")
+        return False, 0, str(exc)
+
+
+def bulk_delete(
+    model: Type[models.Model],
+    identifiers: List[Any],
+    field: Optional[str] = None,
+) -> Tuple[bool, int, str]:
+    """Bulk-delete objects whose ``field`` value is in ``identifiers``."""
+    try:
+        if field in (None, 'id', 'uuid'):
+            field = get_pk_info(model).name
+        qs = model.objects.filter(**{f"{field}__in": identifiers})
+        count = qs.count()
+        qs.delete()
+        return True, count, f"Deleted {count} objects"
+    except Exception as exc:
+        logger.error(f"Bulk delete failed for {model.__name__}: {exc}")
+        return False, 0, str(exc)
+
+
+def upsert(
+    model: Type[models.Model],
+    data: Dict[str, Any],
+    match_fields: Optional[List[str]] = None,
+    update_fields: Optional[List[str]] = None,
+    _pk_info: Optional[PrimaryKeyInfo] = None,
+) -> Tuple[bool, Optional[models.Model], str]:
+    """Update if a row matches ``match_fields``, otherwise create.
+
+    ``_pk_info`` is an internal optimisation: callers that have already
+    resolved the model's primary key can pass it back to avoid a second
+    ``get_pk_info`` introspection call.
+    """
+    try:
+        pk_info = _pk_info or get_pk_info(model)
+        if match_fields:
+            match_fields = [
+                pk_info.name if field_name in ('id', 'uuid') else field_name
+                for field_name in match_fields
+            ]
+        else:
+            match_fields = [pk_info.name]
+
+        pk_value = get_pk_value_from_data(model, data, _pk_info=pk_info)
+        if pk_value is not None and pk_info.name not in data:
+            data[pk_info.name] = pk_value
+
+        match_filter = {
+            field_name: data[field_name]
+            for field_name in match_fields
+            if field_name in data and data[field_name] is not None
+        }
+
+        if match_filter:
+            try:
+                obj = model.objects.get(**match_filter)
+                update_fields = update_fields or [
+                    field_name for field_name in data if field_name != pk_info.name
+                ]
+                for field_name in update_fields:
+                    if field_name in data:
+                        setattr(obj, field_name, data[field_name])
+                obj.save()
+                return True, obj, "Updated existing object"
+            except model.DoesNotExist:
+                pass
+
+        obj = model.objects.create(**data)
+        return True, obj, "Created new object"
+    except Exception as exc:
+        logger.error(f"Upsert failed for {model.__name__}: {exc}")
+        return False, None, str(exc)
+
+
+def get_or_create(
+    model: Type[models.Model],
+    defaults: Optional[Dict[str, Any]] = None,
+    **kwargs,
+) -> Tuple[models.Model, bool]:
+    """``Model.objects.get_or_create`` with PK-aliased kwargs."""
+    kwargs = normalize_pk_kwargs(model, kwargs)
+    return model.objects.get_or_create(defaults=defaults, **kwargs)
+
+
+def get_by_pk(model: Type[models.Model], value: Any) -> Optional[models.Model]:
+    """Return the row whose PK matches ``value`` or ``None``."""
+    try:
+        return model.objects.get(**{get_pk_info(model).name: value})
+    except model.DoesNotExist:
+        logger.debug(f"No {model.__name__} found with PK={value}")
+        return None
+    except Exception as exc:
+        logger.error(f"Error getting {model.__name__} by PK: {exc}")
+        return None
+
+
+def get_one(
+    model: Type[models.Model],
+    identifier: Any = None,
+    **kwargs,
+) -> Optional[models.Model]:
+    """Filter with PK-aliased kwargs, returning the first match.
+
+    Prefer :func:`get_first` over this function when you only need the
+    ``filter(...).first()`` semantics — :func:`get_one` is kept as alias for
+    historical imports.
+    """
+    return get_first(model, identifier=identifier, **kwargs)
+
+
+def get_first(
+    model: Type[models.Model],
+    identifier: Any = None,
+    **kwargs,
+) -> Optional[models.Model]:
+    """Filter with PK-aliased kwargs, returning the first match."""
+    kwargs = normalize_pk_kwargs(model, kwargs)
+    if identifier is not None:
+        pk_name = get_pk_info(model).name
+        if pk_name not in kwargs:
+            kwargs[pk_name] = identifier
+    return model.objects.filter(**kwargs).first()
+
+
+def update_one(
+    model: Type[models.Model],
+    identifier: Any,
+    data: Dict[str, Any],
+    **kwargs,
+) -> Optional[models.Model]:
+    """Update one row by PK; strip PK aliases from ``data`` before saving."""
+    pk_info = get_pk_info(model)
+    kwargs = normalize_pk_kwargs(model, kwargs)
+    pk_value = identifier if identifier is not None else kwargs.pop(pk_info.name, None)
+    if pk_value is None:
+        logger.error(f"No identifier provided for update on {model.__name__}")
+        return None
+    for field_name in (pk_info.name, 'id', 'uuid'):
+        data.pop(field_name, None)
+    obj = get_by_pk(model, pk_value)
+    if obj is None:
+        return None
+    for field_name, value in data.items():
+        setattr(obj, field_name, value)
+    obj.save()
+    return obj
+
+
+def delete_one(
+    model: Type[models.Model],
+    identifier: Any,
+    **kwargs,
+) -> bool:
+    """Delete one row by PK. Returns ``True`` on success."""
+    pk_info = get_pk_info(model)
+    kwargs = normalize_pk_kwargs(model, kwargs)
+    pk_value = identifier if identifier is not None else kwargs.pop(pk_info.name, None)
+    if pk_value is None:
+        logger.error(f"No identifier provided for delete on {model.__name__}")
+        return False
+    obj = get_by_pk(model, pk_value)
+    if obj is None:
+        return False
+    obj.delete()
+    return True
+
+
+def execute_batch(
+    model: Type[models.Model],
+    operations: List[Dict[str, Any]],
+) -> Dict[str, Any]:
+    """Run a list of CRUD ``operations`` sequentially and aggregate the result."""
+    results = [_execute_single_op(model, op) for op in operations]
+    return {
+        "total_operations": len(operations),
+        "successful": sum(1 for r in results if r.get("success")),
+        "failed": sum(1 for r in results if not r.get("success")),
+        "results": results,
+    }
+
+
+def _execute_single_op(model: Type[models.Model], operation: Dict[str, Any]) -> Dict[str, Any]:
+    """Dispatch one ``create`` / ``update`` / ``delete`` operation."""
+    op_type = operation.get("type")
+    data = operation.get("data", {})
+    try:
+        if op_type == "create":
+            obj = model.objects.create(**data)
+            return {"success": True, "type": op_type, "object": obj}
+        if op_type == "update":
+            pk_value = get_pk_value_from_data(model, data)
+            if pk_value is None:
+                return {"success": False, "error": "Missing identifier"}
+            pk_info = get_pk_info(model)
+            update_data = {
+                k: v for k, v in data.items()
+                if k not in (pk_info.name, 'id', 'uuid')
+            }
+            obj = update_one(model, pk_value, update_data)
+            return {"success": True, "type": op_type, "object": obj}
+        if op_type == "delete":
+            pk_value = get_pk_value_from_data(model, data)
+            if pk_value is None:
+                return {"success": False, "error": "Missing identifier"}
+            return {"success": delete_one(model, pk_value), "type": op_type}
+        return {"success": False, "error": f"Unknown operation type: {op_type}"}
+    except Exception as exc:
+        return {"success": False, "error": str(exc), "type": op_type}
+
+
+# ---------------------------------------------------------------------------
+# Service classes — thin facades for backwards compatibility
+# ---------------------------------------------------------------------------
+
+
 class CRUDService(BaseService):
     """
-    Advanced CRUD service with automatic primary key handling.
+    Backwards-compatible service wrapper around the bare CRUD functions.
 
-    Canonical import: from django_osoul.core.services import CRUDService
+    New code should call the module-level functions directly.
     """
 
     service_name = "crud_service"
 
     def __init__(self, model_class: type = None):
         super().__init__(model_class)
-        self._setup_pk_info()
+        self._pk_info: Optional[PrimaryKeyInfo] = None
 
-    def _setup_pk_info(self) -> None:
-        """Setup primary key information for the model."""
-        if not hasattr(self, '_pk_info'):
-            pk = self.model_class._meta.pk
-            self._pk_info = {
-                'name': pk.name,
-                'type': 'uuid' if isinstance(pk, UUIDField) else 'id',
-                'field_type': type(pk)
-            }
-            logger.debug(
-                f"PK info for {self.model_class.__name__}: "
-                f"name={self._pk_info['name']}, type={self._pk_info['type']}"
-            )
+    def _ensure_pk_info(self) -> PrimaryKeyInfo:
+        if self._pk_info is None:
+            self._pk_info = get_pk_info(self.model_class)
+        return self._pk_info
 
     @property
     def pk_name(self) -> str:
-        """Get primary key field name."""
-        self._setup_pk_info()
-        return self._pk_info['name']
+        return self._ensure_pk_info().name
 
     @property
     def pk_type(self) -> str:
-        """Get primary key type ('id' or 'uuid')."""
-        self._setup_pk_info()
-        return self._pk_info['type']
+        return self._ensure_pk_info().type
 
     def _normalize_pk_kwargs(self, kwargs: Dict[str, Any]) -> Dict[str, Any]:
-        """
-        Normalize PK kwargs to use actual PK field name.
-
-        Maps 'id' or 'uuid' kwargs to the actual PK field name.
-        """
-        normalized = kwargs.copy()
-
-        # If PK field name is not in kwargs, check for common aliases
-        if self.pk_name not in normalized:
-            # Check if 'id' was provided but PK is 'uuid'
-            if 'id' in normalized and self.pk_type == 'uuid':
-                normalized[self.pk_name] = normalized.pop('id')
-                logger.debug(f"Mapped 'id' to PK field '{self.pk_name}'")
-            # Check if 'uuid' was provided but PK is 'id'
-            elif 'uuid' in normalized and self.pk_type == 'id':
-                normalized[self.pk_name] = normalized.pop('uuid')
-                logger.debug(f"Mapped 'uuid' to PK field '{self.pk_name}'")
-
-        return normalized
+        return normalize_pk_kwargs(self.model_class, kwargs)
 
     def _get_pk_value_from_data(self, data: Dict[str, Any]) -> Optional[Any]:
-        """Extract PK value from data dictionary."""
-        # First try actual PK field
-        if self.pk_name in data:
-            return data[self.pk_name]
-
-        # Then try common aliases
-        if self.pk_type == 'uuid' and 'id' in data:
-            return data['id']
-        elif self.pk_type == 'id' and 'uuid' in data:
-            return data['uuid']
-
-        return None
+        return get_pk_value_from_data(self.model_class, data)
 
     def execute(self, operation: str, **kwargs) -> Any:
-        """Execute CRUD operation."""
-        # Normalize PK kwargs before execution
-        kwargs = self._normalize_pk_kwargs(kwargs)
-
+        kwargs = normalize_pk_kwargs(self.model_class, kwargs)
         if operation == "bulk_create":
             return self.bulk_create(**kwargs)
-        elif operation == "bulk_update":
+        if operation == "bulk_update":
             return self.bulk_update(**kwargs)
-        elif operation == "bulk_delete":
+        if operation == "bulk_delete":
             return self.bulk_delete(**kwargs)
-        elif operation == "upsert":
+        if operation == "upsert":
             return self.upsert(**kwargs)
-        else:
-            return super().execute(operation, **kwargs)
+        return super().execute(operation, **kwargs)
 
     def bulk_create(
         self,
@@ -113,23 +390,7 @@ class CRUDService(BaseService):
         batch_size: int = 1000,
         **kwargs,
     ) -> Tuple[bool, List[models.Model], str]:
-        """
-        Bulk create objects.
-        """
-        try:
-            created_objects = []
-
-            for i in range(0, len(objects_data), batch_size):
-                batch = objects_data[i:i + batch_size]
-                objects = [self.model_class(**data) for data in batch]
-                created = self.model_class.objects.bulk_create(objects, batch_size)
-                created_objects.extend(created)
-
-            return True, created_objects, f"Created {len(created_objects)} objects"
-
-        except Exception as e:
-            logger.error(f"Bulk create failed for {self.model_class.__name__}: {e}")
-            return False, [], str(e)
+        return bulk_create(self.model_class, objects_data, batch_size=batch_size)
 
     def bulk_update(
         self,
@@ -138,22 +399,7 @@ class CRUDService(BaseService):
         batch_size: int = 1000,
         **kwargs,
     ) -> Tuple[bool, int, str]:
-        """
-        Bulk update objects.
-        """
-        try:
-            updated_count = 0
-
-            for i in range(0, len(objects), batch_size):
-                batch = objects[i:i + batch_size]
-                self.model_class.objects.bulk_update(batch, update_fields, batch_size)
-                updated_count += len(batch)
-
-            return True, updated_count, f"Updated {updated_count} objects"
-
-        except Exception as e:
-            logger.error(f"Bulk update failed for {self.model_class.__name__}: {e}")
-            return False, 0, str(e)
+        return bulk_update(self.model_class, objects, update_fields, batch_size=batch_size)
 
     def bulk_delete(
         self,
@@ -161,27 +407,7 @@ class CRUDService(BaseService):
         field: str = "id",
         **kwargs,
     ) -> Tuple[bool, int, str]:
-        """
-        Bulk delete objects.
-        """
-        try:
-            # Normalize field name
-            if field in ['id', 'uuid']:
-                field = self.pk_name
-
-            # Get objects to delete
-            filter_kwargs = {f"{field}__in": identifiers}
-            objects = self.manager.filter(**filter_kwargs)
-            count = objects.count()
-
-            # Delete
-            objects.delete()
-
-            return True, count, f"Deleted {count} objects"
-
-        except Exception as e:
-            logger.error(f"Bulk delete failed for {self.model_class.__name__}: {e}")
-            return False, 0, str(e)
+        return bulk_delete(self.model_class, identifiers, field)
 
     def upsert(
         self,
@@ -190,104 +416,36 @@ class CRUDService(BaseService):
         update_fields: List[str] = None,
         **kwargs,
     ) -> Tuple[bool, Optional[models.Model], str]:
-        """
-        Upsert operation (update or insert).
-        """
-        try:
-            # Normalize match_fields to use actual PK field name
-            if match_fields:
-                normalized_match_fields = []
-                for field in match_fields:
-                    if field in ['id', 'uuid']:
-                        normalized_match_fields.append(self.pk_name)
-                    else:
-                        normalized_match_fields.append(field)
-                match_fields = normalized_match_fields
-            else:
-                # Default to PK field
-                match_fields = [self.pk_name]
-
-            # Get PK value from data
-            pk_value = self._get_pk_value_from_data(data)
-            if pk_value is not None and self.pk_name not in data:
-                data[self.pk_name] = pk_value
-
-            # Build match filter
-            match_filter = {}
-            for field in match_fields:
-                if field in data and data[field] is not None:
-                    match_filter[field] = data[field]
-
-            if match_filter:
-                # Try to get existing object
-                try:
-                    obj = self.manager.get(**match_filter)
-
-                    # Update if exists
-                    update_fields = update_fields or [f for f in data.keys() if f != self.pk_name]
-                    for field in update_fields:
-                        if field in data:
-                            setattr(obj, field, data[field])
-
-                    obj.save()
-                    return True, obj, "Updated existing object"
-
-                except self.model_class.DoesNotExist:
-                    pass
-
-            # Create new object
-            obj = self.model_class.objects.create(**data)
-            return True, obj, "Created new object"
-
-        except Exception as e:
-            logger.error(f"Upsert failed for {self.model_class.__name__}: {e}")
-            return False, None, str(e)
+        return upsert(self.model_class, data, match_fields, update_fields)
 
     def get_or_create(
         self,
         defaults: Dict[str, Any] = None,
         **kwargs,
     ) -> Tuple[models.Model, bool]:
-        """
-        Get or create object.
-        """
-        try:
-            # Normalize PK kwargs
-            kwargs = self._normalize_pk_kwargs(kwargs)
-            return self.manager.get_or_create(defaults=defaults, **kwargs)
-        except Exception as e:
-            logger.error(f"Get or create failed for {self.model_class.__name__}: {e}")
-            raise
+        return get_or_create(self.model_class, defaults, **kwargs)
 
     def get_by_pk(self, value: Any) -> Optional[models.Model]:
-        """
-        Get object by primary key value.
-
-        Args:
-            value: Primary key value (could be ID or UUID)
-
-        Returns:
-            Object if found, None otherwise
-        """
-        try:
-            return self.manager.get(**{self.pk_name: value})
-        except self.model_class.DoesNotExist:
-            logger.debug(f"No {self.model_class.__name__} found with {self.pk_name}={value}")
-            return None
-        except Exception as e:
-            logger.error(f"Error getting {self.model_class.__name__} by {self.pk_name}: {e}")
-            return None
+        return get_by_pk(self.model_class, value)
 
     def get(self, identifier: Any, **kwargs) -> Optional[models.Model]:
-        """Get object by identifier with PK normalization."""
-        # Normalize PK kwargs
-        kwargs = self._normalize_pk_kwargs(kwargs)
+        """Get one row, preserving the legacy ``BaseService.get`` semantics.
 
-        # If identifier is provided directly and no PK in kwargs, use it as PK value
-        if identifier is not None and self.pk_name not in kwargs:
-            kwargs[self.pk_name] = identifier
-
-        return super().get(**kwargs)
+        Calls the model's manager ``get_by_field`` first when available
+        (matching the pre-refactor behaviour that plugins and subclasses
+        could override). Falls back to :func:`get_first` only when the
+        manager lacks the custom accessor, so the standard Django usage path
+        keeps working even if ``get_by_field`` is not installed.
+        """
+        kwargs = normalize_pk_kwargs(self.model_class, kwargs)
+        manager = self.model_class.objects
+        if identifier is not None:
+            pk_name = get_pk_info(self.model_class).name
+            if pk_name not in kwargs:
+                kwargs[pk_name] = identifier
+        if hasattr(manager, "get_by_field"):
+            return manager.get_by_field(identifier, **kwargs)
+        return get_first(self.model_class, identifier=identifier, **kwargs)
 
     def update(
         self,
@@ -295,61 +453,19 @@ class CRUDService(BaseService):
         data: Dict[str, Any],
         **kwargs,
     ) -> Optional[models.Model]:
-        """Update existing object with PK normalization."""
-        # Normalize PK kwargs
-        kwargs = self._normalize_pk_kwargs(kwargs)
-
-        # Get PK value from identifier or kwargs
-        pk_value = identifier
-        if identifier is None and self.pk_name in kwargs:
-            pk_value = kwargs.pop(self.pk_name)
-
-        if pk_value is None:
-            logger.error(f"No identifier provided for update on {self.model_class.__name__}")
-            return None
-
-        # Remove PK from data if present (should not update PK)
-        if self.pk_name in data:
-            del data[self.pk_name]
-        if 'id' in data:
-            del data['id']
-        if 'uuid' in data:
-            del data['uuid']
-
-        # Use our get_by_pk method
-        obj = self.get_by_pk(pk_value)
-        if obj:
-            for field, value in data.items():
-                setattr(obj, field, value)
-            obj.save()
-        return obj
+        return update_one(self.model_class, identifier, data, **kwargs)
 
     def delete(self, identifier: Any, **kwargs) -> bool:
-        """Delete object with PK normalization."""
-        # Normalize PK kwargs
-        kwargs = self._normalize_pk_kwargs(kwargs)
-
-        # Get PK value from identifier or kwargs
-        pk_value = identifier
-        if identifier is None and self.pk_name in kwargs:
-            pk_value = kwargs.pop(self.pk_name)
-
-        if pk_value is None:
-            logger.error(f"No identifier provided for delete on {self.model_class.__name__}")
-            return False
-
-        obj = self.get_by_pk(pk_value)
-        if obj:
-            obj.delete()
-            return True
-        return False
+        return delete_one(self.model_class, identifier, **kwargs)
 
 
 class BatchCRUDService(CRUDService):
     """
-    Batch CRUD operations service.
+    Backwards-compatible batch executor wrapper.
 
-    Canonical import: from django_osoul.core.services import BatchCRUDService
+    New code should call :func:`execute_batch` directly. The
+    ``transaction_required`` flag is honoured at the caller; operations are
+    always run sequentially within :func:`execute_batch`.
     """
 
     service_name = "batch_crud_service"
@@ -360,59 +476,7 @@ class BatchCRUDService(CRUDService):
         transaction_required: bool = True,
         **kwargs,
     ) -> Dict[str, Any]:
-        """
-        Execute batch of CRUD operations.
-        """
-        results = []
-
-        if transaction_required:
-            for op in operations:
-                result = self._execute_single(op)
-                results.append(result)
-        else:
-            for op in operations:
-                result = self._execute_single(op)
-                results.append(result)
-
-        return {
-            "total_operations": len(operations),
-            "successful": len([r for r in results if r.get("success")]),
-            "failed": len([r for r in results if not r.get("success")]),
-            "results": results,
-        }
+        return execute_batch(self.model_class, operations)
 
     def _execute_single(self, operation: Dict[str, Any]) -> Dict[str, Any]:
-        """Execute single operation."""
-        op_type = operation.get("type")
-        data = operation.get("data", {})
-
-        try:
-            if op_type == "create":
-                obj = self.create(data)
-                return {"success": True, "type": op_type, "object": obj}
-            elif op_type == "update":
-                # Extract identifier from data
-                pk_value = self._get_pk_value_from_data(data)
-                if pk_value:
-                    # Remove PK from update data
-                    update_data = data.copy()
-                    for pk_field in [self.pk_name, 'id', 'uuid']:
-                        if pk_field in update_data:
-                            del update_data[pk_field]
-
-                    obj = self.update(pk_value, update_data)
-                    return {"success": True, "type": op_type, "object": obj}
-                else:
-                    return {"success": False, "error": "Missing identifier"}
-            elif op_type == "delete":
-                pk_value = self._get_pk_value_from_data(data)
-                if pk_value:
-                    success = self.delete(pk_value)
-                    return {"success": success, "type": op_type}
-                else:
-                    return {"success": False, "error": "Missing identifier"}
-            else:
-                return {"success": False, "error": f"Unknown operation type: {op_type}"}
-
-        except Exception as e:
-            return {"success": False, "error": str(e), "type": op_type}
+        return _execute_single_op(self.model_class, operation)

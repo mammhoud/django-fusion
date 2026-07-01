@@ -1,10 +1,14 @@
-{% load static i18n wagtailcore_tags %}
+{% load static i18n wagtailcore_tags components_field %}
 {# Contact Form Block Template - Enhanced for Wagtail Blocks #}
 
-<div class="contact-form-block {{ value.custom_css_class }}"
-     id="{{ value.form_id }}"
-     data-form-style="{{ value.form_style }}"
-     data-background="{{ value.background_style }}">
+<div class="contact-form-block {{ block_classes }}"
+     id="{{ block_id }}"
+     {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}
+     data-form-style="{{ self.form_style }}"
+     data-background="{{ self.background_style }}">
+
+  {% render_unhandled_fields unhandled_fields %}
+
 
   <!-- Form Header -->
   {% if value.form_title %}
@@ -33,7 +37,7 @@
 
     <div class="contact-form__fields">
       {% for field in value.fields %}
-      {% include "components/blocks/partials/form_field.html" with field=field show_icons=value.show_icons icon_style=value.icon_style show_labels=value.show_labels %}
+      {% comp "blocks.partials.form_field" field=field show_icons=value.show_icons icon_style=value.icon_style show_labels=value.show_labels / %}
       {% endfor %}
     </div>
 

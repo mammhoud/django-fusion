@@ -74,8 +74,7 @@ class CartService(CartServiceBase):
 ```
 
 ## Documentation Links
-- [ceptor-ai README](../../../venv/libs/ceptor-ai/README.md)
+- [ceptor-ai README](../../README.md)
 
 ## Related Packages
-- [django-osoul](../django-osoul/) - Base layer (ceptor-ai depends on this)
-- [django-osoul](../django-osoul/) - Testing infrastructure
+- [django-osoul](../../../django-osoul/) - Base layer (ceptor-ai depends on this)

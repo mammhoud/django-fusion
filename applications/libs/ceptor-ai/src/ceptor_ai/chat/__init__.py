@@ -1,12 +1,10 @@
-"""
-ceptor_ai.chat — Chat bubble REST API client for the crafts server.
+"""Compatibility shim — ``ceptor_ai.chat`` now lives in ``ceptor_ai.communication.chat``.
 
-Provides:
-    CeptorClient   — REST API client for the ceptor-ai server
-    ChatBubble     — High-level chat interface (send message, get reply)
-    RasaClient     — Optional Rasa Open Source NLU/dialogue client
+Import from the canonical path instead::
+
+    from ceptor_ai.communication.chat import CeptorClient, ChatBubble, RasaClient
 """
-from ceptor_ai.chat.client import ChatBubble, CeptorClient
-from ceptor_ai.chat.rasa import RasaClient
+from __future__ import annotations
+from ceptor_ai.communication.chat import ChatBubble, CeptorClient, RasaClient  # noqa: F401
 
 __all__ = ["CeptorClient", "ChatBubble", "RasaClient"]

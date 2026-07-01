@@ -62,3 +62,41 @@ uv run pytest
 | `applications/configs/base/apps.py` | Shared Django app registry |
 | `applications/Makefile` | Build, deploy, and development commands |
 | `applications/pyproject.toml` | Package metadata and `uv` dependencies |
+
+## Canonical Imports
+
+One canonical-imports block per public surface, kept short so consumers can
+adopt new code without scrolling through tutorials. The full API reference for
+each surface lives in **[packages.md](packages.md)**.
+
+### Orchestrator (`ceptor-ai`)
+
+```python
+from ceptor_ai.orchestrator.operators import (
+    OrchestratorState,
+    scan_specs, load_specs,
+    get_spec, get_specs_by_category, get_all_specs,
+    get_tasks_by_category, get_tasks_by_status,
+    filter_tasks, query_tasks,
+    execute_task, execute_spec_tasks,
+    get_spec_progress, get_category_summary, get_overall_summary,
+    update_task_status,
+    get_errors, get_warnings, get_error_summary,
+    export_to_json, get_execution_history,
+    get_format_compatibility_info, check_spec_format_compatibility,
+)
+from ceptor_ai.orchestrator.config import (
+    OrchestratorConfig,
+    load_from_file, load_from_env, load_from_args,
+    validate_config, validate_warnings, validate_or_raise, format_summary,
+)
+```
+
+Full reference: **[packages.md → Orchestrator Operators](packages.md#orchestrator-operators-ceptor_aiorchestrator)**
+
+## Surface Map
+
+| Surface | Module | Doc |
+|---|---|---|
+| Orchestrator operators | `ceptor_ai.orchestrator.operators` | [packages.md](packages.md#orchestrator-operators-ceptor_aiorchestrator) |
+| Orchestrator config | `ceptor_ai.orchestrator.config` | [packages.md](packages.md#orchestrator-operators-ceptor_aiorchestrator) |

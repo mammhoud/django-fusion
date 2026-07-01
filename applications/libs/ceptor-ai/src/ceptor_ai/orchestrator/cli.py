@@ -5,11 +5,15 @@ import json
 import logging
 import sys
 from typing import Optional
-
-from .config import ConfigLoader, OrchestratorConfig
+from .config import (
+    OrchestratorConfig,
+    load_from_env,
+    load_from_file,
+    validate_or_raise,
+    validate_warnings,
+)
 from .models import TaskStatus
 from .orchestrator import SpecTaskOrchestrator
-
 logger = logging.getLogger(__name__)
 
 
@@ -29,22 +33,33 @@ class OrchestratorCLI:
         )
 
     def load_config(self, config_file: Optional[str] = None) -> OrchestratorConfig:
-        """Load configuration."""
-        loader = ConfigLoader()
+        """Load configuration.
 
+        Wires the module-level loaders exposed by ``orchestrator.config``. Each
+        loader returns ``(config, warnings)``; we currently log only the
+        non-fatal advisories produced by :func:`validate_warnings` (e.g. an
+        unknown PBT framework) and abort on :func:`validate_or_raise` for
+        hard validation failures.
+        """
+        config = OrchestratorConfig()
         if config_file:
-            loader.load_from_file(config_file)
+            config, _file_warnings = load_from_file(config_file, config)
+        config, _env_warnings = load_from_env(config)
 
-        loader.load_from_env()
+        # Surface non-fatal advisories, mirroring the soft-warning behaviour
+        # the legacy ``ConfigLoader.validate_config`` had for unknown
+        # framework names and similar edge cases.
+        for advisory in validate_warnings(config):
+            logger.warning(advisory)
 
         try:
-            loader.validate_config()
-        except ValueError as e:
-            logger.error(f"Configuration validation failed: {e}")
+            validate_or_raise(config)
+        except ValueError as exc:
+            logger.error(f"Configuration validation failed: {exc}")
             sys.exit(1)
 
-        self.config = loader.get_config()
-        return self.config
+        self.config = config
+        return config
 
     def initialize_orchestrator(self) -> SpecTaskOrchestrator:
         """Initialize the orchestrator."""

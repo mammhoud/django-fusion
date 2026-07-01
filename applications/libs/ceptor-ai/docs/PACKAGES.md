@@ -79,6 +79,93 @@ PROFILE_MODEL = "auth.User"  # Required ForeignKey target
 INSTALLED_APPS += ["ceptor_ai"]
 ```
 
+### Orchestrator Operators (`ceptor_ai.orchestrator`)
+
+Functional-style orchestrator. Everything lives in the
+`ceptor_ai.orchestrator.operators` module: a single :class:`OrchestratorState`
+holds the cross-cutting mutable state, and the rest of the surface is bare
+functions — no god-classes, no inheritance, no fixtures needed. Pair with
+`ceptor_ai.orchestrator.progress` and `ceptor_ai.orchestrator.tracker` for the
+state-tracking helpers used internally by the operators; pair with
+`ceptor_ai.orchestrator.config` for the `OrchestratorConfig` container and its
+loader operators (no more `ConfigLoader` god-class).
+
+**Canonical imports**
+
+```python
+from ceptor_ai.orchestrator.operators import (
+    OrchestratorState,
+    # Scan / load
+    scan_specs, load_specs,
+    # Queries
+    get_spec, get_specs_by_category, get_all_specs,
+    get_tasks_by_category, get_tasks_by_status,
+    filter_tasks, query_tasks,
+    # Execution
+    execute_task, execute_spec_tasks,
+    # Progress / errors / export / format
+    get_spec_progress, get_category_summary, get_overall_summary,
+    update_task_status,
+    get_errors, get_warnings, get_error_summary,
+    export_to_json, get_execution_history,
+    get_format_compatibility_info, check_spec_format_compatibility,
+)
+```
+
+**Operators**
+
+| Group | Function | Purpose |
+|---|---|---|
+| Scan / load | `scan_specs(state, base_path=None)` | Walk a spec tree and report counts per category |
+| Scan / load | `load_specs(state, base_path=None)` | Scan + parse every spec on disk; populate `state.specs` / `state.tasks` |
+| Queries | `get_spec(state, category, spec_name)` | Look up a single :class:`Spec` by path |
+| Queries | `get_specs_by_category(state, category)` | List every :class:`Spec` under a category |
+| Queries | `get_all_specs(state)` | Flattened list of every loaded spec |
+| Queries | `get_tasks_by_category(state, category)` | Tasks belonging to a category |
+| Queries | `get_tasks_by_status(state, status)` | Tasks currently in a given :class:`TaskStatus` |
+| Queries | `filter_tasks(state, criteria)` | Free-form criteria filter (delegates to `tracker`) |
+| Queries | `query_tasks(state, criteria)` | Delegates filter to `TaskQuery.find_by_criteria` |
+| Execution | `execute_task(state, task_id)` | Run one task by id |
+| Execution | `execute_spec_tasks(state, category, spec_name)` | Run every task in a spec |
+| Progress | `get_spec_progress(state, category, spec_name)` | Per-spec progress report |
+| Progress | `get_category_summary(state, category)` | Per-category progress summary |
+| Progress | `get_overall_summary(state)` | Aggregated summary across all specs |
+| Progress | `update_task_status(state, task_id, new_status)` | Update one task's :class:`TaskStatus` |
+| Errors | `get_errors(state)` / `get_warnings(state)` | Lists recorded by the state's error handler |
+| Errors | `get_error_summary(state)` | Aggregated error counts |
+| Export | `export_to_json(state, file_path)` | Dump specs + summary to a JSON file |
+| Execution | `get_execution_history(state, task_id)` | Past runs for one task |
+| Format | `get_format_compatibility_info(state)` | Compatibility layer metadata |
+| Format | `check_spec_format_compatibility(state, spec_path)` | Validate a single spec file's format |
+
+**State**
+
+:class:`OrchestratorState` is a `dataclass` that owns the `scanner`, `parser`,
+`executor`, `PBT executor`, `management-script runner`, `error handler`,
+`recovery manager`, `compatibility layer`, and the in-memory `specs` / `tasks`
+/ `status_history` collections. Construct one with a populated
+:class:`OrchestratorConfig`:
+
+```python
+from ceptor_ai.orchestrator.config import OrchestratorConfig
+from ceptor_ai.orchestrator.operators import OrchestratorState, load_specs
+
+state = OrchestratorState(config=OrchestratorConfig(base_path=".kiro/specs"))
+result = load_specs(state)
+# {
+#     "success": True,
+#     "loaded": int,
+#     "failed": int,
+#     "total": int,
+# }
+```
+
+**Companion modules**
+
+- `ceptor_ai.orchestrator.progress` — `spec_progress_report`, `category_summary`, `overall_summary`
+- `ceptor_ai.orchestrator.tracker` — task lookup / status update helpers (`get_task_by_id`, `update_task_status`, `filter_tasks`, …)
+- `ceptor_ai.orchestrator.config` — module-level loader operators: `load_from_file`, `load_from_env`, `load_from_args`, `validate_config`, `validate_warnings`, `validate_or_raise`, `format_summary`
+
 ## External Dependencies
 
 ### Core Framework
