@@ -66,7 +66,9 @@ TEMPLATES = [
         "OPTIONS": {
             "context_processors": _CONTEXT_PROCESSORS,
             "libraries": {
-                # Custom template tags can be added here
+                # Register component tags for {% load components %} compatibility.
+                # It's also registered as a builtin, but {% load %} needs the library entry.
+                "components": "django_osoul.comp.templatetags.components",
             },
             "builtins": _TEMPLATE_BUILTINS,
         },

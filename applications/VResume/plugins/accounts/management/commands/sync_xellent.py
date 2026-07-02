@@ -17,7 +17,7 @@ class Command(BaseCommand):
         files_to_sync = [
             "apps/handlers/snippets/manage/peoples.py",
             "apps/pages/wagtail_hooks.py",
-            "components/content/media/gallery.html",
+            "assets/templates/content/media/gallery.html",
             "assets/templates/layout/landing/footer.html",
         ]
 

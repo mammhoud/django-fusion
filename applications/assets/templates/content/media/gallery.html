@@ -8,9 +8,9 @@
                     {% if item.media_type == 'video' and item.video.embed_url %}
                         <a class="lightbox-media-box border-radius-1 box-shadow icon-xl position-relative d-block"
                             href="{{ item.video.embed_url }}">
-                            {% if item.image %}
-                                {% image item.image fill-630x290 as featured_img %}
-                                <img src="{{ featured_img.url }}" alt="{{ item.image.title }}"
+                            {% if item.image and item.image.image %}
+                                {% image item.image.image fill-630x290 as featured_img %}
+                                <img src="{{ featured_img.url }}" alt="{{ item.image.alternative_text }}"
                                         class="img-fluid border-radius-1 shadow w-100">
                             {% else %}
                                 <img src="{% static 'assets/img/about/default-video.jpg' %}"
@@ -18,9 +18,9 @@
                             {% endif %}
                             <i class="bi bi-play position-absolute top-50 start-50 translate-middle fs-1 text-white"></i>
                         </a>
-                    {% elif item.image %}
-                        {% image item.image fill-630x290 as featured_img %}
-                        <img src="{{ featured_img.url }}" alt="{{ item.image.title }}"
+                    {% elif item.image and item.image.image %}
+                        {% image item.image.image fill-630x290 as featured_img %}
+                        <img src="{{ featured_img.url }}" alt="{{ item.image.alternative_text }}"
                                 class="img-fluid border-radius-1 box-shadow w-100">
                     {% endif %}
                 </div>
@@ -30,9 +30,9 @@
                     {% if item.media_type == 'video' and item.video.embed_url %}
                         <a class="lightbox-media-box border-radius-1 box-shadow icon-lg position-relative d-block"
                             href="{{ item.video.embed_url }}">
-                            {% if item.image %}
-                                {% image item.image fill-315x196 as small_img %}
-                                <img src="{{ small_img.url }}" alt="{{ item.image.title }}"
+                            {% if item.image and item.image.image %}
+                                {% image item.image.image fill-315x196 as small_img %}
+                                <img src="{{ small_img.url }}" alt="{{ item.image.alternative_text }}"
                                         class="img-fluid border-radius-1 shadow w-100">
                             {% else %}
                                 <img src="{% static 'assets/img/about/default-video.jpg' %}"
@@ -40,9 +40,9 @@
                             {% endif %}
                             <i class="bi bi-play position-absolute top-50 start-50 translate-middle fs-3 text-white"></i>
                         </a>
-                    {% elif item.image %}
-                        {% image item.image fill-315x196 as small_img %}
-                        <img src="{{ small_img.url }}" alt="{{ item.image.title }}"
+                    {% elif item.image and item.image.image %}
+                        {% image item.image.image fill-315x196 as small_img %}
+                        <img src="{{ small_img.url }}" alt="{{ item.image.alternative_text }}"
                                 class="img-fluid border-radius-1 box-shadow w-100">
                     {% endif %}
                 </div>
@@ -64,4 +64,3 @@
         {% endfor %}
     </div><!-- end inner row -->
 </div>
-
