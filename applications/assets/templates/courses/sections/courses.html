@@ -1,8 +1,19 @@
-<!-- Portfolio section -->
-		<div class="section">
-			<div class="container">
-				{% include "courses/sections/search.html" %}
-				{% include "courses/sections/grid.html" %}
-			</div><!-- end container -->
-		</div>
-		<!-- end Portfolio section -->
+<!-- Course Catalog Section — BEM -->
+{% load i18n %}
+<div class="rbt-course-catalog">
+    <div class="container">
+        <!-- Controls: search, sort, and view toggle -->
+        <div class="rbt-course-catalog__header">
+            <div class="rbt-course-catalog__controls">
+                {% include "courses/sections/search.html" %}
+                {% include "courses/partials/view_toggle.html" %}
+            </div>
+        </div>
+
+        <!-- Grid View (default) -->
+        {% include "courses/sections/grid.html" %}
+
+        <!-- List View (hidden by default, toggled via JS) -->
+        {% include "courses/sections/list.html" %}
+    </div>
+</div>
