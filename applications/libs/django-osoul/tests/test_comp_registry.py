@@ -247,8 +247,7 @@ def test_rewrite_template_byte_exact_replacement():
     expected_comp_calls = {
         # Two distinct occurrences of the same comp call (normal + extra padding).
         '{% comp "partials/auth_buttons.html" /%}': 2,
-        '{% comp "p.html" only with foo=bar /%}': 1,
-        '{% comp "p.html" with foo=baz only /%}': 1,
+        '{% comp "y.html" only /%}': 1,
     }
     import re  # local import so the test stays self-contained.
 

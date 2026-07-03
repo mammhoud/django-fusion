@@ -150,7 +150,7 @@ def _build_comp_call(match: IncludeMatch) -> str:
         bits.append("only")
     if match.kwargs_str:
         bits.append(match.kwargs_str)
-    return "{% comp " + " ".join(bits) + " / %}"
+    return "{% comp " + " ".join(bits) + " /%}"
 
 
 def rewrite_template(
@@ -191,8 +191,30 @@ def rewrite_template(
     skipped: list[tuple[str, str, int]] = []
     new_parts: list[str] = []
     cursor = 0
+    lexer_cursor = 0  # tracks sequential byte position for Django 5.2+ fallback
 
     for tok in tokens:
+        # Reconstruct byte position for Django 5.2+ where Lexer omits
+        # ``.position``.  Search for the token contents starting from
+        # ``lexer_cursor`` (the end of the previous token) to ensure
+        # sequential safety, then expand outward to ``{`` / ``}``
+        # delimiters for non-TEXT tokens.
+        pos = tok.position
+        if pos is None:
+            content_idx = raw.find(tok.contents, lexer_cursor)
+            if content_idx >= 0:
+                if tok.token_type == TokenType.TEXT:
+                    pos = (content_idx, content_idx + len(tok.contents))
+                else:
+                    start = raw.rfind("{", lexer_cursor, content_idx)
+                    end = raw.find("}", content_idx + len(tok.contents))
+                    if start >= 0 and end >= 0:
+                        pos = (start, end + 1)
+
+        # Advance the sequential cursor for the next token.
+        if pos is not None:
+            lexer_cursor = pos[1]
+
         if tok.token_type != TokenType.BLOCK:
             continue
         c = tok.contents.strip()
@@ -200,19 +222,17 @@ def rewrite_template(
             continue
 
         match = _parse_include_contents(c)
-        # Lexer-produced Token objects don't expose ``.source`` (Engine-
-        # produced Tokens do). Use the byte position to derive the
-        # 1-based line number by counting newlines in ``raw`` up to the
-        # token's start offset. ``Lexer`` may yield tokens whose
-        # ``position`` is ``None`` (e.g. comment-only fragments inside
-        # the leading text or buffer placeholders); compute a fallback
-        # offset from the literal token contents via ``str.find`` so we
-        # never feed ``None`` into ``raw[:None]``.
-        pos = tok.position
+        # Use the byte position to derive the 1-based line number by
+        # counting newlines in ``raw`` up to the token's start offset.
+        # ``Lexer`` may yield tokens whose ``position`` is ``None``
+        # (e.g. comment-only fragments inside the leading text or
+        # buffer placeholders); compute a fallback offset from the
+        # literal token contents via ``str.find`` so we never feed
+        # ``None`` into ``raw[:None]``.
         if pos is not None:
             pos_offset: int = pos[0]
         else:
-            found = raw.find(tok.contents)
+            found = raw.find(tok.contents, cursor)
             pos_offset = found if found >= 0 else 0
         line = raw[:pos_offset].count("\n") + 1
 

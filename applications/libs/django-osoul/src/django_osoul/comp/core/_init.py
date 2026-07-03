@@ -239,7 +239,33 @@ class ComponentRegistry:
         if name in self._components and not settings.DEBUG:
             return self._components[name]
 
-        self._components[name] = Component.from_name(name)
+        # Path-style names (containing / or ending in .html) are
+        # resolved differently depending on whether they live under a
+        # recognised component directory:
+        #
+        # * UNDER a component dir (e.g. "components/static.html"):
+        #   delegate to ``Component.from_name`` which derives the
+        #   canonical name relative to the component dir root
+        #   ("static").
+        #
+        # * NOT under a component dir (e.g. "partials/auth_buttons.html"):
+        #   use ``IncludePathComponent.from_include_path`` which
+        #   preserves the full include-path verbatim as the component
+        #   name, making render-history introspection match the string
+        #   the author typed in ``{% comp "partials/auth_buttons.html" %}``.
+        if name.endswith(".html") or "/" in name:
+            component_dirs = get_component_directories()
+            is_under_comp_dir = any(
+                name.startswith(f"{d.name}/") for d in component_dirs
+            )
+            if is_under_comp_dir:
+                self._components[name] = Component.from_name(name)
+            else:
+                from django_osoul.comp.registry import IncludePathComponent
+
+                self._components[name] = IncludePathComponent.from_include_path(name)
+        else:
+            self._components[name] = Component.from_name(name)
         if name not in self._component_usage:
             self._component_usage[name] = set()
         return self._components[name]
