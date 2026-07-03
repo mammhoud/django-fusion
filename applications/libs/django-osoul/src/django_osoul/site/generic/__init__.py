@@ -5,43 +5,44 @@ the request carries an ``HX-Request`` header, full-page responses otherwise.
 
 Classes
 -------
-BaseGenericView     Abstract base with permission checking and context injection.
-GenericListView     Paginated list with optional search and filter support.
-GenericListView2    Alternative list implementation with cursor-based pagination.
-GenericCreateView   Form-based create with HTMX fragment success response.
-GenericUpdateView   Form-based update with optimistic concurrency check.
-GenericDeleteView   Confirmation-based delete with HTMX redirect response.
-GenericDetailView   Read-only detail view with related-object context.
-GenericSearchView   Search-focused view with relevance sorting.
-GenericTableView    DataTable-compatible view with JSON export support.
-GenericActionView   Non-form action view (status changes, bulk operations).
+BaseListModelView   Abstract list base with pagination, sorting, and bulk actions.
+ListModelView       Full-featured paginated list with search and filter support.
+CreateModelView     Form-based create with HTMX fragment success response.
+UpdateModelView     Form-based update with optimistic concurrency check.
+DeleteModelView     Confirmation-based delete with HTMX redirect response.
+DetailModelView     Read-only detail view with related-object context.
+SearchableViewMixin Search-focused view mixin with relevance sorting.
+TableView           DataTable-compatible view with JSON export support.
+BaseBulkActionView  Base for bulk action views (status changes, operations).
+DeleteBulkActionView    Confirmation-based bulk delete action.
+Action              UI action descriptor (name, url, icon).
 
 Usage::
 
     from django_osoul.site.generic import (
-        GenericListView, GenericCreateView, GenericUpdateView, GenericDeleteView,
+        ListModelView, CreateModelView, UpdateModelView, DeleteModelView,
     )
 """
-from .base import BaseGenericView
-from .list import GenericListView
-from .list2 import GenericListView2
-from .create import GenericCreateView
-from .update import GenericUpdateView
-from .delete import GenericDeleteView
-from .detail import GenericDetailView
-from .search import GenericSearchView
-from .table import GenericTableView
-from .actions import GenericActionView
+from .actions import BaseBulkActionView, DeleteBulkActionView
+from .base import Action
+from .create import CreateModelView
+from .delete import DeleteModelView
+from .detail import DetailModelView
+from .list import BaseListModelView, ListModelView
+from .search import SearchableViewMixin
+from .table import TableView
+from .update import UpdateModelView
 
 __all__ = [
-    "BaseGenericView",
-    "GenericListView",
-    "GenericListView2",
-    "GenericCreateView",
-    "GenericUpdateView",
-    "GenericDeleteView",
-    "GenericDetailView",
-    "GenericSearchView",
-    "GenericTableView",
-    "GenericActionView",
+    "Action",
+    "BaseBulkActionView",
+    "BaseListModelView",
+    "CreateModelView",
+    "DeleteBulkActionView",
+    "DeleteModelView",
+    "DetailModelView",
+    "ListModelView",
+    "SearchableViewMixin",
+    "TableView",
+    "UpdateModelView",
 ]
