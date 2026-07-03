@@ -101,11 +101,9 @@ def _boot_django(test_templates_dir: Path) -> None:
             templates.append(templates_conf)
         settings.TEMPLATES = templates
         engines._engines.clear()
-        # Some Django versions cache the settings-derived alias-to-engine
-        # map on `engines._templates` too; clear both so the next
-        # `engines["django"]` rebuilds against the mutated settings.
-        if hasattr(engines, "_templates"):
-            engines._templates = {}
+        # Django 5.2+ uses @cached_property for templates; invalidate the
+        # cached property so it re-reads from the mutated settings.TEMPLATES.
+        engines.__dict__.pop("templates", None)
 
 
 _test_templates_dir = Path(__file__).resolve().parent / "test_templates_comp_registry"
