@@ -17,3 +17,6 @@ Thumbs.db
 # IDE
 .idea/
 .claude/
+
+# Backups
+backups/
