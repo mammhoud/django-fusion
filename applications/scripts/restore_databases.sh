@@ -224,18 +224,19 @@ for sql_file in "${!DB_MAP[@]}"; do
     # (pg_dump includes a custom security token that psql can't parse)
     TEMP_SQL=$(mktemp /tmp/restore_XXXXXX.sql)
 
-    # Strip the \restrict line (grep needs \\ to match literal backslash)
-    grep -v '^\\restrict ' "$BACKUP_DIR/$sql_file" > "$TEMP_SQL"
+    # Strip \restrict and \unrestrict lines (custom pg_dump security tokens
+    # that standard psql cannot parse; grep needs \\ for literal backslash)
+    grep -v '^\\restrict \|^\\unrestrict ' "$BACKUP_DIR/$sql_file" > "$TEMP_SQL"
 
     # Restore into the target database, capturing stderr for error reporting
     ERROR_LOG=$(mktemp /tmp/restore_error_XXXXXX.log)
     if docker exec -i "$PG_CONTAINER" psql -U "$PG_USER" -d "$target_db" \
         -v ON_ERROR_STOP=1 < "$TEMP_SQL" > /dev/null 2>"$ERROR_LOG"; then
         echo -e "${GREEN}OK${NC}"
-        ((RESTORE_OK++))
+        RESTORE_OK=$((RESTORE_OK + 1))
     else
         echo -e "${RED}FAILED${NC}"
-        ((RESTORE_FAIL++))
+        RESTORE_FAIL=$((RESTORE_FAIL + 1))
         # Show the error from the captured log
         echo -e "  ${RED}Error details:${NC}"
         tail -5 "$ERROR_LOG"
