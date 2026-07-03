@@ -1,7 +1,7 @@
 from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
-from ceptor_ai.blocks.pages.event import EventSectionBlock
+from ceptor_ai.content.blocks.pages.event import EventSectionBlock
 
 # Base and reusable block imports
 from django_osoul.models import BaseModel as DefaultBase
@@ -54,7 +54,7 @@ class Event(DefaultBase):
 
     # Content blocks
     content = StreamField(
-        EventSectionBlock(),
+        [("event_section", EventSectionBlock())],
         use_json_field=True,
         blank=True,
         verbose_name=_("Event Content"),

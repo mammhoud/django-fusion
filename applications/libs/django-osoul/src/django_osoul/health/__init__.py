@@ -9,3 +9,5 @@ Usage — add to root URLs::
     from django_osoul.health import urls as health_urls
     urlpatterns += [path("health/", include(health_urls))]
 """
+
+from .views import AssetsHealthView, DatabaseHealthView, HealthCheckView  # noqa: F401

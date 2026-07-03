@@ -35,6 +35,41 @@ configure_site_environment("vresume", module="CMS", default_port=5072)
 from configs.settings import *  # noqa: E402,F401,F403
 
 # ============================================================
+# Monkey-patch: django-webpack-loader v3.2.3 expects flat-string
+# chunks but webpack-bundle-tracker v3+ outputs dict chunks like
+# {"name": "foo.js", "path": "...", "url": "..."}.
+#
+# Patches filter_chunks (extract name before regex match) and
+# get_bundle (skip nonexistent assets["assets"], return chunks
+# directly since v3+ already includes urls).
+# ============================================================
+def _patch_webpack_loader():
+    from webpack_loader.loaders import WebpackLoader
+
+    def _patched_filter_chunks(self, chunks):
+        filtered_chunks = []
+        for chunk in (chunks or []):
+            chunk_name = chunk["name"] if isinstance(chunk, dict) else chunk
+            ignore = any(
+                regex.match(chunk_name) for regex in self.config["ignores"]
+            )
+            if not ignore:
+                filtered_chunks.append(chunk)
+        return filtered_chunks
+
+    def _patched_get_bundle(self, bundle_name):
+        assets = self.get_assets()
+        chunks = assets.get("chunks", {}).get(bundle_name, [])
+        # v3+ chunks are dicts with 'name' and 'url' — return as-is
+        return self.filter_chunks(chunks)
+
+    WebpackLoader.filter_chunks = _patched_filter_chunks
+    WebpackLoader.get_bundle = _patched_get_bundle
+
+
+_patch_webpack_loader()
+
+# ============================================================
 # URL and Application Configuration
 # ============================================================
 ROOT_URLCONF = "www.urls"
