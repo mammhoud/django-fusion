@@ -1,16 +1,15 @@
 # ============================================================
 # Main Orchestration — Website Services
 # ============================================================
-# Traefik  → managed by Coolify (default-proxy, traefik:v3.6)
-# Postgres → managed by Coolify (postgres, postgres:15-alpine)
-# Redis    → managed by Coolify (default-redis, redis:7-alpine)
+# Infrastructure Services (Traefik, PostgreSQL, Redis) are defined 
+# in the root docker-compose.yml and automatically connected via shared networks.
 #
-# This file only manages application containers that need rebuilding:
-#   - ctc-research-website, lms-web, vresume-web
-#   - structa-docs (Docsify)
+# This file includes application containers that need rebuilding:
+#   - ctc-research-website, lms-web, vresume-web, crm-website
 # ============================================================
 
 include:
   - path: ./lms-demo/docker-compose.yml
   - path: ./ctc-research/docker-compose.yml
   - path: ./VResume/docker-compose.yml
+  - path: ./crm/docker-compose.yml

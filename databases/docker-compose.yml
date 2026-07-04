@@ -51,7 +51,7 @@ services:
       POSTGRES_DB: app_db
       PGDATA: /var/lib/postgresql/data/pgdata
       # Multiple databases – comma‑separated list: db:owner:password
-      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko:structa:mk_pAssWord123,coder:coder:mk_pAssWord123}"
+      INITDB_MULTIPLE_DATABASES: "${POSTGRES_DATABASES:-db_ctc:structa:mk_pAssWord123,db_structa:structa:mk_pAssWord123,vresume:structa:mk_pAssWord123,blinko:structa:mk_pAssWord123,coder:coder:mk_pAssWord123,db_crm:structa:mk_pAssWord123}"
 
       # ---- NEW: Force re‑initialization on every start ----
       # Set FORCE_REINIT=true to ignore the .init_done marker and run init scripts again

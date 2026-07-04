@@ -6,11 +6,10 @@
 include:
   - databases/docker-compose.yml
   - proxy/docker-compose.yml
-  - ../services/media/docker-compose.yml
+  - compose/docker-compose.applications.yml
   # - services/utilities/docker-compose.yml
   # - services/ollama/docker-compose.yml
   # - services/mailpit/docker-compose.yml
-  - compose/docker-compose.applications.yml
   # - compose/docker-compose.docs.yml
 
 
@@ -54,6 +53,10 @@ volumes:
     name: vresume-static
   vresume-media:
     name: vresume-media
+  crm-static:
+    name: crm-static
+  crm-media:
+    name: crm-media
   prometheus_data:
     name: prometheus_data
   loki_data:

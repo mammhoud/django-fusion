@@ -339,6 +339,9 @@ src/ceptor_ai/migrations/0054_backgroundtasklog.py
 src/ceptor_ai/migrations/0055_delete_backgroundtasklog.py
 src/ceptor_ai/migrations/0056_backgroundtasklog.py
 src/ceptor_ai/migrations/0057_delete_backgroundtasklog.py
+src/ceptor_ai/migrations/0058_backgroundtasklog.py
+src/ceptor_ai/migrations/0059_delete_backgroundtasklog.py
+src/ceptor_ai/migrations/0060_backgroundtasklog.py
 src/ceptor_ai/migrations/__init__.py
 src/ceptor_ai/models/__init__.py
 src/ceptor_ai/orchestrator/__init__.py

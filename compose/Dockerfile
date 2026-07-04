@@ -67,16 +67,18 @@ COPY applications/tasks   ${APP_HOME}/tasks
 RUN uv sync --frozen --no-install-project
 
 # ----------------------------------------------------------------------------
-# Install the specific website as an editable package
-# ----------------------------------------------------------------------------
-RUN uv pip install --editable /app/${PROJECT_PATH}
-
-# ----------------------------------------------------------------------------
 # Copy the specific website code (build-time)
 # ----------------------------------------------------------------------------
 # For production, this embeds the site code. For development, you can
 # override this directory with a volume mount (see compose volumes).
 COPY applications/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
+
+# ----------------------------------------------------------------------------
+# Install the specific website as an editable package
+# ----------------------------------------------------------------------------
+RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
+      uv pip install --editable /app/${PROJECT_PATH}; \
+    fi
 
 # ----------------------------------------------------------------------------
 # Copy entrypoint and helper scripts (located at compose/ inside repository)
