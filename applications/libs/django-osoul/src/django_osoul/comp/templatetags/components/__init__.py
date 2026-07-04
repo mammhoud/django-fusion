@@ -5,7 +5,7 @@ from __future__ import annotations
 
 from django import template
 
-from ..tags import asset, block, prop, slot, var
+from ..tags import asset, block, include_bridge, prop, slot, var
 
 register = template.Library()
 
@@ -16,3 +16,4 @@ register.tag(prop.TAG, prop.do_prop)
 register.tag(slot.TAG, slot.do_slot)
 register.tag(var.TAG, var.do_var)
 register.tag(var.END_TAG, var.do_end_var)
+register.tag(include_bridge.TAG, include_bridge.do_comp_include)

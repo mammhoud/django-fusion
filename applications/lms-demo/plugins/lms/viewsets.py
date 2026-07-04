@@ -14,7 +14,7 @@ Usage::
 
 from __future__ import annotations
 
-from django_osoul.site.routes import ModelViewset, ReadonlyModelViewset
+from django_osoul.comp.routes import ModelViewset, ReadonlyModelViewset
 
 
 class CourseViewset(ModelViewset):

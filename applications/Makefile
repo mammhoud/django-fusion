@@ -62,6 +62,22 @@ else ifeq ($(WEBSITE),vresume.structa.cloud)
   SITE := vresume
   TEST_WEBSITE := vresume
   COMPOSE_FILE ?= docker-compose.yml
+
+else ifeq ($(WEBSITE),crm)
+  SITE := crm
+  TEST_WEBSITE := crm
+  COMPOSE_FILE ?= docker-compose.yml
+
+else ifeq ($(WEBSITE),crm.structa.cloud)
+  SITE := crm
+  TEST_WEBSITE := crm
+  COMPOSE_FILE ?= docker-compose.yml
+
+else ifeq ($(WEBSITE),inventory)
+  SITE := crm
+  TEST_WEBSITE := crm
+  COMPOSE_FILE ?= docker-compose.yml
+
 else
   SITE := $(WEBSITE)
   TEST_WEBSITE := all

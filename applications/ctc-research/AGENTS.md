@@ -14,12 +14,14 @@ Path: `applications/ctc-research/`
 ```
 ctc-research/templates/
 ├── base_page.html          # Extends shared base.html
-├── index.html              # Home page template
+├── base_auth.html          # Auth layout wrapper
+├── base_profile.html       # Profile layout wrapper
+├── index.html              # Home page template (HTMX dispatcher)
 ├── home/
+│   └── main.html           # Home page sections
 │   └── sections/
 │       └── clients.html    # Client logos section
 ├── about/                   # About page templates
-├── certification/           # Certification templates
 ├── contact/                 # Contact page templates
 ├── registration/            # Registration/signup templates
 └── services/                # Services page templates
@@ -58,3 +60,11 @@ Use `{% extends "layout/<variant>/skeleton.html" %}`:
 - `layout/learning/` — LMS/learning layout
 - `layout/profile/` — user profile layout
 - `layout/auth/` — authentication layout (via `base_auth.html`)
+
+## Auth & Accounts
+- Adapter: `plugins.accounts.adapters.RegistrationAdapter`
+- Views: `plugins.accounts.views.allauth` (AllauthLoginView, AllauthSignupView)
+- HTMX fragment rendering for login/signup modals
+- Social auth adapter: `AuthHTMXSocialAccountAdapter`
+- Profile settings include 2FA (TOTP-based via `two_factor_enabled`)
+- Templates use `{% comp_include %}` for component tracking

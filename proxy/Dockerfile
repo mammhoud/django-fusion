@@ -3,15 +3,8 @@ FROM docker.io/traefik:latest
 # Install utilities
 RUN apk add --no-cache apache2-utils curl
 
-# Create required directories
-RUN mkdir -p /etc/traefik/acme /etc/traefik/certs /etc/traefik/dynamic
-
-# Create ACME storage files with correct permissions
-# These must be writable by Traefik (user 1000)
-RUN touch /etc/traefik/acme/acme.json \
-    && touch /etc/traefik/acme/acme-staging.json \
-    && chmod 600 /etc/traefik/acme/acme.json \
-    && chmod 600 /etc/traefik/acme/acme-staging.json
+# Create required directories (static certs only — ACME disabled, see proxy/traefik/dynamic/certs.yml)
+RUN mkdir -p /etc/traefik/certs /etc/traefik/dynamic
 
 # Copy static configuration (dynamic.yml → dynamic.yml)
 COPY ./traefik/dynamic.yml /etc/traefik/dynamic.yml

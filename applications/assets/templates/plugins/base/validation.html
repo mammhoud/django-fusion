@@ -5,8 +5,8 @@
      success_message : optional success text shown when errors is empty
 
    EXAMPLE:
-     {% include "ui/base/validation.html" with errors=field.errors %}
-     {% include "ui/base/validation.html" with errors=field.errors success_message="Looks good!" %}
+     {% comp_include "ui/base/validation.html" errors=field.errors %}
+     {% comp_include "ui/base/validation.html" errors=field.errors success_message="Looks good!" %}
 #}
 {% if errors %}
     <div class="invalid-feedback d-block mt-1">

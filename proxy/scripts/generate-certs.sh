@@ -2,7 +2,7 @@
 #
 # Traefik Production Certificate Generation Script
 # Generates self-signed certificates with proper CN (Common Name) for all domains
-# Certificates are stored in ACME JSON format compatible with Traefik
+# Certificates are written to proxy/certs/ as PEM/crt/key bundles for Traefik.
 #
 # Usage: ./generate-certs.sh [production|staging]
 #
@@ -10,10 +10,8 @@
 set -e
 
 TRAEFIK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-ACME_DIR="${TRAEFIK_DIR}/acme"
 CERT_DIR="${TRAEFIK_DIR}/certs"
 BACKUP_DIR="${TRAEFIK_DIR}/certs"
-TIMESTAMP=$(date +"%Y%m%d_%H%M%S")
 
 # Colors
 GREEN='\033[0;32m'
@@ -24,7 +22,6 @@ NC='\033[0m'
 
 # Configuration
 ENVIRONMENT="${1:-production}"
-ACME_EMAIL="${TRAEFIK_ACME_EMAIL:-admin@ctc-research.com}"
 
 # Domain configurations
 declare -A DOMAINS=(
@@ -52,7 +49,7 @@ warning() {
 }
 
 # Create directories
-mkdir -p "$ACME_DIR" "$CERT_DIR" "$BACKUP_DIR"
+mkdir -p "$CERT_DIR" "$BACKUP_DIR"
 
 # ============================================================
 # Generate Self-Signed Certificates with Proper CN
@@ -101,87 +98,12 @@ generate_self_signed_cert() {
 generate_all_certs() {
   log "=== Generating All Certificates (Self-Signed) ==="
   log "Environment: $ENVIRONMENT"
-  log "ACME Email: $ACME_EMAIL"
   echo ""
 
   for domain_name in "${!DOMAINS[@]}"; do
     generate_self_signed_cert "$domain_name" "${DOMAINS[$domain_name]}"
     echo ""
   done
-}
-
-# ============================================================
-# Convert to Traefik ACME JSON Format
-# ============================================================
-create_traefik_acme_json() {
-  log "Creating Traefik ACME JSON configuration..."
-
-  # Backup existing acme.json if it exists
-  if [ -f "${ACME_DIR}/acme.json" ]; then
-    log "Backing up existing acme.json..."
-    cp "${ACME_DIR}/acme.json" "${BACKUP_DIR}/acme_backup_${TIMESTAMP}.json"
-  fi
-
-  # Create acme.json with proper structure
-  cat > "${ACME_DIR}/acme.json" << 'EOF'
-{
-  "letsencrypt": {
-    "Account": {
-      "Email": "admin@ctc-research.com",
-      "Registration": {},
-      "PrivateKey": "MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDTk..."
-    },
-    "Certificates": [
-EOF
-
-  # Add each certificate to the JSON
-  local first=true
-  for domain_name in "${!DOMAINS[@]}"; do
-    if [ "$first" = false ]; then
-      echo "," >> "${ACME_DIR}/acme.json"
-    fi
-    first=false
-
-    local primary_domain=$(echo "${DOMAINS[$domain_name]}" | awk '{print $1}')
-    local domains="${DOMAINS[$domain_name]}"
-
-    # Read certificate and key, encode as base64
-    local cert_content=$(cat "${CERT_DIR}/${domain_name}.crt" | base64 -w 0)
-    local key_content=$(cat "${CERT_DIR}/${domain_name}.key" | base64 -w 0)
-
-    # Build SANs array
-    local sans=""
-    for san in $domains; do
-      if [ -z "$sans" ]; then
-        sans="\"$san\""
-      else
-        sans="$sans, \"$san\""
-      fi
-    done
-
-    cat >> "${ACME_DIR}/acme.json" << EOF
-      {
-        "domain": {
-          "main": "$primary_domain",
-          "sans": [$sans]
-        },
-        "certificate": "$cert_content",
-        "key": "$key_content"
-      }
-EOF
-  done
-
-  # Close the JSON structure
-  cat >> "${ACME_DIR}/acme.json" << 'EOF'
-    ]
-  }
-}
-EOF
-
-  # Set proper permissions
-  chmod 600 "${ACME_DIR}/acme.json"
-
-  success "Created Traefik ACME JSON: ${ACME_DIR}/acme.json"
 }
 
 # ============================================================
@@ -252,7 +174,6 @@ display_summary() {
   echo ""
   echo "📁 Certificate Locations:"
   echo "  Certificates:     ${CERT_DIR}"
-  echo "  ACME JSON:        ${ACME_DIR}/acme.json"
   echo "  Backups:          ${BACKUP_DIR}"
   echo ""
   echo "🔐 Generated Certificates:"
@@ -283,7 +204,6 @@ main() {
   echo ""
 
   generate_all_certs
-  create_traefik_acme_json
   create_certificate_bundle
   verify_certs
   display_summary

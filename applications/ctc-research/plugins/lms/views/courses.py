@@ -9,7 +9,7 @@ from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
 from django_osoul.site import PageHandler
-from django_osoul.views import FilterMixin, SearchMixin
+from django_osoul.web.views import FilterMixin, SearchMixin
 from ceptor_ai.models import CachingStorage
 
 from ..models import Course, CourseEnrollmentLead, CourseTag

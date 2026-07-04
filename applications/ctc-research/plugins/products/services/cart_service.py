@@ -13,7 +13,7 @@ from decimal import Decimal
 from typing import Any, Dict
 
 from django.http import HttpRequest
-from django_osoul.services import CartServiceBase
+from django_osoul.core.services import CartServiceBase
 
 from plugins.products.models.cart import Cart, CartItem
 

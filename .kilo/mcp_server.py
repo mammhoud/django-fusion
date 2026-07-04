@@ -13,21 +13,18 @@ Run with the crafts-ai source package on the import path, for example:
 from __future__ import annotations
 
 import os
+import subprocess
 from importlib import import_module, util
 from io import StringIO
 from pathlib import Path
 from typing import Any
 
-
-from django.core.management import call_command
 from fastapi import FastAPI
+from fastapi.responses import JSONResponse
 
 from crafts_ai.cli import package_info
 
 app = FastAPI(title="Structa Cloud MCP")
-
-
-JSONResponse: Any | None = None
 
 
 def _find_spec(module_name: str) -> Any | None:
@@ -45,22 +42,10 @@ def _optional_import(module_name: str) -> Any | None:
     return import_module(module_name)
 
 
-_fastapi = _optional_import("fastapi")
-_responses = _optional_import("fastapi.responses")
-
-if _fastapi is None:
-    app = None
-else:
-    app = _fastapi.FastAPI(title="Structa Cloud MCP")
-    JSONResponse = _responses.JSONResponse if _responses is not None else None
-
-
-def _json_error(message: str, status_code: int, **details: Any) -> Any:
+def _json_error(message: str, status_code: int, **details: Any) -> JSONResponse:
     """Return a structured JSON error response."""
     payload = {"ok": False, "error": message, **details}
-    if JSONResponse is not None:
-        return JSONResponse(status_code=status_code, content=payload)
-    return payload
+    return JSONResponse(status_code=status_code, content=payload)
 
 
 def _django_status() -> dict[str, Any]:
@@ -95,13 +80,13 @@ def get_django_osoul_info() -> dict[str, Any]:
             "available": False,
             "error": "Optional package 'django_osoul' is not importable.",
         }
-    
+
     osoul = import_module("django_osoul")
     return {
         "available": True,
         "version": getattr(osoul, "__version__", "unknown"),
         "path": str(Path(osoul.__file__).parent),
-        "modules": ["site", "wagtail", "views", "comp", "routes"]
+        "modules": ["site", "wagtail", "views", "comp", "routes", "contrib", "web", "health"],
     }
 
 
@@ -109,19 +94,23 @@ def get_django_osoul_viewsets() -> dict[str, Any]:
     """Get available django-osoul viewsets."""
     if _find_spec("django_osoul") is None:
         return {"available": False, "error": "django-osoul not installed"}
-    
+
     try:
         viewsets = import_module("django_osoul.site")
-        
+
         component_views = getattr(viewsets, "ComponentViews", None)
         page_handler = getattr(viewsets, "PageHandler", None)
         htmx_pagination = getattr(viewsets, "HTMXPaginationMixin", None)
-        
+        model_viewset = getattr(viewsets, "ModelViewset", None)
+        readonly_model_viewset = getattr(viewsets, "ReadonlyModelViewset", None)
+
         return {
             "available": True,
             "ComponentViews": component_views is not None,
             "PageHandler": page_handler is not None,
             "HTMXPaginationMixin": htmx_pagination is not None,
+            "ModelViewset": model_viewset is not None,
+            "ReadonlyModelViewset": readonly_model_viewset is not None,
         }
     except Exception as e:
         return {"available": False, "error": str(e)}
@@ -129,15 +118,40 @@ def get_django_osoul_viewsets() -> dict[str, Any]:
 
 def get_traefik_status() -> dict[str, Any]:
     """Return Traefik configuration status."""
-    traefik_dir = Path("/home/websites/structa.cloud/proxy/traefik")
-    
+    traefik_dir = Path("/home/structa.cloud/proxy/traefik")
+
     return {
         "config_dir": str(traefik_dir),
         "dynamic_exists": (traefik_dir / "dynamic.yml").exists(),
-        "ctc_research": (traefik_dir / "ctc-research.yml").exists(),
-        "structa_cloud": (traefik_dir / "structa-cloud.yml").exists(),
-        "vresume": (traefik_dir / "vresume.yml").exists(),
+        "dynamic_dir_exists": (traefik_dir / "dynamic").exists(),
+        "ctc_research": (traefik_dir / "dynamic/ctc-research.yml").exists(),
+        "structa_cloud": (traefik_dir / "dynamic/structa-cloud.yml").exists(),
+        "vresume": (traefik_dir / "dynamic/vresume.yml").exists(),
+        "certs_dir_exists": (traefik_dir / "../certs").exists(),
     }
+
+
+def get_docker_status() -> dict[str, Any]:
+    """Return Docker container status for the project."""
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "--format", "{{.Names}}|{{.Status}}|{{.Ports}}"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+        containers = []
+        for line in result.stdout.strip().split("\n"):
+            if line:
+                parts = line.split("|")
+                containers.append({
+                    "name": parts[0] if len(parts) > 0 else "unknown",
+                    "status": parts[1] if len(parts) > 1 else "unknown",
+                    "ports": parts[2] if len(parts) > 2 else "",
+                })
+        return {"ok": True, "containers": containers}
+    except Exception as e:
+        return {"ok": False, "error": str(e)}
 
 
 def get_migration_status() -> dict[str, Any]:
@@ -177,13 +191,13 @@ def get_crafts_ai_info() -> dict[str, Any]:
         }
 
     cli = import_module("crafts_ai.cli")
-    package_info = getattr(cli, "package_info", None)
-    if package_info is None:
+    package_info_fn = getattr(cli, "package_info", None)
+    if package_info_fn is None:
         return {
             "available": False,
             "error": "crafts_ai.cli.package_info is not available.",
         }
-    return {"available": True, "package": package_info()}
+    return {"available": True, "package": package_info_fn()}
 
 
 def list_crafts_ai_agents() -> dict[str, Any]:
@@ -203,114 +217,137 @@ def list_crafts_ai_agents() -> dict[str, Any]:
     return {"available": True, "agents": registry}
 
 
-if app is not None:
+def get_website_endpoints() -> dict[str, Any]:
+    """Return configured website endpoints from Traefik dynamic config."""
+    endpoints = {
+        "structa_cloud": {"host": "structa.cloud", "port": 5071, "service": "lms-web"},
+        "vresume": {"host": "vresume.structa.cloud", "port": 5072, "service": "vresume-web"},
+        "ctc_research": {"host": "ctc-research.com", "port": 5070, "service": "ctc-research-website"},
+    }
+    return {"ok": True, "endpoints": endpoints}
 
-    @app.get("/viewsets")
-    async def viewsets() -> Any:
-        """Return available viewsets."""
-        return {"ok": True, **get_django_osoul_viewsets()}
 
-    @app.get("/health")
-    async def health() -> dict[str, Any]:
-        """Return service health with all integrations."""
-        return {
-            "ok": True,
-            "status": "ok",
-            "django": _django_status(),
-            "optional_dependencies": {
-                "crafts_ai": _find_spec("crafts_ai") is not None,
-                "django_osoul": _find_spec("django_osoul") is not None,
-                "openai": _find_spec("openai") is not None,
-            },
-            "traefik": get_traefik_status(),
-        }
-
-    @app.get("/migrations/status")
-    async def migration_status() -> Any:
-        """Return Django migration status, or a structured configuration error."""
-        result = get_migration_status()
-        if not result["ok"]:
-            return _json_error(
-                "Django migrations are unavailable.",
-                503,
-                django=result["django"],
-            )
-        return result
-
-    @app.get("/crafts-ai/info")
-    async def crafts_ai_info() -> Any:
-        """Return crafts-ai metadata, or a structured dependency error."""
-        result = get_crafts_ai_info()
-        if not result["available"]:
-            return _json_error(result["error"], 503)
-        return {"ok": True, **result}
-
-    @app.get("/crafts-ai/agents")
-    async def crafts_ai_agents() -> Any:
-        """Return crafts-ai agent metadata, or a structured dependency error."""
-        result = list_crafts_ai_agents()
-        if not result["available"]:
-            return _json_error(result["error"], 503, agents=result["agents"])
-        return {"ok": True, **result}
-
-    @app.get("/django-osoul/info")
-    async def django_osoul_info() -> Any:
-        """Return django-osoul metadata."""
-        result = get_django_osoul_info()
-        if not result["available"]:
-            return _json_error(result["error"], 503)
-        return {"ok": True, **result}
-
-    @app.get("/django-osoul/viewsets")
-    async def django_osoul_viewsets() -> Any:
-        """Return django-osoul viewsets info."""
-        result = get_django_osoul_viewsets()
-        if not result["available"]:
-            return _json_error(result["error"], 503)
-        return {"ok": True, **result}
-
-    @app.get("/traefik/status")
-    async def traefik_status() -> Any:
-        """Return Traefik configuration status."""
-        return {"ok": True, **get_traefik_status()}
-
-    @app.get("/openrouter/status")
-    async def openrouter_status() -> Any:
-        """Report OpenRouter readiness without making an external request."""
-        missing = []
-        if not os.environ.get("OPENROUTER_API_KEY"):
-            missing.append("OPENROUTER_API_KEY")
-        if _find_spec("openai") is None:
-            return _json_error(
-                "Optional dependency 'openai' is not installed.",
-                503,
-                missing_dependencies=["openai"],
-            )
-        if missing:
-            return _json_error(
-                "OpenRouter is not configured.",
-                503,
-                missing_environment=missing,
-            )
-        return {"ok": True, "configured": True}
+def get_auth_features() -> dict[str, Any]:
+    """Return auth feature availability across the project."""
+    features = {
+        "allauth": _find_spec("allauth") is not None,
+        "django_osoul_auth": _find_spec("django_osoul.site.auth") is not None,
+        "social_auth": _find_spec("allauth.socialaccount") is not None,
+        "mfa": _find_spec("allauth.mfa") is not None,
+        "oauth2_provider": _find_spec("oauth2_provider") is not None,
+    }
+    return {"ok": True, "features": features}
 
 
 @app.get("/health")
-async def health() -> dict[str, str]:
-    """Return a lightweight health response for the MCP server."""
-    return {"status": "ok"}
-
-
-@app.get("/crafts-ai/info")
-async def crafts_ai_info() -> dict[str, str | bool]:
-    """Return framework-agnostic crafts-ai package metadata."""
-    return package_info()
+async def health() -> dict[str, Any]:
+    """Return service health with all integrations."""
+    return {
+        "ok": True,
+        "status": "ok",
+        "django": _django_status(),
+        "optional_dependencies": {
+            "crafts_ai": _find_spec("crafts_ai") is not None,
+            "django_osoul": _find_spec("django_osoul") is not None,
+            "openai": _find_spec("openai") is not None,
+            "allauth": _find_spec("allauth") is not None,
+        },
+        "traefik": get_traefik_status(),
+        "docker": get_docker_status(),
+        "auth": get_auth_features(),
+        "websites": get_website_endpoints(),
+    }
 
 
 @app.get("/migrations/status")
-async def migration_status() -> dict[str, Any]:
-    """Return Django migration status from the configured project."""
-    out = StringIO()
-    call_command("showmigrations", stdout=out)
-    output = out.getvalue()
-    return {"raw": output}
+async def migration_status() -> Any:
+    """Return Django migration status, or a structured configuration error."""
+    result = get_migration_status()
+    if not result["ok"]:
+        return _json_error(
+            "Django migrations are unavailable.",
+            503,
+            django=result["django"],
+        )
+    return result
+
+
+@app.get("/crafts-ai/info")
+async def crafts_ai_info() -> Any:
+    """Return crafts-ai metadata, or a structured dependency error."""
+    result = get_crafts_ai_info()
+    if not result["available"]:
+        return _json_error(result["error"], 503)
+    return {"ok": True, **result}
+
+
+@app.get("/crafts-ai/agents")
+async def crafts_ai_agents() -> Any:
+    """Return crafts-ai agent metadata, or a structured dependency error."""
+    result = list_crafts_ai_agents()
+    if not result["available"]:
+        return _json_error(result["error"], 503, agents=result["agents"])
+    return {"ok": True, **result}
+
+
+@app.get("/django-osoul/info")
+async def django_osoul_info() -> Any:
+    """Return django-osoul metadata."""
+    result = get_django_osoul_info()
+    if not result["available"]:
+        return _json_error(result["error"], 503)
+    return {"ok": True, **result}
+
+
+@app.get("/django-osoul/viewsets")
+async def django_osoul_viewsets() -> Any:
+    """Return django-osoul viewsets info."""
+    result = get_django_osoul_viewsets()
+    if not result["available"]:
+        return _json_error(result["error"], 503)
+    return {"ok": True, **result}
+
+
+@app.get("/traefik/status")
+async def traefik_status() -> Any:
+    """Return Traefik configuration status."""
+    return {"ok": True, **get_traefik_status()}
+
+
+@app.get("/docker/status")
+async def docker_status() -> Any:
+    """Return Docker container status."""
+    return get_docker_status()
+
+
+@app.get("/auth/features")
+async def auth_features() -> Any:
+    """Return auth feature availability."""
+    return get_auth_features()
+
+
+@app.get("/websites/endpoints")
+async def websites_endpoints() -> Any:
+    """Return configured website endpoints."""
+    return get_website_endpoints()
+
+
+@app.get("/openrouter/status")
+async def openrouter_status() -> Any:
+    """Report OpenRouter readiness without making an external request."""
+    missing = []
+    if not os.environ.get("OPENROUTER_API_KEY"):
+        missing.append("OPENROUTER_API_KEY")
+    if _find_spec("openai") is None:
+        return _json_error(
+            "Optional dependency 'openai' is not installed.",
+            503,
+            missing_dependencies=["openai"],
+        )
+    if missing:
+        return _json_error(
+            "OpenRouter is not configured.",
+            503,
+            missing_environment=missing,
+        )
+    return {"ok": True, "configured": True}

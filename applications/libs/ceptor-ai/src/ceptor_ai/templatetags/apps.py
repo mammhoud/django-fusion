@@ -30,7 +30,7 @@ from django.urls import NoReverseMatch
 # Viewset belongs to rseal (routing concept) — keep pointing to ceptor_ai
 # Lazy import to avoid circular imports during template tag loading
 def _get_viewset():
-    from django_osoul.site.routes.base import Viewset
+    from django_osoul.comp.routes.base import Viewset
     return Viewset
 from wagtail.models import Page, Site
 

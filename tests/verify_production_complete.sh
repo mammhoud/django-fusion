@@ -191,17 +191,22 @@ echo "═" | tee -a "$REPORT"
 echo "7️⃣ SSL/TLS CERTIFICATE CHECK" | tee -a "$REPORT"
 echo "═" | tee -a "$REPORT"
 
-if [ -f /root/site/websites/compose/traefik/certs/acme.json ]; then
-    test_pass "Traefik ACME configuration exists"
+if [ -f /root/site/websites/compose/traefik/acme/acme.json ]; then
+    test_pass "Traefik ACME store (acme.json) exists"
 else
-    test_warn "ACME configuration not found"
+    test_warn "ACME store not found at /root/site/websites/compose/traefik/acme/acme.json"
+fi
+
+if [ -d /root/site/websites/compose/traefik/acme ]; then
+    ACME_PERMS=$(stat -c %a /root/site/websites/compose/traefik/acme/acme.json 2>/dev/null || echo "?")
+    test_pass "ACME store permissions: ${ACME_PERMS} (expect 600)"
 fi
 
 if [ -d /root/site/websites/compose/traefik/certs ]; then
-    CERT_COUNT=$(find /root/site/websites/compose/traefik/certs -type f 2>/dev/null | wc -l)
-    test_pass "SSL certificates installed: $CERT_COUNT files"
+    CERT_COUNT=$(find /root/site/websites/compose/traefik/certs -maxdepth 1 -type f 2>/dev/null | wc -l)
+    test_pass "Legacy self-signed fallback files: $CERT_COUNT (deleted in Stage 3)"
 else
-    test_warn "Certificate directory not found"
+    test_warn "Legacy self-signed cert directory not found"
 fi
 
 echo "" | tee -a "$REPORT"

@@ -1,9 +1,11 @@
 http:
   routers:
     traefik-dashboard:
-      rule: 'Host(`traefik.structa.cloud`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))'
-      entryPoints: [web-secure]
+      rule: Host(`traefik.structa.cloud`) && (PathPrefix(`/api`) || PathPrefix(`/dashboard`))
+      entryPoints:
+      - web-secure
       service: api@internal
-      middlewares: [basic-auth]
+      middlewares:
+      - basic-auth
       tls:
         certResolver: letsencrypt

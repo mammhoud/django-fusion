@@ -1,19 +1,19 @@
 <main>
     <!-- Page Title Section -->
-    {% include "services/includes/page_title.html" %}
+    {% comp_include "services/includes/page_title.html" %}
     
     <!-- Main Content Sections -->
     {% for block in page.body %}
         {% if block.block_type == 'services_section' %}
-            {% include "services/includes/services_section.html" %}
+            {% comp_include "services/includes/services_section.html" %}
         {% elif block.block_type == 'counter_section' %}
-            {% include "services/includes/counter_section.html" %}
+            {% comp_include "services/includes/counter_section.html" %}
         {% elif block.block_type == 'testimonial_section' %}
-            {% include "services/includes/testimonial_section.html" %}
+            {% comp_include "services/includes/testimonial_section.html" %}
         {% elif block.block_type == 'pricing_section' %}
-            {% include "services/includes/pricing_section.html" %}
+            {% comp_include "services/includes/pricing_section.html" %}
         {% elif block.block_type == 'clients' %}
-            {% include "services/includes/clients_section.html" %}
+            {% comp_include "services/includes/clients_section.html" %}
         {% endif %}
     {% endfor %}
 </main>

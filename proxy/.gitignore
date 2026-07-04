@@ -1,0 +1,10 @@
+# Local environment file with secrets (Cloudflare token, etc.)
+# Copy from .env.example and fill in real values.
+.env
+
+# Runtime ACME storage — contains Let's Encrypt account keys and live certs.
+# The directory itself is committed (with .gitkeep) so that bind mounts
+# resolve, but the JSON inside is not.
+acme/acme.json
+acme/acme.json.tmp
+acme/backups/

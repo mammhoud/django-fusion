@@ -13,20 +13,20 @@
             {# Mobile only: Auth & Language #}
             <li class="nav-item d-xl-only mt-4 border-top pt-4">
                 <div class="mobile-actions">
-                    {% include "partials/auth_buttons.html" %}
+                    {% comp_include "partials/auth_buttons.html" %}
                 </div>
             </li>
             <li class="nav-item d-xl-only mt-3">
                 <div class="mobile-actions">
-                    {% include "partials/language_selector.html" %}
+                    {% comp_include "partials/language_selector.html" %}
                 </div>
             </li>
         </ul>
 
         <!-- Desktop only: User actions -->
         <div class="desktop-actions d-none d-xl-flex">
-            {% include "partials/auth_buttons.html" %}
-            {% include "partials/language_selector.html" %}
+            {% comp_include "partials/auth_buttons.html" %}
+            {% comp_include "partials/language_selector.html" %}
         </div>
     </div>
 </div>

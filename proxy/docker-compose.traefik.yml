@@ -35,10 +35,18 @@ services:
       - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
       - ./traefik/dynamic:/etc/traefik/dynamic:ro
       - ./certs:/etc/traefik/certs:ro
-      - traefik_acme:/etc/traefik/acme
+      # ACME storage for Let's Encrypt (DNS-01). The file MUST exist with
+      # mode 0600 before the container starts — run `./scripts/manage-certs.sh
+      # bootstrap-acme` to create it. See proxy/LETSENCRYPT.md.
+      - ./acme:/etc/traefik/acme:rw
     environment:
-      - TRAEFIK_ACME_EMAIL=admin@structa.cloud
       - TRAEFIK_LOG_LEVEL=INFO
+      # Cloudflare DNS-01 — read by the traefik cloudflare provider.
+      # Override in a local .env (see proxy/.env.example) — never commit the token.
+      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN:-}
+      - CF_API_EMAIL=${CF_API_EMAIL:-}
+      - CF_API_KEY=${CF_API_KEY:-}
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@structa.cloud}
     command:
       - "--configFile=/etc/traefik/dynamic.yml"   # matches the copy in Dockerfile
     healthcheck:
@@ -55,10 +63,6 @@ services:
           cpus: '0.5'
           memory: 256M
 
-volumes:
-  traefik_acme:
-    name: traefik_acme
-  
 networks:
   traefik-net:
     external: true

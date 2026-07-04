@@ -39,3 +39,13 @@ default:
       allowed_hosts: [localhost, 127.0.0.1]
       csrf_trusted_origins: [http://localhost, http://127.0.0.1]
       cors_allowed_origins: [http://localhost, http://127.0.0.1]
+    crm:
+      path: crm
+      aliases: [crm, sales, inventory, crm.structa.cloud]
+      domain: crm.structa.cloud
+      port: 5074
+      module: CMS
+      ssl_enabled: false
+      allowed_hosts: [crm.structa.cloud, www.crm.structa.cloud, localhost, 127.0.0.1]
+      csrf_trusted_origins: [http://crm.structa.cloud, https://crm.structa.cloud, http://www.crm.structa.cloud, https://www.crm.structa.cloud]
+      cors_allowed_origins: [http://crm.structa.cloud, https://crm.structa.cloud, http://www.crm.structa.cloud, https://www.crm.structa.cloud]

@@ -1,0 +1,9 @@
+# Dynamic TLS certificates (loaded by file provider)
+tls:
+  certificates:
+    - certFile: /etc/traefik/certs/ctc-research.crt
+      keyFile: /etc/traefik/certs/ctc-research.key
+    - certFile: /etc/traefik/certs/structa-cloud.crt
+      keyFile: /etc/traefik/certs/structa-cloud.key
+    - certFile: /etc/traefik/certs/vresume.crt
+      keyFile: /etc/traefik/certs/vresume.key

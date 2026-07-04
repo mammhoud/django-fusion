@@ -1,6 +1,6 @@
 def test_public_imports():
-    from django_osoul.handlers import ErrorTrackerMiddleware
-    from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware as Middleware
+    from django_osoul.core.middlewares.error_tracker import ErrorTrackerMiddleware
+    from django_osoul.core.middlewares import ErrorTrackerMiddleware as Middleware
     from django_osoul.wagtail.snippets import BaseSnippetViewSet, export_to_csv
 
     assert ErrorTrackerMiddleware is Middleware

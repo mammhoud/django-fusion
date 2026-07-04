@@ -24,7 +24,7 @@
             </h5>
             <div class="contact-group__items d-flex flex-wrap gap-2">
                 {% for profile in social_profiles %}
-                {% include "blocks/contact/contact_profile.html" with value=profile %}
+                {% comp_include "blocks/contact/contact_profile.html" value=profile %}
                 {% endfor %}
             </div>
         </div>
@@ -37,7 +37,7 @@
             </h5>
             <div class="contact-group__items">
                 {% for profile in contact_methods %}
-                {% include "blocks/contact/contact_profile.html" with value=profile %}
+                {% comp_include "blocks/contact/contact_profile.html" value=profile %}
                 {% endfor %}
             </div>
         </div>
@@ -50,7 +50,7 @@
             </h5>
             <div class="contact-group__items">
                 {% for profile in websites %}
-                {% include "blocks/contact/contact_profile.html" with value=profile %}
+                {% comp_include "blocks/contact/contact_profile.html" value=profile %}
                 {% endfor %}
             </div>
         </div>

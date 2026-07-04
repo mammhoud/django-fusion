@@ -12,7 +12,6 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: vresume-site-service
       tls:
-        certResolver: letsencrypt
     vresume-media-http:
       rule: 'Host(`vresume.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
@@ -26,7 +25,6 @@ http:
       service: vresume-media-service
       priority: 100
       tls:
-        certResolver: letsencrypt
   services:
     vresume-site-service:
       loadBalancer:

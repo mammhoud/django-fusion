@@ -55,23 +55,23 @@ onload="{{ jsFunction }}"
 
 {% endblock theme_colors %}
 {% block modal %}
-{% include 'common/modals/cart_modal.html' with modal_id="cartModal" modal_icon="bi-cart3" %}
+{% comp_include 'common/modals/cart_modal.html' modal_id="cartModal" modal_icon="bi-cart3" %}
 {% endblock modal %}
 
 {% block body %}
 <div class="flex wrapper">
 
   {% block side_nav %}
-  {% include 'layout/navigation/side_nav.html' %}
+  {% comp_include 'layout/navigation/side_nav.html' %}
   {% endblock side_nav %}
 
   <div class="page-content">
     {% block top_nav %}
-    <div class="top-nav">{% include 'layout/navigation/top_nav.html' %}</div>
+    <div class="top-nav">{% comp_include 'layout/navigation/top_nav.html' %}</div>
     {% endblock top_nav %}
     <main class="page-layout__main flex-grow p-6 bg-base-100">
       {% block top_header %}
-      <div class="breadcrumbs">{% include 'layout/headers/breadcrumbs.html' %}</div>
+      <div class="breadcrumbs">{% comp_include 'layout/headers/breadcrumbs.html' %}</div>
       {% endblock top_header %}
       {% block content %}
       {% comment %} HERE A FRAGMENT FOR THE PAGE WILL BE {% endcomment %}
@@ -79,8 +79,8 @@ onload="{{ jsFunction }}"
     </main>
 
     {% block footer %}
-    {% comment %} {% include "partials/footer.html" %}
-    {% include "includes/customizer.html" %}
+    {% comment %} {% comp_include "partials/footer.html" %}
+    {% comp_include "includes/customizer.html" %}
     {% endcomment %}
     {% endblock footer %}
 

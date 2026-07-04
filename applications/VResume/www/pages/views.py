@@ -5,11 +5,13 @@ Consolidated from multiple files to simplify structure.
 import json
 import logging
 
+from django.conf import settings
 from django.http import Http404, HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 from django.utils import translation
 from django.utils.translation import gettext_lazy as _
 from django.views.decorators.http import require_http_methods
+from django.views.generic.base import RedirectView
 from wagtail.models import Locale, Site
 
 logger = logging.getLogger(__name__)
@@ -110,6 +112,66 @@ def tab_view(request, tab_name):
 
     return render(request, template, context)
 
+
+class LocalePreservingRedirectView(RedirectView):
+    """
+    RedirectView that preserves the active i18n language prefix.
+    When the active language differs from LANGUAGE_CODE, prepend /{lang}/.
+    """
+    permanent = True
+
+    def get_redirect_url(self, *args, **kwargs):
+        redirect_url = super().get_redirect_url(*args, **kwargs)
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        default_lang = settings.LANGUAGE_CODE
+        if current_lang and current_lang != default_lang and redirect_url:
+            redirect_url = f"/{current_lang}{redirect_url}"
+        return redirect_url
+
+
+@require_http_methods(["GET"])
+def team_view(request):
+    """
+    Serve the team page — an AboutPage instance with slug='team'.
+    Since 'team' isn't a valid tab in tab_view, we serve it manually
+    through the about tab template showing the team page's content.
+    """
+    from pages.about.models import AboutPage
+
+    locale = get_current_locale(request)
+    page = AboutPage.objects.live().filter(slug='team', locale=locale).first()
+    if not page:
+        page = AboutPage.objects.live().filter(slug='team').first()
+    if not page:
+        raise Http404("Team page not found")
+
+    site = Site.find_for_request(request)
+
+    context = page.get_context(request)
+    context["page"] = page
+    context["active_tab"] = "about"
+    context["tabs"] = [
+        ("home", _("Home")),
+        ("about", _("About")),
+        ("resume", _("Resume")),
+        ("portfolio", _("Portfolio")),
+        ("blog", _("Blog")),
+        ("contact", _("Contact")),
+    ]
+
+    if "vresume_settings" not in context:
+        from pages.home.models import VResumeSettings
+        try:
+            context["vresume_settings"] = VResumeSettings.for_site(site)
+        except Exception:
+            logger.debug("Could not load VResumeSettings for team_view")
+            context["vresume_settings"] = None
+
+    is_htmx = request.headers.get('HX-Request') == 'true'
+    template = "about/fragment.html" if is_htmx else "skeleton.html"
+
+    return render(request, template, context)
 
 
 # ── Content Detail Views (HTMX Modals) ──────────────────────────────────

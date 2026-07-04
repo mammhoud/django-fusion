@@ -7,7 +7,7 @@
      fragment_name : the name of the fragment component to render (optional)
 
    EXAMPLE:
-     {% include "ui/base/fragment.html" with fragment_name="course_list" %}
+     {% comp_include "ui/base/fragment.html" fragment_name="course_list" %}
 #}
 {% if fragment_name %}
 <div id="{{ fragment_name }}__container">

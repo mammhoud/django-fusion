@@ -187,10 +187,12 @@ status:
 	@echo "Container Status:"
 	@docker ps --filter name=default-proxy --format "table {{.Names}}\t{{.Status}}\t{{.Ports}}"
 	@echo ""
-	@echo "🔐 Certificate Expiry (from live acme.json):"
-	@docker exec default-proxy cat /etc/traefik/acme/acme.json 2>/dev/null | \
-		jq -r '.letsencrypt.Certificates[] | "\(.domain.main) expires: \(.certificate.notAfter)"' \
-		2>/dev/null || echo "  (jq not available or no certificates yet)"
+	@echo "🔐 Certificate Expiry (from static certs in proxy/certs/):"
+	@for cert in $(SOURCE_DIR)/certs/*.crt; do \
+		[ -f "$$cert" ] || continue; \
+		notAfter=$$(openssl x509 -in "$$cert" -noout -enddate 2>/dev/null | cut -d= -f2); \
+		printf "  %-32s expires: %s\n" "$$(basename $$cert .crt)" "$$notAfter"; \
+	done
 	@echo ""
 	@echo "🌐 Routers Loaded:"
 	@docker exec default-proxy traefik healthcheck --ping 2>/dev/null || \

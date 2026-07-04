@@ -5,7 +5,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.cache import cache
 from django.db import models
 from django.utils import timezone
-from django_osoul.managers import BaseManager, CachedManager, cached_method
+from django_osoul.core.managers import BaseManager, CachedManager, cached_method
 
 logger = logging.getLogger(__name__)
 

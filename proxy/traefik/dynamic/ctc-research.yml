@@ -13,20 +13,30 @@ http:
       service: ctc-site-service
       tls:
         certResolver: letsencrypt
-    ctc-media-http:
+        domains:
+          - main: ctc-research.com
+            sans:
+              - www.ctc-research.com
+              - arch.ctc-research.com
+    ctc-site-media-http:
       rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
       entryPoints: [web]
       middlewares: [compress, redirect-to-https]
-      service: ctc-media-service
+      service: ctc-site-media-service
       priority: 100
-    ctc-media-https:
+    ctc-site-media-https:
       rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
-      service: ctc-media-service
+      service: ctc-site-media-service
       priority: 100
       tls:
         certResolver: letsencrypt
+        domains:
+          - main: ctc-research.com
+            sans:
+              - www.ctc-research.com
+              - arch.ctc-research.com
   services:
     ctc-site-service:
       loadBalancer:
@@ -34,9 +44,10 @@ http:
           - url: 'http://ctc-research-website:5070'
         healthCheck:
           path: /health/
+          hostname: ctc-research.com
           interval: 30s
           timeout: 10s
-    ctc-media-service:
+    ctc-site-media-service:
       loadBalancer:
         servers:
           - url: 'http://shared-media:80'

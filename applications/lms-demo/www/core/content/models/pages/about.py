@@ -12,6 +12,7 @@ from .base import BasePage
 
 class AboutPage(BasePage):
     template = "base_page.html"
+    template_name = "about/main.html"
     fragment_name = "about.main"
     page_title = _("About Page")
     # ✅ Wrap your title section fields in a StructBlock inside a StreamField

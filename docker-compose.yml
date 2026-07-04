@@ -66,8 +66,6 @@ volumes:
     name: ollama
   open-webui:
     name: open-webui
-  traefik_acme:
-    name: traefik_acme
   caddy_data:
     name: caddy_data
   caddy_config:

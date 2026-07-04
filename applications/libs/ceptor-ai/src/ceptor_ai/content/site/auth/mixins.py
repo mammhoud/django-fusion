@@ -18,7 +18,7 @@ from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django_osoul.comp.site import PageHandler
+from django_osoul.site import PageHandler
 from django_osoul.site.auth.mixins import (
     AuthBaseMixin,
     AuthConfig,

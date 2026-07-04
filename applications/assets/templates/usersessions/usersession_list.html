@@ -7,7 +7,7 @@
       <p>{% trans "Manage devices that are logged into your account." %}</p>
     </header>
 
-    {% include "account/snippets/messages.html" %}
+    {% comp_include "account/snippets/messages.html" %}
 
     {% if sessions %}
       <div class="list-group mb-4">

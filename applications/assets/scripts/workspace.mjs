@@ -24,20 +24,25 @@ const siteAliases = {
   'vresume.structa.cloud': 'vresume',
   customizer: 'customizer',
   cust: 'customizer',
+  crm: 'crm',
+  'crm.structa.cloud': 'crm',
+  inventory: 'crm',
 };
 
-const sites = ['ctc-research', 'lms-demo', 'vresume', 'customizer'];
+const sites = ['ctc-research', 'lms-demo', 'vresume', 'customizer', 'crm'];
 const siteDirs = {
   'ctc-research': 'ctc-research',
   'lms-demo': 'lms-demo',
   vresume: 'VResume',
   customizer: 'customizer',
+  crm: 'crm',
 };
 const cleanDirs = {
   'ctc-research': ['ctc-research/assets/bundles/ctc-research'],
   'lms-demo': ['lms-demo/assets/bundles/lms-demo'],
   vresume: ['VResume/assets/bundles/vresume'],
   customizer: ['customizer/assets/bundles/customizer'],
+  crm: ['crm/assets/bundles/crm'],
   shared: ['assets/bundles/shared'],
 };
 

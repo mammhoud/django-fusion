@@ -2,7 +2,7 @@
 {% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
 {% load render_bundle from webpack_loader %}
 {% block meta %}
-{% include 'partials/meta.html' %}
+{% comp_include 'partials/meta.html' %}
 {% endblock meta %}
 {% block html_attr %}data-theme="light"{% endblock html_attr %}
 {% block styles %}
@@ -45,7 +45,7 @@ data-page="auth"
 {% block extra_body %}
 {{ block.super }}
 {% if PASSKEY_LOGIN_ENABLED %}
-{% include "plugins/mfa/webauthn/snippets/login_script.html" with button_id="passkey_login" %}
+{% comp_include "plugins/mfa/webauthn/snippets/login_script.html" button_id="passkey_login" %}
 {% endif %}
 {% endblock %}
 

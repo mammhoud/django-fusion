@@ -14,7 +14,7 @@ Usage::
 
 from __future__ import annotations
 
-from django_osoul.site.routes import ModelViewset
+from django_osoul.comp.routes import ModelViewset
 
 
 class BlogPostViewset(ModelViewset):

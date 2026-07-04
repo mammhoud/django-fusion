@@ -337,6 +337,7 @@ requires-dist = [
     { name = "django", specifier = ">=4.2" },
     { name = "django-mcp-server", specifier = ">=0.1.0" },
     { name = "fastapi", marker = "extra == 'mcp'", specifier = ">=0.110" },
+    { name = "hypothesis", marker = "extra == 'test'", specifier = ">=6.0" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "watchdog", specifier = ">=4.0" },
 ]

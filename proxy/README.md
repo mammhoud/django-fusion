@@ -78,43 +78,58 @@ services:
 
 ## SSL/TLS Configuration
 
-### Automatic SSL Generation
+### Primary flow: Let's Encrypt DNS-01 (Cloudflare)
 
-**Certificate generation script:** `generate-certs.sh`
+Production certs are obtained via Let's Encrypt using Traefik's native
+DNS-01 challenge against Cloudflare. The `certificatesResolvers.letsencrypt`
+block lives in the static config at `proxy/traefik/dynamic.yml`; per-site
+HTTPS routers opt in with `tls: { certResolver: letsencrypt }`.
+
+Full runbook (Prerequisites, Stage 1/2/3, rollback, Coolify sync):
+**[`proxy/LETSENCRYPT.md`](./LETSENCRYPT.md)**
+
+Quick start:
 
 ```bash
-bash infra/traefik/generate-certs.sh
+# 1. Configure DNS provider credentials
+cp proxy/.env.example proxy/.env
+$EDITOR proxy/.env   # set CF_DNS_API_TOKEN (Zone / DNS / Edit scope)
+
+# 2. Bootstrap ACME storage (mode 0600)
+./proxy/scripts/manage-certs.sh bootstrap-acme
+
+# 3. Start the proxy
+docker compose -f proxy/docker-compose.traefik.yml up -d
+
+# 4. Inspect what Traefik has stored
+./proxy/scripts/manage-certs.sh status
+./proxy/scripts/manage-certs.sh check-expiry
 ```
 
-**Creates:**
-- Self-signed certificates for local development
-- ACME configuration for Let's Encrypt
-- Certificate files in `certs/` directory
+Certs are stored in `proxy/acme/acme.json` (gitignored). Traefik renews
+them automatically ~30 days before expiry.
 
-### Let's Encrypt Configuration
+### Legacy / fallback: self-signed certificates
 
-**Automatic renewal:**
-- ACME protocol configured in `traefik.yml`
-- Certificates auto-renewed 30 days before expiry
-- Certificates stored in `certs/acme.json`
+The legacy self-signed flow is kept as a fallback for environments
+without DNS provider access. It is **not** the production path.
 
-### Certificate Backup & Restore
-
-**Automatic on Traefik startup:**
-1. Backup existing certificates: `backup-certs.sh`
-2. Restore from backup if needed: `restore-certs.sh`
-3. Generate new if none found
-
-**Manual backup:**
 ```bash
-bash infra/traefik/scripts/backup-certs.sh
+./proxy/scripts/manage-certs.sh generate-self-signed   # create certs
+./proxy/scripts/manage-certs.sh list                  # inspect
+./proxy/scripts/manage-certs.sh validate               # check key/cert match
 ```
 
-**Backup location:**
-```
-infra/traefik/certs/
-└── acme_YYYYMMDD_HHMMSS.json
-```
+The self-signed files in `proxy/certs/` are referenced by
+`proxy/traefik/dynamic/certs.yml` until Stage 3 of the LE rollout deletes
+that file.
+
+### Certificate backup & restore
+
+`proxy/scripts/backup-certs.sh` and `proxy/scripts/restore-certs.sh`
+operate on the LE `acme.json` store (with fallbacks to the legacy
+self-signed `certs/` directory). The default-proxy container runs these
+automatically on startup so certs survive container restarts.
 
 ---
 

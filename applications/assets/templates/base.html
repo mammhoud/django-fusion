@@ -86,13 +86,13 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {# Notification system — toasts, alerts, Django messages, HTMX OOB fragments #}
     {% block notifications %}
         {# FIXME: notification include causes RecursionError in template render chain #}
-        {# {% include "plugins/notifications/notification.html" %} #}
+        {# {% comp_include "plugins/notifications/notification.html" %} #}
     {% endblock notifications %}
 
     {# Cookie Consent — shared templates for all sites #}
-    {% include "components/cookies/cookie-consent.html" %}
-    {% include "components/cookies/cookie-policy.html" %}
-    {% include "components/cookies/privacy-policy.html" %}
+    {% comp_include "components/cookies/cookie-consent.html" %}
+    {% comp_include "components/cookies/cookie-policy.html" %}
+    {% comp_include "components/cookies/privacy-policy.html" %}
 
     {% block scripts %}
     {% endblock scripts %}

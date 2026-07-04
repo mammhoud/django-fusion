@@ -1,4 +1,4 @@
-# Shim: re-export from django_osoul.middlewares
+# Re-export canonical middleware classes from django_osoul
 from django_osoul.core.middlewares import (  # noqa: F401
     SiteMiddleware,
     ReadonlyExceptionHandlerMiddleware,

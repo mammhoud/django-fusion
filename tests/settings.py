@@ -256,7 +256,7 @@ for _mod_path in [
     "crafts_ai.pipelines.models.tags",
     "crafts_ai.pipelines.models.users.role",
     # Missing generic.search module
-    "django_osoul.site.generic.search",
+    "django_osoul.comp.generic.search",
     # www.core.content.models — stub to avoid pulling in crafts_ai models
     "www.core.content",
     "www.core.content.models",
@@ -340,6 +340,7 @@ INSTALLED_APPS = [
     "taggit",
     "modelcluster",
     "django_osoul",
+    "django_osoul.comp",
     # allauth — needed for adapter tests
     "allauth",
     "allauth.account",
@@ -362,7 +363,7 @@ def _installed(app: str) -> bool:
 _OPTIONAL_TEST_APPS = {
     "wagtail", "wagtail.images", "wagtail.documents", "wagtail.snippets",
     "wagtail.search", "wagtail.admin", "wagtail.contrib.settings",
-    "taggit", "modelcluster", "django_osoul", "allauth",
+    "taggit", "modelcluster", "django_osoul", "django_osoul.comp", "allauth",
     "allauth.account", "allauth.socialaccount", "apps.blog",
 }
 INSTALLED_APPS = [
@@ -408,6 +409,12 @@ TEMPLATES = [{
             "django.contrib.auth.context_processors.auth",
             "django.contrib.messages.context_processors.messages",
         ],
+        "builtins": [
+            "django_osoul.comp.templatetags.components",
+        ],
+        "libraries": {
+            "components": "django_osoul.comp.templatetags.components",
+        },
     },
 }]
 

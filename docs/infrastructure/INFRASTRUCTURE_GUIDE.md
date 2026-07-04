@@ -247,21 +247,28 @@ Reservations are set at half the limits to allow burst headroom.
 
 ---
 
-## TLS / ACME
+## TLS / Certificates
 
-Traefik handles TLS termination automatically via Let's Encrypt ACME. Certificates are
-stored in the `traefik_acme` Docker volume (`/etc/traefik/acme`).
+Traefik handles TLS termination using static self-signed certificates mounted from
+`proxy/certs/` (`/etc/traefik/certs` inside the container). See
+`proxy/traefik/dynamic/certs.yml` for the active cert list. No ACME / Let's Encrypt
+flow is configured — there is no `traefik_acme` volume and no `acme.json` storage.
 
-Configuration:
-```yaml
-environment:
-  TRAEFIK_ACME_EMAIL: ${TRAEFIK_ACME_EMAIL:-admin@structa.cloud}
-  TRAEFIK_LOG_LEVEL: ${TRAEFIK_LOG_LEVEL:-INFO}
+To regenerate self-signed certs (365 days):
+
+```bash
+./proxy/scripts/manage-certs.sh generate-self-signed
 ```
 
-For local development, self-signed certs from `compose/traefik/certs/` are used instead.
+To check expiry / validate / backup / restore:
 
-See `docs/infrastructure/DEPLOYMENT_GUIDE_SSL.md` for full TLS setup instructions.
+```bash
+./proxy/scripts/manage-certs.sh list
+./proxy/scripts/manage-certs.sh check-expiry
+./proxy/scripts/manage-certs.sh validate
+./proxy/scripts/manage-certs.sh backup
+./proxy/scripts/manage-certs.sh restore <archive.tar.gz>
+```
 
 ---
 

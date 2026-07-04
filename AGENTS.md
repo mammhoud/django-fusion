@@ -80,3 +80,91 @@ Use `fragment_name` only for fragment identifiers and context keys. Do not intro
 - Run the narrowest relevant checks first, then broader tests when practical.
 - For Django site work, prefer commands delegated through `applications/Makefile` with the appropriate `WEBSITE=...` value.
 - For shared library work, run tests or checks that cover both the library and affected sites when practical.
+
+## Infrastructure & Proxy
+- Traefik proxy (`default-proxy`) serves SSL on port 443. Certs are obtained via Let's Encrypt DNS-01 (Cloudflare) using Traefik's native `certificatesResolvers` block in `proxy/traefik/dynamic.yml`.
+- Nginx media server (`shared-media`) serves static/media files for all sites.
+- ACME store lives at `proxy/acme/acme.json` (mode 0600), bind-mounted into the proxy at `/etc/traefik/acme/`. The directory is git-tracked (via `.gitkeep`); `acme.json` is gitignored.
+- Cloudflare credentials are read from env vars on the proxy container (`CF_DNS_API_TOKEN` recommended, or `CF_API_EMAIL` + `CF_API_KEY`). Local values come from `proxy/.env` (gitignored; copy from `proxy/.env.example`).
+- HTTPS routers opt into LE via `tls: { certResolver: letsencrypt }` in the per-site router file. The catchall router intentionally has no certResolver — Traefik falls back to its internal default cert for unmatched hosts.
+- The rollout is staged (see `proxy/LETSENCRYPT.md`): Stage 1 enables LE for `vresume.structa.cloud` on the Let's Encrypt **staging** CA; Stage 2 flips to the production CA and enables LE for ctc-research / structa-cloud / media / dashboard; Stage 3 deletes `proxy/traefik/dynamic/certs.yml`.
+- `proxy/traefik/dynamic/certs.yml` (static self-signed certs) is kept as a fallback until Stage 3. Until it's deleted, removing `certResolver` from a router causes it to fall back to the SAN-matched self-signed cert.
+- `proxy/scripts/manage-certs.sh` now provides `bootstrap-acme`, `status`, and `check-expiry` for the LE flow; the self-signed commands are retained as a legacy fallback.
+- Health checks on backend services must include the correct `Host` header (set via `hostname` in Traefik healthCheck config).
+- Media subdomains: `media.structa.cloud`, `media.ctc-research.com`, `media.lms-demo.com`, `media.vresume.structa.cloud`.
+- Legacy self-signed certs remain in `proxy/certs/` for rollback purposes; they are no longer the source of truth.
+
+## Authentication & Authorization
+- All sites use `django-allauth` for authentication with `django-osoul` auth mixins.
+- Auth views extend `PageHandler` from `django_osoul.site`.
+- HTMX is used for modal-based login/register flows.
+- Social auth adapters live in site `plugins/accounts/adapters.py`.
+- MFA support: custom TOTP-based 2FA in profile settings (via `two_factor_enabled` / `two_factor_secret` on profile model).
+- `allauth.mfa` is available as optional dependency for WebAuthn/passkey support.
+- Auth email templates are managed as Wagtail snippets via `AuthEmailTemplate`.
+- Account adapter: `plugins.accounts.adapters.RegistrationAdapter` (HTMX-aware, fragment rendering).
+- Supported auth flows: login, signup, password reset, password change, email management, social signup, social connections.
+
+## Component System (django-osoul)
+- Use `{% comp "name" %}` for rendered components from `django_osoul.comp`.
+- Use `{% comp_include "path" %}` as a drop-in replacement for `{% include %}` that registers paths for tracking.
+- Use `{% include "path" %}` only for truly dynamic template names (e.g., `{% include template_name %}`).
+- Bridge legacy includes to `comp` via `register_include_path()`.
+- The `IncludePathComponent` class maps include paths to component names verbatim.
+- Register include paths in `AppConfig.ready()` or via `COMPONENTS_INCLUDE_PATH_ROOTS` setting.
+- Component template directories: `components/blocks/`, `components/partials/`, `tags/`.
+- Component namespaces use dot notation: `{% comp "contact.sections.form" block=block / %}`.
+
+## django-osoul Canonical Import Paths
+
+All re-export shims have been removed. Use these canonical paths directly.
+
+### Routing (`comp.routes`)
+
+```python
+from django_osoul.comp.routes import (
+    # Base routing
+    Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path, IndexViewMixin,
+    # Descriptor
+    viewprop,
+    # Model viewsets
+    BaseModelViewset, ModelViewset, ReadonlyModelViewset,
+    ListBulkActionsMixin, CreateViewMixin, UpdateViewMixin, DeleteViewMixin, DetailViewMixin,
+    # Site/Application
+    Application, AppMenuMixin, Site,
+    # Routable components
+    RoutableComponent, FragmentComponent,
+    # Fragment detection
+    FragmentDetector, FragmentDetectionMixin,
+)
+```
+
+### Generic CBVs (`comp.generic`)
+
+```python
+from django_osoul.comp.generic import (
+    Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
+    DetailModelView, ListModelView, UpdateModelView,
+    BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
+)
+```
+
+### Other canonical paths
+
+| Module | Canonical Path |
+|--------|---------------|
+| Handlers | `django_osoul.core.handlers` |
+| Managers | `django_osoul.core.managers` |
+| Models | `django_osoul.core.models` |
+| Services | `django_osoul.core.services` |
+| Views (FilterMixin, SearchMixin) | `django_osoul.web.views` |
+| Loaders | `django_osoul.comp.loaders` |
+| Middlewares | `django_osoul.core.middlewares` |
+| Cache | `django_osoul.core.cache` |
+
+## Media & Static Files
+- Shared static files: `applications/assets/static/`.
+- Site-specific staticfiles: `applications/<site>/assets/staticfiles/`.
+- Site-specific media: `applications/<site>/assets/media/`.
+- Nginx mounts each site's staticfiles under `/var/www/sites/<site>/static/`.
+- Traefik routes `PathPrefix(/static/)` and `PathPrefix(/media/)` to `shared-media:80`.

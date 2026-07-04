@@ -2,13 +2,14 @@
 Authentication Configuration
 -----------------------------
 
-Django-only authentication settings for VResume.
-Allauth and all social/MFA/headless settings have been removed.
+Django + django-allauth authentication settings shared across all sites.
+Includes allauth, social auth, MFA, and HTMX fragment auth flow settings.
 
 References:
 - Django auth: https://docs.djangoproject.com/en/stable/ref/settings/#auth
 - Django sessions: https://docs.djangoproject.com/en/stable/ref/settings/#sessions
 - Django CSRF: https://docs.djangoproject.com/en/stable/ref/csrf/
+- django-allauth: https://docs.allauth.org/
 """
 
 from ..settings.conf import settings as conf_settings
@@ -107,6 +108,44 @@ ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_LOGOUT_ON_GET = False
 ACCOUNT_ADAPTER = settings.get("ACCOUNT_ADAPTER", "plugins.accounts.adapters.RegistrationAdapter")
 ACCOUNT_FORMS = settings.get("ACCOUNT_FORMS", {})
+
+# =============================================================================
+# 🔐 ALLAUTH ADVANCED OPTIONS
+# =============================================================================
+ACCOUNT_LOGIN_ON_EMAIL_CONFIRMATION = True
+ACCOUNT_LOGIN_ON_PASSWORD_RESET = True
+ACCOUNT_PRESERVE_USERNAME_CASING = False
+ACCOUNT_USERNAME_BLACKLIST = list(settings.get("ACCOUNT_USERNAME_BLACKLIST", ["admin", "root", "superuser"]))
+ACCOUNT_MAX_EMAIL_ADDRESSES = settings.get("ACCOUNT_MAX_EMAIL_ADDRESSES", 1)
+ACCOUNT_CHANGE_EMAIL = settings.get("ACCOUNT_CHANGE_EMAIL", False)
+ACCOUNT_REAUTHENTICATION_REQUIRED = settings.get("ACCOUNT_REAUTHENTICATION_REQUIRED", False)
+ACCOUNT_REAUTHENTICATION_TIMEOUT = settings.get("ACCOUNT_REAUTHENTICATION_TIMEOUT", 300)
+
+# =============================================================================
+# 🔗 SOCIAL AUTH OPTIONS
+# =============================================================================
+SOCIALACCOUNT_ADAPTER = settings.get(
+    "SOCIALACCOUNT_ADAPTER", "plugins.accounts.adapters.AuthHTMXSocialAccountAdapter"
+)
+SOCIALACCOUNT_AUTO_SIGNUP = settings.get("SOCIALACCOUNT_AUTO_SIGNUP", True)
+SOCIALACCOUNT_EMAIL_VERIFICATION = settings.get("SOCIALACCOUNT_EMAIL_VERIFICATION", "optional")
+SOCIALACCOUNT_STORE_TOKENS = settings.get("SOCIALACCOUNT_STORE_TOKENS", False)
+SOCIALACCOUNT_LOGIN_ON_GET = settings.get("SOCIALACCOUNT_LOGIN_ON_GET", False)
+SOCIALACCOUNT_PROVIDERS = settings.get("SOCIALACCOUNT_PROVIDERS", {})
+
+# =============================================================================
+# 🛡️ MFA / 2FA OPTIONS (requires allauth.mfa in INSTALLED_APPS)
+# =============================================================================
+MFA_PASSKEY_LOGIN_ENABLED = settings.get("MFA_PASSKEY_LOGIN_ENABLED", False)
+MFA_PASSKEY_SIGNUP_ENABLED = settings.get("MFA_PASSKEY_SIGNUP_ENABLED", False)
+MFA_SUPPORTED_TYPES = settings.get("MFA_SUPPORTED_TYPES", ["totp", "recovery_codes"])
+
+# =============================================================================
+# 📧 EMAIL OPTIONS
+# =============================================================================
+ACCOUNT_EMAIL_SUBJECT_PREFIX = settings.get("EMAIL_SUBJECT_PREFIX", "[Structa Cloud] ")
+ACCOUNT_EMAIL_NOTIFICATIONS = settings.get("ACCOUNT_EMAIL_NOTIFICATIONS", True)
+ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = settings.get("ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS", 3)
 
 # =============================================================================
 # 👤 PROFILE MODEL — required by ceptor_ai and django_osoul ForeignKey refs

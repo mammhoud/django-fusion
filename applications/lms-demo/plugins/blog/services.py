@@ -7,7 +7,7 @@ django_osoul.services.tagging so it can be reused across apps.
 """
 
 from django.db.models import Count, Q
-from django_osoul.services import PostFilterServiceBase, TagServiceBase
+from django_osoul.core.services import PostFilterServiceBase, TagServiceBase
 
 from .models import BlogPost, BlogTag
 

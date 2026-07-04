@@ -34,8 +34,7 @@ entryPoints:
   web-secure:
     address: ":443"
     http:
-      tls:
-        certResolver: letsencrypt
+      tls: {}
 
   # Optional UDP entrypoint (if you need explicit UDP routing)
   # web-secure-udp:
@@ -46,29 +45,35 @@ providers:
     directory: /etc/traefik/dynamic   # correct path for dynamic configs
     watch: true
 
+# ===========================================================================
+# ACME / Let's Encrypt — DNS-01 (Cloudflare)
+# ===========================================================================
+# Staged rollout (see proxy/LETSENCRYPT.md):
+#   Stage 1 (now): caServer = staging, vresume routers only — verify cert
+#   Stage 2:        caServer = production, add resolvers to remaining sites
+#   Stage 3:        delete proxy/traefik/dynamic/certs.yml
+#
+# DNS provider credentials are read from env vars on the proxy container:
+#   - CF_DNS_API_TOKEN  (scoped token, Zone:DNS:Edit)  — recommended
+#   - CF_API_EMAIL + CF_API_KEY                       — legacy global key
+#
+# Storage path /etc/traefik/acme/acme.json is mounted from ./acme/acme.json
+# (see proxy/docker-compose.traefik.yml). The file MUST exist with mode 0600
+# before the container starts; the manage-certs.sh bootstrap command handles
+# this.
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: "admin@structa.cloud"
-      storage: /etc/traefik/acme/acme.json   # correct path
-      caServer: "https://acme-v02.api.letsencrypt.org/directory"
-      httpChallenge:
-        entryPoint: web
+      email: ${LETSENCRYPT_EMAIL:-admin@structa.cloud}
+      storage: /etc/traefik/acme/acme.json
+      # STAGING — keep here until the first cert is verified (Stage 1).
+      # Once vresume + ctc-research certs are confirmed, flip to production:
+      #   https://acme-v02.api.letsencrypt.org/directory
+      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
+      dnsChallenge:
+        provider: cloudflare
+        delayBeforeCheck: 30
+        resolvers:
+          - 1.1.1.1:53
+          - 8.8.8.8:53
 
-  letsencrypt-staging:
-    acme:
-      email: "admin@structa.cloud"
-      storage: /etc/traefik/acme/acme-staging.json
-      caServer: "https://acme-staging-v02.api.letsencrypt.org/directory"
-      httpChallenge:
-        entryPoint: web
-
-# Optional static certificates (uncomment if you have custom certs)
-# tls:
-#   certificates:
-#     - certFile: /etc/traefik/certs/ctc-research.crt
-#       keyFile: /etc/traefik/certs/ctc-research.key
-#     - certFile: /etc/traefik/certs/structa-cloud.crt
-#       keyFile: /etc/traefik/certs/structa-cloud.key
-#     - certFile: /etc/traefik/certs/vresume.crt
-#       keyFile: /etc/traefik/certs/vresume.key

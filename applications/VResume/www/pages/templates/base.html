@@ -22,7 +22,7 @@
     </title>
 
     {% block meta_tags %}{% endblock %}
-    {% include 'layout/meta.html' %}
+    {% comp_include 'layout/meta.html' %}
 
     {% block favicon %}
         {% if settings.communications.VResumeSettings.favicon %}
@@ -60,7 +60,7 @@
     <main class="vresume-layout spa-shell" data-usecase="spa" data-animate="fade-in">
         {# LEFT SIDEBAR (fixed, collapsible on mobile) #}
         <aside class="vresume-layout__sidebar" data-sidebar>
-            {% include 'sidebar.html' with vresume_settings=settings.communications.VResumeSettings %}
+            {% comp_include 'sidebar.html' vresume_settings=settings.communications.VResumeSettings %}
         </aside>
 
         {# RIGHT MAIN CONTENT AREA #}
@@ -70,21 +70,23 @@
 
             <div id="vresume-tab-content">
                 {# Render appropriate fragment based on active tab #}
+                {% block vresume_content %}
                 {% if active_tab == "home" %}
-                    {% include 'home/fragment.html' with page=page %}
+                    {% comp_include 'home/fragment.html' page=page %}
                 {% elif active_tab == "about" %}
-                    {% include 'about/fragment.html' with page=page %}
+                    {% comp_include 'about/fragment.html' page=page %}
                 {% elif active_tab == "resume" %}
-                    {% include 'resume/fragment.html' with page=page %}
+                    {% comp_include 'resume/fragment.html' page=page %}
                 {% elif active_tab == "portfolio" %}
-                    {% include 'portfolio/fragment.html' with page=page %}
+                    {% comp_include 'portfolio/fragment.html' page=page %}
                 {% elif active_tab == "blog" %}
-                    {% include 'blog/fragment.html' with page=page posts=posts %}
+                    {% comp_include 'blog/fragment.html' page=page posts=posts %}
                 {% elif active_tab == "contact" %}
-                    {% include 'connect/fragment.html' with page=page %}
+                    {% comp_include 'connect/fragment.html' page=page %}
                 {% else %}
-                    {% include 'about/fragment.html' with page=page %}
+                    {% comp_include 'about/fragment.html' page=page %}
                 {% endif %}
+                {% endblock vresume_content %}
             </div>
         </div>
     </main>
@@ -93,7 +95,7 @@
     {# Footer (minimal copyright)                             #}
     {# ====================================================== #}
     {% block footer %}
-        {% include 'layout/footer.html' %}
+        {% comp_include 'layout/footer.html' %}
     {% endblock footer %}
 
     {# ====================================================== #}

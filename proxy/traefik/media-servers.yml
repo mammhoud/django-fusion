@@ -11,7 +11,6 @@ http:
       middlewares: [compress, security-headers]
       service: shared-media-service
       tls:
-        certResolver: letsencrypt
     ctc-media-http:
       rule: 'Host(`media.ctc-research.com`)'
       entryPoints: [web]
@@ -23,7 +22,6 @@ http:
       middlewares: [compress, security-headers]
       service: ctc-media-service
       tls:
-        certResolver: letsencrypt
   services:
     shared-media-service:
       loadBalancer:

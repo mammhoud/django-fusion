@@ -74,23 +74,27 @@ echo ""
 echo "1. Certificate Files Verification"
 echo "=================================="
 
-check_file "/root/site/websites/compose/traefik/certs/ctc-research.crt" "CTC-Research Certificate"
-check_file "/root/site/websites/compose/traefik/certs/ctc-research.key" "CTC-Research Private Key"
-check_file "/root/site/websites/compose/traefik/certs/ctc-research.pem" "CTC-Research PEM"
+# LE-managed: acme.json is the source of truth (Stage 3+). Until Stage 3
+# the self-signed .crt/.key/.pem files in certs/ are still referenced
+# via certs.yml as a fallback.
+check_file "/root/site/websites/compose/traefik/acme/acme.json" "Traefik ACME store (acme.json)"
+check_permission "/root/site/websites/compose/traefik/acme/acme.json" "600" "ACME store permissions"
 
-check_file "/root/site/websites/compose/traefik/certs/structa-cloud.crt" "Structa Cloud Certificate"
-check_file "/root/site/websites/compose/traefik/certs/structa-cloud.key" "Structa Cloud Private Key"
-check_file "/root/site/websites/compose/traefik/certs/structa-cloud.pem" "Structa Cloud PEM"
+check_file "/root/site/websites/compose/traefik/certs/ctc-research.crt" "CTC-Research self-signed cert (fallback)"
+check_file "/root/site/websites/compose/traefik/certs/ctc-research.key" "CTC-Research self-signed key (fallback)"
 
-check_file "/root/site/websites/compose/traefik/certs/vresume.crt" "VResume Certificate"
-check_file "/root/site/websites/compose/traefik/certs/vresume.key" "VResume Private Key"
-check_file "/root/site/websites/compose/traefik/certs/vresume.pem" "VResume PEM"
+check_file "/root/site/websites/compose/traefik/certs/structa-cloud.crt" "Structa Cloud self-signed cert (fallback)"
+check_file "/root/site/websites/compose/traefik/certs/structa-cloud.key" "Structa Cloud self-signed key (fallback)"
+
+check_file "/root/site/websites/compose/traefik/certs/vresume.crt" "VResume self-signed cert (fallback)"
+check_file "/root/site/websites/compose/traefik/certs/vresume.key" "VResume self-signed key (fallback)"
 
 # Check certificate permissions
 echo ""
 echo "2. Certificate File Permissions"
 echo "================================"
 
+# Self-signed keys (fallback) must remain 0600
 check_permission "/root/site/websites/compose/traefik/certs/ctc-research.key" "600" "CTC-Research Key Permissions"
 check_permission "/root/site/websites/compose/traefik/certs/structa-cloud.key" "600" "Structa Cloud Key Permissions"
 check_permission "/root/site/websites/compose/traefik/certs/vresume.key" "600" "VResume Key Permissions"
@@ -111,16 +115,25 @@ echo ""
 echo "4. Configuration Content Verification"
 echo "======================================"
 
-check_contains "/root/site/websites/compose/traefik/traefik.yml" "tls:" "Traefik TLS section exists"
-check_contains "/root/site/websites/compose/traefik/traefik.yml" "ctc-research.crt" "CTC-Research cert in traefik.yml"
-check_contains "/root/site/websites/compose/traefik/traefik.yml" "structa-cloud.crt" "Structa Cloud cert in traefik.yml"
-check_contains "/root/site/websites/compose/traefik/traefik.yml" "vresume.crt" "VResume cert in traefik.yml"
+# Static config: must declare the letsencrypt certificatesResolvers block
+# (dnsChallenge + cloudflare). certs.yml self-signed fallback is still
+# expected on the host until Stage 3 deletes it.
+check_contains "/root/site/websites/compose/traefik/dynamic.yml" "certificatesResolvers:" "Static config declares certificatesResolvers"
+check_contains "/root/site/websites/compose/traefik/dynamic.yml" "certResolver: letsencrypt" "Static config references 'letsencrypt' resolver"
+check_contains "/root/site/websites/compose/traefik/dynamic.yml" "provider: cloudflare" "Static config uses Cloudflare DNS-01"
+check_contains "/root/site/websites/compose/traefik/dynamic.yml" "dnsChallenge:" "Static config uses DNS-01 challenge"
 
-check_contains "/root/site/websites/compose/docker-compose.traefik.yml" "./traefik/certs:/etc/traefik/certs" "Certificate volume mount in compose"
+check_file "/root/site/websites/compose/traefik/dynamic/certs.yml" "Self-signed certs fallback (deleted in Stage 3)"
 
-check_contains "/root/site/websites/compose/traefik/dynamic/ctc-research.yml" "certResolver: local" "CTC-Research uses local cert resolver"
-check_contains "/root/site/websites/compose/traefik/dynamic/structa-cloud.yml" "certResolver: local" "Structa Cloud uses local cert resolver"
-check_contains "/root/site/websites/compose/traefik/dynamic/vresume.yml" "certResolver: local" "VResume uses local cert resolver"
+check_contains "/root/site/websites/compose/docker-compose.traefik.yml" "./traefik/certs:/etc/traefik/certs" "Legacy self-signed certs volume mount in compose"
+check_contains "/root/site/websites/compose/docker-compose.traefik.yml" "./acme:/etc/traefik/acme" "ACME store volume mount in compose"
+check_contains "/root/site/websites/compose/docker-compose.traefik.yml" "CF_DNS_API_TOKEN" "Cloudflare token env var passed to proxy"
+
+# Stage 1 of the LE rollout only enables vresume. Stage 2 will add the
+# other two sites — re-enable these checks at that point.
+# check_contains "/root/site/websites/compose/traefik/dynamic/ctc-research.yml" "certResolver: letsencrypt" "CTC-Research uses Let's Encrypt cert resolver"
+# check_contains "/root/site/websites/compose/traefik/dynamic/structa-cloud.yml" "certResolver: letsencrypt" "Structa Cloud uses Let's Encrypt cert resolver"
+check_contains "/root/site/websites/compose/traefik/dynamic/vresume.yml" "certResolver: letsencrypt" "VResume uses Let's Encrypt cert resolver (Stage 1)"
 
 # Check base directory cleanup
 echo ""

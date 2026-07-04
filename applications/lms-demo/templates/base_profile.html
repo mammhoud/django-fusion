@@ -17,11 +17,11 @@ Page Banner START -->
                         <div class="row g-0 flex-column flex-md-row align-items-center align-items-md-end text-center text-md-start">
                             <!-- Avatar -->
                             <div class="col-12 col-md-auto mt-n5 mb-3 mb-md-0 px-3">
-                                {% include "profile/partials/avatar.html" %}
+                                {% comp_include "profile/partials/avatar.html" %}
                             </div>
                             <!-- Info -->
                             <div class="col-12 col-md mt-2 mt-md-4 px-3 pb-3 pb-md-4">
-                                {% include "profile/partials/user-info.html" %}
+                                {% comp_include "profile/partials/user-info.html" %}
                             </div>
                         </div>
                     </div>
@@ -52,7 +52,7 @@ Page content START -->
         <div class="row g-4">
             <!-- LEFT : navigator (off-canvas on mobile) -->
             <div class="col-xl-3">
-                {% include "profile/partials/navigator.html" %}
+                {% comp_include "profile/partials/navigator.html" %}
             </div>
 
             <!-- RIGHT : HTMX targetable panel -->
@@ -70,13 +70,13 @@ Page content START -->
 </section>
 
 
-{% include 'profile/partials/modals/profile_confirmation.html' with modal_id="confirmationModal" %}
-{% include 'profile/partials/modals/profile_message.html' with modal_id="messageModal" %}
-{% include 'profile/partials/modals/profile_share.html' with modal_id="shareModal" %}
-{% include 'profile/partials/modals/profile_report.html' with modal_id="reportModal" %}
-{% include 'profile/partials/modals/profile_bio.html' with modal_id="bioModal" %}
+{% comp_include 'profile/partials/modals/profile_confirmation.html' modal_id="confirmationModal" %}
+{% comp_include 'profile/partials/modals/profile_message.html' modal_id="messageModal" %}
+{% comp_include 'profile/partials/modals/profile_share.html' modal_id="shareModal" %}
+{% comp_include 'profile/partials/modals/profile_report.html' modal_id="reportModal" %}
+{% comp_include 'profile/partials/modals/profile_bio.html' modal_id="bioModal" %}
 
 {% if user == request.user %}
-{% include 'profile/partials/modals/profile_image.html' with modal_id="profileImageModal" %}
+{% comp_include 'profile/partials/modals/profile_image.html' modal_id="profileImageModal" %}
 {% endif %}
 {% endblock content %}

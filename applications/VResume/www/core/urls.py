@@ -7,6 +7,7 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.urls import include, path, re_path
 from django.views import defaults as default_views
 from django.views.generic import TemplateView
+from django.views.generic.base import RedirectView
 from django.views.i18n import set_language
 from django.views.static import serve
 from wagtail import urls as wagtail_urls
@@ -91,6 +92,12 @@ urlpatterns = [
 # Internationalized URL patterns - these will have language prefixes
 # When prefix_default_language=False, URLs without language prefix use active language
 urlpatterns += i18n_patterns(
+    # Wagtail slug-change redirects — old /home-page/ → /
+    path(
+        "home-page/",
+        RedirectView.as_view(url="/", permanent=True),
+        name="redirect-home-page",
+    ),
     # Your custom apps with i18n support
     path("", include("pages.urls")),
     # Wagtail pages (will automatically handle i18n if WAGTAIL_I18N_ENABLED = True)

@@ -16,7 +16,7 @@ x-proxy-common: &proxy-common
     - common
 x-media-base: &media-base
   build:
-    context: ../services/media
+    context: ./nginx
     dockerfile: Dockerfile
   restart: unless-stopped
   networks:
@@ -38,14 +38,17 @@ services:
       - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms-demo.com`) || Host(`media.vresume.structa.cloud`)"
       - "traefik.http.services.shared-media.loadbalancer.server.port=80"
     volumes:
-      - ../applications/assets/media:/usr/share/nginx/html/media:ro
-      - ../applications/assets/static:/usr/share/nginx/html/static:ro
-      - ../assets/staticfiles:/var/www/static:ro
-      - ../assets/media:/var/www/media:ro
-      - ../ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
-      - ../VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
-      - ./nginx/nginx.conf:/etc/nginx/conf.d/nginx.conf:ro
+      # Site build output staticfiles
+      - ../applications/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../applications/lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
+      - ../applications/VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
+      # Shared application static files
+      - ../applications/assets/static:/var/www/static:ro
+      # Site-specific media uploads
+      - ../applications/ctc-research/assets/media:/var/www/media/ctc-research:ro
+      - ../applications/lms-demo/assets/media:/var/www/media/lms-demo:ro
+      - ../applications/VResume/assets/media:/var/www/media/vresume:ro
+      - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
     networks:
       - common
 

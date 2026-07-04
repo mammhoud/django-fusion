@@ -7,8 +7,8 @@
         <h2 class="h2 article-title">{% trans "About me" %}</h2>
     </header>
 
-    {% include 'about/sections/intro.html' %}
-    {% include 'about/sections/team.html' with team_members=team %}
-    {% include 'about/sections/testimonials.html' %}
-    {% include 'about/sections/clients.html' %}
+    {% comp_include 'about/sections/intro.html' %}
+    {% comp_include 'about/sections/team.html' team_members=team %}
+    {% comp_include 'about/sections/testimonials.html' %}
+    {% comp_include 'about/sections/clients.html' %}
 </article>

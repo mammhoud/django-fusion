@@ -6,7 +6,7 @@ Generic service patterns for common operations.
 """
 # Tagging service bases live in handlers.tagging but are re-exported here
 # so that plugins can do: from django_osoul.core.services import TagServiceBase
-from django_osoul.handlers.tagging import (  # noqa: F401
+from django_osoul.core.handlers.tagging import (  # noqa: F401
     PostFilterServiceBase,
     TagServiceBase,
 )

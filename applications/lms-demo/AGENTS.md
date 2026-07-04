@@ -16,8 +16,9 @@ lms-demo/templates/
 ├── base_page.html          # Extends shared base.html
 ├── base_profile.html       # Profile-specific base template
 ├── base_auth.html          # Auth-specific base template
-├── index.html              # Home page template
+├── index.html              # Home page template (HTMX dispatcher)
 ├── home/
+│   └── main.html           # Home page sections
 │   └── sections/
 │       └── clients.html    # Client logos section
 ├── about/                   # About page templates
@@ -39,9 +40,10 @@ lms-demo/plugins/
 ├── lms/templates/           # LMS email and learning templates
 │   ├── email/               # LMS email templates
 │   └── lms/                 # LMS page templates
-├── profile/templates/       # Empty shelf — reserved for profile overrides
+├── profile/templates/       # Profile templates
 └── components/              # Site-specific UI components
     ├── auth/                # Auth components
+    ├── profile/             # Profile partials and settings
     └── blocks/              # Content blocks
 ```
 
@@ -58,3 +60,11 @@ Use `{% extends "layout/<variant>/skeleton.html" %}`:
 - `layout/learning/` — LMS/learning layout
 - `layout/profile/` — user profile layout
 - `layout/auth/` — authentication layout (via `base_auth.html`)
+
+## Auth & Accounts
+- Adapter: `plugins.accounts.adapters.RegistrationAdapter`
+- Views: `plugins.accounts.views.allauth` (AllauthLoginView, AllauthSignupView)
+- HTMX fragment rendering for login/signup modals
+- Social auth adapter: `AuthHTMXSocialAccountAdapter`
+- Profile settings include 2FA (TOTP-based via `two_factor_enabled`)
+- Templates use `{% comp_include %}` for component tracking

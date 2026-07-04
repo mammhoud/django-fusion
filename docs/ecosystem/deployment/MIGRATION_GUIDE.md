@@ -190,16 +190,16 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.managers.role_hierarchy import RoleHierarchyManager` | `from django_osoul.managers import RoleHierarchyManager` |
-| `from apps.handlers.managers.group_access import GroupAccessControl` | `from django_osoul.managers import GroupAccessControl` |
-| `from apps.handlers.managers.user import UserManager` | `from django_osoul.managers import UserManager` |
-| `from apps.handlers.managers.group import GroupManager` | `from django_osoul.managers import GroupManager` |
-| `from apps.handlers.managers import RoleHierarchyManager` | `from django_osoul.managers import RoleHierarchyManager` |
-| `from apps.handlers.managers import TokenCachedManager` | `from django_osoul.managers import TokenCachedManager` |
-| `from apps.handlers.managers import BaseManager` | `from django_osoul.managers import BaseManager` |
-| `from apps.handlers.managers import CachedManager` | `from django_osoul.managers import CachedManager` |
-| `from apps.handlers.managers import PersonTagCategoryManager` | `from django_osoul.managers import PersonTagCategoryManager` |
-| `from apps.handlers.managers import PersonTagManager` | `from django_osoul.managers import PersonTagManager` |
+| `from apps.handlers.managers.role_hierarchy import RoleHierarchyManager` | `from django_osoul.core.managers import RoleHierarchyManager` |
+| `from apps.handlers.managers.group_access import GroupAccessControl` | `from django_osoul.core.managers import GroupAccessControl` |
+| `from apps.handlers.managers.user import UserManager` | `from django_osoul.core.managers import UserManager` |
+| `from apps.handlers.managers.group import GroupManager` | `from django_osoul.core.managers import GroupManager` |
+| `from apps.handlers.managers import RoleHierarchyManager` | `from django_osoul.core.managers import RoleHierarchyManager` |
+| `from apps.handlers.managers import TokenCachedManager` | `from django_osoul.core.managers import TokenCachedManager` |
+| `from apps.handlers.managers import BaseManager` | `from django_osoul.core.managers import BaseManager` |
+| `from apps.handlers.managers import CachedManager` | `from django_osoul.core.managers import CachedManager` |
+| `from apps.handlers.managers import PersonTagCategoryManager` | `from django_osoul.core.managers import PersonTagCategoryManager` |
+| `from apps.handlers.managers import PersonTagManager` | `from django_osoul.core.managers import PersonTagManager` |
 
 ### Mixins
 
@@ -242,8 +242,8 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.services.user import UserService` | `from django_osoul.services.user import UserService` |
-| `from apps.handlers.services.group import GroupService` | `from django_osoul.services.group import GroupService` |
+| `from apps.handlers.services.user import UserService` | `from django_osoul.core.services.user import UserService` |
+| `from apps.handlers.services.group import GroupService` | `from django_osoul.core.services.group import GroupService` |
 | `from apps.LMS.services.cart import CartService` | `from apps.lms.services.cart import CartService` (thin subclass of `crafts_ai.pipelines.services.cart.CartServiceBase`) |
 | `from apps.LMS.services.person import PersonService` | `from apps.lms.services.person import PersonService` (thin subclass of `crafts_ai.pipelines.services.person.PersonServiceBase`) |
 | `from apps.LMS.services.message import MessageService` | `from apps.lms.services.message import MessageService` (thin subclass of `crafts_ai.pipelines.services.message.MessageServiceBase`) |
@@ -253,11 +253,11 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.handlers.base import ...` | `from django_osoul.handlers.base import ...` |
-| `from apps.handlers.handlers.core import ...` | `from django_osoul.handlers.core import ...` |
-| `from apps.handlers.handlers.search import ...` | `from django_osoul.handlers.search import ...` |
-| `from apps.handlers.handlers.mixins.fragment import ...` | `from django_osoul.handlers.mixins.fragment import ...` |
-| `from apps.handlers.handlers.mixins.page import ...` | `from django_osoul.handlers.mixins.page import ...` |
+| `from apps.handlers.handlers.base import ...` | `from django_osoul.core.handlers.base import ...` |
+| `from apps.handlers.handlers.core import ...` | `from django_osoul.core.handlers.core import ...` |
+| `from apps.handlers.handlers.search import ...` | `from django_osoul.core.handlers.search import ...` |
+| `from apps.handlers.handlers.mixins.fragment import ...` | `from django_osoul.core.handlers.mixins.fragment import ...` |
+| `from apps.handlers.handlers.mixins.page import ...` | `from django_osoul.core.handlers.mixins.page import ...` |
 | `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from crafts_ai.handlers.mixins.wagtail_page import ...` |
 | `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from crafts_ai.handlers.mixins.wagtail_fragment import ...` |
 | `from apps.handlers.handlers.search import ...` (Wagtail) | `from crafts_ai.handlers.search import ...` |
@@ -344,9 +344,9 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.comp.widgets import ...` | `from django_osoul.comp.widgets import ...` |
 | `from apps.handlers.comp.payloads import ...` | `from django_osoul.comp.payloads import ...` |
-| `from apps.handlers.comp.site import ComponentViews` | `from django_osoul.comp.site import ComponentViews` |
-| `from apps.handlers.comp.site import NotificationMixin` | `from django_osoul.comp.site import NotificationMixin` |
-| `from apps.handlers.comp.site import PageHandler` | `from django_osoul.comp.site import PageHandler` |
+| `from apps.handlers.comp.site import ComponentViews` | `from django_osoul.site import ComponentViews` |
+| `from apps.handlers.comp.site import NotificationMixin` | `from django_osoul.site import NotificationMixin` |
+| `from apps.handlers.comp.site import PageHandler` | `from django_osoul.site import PageHandler` |
 | `from apps.handlers.comp.forms.layout import LayoutElement` | `from django_osoul.comp.forms.layout import LayoutElement` |
 | `from apps.handlers.comp.views.includes import PaginatedBaseView` | `from django_osoul.comp.views.includes import PaginatedBaseView` |
 
@@ -354,10 +354,10 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.models import BaseModel` | `from django_osoul.models import BaseModel` |
-| `from apps.handlers.models import Person` | `from django_osoul.models import Person` |
-| `from apps.handlers.models import Certificate` | `from django_osoul.models import Certificate` |
-| `from apps.handlers.models import Message` | `from django_osoul.models import Message` |
+| `from apps.handlers.models import BaseModel` | `from django_osoul.core.models import BaseModel` |
+| `from apps.handlers.models import Person` | `from django_osoul.core.models import Person` |
+| `from apps.handlers.models import Certificate` | `from django_osoul.core.models import Certificate` |
+| `from apps.handlers.models import Message` | `from django_osoul.core.models import Message` |
 | `from apps.handlers.models.manage.company import Organization` | `from apps.accounts.models.manage.company import Organization` |
 
 ### Rendering
@@ -669,7 +669,7 @@ from crafts_ai.contrib.wagtail_hooks import register_custom_hooks
 from apps.accounts.managers import UserManager
 
 # AFTER (Replacement)
-from django_osoul.managers import UserManager
+from django_osoul.core.managers import UserManager
 ```
 
 **Deprecated**: Project-specific middleware implementations
@@ -796,7 +796,7 @@ The `handlers` app was renamed to `accounts`. Update your import:
 from apps.handlers.managers import RoleHierarchyManager
 
 # After
-from django_osoul.managers import RoleHierarchyManager
+from django_osoul.core.managers import RoleHierarchyManager
 ```
 
 Also update `INSTALLED_APPS` to use `apps.accounts` instead of `apps.handlers`.
@@ -1212,7 +1212,7 @@ permissions = manager.get_all_permissions_for_role('admin')
 
 **After:**
 ```python
-from django_osoul.managers import RoleHierarchyManager
+from django_osoul.core.managers import RoleHierarchyManager
 
 manager = RoleHierarchyManager()
 permissions = manager.get_all_permissions_for_role('admin')

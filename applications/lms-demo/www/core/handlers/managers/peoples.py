@@ -6,7 +6,7 @@ from django.contrib.auth import get_user_model
 from django.core.cache import cache
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
-from django_osoul.managers import CachedManager
+from django_osoul.core.managers import CachedManager
 
 from www.core.CI.services import *
 

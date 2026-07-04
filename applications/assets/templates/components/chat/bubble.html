@@ -1,7 +1,7 @@
 {% load static %}
 {# ============================================================
    rseal bubble chat widget
-   Usage: {% include "components/chat/bubble.html" with chat_config=config %}
+   Usage: {% comp_include "components/chat/bubble.html" chat_config=config %}
    ============================================================ #}
 
 {% with config=chat_config|default:"{}" %}

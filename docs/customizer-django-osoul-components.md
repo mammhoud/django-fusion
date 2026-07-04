@@ -160,7 +160,7 @@ Place site-specific registration in a site module such as `applications/ctc-rese
 ```python
 from __future__ import annotations
 
-from django_osoul.site.routes import Application, Site, viewprop
+from django_osoul.comp.routes import Application, Site, viewprop
 
 
 class CustomizerApp(Application):
@@ -290,7 +290,7 @@ from typing import Any
 from django import forms
 from django.http import HttpRequest, HttpResponse
 
-from django_osoul.site.routes.fragments import FragmentViewset
+from django_osoul.comp.routes.fragments import FragmentViewset
 
 
 class CustomizerMessageForm(forms.Form):

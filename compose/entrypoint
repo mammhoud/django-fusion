@@ -119,7 +119,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     LOAD_DUMP_ARGS=("--site" "$SITE_NAME")
     [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
     [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
-    if ! run_logged load_dumped_data python tests/scripts/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
+    if ! run_logged load_dumped_data python tests/scripts/utilities/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then
         echo "[WARN] dumped data load failed (non-fatal); see ${LOG_DIR}/load_dumped_data.log"
     fi
 
@@ -142,7 +142,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     [ "${STRICT_ASSETS:-false}" = "true" ] && VERIFY_ARGS+=("--strict-assets")
     [ "${STRICT_PAGE_CONTENT:-false}" = "true" ] && VERIFY_ARGS+=("--strict-pages")
     [ "${STRICT_PAGE_CONTENT:-false}" != "true" ] && VERIFY_ARGS+=("--no-strict-content")
-    if ! run_logged verify_runtime python tests/scripts/verify_runtime.py "${VERIFY_ARGS[@]}"; then
+    if ! run_logged verify_runtime python tests/scripts/validation/verify_runtime.py "${VERIFY_ARGS[@]}"; then
         echo "[WARN] runtime verification failed (non-fatal); see ${LOG_DIR}/verify_runtime.log"
     fi
 

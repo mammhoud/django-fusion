@@ -15,7 +15,7 @@
         <div class="row g-4">
             <!-- Filter Sidebar -->
             <div class="col-lg-3">
-                {% include "modules/courses/filters.html" %}
+                {% comp_include "modules/courses/filters.html" %}
             </div>
 
             <!-- Course Results Area -->
@@ -48,7 +48,7 @@
 
                 <!-- Results container for HTMX -->
                 <div id="course-results-container">
-                    {% include "modules/courses/search_results.html" %}
+                    {% comp_include "modules/courses/search_results.html" %}
                 </div>
             </div>
         </div>

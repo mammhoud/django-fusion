@@ -9,6 +9,7 @@ from .base import BasePage
 
 
 class TeamPage(BasePage):
+    template_name = "team/main.html"
     fragment_name = "team.main"
     template = "base_page.html"
     page_title = _("Team Page")

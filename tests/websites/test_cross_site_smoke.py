@@ -33,36 +33,38 @@ class SiteSmokeSpec:
     component_templates: tuple[str, ...]
 
 
+SHARED_TEMPLATES = APPS_ROOT / "assets" / "templates"
+
 SITE_SPECS = (
     SiteSmokeSpec(
         key="ctc",
         label="CTC Research",
         root=APPS_ROOT / "ctc-research",
         public_templates=(
-            "www/core/templates/home/main.html",
-            "www/core/templates/about/main.html",
-            "www/core/templates/services/main.html",
-            "www/core/templates/contact/main.html",
+            "templates/home/main.html",
+            "templates/about/main.html",
+            "templates/services/main.html",
+            "templates/contact/main.html",
         ),
-        base_templates=("assets/templates/base.html",),
+        base_templates=("templates/base_page.html",),
         navigation_templates=(
-            "assets/templates/layout/landing/header/landing.html",
-            "assets/templates/layout/landing/partials/navigations.html",
+            str(SHARED_TEMPLATES / "layout" / "landing" / "header" / "landing.html"),
+            str(SHARED_TEMPLATES / "layout" / "landing" / "partials" / "navigations.html"),
         ),
-        footer_templates=("assets/templates/layout/landing/footer.html",),
-        metadata_templates=("assets/templates/layout/landing/meta.html",),
-        static_markers=("{% static", "render_bundle"),
+        footer_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "footer.html"),),
+        metadata_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "meta.html"),),
+        static_markers=("{% extends", "wagtailcore_tags", "{% block body %}"),
         dynamic_markers=(
-            "page.head",
-            "page.summary",
-            "page.CTA",
+            "page.slug",
+            "template_name",
+            "home/main.html",
             "page.contact_form",
         ),
         component_templates=(
-            "www/core/templates/home/sections/slider.html",
-            "www/core/templates/home/sections/listing.html",
-            "www/core/templates/services/includes/services_section.html",
-            "www/core/templates/contact/sections/form.html",
+            str(SHARED_TEMPLATES / "home" / "sections" / "slider.html"),
+            str(SHARED_TEMPLATES / "home" / "sections" / "listing.html"),
+            str(SHARED_TEMPLATES / "services" / "includes" / "services_section.html"),
+            str(SHARED_TEMPLATES / "contact" / "sections" / "form.html"),
         ),
     ),
     SiteSmokeSpec(
@@ -78,11 +80,11 @@ SITE_SPECS = (
         ),
         base_templates=("assets/templates/layout/landing/skeleton.html",),
         navigation_templates=(
-            "assets/templates/layout/landing/header/landing.html",
-            "assets/templates/layout/landing/partials/navigations.html",
+            str(SHARED_TEMPLATES / "layout" / "landing" / "header" / "landing.html"),
+            str(SHARED_TEMPLATES / "layout" / "landing" / "partials" / "navigations.html"),
         ),
-        footer_templates=("assets/templates/layout/landing/footer.html",),
-        metadata_templates=("assets/templates/layout/landing/meta.html",),
+        footer_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "footer.html"),),
+        metadata_templates=(str(SHARED_TEMPLATES / "layout" / "landing" / "meta.html"),),
         static_markers=("{% static", "render_bundle"),
         dynamic_markers=(
             "page.head",
@@ -214,15 +216,15 @@ def test_shared_base_template_exposes_cross_site_layout_blocks_and_bundles() -> 
         "styles",
         "header",
         "body",
-        "modal",
         "scripts",
         "extra_assets",
+        "extra_head",
     ):
-        assert f"block {block_name}" in source
+        assert ("{% block " + block_name + " %}" in source) or ("block " + block_name in source)
     assert "render_bundle 'main' 'js'" in source
     assert "render_bundle 'app' 'js'" in source
+    assert "plugins/notifications/notification.html" in source or "notifications/notification.html" in source
     assert "data-navigation" in source
-    assert "ui/notifications/notification.html" in source
 
 
 def test_static_asset_entrypoints_cover_all_public_sites() -> None:

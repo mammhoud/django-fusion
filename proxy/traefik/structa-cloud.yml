@@ -12,7 +12,6 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: structa-site-service
       tls:
-        certResolver: letsencrypt
         domains:
           - main: 'structa.cloud'
             sans: ['*.structa.cloud']
@@ -29,7 +28,6 @@ http:
       service: structa-media-service
       priority: 100
       tls:
-        certResolver: letsencrypt
   services:
     structa-site-service:
       loadBalancer:

@@ -3,33 +3,7 @@ from allauth.account.views import LoginView, LogoutView, PasswordResetView, Sign
 from django.http import JsonResponse
 from django.urls import include, path
 from django.views import View
-from django.views.generic import DetailView, ListView, TemplateView
-
-
-class EventListView(ListView):
-    """Public event listing backed by the shared Event snippet model."""
-
-    template_name = "events/events.html"
-    context_object_name = "events"
-
-    def get_queryset(self):
-        from plugins.accounts.models import Event
-
-        return Event.objects.filter(is_active=True, is_visible=True).order_by(
-            "start_date", "title"
-        )
-
-
-class EventDetailView(DetailView):
-    """Public event detail backed by the shared Event snippet model."""
-
-    template_name = "events/detail.html"
-    context_object_name = "event"
-
-    def get_queryset(self):
-        from plugins.accounts.models import Event
-
-        return Event.objects.filter(is_active=True, is_visible=True)
+from django.views.generic import TemplateView
 
 
 class NewsletterSubscribeView(View):
@@ -46,9 +20,10 @@ class NewsletterSubscribeView(View):
 app_name = "plugins"
 
 urlpatterns = [
-    path("events/", EventListView.as_view(), name="events"),
-    path("events/<int:pk>/", EventDetailView.as_view(), name="event-detail"),
-    path("accounts/", include("allauth.urls")),
+    # NOTE: allauth.urls is NOT included here — it lives at the top of
+    # applications/lms-demo/www/urls.py (single source of truth, matching
+    # CTC parity). Including it here would re-register the same URL names
+    # under i18n_patterns and cause reverse('account_login') shadowing.
     # Plugin namespaces — accounts is already provided by plugins.accounts.urls
     # included at the accounts/ prefix; do NOT add namespace="accounts" here
     # because app_name="accounts" in that module handles it already.

@@ -42,6 +42,9 @@ const SITE_DIR_MAP = {
   VResume: 'VResume',
   resume: 'VResume',
   'vresume.structa.cloud': 'VResume',
+  crm: 'crm',
+  'crm.structa.cloud': 'crm',
+  inventory: 'crm',
 };
 
 // ─────────────────────────────────────────────────────────────────────────────
@@ -65,6 +68,7 @@ module.exports = (env = {}, argv = {}) => {
     'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/app.js'),
     'lms-demo': path.resolve(workspaceRoot, 'lms-demo/assets/static/js/app.js'),
     'VResume': path.resolve(workspaceRoot, 'VResume/assets/static/js/app.js'),
+    'crm': path.resolve(workspaceRoot, 'crm/assets/static/js/app.js'),
   };
 
   // Static (CSS + vendor) entry — each site provides its own static.js
@@ -72,6 +76,7 @@ module.exports = (env = {}, argv = {}) => {
     'ctc-research': path.resolve(workspaceRoot, 'ctc-research/assets/static/js/static.js'),
     'lms-demo': path.resolve(workspaceRoot, 'lms-demo/assets/static/js/static.js'),
     'VResume': path.resolve(workspaceRoot, 'VResume/assets/static/js/static.js'),
+    'crm': path.resolve(workspaceRoot, 'crm/assets/static/js/static.js'),
   };
 
   const isVResume = siteDir === 'VResume';
@@ -143,6 +148,7 @@ module.exports = (env = {}, argv = {}) => {
         '@ctc': path.resolve(workspaceRoot, 'ctc-research/assets/static/js'),
         '@lms': path.resolve(workspaceRoot, 'lms-demo/assets/static/js'),
         '@vresume': path.resolve(workspaceRoot, 'VResume/assets/static/js'),
+        '@crm': path.resolve(workspaceRoot, 'crm/assets/static/js'),
       },
     },
 

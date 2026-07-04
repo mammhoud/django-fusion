@@ -10,7 +10,7 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django_osoul.comp.site import ComponentViews, NotificationMixin
+from django_osoul.site import ComponentViews, NotificationMixin
 
 # ===============================================
 # AUTH API ENDPOINTS (FOR AJAX/SPA)

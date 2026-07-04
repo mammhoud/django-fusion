@@ -15,7 +15,7 @@ sys.path.insert(0, str(src_path))
 
 # Import directly from the module to avoid loading the full django_osoul package
 # which has dependencies like twilio that may not be installed
-from django_osoul.managers.role_hierarchy import RoleHierarchyManager
+from django_osoul.core.managers.role_hierarchy import RoleHierarchyManager
 from hypothesis import given, settings
 from hypothesis import strategies as st
 

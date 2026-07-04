@@ -52,7 +52,12 @@ WAGTAILSEARCH_BACKENDS = {
 # dedicated media server / X-Accel proxy is present.
 WAGTAILIMAGES_SERVE_METHOD = os.environ.get("WAGTAILIMAGES_SERVE_METHOD", "serve")
 WAGTAIL_CACHE = True
-WAGTAIL_CACHE_BACKEND = "default"
+# Use the shared `redis` alias (matches CACHE_MIDDLEWARE_ALIAS below) so that
+# `cache.clear()` flushes the Wagtail page cache across all 4 gunicorn workers
+# in one call. The previous value `"default"` was LocMemCache (per-process),
+# which is why full container restarts were required to invalidate cached pages
+# from EventPage and other Wagtail Page models.
+WAGTAIL_CACHE_BACKEND = "redis"
 WAGTAILEMBEDS_RESPONSIVE_HTML = True
 
 # -------------------------------------------------------------------
@@ -64,7 +69,33 @@ if "MIDDLEWARE" in dir():  # noqa: F821
         # ... your other middleware ...
         "django.middleware.cache.FetchFromCacheMiddleware",
     ]
-CACHE_MIDDLEWARE_ALIAS = "default"
+# ---- Cache Middleware: Shared Redis (faster than FileBasedCache, survives restarts) ----
+# Add a `redis` alias to CACHES that uses django_redis with a no-password URL.
+# REDIS_URL has a password but Redis has no `requirepass` configured, so we
+# strip the password here. `cache.clear()` affects all 4 gunicorn workers
+# in one call and the cache survives container restarts. Faster than the
+# `file` alias (FileBasedCache) because Redis is in-memory.
+import os
+import re as _re_cache
+
+_redis_env = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+# Strip :password@ from the URL (keeps @host:port/db intact)
+_redis_url_no_password = _re_cache.sub(r"://[^@]+@", "://", _redis_env)
+
+CACHES["redis"] = {
+    "BACKEND": "django_redis.cache.RedisCache",
+    "LOCATION": _redis_url_no_password,
+    "OPTIONS": {
+        "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        "SOCKET_CONNECT_TIMEOUT": 5,
+        "SOCKET_TIMEOUT": 5,
+        "IGNORE_EXCEPTIONS": True,
+    },
+    "KEY_PREFIX": "django_cache",
+    "TIMEOUT": CACHE_MIDDLEWARE_SECONDS,
+}
+
+CACHE_MIDDLEWARE_ALIAS = "redis"
 
 # -------------------------------------------------------------------
 # 🌍 Internationalisation

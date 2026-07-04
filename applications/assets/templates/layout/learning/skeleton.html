@@ -2,7 +2,7 @@
 {% load i18n static unfold %}
 {% load render_bundle from webpack_loader %}
 {% block meta %}
-{% include 'partials/meta.html' %}
+{% comp_include 'partials/meta.html' %}
 {% endblock meta %}
 {% block html_attr %}
     data-theme="theme2" data-usecase="lms" data-sidenav-view="{{ sidenav }}"
@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block header %}
-{% include 'learning/header/learning.html' %}
+{% comp_include 'learning/header/learning.html' %}
 {% endblock header %}
 
 

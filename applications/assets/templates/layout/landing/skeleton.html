@@ -2,7 +2,7 @@
 {% load i18n static unfold %}
 {% load render_bundle from webpack_loader %}
 {% block meta %}
-    {% include 'partials/meta.html' %}
+    {% comp_include 'partials/meta.html' %}
 {% endblock meta %}
 {% block html_attr %}
     data-usecase="landing" data-sidenav-view="{{ sidenav }}" {% endblock html_attr %}
@@ -22,7 +22,7 @@
 {% endblock loader %}
 
  {% block header %}
-    {% include 'landing/header/landing.html' %}
+    {% comp_include 'landing/header/landing.html' %}
 {% endblock header %}
 
 
@@ -52,7 +52,7 @@
     {# Footer Section                                         #}
     {# ====================================================== #}
     {% block footer %}
-        {% include 'landing/footer.html' %}
+        {% comp_include 'landing/footer.html' %}
     {% endblock footer %}
 
     {# ====================================================== #}

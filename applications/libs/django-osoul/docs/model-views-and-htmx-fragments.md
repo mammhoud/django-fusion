@@ -6,12 +6,11 @@ Django model views, Wagtail snippet viewsets, and HTMX fragment responses in
 
 ## Canonical imports
 
-Use public imports from `django_osoul.site`, `django_osoul.site.generic`, and
-`django_osoul.wagtail.viewsets` in new code:
+Use these canonical import paths in new code:
 
 ```python
 from django_osoul.site import ComponentViews, FragmentHandlerMixin, viewprop
-from django_osoul.site.generic import (
+from django_osoul.comp.generic import (
     CreateModelView,
     DetailModelView,
     ListModelView,
@@ -19,10 +18,6 @@ from django_osoul.site.generic import (
 )
 from django_osoul.wagtail.viewsets import BaseSnippetViewSet
 ```
-
-`django_osoul.comp.site` is a deprecated compatibility path. It still re-exports
-site and generic classes for older code, but new code should import from
-`django_osoul.site` or `django_osoul.site.generic` directly.
 
 ## Request flow
 
@@ -65,7 +60,7 @@ needed for your app.
 # urls.py
 from django.urls import path, reverse_lazy
 
-from django_osoul.site.generic import (
+from django_osoul.comp.generic import (
     CreateModelView,
     DetailModelView,
     ListModelView,
@@ -123,7 +118,7 @@ page for normal requests and a smaller fragment for HTMX requests.
 ```python
 # views.py
 from django_osoul.site import FragmentHandlerMixin
-from django_osoul.site.generic import ListModelView
+from django_osoul.comp.generic import ListModelView
 
 from .models import Article
 
@@ -177,7 +172,7 @@ list fragment depending on the UX you want.
 # views.py
 from django.urls import reverse_lazy
 
-from django_osoul.site.generic import CreateModelView, UpdateModelView
+from django_osoul.comp.generic import CreateModelView, UpdateModelView
 
 from .models import Article
 
@@ -212,17 +207,17 @@ class ArticleUpdateView(UpdateModelView):
 ## Viewset-oriented model wiring
 
 When a project uses django-osoul routing/viewset classes, keep custom view
-classes imported from `django_osoul.site.generic` and assign them on the viewset.
+classes imported from `django_osoul.comp.generic` and assign them on the viewset.
 The viewset passes `model`, `queryset`, and `viewset` into the view kwargs.
 
 ```python
-from django_osoul.site.generic import (
+from django_osoul.comp.generic import (
     CreateModelView,
     DetailModelView,
     ListModelView,
     UpdateModelView,
 )
-from django_osoul.site.routes.other import ModelViewset
+from django_osoul.comp.routes.other import ModelViewset
 
 from .models import Article
 
@@ -298,6 +293,6 @@ The duplicate action copies selected snippets with a new primary key and, when a
 ## Import checklist
 
 - New site, context, fragment, and helper imports: `django_osoul.site`.
-- Generic CRUD view imports: `django_osoul.site.generic`.
+- Generic CRUD view imports: `django_osoul.comp.generic`.
 - Wagtail snippet helpers: `django_osoul.wagtail.viewsets`.
-- Deprecated compatibility only: `django_osoul.comp.site`.
+

@@ -1,0 +1,27 @@
+{% load wagtailcore_tags wagtailimages_tags %}
+<!-- client area start -->
+<div class="client__area-3 pt-50 pb-50">
+    <div class="container">
+        <div class="row gx-0">
+            <div class="col-xl-12">
+                <div class="client__slider client__slider-active owl-carousel text-center">
+                    {% for client_block in block.value %}
+                        {% with client=client_block.value %}
+                        <div class="client__thumb">
+                            {% image client.logo max-300x200 as logo %}
+                            {% if client.link %}
+                                <a href="{{ client.link }}">
+                                    <img src="{{ logo.url }}" alt="{{ client.logo.title }}">
+                                </a>
+                            {% else %}
+                                <img src="{{ logo.url }}" alt="{{ client.logo.title }}">
+                            {% endif %}
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- client area end -->

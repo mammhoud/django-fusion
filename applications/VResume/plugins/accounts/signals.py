@@ -10,7 +10,7 @@ import threading
 from django.contrib.auth.signals import user_logged_in
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django_osoul.models import EmailTemplate
+from django_osoul.core.models import EmailTemplate
 
 logger = logging.getLogger(__name__)
 

@@ -1,24 +1,34 @@
 from django.http import Http404
-from django.views.generic import DetailView, ListView
+from django.views.generic import DetailView
+
+from wagtail.models import Page, Site
 
 
-class EventListView(ListView):
-    """Public event listing backed by the shared Event snippet model."""
+def event_list_view(request):
+    """
+    Serve the Wagtail EventPage by finding it in the page tree.
 
-    template_name = "events/main.html"
-    context_object_name = "events"
+    Replaces the old Django ``EventListView``.  The ``EventPage``
+    (``BaseIndexPage`` subclass) handles pagination via
+    ``get_listed_items()`` and the grid template iterates over
+    ``page_items``.
+    """
+    site = Site.find_for_request(request)
+    if not site:
+        raise Http404("No site configured")
 
-    def get_queryset(self):
-        from plugins.accounts.models import Event
+    from pages.events.models import EventPage
 
-        return Event.objects.filter(is_active=True, is_visible=True).order_by(
-            "start_date", "title"
-        )
+    page = (
+        Page.objects.child_of(site.root_page)
+        .type(EventPage)
+        .live()
+        .first()
+    )
+    if not page:
+        raise Http404("No events page found")
 
-    def get_context_data(self, **kwargs):
-        context = super().get_context_data(**kwargs)
-        context.update({"active_tab": "events", "page_title": "Events"})
-        return context
+    return page.specific.serve(request)
 
 
 class EventDetailView(DetailView):

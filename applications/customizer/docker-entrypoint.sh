@@ -4,6 +4,12 @@ set -euo pipefail
 CUSTOMIZER_PORT="${CUSTOMIZER_PORT:-5073}"
 APP_HOME="/app/customizer"
 WORKERS="${WORKERS:-2}"
+# Auto-recycle workers to flush stale in-memory state (template caches,
+# cached.Loader entries, accumulated per-worker caches) after they have
+# served MAX_REQUESTS requests. Jitter spreads restarts so a thundering
+# herd is avoided. Set MAX_REQUESTS=0 to disable.
+MAX_REQUESTS="${MAX_REQUESTS:-1000}"
+MAX_REQUESTS_JITTER="${MAX_REQUESTS_JITTER:-100}"
 
 cd "$APP_HOME"
 
@@ -32,6 +38,8 @@ case "${1:-server}" in
             --bind "0.0.0.0:${CUSTOMIZER_PORT}" \
             --workers "${WORKERS}" \
             --worker-class uvicorn.workers.UvicornWorker \
+            --max-requests "${MAX_REQUESTS}" \
+            --max-requests-jitter "${MAX_REQUESTS_JITTER}" \
             --access-logfile - \
             --error-logfile - \
             server:asgi_application

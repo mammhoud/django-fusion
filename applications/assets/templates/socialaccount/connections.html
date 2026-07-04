@@ -5,7 +5,7 @@
 <section class="fragment--form">
   <section class="auth__card card card--form">
     <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Social Connections" %}</h2><p class="auth__form-subtitle">{% trans "Manage your connected social accounts" %}</p></header>
-    {% include "account/snippets/messages.html" %}
+    {% comp_include "account/snippets/messages.html" %}
 
     {% if connected_accounts %}
       <div class="mb-4"><h3 class="fs-6 fw-bold">{% trans "Connected accounts" %}</h3>

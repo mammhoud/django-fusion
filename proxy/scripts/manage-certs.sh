@@ -3,28 +3,35 @@
 ################################################################################
 # SSL Certificate Management Script for Traefik
 # ─────────────────────────────────────────────────────────────────────────────
-# Manage self-signed and Let's Encrypt certificates for the multi-site setup.
+# Production certificates are now obtained via Let's Encrypt DNS-01 (Cloudflare),
+# managed natively by Traefik. This script is retained for:
+#   • Bootstrapping the local ACME storage (bootstrap-acme)
+#   • Inspecting what Traefik has stored (status)
+#   • Legacy self-signed cert generation (generate-self-signed) — kept as a
+#     fallback for environments without DNS provider access.
 #
 # Usage:
 #   ./manage-certs.sh [command] [options]
 #
 # Commands:
-#   generate-self-signed   Generate self-signed certificates for all domains
-#   list                   List all certificates with expiration dates
-#   check-expiry           Check if any certificates are expiring soon
-#   backup                 Backup all certificates to a dated archive
-#   restore [file]         Restore certificates from backup
-#   renew-letsencrypt      Attempt to renew using Let's Encrypt ACME
-#   validate               Validate certificate and key pairs
+#   bootstrap-acme         Create proxy/acme/ with a 0600 acme.json placeholder
+#   status                 Show Traefik ACME storage + certs on disk
+#   check-expiry           Check expiry of any LE certs in acme.json
+#   generate-self-signed   Generate self-signed certificates for all domains (legacy)
+#   list                   List all certificates with expiration dates (legacy)
+#   backup                 Backup all certificates to a dated archive (legacy)
+#   restore [file]         Restore certificates from backup (legacy)
+#   validate               Validate certificate and key pairs (legacy)
 #   help                   Show this help message
 #
+# See proxy/LETSENCRYPT.md for the full DNS-01 deployment runbook.
 ################################################################################
 
 set -e
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-CERTS_DIR="${SCRIPT_DIR}/certs"
-BACKUP_DIR="${SCRIPT_DIR}/certs"
+CERTS_DIR="${SCRIPT_DIR}/../certs"
+BACKUP_DIR="${SCRIPT_DIR}/../certs"
 COMPOSE_FILE="${SCRIPT_DIR}/../../docker-compose.yml"
 
 # Colors for output
@@ -34,11 +41,12 @@ YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
-# Certificate domains
+# Certificate domains. First domain is the CN; the rest become SubjectAltName (SAN) entries.
+# Keep these in sync with the per-site ALLOWED_HOSTS in applications/<site>/docker-compose.yml.
 DOMAINS=(
-  "ctc-research:ctc-research.com"
-  "structa-cloud:structa.cloud"
-  "vresume:vresume.structa.cloud"
+  "ctc-research:ctc-research.com www.ctc-research.com arch.ctc-research.com"
+  "structa-cloud:structa.cloud www.structa.cloud core.structa.cloud"
+  "vresume:vresume.structa.cloud www.vresume.structa.cloud resume.structa.cloud"
 )
 
 ################################################################################
@@ -67,26 +75,43 @@ log_error() {
 
 generate_self_signed() {
   local cert_name=$1
-  local domain=$2
-  local days=${3:-365}
+  shift
+  local domains=("$@")
+  local primary_domain="${domains[0]}"
+  local days=365
 
-  log_info "Generating self-signed certificate for $domain ($cert_name)..."
+  log_info "Generating self-signed certificate for $primary_domain ($cert_name)..."
+  log_info "  SANs: ${domains[*]}"
+
+  # Build the SubjectAltName value: "DNS:dom1,DNS:dom2,..."
+  local san_csv=""
+  local d
+  for d in "${domains[@]}"; do
+    if [ -z "$san_csv" ]; then
+      san_csv="DNS:${d}"
+    else
+      san_csv="${san_csv},DNS:${d}"
+    fi
+  done
 
   # Generate private key
   openssl genrsa -out "${CERTS_DIR}/${cert_name}.key" 2048 2>/dev/null
 
-  # Generate certificate signing request
+  # Generate certificate signing request with proper CN and SANs
+  # (-addext requires OpenSSL ≥ 1.1.0; the -extfile on x509 is a belt-and-braces fallback.)
   openssl req -new \
     -key "${CERTS_DIR}/${cert_name}.key" \
     -out "${CERTS_DIR}/${cert_name}.csr" \
-    -subj "/C=US/ST=California/L=Remote/O=Structa/CN=${domain}" \
+    -subj "/C=US/ST=California/L=Remote/O=Structa/CN=${primary_domain}" \
+    -addext "subjectAltName=${san_csv}" \
     2>/dev/null
 
-  # Generate self-signed certificate (valid for 365 days)
+  # Generate self-signed certificate (valid for $days days) with SANs
   openssl x509 -req -days "${days}" \
     -in "${CERTS_DIR}/${cert_name}.csr" \
     -signkey "${CERTS_DIR}/${cert_name}.key" \
     -out "${CERTS_DIR}/${cert_name}.crt" \
+    -extfile <(printf "subjectAltName=%s\n" "$san_csv") \
     2>/dev/null
 
   # Generate certificate chain (for compatibility)
@@ -124,7 +149,10 @@ list_certificates() {
 
     echo ""
     echo "Certificate: $cert_name"
-    echo "Domain: $domain"
+    echo "Domains:"
+    for d in $domain; do
+      echo "  - $d"
+    done
     echo "File: $cert_file"
 
     # Get expiration date
@@ -289,6 +317,72 @@ validate_certificates() {
 }
 
 ################################################################################
+# Bootstrap ACME storage (proxy/acme/acme.json, mode 0600)
+################################################################################
+
+bootstrap_acme() {
+  local acme_dir="${SCRIPT_DIR}/../acme"
+  local acme_file="${acme_dir}/acme.json"
+
+  log_info "Bootstrapping ACME storage at ${acme_file}..."
+
+  mkdir -p "$acme_dir"
+  if [ ! -f "$acme_file" ]; then
+    : > "$acme_file"
+  fi
+  chmod 600 "$acme_file"
+
+  log_success "ACME storage ready: ${acme_file} (mode 0600)"
+  log_info "You can now start the proxy: docker compose -f proxy/docker-compose.traefik.yml up -d"
+}
+
+################################################################################
+# Status — show Traefik ACME storage + per-site certs on disk
+################################################################################
+
+status_certificates() {
+  local acme_file="${SCRIPT_DIR}/../acme/acme.json"
+  echo ""
+  log_info "ACME / Let's Encrypt status"
+  echo "────────────────────────────────────────────────────────────"
+
+  if [ -f "$acme_file" ]; then
+    local size
+    size=$(du -sh "$acme_file" | cut -f1)
+    local perms
+    perms=$(stat -c %a "$acme_file")
+    log_success "acme.json present  (${size}, mode ${perms})"
+    if command -v jq >/dev/null 2>&1; then
+      local cert_count
+      cert_count=$(jq -r '.. | .Certificates? // empty | length' "$acme_file" 2>/dev/null \
+        | awk '{s+=$1} END {print s+0}')
+      if [ "${cert_count:-0}" -gt 0 ]; then
+        log_success "LE certs in store: ${cert_count}"
+        jq -r '.. | .Certificates? // empty | .[] | "  - " + .domain + "  (expires " + (.certificate.expiry // "unknown") + ")"' \
+          "$acme_file" 2>/dev/null || true
+      else
+        log_warning "acme.json exists but no LE certs yet — trigger by hitting an https endpoint"
+      fi
+    else
+      log_warning "Install 'jq' to inspect cert domains/expiries"
+    fi
+  else
+    log_warning "acme.json not found at ${acme_file}"
+    log_info "Run: $0 bootstrap-acme"
+  fi
+
+  echo ""
+  log_info "Legacy self-signed certs in ${CERTS_DIR}:"
+  for cert in "${CERTS_DIR}"/*.crt; do
+    [ -f "$cert" ] || continue
+    local notAfter
+    notAfter=$(openssl x509 -in "$cert" -noout -enddate 2>/dev/null | cut -d= -f2)
+    printf "  %-32s expires: %s\n" "$(basename "$cert" .crt)" "$notAfter"
+  done
+  echo ""
+}
+
+################################################################################
 # Main
 ################################################################################
 
@@ -298,21 +392,36 @@ main() {
   mkdir -p "$CERTS_DIR"
 
   case "$command" in
+    bootstrap-acme)
+      bootstrap_acme
+      ;;
+
+    status)
+      status_certificates
+      ;;
+
+    check-expiry)
+      check_expiry
+      ;;
+
     generate-self-signed)
       log_info "Generating self-signed certificates for all domains..."
       for domain_config in "${DOMAINS[@]}"; do
-        IFS=':' read -r cert_name domain <<< "$domain_config"
-        generate_self_signed "$cert_name" "$domain" 365
+        IFS=':' read -r cert_name domain_str <<< "$domain_config"
+        # Split the space-separated domain list into positional args (first is CN, rest are SANs).
+        # Filter out empty entries to avoid `subjectAltName=DNS:,DNS:...` if anyone leaves a trailing space.
+        set --
+        # shellcheck disable=SC2086
+        for d in $domain_str; do
+          [ -n "$d" ] && set -- "$@" "$d"
+        done
+        generate_self_signed "$cert_name" "$@"
       done
       log_success "All certificates generated"
       ;;
 
     list)
       list_certificates
-      ;;
-
-    check-expiry)
-      check_expiry
       ;;
 
     backup)
@@ -335,50 +444,50 @@ SSL Certificate Management Script for Traefik
 
 Usage:  ./manage-certs.sh [command] [options]
 
-Commands:
-  generate-self-signed     Generate self-signed certificates for all domains
-  list                     List all certificates with expiration dates
-  check-expiry             Check if any certificates are expiring soon
-  backup                   Backup all certificates to a dated archive
-  restore [file]           Restore certificates from a backup archive
-  validate                 Validate certificate and key pairs
-  help                     Show this help message
+Primary (Let's Encrypt / ACME) commands:
+  bootstrap-acme         Create proxy/acme/acme.json (mode 0600) before first start
+  status                 Show ACME storage contents + per-site cert status
+  check-expiry           Check expiry of LE certs in acme.json (uses jq if available)
+
+Legacy (self-signed) commands — kept as a fallback for environments
+without DNS provider access:
+  generate-self-signed   Generate self-signed certificates for all domains
+  list                   List self-signed certificates with expiration dates
+  backup                 Backup self-signed certs to a dated archive
+  restore [file]         Restore self-signed certs from a backup archive
+  validate               Validate self-signed cert/key pairs
+
+Other:
+  help                   Show this help message
 
 Examples:
-  # Generate new self-signed certificates
-  ./manage-certs.sh generate-self-signed
+  # First-time LE setup
+  cp proxy/.env.example proxy/.env  # fill in CF_DNS_API_TOKEN
+  ./manage-certs.sh bootstrap-acme
+  docker compose -f proxy/docker-compose.traefik.yml up -d
+  ./manage-certs.sh status
 
-  # List all certificates
-  ./manage-certs.sh list
-
-  # Check expiration status
+  # Inspect an existing LE store
+  ./manage-certs.sh status
   ./manage-certs.sh check-expiry
 
-  # Backup certificates
-  ./manage-certs.sh backup
-
-  # Restore from backup
-  ./manage-certs.sh restore certs/certs-backup-20260611-120000.tar.gz
-
-  # Validate certificates match keys
+  # Legacy self-signed flow (fallback)
+  ./manage-certs.sh generate-self-signed
   ./manage-certs.sh validate
 
-Supported Domains:
-  • ctc-research.com
-  • structa.cloud
-  • vresume.structa.cloud
+DNS-01 / Let's Encrypt Configuration:
+  See proxy/LETSENCRYPT.md for the full runbook (provider credentials,
+  staged rollout, acme.json bootstrapping, rollback).
+
+Supported Domains (CN + SANs):
+  • ctc-research.com       (www.ctc-research.com, arch.ctc-research.com)
+  • structa.cloud          (www.structa.cloud, core.structa.cloud)
+  • vresume.structa.cloud  (www.vresume.structa.cloud, resume.structa.cloud)
 
 Certificate Information:
-  • Type: Self-signed (currently in use)
-  • Validity: 365 days from generation
-  • Storage: ./certs/ directory
-  • Backups: ./certs/ directory
-
-ACME / Let's Encrypt Configuration:
-  To enable automatic ACME certificate renewal:
-  1. Set valid email in TRAEFIK_ACME_EMAIL environment variable (.env)
-  2. Configure DNS or HTTP challenge in traefik.yml
-  3. Restart Traefik: docker compose restart structa-proxy
+  • Primary:  Let's Encrypt (DNS-01, Cloudflare) — auto-renewed by Traefik
+  • Fallback: Self-signed (365 days) — managed by this script
+  • Storage:  ./acme/acme.json (LE)  and  ./certs/ (self-signed)
 
 HELP
       ;;

@@ -18,6 +18,8 @@ function normalizeSiteName(value) {
     resume: 'vresume',
     VResume: 'vresume',
     'vresume.structa.cloud': 'vresume',
+    'crm.structa.cloud': 'crm',
+    inventory: 'crm',
   };
   return aliases[raw] || raw;
 }

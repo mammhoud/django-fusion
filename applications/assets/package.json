@@ -14,6 +14,8 @@
     "build:structa": "node scripts/workspace.mjs build --site structa",
     "build:vresume": "node scripts/workspace.mjs build --site vresume",
     "build:all": "node scripts/workspace.mjs build --site all",
+    "build:crm": "node scripts/workspace.mjs build --site crm",
+    "build:dev:crm": "node scripts/workspace.mjs build-dev --site crm",
     "watch": "node scripts/workspace.mjs watch",
     "dev": "node scripts/workspace.mjs dev",
     "clean": "node scripts/workspace.mjs clean --site all",
@@ -46,6 +48,7 @@
     "watch:customizer": "node scripts/workspace.mjs watch --site customizer",
     "dev:customizer": "node scripts/workspace.mjs dev --site customizer",
     "clean:customizer": "node scripts/workspace.mjs clean --site customizer",
+    "clean:crm": "node scripts/workspace.mjs clean --site crm",
     "collectstatic:customizer": "node scripts/workspace.mjs collectstatic --site customizer",
     "build:collect:customizer": "node scripts/workspace.mjs build-collect --site customizer",
     "build:ctc-website": "node scripts/workspace.mjs build --site ctc-website"

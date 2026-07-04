@@ -10,7 +10,7 @@ from django.db import transaction
 from django.db.models import Avg, Count, F, Max, Min, Q
 from django.db.models.aggregates import Sum
 from django.utils import timezone
-from django_osoul.managers import CachedManager
+from django_osoul.core.managers import CachedManager
 
 if TYPE_CHECKING:
     from plugins.lms.models import Course, Enrollment, Lesson, Module

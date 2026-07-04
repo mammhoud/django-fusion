@@ -22,10 +22,10 @@
      success_message : hint text shown next to field_success field
 
    USAGE — standard form:
-     {% include "ui/forms/form.html" with form=my_form %}
+     {% comp_include "ui/forms/form.html" form=my_form %}
 
    USAGE — HTMX form:
-     {% include "ui/forms/form.html" with
+     {% comp_include "ui/forms/form.html"
          form=my_form
          hx_post="/api/endpoint/"
          hx_target="#result"
@@ -34,14 +34,14 @@
      %}
 
    USAGE — with cancel (in modal):
-     {% include "ui/forms/form.html" with
+     {% comp_include "ui/forms/form.html"
          form=my_form
          show_cancel=True
          cancel_label="Discard"
      %}
 
    USAGE — with field-level success hint:
-     {% include "ui/forms/form.html" with
+     {% comp_include "ui/forms/form.html"
          form=my_form
          hx_post="/validate/"
          field_success="username"

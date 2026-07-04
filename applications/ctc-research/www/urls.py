@@ -149,6 +149,46 @@ urlpatterns += i18n_patterns(
 # Documented under docs/routable-site-urls.md. Mount before Wagtail catch-all.
 urlpatterns += [path("osoul/", include((site.urls[0], site.urls[1]), namespace=site.urls[2]))]
 
+# ── Old slug redirects (about-page → about, team-page → team) ──────────────
+class _LocalePreservingRedirectView(RedirectView):
+    """RedirectView subclass that preserves the active i18n language prefix."""
+    permanent = True
+    url = None
+
+    def get_redirect_url(self, *args, **kwargs):
+        redirect_url = super().get_redirect_url(*args, **kwargs)
+        from django.utils.translation import get_language
+        current_lang = get_language()
+        default_lang = settings.LANGUAGE_CODE
+        if current_lang and current_lang != default_lang and redirect_url:
+            redirect_url = f"/{current_lang}{redirect_url}"
+        return redirect_url
+
+
+urlpatterns += i18n_patterns(
+    path(
+        "about-page/",
+        _LocalePreservingRedirectView.as_view(url="/about/"),
+        name="redirect-about-page",
+    ),
+    path(
+        "team-page/",
+        _LocalePreservingRedirectView.as_view(url="/team/"),
+        name="redirect-team-page",
+    ),
+    path(
+        "contact-page/",
+        _LocalePreservingRedirectView.as_view(url="/contact/"),
+        name="redirect-contact-page",
+    ),
+    path(
+        "home-page/",
+        _LocalePreservingRedirectView.as_view(url="/"),
+        name="redirect-home-page",
+    ),
+    prefix_default_language=False,
+)
+
 # ── Wagtail ───────────────────────────────────────────────────────────────────
 if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
     urlpatterns += [

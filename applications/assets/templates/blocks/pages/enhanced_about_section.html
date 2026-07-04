@@ -119,7 +119,7 @@
 
             <div class="row g-4">
                 {% for member in self.team_members %}
-                {% include "blocks/enhanced_team_member.html" with value=member.value %}
+                {% comp_include "blocks/enhanced_team_member.html" value=member.value %}
                 {% endfor %}
             </div>
         </div>
@@ -134,7 +134,7 @@
 
             <div class="row g-3">
                 {% for item in self.gallery_items %}
-                {% include "blocks/media_gallery_item.html" with value=item.value %}
+                {% comp_include "blocks/media_gallery_item.html" value=item.value %}
                 {% endfor %}
             </div>
         </div>

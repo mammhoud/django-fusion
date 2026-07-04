@@ -14,8 +14,10 @@ http:
       tls:
         certResolver: letsencrypt
         domains:
-          - main: 'structa.cloud'
-            sans: ['*.structa.cloud']
+          - main: structa.cloud
+            sans:
+              - www.structa.cloud
+              - core.structa.cloud
     structa-media-http:
       rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
@@ -30,6 +32,11 @@ http:
       priority: 100
       tls:
         certResolver: letsencrypt
+        domains:
+          - main: structa.cloud
+            sans:
+              - www.structa.cloud
+              - core.structa.cloud
   services:
     structa-site-service:
       loadBalancer:
@@ -37,6 +44,7 @@ http:
           - url: 'http://lms-web:5071'
         healthCheck:
           path: /health/
+          hostname: structa.cloud
           interval: 30s
           timeout: 10s
     structa-media-service:

@@ -12,7 +12,7 @@ from __future__ import annotations
 from django import forms
 from django.db.models import Q
 from django.http import HttpResponse
-from django_osoul.site.routes import FragmentComponent
+from django_osoul.comp.routes import FragmentComponent
 
 
 class BlogPostListFragment(FragmentComponent):
