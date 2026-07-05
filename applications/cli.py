@@ -47,6 +47,13 @@ SITES = {
         "port": 5072,
         "db_name": "vresume",
     },
+    "crm": {
+        "path": "crm",
+        "project_path": "crm",
+        "service": "crm-website",
+        "port": 5074,
+        "db_name": "db_crm",
+    },
 }
 
 SITE_ALIASES = {
@@ -63,6 +70,10 @@ SITE_ALIASES = {
     "vresume": "vresume",
     "vresume.structa.cloud": "vresume",
     "VResume": "vresume",
+    "crm": "crm",
+    "sales": "crm",
+    "inventory": "crm",
+    "crm.structa.cloud": "crm",
 }
 
 LIBS = {

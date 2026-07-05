@@ -1,0 +1,43 @@
+http:
+  routers:
+    crm-site-http:
+      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: crm-site-service
+      priority: 10
+    crm-site-https:
+      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: crm-site-service
+      tls:
+        certResolver: letsencrypt
+    crm-site-media-http:
+      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: crm-site-media-service
+      priority: 100
+    crm-site-media-https:
+      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: crm-site-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt
+  services:
+    crm-site-service:
+      loadBalancer:
+        servers:
+          - url: 'http://crm-website:5074'
+        healthCheck:
+          path: /health/
+          hostname: crm.structa.cloud
+          interval: 30s
+          timeout: 10s
+    crm-site-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-media:80'
