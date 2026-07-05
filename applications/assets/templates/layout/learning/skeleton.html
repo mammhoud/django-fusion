@@ -1,8 +1,8 @@
 {% extends 'base.html' %}
 {% load i18n static unfold %}
-{% load render_bundle from webpack_loader %}
+{% load render_bundle from webpack_loader laces laces %}
 {% block meta %}
-{% comp_include 'partials/meta.html' %}
+{% comp 'partials/meta.html' /%}
 {% endblock meta %}
 {% block html_attr %}
     data-theme="theme2" data-usecase="lms" data-sidenav-view="{{ sidenav }}"
@@ -20,7 +20,7 @@
 {% endblock %}
 
 {% block header %}
-{% comp_include 'learning/header/learning.html' %}
+{% comp 'learning/header/learning.html' /%}
 {% endblock header %}
 
 

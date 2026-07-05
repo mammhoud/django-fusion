@@ -45,7 +45,7 @@ SITE_DIR_NAME="${PROJECT_PATH:-$SITE_NAME}"
 if [ ! -d "${APP_HOME}/${SITE_DIR_NAME}" ] && [ "$SITE_NAME" = "vresume" ]; then
     SITE_DIR_NAME="VResume"
 fi
-export PYTHONPATH="${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
+export PYTHONPATH="${APP_HOME}/libs/django-fusion/src:${APP_HOME}/${SITE_DIR_NAME}/www:${APP_HOME}/${SITE_DIR_NAME}:${APP_HOME}:${PYTHONPATH:-}"
 
 if [ "${RUN_UV_SYNC:-false}" = "true" ]; then
     echo "[SETUP] Syncing Python dependencies with uv..."

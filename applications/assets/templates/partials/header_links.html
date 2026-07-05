@@ -1,4 +1,4 @@
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces laces %}
 <!-- Menu -->
 <div class="header-menu">
     <button class="sidebar-close d-lg-none" aria-label="Close menu">
@@ -13,20 +13,20 @@
             {# Mobile only: Auth & Language #}
             <li class="nav-item d-xl-only mt-4 border-top pt-4">
                 <div class="mobile-actions">
-                    {% comp_include "partials/auth_buttons.html" %}
+                    {% comp "partials/auth_buttons.html" /%}
                 </div>
             </li>
             <li class="nav-item d-xl-only mt-3">
                 <div class="mobile-actions">
-                    {% comp_include "partials/language_selector.html" %}
+                    {% comp "partials/language_selector.html" /%}
                 </div>
             </li>
         </ul>
 
         <!-- Desktop only: User actions -->
         <div class="desktop-actions d-none d-xl-flex">
-            {% comp_include "partials/auth_buttons.html" %}
-            {% comp_include "partials/language_selector.html" %}
+            {% comp "partials/auth_buttons.html" /%}
+            {% comp "partials/language_selector.html" /%}
         </div>
     </div>
 </div>

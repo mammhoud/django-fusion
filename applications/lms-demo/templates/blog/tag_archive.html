@@ -1,5 +1,5 @@
 {% extends "landing/skeleton.html" %}
-{% load i18n %}
+{% load i18n laces %}
 
 {% block content %}
 <div class="tag-archive py-5">
@@ -26,7 +26,7 @@
         <div class="row g-4">
             {% for post in posts %}
             <div class="col-md-6 col-lg-4">
-                {% comp_include "blog/components/post_card.html" post=post %}
+                {% comp "blog/components/post_card.html" post=post / %}
             </div>
             {% empty %}
             <div class="col-12 text-center py-5 text-muted">

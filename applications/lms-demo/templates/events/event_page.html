@@ -1,3 +1,4 @@
+{% load laces %}
 {% extends "base_page.html" %}
 
 {# LMS-only Wagtail EventPage template (neutralises cross-site leak):
@@ -5,5 +6,5 @@
    Resolved via Django APP_DIRS chain so the lookup key `events/event_page.html`
    keeps resolving — but only to this file, never to CTC/VResume. #}
 {% block content %}
-    {% comp_include "events/main.html" %}
+    {% comp "events/main.html" /%}
 {% endblock %}

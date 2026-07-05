@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static i18n wagtailcore_tags wagtailimages_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags laces %}
 
 <!-- Course Grid Component -->
 <div class="course-grid">
@@ -135,7 +135,7 @@
                         </div>
 
                         <!-- Enroll Button -->
-                        {% comp_include "courses/partials/course_actions.html" course=course %}
+                        {% comp "courses/partials/course_actions.html" course=course / %}
                     </div>
                 </article>
             </div>

@@ -1,5 +1,5 @@
 {# HTMX Fragment: Portfolio Tab Content Only (No Layout) #}
-{% load i18n %}
+{% load i18n laces laces %}
 
 <article class="portfolio active container" data-page="portfolio">
   <header class="content__header">
@@ -12,6 +12,6 @@
 
   {# Results container - replaced by HTMX on filter/search #}
   <div id="results-container">
-    {% comp_include 'portfolio/sections/projects.html' %}
+    {% comp 'portfolio/sections/projects.html' /%}
   </div>
 </article>

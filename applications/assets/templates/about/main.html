@@ -4,17 +4,17 @@
 
 {% for block in page.head %}
 {% if block.block_type == 'page_title' %}
-{% comp_include "content/page_title.html" %}
+{% comp "content/page_title.html" /%}
 {% endif %}
 {% endfor %}
 
 
 {% for block in page.facts %}
 {% if block.block_type == 'about' %}
-{% comp_include "about/sections/about.html" %}
+{% comp "about/sections/about.html" /%}
 {% elif block.block_type == 'testimonials' %}
-{% comp_include "about/sections/testimonials.html" %}
+{% comp "about/sections/testimonials.html" /%}
 {% elif block.block_type == 'clients' %}
-{% comp_include "about/sections/clients.html" %}
+{% comp "about/sections/clients.html" /%}
 {% endif %}
 {% endfor %}

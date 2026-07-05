@@ -1,5 +1,5 @@
 {% extends "base_auth.html" %}
-{% load i18n static wagtailcore_tags wagtailimages_tags %}
+{% load i18n static wagtailcore_tags wagtailimages_tags laces %}
 {% image BrandSettings.logo original as logo %}
 
 {% block auth_content %}
@@ -24,7 +24,7 @@
       </p>
     </header>
 
-    {% include "account/snippets/messages.html" %}
+    {% comp "account/snippets/messages.html" / %}
 
     <div class="auth__content">
       <!-- Instructions -->

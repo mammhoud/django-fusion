@@ -1,5 +1,5 @@
 {% extends "base_page.html" %}
-{% load i18n %}
+{% load i18n laces laces %}
 
 {% block content %}
 <div class="container py-5">
@@ -108,7 +108,7 @@
 
       <!-- HTMX-swappable results container -->
       <div id="course-results">
-        {% comp_include "courses/_search_results.html" %}
+        {% comp "courses/_search_results.html" /%}
       </div>
     </div>
   </div>

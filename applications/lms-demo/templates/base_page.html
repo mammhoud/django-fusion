@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n wagtailcore_tags %}
+{% load i18n wagtailcore_tags laces %}
 
 {% block bodyclass %}page-{{ page.slug|default:"home" }}{% endblock %}
 
@@ -9,7 +9,7 @@
             {% if template_name and template_name != "base_page.html" and template_name != "base.html" and template_name != "landing/skeleton.html" %}
                 {% include template_name %}
             {% else %}
-                {% include "home/main.html" %}
+                {% comp "home/main.html" / %}
             {% endif %}
         {% endblock content %}
     </main>

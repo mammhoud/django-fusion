@@ -20,3 +20,37 @@ Thumbs.db
 
 # Backups
 backups/
+
+# ----------------------------------------------------------------------
+# Project-wide ignores (mirrors the protections under applications/.gitignore
+# for files that live outside `applications/`).
+# ----------------------------------------------------------------------
+
+# SSL/TLS private keys and certificates (proxy/certs/* self-signed legacy;
+# real LE certs live in proxy/acme/acme.json which is gitignored below)
+*.pem
+*.key
+*.crt
+*.p12
+*.pfx
+
+# Local environment files with secrets (.env.example is the safe template to commit)
+*.env
+.env
+*.env.backup*
+
+# Test databases and dumps
+*.sqlite3
+*.dump
+*.sql.gz
+tests/test_db.sqlite3
+tests/@env*
+
+# Transient working files
+tmp/
+*.tmp
+*~
+*.swp
+
+# Local virtualenv at the repo root
+.venv/

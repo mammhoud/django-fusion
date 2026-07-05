@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces %}
 
 <!-- Preview Video Modal -->
 {% if course.preview_video %}
@@ -21,7 +21,7 @@
                             {% if block.block_type == 'preview_video' %}
                                 <div class="carousel-item {% if forloop.first %}active{% endif %}">
                                     <div class="ratio ratio-16x9">
-                                        {% comp_include "blocks/enhanced_video.html" block=block %}
+                                        {% comp "blocks/enhanced_video.html" block=block / %}
                                     </div>
                                 </div>
                             {% endif %}

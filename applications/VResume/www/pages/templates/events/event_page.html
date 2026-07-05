@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n laces %}
 
 {% block vresume_content %}
 <section class="events-page">
-    {% include "events/includes/page_title.html" %}
-    {% include "events/sections/grid.html" with page_items=page_items %}
+    {% comp "events/includes/page_title.html" / %}
+    {% comp "events/sections/grid.html" page_items=page_items / %}
 </section>
 {% endblock vresume_content %}

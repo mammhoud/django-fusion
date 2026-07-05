@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n laces %}
 <div class="settings-section">
     {% if success_message %}
     <div class="alert alert-success alert-dismissible fade show" role="alert">
@@ -16,7 +16,7 @@
               onsubmit="event.preventDefault(); updateSection('{{ section }}', this);">
             {% csrf_token %}
 
-            {% include "profiles/partials/settings/"|add:section|add:"_form.html" %}
+            {% comp "profiles/partials/settings/"|add:section|add:"_form.html" / %}
 
             <div class="settings-form__actions mt-4">
                 <button type="submit" class="btn btn-primary btn--settings">

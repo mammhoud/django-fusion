@@ -1,17 +1,17 @@
 {% extends "base.html" %}
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags laces laces %}
 
 {% block content %}
 <main>
     <!-- Page Title Section -->
-    {% comp_include "products/page_title.html" %}
+    {% comp "products/page_title.html" /%}
     
     <!-- Main Content Sections -->
     {% for block in page.body %}
         {% if block.block_type == 'products_section' %}
-            {% comp_include "products/products.html" %}
+            {% comp "products/products.html" /%}
         {% elif block.block_type == 'clients' %}
-            {% comp_include "products/clients.html" %}
+            {% comp "products/clients.html" /%}
         {% endif %}
     {% endfor %}
 </main>

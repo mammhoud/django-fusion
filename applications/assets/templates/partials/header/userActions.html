@@ -1,3 +1,4 @@
+{% load laces %}
 {# partials/header/userActions.html
    ───────────────────────────────
    Convenience include that composes the three canonical header action
@@ -10,8 +11,8 @@
      partials/header_toggle.html   – hamburger menu button
 
    EXAMPLE:
-     {% comp_include "partials/header/userActions.html" %}
+     {% comp "partials/header/userActions.html" /%}
 #}
-{% comp_include "partials/auth_buttons.html" %}
-{% comp_include "partials/language_selector.html" %}
-{% comp_include "partials/header_toggle.html" %}
+{% comp "partials/auth_buttons.html" /%}
+{% comp "partials/language_selector.html" /%}
+{% comp "partials/header_toggle.html" /%}

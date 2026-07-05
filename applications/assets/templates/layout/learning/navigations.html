@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n static wagtailuserbar unfold %}
+{% load i18n static wagtailuserbar unfold laces laces %}
 
 
 
@@ -62,16 +62,16 @@ onload="{{ jsFunction }}"
 <div class="flex wrapper">
 
   {% block side_nav %}
-  {% comp_include 'layout/navigation/side_nav.html' %}
+  {% comp 'layout/navigation/side_nav.html' /%}
   {% endblock side_nav %}
 
   <div class="page-content">
     {% block top_nav %}
-    <div class="top-nav">{% comp_include 'layout/navigation/top_nav.html' %}</div>
+    <div class="top-nav">{% comp 'layout/navigation/top_nav.html' /%}</div>
     {% endblock top_nav %}
     <main class="page-layout__main flex-grow p-6 bg-base-100">
       {% block top_header %}
-      <div class="breadcrumbs">{% comp_include 'layout/headers/breadcrumbs.html' %}</div>
+      <div class="breadcrumbs">{% comp 'layout/headers/breadcrumbs.html' /%}</div>
       {% endblock top_header %}
       {% block content %}
       {% comment %} HERE A FRAGMENT FOR THE PAGE WILL BE {% endcomment %}
@@ -79,8 +79,8 @@ onload="{{ jsFunction }}"
     </main>
 
     {% block footer %}
-    {% comment %} {% comp_include "partials/footer.html" %}
-    {% comp_include "includes/customizer.html" %}
+    {% comment %} {% comp "partials/footer.html" /%}
+    {% comp "includes/customizer.html" /%}
     {% endcomment %}
     {% endblock footer %}
 

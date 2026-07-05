@@ -1,5 +1,5 @@
 {% load i18n static unfold %}
-{% load render_bundle from webpack_loader %}
+{% load render_bundle from webpack_loader laces laces %}
 
 {% get_current_language as LANGUAGE_CODE %}
 {% get_current_language_bidi as LANGUAGE_BIDI %}
@@ -86,13 +86,13 @@ hx-headers='{"x-csrftoken": "{{ csrf_token }}"}' {% endblock body_attr %}>
     {# Notification system — toasts, alerts, Django messages, HTMX OOB fragments #}
     {% block notifications %}
         {# FIXME: notification include causes RecursionError in template render chain #}
-        {# {% comp_include "plugins/notifications/notification.html" %} #}
+        {# {% comp "plugins/notifications/notification.html" /%} #}
     {% endblock notifications %}
 
     {# Cookie Consent — shared templates for all sites #}
-    {% comp_include "components/cookies/cookie-consent.html" %}
-    {% comp_include "components/cookies/cookie-policy.html" %}
-    {% comp_include "components/cookies/privacy-policy.html" %}
+    {% comp "components/cookies/cookie-consent.html" /%}
+    {% comp "components/cookies/cookie-policy.html" /%}
+    {% comp "components/cookies/privacy-policy.html" /%}
 
     {% block scripts %}
     {% endblock scripts %}

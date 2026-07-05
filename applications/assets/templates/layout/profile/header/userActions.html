@@ -1,4 +1,4 @@
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces laces %}
 
 
         <!-- Menu Extra -->
@@ -19,8 +19,8 @@
                 {% endwith %}
             </ul>
 
-        {% comp_include "partials/auth_buttons.html" %}
-        {% comp_include "partials/language_selector.html" %}
-        {% comp_include "partials/header_toggle.html" %}
+        {% comp "partials/auth_buttons.html" /%}
+        {% comp "partials/language_selector.html" /%}
+        {% comp "partials/header_toggle.html" /%}
 
         </div>

@@ -10,9 +10,9 @@
 
    EXAMPLE:
      <div hx-get="/api/data" hx-indicator="#ui-spinner-template">…</div>
-     {% comp_include "ui/base/loader.html" %}
+     {% comp "ui/base/loader.html" /%}
 #}
-{% load i18n %}
+{% load i18n laces laces %}
 
 <!-- Standard Inline Spinner -->
 <div id="ui-spinner-template" class="htmx-indicator d-flex align-items-center justify-content-center gap-2" role="status">

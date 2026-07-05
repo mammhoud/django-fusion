@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load wagtailcore_tags wagtailimages_tags i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n laces %}
 {# Enhanced About Section Block Template - Wagtail Bakery Style #}
 
 <section class="about-section about-section--{{ self.layout_style|default:'standard' }} {% if self.content_alignment == 'center' %}text-center{% elif self.content_alignment == 'right' %}text-end{% endif %}">
@@ -119,7 +119,7 @@
 
             <div class="row g-4">
                 {% for member in self.team_members %}
-                {% comp_include "blocks/enhanced_team_member.html" value=member.value %}
+                {% comp "blocks/enhanced_team_member.html" value=member.value / %}
                 {% endfor %}
             </div>
         </div>
@@ -134,7 +134,7 @@
 
             <div class="row g-3">
                 {% for item in self.gallery_items %}
-                {% comp_include "blocks/media_gallery_item.html" value=item.value %}
+                {% comp "blocks/media_gallery_item.html" value=item.value / %}
                 {% endfor %}
             </div>
         </div>

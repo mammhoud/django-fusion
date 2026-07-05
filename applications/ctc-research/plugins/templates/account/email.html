@@ -1,11 +1,11 @@
 {% extends "base_auth.html" %}
-{% load i18n static %}
+{% load i18n static laces %}
 
 {% block auth_content %}
 <section class="fragment--form">
   <section class="auth__card card card--form">
     <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Email Addresses" %}</h2><p class="auth__form-subtitle mb-4">{% trans "Manage email addresses associated with your account" %}</p></header>
-    {% include "account/snippets/messages.html" %}
+    {% comp "account/snippets/messages.html" / %}
 
     {% if emailaddresses %}
       <div class="mb-4"><h3 class="fs-6 fw-bold">{% trans "Your email addresses" %}</h3>

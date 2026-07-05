@@ -1,5 +1,5 @@
 {% extends layout_path|default:"learning/skeleton.html" %}
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces laces %}
 
 
 {% block title %}Watching: {{ lesson.title }} - {{ lesson.course.title }} :: LearnHub{% endblock %}
@@ -23,7 +23,7 @@
                     </nav>
 
                     <!-- Video Player Component -->
-                    {% comp_include 'learning/video_player.html' %}
+                    {% comp 'learning/video_player.html' /%}
 
                     <!-- Lesson Info -->
                     <div class="row align-items-center mb-4">
@@ -111,17 +111,17 @@
 
                         <!-- Resources Tab -->
                         <div class="tab-pane fade" id="resources" role="tabpanel">
-                            {% comp_include 'learning/lesson_resources.html' %}
+                            {% comp 'learning/lesson_resources.html' /%}
                         </div>
 
                         <!-- Discussion Tab -->
                         <div class="tab-pane fade" id="discussion" role="tabpanel">
-                            {% comp_include 'learning/discussion_comments.html' %}
+                            {% comp 'learning/discussion_comments.html' /%}
                         </div>
 
                         <!-- Notes Tab -->
                         <div class="tab-pane fade" id="notes" role="tabpanel">
-                            {% comp_include 'learning/lesson_notes.html' %}
+                            {% comp 'learning/lesson_notes.html' /%}
                         </div>
                     </div>
                 </div>
@@ -129,7 +129,7 @@
 
             <!-- Sidebar Column -->
             <div class="col-12 col-lg-4 bg-light">
-                {% comp_include 'learning/course_sidebar.html' %}
+                {% comp 'learning/course_sidebar.html' /%}
             </div>
         </div>
     </div><!-- end container -->

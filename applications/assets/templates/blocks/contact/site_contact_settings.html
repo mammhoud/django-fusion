@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load wagtailcore_tags wagtailimages_tags i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n laces %}
 {# Site Contact Settings Block Template - Wagtail Bakery Style #}
 
 <div class="site-contact-settings site-contact-settings--{{ self.display_mode|default:'list' }}">
@@ -24,7 +24,7 @@
             </h5>
             <div class="contact-group__items d-flex flex-wrap gap-2">
                 {% for profile in social_profiles %}
-                {% comp_include "blocks/contact/contact_profile.html" value=profile %}
+                {% comp "blocks/contact/contact_profile.html" value=profile / %}
                 {% endfor %}
             </div>
         </div>
@@ -37,7 +37,7 @@
             </h5>
             <div class="contact-group__items">
                 {% for profile in contact_methods %}
-                {% comp_include "blocks/contact/contact_profile.html" value=profile %}
+                {% comp "blocks/contact/contact_profile.html" value=profile / %}
                 {% endfor %}
             </div>
         </div>
@@ -50,7 +50,7 @@
             </h5>
             <div class="contact-group__items">
                 {% for profile in websites %}
-                {% comp_include "blocks/contact/contact_profile.html" value=profile %}
+                {% comp "blocks/contact/contact_profile.html" value=profile / %}
                 {% endfor %}
             </div>
         </div>

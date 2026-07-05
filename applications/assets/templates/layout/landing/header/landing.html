@@ -1,4 +1,4 @@
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces laces %}
 
 
 
@@ -11,10 +11,10 @@
     <div class="container">
         <!-- Logo -->
         
-        {% comp_include "partials/logo.html" %}
+        {% comp "partials/logo.html" /%}
         
-        {% comp_include "partials/header_links.html" %}
-        {% comp_include "partials/header_extra.html" %}
+        {% comp "partials/header_links.html" /%}
+        {% comp "partials/header_extra.html" /%}
 
 
        

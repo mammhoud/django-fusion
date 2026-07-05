@@ -3,7 +3,7 @@ Course List View - HTMX Fragment
 Used for displaying courses in list layout
 {% endcomment %}
 
-{% load static %}
+{% load static laces %}
 
 <div class="rbt-course-list">
   {% for course in courses %}
@@ -141,5 +141,5 @@ Used for displaying courses in list layout
 
 {# Pagination #}
 {% if page_obj.has_other_pages %}
-  {% include "courses/_pagination.html" %}
+  {% comp "courses/_pagination.html" / %}
 {% endif %}

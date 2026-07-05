@@ -1,12 +1,12 @@
 {% extends layout_path|default:'profile/skeleton.html' %}
-{% load i18n %}
+{% load i18n laces %}
 {% block content %}
 <section class="profile-shell py-4">
   <div class="container">
     <div class="row g-4">
-      <aside class="col-xl-3">{% include "profile/partials/navigator.html" %}</aside>
+      <aside class="col-xl-3">{% comp "profile/partials/navigator.html" / %}</aside>
       <main class="col-xl-9" id="panel-content">
-        {% include "profile/profile.html" %}
+        {% comp "profile/profile.html" / %}
       </main>
     </div>
   </div>

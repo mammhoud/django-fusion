@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static %}
+{% load static laces %}
 {# Context fields: form, request #}
 {# Placeholders: none #}
 <section class="fragment--form">
@@ -167,5 +167,5 @@
   </section>
 
   {# Privacy Policy Modal #}
-  {% include "auth/privacy_modal.html" %}
+  {% comp "auth/privacy_modal.html" / %}
 </section>

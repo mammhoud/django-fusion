@@ -1,5 +1,5 @@
 {% extends "landing/skeleton.html" %}
-{% load i18n %}
+{% load i18n laces %}
 
 {% block meta_tags %}
 <meta name="description" content="{% if current_tag %}{% blocktrans with tag=current_tag_obj.name|default:current_tag %}Posts tagged {{ tag }}{% endblocktrans %}{% elif current_category %}{% blocktrans with cat=current_category %}Category: {{ cat }}{% endblocktrans %}{% else %}{% trans 'Browse our latest blog posts' %}{% endif %}">
@@ -105,7 +105,7 @@
         <div class="row g-4">
           {% for post in posts %}
           <div class="col-md-6">
-            {% comp_include "blog/components/post_card.html" post=post %}
+            {% comp "blog/components/post_card.html" post=post / %}
           </div>
           {% empty %}
           <div class="col-12">

@@ -1,7 +1,7 @@
-{% load i18n %}
+{% load i18n laces %}
 <div class="events-grid">
     {% for event in page_items %}
-        {% include "events/includes/event_card.html" with event=event %}
+        {% comp "events/includes/event_card.html" event=event / %}
     {% empty %}
         <p class="events-grid__empty">{% trans "No upcoming events." %}</p>
     {% endfor %}

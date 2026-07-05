@@ -1,5 +1,5 @@
 {% extends "base_page.html" %}
-{% load i18n static %}
+{% load i18n static laces laces %}
 
 {% block content %}
 <div class="courses-catalog-page py-5 bg-light">
@@ -15,7 +15,7 @@
         <div class="row g-4">
             <!-- Filter Sidebar -->
             <div class="col-lg-3">
-                {% comp_include "modules/courses/filters.html" %}
+                {% comp "modules/courses/filters.html" /%}
             </div>
 
             <!-- Course Results Area -->
@@ -48,7 +48,7 @@
 
                 <!-- Results container for HTMX -->
                 <div id="course-results-container">
-                    {% comp_include "modules/courses/search_results.html" %}
+                    {% comp "modules/courses/search_results.html" /%}
                 </div>
             </div>
         </div>

@@ -1,4 +1,4 @@
-{% load wagtailcore_tags wagtailimages_tags %}
+{% load wagtailcore_tags wagtailimages_tags laces %}
 {# Call to Action Block Template - Wagtail Bakery Style #}
 
 <section class="cta-block {{ css_classes }}"
@@ -23,7 +23,7 @@
         {# Split Layout Media #}
         {% if is_split_layout and has_media and self.media_position == 'left' %}
         <div class="cta-block__media cta-block__media--{{ self.media_position }}">
-            {% include "blocks/partials/cta_media.html" %}
+            {% comp "blocks/partials/cta_media.html" / %}
         </div>
         {% endif %}
 
@@ -31,7 +31,7 @@
             {# Badge #}
             {% if self.badge.text %}
             <div class="cta-block__badge">
-                {% include "components/blocks/badge_block.html" with value=self.badge %}
+                {% comp "components/blocks/badge_block.html" value=self.badge / %}
             </div>
             {% endif %}
 
@@ -74,11 +74,11 @@
             {% if has_buttons %}
             <div class="cta-block__buttons d-flex flex-wrap gap-3 {% if self.button_group_alignment == 'center' %}justify-content-center{% elif self.button_group_alignment == 'right' %}justify-content-end{% elif self.button_group_alignment == 'space-between' %}justify-content-between{% endif %}">
                 {% if has_primary_button and self.primary_button.text %}
-                {% include "components/blocks/button_block.html" with value=self.primary_button extra_class="btn btn-primary btn-lg" %}
+                {% comp "components/blocks/button_block.html" value=self.primary_button extra_class="btn btn-primary btn-lg" / %}
                 {% endif %}
 
                 {% if has_secondary_button and self.secondary_button.text %}
-                {% include "components/blocks/button_block.html" with value=self.secondary_button extra_class="btn btn-outline-primary btn-lg" %}
+                {% comp "components/blocks/button_block.html" value=self.secondary_button extra_class="btn btn-outline-primary btn-lg" / %}
                 {% endif %}
             </div>
             {% endif %}
@@ -133,7 +133,7 @@
         {# Split Layout Media (Right/Bottom) #}
         {% if is_split_layout and has_media and self.media_position != 'left' %}
         <div class="cta-block__media cta-block__media--{{ self.media_position }}">
-            {% include "blocks/partials/cta_media.html" %}
+            {% comp "blocks/partials/cta_media.html" / %}
         </div>
         {% endif %}
 

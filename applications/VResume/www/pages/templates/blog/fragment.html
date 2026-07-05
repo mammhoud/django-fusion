@@ -1,5 +1,5 @@
 {# HTMX Fragment: Blog Tab Content Only (No Layout) #}
-{% load i18n %}
+{% load i18n laces laces %}
 
 <article class="blog active container" data-page="blog">
   <header class="content__header">
@@ -12,6 +12,6 @@
 
   {# Results container - replaced by HTMX on filter/search #}
   <div id="results-container">
-    {% comp_include 'blog/sections/posts.html' %}
+    {% comp 'blog/sections/posts.html' /%}
   </div>
 </article>

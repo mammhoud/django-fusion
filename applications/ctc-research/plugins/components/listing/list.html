@@ -1,3 +1,4 @@
+{% load laces %}
 <!-- products/list.html -->
 {% extends "base.html" %}
 
@@ -25,7 +26,7 @@
 
 <!-- Pagination Controls -->
 <div id="pagination-container">
-    {% include "components/pagination/numbers.html" %}
+    {% comp "components/pagination/numbers.html" / %}
 </div>
 
 <!-- Load More (alternative) -->

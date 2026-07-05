@@ -1,6 +1,6 @@
 {# Blog Posts Section #}
 {# Grid + list view with search/filter support and HTMX modal integration #}
-{% load i18n static wagtailimages_tags %}
+{% load i18n static wagtailimages_tags laces %}
 
 {% with post_list=page_obj.object_list|default:posts %}
 <div class="grid-section__listing" data-blog-grid>
@@ -13,6 +13,6 @@
   </div>
   {% endif %}
 
-  <ul class="post__list" data-blog-list role="list">{% include "blog/sections/posts_items.html" %}</ul>
+  <ul class="post__list" data-blog-list role="list">{% comp "blog/sections/posts_items.html" / %}</ul>
 </div>{# /.grid-section__listing #}
 {% endwith %}

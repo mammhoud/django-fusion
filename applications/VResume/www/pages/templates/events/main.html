@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n laces %}
 
 {% block content %}
 <section class="events-page">
-    {% include "events/includes/page_title.html" %}
-    {% include "events/sections/grid.html" with events=events %}
+    {% comp "events/includes/page_title.html" / %}
+    {% comp "events/sections/grid.html" events=events / %}
 </section>
 {% endblock content %}

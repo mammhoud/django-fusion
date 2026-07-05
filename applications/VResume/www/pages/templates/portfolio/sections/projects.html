@@ -1,6 +1,6 @@
 {# Portfolio Projects Section #}
 {# Grid + list view with search/filter support and HTMX modal integration #}
-{% load i18n static wagtailimages_tags %}
+{% load i18n static wagtailimages_tags laces %}
 
 {% with projects=page_obj.object_list|default:featured_projects %}
 <div class="grid-section__listing" data-portfolio-grid>
@@ -13,6 +13,6 @@
   </div>
   {% endif %}
 
-  <ul class="project__list" data-portfolio-list role="list">{% include "portfolio/sections/projects_items.html" %}</ul>
+  <ul class="project__list" data-portfolio-list role="list">{% comp "portfolio/sections/projects_items.html" / %}</ul>
 </div>{# /.grid-section__listing #}
 {% endwith %}

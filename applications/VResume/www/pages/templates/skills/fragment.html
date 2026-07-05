@@ -1,12 +1,12 @@
 {# HTMX Fragment: Skills Tab Content Only (No Layout) #}
-{% load i18n %}
+{% load i18n laces %}
 
 <article class="skills" data-page="skills">
     <header>
         <h2 class="h2 article__title">{% trans "Skills" %}</h2>
     </header>
 
-    {% include 'resume/sections/skills.html' %}
-    {% include 'skills/sections/skills_grid.html' %}
-    {% include 'skills/sections/skills_by_category.html' %}
+    {% comp 'resume/sections/skills.html' / %}
+    {% comp 'skills/sections/skills_grid.html' / %}
+    {% comp 'skills/sections/skills_by_category.html' / %}
 </article>

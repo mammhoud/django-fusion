@@ -1,4 +1,4 @@
-{% load i18n static humanize %}
+{% load i18n static humanize laces laces %}
 
 <section class="fragment--form">
   <section class="auth__card card card--form">
@@ -7,7 +7,7 @@
       <p>{% trans "Manage devices that are logged into your account." %}</p>
     </header>
 
-    {% comp_include "account/snippets/messages.html" %}
+    {% comp "account/snippets/messages.html" /%}
 
     {% if sessions %}
       <div class="list-group mb-4">

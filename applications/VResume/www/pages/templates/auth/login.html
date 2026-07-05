@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static %}
+{% load static laces %}
 {# Context fields: form, request #}
 {# Placeholders: none #}
 <!-- SSE Connection for Real-time Notifications -->
@@ -114,7 +114,7 @@
           <span id="login-spinner" class="spinner-border spinner-border-sm ms-2 htmx-indicator"></span>
         </button>
       </div>
-      {% load socialaccount %}
+      {% load socialaccount laces %}
       {% get_providers as socialaccount_providers %}
       {% if socialaccount_providers %}
       <!-- Divider -->
@@ -168,5 +168,5 @@
   </section>
 
   {# Privacy Policy Modal #}
-  {% comp_include "auth/privacy_modal.html" %}
+  {% comp "auth/privacy_modal.html" /%}
 </section>

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static i18n wagtailcore_tags wagtailimages_tags %}
+{% load static i18n wagtailcore_tags wagtailimages_tags laces %}
 
 <!-- Base Form Template - Reusable for all form types -->
 
@@ -31,7 +31,7 @@
     <!-- Default: Use dynamic field configuration -->
     <div class="form-fields {{ block.value.layout }}">
         {% for field_config in block.value.fields %}
-        {% comp_include 'blocks/partials/form_field.html' field_config=field_config block=block %}
+        {% comp 'blocks/partials/form_field.html' field_config=field_config block=block / %}
         {% endfor %}
     </div>
     {% endblock form_fields %}

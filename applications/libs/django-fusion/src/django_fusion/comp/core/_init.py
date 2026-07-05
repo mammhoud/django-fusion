@@ -223,6 +223,15 @@ class ComponentRegistry:
 
     def record_render(self, metadata: ComponentRenderMetadata) -> None:
         self._render_history.append(metadata)
+        
+        # Cache render event if Redis is available
+        try:
+            from django_fusion.comp.cache import get_component_map_cache
+            cache = get_component_map_cache()
+            cache.record_render(metadata.name)
+        except Exception as e:
+            # Silently fail if caching doesn't work
+            pass
 
     def get_render_history(self) -> tuple[ComponentRenderMetadata, ...]:
         return tuple(self._render_history)
@@ -236,8 +245,19 @@ class ComponentRegistry:
         )
 
     def get_component(self, name: str) -> Component:
+        # Check in-memory cache first
         if name in self._components and not settings.DEBUG:
             return self._components[name]
+
+        # Try Redis/in-memory cache
+        try:
+            from django_fusion.comp.cache import get_component_map_cache
+            cache = get_component_map_cache()
+            cached_path = cache.get_component(name)
+            if cached_path and name in self._components:
+                return self._components[name]
+        except Exception:
+            pass  # Fall through to normal resolution
 
         # Path-style names (containing / or ending in .html) are
         # resolved differently depending on whether they live under a
@@ -266,8 +286,18 @@ class ComponentRegistry:
                 self._components[name] = IncludePathComponent.from_include_path(name)
         else:
             self._components[name] = Component.from_name(name)
+        
         if name not in self._component_usage:
             self._component_usage[name] = set()
+        
+        # Cache the resolved component
+        try:
+            from django_fusion.comp.cache import get_component_map_cache
+            cache = get_component_map_cache()
+            cache.set_component(name, self._components[name].path)
+        except Exception:
+            pass  # Silently fail if caching doesn't work
+        
         return self._components[name]
 
     def get_component_names_used_in_template(self, template_path: str | Path) -> set[str]:

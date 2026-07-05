@@ -27,6 +27,20 @@ Public API
 - :func:`register_default_partials` — default partials-path discovery
   wired into ``django_fusion.comp.apps.CoreExtAppConfig.ready()``; sites
   override ``COMPONENTS_INCLUDE_PATH_ROOTS`` in settings to extend.
+
+Caching
+-------
+Component mappings are cached in Redis when available, falling back to
+in-memory caching. Configure via Django's CACHES setting:
+
+    CACHES = {
+        'default': {
+            'BACKEND': 'django.core.cache.backends.redis.RedisCache',
+            'LOCATION': 'redis://127.0.0.1:6379/1',
+        }
+    }
+
+See :mod:`django_fusion.comp.cache` for details.
 """
 
 from __future__ import annotations
@@ -40,6 +54,7 @@ from django.template.loader import select_template
 from django.template.backends.django import Template as DjangoTemplate
 
 from django_fusion.comp.core._init import Component, components
+from django_fusion.comp.cache import get_component_map_cache
 
 logger = logging.getLogger(__name__)
 
@@ -149,7 +164,13 @@ def register_include_path(path: str) -> str:
     """
     if path in components._components:
         return path
+    
     components._components[path] = IncludePathComponent.from_include_path(path)
+    
+    # Cache in Redis/in-memory
+    cache = get_component_map_cache()
+    cache.set_component(path, path)
+    
     logger.debug("Registering include-path component: %s", path)
     return path
 
@@ -164,10 +185,27 @@ def register_include_paths(paths: Iterable[str]) -> list[str]:
         template could not be resolved).
     """
     cached: list[str] = []
+    cache = get_component_map_cache()
+    
+    # Batch cache operations
+    batch_mapping = {}
+    
     for path in paths:
-        register_include_path(path)
-        if path in components._components:
+        if path not in components._components:
+            try:
+                components._components[path] = IncludePathComponent.from_include_path(path)
+                cached.append(path)
+                batch_mapping[path] = path
+            except Exception as e:
+                logger.debug(f"Failed to register path {path}: {e}")
+        else:
             cached.append(path)
+    
+    # Batch cache all at once
+    if batch_mapping:
+        cache.set_components(batch_mapping)
+        logger.debug(f"Cached {len(batch_mapping)} component paths")
+    
     return cached
 
 

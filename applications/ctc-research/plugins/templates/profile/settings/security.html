@@ -1,4 +1,4 @@
-{% load i18n %}
+{% load i18n laces %}
 <div class="settings-section">
     <div class="settings-section__header">
         <h5 class="settings-section__title">{% trans "Security Settings" %}</h5>
@@ -312,7 +312,7 @@
             </div>
             <div class="modal-body">
                 <div id="twoFactorContent">
-                    {% include "profiles/partials/security/two_factor_setup.html" %}
+                    {% comp "profiles/partials/security/two_factor_setup.html" / %}
                 </div>
             </div>
         </div>

@@ -1,13 +1,13 @@
 {# HTMX Fragment: Home Tab Content #}
-{% load i18n static wagtailimages_tags %}
+{% load i18n static wagtailimages_tags laces laces %}
 
 <article class="home active container" data-page="home">
     <header>
         <h2 class="h2 article-title">{% trans "Home" %}</h2>
     </header>
 
-    {% comp_include "home/sections/slider.html" %}
-    {% comp_include "home/sections/services.html" %}
-    {% comp_include "home/sections/newsletter.html" %}
+    {% comp "home/sections/slider.html" /%}
+    {% comp "home/sections/services.html" /%}
+    {% comp "home/sections/newsletter.html" /%}
     
 </article>

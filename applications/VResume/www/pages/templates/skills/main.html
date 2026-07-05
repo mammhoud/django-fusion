@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
-{% load i18n %}
+{% load i18n laces %}
 
 {% block vresume_content %}
-    {% include 'skills/fragment.html' %}
+    {% comp 'skills/fragment.html' / %}
 {% endblock vresume_content %}

@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces %}
 <!-- Offcanvas for mobile -->
 <div class="offcanvas offcanvas-start d-lg-none" tabindex="-1" id="offcanvasNavigator">
     <div class="offcanvas-header">
@@ -7,7 +7,7 @@
         <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
     </div>
     <div class="offcanvas-body">
-        {% include "profile/partials/nav-menu.html" %}
+        {% comp "profile/partials/nav-menu.html" / %}
     </div>
 </div>
 
@@ -15,7 +15,7 @@
 <div class="profile__nav d-lg-block">
     <div class="profile__nav-card card">
         <div class="card-body p-0">
-            {% include "profile/partials/nav-menu.html" %}
+            {% comp "profile/partials/nav-menu.html" / %}
         </div>
     </div>
 </div>

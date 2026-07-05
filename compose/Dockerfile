@@ -88,6 +88,9 @@ COPY applications/tasks   ${APP_HOME}/tasks
 
 RUN uv sync --frozen --no-install-project
 
+# Install local django-fusion library as editable (required by all sites)
+RUN cd ${APP_HOME}/libs/django-fusion && uv pip install -e . --no-build-isolation 2>&1 || echo "[WARN] django-fusion install failed (may already be installed via lockfile)"
+
 # ----------------------------------------------------------------------------
 # Copy the specific website code (build-time)
 # ----------------------------------------------------------------------------

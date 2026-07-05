@@ -1,4 +1,4 @@
-{% load static wagtailcore_tags %}
+{% load static wagtailcore_tags laces %}
 {% comment %}
 CoursesPage Catalog Template
 =============================
@@ -135,7 +135,7 @@ Handles:
     {% if courses %}
       <div class="course-catalog__view course-catalog__view--{{ request.GET.view|default:'grid' }}">
         {% for course in courses %}
-          {% include "learning/_course_card.html" with course=course %}
+          {% comp "learning/_course_card.html" course=course / %}
         {% endfor %}
       </div>
 
@@ -194,5 +194,5 @@ Handles:
 </div>
 
 <style>
-  {% include "learning/course_catalog.scss" %}
+  {% comp "learning/course_catalog.scss" / %}
 </style>

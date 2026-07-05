@@ -1,11 +1,11 @@
 {# HTMX Fragment: Contact Tab Content Only (No Layout) #}
-{% load i18n %}
+{% load i18n laces laces %}
 
 <article class="contact active container" data-page="contact">
     <header>
         <h2 class="h2 article-title">{% trans "Contact" %}</h2>
     </header>
 
-    {% comp_include 'connect/sections/map.html' %}
-    {% comp_include 'connect/sections/form.html' %}
+    {% comp 'connect/sections/map.html' /%}
+    {% comp 'connect/sections/form.html' /%}
 </article>

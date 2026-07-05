@@ -1,3 +1,4 @@
+{% load laces %}
 {% extends "base_page.html" %}
 
 {# CTC-only Wagtail EventPage template (option-a pattern).
@@ -6,5 +7,5 @@
    `applications/assets/templates/` tree. Resolved via Django's APP_DIRS
    chain — the lookup key `events/event_page.html` resolves here first. #}
 {% block content %}
-    {% comp_include "events/main.html" %}
+    {% comp "events/main.html" /%}
 {% endblock %}

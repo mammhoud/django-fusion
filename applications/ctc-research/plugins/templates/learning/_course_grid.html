@@ -3,7 +3,7 @@ Course Grid View - HTMX Fragment
 Used for displaying courses in grid layout
 {% endcomment %}
 
-{% load static %}
+{% load static laces %}
 
 <div class="rbt-course-grid{% if compact %} rbt-course-grid--compact{% endif %}">
   {% for course in courses %}
@@ -139,5 +139,5 @@ Used for displaying courses in grid layout
 
 {# Pagination #}
 {% if page_obj.has_other_pages %}
-  {% include "courses/_pagination.html" %}
+  {% comp "courses/_pagination.html" / %}
 {% endif %}

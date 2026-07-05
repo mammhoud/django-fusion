@@ -1,4 +1,4 @@
-{% load wagtailadmin_tags static i18n %}
+{% load wagtailadmin_tags static i18n laces laces %}
 <nav class="navbar navbar-expand-lg navbar-light bg-light">
     <div class="container-fluid">
         <a class="navbar-brand" href="{% url 'wagtailadmin_home' %}">
@@ -21,7 +21,7 @@
                 {% endfor %}
             </ul>
             <ul class="navbar-nav">
-                {% comp_include "wagtailadmin/shared/user_avatar.html" %}
+                {% comp "wagtailadmin/shared/user_avatar.html" /%}
             </ul>
         </div>
     </div>

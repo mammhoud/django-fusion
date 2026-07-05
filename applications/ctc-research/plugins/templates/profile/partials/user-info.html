@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces %}
 <div class="profile-header position-relative">
     <div class="row align-items-center g-4">
 
@@ -186,7 +186,7 @@
     </div>
     <!-- CTA -->
 <div class="d-flex justify-content-center justify-content-md-start mt-3 mt-md-0">
-    {% include "profile/partials/banner-options.html" %}
+    {% comp "profile/partials/banner-options.html" / %}
 </div>
 
 </div>

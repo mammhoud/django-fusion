@@ -1,5 +1,5 @@
 {% extends "base_auth.html" %}
-{% load i18n static socialaccount %}
+{% load i18n static socialaccount laces %}
 
 {% block auth_content %}
 <section class="fragment--form">
@@ -10,7 +10,7 @@
       <p class="auth__form-subtitle text-muted mb-4">{% trans "Sign in to your account" %}</p>
     </header>
 
-    {% include "account/snippets/messages.html" %}
+    {% comp "account/snippets/messages.html" / %}
 
     <form id="login-form" class="auth__form" action="{% url 'account_login' %}" method="post" novalidate
           hx-post="{% url 'account_login' %}" hx-target=".fragment--form" hx-swap="innerHTML" hx-trigger="submit"

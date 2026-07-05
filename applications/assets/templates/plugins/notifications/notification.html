@@ -5,7 +5,7 @@
    and SSE live-update indicator — all in one include.
 
    Include ONCE in base.html, just before </body>:
-     {% comp_include "ui/notifications/notification.html" %}
+     {% comp "ui/notifications/notification.html" /%}
 
    CONTEXT VARIABLES (all optional):
      hx_connection : SSE endpoint URL; if set, activates live notifications
@@ -38,7 +38,7 @@
      All four accept:  {{ message }}
    ────────────────────────────────────────────────────────────────────────
 #}
-{% load i18n static %}
+{% load i18n static laces laces %}
 
 {# ── Main notification container ────────────────────────────────────────── #}
 <div data-notifications-init

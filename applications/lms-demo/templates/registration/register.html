@@ -1,5 +1,5 @@
 {% extends 'layout/auth/skeleton.html' %}
-{% load i18n %}
+{% load i18n laces laces %}
 
 {% block title %}Register — LMS Demo{% endblock %}
 
@@ -36,7 +36,7 @@
           <p class="auth__form-subtitle">{% trans "Enter your details to get started" %}</p>
         </div>
 
-        {% comp_include "registration/fragments/register_form.html" %}
+        {% comp "registration/fragments/register_form.html" /%}
 
         <p class="auth__privacy-note" style="font-size:0.75rem;color:var(--auth-text-tertiary);text-align:center;margin-top:1rem;line-height:1.5;">
           {% trans "By creating an account, you agree to our Terms of Service and Privacy Policy." %}
