@@ -1,7 +1,8 @@
+{% load laces %}
 {# applications/customizer/templates/fragments/message_send_result.html #}
 
-{% include "components/alert.html" with 
-  is_success=is_success 
-  message=message 
-  errors=form.errors 
-%}
+{% comp "components/alert.html"
+  is_success=is_success
+  message=message
+  errors=form.errors
+/%}

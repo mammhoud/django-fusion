@@ -1,6 +1,7 @@
+{% load laces %}
 {# applications/customizer/templates/fragments/page_section_list.html #}
 
-{% include "components/section_list.html" with 
-  page_title=page.title 
-  sections=page.sections 
-%}
+{% comp "components/section_list.html"
+  page_title=page.title
+  sections=page.sections
+/%}
