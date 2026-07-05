@@ -31,7 +31,7 @@ class FrontCourseDetailView(PageHandler, TemplateView):
         """Generate cache key for this view."""
         # Include user-specific data if needed
         user_id = self.request.user.id if self.request.user.is_authenticated else 'anonymous'
-        return f"course_view:{slug}:user:{user_id}:lang:{self.request.LANGUAGE_CODE}"
+        return f"course:{slug}:user:{user_id}:lang:{self.request.LANGUAGE_CODE}"
 
     @method_decorator(vary_on_cookie)
     def dispatch(self, request, *args, **kwargs):

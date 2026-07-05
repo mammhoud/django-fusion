@@ -72,7 +72,7 @@ urlpatterns = [
     # ===================================================================
     # Course Detail & Learning
     # ===================================================================
-    path("course/<slug:slug>/", FrontCourseDetailView.as_view(), name="course_view"),
+    path("course/<slug:slug>/", FrontCourseDetailView.as_view(), name="course"),
     path(
         "course/<slug:slug>/lesson/<int:lesson_id>/", CourseWatchView.as_view(), name="course_watch"
     ),

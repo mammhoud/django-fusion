@@ -11,7 +11,8 @@ http:
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: structa-site-service
-      tls: {}
+      tls:
+        certResolver: letsencrypt-http
     structa-media-http:
       rule: '(Host(`structa.cloud`) || Host(`www.structa.cloud`) || Host(`core.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
@@ -24,7 +25,8 @@ http:
       middlewares: [compress, security-headers]
       service: structa-media-service
       priority: 100
-      tls: {}
+      tls:
+        certResolver: letsencrypt-http
   services:
     structa-site-service:
       loadBalancer:

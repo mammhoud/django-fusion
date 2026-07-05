@@ -39,6 +39,14 @@ class Command(BaseCommand):
             ],
             "required": False,
         },
+        {
+            "name": "homepage_content",
+            "description": "Load HomePage demo content (slider, features, about, CTA)",
+            "paths": [
+                "assets/fixtures/seed/homepage_content.json",
+            ],
+            "required": False,
+        },
     ]
     
     def add_arguments(self, parser):

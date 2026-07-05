@@ -109,7 +109,7 @@
                             {{ enrollment.payment_id|default:"-"|truncatechars:10 }}
                         </td>
                         <td class="px-6 py-4 whitespace-nowrap text-right text-sm font-medium">
-                            <a href="{% url 'lms:course' slug=enrollment.course.slug %}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
+                            <a href="{% url 'plugins:lms:course' slug=enrollment.course.slug %}" class="text-indigo-600 hover:text-indigo-900 dark:text-indigo-400 dark:hover:text-indigo-300">
                                 {% trans "View Course" %}
                             </a>
                         </td>

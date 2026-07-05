@@ -368,7 +368,7 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
     @property
     def url(self):
         """Return the URL for this course."""
-        return reverse_lazy("lms:course", kwargs={"slug": self.slug})
+        return reverse_lazy("plugins:lms:course", kwargs={"slug": self.slug})
 
     @property
     def total_lessons(self):

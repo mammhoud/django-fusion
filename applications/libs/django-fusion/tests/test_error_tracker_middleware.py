@@ -16,7 +16,7 @@ from django.test import RequestFactory, TestCase
 
 spec = importlib.util.spec_from_file_location(
     "error_tracker",
-    str(Path(__file__).parent.parent / "src" / "django_fusion" / "middlewares" / "error_tracker.py")
+    str(Path(__file__).parent.parent / "src" / "django_fusion" / "core" / "middlewares" / "error_tracker.py")
 )
 error_tracker_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(error_tracker_module)

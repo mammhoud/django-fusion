@@ -114,4 +114,7 @@ class Event(DefaultBase):
         return f"{self.title} ({self.get_event_type_display()})"
 
     def get_absolute_url(self):
-        return reverse("event-detail", kwargs={"pk": self.pk})
+        try:
+            return reverse("event-detail", kwargs={"pk": self.pk})
+        except Exception:
+            return f"/events/#event-{self.pk}"

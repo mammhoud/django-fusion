@@ -1,0 +1,10 @@
+[project]
+name = "lms-demo"
+version = "1.0.3"
+description = "LMS Demo (structa.cloud) — part of Structa Cloud workspace"
+requires-python = ">=3.11"
+dependencies = []
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"

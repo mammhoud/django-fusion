@@ -19,7 +19,7 @@
                     <a href="{% url 'lms:course_watch' enrollment.course.slug enrollment.course.modules.first.lessons.first.id %}" class="button button-lg button-radius button-primary">
                         {% trans "Start Learning Now" %}
                     </a>
-                    <a href="{% url 'lms:course' enrollment.course.slug %}" class="button button-lg button-radius button-outline-secondary">
+                    <a href="{% url 'plugins:lms:course' enrollment.course.slug %}" class="button button-lg button-radius button-outline-secondary">
                         {% trans "View Course Details" %}
                     </a>
                 </div>
