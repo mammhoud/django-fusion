@@ -14,13 +14,13 @@ http:
       tls:
         certResolver: letsencrypt
     crm-site-media-http:
-      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
+      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
       middlewares: [compress, redirect-to-https]
       service: crm-site-media-service
       priority: 100
     crm-site-media-https:
-      rule: 'Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
+      rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web-secure]
       middlewares: [compress, security-headers]
       service: crm-site-media-service

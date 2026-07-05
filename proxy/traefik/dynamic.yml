@@ -64,7 +64,7 @@ providers:
 certificatesResolvers:
   letsencrypt:
     acme:
-      email: ${LETSENCRYPT_EMAIL:-admin@structa.cloud}
+      email: structa.cloud@gmail.com
       storage: /etc/traefik/acme/acme.json
       # STAGING — keep here until the first cert is verified (Stage 1).
       # Once vresume + ctc-research certs are confirmed, flip to production:
