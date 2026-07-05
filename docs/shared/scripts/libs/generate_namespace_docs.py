@@ -17,9 +17,9 @@ from pathlib import Path
 LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 PACKAGES = {
-    "django-osoul":  ("django_osoul",  "Django foundation layer"),
+    "django-fusion":  ("django_fusion",  "Django foundation layer"),
     "crafts-ai":  ("crafts_ai",  "Django automation engine"),
-    "django-osoul":   ("django_osoul",   "Django testing framework"),
+    "django-fusion":   ("django_fusion",   "Django testing framework"),
     "crafts-ai":     ("crafts_ai",     "Standalone AI/MCP toolkit"),
 }
 

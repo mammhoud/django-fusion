@@ -26,7 +26,7 @@ configure_site_environment("vresume", module="CMS", default_port=5072)
 # ============================================================
 # Internal Dependency Handling
 # ============================================================
-# django_osoul and ceptor_ai are real workspace dependencies. Do not install
+# django_fusion and ceptor_ai are real workspace dependencies. Do not install
 # fake sys.modules shims here; dependency failures should surface during checks.
 
 # ============================================================
@@ -94,7 +94,7 @@ LOCAL_APPS = [
     "www.core",
     "plugins.accounts.apps.AccountsConfig",
     "ceptor_ai",
-    "django_osoul.analyzer.apps.AnalyzerAppConfig",
+    "django_fusion.analyzer.apps.AnalyzerAppConfig",
     "pages.home",
     "pages.about",
     "pages.cv",

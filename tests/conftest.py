@@ -97,7 +97,7 @@ def _register_aliases():
         "www.apps.accounts.tokens":    "accounts.tokens",
         "www.apps.accounts.renderers": "accounts.renderers",
 
-        # Legacy registration module aliases used by older django-osoul/rseal
+        # Legacy registration module aliases used by older django-fusion/rseal
         # registration tests. The site implementation lives in accounts.*.
         "www.apps.accounts.registration.tokens": "accounts.registration.tokens",
         "www.apps.accounts.registration.adapter": "accounts.adapters",

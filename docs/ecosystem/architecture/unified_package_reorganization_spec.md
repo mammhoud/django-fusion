@@ -13,7 +13,7 @@ This unified specification consolidates all existing phase specs, architectural 
 
 ### Key Objectives
 
-1. **Consolidate 4 packages into 2 core packages** (django-osoul + crafts-ai)
+1. **Consolidate 4 packages into 2 core packages** (django-fusion + crafts-ai)
 2. **Establish clear separation of concerns** (foundation vs. automation)
 3. **Create reusable, modular components** for any Django website project
 4. **Eliminate circular dependencies** and import conflicts
@@ -28,7 +28,7 @@ This unified specification consolidates all existing phase specs, architectural 
 
 ```
 venv/libs/
-├── django-osoul/          (Foundation layer - 45% of code)
+├── django-fusion/          (Foundation layer - 45% of code)
 │   ├── models/            (Base models, mixins, abstract classes)
 │   ├── routes/            (URL routing utilities)
 │   ├── forms/             (Form base classes, validators)
@@ -46,7 +46,7 @@ venv/libs/
 │   ├── pipelines/         (Data processing pipelines)
 │   └── integrations/      (Third-party service connectors)
 │
-├── django-osoul/           (Testing framework - 12% of code)
+├── django-fusion/           (Testing framework - 12% of code)
 │   ├── factories/         (Factory Boy factories)
 │   ├── assertions/        (Custom test assertions)
 │   ├── fixtures/          (Test data fixtures)
@@ -68,36 +68,36 @@ venv/libs/
 ```
 stdlib/Django
     ↓
-django-osoul (foundation only)
+django-fusion (foundation only)
     ↓
 crafts-ai (automation, depends on osoul)
     ↓
 nawaai (optional AI, zero Django imports)
 
-django-osoul (testing, depends on osoul + rseal)
+django-fusion (testing, depends on osoul + rseal)
 
 ctc-research.com & structa.cloud (depend on osoul + rseal)
 ```
 
 ### 1.3 Architectural Constraints
 
-**django-osoul (Foundation Layer):**
+**django-fusion (Foundation Layer):**
 - ✅ Can import: Django, stdlib, third-party utilities
 - ❌ Cannot import: Wagtail, Celery, AI libraries, crafts-ai
 - Purpose: Provide base models, mixins, utilities for any Django project
 
 **crafts-ai (Automation Layer):**
-- ✅ Can import: Django, django-osoul, Wagtail, Celery, AI libraries
+- ✅ Can import: Django, django-fusion, Wagtail, Celery, AI libraries
 - ❌ Cannot import: Project-specific code, circular imports
 - Purpose: Provide automation, email, tasks, AI integration
 
 **nawaai (AI/MCP Toolkit):**
 - ✅ Can import: stdlib, AI libraries, MCP libraries
-- ❌ Cannot import: Django, django-osoul, crafts-ai
+- ❌ Cannot import: Django, django-fusion, crafts-ai
 - Purpose: Standalone AI/MCP utilities, reusable across projects
 
-**django-osoul (Testing Framework):**
-- ✅ Can import: Django, django-osoul, crafts-ai, pytest, factory-boy
+**django-fusion (Testing Framework):**
+- ✅ Can import: Django, django-fusion, crafts-ai, pytest, factory-boy
 - ❌ Cannot import: Project-specific code
 - Purpose: Provide testing utilities for any Django project
 
@@ -109,7 +109,7 @@ ctc-research.com & structa.cloud (depend on osoul + rseal)
 
 ```
 venv/libs/
-├── django-osoul/          (Foundation - 60% of code)
+├── django-fusion/          (Foundation - 60% of code)
 │   ├── models/
 │   │   ├── base.py        (BaseModel, TimestampedModel, UUIDModel)
 │   │   ├── mixins.py      (Mixins: Timestamped, Slugged, Publishable, etc.)
@@ -138,7 +138,7 @@ venv/libs/
 │   ├── signals/           (Advanced signal handlers)
 │   └── monitoring/        (Task monitoring, logging)
 │
-├── django-osoul/           (Testing - 10% of code)
+├── django-fusion/           (Testing - 10% of code)
 │   ├── factories/         (Factory Boy factories)
 │   ├── assertions/        (Custom test assertions)
 │   ├── fixtures/          (Test data fixtures)
@@ -160,28 +160,28 @@ stdlib
     ↓
 nawaai (standalone, zero Django)
     ↓
-django-osoul (foundation, depends on nawaai optionally)
+django-fusion (foundation, depends on nawaai optionally)
     ↓
 crafts-ai (automation, depends on osoul + nawaai)
 
-django-osoul (testing, depends on osoul + rseal)
+django-fusion (testing, depends on osoul + rseal)
 
 ctc-research.com & structa.cloud (depend on osoul + rseal)
 ```
 
 ### 2.3 Import Path Changes
 
-**Foundation Layer (django-osoul):**
+**Foundation Layer (django-fusion):**
 ```python
 # OLD → NEW
-from crafts_ai.models import BaseModel → from django_osoul.models import BaseModel
-from crafts_ai.routes import path_helper → from django_osoul.routes import path_helper
-from crafts_ai.forms import BaseForm → from django_osoul.forms import BaseForm
-from crafts_ai.middleware import * → from django_osoul.middleware import *
-from crafts_ai.signals import * → from django_osoul.signals import *
-from crafts_ai.decorators import * → from django_osoul.decorators import *
-from crafts_ai.validators import * → from django_osoul.validators import *
-from crafts_ai.admin import BaseAdmin → from django_osoul.admin import BaseAdmin
+from crafts_ai.models import BaseModel → from django_fusion.models import BaseModel
+from crafts_ai.routes import path_helper → from django_fusion.routes import path_helper
+from crafts_ai.forms import BaseForm → from django_fusion.forms import BaseForm
+from crafts_ai.middleware import * → from django_fusion.middleware import *
+from crafts_ai.signals import * → from django_fusion.signals import *
+from crafts_ai.decorators import * → from django_fusion.decorators import *
+from crafts_ai.validators import * → from django_fusion.validators import *
+from crafts_ai.admin import BaseAdmin → from django_fusion.admin import BaseAdmin
 ```
 
 **Automation Layer (crafts-ai):**
@@ -205,14 +205,14 @@ from nawaai.tools import Tool, Agent
 from nawaai.utils import parse_response, format_prompt
 ```
 
-**Testing Layer (django-osoul):**
+**Testing Layer (django-fusion):**
 ```python
 # NEW - Testing utilities
-from django_osoul.factories import UserFactory, ModelFactory
-from django_osoul.assertions import assert_model_created, assert_email_sent
-from django_osoul.fixtures import load_fixture, create_test_data
-from django_osoul.helpers import create_user, create_post
-from django_osoul.mocks import mock_email, mock_celery_task
+from django_fusion.factories import UserFactory, ModelFactory
+from django_fusion.assertions import assert_model_created, assert_email_sent
+from django_fusion.fixtures import load_fixture, create_test_data
+from django_fusion.helpers import create_user, create_post
+from django_fusion.mocks import mock_email, mock_celery_task
 ```
 
 ---
@@ -221,33 +221,33 @@ from django_osoul.mocks import mock_email, mock_celery_task
 
 ### Phase 1: Foundation Layer Consolidation (Weeks 1-2)
 
-**Objective:** Move all foundation code to django-osoul
+**Objective:** Move all foundation code to django-fusion
 
 **Tasks:**
 1. Identify all foundation modules in crafts-ai
    - models/, routes/, forms/, middleware/, signals/, decorators/, validators/, admin/
-2. Create corresponding directories in django-osoul
+2. Create corresponding directories in django-fusion
 3. Move files with import updates
 4. Create deprecation shims in crafts-ai
 5. Update all internal imports
 6. Run tests to verify functionality
 
 **Deliverables:**
-- django-osoul contains all foundation code
+- django-fusion contains all foundation code
 - crafts-ai has deprecation shims for backward compatibility
 - All tests pass
 - No circular imports
 
 **Files to Move:**
 ```
-crafts-ai/models/ → django-osoul/models/
-crafts-ai/routes/ → django-osoul/routes/
-crafts-ai/forms/ → django-osoul/forms/
-crafts-ai/middleware/ → django-osoul/middleware/
-crafts-ai/signals/ → django-osoul/signals/
-crafts-ai/decorators/ → django-osoul/decorators/
-crafts-ai/validators/ → django-osoul/validators/
-crafts-ai/admin/ → django-osoul/admin/
+crafts-ai/models/ → django-fusion/models/
+crafts-ai/routes/ → django-fusion/routes/
+crafts-ai/forms/ → django-fusion/forms/
+crafts-ai/middleware/ → django-fusion/middleware/
+crafts-ai/signals/ → django-fusion/signals/
+crafts-ai/decorators/ → django-fusion/decorators/
+crafts-ai/validators/ → django-fusion/validators/
+crafts-ai/admin/ → django-fusion/admin/
 ```
 
 ### Phase 2: AI/MCP Extraction (Weeks 3-4)
@@ -276,11 +276,11 @@ crafts-ai/mcp/ → nawaai/mcp/
 
 ### Phase 3: Testing Framework Consolidation (Weeks 5-6)
 
-**Objective:** Consolidate testing utilities into django-osoul
+**Objective:** Consolidate testing utilities into django-fusion
 
 **Tasks:**
 1. Identify all testing code in crafts-ai and django-seed
-2. Move to django-osoul
+2. Move to django-fusion
 3. Create base test classes
 4. Create factory definitions
 5. Create assertion helpers
@@ -288,16 +288,16 @@ crafts-ai/mcp/ → nawaai/mcp/
 7. Run tests to verify functionality
 
 **Deliverables:**
-- django-osoul contains all testing utilities
+- django-fusion contains all testing utilities
 - Clear API for test factories, assertions, fixtures
 - All tests pass
 - Documentation for testing utilities
 
 **Files to Move:**
 ```
-crafts-ai/seeder/ → django-osoul/factories/
-crafts-ai/tests/ → django-osoul/base/
-django-seed/seeding/ → django-osoul/fixtures/
+crafts-ai/seeder/ → django-fusion/factories/
+crafts-ai/tests/ → django-fusion/base/
+django-seed/seeding/ → django-fusion/fixtures/
 ```
 
 ### Phase 4: Deprecation Shims & Backward Compatibility (Weeks 7-8)
@@ -322,11 +322,11 @@ django-seed/seeding/ → django-osoul/fixtures/
 ```python
 # crafts-ai/models/__init__.py
 import warnings
-from django_osoul.models import BaseModel, TimestampedModel
+from django_fusion.models import BaseModel, TimestampedModel
 
 warnings.warn(
     "Importing from crafts_ai.models is deprecated. "
-    "Use django_osoul.models instead.",
+    "Use django_fusion.models instead.",
     DeprecationWarning,
     stacklevel=2
 )
@@ -374,7 +374,7 @@ __all__ = ['BaseModel', 'TimestampedModel']
 ### 4.2 Enhancement Goals
 
 **Goal 1: Increase Reusability**
-- Extract common patterns into django-osoul
+- Extract common patterns into django-fusion
 - Create reusable app templates
 - Document best practices
 - Provide example implementations
@@ -445,7 +445,7 @@ __all__ = ['BaseModel', 'TimestampedModel']
 
 **Phase 1: Extract Common Patterns (Weeks 1-2)**
 - Identify common patterns in both projects
-- Extract to django-osoul
+- Extract to django-fusion
 - Create reusable components
 - Document patterns
 
@@ -479,11 +479,11 @@ __all__ = ['BaseModel', 'TimestampedModel']
 
 ### 5.1 File Organization Strategy
 
-**django-osoul Structure:**
+**django-fusion Structure:**
 ```
-django-osoul/
+django-fusion/
 ├── src/
-│   └── django_osoul/
+│   └── django_fusion/
 │       ├── __init__.py
 │       ├── models/
 │       │   ├── __init__.py
@@ -534,9 +534,9 @@ crafts-ai/
 
 **Absolute Imports (Preferred):**
 ```python
-from django_osoul.models import BaseModel
+from django_fusion.models import BaseModel
 from crafts_ai.email import send_email
-from django_osoul.factories import UserFactory
+from django_fusion.factories import UserFactory
 from nawaai.ai import LLMClient
 ```
 
@@ -626,10 +626,10 @@ tests/
 ### 6.2 Architecture Metrics
 
 - ✅ Clear separation of concerns
-- ✅ Foundation layer (django-osoul) has zero automation imports
+- ✅ Foundation layer (django-fusion) has zero automation imports
 - ✅ Automation layer (crafts-ai) depends only on foundation
 - ✅ AI layer (nawaai) has zero Django imports
-- ✅ Testing layer (django-osoul) depends on foundation + automation
+- ✅ Testing layer (django-fusion) depends on foundation + automation
 
 ### 6.3 Documentation Metrics
 
@@ -694,7 +694,7 @@ tests/
 ### Overall Timeline: 10 Weeks
 
 **Week 1-2: Foundation Layer Consolidation**
-- Move foundation code to django-osoul
+- Move foundation code to django-fusion
 - Create deprecation shims
 - Update imports
 - Run tests
@@ -706,7 +706,7 @@ tests/
 - Update imports
 
 **Week 5-6: Testing Framework Consolidation**
-- Move testing code to django-osoul
+- Move testing code to django-fusion
 - Create base test classes
 - Create factory definitions
 - Create assertion helpers
@@ -776,9 +776,9 @@ tests/
 
 ### A. Glossary
 
-- **django-osoul:** Foundation layer package
+- **django-fusion:** Foundation layer package
 - **crafts-ai:** Automation layer package
-- **django-osoul:** Testing framework package
+- **django-fusion:** Testing framework package
 - **nawaai:** AI/MCP toolkit package
 - **Deprecation shim:** Backward compatibility layer
 - **Circular import:** When module A imports B and B imports A

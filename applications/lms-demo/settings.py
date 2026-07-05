@@ -57,7 +57,7 @@ LOCAL_APPS = [
     "plugins.products.apps.ProductsConfig",
     "plugins.profile.apps.ProfileConfig",
     "ceptor_ai",
-    "django_osoul.analyzer.apps.AnalyzerAppConfig",
+    "django_fusion.analyzer.apps.AnalyzerAppConfig",
 ]
 INSTALLED_APPS += LOCAL_APPS
 # ============================================================

@@ -1,10 +1,10 @@
 # crafts-ai Documentation
 
 ## Overview
-crafts-ai is the Wagtail automation layer that builds on top of django-osoul. It provides pipelines, services, workflows, email handling, and Wagtail-specific components.
+crafts-ai is the Wagtail automation layer that builds on top of django-fusion. It provides pipelines, services, workflows, email handling, and Wagtail-specific components.
 
 ## Key Principles
-- **Depends on django-osoul** - Uses base classes from django-osoul
+- **Depends on django-fusion** - Uses base classes from django-fusion
 - **Wagtail-focused** - Provides Wagtail-specific automation
 - **No project dependencies** - Must not import project-specific code
 
@@ -77,5 +77,5 @@ class CartService(CartServiceBase):
 - [crafts-ai README](../../../venv/libs/crafts-ai/README.md)
 
 ## Related Packages
-- [django-osoul](../django-osoul/) - Base layer (crafts-ai depends on this)
-- [django-osoul](../django-osoul/) - Testing infrastructure
+- [django-fusion](../django-fusion/) - Base layer (crafts-ai depends on this)
+- [django-fusion](../django-fusion/) - Testing infrastructure

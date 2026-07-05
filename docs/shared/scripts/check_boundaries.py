@@ -4,9 +4,9 @@ Boundary Checker for Ecosystem Architectural Refactoring
 
 This script checks for boundary violations across the ecosystem:
 1. crafts-ai-no-django: crafts-ai must be pure Python with zero Django imports
-2. osoul-no-wagtail: django_osoul must not import wagtail, celery, or crafts_ai
+2. osoul-no-wagtail: django_fusion must not import wagtail, celery, or crafts_ai
 3. rseal-no-projects: crafts_ai must not import project-specific code
-4. grep-test-only: django_osoul must not be imported by production code
+4. grep-test-only: django_fusion must not be imported by production code
 """
 
 import ast
@@ -39,9 +39,9 @@ class BoundaryChecker:
                 "message": "crafts-ai must be pure Python with zero Django imports"
             },
             "osoul-no-wagtail": {
-                "source": "django_osoul",
+                "source": "django_fusion",
                 "forbidden_modules": ["wagtail", "celery", "crafts_ai"],
-                "message": "django_osoul must not import wagtail, celery, or crafts_ai"
+                "message": "django_fusion must not import wagtail, celery, or crafts_ai"
             },
             "rseal-no-projects": {
                 "source": "crafts_ai",
@@ -49,9 +49,9 @@ class BoundaryChecker:
                 "message": "crafts_ai must not import project-specific code"
             },
             "grep-test-only": {
-                "source": ["django_osoul", "crafts_ai", "apps"],
-                "forbidden_modules": ["django_osoul"],
-                "message": "django_osoul is test-only and must not be imported by production code"
+                "source": ["django_fusion", "crafts_ai", "apps"],
+                "forbidden_modules": ["django_fusion"],
+                "message": "django_fusion is test-only and must not be imported by production code"
             }
         }
 
@@ -105,22 +105,22 @@ class BoundaryChecker:
                 if "crafts-ai" not in source_package:
                     continue
             elif rule_name == "osoul-no-wagtail":
-                if "django_osoul" not in source_package:
+                if "django_fusion" not in source_package:
                     continue
             elif rule_name == "rseal-no-projects":
                 if "crafts_ai" not in source_package:
                     continue
             elif rule_name == "grep-test-only":
-                # Check if this is production code importing django_osoul
-                if "django_osoul" in source_package or "test" in source_package:
-                    continue  # django_osoul can import itself or test code can import it
-                if "django_osoul" in import_name:
+                # Check if this is production code importing django_fusion
+                if "django_fusion" in source_package or "test" in source_package:
+                    continue  # django_fusion can import itself or test code can import it
+                if "django_fusion" in import_name:
                     violations.append(BoundaryViolation(
                         filepath=filepath,
                         line_number=line_no,
                         import_statement=import_name,
                         rule_violated=rule_name,
-                        fix_suggestion=f"Remove import of django_osoul from production code"
+                        fix_suggestion=f"Remove import of django_fusion from production code"
                     ))
                 continue
 
@@ -144,12 +144,12 @@ class BoundaryChecker:
 
         if "crafts-ai" in path_str:
             return "crafts-ai"
-        elif "django_osoul" in path_str:
-            return "django_osoul"
+        elif "django_fusion" in path_str:
+            return "django_fusion"
         elif "crafts_ai" in path_str:
             return "crafts_ai"
-        elif "django_osoul" in path_str:
-            return "django_osoul"
+        elif "django_fusion" in path_str:
+            return "django_fusion"
         elif "apps" in path_str or "ctc-research" in path_str or "structa.cloud" in path_str:
             return "apps"
         return "unknown"

@@ -5,7 +5,7 @@ from __future__ import annotations
 from pathlib import Path
 
 from django.conf import settings
-from django_osoul.site.pages import PageCatalog, TemplateRoot
+from django_fusion.site.pages import PageCatalog, TemplateRoot
 
 
 def customizer_apps() -> list[dict[str, object]]:

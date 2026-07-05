@@ -4,7 +4,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
 from django.utils import timezone
 from django.views import View
-from django_osoul.site import PageHandler
+from django_fusion.site import PageHandler
 
 # Optional coupling to Core plugins
 try:

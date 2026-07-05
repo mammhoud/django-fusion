@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from django.urls import include, path
-from django_osoul.health.views import HealthCheckView
+from django_fusion.health.views import HealthCheckView
 
 from ceptor_ai.apps import DjangoRsealConfig
 from ceptor_ai.routes.newsletter.subscription import SubscribeView

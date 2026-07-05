@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """
 Asset Health Verification Script
-Tests asset loading from Django URLs using django-osoul style verification.
+Tests asset loading from Django URLs using django-fusion style verification.
 Checks:
 - Static file URLs (/static/)
 - Media URLs (/media/)
@@ -272,7 +272,7 @@ def main():
         print()
 
         # 5. Check Template Asset References
-        print("5️⃣  Template Asset References (django-osoul)")
+        print("5️⃣  Template Asset References (django-fusion)")
         print("-" * 40)
         template_refs = check_template_assets(site_key)
         for ref_type, count in template_refs.items():

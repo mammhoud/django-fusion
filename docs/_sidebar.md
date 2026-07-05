@@ -50,12 +50,12 @@
   * [Newsletter](user_guide/newsletter.md)
 
 * **Packages**
-  * [django-osoul](packages/django-osoul/README.md)
-    * [Usage](packages/django-osoul/usage.md)
+  * [django-fusion](packages/django-fusion/README.md)
+    * [Usage](packages/django-fusion/usage.md)
   * [crafts-ai](packages/crafts-ai/README.md)
     * [Usage](packages/crafts-ai/usage.md)
-  * [django-osoul](packages/django-osoul/README.md)
-    * [Usage](packages/django-osoul/usage.md)
+  * [django-fusion](packages/django-fusion/README.md)
+    * [Usage](packages/django-fusion/usage.md)
   * [nawaai](packages/nawaai/)
 
 * **Ecosystem**

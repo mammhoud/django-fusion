@@ -25,7 +25,7 @@ def main():
     print("\n1. Run all tests:")
     print("   $ python3 scripts/run_all_tests.py")
     print("   This will:")
-    print("   - Run tests for all packages (django_osoul, crafts_ai, django_osoul, nawaai)")
+    print("   - Run tests for all packages (django_fusion, crafts_ai, django_fusion, nawaai)")
     print("   - Run tests for ctc-research.com")
     print("   - Run tests for structa.cloud")
     print("   - Verify test parity between websites")

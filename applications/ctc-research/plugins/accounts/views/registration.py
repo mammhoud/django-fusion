@@ -20,7 +20,7 @@ from django.utils import timezone
 from django.utils.decorators import method_decorator
 from django.views import View
 from django.views.decorators.csrf import csrf_protect
-from django_osoul.site import PageHandler
+from django_fusion.site import PageHandler
 
 from ..emails import send_registration_email
 from ..forms.registration import PasswordCreationForm, RegistrationForm

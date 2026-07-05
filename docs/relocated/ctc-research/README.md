@@ -2,7 +2,7 @@
 
 **AllianceCore LMS Platform** — A professional Learning Management System built with Django 5.x and Wagtail CMS following the thin layer architectural pattern.
 
-structa.cloud is a thin-layer Django project that delegates all business logic to shared packages (`django_osoul`, `crafts_ai`, `django_osoul`). It provides course management, user enrollments, progress tracking, certification, and a blog/newsletter system under the `alliance` app label.
+structa.cloud is a thin-layer Django project that delegates all business logic to shared packages (`django_fusion`, `crafts_ai`, `django_fusion`). It provides course management, user enrollments, progress tracking, certification, and a blog/newsletter system under the `alliance` app label.
 
 ---
 
@@ -41,7 +41,7 @@ Runtime port: `5070`. Generated media/staticfiles/bundles and database files are
 - **Newsletter**: Celery-powered email delivery with AI-enhanced content
 - **Auth**: Role-based access control, social auth, allauth integration
 - **API**: Django Ninja REST API
-- **Health Checks**: Unified health endpoints via `django_osoul`
+- **Health Checks**: Unified health endpoints via `django_fusion`
 - **i18n**: Multi-language support (English, Arabic, French, German)
 - **Thin Layer Architecture**: All business logic delegated to shared packages
 
@@ -240,7 +240,7 @@ curl http://localhost:5070/health/media/
 ```
 structa.cloud/
 ├── apps/                    # Thin layer apps (delegate to packages)
-│   ├── accounts/            # User management (thin subclasses of django_osoul)
+│   ├── accounts/            # User management (thin subclasses of django_fusion)
 │   │   ├── models/          # Project-specific user/group models
 │   │   ├── services/        # Thin subclasses: UserService, GroupService
 │   │   └── views/           # Account views
@@ -279,12 +279,12 @@ This project follows strict package boundaries:
 
 | Package | Purpose | Import Rules |
 |---------|---------|--------------|
-| `django_osoul` | Pure Django foundation (models, mixins, utils, contrib) | No Wagtail/Celery imports |
+| `django_fusion` | Pure Django foundation (models, mixins, utils, contrib) | No Wagtail/Celery imports |
 | `crafts_ai` | Wagtail + automation (services, workflows, email, signals) | No project-specific imports |
-| `django_osoul` | Testing infrastructure and health checks | Test-only, never in production |
+| `django_fusion` | Testing infrastructure and health checks | Test-only, never in production |
 | `nawaai` | AI/MCP toolkit | Pure Python, zero Django imports |
 
-**Dependency Direction**: `stdlib` → `nawaai` → `django_osoul` → `crafts_ai` → `projects`
+**Dependency Direction**: `stdlib` → `nawaai` → `django_fusion` → `crafts_ai` → `projects`
 
 ### Alliance App vs LMS App
 
@@ -338,10 +338,10 @@ class CartService(CartServiceBase):
 ### What Goes to Packages
 
 1. **Business logic** (all services, managers, utilities)
-2. **Reusable models** (foundation models in `django_osoul`)
+2. **Reusable models** (foundation models in `django_fusion`)
 3. **Wagtail components** (blocks, snippets, hooks in `crafts_ai`)
-4. **Testing infrastructure** (all in `django_osoul`)
-5. **Health check system** (unified in `django_osoul`)
+4. **Testing infrastructure** (all in `django_fusion`)
+5. **Health check system** (unified in `django_fusion`)
 
 ---
 
@@ -349,10 +349,10 @@ class CartService(CartServiceBase):
 
 ### Test Infrastructure
 
-Tests use `django_osoul` for unified infrastructure:
+Tests use `django_fusion` for unified infrastructure:
 
 ```python
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 from hypothesis import given
 
 class CartServiceTest(BaseTestCase):
@@ -395,7 +395,7 @@ The project uses Hypothesis for property-based testing:
 
 ```python
 from hypothesis import given, strategies as st
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 class TestParsers(BaseTestCase):
     @given(st.text(min_size=1, max_size=100))
@@ -492,24 +492,24 @@ DJANGO_SETTINGS_MODULE=configs.settings.production
 
 ### Code Organization
 
-1. **New feature in package?** → Add to `django_osoul` (pure Django) or `crafts_ai` (Wagtail/automation)
+1. **New feature in package?** → Add to `django_fusion` (pure Django) or `crafts_ai` (Wagtail/automation)
 2. **New feature in project?** → Create thin subclass in appropriate app
-3. **New test?** → Use `django_osoul` infrastructure
+3. **New test?** → Use `django_fusion` infrastructure
 4. **New template?** → Add to project's `templates/` directory
 
 ### Import Rules
 
 ```python
 # ✅ Allowed
-from django_osoul.managers import RoleHierarchyManager
+from django_fusion.managers import RoleHierarchyManager
 from crafts_ai.pipelines.services import CartServiceBase
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 # ❌ Forbidden
-# django_osoul importing wagtail
+# django_fusion importing wagtail
 # crafts_ai importing project-specific code
 # nawaai importing Django modules
-# Production code importing django_osoul
+# Production code importing django_fusion
 ```
 
 ### Boundary Enforcement
@@ -790,5 +790,5 @@ MIT License - see [LICENSE](./LICENSE) file for details.
 | Docker setup | Standard compose | Traefik + SSL |
 | Domain | ctc-research.com | structa.cloud |
 
-Both projects share identical app structure (`accounts/`, `content/`, `blog/`, `lms/`) and use the same thin layer pattern delegating to `django_osoul` and `crafts_ai`.
+Both projects share identical app structure (`accounts/`, `content/`, `blog/`, `lms/`) and use the same thin layer pattern delegating to `django_fusion` and `crafts_ai`.
 

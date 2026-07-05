@@ -207,9 +207,9 @@ docs/
   - [structa.cloud](structa.cloud/)
   - [ctc-research.com](ctc-research.com/)
 - **Packages**
-  - [django-osoul](packages/django-osoul/)
+  - [django-fusion](packages/django-fusion/)
   - [crafts-ai](packages/crafts-ai/)
-  - [django-osoul](packages/django-osoul/)
+  - [django-fusion](packages/django-fusion/)
 - **Infrastructure**
   - [Docker](infrastructure/docker/)
   - [Traefik](infrastructure/traefik/)

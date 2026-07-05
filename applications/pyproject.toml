@@ -87,7 +87,7 @@ dependencies = [
     "pytest-django",
     "virtualenv",
     # Internal libs (local workspace sources — see [tool.uv.sources])
-    "django-osoul",
+    "django-fusion",
     "ceptor-ai",
     "ollama>=0.6.2",
     "httpx>=0.25.0",
@@ -107,34 +107,34 @@ build-backend = "hatchling.build"
 packages = ["configs", "tasks"]
 
 # Local sources for internal libs used by all websites.
-# django-grep is merged into libs/django-osoul; django-rseal is merged into libs/ceptor-ai.
+# django-grep is merged into libs/django-fusion; django-rseal is merged into libs/ceptor-ai.
 
 [tool.uv.sources]
-django-osoul = { path = "libs/django-osoul", editable = true }
+django-fusion = { path = "libs/django-fusion", editable = true }
 ceptor-ai = { path = "libs/ceptor-ai", editable = true }
 
 [tool.pytest.ini_options]        
 minversion = "7.0"
 addopts = ["--strict-markers", "--strict-config", "-v", "--tb=short", "--no-header", "--import-mode=importlib"]
 DJANGO_SETTINGS_MODULE = "tests.settings"
-# django-osoul analyzer tests live in their own sub-package so they can be
+# django-fusion analyzer tests live in their own sub-package so they can be
 # picked up from the workspace without dragging the rest of the
-# django-osoul test corpus (which uses a different Django settings config)
+# django-fusion test corpus (which uses a different Django settings config)
 # into the same collection pass.
 testpaths = [
     "tests",
-    "libs/django-osoul/tests/analyzer",
+    "libs/django-fusion/tests/analyzer",
 ]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
 # ``.`` so ``from apps.*`` imports resolve (workspace tests rely on this).
-# ``libs/django-osoul/src`` so ``from django_osoul.analyzer.*`` resolves
+# ``libs/django-fusion/src`` so ``from django_fusion.analyzer.*`` resolves
 # when pytest is invoked from the workspace root, independent of whether
 # the editable install has materialised the .pth file.
 pythonpath = [
     ".",
-    "libs/django-osoul/src",
+    "libs/django-fusion/src",
 ]
 markers = [
     "slow: marks tests as slow",

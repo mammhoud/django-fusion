@@ -13,7 +13,7 @@ Admin URL: /control/ (Wagtail) / /admin/ (Django admin redirect)
 """
 from __future__ import annotations
 
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 from ..base.config import AdminURLs, AuthURLs, Credentials
 from ..base.mixins import AuthAssertMixin, ResponseAssertMixin
@@ -23,7 +23,7 @@ class AdminAccessTest(ResponseAssertMixin, BaseTestCase):
     """
     Tests for admin panel access control.
 
-    Uses django-osoul BaseTestCase which provides self.admin_user (superuser)
+    Uses django-fusion BaseTestCase which provides self.admin_user (superuser)
     and self.login_as_admin() helper.
     """
 

@@ -6,13 +6,13 @@
 
 | # | Item | From | To | Lines | Effort | Priority |
 |---|------|------|----|-------|--------|----------|
-| 1 | `mixins.py` | Both sites | `django_osoul.pipelines.site.mixins` | 907 | Medium | **High** |
-| 2 | `call.py` | Both sites | `django_osoul.CI.models.interaction.call` | 87 | Low | **High** |
-| 3 | `notification.py` | Both sites | `django_osoul.CI.models.interaction.notification` | 124 | Low | **High** |
-| 4 | `submission.py` | Both sites | `django_osoul.handlers.models.forms.submission` | 121 | Low | Medium |
-| 5 | `integrations.py` | Both sites | `django_osoul.CI.models.integrations` | 178 | Low | Medium |
-| 6 | Blog models | Both sites | `django_osoul.handlers.models.blog` | ~200 | Medium | Medium |
-| 7 | `cart.py` (abstract) | Both sites | `django_osoul.CI.models.cart` | ~70 | Low | Low |
+| 1 | `mixins.py` | Both sites | `django_fusion.pipelines.site.mixins` | 907 | Medium | **High** |
+| 2 | `call.py` | Both sites | `django_fusion.CI.models.interaction.call` | 87 | Low | **High** |
+| 3 | `notification.py` | Both sites | `django_fusion.CI.models.interaction.notification` | 124 | Low | **High** |
+| 4 | `submission.py` | Both sites | `django_fusion.handlers.models.forms.submission` | 121 | Low | Medium |
+| 5 | `integrations.py` | Both sites | `django_fusion.CI.models.integrations` | 178 | Low | Medium |
+| 6 | Blog models | Both sites | `django_fusion.handlers.models.blog` | ~200 | Medium | Medium |
+| 7 | `cart.py` (abstract) | Both sites | `django_fusion.CI.models.cart` | ~70 | Low | Low |
 
 **Total remaining**: ~1,687 lines across 7 items.
 
@@ -40,7 +40,7 @@
 | Suggestion | Effort | Priority |
 |------------|--------|----------|
 | Raise test coverage to 90%+ | Low | High |
-| CI/CD GitHub Actions for django-osoul and django-seed | Low | High |
+| CI/CD GitHub Actions for django-fusion and django-seed | Low | High |
 | Full type annotations on all service classes | Low | Medium |
 | `CHANGELOG.md` with semantic versioning in both libs | Low | Medium |
 | Pre-commit hooks: ruff, mypy, pytest | Low | Medium |
@@ -61,22 +61,22 @@
 
 ```python
 # Profile and site mixins (pending)
-from django_osoul.pipelines.site.mixins import (
+from django_fusion.pipelines.site.mixins import (
     ProfileContextMixin, ProfileOperationsMixin, ProfileDashboardMixin,
     NoteMixin, CertificateMixin, CourseMixin, MessageMixin,
 )
 
 # CI models (pending)
-from django_osoul.CI.models.interaction.call import Call
-from django_osoul.CI.models.interaction.notification import Notification
-from django_osoul.CI.models.integrations import Integration
-from django_osoul.handlers.models.forms.submission import FormSubmission
+from django_fusion.CI.models.interaction.call import Call
+from django_fusion.CI.models.interaction.notification import Notification
+from django_fusion.CI.models.integrations import Integration
+from django_fusion.handlers.models.forms.submission import FormSubmission
 
 # Utilities (available now)
-from django_osoul.utils.validators import validate_email_format
-from django_osoul.utils.text import slugify_unique, truncate_words
-from django_osoul.utils.datetime_utils import format_relative_time
-from django_osoul.utils.responses import success_response, error_response
+from django_fusion.utils.validators import validate_email_format
+from django_fusion.utils.text import slugify_unique, truncate_words
+from django_fusion.utils.datetime_utils import format_relative_time
+from django_fusion.utils.responses import success_response, error_response
 
 # Email automation (available now)
 from django_seed.models import EmailLog, UserRole, UserGroup

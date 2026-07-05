@@ -1,8 +1,8 @@
 """
-Static asset availability tests for ctc-research.com using django-osoul test utilities.
+Static asset availability tests for ctc-research.com using django-fusion test utilities.
 
-Uses django_osoul.tests.base.BaseTestCase (Django test client — browser-style)
-and django_osoul.tests.mixins.AssertHTMLMixin for HTML assertions.
+Uses django_fusion.tests.base.BaseTestCase (Django test client — browser-style)
+and django_fusion.tests.mixins.AssertHTMLMixin for HTML assertions.
 
 Covers:
 - Known static asset paths return HTTP 200
@@ -25,8 +25,8 @@ if not django_settings.configured:
     django.setup()
 
 from django.test import Client, override_settings
-from django_osoul.tests.base import BaseTestCase
-from django_osoul.tests.mixins import AssertHTMLMixin
+from django_fusion.tests.base import BaseTestCase
+from django_fusion.tests.mixins import AssertHTMLMixin
 
 # ---------------------------------------------------------------------------
 # Helpers

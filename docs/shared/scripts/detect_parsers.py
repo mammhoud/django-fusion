@@ -22,9 +22,9 @@ from typing import List, Optional
 SCAN_DIRS = [
     "ctc-research.com/apps",
     "structa.cloud/apps",
-    "venv/libs/django-osoul/src",
+    "venv/libs/django-fusion/src",
     "venv/libs/crafts-ai/src",
-    "venv/libs/django-osoul/src",
+    "venv/libs/django-fusion/src",
     "applications/libs/crafts-ai/src/crafts_ai",
 ]
 

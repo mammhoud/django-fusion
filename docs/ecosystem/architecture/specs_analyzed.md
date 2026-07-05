@@ -206,9 +206,9 @@
 - Circular import risks identified
 
 ### Reorganization Goals
-- Consolidate into 2 core packages (django-osoul + crafts-ai)
+- Consolidate into 2 core packages (django-fusion + crafts-ai)
 - Extract AI to standalone nawaai
-- Consolidate testing to django-osoul
+- Consolidate testing to django-fusion
 - Eliminate circular imports
 - Maintain backward compatibility
 

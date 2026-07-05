@@ -22,7 +22,7 @@ NC     := \033[0m
 SITE_NAME := $(notdir $(CURDIR))
 DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
 # PYTHONPATH includes site root, workspace root, www subdirectory, and libs
-PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../libs/django-osoul/src):$(abspath ../libs/crafts-ai/src)
+PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../libs/django-fusion/src):$(abspath ../libs/crafts-ai/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ..
@@ -138,15 +138,15 @@ install: ## Install Python dependencies
 	@echo -e "$(BLUE)Installing Python deps...$(NC)"
 	@$(UV) sync
 	@echo -e "$(GREEN)✅ Installed$(NC)"
-	# Install local django_osoul library in editable mode
-	@echo -e "$(BLUE)Installing local django_osoul library...$(NC)"
-	@cd $(abspath ../libs/django-osoul) && $(UV) pip install -e .
+	# Install local django_fusion library in editable mode
+	@echo -e "$(BLUE)Installing local django_fusion library...$(NC)"
+	@cd $(abspath ../libs/django-fusion) && $(UV) pip install -e .
 	@echo -e "$(GREEN)✅ Local library installed$(NC)"
 
-install-internal: ## Refresh mammhoud GitHub packages (django-osoul/rseal/grep)
+install-internal: ## Refresh mammhoud GitHub packages (django-fusion/rseal/grep)
 	$(call clean_broken_venv)
 	@echo -e "$(BLUE)Installing mammhoud GitHub packages...$(NC)"
-	@$(UV) sync --upgrade-package django-osoul --upgrade-package crafts-ai
+	@$(UV) sync --upgrade-package django-fusion --upgrade-package crafts-ai
 	@echo -e "$(GREEN)✅ Internal packages refreshed from GitHub$(NC)"
 
 setup: ## Full setup (frontend, migrations, static, checks, superuser, data)

@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
-from django_osoul.site._context_mixins import WagtailPageMixin
+from django_fusion.site._context_mixins import WagtailPageMixin
 from plugins.accounts.models.manage.service import Service
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
@@ -28,7 +28,7 @@ logger = logging.getLogger(__name__)
 
 class BasePage(WagtailPageMixin, Page):
     """
-    🧩 Base Wagtail Page — powered by django-osoul's WagtailPageMixin.
+    🧩 Base Wagtail Page — powered by django-fusion's WagtailPageMixin.
 
     Rendering pipeline (same order as ComponentViews/PageHandler):
       1. resolve_strategy(request)   → "fragment" | "document"

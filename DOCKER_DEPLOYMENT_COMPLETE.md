@@ -141,7 +141,7 @@ crm.structa.cloud
 - **Total: 27 data objects**
 
 ### Technology Stack
-- **Framework:** Django 4.2 + django-osoul
+- **Framework:** Django 4.2 + django-fusion
 - **Database:** PostgreSQL (db_crm)
 - **Cache:** Redis
 - **Workers:** Celery

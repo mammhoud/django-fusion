@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide explains how to use django-osoul ViewSets with Wagtail pages and comp tags.
+This guide explains how to use django-fusion ViewSets with Wagtail pages and comp tags.
 
 ## Available ViewSets
 
@@ -11,7 +11,7 @@ This guide explains how to use django-osoul ViewSets with Wagtail pages and comp
 Base class for component-based views that work with the `comp` template tag system.
 
 ```python
-from django_osoul.site import ComponentViews
+from django_fusion.site import ComponentViews
 
 class MyComponentViewSet(ComponentViews):
     component_dir = "components/myapp"
@@ -25,7 +25,7 @@ class MyComponentViewSet(ComponentViews):
 Handler for Wagtail pages with HTMX support.
 
 ```python
-from django_osoul.site import PageHandler
+from django_fusion.site import PageHandler
 
 class MyPageHandler(PageHandler):
     template_base = "pages/base.html"
@@ -41,7 +41,7 @@ class MyPageHandler(PageHandler):
 Mixin for adding HTMX pagination support to views.
 
 ```python
-from django_osoul.site import HTMXPaginationMixin
+from django_fusion.site import HTMXPaginationMixin
 
 class MyPaginatedView(HTMXPaginationMixin, TemplateView):
     template_name = "list.html"
@@ -56,7 +56,7 @@ class MyPaginatedView(HTMXPaginationMixin, TemplateView):
 
 ```python
 # applications/ctc-research/www/apps/viewsets.py
-from django_osoul.site import ComponentViews
+from django_fusion.site import ComponentViews
 from wagtail.models import Page
 
 class PageComponentViewSet(ComponentViews):
@@ -76,8 +76,8 @@ class PageComponentViewSet(ComponentViews):
 
 ```python
 # applications/ctc-research/site.py
-from django_osoul.site import ComponentViews, PageHandler
-from django_osoul.site.views.tags import register
+from django_fusion.site import ComponentViews, PageHandler
+from django_fusion.site.views.tags import register
 from wagtail.models import Page
 
 @register('site_pages')
@@ -122,8 +122,8 @@ def page_sections(context, page):
 
 ```python
 # applications/ctc-research/www/apps/views.py
-from django_osoul.site import ComponentViews, HtmxDetails
-from django_osoul.site.response import HttpResponseClientRedirect
+from django_fusion.site import ComponentViews, HtmxDetails
+from django_fusion.site.response import HttpResponseClientRedirect
 from django.views.generic import TemplateView
 
 class PageDetailView(TemplateView):
@@ -176,8 +176,8 @@ class PageDetailView(TemplateView):
 
 ```python
 # applications/ctc-research/www/apps/viewsets.py
-from django_osoul.site import ComponentViews, PageHandler
-from django_osoul.site.plugins import HtmxDetails
+from django_fusion.site import ComponentViews, PageHandler
+from django_fusion.site.plugins import HtmxDetails
 from wagtail.models import Page
 
 class SiteComponentViewSet(ComponentViews):
@@ -211,8 +211,8 @@ class SitePageHandler(PageHandler):
 
 ```python
 # applications/ctc-research/site.py
-from django_osoul.site import ComponentViews, PageHandler
-from django_osoul.site.views.tags import register
+from django_fusion.site import ComponentViews, PageHandler
+from django_fusion.site.views.tags import register
 from wagtail.models import Page
 
 @register('site_pages')
@@ -294,8 +294,8 @@ def page_sections(context, page):
 
 ```python
 # applications/ctc-research/www/apps/htmx.py
-from django_osoul.site import ComponentViews, HtmxDetails
-from django_osoul.site.response import HttpResponseClientRedirect
+from django_fusion.site import ComponentViews, HtmxDetails
+from django_fusion.site.response import HttpResponseClientRedirect
 from django.views.generic import View
 
 class PageFragmentView(View):
@@ -351,7 +351,7 @@ def home(request):
 
 ```python
 # viewsets.py
-from django_osoul.site import ComponentViews
+from django_fusion.site import ComponentViews
 
 class HomeComponentViewSet(ComponentViews):
     def get_pages(self):

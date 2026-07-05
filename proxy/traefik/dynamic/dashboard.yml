@@ -7,5 +7,4 @@ http:
       service: api@internal
       middlewares:
       - basic-auth
-      tls:
-        certResolver: letsencrypt
+      tls: {}

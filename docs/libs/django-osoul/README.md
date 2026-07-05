@@ -1,14 +1,14 @@
-# django-osoul shared Wagtail viewsets
+# django-fusion shared Wagtail viewsets
 
-`django-osoul` owns reusable Wagtail admin behavior that is not tied to a single
+`django-fusion` owns reusable Wagtail admin behavior that is not tied to a single
 Structa Cloud site. Site projects should import shared snippet functionality
-from `django_osoul.wagtail.viewsets` and keep site-specific configuration next
+from `django_fusion.wagtail.viewsets` and keep site-specific configuration next
 to the site models.
 
 ## Shared import
 
 ```python
-from django_osoul.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.wagtail.viewsets import BaseSnippetViewSet
 ```
 
 `BaseSnippetViewSet` provides generic snippet actions and display helpers:
@@ -21,13 +21,13 @@ from django_osoul.wagtail.viewsets import BaseSnippetViewSet
 
 Each site should define its own model references, labels, icons, menu names, and
 export field lists in local viewset classes. Do not add CTC Research, LMS Demo,
-or VResume model imports to `django-osoul`.
+or VResume model imports to `django-fusion`.
 
 ### CTC Research
 
 ```python
 from django.utils.translation import gettext_lazy as _
-from django_osoul.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.wagtail.viewsets import BaseSnippetViewSet
 
 from ctc_research.models import ResearchPartner
 
@@ -45,7 +45,7 @@ class ResearchPartnerViewSet(BaseSnippetViewSet):
 
 ```python
 from django.utils.translation import gettext_lazy as _
-from django_osoul.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.wagtail.viewsets import BaseSnippetViewSet
 
 from lms_demo.models import CourseProvider
 
@@ -63,7 +63,7 @@ class CourseProviderViewSet(BaseSnippetViewSet):
 
 ```python
 from django.utils.translation import gettext_lazy as _
-from django_osoul.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.wagtail.viewsets import BaseSnippetViewSet
 
 from pages.portfolio.models import Project
 
@@ -79,4 +79,4 @@ class ProjectViewSet(BaseSnippetViewSet):
 
 During migration, VResume also re-exports the shared base from
 `applications/VResume/www/core/snippets/` for older imports. New code should use
-`django_osoul.wagtail.viewsets` directly.
+`django_fusion.wagtail.viewsets` directly.

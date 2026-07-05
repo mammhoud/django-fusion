@@ -173,7 +173,7 @@ dependencies = [
     { name = "django-htmx" },
     { name = "django-import-export" },
     { name = "django-ninja" },
-    { name = "django-osoul" },
+    { name = "django-fusion" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -240,7 +240,7 @@ requires-dist = [
     { name = "django-htmx" },
     { name = "django-import-export" },
     { name = "django-ninja" },
-    { name = "django-osoul", git = "https://github.com/mammhoud/django-osoul?branch=generic" },
+    { name = "django-fusion", git = "https://github.com/mammhoud/django-fusion?branch=generic" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -704,7 +704,7 @@ dependencies = [
     { name = "django-htmx" },
     { name = "django-import-export" },
     { name = "django-ninja" },
-    { name = "django-osoul" },
+    { name = "django-fusion" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -771,7 +771,7 @@ requires-dist = [
     { name = "django-htmx" },
     { name = "django-import-export" },
     { name = "django-ninja" },
-    { name = "django-osoul", git = "https://github.com/mammhoud/django-osoul?branch=generic" },
+    { name = "django-fusion", git = "https://github.com/mammhoud/django-fusion?branch=generic" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -1094,7 +1094,7 @@ source = { git = "https://github.com/mammhoud/django-grep?branch=generic#6b4a209
 dependencies = [
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "django-osoul" },
+    { name = "django-fusion" },
     { name = "django-rseal" },
     { name = "pytest" },
     { name = "pytest-django" },
@@ -1175,9 +1175,9 @@ wheels = [
 ]
 
 [[package]]
-name = "django-osoul"
+name = "django-fusion"
 version = "0.1.0"
-source = { git = "https://github.com/mammhoud/django-osoul?branch=generic#0f605a898f4f22ddeff3f646c0785ffc1cbd34f4" }
+source = { git = "https://github.com/mammhoud/django-fusion?branch=generic#0f605a898f4f22ddeff3f646c0785ffc1cbd34f4" }
 dependencies = [
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -1252,7 +1252,7 @@ dependencies = [
     { name = "django-colorfield" },
     { name = "django-filter" },
     { name = "django-modelcluster" },
-    { name = "django-osoul" },
+    { name = "django-fusion" },
     { name = "django-taggit" },
     { name = "faker" },
     { name = "toposort" },

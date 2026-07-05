@@ -8,10 +8,10 @@ The service layer provides a clean separation between views and models, encapsul
 
 ### Base Service Classes
 
-All services inherit from base classes provided by django-osoul:
+All services inherit from base classes provided by django-fusion:
 
 ```python
-from django_osoul.comp.payloads.services import BaseService, TokenService
+from django_fusion.comp.payloads.services import BaseService, TokenService
 ```
 
 ### Certificate Service

@@ -5,12 +5,12 @@ set -euo pipefail
 LIBS="$(cd "$(dirname "$0")/.." && pwd)"
 ERRORS=0
 
-echo "=== Running django-osoul tests ==="
+echo "=== Running django-fusion tests ==="
 cd "$LIBS"
-if uv run pytest django-osoul/tests/ -v --tb=short -q 2>&1; then
-  echo "PASS: django-osoul tests"
+if uv run pytest django-fusion/tests/ -v --tb=short -q 2>&1; then
+  echo "PASS: django-fusion tests"
 else
-  echo "FAIL: django-osoul tests"
+  echo "FAIL: django-fusion tests"
   ERRORS=$((ERRORS + 1))
 fi
 

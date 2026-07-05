@@ -72,7 +72,7 @@ healthcheck:
 
 ## Implementation
 
-**Location:** `libs/django-osoul/src/django_osoul/health/views.py`
+**Location:** `libs/django-fusion/src/django_fusion/health/views.py`
 
 ### Main check features
 - Homepage load verification

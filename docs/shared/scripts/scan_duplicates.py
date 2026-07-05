@@ -2,7 +2,7 @@
 """
 Duplicate Code Scanner for Django Libs Monorepo
 
-This script scans django-osoul, crafts-ai, django-seed (nawaai), and django-osoul
+This script scans django-fusion, crafts-ai, django-seed (nawaai), and django-fusion
 packages for duplicate classes, functions, and modules using AST parsing.
 
 Generates a DUPLICATE_AUDIT.md file with findings.
@@ -47,7 +47,7 @@ class DuplicateScanner:
 
     def __init__(self, base_path: Path):
         self.base_path = base_path
-        self.packages = ["django-osoul", "crafts-ai", "django-seed", "django-osoul"]
+        self.packages = ["django-fusion", "crafts-ai", "django-seed", "django-fusion"]
         self.symbols: Dict[Tuple[str, str], List[Symbol]] = defaultdict(list)
 
     def scan_all_packages(self):
@@ -159,7 +159,7 @@ class DuplicateScanner:
 
     def determine_canonical_location(self, name: str, symbol_type: str, symbols: List[Symbol]) -> str:
         """Determine the canonical location for a symbol based on design rules."""
-        # Foundation utilities → django-osoul
+        # Foundation utilities → django-fusion
         foundation_patterns = [
             "BaseModel", "TimeStampedModel", "SoftDeleteMixin", "UUIDPrimaryKeyModel",
             "slugify", "truncate", "strip_html", "success_response", "error_response",
@@ -179,10 +179,10 @@ class DuplicateScanner:
             "AIIntegration", "MCPServer", "SimpleSeeder", "craftsai"
         ]
 
-        # UI components → django-osoul
+        # UI components → django-fusion
         if "comp" in name.lower():
             for symbol in symbols:
-                if "django-osoul" in symbol.file_path:
+                if "django-fusion" in symbol.file_path:
                     return symbol.file_path
             return symbols[0].file_path
 
@@ -190,7 +190,7 @@ class DuplicateScanner:
         for pattern in foundation_patterns:
             if pattern.lower() in name.lower():
                 for symbol in symbols:
-                    if "django-osoul" in symbol.file_path:
+                    if "django-fusion" in symbol.file_path:
                         return symbol.file_path
 
         for pattern in automation_patterns:
@@ -245,7 +245,7 @@ class DuplicateScanner:
         report = []
         report.append("# Duplicate Code Audit Report")
         report.append("")
-        report.append("This report identifies duplicate code symbols across django-osoul, crafts-ai, django-seed (nawaai), and django-osoul packages.")
+        report.append("This report identifies duplicate code symbols across django-fusion, crafts-ai, django-seed (nawaai), and django-fusion packages.")
         report.append("")
         report.append(f"**Total Duplicates Found**: {len(duplicates)}")
         report.append("")
@@ -278,11 +278,11 @@ class DuplicateScanner:
         report.append("")
         report.append("## Elimination Strategy")
         report.append("")
-        report.append("1. **Foundation utilities** → django-osoul (keep osoul, remove from grep)")
+        report.append("1. **Foundation utilities** → django-fusion (keep osoul, remove from grep)")
         report.append("2. **Automation features** → crafts-ai (keep rseal, remove from grep/seed)")
         report.append("3. **AI/MCP features** → nawaai (keep nawaai, rseal imports optionally)")
-        report.append("4. **UI components** → django-osoul/comp/ (move from grep/rseal)")
-        report.append("5. **Testing utilities** → django-osoul (new purpose, remove old code)")
+        report.append("4. **UI components** → django-fusion/comp/ (move from grep/rseal)")
+        report.append("5. **Testing utilities** → django-fusion (new purpose, remove old code)")
 
         return "\n".join(report)
 

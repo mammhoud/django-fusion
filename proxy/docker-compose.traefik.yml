@@ -44,13 +44,8 @@ services:
       - ./acme:/etc/traefik/acme:rw
     environment:
       - TRAEFIK_LOG_LEVEL=INFO
-      # Cloudflare DNS-01 — read by the traefik cloudflare provider.
-      # Override in a local .env (see proxy/.env.example) — never commit the token.
-      - CF_DNS_API_TOKEN=${CF_DNS_API_TOKEN:-}
-      - CF_API_EMAIL=${CF_API_EMAIL:-}
-      - CF_API_KEY=${CF_API_KEY:-}
-      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@structa.cloud}
-      - CF_API_KEY=${CF_API_KEY:-}
+      # Cloudflare DNS-01 credentials are loaded from proxy/.env via env_file above.
+      # Traefik Cloudflare provider reads: CF_DNS_API_TOKEN (or CF_API_EMAIL+CF_API_KEY).
       - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@structa.cloud}
     command:
       - "--configFile=/etc/traefik/dynamic.yml"   # matches the copy in Dockerfile

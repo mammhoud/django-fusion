@@ -76,7 +76,7 @@
 
 | File | Change |
 |---|---|
-| `libs/django-osoul/src/django_osoul/health/views.py` | Enhanced `HealthCheckView` and `AssetsHealthView` |
+| `libs/django-fusion/src/django_fusion/health/views.py` | Enhanced `HealthCheckView` and `AssetsHealthView` |
 | `websites/ctc-research.docker-compose.yml` | Updated healthcheck intervals |
 | `websites/structa.docker-compose.yml` | Updated healthcheck intervals |
 | `Makefile` | Added `health-check` target |

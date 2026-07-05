@@ -4,7 +4,7 @@ URL configuration for ctc-research.
 Plugin patterns use string-based include so Django defers the import of
 plugins.urls until after django.setup() completes — preventing the
 `Conflicting 'role' models` RuntimeError that occurs when
-django_osoul.site is imported during URL-pattern construction.
+django_fusion.site is imported during URL-pattern construction.
 """
 import os
 import sys
@@ -19,19 +19,19 @@ from django.views.generic.base import RedirectView
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from django_osoul.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
-from django_osoul.site.utils import get_root_redirect_pattern
+from django_fusion.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
+from django_fusion.site.utils import get_root_redirect_pattern
 from www.core.routes import site
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
-    from django_osoul.contrib.debug_tools.common_urls import configure_common_urls
+    from django_fusion.contrib.debug_tools.common_urls import configure_common_urls
 except Exception:
     def configure_common_urls(urlpatterns):
         return urlpatterns
 
 try:
-    from django_osoul.contrib.debug_tools.error_views import (
+    from django_fusion.contrib.debug_tools.error_views import (
         handler400,
         handler403,
         handler404,
@@ -111,7 +111,7 @@ if apps.is_installed("django.contrib.admin"):
     urlpatterns.append(path("django-admin/", admin.site.urls))
 
 try:
-    urlpatterns += [path("health_admin/", include("django_osoul.health.urls"))]
+    urlpatterns += [path("health_admin/", include("django_fusion.health.urls"))]
 except Exception:
     pass
 
@@ -203,7 +203,7 @@ if wagtail_urls and wagtailadmin_urls and wagtaildocs_urls:
 # ── Development extras ────────────────────────────────────────────────────────
 if settings.DEBUG:
     try:
-        from django_osoul.contrib.debug_tools.dev_urls import configure_dev_urls
+        from django_fusion.contrib.debug_tools.dev_urls import configure_dev_urls
         urlpatterns = configure_dev_urls(urlpatterns, settings)
     except Exception:
         pass

@@ -1,14 +1,14 @@
 # Profile Model Enhancement Report
 
 ## Overview
-This document summarizes the enhancements made to the `Person` model in `django_osoul.pipelines.models.users` to include comprehensive profile fields found in modern application user profiles. These additions leverage the existing advanced tagging system and add missing functionality for gamification, professional details, and data privacy.
+This document summarizes the enhancements made to the `Person` model in `django_fusion.pipelines.models.users` to include comprehensive profile fields found in modern application user profiles. These additions leverage the existing advanced tagging system and add missing functionality for gamification, professional details, and data privacy.
 
 ## Date: 2026-02-04
 
 ## Enhancements
 
 ### 1. Skills & Tagging Integration
-Integrated the `Person` model with the advanced tagging system defined in `django_osoul.pipelines.models.tags`.
+Integrated the `Person` model with the advanced tagging system defined in `django_fusion.pipelines.models.tags`.
 - **Field**: `tags`
 - **Type**: `TaggableManager` (using `TaggedPerson` through-model)
 - **Purpose**: Allows adding skills, interests, and other tags to a profile with support for validation, verification, and categorization.

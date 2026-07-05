@@ -66,7 +66,7 @@ Generated: 2026-04-14 21:34:45
 
 - [ ] No subtasks defined
 
-#### 11.1 Update imports for django-osoul classes in both websites
+#### 11.1 Update imports for django-fusion classes in both websites
 
 - [ ] No subtasks defined
 
@@ -82,7 +82,7 @@ Generated: 2026-04-14 21:34:45
 
 - [ ] No subtasks defined
 
-#### 13.1 Add missing test utilities to django-osoul
+#### 13.1 Add missing test utilities to django-fusion
 
 - [ ] No subtasks defined
 
@@ -130,7 +130,7 @@ Generated: 2026-04-14 21:34:45
 
 - [ ] No subtasks defined
 
-#### 21.3 Update `README.md` files for `django-osoul`, `crafts-ai`, and `django-osoul`
+#### 21.3 Update `README.md` files for `django-fusion`, `crafts-ai`, and `django-fusion`
 
 - [ ] No subtasks defined
 
@@ -228,9 +228,9 @@ Generated: 2026-04-14 21:34:45
 **Subtasks:**
 - [ ] 10.2.1 Update ctc-research.com/pyproject.toml with unified versions
 - [ ] 10.2.2 Update structa.cloud/pyproject.toml with unified versions
-- [ ] 10.2.3 Update venv/libs/django-osoul/pyproject.toml with unified versions
+- [ ] 10.2.3 Update venv/libs/django-fusion/pyproject.toml with unified versions
 - [ ] 10.2.4 Update venv/libs/crafts-ai/pyproject.toml with unified versions
-- [ ] 10.2.5 Update venv/libs/django-osoul/pyproject.toml with unified versions
+- [ ] 10.2.5 Update venv/libs/django-fusion/pyproject.toml with unified versions
 - [ ] 10.2.6 Update venv/libs/nawaai/pyproject.toml with unified versions
 
 #### 10.3 Remove unused dependencies from all pyproject.toml files
@@ -243,9 +243,9 @@ Generated: 2026-04-14 21:34:45
 #### 10.4 Ensure all packages declare their dependencies explicitly
 
 **Subtasks:**
-- [ ] 10.4.1 Verify django_osoul/pyproject.toml lists all its direct dependencies
-- [ ] 10.4.2 Verify crafts_ai/pyproject.toml lists all its direct dependencies including django_osoul
-- [ ] 10.4.3 Verify django_osoul/pyproject.toml lists all its direct dependencies
+- [ ] 10.4.1 Verify django_fusion/pyproject.toml lists all its direct dependencies
+- [ ] 10.4.2 Verify crafts_ai/pyproject.toml lists all its direct dependencies including django_fusion
+- [ ] 10.4.3 Verify django_fusion/pyproject.toml lists all its direct dependencies
 - [ ] 10.4.4 Verify nawaai/pyproject.toml lists only pure Python dependencies
 
 #### 10.5 Update uv.lock files after all dependency changes
@@ -345,7 +345,7 @@ Generated: 2026-04-14 21:34:45
 #### 14.1 Create ARCHITECTURE.md at workspace root
 
 **Subtasks:**
-- [ ] 14.1.1 Document the package dependency graph as a Mermaid diagram: stdlib → nawaai → django_osoul → crafts_ai → projects
+- [ ] 14.1.1 Document the package dependency graph as a Mermaid diagram: stdlib → nawaai → django_fusion → crafts_ai → projects
 - [ ] 14.1.2 Document each package's responsibilities and what it contains
 - [ ] 14.1.3 Document all boundary rules with examples of allowed and forbidden imports
 - [ ] 14.1.4 Document domain organization (accounts, content, lms/alliance, messaging, cart, forms)
@@ -361,12 +361,12 @@ Generated: 2026-04-14 21:34:45
 #### 14.2 Create MIGRATION_GUIDE.md at workspace root
 
 **Subtasks:**
-- [ ] 14.2.1 List every changed import path in the format: Before: from apps.handlers.managers... → After: from django_osoul.managers...
+- [ ] 14.2.1 List every changed import path in the format: Before: from apps.handlers.managers... → After: from django_fusion.managers...
 - [ ] 14.2.2 Document all app renames (handlers→accounts, LMS→lms/alliance, pages→content)
 - [ ] 14.2.3 Document all deprecated APIs and their replacements
 - [ ] 14.2.4 Include troubleshooting section for common migration errors
 
-#### 14.3 Write comprehensive README.md for django_osoul
+#### 14.3 Write comprehensive README.md for django_fusion
 
 **Subtasks:**
 - [ ] 14.3.1 Document package purpose: "Pure Django foundation layer — models, managers, mixins, utils, comp, contrib"
@@ -382,12 +382,12 @@ Generated: 2026-04-14 21:34:45
 - [ ] 14.4.3 Document CartServiceBase thin subclass pattern with full code example
 - [ ] 14.4.4 Document all Wagtail components: blocks, snippets, hooks, admin customizations
 
-#### 14.5 Write comprehensive README.md for django_osoul
+#### 14.5 Write comprehensive README.md for django_fusion
 
 **Subtasks:**
 - [ ] 14.5.1 Document package purpose: "Unified testing framework — seeder, test base, fixtures, factories, assertions, pytest plugin, health checks"
 - [ ] 14.5.2 Document BaseTestCase usage and all Hypothesis helpers (st_email, st_slug, st_uuid)
-- [ ] 14.5.3 Document health check endpoints and project integration via include('django_osoul.health.urls')
+- [ ] 14.5.3 Document health check endpoints and project integration via include('django_fusion.health.urls')
 - [ ] 14.5.4 Document pytest plugin registration
 
 #### 14.6 Write comprehensive README.md for nawaai
@@ -414,7 +414,7 @@ Generated: 2026-04-14 21:34:45
 #### 14.9 Update all module-level docstrings to reference canonical import paths
 
 **Subtasks:**
-- [ ] 14.9.1 For every class moved to a package, add docstring: "Canonical import: from django_osoul.managers import RoleHierarchyManager"
+- [ ] 14.9.1 For every class moved to a package, add docstring: "Canonical import: from django_fusion.managers import RoleHierarchyManager"
 - [ ] 14.9.2 For every thin subclass in projects, add docstring: "Delegates to crafts_ai.pipelines.services.CartServiceBase"
 - [ ] 14.9.3 Run grep to verify all moved classes have canonical import docstrings
 
@@ -473,9 +473,9 @@ Generated: 2026-04-14 21:34:45
 #### 16.3 Run full test suite across all packages and projects
 
 **Subtasks:**
-- [ ] 16.3.1 Run uv run pytest tests/ -v in venv/libs/django-osoul/
+- [ ] 16.3.1 Run uv run pytest tests/ -v in venv/libs/django-fusion/
 - [ ] 16.3.2 Run uv run pytest tests/ -v in venv/libs/crafts-ai/
-- [ ] 16.3.3 Run uv run pytest tests/ -v in venv/libs/django-osoul/
+- [ ] 16.3.3 Run uv run pytest tests/ -v in venv/libs/django-fusion/
 - [ ] 16.3.4 Run uv run pytest tests/ -v in venv/libs/nawaai/
 - [ ] 16.3.5 Run uv run pytest tests/ -v in ctc-research.com/
 - [ ] 16.3.6 Run uv run pytest tests/ -v in structa.cloud/
@@ -495,9 +495,9 @@ Generated: 2026-04-14 21:34:45
 #### 16.5 Verify zero import errors across entire ecosystem
 
 **Subtasks:**
-- [ ] 16.5.1 Run python -c "import django_osoul" — verify no ImportError
+- [ ] 16.5.1 Run python -c "import django_fusion" — verify no ImportError
 - [ ] 16.5.2 Run python -c "import crafts_ai" — verify no ImportError
-- [ ] 16.5.3 Run python -c "import django_osoul" — verify no ImportError
+- [ ] 16.5.3 Run python -c "import django_fusion" — verify no ImportError
 - [ ] 16.5.4 Run python -c "import nawaai" — verify no ImportError
 - [ ] 16.5.5 Run python manage.py check in ctc-research.com — verify zero errors
 - [ ] 16.5.6 Run python manage.py check in structa.cloud — verify zero errors
@@ -527,130 +527,130 @@ Generated: 2026-04-14 21:34:45
 - [ ] 16.9.1 Run scripts/track_spec_status.py — verify all specs have all tasks marked [x]
 - [ ] 16.9.2 Fix any incomplete tasks found
 
-#### 2.1 Extract handlers base, core, and non-Wagtail mixins from apps/handlers to django_osoul
+#### 2.1 Extract handlers base, core, and non-Wagtail mixins from apps/handlers to django_fusion
 
 **Subtasks:**
 - [ ] 2.1.1 Identify all classes in apps/handlers/ (both projects) that have zero Wagtail imports — base handler classes, core handler classes, fragment handlers, page handlers that use only pure Django (not wagtail.core.models.Page), search handlers using Django ORM (not Wagtail search)
-- [ ] 2.1.2 Copy django_osoul-bound handler base classes to venv/libs/django-osoul/src/django_osoul/handlers/base.py
-- [ ] 2.1.3 Copy django_osoul-bound handler core classes to venv/libs/django-osoul/src/django_osoul/handlers/core.py
-- [ ] 2.1.4 Copy non-Wagtail fragment handler mixins to venv/libs/django-osoul/src/django_osoul/handlers/mixins/fragment.py
-- [ ] 2.1.5 Copy non-Wagtail page handler mixins to venv/libs/django-osoul/src/django_osoul/handlers/mixins/page.py
-- [ ] 2.1.6 Copy non-Wagtail search handler/mixin to venv/libs/django-osoul/src/django_osoul/handlers/search.py
-- [ ] 2.1.7 Update all imports across ctc-research.com and structa.cloud to use new django_osoul.handlers paths
+- [ ] 2.1.2 Copy django_fusion-bound handler base classes to venv/libs/django-fusion/src/django_fusion/handlers/base.py
+- [ ] 2.1.3 Copy django_fusion-bound handler core classes to venv/libs/django-fusion/src/django_fusion/handlers/core.py
+- [ ] 2.1.4 Copy non-Wagtail fragment handler mixins to venv/libs/django-fusion/src/django_fusion/handlers/mixins/fragment.py
+- [ ] 2.1.5 Copy non-Wagtail page handler mixins to venv/libs/django-fusion/src/django_fusion/handlers/mixins/page.py
+- [ ] 2.1.6 Copy non-Wagtail search handler/mixin to venv/libs/django-fusion/src/django_fusion/handlers/search.py
+- [ ] 2.1.7 Update all imports across ctc-research.com and structa.cloud to use new django_fusion.handlers paths
 - [ ] 2.1.8 Delete original handler files from both projects after verifying imports resolve
 - [ ] 2.1.9 Run full test suite and verify zero failures
 
-#### 2.10 Extract pure Django base form classes to django_osoul
+#### 2.10 Extract pure Django base form classes to django_fusion
 
 **Subtasks:**
-- [ ] 2.10.1 Copy base form classes (no Wagtail form widgets) to venv/libs/django-osoul/src/django_osoul/forms/base.py
+- [ ] 2.10.1 Copy base form classes (no Wagtail form widgets) to venv/libs/django-fusion/src/django_fusion/forms/base.py
 - [ ] 2.10.2 Update all imports in both projects and delete originals
 - [ ] 2.10.3 Run tests
 
-#### 2.11 Extract non-Wagtail UI components (pure Django widgets, payloads) to django_osoul/comp/
+#### 2.11 Extract non-Wagtail UI components (pure Django widgets, payloads) to django_fusion/comp/
 
 **Subtasks:**
 - [ ] 2.11.1 Audit all comp/ components in both projects — flag any that import wagtail
-- [ ] 2.11.2 Copy pure Django widgets to venv/libs/django-osoul/src/django_osoul/comp/widgets.py
-- [ ] 2.11.3 Copy payload classes to venv/libs/django-osoul/src/django_osoul/comp/payloads.py
+- [ ] 2.11.2 Copy pure Django widgets to venv/libs/django-fusion/src/django_fusion/comp/widgets.py
+- [ ] 2.11.3 Copy payload classes to venv/libs/django-fusion/src/django_fusion/comp/payloads.py
 - [ ] 2.11.4 Update all imports in both projects and delete originals
 - [ ] 2.11.5 Run tests
 
-#### 2.12 Extract contrib utilities (enums, choices, context, schemas, responses) to django_osoul
+#### 2.12 Extract contrib utilities (enums, choices, context, schemas, responses) to django_fusion
 
 **Subtasks:**
-- [ ] 2.12.1 Copy enums/choices to venv/libs/django-osoul/src/django_osoul/contrib/enums.py
-- [ ] 2.12.2 Copy context utilities to venv/libs/django-osoul/src/django_osoul/contrib/context.py
-- [ ] 2.12.3 Copy schema classes to venv/libs/django-osoul/src/django_osoul/contrib/schemas.py
-- [ ] 2.12.4 Copy response helpers to venv/libs/django-osoul/src/django_osoul/contrib/responses.py
+- [ ] 2.12.1 Copy enums/choices to venv/libs/django-fusion/src/django_fusion/contrib/enums.py
+- [ ] 2.12.2 Copy context utilities to venv/libs/django-fusion/src/django_fusion/contrib/context.py
+- [ ] 2.12.3 Copy schema classes to venv/libs/django-fusion/src/django_fusion/contrib/schemas.py
+- [ ] 2.12.4 Copy response helpers to venv/libs/django-fusion/src/django_fusion/contrib/responses.py
 - [ ] 2.12.5 Update all imports in both projects and delete originals
 - [ ] 2.12.6 Run tests
 
-#### 2.13 Extract foundation models (Person, Certificate, Message — pure Django, no Wagtail) to django_osoul
+#### 2.13 Extract foundation models (Person, Certificate, Message — pure Django, no Wagtail) to django_fusion
 
 **Subtasks:**
-- [ ] 2.13.1 Copy foundation model classes to venv/libs/django-osoul/src/django_osoul/models/
+- [ ] 2.13.1 Copy foundation model classes to venv/libs/django-fusion/src/django_fusion/models/
 - [ ] 2.13.2 Verify no Wagtail model inheritance (no Page, StreamField, etc.)
 - [ ] 2.13.3 Update all imports in both projects and delete originals
 - [ ] 2.13.4 Run migrations check and tests
 
-#### 2.14 Run full boundary check on django_osoul after all extractions
+#### 2.14 Run full boundary check on django_fusion after all extractions
 
 **Subtasks:**
-- [ ] 2.14.1 Run scripts/check_boundaries.py — verify zero wagtail, celery, crafts_ai imports in django_osoul
+- [ ] 2.14.1 Run scripts/check_boundaries.py — verify zero wagtail, celery, crafts_ai imports in django_fusion
 - [ ] 2.14.2 Fix any violations found
-- [ ] 2.14.3 Run full test suite for django_osoul package
+- [ ] 2.14.3 Run full test suite for django_fusion package
 - [ ] 2.14.4 Commit with message: "feat(osoul): extract all pure Django foundation logic"
 
-#### 2.2 Extract RoleHierarchyManager and GroupAccessControl to django_osoul
+#### 2.2 Extract RoleHierarchyManager and GroupAccessControl to django_fusion
 
 **Subtasks:**
-- [ ] 2.2.1 Copy ctc-research.com/apps/handlers/managers/role_hierarchy.py to venv/libs/django-osoul/src/django_osoul/managers/role_hierarchy.py
-- [ ] 2.2.2 Copy GroupAccessControl to venv/libs/django-osoul/src/django_osoul/managers/group_access.py
-- [ ] 2.2.3 Update all imports in both projects to from django_osoul.managers import RoleHierarchyManager, GroupAccessControl
+- [ ] 2.2.1 Copy ctc-research.com/apps/handlers/managers/role_hierarchy.py to venv/libs/django-fusion/src/django_fusion/managers/role_hierarchy.py
+- [ ] 2.2.2 Copy GroupAccessControl to venv/libs/django-fusion/src/django_fusion/managers/group_access.py
+- [ ] 2.2.3 Update all imports in both projects to from django_fusion.managers import RoleHierarchyManager, GroupAccessControl
 - [ ] 2.2.4 Delete original files from both projects
 - [ ] 2.2.5 Run boundary checker — verify osoul has no wagtail/celery/rseal imports
 - [ ] 2.2.6 Run tests
 
-#### 2.3 Extract UserManager and GroupManager to django_osoul
+#### 2.3 Extract UserManager and GroupManager to django_fusion
 
 **Subtasks:**
-- [ ] 2.3.1 Copy UserManager to venv/libs/django-osoul/src/django_osoul/managers/user.py
-- [ ] 2.3.2 Copy GroupManager to venv/libs/django-osoul/src/django_osoul/managers/group.py
+- [ ] 2.3.1 Copy UserManager to venv/libs/django-fusion/src/django_fusion/managers/user.py
+- [ ] 2.3.2 Copy GroupManager to venv/libs/django-fusion/src/django_fusion/managers/group.py
 - [ ] 2.3.3 Update all imports in both projects
 - [ ] 2.3.4 Delete originals and run tests
 
-#### 2.4 Extract pure Django model mixins (UserMixin, GroupMixin, and non-Wagtail model mixins) to django_osoul
+#### 2.4 Extract pure Django model mixins (UserMixin, GroupMixin, and non-Wagtail model mixins) to django_fusion
 
 **Subtasks:**
 - [ ] 2.4.1 Audit all mixins in both projects — flag any that import from wagtail (those go to crafts_ai)
-- [ ] 2.4.2 Copy UserMixin to venv/libs/django-osoul/src/django_osoul/mixins/user.py
-- [ ] 2.4.3 Copy GroupMixin to venv/libs/django-osoul/src/django_osoul/mixins/group.py
-- [ ] 2.4.4 Copy all other pure Django model mixins to venv/libs/django-osoul/src/django_osoul/mixins/models.py
-- [ ] 2.4.5 Copy pure Django view mixins to venv/libs/django-osoul/src/django_osoul/mixins/views.py
+- [ ] 2.4.2 Copy UserMixin to venv/libs/django-fusion/src/django_fusion/mixins/user.py
+- [ ] 2.4.3 Copy GroupMixin to venv/libs/django-fusion/src/django_fusion/mixins/group.py
+- [ ] 2.4.4 Copy all other pure Django model mixins to venv/libs/django-fusion/src/django_fusion/mixins/models.py
+- [ ] 2.4.5 Copy pure Django view mixins to venv/libs/django-fusion/src/django_fusion/mixins/views.py
 - [ ] 2.4.6 Update all imports in both projects
 - [ ] 2.4.7 Delete originals and run tests
 
-#### 2.5 Extract custom authentication backends and storage backends to django_osoul
+#### 2.5 Extract custom authentication backends and storage backends to django_fusion
 
 **Subtasks:**
-- [ ] 2.5.1 Copy all custom auth backends to venv/libs/django-osoul/src/django_osoul/backends/auth.py
-- [ ] 2.5.2 Copy all custom storage backends to venv/libs/django-osoul/src/django_osoul/backends/storage.py
+- [ ] 2.5.1 Copy all custom auth backends to venv/libs/django-fusion/src/django_fusion/backends/auth.py
+- [ ] 2.5.2 Copy all custom storage backends to venv/libs/django-fusion/src/django_fusion/backends/storage.py
 - [ ] 2.5.3 Update AUTHENTICATION_BACKENDS and DEFAULT_FILE_STORAGE settings in both projects
 - [ ] 2.5.4 Update all imports and delete originals
 - [ ] 2.5.5 Run tests
 
-#### 2.6 Extract allauth and social auth adapters to django_osoul
+#### 2.6 Extract allauth and social auth adapters to django_fusion
 
 **Subtasks:**
-- [ ] 2.6.1 Copy allauth adapter to venv/libs/django-osoul/src/django_osoul/adapters/allauth.py
-- [ ] 2.6.2 Copy social auth adapter to venv/libs/django-osoul/src/django_osoul/adapters/social.py
+- [ ] 2.6.1 Copy allauth adapter to venv/libs/django-fusion/src/django_fusion/adapters/allauth.py
+- [ ] 2.6.2 Copy social auth adapter to venv/libs/django-fusion/src/django_fusion/adapters/social.py
 - [ ] 2.6.3 Update ACCOUNT_ADAPTER and SOCIALACCOUNT_ADAPTER settings in both projects
 - [ ] 2.6.4 Update all imports and delete originals
 - [ ] 2.6.5 Run tests
 
-#### 2.7 Extract User/Group services (no Wagtail dependencies) to django_osoul
+#### 2.7 Extract User/Group services (no Wagtail dependencies) to django_fusion
 
 **Subtasks:**
-- [ ] 2.7.1 Copy UserService to venv/libs/django-osoul/src/django_osoul/services/user.py
-- [ ] 2.7.2 Copy GroupService to venv/libs/django-osoul/src/django_osoul/services/group.py
+- [ ] 2.7.1 Copy UserService to venv/libs/django-fusion/src/django_fusion/services/user.py
+- [ ] 2.7.2 Copy GroupService to venv/libs/django-fusion/src/django_fusion/services/group.py
 - [ ] 2.7.3 Verify neither service imports wagtail, celery, or crafts_ai
 - [ ] 2.7.4 Update all imports in both projects and delete originals
 - [ ] 2.7.5 Run tests
 
-#### 2.8 Extract ErrorTrackerMiddleware and other pure Django middleware to django_osoul
+#### 2.8 Extract ErrorTrackerMiddleware and other pure Django middleware to django_fusion
 
 **Subtasks:**
-- [ ] 2.8.1 Copy ErrorTrackerMiddleware to venv/libs/django-osoul/src/django_osoul/middlewares/error_tracker.py
-- [ ] 2.8.2 Copy any other pure Django middleware (no Wagtail/Celery) to django_osoul/middlewares/
+- [ ] 2.8.1 Copy ErrorTrackerMiddleware to venv/libs/django-fusion/src/django_fusion/middlewares/error_tracker.py
+- [ ] 2.8.2 Copy any other pure Django middleware (no Wagtail/Celery) to django_fusion/middlewares/
 - [ ] 2.8.3 Update MIDDLEWARE settings in both projects
 - [ ] 2.8.4 Update all imports and delete originals
 - [ ] 2.8.5 Run tests
 
-#### 2.9 Extract UniqueFieldValidator, SlugFieldValidator, and other pure Django form validators to django_osoul
+#### 2.9 Extract UniqueFieldValidator, SlugFieldValidator, and other pure Django form validators to django_fusion
 
 **Subtasks:**
-- [ ] 2.9.1 Copy validators to venv/libs/django-osoul/src/django_osoul/filters/validators.py
+- [ ] 2.9.1 Copy validators to venv/libs/django-fusion/src/django_fusion/filters/validators.py
 - [ ] 2.9.2 Update all imports in both projects and delete originals
 - [ ] 2.9.3 Run tests
 
@@ -788,75 +788,75 @@ Generated: 2026-04-14 21:34:45
 - [ ] 3.9.2 Update both projects to import hooks from crafts_ai
 - [ ] 3.9.3 Run tests
 
-#### 4.1 Create unified BaseTestCase in django_osoul
+#### 4.1 Create unified BaseTestCase in django_fusion
 
 **Subtasks:**
-- [ ] 4.1.1 Create venv/libs/django-osoul/src/django_osoul/tests/base.py with BaseTestCase extending django.test.TestCase
+- [ ] 4.1.1 Create venv/libs/django-fusion/src/django_fusion/tests/base.py with BaseTestCase extending django.test.TestCase
 - [ ] 4.1.2 Add st_email() Hypothesis strategy to base.py
 - [ ] 4.1.3 Add st_slug() Hypothesis strategy to base.py
 - [ ] 4.1.4 Add st_uuid() Hypothesis strategy to base.py
-- [ ] 4.1.5 Run django_osoul package tests to verify helpers work
+- [ ] 4.1.5 Run django_fusion package tests to verify helpers work
 
-#### 4.10 Run full boundary check — verify django_osoul not imported by production code
+#### 4.10 Run full boundary check — verify django_fusion not imported by production code
 
 **Subtasks:**
 - [ ] 4.10.1 Run scripts/check_boundaries.py grep-test-only rule
-- [ ] 4.10.2 Fix any production code that imports django_osoul
+- [ ] 4.10.2 Fix any production code that imports django_fusion
 - [ ] 4.10.3 Commit with message: "feat(grep): extract unified testing infrastructure and health checks"
 
-#### 4.2 Create unified factories in django_osoul
+#### 4.2 Create unified factories in django_fusion
 
 **Subtasks:**
 - [ ] 4.2.1 Audit all factory_boy factory classes in both projects and packages
-- [ ] 4.2.2 Copy reusable factories to venv/libs/django-osoul/src/django_osoul/tests/factories/
-- [ ] 4.2.3 Update all test imports in both projects to use django_osoul.tests.factories
+- [ ] 4.2.2 Copy reusable factories to venv/libs/django-fusion/src/django_fusion/tests/factories/
+- [ ] 4.2.3 Update all test imports in both projects to use django_fusion.tests.factories
 - [ ] 4.2.4 Delete duplicate factory files from projects
 - [ ] 4.2.5 Run tests
 
-#### 4.3 Create unified fixtures in django_osoul
+#### 4.3 Create unified fixtures in django_fusion
 
 **Subtasks:**
-- [ ] 4.3.1 Copy reusable test fixtures to venv/libs/django-osoul/src/django_osoul/tests/fixtures/
-- [ ] 4.3.2 Update all test imports in both projects to use django_osoul.tests.fixtures
+- [ ] 4.3.1 Copy reusable test fixtures to venv/libs/django-fusion/src/django_fusion/tests/fixtures/
+- [ ] 4.3.2 Update all test imports in both projects to use django_fusion.tests.fixtures
 - [ ] 4.3.3 Delete duplicate fixture files from projects
 - [ ] 4.3.4 Run tests
 
-#### 4.4 Create unified assertions in django_osoul
+#### 4.4 Create unified assertions in django_fusion
 
 **Subtasks:**
-- [ ] 4.4.1 Copy custom assertion helpers to venv/libs/django-osoul/src/django_osoul/tests/assertions/
-- [ ] 4.4.2 Update all test imports in both projects to use django_osoul.tests.assertions
+- [ ] 4.4.1 Copy custom assertion helpers to venv/libs/django-fusion/src/django_fusion/tests/assertions/
+- [ ] 4.4.2 Update all test imports in both projects to use django_fusion.tests.assertions
 - [ ] 4.4.3 Delete duplicate assertion files from projects
 - [ ] 4.4.4 Run tests
 
-#### 4.5 Create unified test mixins in django_osoul
+#### 4.5 Create unified test mixins in django_fusion
 
 **Subtasks:**
-- [ ] 4.5.1 Copy reusable test mixin classes to venv/libs/django-osoul/src/django_osoul/tests/mixins/
+- [ ] 4.5.1 Copy reusable test mixin classes to venv/libs/django-fusion/src/django_fusion/tests/mixins/
 - [ ] 4.5.2 Update all test imports in both projects
 - [ ] 4.5.3 Delete duplicate mixin files from projects
 - [ ] 4.5.4 Run tests
 
-#### 4.6 Register pytest plugin in django_osoul
+#### 4.6 Register pytest plugin in django_fusion
 
 **Subtasks:**
-- [ ] 4.6.1 Create venv/libs/django-osoul/src/django_osoul/tests/pytest_plugin.py with plugin registration
+- [ ] 4.6.1 Create venv/libs/django-fusion/src/django_fusion/tests/pytest_plugin.py with plugin registration
 - [ ] 4.6.2 Register plugin in pyproject.toml under [tool.pytest11]
 - [ ] 4.6.3 Verify plugin loads correctly in both projects
 
-#### 4.7 Create health check system in django_osoul
+#### 4.7 Create health check system in django_fusion
 
 **Subtasks:**
-- [ ] 4.7.1 Create venv/libs/django-osoul/src/django_osoul/health/__init__.py
-- [ ] 4.7.2 Create venv/libs/django-osoul/src/django_osoul/health/views.py with HealthCheckView, DatabaseHealthView, AssetsHealthView, MediaHealthView
-- [ ] 4.7.3 Create venv/libs/django-osoul/src/django_osoul/health/urls.py with urlpatterns for all four endpoints
-- [ ] 4.7.4 Add path('health/', include('django_osoul.health.urls')) to ctc-research.com/configs/urls.py
-- [ ] 4.7.5 Add path('health/', include('django_osoul.health.urls')) to structa.cloud/configs/urls.py
+- [ ] 4.7.1 Create venv/libs/django-fusion/src/django_fusion/health/__init__.py
+- [ ] 4.7.2 Create venv/libs/django-fusion/src/django_fusion/health/views.py with HealthCheckView, DatabaseHealthView, AssetsHealthView, MediaHealthView
+- [ ] 4.7.3 Create venv/libs/django-fusion/src/django_fusion/health/urls.py with urlpatterns for all four endpoints
+- [ ] 4.7.4 Add path('health/', include('django_fusion.health.urls')) to ctc-research.com/configs/urls.py
+- [ ] 4.7.5 Add path('health/', include('django_fusion.health.urls')) to structa.cloud/configs/urls.py
 - [ ] 4.7.6 Remove any existing health check views/urls from both projects
 - [ ] 4.7.7 Test GET /health/ returns 200, GET /health/database/ returns 200, GET /health/assets/ returns 200, GET /health/media/ returns 200
 - [ ] 4.7.8 Test GET /health/database/ returns 503 when database is unreachable
 
-#### 4.8 Migrate all existing tests in both projects to use django_osoul infrastructure
+#### 4.8 Migrate all existing tests in both projects to use django_fusion infrastructure
 
 **Subtasks:**
 - [ ] 4.8.1 Write scripts/migrate_tests.py implementing TestMigrator
@@ -866,11 +866,11 @@ Generated: 2026-04-14 21:34:45
 - [ ] 4.8.5 Delete duplicate test infrastructure files from projects
 - [ ] 4.8.6 Run full test suite and verify all tests pass
 
-#### 4.9 Move seeder infrastructure to django_osoul
+#### 4.9 Move seeder infrastructure to django_fusion
 
 **Subtasks:**
-- [ ] 4.9.1 Copy database seeder classes to venv/libs/django-osoul/src/django_osoul/seeder/
-- [ ] 4.9.2 Copy management commands (backup_db, backup_media, load_fixtures) to venv/libs/django-osoul/src/django_osoul/management/commands/
+- [ ] 4.9.1 Copy database seeder classes to venv/libs/django-fusion/src/django_fusion/seeder/
+- [ ] 4.9.2 Copy management commands (backup_db, backup_media, load_fixtures) to venv/libs/django-fusion/src/django_fusion/management/commands/
 - [ ] 4.9.3 Update all imports in both projects and delete originals
 - [ ] 4.9.4 Run tests
 
@@ -978,28 +978,28 @@ Generated: 2026-04-14 21:34:45
 #### 7.3 Remove all remaining duplicate managers from projects
 
 **Subtasks:**
-- [ ] 7.3.1 Verify all managers now imported from django_osoul.managers
+- [ ] 7.3.1 Verify all managers now imported from django_fusion.managers
 - [ ] 7.3.2 Delete any remaining duplicate manager files from both projects
 - [ ] 7.3.3 Run tests
 
 #### 7.4 Remove all remaining duplicate mixins from projects
 
 **Subtasks:**
-- [ ] 7.4.1 Verify all mixins now imported from django_osoul.mixins or crafts_ai
+- [ ] 7.4.1 Verify all mixins now imported from django_fusion.mixins or crafts_ai
 - [ ] 7.4.2 Delete any remaining duplicate mixin files from both projects
 - [ ] 7.4.3 Run tests
 
 #### 7.5 Remove all remaining duplicate forms from projects
 
 **Subtasks:**
-- [ ] 7.5.1 Verify all base form classes now imported from django_osoul.forms
+- [ ] 7.5.1 Verify all base form classes now imported from django_fusion.forms
 - [ ] 7.5.2 Delete any remaining duplicate form base files from both projects
 - [ ] 7.5.3 Run tests
 
 #### 7.6 Remove all remaining duplicate middleware from projects
 
 **Subtasks:**
-- [ ] 7.6.1 Verify all middleware now imported from django_osoul.middlewares or crafts_ai.contrib
+- [ ] 7.6.1 Verify all middleware now imported from django_fusion.middlewares or crafts_ai.contrib
 - [ ] 7.6.2 Delete any remaining duplicate middleware files from both projects
 - [ ] 7.6.3 Run tests
 
@@ -1062,9 +1062,9 @@ Generated: 2026-04-14 21:34:45
 **Subtasks:**
 - [ ] 8.5.1 Create or update ctc-research.com/CHANGELOG.md with all changes from this refactoring
 - [ ] 8.5.2 Create or update structa.cloud/CHANGELOG.md with all changes from this refactoring
-- [ ] 8.5.3 Create or update venv/libs/django-osoul/CHANGELOG.md
+- [ ] 8.5.3 Create or update venv/libs/django-fusion/CHANGELOG.md
 - [ ] 8.5.4 Create or update venv/libs/crafts-ai/CHANGELOG.md
-- [ ] 8.5.5 Create or update venv/libs/django-osoul/CHANGELOG.md
+- [ ] 8.5.5 Create or update venv/libs/django-fusion/CHANGELOG.md
 - [ ] 8.5.6 Create or update venv/libs/nawaai/CHANGELOG.md
 
 #### 9.1 Verify no templates exist in any venv/libs/ package
@@ -1093,7 +1093,7 @@ Generated: 2026-04-14 21:34:45
 
 **Subtasks:**
 - [ ] 9.4.1 Audit all templatetags directories — reusable tags belong in packages, project-specific tags stay in projects
-- [ ] 9.4.2 Move reusable templatetags to appropriate package (django_osoul or crafts_ai)
+- [ ] 9.4.2 Move reusable templatetags to appropriate package (django_fusion or crafts_ai)
 - [ ] 9.4.3 Update all {% load %} tags in templates
 - [ ] 9.4.4 Run tests
 

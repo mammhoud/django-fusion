@@ -1,6 +1,6 @@
 # Merge Conflicts — ceptor-ai
 
-This file documents symbol/file conflicts encountered during the migration of `django-seed` and `django-osoul` into `ceptor-ai`. Each entry requires a developer decision before the conflict is considered resolved.
+This file documents symbol/file conflicts encountered during the migration of `django-seed` and `django-fusion` into `ceptor-ai`. Each entry requires a developer decision before the conflict is considered resolved.
 
 ---
 

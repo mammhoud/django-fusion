@@ -146,12 +146,12 @@ python manage.py --site=ctc-research dumpdata --indent 2 --natural-foreign --nat
 
 ---
 
-## Using Fixtures in Tests (django-osoul)
+## Using Fixtures in Tests (django-fusion)
 
-With `django-osoul`'s `BaseTestCase`, fixtures load automatically via the standard Django mechanism:
+With `django-fusion`'s `BaseTestCase`, fixtures load automatically via the standard Django mechanism:
 
 ```python
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 class CourseListTest(BaseTestCase):
     fixtures = [

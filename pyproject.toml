@@ -1,4 +1,4 @@
-# Repo-root pytest wiring for django-osoul analyzer tests.
+# Repo-root pytest wiring for django-fusion analyzer tests.
 #
 # Required so that ``pytest`` invoked from /home/structa.cloud/ can
 # resolve the analyzer tests without an absolute path (running ``pytest``
@@ -7,15 +7,15 @@
 # Layout note: there are TWO top-level pytest-testable trees in
 # this repo, and they live on opposite sides of ``applications/``:
 #   - /home/structa.cloud/tests/                    (workspace tests, sibling of applications/)
-#   - /home/structa.cloud/applications/libs/django-osoul/tests/analyzer/
-#                                                  (django-osoul analyzer tests, *inside* applications/)
+#   - /home/structa.cloud/applications/libs/django-fusion/tests/analyzer/
+#                                                  (django-fusion analyzer tests, *inside* applications/)
 # This file targets BOTH via ``testpaths`` so ``pytest`` from the
 # repo root discovers either.
 #
 # Design notes:
-# - testpaths adds ``applications/libs/django-osoul/tests/analyzer``
+# - testpaths adds ``applications/libs/django-fusion/tests/analyzer``
 #   so the analyzer sub-package is auto-discovered. We point at the
-#   narrow subdir (not the wider libs/django-osoul/tests/) because
+#   narrow subdir (not the wider libs/django-fusion/tests/) because
 #   the wider tree relies on the library-local conftest.py that
 #   configures Django with a different settings module -- pulling
 #   it into the same pytest run as the workspace tests would
@@ -34,11 +34,11 @@
 #   ``tests/settings.py`` conditionally strips any optional app
 #   whose ``find_spec`` returns None from ``INSTALLED_APPS``, so
 #   workspace deps that aren't installed in the active interpreter
-#   (e.g. django-allauth or django-osoul) are tolerated.
+#   (e.g. django-allauth or django-fusion) are tolerated.
 # - pythonpath lists ``.`` (= repo root) FIRST so ``tests/settings.py``
 #   resolves when DJANGO_SETTINGS_MODULE = "tests.settings" is read
-#   by pytest-django. Then ``applications/libs/django-osoul/src`` so
-#   ``from django_osoul.analyzer.parser import ...`` resolves
+#   by pytest-django. Then ``applications/libs/django-fusion/src`` so
+#   ``from django_fusion.analyzer.parser import ...`` resolves
 #   independent of any editable-install state.
 #
 # No [project] / [build-system] sections -- this is a config-only
@@ -48,7 +48,7 @@
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
-    "applications/libs/django-osoul/tests/analyzer",
+    "applications/libs/django-fusion/tests/analyzer",
 ]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 
@@ -60,5 +60,5 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 pythonpath = [
     ".",
-    "applications/libs/django-osoul/src",
+    "applications/libs/django-fusion/src",
 ]

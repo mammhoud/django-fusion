@@ -1,7 +1,7 @@
-"""Customizer viewset registration using canonical django_osoul.site imports.
+"""Customizer viewset registration using canonical django_fusion.site imports.
 
-Import customizer site integrations from ``django_osoul.site`` rather than the
-legacy ``django_osoul.comp.site`` shim.  This module intentionally keeps the
+Import customizer site integrations from ``django_fusion.site`` rather than the
+legacy ``django_fusion.comp.site`` shim.  This module intentionally keeps the
 registry small and explicit so URL modules can opt in to the class-based views
 that expose the customizer SPA fragments.
 """
@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from django.urls import path
 from django.views import View
-from django_osoul.site import HtmxDetails
+from django_fusion.site import HtmxDetails
 
 from chat.views import (
     MessageSendResultFragmentView,

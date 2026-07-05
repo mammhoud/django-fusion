@@ -10,7 +10,7 @@ This document summarizes all errors found during deployment and the fixes applie
 ### 1. Missing Contact Form Template
 **Error:** `django.template.exceptions.TemplateDoesNotExist: components/contact/sections/form/form.html`
 
-**Root Cause:** The contact form component was using django-osoul's component loader which expects nested folder structure `components/contact/sections/form/form.html` rather than a flat structure.
+**Root Cause:** The contact form component was using django-fusion's component loader which expects nested folder structure `components/contact/sections/form/form.html` rather than a flat structure.
 
 **Fix Applied:**
 - Created `_shared/plugins/components/` directory structure
@@ -23,7 +23,7 @@ This document summarizes all errors found during deployment and the fixes applie
 - Created `_shared/plugins/components/contact/sections/form/form.html`
 
 ### 2. crafts_ai Model Conflict Error
-**Error:** `RuntimeError: Conflicting 'role' models in application 'django_osoul': <class 'django_osoul.models.auth.Role'> and <class 'django_osoul.site.auth.models.role.Role'>`
+**Error:** `RuntimeError: Conflicting 'role' models in application 'django_fusion': <class 'django_fusion.models.auth.Role'> and <class 'django_fusion.site.auth.models.role.Role'>`
 
 **Root Cause:** crafts_ai package has two conflicting Role model definitions causing registration failure during import. The issue occurs when importing from `crafts_ai.site.payments`.
 

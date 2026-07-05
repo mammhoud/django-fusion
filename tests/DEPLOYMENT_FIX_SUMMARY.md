@@ -19,11 +19,11 @@ TEMPLATES_DIRS = [
 **Impact**: Allows template resolution for components/contact/sections/form/form.html and notifications/notification.html
 
 ### 2. ✅ Django OSoul Role Model Conflict (PARTIALLY FIXED)
-**Issue**: `RuntimeError: Conflicting 'role' models in application 'django_osoul'`
-- Root cause: `django_osoul` defines `Role` in two places:
-  - `django_osoul.models.auth.Role`  
-  - `django_osoul.site.auth.models.role.Role`
-- Triggered when `crafts_ai.site` is imported (imports `django_osoul.site.auth`)
+**Issue**: `RuntimeError: Conflicting 'role' models in application 'django_fusion'`
+- Root cause: `django_fusion` defines `Role` in two places:
+  - `django_fusion.models.auth.Role`  
+  - `django_fusion.site.auth.models.role.Role`
+- Triggered when `crafts_ai.site` is imported (imports `django_fusion.site.auth`)
 
 **Fixes Applied**:
 
@@ -121,7 +121,7 @@ class MyView(BaseView, View):
 This defers the problematic import until request time, after Django's app registry is fully initialized.
 
 ### Root Cause Analysis
-The core issue is that `django_osoul` (a library) has a bug where two modules define the same model with the same app_label. This causes Django's app registry to raise an error when both modules are imported. The fix is to defer the problematic imports until after the app registry is ready.
+The core issue is that `django_fusion` (a library) has a bug where two modules define the same model with the same app_label. This causes Django's app registry to raise an error when both modules are imported. The fix is to defer the problematic imports until after the app registry is ready.
 
 ## Deployment Command
 ```bash
@@ -223,7 +223,7 @@ The lazy loading pattern implemented:
 ### Technical Debt
 
 These issues should be addressed in future sessions:
-1. Fix django_osoul library bug (duplicate Role model definitions)
+1. Fix django_fusion library bug (duplicate Role model definitions)
 2. Consolidate duplicate certificate scripts
 3. SSL/HTTPS configuration with proper certificates
 4. Full integration testing across all sites
@@ -261,7 +261,7 @@ The ctc-research site is now:
 
 1. **Homepage/Root URL**: The root URL `/` returns a 500 error through the error handler. This appears to be a template rendering issue in the error handler, not the app itself.
 
-2. **Error Handler Templates**: The custom error handlers from django_osoul may not be properly configured or available.
+2. **Error Handler Templates**: The custom error handlers from django_fusion may not be properly configured or available.
 
 ### Verification Commands
 

@@ -1,0 +1,1133 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-04-20 18:29+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+#: django_fusion/comp/apps.py:8
+msgid "Core Extensions"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:32
+msgid "Connection"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:44
+msgid "Authentication"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:50
+msgid "Sender"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:56
+#: django_fusion/models/interaction/call.py:50
+#: django_fusion/models/interaction/notification.py:59
+msgid "Status"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:75
+msgid "📧 Send test email to admin"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:83
+#, python-brace-format
+msgid "✅ Test email sent to {to_email} via {config.email_host}"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:89
+#, python-brace-format
+msgid "❌ Failed to send test email: {e}"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:92
+msgid "✅ Activate selected config"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:95
+msgid "Please select only one configuration to activate."
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:99
+msgid "Configuration activated."
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:101
+msgid "❌ Deactivate selected config"
+msgstr ""
+
+#: django_fusion/contrib/admin/email_admin.py:104
+msgid "Configuration deactivated."
+msgstr ""
+
+#: django_fusion/contrib/admin/wagtail_hooks.py:13
+msgid "Email Templates"
+msgstr ""
+
+#: django_fusion/contrib/admin/wagtail_hooks.py:22
+msgid "Auth & Email"
+msgstr ""
+
+#: django_fusion/filters/validators.py:47
+msgid "This value already exists."
+msgstr ""
+
+#: django_fusion/filters/validators.py:69
+msgid "Enter a valid slug (lowercase letters, numbers, and hyphens)."
+msgstr ""
+
+#: django_fusion/filters/validators.py:76
+msgid "This slug is already in use."
+msgstr ""
+
+#: django_fusion/middlewares/freeze.py:24
+msgid "Database is operating in readonly mode. Not possible to save any data."
+msgstr ""
+
+#: django_fusion/models/auth.py:88 django_fusion/site/auth/models/role.py:13
+msgid "Administrator"
+msgstr ""
+
+#: django_fusion/models/auth.py:89 django_fusion/site/auth/models/role.py:14
+msgid "Manager"
+msgstr ""
+
+#: django_fusion/models/auth.py:90 django_fusion/site/auth/models/role.py:15
+msgid "Editor"
+msgstr ""
+
+#: django_fusion/models/auth.py:91 django_fusion/site/auth/models/role.py:16
+msgid "Contributor"
+msgstr ""
+
+#: django_fusion/models/auth.py:92 django_fusion/site/auth/models/role.py:17
+msgid "Viewer"
+msgstr ""
+
+#: django_fusion/models/auth.py:93 django_fusion/site/auth/models/role.py:18
+msgid "Custom"
+msgstr ""
+
+#: django_fusion/models/auth.py:98 django_fusion/site/auth/models/role.py:23
+msgid "Role Name"
+msgstr ""
+
+#: django_fusion/models/auth.py:99 django_fusion/site/auth/models/role.py:24
+msgid "Unique name for this role (e.g., Admin, Manager, User)."
+msgstr ""
+
+#: django_fusion/models/auth.py:106 django_fusion/site/auth/models/role.py:31
+msgid "Role Type"
+msgstr ""
+
+#: django_fusion/models/auth.py:107 django_fusion/site/auth/models/role.py:32
+msgid "Category of role"
+msgstr ""
+
+#: django_fusion/models/auth.py:112 django_fusion/site/auth/models/role.py:37
+msgid "Description"
+msgstr ""
+
+#: django_fusion/models/auth.py:113 django_fusion/site/auth/models/role.py:38
+msgid "Detailed description of this role"
+msgstr ""
+
+#: django_fusion/models/auth.py:119 django_fusion/site/auth/models/role.py:44
+#: django_fusion/site/choices/token.py:14
+msgid "Permissions"
+msgstr ""
+
+#: django_fusion/models/auth.py:120 django_fusion/site/auth/models/role.py:45
+msgid "JSON structure defining role permissions"
+msgstr ""
+
+#: django_fusion/models/auth.py:125 django_fusion/site/auth/models/role.py:50
+msgid "Is Default Role"
+msgstr ""
+
+#: django_fusion/models/auth.py:126 django_fusion/site/auth/models/role.py:51
+msgid "Assign this role to new users by default"
+msgstr ""
+
+#: django_fusion/models/auth.py:131 django_fusion/site/auth/models/role.py:56
+msgid "Role Level"
+msgstr ""
+
+#: django_fusion/models/auth.py:132 django_fusion/site/auth/models/role.py:57
+msgid "Hierarchical level (higher = more permissions)"
+msgstr ""
+
+#: django_fusion/models/auth.py:140 django_fusion/site/auth/models/role.py:65
+msgid "Group"
+msgstr ""
+
+#: django_fusion/models/auth.py:141 django_fusion/site/auth/models/role.py:66
+msgid "Link to a Django group"
+msgstr ""
+
+#: django_fusion/models/auth.py:150 django_fusion/site/auth/models/role.py:70
+msgid "Role"
+msgstr ""
+
+#: django_fusion/models/auth.py:151 django_fusion/site/auth/models/role.py:71
+msgid "Roles"
+msgstr ""
+
+#: django_fusion/models/base.py:40
+msgid "Unique identifier"
+msgstr ""
+
+#: django_fusion/models/base.py:45
+msgid "Creation timestamp"
+msgstr ""
+
+#: django_fusion/models/base.py:49
+msgid "Last update timestamp"
+msgstr ""
+
+#: django_fusion/models/integrations.py:21
+msgid "Twilio (Messaging API)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:22
+msgid "Stripe (Payment Processor)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:23
+msgid "PayPal (Payment Gateway)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:24
+msgid "Google (OAuth / APIs)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:25
+msgid "Amazon Web Services (S3, SNS, etc.)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:26
+msgid "Slack (Messaging / Webhooks)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:27
+msgid "Zoho (CRM / Accounting)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:28
+msgid "HubSpot (CRM / Marketing)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:29
+msgid "QuickBooks (Accounting)"
+msgstr ""
+
+#: django_fusion/models/integrations.py:30
+msgid "Custom Integration"
+msgstr ""
+
+#: django_fusion/models/integrations.py:37
+msgid "Messaging / SMS"
+msgstr ""
+
+#: django_fusion/models/integrations.py:38
+msgid "Voice / Calls"
+msgstr ""
+
+#: django_fusion/models/integrations.py:39
+msgid "WhatsApp Messaging"
+msgstr ""
+
+#: django_fusion/models/integrations.py:40
+msgid "Video API"
+msgstr ""
+
+#: django_fusion/models/integrations.py:43
+msgid "Payments / Charges"
+msgstr ""
+
+#: django_fusion/models/integrations.py:44
+msgid "Invoices / Billing"
+msgstr ""
+
+#: django_fusion/models/integrations.py:45
+msgid "Customer Profiles"
+msgstr ""
+
+#: django_fusion/models/integrations.py:46
+msgid "Subscriptions / Plans"
+msgstr ""
+
+#: django_fusion/models/integrations.py:49
+msgid "Authentication / OAuth"
+msgstr ""
+
+#: django_fusion/models/integrations.py:50
+msgid "Webhook Endpoint"
+msgstr ""
+
+#: django_fusion/models/integrations.py:51
+msgid "Data Synchronization"
+msgstr ""
+
+#: django_fusion/models/integrations.py:52
+msgid "Analytics / Reports"
+msgstr ""
+
+#: django_fusion/models/integrations.py:53
+msgid "Callback or Redirect"
+msgstr ""
+
+#: django_fusion/models/integrations.py:54
+msgid "Health Check / Ping"
+msgstr ""
+
+#: django_fusion/models/integrations.py:55
+msgid "Custom Endpoint"
+msgstr ""
+
+#: django_fusion/models/integrations.py:61
+msgid "Integration Name"
+msgstr ""
+
+#: django_fusion/models/integrations.py:63
+msgid "Human-readable name of the integration (e.g. Twilio Messaging)."
+msgstr ""
+
+#: django_fusion/models/integrations.py:66
+msgid "External ID"
+msgstr ""
+
+#: django_fusion/models/integrations.py:69
+msgid "Unique identifier from the external system (if available)."
+msgstr ""
+
+#: django_fusion/models/integrations.py:75
+msgid "Integration Type"
+msgstr ""
+
+#: django_fusion/models/integrations.py:76
+msgid "Select which platform or service this integration connects to."
+msgstr ""
+
+#: django_fusion/models/integrations.py:82
+msgid "Endpoint Type"
+msgstr ""
+
+#: django_fusion/models/integrations.py:83
+msgid "Type of endpoint or API section this configuration handles."
+msgstr ""
+
+#: django_fusion/models/integrations.py:87
+msgid "API Endpoint"
+msgstr ""
+
+#: django_fusion/models/integrations.py:89
+msgid "Base URL for the endpoint, e.g., https://api.twilio.com/v1/messages"
+msgstr ""
+
+#: django_fusion/models/integrations.py:92
+msgid "API Key / Token"
+msgstr ""
+
+#: django_fusion/models/integrations.py:95
+msgid "API key or authentication token used for access."
+msgstr ""
+
+#: django_fusion/models/integrations.py:98
+msgid "Metadata"
+msgstr ""
+
+#: django_fusion/models/integrations.py:101
+msgid "Additional configuration or credentials as JSON."
+msgstr ""
+
+#: django_fusion/models/integrations.py:109
+msgid "Is Active"
+msgstr ""
+
+#: django_fusion/models/integrations.py:110
+msgid "Indicates whether this integration is currently enabled."
+msgstr ""
+
+#: django_fusion/models/integrations.py:115
+msgid "Last Sync At"
+msgstr ""
+
+#: django_fusion/models/integrations.py:116
+msgid "When the last synchronization or update occurred."
+msgstr ""
+
+#: django_fusion/models/integrations.py:121
+msgid "Success"
+msgstr ""
+
+#: django_fusion/models/integrations.py:122
+msgid "Error"
+msgstr ""
+
+#: django_fusion/models/integrations.py:123
+msgid "Pending"
+msgstr ""
+
+#: django_fusion/models/integrations.py:124
+msgid "Never Synced"
+msgstr ""
+
+#: django_fusion/models/integrations.py:127
+msgid "Sync Status"
+msgstr ""
+
+#: django_fusion/models/integrations.py:128
+msgid "The current synchronization status."
+msgstr ""
+
+#: django_fusion/models/integrations.py:131
+msgid "Created At"
+msgstr ""
+
+#: django_fusion/models/integrations.py:132
+msgid "Updated At"
+msgstr ""
+
+#: django_fusion/models/integrations.py:136
+#: django_fusion/models/interaction/call.py:43
+#: django_fusion/models/interaction/notification.py:47
+msgid "Integration"
+msgstr ""
+
+#: django_fusion/models/integrations.py:137
+msgid "Integrations"
+msgstr ""
+
+#: django_fusion/models/integrations.py:171
+msgid "Last sync succeeded."
+msgstr ""
+
+#: django_fusion/models/integrations.py:172
+msgid "Last sync failed."
+msgstr ""
+
+#: django_fusion/models/integrations.py:173
+msgid "Sync pending."
+msgstr ""
+
+#: django_fusion/models/integrations.py:174
+msgid "Never synced."
+msgstr ""
+
+#: django_fusion/models/integrations.py:175
+msgid "Unknown status."
+msgstr ""
+
+#: django_fusion/models/interaction/call.py:44
+msgid "Reference to the integration used (e.g., Twilio Voice API)."
+msgstr ""
+
+#: django_fusion/models/interaction/call.py:46
+msgid "Call SID"
+msgstr ""
+
+#: django_fusion/models/interaction/call.py:53
+msgid "Call status such as initiated, in-progress, or completed."
+msgstr ""
+
+#: django_fusion/models/interaction/call.py:58
+msgid "Call"
+msgstr ""
+
+#: django_fusion/models/interaction/call.py:59
+msgid "Calls"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:29
+msgid "SMS Message"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:30
+msgid "Email Notification"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:31
+msgid "Voice Call"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:32
+msgid "Push Notification"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:48
+msgid ""
+"The integration used to send this notification (e.g., Twilio, SendGrid)."
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:55
+msgid "Message Content"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:56
+msgid "Subject"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:62
+msgid "Status of the notification: pending, sent, failed."
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:64
+msgid "Response Data"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:69
+msgid "Notification"
+msgstr ""
+
+#: django_fusion/models/interaction/notification.py:70
+msgid "Notifications"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:23
+#: django_fusion/site/auth/forms/code.py:58
+#: django_fusion/site/auth/forms/login.py:95
+#: django_fusion/site/auth/forms/password.py:282
+#: django_fusion/site/auth/forms/signup.py:73
+msgid "Email address"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:49
+msgid "Send Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:65
+#: django_fusion/site/auth/forms/phone.py:192
+#: django_fusion/site/auth/forms/signup.py:38
+#: django_fusion/site/auth/forms/signup.py:74
+msgid "Phone number"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:108
+msgid "Verification code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:112
+#: django_fusion/site/auth/forms/confirm.py:27
+#: django_fusion/site/auth/forms/confirm.py:51
+#: django_fusion/site/auth/forms/phone.py:45
+msgid "Enter 6-digit code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:117
+msgid "Enter the 6-digit code sent to your email or phone."
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:126
+#: django_fusion/site/auth/forms/confirm.py:56
+msgid "Verify Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/code.py:134
+msgid "Enter verification code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:22
+msgid "Verification Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:33
+msgid "Enter the verification code sent to your email or phone."
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:64
+msgid "The verification code is incorrect. Please try again."
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:78
+msgid "Login Verification Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:80
+msgid ""
+"Enter the 6-digit verification code sent to your email or phone to complete "
+"login."
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:94
+msgid "Email Verification Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:96
+msgid "Enter the 6-digit verification code sent to your email address."
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:101
+msgid "Verify Email"
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:119
+msgid "Password Reset Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:121
+msgid ""
+"Enter the 6-digit verification code sent to your email to reset your "
+"password."
+msgstr ""
+
+#: django_fusion/site/auth/forms/confirm.py:126
+msgid "Reset Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:33
+#: django_fusion/site/auth/forms/password.py:198
+#: django_fusion/site/auth/forms/signup.py:76
+msgid "Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:38
+msgid "Remember me"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:40
+msgid "Keep me logged in for 30 days"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:62
+msgid "Sign In"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:78
+msgid "Enter your password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:92
+msgid "Email"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:102
+#: django_fusion/site/auth/forms/login.py:105
+#: django_fusion/site/auth/forms/signup.py:75
+msgid "Username"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:115
+msgid "Login"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:128
+msgid "Username, email or phone"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:130
+msgid "Username or email"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:132
+msgid "Username or phone"
+msgstr ""
+
+#: django_fusion/site/auth/forms/login.py:134
+msgid "Email or phone"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:83
+msgid "Passwords do not match. Please enter the same password in both fields."
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:99
+msgid "Current Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:101
+msgid "Enter your current password."
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:105
+#: django_fusion/site/auth/forms/password.py:352
+msgid "New Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:110
+#: django_fusion/site/auth/forms/password.py:357
+msgid "Confirm New Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:112
+#: django_fusion/site/auth/forms/password.py:359
+msgid "Enter your new password again to confirm."
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:125
+#: django_fusion/site/auth/forms/password.py:373
+msgid "Change Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:133
+msgid "Current password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:139
+#: django_fusion/site/auth/forms/password.py:226
+#: django_fusion/site/auth/forms/password.py:381
+msgid "New password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:145
+#: django_fusion/site/auth/forms/password.py:387
+msgid "Confirm new password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:154
+msgid "The current password you entered is incorrect."
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:203
+msgid "Password (again)"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:205
+msgid "Enter your password again to confirm."
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:218
+msgid "Set Password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:232
+#: django_fusion/site/auth/forms/signup.py:77
+msgid "Confirm password"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:257
+msgid "Email Address"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:260
+msgid "Enter your email address"
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:265
+msgid "Enter the email address associated with your account."
+msgstr ""
+
+#: django_fusion/site/auth/forms/password.py:274
+msgid "Send Reset Link"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:29
+msgid "Phone Verification Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:31
+msgid "Enter the 6-digit verification code sent to your phone number."
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:37
+msgid "Verify Phone"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:60
+msgid "Verify Phone Number"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:78
+msgid "New Phone Number"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:80
+msgid ""
+"Enter your new phone number including country code (e.g., +1 234 567 8900)."
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:86
+msgid "Change Phone Number"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:94
+msgid "Enter new phone number"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:114
+msgid "Please enter a valid phone number format (e.g., +1 234 567 8900)."
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:158
+msgid "Phone Number"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:161
+msgid "+1 234 567 8900"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:164
+msgid ""
+"Enter your phone number with country code to receive a verification code."
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:168
+msgid "Verification Method"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:170
+msgid "Send verification code via SMS"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:171
+msgid "Receive verification code via phone call"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:175
+msgid "Choose how you want to receive the verification code."
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:184
+msgid "Send Verification Code"
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:215
+msgid "Please include country code (e.g., +1 for US/Canada)."
+msgstr ""
+
+#: django_fusion/site/auth/forms/phone.py:220
+msgid "Phone number appears to be too short. Please check and try again."
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:24
+#: django_fusion/site/auth/forms/signup.py:71
+msgid "First name"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:26
+msgid "Enter your first name"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:31
+#: django_fusion/site/auth/forms/signup.py:72
+msgid "Last name"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:33
+msgid "Enter your last name"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:40
+msgid "Optional phone number for account recovery"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:44
+msgid "Terms and conditions"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:47
+msgid "You must agree to the Terms and Conditions to sign up."
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:58
+msgid "Create Account"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:100
+msgid "Optional"
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:104
+msgid "Use at least 8 characters with a mix of letters, numbers, and symbols."
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:151
+msgid "Please enter a valid phone number with at least 10 digits."
+msgstr ""
+
+#: django_fusion/site/auth/forms/signup.py:164
+#: django_fusion/site/auth/mixins.py:123
+msgid "Passwords do not match."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:81
+msgid "You are already logged in"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:83
+msgid "Already Logged In"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:92
+msgid "You are already logged out"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:94
+msgid "Already Logged Out"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:108
+msgid "Please enter your email/username."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:110
+msgid "Please enter your password."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:119
+msgid "Username is required."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:121
+msgid "Email is required."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:125
+msgid "Username already exists."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:127
+msgid "Email already exists."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:170 django_fusion/site/auth/mixins.py:180
+msgid "Invalid credentials"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:175
+msgid "User not found"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:199
+msgid "Registration failed"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:215
+msgid "An error occurred during registration. Please try again."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:228
+msgid "You have been logged out successfully"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:230
+msgid "Logged Out"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:254
+#, python-format
+msgid "Welcome back, %(username)s!"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:256
+msgid "Login Successful"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:269
+msgid "Login Failed"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:282
+msgid "Account created and logged in successfully!"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:284
+msgid "Account created successfully! Please log in."
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:293
+msgid "Registration Successful"
+msgstr ""
+
+#: django_fusion/site/auth/mixins.py:304
+msgid "Registration Failed"
+msgstr ""
+
+#: django_fusion/site/auth/models/role.py:89
+msgid "Only one role can be set as default."
+msgstr ""
+
+#: django_fusion/site/auth/models/token.py:123
+msgid "Bearer Token"
+msgstr ""
+
+#: django_fusion/site/auth/models/token.py:124
+msgid "Bearer Tokens"
+msgstr ""
+
+#: django_fusion/site/choices/cart.py:6
+msgid "Active"
+msgstr ""
+
+#: django_fusion/site/choices/cart.py:7
+msgid "Saved"
+msgstr ""
+
+#: django_fusion/site/choices/cart.py:8
+msgid "Empty"
+msgstr ""
+
+#: django_fusion/site/choices/contact.py:7
+msgid "Mobile"
+msgstr ""
+
+#: django_fusion/site/choices/contact.py:8
+msgid "Home"
+msgstr ""
+
+#: django_fusion/site/choices/contact.py:9
+msgid "Work"
+msgstr ""
+
+#: django_fusion/site/choices/contact.py:13
+msgid "Text"
+msgstr ""
+
+#: django_fusion/site/choices/contact.py:14
+msgid "Dedicated"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:6
+msgid "Direct Message"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:7
+msgid "Group Chat"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:8
+msgid "Broadcast"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:12
+msgid "Sent"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:13
+msgid "Delivered"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:14
+msgid "Read"
+msgstr ""
+
+#: django_fusion/site/choices/message.py:15
+msgid "Failed"
+msgstr ""
+
+#: django_fusion/site/choices/module.py:6
+msgid "Lead"
+msgstr ""
+
+#: django_fusion/site/choices/module.py:7
+msgid "Task"
+msgstr ""
+
+#: django_fusion/site/choices/module.py:8
+msgid "Project"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:6
+msgid "Vertical"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:7
+msgid "Horizontal"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:11
+msgid "Default"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:12
+msgid "Bordered"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:13
+msgid "Semi Dark"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:17
+msgid "Light"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:18
+msgid "Dark"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:19
+msgid "System Mode"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:23
+msgid "Compact"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:24
+msgid "Wide"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:28
+#: django_fusion/site/choices/styles.py:35
+msgid "Fixed"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:29
+#: django_fusion/site/choices/styles.py:34
+msgid "Static"
+msgstr ""
+
+#: django_fusion/site/choices/styles.py:30
+msgid "Hidden"
+msgstr ""
+
+#: django_fusion/site/choices/token.py:6
+msgid "Private"
+msgstr ""
+
+#: django_fusion/site/choices/token.py:7
+msgid "Team"
+msgstr ""
+
+#: django_fusion/site/choices/token.py:8
+msgid "Public"
+msgstr ""
+
+#: django_fusion/site/choices/token.py:12
+msgid "Email Activation"
+msgstr ""
+
+#: django_fusion/site/choices/token.py:13
+msgid "Subscription"
+msgstr ""
+
+#: django_fusion/site/choices/token.py:15
+msgid "Common"
+msgstr ""
+
+#: django_fusion/site/generic/create.py:86
+#: django_fusion/site/generic/update.py:105
+msgid "View"
+msgstr ""
+
+#: django_fusion/site/generic/create.py:89
+#, python-brace-format
+msgid "The {obj} was added successfully. {link}"
+msgstr ""
+
+#: django_fusion/site/generic/delete.py:83
+#, python-brace-format
+msgid "The {obj} was deleted successfully."
+msgstr ""
+
+#: django_fusion/site/generic/update.py:108
+#, python-brace-format
+msgid "The {obj} was changed successfully. {link}"
+msgstr ""
+
+#: django_fusion/site/routes/other.py:54
+msgid "Add new"
+msgstr ""

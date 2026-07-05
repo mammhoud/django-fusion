@@ -1,11 +1,11 @@
 """
 Tags views.
 
-Re-exports from django_osoul.contrib.views.tags for backward compatibility.
+Re-exports from django_fusion.contrib.views.tags for backward compatibility.
 
-Canonical import: from django_osoul.contrib.views import TagsView
+Canonical import: from django_fusion.contrib.views import TagsView
 """
 
-from django_osoul.site.views.tags import EnhancedTagsView as TagsView  # noqa: F401
+from django_fusion.site.views.tags import EnhancedTagsView as TagsView  # noqa: F401
 
 __all__ = ["TagsView"]

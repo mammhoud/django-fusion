@@ -6,7 +6,7 @@ import logging
 from django.http import HttpRequest, HttpResponse, JsonResponse
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
-from django_osoul.site import NotificationMixin, PageHandler
+from django_fusion.site import NotificationMixin, PageHandler
 
 from plugins.blog.forms import BlogPostFilterForm, BlogPostForm
 from plugins.blog.models import BlogCategory, BlogPost, BlogTag

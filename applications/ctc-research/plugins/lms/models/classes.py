@@ -3,7 +3,7 @@ from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django_osoul.core.models import BaseModel as DefaultBase
+from django_fusion.core.models import BaseModel as DefaultBase
 from ceptor_ai.blocks.stream_blocks import BaseStreamBlock
 from ceptor_ai.models import ContentBase
 from wagtail.admin.panels import (

@@ -52,9 +52,9 @@ def _ensure_mock(name: str) -> types.ModuleType:
     return sys.modules[name]
 
 
-_ensure_mock("django_osoul")
-_ensure_mock("django_osoul.comp")
-_site_mod = _ensure_mock("django_osoul.comp.site")
+_ensure_mock("django_fusion")
+_ensure_mock("django_fusion.comp")
+_site_mod = _ensure_mock("django_fusion.comp.site")
 if not hasattr(_site_mod, "PageHandler"):
 
     class _PageHandler:

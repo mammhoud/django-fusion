@@ -98,7 +98,7 @@ class EmailRecord:
 
 | Field | Value |
 |-------|-------|
-| **File** | `venv/libs/django-osoul/src/django_osoul/contrib/schemas/serializer.py` |
+| **File** | `venv/libs/django-fusion/src/django_fusion/contrib/schemas/serializer.py` |
 | **Line** | 4 |
 | **Input Type** | `django.db.models.Model` instance |
 | **Output Type** | `dict` |
@@ -112,7 +112,7 @@ class EmailRecord:
 
 | Field | Value |
 |-------|-------|
-| **Files** | `venv/libs/django-osoul/src/django_osoul/comp/site/paginators.py` (×2), `page_handler.py` |
+| **Files** | `venv/libs/django-fusion/src/django_fusion/comp/site/paginators.py` (×2), `page_handler.py` |
 | **Input Type** | `list[Any]` (Django model instances) |
 | **Output Type** | `list[dict[str, Any]]` |
 | **Kind** | Method on mixin classes |
@@ -125,7 +125,7 @@ class EmailRecord:
 
 | Field | Value |
 |-------|-------|
-| **File** | `venv/libs/django-osoul/src/django_osoul/comp/adapters/base.py` |
+| **File** | `venv/libs/django-fusion/src/django_fusion/comp/adapters/base.py` |
 | **Line** | 84 |
 | **Input Type** | `object` (any JSON-serializable Python object) |
 | **Output Type** | `str` (compact JSON) |
@@ -143,7 +143,7 @@ class EmailRecord:
 
 | Field | Value |
 |-------|-------|
-| **File** | `venv/libs/django-osoul/src/django_osoul/contrib/responses/encoder.py` |
+| **File** | `venv/libs/django-fusion/src/django_fusion/contrib/responses/encoder.py` |
 | **Line** | 47 |
 | **Input Type** | `object` (any JSON-serializable Python object) |
 | **Output Type** | `str` (pretty-printed JSON with indent=4, sorted keys) |
@@ -173,7 +173,7 @@ These are **data validation schemas**, not string parsers. They validate structu
 
 Identical set to ctc-research.com (duplicated — see DUPLICATION_REPORT.md).
 
-### In `venv/libs/django-osoul/src/django_osoul/contrib/schemas/`
+### In `venv/libs/django-fusion/src/django_fusion/contrib/schemas/`
 
 | Schema | File | Base |
 |--------|------|------|

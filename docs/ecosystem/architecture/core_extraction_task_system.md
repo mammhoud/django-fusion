@@ -9,7 +9,7 @@
 
 ## Executive Overview
 
-This task system focuses on extracting **only core, reusable code** from Django websites into django-osoul and crafts-ai packages. Project-specific logic remains in websites. The system eliminates duplication and ensures code fits clear package use cases.
+This task system focuses on extracting **only core, reusable code** from Django websites into django-fusion and crafts-ai packages. Project-specific logic remains in websites. The system eliminates duplication and ensures code fits clear package use cases.
 
 ### Core Principles
 - **Extract Only Core Code:** Reusable across multiple projects
@@ -68,7 +68,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
    find ctc-research.com structa.cloud -name "forms.py" -type f
 
    # Categorize:
-   # - Base form classes → Core (django-osoul)
+   # - Base form classes → Core (django-fusion)
    # - Project forms → Stays
    # - Duplicated forms → Consolidate
    ```
@@ -79,8 +79,8 @@ This task system focuses on extracting **only core, reusable code** from Django 
    find ctc-research.com structa.cloud -name "views.py" -type f
 
    # Categorize:
-   # - Base view classes → Core (django-osoul)
-   # - Mixins → Core (django-osoul)
+   # - Base view classes → Core (django-fusion)
+   # - Mixins → Core (django-fusion)
    # - Project views → Stays
    ```
 
@@ -90,7 +90,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
    find ctc-research.com structa.cloud -name "utils.py" -type f
 
    # Categorize:
-   # - Reusable helpers → Core (django-osoul)
+   # - Reusable helpers → Core (django-fusion)
    # - Project-specific → Stays
    # - Duplicated → Consolidate
    ```
@@ -219,12 +219,12 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 ## Phase 2: Extract Base Models & Utilities (Weeks 2-3)
 
-### Task 2.1: Extract Base Models to django-osoul
+### Task 2.1: Extract Base Models to django-fusion
 
-**Objective:** Move reusable base models to django-osoul
+**Objective:** Move reusable base models to django-fusion
 
 **Deliverables:**
-- [ ] Base models in django-osoul
+- [ ] Base models in django-fusion
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -241,11 +241,11 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - SoftDeleteModel
    ```
 
-2. **Create in django-osoul**
+2. **Create in django-fusion**
    ```bash
-   # Create models in django-osoul
-   venv/libs/django-osoul/src/django_osoul/models/base.py
-   venv/libs/django-osoul/src/django_osoul/models/mixins.py
+   # Create models in django-fusion
+   venv/libs/django-fusion/src/django_fusion/models/base.py
+   venv/libs/django-fusion/src/django_fusion/models/mixins.py
    ```
 
 3. **Move Code**
@@ -258,14 +258,14 @@ This task system focuses on extracting **only core, reusable code** from Django 
 4. **Create Deprecation Shims**
    ```python
    # In websites, create shims:
-   from django_osoul.models import BaseModel
+   from django_fusion.models import BaseModel
    # Keep old import path working
    ```
 
 5. **Update All Imports**
    ```bash
    # Update imports in websites
-   sed -i 's/from \.models import BaseModel/from django_osoul.models import BaseModel/g' \
+   sed -i 's/from \.models import BaseModel/from django_fusion.models import BaseModel/g' \
        ctc-research.com/**/*.py
    ```
 
@@ -277,19 +277,19 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Base models in django-osoul
+- Base models in django-fusion
 - Websites still work
 - All tests passing
 - No circular imports
 
 ---
 
-### Task 2.2: Extract Reusable Utilities to django-osoul
+### Task 2.2: Extract Reusable Utilities to django-fusion
 
-**Objective:** Move reusable utility functions to django-osoul
+**Objective:** Move reusable utility functions to django-fusion
 
 **Deliverables:**
-- [ ] Utilities in django-osoul
+- [ ] Utilities in django-fusion
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -307,9 +307,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Permission helpers
    ```
 
-2. **Create in django-osoul**
+2. **Create in django-fusion**
    ```bash
-   venv/libs/django-osoul/src/django_osoul/utils/
+   venv/libs/django-fusion/src/django_fusion/utils/
    ```
 
 3. **Move Code**
@@ -334,19 +334,19 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Utilities in django-osoul
+- Utilities in django-fusion
 - Websites still work
 - All tests passing
 - No duplication
 
 ---
 
-### Task 2.3: Extract Form Base Classes to django-osoul
+### Task 2.3: Extract Form Base Classes to django-fusion
 
-**Objective:** Move reusable form classes to django-osoul
+**Objective:** Move reusable form classes to django-fusion
 
 **Deliverables:**
-- [ ] Form base classes in django-osoul
+- [ ] Form base classes in django-fusion
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -362,9 +362,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Common validators
    ```
 
-2. **Create in django-osoul**
+2. **Create in django-fusion**
    ```bash
-   venv/libs/django-osoul/src/django_osoul/forms/
+   venv/libs/django-fusion/src/django_fusion/forms/
    ```
 
 3. **Move Code**
@@ -389,7 +389,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Form classes in django-osoul
+- Form classes in django-fusion
 - Websites still work
 - All tests passing
 - No duplication
@@ -518,12 +518,12 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 ## Phase 4: Extract Testing Utilities (Week 6)
 
-### Task 4.1: Extract Testing Factories to django-osoul
+### Task 4.1: Extract Testing Factories to django-fusion
 
-**Objective:** Move reusable test factories to django-osoul
+**Objective:** Move reusable test factories to django-fusion
 
 **Deliverables:**
-- [ ] Factories in django-osoul
+- [ ] Factories in django-fusion
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -538,9 +538,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Common fixtures
    ```
 
-2. **Create in django-osoul**
+2. **Create in django-fusion**
    ```bash
-   venv/libs/django-osoul/src/django_osoul/factories/
+   venv/libs/django-fusion/src/django_fusion/factories/
    ```
 
 3. **Move Code**
@@ -565,19 +565,19 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Factories in django-osoul
+- Factories in django-fusion
 - Websites still work
 - All tests passing
 - No duplication
 
 ---
 
-### Task 4.2: Extract Test Fixtures to django-osoul
+### Task 4.2: Extract Test Fixtures to django-fusion
 
-**Objective:** Move reusable test fixtures to django-osoul
+**Objective:** Move reusable test fixtures to django-fusion
 
 **Deliverables:**
-- [ ] Fixtures in django-osoul
+- [ ] Fixtures in django-fusion
 - [ ] Deprecation shims in websites
 - [ ] All imports updated
 - [ ] Tests passing
@@ -592,9 +592,9 @@ This task system focuses on extracting **only core, reusable code** from Django 
    # - Common assertions
    ```
 
-2. **Create in django-osoul**
+2. **Create in django-fusion**
    ```bash
-   venv/libs/django-osoul/src/django_osoul/fixtures/
+   venv/libs/django-fusion/src/django_fusion/fixtures/
    ```
 
 3. **Move Code**
@@ -619,7 +619,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
    ```
 
 **Success Criteria:**
-- Fixtures in django-osoul
+- Fixtures in django-fusion
 - Websites still work
 - All tests passing
 - No duplication
@@ -723,17 +723,17 @@ This task system focuses on extracting **only core, reusable code** from Django 
 **Objective:** Document extracted code in packages
 
 **Deliverables:**
-- [ ] django-osoul documentation
+- [ ] django-fusion documentation
 - [ ] crafts-ai documentation
-- [ ] django-osoul documentation
+- [ ] django-fusion documentation
 - [ ] API documentation
 
 **Steps:**
 
-1. **Create django-osoul docs**
+1. **Create django-fusion docs**
    ```bash
    # Document base models, utilities, forms
-   venv/libs/django-osoul/docs/
+   venv/libs/django-fusion/docs/
    ```
 
 2. **Create crafts-ai docs**
@@ -742,10 +742,10 @@ This task system focuses on extracting **only core, reusable code** from Django 
    venv/libs/crafts-ai/docs/
    ```
 
-3. **Create django-osoul docs**
+3. **Create django-fusion docs**
    ```bash
    # Document factories, fixtures, assertions
-   venv/libs/django-osoul/docs/
+   venv/libs/django-fusion/docs/
    ```
 
 4. **Generate API docs**
@@ -788,7 +788,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
 
 ## What Gets Extracted: Detailed List
 
-### django-osoul (Base Models & Utilities)
+### django-fusion (Base Models & Utilities)
 
 **Models:**
 - BaseModel (with timestamps, UUID)
@@ -837,7 +837,7 @@ This task system focuses on extracting **only core, reusable code** from Django 
 - Workflow orchestration
 - Pipeline utilities
 
-### django-osoul (Testing)
+### django-fusion (Testing)
 
 **Factories:**
 - UserFactory

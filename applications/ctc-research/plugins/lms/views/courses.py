@@ -8,8 +8,8 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
-from django_osoul.site import PageHandler
-from django_osoul.web.views import FilterMixin, SearchMixin
+from django_fusion.site import PageHandler
+from django_fusion.web.views import FilterMixin, SearchMixin
 from ceptor_ai.models import CachingStorage
 
 from ..models import Course, CourseEnrollmentLead, CourseTag
@@ -231,7 +231,7 @@ class CourseSearchView(SearchMixin, FilterMixin, ListView):
     """
     Search and filter view for courses with caching support.
 
-    Uses SearchMixin and FilterMixin from django-osoul for declarative
+    Uses SearchMixin and FilterMixin from django-fusion for declarative
     search/filter configuration while preserving the existing caching logic.
     """
 

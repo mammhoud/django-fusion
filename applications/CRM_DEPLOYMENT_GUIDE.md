@@ -1,7 +1,7 @@
 # CRM Site - Quick Deployment Guide
 
 ## Overview
-The CRM site has been successfully integrated into the Structa Cloud monorepo. It's a complete sales and inventory management system with django-osoul routing, HTMX components, and a full fixture suite.
+The CRM site has been successfully integrated into the Structa Cloud monorepo. It's a complete sales and inventory management system with django-fusion routing, HTMX components, and a full fixture suite.
 
 ## Quick Start
 
@@ -48,7 +48,7 @@ WEBSITE=crm make check
 
 ## Site Architecture
 
-### Core Routing (django-osoul)
+### Core Routing (django-fusion)
 - **File:** `crm/www/core/routes.py`
 - **Classes:** 6 Application classes for Dashboard, Inventory, Transactions, Invoices, Bills, Accounts
 - **URLs:** `crm/www/urls.py` - 21 routes configured

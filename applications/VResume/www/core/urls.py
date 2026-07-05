@@ -16,7 +16,7 @@ from wagtail.contrib.sitemaps import Sitemap
 from wagtail.contrib.sitemaps.views import index, sitemap
 from wagtail.documents import urls as wagtaildocs_urls
 
-from django_osoul.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
+from django_fusion.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from core import views as core_views
 
 # from wagtail_transfer import urls as wagtailtransfer_urls

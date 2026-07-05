@@ -6,27 +6,27 @@
 graph TD
     stdlib[Python Standard Library]
     nawaai[nawaai\nPure Python AI/MCP Toolkit]
-    django_osoul[django_osoul\nPure Django Foundation]
+    django_fusion[django_fusion\nPure Django Foundation]
     crafts_ai[crafts_ai\nWagtail + Automation Layer]
-    django_osoul[django_osoul\nUnified Testing Framework]
+    django_fusion[django_fusion\nUnified Testing Framework]
     ctc[ctc-research.com\nThin Layer Project]
     structa[structa.cloud\nThin Layer Project]
 
     stdlib --> nawaai
-    stdlib --> django_osoul
+    stdlib --> django_fusion
     nawaai --> crafts_ai
-    django_osoul --> crafts_ai
-    django_osoul --> ctc
-    django_osoul --> structa
+    django_fusion --> crafts_ai
+    django_fusion --> ctc
+    django_fusion --> structa
     crafts_ai --> ctc
     crafts_ai --> structa
-    django_osoul --> ctc
-    django_osoul --> structa
+    django_fusion --> ctc
+    django_fusion --> structa
 ```
 
-**Dependency direction**: stdlib → nawaai → django_osoul → crafts_ai → projects
+**Dependency direction**: stdlib → nawaai → django_fusion → crafts_ai → projects
 
-`django_osoul` is a test-only dependency — it must never be imported by production code.
+`django_fusion` is a test-only dependency — it must never be imported by production code.
 
 ---
 
@@ -70,7 +70,7 @@ graph TD
   from crafts_ai.seeder.simple_seeder import SimpleSeeder
   ```
 
-### django_osoul — Pure Django Foundation Layer
+### django_fusion — Pure Django Foundation Layer
 
 - **Purpose**: Pure Django/Python foundation layer — models, managers, mixins, utils, comp, contrib
 - **Contains**:
@@ -147,18 +147,18 @@ graph TD
   - Pure Django only
 - **Key Exports**:
   ```python
-  from django_osoul.models.base import BaseModel, TimeStampedModel, UUIDModel
-  from django_osoul.managers import RoleHierarchyManager, GroupAccessControl, UserManager, GroupManager
-  from django_osoul.mixins import UserMixin, GroupMixin, CacheMixin, SearchMixin
-  from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware
-  from django_osoul.filters.validators import UniqueFieldValidator, SlugFieldValidator
-  from django_osoul.forms import BaseForm, BaseModelForm
-  from django_osoul.contrib.responses import JsonResponse, HtmxResponse
+  from django_fusion.models.base import BaseModel, TimeStampedModel, UUIDModel
+  from django_fusion.managers import RoleHierarchyManager, GroupAccessControl, UserManager, GroupManager
+  from django_fusion.mixins import UserMixin, GroupMixin, CacheMixin, SearchMixin
+  from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware
+  from django_fusion.filters.validators import UniqueFieldValidator, SlugFieldValidator
+  from django_fusion.forms import BaseForm, BaseModelForm
+  from django_fusion.contrib.responses import JsonResponse, HtmxResponse
   ```
 
 ### crafts_ai — Wagtail + Automation Layer
 
-- **Purpose**: Wagtail-specific components and automation pipelines built on django_osoul
+- **Purpose**: Wagtail-specific components and automation pipelines built on django_fusion
 - **Contains**:
   - `pipelines/` — Full pipeline stack
     - `models/` — Pipeline-specific models (can use Wagtail)
@@ -180,11 +180,11 @@ graph TD
     - `signals/` — Django signals for automation (cart_updated, user_enrolled)
     - `snippets/` — Wagtail snippets
     - `adapters/` — Adapter patterns
-    - `backends/` — Shim → django_osoul.backends
-    - `filters/` — Shim → django_osoul.filters
-    - `managers/` — Shim → django_osoul.managers
-    - `middlewares/` — Shim → django_osoul.middlewares
-    - `mixins/` — Shim → django_osoul.mixins
+    - `backends/` — Shim → django_fusion.backends
+    - `filters/` — Shim → django_fusion.filters
+    - `managers/` — Shim → django_fusion.managers
+    - `middlewares/` — Shim → django_fusion.middlewares
+    - `mixins/` — Shim → django_fusion.mixins
     - `utils/` — Utility functions
   - `comp/` — Wagtail UI components
     - `blocks/` — Wagtail StreamField blocks
@@ -245,8 +245,8 @@ graph TD
 - **Boundary Rules**:
   - Must not import project-specific code (ctc-research.com, structa.cloud)
   - Can import Wagtail and Celery
-  - Depends on django_osoul for pure Django foundation
-- **Dependencies**: django_osoul, Wagtail, Celery, nawaai
+  - Depends on django_fusion for pure Django foundation
+- **Dependencies**: django_fusion, Wagtail, Celery, nawaai
 - **Key Exports**:
   ```python
   from crafts_ai.pipelines.services.cart import CartServiceBase
@@ -259,7 +259,7 @@ graph TD
   from crafts_ai.contrib.cache.utils import cache_result
   ```
 
-### django_osoul — Unified Testing Framework
+### django_fusion — Unified Testing Framework
 
 - **Purpose**: Unified testing framework and health check endpoints
 - **Contains**:
@@ -290,11 +290,11 @@ graph TD
 - **Dependencies**: Django, pytest, Hypothesis
 - **Key Exports**:
   ```python
-  from django_osoul.tests.base import BaseTestCase, st_email, st_slug, st_uuid
-  from django_osoul.tests.assertions import assert_redirects_to, assert_json_response
-  from django_osoul.tests.factories import UserFactory, GroupFactory
-  from django_osoul.health.views import HealthCheckView, DatabaseHealthView
-  from django_osoul.seeder import Seeder
+  from django_fusion.tests.base import BaseTestCase, st_email, st_slug, st_uuid
+  from django_fusion.tests.assertions import assert_redirects_to, assert_json_response
+  from django_fusion.tests.factories import UserFactory, GroupFactory
+  from django_fusion.health.views import HealthCheckView, DatabaseHealthView
+  from django_fusion.seeder import Seeder
   ```
 
 ---
@@ -306,9 +306,9 @@ graph TD
 The ecosystem enforces four strict boundary rules via import-linter in CI:
 
 1. **nawaai-no-django**: nawaai must be pure Python with zero Django imports
-2. **osoul-no-wagtail**: django_osoul must not import wagtail, celery, or crafts_ai
+2. **osoul-no-wagtail**: django_fusion must not import wagtail, celery, or crafts_ai
 3. **rseal-no-projects**: crafts_ai must not import project-specific code
-4. **grep-test-only**: django_osoul is test-only and must not be imported by production code
+4. **grep-test-only**: django_fusion is test-only and must not be imported by production code
 
 These rules are enforced by `.importlinter` configuration and run automatically in CI on every commit.
 
@@ -317,19 +317,19 @@ These rules are enforced by `.importlinter` configuration and run automatically 
 | Package | Can import from |
 |---------|----------------|
 | `nawaai` | Python standard library only |
-| `django_osoul` | Python standard library, Django framework |
-| `crafts_ai` | Python standard library, Django, django_osoul, Wagtail, Celery, nawaai |
-| `django_osoul` | Python standard library, Django, pytest, Hypothesis |
-| Projects (`ctc-research.com`, `structa.cloud`) | All packages (nawaai, django_osoul, crafts_ai, django_osoul) |
+| `django_fusion` | Python standard library, Django framework |
+| `crafts_ai` | Python standard library, Django, django_fusion, Wagtail, Celery, nawaai |
+| `django_fusion` | Python standard library, Django, pytest, Hypothesis |
+| Projects (`ctc-research.com`, `structa.cloud`) | All packages (nawaai, django_fusion, crafts_ai, django_fusion) |
 
 ### Forbidden Import Directions
 
 | Package | Must NOT import |
 |---------|----------------|
-| `nawaai` | Django, Wagtail, Celery, django_osoul, crafts_ai, django_osoul |
-| `django_osoul` | Wagtail, Celery, crafts_ai, django_osoul |
+| `nawaai` | Django, Wagtail, Celery, django_fusion, crafts_ai, django_fusion |
+| `django_fusion` | Wagtail, Celery, crafts_ai, django_fusion |
 | `crafts_ai` | Project-specific code (`apps.`, `ctc-research`, `structa`) |
-| `django_osoul` | Must not be imported by production code (test files only) |
+| `django_fusion` | Must not be imported by production code (test files only) |
 
 ### Detailed Boundary Rules with Examples
 
@@ -359,22 +359,22 @@ from django.conf import settings                # Django settings
 from django.contrib.auth.models import User     # Django auth
 from wagtail.models import Page                 # Wagtail CMS
 from celery import shared_task                  # Celery task queue
-from django_osoul.models import BaseModel      # Django package
+from django_fusion.models import BaseModel      # Django package
 from crafts_ai.pipelines import CartServiceBase  # Django package
-from django_osoul.tests.base import BaseTestCase # Testing framework
+from django_fusion.tests.base import BaseTestCase # Testing framework
 ```
 
 **Enforcement**: Import-linter checks all imports from `crafts_ai` modules and fails if any Django/Wagtail/Celery imports are detected.
 
 #### 2. osoul-no-wagtail: Pure Django Foundation Layer
 
-**Rule**: django_osoul must not import wagtail, celery, or crafts_ai
+**Rule**: django_fusion must not import wagtail, celery, or crafts_ai
 
 **Purpose**: Keep foundation layer pure Django for maximum reusability across Django projects (with or without Wagtail)
 
 **Allowed Imports**:
 ```python
-# In django_osoul — ALLOWED
+# In django_fusion — ALLOWED
 from django.db import models
 from django.contrib.auth.models import AbstractUser
 from django.forms import ModelForm
@@ -387,17 +387,17 @@ from typing import Any, Dict, List
 
 **Forbidden Imports**:
 ```python
-# In django_osoul — FORBIDDEN (violates osoul-no-wagtail)
+# In django_fusion — FORBIDDEN (violates osoul-no-wagtail)
 from wagtail.models import Page                 # Wagtail CMS
 from wagtail.admin.panels import FieldPanel    # Wagtail admin
 from wagtail.blocks import StructBlock          # Wagtail blocks
 from celery import shared_task                  # Celery task queue
 from crafts_ai.pipelines import CartServiceBase  # Automation layer
 from crafts_ai.comp.blocks import MediaBlock    # Wagtail components
-from django_osoul.tests.base import BaseTestCase # Test-only imports
+from django_fusion.tests.base import BaseTestCase # Test-only imports
 ```
 
-**Enforcement**: Import-linter checks all imports from `django_osoul` modules and fails if any Wagtail/Celery/crafts_ai imports are detected.
+**Enforcement**: Import-linter checks all imports from `django_fusion` modules and fails if any Wagtail/Celery/crafts_ai imports are detected.
 
 #### 3. rseal-no-projects: Wagtail + Automation Layer
 
@@ -408,8 +408,8 @@ from django_osoul.tests.base import BaseTestCase # Test-only imports
 **Allowed Imports**:
 ```python
 # In crafts_ai — ALLOWED
-from django_osoul.managers import RoleHierarchyManager  # Foundation layer
-from django_osoul.mixins import UserMixin               # Foundation layer
+from django_fusion.managers import RoleHierarchyManager  # Foundation layer
+from django_fusion.mixins import UserMixin               # Foundation layer
 from wagtail.models import Page                         # Wagtail CMS
 from wagtail.blocks import StructBlock                  # Wagtail blocks
 from celery import shared_task                          # Celery task queue
@@ -432,17 +432,17 @@ from structa.cloud.apps.lms.models import Course       # Project-specific
 
 #### 4. grep-test-only: Unified Testing Framework
 
-**Rule**: django_osoul must not be imported by production code
+**Rule**: django_fusion must not be imported by production code
 
 **Purpose**: Keep testing infrastructure separate from production code
 
 **Allowed Imports** (in test files only):
 ```python
 # In test files — ALLOWED
-from django_osoul.tests.base import BaseTestCase
-from django_osoul.tests.factories import UserFactory
-from django_osoul.tests.assertions import assert_json_response
-from django_osoul.health.views import HealthCheckView
+from django_fusion.tests.base import BaseTestCase
+from django_fusion.tests.factories import UserFactory
+from django_fusion.tests.assertions import assert_json_response
+from django_fusion.health.views import HealthCheckView
 import pytest
 from hypothesis import given, strategies as st
 ```
@@ -450,26 +450,26 @@ from hypothesis import given, strategies as st
 **Forbidden Imports** (in production code):
 ```python
 # In production code — FORBIDDEN (violates grep-test-only)
-from django_osoul.tests.base import BaseTestCase         # Test infrastructure
-from django_osoul.tests.factories import UserFactory     # Test factories
-from django_osoul.health.views import HealthCheckView    # Health checks (ok in projects)
+from django_fusion.tests.base import BaseTestCase         # Test infrastructure
+from django_fusion.tests.factories import UserFactory     # Test factories
+from django_fusion.health.views import HealthCheckView    # Health checks (ok in projects)
 ```
 
-**Special Case**: Health check views (`django_osoul.health`) are allowed in project URL configurations since they're part of the deployment infrastructure:
+**Special Case**: Health check views (`django_fusion.health`) are allowed in project URL configurations since they're part of the deployment infrastructure:
 ```python
 # In project urls.py — ALLOWED
 from django.urls import path, include
 
 urlpatterns = [
-    path('health/', include('django_osoul.health.urls')),  # OK - deployment infra
+    path('health/', include('django_fusion.health.urls')),  # OK - deployment infra
 ]
 ```
 
-**Enforcement**: Import-linter checks imports from `django_osoul`, `crafts_ai`, and `apps` modules and fails if any `django_osoul` imports are detected (except health URLs).
+**Enforcement**: Import-linter checks imports from `django_fusion`, `crafts_ai`, and `apps` modules and fails if any `django_fusion` imports are detected (except health URLs).
 
 ### Dependency Direction Enforcement
 
-**Rule**: stdlib → nawaai → django_osoul → crafts_ai → projects
+**Rule**: stdlib → nawaai → django_fusion → crafts_ai → projects
 
 **Purpose**: Enforce clean dependency hierarchy and prevent circular dependencies
 
@@ -479,7 +479,7 @@ stdlib (Python standard library)
   ↓
 nawaai (pure Python AI toolkit)
   ↓
-django_osoul (pure Django foundation)
+django_fusion (pure Django foundation)
   ↓
 crafts_ai (Wagtail + automation)
   ↓
@@ -489,7 +489,7 @@ projects (ctc-research.com, structa.cloud)
 **Invalid Dependency Examples**:
 ```python
 # INVALID — violates dependency direction
-from django_osoul.ai import OpenAIIntegration  # osoul importing nawaai content
+from django_fusion.ai import OpenAIIntegration  # osoul importing nawaai content
 from crafts_ai.models import BaseModel      # rseal should not define foundation models
 from apps.accounts.managers import UserManager  # projects should not define reusable managers
 ```
@@ -506,9 +506,9 @@ source_modules = crafts_ai
 forbidden_modules = django, wagtail, celery
 
 [importlinter:contract:osoul-no-wagtail]
-name = django_osoul must not import Wagtail, Celery, or crafts_ai
+name = django_fusion must not import Wagtail, Celery, or crafts_ai
 type = forbidden
-source_modules = django_osoul
+source_modules = django_fusion
 forbidden_modules = wagtail, celery, crafts_ai
 
 [importlinter:contract:rseal-no-projects]
@@ -518,15 +518,15 @@ source_modules = crafts_ai
 forbidden_modules = apps, ctc_research, structa
 
 [importlinter:contract:grep-test-only]
-name = django_osoul must not be imported by production code
+name = django_fusion must not be imported by production code
 type = forbidden
-source_modules = django_osoul, crafts_ai
-forbidden_modules = django_osoul
+source_modules = django_fusion, crafts_ai
+forbidden_modules = django_fusion
 
 [importlinter:contract:dependency-direction]
-name = Dependency direction: crafts_ai -> django_osoul -> crafts_ai
+name = Dependency direction: crafts_ai -> django_fusion -> crafts_ai
 type = layers
-layers = crafts_ai, django_osoul, crafts_ai
+layers = crafts_ai, django_fusion, crafts_ai
 ```
 
 **CI Integration**: The import-linter runs automatically on every commit via GitHub Actions workflow `.github/workflows/architecture-validation.yml`. Any boundary violation fails the build and prevents merging.
@@ -535,10 +535,10 @@ layers = crafts_ai, django_osoul, crafts_ai
 
 | Violation Pattern | Fix Strategy |
 |-------------------|--------------|
-| `nawaai` importing Django models | Move Django-dependent logic to `django_osoul` or `crafts_ai`, keep nawaai pure Python |
-| `django_osoul` importing Wagtail | Move Wagtail-dependent code to `crafts_ai`, keep osoul pure Django |
+| `nawaai` importing Django models | Move Django-dependent logic to `django_fusion` or `crafts_ai`, keep nawaai pure Python |
+| `django_fusion` importing Wagtail | Move Wagtail-dependent code to `crafts_ai`, keep osoul pure Django |
 | `crafts_ai` importing `apps.*` | Move reusable logic from projects to `crafts_ai`, keep project-specific code thin |
-| Production code importing `django_osoul.tests` | Move test infrastructure imports to test files only |
+| Production code importing `django_fusion.tests` | Move test infrastructure imports to test files only |
 | Circular imports between packages | Apply dependency injection, extract interfaces, or use event-based communication |
 
 ### Verification Commands
@@ -570,11 +570,11 @@ All business logic is organized by domain with consistent structure across both 
 
 | Domain | App Name | Description | Key Components | Cross-Project Organization |
 |--------|----------|-------------|----------------|----------------------------|
-| `accounts` | `apps/accounts/` | User management, authentication, roles, permissions | User/Group models, authentication backends, role hierarchy, permissions system | **Both projects**: Identical structure. Uses `django_osoul` for foundation logic (managers, mixins, services) and `crafts_ai` for automation. |
-| `content` | `apps/content/` | CMS content, pages, blog posts, media management | Wagtail pages, blog posts, media library, content blocks | **Both projects**: Identical structure. Uses `crafts_ai` for Wagtail components (blocks, snippets, hooks) and `django_osoul` for pure Django utilities. |
+| `accounts` | `apps/accounts/` | User management, authentication, roles, permissions | User/Group models, authentication backends, role hierarchy, permissions system | **Both projects**: Identical structure. Uses `django_fusion` for foundation logic (managers, mixins, services) and `crafts_ai` for automation. |
+| `content` | `apps/content/` | CMS content, pages, blog posts, media management | Wagtail pages, blog posts, media library, content blocks | **Both projects**: Identical structure. Uses `crafts_ai` for Wagtail components (blocks, snippets, hooks) and `django_fusion` for pure Django utilities. |
 | `lms` | `apps/lms/` | Learning management system (ctc-research.com) | Courses, lessons, enrollments, progress tracking, certificates | **ctc-research.com only**: Uses `lms` AppConfig label. Contains cart functionality within this domain. |
 | `alliance` | `apps/lms/` | Learning management system (structa.cloud) | Courses, lessons, enrollments, progress tracking, certificates | **structa.cloud only**: Uses `alliance` AppConfig label. Contains cart functionality within this domain. |
-| `messaging` | `apps/messaging/` | Internal messaging, notifications, email communications | Message models, notification system, email templates | **Both projects**: Identical structure. Uses `crafts_ai` for email automation and `django_osoul` for foundation models. |
+| `messaging` | `apps/messaging/` | Internal messaging, notifications, email communications | Message models, notification system, email templates | **Both projects**: Identical structure. Uses `crafts_ai` for email automation and `django_fusion` for foundation models. |
 | `cart` | within lms/alliance | Shopping cart, checkout, orders, payments | Cart models, checkout workflows, payment processing | **Embedded domain**: Contained within `lms`/`alliance` apps. Uses `crafts_ai.pipelines.services.cart.CartServiceBase` as base class. |
 | `forms` | within content | Form submissions and processing | Form models, submission handling, validation | **Embedded domain**: Contained within `content` app. Uses `crafts_ai.pipelines.services.form_submission.FormSubmissionService` as base class. |
 | `blog` | `apps/blog/` | Blog functionality | Blog posts, categories, tags, comments | **Both projects**: Identical structure. Extends `content` domain with blog-specific features. |
@@ -590,7 +590,7 @@ All business logic is organized by domain with consistent structure across both 
   - Authentication backends (custom, social auth, allauth)
   - `UserService` and `GroupService` for business logic
 - **Package Dependencies**:
-  - `django_osoul`: Pure Django models, managers, mixins, services
+  - `django_fusion`: Pure Django models, managers, mixins, services
   - `crafts_ai`: Email automation, notification workflows
 - **Project Implementation**: Thin subclasses in `apps/accounts/services/` delegating to package base classes
 
@@ -603,7 +603,7 @@ All business logic is organized by domain with consistent structure across both 
   - Media management (images, documents, videos)
 - **Package Dependencies**:
   - `crafts_ai`: All Wagtail components (blocks, snippets, hooks, admin customizations)
-  - `django_osoul`: Pure Django utilities, form base classes
+  - `django_fusion`: Pure Django utilities, form base classes
 - **Project Implementation**: Project-specific page models extending `crafts_ai` base classes
 
 #### 3. LMS/Alliance Domain
@@ -615,7 +615,7 @@ All business logic is organized by domain with consistent structure across both 
   - `Cart` functionality for course purchases (embedded domain)
 - **Package Dependencies**:
   - `crafts_ai`: `CartServiceBase`, `PersonServiceBase`, automation workflows
-  - `django_osoul`: Foundation models, mixins, utilities
+  - `django_fusion`: Foundation models, mixins, utilities
 - **Project Differences**:
   - `ctc-research.com`: Uses `lms` AppConfig label
   - `structa.cloud`: Uses `alliance` AppConfig label (same codebase, different branding)
@@ -628,7 +628,7 @@ All business logic is organized by domain with consistent structure across both 
   - Email template management with role-based selection
 - **Package Dependencies**:
   - `crafts_ai`: `MessageServiceBase`, `RoleBasedEmailTemplateSelector`, email automation
-  - `django_osoul`: Foundation message models, utilities
+  - `django_fusion`: Foundation message models, utilities
 
 #### 5. Cart Domain (Embedded)
 - **Purpose**: Shopping cart and checkout functionality
@@ -681,7 +681,7 @@ apps/<domain>/
   │   └── base.py                  # Form base classes
   ├── managers/                    # Custom model managers
   │   ├── __init__.py
-  │   └── base.py                  # Manager base classes (delegates to django_osoul)
+  │   └── base.py                  # Manager base classes (delegates to django_fusion)
   ├── middleware/                  # Request/response middleware
   │   ├── __init__.py
   │   └── base.py                  # Middleware base classes
@@ -703,19 +703,19 @@ apps/<domain>/
 1. **Thin Layer Pattern**: Project apps contain minimal code, delegating to shared packages
 2. **Consistent Structure**: Identical layout across all domains and both projects
 3. **Clear Responsibilities**: Each sub-module has a single, well-defined purpose
-4. **Package Delegation**: Import from `django_osoul` and `crafts_ai` for reusable logic
+4. **Package Delegation**: Import from `django_fusion` and `crafts_ai` for reusable logic
 
 ### Cross-Project Domain Mapping
 
 | Domain | ctc-research.com | structa.cloud | Package Dependencies |
 |--------|------------------|--------------|----------------------|
-| `accounts` | `apps/accounts/` | `apps/accounts/` | django_osoul, crafts_ai |
-| `content` | `apps/content/` | `apps/content/` | crafts_ai, django_osoul |
-| `lms/alliance` | `apps/lms/` (lms) | `apps/lms/` (alliance) | crafts_ai, django_osoul |
-| `messaging` | `apps/messaging/` | `apps/messaging/` | crafts_ai, django_osoul |
+| `accounts` | `apps/accounts/` | `apps/accounts/` | django_fusion, crafts_ai |
+| `content` | `apps/content/` | `apps/content/` | crafts_ai, django_fusion |
+| `lms/alliance` | `apps/lms/` (lms) | `apps/lms/` (alliance) | crafts_ai, django_fusion |
+| `messaging` | `apps/messaging/` | `apps/messaging/` | crafts_ai, django_fusion |
 | `cart` | within `apps/lms/` | within `apps/lms/` | crafts_ai.pipelines.services.cart |
 | `forms` | within `apps/content/` | within `apps/content/` | crafts_ai.pipelines.services.form_submission |
-| `blog` | `apps/blog/` | `apps/blog/` | crafts_ai, django_osoul |
+| `blog` | `apps/blog/` | `apps/blog/` | crafts_ai, django_fusion |
 
 **Consistency Enforcement**:
 - Both projects maintain identical directory structures
@@ -740,7 +740,7 @@ The thin layer pattern is a core architectural principle that ensures all busine
 
 **Anti-Pattern**: Projects MUST NOT contain:
 - Reusable business logic (belongs in packages)
-- Reusable managers, mixins, forms, or middleware (belongs in django_osoul or crafts_ai)
+- Reusable managers, mixins, forms, or middleware (belongs in django_fusion or crafts_ai)
 - Duplicated code across projects (single source of truth in packages)
 
 ### Why Use the Thin Layer Pattern?
@@ -993,7 +993,7 @@ class CertificateService(CertificateServiceBase):
 
 To verify your project follows the thin layer pattern:
 
-- [ ] All business logic is in shared packages (django_osoul, crafts_ai)
+- [ ] All business logic is in shared packages (django_fusion, crafts_ai)
 - [ ] Project services are thin subclasses with model injection
 - [ ] No duplicate managers, mixins, forms, or middleware in projects
 - [ ] All imports reference package classes, not project-specific implementations
@@ -1004,7 +1004,7 @@ To verify your project follows the thin layer pattern:
 
 ## Package Separation Summary
 
-### django_osoul (Pure Django Foundation)
+### django_fusion (Pure Django Foundation)
 
 - All pure Django models, managers, mixins
 - All utility functions with zero Wagtail/Celery dependencies
@@ -1024,7 +1024,7 @@ To verify your project follows the thin layer pattern:
 
 ### Key Separation Points
 
-| Component | django_osoul | crafts_ai |
+| Component | django_fusion | crafts_ai |
 |-----------|-------------|-------------|
 | Handlers | Pure Django handlers | Wagtail page handlers |
 | Services | User/Group services | CartServiceBase, PersonServiceBase, etc. |
@@ -1049,9 +1049,9 @@ import-linter --config .importlinter
 python scripts/analyze_duplication.py --threshold 0.70
 
 # Run full test suite
-cd venv/libs/django-osoul && uv run pytest tests/ -v
+cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd venv/libs/crafts-ai && uv run pytest tests/ -v
-cd venv/libs/django-osoul && uv run pytest tests/ -v
+cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd venv/libs/nawaai && uv run pytest tests/ -v
 ```
 

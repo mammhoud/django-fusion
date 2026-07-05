@@ -1,7 +1,7 @@
-# django-osoul Documentation
+# django-fusion Documentation
 
 ## Overview
-django-osoul is the pure Django foundation layer for the ecosystem. It provides abstract models, managers, mixins, utilities, and components that can be used across all projects.
+django-fusion is the pure Django foundation layer for the ecosystem. It provides abstract models, managers, mixins, utilities, and components that can be used across all projects.
 
 ## Key Principles
 - **No Wagtail dependencies** - Must not import wagtail
@@ -49,7 +49,7 @@ Service layer classes
 ## Installation
 
 ```bash
-cd venv/libs/django-osoul
+cd venv/libs/django-fusion
 uv sync
 ```
 
@@ -59,14 +59,14 @@ uv sync
 # In your Django settings
 INSTALLED_APPS = [
     ...
-    'django_osoul',
+    'django_fusion',
     ...
 ]
 ```
 
 ## Documentation Links
-- [django-osoul README](../../../venv/libs/django-osoul/README.md)
+- [django-fusion README](../../../venv/libs/django-fusion/README.md)
 
 ## Related Packages
-- [crafts-ai](../crafts-ai/) - Wagtail automation (depends on django-osoul)
-- [django-osoul](../django-osoul/) - Testing infrastructure
+- [crafts-ai](../crafts-ai/) - Wagtail automation (depends on django-fusion)
+- [django-fusion](../django-fusion/) - Testing infrastructure

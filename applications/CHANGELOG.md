@@ -36,11 +36,11 @@
 | `docs/INDEX.md` | Master documentation index with quick-reference tables |
 | `docs/websites.md` | Per-website config, LOCAL_APPS, UNFOLD sidebar architecture, CELERY_BEAT schedules |
 | `docs/environments.md` | Dynaconf environments, feature toggles, settings API, env variables |
-| `docs/packages.md` | Internal libs (django-osoul, ceptor-ai), external deps, best practices |
+| `docs/packages.md` | Internal libs (django-fusion, ceptor-ai), external deps, best practices |
 | `docs/templates.md` | Template inheritance, HTMX fragments, layouts, Wagtail blocks, email templates |
 
 - **Updated** `assets/templates/AGENTS.md` → points to new docs
-- **Copied** all docs to `libs/django-osoul/docs/` and `libs/ceptor-ai/docs/`
+- **Copied** all docs to `libs/django-fusion/docs/` and `libs/ceptor-ai/docs/`
 
 ### Test Fixes — 30 failures → 0 failures
 

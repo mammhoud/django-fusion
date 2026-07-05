@@ -4,7 +4,7 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
-from django_osoul.site import NotificationMixin, PageHandler
+from django_fusion.site import NotificationMixin, PageHandler
 
 from plugins.lms.management.services.courses import CourseService
 

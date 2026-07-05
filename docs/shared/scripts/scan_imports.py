@@ -7,8 +7,8 @@ from pathlib import Path
 LIBS = Path(__file__).resolve().parents[3] / "applications" / "libs"
 
 RULES = {
-    "django-osoul": {
-        "path": LIBS / "django-osoul/src/django_osoul",
+    "django-fusion": {
+        "path": LIBS / "django-fusion/src/django_fusion",
         "forbidden": [r"^from wagtail", r"^import wagtail", r"^from celery",
                       r"^import celery", r"^from crafts_ai", r"^import crafts_ai"],
     },

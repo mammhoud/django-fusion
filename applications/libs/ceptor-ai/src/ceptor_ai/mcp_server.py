@@ -1,7 +1,7 @@
-"""FastAPI MCP integration points for ceptor-ai with django-osoul integrations.
+"""FastAPI MCP integration points for ceptor-ai with django-fusion integrations.
 
 Provides endpoints for health, package info, features, file structure,
-auth feature detection, django-osoul component registry introspection,
+auth feature detection, django-fusion component registry introspection,
 SSL certificate status, proxy health, and website endpoint discovery.
 """
 
@@ -41,19 +41,19 @@ MCP_FEATURES: tuple[dict[str, str], ...] = (
         "summary": "Auth feature availability (allauth, MFA, social auth, oauth2, passkeys).",
     },
     {
-        "name": "django_osoul_info",
-        "path": "/django-osoul/info",
-        "summary": "django-osoul package metadata and module inventory.",
+        "name": "django_fusion_info",
+        "path": "/django-fusion/info",
+        "summary": "django-fusion package metadata and module inventory.",
     },
     {
-        "name": "django_osoul_components",
-        "path": "/django-osoul/components",
-        "summary": "django-osoul component registry introspection.",
+        "name": "django_fusion_components",
+        "path": "/django-fusion/components",
+        "summary": "django-fusion component registry introspection.",
     },
     {
-        "name": "django_osoul_viewsets",
-        "path": "/django-osoul/viewsets",
-        "summary": "django-osoul viewset availability.",
+        "name": "django_fusion_viewsets",
+        "path": "/django-fusion/viewsets",
+        "summary": "django-fusion viewset availability.",
     },
     {
         "name": "website_endpoints",
@@ -110,14 +110,14 @@ def latest_features() -> dict[str, Any]:
     }
 
 
-def get_django_osoul_info() -> dict[str, Any]:
-    """Return django-osoul package metadata."""
-    if _find_spec("django_osoul") is None:
+def get_django_fusion_info() -> dict[str, Any]:
+    """Return django-fusion package metadata."""
+    if _find_spec("django_fusion") is None:
         return {
             "available": False,
-            "error": "Optional package 'django_osoul' is not importable.",
+            "error": "Optional package 'django_fusion' is not importable.",
         }
-    osoul = import_module("django_osoul")
+    osoul = import_module("django_fusion")
     return {
         "available": True,
         "version": getattr(osoul, "__version__", "unknown"),
@@ -126,13 +126,13 @@ def get_django_osoul_info() -> dict[str, Any]:
     }
 
 
-def get_django_osoul_components() -> dict[str, Any]:
-    """Return django-osoul component registry info."""
-    if _find_spec("django_osoul.comp.core") is None:
-        return {"available": False, "error": "django-osoul comp not available"}
+def get_django_fusion_components() -> dict[str, Any]:
+    """Return django-fusion component registry info."""
+    if _find_spec("django_fusion.comp.core") is None:
+        return {"available": False, "error": "django-fusion comp not available"}
     try:
-        from django_osoul.comp.core._init import components
-        from django_osoul.comp.registry import register_default_partials
+        from django_fusion.comp.core._init import components
+        from django_fusion.comp.registry import register_default_partials
         return {
             "available": True,
             "registered_count": len(components._components),
@@ -149,7 +149,7 @@ def get_auth_features() -> dict[str, Any]:
         "ok": True,
         "features": {
             "allauth": _find_spec("allauth") is not None,
-            "django_osoul_auth": _find_spec("django_osoul.site.auth") is not None,
+            "django_fusion_auth": _find_spec("django_fusion.site.auth") is not None,
             "social_auth": _find_spec("allauth.socialaccount") is not None,
             "mfa": _find_spec("allauth.mfa") is not None,
             "oauth2_provider": _find_spec("oauth2_provider") is not None,
@@ -291,15 +291,15 @@ if FastAPI is not None:
         """Return auth feature availability."""
         return get_auth_features()
 
-    @app.get("/django-osoul/info")
-    async def django_osoul_info() -> dict[str, Any]:
-        """Return django-osoul metadata."""
-        return get_django_osoul_info()
+    @app.get("/django-fusion/info")
+    async def django_fusion_info() -> dict[str, Any]:
+        """Return django-fusion metadata."""
+        return get_django_fusion_info()
 
-    @app.get("/django-osoul/components")
-    async def django_osoul_components() -> dict[str, Any]:
-        """Return django-osoul component registry info."""
-        return get_django_osoul_components()
+    @app.get("/django-fusion/components")
+    async def django_fusion_components() -> dict[str, Any]:
+        """Return django-fusion component registry info."""
+        return get_django_fusion_components()
 
     @app.get("/websites/endpoints")
     async def websites_endpoints() -> dict[str, Any]:
@@ -316,13 +316,13 @@ if FastAPI is not None:
         """Return Traefik and nginx proxy configuration status."""
         return get_proxy_status()
 
-    @app.get("/django-osoul/viewsets")
-    async def django_osoul_viewsets() -> dict[str, Any]:
-        """Return django-osoul viewsets availability."""
-        if _find_spec("django_osoul") is None:
-            return {"available": False, "error": "django-osoul not installed"}
+    @app.get("/django-fusion/viewsets")
+    async def django_fusion_viewsets() -> dict[str, Any]:
+        """Return django-fusion viewsets availability."""
+        if _find_spec("django_fusion") is None:
+            return {"available": False, "error": "django-fusion not installed"}
         try:
-            viewsets = import_module("django_osoul.site")
+            viewsets = import_module("django_fusion.site")
             return {
                 "available": True,
                 "ComponentViews": getattr(viewsets, "ComponentViews", None) is not None,

@@ -230,8 +230,8 @@ class TestUpdateLockShas:
     def test_updates_sha_in_lock_file(self, tmp_path):
         lock_content = textwrap.dedent("""\
             [[package]]
-            name = "django-osoul"
-            source = { git = "https://github.com/mammhoud/django-osoul?branch=generic#aaaa" }
+            name = "django-fusion"
+            source = { git = "https://github.com/mammhoud/django-fusion?branch=generic#aaaa" }
         """)
         # The regex expects 40-char hex SHAs
         old_sha = "a" * 40
@@ -245,7 +245,7 @@ class TestUpdateLockShas:
 
         c = cli.CLI()
         with patch.object(cli, "SCRIPT_DIR", tmp_path):
-            c._update_lock_shas({"django-osoul": new_sha})
+            c._update_lock_shas({"django-fusion": new_sha})
 
         result = lock_file.read_text()
         assert new_sha in result
@@ -254,7 +254,7 @@ class TestUpdateLockShas:
     def test_no_lock_files_is_noop(self, tmp_path):
         c = cli.CLI()
         with patch.object(cli, "SCRIPT_DIR", tmp_path):
-            c._update_lock_shas({"django-osoul": "b" * 40})
+            c._update_lock_shas({"django-fusion": "b" * 40})
 
     def test_unknown_lib_ignored(self, tmp_path):
         lock_content = "some content"
@@ -332,7 +332,7 @@ class TestPush:
         mock_run.return_value = MagicMock(returncode=0, stdout="")
         c = cli.CLI()
         with patch.object(c, "_update_lock_shas"):
-            c.push(lib="django-osoul")
+            c.push(lib="django-fusion")
 
     @patch("cli.subprocess.run")
     def test_push_with_changes(self, mock_run):
@@ -354,7 +354,7 @@ class TestPush:
         mock_run.side_effect = side_effect
         c = cli.CLI()
         with patch.object(c, "_update_lock_shas"):
-            c.push(lib="django-osoul", message="test commit")
+            c.push(lib="django-fusion", message="test commit")
 
 
 # ---------------------------------------------------------------------------

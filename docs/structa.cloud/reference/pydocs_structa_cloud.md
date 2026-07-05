@@ -31,11 +31,11 @@ User authentication, registration, profiles, and permissions.
 #### Models
 
 ```python
-class User(django_osoul.models.AbstractUser):
+class User(django_fusion.models.AbstractUser):
     """
     Custom user model for structa.cloud.
 
-    Extends django_osoul.models.AbstractUser with project-specific fields.
+    Extends django_fusion.models.AbstractUser with project-specific fields.
 
     Attributes:
         phone (str): User phone number
@@ -52,11 +52,11 @@ class User(django_osoul.models.AbstractUser):
     """
     pass
 
-class Group(django_osoul.models.Group):
+class Group(django_fusion.models.Group):
     """
     Custom group model for structa.cloud.
 
-    Extends django_osoul.models.Group with project-specific fields.
+    Extends django_fusion.models.Group with project-specific fields.
 
     Attributes:
         description (str): Group description
@@ -159,7 +159,7 @@ class Lesson(crafts_ai.models.BasePage):
     """
     pass
 
-class Enrollment(django_osoul.models.TimestampedModel):
+class Enrollment(django_fusion.models.TimestampedModel):
     """
     Enrollment model for Alliance LMS.
 
@@ -178,7 +178,7 @@ class Enrollment(django_osoul.models.TimestampedModel):
     """
     pass
 
-class Cart(django_osoul.models.TimestampedModel):
+class Cart(django_fusion.models.TimestampedModel):
     """
     Shopping cart model for Alliance LMS.
 
@@ -300,7 +300,7 @@ class BlogPost(crafts_ai.models.BasePage):
     """
     pass
 
-class Tag(django_osoul.models.NamedModel):
+class Tag(django_fusion.models.NamedModel):
     """
     Tag model for blog posts.
 
@@ -368,7 +368,7 @@ Additional Settings:
 ### Health Endpoints
 
 ```python
-# Health check endpoints provided by django_osoul
+# Health check endpoints provided by django_fusion
 
 def health_check(request):
     """
@@ -417,13 +417,13 @@ def health_media(request):
 
 ```python
 # tests/base.py
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 class StructaTestCase(BaseTestCase):
     """
     Base test case for structa.cloud tests.
 
-    Extends django_osoul.tests.base.BaseTestCase with
+    Extends django_fusion.tests.base.BaseTestCase with
     project-specific test utilities.
 
     Features:

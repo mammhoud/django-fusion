@@ -616,7 +616,7 @@ import-linter --config .importlinter
 
 # Check for grep-test-only violations
 echo "Checking grep-test-only violations..."
-grep -r "from django_osoul\|import django_osoul" --include="*.py" . \
+grep -r "from django_fusion\|import django_fusion" --include="*.py" . \
     | grep -v "test" \
     | grep -v ".pyc" \
     | wc -l

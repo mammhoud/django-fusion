@@ -24,7 +24,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `structa.cloud/apps/pages/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -108,7 +108,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0009_remove_homepage_contact_details_and_more.py`
 - `structa.cloud/apps/pages/migrations/0009_remove_homepage_contact_details_and_more.py`
 
-**Target**: `django_osoul.pages.migrations.0009_remove_homepage_contact_details_and_more`
+**Target**: `django_fusion.pages.migrations.0009_remove_homepage_contact_details_and_more`
 
 **Category**: extract-to-osoul
 
@@ -206,7 +206,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0011_remove_aboutpage_enable_dark_mode_and_more.py`
 - `structa.cloud/apps/pages/migrations/0011_remove_aboutpage_enable_dark_mode_and_more.py`
 
-**Target**: `django_osoul.pages.migrations.0011_remove_aboutpage_enable_dark_mode_and_more`
+**Target**: `django_fusion.pages.migrations.0011_remove_aboutpage_enable_dark_mode_and_more`
 
 **Category**: extract-to-osoul
 
@@ -220,7 +220,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0016_remove_aboutpage_has_footer_with_partners_and_more.py`
 - `structa.cloud/apps/pages/migrations/0016_remove_aboutpage_has_footer_with_partners_and_more.py`
 
-**Target**: `django_osoul.pages.migrations.0016_remove_aboutpage_has_footer_with_partners_and_more`
+**Target**: `django_fusion.pages.migrations.0016_remove_aboutpage_has_footer_with_partners_and_more`
 
 **Category**: extract-to-osoul
 
@@ -234,7 +234,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/migrations/0003_aboutpage_enable_dark_mode_and_more.py`
 - `structa.cloud/apps/pages/migrations/0003_aboutpage_enable_dark_mode_and_more.py`
 
-**Target**: `django_osoul.pages.migrations.0003_aboutpage_enable_dark_mode_and_more`
+**Target**: `django_fusion.pages.migrations.0003_aboutpage_enable_dark_mode_and_more`
 
 **Category**: extract-to-osoul
 
@@ -332,7 +332,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/signals/user.py`
 - `structa.cloud/apps/pages/signals/user.py`
 
-**Target**: `django_osoul.pages.signals.user`
+**Target**: `django_fusion.pages.signals.user`
 
 **Category**: extract-to-osoul
 
@@ -346,7 +346,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/signals/profile.py`
 - `structa.cloud/apps/pages/signals/profile.py`
 
-**Target**: `django_osoul.pages.signals.profile`
+**Target**: `django_fusion.pages.signals.profile`
 
 **Category**: extract-to-osoul
 
@@ -360,7 +360,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/signals/default.py`
 - `structa.cloud/apps/pages/signals/default.py`
 
-**Target**: `django_osoul.pages.signals.default`
+**Target**: `django_fusion.pages.signals.default`
 
 **Category**: extract-to-osoul
 
@@ -374,7 +374,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `structa.cloud/apps/pages/models/__init__.py`
 
-**Target**: `django_osoul.pages.models.__init__`
+**Target**: `django_fusion.pages.models.__init__`
 
 **Category**: extract-to-osoul
 
@@ -416,7 +416,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/__init__.py`
 - `structa.cloud/apps/pages/models/pages/__init__.py`
 
-**Target**: `django_osoul.pages.models.pages.__init__`
+**Target**: `django_fusion.pages.models.pages.__init__`
 
 **Category**: extract-to-osoul
 
@@ -430,7 +430,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/events.py`
 - `structa.cloud/apps/pages/models/pages/events.py`
 
-**Target**: `django_osoul.pages.models.pages.events`
+**Target**: `django_fusion.pages.models.pages.events`
 
 **Category**: extract-to-osoul
 
@@ -444,7 +444,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/services.py`
 - `structa.cloud/apps/pages/models/pages/services.py`
 
-**Target**: `django_osoul.pages.models.pages.services`
+**Target**: `django_fusion.pages.models.pages.services`
 
 **Category**: extract-to-osoul
 
@@ -472,7 +472,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/admin.py`
 - `structa.cloud/apps/blog/admin.py`
 
-**Target**: `django_osoul.blog.admin`
+**Target**: `django_fusion.blog.admin`
 
 **Category**: extract-to-osoul
 
@@ -486,7 +486,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/feeds.py`
 - `structa.cloud/apps/blog/feeds.py`
 
-**Target**: `django_osoul.blog.feeds`
+**Target**: `django_fusion.blog.feeds`
 
 **Category**: extract-to-osoul
 
@@ -500,7 +500,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/apps.py`
 - `structa.cloud/apps/blog/apps.py`
 
-**Target**: `django_osoul.blog.apps`
+**Target**: `django_fusion.blog.apps`
 
 **Category**: extract-to-osoul
 
@@ -514,7 +514,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/__init__.py`
 - `structa.cloud/apps/blog/__init__.py`
 
-**Target**: `django_osoul.blog.__init__`
+**Target**: `django_fusion.blog.__init__`
 
 **Category**: extract-to-osoul
 
@@ -528,7 +528,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/api.py`
 - `structa.cloud/apps/blog/api.py`
 
-**Target**: `django_osoul.blog.api`
+**Target**: `django_fusion.blog.api`
 
 **Category**: extract-to-osoul
 
@@ -570,7 +570,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/urls.py`
 - `structa.cloud/apps/blog/urls.py`
 
-**Target**: `django_osoul.blog.urls`
+**Target**: `django_fusion.blog.urls`
 
 **Category**: extract-to-osoul
 
@@ -584,7 +584,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/services.py`
 - `structa.cloud/apps/blog/services.py`
 
-**Target**: `django_osoul.blog.services`
+**Target**: `django_fusion.blog.services`
 
 **Category**: extract-to-osoul
 
@@ -612,7 +612,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/views/likes.py`
 - `structa.cloud/apps/blog/views/likes.py`
 
-**Target**: `django_osoul.blog.views.likes`
+**Target**: `django_fusion.blog.views.likes`
 
 **Category**: extract-to-osoul
 
@@ -626,7 +626,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/views/tags.py`
 - `structa.cloud/apps/blog/views/tags.py`
 
-**Target**: `django_osoul.blog.views.tags`
+**Target**: `django_fusion.blog.views.tags`
 
 **Category**: extract-to-osoul
 
@@ -640,7 +640,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/views/post.py`
 - `structa.cloud/apps/blog/views/post.py`
 
-**Target**: `django_osoul.blog.views.post`
+**Target**: `django_fusion.blog.views.post`
 
 **Category**: extract-to-osoul
 
@@ -654,7 +654,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/views/__init__.py`
 - `structa.cloud/apps/blog/views/__init__.py`
 
-**Target**: `django_osoul.blog.views.__init__`
+**Target**: `django_fusion.blog.views.__init__`
 
 **Category**: extract-to-osoul
 
@@ -668,7 +668,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/views/comments.py`
 - `structa.cloud/apps/blog/views/comments.py`
 
-**Target**: `django_osoul.blog.views.comments`
+**Target**: `django_fusion.blog.views.comments`
 
 **Category**: extract-to-osoul
 
@@ -682,7 +682,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/comment.py`
 - `structa.cloud/apps/blog/models/comment.py`
 
-**Target**: `django_osoul.blog.models.comment`
+**Target**: `django_fusion.blog.models.comment`
 
 **Category**: extract-to-osoul
 
@@ -724,7 +724,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/__init__.py`
 - `structa.cloud/apps/blog/models/__init__.py`
 
-**Target**: `django_osoul.blog.models.__init__`
+**Target**: `django_fusion.blog.models.__init__`
 
 **Category**: extract-to-osoul
 
@@ -738,7 +738,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/tag.py`
 - `structa.cloud/apps/blog/models/tag.py`
 
-**Target**: `django_osoul.blog.models.tag`
+**Target**: `django_fusion.blog.models.tag`
 
 **Category**: extract-to-osoul
 
@@ -752,7 +752,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/category.py`
 - `structa.cloud/apps/blog/models/category.py`
 
-**Target**: `django_osoul.blog.models.category`
+**Target**: `django_fusion.blog.models.category`
 
 **Category**: extract-to-osoul
 
@@ -766,7 +766,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/email_templates.py`
 - `structa.cloud/apps/handlers/email_templates.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -794,7 +794,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/renderers.py`
 - `structa.cloud/apps/handlers/renderers.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -814,15 +814,15 @@ Generated: 2026-04-15 14:39:50
 
 ---
 
-### 58. 0004_move_formsubmission_to_django_osoul.py ↔ 0004_move_formsubmission_to_django_osoul.py
+### 58. 0004_move_formsubmission_to_django_fusion.py ↔ 0004_move_formsubmission_to_django_fusion.py
 
 **Similarity**: 100.0%
 
 **Locations**:
-- `ctc-research.com/apps/handlers/migrations/0004_move_formsubmission_to_django_osoul.py`
-- `structa.cloud/apps/handlers/migrations/0004_move_formsubmission_to_django_osoul.py`
+- `ctc-research.com/apps/handlers/migrations/0004_move_formsubmission_to_django_fusion.py`
+- `structa.cloud/apps/handlers/migrations/0004_move_formsubmission_to_django_fusion.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -864,7 +864,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/migrations/0001_initial.py`
 - `structa.cloud/apps/handlers/migrations/0001_initial.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -892,7 +892,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
 - `structa.cloud/apps/handlers/snippets/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -990,7 +990,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1032,7 +1032,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/manage/team.py`
 - `structa.cloud/apps/handlers/snippets/manage/team.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1046,7 +1046,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/manage/events.py`
 - `structa.cloud/apps/handlers/snippets/manage/events.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1060,7 +1060,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/manage/partners.py`
 - `structa.cloud/apps/handlers/snippets/manage/partners.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1088,7 +1088,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/middleware/privacy_consent.py`
 - `structa.cloud/apps/handlers/middleware/privacy_consent.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1102,7 +1102,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/templatetags/custom_component_tags.py`
 - `structa.cloud/apps/handlers/templatetags/custom_component_tags.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1130,7 +1130,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/filters/user.py`
 - `structa.cloud/apps/handlers/filters/user.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1144,7 +1144,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/filters/location.py`
 - `structa.cloud/apps/handlers/filters/location.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1186,7 +1186,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/filters/profile.py`
 - `structa.cloud/apps/handlers/filters/profile.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1200,7 +1200,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/__init__.py`
 - `structa.cloud/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1214,7 +1214,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/peoples.py`
 - `structa.cloud/apps/handlers/managers/peoples.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1228,7 +1228,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/asset_health.py`
 - `structa.cloud/apps/handlers/site/asset_health.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1242,7 +1242,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/signals.py`
 - `structa.cloud/apps/handlers/registration/signals.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1256,7 +1256,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/forms.py`
 - `structa.cloud/apps/handlers/registration/forms.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1312,7 +1312,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/services/email/__init__.py`
 - `structa.cloud/apps/handlers/services/email/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1326,7 +1326,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/services/email/tasks.py`
 - `structa.cloud/apps/handlers/services/email/tasks.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1410,7 +1410,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1438,7 +1438,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/profiles/privacy_consent.py`
 - `structa.cloud/apps/handlers/models/profiles/privacy_consent.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1452,7 +1452,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/__init__.py`
 - `structa.cloud/apps/handlers/forms/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -1466,7 +1466,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/admin.py`
 - `structa.cloud/apps/LMS/admin.py`
 
-**Target**: `django_osoul.LMS.admin`
+**Target**: `django_fusion.LMS.admin`
 
 **Category**: extract-to-osoul
 
@@ -1480,7 +1480,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/apps.py`
 - `structa.cloud/apps/LMS/apps.py`
 
-**Target**: `django_osoul.LMS.apps`
+**Target**: `django_fusion.LMS.apps`
 
 **Category**: extract-to-osoul
 
@@ -1536,7 +1536,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/snippets/classes.py`
 - `structa.cloud/apps/LMS/snippets/classes.py`
 
-**Target**: `django_osoul.LMS.snippets.classes`
+**Target**: `django_fusion.LMS.snippets.classes`
 
 **Category**: extract-to-osoul
 
@@ -1550,7 +1550,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/snippets/track.py`
 - `structa.cloud/apps/LMS/snippets/track.py`
 
-**Target**: `django_osoul.LMS.snippets.track`
+**Target**: `django_fusion.LMS.snippets.track`
 
 **Category**: extract-to-osoul
 
@@ -1564,7 +1564,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/snippets/__init__.py`
 - `structa.cloud/apps/LMS/snippets/__init__.py`
 
-**Target**: `django_osoul.LMS.snippets.__init__`
+**Target**: `django_fusion.LMS.snippets.__init__`
 
 **Category**: extract-to-osoul
 
@@ -1620,7 +1620,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/templatetags/lms_tags.py`
 - `structa.cloud/apps/LMS/templatetags/lms_tags.py`
 
-**Target**: `django_osoul.LMS.templatetags.lms_tags`
+**Target**: `django_fusion.LMS.templatetags.lms_tags`
 
 **Category**: extract-to-osoul
 
@@ -1634,7 +1634,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/progress.py`
 - `structa.cloud/apps/LMS/managers/progress.py`
 
-**Target**: `django_osoul.LMS.managers.progress`
+**Target**: `django_fusion.LMS.managers.progress`
 
 **Category**: extract-to-osoul
 
@@ -1648,7 +1648,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/__init__.py`
 - `structa.cloud/apps/LMS/managers/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -1662,7 +1662,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/module.py`
 - `structa.cloud/apps/LMS/managers/module.py`
 
-**Target**: `django_osoul.LMS.managers.module`
+**Target**: `django_fusion.LMS.managers.module`
 
 **Category**: extract-to-osoul
 
@@ -1676,7 +1676,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/course.py`
 - `structa.cloud/apps/LMS/managers/course.py`
 
-**Target**: `django_osoul.LMS.managers.course`
+**Target**: `django_fusion.LMS.managers.course`
 
 **Category**: extract-to-osoul
 
@@ -1690,7 +1690,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/enrollments.py`
 - `structa.cloud/apps/LMS/managers/enrollments.py`
 
-**Target**: `django_osoul.LMS.managers.enrollments`
+**Target**: `django_fusion.LMS.managers.enrollments`
 
 **Category**: extract-to-osoul
 
@@ -1704,7 +1704,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/__init__.py`
 - `structa.cloud/apps/LMS/views/__init__.py`
 
-**Target**: `django_osoul.LMS.views.__init__`
+**Target**: `django_fusion.LMS.views.__init__`
 
 **Category**: extract-to-osoul
 
@@ -1746,7 +1746,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/lessons.py`
 - `structa.cloud/apps/LMS/views/lessons.py`
 
-**Target**: `django_osoul.LMS.views.lessons`
+**Target**: `django_fusion.LMS.views.lessons`
 
 **Category**: extract-to-osoul
 
@@ -1788,7 +1788,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/__init__.py`
 - `structa.cloud/apps/LMS/services/__init__.py`
 
-**Target**: `django_osoul.LMS.services.__init__`
+**Target**: `django_fusion.LMS.services.__init__`
 
 **Category**: extract-to-osoul
 
@@ -1802,7 +1802,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/notes.py`
 - `structa.cloud/apps/LMS/services/notes.py`
 
-**Target**: `django_osoul.LMS.services.notes`
+**Target**: `django_fusion.LMS.services.notes`
 
 **Category**: extract-to-osoul
 
@@ -1858,7 +1858,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/certificates.py`
 - `structa.cloud/apps/LMS/services/certificates.py`
 
-**Target**: `django_osoul.LMS.services.certificates`
+**Target**: `django_fusion.LMS.services.certificates`
 
 **Category**: extract-to-osoul
 
@@ -1872,7 +1872,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/quiz.py`
 - `structa.cloud/apps/LMS/models/quiz.py`
 
-**Target**: `django_osoul.LMS.models.quiz`
+**Target**: `django_fusion.LMS.models.quiz`
 
 **Category**: extract-to-osoul
 
@@ -1886,7 +1886,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/__init__.py`
 - `structa.cloud/apps/LMS/models/__init__.py`
 
-**Target**: `django_osoul.LMS.models.__init__`
+**Target**: `django_fusion.LMS.models.__init__`
 
 **Category**: extract-to-osoul
 
@@ -1900,7 +1900,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/certificate.py`
 - `structa.cloud/apps/LMS/models/certificate.py`
 
-**Target**: `django_osoul.LMS.models.certificate`
+**Target**: `django_fusion.LMS.models.certificate`
 
 **Category**: extract-to-osoul
 
@@ -1914,7 +1914,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/enrollment.py`
 - `structa.cloud/apps/LMS/models/enrollment.py`
 
-**Target**: `django_osoul.LMS.models.enrollment`
+**Target**: `django_fusion.LMS.models.enrollment`
 
 **Category**: extract-to-osoul
 
@@ -1928,7 +1928,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/review.py`
 - `structa.cloud/apps/LMS/models/review.py`
 
-**Target**: `django_osoul.LMS.models.review`
+**Target**: `django_fusion.LMS.models.review`
 
 **Category**: extract-to-osoul
 
@@ -1942,7 +1942,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/wishlist.py`
 - `structa.cloud/apps/LMS/models/wishlist.py`
 
-**Target**: `django_osoul.LMS.models.wishlist`
+**Target**: `django_fusion.LMS.models.wishlist`
 
 **Category**: extract-to-osoul
 
@@ -1970,7 +1970,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/progress.py`
 - `structa.cloud/apps/LMS/models/courses/progress.py`
 
-**Target**: `django_osoul.LMS.models.courses.progress`
+**Target**: `django_fusion.LMS.models.courses.progress`
 
 **Category**: extract-to-osoul
 
@@ -1984,7 +1984,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
 
-**Target**: `django_osoul.LMS.models.courses.__init__`
+**Target**: `django_fusion.LMS.models.courses.__init__`
 
 **Category**: extract-to-osoul
 
@@ -2040,7 +2040,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/blocks/__init__.py`
 - `structa.cloud/apps/LMS/models/blocks/__init__.py`
 
-**Target**: `django_osoul.LMS.models.blocks.__init__`
+**Target**: `django_fusion.LMS.models.blocks.__init__`
 
 **Category**: extract-to-osoul
 
@@ -2054,7 +2054,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/blocks/cart.py`
 - `structa.cloud/apps/LMS/models/blocks/cart.py`
 
-**Target**: `django_osoul.LMS.models.blocks.cart`
+**Target**: `django_fusion.LMS.models.blocks.cart`
 
 **Category**: extract-to-osoul
 
@@ -2082,7 +2082,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/content.py`
 - `structa.cloud/apps/LMS/models/schemas/content.py`
 
-**Target**: `django_osoul.LMS.models.schemas.content`
+**Target**: `django_fusion.LMS.models.schemas.content`
 
 **Category**: extract-to-osoul
 
@@ -2096,7 +2096,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/quiz.py`
 - `structa.cloud/apps/LMS/models/schemas/quiz.py`
 
-**Target**: `django_osoul.LMS.models.schemas.quiz`
+**Target**: `django_fusion.LMS.models.schemas.quiz`
 
 **Category**: extract-to-osoul
 
@@ -2110,7 +2110,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/__init__.py`
 - `structa.cloud/apps/LMS/models/schemas/__init__.py`
 
-**Target**: `django_osoul.LMS.models.schemas.__init__`
+**Target**: `django_fusion.LMS.models.schemas.__init__`
 
 **Category**: extract-to-osoul
 
@@ -2124,7 +2124,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/base.py`
 - `structa.cloud/apps/LMS/models/schemas/base.py`
 
-**Target**: `django_osoul.LMS.models.schemas.base`
+**Target**: `django_fusion.LMS.models.schemas.base`
 
 **Category**: extract-to-osoul
 
@@ -2138,7 +2138,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/course.py`
 - `structa.cloud/apps/LMS/models/schemas/course.py`
 
-**Target**: `django_osoul.LMS.models.schemas.course`
+**Target**: `django_fusion.LMS.models.schemas.course`
 
 **Category**: extract-to-osoul
 
@@ -2152,7 +2152,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/enrollment.py`
 - `structa.cloud/apps/LMS/models/schemas/enrollment.py`
 
-**Target**: `django_osoul.LMS.models.schemas.enrollment`
+**Target**: `django_fusion.LMS.models.schemas.enrollment`
 
 **Category**: extract-to-osoul
 
@@ -2166,7 +2166,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/review.py`
 - `structa.cloud/apps/LMS/models/schemas/review.py`
 
-**Target**: `django_osoul.LMS.models.schemas.review`
+**Target**: `django_fusion.LMS.models.schemas.review`
 
 **Category**: extract-to-osoul
 
@@ -2180,7 +2180,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/schemas/references.py`
 - `structa.cloud/apps/LMS/models/schemas/references.py`
 
-**Target**: `django_osoul.LMS.models.schemas.references`
+**Target**: `django_fusion.LMS.models.schemas.references`
 
 **Category**: extract-to-osoul
 
@@ -2318,9 +2318,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2332,9 +2332,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2626,9 +2626,9 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `structa.cloud/apps/handlers/views/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2695,10 +2695,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/typing.py`
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/_typing.py`
+- `venv/libs/django-fusion/src/django_fusion/typing.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/_typing.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2709,10 +2709,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/middlewares/site.py`
+- `venv/libs/django-fusion/src/django_fusion/middlewares/site.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/site.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2723,10 +2723,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/middlewares/freeze.py`
+- `venv/libs/django-fusion/src/django_fusion/middlewares/freeze.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/freeze.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2737,10 +2737,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/middlewares/language.py`
+- `venv/libs/django-fusion/src/django_fusion/middlewares/language.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/language.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2751,10 +2751,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/middlewares/service.py`
+- `venv/libs/django-fusion/src/django_fusion/middlewares/service.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/middlewares/service.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2765,10 +2765,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/filters/base.py`
+- `venv/libs/django-fusion/src/django_fusion/filters/base.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/filters/base.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2779,10 +2779,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/filters/cache.py`
+- `venv/libs/django-fusion/src/django_fusion/filters/cache.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/filters/cache.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2793,10 +2793,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/managers/tags.py`
+- `venv/libs/django-fusion/src/django_fusion/managers/tags.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/tags.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2807,10 +2807,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/managers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/managers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/search.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2821,10 +2821,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/managers/base.py`
+- `venv/libs/django-fusion/src/django_fusion/managers/base.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/base.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2835,10 +2835,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/components.py`
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/comp_tags.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/components.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/comp_tags.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2849,10 +2849,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2863,10 +2863,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2877,10 +2877,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2891,10 +2891,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2905,10 +2905,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2919,10 +2919,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2933,10 +2933,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2947,10 +2947,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2961,10 +2961,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2975,10 +2975,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -2989,10 +2989,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3003,10 +3003,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3017,10 +3017,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3031,10 +3031,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3045,10 +3045,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3059,10 +3059,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3073,10 +3073,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3087,10 +3087,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3101,10 +3101,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3115,10 +3115,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3129,10 +3129,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3143,10 +3143,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3157,10 +3157,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/handlers/search.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/search.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3171,10 +3171,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/mixins/search.py`
+- `venv/libs/django-fusion/src/django_fusion/mixins/search.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/search.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3185,10 +3185,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/mixins/service.py`
+- `venv/libs/django-fusion/src/django_fusion/mixins/service.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/service.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3199,10 +3199,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/mixins/token.py`
+- `venv/libs/django-fusion/src/django_fusion/mixins/token.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/token.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3213,10 +3213,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/mixins/cache.py`
+- `venv/libs/django-fusion/src/django_fusion/mixins/cache.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/mixins/cache.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3227,10 +3227,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3241,10 +3241,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3255,10 +3255,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3269,10 +3269,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3283,10 +3283,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3297,10 +3297,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3311,10 +3311,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3325,10 +3325,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3339,10 +3339,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3353,10 +3353,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3367,10 +3367,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3381,10 +3381,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3395,10 +3395,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3409,10 +3409,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3423,10 +3423,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3437,10 +3437,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3451,10 +3451,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3465,10 +3465,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3479,10 +3479,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3493,10 +3493,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3507,10 +3507,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3521,10 +3521,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/management/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/management/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -3858,7 +3858,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -4138,7 +4138,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/comp/templatetags/components/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -4488,7 +4488,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/chat/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -4516,7 +4516,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/seeder/providers.py`
-- `venv/libs/django-osoul/src/django_osoul/seeder/providers.py`
+- `venv/libs/django-fusion/src/django_fusion/seeder/providers.py`
 
 **Target**: `crafts_ai.`
 
@@ -4530,7 +4530,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/seeder/guessers.py`
-- `venv/libs/django-osoul/src/django_osoul/seeder/guessers.py`
+- `venv/libs/django-fusion/src/django_fusion/seeder/guessers.py`
 
 **Target**: `crafts_ai.`
 
@@ -4544,7 +4544,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/seeder/exceptions.py`
-- `venv/libs/django-osoul/src/django_osoul/seeder/exceptions.py`
+- `venv/libs/django-fusion/src/django_fusion/seeder/exceptions.py`
 
 **Target**: `crafts_ai.`
 
@@ -4824,7 +4824,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/signals/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -5076,7 +5076,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/email_config/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -5300,7 +5300,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/debug_tools/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -5510,7 +5510,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/privacy/middleware.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -5706,7 +5706,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/cache/utils.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -5888,7 +5888,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/unfold.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -6056,7 +6056,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/admin_site/wagtail.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -6210,7 +6210,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/management/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -6350,7 +6350,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/management/commands/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -6476,7 +6476,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -6700,7 +6700,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -6896,7 +6896,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -7134,7 +7134,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -7260,7 +7260,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -7358,7 +7358,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -7428,7 +7428,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/adapters/adapters/adapters/adapters/adapters/adapters/adapters/adapters/__init__.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -7484,7 +7484,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/workflows/orchestrator.py`
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 
 **Target**: `crafts_ai.`
 
@@ -7721,10 +7721,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/__init__.py`
 - `venv/libs/nawaai/crafts_ai/mcp/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -7735,10 +7735,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/routes/base.py`
+- `venv/libs/django-fusion/src/django_fusion/routes/base.py`
 - `venv/libs/crafts-ai/src/crafts_ai/routes/base.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -7749,10 +7749,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 100.0%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/routes/base.py`
+- `venv/libs/django-fusion/src/django_fusion/routes/base.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/routes/base.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -7780,7 +7780,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/management/commands/validate_config.py`
 - `structa.cloud/apps/handlers/management/commands/validate_config.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -7805,10 +7805,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 99.9%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/components.py`
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/components/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/components.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/components/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -7819,10 +7819,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 99.9%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/comp_tags.py`
-- `venv/libs/django-osoul/src/django_osoul/comp/templatetags/components/__init__.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/comp_tags.py`
+- `venv/libs/django-fusion/src/django_fusion/comp/templatetags/components/__init__.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -7848,7 +7848,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/seeder/seeder.py`
-- `venv/libs/django-osoul/src/django_osoul/seeder/seeder.py`
+- `venv/libs/django-fusion/src/django_fusion/seeder/seeder.py`
 
 **Target**: `crafts_ai.`
 
@@ -7861,10 +7861,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 99.8%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/managers/token.py`
+- `venv/libs/django-fusion/src/django_fusion/managers/token.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/managers/token.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -7892,7 +7892,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/allauth_views.py`
 - `structa.cloud/apps/handlers/registration/allauth_views.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -7976,7 +7976,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/tags.py`
 - `structa.cloud/apps/handlers/site/tags.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8001,10 +8001,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 99.4%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/filters/token.py`
+- `venv/libs/django-fusion/src/django_fusion/filters/token.py`
 - `venv/libs/crafts-ai/src/crafts_ai/pipelines/filters/token.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -8074,7 +8074,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/services/certificates.py`
 - `structa.cloud/apps/handlers/services/certificates.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8116,7 +8116,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/tokens.py`
 - `structa.cloud/apps/handlers/registration/tokens.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8144,7 +8144,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/messages.py`
 - `structa.cloud/apps/handlers/managers/messages.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8169,10 +8169,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 98.6%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/contrib/utils.py`
+- `venv/libs/django-fusion/src/django_fusion/contrib/utils.py`
 - `venv/libs/crafts-ai/src/crafts_ai/contrib/utils.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -8578,7 +8578,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/notes.py`
 - `structa.cloud/apps/handlers/site/notes.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8690,7 +8690,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/certificates.py`
 - `structa.cloud/apps/handlers/managers/certificates.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8704,7 +8704,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/notes.py`
 - `structa.cloud/apps/handlers/managers/notes.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8743,10 +8743,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 96.3%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/conf.py`
-- `venv/libs/django-osoul/src/django_osoul/conf_utils.py`
+- `venv/libs/django-fusion/src/django_fusion/conf.py`
+- `venv/libs/django-fusion/src/django_fusion/conf_utils.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -8900,7 +8900,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/messages.py`
 - `structa.cloud/apps/handlers/site/messages.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -8970,7 +8970,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/tag.py`
 - `ctc-research.com/apps/blog/models/category.py`
 
-**Target**: `django_osoul.blog.models.tag`
+**Target**: `django_fusion.blog.models.tag`
 
 **Category**: extract-to-osoul
 
@@ -8984,7 +8984,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/tag.py`
 - `structa.cloud/apps/blog/models/category.py`
 
-**Target**: `django_osoul.blog.models.tag`
+**Target**: `django_fusion.blog.models.tag`
 
 **Category**: extract-to-osoul
 
@@ -8998,7 +8998,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/blog/models/tag.py`
 - `structa.cloud/apps/blog/models/category.py`
 
-**Target**: `django_osoul.blog.models.tag`
+**Target**: `django_fusion.blog.models.tag`
 
 **Category**: extract-to-osoul
 
@@ -9012,7 +9012,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/apps.py`
 - `ctc-research.com/apps/LMS/apps.py`
 
-**Target**: `django_osoul.blog.apps`
+**Target**: `django_fusion.blog.apps`
 
 **Category**: extract-to-osoul
 
@@ -9026,7 +9026,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/apps.py`
 - `structa.cloud/apps/LMS/apps.py`
 
-**Target**: `django_osoul.blog.apps`
+**Target**: `django_fusion.blog.apps`
 
 **Category**: extract-to-osoul
 
@@ -9040,7 +9040,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/blog/apps.py`
 - `structa.cloud/apps/LMS/apps.py`
 
-**Target**: `django_osoul.blog.apps`
+**Target**: `django_fusion.blog.apps`
 
 **Category**: extract-to-osoul
 
@@ -9082,7 +9082,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/apps.py`
 - `structa.cloud/apps/handlers/registration/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9121,10 +9121,10 @@ Generated: 2026-04-15 14:39:50
 **Similarity**: 85.4%
 
 **Locations**:
-- `venv/libs/django-osoul/src/django_osoul/middlewares/error_tracker.py`
-- `venv/libs/django-osoul/src/django_osoul/handlers/base.py`
+- `venv/libs/django-fusion/src/django_fusion/middlewares/error_tracker.py`
+- `venv/libs/django-fusion/src/django_fusion/handlers/base.py`
 
-**Target**: `django_osoul.`
+**Target**: `django_fusion.`
 
 **Category**: already-extracted
 
@@ -9138,7 +9138,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/__init__.py`
 - `ctc-research.com/apps/LMS/services/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -9152,7 +9152,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/__init__.py`
 - `structa.cloud/apps/LMS/services/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -9166,7 +9166,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/services/__init__.py`
 - `structa.cloud/apps/LMS/managers/__init__.py`
 
-**Target**: `django_osoul.LMS.services.__init__`
+**Target**: `django_fusion.LMS.services.__init__`
 
 **Category**: extract-to-osoul
 
@@ -9180,7 +9180,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/LMS/managers/__init__.py`
 - `structa.cloud/apps/LMS/services/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -9194,7 +9194,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/cart.py`
 - `structa.cloud/apps/handlers/site/cart.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9208,7 +9208,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/apps.py`
 - `structa.cloud/apps/blog/apps.py`
 
-**Target**: `django_osoul.LMS.apps`
+**Target**: `django_fusion.LMS.apps`
 
 **Category**: extract-to-osoul
 
@@ -9292,7 +9292,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/management/commands/populate_content.py`
 - `structa.cloud/apps/handlers/management/commands/verify_content.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9306,7 +9306,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/management/commands/verify_deployment.py`
 - `structa.cloud/apps/handlers/management/commands/verify_deployment.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9320,7 +9320,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/models/category.py`
 - `structa.cloud/apps/blog/models/tag.py`
 
-**Target**: `django_osoul.blog.models.category`
+**Target**: `django_fusion.blog.models.category`
 
 **Category**: extract-to-osoul
 
@@ -9362,7 +9362,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/processors/basic_auth.py`
 - `structa.cloud/apps/handlers/processors/auth_utils.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9432,7 +9432,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/tests/test_property_htmx_headers.py`
 - `ctc-research.com/apps/handlers/registration/tests/test_property_hx_trigger_validity.py`
 
-**Target**: `django_osoul.handlers.registration.tests.test_property_htmx_headers`
+**Target**: `django_fusion.handlers.registration.tests.test_property_htmx_headers`
 
 **Category**: extract-to-grep
 
@@ -9446,7 +9446,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9460,7 +9460,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `ctc-research.com/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9474,7 +9474,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9502,7 +9502,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9516,7 +9516,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/__init__.py`
 - `structa.cloud/apps/pages/models/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9530,7 +9530,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9558,7 +9558,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/snippets/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9572,7 +9572,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9586,7 +9586,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9628,7 +9628,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9642,7 +9642,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9656,7 +9656,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9670,7 +9670,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9684,7 +9684,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9698,7 +9698,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9712,7 +9712,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9726,7 +9726,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9754,7 +9754,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9768,7 +9768,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 - `structa.cloud/apps/LMS/views/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9782,7 +9782,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9796,7 +9796,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9838,7 +9838,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `structa.cloud/apps/handlers/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9852,7 +9852,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/apps.py`
 - `structa.cloud/apps/handlers/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9880,7 +9880,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `ctc-research.com/apps/LMS/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -9894,7 +9894,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `structa.cloud/apps/LMS/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -9908,7 +9908,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
 - `structa.cloud/apps/handlers/site/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9922,7 +9922,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/apps.py`
 - `structa.cloud/apps/LMS/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -9936,7 +9936,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/site/__init__.py`
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9950,7 +9950,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/manage/__init__.py`
 - `structa.cloud/apps/handlers/snippets/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9978,7 +9978,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `ctc-research.com/apps/LMS/views/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -9992,7 +9992,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/LMS/views/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10006,7 +10006,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/__init__.py`
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10020,7 +10020,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/LMS/views/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10062,7 +10062,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10076,7 +10076,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/snippets/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10090,7 +10090,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/snippets/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10118,7 +10118,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/management/commands/update_site_settings.py`
 - `structa.cloud/apps/handlers/management/commands/verify_content.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10132,7 +10132,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/services/messages.py`
 - `structa.cloud/apps/handlers/services/messages.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10146,7 +10146,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/manage/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10160,7 +10160,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/management/commands/populate_content.py`
 - `structa.cloud/apps/handlers/management/commands/update_site_settings.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10216,7 +10216,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10230,7 +10230,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/snippets/newsletter/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10244,7 +10244,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/apps.py`
 - `structa.cloud/apps/pages/apps.py`
 
-**Target**: `django_osoul.blog.apps`
+**Target**: `django_fusion.blog.apps`
 
 **Category**: extract-to-osoul
 
@@ -10258,7 +10258,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
 - `structa.cloud/apps/pages/models/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10272,7 +10272,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
 - `ctc-research.com/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10286,7 +10286,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/snippets/__init__.py`
 - `structa.cloud/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10300,7 +10300,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/snippets/__init__.py`
 - `structa.cloud/apps/handlers/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10342,7 +10342,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/apps.py`
 - `structa.cloud/apps/handlers/registration/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10356,7 +10356,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/registration/apps.py`
 - `structa.cloud/apps/LMS/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10384,7 +10384,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/registration/adapter.py`
 - `structa.cloud/apps/handlers/registration/adapter.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10398,7 +10398,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/forms/__init__.py`
 - `structa.cloud/apps/pages/models/pages/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10440,7 +10440,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/models/__init__.py`
 - `structa.cloud/apps/handlers/models/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10468,7 +10468,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/events.py`
 - `ctc-research.com/apps/pages/models/pages/services.py`
 
-**Target**: `django_osoul.pages.models.pages.events`
+**Target**: `django_fusion.pages.models.pages.events`
 
 **Category**: extract-to-osoul
 
@@ -10482,7 +10482,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/events.py`
 - `structa.cloud/apps/pages/models/pages/services.py`
 
-**Target**: `django_osoul.pages.models.pages.events`
+**Target**: `django_fusion.pages.models.pages.events`
 
 **Category**: extract-to-osoul
 
@@ -10496,7 +10496,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/pages/events.py`
 - `structa.cloud/apps/pages/models/pages/services.py`
 
-**Target**: `django_osoul.pages.models.pages.events`
+**Target**: `django_fusion.pages.models.pages.events`
 
 **Category**: extract-to-osoul
 
@@ -10510,7 +10510,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/__init__.py`
 - `ctc-research.com/apps/handlers/forms/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10524,7 +10524,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/pages/__init__.py`
 - `structa.cloud/apps/handlers/forms/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10538,7 +10538,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/pages/__init__.py`
 - `structa.cloud/apps/handlers/forms/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10550,7 +10550,7 @@ Generated: 2026-04-15 14:39:50
 
 **Locations**:
 - `venv/libs/crafts-ai/src/crafts_ai/renderer.py`
-- `venv/libs/django-osoul/src/django_osoul/typing.py`
+- `venv/libs/django-fusion/src/django_fusion/typing.py`
 
 **Target**: `crafts_ai.`
 
@@ -10566,7 +10566,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/blog/apps.py`
 - `structa.cloud/apps/handlers/registration/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10580,7 +10580,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/blog/apps.py`
 - `structa.cloud/apps/handlers/registration/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10706,7 +10706,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/__init__.py`
 - `structa.cloud/apps/handlers/snippets/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10776,7 +10776,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/services/__init__.py`
 - `structa.cloud/apps/handlers/models/profiles/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10818,7 +10818,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/managers/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10832,7 +10832,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/managers/__init__.py`
 - `structa.cloud/apps/handlers/models/manage/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10930,7 +10930,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `ctc-research.com/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10944,7 +10944,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10958,7 +10958,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/models/__init__.py`
 - `structa.cloud/apps/handlers/models/blog/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -10972,7 +10972,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
 - `structa.cloud/apps/LMS/managers/__init__.py`
 
-**Target**: `django_osoul.LMS.models.courses.__init__`
+**Target**: `django_fusion.LMS.models.courses.__init__`
 
 **Category**: extract-to-osoul
 
@@ -11098,7 +11098,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/__init__.py`
 - `structa.cloud/apps/handlers/site/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -11112,7 +11112,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/site/__init__.py`
 - `structa.cloud/apps/pages/models/pages/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -11126,7 +11126,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/handlers/apps.py`
 - `structa.cloud/apps/handlers/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -11140,7 +11140,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/__init__.py`
 - `ctc-research.com/apps/LMS/models/courses/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -11154,7 +11154,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/managers/__init__.py`
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -11168,7 +11168,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/site/__init__.py`
 - `structa.cloud/apps/LMS/managers/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -11182,7 +11182,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/LMS/managers/__init__.py`
 - `structa.cloud/apps/LMS/models/courses/__init__.py`
 
-**Target**: `django_osoul.LMS.managers.__init__`
+**Target**: `django_fusion.LMS.managers.__init__`
 
 **Category**: extract-to-osoul
 
@@ -11196,7 +11196,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `ctc-research.com/apps/blog/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -11210,7 +11210,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `structa.cloud/apps/blog/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -11224,7 +11224,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/apps.py`
 - `structa.cloud/apps/blog/apps.py`
 
-**Target**: `django_osoul.pages.apps`
+**Target**: `django_fusion.pages.apps`
 
 **Category**: extract-to-osoul
 
@@ -11336,7 +11336,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/pages/apps.py`
 - `structa.cloud/apps/handlers/registration/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -11350,7 +11350,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/pages/apps.py`
 - `structa.cloud/apps/handlers/registration/apps.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 
@@ -11378,7 +11378,7 @@ Generated: 2026-04-15 14:39:50
 - `ctc-research.com/apps/LMS/views/__init__.py`
 - `structa.cloud/apps/LMS/managers/__init__.py`
 
-**Target**: `django_osoul.LMS.views.__init__`
+**Target**: `django_fusion.LMS.views.__init__`
 
 **Category**: extract-to-osoul
 
@@ -11420,7 +11420,7 @@ Generated: 2026-04-15 14:39:50
 - `structa.cloud/apps/handlers/site/__init__.py`
 - `structa.cloud/apps/handlers/forms/__init__.py`
 
-**Target**: `django_osoul.handlers`
+**Target**: `django_fusion.handlers`
 
 **Category**: extract-to-osoul
 

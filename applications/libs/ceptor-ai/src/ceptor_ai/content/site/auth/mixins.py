@@ -7,7 +7,7 @@ Smooth integration between page components and auth logic with:
 - Automatic context management
 - Seamless HTMX/SSE support
 
-Generic authentication logic is imported from django_osoul.contrib.auth.
+Generic authentication logic is imported from django_fusion.contrib.auth.
 Wagtail-specific page components are defined here.
 """
 
@@ -18,8 +18,8 @@ from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django_osoul.site import PageHandler
-from django_osoul.site.auth.mixins import (
+from django_fusion.site import PageHandler
+from django_fusion.site.auth.mixins import (
     AuthBaseMixin,
     AuthConfig,
     AuthProcessorMixin,

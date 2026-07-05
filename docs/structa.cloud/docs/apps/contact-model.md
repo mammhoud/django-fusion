@@ -107,7 +107,7 @@ from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, Tabbed
 from wagtail.models import DraftStateMixin, LockableMixin, RevisionMixin
 
 # Local imports
-from django_osoul.pipelines.models import DefaultBase
+from django_fusion.pipelines.models import DefaultBase
 ```
 
 ### 3.2 Missing Type Hints

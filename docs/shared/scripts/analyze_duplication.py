@@ -221,12 +221,12 @@ class DuplicationAnalyzer:
     def _categorize_duplication(self, file_a: str, file_b: str) -> Tuple[str, str, str]:
         """Categorize duplication and determine target package."""
         # Check if either file is already in a package
-        if 'venv/libs/django-osoul' in file_a or 'venv/libs/django-osoul' in file_b:
-            return "already-extracted", "django_osoul", ""
+        if 'venv/libs/django-fusion' in file_a or 'venv/libs/django-fusion' in file_b:
+            return "already-extracted", "django_fusion", ""
         elif 'venv/libs/crafts-ai' in file_a or 'venv/libs/crafts-ai' in file_b:
             return "already-extracted", "crafts_ai", ""
-        elif 'venv/libs/django-osoul' in file_a or 'venv/libs/django-osoul' in file_b:
-            return "already-extracted", "django_osoul", ""
+        elif 'venv/libs/django-fusion' in file_a or 'venv/libs/django-fusion' in file_b:
+            return "already-extracted", "django_fusion", ""
         elif 'applications/libs/crafts-ai' in file_a or 'applications/libs/crafts-ai' in file_b:
             return "already-extracted", "crafts-ai", ""
 
@@ -249,16 +249,16 @@ class DuplicationAnalyzer:
         if has_wagtail or has_celery or has_crafts_ai:
             return "extract-to-rseal", "crafts_ai", self._determine_module_path(file_a)
         elif has_pytest or has_unittest or has_hypothesis:
-            return "extract-to-grep", "django_osoul", self._determine_module_path(file_a)
+            return "extract-to-grep", "django_fusion", self._determine_module_path(file_a)
         elif 'apps/handlers' in file_a or 'apps/handlers' in file_b:
             # Handler logic - check if it's pure Django or has Wagtail
             if has_wagtail:
                 return "extract-to-rseal", "crafts_ai", "handlers"
             else:
-                return "extract-to-osoul", "django_osoul", "handlers"
+                return "extract-to-osoul", "django_fusion", "handlers"
         else:
             # Default to osoul for foundation logic
-            return "extract-to-osoul", "django_osoul", self._determine_module_path(file_a)
+            return "extract-to-osoul", "django_fusion", self._determine_module_path(file_a)
 
     def _determine_module_path(self, file_path: str) -> str:
         """Determine the module path within target package."""
@@ -353,9 +353,9 @@ def main():
     directories = [
         'ctc-research.com/apps/',
         'structa.cloud/apps/',
-        'venv/libs/django-osoul/',
+        'venv/libs/django-fusion/',
         'venv/libs/crafts-ai/',
-        'venv/libs/django-osoul/',
+        'venv/libs/django-fusion/',
         'applications/libs/crafts-ai/'
     ]
 

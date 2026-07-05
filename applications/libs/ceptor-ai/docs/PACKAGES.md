@@ -8,22 +8,22 @@ The workspace includes two internal packages installed as editable local sources
 
 | Package | Path | Import Name | Description |
 |---|---|---|---|
-| **django-osoul** | `libs/django-osoul/` | `django_osoul` | Django component system, analyzer, SCSS utilities |
+| **django-fusion** | `libs/django-fusion/` | `django_fusion` | Django component system, analyzer, SCSS utilities |
 | **ceptor-ai** | `libs/ceptor-ai/` | `ceptor_ai` | AI integration, chat, models, handlers |
 
 Configured in `pyproject.toml`:
 
 ```toml
 [tool.uv.sources]
-django-osoul = { path = "libs/django-osoul", editable = true }
+django-fusion = { path = "libs/django-fusion", editable = true }
 ceptor-ai = { path = "libs/ceptor-ai", editable = true }
 ```
 
-## django-osoul
+## django-fusion
 
 ### Component System
 
-The `django_osoul.comp` package provides a Django template component system:
+The `django_fusion.comp` package provides a Django template component system:
 
 ```django
 {% load components %}
@@ -41,19 +41,19 @@ The `django_osoul.comp` package provides a Django template component system:
 - `{% css "path" %}` — Include component CSS
 - `{% js "path" %}` — Include component JavaScript
 
-### Analyzer (`django_osoul.analyzer`)
+### Analyzer (`django_fusion.analyzer`)
 
 The analyzer app provides site analysis and monitoring:
 
 ```python
-from django_osoul.analyzer.apps import AnalyzerAppConfig
+from django_fusion.analyzer.apps import AnalyzerAppConfig
 ```
 
-**AppConfig**: `django_osoul.analyzer.apps.AnalyzerAppConfig`
+**AppConfig**: `django_fusion.analyzer.apps.AnalyzerAppConfig`
 
-**Tests location**: `libs/django-osoul/tests/analyzer/`
+**Tests location**: `libs/django-fusion/tests/analyzer/`
 
-### Viewsets (`django_osoul.viewsets`)
+### Viewsets (`django_fusion.viewsets`)
 
 Reusable Django REST/ViewSet patterns. See `DJANGO_OSOUL_VIEWSETS.md` for detailed API.
 
@@ -273,9 +273,9 @@ uv run <command>
 
 ### Internal Library Development
 
-1. **Editable installs**: Both `django-osoul` and `ceptor-ai` use `editable = true`
+1. **Editable installs**: Both `django-fusion` and `ceptor-ai` use `editable = true`
 2. **Tests alongside source**: Tests live in `libs/<package>/tests/`
-3. **Import convention**: Use the public import name (`django_osoul`, `ceptor_ai`)
+3. **Import convention**: Use the public import name (`django_fusion`, `ceptor_ai`)
 4. **Avoid circular imports**: Internal libs should not import from site-specific code
 
 ### Template Dependencies

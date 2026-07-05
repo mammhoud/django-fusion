@@ -1,11 +1,11 @@
-# django-osoul Usage Guide
+# django-fusion Usage Guide
 
-`django-osoul` is the search and full-text indexing library for the structa.cloud monorepo. It provides site-wide search across Django models with minimal configuration.
+`django-fusion` is the search and full-text indexing library for the structa.cloud monorepo. It provides site-wide search across Django models with minimal configuration.
 
 ## Installation
 
 ```bash
-uv pip install -e applications/libs/django-osoul/
+uv pip install -e applications/libs/django-fusion/
 ```
 
 ## Add to INSTALLED_APPS
@@ -13,7 +13,7 @@ uv pip install -e applications/libs/django-osoul/
 ```python
 INSTALLED_APPS = [
     ...
-    'django_osoul',
+    'django_fusion',
 ]
 ```
 
@@ -21,7 +21,7 @@ INSTALLED_APPS = [
 
 ```python
 # In your app's apps.py or models.py
-from django_osoul import search_registry
+from django_fusion import search_registry
 
 search_registry.register(
     model=BlogPost,
@@ -33,7 +33,7 @@ search_registry.register(
 ## Search Query
 
 ```python
-from django_osoul import search
+from django_fusion import search
 
 results = search(query="python tutorial", website="ctc-research.com")
 # Returns: [{'model': 'BlogPost', 'pk': 1, 'title': '...', 'url': '...'}, ...]
@@ -43,7 +43,7 @@ results = search(query="python tutorial", website="ctc-research.com")
 
 ```python
 # urls.py
-from django_osoul.urls import urlpatterns as grep_urls
+from django_fusion.urls import urlpatterns as grep_urls
 
 urlpatterns += grep_urls
 ```

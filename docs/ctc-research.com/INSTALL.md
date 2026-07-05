@@ -84,22 +84,22 @@ STRIPE_SECRET_KEY=
 
 ---
 
-## 3. Set Up `django-osoul` (Source Clone)
+## 3. Set Up `django-fusion` (Source Clone)
 
-Alliance uses `django-osoul` installed from a local source clone as configured in `pyproject.toml`:
+Alliance uses `django-fusion` installed from a local source clone as configured in `pyproject.toml`:
 
 ```toml
 [tool.uv.sources]
-django-osoul = { path = "/libs/django-osoul", editable = true }
+django-fusion = { path = "/libs/django-fusion", editable = true }
 ```
 
-Clone `django-osoul` into the expected path:
+Clone `django-fusion` into the expected path:
 
 ```bash
 # On your host machine (mounted into containers)
 sudo mkdir -p /libs
 cd /libs
-git clone https://github.com/<org>/django-osoul.git
+git clone https://github.com/<org>/django-fusion.git
 ```
 
 > If you prefer a different path, update the `path` in `pyproject.toml` and the matching Docker volume mount in `compose/`.
@@ -253,8 +253,8 @@ docker compose down --rmi all
 
 ## Troubleshooting
 
-### `django-osoul` not found
-Ensure `/libs/django-osoul` exists and is accessible inside the container via the volume mount. Check `compose/` service definitions for the bind mount declaration.
+### `django-fusion` not found
+Ensure `/libs/django-fusion` exists and is accessible inside the container via the volume mount. Check `compose/` service definitions for the bind mount declaration.
 
 ### Database connection refused
 Verify `DATABASE_URL` matches the `db` service credentials in `.env`. Services sometimes need a few seconds to be ready; retry after `docker compose up -d`.

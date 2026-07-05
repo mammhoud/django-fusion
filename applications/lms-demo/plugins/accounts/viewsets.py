@@ -2,7 +2,7 @@
 Events Viewset for lms-demo
 ==============================
 
-Routable ModelViewset for Events management using django_osoul.
+Routable ModelViewset for Events management using django_fusion.
 Registered in www/core/routes.py → site viewsets.
 
 Usage::
@@ -13,7 +13,7 @@ Usage::
 
 from __future__ import annotations
 
-from django_osoul.comp.routes import ModelViewset
+from django_fusion.comp.routes import ModelViewset
 
 
 class EventViewset(ModelViewset):

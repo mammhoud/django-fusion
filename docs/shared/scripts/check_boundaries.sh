@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 # check_boundaries.sh — Verify package boundary rules for venv/libs
 # Rules:
-#   django-osoul core (excl. comp/blocks, comp/templatetags): NO wagtail, celery, crafts_ai
+#   django-fusion core (excl. comp/blocks, comp/templatetags): NO wagtail, celery, crafts_ai
 #   crafts-ai: NO django imports
 
 set -euo pipefail
@@ -9,8 +9,8 @@ set -euo pipefail
 LIBS="$(cd "$(dirname "$0")/../.." && pwd)/applications/libs"
 ERRORS=0
 
-echo "=== Checking django-osoul boundaries (no wagtail/celery/crafts_ai) ==="
-OSOUL="$LIBS/django-osoul/src/django_osoul"
+echo "=== Checking django-fusion boundaries (no wagtail/celery/crafts_ai) ==="
+OSOUL="$LIBS/django-fusion/src/django_fusion"
 # comp/blocks and comp/templatetags are Wagtail UI components — wagtail imports are expected there
 VIOLATIONS=$(grep -rn --include="*.py" \
   -e "^from wagtail" -e "^import wagtail" \
@@ -23,11 +23,11 @@ VIOLATIONS=$(grep -rn --include="*.py" \
   || true)
 
 if [ -n "$VIOLATIONS" ]; then
-  echo "FAIL: django-osoul boundary violations:"
+  echo "FAIL: django-fusion boundary violations:"
   echo "$VIOLATIONS"
   ERRORS=$((ERRORS + 1))
 else
-  echo "PASS: django-osoul has no boundary violations"
+  echo "PASS: django-fusion has no boundary violations"
 fi
 
 echo ""

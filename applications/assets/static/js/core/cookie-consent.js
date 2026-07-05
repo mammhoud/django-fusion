@@ -7,7 +7,7 @@
  * rendered by ``components/cookies/cookie-consent.html`` and presents a
  * bootbox dialog on first visit.
  *
- * Storage keys match ``django_osoul.contrib.privacy.cookies.CookiePreferences``.
+ * Storage keys match ``django_fusion.contrib.privacy.cookies.CookiePreferences``.
  *
  * Usage — just import in your site's main entry:
  *

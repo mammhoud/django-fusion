@@ -1,7 +1,7 @@
-# django-osoul Documentation
+# django-fusion Documentation
 
 ## Overview
-django-osoul is the unified testing framework for the ecosystem. It provides test base classes, fixtures, factories, pytest plugins, and health check endpoints.
+django-fusion is the unified testing framework for the ecosystem. It provides test base classes, fixtures, factories, pytest plugins, and health check endpoints.
 
 ## Key Principles
 - **Test-only imports** - Must not be imported by production code
@@ -33,7 +33,7 @@ Data seeding utilities for testing and development
 ## Installation
 
 ```bash
-cd venv/libs/django-osoul
+cd venv/libs/django-fusion
 uv sync
 ```
 
@@ -41,7 +41,7 @@ uv sync
 
 ### In Tests
 ```python
-from django_osoul import BaseTestCase
+from django_fusion import BaseTestCase
 
 class MyTest(BaseTestCase):
     def test_something(self):
@@ -53,15 +53,15 @@ class MyTest(BaseTestCase):
 ```python
 # In your urls.py
 urlpatterns = [
-    path("health/", include("django_osoul.health.urls")),
+    path("health/", include("django_fusion.health.urls")),
 ]
 ```
 
 ## Documentation Links
-- [django-osoul README](../../../venv/libs/django-osoul/README.md)
-- [django-osoul Overview](django-osoul-overview.md)
-- [Usage Analysis](django-osoul-usage-analysis.md)
+- [django-fusion README](../../../venv/libs/django-fusion/README.md)
+- [django-fusion Overview](django-fusion-overview.md)
+- [Usage Analysis](django-fusion-usage-analysis.md)
 
 ## Related Packages
-- [django-osoul](../django-osoul/) - Pure Django foundation
+- [django-fusion](../django-fusion/) - Pure Django foundation
 - [crafts-ai](../crafts-ai/) - Wagtail automation

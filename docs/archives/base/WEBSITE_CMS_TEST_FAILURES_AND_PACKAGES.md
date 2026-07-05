@@ -41,8 +41,8 @@ The shared media service is now named `shared-media`, mounts one workspace media
 | --- | --- | --- |
 | `django` | `configs/`, `tests/`, each website package | Core settings, URL routing, management commands, and template rendering. |
 | `wagtail` | `ctc-research/www/core/content`, `lms-demo/www/core/content`, website templates | CMS page models and StreamField-backed content templates. Templates should render page/model fields instead of hard-coded demo copy. |
-| `django-osoul` | `pyproject.toml` / `uv.lock` internal source | Internal GitHub-sourced package kept in the workspace dependency set for grep/search-related Django integrations. |
-| `django-osoul` | `pyproject.toml`, settings and tests | Shared site/app conventions and compatibility helpers used by the website apps. |
+| `django-fusion` | `pyproject.toml` / `uv.lock` internal source | Internal GitHub-sourced package kept in the workspace dependency set for grep/search-related Django integrations. |
+| `django-fusion` | `pyproject.toml`, settings and tests | Shared site/app conventions and compatibility helpers used by the website apps. |
 | `crafts-ai` | `pyproject.toml`, `tasks/crafts_ai.py`, account/registration tests | Internal integration package used by task recovery and registration/auth compatibility tests. |
 | `pytest` / `pytest-django` | `pyproject.toml`, `tests/` | Root smoke and Django-aware tests. CI now calls `uv run pytest` from the repository root. |
 | `ruff` | GitHub Actions lint workflow | Installed in the lint job and run against the repository using `.ruff.toml`. |

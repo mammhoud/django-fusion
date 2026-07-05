@@ -1,5 +1,0 @@
-django>=4.2
-wagtail
-
-[test]
-pytest

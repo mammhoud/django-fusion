@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 try:
-    from django_osoul.tests.base import BaseTestCase
+    from django_fusion.tests.base import BaseTestCase
 
     from apps.blog.models import BlogCategory, BlogPost, BlogTag
     from apps.blog.services import PostFilterService, TagService

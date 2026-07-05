@@ -3,6 +3,28 @@
 # Build context: repository root (i.e., the parent of structa.cloud/)
 # PROJECT_PATH is the site subdirectory inside applications/, e.g. "ctc-research".
 # =============================================================================
+
+# ── Stage 1: Pre-build webpack bundles ───────────────────────────────────────
+FROM node:24-slim AS asset-builder
+ARG PROJECT_PATH=ctc-research
+WORKDIR /build
+
+# Install npm dependencies
+COPY applications/assets/package.json applications/assets/package-lock.json /build/assets/
+RUN cd /build/assets && npm ci --include=dev --legacy-peer-deps 2>&1
+
+# Copy build source files (shared + site-specific)
+COPY applications/assets/scripts /build/assets/scripts
+COPY applications/assets/static   /build/assets/static
+COPY applications/webpack          /build/webpack
+COPY applications/${PROJECT_PATH}/assets /build/${PROJECT_PATH}/assets
+
+# Build webpack bundles for this site
+ENV PROJECT_PATH=${PROJECT_PATH} \
+    NODE_ENV=production
+RUN cd /build/assets && npm run build 2>&1
+
+# ── Stage 2: Application image ───────────────────────────────────────────────
 FROM python:3.11-slim AS app-base
 
 ARG PROJECT_PATH=ctc-research
@@ -72,6 +94,11 @@ RUN uv sync --frozen --no-install-project
 # For production, this embeds the site code. For development, you can
 # override this directory with a volume mount (see compose volumes).
 COPY applications/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
+
+# ----------------------------------------------------------------------------
+# Copy pre-built webpack bundles from the asset builder stage
+# ----------------------------------------------------------------------------
+COPY --from=asset-builder /build/${PROJECT_PATH}/assets/bundles ${APP_HOME}/${PROJECT_PATH}/assets/bundles
 
 # ----------------------------------------------------------------------------
 # Install the specific website as an editable package

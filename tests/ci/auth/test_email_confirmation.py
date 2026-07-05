@@ -15,7 +15,7 @@ from __future__ import annotations
 from allauth.account.models import EmailAddress, EmailConfirmationHMAC
 from django.core import mail
 from django.test import override_settings
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 from ..base.config import AuthURLs, Credentials
 from ..base.mixins import AuthAssertMixin

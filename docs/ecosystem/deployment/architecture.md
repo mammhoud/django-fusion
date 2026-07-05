@@ -219,7 +219,7 @@ Domain Routing:
 | JWT | jwt | Latest | JSON Web Token handling |
 | Twilio | twilio | 9.8.7+ | SMS and communication services |
 | Cloud Storage | django-storages | 1.14.6+ | Cloud storage backends (S3, etc.) |
-| Code Search | django-osoul | Latest | Code search functionality |
+| Code Search | django-fusion | Latest | Code search functionality |
 | Audit Trail | django-simple-history | Latest | Model change history tracking |
 | Color Fields | django-colorfield | Latest | Color picker field |
 | Crispy Forms | django-crispy-forms | Latest | Form rendering |
@@ -296,7 +296,7 @@ Domain Routing:
 61. stripe - Payment processing
 62. django-paypal - PayPal integration
 63. hypothesis - Property-based testing
-64. django-osoul - Code search functionality
+64. django-fusion - Code search functionality
 65. django-storages[boto3] - Cloud storage backends
 66. pytest-django - Django testing framework
 ```

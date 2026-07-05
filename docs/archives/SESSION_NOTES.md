@@ -2,26 +2,26 @@
 
 ## 🔴 Current Status
 - **Container**: ctc-web is running but workers keep crashing
-- **Root Cause**: Dependency chain failure: `crafts_ai` → `django_osoul` → `twilio`
+- **Root Cause**: Dependency chain failure: `crafts_ai` → `django_fusion` → `twilio`
 - **Blocker**: Cannot install `twilio` due to OOM (Out of Memory) errors
-- **Workaround**: Creating fake `django_osoul` module with dynamic attribute resolution
+- **Workaround**: Creating fake `django_fusion` module with dynamic attribute resolution
 
 ## Problem Analysis
 
 ### 1. **Dependency Chain Issue**
 ```
 crafts_ai (installed in container)
-  └─ depends on django_osoul
+  └─ depends on django_fusion
        └─ depends on twilio (SMS/Voice service)
             └─ Installation FAILS due to memory constraints
 ```
 
 ### 2. **Errors Encountered**
 - `ModuleNotFoundError: No module named 'twilio'`
-- `ModuleNotFoundError: No module named 'django_osoul.site.enums.env.Direction'`
-- `ModuleNotFoundError: No module named 'django_osoul.managers'`
-- `ModuleNotFoundError: No module named 'django_osoul.managers'; 'django_osoul' is not a package`
-- `AttributeError: module 'django_osoul.site.enums.upload' has no attribute 'FileUploadStrategy'`
+- `ModuleNotFoundError: No module named 'django_fusion.site.enums.env.Direction'`
+- `ModuleNotFoundError: No module named 'django_fusion.managers'`
+- `ModuleNotFoundError: No module named 'django_fusion.managers'; 'django_fusion' is not a package`
+- `AttributeError: module 'django_fusion.site.enums.upload' has no attribute 'FileUploadStrategy'`
 
 ### 3. **Why We Can't Just Remove crafts_ai**
 - Code directly imports: `from crafts_ai.models.default import DefaultBase`
@@ -30,7 +30,7 @@ crafts_ai (installed in container)
 
 ## Current Workaround
 
-### Fake `django_osoul` Module Implementation
+### Fake `django_fusion` Module Implementation
 Located in: `/root/site/websites/ctc-research/settings.py`
 
 **Approach**:
@@ -41,7 +41,7 @@ Located in: `/root/site/websites/ctc-research/settings.py`
 
 **Modules Created**:
 ```
-django_osoul/
+django_fusion/
 ├── __init__.py
 ├── models/
 │   ├── __init__.py
@@ -131,7 +131,7 @@ pip install twilio
 
 **Create** `/root/site/websites/fake_twilio_lightweight.py`:
 ```python
-"""Minimal twilio mock for django_osoul"""
+"""Minimal twilio mock for django_fusion"""
 
 class Client:
     """Fake Twilio Client"""
@@ -160,8 +160,8 @@ Then install this BEFORE crafts_ai in requirements.
 ## 🔧 Ongoing Maintenance Tasks
 
 ### Currently Missing Attributes to Add
-- `django_osoul.managers.*` (various manager classes)
-- `django_osoul.site.enums.env.Direction`
+- `django_fusion.managers.*` (various manager classes)
+- `django_fusion.site.enums.env.Direction`
 - Potentially more as crafts_ai loads additional models
 
 ### Pattern to Follow
@@ -172,7 +172,7 @@ When new `AttributeError` occurs:
 class FakeMissingAttribute:
     pass
 
-django_osoul_env.MissingAttribute = FakeMissingAttribute
+django_fusion_env.MissingAttribute = FakeMissingAttribute
 ```
 
 ### Monitoring
@@ -189,7 +189,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 ## Files Modified in This Session
 
 1. **`/root/site/websites/ctc-research/settings.py`**
-   - Added fake django_osoul module hierarchy
+   - Added fake django_fusion module hierarchy
    - Added DJANGO_SETTINGS_MODULE=ctc-research.settings (fixed import path)
    - Kept crafts_ai in INSTALLED_APPS (required for models)
 
@@ -251,7 +251,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 
 ## Additional Websites to Check
 
-- **LMS (lms-demo)**: Check if same crafts_ai/django_osoul issues exist
+- **LMS (lms-demo)**: Check if same crafts_ai/django_fusion issues exist
 - **VResume (VResume)**: Check if same issues exist when enabled
 - **structa-cloud**: Check if disabled correctly with profiles
 
@@ -260,7 +260,7 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 ## References
 
 - **crafts_ai**: https://github.com/your-repo/crafts_ai (check actual location)
-- **django_osoul**: Appears to be internal package, requires twilio
+- **django_fusion**: Appears to be internal package, requires twilio
 - **Issue**: Circular dependency chain with memory-intensive package
 
 
@@ -270,21 +270,21 @@ docker exec ctc-web grep "AttributeError\|ModuleNotFoundError" /app/logs/gunicor
 ## ⚠️ UPDATE: Current Workaround is Hitting Diminishing Returns
 
 ### Problem with Fake Module Approach
-The fake `django_osoul` module approach creates a cascading problem:
+The fake `django_fusion` module approach creates a cascading problem:
 1. Add fake module → Works briefly
 2. Django imports more of crafts_ai → New missing module error
 3. Repeat infinitely...
 
 **Missing modules discovered so far**:
-- `django_osoul.managers` ✅ Added
-- `django_osoul.site._context_mixins` ✅ Added
-- `django_osoul.core` ❌ New error
+- `django_fusion.managers` ✅ Added
+- `django_fusion.site._context_mixins` ✅ Added
+- `django_fusion.core` ❌ New error
 - And more will follow...
 
 ### Why This Is Happening
-- `crafts_ai` was designed to work with complete `django_osoul` package
+- `crafts_ai` was designed to work with complete `django_fusion` package
 - Different parts of the code import from different submodules
-- We don't have complete `django_osoul` documentation to know all required submodules
+- We don't have complete `django_fusion` documentation to know all required submodules
 - Each workaround reveals another missing piece
 
 ### Current Status

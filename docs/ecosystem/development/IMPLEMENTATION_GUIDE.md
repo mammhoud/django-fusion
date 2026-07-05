@@ -54,16 +54,16 @@ grep -r "def.*route" venv/libs/crafts-ai/
 - `validators/` - Field validators
 - `admin/` - Admin base classes
 
-### Step 1.2: Create django-osoul Structure
+### Step 1.2: Create django-fusion Structure
 
 ```bash
 # Create directory structure
-mkdir -p venv/libs/django-osoul/src/django_osoul/{models,routes,forms,middleware,signals,decorators,validators,admin,utils,exceptions,tests}
+mkdir -p venv/libs/django-fusion/src/django_fusion/{models,routes,forms,middleware,signals,decorators,validators,admin,utils,exceptions,tests}
 
 # Create __init__.py files
-touch venv/libs/django-osoul/src/django_osoul/__init__.py
-touch venv/libs/django-osoul/src/django_osoul/models/__init__.py
-touch venv/libs/django-osoul/src/django_osoul/routes/__init__.py
+touch venv/libs/django-fusion/src/django_fusion/__init__.py
+touch venv/libs/django-fusion/src/django_fusion/models/__init__.py
+touch venv/libs/django-fusion/src/django_fusion/routes/__init__.py
 # ... repeat for all directories
 ```
 
@@ -74,11 +74,11 @@ touch venv/libs/django-osoul/src/django_osoul/routes/__init__.py
 ```bash
 # Copy files
 cp venv/libs/crafts-ai/src/crafts_ai/models/*.py \
-   venv/libs/django-osoul/src/django_osoul/models/
+   venv/libs/django-fusion/src/django_fusion/models/
 
 # Update imports in moved files
 # OLD: from crafts_ai.utils import helper
-# NEW: from django_osoul.utils import helper
+# NEW: from django_fusion.utils import helper
 ```
 
 **Script to Update Imports:**
@@ -107,11 +107,11 @@ def update_imports(file_path, old_module, new_module):
         f.write(content)
 
 # Usage
-for root, dirs, files in os.walk('venv/libs/django-osoul/src/django_osoul'):
+for root, dirs, files in os.walk('venv/libs/django-fusion/src/django_fusion'):
     for file in files:
         if file.endswith('.py'):
             file_path = os.path.join(root, file)
-            update_imports(file_path, 'crafts_ai', 'django_osoul')
+            update_imports(file_path, 'crafts_ai', 'django_fusion')
 ```
 
 ### Step 1.4: Create Deprecation Shims
@@ -123,7 +123,7 @@ for root, dirs, files in os.walk('venv/libs/django-osoul/src/django_osoul'):
 Backward compatibility layer for moved modules.
 
 This module provides deprecation shims for code that has been moved to
-django-osoul. These imports will be removed in crafts-ai 3.0.0.
+django-fusion. These imports will be removed in crafts-ai 3.0.0.
 """
 
 import warnings
@@ -139,7 +139,7 @@ def _deprecation_warning(old_path, new_path):
     )
 
 # Models
-from django_osoul.models import (
+from django_fusion.models import (
     BaseModel,
     TimestampedModel,
     UUIDModel,
@@ -160,18 +160,18 @@ __all__ = [
 
 ```python
 """
-Deprecated: Use django_osoul.models instead.
+Deprecated: Use django_fusion.models instead.
 
 This module is kept for backward compatibility only.
-All imports have been moved to django-osoul.
+All imports have been moved to django-fusion.
 """
 
 import warnings
-from django_osoul.models import *
+from django_fusion.models import *
 
 warnings.warn(
     "Importing from crafts_ai.models is deprecated. "
-    "Use django_osoul.models instead. "
+    "Use django_fusion.models instead. "
     "This will be removed in crafts-ai 3.0.0.",
     DeprecationWarning,
     stacklevel=2
@@ -188,17 +188,17 @@ grep -r "from crafts_ai.models import" venv/libs/crafts-ai/
 grep -r "from crafts_ai.routes import" venv/libs/crafts-ai/
 grep -r "from crafts_ai.forms import" venv/libs/crafts-ai/
 
-# Update to use django_osoul
-sed -i 's/from crafts_ai\.models/from django_osoul.models/g' \
+# Update to use django_fusion
+sed -i 's/from crafts_ai\.models/from django_fusion.models/g' \
     venv/libs/crafts-ai/src/crafts_ai/**/*.py
 ```
 
 ### Step 1.6: Run Tests
 
 ```bash
-# Run django-osoul tests
-cd venv/libs/django-osoul
-pytest tests/ -v --cov=src/django_osoul
+# Run django-fusion tests
+cd venv/libs/django-fusion
+pytest tests/ -v --cov=src/django_fusion
 
 # Run crafts-ai tests
 cd venv/libs/crafts-ai
@@ -221,9 +221,9 @@ import importlib
 def check_circular_imports():
     """Check for circular imports."""
     modules = [
-        'django_osoul',
+        'django_fusion',
         'crafts_ai',
-        'django_osoul',
+        'django_fusion',
         'nawaai',
     ]
 
@@ -388,15 +388,15 @@ find venv/libs/crafts-ai -name "*test*" -o -name "*factory*" -o -name "*fixture*
 find venv/libs/django-seed -name "*seed*" -o -name "*factory*"
 ```
 
-### Step 3.2: Create django-osoul Structure
+### Step 3.2: Create django-fusion Structure
 
 ```bash
 # Create directory structure
-mkdir -p venv/libs/django-osoul/src/django_osoul/{factories,assertions,fixtures,helpers,mocks,runners}
+mkdir -p venv/libs/django-fusion/src/django_fusion/{factories,assertions,fixtures,helpers,mocks,runners}
 
 # Create __init__.py files
-touch venv/libs/django-osoul/src/django_osoul/__init__.py
-touch venv/libs/django-osoul/src/django_osoul/factories/__init__.py
+touch venv/libs/django-fusion/src/django_fusion/__init__.py
+touch venv/libs/django-fusion/src/django_fusion/factories/__init__.py
 # ... repeat for all directories
 ```
 
@@ -405,20 +405,20 @@ touch venv/libs/django-osoul/src/django_osoul/factories/__init__.py
 ```bash
 # Copy factory files
 cp venv/libs/crafts-ai/src/crafts_ai/seeder/*.py \
-   venv/libs/django-osoul/src/django_osoul/factories/
+   venv/libs/django-fusion/src/django_fusion/factories/
 
 # Copy fixture files
 cp venv/libs/django-seed/src/django_seed/seeding/*.py \
-   venv/libs/django-osoul/src/django_osoul/fixtures/
+   venv/libs/django-fusion/src/django_fusion/fixtures/
 
 # Copy test utilities
 cp venv/libs/crafts-ai/src/crafts_ai/tests/*.py \
-   venv/libs/django-osoul/src/django_osoul/helpers/
+   venv/libs/django-fusion/src/django_fusion/helpers/
 ```
 
 ### Step 3.4: Create Base Test Classes
 
-**File: `venv/libs/django-osoul/src/django_osoul/base.py`**
+**File: `venv/libs/django-fusion/src/django_fusion/base.py`**
 
 ```python
 """Base test classes for Django projects."""
@@ -485,7 +485,7 @@ class BaseAPITestCase(TestCase):
 
 ### Step 3.5: Create Factory Definitions
 
-**File: `venv/libs/django-osoul/src/django_osoul/factories/__init__.py`**
+**File: `venv/libs/django-fusion/src/django_fusion/factories/__init__.py`**
 
 ```python
 """Factory definitions for testing."""
@@ -522,7 +522,7 @@ class UserFactory(factory.django.DjangoModelFactory):
 
 ### Step 3.6: Create Assertion Helpers
 
-**File: `venv/libs/django-osoul/src/django_osoul/assertions.py`**
+**File: `venv/libs/django-fusion/src/django_fusion/assertions.py`**
 
 ```python
 """Custom assertion helpers for testing."""
@@ -561,9 +561,9 @@ def assert_status_code(response, expected_code):
 ### Step 3.7: Run Tests
 
 ```bash
-# Run django-osoul tests
-cd venv/libs/django-osoul
-pytest tests/ -v --cov=src/django_osoul
+# Run django-fusion tests
+cd venv/libs/django-fusion
+pytest tests/ -v --cov=src/django_fusion
 
 # Run all tests
 cd venv/libs
@@ -587,9 +587,9 @@ This guide helps you migrate from crafts-ai 1.x to 2.0.0.
 
 In crafts-ai 2.0.0, we reorganized the codebase to improve maintainability and reusability:
 
-- Foundation code moved to `django-osoul`
+- Foundation code moved to `django-fusion`
 - AI code moved to `nawaai`
-- Testing utilities moved to `django-osoul`
+- Testing utilities moved to `django-fusion`
 
 ## Migration Steps
 
@@ -604,9 +604,9 @@ from crafts_ai.seeder import Seeder
 
 **After (2.0.0):**
 ```python
-from django_osoul.models import BaseModel
+from django_fusion.models import BaseModel
 from nawaai.ai import LLMClient
-from django_osoul.factories import Seeder
+from django_fusion.factories import Seeder
 ```
 
 ### 2. Update Dependencies
@@ -615,9 +615,9 @@ Update your `pyproject.toml`:
 
 ```toml
 [dependencies]
-django-osoul = "^2.0.0"
+django-fusion = "^2.0.0"
 crafts-ai = "^2.0.0"
-django-osoul = "^2.0.0"
+django-fusion = "^2.0.0"
 nawaai = "^1.0.0"
 ```
 
@@ -676,23 +676,23 @@ If you're upgrading from crafts-ai 1.x, please see the [Migration Guide](../depl
 
 ## New Package Structure
 
-- **django-osoul:** Foundation layer (models, forms, middleware, etc.)
+- **django-fusion:** Foundation layer (models, forms, middleware, etc.)
 - **crafts-ai:** Automation layer (email, tasks, workflows, etc.)
-- **django-osoul:** Testing framework (factories, assertions, fixtures, etc.)
+- **django-fusion:** Testing framework (factories, assertions, fixtures, etc.)
 - **nawaai:** AI/MCP toolkit (standalone, zero Django)
 
 ## Installation
 
 ```bash
-pip install django-osoul crafts-ai django-osoul nawaai
+pip install django-fusion crafts-ai django-fusion nawaai
 ```
 
 ## Quick Start
 
 ```python
-from django_osoul.models import BaseModel
+from django_fusion.models import BaseModel
 from crafts_ai.email import send_email
-from django_osoul.factories import UserFactory
+from django_fusion.factories import UserFactory
 from nawaai.ai import LLMClient
 ```
 ```
@@ -723,10 +723,10 @@ pip install sphinx sphinx-rtd-theme
 
 # Create documentation
 cd docs
-sphinx-quickstart -q -p "django-osoul" -a "Your Name" -v "2.0.0"
+sphinx-quickstart -q -p "django-fusion" -a "Your Name" -v "2.0.0"
 
 # Generate API docs
-sphinx-apidoc -o source ../venv/libs/django-osoul/src/django_osoul
+sphinx-apidoc -o source ../venv/libs/django-fusion/src/django_fusion
 
 # Build HTML docs
 make html
@@ -742,22 +742,22 @@ make html
 ## [2.0.0] - 2026-04-14
 
 ### Added
-- New `django-osoul` package for foundation layer
-- New `django-osoul` package for testing framework
+- New `django-fusion` package for foundation layer
+- New `django-fusion` package for testing framework
 - New `nawaai` package for AI/MCP toolkit
 - Comprehensive API documentation
 - Migration guide for upgrading from 1.x
 
 ### Changed
 - Reorganized package structure
-- Moved foundation code to `django-osoul`
+- Moved foundation code to `django-fusion`
 - Moved AI code to `nawaai`
-- Moved testing utilities to `django-osoul`
+- Moved testing utilities to `django-fusion`
 
 ### Deprecated
-- Importing from `crafts_ai.models` (use `django_osoul.models`)
+- Importing from `crafts_ai.models` (use `django_fusion.models`)
 - Importing from `crafts_ai.ai` (use `nawaai.ai`)
-- Importing from `crafts_ai.seeder` (use `django_osoul.factories`)
+- Importing from `crafts_ai.seeder` (use `django_fusion.factories`)
 
 ### Removed
 - Nothing in this release (backward compatibility maintained)
@@ -781,11 +781,11 @@ make html
 
 ### Step 5.3: Update Version Numbers
 
-**File: `venv/libs/django-osoul/pyproject.toml`**
+**File: `venv/libs/django-fusion/pyproject.toml`**
 
 ```toml
 [project]
-name = "django-osoul"
+name = "django-fusion"
 version = "2.0.0"
 description = "Foundation layer for Django projects"
 ```
@@ -798,20 +798,20 @@ name = "crafts-ai"
 version = "2.0.0"
 description = "Automation layer for Django projects"
 dependencies = [
-    "django-osoul>=2.0.0",
+    "django-fusion>=2.0.0",
     "nawaai>=1.0.0",
 ]
 ```
 
-**File: `venv/libs/django-osoul/pyproject.toml`**
+**File: `venv/libs/django-fusion/pyproject.toml`**
 
 ```toml
 [project]
-name = "django-osoul"
+name = "django-fusion"
 version = "2.0.0"
 description = "Testing framework for Django projects"
 dependencies = [
-    "django-osoul>=2.0.0",
+    "django-fusion>=2.0.0",
     "crafts-ai>=2.0.0",
 ]
 ```
@@ -830,9 +830,9 @@ description = "AI/MCP toolkit"
 ```bash
 # Create git tags
 git tag -a v2.0.0 -m "Release version 2.0.0"
-git tag -a django-osoul-2.0.0 -m "django-osoul 2.0.0"
+git tag -a django-fusion-2.0.0 -m "django-fusion 2.0.0"
 git tag -a crafts-ai-2.0.0 -m "crafts-ai 2.0.0"
-git tag -a django-osoul-2.0.0 -m "django-osoul 2.0.0"
+git tag -a django-fusion-2.0.0 -m "django-fusion 2.0.0"
 git tag -a nawaai-1.0.0 -m "nawaai 1.0.0"
 
 # Push tags
@@ -843,13 +843,13 @@ git push origin --tags
 
 ```bash
 # Build packages
-cd venv/libs/django-osoul
+cd venv/libs/django-fusion
 poetry build
 
 cd ../crafts-ai
 poetry build
 
-cd ../django-osoul
+cd ../django-fusion
 poetry build
 
 cd ../nawaai
@@ -871,10 +871,10 @@ poetry publish
 - [ ] No circular imports
 
 ### Architecture
-- [ ] Foundation layer (django-osoul) has zero automation imports
+- [ ] Foundation layer (django-fusion) has zero automation imports
 - [ ] Automation layer (crafts-ai) depends only on foundation
 - [ ] AI layer (nawaai) has zero Django imports
-- [ ] Testing layer (django-osoul) depends on foundation + automation
+- [ ] Testing layer (django-fusion) depends on foundation + automation
 
 ### Documentation
 - [ ] API documentation complete

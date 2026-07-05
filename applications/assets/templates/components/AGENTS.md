@@ -6,7 +6,7 @@ Path: `applications/assets/templates/components/`
 
 Shared, reusable Django/Wagtail template components used across all Structa Cloud sites
 (CTC Research, LMS Demo, VResume). Components are loaded via `{% include %}` or the
-custom `{% comp %}` tag (requires `django_osoul.comp`).
+custom `{% comp %}` tag (requires `django_fusion.comp`).
 
 ## Component Inventory
 
@@ -50,4 +50,4 @@ custom `{% comp %}` tag (requires `django_osoul.comp`).
 - BEM classes: `component`, `component__element`, `component--modifier`
 - No IDs for styling
 - Pass only required context via `{% include "components/..." with key=value only %}`
-- Prefer `{% comp "path" /%}` for component rendering (auto-registered by django-osoul)
+- Prefer `{% comp "path" /%}` for component rendering (auto-registered by django-fusion)

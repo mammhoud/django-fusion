@@ -192,7 +192,7 @@ if "www.apps.accounts.renderers" not in sys.modules:
         _stub.dynamic_renderer = MagicMock()
         sys.modules["www.apps.accounts.renderers"] = _stub
 
-# Registration modules moved under accounts.*; keep django-osoul/rseal and
+# Registration modules moved under accounts.*; keep django-fusion/rseal and
 # legacy tests that import www.apps.accounts.registration.* working.
 def _register_registration_aliases():
     _alias_targets = {
@@ -256,7 +256,7 @@ for _mod_path in [
     "crafts_ai.pipelines.models.tags",
     "crafts_ai.pipelines.models.users.role",
     # Missing generic.search module
-    "django_osoul.comp.generic.search",
+    "django_fusion.comp.generic.search",
     # www.core.content.models — stub to avoid pulling in crafts_ai models
     "www.core.content",
     "www.core.content.models",
@@ -339,8 +339,8 @@ INSTALLED_APPS = [
     "wagtail.contrib.settings",
     "taggit",
     "modelcluster",
-    "django_osoul",
-    "django_osoul.comp",
+    "django_fusion",
+    "django_fusion.comp",
     # allauth — needed for adapter tests
     "allauth",
     "allauth.account",
@@ -363,7 +363,7 @@ def _installed(app: str) -> bool:
 _OPTIONAL_TEST_APPS = {
     "wagtail", "wagtail.images", "wagtail.documents", "wagtail.snippets",
     "wagtail.search", "wagtail.admin", "wagtail.contrib.settings",
-    "taggit", "modelcluster", "django_osoul", "django_osoul.comp", "allauth",
+    "taggit", "modelcluster", "django_fusion", "django_fusion.comp", "allauth",
     "allauth.account", "allauth.socialaccount", "apps.blog",
 }
 INSTALLED_APPS = [
@@ -410,10 +410,10 @@ TEMPLATES = [{
             "django.contrib.messages.context_processors.messages",
         ],
         "builtins": [
-            "django_osoul.comp.templatetags.components",
+            "django_fusion.comp.templatetags.components",
         ],
         "libraries": {
-            "components": "django_osoul.comp.templatetags.components",
+            "components": "django_fusion.comp.templatetags.components",
         },
     },
 }]
@@ -431,7 +431,7 @@ PROFILE_MODEL = "auth.User"
 MIGRATION_MODULES = {
     # Main apps
     "crafts_ai": None,
-    "django_osoul": None,
+    "django_fusion": None,
     "pipelines": None,
     "accounts": None,
     "blog": None,

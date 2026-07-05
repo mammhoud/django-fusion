@@ -1,7 +1,7 @@
 """
 Profile views for ctc-research.
 
-All heavy imports (ceptor_ai.site, django_osoul.site) are deferred to
+All heavy imports (ceptor_ai.site, django_fusion.site) are deferred to
 dispatch-time to avoid the `RuntimeError: Conflicting 'role' models` that
 occurs when these libraries are imported during URL-pattern loading
 (before django.setup() has fully registered all app models).
@@ -28,7 +28,7 @@ _BASES_CACHE: dict = {}
 def _profile_bases():
     """Return (PageHandler, ProfileContextMixin, ProfileOperationsMixin) lazily."""
     if not _BASES_CACHE:
-        from django_osoul.site import PageHandler
+        from django_fusion.site import PageHandler
         from ceptor_ai.site.mixins import ProfileContextMixin, ProfileOperationsMixin
         _BASES_CACHE["PageHandler"] = PageHandler
         _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin

@@ -148,7 +148,7 @@ ACCOUNT_EMAIL_NOTIFICATIONS = settings.get("ACCOUNT_EMAIL_NOTIFICATIONS", True)
 ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS = settings.get("ACCOUNT_EMAIL_CONFIRMATION_EXPIRE_DAYS", 3)
 
 # =============================================================================
-# 👤 PROFILE MODEL — required by ceptor_ai and django_osoul ForeignKey refs
+# 👤 PROFILE MODEL — required by ceptor_ai and django_fusion ForeignKey refs
 # =============================================================================
 # This must be set at the base config level so it is available when Django
 # loads model classes from installed apps (before site settings are applied).

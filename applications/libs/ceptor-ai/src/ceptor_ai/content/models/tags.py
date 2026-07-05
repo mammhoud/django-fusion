@@ -16,7 +16,7 @@ from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFi
 from wagtail.fields import RichTextField
 from wagtail.search import index
 
-from django_osoul.core.managers import (
+from django_fusion.core.managers import (
     PersonTagCategoryManager,
     PersonTagManager,
     TaggedPersonManager,

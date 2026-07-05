@@ -17,8 +17,8 @@ from ceptor_ai.typing import override
 # CONSTANTS
 # ------------------------------------------------------------------
 COMPONENTS_SETTINGS_NAME = "COMPONENTS"
-COMPONENTS_BUILTINS = "django_osoul.comp.templatetags.components"
-COMPONENTS_FINDER = "django_osoul.comp.staticfiles.BlockAssetFinder"
+COMPONENTS_BUILTINS = "django_fusion.comp.templatetags.components"
+COMPONENTS_FINDER = "django_fusion.comp.staticfiles.BlockAssetFinder"
 
 
 # ------------------------------------------------------------------
@@ -560,7 +560,7 @@ class AppSettings:
     @property
     def ADAPTER(self) -> str:
         """The adapter, setting ACCOUNT_ADAPTER overrides this default"""
-        return self._setting("ADAPTER", "django_osoul.adapters.AccountAdapter")
+        return self._setting("ADAPTER", "django_fusion.adapters.AccountAdapter")
 
     @property
     def EMAIL_MAX_LENGTH(self) -> int:

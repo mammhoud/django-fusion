@@ -1,7 +1,7 @@
 """
 CartService — concrete implementation for plugins.products.
 
-Extends CartServiceBase from django-osoul with the project's Cart / CartItem
+Extends CartServiceBase from django-fusion with the project's Cart / CartItem
 models.  Import this service everywhere instead of the old
 ``plugins.accounts.site.cart`` path.
 """
@@ -13,7 +13,7 @@ from decimal import Decimal
 from typing import Any, Dict
 
 from django.http import HttpRequest
-from django_osoul.core.services import CartServiceBase
+from django_fusion.core.services import CartServiceBase
 
 from plugins.products.models.cart import Cart, CartItem
 

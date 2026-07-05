@@ -13,7 +13,7 @@ from django.utils.translation import gettext_lazy as _
 
 User = get_user_model()
 
-from django_osoul.core.forms import BaseStyledForm, LayoutMixin, SecurityMixin, ValidationMixin
+from django_fusion.core.forms import BaseStyledForm, LayoutMixin, SecurityMixin, ValidationMixin
 
 
 class EnhancedUserAdminCreationForm(

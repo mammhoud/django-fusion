@@ -6,7 +6,7 @@ Canonical imports::
     from ceptor_ai.content.site.views import PaymentsView
     from ceptor_ai.content.site.views import SearchView
     from ceptor_ai.content.site.views import TagsView
-    from django_osoul.health.views import HealthCheckView
+    from django_fusion.health.views import HealthCheckView
 """
 
 from .notifications import NotificationView  # noqa: F401

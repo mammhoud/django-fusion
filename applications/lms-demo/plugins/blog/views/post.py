@@ -3,7 +3,7 @@ Blog Post Views
 """
 from django.utils.translation import gettext_lazy as _
 from django.views.generic import DetailView, ListView
-from django_osoul.web.views import FilterMixin, SearchMixin
+from django_fusion.web.views import FilterMixin, SearchMixin
 
 from plugins.blog.models import BlogCategory, BlogPost, BlogTag
 from plugins.blog.services import TagService

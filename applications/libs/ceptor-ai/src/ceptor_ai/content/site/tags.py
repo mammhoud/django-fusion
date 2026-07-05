@@ -2,9 +2,9 @@
 ceptor_ai.site.tags
 =================================
 
-Re-exports from django_osoul.contrib.views for backward compatibility.
+Re-exports from django_fusion.contrib.views for backward compatibility.
 """
-from django_osoul.site.views.tags import EnhancedTagsView  # noqa: F401
+from django_fusion.site.views.tags import EnhancedTagsView  # noqa: F401
 
 __all__ = ["EnhancedTagsView"]
 

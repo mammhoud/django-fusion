@@ -2,7 +2,7 @@
 
 > Part of **ceptor-ai** — Django automation engine
 
-Admin integration - shim re-exporting from django_osoul.
+Admin integration - shim re-exporting from django_fusion.
 
 ## Contents
 

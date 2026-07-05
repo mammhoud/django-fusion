@@ -11,8 +11,7 @@ http:
       entryPoints: [web-secure]
       middlewares: [compress, csrf-headers, security-headers]
       service: crm-site-service
-      tls:
-        certResolver: letsencrypt
+      tls: {}
     crm-site-media-http:
       rule: '(Host(`crm.structa.cloud`) || Host(`www.crm.structa.cloud`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`))'
       entryPoints: [web]
@@ -25,8 +24,7 @@ http:
       middlewares: [compress, security-headers]
       service: crm-site-media-service
       priority: 100
-      tls:
-        certResolver: letsencrypt
+      tls: {}
   services:
     crm-site-service:
       loadBalancer:

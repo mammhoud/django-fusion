@@ -8,7 +8,7 @@ Master index for all Structa Cloud project documentation.
 |---|---|
 | [websites.md](websites.md) | Website config, modules, ports, LOCAL_APPS, UNFOLD sidebar, CELERY_BEAT schedules |
 | [environments.md](environments.md) | Environment types (development, demo, production), dynaconf, and settings |
-| [packages.md](packages.md) | Internal packages (`django-osoul`, `ceptor-ai`), dependencies, and best practices |
+| [packages.md](packages.md) | Internal packages (`django-fusion`, `ceptor-ai`), dependencies, and best practices |
 | [templates.md](templates.md) | Template organization, inheritance, HTMX fragments, and usage patterns |
 
 ## Architecture
@@ -17,7 +17,7 @@ Master index for all Structa Cloud project documentation.
 - **Site modules**: `ctc-research/`, `lms-demo/`, `VResume/` — per-website application code
 - **Shared configs**: `configs/` — base settings, site config, and environment management
 - **Shared templates**: `assets/templates/` — cross-site template library
-- **Internal libraries**: `libs/django-osoul/`, `libs/ceptor-ai/` — editable workspace packages
+- **Internal libraries**: `libs/django-fusion/`, `libs/ceptor-ai/` — editable workspace packages
 
 ## Quick Reference
 

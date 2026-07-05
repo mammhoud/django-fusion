@@ -1,12 +1,12 @@
-"""Cache utilities - shim re-exporting from django_osoul."""
+"""Cache utilities - shim re-exporting from django_fusion."""
 import warnings
 
-from django_osoul.contrib.cache.utils import *  # noqa: F401, F403
+from django_fusion.contrib.cache.utils import *  # noqa: F401, F403
 
 __all__ = []
 
 warnings.warn(
-    "ceptor_ai.contrib.cache has been moved to django_osoul.contrib.cache. "
+    "ceptor_ai.contrib.cache has been moved to django_fusion.contrib.cache. "
     "Please update your imports.",
     DeprecationWarning,
     stacklevel=2,

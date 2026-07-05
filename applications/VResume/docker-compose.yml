@@ -60,6 +60,7 @@ services:
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
       - ../tasks:/app/tasks:z
@@ -78,6 +79,7 @@ services:
     networks:
       - common
       - warehouse-net
+      - traefik-net
 
   vresume-worker:
     build:
@@ -122,6 +124,7 @@ services:
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
       - ../tasks:/app/tasks:z
@@ -136,11 +139,14 @@ services:
     networks:
       - common
       - warehouse-net
+      - traefik-net
 
 networks:
   common:
     external: true
   warehouse-net:
+    external: true
+  traefik-net:
     external: true
 
 volumes:

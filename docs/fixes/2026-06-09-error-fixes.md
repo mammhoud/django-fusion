@@ -26,16 +26,16 @@ Kept only the modules that actually exist: `manage`, `profiles`, `tags`,
 
 **Container:** lms-demo, ctc-research  
 **Symptom:** `Internal Server Error: /` — every front-end page failed.  
-**Root cause:** Templates use `{% comp %}` from `django_osoul.comp.templatetags.components`
-but that library was never discoverable — `django_osoul.comp` was not in
+**Root cause:** Templates use `{% comp %}` from `django_fusion.comp.templatetags.components`
+but that library was never discoverable — `django_fusion.comp` was not in
 `INSTALLED_APPS` and not in `TEMPLATES.builtins`.
 
 **Fix:**  
 `configs/base/templates.py`
 
-Added `"django_osoul.comp.templatetags.components"` to `_TEMPLATE_BUILTINS`,
+Added `"django_fusion.comp.templatetags.components"` to `_TEMPLATE_BUILTINS`,
 guarded by `importlib.util.find_spec`. This matches the constant
-`COMPONENTS_BUILTINS` already defined in `django_osoul`'s own `conf.py`.
+`COMPONENTS_BUILTINS` already defined in `django_fusion`'s own `conf.py`.
 The `{% comp %}` tag now works in all templates project-wide without any
 `{% load %}` directive.
 
@@ -223,7 +223,7 @@ even launched.
 
 | File | Change |
 |------|--------|
-| `configs/base/templates.py` | Added `layout/` to `TEMPLATES_DIRS`; added `django_osoul.comp` builtin |
+| `configs/base/templates.py` | Added `layout/` to `TEMPLATES_DIRS`; added `django_fusion.comp` builtin |
 | `configs/settings/conf.py` | `_generate_secret_key()` helper; auto-generate `DJANGO_SECRET_KEY` |
 | `configs/base/apps.py` | Added `www.core.handlers.apps.AccountsConfig` to `LOCAL_APPS` |
 | `ctc-research/.env` | Removed `DJANGO_SECRET_KEY` |

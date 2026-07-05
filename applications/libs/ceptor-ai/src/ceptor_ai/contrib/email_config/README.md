@@ -2,7 +2,7 @@
 
 > Part of **ceptor-ai** — Django automation engine
 
-Email configuration utilities - shim re-exporting from django_osoul.
+Email configuration utilities - shim re-exporting from django_fusion.
 
 ## Usage
 

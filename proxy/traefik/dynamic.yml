@@ -46,34 +46,59 @@ providers:
     watch: true
 
 # ===========================================================================
-# ACME / Let's Encrypt — DNS-01 (Cloudflare)
+# ACME / Let's Encrypt — certificate resolvers
 # ===========================================================================
-# Staged rollout (see proxy/LETSENCRYPT.md):
-#   Stage 1 (now): caServer = staging, vresume routers only — verify cert
-#   Stage 2:        caServer = production, add resolvers to remaining sites
-#   Stage 3:        delete proxy/traefik/dynamic/certs.yml
+# STEP 2 of the LE migration: uncomment ONE of the resolver blocks below,
+# then restart the proxy: docker restart default-proxy
 #
-# DNS provider credentials are read from env vars on the proxy container:
-#   - CF_DNS_API_TOKEN  (scoped token, Zone:DNS:Edit)  — recommended
-#   - CF_API_EMAIL + CF_API_KEY                       — legacy global key
+# After restarting, complete STEP 3 in proxy/traefik/dynamic/ctc-research.yml
+# (flip routers to use certResolver and comment out the self-signed cert entry
+# in proxy/traefik/dynamic/certs.yml).
 #
-# Storage path /etc/traefik/acme/acme.json is mounted from ./acme/acme.json
-# (see proxy/docker-compose.traefik.yml). The file MUST exist with mode 0600
-# before the container starts; the manage-certs.sh bootstrap command handles
-# this.
+# Prerequisites common to both options:
+#   - proxy/acme/acme.json must exist with mode 0600
+#     Run: touch proxy/acme/acme.json && chmod 600 proxy/acme/acme.json
+#
+# ---------------------------------------------------------------------------
+# OPTION A — DNS-01 via Cloudflare (recommended; works even if port 80 is
+#             blocked; required for wildcard certs)
+#
+# Prerequisites:
+#   - ctc-research.com DNS managed by Cloudflare
+#   - Cloudflare API token (Zone:DNS:Edit) set in proxy/.env as CF_DNS_API_TOKEN
+#     Create at: https://dash.cloudflare.com/profile/api-tokens
+#
+# certificatesResolvers:
+#   letsencrypt:
+#     acme:
+#       email: structa.cloud@gmail.com
+#       storage: /etc/traefik/acme/acme.json
+#       caServer: https://acme-v02.api.letsencrypt.org/directory
+#       # caServer: https://acme-staging-v02.api.letsencrypt.org/directory  # use for testing
+#       dnsChallenge:
+#         provider: cloudflare
+#         delayBeforeCheck: 30
+#         resolvers:
+#           - 1.1.1.1:53
+#           - 8.8.8.8:53
+#
+# ---------------------------------------------------------------------------
+# OPTION B — HTTP-01 via Hostinger DNS (no API token needed)
+#
+# Prerequisites:
+#   - STEP 1 must be done first: DNS A records for ctc-research.com must
+#     point to 187.77.166.222 (set on Hostinger: https://hpanel.hostinger.com)
+#   - Port 80 must be reachable from the internet on ctc-research.com
+#   - Verify DNS before enabling: dig +short ctc-research.com A
+#     must return 187.77.166.222, not 127.0.0.1
+#
 certificatesResolvers:
-  letsencrypt:
+  letsencrypt-http:
     acme:
       email: structa.cloud@gmail.com
       storage: /etc/traefik/acme/acme.json
-      # STAGING — keep here until the first cert is verified (Stage 1).
-      # Once vresume + ctc-research certs are confirmed, flip to production:
-      #   https://acme-v02.api.letsencrypt.org/directory
-      caServer: https://acme-staging-v02.api.letsencrypt.org/directory
-      dnsChallenge:
-        provider: cloudflare
-        delayBeforeCheck: 30
-        resolvers:
-          - 1.1.1.1:53
-          - 8.8.8.8:53
-
+      caServer: https://acme-v02.api.letsencrypt.org/directory
+      httpChallenge:
+        entryPoint: web
+#
+# ---------------------------------------------------------------------------

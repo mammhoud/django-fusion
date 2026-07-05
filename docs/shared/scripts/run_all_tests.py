@@ -158,9 +158,9 @@ class TestRunner:
         print(f"{'='*60}")
 
         packages = [
-            ("django_osoul", "venv/libs/django-osoul"),
+            ("django_fusion", "venv/libs/django-fusion"),
             ("crafts_ai", "venv/libs/crafts-ai"),
-            ("django_osoul", "venv/libs/django-osoul"),
+            ("django_fusion", "venv/libs/django-fusion"),
             ("crafts_ai", "applications/libs/crafts-ai")
         ]
 

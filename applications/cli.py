@@ -77,7 +77,7 @@ SITE_ALIASES = {
 }
 
 LIBS = {
-    "django-osoul": REPO_ROOT / "libs" / "django-osoul",
+    "django-fusion": REPO_ROOT / "libs" / "django-fusion",
     "ceptor-ai": REPO_ROOT / "libs" / "ceptor-ai",
 }
 
@@ -538,7 +538,7 @@ class SiteCLI:
             return
 
         repo_map = {
-            "django-osoul": "django-osoul",
+            "django-fusion": "django-fusion",
             "ceptor-ai": "ceptor-ai",
         }
 

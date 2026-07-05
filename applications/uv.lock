@@ -972,9 +972,9 @@ wheels = [
 ]
 
 [[package]]
-name = "django-osoul"
+name = "django-fusion"
 version = "0.1.0"
-source = { editable = "libs/django-osoul" }
+source = { editable = "libs/django-fusion" }
 dependencies = [
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
@@ -3341,7 +3341,7 @@ dependencies = [
     { name = "django-import-export" },
     { name = "django-modelcluster" },
     { name = "django-ninja" },
-    { name = "django-osoul" },
+    { name = "django-fusion" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -3426,7 +3426,7 @@ requires-dist = [
     { name = "django-import-export" },
     { name = "django-modelcluster", specifier = ">=6.5" },
     { name = "django-ninja" },
-    { name = "django-osoul", editable = "libs/django-osoul" },
+    { name = "django-fusion", editable = "libs/django-fusion" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },

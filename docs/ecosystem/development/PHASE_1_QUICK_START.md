@@ -84,7 +84,7 @@ Week 3: Certificate Generation
 └─ Update imports
 
 Week 4: Form Validators
-├─ Extract to django-osoul
+├─ Extract to django-fusion
 ├─ Create deprecation shims
 └─ Update imports
 ```

@@ -8,7 +8,7 @@ This section contains documentation for shared packages used by all projects.
 
 ## Packages
 
-### [django-osoul](django-osoul/)
+### [django-fusion](django-fusion/)
 **Pure Django foundation layer**
 
 Abstract models, managers, mixins, utilities, and components
@@ -34,7 +34,7 @@ Abstract models, managers, mixins, utilities, and components
 **Wagtail automation layer**
 
 Pipelines, services, workflows, email handling, and Wagtail components
-- Depends on django-osoul
+- Depends on django-fusion
 - Wagtail-focused automation
 - No project-specific code
 
@@ -51,7 +51,7 @@ Pipelines, services, workflows, email handling, and Wagtail components
 - `snippets/` - Wagtail snippets
 - `hooks/` - Wagtail hooks
 
-### [django-osoul](django-osoul/)
+### [django-fusion](django-fusion/)
 **Unified testing framework**
 
 Test base classes, fixtures, factories, pytest plugins, and health checks
@@ -86,19 +86,19 @@ AI integrations, chat functionality, and MCP server support
 
 ```bash
 # Install all packages
-cd venv/libs/django-osoul && uv sync
+cd venv/libs/django-fusion && uv sync
 cd venv/libs/crafts-ai && uv sync
-cd venv/libs/django-osoul && uv sync
+cd venv/libs/django-fusion && uv sync
 uv pip install -e applications/libs/crafts-ai/
 ```
 
 ## Usage
 
-### django-osoul
+### django-fusion
 ```python
 # In settings.py
 INSTALLED_APPS = [
-    'django_osoul',
+    'django_fusion',
     ...
 ]
 ```
@@ -113,9 +113,9 @@ class CartService(CartServiceBase):
     pass
 ```
 
-### django-osoul
+### django-fusion
 ```python
-from django_osoul import BaseTestCase
+from django_fusion import BaseTestCase
 
 class MyTest(BaseTestCase):
     def test_something(self):
@@ -134,10 +134,10 @@ info = package_info()
 ## Dependency Direction
 
 ```
-ctc-research.com  →  django-osoul, django-osoul, crafts-ai, crafts-ai
-structa.cloud     →  django-osoul, django-osoul, crafts-ai, crafts-ai
-crafts-ai      →  django-osoul
-django-osoul       →  (standalone)
+ctc-research.com  →  django-fusion, django-fusion, crafts-ai, crafts-ai
+structa.cloud     →  django-fusion, django-fusion, crafts-ai, crafts-ai
+crafts-ai      →  django-fusion
+django-fusion       →  (standalone)
 crafts-ai         →  (standalone)
 ```
 

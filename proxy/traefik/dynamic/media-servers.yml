@@ -15,8 +15,7 @@ http:
       - compress
       - security-headers
       service: shared-media-service
-      tls:
-        certResolver: letsencrypt
+      tls: {}
     ctc-media-http:
       rule: Host(`media.ctc-research.com`)
       entryPoints:
@@ -32,8 +31,7 @@ http:
       - compress
       - security-headers
       service: ctc-media-service
-      tls:
-        certResolver: letsencrypt
+      tls: {}
     lms-media-http:
       rule: Host(`media.lms-demo.com`)
       entryPoints:
@@ -49,8 +47,7 @@ http:
       - compress
       - security-headers
       service: lms-media-service
-      tls:
-        certResolver: letsencrypt
+      tls: {}
     vresume-media-http:
       rule: Host(`media.vresume.structa.cloud`)
       entryPoints:
@@ -66,8 +63,7 @@ http:
       - compress
       - security-headers
       service: vresume-media-service
-      tls:
-        certResolver: letsencrypt
+      tls: {}
   services:
     shared-media-service:
       loadBalancer:

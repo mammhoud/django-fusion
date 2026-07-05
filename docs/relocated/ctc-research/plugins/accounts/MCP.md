@@ -4,7 +4,7 @@
 This project is designed to be fully integrated with AI-driven development workflows using the **Model Context Protocol (MCP)**. MCP allows AI agents (like Claude or Antigravity) to act as a "junior developer" with direct access to your Django environment.
 
 ## 🛠️ Usage with Django Grep
-The `django-osoul` plugin provides the underlying server that implements the MCP tools.
+The `django-fusion` plugin provides the underlying server that implements the MCP tools.
 
 ### Available Tools:
 1. **`search_code`**: Fast regex search across the entire project.
@@ -14,10 +14,10 @@ The `django-osoul` plugin provides the underlying server that implements the MCP
 
 ## 🔌 How to Integrate
 To enable AI agents to work on this project:
-1. Ensure `django_osoul.mcp_designer` is in `INSTALLED_APPS`.
+1. Ensure `django_fusion.mcp_designer` is in `INSTALLED_APPS`.
 2. Configure your AI IDE (e.g., Cursor, Windsurf) or Agent to point to the `mcp_django_server.py` entry point.
 3. Use the following prompt to prime the AI:
-   > "You are an expert Django/Wagtail developer. Use the MCP tools provided by django-osoul to explore this codebase and help me build new features."
+   > "You are an expert Django/Wagtail developer. Use the MCP tools provided by django-fusion to explore this codebase and help me build new features."
 
 ## 📍 Integration Points
 - **Core:** The core project provides the settings and structure.

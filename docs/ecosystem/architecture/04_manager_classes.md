@@ -6,12 +6,12 @@ Manager classes provide database query abstractions and business logic for model
 
 ## Role Hierarchy Manager
 
-**Location**: `django_osoul/managers/role_hierarchy.py`
+**Location**: `django_fusion/managers/role_hierarchy.py`
 
 Manages role-based permissions and group hierarchies.
 
 ```python
-from django_osoul.managers import RoleHierarchyManager
+from django_fusion.managers import RoleHierarchyManager
 ```
 
 ### Methods
@@ -99,12 +99,12 @@ if RoleHierarchyManager.has_permission(user, 'edit_content'):
 
 ## Group Access Control
 
-**Location**: `django_osoul/managers/group_access.py`
+**Location**: `django_fusion/managers/group_access.py`
 
 Provides group-based access control utilities.
 
 ```python
-from django_osoul.managers import GroupAccessControl
+from django_fusion.managers import GroupAccessControl
 ```
 
 ### Methods

@@ -43,7 +43,7 @@ Cross-domain leakage occurs when a module that belongs to one domain imports fro
 
 The cross-domain leakage is expected and reflects the current architecture where domains are not yet fully separated. The leakage patterns suggest:
 
-1. **Extract shared interfaces**: Create abstract base classes in django_osoul for common patterns
+1. **Extract shared interfaces**: Create abstract base classes in django_fusion for common patterns
 2. **Use dependency injection**: Pass dependencies rather than importing directly
 3. **Event-based communication**: Use Django signals or event systems to decouple domains
 4. **Service layer abstraction**: Move cross-domain logic to service classes in crafts_ai
@@ -189,7 +189,7 @@ The domain restructuring analysis reveals:
 These findings are expected given the current architecture and indicate areas for improvement in Phase 7 (Project Simplification) and beyond. The app renames and sub-module reorganization (tasks 6.1-6.6) have been completed successfully and are ready for final commit.
 
 The cross-domain leakage and circular dependencies will be addressed through:
-1. Extracting shared logic to django_osoul and crafts_ai packages
+1. Extracting shared logic to django_fusion and crafts_ai packages
 2. Using dependency injection and event-based communication
 3. Converting projects to thin layers that delegate to packages
 4. Enforcing strict package boundaries with import-linter

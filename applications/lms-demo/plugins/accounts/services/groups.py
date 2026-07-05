@@ -1,13 +1,13 @@
 """
 Group and role management services for the handlers app.
 
-Re-exports the shared RoleHierarchyManager from django-osoul with
+Re-exports the shared RoleHierarchyManager from django-fusion with
 the site-specific role hierarchy and permissions configured.
 """
 
 from django.db import transaction
-from django_osoul.core.managers import GroupAccessControl
-from django_osoul.core.managers import RoleHierarchyManager as _BaseRoleHierarchyManager
+from django_fusion.core.managers import GroupAccessControl
+from django_fusion.core.managers import RoleHierarchyManager as _BaseRoleHierarchyManager
 
 
 class RoleHierarchyManager(_BaseRoleHierarchyManager):

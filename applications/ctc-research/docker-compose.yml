@@ -62,6 +62,7 @@ services:
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
       - ../tasks:/app/tasks:z
@@ -122,6 +123,7 @@ services:
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
       - ../tasks:/app/tasks:z

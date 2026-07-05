@@ -61,9 +61,9 @@ Development workflow and coding standards
 
 | Package | Purpose | Documentation |
 |---------|---------|---------------|
-| django-osoul | Django foundation | [packages/django-osoul/](../packages/django-osoul/) |
+| django-fusion | Django foundation | [packages/django-fusion/](../packages/django-fusion/) |
 | crafts-ai | Wagtail automation | [packages/crafts-ai/](../packages/crafts-ai/) |
-| django-osoul | Testing | [packages/django-osoul/](../packages/django-osoul/) |
+| django-fusion | Testing | [packages/django-fusion/](../packages/django-fusion/) |
 | nawaai | AI toolkit | [packages/nawaai/](../packages/nawaai/) |
 
 ---

@@ -1,5 +1,5 @@
 """
-Unit tests for django-osoul routable components.
+Unit tests for django-fusion routable components.
 
 Tests cover:
 - RoutableComponent permission checks
@@ -38,7 +38,7 @@ class TestRoutableComponent(TestCase):
     """Tests for RoutableComponent base class."""
 
     def setUp(self):
-        from django_osoul.comp.routes import RoutableComponent
+        from django_fusion.comp.routes import RoutableComponent
 
         class PublicComponent(RoutableComponent):
             route_name = "public"
@@ -116,7 +116,7 @@ class TestRoutableComponent(TestCase):
         self.assertTrue(comp.show_in_menu)
 
     def test_get_route_url_raises_without_route_name(self):
-        from django_osoul.comp.routes import RoutableComponent
+        from django_fusion.comp.routes import RoutableComponent
 
         class NoNameComp(RoutableComponent):
             route_name = None
@@ -135,7 +135,7 @@ class TestFragmentComponent(TestCase):
     """Tests for FragmentComponent."""
 
     def setUp(self):
-        from django_osoul.comp.routes import FragmentComponent
+        from django_fusion.comp.routes import FragmentComponent
 
         class SimpleFragment(FragmentComponent):
             route_name = "simple-fragment"
@@ -164,12 +164,12 @@ class TestFragmentComponent(TestCase):
         self.factory = RequestFactory()
 
     def test_is_htmx_request_true(self):
-        from django_osoul.site._context_mixins import is_htmx_request
+        from django_fusion.site._context_mixins import is_htmx_request
         request = make_htmx_request(self.factory)
         self.assertTrue(is_htmx_request(request))
 
     def test_is_htmx_request_false(self):
-        from django_osoul.site._context_mixins import is_htmx_request
+        from django_fusion.site._context_mixins import is_htmx_request
         request = make_regular_request(self.factory)
         self.assertFalse(is_htmx_request(request))
 
@@ -247,7 +247,7 @@ class TestFragmentDetector(TestCase):
     """Tests for FragmentDetector strategy detection."""
 
     def setUp(self):
-        from django_osoul.comp.routes import FragmentDetector
+        from django_fusion.comp.routes import FragmentDetector
         self.detector = FragmentDetector()
         self.factory = RequestFactory()
 
@@ -288,7 +288,7 @@ class TestApplicationMenuOrdering(TestCase):
     """Tests for Application.menu_items() ordering by menu_order."""
 
     def test_menu_items_sorted_by_menu_order(self):
-        from django_osoul.comp.routes import Application, AppMenuMixin, RoutableComponent
+        from django_fusion.comp.routes import Application, AppMenuMixin, RoutableComponent
 
         class CompA(AppMenuMixin, RoutableComponent):
             route_name = "a"
@@ -322,7 +322,7 @@ class TestApplicationMenuOrdering(TestCase):
         self.assertEqual(titles, ["B", "C", "A"])
 
     def test_show_in_menu_false_hides_item(self):
-        from django_osoul.comp.routes import Application, AppMenuMixin, RoutableComponent
+        from django_fusion.comp.routes import Application, AppMenuMixin, RoutableComponent
 
         class HiddenComp(AppMenuMixin, RoutableComponent):
             route_name = "hidden"
@@ -358,7 +358,7 @@ class TestSite(TestCase):
     """Tests for Site class."""
 
     def setUp(self):
-        from django_osoul.comp.routes import Application, RoutableComponent, Site
+        from django_fusion.comp.routes import Application, RoutableComponent, Site
 
         class DashboardComponent(RoutableComponent):
             route_name = "dashboard"
@@ -407,7 +407,7 @@ class TestSite(TestCase):
         self.assertTrue(any(isinstance(v, self.TestApp) for v in site.viewsets))
 
     def test_site_title_defaults_to_class_name(self):
-        from django_osoul.comp.routes import Site
+        from django_fusion.comp.routes import Site
 
         class MySite(Site):
             pass
@@ -417,7 +417,7 @@ class TestSite(TestCase):
         self.assertIsNotNone(site.title)
 
     def test_site_has_view_permission_with_permission(self):
-        from django_osoul.comp.routes import Site
+        from django_fusion.comp.routes import Site
 
         class RestrictedSite(Site):
             permission = "auth.view_user"
@@ -454,7 +454,7 @@ class TestBaseViewset(TestCase):
     """Tests for BaseViewset base class."""
 
     def test_viewset_parents_empty(self):
-        from django_osoul.comp.routes import Viewset
+        from django_fusion.comp.routes import Viewset
 
         class EmptyViewset(Viewset):
             pass
@@ -463,7 +463,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(vs.parents(), [])
 
     def test_viewset_parents_hierarchy(self):
-        from django_osoul.comp.routes import Viewset
+        from django_fusion.comp.routes import Viewset
 
         class ParentViewset(Viewset):
             pass
@@ -478,7 +478,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(child.parents(), [parent])
 
     def test_viewset_parents_multi_level(self):
-        from django_osoul.comp.routes import Viewset
+        from django_fusion.comp.routes import Viewset
 
         class GrandparentViewset(Viewset):
             pass
@@ -500,7 +500,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(child.parents(), [grandparent, parent])
 
     def test_viewset_has_view_permission_default(self):
-        from django_osoul.comp.routes import Viewset
+        from django_fusion.comp.routes import Viewset
 
         class TestViewset(Viewset):
             pass
@@ -511,7 +511,7 @@ class TestBaseViewset(TestCase):
         self.assertTrue(vs.has_view_permission(user))
 
     def test_viewset_reverse_raises_without_parent(self):
-        from django_osoul.comp.routes import Viewset
+        from django_fusion.comp.routes import Viewset
 
         class TestViewset(Viewset):
             pass
@@ -534,7 +534,7 @@ class TestModelViewset(TestCase):
 
         # Create a simple test model
         from django.db import models
-        from django_osoul.comp.routes import ModelViewset
+        from django_fusion.comp.routes import ModelViewset
 
         class TestArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -598,7 +598,7 @@ class TestReadonlyModelViewset(TestCase):
 
     def setUp(self):
         from django.db import models
-        from django_osoul.comp.routes import ReadonlyModelViewset
+        from django_fusion.comp.routes import ReadonlyModelViewset
 
         class TestItem(models.Model):
             name = models.CharField(max_length=50)
@@ -628,7 +628,7 @@ class TestFragmentDetectorAdditional(TestCase):
     """Additional tests for FragmentDetector."""
 
     def setUp(self):
-        from django_osoul.comp.routes import FragmentDetector
+        from django_fusion.comp.routes import FragmentDetector
         self.detector = FragmentDetector()
         self.factory = RequestFactory()
 
@@ -683,7 +683,7 @@ class TestApplicationHasViewPermission(TestCase):
     """Tests for Application.has_view_permission."""
 
     def test_application_has_view_permission_with_permission(self):
-        from django_osoul.comp.routes import Application
+        from django_fusion.comp.routes import Application
 
         class RestrictedApp(Application):
             permission = "auth.add_user"
@@ -709,7 +709,7 @@ class TestApplicationHasViewPermission(TestCase):
         self.assertTrue(app.has_view_permission(user))
 
     def test_application_has_view_permission_callable(self):
-        from django_osoul.comp.routes import Application
+        from django_fusion.comp.routes import Application
 
         class CustomPermApp(Application):
             title = "Custom Perm App"
@@ -725,7 +725,7 @@ class TestApplicationHasViewPermission(TestCase):
         self.assertTrue(app.has_view_permission(admin_user))
 
     def test_application_has_view_permission_no_permission(self):
-        from django_osoul.comp.routes import Application
+        from django_fusion.comp.routes import Application
 
         class OpenApp(Application):
             title = "Open App"
@@ -747,7 +747,7 @@ class TestAppMenuMixin(TestCase):
     """Tests for AppMenuMixin."""
 
     def test_title_defaults_to_class_name(self):
-        from django_osoul.comp.routes import AppMenuMixin
+        from django_fusion.comp.routes import AppMenuMixin
 
         class MyAdmin(AppMenuMixin):
             pass
@@ -757,7 +757,7 @@ class TestAppMenuMixin(TestCase):
         self.assertIsNotNone(mixin.title)
 
     def test_has_view_permission_delegates_to_parent(self):
-        from django_osoul.comp.routes import AppMenuMixin
+        from django_fusion.comp.routes import AppMenuMixin
 
         class TestMenuItem(AppMenuMixin):
             pass

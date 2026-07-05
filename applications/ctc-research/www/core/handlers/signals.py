@@ -3,7 +3,7 @@ import logging
 from django.contrib.auth import get_user_model
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django_osoul.core.models import EmailTemplate
+from django_fusion.core.models import EmailTemplate
 
 logger = logging.getLogger(__name__)
 

@@ -1,8 +1,8 @@
 """CV app blocks with VResume-specific templates."""
 
 from django.utils.translation import gettext_lazy as _
-from django_osoul.wagtail.blocks import SkillBlock as BaseSkillBlock
-from django_osoul.wagtail.blocks import TimelineItemBlock as BaseTimelineItemBlock
+from django_fusion.wagtail.blocks import SkillBlock as BaseSkillBlock
+from django_fusion.wagtail.blocks import TimelineItemBlock as BaseTimelineItemBlock
 
 
 class TimelineItemBlock(BaseTimelineItemBlock):

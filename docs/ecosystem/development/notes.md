@@ -15,8 +15,8 @@ All four libraries live in `/root/site/libs` as a unified uv workspace.
 uv sync --directory /root/site/libs
 
 # Or install individually as editable
-uv pip install -e /root/site/libs/django-osoul
-uv pip install -e /root/site/libs/django-osoul
+uv pip install -e /root/site/libs/django-fusion
+uv pip install -e /root/site/libs/django-fusion
 uv pip install -e /root/site/libs/crafts-ai
 uv pip install -e /root/site/libs/django-seed
 ```
@@ -26,8 +26,8 @@ Workspace layout:
 ```
 /root/site/libs/
 ├── pyproject.toml      # uv workspace root
-├── django-osoul/        # canonical base utilities
-├── django-osoul/       # abstract models, managers, validators (depends on django-osoul)
+├── django-fusion/        # canonical base utilities
+├── django-fusion/       # abstract models, managers, validators (depends on django-fusion)
 ├── crafts-ai/       # AI integrations, Celery tasks, email models (depends on django-seed)
 └── django-seed/        # email automation, orchestration, seeding
 ```
@@ -43,7 +43,7 @@ Workspace layout:
 uv sync --directory /root/site/libs
 
 # Or add to a site's pyproject.toml as workspace dependencies
-uv add django-osoul django-seed django-osoul crafts-ai
+uv add django-fusion django-seed django-fusion crafts-ai
 ```
 
 ### 1.2 Required Settings
@@ -52,9 +52,9 @@ Add to `INSTALLED_APPS` in your site's `settings/base.py`:
 
 ```
 # See settings/base.py — add these app labels:
-# django_osoul
-# django_osoul.pipelines
-# django_osoul.comp
+# django_fusion
+# django_fusion.pipelines
+# django_fusion.comp
 # django_seed
 ```
 
@@ -118,33 +118,33 @@ python manage.py qcluster
 
 ## 2. Library Overview
 
-### 2.1 django-osoul (Tier 1 — Canonical Base Utilities)
+### 2.1 django-fusion (Tier 1 — Canonical Base Utilities)
 
-**GitHub:** https://github.com/mammhoud/django-osoul
+**GitHub:** https://github.com/mammhoud/django-fusion
 
 Provides:
-- `django_osoul.utils.text` — `slugify_unique`, `truncate_words`, `strip_html_tags`
-- `django_osoul.utils.responses` — `success_response`, `error_response`, `created_response`, `forbidden_response`
-- `django_osoul.utils.datetime_utils` — `format_relative_time`, `format_duration`
-- `django_osoul.utils.validators` — `validate_email_format`, `validate_email_domain`
-- `django_osoul.models.mixins` — `TimestampedModel`, `SoftDeleteModel`, `UUIDPrimaryKeyModel`
-- `django_osoul.views.mixins` — `AjaxResponseMixin`, `MessageMixin`
-- `django_osoul.management.base` — `BaseCommand` with logging
-- `django_osoul.templatetags.django_osoul_tags` — `format_duration`, `render_widget`
+- `django_fusion.utils.text` — `slugify_unique`, `truncate_words`, `strip_html_tags`
+- `django_fusion.utils.responses` — `success_response`, `error_response`, `created_response`, `forbidden_response`
+- `django_fusion.utils.datetime_utils` — `format_relative_time`, `format_duration`
+- `django_fusion.utils.validators` — `validate_email_format`, `validate_email_domain`
+- `django_fusion.models.mixins` — `TimestampedModel`, `SoftDeleteModel`, `UUIDPrimaryKeyModel`
+- `django_fusion.views.mixins` — `AjaxResponseMixin`, `MessageMixin`
+- `django_fusion.management.base` — `BaseCommand` with logging
+- `django_fusion.templatetags.django_fusion_tags` — `format_duration`, `render_widget`
 
-### 2.2 django-osoul (Tier 2 — Abstract Models & Validators)
+### 2.2 django-fusion (Tier 2 — Abstract Models & Validators)
 
-**GitHub:** https://github.com/mammhoud/django-osoul
-**Depends on:** django-osoul
+**GitHub:** https://github.com/mammhoud/django-fusion
+**Depends on:** django-fusion
 
-Unique modules (not in django-osoul):
-- `django_osoul.models.base` — `BaseModel`, `TimeStampedModel`, `UUIDModel`
-- `django_osoul.models.managers` — `SoftDeleteQuerySet`, `SoftDeleteManager`
-- `django_osoul.services.validators` — `validate_phone_number`, `validate_url`, `validate_username`
-- `django_osoul.utils.decorators` — `cache_result`, `retry_on_exception`, `log_execution`
-- `django_osoul.constants` — timeout, pagination, cache, status, role constants
-- `django_osoul.enums` — `StatusEnum`, `RoleEnum`, `PermissionEnum`, `VisibilityEnum`, `PriorityEnum`
-- `django_osoul.exceptions` — `ForgeException`, `ValidationError`, `NotFoundError`, `PermissionDeniedError`
+Unique modules (not in django-fusion):
+- `django_fusion.models.base` — `BaseModel`, `TimeStampedModel`, `UUIDModel`
+- `django_fusion.models.managers` — `SoftDeleteQuerySet`, `SoftDeleteManager`
+- `django_fusion.services.validators` — `validate_phone_number`, `validate_url`, `validate_username`
+- `django_fusion.utils.decorators` — `cache_result`, `retry_on_exception`, `log_execution`
+- `django_fusion.constants` — timeout, pagination, cache, status, role constants
+- `django_fusion.enums` — `StatusEnum`, `RoleEnum`, `PermissionEnum`, `VisibilityEnum`, `PriorityEnum`
+- `django_fusion.exceptions` — `ForgeException`, `ValidationError`, `NotFoundError`, `PermissionDeniedError`
 
 ### 2.3 django-seed (Tier 1 — Canonical Email Automation)
 
@@ -176,14 +176,14 @@ Unique modules (not in django-seed):
 
 ## 3. Deduplication Map
 
-Modules removed from django-osoul (use django-osoul instead):
+Modules removed from django-fusion (use django-fusion instead):
 
-| Removed from django-osoul | Use instead |
+| Removed from django-fusion | Use instead |
 |---|---|
-| `django_osoul.utils.text` | `django_osoul.utils.text` |
-| `django_osoul.utils.responses` | `django_osoul.utils.responses` |
-| `django_osoul.utils.datetime_utils` | `django_osoul.utils.datetime_utils` |
-| `django_osoul.models.mixins` | `django_osoul.models.mixins` |
+| `django_fusion.utils.text` | `django_fusion.utils.text` |
+| `django_fusion.utils.responses` | `django_fusion.utils.responses` |
+| `django_fusion.utils.datetime_utils` | `django_fusion.utils.datetime_utils` |
+| `django_fusion.models.mixins` | `django_fusion.models.mixins` |
 
 Modules removed from crafts-ai (use django-seed instead):
 
@@ -236,11 +236,11 @@ Modules removed from crafts-ai (use django-seed instead):
 
 | # | Item | From | To | Lines | Priority |
 |---|------|------|----|-------|----------|
-| 1 | `mixins.py` | Both sites | `django_osoul.pipelines.site.mixins` | 907 | High |
-| 2 | `call.py` | Both sites | `django_osoul.CI.models.interaction.call` | 87 | High |
-| 3 | `notification.py` | Both sites | `django_osoul.CI.models.interaction.notification` | 124 | High |
-| 4 | `submission.py` | Both sites | `django_osoul.handlers.models.forms.submission` | 121 | Medium |
-| 5 | `integrations.py` | Both sites | `django_osoul.CI.models.integrations` | 178 | Medium |
+| 1 | `mixins.py` | Both sites | `django_fusion.pipelines.site.mixins` | 907 | High |
+| 2 | `call.py` | Both sites | `django_fusion.CI.models.interaction.call` | 87 | High |
+| 3 | `notification.py` | Both sites | `django_fusion.CI.models.interaction.notification` | 124 | High |
+| 4 | `submission.py` | Both sites | `django_fusion.handlers.models.forms.submission` | 121 | Medium |
+| 5 | `integrations.py` | Both sites | `django_fusion.CI.models.integrations` | 178 | Medium |
 
 ---
 

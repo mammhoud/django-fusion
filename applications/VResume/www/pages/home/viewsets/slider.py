@@ -1,5 +1,5 @@
 from django.utils.translation import gettext_lazy as _
-from django_osoul.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.wagtail.viewsets import BaseSnippetViewSet
 from pages.home.models import Slider
 
 

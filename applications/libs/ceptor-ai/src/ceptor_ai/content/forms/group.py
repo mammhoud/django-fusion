@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 from wagtail.users.forms import GroupForm as WagtailGroupForm
 
 from django.contrib.auth.models import Group
-from django_osoul.core.forms import BaseStyledForm, LayoutMixin, SecurityMixin, ValidationMixin
+from django_fusion.core.forms import BaseStyledForm, LayoutMixin, SecurityMixin, ValidationMixin
 
 
 class GroupRolesForm(BaseStyledForm, SecurityMixin, LayoutMixin, ValidationMixin, WagtailGroupForm):

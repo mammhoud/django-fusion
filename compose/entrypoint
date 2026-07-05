@@ -65,29 +65,41 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     echo "[SETUP] Preparing static files..."
     BUILD_ASSETS_MODE="${BUILD_ASSETS_ON_START:-auto}"
     WEBPACK_BIN="${APP_HOME}/assets/node_modules/.bin/webpack"
-    SHOULD_BUILD_ASSETS=false
-    case "$BUILD_ASSETS_MODE" in
-        true|1|yes)
-            if [ -x "$WEBPACK_BIN" ]; then
-                SHOULD_BUILD_ASSETS=true
-            else
-                echo "[WARN] BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}, but ${WEBPACK_BIN} is missing; run 'npm --prefix assets ci --include=dev --legacy-peer-deps' before container startup to enable webpack builds."
-            fi
-            ;;
-        auto)
-            if [ -x "$WEBPACK_BIN" ]; then
-                SHOULD_BUILD_ASSETS=true
-            else
-                echo "[INFO] Skipping webpack build because assets/node_modules is not installed in the mounted workspace."
-            fi
-            ;;
-        false|0|no)
-            echo "[INFO] BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; skipping webpack build."
-            ;;
-        *)
-            echo "[WARN] Unknown BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; expected auto, true, or false. Skipping webpack build."
-            ;;
-    esac
+
+    # Skip webpack if pre-built bundles exist (baked into image at build time)
+    # Bundles are in <site>/assets/bundles/<site>/ (or vresume for VResume)
+    SITE_BUNDLES_DIR="${APP_HOME}/${SITE_DIR_NAME}/assets/bundles"
+    BUNDLE_SUBDIR="${SITE_DIR_NAME}"
+    [ "$SITE_NAME" = "vresume" ] && BUNDLE_SUBDIR="vresume"
+    SITE_BUNDLE_PATH="${SITE_BUNDLES_DIR}/${BUNDLE_SUBDIR}"
+    if [ -d "$SITE_BUNDLE_PATH" ] && ls "$SITE_BUNDLE_PATH"/*.js >/dev/null 2>&1; then
+        echo "[INFO] Pre-built webpack bundles found at ${SITE_BUNDLE_PATH} — skipping runtime build"
+        SHOULD_BUILD_ASSETS=false
+    else
+        SHOULD_BUILD_ASSETS=false
+        case "$BUILD_ASSETS_MODE" in
+            true|1|yes)
+                if [ -x "$WEBPACK_BIN" ]; then
+                    SHOULD_BUILD_ASSETS=true
+                else
+                    echo "[WARN] BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}, but ${WEBPACK_BIN} is missing; run 'npm --prefix assets ci --include=dev --legacy-peer-deps' before container startup to enable webpack builds."
+                fi
+                ;;
+            auto)
+                if [ -x "$WEBPACK_BIN" ]; then
+                    SHOULD_BUILD_ASSETS=true
+                else
+                    echo "[INFO] Skipping webpack build because assets/node_modules is not installed in the mounted workspace."
+                fi
+                ;;
+            false|0|no)
+                echo "[INFO] BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; skipping webpack build."
+                ;;
+            *)
+                echo "[WARN] Unknown BUILD_ASSETS_ON_START=${BUILD_ASSETS_MODE}; expected auto, true, or false. Skipping webpack build."
+                ;;
+        esac
+    fi
 
     if [ "$SHOULD_BUILD_ASSETS" = "true" ]; then
         echo "[SETUP] Collecting/building static files..."
@@ -116,7 +128,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
     fi
 
     echo "[SETUP] Loading dumped data fixtures..."
-    LOAD_DUMP_ARGS=("--site" "$SITE_NAME")
+    LOAD_DUMP_ARGS=("$SITE_NAME")
     [ "${FORCE_LOAD_DUMPS:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--force" "--include-dumps")
     [ "${LOAD_FIXTURES:-false}" = "true" ] && LOAD_DUMP_ARGS+=("--include-extra")
     if ! run_logged load_dumped_data python tests/scripts/utilities/load_dumped_data.py "${LOAD_DUMP_ARGS[@]}"; then

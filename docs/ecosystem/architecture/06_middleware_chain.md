@@ -18,14 +18,14 @@ The order of middleware in `settings.py` is critical as they are processed in th
 
 ## Error Tracker Middleware
 
-**Location**: `django_osoul/middlewares/error_tracker.py`
+**Location**: `django_fusion/middlewares/error_tracker.py`
 
 Logs HTTP errors (4xx and 5xx) with request details.
 
 ```python
 MIDDLEWARE = [
     # ...
-    'django_osoul.middlewares.ErrorTrackerMiddleware',
+    'django_fusion.middlewares.ErrorTrackerMiddleware',
     # ...
 ]
 ```

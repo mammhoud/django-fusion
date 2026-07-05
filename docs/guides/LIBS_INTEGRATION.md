@@ -10,11 +10,11 @@ The workspace uses three internal Python libraries installed as git submodules u
 They follow a strict layered dependency order:
 
 ```
-django-osoul  (testing only — never in production code)
+django-fusion  (testing only — never in production code)
      ↑
-crafts-ai (automation layer — depends on django-osoul)
+crafts-ai (automation layer — depends on django-fusion)
      ↑
-django-osoul (foundation layer — zero external lib dependencies)
+django-fusion (foundation layer — zero external lib dependencies)
 ```
 
 Each library is installed into the workspace virtual environment via `uv`:
@@ -22,17 +22,17 @@ Each library is installed into the workspace virtual environment via `uv`:
 ```toml
 # pyproject.toml (workspace root)
 [tool.uv.sources]
-django-osoul = { path = "libs/django-osoul", editable = true }
+django-fusion = { path = "libs/django-fusion", editable = true }
 crafts-ai = { path = "libs/crafts-ai", editable = true }
-django-osoul  = { path = "libs/django-osoul",  editable = true }
+django-fusion  = { path = "libs/django-fusion",  editable = true }
 ```
 
 ---
 
-## django-osoul (Foundation)
+## django-fusion (Foundation)
 
-**Location:** `libs/django-osoul/`
-**PyPI:** `django-osoul`
+**Location:** `libs/django-fusion/`
+**PyPI:** `django-fusion`
 
 ### What It Provides
 
@@ -50,9 +50,9 @@ Pure Django foundation layer with zero Wagtail/Celery/rseal dependencies:
 ```python
 INSTALLED_APPS = [
     # ...
-    "django_osoul",
-    "django_osoul.comp",
-    "django_osoul.contrib",
+    "django_fusion",
+    "django_fusion.comp",
+    "django_fusion.contrib",
 ]
 ```
 
@@ -67,7 +67,7 @@ Logs to `django.request.errors` — 5xx at `CRITICAL`, 4xx at `ERROR`.
 # settings.py
 MIDDLEWARE = [
     # ... other middleware ...
-    "django_osoul.middlewares.error_tracker.ErrorTrackerMiddleware",
+    "django_fusion.middlewares.error_tracker.ErrorTrackerMiddleware",
 ]
 ```
 
@@ -77,7 +77,7 @@ Manages role hierarchy and permission inheritance. Subclass and define `ROLE_HIE
 and `ROLE_PERMISSIONS`:
 
 ```python
-from django_osoul.managers import RoleHierarchyManager
+from django_fusion.managers import RoleHierarchyManager
 
 class SiteRoleManager(RoleHierarchyManager):
     ROLE_HIERARCHY = {
@@ -101,7 +101,7 @@ has_access = mgr.has_permission(request.user, "auth.view_user")
 Static helpers for group-based access control. No instantiation needed:
 
 ```python
-from django_osoul.managers import GroupAccessControl
+from django_fusion.managers import GroupAccessControl
 
 # Check group membership
 if GroupAccessControl.check_group_access(request.user, ["editors", "admins"]):
@@ -114,8 +114,8 @@ qs = GroupAccessControl.filter_by_group(Article.objects.all(), request.user)
 #### BaseModel / TimestampedModel / SoftDeleteMixin
 
 ```python
-from django_osoul.models.base import BaseModel
-from django_osoul.models.mixins import TimestampedModel, SoftDeleteMixin
+from django_fusion.models.base import BaseModel
+from django_fusion.models.mixins import TimestampedModel, SoftDeleteMixin
 
 class MyModel(TimestampedModel, SoftDeleteMixin, BaseModel):
     name = models.CharField(max_length=255)
@@ -126,23 +126,23 @@ class MyModel(TimestampedModel, SoftDeleteMixin, BaseModel):
 
 ### Thin Wrappers Pattern (ctc-research example)
 
-ctc-research uses re-export wrappers so site code never imports from `django_osoul` directly.
+ctc-research uses re-export wrappers so site code never imports from `django_fusion` directly.
 This insulates the site from internal API changes:
 
 ```python
 # ctc-research/www/apps/middleware/error_tracker.py
-from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware
+from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware
 __all__ = ["ErrorTrackerMiddleware"]
 
 # ctc-research/www/apps/services/groups.py
-from django_osoul.managers import GroupAccessControl, RoleHierarchyManager
+from django_fusion.managers import GroupAccessControl, RoleHierarchyManager
 __all__ = ["RoleHierarchyManager", "GroupAccessControl"]
 ```
 
 VResume follows the same pattern:
 ```python
 # VResume/www/core/error_tracker.py
-from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware
+from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware
 __all__ = ["ErrorTrackerMiddleware"]
 ```
 
@@ -151,8 +151,8 @@ __all__ = ["ErrorTrackerMiddleware"]
 1. Create the thin wrapper:
    ```python
    # mysite/www/core/error_tracker.py
-   """Mysite error tracker — delegates to django_osoul."""
-   from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware
+   """Mysite error tracker — delegates to django_fusion."""
+   from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware
    __all__ = ["ErrorTrackerMiddleware"]
    ```
 
@@ -175,7 +175,7 @@ __all__ = ["ErrorTrackerMiddleware"]
 
 ### What It Provides
 
-Automation layer for pipelines, email, workflows, and privacy. Depends on `django-osoul`:
+Automation layer for pipelines, email, workflows, and privacy. Depends on `django-fusion`:
 
 - **Email:** `RoleBasedEmailTemplateSelector`, `EmailTemplateRegistry`
 - **Services:** `CertificateServiceBase`, `PersonServiceBase`, `MessageServiceBase`, `FormSubmissionService`
@@ -329,10 +329,10 @@ class CertificateService(CertificateServiceBase):
 
 ---
 
-## django-osoul (Testing)
+## django-fusion (Testing)
 
-**Location:** `libs/django-osoul/`
-**PyPI:** `django-osoul`
+**Location:** `libs/django-fusion/`
+**PyPI:** `django-fusion`
 
 ### What It Provides
 
@@ -349,20 +349,20 @@ Unified testing framework. **Never import in production code.**
 In `conftest.py` at the repo root:
 
 ```python
-pytest_plugins = ["django_osoul.tests.pytest_plugin"]
+pytest_plugins = ["django_fusion.tests.pytest_plugin"]
 ```
 
 Or in `pyproject.toml`:
 
 ```toml
 [tool.pytest.ini_options]
-plugins = ["django_osoul.tests.pytest_plugin"]
+plugins = ["django_fusion.tests.pytest_plugin"]
 ```
 
 ### BaseTestCase Usage
 
 ```python
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 class CoursePageTest(BaseTestCase):
     # self.user (testuser/testpass123) and self.admin_user available automatically
@@ -381,7 +381,7 @@ class CoursePageTest(BaseTestCase):
 ### BaseAPITestCase Usage
 
 ```python
-from django_osoul.tests.base import BaseAPITestCase
+from django_fusion.tests.base import BaseAPITestCase
 
 class CourseAPITest(BaseAPITestCase):
     def test_create_course(self):
@@ -402,7 +402,7 @@ class CourseAPITest(BaseAPITestCase):
 ### Property-Based Testing with st_email, st_slug, st_uuid
 
 ```python
-from django_osoul.tests.base import BaseTestCase, st_email, st_slug, st_uuid
+from django_fusion.tests.base import BaseTestCase, st_email, st_slug, st_uuid
 from hypothesis import given, settings
 
 class EmailValidationPropertyTest(BaseTestCase):
@@ -410,7 +410,7 @@ class EmailValidationPropertyTest(BaseTestCase):
     @settings(max_examples=100)
     def test_valid_emails_accepted(self, email):
         """Property: any valid email passes our validator."""
-        from django_osoul.filters import UniqueFieldValidator
+        from django_fusion.filters import UniqueFieldValidator
         from django.contrib.auth import get_user_model
         User = get_user_model()
         # Should not raise on valid emails
@@ -429,7 +429,7 @@ class EmailValidationPropertyTest(BaseTestCase):
 ### Replacing VResume's data_populator.py
 
 `VResume/www/tests/data_populator.py` is a standalone script that uses Pillow and Wagtail
-directly to create test content. The django-osoul pattern replaces ad-hoc scripts with
+directly to create test content. The django-fusion pattern replaces ad-hoc scripts with
 managed fixtures and seeder helpers:
 
 **Current approach (standalone script):**
@@ -440,7 +440,7 @@ python manage.py --site=vresume shell < VResume/www/tests/data_populator.py
 **Recommended approach (BaseTestCase + fixtures):**
 ```python
 # VResume/www/tests/test_portfolio.py
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 class PortfolioPageTest(BaseTestCase):
     fixtures = [
@@ -459,9 +459,9 @@ class PortfolioPageTest(BaseTestCase):
         self.assertEqual(response.status_code, 200)
 ```
 
-For generating dummy images (previously Pillow-based), use `django-osoul`'s seeder:
+For generating dummy images (previously Pillow-based), use `django-fusion`'s seeder:
 ```python
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 
 class PortfolioTest(BaseTestCase):
     def test_portfolio_page(self):
@@ -476,16 +476,16 @@ class PortfolioTest(BaseTestCase):
 
 | Library | ctc-research | lms-demo | VResume |
 |---------|:---:|:---:|:---:|
-| django-osoul (ErrorTrackerMiddleware) | ✅ thin wrapper | ✅ | ✅ thin wrapper |
-| django-osoul (RoleHierarchyManager) | ✅ thin wrapper | ✅ | — |
-| django-osoul (GroupAccessControl) | ✅ thin wrapper | ✅ | — |
-| django-osoul (BaseModel/mixins) | ✅ | ✅ | ✅ |
+| django-fusion (ErrorTrackerMiddleware) | ✅ thin wrapper | ✅ | ✅ thin wrapper |
+| django-fusion (RoleHierarchyManager) | ✅ thin wrapper | ✅ | — |
+| django-fusion (GroupAccessControl) | ✅ thin wrapper | ✅ | — |
+| django-fusion (BaseModel/mixins) | ✅ | ✅ | ✅ |
 | crafts-ai (PrivacyConsentMiddleware) | ✅ thin wrapper | ✅ | — |
 | crafts-ai (CertificateServiceBase) | ✅ wrapped | ✅ | — |
 | crafts-ai (EmailTemplateRegistry) | ✅ | ✅ | partial |
 | crafts-ai (FormSubmissionService) | ✅ | ✅ | ✅ |
-| django-osoul (BaseTestCase) | ✅ | ✅ | partial |
-| django-osoul (property-based testing) | ✅ | partial | — |
+| django-fusion (BaseTestCase) | ✅ | ✅ | partial |
+| django-fusion (property-based testing) | ✅ | partial | — |
 
 Legend: ✅ integrated, partial = partially used, — = not applicable
 
@@ -493,8 +493,8 @@ Legend: ✅ integrated, partial = partially used, — = not applicable
 
 ## See Also
 
-- `libs/django-osoul/README.md` — full osoul API reference
+- `libs/django-fusion/README.md` — full osoul API reference
 - `libs/crafts-ai/README.md` — full rseal API reference
-- `libs/django-osoul/README.md` — full grep API reference
+- `libs/django-fusion/README.md` — full grep API reference
 - `assets/ASSETS_GUIDE.md` — frontend build reference
 - `docs/infrastructure/INFRASTRUCTURE_GUIDE.md` — Docker/compose stack

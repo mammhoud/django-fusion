@@ -190,60 +190,60 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.managers.role_hierarchy import RoleHierarchyManager` | `from django_osoul.core.managers import RoleHierarchyManager` |
-| `from apps.handlers.managers.group_access import GroupAccessControl` | `from django_osoul.core.managers import GroupAccessControl` |
-| `from apps.handlers.managers.user import UserManager` | `from django_osoul.core.managers import UserManager` |
-| `from apps.handlers.managers.group import GroupManager` | `from django_osoul.core.managers import GroupManager` |
-| `from apps.handlers.managers import RoleHierarchyManager` | `from django_osoul.core.managers import RoleHierarchyManager` |
-| `from apps.handlers.managers import TokenCachedManager` | `from django_osoul.core.managers import TokenCachedManager` |
-| `from apps.handlers.managers import BaseManager` | `from django_osoul.core.managers import BaseManager` |
-| `from apps.handlers.managers import CachedManager` | `from django_osoul.core.managers import CachedManager` |
-| `from apps.handlers.managers import PersonTagCategoryManager` | `from django_osoul.core.managers import PersonTagCategoryManager` |
-| `from apps.handlers.managers import PersonTagManager` | `from django_osoul.core.managers import PersonTagManager` |
+| `from apps.handlers.managers.role_hierarchy import RoleHierarchyManager` | `from django_fusion.core.managers import RoleHierarchyManager` |
+| `from apps.handlers.managers.group_access import GroupAccessControl` | `from django_fusion.core.managers import GroupAccessControl` |
+| `from apps.handlers.managers.user import UserManager` | `from django_fusion.core.managers import UserManager` |
+| `from apps.handlers.managers.group import GroupManager` | `from django_fusion.core.managers import GroupManager` |
+| `from apps.handlers.managers import RoleHierarchyManager` | `from django_fusion.core.managers import RoleHierarchyManager` |
+| `from apps.handlers.managers import TokenCachedManager` | `from django_fusion.core.managers import TokenCachedManager` |
+| `from apps.handlers.managers import BaseManager` | `from django_fusion.core.managers import BaseManager` |
+| `from apps.handlers.managers import CachedManager` | `from django_fusion.core.managers import CachedManager` |
+| `from apps.handlers.managers import PersonTagCategoryManager` | `from django_fusion.core.managers import PersonTagCategoryManager` |
+| `from apps.handlers.managers import PersonTagManager` | `from django_fusion.core.managers import PersonTagManager` |
 
 ### Mixins
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.mixins.user import UserMixin` | `from django_osoul.mixins import UserMixin` |
-| `from apps.handlers.mixins.group import GroupMixin` | `from django_osoul.mixins import GroupMixin` |
-| `from apps.handlers.mixins.views import ...` | `from django_osoul.mixins import ...` |
-| `from apps.handlers.mixins.models import ...` | `from django_osoul.mixins import ...` |
+| `from apps.handlers.mixins.user import UserMixin` | `from django_fusion.mixins import UserMixin` |
+| `from apps.handlers.mixins.group import GroupMixin` | `from django_fusion.mixins import GroupMixin` |
+| `from apps.handlers.mixins.views import ...` | `from django_fusion.mixins import ...` |
+| `from apps.handlers.mixins.models import ...` | `from django_fusion.mixins import ...` |
 | `from apps.handlers.mixins.service import ServiceMixin` | `from crafts_ai.pipelines.mixins.service import ServiceMixin` |
-| `from apps.handlers.mixins import CacheMixin` | `from django_osoul.mixins import CacheMixin` |
-| `from apps.handlers.mixins import CacheSearchMixin` | `from django_osoul.mixins import CacheSearchMixin` |
+| `from apps.handlers.mixins import CacheMixin` | `from django_fusion.mixins import CacheMixin` |
+| `from apps.handlers.mixins import CacheSearchMixin` | `from django_fusion.mixins import CacheSearchMixin` |
 
 ### Middleware
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.middleware.error_tracker import ErrorTrackerMiddleware` | `from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware` |
-| `from apps.handlers.middleware import ErrorTrackerMiddleware` | `from django_osoul.middlewares import ErrorTrackerMiddleware` |
+| `from apps.handlers.middleware.error_tracker import ErrorTrackerMiddleware` | `from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware` |
+| `from apps.handlers.middleware import ErrorTrackerMiddleware` | `from django_fusion.middlewares import ErrorTrackerMiddleware` |
 | `from apps.handlers.middleware.privacy import PrivacyConsentMiddleware` | `from crafts_ai.contrib.privacy.middleware import PrivacyConsentMiddleware` |
-| `from apps.handlers.middleware import SiteMiddleware` | `from django_osoul.middlewares import SiteMiddleware` |
-| `from apps.handlers.middleware import ReadonlyExceptionHandlerMiddleware` | `from django_osoul.middlewares import ReadonlyExceptionHandlerMiddleware` |
+| `from apps.handlers.middleware import SiteMiddleware` | `from django_fusion.middlewares import SiteMiddleware` |
+| `from apps.handlers.middleware import ReadonlyExceptionHandlerMiddleware` | `from django_fusion.middlewares import ReadonlyExceptionHandlerMiddleware` |
 
 ### Backends
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.backends.auth import ...` | `from django_osoul.backends.auth import ...` |
-| `from apps.handlers.backends.storage import ...` | `from django_osoul.backends.storage import ...` |
-| `from apps.handlers.backends.auth import EmailOrUsernameModelBackend` | `from django_osoul.backends.auth import EmailOrUsernameModelBackend` |
+| `from apps.handlers.backends.auth import ...` | `from django_fusion.backends.auth import ...` |
+| `from apps.handlers.backends.storage import ...` | `from django_fusion.backends.storage import ...` |
+| `from apps.handlers.backends.auth import EmailOrUsernameModelBackend` | `from django_fusion.backends.auth import EmailOrUsernameModelBackend` |
 
 ### Adapters
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.adapters.allauth import ...` | `from django_osoul.adapters.allauth import ...` |
-| `from apps.handlers.adapters.social import ...` | `from django_osoul.adapters.social import ...` |
+| `from apps.handlers.adapters.allauth import ...` | `from django_fusion.adapters.allauth import ...` |
+| `from apps.handlers.adapters.social import ...` | `from django_fusion.adapters.social import ...` |
 
 ### Services
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.services.user import UserService` | `from django_osoul.core.services.user import UserService` |
-| `from apps.handlers.services.group import GroupService` | `from django_osoul.core.services.group import GroupService` |
+| `from apps.handlers.services.user import UserService` | `from django_fusion.core.services.user import UserService` |
+| `from apps.handlers.services.group import GroupService` | `from django_fusion.core.services.group import GroupService` |
 | `from apps.LMS.services.cart import CartService` | `from apps.lms.services.cart import CartService` (thin subclass of `crafts_ai.pipelines.services.cart.CartServiceBase`) |
 | `from apps.LMS.services.person import PersonService` | `from apps.lms.services.person import PersonService` (thin subclass of `crafts_ai.pipelines.services.person.PersonServiceBase`) |
 | `from apps.LMS.services.message import MessageService` | `from apps.lms.services.message import MessageService` (thin subclass of `crafts_ai.pipelines.services.message.MessageServiceBase`) |
@@ -253,11 +253,11 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.handlers.base import ...` | `from django_osoul.core.handlers.base import ...` |
-| `from apps.handlers.handlers.core import ...` | `from django_osoul.core.handlers.core import ...` |
-| `from apps.handlers.handlers.search import ...` | `from django_osoul.core.handlers.search import ...` |
-| `from apps.handlers.handlers.mixins.fragment import ...` | `from django_osoul.core.handlers.mixins.fragment import ...` |
-| `from apps.handlers.handlers.mixins.page import ...` | `from django_osoul.core.handlers.mixins.page import ...` |
+| `from apps.handlers.handlers.base import ...` | `from django_fusion.core.handlers.base import ...` |
+| `from apps.handlers.handlers.core import ...` | `from django_fusion.core.handlers.core import ...` |
+| `from apps.handlers.handlers.search import ...` | `from django_fusion.core.handlers.search import ...` |
+| `from apps.handlers.handlers.mixins.fragment import ...` | `from django_fusion.core.handlers.mixins.fragment import ...` |
+| `from apps.handlers.handlers.mixins.page import ...` | `from django_fusion.core.handlers.mixins.page import ...` |
 | `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from crafts_ai.handlers.mixins.wagtail_page import ...` |
 | `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from crafts_ai.handlers.mixins.wagtail_fragment import ...` |
 | `from apps.handlers.handlers.search import ...` (Wagtail) | `from crafts_ai.handlers.search import ...` |
@@ -266,37 +266,37 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.forms.base import ...` | `from django_osoul.forms import ...` |
-| `from apps.handlers.forms import ...` | `from django_osoul.forms import ...` |
-| `from apps.handlers.forms import BaseStyledForm` | `from django_osoul.forms import BaseStyledForm` |
-| `from apps.handlers.forms import LayoutMixin` | `from django_osoul.forms import LayoutMixin` |
-| `from apps.handlers.forms import SecurityMixin` | `from django_osoul.forms import SecurityMixin` |
-| `from apps.handlers.forms import ValidationMixin` | `from django_osoul.forms import ValidationMixin` |
-| `from apps.handlers.forms import PasswordVerificationMixin` | `from django_osoul.forms import PasswordVerificationMixin` |
-| `from apps.handlers.forms import FormAjaxCompleteMixin` | `from django_osoul.comp.forms import FormAjaxCompleteMixin` |
-| `from apps.handlers.forms import FormDependentSelectMixin` | `from django_osoul.comp.forms import FormDependentSelectMixin` |
-| `from apps.handlers.forms import ModelForm` | `from django_osoul.comp.forms import ModelForm` |
+| `from apps.handlers.forms.base import ...` | `from django_fusion.forms import ...` |
+| `from apps.handlers.forms import ...` | `from django_fusion.forms import ...` |
+| `from apps.handlers.forms import BaseStyledForm` | `from django_fusion.forms import BaseStyledForm` |
+| `from apps.handlers.forms import LayoutMixin` | `from django_fusion.forms import LayoutMixin` |
+| `from apps.handlers.forms import SecurityMixin` | `from django_fusion.forms import SecurityMixin` |
+| `from apps.handlers.forms import ValidationMixin` | `from django_fusion.forms import ValidationMixin` |
+| `from apps.handlers.forms import PasswordVerificationMixin` | `from django_fusion.forms import PasswordVerificationMixin` |
+| `from apps.handlers.forms import FormAjaxCompleteMixin` | `from django_fusion.comp.forms import FormAjaxCompleteMixin` |
+| `from apps.handlers.forms import FormDependentSelectMixin` | `from django_fusion.comp.forms import FormDependentSelectMixin` |
+| `from apps.handlers.forms import ModelForm` | `from django_fusion.comp.forms import ModelForm` |
 
 ### Validators / Filters
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.filters.validators import UniqueFieldValidator` | `from django_osoul.filters.validators import UniqueFieldValidator` |
-| `from apps.handlers.filters.validators import SlugFieldValidator` | `from django_osoul.filters.validators import SlugFieldValidator` |
-| `from apps.handlers.filters import BaseFilterMethod` | `from django_osoul.filters import BaseFilterMethod` |
-| `from apps.handlers.filters import DictFilterMethod` | `from django_osoul.filters import DictFilterMethod` |
+| `from apps.handlers.filters.validators import UniqueFieldValidator` | `from django_fusion.filters.validators import UniqueFieldValidator` |
+| `from apps.handlers.filters.validators import SlugFieldValidator` | `from django_fusion.filters.validators import SlugFieldValidator` |
+| `from apps.handlers.filters import BaseFilterMethod` | `from django_fusion.filters import BaseFilterMethod` |
+| `from apps.handlers.filters import DictFilterMethod` | `from django_fusion.filters import DictFilterMethod` |
 
 ### Contrib Utilities
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.contrib.enums import ...` | `from django_osoul.contrib.enums import ...` |
-| `from apps.handlers.contrib.choices import ...` | `from django_osoul.contrib.choices import ...` |
-| `from apps.handlers.contrib.context import ...` | `from django_osoul.contrib.context import ...` |
-| `from apps.handlers.contrib.schemas import ...` | `from django_osoul.contrib.schemas import ...` |
-| `from apps.handlers.contrib.responses import ...` | `from django_osoul.contrib.responses import ...` |
-| `from apps.handlers.contrib import DEFAULT` | `from django_osoul.contrib import DEFAULT` |
-| `from apps.handlers.contrib import camel_case_to_underscore` | `from django_osoul.contrib import camel_case_to_underscore` |
+| `from apps.handlers.contrib.enums import ...` | `from django_fusion.contrib.enums import ...` |
+| `from apps.handlers.contrib.choices import ...` | `from django_fusion.contrib.choices import ...` |
+| `from apps.handlers.contrib.context import ...` | `from django_fusion.contrib.context import ...` |
+| `from apps.handlers.contrib.schemas import ...` | `from django_fusion.contrib.schemas import ...` |
+| `from apps.handlers.contrib.responses import ...` | `from django_fusion.contrib.responses import ...` |
+| `from apps.handlers.contrib import DEFAULT` | `from django_fusion.contrib import DEFAULT` |
+| `from apps.handlers.contrib import camel_case_to_underscore` | `from django_fusion.contrib import camel_case_to_underscore` |
 
 ### Wagtail Components
 
@@ -321,67 +321,67 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from django.test import TestCase` | `from django_osoul.tests.base import BaseTestCase` |
-| `from apps.handlers.tests.factories import ...` | `from django_osoul.tests.factories import ...` |
-| `from apps.handlers.tests.assertions import ...` | `from django_osoul.tests.assertions import ...` |
-| `from apps.handlers.tests.fixtures import ...` | `from django_osoul.tests.fixtures import ...` |
-| `from apps.handlers.tests.mixins import ...` | `from django_osoul.tests.mixins import ...` |
-| Custom Hypothesis strategies | `from django_osoul.tests.base import st_email, st_slug, st_uuid` |
+| `from django.test import TestCase` | `from django_fusion.tests.base import BaseTestCase` |
+| `from apps.handlers.tests.factories import ...` | `from django_fusion.tests.factories import ...` |
+| `from apps.handlers.tests.assertions import ...` | `from django_fusion.tests.assertions import ...` |
+| `from apps.handlers.tests.fixtures import ...` | `from django_fusion.tests.fixtures import ...` |
+| `from apps.handlers.tests.mixins import ...` | `from django_fusion.tests.mixins import ...` |
+| Custom Hypothesis strategies | `from django_fusion.tests.base import st_email, st_slug, st_uuid` |
 
 ### Health Checks
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.views.health import HealthCheckView` | `from django_osoul.health.views import HealthCheckView` |
-| `from apps.handlers.views.health import DatabaseHealthView` | `from django_osoul.health.views import DatabaseHealthView` |
-| `from apps.handlers.views.health import AssetsHealthView` | `from django_osoul.health.views import AssetsHealthView` |
-| `from apps.handlers.views.health import MediaHealthView` | `from django_osoul.health.views import MediaHealthView` |
-| Custom health check URLs | `path('health/', include('django_osoul.health.urls'))` |
+| `from apps.handlers.views.health import HealthCheckView` | `from django_fusion.health.views import HealthCheckView` |
+| `from apps.handlers.views.health import DatabaseHealthView` | `from django_fusion.health.views import DatabaseHealthView` |
+| `from apps.handlers.views.health import AssetsHealthView` | `from django_fusion.health.views import AssetsHealthView` |
+| `from apps.handlers.views.health import MediaHealthView` | `from django_fusion.health.views import MediaHealthView` |
+| Custom health check URLs | `path('health/', include('django_fusion.health.urls'))` |
 
 ### UI Components
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.comp.widgets import ...` | `from django_osoul.comp.widgets import ...` |
-| `from apps.handlers.comp.payloads import ...` | `from django_osoul.comp.payloads import ...` |
-| `from apps.handlers.comp.site import ComponentViews` | `from django_osoul.site import ComponentViews` |
-| `from apps.handlers.comp.site import NotificationMixin` | `from django_osoul.site import NotificationMixin` |
-| `from apps.handlers.comp.site import PageHandler` | `from django_osoul.site import PageHandler` |
-| `from apps.handlers.comp.forms.layout import LayoutElement` | `from django_osoul.comp.forms.layout import LayoutElement` |
-| `from apps.handlers.comp.views.includes import PaginatedBaseView` | `from django_osoul.comp.views.includes import PaginatedBaseView` |
+| `from apps.handlers.comp.widgets import ...` | `from django_fusion.comp.widgets import ...` |
+| `from apps.handlers.comp.payloads import ...` | `from django_fusion.comp.payloads import ...` |
+| `from apps.handlers.comp.site import ComponentViews` | `from django_fusion.site import ComponentViews` |
+| `from apps.handlers.comp.site import NotificationMixin` | `from django_fusion.site import NotificationMixin` |
+| `from apps.handlers.comp.site import PageHandler` | `from django_fusion.site import PageHandler` |
+| `from apps.handlers.comp.forms.layout import LayoutElement` | `from django_fusion.comp.forms.layout import LayoutElement` |
+| `from apps.handlers.comp.views.includes import PaginatedBaseView` | `from django_fusion.comp.views.includes import PaginatedBaseView` |
 
 ### Models
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.models import BaseModel` | `from django_osoul.core.models import BaseModel` |
-| `from apps.handlers.models import Person` | `from django_osoul.core.models import Person` |
-| `from apps.handlers.models import Certificate` | `from django_osoul.core.models import Certificate` |
-| `from apps.handlers.models import Message` | `from django_osoul.core.models import Message` |
+| `from apps.handlers.models import BaseModel` | `from django_fusion.core.models import BaseModel` |
+| `from apps.handlers.models import Person` | `from django_fusion.core.models import Person` |
+| `from apps.handlers.models import Certificate` | `from django_fusion.core.models import Certificate` |
+| `from apps.handlers.models import Message` | `from django_fusion.core.models import Message` |
 | `from apps.handlers.models.manage.company import Organization` | `from apps.accounts.models.manage.company import Organization` |
 
 ### Rendering
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.rendering import TemplateRenderer` | `from django_osoul.rendering import TemplateRenderer` |
+| `from apps.handlers.rendering import TemplateRenderer` | `from django_fusion.rendering import TemplateRenderer` |
 
-### Package-Level Shims (crafts_ai re-exports from django_osoul)
+### Package-Level Shims (crafts_ai re-exports from django_fusion)
 
-These crafts_ai paths re-export from django_osoul for backward compatibility:
+These crafts_ai paths re-export from django_fusion for backward compatibility:
 
 | crafts_ai path | Actual source |
 |-------------------|---------------|
-| `crafts_ai.pipelines.backends` | `django_osoul.backends` |
-| `crafts_ai.pipelines.filters` | `django_osoul.filters` |
-| `crafts_ai.pipelines.managers` | `django_osoul.managers` |
-| `crafts_ai.pipelines.middlewares` | `django_osoul.middlewares` |
-| `crafts_ai.pipelines.mixins` | `django_osoul.mixins` |
-| `crafts_ai.logging_config` | `django_osoul.logging_config` |
-| `crafts_ai.forms` | `django_osoul.forms` |
-| `crafts_ai.contrib` | `django_osoul.contrib` |
+| `crafts_ai.pipelines.backends` | `django_fusion.backends` |
+| `crafts_ai.pipelines.filters` | `django_fusion.filters` |
+| `crafts_ai.pipelines.managers` | `django_fusion.managers` |
+| `crafts_ai.pipelines.middlewares` | `django_fusion.middlewares` |
+| `crafts_ai.pipelines.mixins` | `django_fusion.mixins` |
+| `crafts_ai.logging_config` | `django_fusion.logging_config` |
+| `crafts_ai.forms` | `django_fusion.forms` |
+| `crafts_ai.contrib` | `django_fusion.contrib` |
 
-Prefer the canonical `django_osoul.*` paths in new code.
+Prefer the canonical `django_fusion.*` paths in new code.
 
 ---
 
@@ -389,18 +389,18 @@ Prefer the canonical `django_osoul.*` paths in new code.
 
 This section documents all deprecated APIs, their replacements, migration paths, and common errors encountered during migration.
 
-### 1. ServiceMixin (Moved from django_osoul to crafts_ai)
+### 1. ServiceMixin (Moved from django_fusion to crafts_ai)
 
-**Deprecated**: `django_osoul.mixins.service.ServiceMixin`
+**Deprecated**: `django_fusion.mixins.service.ServiceMixin`
 **Replacement**: `crafts_ai.pipelines.mixins.service.ServiceMixin`
 
-**Why it was deprecated**: ServiceMixin contained Wagtail dependencies, violating the `django_osoul` package's "no Wagtail" boundary rule. All Wagtail-related code must reside in `crafts_ai` to maintain clean separation between pure Django foundation logic and Wagtail automation logic.
+**Why it was deprecated**: ServiceMixin contained Wagtail dependencies, violating the `django_fusion` package's "no Wagtail" boundary rule. All Wagtail-related code must reside in `crafts_ai` to maintain clean separation between pure Django foundation logic and Wagtail automation logic.
 
 **Before/After Example**:
 
 ```python
 # BEFORE (Deprecated)
-from django_osoul.mixins.service import ServiceMixin
+from django_fusion.mixins.service import ServiceMixin
 
 class MyService(ServiceMixin):
     """Service using deprecated ServiceMixin."""
@@ -419,24 +419,24 @@ class MyService(ServiceMixin):
 ```
 
 **Migration Path**:
-1. Update import statement from `django_osoul.mixins.service` to `crafts_ai.pipelines.mixins.service`
-2. Verify no other `django_osoul` code imports Wagtail components
+1. Update import statement from `django_fusion.mixins.service` to `crafts_ai.pipelines.mixins.service`
+2. Verify no other `django_fusion` code imports Wagtail components
 3. Run boundary checker to ensure compliance: `python scripts/check_boundaries.py`
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `Cannot import name 'ServiceMixin' from 'django_osoul.mixins'`
+- **ImportError**: `Cannot import name 'ServiceMixin' from 'django_fusion.mixins'`
   - **Fix**: Update import to `from crafts_ai.pipelines.mixins.service import ServiceMixin`
-- **Boundary Violation**: `django_osoul imports wagtail`
-  - **Fix**: Move all Wagtail-dependent code from `django_osoul` to `crafts_ai`
+- **Boundary Violation**: `django_fusion imports wagtail`
+  - **Fix**: Move all Wagtail-dependent code from `django_fusion` to `crafts_ai`
 - **Circular Dependency**: ServiceMixin now in `crafts_ai` but code needs pure Django version
-  - **Fix**: Extract pure Django functionality to separate mixin in `django_osoul`, keep Wagtail-dependent parts in `crafts_ai`
+  - **Fix**: Extract pure Django functionality to separate mixin in `django_fusion`, keep Wagtail-dependent parts in `crafts_ai`
 
-### 2. Seeder Shim (crafts_ai.seeder → django_osoul.seeder)
+### 2. Seeder Shim (crafts_ai.seeder → django_fusion.seeder)
 
-**Deprecated**: `crafts_ai.seeder` (shim module that imported `django_osoul.seeder`)
-**Replacement**: `django_osoul.seeder` directly
+**Deprecated**: `crafts_ai.seeder` (shim module that imported `django_fusion.seeder`)
+**Replacement**: `django_fusion.seeder` directly
 
-**Why it was deprecated**: The shim violated the "grep-test-only" boundary rule. `django_osoul` is a testing-only package and must not be imported by production code (`crafts_ai`). The shim created an indirect dependency that broke this rule.
+**Why it was deprecated**: The shim violated the "grep-test-only" boundary rule. `django_fusion` is a testing-only package and must not be imported by production code (`crafts_ai`). The shim created an indirect dependency that broke this rule.
 
 **Before/After Example**:
 
@@ -449,8 +449,8 @@ seeder.seed_test_data()  # Production code importing test infrastructure
 
 # AFTER (Replacement)
 # Production code should NOT import seeder functionality
-# Test code imports directly from django_osoul
-from django_osoul.seeder import DatabaseSeeder
+# Test code imports directly from django_fusion
+from django_fusion.seeder import DatabaseSeeder
 
 # Only in test files, never in production code
 class MyTests(BaseTestCase):
@@ -461,17 +461,17 @@ class MyTests(BaseTestCase):
 
 **Migration Path**:
 1. Remove all imports of `crafts_ai.seeder` from production code
-2. Update test code to import `django_osoul.seeder` directly
-3. Ensure no production code imports `django_osoul` modules
+2. Update test code to import `django_fusion.seeder` directly
+3. Ensure no production code imports `django_fusion` modules
 4. Run boundary checker: `python scripts/check_boundaries.py --rule grep-test-only`
 
 **Common Migration Errors and Fixes**:
 - **ImportError**: `No module named 'crafts_ai.seeder'`
-  - **Fix**: Update test code to use `django_osoul.seeder`, remove from production code
-- **Boundary Violation**: `crafts_ai imports django_osoul`
+  - **Fix**: Update test code to use `django_fusion.seeder`, remove from production code
+- **Boundary Violation**: `crafts_ai imports django_fusion`
   - **Fix**: Remove the shim module and update all imports
 - **Production Code Dependency**: Production code needs seeding functionality
-  - **Fix**: Move seeding logic to `django_osoul` or `crafts_ai` with proper boundaries
+  - **Fix**: Move seeding logic to `django_fusion` or `crafts_ai` with proper boundaries
 
 ### 3. Direct CartService/PersonService/MessageService (Replaced by Thin Subclass Pattern)
 
@@ -548,12 +548,12 @@ class CartService(CartServiceBase):
 - **Missing Project-Specific Logic**: Business logic lost during migration
   - **Fix**: Carefully extract project-specific logic to overrides, keep common logic in base classes
 
-### 4. Direct TestCase Usage (Replaced by BaseTestCase from django_osoul)
+### 4. Direct TestCase Usage (Replaced by BaseTestCase from django_fusion)
 
 **Deprecated**: `from django.test import TestCase`
-**Replacement**: `from django_osoul.tests.base import BaseTestCase`
+**Replacement**: `from django_fusion.tests.base import BaseTestCase`
 
-**Why it was deprecated**: `BaseTestCase` provides unified testing infrastructure including Hypothesis helpers (`st_email`, `st_slug`, `st_uuid`), consistent setup/teardown patterns, and integration with `django_osoul` test ecosystem.
+**Why it was deprecated**: `BaseTestCase` provides unified testing infrastructure including Hypothesis helpers (`st_email`, `st_slug`, `st_uuid`), consistent setup/teardown patterns, and integration with `django_fusion` test ecosystem.
 
 **Before/After Example**:
 
@@ -573,11 +573,11 @@ class UserTest(TestCase):
         self.assertTrue(re.match(pattern, email) is not None)
 
 # AFTER (Replacement)
-from django_osoul.tests.base import BaseTestCase
-from django_osoul.tests.base import st_email
+from django_fusion.tests.base import BaseTestCase
+from django_fusion.tests.base import st_email
 
 class UserTest(BaseTestCase):
-    """Test using BaseTestCase with django_osoul Hypothesis helpers."""
+    """Test using BaseTestCase with django_fusion Hypothesis helpers."""
 
     @given(st_email())
     def test_email_validation(self, email):
@@ -586,21 +586,21 @@ class UserTest(BaseTestCase):
 ```
 
 **Migration Path**:
-1. Replace all `from django.test import TestCase` with `from django_osoul.tests.base import BaseTestCase`
+1. Replace all `from django.test import TestCase` with `from django_fusion.tests.base import BaseTestCase`
 2. Update test class inheritance: `class MyTest(TestCase):` → `class MyTest(BaseTestCase):`
-3. Replace custom Hypothesis strategies with `django_osoul` helpers (`st_email`, `st_slug`, `st_uuid`)
+3. Replace custom Hypothesis strategies with `django_fusion` helpers (`st_email`, `st_slug`, `st_uuid`)
 4. Update imports for test utilities (`factories`, `assertions`, `fixtures`, `mixins`)
 5. Run test suite to verify all tests pass
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `No module named 'django_osoul'`
-  - **Fix**: Install `django_osoul` package: `cd venv/libs/django-osoul && uv install`
+- **ImportError**: `No module named 'django_fusion'`
+  - **Fix**: Install `django_fusion` package: `cd venv/libs/django-fusion && uv install`
 - **Missing Hypothesis Helpers**: `st_email not found`
-  - **Fix**: Import from correct location: `from django_osoul.tests.base import st_email, st_slug, st_uuid`
+  - **Fix**: Import from correct location: `from django_fusion.tests.base import st_email, st_slug, st_uuid`
 - **Test Method Conflicts**: BaseTestCase has different setUp/tearDown behavior
   - **Fix**: Review BaseTestCase implementation and adjust test setup accordingly
 - **Deprecated Assertions**: Custom assertions no longer available
-  - **Fix**: Update to use `django_osoul.tests.assertions` or standard unittest assertions
+  - **Fix**: Update to use `django_fusion.tests.assertions` or standard unittest assertions
 
 ### 5. Direct Import of Project-Specific Handlers/Blocks (Moved to crafts_ai)
 
@@ -661,7 +661,7 @@ from crafts_ai.contrib.wagtail_hooks import register_custom_hooks
 ### 6. Additional Deprecated Patterns
 
 **Deprecated**: Direct use of project-specific model managers
-**Replacement**: Import managers from `django_osoul.managers`
+**Replacement**: Import managers from `django_fusion.managers`
 
 **Example**:
 ```python
@@ -669,11 +669,11 @@ from crafts_ai.contrib.wagtail_hooks import register_custom_hooks
 from apps.accounts.managers import UserManager
 
 # AFTER (Replacement)
-from django_osoul.core.managers import UserManager
+from django_fusion.core.managers import UserManager
 ```
 
 **Deprecated**: Project-specific middleware implementations
-**Replacement**: Import middleware from `django_osoul.middlewares` or `crafts_ai.contrib`
+**Replacement**: Import middleware from `django_fusion.middlewares` or `crafts_ai.contrib`
 
 **Example**:
 ```python
@@ -681,11 +681,11 @@ from django_osoul.core.managers import UserManager
 from apps.accounts.middleware import ErrorTrackerMiddleware
 
 # AFTER (Replacement)
-from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware
+from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware
 ```
 
 **Deprecated**: Project-specific form base classes
-**Replacement**: Import forms from `django_osoul.forms`
+**Replacement**: Import forms from `django_fusion.forms`
 
 **Example**:
 ```python
@@ -693,7 +693,7 @@ from django_osoul.middlewares.error_tracker import ErrorTrackerMiddleware
 from apps.accounts.forms import BaseStyledForm
 
 # AFTER (Replacement)
-from django_osoul.forms import BaseStyledForm
+from django_fusion.forms import BaseStyledForm
 ```
 
 ---
@@ -703,7 +703,7 @@ from django_osoul.forms import BaseStyledForm
 After updating deprecated APIs, verify:
 
 1. **Boundary Rules**: Run `python scripts/check_boundaries.py` - zero violations
-2. **Import Errors**: Run `python -c "import django_osoul; import crafts_ai; import django_osoul"` - no errors
+2. **Import Errors**: Run `python -c "import django_fusion; import crafts_ai; import django_fusion"` - no errors
 3. **Test Suite**: Run full test suite for all packages and projects - all tests pass
 4. **Template Resolution**: Verify all templates render correctly
 5. **Service Functionality**: Test key service methods (cart operations, user management, messaging)
@@ -731,7 +731,7 @@ MIDDLEWARE = [
 # After
 MIDDLEWARE = [
     ...
-    "django_osoul.middlewares.error_tracker.ErrorTrackerMiddleware",
+    "django_fusion.middlewares.error_tracker.ErrorTrackerMiddleware",
     "crafts_ai.contrib.privacy.middleware.PrivacyConsentMiddleware",
     ...
 ]
@@ -747,7 +747,7 @@ AUTHENTICATION_BACKENDS = [
 
 # After
 AUTHENTICATION_BACKENDS = [
-    "django_osoul.backends.auth.CustomAuthBackend",
+    "django_fusion.backends.auth.CustomAuthBackend",
 ]
 ```
 
@@ -759,8 +759,8 @@ ACCOUNT_ADAPTER = "apps.handlers.adapters.allauth.CustomAccountAdapter"
 SOCIALACCOUNT_ADAPTER = "apps.handlers.adapters.social.CustomSocialAccountAdapter"
 
 # After
-ACCOUNT_ADAPTER = "django_osoul.adapters.allauth.CustomAccountAdapter"
-SOCIALACCOUNT_ADAPTER = "django_osoul.adapters.social.CustomSocialAccountAdapter"
+ACCOUNT_ADAPTER = "django_fusion.adapters.allauth.CustomAccountAdapter"
+SOCIALACCOUNT_ADAPTER = "django_fusion.adapters.social.CustomSocialAccountAdapter"
 ```
 
 ### Health Check URLs
@@ -771,11 +771,11 @@ urlpatterns = [
     path("health/", views.health_check),
 ]
 
-# After — unified health check from django_osoul
+# After — unified health check from django_fusion
 from django.urls import path, include
 
 urlpatterns = [
-    path("health/", include("django_osoul.health.urls")),
+    path("health/", include("django_fusion.health.urls")),
 ]
 ```
 
@@ -796,7 +796,7 @@ The `handlers` app was renamed to `accounts`. Update your import:
 from apps.handlers.managers import RoleHierarchyManager
 
 # After
-from django_osoul.core.managers import RoleHierarchyManager
+from django_fusion.core.managers import RoleHierarchyManager
 ```
 
 Also update `INSTALLED_APPS` to use `apps.accounts` instead of `apps.handlers`.
@@ -825,27 +825,27 @@ from apps.pages.models import HomePage
 from apps.content.models import HomePage
 ```
 
-#### ImportError: ModuleNotFoundError for django_osoul, crafts_ai, or django_osoul
+#### ImportError: ModuleNotFoundError for django_fusion, crafts_ai, or django_fusion
 
 Ensure packages are installed and in your Python path:
 
 ```bash
 # Install all packages
-cd venv/libs/django-osoul && uv install
+cd venv/libs/django-fusion && uv install
 cd venv/libs/crafts-ai && uv install
-cd venv/libs/django-osoul && uv install
+cd venv/libs/django-fusion && uv install
 
 # Verify imports work
-python -c "import django_osoul; import crafts_ai; import django_osoul; print('All imports successful')"
+python -c "import django_fusion; import crafts_ai; import django_fusion; print('All imports successful')"
 ```
 
-#### ImportError: Cannot import name 'ServiceMixin' from 'django_osoul.mixins'
+#### ImportError: Cannot import name 'ServiceMixin' from 'django_fusion.mixins'
 
 `ServiceMixin` was moved to `crafts_ai` due to Wagtail dependencies:
 
 ```python
 # Before
-from django_osoul.mixins.service import ServiceMixin
+from django_fusion.mixins.service import ServiceMixin
 
 # After
 from crafts_ai.pipelines.mixins.service import ServiceMixin
@@ -910,28 +910,28 @@ Static files follow the same pattern as templates:
 
 Templatetags placement:
 
-1. Reusable templatetags moved to packages (`django_osoul/templatetags/` or `crafts_ai/templatetags/`)
+1. Reusable templatetags moved to packages (`django_fusion/templatetags/` or `crafts_ai/templatetags/`)
 2. Project-specific templatetags remain in project `templatetags/` directories
 3. Update `{% load %}` statements with new module names
 
 ### 4. Boundary Violation Errors
 
-#### django_osoul imports Wagtail (boundary violation)
+#### django_fusion imports Wagtail (boundary violation)
 
-If you see `django_osoul imports wagtail` error:
+If you see `django_fusion imports wagtail` error:
 
 1. Run `python scripts/check_boundaries.py` to find all violations
-2. Move Wagtail-dependent code from `django_osoul` to `crafts_ai`
+2. Move Wagtail-dependent code from `django_fusion` to `crafts_ai`
 3. Update all imports in both packages and projects
 4. Common violations: `ServiceMixin`, Wagtail block classes, Wagtail-specific handlers
 
-#### django_osoul imported by production code (grep-test-only violation)
+#### django_fusion imported by production code (grep-test-only violation)
 
-`django_osoul` is for testing only. If production code imports it:
+`django_fusion` is for testing only. If production code imports it:
 
-1. Find the production file importing `django_osoul`
+1. Find the production file importing `django_fusion`
 2. Move the import to a test file, or
-3. Use the production equivalent (e.g., `django_osoul.middlewares` instead of `django_osoul.tests`)
+3. Use the production equivalent (e.g., `django_fusion.middlewares` instead of `django_fusion.tests`)
 
 #### nawaai imports Django (nawaai-no-django violation)
 
@@ -939,7 +939,7 @@ If you see `django_osoul imports wagtail` error:
 
 1. Refactor Django-dependent code out of `nawaai`
 2. Use dependency injection or pure Python alternatives
-3. Move Django integration to `django_osoul` or `crafts_ai`
+3. Move Django integration to `django_fusion` or `crafts_ai`
 
 #### Circular import detected
 
@@ -947,68 +947,68 @@ Circular dependencies break the dependency direction:
 
 1. Run `python scripts/detect_cycles.py` to find all cycles
 2. Apply suggested break strategies: extract interface, dependency injection, or event-based communication
-3. Common cycles: between `django_osoul` and `crafts_ai`, or within domain modules
+3. Common cycles: between `django_fusion` and `crafts_ai`, or within domain modules
 
 ### 5. Test Failures After Migration
 
 #### TestCase import errors
 
-All tests should use `django_osoul` infrastructure:
+All tests should use `django_fusion` infrastructure:
 
 ```python
 # Before
 from django.test import TestCase
 
 # After
-from django_osoul.tests.base import BaseTestCase
+from django_fusion.tests.base import BaseTestCase
 ```
 
 #### Factory import errors
 
-Factories moved to `django_osoul`:
+Factories moved to `django_fusion`:
 
 ```python
 # Before
 from apps.handlers.tests.factories import UserFactory
 
 # After
-from django_osoul.tests.factories import UserFactory
+from django_fusion.tests.factories import UserFactory
 ```
 
 #### Assertion import errors
 
-Assertions moved to `django_osoul`:
+Assertions moved to `django_fusion`:
 
 ```python
 # Before
 from apps.handlers.tests.assertions import assert_user_has_role
 
 # After
-from django_osoul.tests.assertions import assert_user_has_role
+from django_fusion.tests.assertions import assert_user_has_role
 ```
 
 #### Hypothesis strategy errors
 
-Use `django_osoul` Hypothesis helpers:
+Use `django_fusion` Hypothesis helpers:
 
 ```python
 # Before: Custom strategies
 from hypothesis import strategies as st
 
-# After: Use django_osoul helpers
-from django_osoul.tests.base import st_email, st_slug, st_uuid
+# After: Use django_fusion helpers
+from django_fusion.tests.base import st_email, st_slug, st_uuid
 ```
 
 #### Health check test failures
 
-Health checks unified in `django_osoul`:
+Health checks unified in `django_fusion`:
 
 ```python
 # Before: Custom health check views
 path('health/', views.health_check)
 
-# After: Use django_osoul health URLs
-path('health/', include('django_osoul.health.urls'))
+# After: Use django_fusion health URLs
+path('health/', include('django_fusion.health.urls'))
 ```
 
 ### 6. Database Migration Issues
@@ -1138,9 +1138,9 @@ python scripts/analyze_duplication.py --threshold 0.70
 import-linter --config .importlinter
 
 # Run all tests
-cd venv/libs/django-osoul && uv run pytest tests/ -v
+cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd venv/libs/crafts-ai && uv run pytest tests/ -v
-cd venv/libs/django-osoul && uv run pytest tests/ -v
+cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd ctc-research.com && uv run pytest tests/ -v
 cd structa.cloud && uv run pytest tests/ -v
 ```
@@ -1151,7 +1151,7 @@ Use git history and backups:
 
 ```bash
 # Find when a file was moved
-git log --follow --name-only -- venv/libs/django-osoul/src/django_osoul/managers/role_hierarchy.py
+git log --follow --name-only -- venv/libs/django-fusion/src/django_fusion/managers/role_hierarchy.py
 
 # Revert to a rollback point
 git checkout rollback-phase-1-start
@@ -1186,9 +1186,9 @@ python scripts/analyze_duplication.py --threshold 0.70
 import-linter --config .importlinter
 
 # Run tests for all packages
-cd venv/libs/django-osoul && uv run pytest tests/ -v
+cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd venv/libs/crafts-ai && uv run pytest tests/ -v
-cd venv/libs/django-osoul && uv run pytest tests/ -v
+cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd venv/libs/nawaai && uv run pytest tests/ -v
 
 # Run tests for projects
@@ -1212,7 +1212,7 @@ permissions = manager.get_all_permissions_for_role('admin')
 
 **After:**
 ```python
-from django_osoul.core.managers import RoleHierarchyManager
+from django_fusion.core.managers import RoleHierarchyManager
 
 manager = RoleHierarchyManager()
 permissions = manager.get_all_permissions_for_role('admin')
@@ -1268,8 +1268,8 @@ class MyTest(TestCase):
 
 **After:**
 ```python
-from django_osoul.tests.base import BaseTestCase
-from django_osoul.tests.factories import UserFactory
+from django_fusion.tests.base import BaseTestCase
+from django_fusion.tests.factories import UserFactory
 
 class MyTest(BaseTestCase):
     def test_user_creation(self):
@@ -1296,7 +1296,7 @@ urlpatterns = [
 from django.urls import path, include
 
 urlpatterns = [
-    path('health/', include('django_osoul.health.urls')),
+    path('health/', include('django_fusion.health.urls')),
 ]
 ```
 
@@ -1305,10 +1305,10 @@ urlpatterns = [
 ## Summary of Key Changes
 
 1. **App Renames**: `handlers` → `accounts`, `LMS` → `lms`/`alliance`, `pages` → `content`
-2. **Package Extraction**: Business logic moved to `django_osoul` (pure Django) and `crafts_ai` (Wagtail + automation)
+2. **Package Extraction**: Business logic moved to `django_fusion` (pure Django) and `crafts_ai` (Wagtail + automation)
 3. **Thin Layer Pattern**: Projects now delegate to package base classes
-4. **Testing Unification**: All tests use `django_osoul` infrastructure
-5. **Health Check Unification**: Health endpoints provided by `django_osoul.health`
+4. **Testing Unification**: All tests use `django_fusion` infrastructure
+5. **Health Check Unification**: Health endpoints provided by `django_fusion.health`
 6. **Boundary Enforcement**: Strict import rules enforced by import-linter
 7. **Zero Duplication**: All shared logic in packages, no duplication across projects
 

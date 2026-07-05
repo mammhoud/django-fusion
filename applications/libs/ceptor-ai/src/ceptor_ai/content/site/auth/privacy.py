@@ -5,7 +5,7 @@ Serves privacy policy content as an HTMX fragment for lazy-loading modals.
 from django.http import HttpResponse
 from django.template.loader import render_to_string
 
-from django_osoul.site import ComponentViews
+from django_fusion.site import ComponentViews
 from ceptor_ai.contrib.privacy import get_privacy_html
 
 

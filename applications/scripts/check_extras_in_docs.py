@@ -25,7 +25,7 @@ doc drift can't ship on a PR.
 Notes
 -----
 
-* Library package names use hyphens (``ceptor-ai``, ``django-osoul``) per PEP
+* Library package names use hyphens (``ceptor-ai``, ``django-fusion``) per PEP
   621; the dict under ``applications/libs`` mirrors that. So the mapping is
   literally ``applications/libs/{pkg}/pyproject.toml``.
 * ``pip install`` is treated leniently: anything after the install command up to

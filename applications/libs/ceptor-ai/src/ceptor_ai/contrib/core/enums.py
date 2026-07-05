@@ -1,13 +1,13 @@
 """
-Compatibility shim: enums live in django_osoul.contrib.enums.
+Compatibility shim: enums live in django_fusion.contrib.enums.
 Re-exported here for backward compatibility.
-Uses direct module imports to avoid triggering django_osoul.__init__ model loading.
+Uses direct module imports to avoid triggering django_fusion.__init__ model loading.
 """
 import importlib as _importlib
 
 # Import directly from submodules to avoid AppRegistryNotReady
-_env = _importlib.import_module("django_osoul.site.enums.env")
-_upload = _importlib.import_module("django_osoul.site.enums.upload")
+_env = _importlib.import_module("django_fusion.site.enums.env")
+_upload = _importlib.import_module("django_fusion.site.enums.upload")
 
 Environment = _env.Environment
 Runtime = _env.Runtime

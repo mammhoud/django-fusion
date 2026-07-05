@@ -134,8 +134,8 @@ INSTALLED_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "django_osoul",
-    "django_osoul.mcp_designer",   # MCP integration
+    "django_fusion",
+    "django_fusion.mcp_designer",   # MCP integration
     "ninja_extra",
     "django_htmx",
     "django_bird",

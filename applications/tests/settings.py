@@ -8,13 +8,13 @@ from ``applications/`` via ``make test-local`` (which is ``uv run pytest``).
 Background
 ----------
 ``applications/pyproject.toml`` pins ``DJANGO_SETTINGS_MODULE = "tests.settings"``
-and sets ``testpaths = ["tests", "libs/django-osoul/tests/analyzer"]``.
+and sets ``testpaths = ["tests", "libs/django-fusion/tests/analyzer"]``.
 When pytest is run from ``applications/``, the ``tests`` testpath resolves to
 ``applications/tests/`` (a directory that did not exist before this shim), and
 ``tests.settings`` resolves to this module.
 
 The root ``tests/settings.py`` (at the workspace root) holds the full Django
-configuration for the library test corpus (django-osoul analyzer, ceptor-ai,
+configuration for the library test corpus (django-fusion analyzer, ceptor-ai,
 etc.). Site-specific tests need the same base but with the shared
 ``applications/assets/templates/`` directory added to ``TEMPLATES.DIRS`` so
 that templates like ``events.html`` (which include ``events/includes/events_grid.html``)

@@ -8,7 +8,7 @@ from django.http import HttpRequest
 from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django_osoul.site import PageHandler
+from django_fusion.site import PageHandler
 
 from ceptor_ai.content.forms.newsletter.subscription import SubscriptionForm
 from ceptor_ai.content.models.newsletter import Subscriber

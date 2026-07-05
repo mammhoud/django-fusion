@@ -49,12 +49,12 @@ class ThinLayerReport:
 # ---------------------------------------------------------------------------
 
 PACKAGE_BASES = {
-    # django_osoul
-    "django_osoul",
+    # django_fusion
+    "django_fusion",
     # crafts_ai
     "crafts_ai",
-    # django_osoul
-    "django_osoul",
+    # django_fusion
+    "django_fusion",
     # nawaai
     "nawaai",
 }

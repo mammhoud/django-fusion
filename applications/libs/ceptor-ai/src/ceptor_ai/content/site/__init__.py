@@ -6,7 +6,7 @@ Exports authentication views and non-auth views.
 Canonical imports::
     from ceptor_ai.content.site.auth import LoginView
     from ceptor_ai.content.site.views import NotificationView
-    from django_osoul.health.views import health_check
+    from django_fusion.health.views import health_check
 """
 
 from django.shortcuts import redirect

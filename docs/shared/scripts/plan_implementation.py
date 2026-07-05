@@ -75,7 +75,7 @@ class ImplementationPlanner:
         "1.4.3": 1.0,   # Create git tags
         "1.4.4": 2.0,   # Write BACKUP_LOG.md template
 
-        # Phase 2: django_osoul extractions (simplified estimates)
+        # Phase 2: django_fusion extractions (simplified estimates)
         "2.1": 12.0,    # Extract handlers
         "2.2": 6.0,     # Extract managers
         "2.3": 4.0,     # Extract user/group managers
@@ -110,7 +110,7 @@ class ImplementationPlanner:
         "3.16": 4.0,    # Extract orchestrator
         "3.17": 4.0,    # Boundary check
 
-        # Phase 4: django_osoul
+        # Phase 4: django_fusion
         "4.1": 4.0,     # Create BaseTestCase
         "4.2": 6.0,     # Create factories
         "4.3": 4.0,     # Create fixtures
@@ -186,9 +186,9 @@ class ImplementationPlanner:
         # Phase 14: Documentation
         "14.1": 6.0,    # Create ARCHITECTURE.md
         "14.2": 4.0,    # Create MIGRATION_GUIDE.md
-        "14.3": 4.0,    # Write django_osoul README
+        "14.3": 4.0,    # Write django_fusion README
         "14.4": 4.0,    # Write crafts_ai README
-        "14.5": 4.0,    # Write django_osoul README
+        "14.5": 4.0,    # Write django_fusion README
         "14.6": 3.0,    # Write nawaai README
         "14.7": 4.0,    # Write ctc-research README
         "14.8": 4.0,    # Write structa.cloud README
@@ -362,9 +362,9 @@ class ImplementationPlanner:
 
     PHASE_DESCRIPTIONS = {
         1: "Analysis and Planning",
-        2: "django_osoul — Extract Pure Django/Python Foundation",
+        2: "django_fusion — Extract Pure Django/Python Foundation",
         3: "crafts_ai — Extract Wagtail + Automation Logic",
-        4: "django_osoul — Extract Testing Infrastructure and Health Checks",
+        4: "django_fusion — Extract Testing Infrastructure and Health Checks",
         5: "nawaai — Verify Pure Python Boundary",
         6: "Domain Restructuring — App Renames and Module Reorganization",
         7: "Project Simplification — Thin Layer Pattern",
@@ -498,11 +498,11 @@ class ImplementationPlanner:
             "```",
             "Phase 1: Analysis and Planning",
             "  ↓",
-            "Phase 2: django_osoul (Pure Django Foundation)",
+            "Phase 2: django_fusion (Pure Django Foundation)",
             "  ↓",
             "Phase 3: crafts_ai (Wagtail + Automation)",
             "  ↓",
-            "Phase 4: django_osoul (Testing Infrastructure)",
+            "Phase 4: django_fusion (Testing Infrastructure)",
             "  ↓",
             "Phase 5: nawaai (Pure Python Boundary)",
             "  ↓",

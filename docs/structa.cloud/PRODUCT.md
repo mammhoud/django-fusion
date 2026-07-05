@@ -87,12 +87,12 @@
 | `colorfield` | Color picker field |
 | `django_rq` | Redis Queue background jobs |
 
-### django-osoul (Internal Library)
+### django-fusion (Internal Library)
 | App | Purpose |
 |---|---|
-| `django_osoul.pipelines` | Core models, auth views, newsletter, user pipelines |
-| `django_osoul.comp` | PageHandler, HTMX components, notification system |
-| `django_osoul.mcp_designer` | MCP server integration for AI tooling |
+| `django_fusion.pipelines` | Core models, auth views, newsletter, user pipelines |
+| `django_fusion.comp` | PageHandler, HTMX components, notification system |
+| `django_fusion.mcp_designer` | MCP server integration for AI tooling |
 
 ### Project Apps
 | App | Purpose |
@@ -120,7 +120,7 @@
 - Startup validation in `HandlersConfig.ready()`: SECRET_KEY length, insecure placeholder detection, duplicate YAML settings, URL routing resolution, middleware ordering
 
 ### Health Check
-- `GET /health/` → `{"status": "ok"}` — served by `django_osoul.pipelines` (shared with ctc-research)
+- `GET /health/` → `{"status": "ok"}` — served by `django_fusion.pipelines` (shared with ctc-research)
 
 ### Management Commands
 | Command | Description |
@@ -130,7 +130,7 @@
 
 ### Social Authentication
 - Google, GitHub, Facebook, LinkedIn OAuth2 providers configured
-- `SocialAccountAdapter` from django-osoul for custom signup flow
+- `SocialAccountAdapter` from django-fusion for custom signup flow
 
 ### MFA
 - TOTP, WebAuthn, and recovery codes via `allauth.mfa`
@@ -151,8 +151,8 @@ structa.cloud/
 │   ├── configs/                 # Dynaconf + Pydantic settings
 │   └── compose/                 # Docker + Traefik configs
 └── libs/
-    └── django-osoul/             # Shared internal library
-        └── src/django_osoul/
+    └── django-fusion/             # Shared internal library
+        └── src/django_fusion/
             ├── pipelines/       # Models, auth views, /health/, newsletter
             └── comp/            # PageHandler, HTMX, notifications
 ```

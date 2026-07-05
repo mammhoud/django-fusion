@@ -16,9 +16,9 @@ compatible constraint (highest lower bound).
 |------|-----------|
 | `ctc-research.com/pyproject.toml` | *(unpinned)* |
 | `structa.cloud/pyproject.toml` | *(unpinned)* |
-| `venv/libs/django-osoul/pyproject.toml` | `>=4.0` |
+| `venv/libs/django-fusion/pyproject.toml` | `>=4.0` |
 | `venv/libs/crafts-ai/pyproject.toml` | `>=4.0` |
-| `venv/libs/django-osoul/pyproject.toml` | *(unpinned)* |
+| `venv/libs/django-fusion/pyproject.toml` | *(unpinned)* |
 
 **Recommended unified version:** `>=4.2`
 *(Both projects require Python ≥3.11 and use Django 5.x features; >=4.2 is the
@@ -45,7 +45,7 @@ sufficient for the packages.)*
 | File | Constraint |
 |------|-----------|
 | `structa.cloud/pyproject.toml` | `>=9.0.2` |
-| `venv/libs/django-osoul/pyproject.toml` | `>=7.0` |
+| `venv/libs/django-fusion/pyproject.toml` | `>=7.0` |
 
 **Recommended unified version:** `>=9.0.2`
 *(Application projects already require 9.x; align the package to match.)*
@@ -58,7 +58,7 @@ sufficient for the packages.)*
 |------|-----------|
 | `ctc-research.com/pyproject.toml` | `>=4.12.0` |
 | `structa.cloud/pyproject.toml` | `>=4.12.0` |
-| `venv/libs/django-osoul/pyproject.toml` | `>=4.5` |
+| `venv/libs/django-fusion/pyproject.toml` | `>=4.5` |
 
 **Recommended unified version:** `>=4.12.0`
 *(Use the highest lower bound declared by the application projects.)*
@@ -96,7 +96,7 @@ excluded from this analysis.
 | `python-json-logger` | Used in `LOGGING` settings — **keep** |
 | `yml` | No import found in source tree — **candidate for removal** |
 
-### `venv/libs/django-osoul/pyproject.toml`
+### `venv/libs/django-fusion/pyproject.toml`
 
 | Package | Finding |
 |---------|---------|

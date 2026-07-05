@@ -191,7 +191,7 @@ COMPLETE_TASK_SYSTEM_INDEX.md (You are here)
 
 ## What Gets Extracted
 
-### django-osoul
+### django-fusion
 - Base models (BaseModel, TimestampedModel, etc.)
 - Form base classes and validators
 - Reusable utilities
@@ -204,7 +204,7 @@ COMPLETE_TASK_SYSTEM_INDEX.md (You are here)
 - Task monitoring and error handling
 - Workflow orchestration
 
-### django-osoul
+### django-fusion
 - Reusable factories
 - Common fixtures
 - Reusable assertions

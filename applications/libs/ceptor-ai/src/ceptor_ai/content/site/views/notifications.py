@@ -1,11 +1,11 @@
 """
 Notification views.
 
-Re-exports from django_osoul.contrib.views.notifications for backward compatibility.
+Re-exports from django_fusion.contrib.views.notifications for backward compatibility.
 
-Canonical import: from django_osoul.contrib.views import NotificationView
+Canonical import: from django_fusion.contrib.views import NotificationView
 """
 
-from django_osoul.site.views.notifications import NotificationView  # noqa: F401
+from django_fusion.site.views.notifications import NotificationView  # noqa: F401
 
 __all__ = ["NotificationView"]

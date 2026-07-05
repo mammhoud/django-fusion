@@ -2,7 +2,7 @@
 Unit tests for profile blog management views (BlogPostsView, BlogPostCreateView,
 BlogPostEditView, BlogPostDeleteView) from www.apps.accounts.site.blog.
 
-These views use PageHandler (django_osoul) which has complex rendering.
+These views use PageHandler (django_fusion) which has complex rendering.
 We test the core logic by calling view methods directly with mock requests.
 """
 import importlib

@@ -79,7 +79,7 @@ LOCAL_APPS = [
     "plugins.products.apps.ProductsConfig",
     "plugins.profile.apps.ProfileConfig",
     "ceptor_ai",
-    "django_osoul.analyzer.apps.AnalyzerAppConfig",
+    "django_fusion.analyzer.apps.AnalyzerAppConfig",
 ]
 ```
 
@@ -95,7 +95,7 @@ LOCAL_APPS = [
     "plugins.products.apps.ProductsConfig",
     "plugins.profile.apps.ProfileConfig",
     "ceptor_ai",
-    "django_osoul.analyzer.apps.AnalyzerAppConfig",
+    "django_fusion.analyzer.apps.AnalyzerAppConfig",
 ]
 ```
 
@@ -105,7 +105,7 @@ LOCAL_APPS = [
     "www.core",
     "plugins.accounts.apps.AccountsConfig",
     "ceptor_ai",
-    "django_osoul.analyzer.apps.AnalyzerAppConfig",
+    "django_fusion.analyzer.apps.AnalyzerAppConfig",
     "pages.home",
     "pages.about",
     "pages.cv",

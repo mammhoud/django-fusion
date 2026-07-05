@@ -2,7 +2,7 @@
 
 > Part of **ceptor-ai** — Django automation engine
 
-Privacy utilities - shim re-exporting from django_osoul.
+Privacy utilities - shim re-exporting from django_fusion.
 
 ## Contents
 

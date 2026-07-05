@@ -1,3 +1,45 @@
+# =============================================================================
+# CTC Research — Traefik router config
+# =============================================================================
+#
+# CURRENT STATE: serving self-signed TLS cert (browsers will warn).
+#
+# TO GET A TRUSTED LET'S ENCRYPT CERT — follow these 3 steps in order:
+#
+# STEP 1 — Fix DNS on Hostinger
+#   Log in at https://hpanel.hostinger.com → DNS Zone for ctc-research.com
+#   Add / update these A records (all pointing to this server):
+#
+#     @    A  187.77.166.222  (ctc-research.com)
+#     www  A  187.77.166.222
+#     arch A  187.77.166.222
+#
+#   Set TTL to 300. Wait a few minutes for propagation, then verify:
+#     dig +short ctc-research.com A   # should return 187.77.166.222
+#
+# STEP 2 — Enable certificatesResolvers in proxy/traefik/dynamic.yml
+#   See the comment block at the bottom of that file.
+#   Uncomment the `certificatesResolvers:` section and restart the proxy:
+#     docker restart default-proxy
+#
+# STEP 3 — Flip the routers below to use the LE cert resolver
+#   On ctc-site-https and ctc-site-media-https, replace:
+#     tls: {}
+#   with:
+#     tls:
+#       certResolver: letsencrypt        # DNS-01 via Cloudflare
+#   OR:
+#     tls:
+#       certResolver: letsencrypt-http   # HTTP-01 (no API token needed,
+#                                        # but requires Step 1 DNS to be done first)
+#
+#   Then remove the ctc-research entry from proxy/traefik/dynamic/certs.yml
+#   (see comment in that file) so Traefik stops serving the self-signed cert.
+#
+#   Traefik will request and store the LE cert automatically on next request.
+#   No restart needed for Step 3 — the file provider hot-reloads.
+# =============================================================================
+
 http:
   routers:
     ctc-site-http:
@@ -12,12 +54,7 @@ http:
       middlewares: [compress, csrf-headers, security-headers]
       service: ctc-site-service
       tls:
-        certResolver: letsencrypt
-        domains:
-          - main: ctc-research.com
-            sans:
-              - www.ctc-research.com
-              - arch.ctc-research.com
+        certResolver: letsencrypt-http
     ctc-site-media-http:
       rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
       entryPoints: [web]
@@ -31,12 +68,7 @@ http:
       service: ctc-site-media-service
       priority: 100
       tls:
-        certResolver: letsencrypt
-        domains:
-          - main: ctc-research.com
-            sans:
-              - www.ctc-research.com
-              - arch.ctc-research.com
+        certResolver: letsencrypt-http
   services:
     ctc-site-service:
       loadBalancer:

@@ -72,16 +72,16 @@
 
 ### 📦 Package-Aligned
 - Code fits clear package use cases
-- django-osoul: Base models, forms, utilities
+- django-fusion: Base models, forms, utilities
 - crafts-ai: Email, tasks, workflows
-- django-osoul: Testing utilities
+- django-fusion: Testing utilities
 - nawaai: AI/MCP (standalone)
 
 ---
 
 ## What Gets Extracted
 
-### django-osoul (Base Models & Utilities)
+### django-fusion (Base Models & Utilities)
 ```
 ✅ BaseModel, TimestampedModel, SluggedModel
 ✅ Base form classes and validators
@@ -98,7 +98,7 @@
 ✅ Workflow orchestration
 ```
 
-### django-osoul (Testing)
+### django-fusion (Testing)
 ```
 ✅ Reusable factories (UserFactory, etc.)
 ✅ Common fixtures and test data
@@ -124,17 +124,17 @@
 - Plan extraction strategy
 
 ### Weeks 2-3: Extract Base Models & Utilities
-- Extract base models to django-osoul
-- Extract utilities to django-osoul
-- Extract form base classes to django-osoul
+- Extract base models to django-fusion
+- Extract utilities to django-fusion
+- Extract form base classes to django-fusion
 
 ### Weeks 4-5: Extract Email & Task Logic
 - Extract email logic to crafts-ai
 - Extract task logic to crafts-ai
 
 ### Week 6: Extract Testing Utilities
-- Extract factories to django-osoul
-- Extract fixtures to django-osoul
+- Extract factories to django-fusion
+- Extract fixtures to django-fusion
 
 ### Weeks 7-8: Cleanup & Documentation
 - Remove duplication from websites

@@ -82,9 +82,9 @@ The AI tasks use these files as context via `@codebase` and `@folder docs`:
 ```
 applications/
 ├── configs/settings/     ← YAML settings for all sites
-├── libs/django-osoul/    ← Language & file utilities
+├── libs/django-fusion/    ← Language & file utilities
 ├── libs/crafts-ai/    ← Email & notification tasks
-├── libs/django-osoul/     ← Search indexing
+├── libs/django-fusion/     ← Search indexing
 └── tasks/                ← Shared Celery tasks
 
 docs/
@@ -100,7 +100,7 @@ AI tasks reference the phase system in `docs/monorepo/PHASES.md`. When running `
 ```
 Finding: utilities.py still imported in ctc_research/views.py
 → Phase 3 (Utilities Migration) — Task 3.4: Update imports across monorepo
-→ Fix: from django_osoul.site.utils import get_file_extension
+→ Fix: from django_fusion.site.utils import get_file_extension
 ```
 
 ## Adding a New Task

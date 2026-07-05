@@ -8,7 +8,7 @@ This document describes the core models and their relationships in the project.
 
 ### BaseModel
 
-**Location**: `django_osoul/models.py`
+**Location**: `django_fusion/models.py`
 
 All models inherit from `BaseModel` which provides:
 
@@ -17,7 +17,7 @@ All models inherit from `BaseModel` which provides:
 - `uuid` - Universal unique identifier
 
 ```python
-from django_osoul.models import BaseModel
+from django_fusion.models import BaseModel
 
 class MyModel(BaseModel):
     name = models.CharField(max_length=100)

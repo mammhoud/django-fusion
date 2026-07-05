@@ -1,5 +1,5 @@
-# Re-export canonical middleware classes from django_osoul
-from django_osoul.core.middlewares import (  # noqa: F401
+# Re-export canonical middleware classes from django_fusion
+from django_fusion.core.middlewares import (  # noqa: F401
     SiteMiddleware,
     ReadonlyExceptionHandlerMiddleware,
     DefaultLanguageMiddleware,

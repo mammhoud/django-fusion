@@ -1,9 +1,32 @@
 # Dynamic TLS certificates (loaded by file provider)
+#
+# MIGRATION NOTE — when you're ready for trusted Let's Encrypt certs:
+#
+#   STEP 1: Fix DNS on Hostinger → ctc-research.com A → 187.77.166.222
+#           (see proxy/traefik/dynamic/ctc-research.yml for full instructions)
+#
+#   STEP 2: Uncomment certificatesResolvers in proxy/traefik/dynamic.yml
+#           and restart the proxy: docker restart default-proxy
+#
+#   STEP 3: In ctc-research.yml flip the two https routers to use certResolver,
+#           then comment out or remove the ctc-research block below so Traefik
+#           stops serving the self-signed cert and falls through to ACME:
+#
+#     # - certFile: /etc/traefik/certs/ctc-research.crt
+#     #   keyFile:  /etc/traefik/certs/ctc-research.key
+#
+#   The physical cert files in proxy/certs/ are kept as an emergency rollback
+#   — just uncomment this block and restart if needed.
+#
 tls:
   certificates:
-    - certFile: /etc/traefik/certs/ctc-research.crt
-      keyFile: /etc/traefik/certs/ctc-research.key
+    # ctc-research.com — self-signed removed; LE cert now handled by letsencrypt-http resolver
+    # Rollback: uncomment the two lines below and restart the proxy
+    # - certFile: /etc/traefik/certs/ctc-research.crt
+    #   keyFile:  /etc/traefik/certs/ctc-research.key
     - certFile: /etc/traefik/certs/structa-cloud.crt
       keyFile: /etc/traefik/certs/structa-cloud.key
     - certFile: /etc/traefik/certs/vresume.crt
       keyFile: /etc/traefik/certs/vresume.key
+    - certFile: /etc/traefik/certs/crm.crt
+      keyFile: /etc/traefik/certs/crm.key

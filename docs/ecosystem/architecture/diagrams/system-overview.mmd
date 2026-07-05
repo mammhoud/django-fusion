@@ -14,15 +14,15 @@ graph TB
         CHAT[Chat]
     end
 
-    subgraph "django-osoul"
-        OSOUL[django-osoul<br/>Foundation Layer]
+    subgraph "django-fusion"
+        OSOUL[django-fusion<br/>Foundation Layer]
         COMP[Components]
         MODELS[Models]
         SERVICES[Services]
     end
 
-    subgraph "django-osoul"
-        GREP[django-osoul<br/>Test Infrastructure]
+    subgraph "django-fusion"
+        GREP[django-fusion<br/>Test Infrastructure]
         HEALTH[Health Checks]
         TESTS[Testing Utils]
     end
@@ -59,8 +59,8 @@ graph TB
 
 | Package | Depends On | Used By |
 |---------|-----------|---------|
-| django-osoul | Django | Both websites, crafts-ai |
-| django-osoul | Django, Wagtail | crafts-ai, Both websites |
-| crafts-ai | django-osoul, django-osoul | Both websites |
-| ctc-research.com | crafts-ai, django-osoul, django-osoul | - |
-| structa.cloud | crafts-ai, django-osoul, django-osoul | - |
+| django-fusion | Django | Both websites, crafts-ai |
+| django-fusion | Django, Wagtail | crafts-ai, Both websites |
+| crafts-ai | django-fusion, django-fusion | Both websites |
+| ctc-research.com | crafts-ai, django-fusion, django-fusion | - |
+| structa.cloud | crafts-ai, django-fusion, django-fusion | - |

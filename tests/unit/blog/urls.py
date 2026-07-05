@@ -9,7 +9,7 @@ from django.urls import include, path
 def _get_osoul_urls():
     """Lazily build osoul site URLs to avoid import-time side effects."""
     try:
-        from django_osoul.web.routes import Application, Site
+        from django_fusion.web.routes import Application, Site
 
         from apps.blog.components import BlogPostCreateFragment, BlogPostListFragment
 

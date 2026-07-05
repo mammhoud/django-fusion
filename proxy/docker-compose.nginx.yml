@@ -50,6 +50,7 @@ services:
       - ../applications/VResume/assets/media:/var/www/media/vresume:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
     networks:
+      - traefik-net
       - common
 
     deploy:

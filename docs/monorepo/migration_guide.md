@@ -4,7 +4,7 @@ Phase-by-phase migration notes for the structa.cloud monorepo.
 
 ---
 
-## Phase 3: utilities.py → django-osoul
+## Phase 3: utilities.py → django-fusion
 
 **When**: If you have code importing from `applications/utilities.py`
 
@@ -15,10 +15,10 @@ The file has been deleted. Update your imports:
 from utilities import get_file_extension, detect_language
 
 # After
-from django_osoul.site.utils import get_file_extension, detect_language
+from django_fusion.site.utils import get_file_extension, detect_language
 ```
 
-Full mapping: [packages/django-osoul/usage.md](../packages/django-osoul/usage.md)
+Full mapping: [packages/django-fusion/usage.md](../packages/django-fusion/usage.md)
 
 ---
 
@@ -124,13 +124,13 @@ When Phase 7 is complete, language switching will require:
 
 ```python
 # Add to INSTALLED_APPS
-'django_osoul',
+'django_fusion',
 
 # Add to MIDDLEWARE
-'django_osoul.middleware.LanguageMiddleware',
+'django_fusion.middleware.LanguageMiddleware',
 
 # Add to TEMPLATES context_processors
-'django_osoul.context_processors.language_context',
+'django_fusion.context_processors.language_context',
 ```
 
-Reference: `/data/refrences/django-osoul/`
+Reference: `/data/refrences/django-fusion/`

@@ -6,7 +6,7 @@ Alliance is designed to be fully integrated with AI-driven development workflows
 
 ## 🛠️ Usage with Django Grep
 
-The `django-osoul` plugin provides the underlying server that implements the MCP tools. It is installed as a source clone at `/libs/django-osoul` (see [INSTALL.md](../INSTALL.md#3-set-up-django-osoul-source-clone)).
+The `django-fusion` plugin provides the underlying server that implements the MCP tools. It is installed as a source clone at `/libs/django-fusion` (see [INSTALL.md](../INSTALL.md#3-set-up-django-fusion-source-clone)).
 
 ### Available Tools
 
@@ -21,10 +21,10 @@ The `django-osoul` plugin provides the underlying server that implements the MCP
 
 To enable AI agents to work on this project:
 
-1. Ensure `django_osoul.mcp_designer` is in `INSTALLED_APPS`.
+1. Ensure `django_fusion.mcp_designer` is in `INSTALLED_APPS`.
 2. Configure your AI IDE (e.g., Cursor, Windsurf) or Agent to point to the `mcp_django_server.py` entry point.
 3. Use the following prompt to prime the AI:
-   > "You are an expert Django/Wagtail developer. Use the MCP tools provided by django-osoul to explore the Alliance codebase and help me build new features."
+   > "You are an expert Django/Wagtail developer. Use the MCP tools provided by django-fusion to explore the Alliance codebase and help me build new features."
 
 ## 📍 Integration Points
 
@@ -39,8 +39,8 @@ Add the following to `INSTALLED_APPS` in your settings:
 ```python
 INSTALLED_APPS = [
     # ...
-    "django_osoul",
-    "django_osoul.mcp_designer",
+    "django_fusion",
+    "django_fusion.mcp_designer",
     # ...
 ]
 ```
@@ -49,7 +49,7 @@ Django Grep is installed from source — see the `pyproject.toml` source overrid
 
 ```toml
 [tool.uv.sources]
-django-osoul = { path = "/libs/django-osoul", editable = true }
+django-fusion = { path = "/libs/django-fusion", editable = true }
 ```
 
 ## Further Reading

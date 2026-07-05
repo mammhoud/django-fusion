@@ -138,10 +138,10 @@ install: ## Install Python dependencies
 	@$(UV) sync
 	@echo -e "$(GREEN)✅ Installed$(NC)"
 
-install-internal: ## Refresh mammhoud GitHub packages (django-osoul/rseal/grep)
+install-internal: ## Refresh mammhoud GitHub packages (django-fusion/rseal/grep)
 	$(call clean_broken_venv)
 	@echo -e "$(BLUE)Installing mammhoud GitHub packages...$(NC)"
-	@$(UV) sync --upgrade-package django-osoul --upgrade-package crafts-ai
+	@$(UV) sync --upgrade-package django-fusion --upgrade-package crafts-ai
 	@echo -e "$(GREEN)✅ Internal packages refreshed from GitHub$(NC)"
 
 setup: ## Full setup (frontend, migrations, static, checks, superuser, data)

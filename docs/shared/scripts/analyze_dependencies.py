@@ -37,15 +37,15 @@ from typing import Dict, List, Set, Tuple
 
 # Dependency rules from design document
 DEPENDENCY_RULES = {
-    "django-osoul": {
+    "django-fusion": {
         "required": ["Django"],
         "forbidden": ["wagtail", "celery", "django-q", "openai", "anthropic", "faker", "mcp"],
         "can_import_from": []
     },
     "crafts-ai": {
-        "required": ["Django", "django-osoul", "wagtail", "celery", "faker", "toposort"],
+        "required": ["Django", "django-fusion", "wagtail", "celery", "faker", "toposort"],
         "optional": {"ai": ["crafts-ai"], "mcp": ["mcp"]},
-        "can_import_from": ["django-osoul"]
+        "can_import_from": ["django-fusion"]
     },
     "crafts-ai": {
         "required": ["Faker", "toposort", "hypothesis"],
@@ -53,10 +53,10 @@ DEPENDENCY_RULES = {
         "forbidden": ["Django"],
         "can_import_from": []
     },
-    "django-osoul": {
-        "required": ["Django", "django-osoul", "crafts-ai", "pytest", "pytest-django"],
+    "django-fusion": {
+        "required": ["Django", "django-fusion", "crafts-ai", "pytest", "pytest-django"],
         "optional": {"selenium": ["selenium"], "playwright": ["playwright"]},
-        "can_import_from": ["django-osoul", "crafts-ai", "crafts-ai"]
+        "can_import_from": ["django-fusion", "crafts-ai", "crafts-ai"]
     }
 }
 
@@ -123,7 +123,7 @@ def get_all_package_imports(libs_dir: Path) -> Dict[str, Dict[str, Set[str]]]:
     """Get imports for all packages."""
     packages = {}
 
-    for package_name in ["django-osoul", "crafts-ai", "django-seed", "django-osoul"]:
+    for package_name in ["django-fusion", "crafts-ai", "django-seed", "django-fusion"]:
         package_dir = libs_dir / package_name
         if package_dir.exists():
             print(f"Analyzing {package_name}...")
@@ -138,11 +138,11 @@ def build_dependency_graph(package_imports: Dict[str, Dict[str, Set[str]]]) -> D
 
     # Map module names to package names
     module_to_package = {
-        "django_osoul": "django-osoul",
+        "django_fusion": "django-fusion",
         "crafts_ai": "crafts-ai",
         "django_seed": "django-seed",
         "craftsai": "django-seed",
-        "django_osoul": "django-osoul"
+        "django_fusion": "django-fusion"
     }
 
     for package_name, files in package_imports.items():
@@ -215,7 +215,7 @@ def check_forbidden_dependencies(package_imports: Dict[str, Dict[str, Set[str]]]
 
 def get_external_dependencies(package_imports: Dict[str, Dict[str, Set[str]]]) -> Dict[str, Set[str]]:
     """Get external (non-monorepo) dependencies for each package."""
-    internal_modules = {"django_osoul", "crafts_ai", "django_seed", "craftsai", "django_osoul"}
+    internal_modules = {"django_fusion", "crafts_ai", "django_seed", "craftsai", "django_fusion"}
     stdlib_modules = {
         "os", "sys", "re", "json", "ast", "pathlib", "typing", "collections",
         "datetime", "time", "logging", "unittest", "io", "copy", "functools",
@@ -247,10 +247,10 @@ def generate_mermaid_graph(graph: Dict[str, Set[str]]) -> str:
 
     # Define nodes with colors
     colors = {
-        "django-osoul": "#90EE90",
+        "django-fusion": "#90EE90",
         "crafts-ai": "#87CEEB",
         "django-seed": "#FFB6C1",
-        "django-osoul": "#FFD700"
+        "django-fusion": "#FFD700"
     }
 
     # Add edges
@@ -427,7 +427,7 @@ def generate_report(
         report.append("")
         report.append("**Resolution Strategy**:")
         report.append("1. Identify shared code causing circular dependency")
-        report.append("2. Extract shared code to common package (django-osoul)")
+        report.append("2. Extract shared code to common package (django-fusion)")
         report.append("3. Update both packages to depend on common package")
         report.append("4. Verify no circular dependencies remain")
         report.append("")
@@ -595,9 +595,9 @@ class UnusedDependency:
 PYPROJECT_FILES = [
     "ctc-research.com/pyproject.toml",
     "structa.cloud/pyproject.toml",
-    "venv/libs/django-osoul/pyproject.toml",
+    "venv/libs/django-fusion/pyproject.toml",
     "venv/libs/crafts-ai/pyproject.toml",
-    "venv/libs/django-osoul/pyproject.toml",
+    "venv/libs/django-fusion/pyproject.toml",
     "applications/libs/crafts-ai/pyproject.toml",
 ]
 
@@ -605,9 +605,9 @@ PYPROJECT_FILES = [
 SOURCE_ROOTS: Dict[str, List[str]] = {
     "ctc-research.com/pyproject.toml": ["ctc-research.com"],
     "structa.cloud/pyproject.toml": ["structa.cloud"],
-    "venv/libs/django-osoul/pyproject.toml": ["venv/libs/django-osoul/src"],
+    "venv/libs/django-fusion/pyproject.toml": ["venv/libs/django-fusion/src"],
     "venv/libs/crafts-ai/pyproject.toml": ["venv/libs/crafts-ai/src"],
-    "venv/libs/django-osoul/pyproject.toml": ["venv/libs/django-osoul/src"],
+    "venv/libs/django-fusion/pyproject.toml": ["venv/libs/django-fusion/src"],
     "applications/libs/crafts-ai/pyproject.toml": ["applications/libs/crafts-ai"],
 }
 
@@ -849,7 +849,7 @@ class DependencyAnalyzer:
             "wagtail-newsletter", "wagtail-transfer",
             "wagtailfontawesome",
             "celery",
-            "django-osoul", "crafts-ai", "django-osoul", "crafts-ai",
+            "django-fusion", "crafts-ai", "django-fusion", "crafts-ai",
         }
 
         # Map package name → typical Python import name

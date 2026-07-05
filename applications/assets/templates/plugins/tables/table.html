@@ -1,46 +1,9 @@
-{# ui/tables/table.html — HTMX sortable table #}
-{% load i18n %}
-
-<div class="table-responsive shadow-sm rounded-3 w-100">
-    <table class="table table-hover align-middle mb-0 {{ table_class|default:'' }}">
-        <thead class="table-light">
-            <tr>
-                {% for col in headers %}
-                <th scope="col" class="py-3 px-4 border-0 text-secondary fw-semibold small text-uppercase"
-                    {% if col.sort_url %}
-                    hx-get="{{ col.sort_url }}"
-                    hx-target="{{ hx_target|default:'#table-container' }}"
-                    style="cursor: pointer;"
-                    {% endif %}>
-                    {{ col.label }}
-                    {% if col.is_sorted %}
-                        {% if col.direction == "asc" %}
-                        <i class="bi bi-arrow-up ms-1"></i>
-                        {% else %}
-                        <i class="bi bi-arrow-down ms-1"></i>
-                        {% endif %}
-                    {% endif %}
-                </th>
-                {% endfor %}
-            </tr>
-        </thead>
-        <tbody class="border-top-0">
-            {% block table_rows %}
-                {% for row in rows %}
-                <tr>
-                    {% for cell in row %}
-                    <td class="py-3 px-4 border-bottom-1">{{ cell|safe }}</td>
-                    {% endfor %}
-                </tr>
-                {% empty %}
-                <tr>
-                    <td colspan="{{ headers|length }}" class="text-center py-5 text-muted">
-                        <i class="bi bi-inbox fs-1 d-block mb-2 text-secondary opacity-50"></i>
-                        {% trans "No records found" %}
-                    </td>
-                </tr>
-                {% endfor %}
-            {% endblock %}
-        </tbody>
-    </table>
-</div>
+{# Backward-compatible shim — delegates to django-fusion components/table.html
+   Kept for existing callers. New code should use:
+     {% comp_include "components/table.html" ... %}
+   or
+     {% load ui_tags %}{% table ... %}
+#}
+{% comp_include "components/table.html"
+    headers=headers rows=rows hx_target=hx_target
+    table_class=table_class empty_message=empty_message table=table %}

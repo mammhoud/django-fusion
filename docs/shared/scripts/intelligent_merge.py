@@ -44,17 +44,17 @@ class IntelligentMerger:
             "forbidden": ["django", "wagtail", "celery"],
             "path": "applications/libs/crafts-ai",
         },
-        "django_osoul": {
+        "django_fusion": {
             "forbidden": ["wagtail", "celery", "crafts_ai"],
-            "path": "venv/libs/django-osoul",
+            "path": "venv/libs/django-fusion",
         },
         "crafts_ai": {
             "forbidden": [],  # No project-specific imports
             "path": "venv/libs/crafts-ai",
         },
-        "django_osoul": {
+        "django_fusion": {
             "forbidden": [],  # Should not be imported by production code
-            "path": "venv/libs/django-osoul",
+            "path": "venv/libs/django-fusion",
         },
     }
 

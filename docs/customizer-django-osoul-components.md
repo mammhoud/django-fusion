@@ -1,10 +1,10 @@
-# Customizer, django-osoul, and Component Architecture Guide
+# Customizer, django-fusion, and Component Architecture Guide
 
-This guide explains how to connect **django-osoul routable viewsets**, **component tags**, **HTMX fragments**, **customizer page/section metadata**, and **site-specific templates** in the Structa Cloud monorepo.
+This guide explains how to connect **django-fusion routable viewsets**, **component tags**, **HTMX fragments**, **customizer page/section metadata**, and **site-specific templates** in the Structa Cloud monorepo.
 
 It is intentionally written against the repository layout used here, not a generic Django layout. Use these canonical paths when applying the examples:
 
-- `applications/libs/django-osoul/` — local reusable django-osoul package and routable component primitives.
+- `applications/libs/django-fusion/` — local reusable django-fusion package and routable component primitives.
 - `applications/customizer/` — customizer app, templates, views, and page-building UI.
 - `applications/assets/` — shared frontend assets, shared templates, static files, scripts, and locale files.
 - `applications/configs/` — shared Django settings and test settings.
@@ -16,9 +16,9 @@ It is intentionally written against the repository layout used here, not a gener
 
 ## Architecture
 
-### 1. django-osoul viewsets
+### 1. django-fusion viewsets
 
-`django-osoul` supplies routable viewset and site primitives from `applications/libs/django-osoul/`. A site project registers one or more application-level viewsets, and each application exposes page viewsets or fragment viewsets.
+`django-fusion` supplies routable viewset and site primitives from `applications/libs/django-fusion/`. A site project registers one or more application-level viewsets, and each application exposes page viewsets or fragment viewsets.
 
 A typical site tree looks like this:
 
@@ -28,7 +28,7 @@ A typical site tree looks like this:
 4. Viewsets expose full-page routes, fragment-only routes, form endpoints, or model-backed routes.
 5. Site URL configuration includes the site routes under a prefix such as `/osoul/` or `/customizer/`.
 
-Keep reusable framework behavior in `applications/libs/django-osoul/`. Keep site-specific registration in the relevant site path such as `applications/ctc-research/`, `applications/lms-demo/`, or `applications/VResume/`.
+Keep reusable framework behavior in `applications/libs/django-fusion/`. Keep site-specific registration in the relevant site path such as `applications/ctc-research/`, `applications/lms-demo/`, or `applications/VResume/`.
 
 ### 2. Component tags
 
@@ -46,7 +46,7 @@ For shared UI, prefer `applications/assets/templates/`. For visual differences b
 
 ### 3. HTMX fragments
 
-HTMX fragments are partial responses rendered without the full page layout. In django-osoul, use `fragment_name` as the single identifier for fragment routes and context keys. Do not introduce parallel names such as `fragment`, `fragment_slug`, or `fragment_key` unless preserving compatibility with existing code.
+HTMX fragments are partial responses rendered without the full page layout. In django-fusion, use `fragment_name` as the single identifier for fragment routes and context keys. Do not introduce parallel names such as `fragment`, `fragment_slug`, or `fragment_key` unless preserving compatibility with existing code.
 
 Recommended conventions:
 
@@ -93,7 +93,7 @@ sequenceDiagram
     autonumber
     actor Browser
     participant URLConf as Site URLConf
-    participant Site as django-osoul Site
+    participant Site as django-fusion Site
     participant App as Customizer Application
     participant Viewset as Page Viewset
     participant Service as Page/Section Service
@@ -151,7 +151,7 @@ flowchart TD
 
 ## Code examples
 
-The examples below are illustrative and should be adapted to the exact classes available in the site being changed. Keep shared framework code in `applications/libs/django-osoul/` and site-specific code in the appropriate canonical site path.
+The examples below are illustrative and should be adapted to the exact classes available in the site being changed. Keep shared framework code in `applications/libs/django-fusion/` and site-specific code in the appropriate canonical site path.
 
 ### `site.py` viewset registration
 
@@ -160,7 +160,7 @@ Place site-specific registration in a site module such as `applications/ctc-rese
 ```python
 from __future__ import annotations
 
-from django_osoul.comp.routes import Application, Site, viewprop
+from django_fusion.comp.routes import Application, Site, viewprop
 
 
 class CustomizerApp(Application):
@@ -290,7 +290,7 @@ from typing import Any
 from django import forms
 from django.http import HttpRequest, HttpResponse
 
-from django_osoul.comp.routes.fragments import FragmentViewset
+from django_fusion.comp.routes.fragments import FragmentViewset
 
 
 class CustomizerMessageForm(forms.Form):
@@ -429,10 +429,10 @@ class CustomizerDiscoveryService:
 
 ## What is added
 
-A customizer/django-osoul integration typically adds:
+A customizer/django-fusion integration typically adds:
 
 - A site-level `Site` registration that mounts customizer page, section, and form viewsets.
-- A small set of django-osoul viewsets for full-page shell rendering and HTMX fragments.
+- A small set of django-fusion viewsets for full-page shell rendering and HTMX fragments.
 - Shared customizer component templates under `applications/assets/templates/` when reusable across sites.
 - Site-specific templates under `applications/ctc-research/`, `applications/lms-demo/`, or `applications/VResume/` only when necessary.
 - A page/section discovery service that returns normalized data for templates and viewsets.

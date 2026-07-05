@@ -30,7 +30,7 @@ Releases are tagged for easy tracking:
 ## 📦 Shared Infrastructure
 The underlying framework that powers the component system and model pipelines.
 
-**Repository URL**: [https://github.com/mammhoud/django-osoul](https://github.com/mammhoud/django-osoul)
+**Repository URL**: [https://github.com/mammhoud/django-fusion](https://github.com/mammhoud/django-fusion)
 
 ### Features
 - **Component System**: Advanced HTML-in-Python rendering.

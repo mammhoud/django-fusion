@@ -1,4 +1,4 @@
-from django_osoul.core.forms import (
+from django_fusion.core.forms import (
     BaseModelForm,
     LayoutMixin,
     PasswordVerificationMixin,

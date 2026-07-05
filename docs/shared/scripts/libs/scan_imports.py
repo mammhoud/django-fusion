@@ -10,9 +10,9 @@ from pathlib import Path
 LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 RULES = {
-    "django-osoul": {
-        "src": "django-osoul/src",
-        "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "crafts_ai", "django_osoul", "crafts_ai"],
+    "django-fusion": {
+        "src": "django-fusion/src",
+        "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "crafts_ai", "django_fusion", "crafts_ai"],
     },
     "crafts-ai": {
         "src": "crafts-ai/src",
@@ -20,10 +20,10 @@ RULES = {
     },
     "crafts-ai": {
         "src": "crafts-ai/src",
-        "forbidden": ["django_osoul"],
+        "forbidden": ["django_fusion"],
     },
-    "django-osoul": {
-        "src": "django-osoul/src",
+    "django-fusion": {
+        "src": "django-fusion/src",
         "forbidden": [],  # can import from all
     },
 }

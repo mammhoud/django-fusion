@@ -12,10 +12,10 @@
 
 | Model Type | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| BaseModel | ✅ Yes | django-osoul | Base with timestamps, UUID |
-| TimestampedModel | ✅ Yes | django-osoul | Mixin for timestamps |
-| SluggedModel | ✅ Yes | django-osoul | Mixin for slugs |
-| PublishableModel | ✅ Yes | django-osoul | Mixin for publish status |
+| BaseModel | ✅ Yes | django-fusion | Base with timestamps, UUID |
+| TimestampedModel | ✅ Yes | django-fusion | Mixin for timestamps |
+| SluggedModel | ✅ Yes | django-fusion | Mixin for slugs |
+| PublishableModel | ✅ Yes | django-fusion | Mixin for publish status |
 | User (project-specific) | ❌ No | Website | Keep in project |
 | Post (project-specific) | ❌ No | Website | Keep in project |
 | Comment (project-specific) | ❌ No | Website | Keep in project |
@@ -24,9 +24,9 @@
 
 | Form Type | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| BaseForm | ✅ Yes | django-osoul | Base form class |
-| BaseModelForm | ✅ Yes | django-osoul | Base model form |
-| Common validators | ✅ Yes | django-osoul | Reusable validators |
+| BaseForm | ✅ Yes | django-fusion | Base form class |
+| BaseModelForm | ✅ Yes | django-fusion | Base model form |
+| Common validators | ✅ Yes | django-fusion | Reusable validators |
 | UserForm (project) | ❌ No | Website | Project-specific |
 | PostForm (project) | ❌ No | Website | Project-specific |
 
@@ -34,9 +34,9 @@
 
 | View Type | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| BaseView | ✅ Yes | django-osoul | Base view class |
-| BaseModelView | ✅ Yes | django-osoul | Base model view |
-| Mixins | ✅ Yes | django-osoul | Reusable mixins |
+| BaseView | ✅ Yes | django-fusion | Base view class |
+| BaseModelView | ✅ Yes | django-fusion | Base model view |
+| Mixins | ✅ Yes | django-fusion | Reusable mixins |
 | UserView (project) | ❌ No | Website | Project-specific |
 | PostView (project) | ❌ No | Website | Project-specific |
 
@@ -44,10 +44,10 @@
 
 | Utility | Extract? | Location | Notes |
 |---------|----------|----------|-------|
-| String helpers | ✅ Yes | django-osoul | Formatting, slugs |
-| Date helpers | ✅ Yes | django-osoul | Date/time utilities |
-| Validation helpers | ✅ Yes | django-osoul | Common validators |
-| Permission helpers | ✅ Yes | django-osoul | Permission checks |
+| String helpers | ✅ Yes | django-fusion | Formatting, slugs |
+| Date helpers | ✅ Yes | django-fusion | Date/time utilities |
+| Validation helpers | ✅ Yes | django-fusion | Common validators |
+| Permission helpers | ✅ Yes | django-fusion | Permission checks |
 | Project-specific utils | ❌ No | Website | Keep in project |
 
 ### Email
@@ -72,9 +72,9 @@
 
 | Component | Extract? | Location | Notes |
 |-----------|----------|----------|-------|
-| UserFactory | ✅ Yes | django-osoul | Reusable factory |
-| BaseModelFactory | ✅ Yes | django-osoul | Base factory |
-| Common fixtures | ✅ Yes | django-osoul | Reusable fixtures |
+| UserFactory | ✅ Yes | django-fusion | Reusable factory |
+| BaseModelFactory | ✅ Yes | django-fusion | Base factory |
+| Common fixtures | ✅ Yes | django-fusion | Reusable fixtures |
 | Project tests | ❌ No | Website | Project-specific |
 
 ---
@@ -98,9 +98,9 @@ Is this code duplicated across projects?
 ### Step 3: Determine Package
 ```
 Which package does this belong to?
-├─ Base models/forms/utilities → django-osoul
+├─ Base models/forms/utilities → django-fusion
 ├─ Email/tasks/workflows → crafts-ai
-├─ Testing utilities → django-osoul
+├─ Testing utilities → django-fusion
 └─ AI/MCP → nawaai
 ```
 
@@ -131,9 +131,9 @@ class BaseModel(models.Model):
         abstract = True
 ```
 
-**After (in django-osoul):**
+**After (in django-fusion):**
 ```python
-# venv/libs/django-osoul/src/django_osoul/models/base.py
+# venv/libs/django-fusion/src/django_fusion/models/base.py
 class BaseModel(models.Model):
     id = models.UUIDField(primary_key=True, default=uuid4)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -146,7 +146,7 @@ class BaseModel(models.Model):
 **Deprecation Shim (in website):**
 ```python
 # ctc-research.com/apps/core/models.py
-from django_osoul.models import BaseModel
+from django_fusion.models import BaseModel
 
 # Keep old import path working
 __all__ = ['BaseModel']
@@ -164,9 +164,9 @@ def slugify_text(text):
     return text.lower().replace(' ', '-')
 ```
 
-**After (in django-osoul):**
+**After (in django-fusion):**
 ```python
-# venv/libs/django-osoul/src/django_osoul/utils/text.py
+# venv/libs/django-fusion/src/django_fusion/utils/text.py
 def slugify_text(text):
     """Convert text to slug."""
     return text.lower().replace(' ', '-')
@@ -175,7 +175,7 @@ def slugify_text(text):
 **Deprecation Shim (in website):**
 ```python
 # ctc-research.com/apps/core/utils.py
-from django_osoul.utils.text import slugify_text
+from django_fusion.utils.text import slugify_text
 
 # Keep old import path working
 __all__ = ['slugify_text']
@@ -195,9 +195,9 @@ class BaseForm(forms.Form):
             field.widget.attrs['class'] = 'form-control'
 ```
 
-**After (in django-osoul):**
+**After (in django-fusion):**
 ```python
-# venv/libs/django-osoul/src/django_osoul/forms/base.py
+# venv/libs/django-fusion/src/django_fusion/forms/base.py
 class BaseForm(forms.Form):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -208,7 +208,7 @@ class BaseForm(forms.Form):
 **Deprecation Shim (in website):**
 ```python
 # ctc-research.com/apps/core/forms.py
-from django_osoul.forms import BaseForm
+from django_fusion.forms import BaseForm
 
 # Keep old import path working
 __all__ = ['BaseForm']
@@ -232,7 +232,7 @@ def format_phone(phone):
     return f"({phone[:3]}) {phone[3:6]}-{phone[6:]}"
 ```
 
-**Action:** Extract to django-osoul, remove from both websites
+**Action:** Extract to django-fusion, remove from both websites
 
 ---
 
@@ -278,7 +278,7 @@ def clean_email(self):
     return email
 ```
 
-**Action:** Extract to django-osoul, remove from both websites
+**Action:** Extract to django-fusion, remove from both websites
 
 ---
 
@@ -335,16 +335,16 @@ class BaseUser(models.Model):
 ### ❌ Mistake 2: Creating Circular Dependencies
 ```python
 # DON'T do this
-# django-osoul imports from crafts-ai
+# django-fusion imports from crafts-ai
 from crafts_ai.email import send_email
 
-# crafts-ai imports from django-osoul
-from django_osoul.models import BaseModel
+# crafts-ai imports from django-fusion
+from django_fusion.models import BaseModel
 ```
 
 ### ✅ Correct: Maintain Dependency Direction
 ```
-django-osoul (foundation)
+django-fusion (foundation)
     ↓
 crafts-ai (automation, depends on osoul)
     ↓
@@ -362,12 +362,12 @@ nawaai (AI, optional)
 ### ✅ Correct: Create Deprecation Shims
 ```python
 # In website, create shim
-from django_osoul.models import BaseModel
+from django_fusion.models import BaseModel
 import warnings
 
 warnings.warn(
     "Importing from website.models is deprecated. "
-    "Use django_osoul.models instead.",
+    "Use django_fusion.models instead.",
     DeprecationWarning,
     stacklevel=2
 )
@@ -390,16 +390,16 @@ grep -r "^def " ctc-research.com structa.cloud --include="*.py" | \
 ### Check for Circular Imports
 ```bash
 # Test imports
-python -c "import django_osoul; import crafts_ai"
+python -c "import django_fusion; import crafts_ai"
 
 # Check specific module
-python -m py_compile venv/libs/django-osoul/src/django_osoul/__init__.py
+python -m py_compile venv/libs/django-fusion/src/django_fusion/__init__.py
 ```
 
 ### Update Imports
 ```bash
 # Replace old import paths
-sed -i 's/from website\.models import/from django_osoul.models import/g' \
+sed -i 's/from website\.models import/from django_fusion.models import/g' \
     ctc-research.com/**/*.py
 ```
 
@@ -425,9 +425,9 @@ Is this code reusable?
     │  └─ NO → Extract if it fits a package
     │
     └─ Which package?
-       ├─ Base models/forms/utilities → django-osoul
+       ├─ Base models/forms/utilities → django-fusion
        ├─ Email/tasks/workflows → crafts-ai
-       ├─ Testing utilities → django-osoul
+       ├─ Testing utilities → django-fusion
        └─ AI/MCP → nawaai
 ```
 

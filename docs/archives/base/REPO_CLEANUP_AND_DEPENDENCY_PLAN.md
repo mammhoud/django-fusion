@@ -19,16 +19,16 @@
    - Removed unreferenced root setup/debug scripts.
 
 5. **Replaced broad fake module handling with real dependency imports**
-   - Deleted `configs/fake_modules.py`, which injected fake `django_osoul` modules into `sys.modules`.
+   - Deleted `configs/fake_modules.py`, which injected fake `django_fusion` modules into `sys.modules`.
    - Removed the fake-module setup call from `ctc-research/settings.py`.
-   - Added `twilio>=9.0` to the root Python dependencies so the installed `django_osoul` package can import its Twilio-backed interaction modules normally.
-   - Replaced legacy application imports from fake-only paths such as `django_osoul.core.*`, `django_osoul.web.*`, and `django_osoul.comp.site` with canonical package paths (`django_osoul.models`, `django_osoul.managers`, `django_osoul.handlers`, `django_osoul.services`, `django_osoul.site`, `django_osoul.site.routes`, and `django_osoul.views`).
+   - Added `twilio>=9.0` to the root Python dependencies so the installed `django_fusion` package can import its Twilio-backed interaction modules normally.
+   - Replaced legacy application imports from fake-only paths such as `django_fusion.core.*`, `django_fusion.web.*`, and `django_fusion.comp.site` with canonical package paths (`django_fusion.models`, `django_fusion.managers`, `django_fusion.handlers`, `django_fusion.services`, `django_fusion.site`, `django_fusion.site.routes`, and `django_fusion.views`).
    - Replaced legacy `crafts_ai.http.*` imports with installed package paths under `crafts_ai.handlers` and `crafts_ai.middlewares`.
    - Replaced stale `crafts_ai.contrib.models` imports with `crafts_ai.contrib.core.models`.
 
 6. **Cleaned library workspace metadata**
-   - Removed non-existent workspace members and sources (`crafts-ai`, `django-osoul-stub`, `nawaai`) from `libs/pyproject.toml`.
-   - Restored `.gitmodules` entries for the tracked `libs/django-osoul`, `libs/django-osoul`, and `libs/crafts-ai` gitlinks so submodule commands have path mappings.
+   - Removed non-existent workspace members and sources (`crafts-ai`, `django-fusion-stub`, `nawaai`) from `libs/pyproject.toml`.
+   - Restored `.gitmodules` entries for the tracked `libs/django-fusion`, `libs/django-fusion`, and `libs/crafts-ai` gitlinks so submodule commands have path mappings.
 
 7. **Documented website apps**
    - Added `docs/WEBSITE_APPLICATION_INVENTORY.md` with the apps discovered for `ctc-research`, `lms-demo`, and `VResume`.
@@ -49,7 +49,7 @@ Do not commit the generated key.
 
 ### Django admin inline relation error
 
-After replacing fake `django_osoul` modules with real dependencies, `manage.py --site=ctc-research check` proceeds farther and then fails in Django admin checks with:
+After replacing fake `django_fusion` modules with real dependencies, `manage.py --site=ctc-research check` proceeds farther and then fails in Django admin checks with:
 
 ```text
 AttributeError: 'str' object has no attribute '_meta'
@@ -81,7 +81,7 @@ Several apps were importing old paths such as `crafts_ai.http.handlers.*`, while
 2. **Use real dependencies.** If a package import fails because an optional dependency is missing, add that dependency to `pyproject.toml` or make the upstream package lazy-import the optional provider.
 3. **Local fallbacks must be narrow.** A fallback may be acceptable only for optional runtime integrations (for example, not sending SMS when Twilio settings are absent), but it must not fake Django models, managers, or app packages.
 4. **Canonical imports only.** Website code should import from the current public API of internal libraries. Legacy import paths should be fixed or supported upstream.
-5. **Automated import checks.** Add CI coverage for `python manage.py --site=<site> check` for every website and a static import scan for banned fake-module patterns (`sys.modules[...] =`, `types.ModuleType`, `django_osoul.core`, `django_osoul.web`, `django_osoul.comp.site`, `crafts_ai.http`).
+5. **Automated import checks.** Add CI coverage for `python manage.py --site=<site> check` for every website and a static import scan for banned fake-module patterns (`sys.modules[...] =`, `types.ModuleType`, `django_fusion.core`, `django_fusion.web`, `django_fusion.comp.site`, `crafts_ai.http`).
 
 ## Next steps
 

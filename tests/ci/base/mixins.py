@@ -1,7 +1,7 @@
 """
 Project-specific assertion mixins for ctc-research.com CI tests.
 
-Extends django_osoul.tests.mixins with domain-aware and auth-specific helpers.
+Extends django_fusion.tests.mixins with domain-aware and auth-specific helpers.
 """
 from __future__ import annotations
 
@@ -10,7 +10,7 @@ from pathlib import Path
 
 from django.conf import settings as django_settings
 from django.core import mail
-from django_osoul.tests.mixins import AssertEmailMixin, AssertHTMLMixin
+from django_fusion.tests.mixins import AssertEmailMixin, AssertHTMLMixin
 
 
 class ResponseAssertMixin(AssertHTMLMixin):

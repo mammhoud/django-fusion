@@ -5,7 +5,7 @@ Tests the creation of groups from CSV, permission inheritance,
 role hierarchy, and group-based access control.
 
 Note: These tests require the full project environment with apps.handlers
-and django_osoul.managers modules. They should be run in the project's
+and django_fusion.managers modules. They should be run in the project's
 own test environment.
 """
 
@@ -23,7 +23,7 @@ User = get_user_model()
 # These tests require the full project environment
 # Skip all tests in this module when running in workspace test environment
 pytestmark = pytest.mark.skip(
-    reason="Group management tests require apps.handlers and django_osoul.managers. "
+    reason="Group management tests require apps.handlers and django_fusion.managers. "
            "Run these tests in the project's own test environment."
 )
 

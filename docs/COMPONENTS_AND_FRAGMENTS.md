@@ -2,7 +2,7 @@
 
 ## Overview
 
-This guide covers using django-osoul and crafts-ai component systems with Wagtail pages.
+This guide covers using django-fusion and crafts-ai component systems with Wagtail pages.
 
 ## Directory Structure
 
@@ -72,8 +72,8 @@ Include it in `base.html` before `</body>`:
 
 ```python
 # applications/<site>/site.py
-from django_osoul.site import ComponentViews, PageHandler
-from django_osoul.site.views.tags import register
+from django_fusion.site import ComponentViews, PageHandler
+from django_fusion.site.views.tags import register
 from wagtail.models import Page
 
 @register('site_pages')
@@ -91,7 +91,7 @@ def page_sections(context, page):
 
 ```python
 # applications/<site>/www/apps/viewsets.py
-from django_osoul.site import ComponentViews
+from django_fusion.site import ComponentViews
 from wagtail.models import Page
 
 class PageComponentViewSet(ComponentViews):

@@ -102,7 +102,7 @@ class Credentials:
     SUPERUSER_PASSWORD = "mk_pAssWord123"
     SUPERUSER_EMAIL = "admin@example.com"
 
-    # django-osoul BaseTestCase built-in credentials
+    # django-fusion BaseTestCase built-in credentials
     BASE_USER_EMAIL = "test@example.com"
     BASE_USER_PASSWORD = "testpass123"
     BASE_ADMIN_EMAIL = "admin@example.com"

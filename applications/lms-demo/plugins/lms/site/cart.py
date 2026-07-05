@@ -4,7 +4,7 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import render
 from django.utils.translation import gettext_lazy as _
 from django.views import View
-from django_osoul.site import PageHandler
+from django_fusion.site import PageHandler
 from plugins.lms.models.courses.info import Course
 from plugins.products.services.cart_service import CartService
 

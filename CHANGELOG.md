@@ -4,18 +4,18 @@
 
 ### docs: fix every broken relative cross-link in legacy READMEs
 
-- `applications/libs/django-osoul/docs/legacy-django-osoul/README.md`
+- `applications/libs/django-fusion/docs/legacy-django-fusion/README.md`
   - Line 65: stale `venv/libs/…` path corrected to `../../README.md`
   - Line 71: `[ceptor-ai](../ceptor-ai/)` corrected to `[ceptor-ai](../../../ceptor-ai/)`
-  - Line 73: removed broken `[django-osoul](../django-osoul/)` (target `docs/django-osoul/` absent)
+  - Line 73: removed broken `[django-fusion](../django-fusion/)` (target `docs/django-fusion/` absent)
   - Renamed "Related Packages" → "Related Package" (singular — the monorepo has exactly two libs)
 - `applications/libs/ceptor-ai/docs/legacy-django-rseal/README.md`
   - Line 77: `../../../venv/libs/ceptor-ai/README.md` → `../../README.md`
-  - Line 80: `../django-osoul/` → `../../../django-osoul/`
+  - Line 80: `../django-fusion/` → `../../../django-fusion/`
   - Line 81: removed duplicate broken link with stale "Testing infrastructure" description
-- `applications/libs/django-osoul/docs/legacy-django-grep/hypothesis.md`
+- `applications/libs/django-fusion/docs/legacy-django-grep/hypothesis.md`
   - Line 57: removed dead `[Auth Testing](../auth/testing.md)` link
-- `applications/libs/django-osoul/docs/legacy-django-osoul/django-allauth.md`
+- `applications/libs/django-fusion/docs/legacy-django-fusion/django-allauth.md`
   - Lines 24, 50: removed dead `[Auth Adapter](../auth/adapter.md)` and `[Auth Templates](../auth/templates.md)` links
 - `applications/libs/ceptor-ai/docs/legacy-ceptor-ai/README.md`
   - Quick Start: stale `CraftsClient` → `CeptorClient` (matching actual `ceptor_ai.chat.client` API)
@@ -31,12 +31,12 @@
 
 ### feat: test scaffolding
 
-- `applications/libs/django-osoul/tests/django_grep/test_ceptor_ai/conftest.py` — wires `apps/libs/ceptor-ai/src` onto `sys.path` for the renamed `test_ceptor_ai.py`.
-- `applications/libs/django-osoul/tests/test_register_include_path_render_equivalence.py` — lights-up test confirming render equivalence across `{% include %}`, `{% comp "path" /%}`, and `{% comp name /%}`.
+- `applications/libs/django-fusion/tests/django_grep/test_ceptor_ai/conftest.py` — wires `apps/libs/ceptor-ai/src` onto `sys.path` for the renamed `test_ceptor_ai.py`.
+- `applications/libs/django-fusion/tests/test_register_include_path_render_equivalence.py` — lights-up test confirming render equivalence across `{% include %}`, `{% comp "path" /%}`, and `{% comp name /%}`.
 
 ### fix: `_LazyIncludeTemplate.template` returns inner `django.template.Template`
 
-- `applications/libs/django-osoul/src/django_osoul/comp/registry.py` — fixed `_LazyIncludeTemplate.template` to return the inner `django.template.Template` (matching the layer that has `.nodelist`) instead of the outer `DjangoTemplate` wrapper. All four consumer sites (`Component.nodelist`, `Component.path`, `Component.source`, `BoundComponent.render`) now converge through the same path the eager `from_name` resolution always used.
+- `applications/libs/django-fusion/src/django_fusion/comp/registry.py` — fixed `_LazyIncludeTemplate.template` to return the inner `django.template.Template` (matching the layer that has `.nodelist`) instead of the outer `DjangoTemplate` wrapper. All four consumer sites (`Component.nodelist`, `Component.path`, `Component.source`, `BoundComponent.render`) now converge through the same path the eager `from_name` resolution always used.
 
 ### rename: legacy codenames → actual package names
 

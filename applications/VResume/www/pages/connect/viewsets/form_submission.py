@@ -1,7 +1,7 @@
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.ui.tables import BooleanColumn
 
-from django_osoul.wagtail.viewsets import BaseSnippetViewSet
+from django_fusion.wagtail.viewsets import BaseSnippetViewSet
 from pages.connect.models import FormSubmission
 
 

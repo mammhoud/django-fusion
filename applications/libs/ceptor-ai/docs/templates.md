@@ -137,7 +137,7 @@ HTMX-powered pages use fragment wrappers for targeted DOM swaps:
 {% endcomp %}
 ```
 
-### django_osoul Components (Builtins)
+### django_fusion Components (Builtins)
 
 Available without `{% load %}`:
 - `{% comp %}` / `{% endcomp %}` — Component wrapper
@@ -291,4 +291,4 @@ When creating a new component:
 
 - `assets/templates/README.md` — Template directory layout
 - [websites.md](websites.md) — Per-website template paths
-- [packages.md](packages.md) — Template-related packages (django-bird, django_osoul)
+- [packages.md](packages.md) — Template-related packages (django-bird, django_fusion)

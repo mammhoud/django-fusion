@@ -3,7 +3,7 @@ from django.http import HttpRequest
 from django.shortcuts import render
 
 from core.commons.views import BaseSearchView
-from django_osoul.comp.views.includes import PaginatedBaseView
+from django_fusion.comp.views.includes import PaginatedBaseView
 
 from ..models import Course  # Ensure you have this model
 

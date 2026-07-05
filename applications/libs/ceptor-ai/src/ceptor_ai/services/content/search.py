@@ -8,7 +8,7 @@ import logging
 from typing import Any, Dict, List
 
 from django.db.models import Q
-from django_osoul.core.services import BaseService
+from django_fusion.core.services import BaseService
 
 logger = logging.getLogger(__name__)
 
