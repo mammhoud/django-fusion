@@ -40,6 +40,10 @@ backups/
 *.env
 .env
 *.env.backup*
+.env.local
+.env.*.local
+secrets.yml
+compose/config/secrets.yml
 
 # Test databases and dumps
 *.sqlite3

@@ -16,7 +16,11 @@ test_db.sqlite3
 # Secrets
 *.env
 *.env.backup*
+*.env.local
+*.env.*.local
 secret.key.txt
+secrets.yml
+compose/config/secrets.yml
 
 # SSL/TLS private keys and certificates
 *.pem
