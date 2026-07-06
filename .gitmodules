@@ -1,0 +1,9 @@
+[submodule "applications/libs/django-fusion"]
+	path = applications/libs/django-fusion
+	url = https://github.com/mammhoud/django-fusion.git
+	branch = generic
+
+[submodule "applications/libs/ceptor-ai"]
+	path = applications/libs/ceptor-ai
+	url = https://github.com/mammhoud/ceptor-ai.git
+	branch = generic

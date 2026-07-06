@@ -8,7 +8,9 @@ __pycache__/
 # Logs
 *.log
 logs/
+logs/*
 **/logs/*.log
+gunicorn-error.log
 
 # OS files
 .DS_Store

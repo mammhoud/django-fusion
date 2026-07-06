@@ -65,6 +65,8 @@ dist/
 
 # Runtime logs and generated diagnostics
 compose/logs/*.log
+logs/*
+gunicorn-error.log
 docs/*.log
 
 # Local virtual environments in nested workspaces
