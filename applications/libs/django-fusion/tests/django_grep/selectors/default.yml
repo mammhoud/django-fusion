@@ -1,8 +1,0 @@
-# Default selectors used by django-grep tests (fallback)
-homepage:
-  hero_title: "h1"
-  signup_cta: "a[href='/signup/']"
-login:
-  username: "#id_username"
-  password: "#id_password"
-  submit: "button[type=submit]"

@@ -1,9 +1,0 @@
-Metadata-Version: 2.4
-Name: django-fusion
-Version: 0.1.0
-Summary: Reusable Django and Wagtail helpers for Structa Cloud sites
-Requires-Python: >=3.11
-Requires-Dist: django>=4.2
-Requires-Dist: wagtail
-Provides-Extra: test
-Requires-Dist: pytest; extra == "test"

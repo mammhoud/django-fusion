@@ -1,2 +1,0 @@
-[console_scripts]
-ceptor-ai = ceptor_ai.cli:main
