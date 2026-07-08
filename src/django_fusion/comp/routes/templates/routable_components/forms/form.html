@@ -1,0 +1,70 @@
+{% load i18n laces %}
+{# Generic form template for routable components #}
+{# This template can be overridden in sites or shared assets #}
+
+<div class="form-container" data-form-name="{{ form_name }}">
+    {% if form.non_field_errors %}
+        <div class="form-errors alert alert-danger">
+            {% for error in form.non_field_errors %}
+                <p>{{ error }}</p>
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    <form method="POST" class="form" id="{{ form_name }}-form">
+        {% csrf_token %}
+
+        {% for field in form %}
+            <div class="form-group mb-3">
+                {% if field.field.widget.input_type == 'hidden' %}
+                    {{ field }}
+                {% else %}
+                    {{ field.label_tag }}
+                    
+                    {% if field.field.widget.input_type == 'textarea' %}
+                        <textarea 
+                            name="{{ field.name }}"
+                            id="{{ field.id }}"
+                            class="form-control {% if field.errors %}is-invalid{% endif %}"
+                            {% if field.field.required %}required{% endif %}
+                        >{{ field.value|default:'' }}</textarea>
+                    {% elif field.field.widget.input_type == 'checkbox' %}
+                        <div class="form-check">
+                            {{ field }}
+                            <label class="form-check-label" for="{{ field.id }}">
+                                {{ field.label }}
+                            </label>
+                        </div>
+                    {% elif field.field.widget.input_type == 'select' %}
+                        {{ field }}
+                    {% else %}
+                        {{ field }}
+                    {% endif %}
+
+                    {% if field.errors %}
+                        <div class="invalid-feedback d-block">
+                            {% for error in field.errors %}
+                                <p>{{ error }}</p>
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+                    {% if field.help_text %}
+                        <small class="form-text text-muted">
+                            {{ field.help_text|safe }}
+                        </small>
+                    {% endif %}
+                {% endif %}
+            </div>
+        {% endfor %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% trans "Submit" %}
+            </button>
+            <a href="{% url 'admin:index' %}" class="btn btn-secondary">
+                {% trans "Cancel" %}
+            </a>
+        </div>
+    </form>
+</div>

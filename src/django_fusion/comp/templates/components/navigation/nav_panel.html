@@ -1,0 +1,36 @@
+{% load i18n %}
+{#
+  Navigation panel component.
+
+  Renders a vertical navigation panel (e.g. profile sidebar) with multiple
+  nav_link items using Unpoly or HTMX attributes.
+
+  Context:
+    links   — list of nav link dicts with url, label, icon, attrs, is_active
+    title   — optional panel heading
+    css_class — outer wrapper CSS class (default: "card")
+#}
+<nav class="{{ css_class }}" aria-label="{% if title %}{{ title }}{% else %}{% trans 'Navigation' %}{% endif %}">
+  {% if title %}
+    <div class="card-header">
+      <h5 class="mb-0">{{ title }}</h5>
+    </div>
+  {% endif %}
+  <div class="card-body">
+    <ul class="nav flex-column">
+      {% for link in links %}
+        <li class="nav-item">
+          <a {{ link.attrs }}
+             class="nav-link{% if link.is_active %} active{% endif %}"
+             {% if link.is_active %}aria-current="page"{% endif %}
+             {% if not unpoly_enabled %}hx-push-url="true"{% endif %}>
+            {% if link.icon %}<i class="{{ link.icon }} me-2"></i>{% endif %}
+            <span>{{ link.label }}</span>
+          </a>
+        </li>
+      {% empty %}
+        <li class="nav-item text-muted">{% trans "No navigation items." %}</li>
+      {% endfor %}
+    </ul>
+  </div>
+</nav>

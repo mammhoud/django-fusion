@@ -1,0 +1,31 @@
+{# django-fusion components/menu/site_menu.html
+   ──────────────────────────────────────────────────────
+   Renders the top-level site navigation menu with Unpoly + HTMX support.
+
+   Uses {% nav_link %} / {% nav_panel %} for each application, which
+   automatically generates up-follow/up-target (Unpoly) or hx-get/hx-target
+   (HTMX fallback) based on the UNPOLY_ENABLED setting.
+
+   Context:
+     site  — the Site instance
+     apps  — list of Application instances with menu_items()
+     user  — current user for permission checking
+     request — the current HTTP request
+#}
+{% load i18n routable_components %}
+
+<nav class="site-menu" aria-label="{{ site.title }} {% trans 'navigation' %}">
+  {% for app in apps %}
+    <div class="site-menu__app">
+      <div class="site-menu__app-header">
+        {% if app.icon %}
+          <span class="site-menu__icon material-icons" aria-hidden="true">{{ app.icon }}</span>
+        {% endif %}
+        <span class="site-menu__app-title">{{ app.title }}</span>
+      </div>
+      {% app_menu app user %}
+    </div>
+  {% empty %}
+    <p class="site-menu__empty text-muted">{% trans "No applications available." %}</p>
+  {% endfor %}
+</nav>

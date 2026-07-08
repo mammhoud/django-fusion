@@ -1,0 +1,100 @@
+{# django-fusion components/pagination.html — Unpoly + HTMX pagination
+   ──────────────────────────────────────────────────────────────────────
+   Renders Bootstrap 5 pagination controls with Unpoly (up-follow/up-target)
+   and HTMX (hx-get/hx-target) fallback. Preserves search/filter query
+   parameters across page navigation.
+
+   PARAMETERS:
+     page_obj       : Django Page object (required)
+     query_string   : pre-computed query string (from request.GET sans page) (optional)
+     hx_target      : target selector for page links (default: '#fusion-content') (optional)
+
+   USAGE — standard (full page reload):
+     {% comp "components/pagination.html" page_obj=page_obj / %}
+
+   USAGE — HTMX / Unpoly fragment:
+     {% comp "components/pagination.html" page_obj=page_obj query_string=query_string hx_target="#list-container" / %}
+
+   USAGE — template tag:
+     {% load routable_components %}
+     {% fragment_pagination page_obj url=request.path %}
+#}
+{% load i18n %}
+
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<nav aria-label="{% trans 'Pagination' %}" class="mt-4">
+  <ul class="pagination pagination-sm justify-content-center mb-0">
+    {# Previous page #}
+    {% if page_obj.has_previous %}
+    <li class="page-item">
+      <a class="page-link"
+         href="?page={{ page_obj.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}"
+         {% if hx_target %}
+         hx-get="?page={{ page_obj.previous_page_number }}{% if query_string %}&{{ query_string }}{% endif %}"
+         hx-target="{{ hx_target }}"
+         {% endif %}
+         up-follow up-target="{{ hx_target|default:'#fusion-content' }}"
+         aria-label="{% trans 'Previous' %}">
+        <i class="bi bi-chevron-left"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-left"></i></span>
+    </li>
+    {% endif %}
+
+    {# Page numbers with ellipsis #}
+    {% for num in page_obj.paginator.page_range %}
+      {% if num == page_obj.number %}
+      <li class="page-item active" aria-current="page">
+        <span class="page-link">{{ num }}</span>
+      </li>
+      {% elif num > page_obj.number|add:"-3" and num < page_obj.number|add:"3" %}
+      <li class="page-item">
+        <a class="page-link"
+           href="?page={{ num }}{% if query_string %}&{{ query_string }}{% endif %}"
+           {% if hx_target %}
+           hx-get="?page={{ num }}{% if query_string %}&{{ query_string }}{% endif %}"
+           hx-target="{{ hx_target }}"
+           {% endif %}
+           up-follow up-target="{{ hx_target|default:'#fusion-content' }}">
+          {{ num }}
+        </a>
+      </li>
+      {% elif num == page_obj.number|add:"-3" or num == page_obj.number|add:"3" %}
+      <li class="page-item disabled">
+        <span class="page-link">&hellip;</span>
+      </li>
+      {% endif %}
+    {% endfor %}
+
+    {# Next page #}
+    {% if page_obj.has_next %}
+    <li class="page-item">
+      <a class="page-link"
+         href="?page={{ page_obj.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}"
+         {% if hx_target %}
+         hx-get="?page={{ page_obj.next_page_number }}{% if query_string %}&{{ query_string }}{% endif %}"
+         hx-target="{{ hx_target }}"
+         {% endif %}
+         up-follow up-target="{{ hx_target|default:'#fusion-content' }}"
+         aria-label="{% trans 'Next' %}">
+        <i class="bi bi-chevron-right"></i>
+      </a>
+    </li>
+    {% else %}
+    <li class="page-item disabled">
+      <span class="page-link"><i class="bi bi-chevron-right"></i></span>
+    </li>
+    {% endif %}
+  </ul>
+
+  {# Entry count summary #}
+  <div class="text-center text-muted small mt-2">
+    {% blocktrans with start=page_obj.start_index end=page_obj.end_index total=page_obj.paginator.count %}
+      Showing {{ start }} – {{ end }} of {{ total }} entries
+    {% endblocktrans %}
+  </div>
+</nav>
+{% endif %}

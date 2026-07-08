@@ -1,0 +1,22 @@
+{% load i18n %}
+{# 
+  Navigation link component.
+
+  Renders an <a> element with Unpoly (up-follow/up-target) or HTMX (hx-get/hx-target)
+  attributes based on the UNPOLY_ENABLED setting.
+
+  Context:
+    url     — href / hx-get target
+    label   — display text
+    icon    — optional icon class (e.g. "bi-house")
+    attrs   — pre-rendered HTML attributes (safe string)
+    is_active — whether this link matches the current page
+    target  — swap target selector
+    layer   — optional Unpoly layer (modal, drawer, popup)
+#}
+<a {{ attrs }}
+   {% if is_active %}aria-current="page"{% endif %}
+   {% if not unpoly_enabled %}hx-push-url="true"{% endif %}>
+  {% if icon %}<i class="{{ icon }} me-2"></i>{% endif %}
+  <span>{{ label }}</span>
+</a>

@@ -1,0 +1,3 @@
+{# django-fusion components/form.html — unified Django form (delegates to shared) #}
+{% load laces %}
+{% comp "components/form/form.html" form=form hx_post=hx_post hx_url=hx_url hx_target=hx_target hx_swap=hx_swap hx_indicator=hx_indicator is_multipart=is_multipart form_class=form_class form_id=form_id form_action=form_action form_method=form_method form_extra_attrs=form_extra_attrs submit_label=submit_label submit_attrs=submit_attrs show_cancel=show_cancel cancel_label=cancel_label cancel_onclick=cancel_onclick cancel_hx_get=cancel_hx_get cancel_hx_target=cancel_hx_target cancel_hx_swap=cancel_hx_swap field_success=field_success success_message=success_message / %}
