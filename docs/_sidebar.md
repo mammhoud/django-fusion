@@ -58,16 +58,6 @@
     * [Usage](packages/django-fusion/usage.md)
   * [nawaai](packages/nawaai/)
 
-* **Ecosystem**
-  * [Getting Started](ecosystem/getting-started/README.md)
-  * [Architecture](ecosystem/architecture/)
-  * [Deployment](ecosystem/deployment/README.md)
-    * [Health Check Enhancement](ecosystem/deployment/health_check_enhancement_summary_2026_04.md)
-    * [Assets Loading Fix](ecosystem/deployment/assets_loading_fix_summary_2026_04.md)
-    * [Migration Guide](ecosystem/deployment/MIGRATION_GUIDE.md)
-  * [Development](ecosystem/development/)
-    * [Wagtail Pages — Content & i18n](ecosystem/development/wagtail-pages-content-i18n-summary.md)
-
 * **Projects**
   * [structa.cloud](structa.cloud/)
   * [ctc-research.com](ctc-research.com/)
