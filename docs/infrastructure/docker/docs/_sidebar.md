@@ -1,7 +1,0 @@
-* [Docker Overview](README.md)
-* [Quick Start](README.md#quick-start)
-* [Service Management](README.md#service-management)
-* [Health Checks](README.md#health-checks)
-* [Environment Variables](README.md#environment-variables)
-* [Volume Management](README.md#volume-management)
-* [Network Configuration](README.md#network-configuration)
