@@ -51,16 +51,19 @@ Token used by the parent Structa Cloud monorepo's `make push-libs` target
 does not carry the **`workflow`** OAuth scope that GitHub requires to
 create or update files under `.github/workflows/`.
 
-When you have a token with `workflow` scope (a maintainer push, a fork
-PR, or a pre-scope-upgrade push), restore the workflow to its normal
-location with this one-liner from the submodule root:
+When you have a token with the `workflow` scope (a maintainer push
+under `mammhoud/django-fusion`), restore the workflow to its normal
+location with this snippet from the submodule root:
 
 ```bash
+# Run this from inside the submodule root (e.g. core/libs/django-fusion)
+cd core/libs/django-fusion
+
 mkdir -p .github/workflows
 cp docs/ci/tests.yml .github/workflows/tests.yml
-git -C $REPO add .github/workflows/tests.yml
-git -C $REPO commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
-git -C $REPO push origin generic
+git add .github/workflows/tests.yml
+git commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
+git push origin generic
 ```
 
 Why the indirection? Without `workflow` scope, GitHub returns:
