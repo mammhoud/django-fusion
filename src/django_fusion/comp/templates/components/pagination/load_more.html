@@ -1,0 +1,27 @@
+{% load i18n %}{# django-fusion components/pagination/load_more.html — "Load More" button pagination
+   ──────────────────────────────────────────────────────────────────
+   Renders a click-to-append button. Each click fetches the next page
+   and prepends/appends it into the supplied HTMX target.
+
+   PARAMETERS:
+     page_obj    : Django Page object (required)
+     hx_target   : selector for content container (default: '#product-grid')
+     hx_swap     : HTMX swap strategy (default: 'beforeend')
+     hx_indicator: HTMX loading indicator selector (default: '#load-more-spinner')
+     css_class   : extra CSS class on wrapper div
+
+   USAGE:
+     {% comp "components/pagination/load_more.html" page_obj=page_obj hx_target="#product-grid" / %}
+#}
+{% if page_obj and page_obj.has_next %}
+<div class="pagination-load-more text-center mt-4 {{ css_class|default:'' }}">
+    <button class="btn btn-outline-primary"
+            hx-get="?page={{ page_obj.next_page_number }}"
+            hx-target="{{ hx_target|default:'#product-grid' }}"
+            hx-swap="{{ hx_swap|default:'beforeend' }}"
+            hx-indicator="{{ hx_indicator|default:'#load-more-spinner' }}">
+        <span id="{{ hx_indicator|default:'#load-more-spinner'|cut:'#' }}" class="htmx-indicator spinner-border spinner-border-sm me-2" role="status"></span>
+        {% trans "Load More" %}
+    </button>
+</div>
+{% endif %}

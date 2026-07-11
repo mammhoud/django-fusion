@@ -60,5 +60,10 @@ compose/config/secrets.yml
 *.so
 *.a
 
+# Documentation builds
+site/
+_build/
+docs/_build/
+
 # Package lock files (optional - keep for reproducibility)
 # uv.lock

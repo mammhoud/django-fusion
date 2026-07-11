@@ -25,11 +25,38 @@ class CoreExtAppConfig(AppConfig):
 
         # Register django-fusion built-in component templates so they are
         # available to {% comp %} without manual registration.
+        #
+        # All paths are relative to the django-fusion app's templates
+        # directory (`django_fusion/comp/templates/`) and resolve via
+        # Django's standard template loader. Sites that need additional
+        # components can either add their own paths to
+        # ``COMPONENTS_INCLUDE_PATH_ROOTS`` or extend this list in a
+        # subclass AppConfig.ready() that runs after this one.
         register_include_paths([
-            "components/table.html",
+            # ── Single-file components ──
+            "components/breadcrumbs.html",
+            "components/button.html",
+            "components/submit_button.html",
+            "components/form/form.html",
+            "components/form/form_block.html",
+            "components/form/form_field.html",
+            "components/form/form_simple.html",
+            "components/modal.html",
+            "components/modal_trigger.html",
+            "components/modal_static.html",
+            "components/notification.html",
+            "components/notification_small.html",
             "components/pagination.html",
             "components/search.html",
-            "components/form.html",
+            "components/table.html",
+            # ── Multi-file subdirectories ──
+            "components/pagination/numbers.html",
+            "components/pagination/load_more.html",
+            "components/pagination/infinite.html",
+            "components/chat/bubble.html",
+            "components/cookies/cookie-consent.html",
+            "components/cookies/cookie-policy.html",
+            "components/cookies/privacy-policy.html",
         ])
 
         from .webpack_compat import _patch_webpack_loader

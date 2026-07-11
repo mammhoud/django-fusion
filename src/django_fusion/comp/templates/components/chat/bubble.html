@@ -1,0 +1,349 @@
+{% load static %}{# ============================================================
+   django-fusion components/chat/bubble.html — rseal/nawaai chat widget
+   ──────────────────────────────────────────────────────────────────
+   Floating chat bubble paired with a slide-up panel. Sends via fetch
+   to the chat endpoint exposed by ceptor-ai's rseal_chat integration.
+
+   Usage: {% comp "components/chat/bubble.html" chat_config=config / %}
+   Optional context:
+     chat_title       : header name (default: 'Assistant')
+     chat_placeholder : input placeholder (default: 'Type a message…')
+     chat_greeting    : first bot message (default: 'Hi! How can I help you today?')
+     chat_endpoint    : override POST endpoint URL (otherwise read from data-config)
+   ============================================================ #}
+
+{% with config=chat_config|default:"{}" %}
+<div id="rseal-chat-widget"
+     data-config="{{ config }}"
+     class="rseal-chat-widget"
+     aria-label="Chat assistant"
+     role="complementary">
+
+  {# ── Floating trigger button ── #}
+  <button id="rseal-chat-toggle"
+          class="rseal-chat-toggle"
+          aria-expanded="false"
+          aria-controls="rseal-chat-panel"
+          title="Open chat">
+    <svg class="rseal-chat-icon rseal-chat-icon--open" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+    </svg>
+    <svg class="rseal-chat-icon rseal-chat-icon--close" viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/>
+    </svg>
+    <span class="rseal-chat-badge" id="rseal-chat-badge" aria-live="polite"></span>
+  </button>
+
+  {# ── Chat panel ── #}
+  <div id="rseal-chat-panel"
+       class="rseal-chat-panel"
+       role="dialog"
+       aria-modal="false"
+       aria-label="Chat window"
+       hidden>
+
+    {# Header #}
+    <div class="rseal-chat-header">
+      <div class="rseal-chat-header__info">
+        <span class="rseal-chat-header__avatar" aria-hidden="true">🤖</span>
+        <div>
+          <p class="rseal-chat-header__name">{{ chat_title|default:"Assistant" }}</p>
+          <p class="rseal-chat-header__status" id="rseal-chat-status">Online</p>
+        </div>
+      </div>
+      <button class="rseal-chat-header__close"
+              aria-label="Close chat"
+              onclick="document.getElementById('rseal-chat-toggle').click()">✕</button>
+    </div>
+
+    {# Messages #}
+    <div id="rseal-chat-messages"
+         class="rseal-chat-messages"
+         role="log"
+         aria-live="polite"
+         aria-label="Chat messages">
+      <div class="rseal-chat-message rseal-chat-message--bot">
+        <span class="rseal-chat-message__text">
+          {{ chat_greeting|default:"Hi! How can I help you today?" }}
+        </span>
+      </div>
+    </div>
+
+    {# Typing indicator #}
+    <div id="rseal-chat-typing" class="rseal-chat-typing" hidden aria-hidden="true">
+      <span></span><span></span><span></span>
+    </div>
+
+    {# Input area #}
+    <form id="rseal-chat-form" class="rseal-chat-input-area" autocomplete="off">
+      {% csrf_token %}
+      <label for="rseal-chat-input" class="sr-only">Type a message</label>
+      <textarea id="rseal-chat-input"
+                name="message"
+                class="rseal-chat-input"
+                placeholder="{{ chat_placeholder|default:'Type a message…' }}"
+                rows="1"
+                maxlength="2000"
+                aria-label="Chat message input"></textarea>
+      <button type="submit"
+              class="rseal-chat-send"
+              aria-label="Send message">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+      </button>
+    </form>
+
+    {# Powered-by footer #}
+    <p class="rseal-chat-footer">
+      Powered by <span>rseal × nawaai</span>
+    </p>
+  </div>
+</div>
+
+{# ── Styles ── #}
+<style>
+:root {
+  --rseal-chat-primary: #4f46e5;
+  --rseal-chat-primary-dark: #3730a3;
+  --rseal-chat-bg: #ffffff;
+  --rseal-chat-surface: #f9fafb;
+  --rseal-chat-border: #e5e7eb;
+  --rseal-chat-text: #111827;
+  --rseal-chat-text-muted: #6b7280;
+  --rseal-chat-bot-bg: #f3f4f6;
+  --rseal-chat-user-bg: #4f46e5;
+  --rseal-chat-user-text: #ffffff;
+  --rseal-chat-radius: 1rem;
+  --rseal-chat-shadow: 0 20px 60px rgba(0,0,0,.15);
+  --rseal-chat-z: 9999;
+  --rseal-chat-width: 360px;
+  --rseal-chat-height: 520px;
+}
+
+.rseal-chat-widget { position: fixed; bottom: 1.5rem; right: 1.5rem; z-index: var(--rseal-chat-z); font-family: system-ui, sans-serif; }
+
+/* Toggle button */
+.rseal-chat-toggle {
+  width: 56px; height: 56px; border-radius: 50%;
+  background: var(--rseal-chat-primary); color: #fff; border: none; cursor: pointer;
+  box-shadow: 0 4px 20px rgba(79,70,229,.4); display: flex; align-items: center; justify-content: center;
+  transition: transform .2s, background .2s; position: relative;
+}
+.rseal-chat-toggle:hover { background: var(--rseal-chat-primary-dark); transform: scale(1.05); }
+.rseal-chat-icon { width: 24px; height: 24px; fill: currentColor; transition: opacity .2s, transform .2s; }
+.rseal-chat-icon--close { position: absolute; opacity: 0; transform: rotate(-90deg); }
+.rseal-chat-widget[data-open] .rseal-chat-icon--open { opacity: 0; transform: rotate(90deg); }
+.rseal-chat-widget[data-open] .rseal-chat-icon--close { opacity: 1; transform: rotate(0); }
+.rseal-chat-badge {
+  position: absolute; top: 0; right: 0; min-width: 18px; height: 18px; border-radius: 9px;
+  background: #ef4444; color: #fff; font-size: 11px; font-weight: 700; padding: 0 4px;
+  display: none; align-items: center; justify-content: center;
+}
+.rseal-chat-badge:not(:empty) { display: flex; }
+
+/* Panel */
+.rseal-chat-panel {
+  position: absolute; bottom: 70px; right: 0;
+  width: var(--rseal-chat-width); height: var(--rseal-chat-height);
+  background: var(--rseal-chat-bg); border-radius: var(--rseal-chat-radius);
+  box-shadow: var(--rseal-chat-shadow); display: flex; flex-direction: column;
+  overflow: hidden; border: 1px solid var(--rseal-chat-border);
+  transform-origin: bottom right; transition: transform .25s, opacity .25s;
+}
+.rseal-chat-panel[hidden] { display: none; }
+
+/* Header */
+.rseal-chat-header {
+  background: var(--rseal-chat-primary); color: #fff; padding: .875rem 1rem;
+  display: flex; align-items: center; justify-content: space-between; flex-shrink: 0;
+}
+.rseal-chat-header__info { display: flex; align-items: center; gap: .625rem; }
+.rseal-chat-header__avatar { font-size: 1.5rem; }
+.rseal-chat-header__name { font-weight: 600; font-size: .9rem; margin: 0; }
+.rseal-chat-header__status { font-size: .75rem; opacity: .8; margin: 0; }
+.rseal-chat-header__close { background: none; border: none; color: #fff; cursor: pointer; font-size: 1.1rem; opacity: .7; padding: 4px; border-radius: 4px; }
+.rseal-chat-header__close:hover { opacity: 1; background: rgba(255,255,255,.15); }
+
+/* Messages */
+.rseal-chat-messages { flex: 1; overflow-y: auto; padding: 1rem; display: flex; flex-direction: column; gap: .625rem; scroll-behavior: smooth; }
+.rseal-chat-message { max-width: 80%; display: flex; }
+.rseal-chat-message--bot { align-self: flex-start; }
+.rseal-chat-message--user { align-self: flex-end; flex-direction: row-reverse; }
+.rseal-chat-message__text {
+  padding: .5rem .875rem; border-radius: 1.25rem; font-size: .875rem; line-height: 1.5;
+  word-break: break-word; white-space: pre-wrap;
+}
+.rseal-chat-message--bot .rseal-chat-message__text { background: var(--rseal-chat-bot-bg); color: var(--rseal-chat-text); border-bottom-left-radius: .25rem; }
+.rseal-chat-message--user .rseal-chat-message__text { background: var(--rseal-chat-user-bg); color: var(--rseal-chat-user-text); border-bottom-right-radius: .25rem; }
+
+/* Typing */
+.rseal-chat-typing { padding: .5rem 1rem; display: flex; gap: 4px; align-items: center; }
+.rseal-chat-typing span { width: 8px; height: 8px; border-radius: 50%; background: var(--rseal-chat-text-muted); animation: rseal-bounce .9s infinite; }
+.rseal-chat-typing span:nth-child(2) { animation-delay: .15s; }
+.rseal-chat-typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes rseal-bounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-6px); } }
+
+/* Input */
+.rseal-chat-input-area { display: flex; align-items: flex-end; gap: .5rem; padding: .75rem; border-top: 1px solid var(--rseal-chat-border); background: var(--rseal-chat-bg); flex-shrink: 0; }
+.rseal-chat-input {
+  flex: 1; border: 1px solid var(--rseal-chat-border); border-radius: 1.25rem;
+  padding: .5rem .875rem; font-size: .875rem; resize: none; outline: none;
+  font-family: inherit; max-height: 120px; overflow-y: auto; line-height: 1.5;
+  background: var(--rseal-chat-surface); color: var(--rseal-chat-text);
+  transition: border-color .2s;
+}
+.rseal-chat-input:focus { border-color: var(--rseal-chat-primary); }
+.rseal-chat-send {
+  width: 38px; height: 38px; border-radius: 50%; background: var(--rseal-chat-primary);
+  color: #fff; border: none; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: background .2s, transform .1s;
+}
+.rseal-chat-send:hover { background: var(--rseal-chat-primary-dark); }
+.rseal-chat-send:active { transform: scale(.95); }
+.rseal-chat-send svg { width: 18px; height: 18px; fill: currentColor; }
+
+/* Footer */
+.rseal-chat-footer { text-align: center; font-size: .7rem; color: var(--rseal-chat-text-muted); padding: .375rem; margin: 0; border-top: 1px solid var(--rseal-chat-border); flex-shrink: 0; }
+.rseal-chat-footer span { font-weight: 600; color: var(--rseal-chat-primary); }
+
+/* Utility */
+.sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+
+@media (max-width: 480px) {
+  .rseal-chat-panel { width: calc(100vw - 2rem); right: -1.5rem; bottom: 70px; }
+}
+</style>
+
+{# ── Script ── #}
+<script>
+(function () {
+  'use strict';
+
+  var widget  = document.getElementById('rseal-chat-widget');
+  var toggle  = document.getElementById('rseal-chat-toggle');
+  var panel   = document.getElementById('rseal-chat-panel');
+  var form    = document.getElementById('rseal-chat-form');
+  var input   = document.getElementById('rseal-chat-input');
+  var msgs    = document.getElementById('rseal-chat-messages');
+  var typing  = document.getElementById('rseal-chat-typing');
+  var badge   = document.getElementById('rseal-chat-badge');
+  var status  = document.getElementById('rseal-chat-status');
+
+  if (!widget || !toggle) return;
+
+  // Config from data attribute (set by Django view)
+  var cfg = {};
+  try { cfg = JSON.parse(widget.dataset.config || '{}'); } catch(e) { cfg = {}; }
+
+  var endpoint = cfg.endpoint || {% if chat_endpoint %}"{{ chat_endpoint }}"{% else %}null{% endif %};
+  var csrfToken = (document.querySelector('[name=csrfmiddlewaretoken]') || {}).value || '';
+
+  var isOpen = false;
+  var unread = 0;
+
+  // ── Toggle panel ──
+  toggle.addEventListener('click', function () {
+    isOpen = !isOpen;
+    toggle.setAttribute('aria-expanded', isOpen);
+    if (isOpen) {
+      panel.removeAttribute('hidden');
+      widget.setAttribute('data-open', '');
+      unread = 0;
+      badge.textContent = '';
+      input.focus();
+    } else {
+      panel.setAttribute('hidden', '');
+      widget.removeAttribute('data-open');
+    }
+  });
+
+  // ── Auto-resize textarea ──
+  input.addEventListener('input', function () {
+    input.style.height = 'auto';
+    input.style.height = Math.min(input.scrollHeight, 120) + 'px';
+  });
+
+  // ── Send on Enter (Shift+Enter = newline) ──
+  input.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); form.requestSubmit(); }
+  });
+
+  // ── Submit ──
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    var text = (input.value || '').trim();
+    if (!text) return;
+
+    appendMessage(text, 'user');
+    input.value = '';
+    input.style.height = 'auto';
+    showTyping(true);
+
+    if (!endpoint) {
+      showTyping(false);
+      appendMessage('Chat endpoint not configured. Set "endpoint" in chat_config or provide chat_endpoint context.', 'bot');
+      return;
+    }
+
+    try {
+      var res = await fetch(endpoint, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': csrfToken,
+          'X-Requested-With': 'XMLHttpRequest',
+        },
+        body: JSON.stringify({ message: text, session_id: getSession() }),
+      });
+
+      var data = await res.json();
+      showTyping(false);
+
+      var reply = data.reply || data.text || data.message || '…';
+      appendMessage(reply, 'bot');
+
+      if (!isOpen) {
+        unread++;
+        badge.textContent = unread > 9 ? '9+' : unread;
+      }
+    } catch (err) {
+      showTyping(false);
+      appendMessage('Sorry, something went wrong. Please try again.', 'bot');
+    }
+  });
+
+  function appendMessage(text, role) {
+    var div = document.createElement('div');
+    div.className = 'rseal-chat-message rseal-chat-message--' + role;
+    var span = document.createElement('span');
+    span.className = 'rseal-chat-message__text';
+    span.textContent = text;
+    div.appendChild(span);
+    msgs.appendChild(div);
+    msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function showTyping(show) {
+    typing.hidden = !show;
+    typing.setAttribute('aria-hidden', !show);
+    if (show) msgs.scrollTop = msgs.scrollHeight;
+  }
+
+  function getSession() {
+    var sid = sessionStorage.getItem('rseal_chat_sid');
+    if (!sid) {
+      sid = (crypto.randomUUID && crypto.randomUUID()) || Math.random().toString(36).slice(2);
+      sessionStorage.setItem('rseal_chat_sid', sid);
+    }
+    return sid;
+  }
+
+  // ── Online/offline status ──
+  function updateStatus() {
+    status.textContent = navigator.onLine ? 'Online' : 'Offline';
+  }
+  window.addEventListener('online', updateStatus);
+  window.addEventListener('offline', updateStatus);
+  updateStatus();
+})();
+</script>
+{% endwith %}

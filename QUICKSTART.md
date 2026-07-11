@@ -255,7 +255,7 @@ Site-specific       applications/lms_demo/templates/components/form/user.html
                     ↓ (if not found)
 Shared assets       applications/assets/templates/components/form/user.html
                     ↓ (if not found)
-Generic fallback    applications/assets/templates/components/form/form.html
+Generic fallback    applications/libs/django-fusion/src/django_fusion/comp/templates/components/form/form.html
                     ↓ (if not found)
 Django-fusion       django_fusion/comp/routes/templates/routable_components/forms/form.html
 ```
@@ -267,7 +267,7 @@ Site-specific       applications/lms_demo/templates/plugins/tables/users.html
                     ↓ (if not found)
 Shared assets       applications/assets/templates/plugins/tables/users.html
                     ↓ (if not found)
-Generic fallback    applications/assets/templates/plugins/tables/table.html
+Generic fallback    applications/libs/django-fusion/src/django_fusion/comp/templates/components/table.html
                     ↓ (if not found)
 Django-fusion       django_fusion/comp/routes/templates/routable_components/tables/table.html
 ```

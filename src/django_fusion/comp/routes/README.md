@@ -115,12 +115,12 @@ This allows each site to customize templates while maintaining shared defaults.
 
 ### Form Templates
 - `components/form/{form_name}.html`
-- `components/form/form.html` (generic)
+- `components/form/form.html` (canonical generic form)
 - `django_fusion/comp/routes/templates/routable_components/forms/form.html` (fallback)
 
 ### Table Templates
 - `plugins/tables/{table_name}.html`
-- `plugins/tables/table.html` (generic)
+- `components/table.html` (canonical generic table)
 - `django_fusion/comp/routes/templates/routable_components/tables/table.html` (fallback)
 
 ## Documentation

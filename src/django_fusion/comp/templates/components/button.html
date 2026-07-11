@@ -1,0 +1,52 @@
+{% load i18n %}{# django-fusion components/button.html — generic styled button
+   ──────────────────────────────────────────────────────────────────
+   Renders a Bootstrap-style button with hover-reverse icon animation.
+   Supports both <button> and <a> modes. Use this for navigation,
+   brand call-to-action, and "Contact With Us" style buttons.
+
+   PARAMETERS:
+     label     : visible button text (required)
+     href      : if set, renders <a>; defaults to <button type="button">
+     type      : button type (default 'button') — ignored when href set
+     variant   : 'primary' (default) | 'secondary' | 'outline-primary' | 'border-gradient'
+                 | 'ghost' | 'link'
+     size      : 'sm' | 'md' (default) | 'lg'
+     icon      : Bootstrap Icon or feather-* class (optional)
+     icon_position : 'right' (default) | 'left'
+     block     : True — full width
+     extra_attrs : raw HTML attribute string (marked safe)
+     css_class : extra CSS classes appended to the root (optional)
+
+   USAGE:
+     {% comp "components/button.html" label="Contact With Us" variant="border-gradient" icon="feather-arrow-right" href="/contact/" / %}
+#}
+
+{% with variant|default:'primary' as resolved_variant %}
+{% with size|default:'' as resolved_size %}
+{% if href %}
+<a href="{{ href }}"
+   class="btn {{ css_class|default:'' }} btn--{{ resolved_variant }}{% if resolved_size %} btn--{{ resolved_size }}{% endif %}{% if block %} d-block w-100{% endif %}"
+   {% if extra_attrs %}{{ extra_attrs|safe }}{% endif %}>
+{% else %}
+<button type="{{ type|default:'button' }}"
+        class="btn {{ css_class|default:'' }} btn--{{ resolved_variant }}{% if resolved_size %} btn--{{ resolved_size }}{% endif %}{% if block %} d-block w-100{% endif %}"
+        {% if extra_attrs %}{{ extra_attrs|safe }}{% endif %}>
+{% endif %}
+        <span class="icon-reverse-wrapper {% if icon %}has-icon{% endif %}">
+            {% if icon and icon_position == 'left' %}
+                <span class="btn-icon"><i class="{{ icon }}" aria-hidden="true"></i></span>
+            {% endif %}
+            <span class="btn-text">{{ label }}</span>
+            {% if icon and icon_position != 'left' %}
+                <span class="btn-icon"><i class="{{ icon }}" aria-hidden="true"></i></span>
+                {# Duplicate icon for hover icon-reverse animation #}
+                <span class="btn-icon"><i class="{{ icon }}" aria-hidden="true"></i></span>
+            {% endif %}
+        </span>
+{% if href %}
+</a>
+{% else %}
+</button>
+{% endif %}
+{% endwith %}
+{% endwith %}

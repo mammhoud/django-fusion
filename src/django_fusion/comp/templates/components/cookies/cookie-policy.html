@@ -1,0 +1,31 @@
+{% load i18n %}{# django-fusion components/cookies/cookie-policy.html
+   ──────────────────────────────────────────────────────────────────
+   Default Cookie Policy content rendered into a modal popup. Sites can
+   override the policy template id (`cookie-policy-template`) or wrap a
+   different content block from their own layout.
+
+   USAGE:
+     {% comp "components/cookies/cookie-policy.html" / %}
+#}
+<template id="cookie-policy-template">
+    <div class="cookie-policy-content">
+        <h4>{% trans "Cookie Policy" %}</h4>
+        <p>{% trans "This website uses cookies to enhance your browsing experience, analyze site traffic, and serve personalized content. By continuing to use this site, you consent to our use of cookies." %}</p>
+
+        <h5>{% trans "What are cookies?" %}</h5>
+        <p>{% trans "Cookies are small text files stored on your device when you visit a website. They help the website remember your preferences and improve your experience." %}</p>
+
+        <h5>{% trans "Types of cookies we use" %}</h5>
+        <ul>
+            <li><strong>{% trans "Essential Cookies" %}:</strong> {% trans "Required for the website to function properly. These cannot be disabled." %}</li>
+            <li><strong>{% trans "Analytics Cookies" %}:</strong> {% trans "Help us understand how visitors interact with the site by collecting anonymous usage data." %}</li>
+            <li><strong>{% trans "Marketing Cookies" %}:</strong> {% trans "Used to deliver relevant advertisements and track campaign performance." %}</li>
+            <li><strong>{% trans "Preference Cookies" %}:</strong> {% trans "Remember your settings and choices for a more personalized experience." %}</li>
+        </ul>
+
+        <h5>{% trans "Managing cookies" %}</h5>
+        <p>{% trans "You can manage your cookie preferences at any time through your browser settings. Please note that disabling certain cookies may affect site functionality." %}</p>
+
+        <p class="text-muted small">{% trans "Last updated: July 2026" %}</p>
+    </div>
+</template>

@@ -1,0 +1,61 @@
+{% load i18n %}{# django-fusion components/submit_button.html — form-submit button
+   ──────────────────────────────────────────────────────────────────
+   Submit button is intentionally NOT a wrapper <form> — it should be
+   placed DIRECTLY INSIDE the user's <form> element. This component
+   only renders the <button type="submit"> element with an optional
+   HTMX indicator spinner. The host <form> is responsible for
+   {% csrf_token %}.
+
+   PARAMETERS:
+     label        : button text (default: "Submit")
+     variant      : 'primary' (default) | 'secondary' | 'outline-primary' | 'success' | 'danger'
+     size         : 'sm' | 'md' (default) | 'lg' — emitted as Bootstrap's
+                    btn-sm / (none) / btn-lg modifier classes
+     icon         : Bootstrap Icon class (optional)
+     icon_position: 'right' (default) | 'left'
+     hx_indicator : HTMX indicator selector (e.g. '#my-spinner');
+                    automatically builds the spinner INSIDE the button when set
+     hx_confirm   : hx-confirm attribute value (HTMX confirmation dialog text)
+     confirm_text : alias for hx_confirm (matches form.html convention)
+     disabled     : True — render as disabled
+     css_class    : extra CSS classes on the button
+     extra_attrs  : raw HTML attribute string (marked safe)
+
+   USAGE — plain submit:
+     {% comp "components/submit_button.html" label="Save" / %}
+
+   USAGE — submit with HTMX indicator spinner:
+     {% comp "components/submit_button.html" label="Save" hx_indicator="#my-spinner" / %}
+
+   USAGE — submit with confirmation:
+     {% comp "components/submit_button.html" label="Delete" variant="danger" confirm_text="Are you sure?" / %}
+
+   NOTE: This component does not render <form> — callers must use it inside
+   a <form> element. For a full form with built-in submit + cancel, use
+   components/form/form.html.
+#}
+{# Normalize size: 'md' is the Bootstrap default (no modifier class), so omit it. #}
+<button type="submit"
+        class="btn btn-{{ variant|default:'primary' }}{% if size == 'sm' %} btn-sm{% elif size == 'lg' %} btn-lg{% endif %} d-flex align-items-center gap-2 {{ css_class|default:'' }}"
+        {% if hx_indicator %}hx-indicator="{{ hx_indicator }}"{% endif %}
+        {% if hx_confirm %}hx-confirm="{{ hx_confirm }}"{% elif confirm_text %}hx-confirm="{{ confirm_text }}"{% endif %}
+        {% if disabled %}disabled{% endif %}
+        {% if extra_attrs %}{{ extra_attrs|safe }}{% endif %}>
+    {% if icon and icon_position == 'left' %}
+    <i class="{{ icon }}" aria-hidden="true"></i>
+    {% endif %}
+    <span class="submit-button__label">{{ label|default:_("Submit") }}</span>
+    {% if icon and icon_position != 'left' %}
+    <i class="{{ icon }}" aria-hidden="true"></i>
+    {% endif %}
+
+    {# Inline HTMX indicator spinner — opt-in via hx_indicator #}
+    {% if hx_indicator %}
+    <span id="{{ hx_indicator|cut:'#' }}"
+          class="spinner-border spinner-border-sm htmx-indicator"
+          role="status"
+          aria-hidden="true">
+        <span class="visually-hidden">{% trans "Loading" %}</span>
+    </span>
+    {% endif %}
+</button>

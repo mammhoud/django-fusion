@@ -88,7 +88,7 @@ def search(
 
 # ── {% form %} ────────────────────────────────────────────────────────────
 
-@register.inclusion_tag("components/form.html", takes_context=False)
+@register.inclusion_tag("components/form/form.html", takes_context=False)
 def form(
     form: Any = None,
     hx_post: str = "",

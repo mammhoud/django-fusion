@@ -41,6 +41,7 @@ Complete catalog and navigation guide for all documentation files.
 
 **Integration & Examples**
 - [INTEGRATION_EXAMPLES.md](./INTEGRATION_EXAMPLES.md) - Real-world implementation examples
+- [COMPONENT_CASE_STUDIES.md](./COMPONENT_CASE_STUDIES.md) - Per-component case studies: `{% comp %}` template syntax, Python kwargs, and styling via Python args
 
 **Legacy/Deprecated**
 - [COMPONENT_CACHE.md](./COMPONENT_CACHE.md) - Component caching (legacy)
@@ -174,6 +175,7 @@ docs/
 
 **Examples & Patterns**
 - [INTEGRATION_EXAMPLES.md](./INTEGRATION_EXAMPLES.md)
+- [COMPONENT_CASE_STUDIES.md](./COMPONENT_CASE_STUDIES.md) - 22 components, 9 cross-cutting recipes, recipe index
 
 **Navigation & Index**
 - [INDEX.md](./INDEX.md)
@@ -211,7 +213,7 @@ docs/
 | Best Practices | 1 | ✅ Complete | ✅ |
 | Troubleshooting | 1 | ✅ Complete | ✅ |
 | Q&A | 1 | ✅ Complete | ✅ |
-| Examples | 1 | ✅ Partial | ✅ |
+| Examples | 2 | ✅ Complete | ✅ |
 | Analysis | 3 | ✅ Complete | ✅ |
 | Navigation | 3 | ✅ Complete | ✅ |
 

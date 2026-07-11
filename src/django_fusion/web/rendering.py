@@ -33,7 +33,7 @@ Usage::
         subject="You're invited",
     )
 
-    response = renderer.render_to_response("auth/login.html", ctx, request)
+    response = renderer.render_to_response("account/login.html", ctx, request)
     html = renderer.render_component("card.html", {"title": "Hello"})
     renderer = TemplateRenderer.get_default()
 """

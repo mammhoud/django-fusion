@@ -1,0 +1,37 @@
+{% load i18n %}{# django-fusion components/cookies/privacy-policy.html
+   ──────────────────────────────────────────────────────────────────
+   Default Privacy Policy content rendered into a modal popup. Sites
+   can override the policy template id (`privacy-policy-template`) or
+   wrap a different content block from their own layout.
+
+   USAGE:
+     {% comp "components/cookies/privacy-policy.html" / %}
+#}
+<template id="privacy-policy-template">
+    <div class="privacy-policy-content">
+        <h4>{% trans "Privacy Policy" %}</h4>
+        <p>{% trans "We are committed to protecting your privacy and ensuring the security of your personal information. This policy explains how we collect, use, and safeguard your data." %}</p>
+
+        <h5>{% trans "Information we collect" %}</h5>
+        <p>{% trans "We may collect information you provide directly (such as name, email, and account details) and data collected automatically (such as browsing behavior and device information)." %}</p>
+
+        <h5>{% trans "How we use your information" %}</h5>
+        <ul>
+            <li>{% trans "To provide and maintain our services" %}</li>
+            <li>{% trans "To improve and personalize your experience" %}</li>
+            <li>{% trans "To communicate with you about updates and relevant content" %}</li>
+            <li>{% trans "To ensure the security and integrity of our platform" %}</li>
+        </ul>
+
+        <h5>{% trans "Data sharing" %}</h5>
+        <p>{% trans "We do not sell your personal information. We may share data with trusted service providers who assist in operating our website, subject to strict confidentiality agreements." %}</p>
+
+        <h5>{% trans "Your rights" %}</h5>
+        <p>{% trans "You have the right to access, correct, or delete your personal data. You may also withdraw consent for non-essential data processing at any time." %}</p>
+
+        <h5>{% trans "Contact us" %}</h5>
+        <p>{% trans "If you have questions about this privacy policy, please contact us through the website." %}</p>
+
+        <p class="text-muted small">{% trans "Last updated: July 2026" %}</p>
+    </div>
+</template>

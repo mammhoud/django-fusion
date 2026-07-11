@@ -1,0 +1,28 @@
+{% load i18n %}{# django-fusion components/pagination/infinite.html — HTMX infinite scroll
+   ──────────────────────────────────────────────────────────────────
+   Renders an invisible sentinel that triggers the next page when the
+   user scrolls it into view (HTMX `intersect once`).
+
+   PARAMETERS:
+     page_obj    : Django Page object (required)
+     hx_target   : selector for content container (default: '#product-grid')
+     hx_swap     : HTMX swap strategy (default: 'beforeend')
+     hx_indicator: HTMX loading indicator selector (default: '#infinite-spinner')
+
+   USAGE:
+     {% comp "components/pagination/infinite.html" page_obj=page_obj hx_target="#product-grid" / %}
+#}
+{% if page_obj and page_obj.has_next %}
+<div class="pagination-infinite"
+     hx-get="?page={{ page_obj.next_page_number }}"
+     hx-trigger="intersect once"
+     hx-target="{{ hx_target|default:'#product-grid' }}"
+     hx-swap="{{ hx_swap|default:'beforeend' }}"
+     hx-indicator="{{ hx_indicator|default:'#infinite-spinner' }}">
+    <div id="{{ hx_indicator|default:'#infinite-spinner'|cut:'#' }}" class="text-center py-3">
+        <span class="spinner-border spinner-border-sm text-secondary" role="status">
+            <span class="visually-hidden">{% trans "Loading more..." %}</span>
+        </span>
+    </div>
+</div>
+{% endif %}

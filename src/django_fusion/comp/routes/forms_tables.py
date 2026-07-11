@@ -20,7 +20,7 @@ The resolution follows a hierarchical pattern::
     # Table templates
     applications/<site>/templates/plugins/tables/<name>.html
     applications/assets/templates/plugins/tables/<name>.html
-    django_fusion/comp/routes/templates/routable_components/tables/<name>.html
+    django_fusion/comp/templates/components/table.html
 
 Usage
 -----
@@ -54,8 +54,6 @@ from typing import Any
 from django.forms import Form
 from django.http import HttpRequest, HttpResponse
 from django.views import generic
-
-from django_fusion.comp.generic.base import FormLayoutMixin
 
 
 class FormMixin:
@@ -98,7 +96,7 @@ class FormMixin:
         Template resolution order:
         1. Site-specific: components/form/{form_name}.html
         2. Shared assets: components/form/{form_name}.html
-        3. Fallback: django_fusion form template
+        3. Fallback: django_fusion canonical form template
 
         Returns:
             List of template names to try in order
@@ -106,8 +104,7 @@ class FormMixin:
         form_name = self.get_form_name()
         return [
             f"components/form/{form_name}.html",
-            f"components/form/form.html",  # Generic form fallback
-            "django_fusion/comp/routes/templates/routable_components/forms/form.html",
+            "components/form/form.html",  # django-fusion canonical (resolves via APP_DIRS)
         ]
 
     def get_form_kwargs(self) -> dict[str, Any]:
@@ -194,16 +191,15 @@ class TableMixin:
         Template resolution order:
         1. Site-specific: plugins/tables/{table_name}.html
         2. Shared assets: plugins/tables/{table_name}.html
-        3. Fallback: generic table template
+        3. Fallback: django_fusion canonical table component
 
         Returns:
             List of template names to try in order
         """
         table_name = self.get_table_name()
         return [
-            f"plugins/tables/{table_name}.html",
-            f"plugins/tables/table.html",  # Generic table fallback
-            "django_fusion/comp/routes/templates/routable_components/tables/table.html",
+            f"plugins/tables/{table_name}.html",  # site-specific override
+            "components/table.html",              # django-fusion canonical (resolves via APP_DIRS)
         ]
 
     def get_table_headers(self) -> list[dict[str, Any]]:

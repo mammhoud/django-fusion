@@ -1,0 +1,30 @@
+{% load i18n %}{# django-fusion components/modal_trigger.html — standalone HTMX trigger button
+   ──────────────────────────────────────────────────────────────────
+   Renders only the trigger button; the modal skeleton must be present
+   elsewhere on the page (use components/modal.html or modal_static.html).
+
+   PARAMETERS:
+     hx_url      : URL that returns the modal body HTML (required)
+     hx_target   : CSS selector to swap content into (default: '#modal-container')
+     hx_swap     : HTMX swap strategy (default: 'innerHTML')
+     hx_indicator: HTMX loading indicator selector (optional)
+     btn_class   : CSS classes for the button (default: 'btn btn-primary')
+     icon        : Bootstrap icon class, e.g. 'bi-pencil' (optional)
+     label       : button text (optional)
+     extra_attrs : raw HTML attribute string for the button (optional, marked safe)
+
+   EXAMPLE:
+     {% comp "components/modal_trigger.html" hx_url="/users/42/edit/" hx_target="#editModal-body" icon="bi-pencil" label="Edit User" / %}
+#}
+
+<button type="button"
+        class="{{ btn_class|default:'btn btn-primary' }}"
+        hx-get="{{ hx_url }}"
+        hx-target="{{ hx_target|default:'#modal-container' }}"
+        hx-swap="{{ hx_swap|default:'innerHTML' }}"
+        hx-trigger="click"
+        {% if hx_indicator %}hx-indicator="{{ hx_indicator }}"{% endif %}
+        {% if extra_attrs %}{{ extra_attrs|safe }}{% endif %}>
+    {% if icon %}<i class="bi {{ icon }} {% if label %}me-2{% endif %}"></i>{% endif %}
+    {% if label %}{{ label }}{% endif %}
+</button>

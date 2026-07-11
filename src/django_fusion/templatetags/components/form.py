@@ -16,7 +16,7 @@ from django import template
 register = template.Library()
 
 
-@register.inclusion_tag("components/form.html", takes_context=False)
+@register.inclusion_tag("components/form/form.html", takes_context=False)
 def form(
     form: Any = None,
     hx_post: str = "",
@@ -43,7 +43,7 @@ def form(
 ) -> dict[str, Any]:
     """Render a unified Django form with HTMX support.
 
-    Delegates to the shared ``components/form/form.html`` template, passing
+    Renders the canonical ``components/form/form.html`` template, passing
     all parameters through.
 
     Args:

@@ -32,7 +32,7 @@ The following files are still duplicated between ctc-research.com and structa.cl
 and should be moved into django-fusion (see `docs/development/final-cleanup-checklist.md`):
 
 | File | Lines | Target in django-fusion | Priority |
-|------|-------|-----------------------|----------|
+|------|-------|-------------------------|----------|
 | `apps/handlers/site/mixins.py` | 907 | `django_fusion/pipelines/site/mixins.py` | High |
 | `CI/models/interaction/call.py` | 87 | `django_fusion/CI/models/interaction/call.py` | High |
 | `CI/models/interaction/notification.py` | 124 | `django_fusion/CI/models/interaction/notification.py` | High |

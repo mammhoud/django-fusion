@@ -4,7 +4,9 @@ version = "0.1.0"
 description = "Reusable Django and Wagtail helpers for Structa Cloud sites"
 requires-python = ">=3.11"
 dependencies = [
+    "attrs>=26.1.0",
     "django>=4.2",
+    "pluggy>=1.6.0",
     "wagtail",
 ]
 
@@ -20,7 +22,36 @@ package-dir = {"" = "src"}
 packages = {find = {where = ["src"], include = ["django_fusion*"]}}
 include-package-data = true
 
+# ---------------------------------------------------------------------------
+# Recognized environment variables (opt-in diagnostics)
+#
+# The conftest recognizes *one* opt-in for diagnostics:
+#
+#   DJANGO_DEBUG_CONFTEST=1
+#
+#     When this is set in the env, conftest.py prints the active
+#     Django TEMPLATES configuration (BACKEND, DIRS, APP_DIRS,
+#     builtins, libraries, context_processors) plus the value of
+#     DJANGO_SETTINGS_MODULE — useful when debugging "which settings
+#     is actually active" scenarios.
+#
+#     The guard is exact-match `os.environ.get("DJANGO_DEBUG_CONFTEST") == "1"`,
+#     NOT a truthy check, so empty strings / accidental values do NOT
+#     trigger the print. This is enforced by
+#     `tests/test_conftest_debug_is_quiet.py` (negative + positive
+#     control).
+#
+#     Usage:
+#         DJANGO_DEBUG_CONFTEST=1 uv run pytest -s tests/test_form_components.py
+#
+# Other env vars considered and rejected (for posterity):
+#   - `DJANGO_SETTINGS_MODULE=tests.settings` — pytest-django would load
+#     `tests/settings.py`, but django-fusion's tests/ stubs use Python's
+#     regular sys.path import chain which pytest-django's lazy engine
+#     init can fail to resolve. The conftest-side `settings.configure()`
+#     remains the simplest working approach.
+# ---------------------------------------------------------------------------
 [tool.pytest.ini_options]
 addopts = ["-v"]
 testpaths = ["tests"]
-pythonpath = ["src"]
+pythonpath = ["src"] 

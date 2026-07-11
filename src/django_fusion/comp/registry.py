@@ -46,6 +46,7 @@ See :mod:`django_fusion.comp.cache` for details.
 from __future__ import annotations
 
 import logging
+import warnings
 from collections.abc import Iterable, Iterator
 from pathlib import Path
 from typing import Final
@@ -197,7 +198,11 @@ def register_include_paths(paths: Iterable[str]) -> list[str]:
                 cached.append(path)
                 batch_mapping[path] = path
             except Exception as e:
-                logger.debug(f"Failed to register path {path}: {e}")
+                logger.exception(f"Failed to register path {path}: {e}")
+                warnings.warn(
+                    f"django_fusion: failed to register include path {path!r}: {e}",
+                    stacklevel=3,
+                )
         else:
             cached.append(path)
     

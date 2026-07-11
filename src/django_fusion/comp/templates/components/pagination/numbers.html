@@ -1,0 +1,39 @@
+{% load i18n %}{# django-fusion components/pagination/numbers.html — simple numbered pagination
+   ──────────────────────────────────────────────────────────────────
+   Renders standard prev / next / numbered pagination links. Suitable
+   for full-page-reload listings without HTMX fragment updates.
+   For HTMX/Unpoly-friendly navigation prefer `components/pagination.html`.
+
+   PARAMETERS:
+     page_obj : Django Page object (required)
+
+   USAGE:
+     {% comp "components/pagination/numbers.html" page_obj=page_obj / %}
+#}
+{% if page_obj and page_obj.paginator.num_pages > 1 %}
+<nav aria-label="{% trans 'Pagination' %}" class="pagination-numbers">
+    <ul class="pagination justify-content-center">
+        {% if page_obj.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="{% trans 'Previous' %}">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+        {% endif %}
+
+        {% for num in page_obj.paginator.page_range %}
+        <li class="page-item {% if page_obj.number == num %}active{% endif %}">
+            <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+        </li>
+        {% endfor %}
+
+        {% if page_obj.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="{% trans 'Next' %}">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        {% endif %}
+    </ul>
+</nav>
+{% endif %}
