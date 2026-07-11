@@ -368,6 +368,11 @@ class PaginatedListView(PaginatedComponentView):
     This links the paginated list fragment to a model-specific template
     in the ``components/`` directory, so every ``PaginatedListView`` has
     a sensible fragment path without manual configuration.
+
+    .. note::
+        The base class sets ``fragment_name = "components.paginated_list"``
+        as a sensible default.  Subclasses that want model-derived derivation
+        must explicitly set ``fragment_name = None`` to opt in.
     """
 
     template_name: str = "components/paginated_list.html"
