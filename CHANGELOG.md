@@ -13,8 +13,9 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - **`CONTRIBUTING.md`** with local dev setup, `DJANGO_DEBUG_CONFTEST=1`
   diagnostic flag, commit conventions, and `DF-0NN` doc-ID discipline.
 - **`CHANGELOG.md`** (this file), seeded with 0.2.0 + 0.1.0 entries.
-- **GitHub Actions workflow** at `.github/workflows/tests.yml` running
-  `pytest` on Python 3.11 / 3.12 across Django 4.2 / 5.0.
+- **GitHub Actions workflow** — staged at `docs/ci/tests.yml` and
+  manually restorable at `.github/workflows/tests.yml` (see Workaround
+  below). Runs `pytest` on Python 3.11 / 3.12 across Django 4.2 / 5.0.
 - **`docs/INDEX.md`** (DF-000) — single source of truth for the doc
   library, with stable `DF-0NN` IDs. Replaces `docs/DOCUMENTATION_MAP.md`
   (removed).
@@ -69,6 +70,43 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
   Development Status :: 4 - Beta, License :: OSI Approved :: MIT License)
 - Added: `[project.urls]` (Homepage, Repository, Issues, Documentation)
 - Added: `pytest-django` to `[project.optional-dependencies].test`
+
+### Workaround: GitHub Actions workflow staged in `docs/ci/`
+
+While the v0.2.0 hygiene content is pushed via `make push-libs`
+(parent Structa Cloud monorepo), the Personal Access Token configured
+on the parent monorepo lacks the **`workflow`** OAuth scope required by
+GitHub to create or update files under `.github/workflows/*.yml`.
+
+GitHub refuses pushes with:
+
+```
+remote: Refusing to allow a Personal Access Token to create or update workflow
+`.github/workflows/tests.yml` without `workflow` scope.
+```
+
+To unblock the rest of the v0.2.0 push without changing the PAT's scope
+on this repo, the workflow definition lives at **`docs/ci/tests.yml`**
+(staging area inside the repo — not active, not eligible to be
+auto-triggered by GitHub). The stage-and-restore flow is:
+
+```bash
+# After `make push-libs` succeeds (which proves the v0.2.0 docs and
+# pyproject landed), restore CI on .github/workflows/tests.yml:
+
+mkdir -p .github/workflows
+cp docs/ci/tests.yml .github/workflows/tests.yml
+
+# Commit & push from inside the submodule, with a token that has the
+# `workflow` scope:
+git -C core/libs/django-fusion add .github/workflows/tests.yml
+git -C core/libs/django-fusion commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
+git -C core/libs/django-fusion push origin generic
+```
+
+If the v0.2.0 push succeeds and CI is otherwise healthy, this
+restoration step may be skipped — `docs/ci/tests.yml` is also a
+runnable workflow template when copied to `.github/workflows/`.
 
 ## [0.1.0] — 2024-12-01
 

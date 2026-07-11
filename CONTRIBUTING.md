@@ -43,6 +43,36 @@ it, conftest stays quiet — this is enforced by `tests/test_conftest_debug_is_q
 The exact-match comparison (`os.environ.get("DJANGO_DEBUG_CONFTEST") == "1"`)
 means empty strings or accidental values do NOT trigger the print.
 
+## CI workflow (`.github/workflows/tests.yml`)
+
+The GitHub Actions workflow is **staged at `docs/ci/tests.yml`**, not at
+`.github/workflows/tests.yml`. This is intentional: the Personal Access
+Token used by the parent Structa Cloud monorepo's `make push-libs` target
+does not carry the **`workflow`** OAuth scope that GitHub requires to
+create or update files under `.github/workflows/`.
+
+When you have a token with `workflow` scope (a maintainer push, a fork
+PR, or a pre-scope-upgrade push), restore the workflow to its normal
+location with this one-liner from the submodule root:
+
+```bash
+mkdir -p .github/workflows
+cp docs/ci/tests.yml .github/workflows/tests.yml
+git -C $REPO add .github/workflows/tests.yml
+git -C $REPO commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
+git -C $REPO push origin generic
+```
+
+Why the indirection? Without `workflow` scope, GitHub returns:
+
+```
+remote: Refusing to allow a Personal Access Token to create or update
+        workflow `.github/workflows/tests.yml` without `workflow` scope.
+```
+
+…and refuses the push. So the file lives in `docs/ci/` until a workflow-
+scoped token pushes it back. The content is identical between locations.
+
 ## Documentation
 
 The repo uses stable doc IDs `DF-0NN` (from [`docs/INDEX.md`](./docs/INDEX.md)).
