@@ -1,6 +1,6 @@
 # Shared Templates — Organization Guide
 
-Scope: `applications/assets/templates/` — the shared template layer for Structa Cloud websites.
+Scope: `core/assets/templates/` — the shared template layer for Structa Cloud websites.
 
 ## Directory Structure
 
@@ -96,16 +96,16 @@ templates/
 
 Django resolves templates in this order (configured in `configs/base/templates.py`):
 
-1. **Site root templates** — `applications/<site>/templates/`
-2. **Site page templates** — `applications/<site>/pages/templates/`
-3. **Site www templates** — `applications/<site>/www/pages/templates/`
-4. **Site asset templates** — `applications/<site>/assets/templates/`
-5. **Site layout templates** — `applications/<site>/assets/templates/layout/`
-6. **Workspace shared plugins** — `applications/_shared/plugins/`
-7. **Site plugin templates** — `applications/<site>/plugins/`
-8. **Site plugin component templates** — `applications/<site>/plugins/components/`
-9. **Workspace asset templates** — `applications/assets/templates/` ← THIS DIRECTORY
-10. **Workspace layout templates** — `applications/assets/templates/layout/`
+1. **Site root templates** — `core/<site>/templates/`
+2. **Site page templates** — `core/<site>/pages/templates/`
+3. **Site www templates** — `core/<site>/www/pages/templates/`
+4. **Site asset templates** — `core/<site>/assets/templates/`
+5. **Site layout templates** — `core/<site>/assets/templates/layout/`
+6. **Workspace shared plugins** — `core/_shared/plugins/`
+7. **Site plugin templates** — `core/<site>/plugins/`
+8. **Site plugin component templates** — `core/<site>/plugins/components/`
+9. **Workspace asset templates** — `core/assets/templates/` ← THIS DIRECTORY
+10. **Workspace layout templates** — `core/assets/templates/layout/`
 11. **Django app templates** — discovered via `APP_DIRS: True`
 
 ## Plugins/ Directory — Canonical Source
@@ -145,9 +145,9 @@ Previously duplicated directories (`errors/`, `newsletter/`, `privacy/`, `mfa/`)
 
 | Website | Module | Port | Site ID | Template Root |
 |---|---|---|---|---|
-| ctc-research | LMS | 5070 | 1 | `applications/ctc-research/` |
-| lms-demo | LMS | 5071 | 2 | `applications/lms-demo/` |
-| VResume | CMS | 5072 | 3 | `applications/VResume/` |
+| ctc-research | LMS | 5070 | 1 | `core/ctc-research/` |
+| lms-demo | LMS | 5071 | 2 | `core/lms-demo/` |
+| VResume | CMS | 5072 | 3 | `core/VResume/` |
 
 ## See Also
 - `docs/templates.md` — Template usage best practices

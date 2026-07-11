@@ -51,8 +51,8 @@ class ThinLayerReport:
 PACKAGE_BASES = {
     # django_fusion
     "django_fusion",
-    # crafts_ai
-    "crafts_ai",
+    # ceptor_ai
+    "ceptor_ai",
     # django_fusion
     "django_fusion",
     # nawaai

@@ -2,7 +2,7 @@
 
 ## 2026-06-30 — Template Reorganization, Settings Inlining & Documentation
 
-### Template Cleanup (`applications/assets/templates/`)
+### Template Cleanup (`core/assets/templates/`)
 
 - **Deduplicated 60+ template files** — consolidated `errors/`, `newsletter/`, `privacy/`, `mfa/` into their `plugins/` equivalents (kept `plugins/` as canonical source)
 - **Merged `LMS/` → `lms/`** (Linux case-sensitivity — these were separate directories)

@@ -124,7 +124,7 @@ if [ "${RUN_SETUP:-false}" = "true" ]; then
 
     if [ -n "${SUPERUSER_USERNAME:-}" ] && [ -n "${SUPERUSER_PASSWORD:-}" ]; then
         echo "[SETUP] Ensuring superuser..."
-        run_logged superuser python -m django_rseal.scripts.superuser || echo "[WARN] superuser failed (non-fatal); see ${LOG_DIR}/superuser.log"
+        run_logged superuser python -m django_fusion.infrastructure.scripts.superuser || echo "[WARN] superuser failed (non-fatal); see ${LOG_DIR}/superuser.log"
     fi
 
     echo "[SETUP] Loading dumped data fixtures..."

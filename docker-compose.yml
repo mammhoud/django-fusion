@@ -73,9 +73,9 @@ volumes:
     name: caddy_data
   caddy_config:
     name: caddy_config
-  customizer-static:
-    name: customizer-static
-  customizer-media:
-    name: customizer-media
-  customizer-data:
-    name: customizer-data
+  tinker-static:
+    name: tinker-static
+  tinker-media:
+    name: tinker-media
+  tinker-data:
+    name: tinker-data

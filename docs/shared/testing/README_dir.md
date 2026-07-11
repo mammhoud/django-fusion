@@ -26,7 +26,7 @@ tests/
 │   └── ...
 └── venv/libs/
     ├── django-fusion/tests/  # django_fusion package tests
-    ├── crafts-ai/tests/ # crafts_ai package tests
+    ├── ceptor-ai/tests/ # ceptor_ai package tests
     ├── django-fusion/tests/  # django_fusion package tests
     └── nawaai/tests/       # nawaai package tests
 ```
@@ -72,8 +72,8 @@ uv run pytest tests/ -v
 cd venv/libs/django-fusion
 uv run pytest tests/ -v
 
-# Test crafts_ai
-cd venv/libs/crafts-ai
+# Test ceptor_ai
+cd venv/libs/ceptor-ai
 uv run pytest tests/ -v
 
 # Test django_fusion
@@ -310,7 +310,7 @@ After running tests, `TEST_REPORT.json` is generated:
   },
   "packages": {
     "django_fusion": {"total": 50, "passed": 50, "failed": 0},
-    "crafts_ai": {"total": 40, "passed": 40, "failed": 0},
+    "ceptor_ai": {"total": 40, "passed": 40, "failed": 0},
     "django_fusion": {"total": 30, "passed": 30, "failed": 0},
     "nawaai": {"total": 20, "passed": 20, "failed": 0}
   },

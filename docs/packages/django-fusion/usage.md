@@ -4,10 +4,10 @@
 
 ## Installation
 
-The package is installed as an editable local dependency from `applications/libs/django-fusion/`:
+The package is installed as an editable local dependency from `core/libs/django-fusion/`:
 
 ```bash
-uv pip install -e applications/libs/django-fusion/
+uv pip install -e core/libs/django-fusion/
 ```
 
 ## Language Utilities
@@ -66,6 +66,6 @@ theme = settings.theme   # 'light' | 'dark'
 
 ## Notes
 
-- Phase 3 migrated `applications/utilities.py` into this package
+- Phase 3 migrated `core/utilities.py` into this package
 - Language switching reference files: `/data/refrences/django-fusion/django_fusion/site/_language.py`
 - Phase 7 will complete the language switcher component implementation

@@ -4,7 +4,7 @@ exercised in the live `/events/` response.
 
 The partial's BEM classes (`.rbt-event-grid`, `.rbt-event-card`) are the
 source-of-truth for the new shared events CSS partial
-(`applications/assets/static/styles/components/_events.scss`). If this
+(`core/assets/static/styles/components/_events.scss`). If this
 include is ever removed, the partial becomes orphan code that is no
 longer exercised at runtime.
 
@@ -19,7 +19,7 @@ from pathlib import Path
 
 from django.test import SimpleTestCase
 
-ROOT = Path(__file__).resolve().parents[1]  # applications/
+ROOT = Path(__file__).resolve().parents[1]  # core/
 
 
 class EventsMainGridIncludeTest(SimpleTestCase):

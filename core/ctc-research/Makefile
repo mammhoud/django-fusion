@@ -22,7 +22,7 @@ NC     := \033[0m
 SITE_NAME := $(notdir $(CURDIR))
 DEFAULT_PORT := $(if $(findstring ctc-research.com,$(SITE_NAME)),5070,5071)
 # PYTHONPATH includes site root, workspace root, www subdirectory, and libs
-PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../libs/django-fusion/src):$(abspath ../libs/crafts-ai/src)
+PYTHONPATH := $(CURDIR):$(CURDIR)/www:$(abspath ..):$(abspath ../libs/django-fusion/src):$(abspath ../libs/ceptor-ai/src)
 export PYTHONPATH
 UV_BIN := $(shell which uv 2>/dev/null || echo /root/.local/bin/uv)
 UV := $(UV_BIN) --project ..
@@ -146,7 +146,7 @@ install: ## Install Python dependencies
 install-internal: ## Refresh mammhoud GitHub packages (django-fusion/rseal/grep)
 	$(call clean_broken_venv)
 	@echo -e "$(BLUE)Installing mammhoud GitHub packages...$(NC)"
-	@$(UV) sync --upgrade-package django-fusion --upgrade-package crafts-ai
+	@$(UV) sync --upgrade-package django-fusion --upgrade-package ceptor-ai
 	@echo -e "$(GREEN)✅ Internal packages refreshed from GitHub$(NC)"
 
 setup: ## Full setup (frontend, migrations, static, checks, superuser, data)

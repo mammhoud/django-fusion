@@ -24,8 +24,8 @@ Thumbs.db
 backups/
 
 # ----------------------------------------------------------------------
-# Project-wide ignores (mirrors the protections under applications/.gitignore
-# for files that live outside `applications/`).
+# Project-wide ignores (mirrors the protections under core/.gitignore
+# for files that live outside `core/`).
 # ----------------------------------------------------------------------
 
 # SSL/TLS private keys and certificates (proxy/certs/* self-signed legacy;

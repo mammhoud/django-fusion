@@ -1,6 +1,6 @@
 # CTC Research — Template Path Tree
 
-Path: `applications/ctc-research/`
+Path: `core/ctc-research/`
 
 ## Template Resolution Order (Django TEMPLATES_DIRS)
 

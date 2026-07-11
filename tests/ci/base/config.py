@@ -39,7 +39,7 @@ class AuthURLs:
     PASSWORD_RESET_KEY = "/accounts/password/reset/key/{key}/"
     PASSWORD_CHANGE = "/accounts/password/change/"
 
-    # Custom project paths (crafts_ai pipelines)
+    # Custom project paths (ceptor_ai pipelines)
     SIGN_IN = "/auth/sign-in/"
     SIGN_UP = "/auth/sign-up/"
     SIGN_OUT = "/auth/sign-out/"

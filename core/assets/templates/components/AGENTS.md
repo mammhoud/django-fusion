@@ -1,6 +1,6 @@
 # Components Library — Agent Instructions
 
-Path: `applications/assets/templates/components/`
+Path: `core/assets/templates/components/`
 
 ## Purpose
 

@@ -5,15 +5,15 @@
 # with no args or with a relative path under the repo root).
 #
 # Layout note: there are TWO top-level pytest-testable trees in
-# this repo, and they live on opposite sides of ``applications/``:
-#   - /home/structa.cloud/tests/                    (workspace tests, sibling of applications/)
-#   - /home/structa.cloud/applications/libs/django-fusion/tests/analyzer/
-#                                                  (django-fusion analyzer tests, *inside* applications/)
+# this repo, and they live on opposite sides of ``core/``:
+#   - /home/structa.cloud/tests/                    (workspace tests, sibling of core/)
+#   - /home/structa.cloud/core/libs/django-fusion/tests/analyzer/
+#                                                  (django-fusion analyzer tests, *inside* core/)
 # This file targets BOTH via ``testpaths`` so ``pytest`` from the
 # repo root discovers either.
 #
 # Design notes:
-# - testpaths adds ``applications/libs/django-fusion/tests/analyzer``
+# - testpaths adds ``core/libs/django-fusion/tests/analyzer``
 #   so the analyzer sub-package is auto-discovered. We point at the
 #   narrow subdir (not the wider libs/django-fusion/tests/) because
 #   the wider tree relies on the library-local conftest.py that
@@ -28,27 +28,27 @@
 #   ``importlib.import_module("apps.blog.urls")`` import chain --
 #   because ``tests/apps/blog/urls.py`` references
 #   ``django.contrib.admin.site.urls`` before Django.setup() has run.
-#   The same value lives in ``applications/pyproject.toml``; adding
+#   The same value lives in ``core/pyproject.toml``; adding
 #   it here makes pytest behavior IDENTICAL whether invoked from
-#   /home/structa.cloud/ or /home/structa.cloud/applications/.
+#   /home/structa.cloud/ or /home/structa.cloud/core/.
 #   ``tests/settings.py`` conditionally strips any optional app
 #   whose ``find_spec`` returns None from ``INSTALLED_APPS``, so
 #   workspace deps that aren't installed in the active interpreter
 #   (e.g. django-allauth or django-fusion) are tolerated.
 # - pythonpath lists ``.`` (= repo root) FIRST so ``tests/settings.py``
 #   resolves when DJANGO_SETTINGS_MODULE = "tests.settings" is read
-#   by pytest-django. Then ``applications/libs/django-fusion/src`` so
+#   by pytest-django. Then ``core/libs/django-fusion/src`` so
 #   ``from django_fusion.analyzer.parser import ...`` resolves
 #   independent of any editable-install state.
 #
 # No [project] / [build-system] sections -- this is a config-only
 # file. The actual project metadata lives in
-# applications/pyproject.toml.
+# core/pyproject.toml.
 
 [tool.pytest.ini_options]
 testpaths = [
     "tests",
-    "applications/libs/django-fusion/tests/analyzer",
+    "core/libs/django-fusion/tests/analyzer",
 ]
 DJANGO_SETTINGS_MODULE = "tests.settings"
 
@@ -60,5 +60,5 @@ python_classes = ["Test*"]
 python_functions = ["test_*"]
 pythonpath = [
     ".",
-    "applications/libs/django-fusion/src",
+    "core/libs/django-fusion/src",
 ]

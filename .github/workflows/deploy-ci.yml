@@ -18,8 +18,8 @@ on:
       - '.github/actions/deploy-preflight/**'
       - '**/docker-compose*.yml'
       - '**/docker-compose*.yaml'
-      - 'applications/libs/**/*.md'
-      - 'applications/scripts/check_markdown_links.py'
+      - 'core/libs/**/*.md'
+      - 'core/scripts/check_markdown_links.py'
   push:
     branches: ['**']
     paths:
@@ -29,8 +29,8 @@ on:
       - '.github/actions/deploy-preflight/**'
       - '**/docker-compose*.yml'
       - '**/docker-compose*.yaml'
-      - 'applications/libs/**/*.md'
-      - 'applications/scripts/check_markdown_links.py'
+      - 'core/libs/**/*.md'
+      - 'core/scripts/check_markdown_links.py'
   workflow_dispatch:
 
 jobs:
@@ -51,6 +51,6 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check Markdown links
-        run: python3 applications/scripts/check_markdown_links.py
+        run: python3 core/scripts/check_markdown_links.py
         env:
           CI: 'true'

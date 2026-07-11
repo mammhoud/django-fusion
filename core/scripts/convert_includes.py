@@ -25,9 +25,9 @@ The script must be invoked as a file, not as ``-m`` (because the
 ``applications`` package's ``__init__.py`` does eager CLI imports
 that aren't resolvable in this layout)::
 
-    python3 applications/scripts/convert_includes.py assets/templates/partials/
-    python3 applications/scripts/convert_includes.py assets/templates/partials/ --report
-    python3 applications/scripts/convert_includes.py --dry-run assets/templates/partials/
+    python3 core/scripts/convert_includes.py assets/templates/partials/
+    python3 core/scripts/convert_includes.py assets/templates/partials/ --report
+    python3 core/scripts/convert_includes.py --dry-run assets/templates/partials/
 
 A ``*.converted.html.bak`` is written next to each rewritten file
 unless ``--no-backup`` is passed.

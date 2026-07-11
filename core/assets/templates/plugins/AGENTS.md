@@ -1,14 +1,14 @@
 # Template Root Instructions: Site Asset Templates
 
 ## Scope
-This directory is a site-specific template root for `applications/ctc-research/assets/templates`. Follow the shared template rules in `applications/assets/templates/AGENTS.md` first, then apply these local notes.
+This directory is a site-specific template root for `core/ctc-research/assets/templates`. Follow the shared template rules in `core/assets/templates/AGENTS.md` first, then apply these local notes.
 
 ## Expected Template Structure
 Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
 
 ## Local Override Notes
 - Keep templates here focused on site-only asset-backed presentation and overrides.
-- Prefer `applications/assets/templates` for cross-site components and shared behavior.
+- Prefer `core/assets/templates` for cross-site components and shared behavior.
 - Prefer this template root for presentation or overrides that are specific to this scope.
 - Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
 - Use `fragment_name` for fragment identifiers and context keys.

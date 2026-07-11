@@ -1,7 +1,7 @@
-# Latest AI, MCP, and crafts-ai Feature Inventory
+# Latest AI, MCP, and ceptor-ai Feature Inventory
 
 This file is the current attachment-style summary for AI agents working in this
-repository. Keep it aligned with `crafts_ai.mcp_server` so local MCP clients and
+repository. Keep it aligned with `ceptor_ai.mcp_server` so local MCP clients and
 human documentation describe the same capabilities.
 
 ## Current MCP endpoints
@@ -9,7 +9,7 @@ human documentation describe the same capabilities.
 | Endpoint | Purpose |
 | --- | --- |
 | `/health` | Readiness check for Kilo/MCP clients. |
-| `/info` | Package metadata shared with the `crafts-ai` CLI. |
+| `/info` | Package metadata shared with the `ceptor-ai` CLI. |
 | `/features` | Full AI/MCP feature inventory and canonical file structure. |
 | `/file-structure` | Compact package, docs, and Kilo path map. |
 
@@ -17,13 +17,13 @@ human documentation describe the same capabilities.
 
 - **Repository-aware Kilo setup**: `.kilo/config.json`, `.kilo/kilo.jsonc`,
   `.kilo/commands/`, and `.kilo/skills/` define the local agent entrypoints.
-- **crafts-ai MCP bridge**: `applications/libs/crafts-ai/src/crafts_ai/mcp_server.py`
+- **ceptor-ai MCP bridge**: `core/libs/ceptor-ai/src/ceptor_ai/mcp_server.py`
   exposes metadata that can be read by local MCP clients without importing
   Django, Wagtail, Celery, or site modules.
 - **AI customizer docs**: `docs/ai/START_HERE.md`, `docs/ai/customizer.md`, and
-  `applications/libs/crafts-ai/docs/agents.md` describe safe template/component
+  `core/libs/ceptor-ai/docs/agents.md` describe safe template/component
   discovery and BEM conversion workflows.
-- **Monorepo structure awareness**: agents must treat `applications/` as the
+- **Monorepo structure awareness**: agents must treat `core/` as the
   application root and use the canonical site paths from `AGENTS.md`.
 
 ## Canonical file structure for latest AI docs
@@ -40,11 +40,11 @@ docs/ai/
 ├── troubleshooting.md
 └── tasks/
 
-applications/libs/crafts-ai/
+core/libs/ceptor-ai/
 ├── AGENTS.md
 ├── docs/agents.md
 ├── pyproject.toml
-└── src/crafts_ai/
+└── src/ceptor_ai/
     ├── cli.py
     ├── customizer/
     └── mcp_server.py
@@ -52,9 +52,9 @@ applications/libs/crafts-ai/
 
 ## Maintenance checklist
 
-1. Update `crafts_ai.mcp_server.MCP_FEATURES` when an endpoint or MCP-facing
+1. Update `ceptor_ai.mcp_server.MCP_FEATURES` when an endpoint or MCP-facing
    capability changes.
 2. Update this file and `docs/ai/mcp_reference.md` in the same change.
-3. Keep `crafts_ai` framework-agnostic; use `importlib.util.find_spec` and
+3. Keep `ceptor_ai` framework-agnostic; use `importlib.util.find_spec` and
    `importlib.import_module` for optional dependencies.
-4. Run the lightweight crafts-ai metadata tests after changes.
+4. Run the lightweight ceptor-ai metadata tests after changes.

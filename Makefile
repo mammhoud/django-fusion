@@ -12,6 +12,8 @@ SHELL := /bin/bash
 # -----------------------------------------------------------------
 .PHONY: push push-libs push-lib pull sync
 
+APPLICATIONS_DIR := core
+
 GITHUB_TOKEN ?=
 
 # Multi-file POSIX-safe lookup. Order preserved by `cat ... | head -n 1`

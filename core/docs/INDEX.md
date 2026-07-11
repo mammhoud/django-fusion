@@ -14,7 +14,7 @@ Master index for all Structa Cloud project documentation.
 
 ## Architecture
 
-- **Workspace root**: `applications/` — shared Django workspace
+- **Workspace root**: `core/` — shared Django workspace
 - **Site modules**: `ctc-research/`, `lms-demo/`, `VResume/` — per-website application code
 - **Shared configs**: `configs/` — base settings, site config, and environment management
 - **Shared templates**: `assets/templates/` — cross-site template library
@@ -56,10 +56,10 @@ uv run pytest
 
 | File | Purpose |
 |---|---|
-| `applications/manage.py` | Unified Django management CLI with multi-site support |
-| `applications/configs/site.py` | Site environment configuration and resolution |
-| `applications/configs/settings/__init__.py` | Entry point for shared settings |
-| `applications/configs/base/__init__.py` | Imports all base config modules |
-| `applications/configs/base/apps.py` | Shared Django app registry |
-| `applications/Makefile` | Build, deploy, and development commands |
-| `applications/pyproject.toml` | Package metadata and `uv` dependencies |
+| `core/manage.py` | Unified Django management CLI with multi-site support |
+| `core/configs/site.py` | Site environment configuration and resolution |
+| `core/configs/settings/__init__.py` | Entry point for shared settings |
+| `core/configs/base/__init__.py` | Imports all base config modules |
+| `core/configs/base/apps.py` | Shared Django app registry |
+| `core/Makefile` | Build, deploy, and development commands |
+| `core/pyproject.toml` | Package metadata and `uv` dependencies |

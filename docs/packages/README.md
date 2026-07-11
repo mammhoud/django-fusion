@@ -14,7 +14,7 @@ This section contains documentation for shared packages used by all projects.
 Abstract models, managers, mixins, utilities, and components
 - No Wagtail dependencies
 - No Celery dependencies
-- No crafts-ai dependencies
+- No ceptor-ai dependencies
 
 **Sub-modules:**
 - `handlers/` - Page handlers
@@ -30,7 +30,7 @@ Abstract models, managers, mixins, utilities, and components
 - `adapters/` - Third-party adapters
 - `services/` - Service layer
 
-### [crafts-ai](crafts-ai/)
+### [ceptor-ai](ceptor-ai/)
 **Wagtail automation layer**
 
 Pipelines, services, workflows, email handling, and Wagtail components
@@ -65,7 +65,7 @@ Test base classes, fixtures, factories, pytest plugins, and health checks
 - Health check endpoints
 - Data seeding utilities
 
-### [crafts-ai](crafts-ai/)
+### [ceptor-ai](ceptor-ai/)
 **Pure Python AI/MCP toolkit**
 
 AI integrations, chat functionality, and MCP server support
@@ -87,9 +87,9 @@ AI integrations, chat functionality, and MCP server support
 ```bash
 # Install all packages
 cd venv/libs/django-fusion && uv sync
-cd venv/libs/crafts-ai && uv sync
+cd venv/libs/ceptor-ai && uv sync
 cd venv/libs/django-fusion && uv sync
-uv pip install -e applications/libs/crafts-ai/
+uv pip install -e core/libs/ceptor-ai/
 ```
 
 ## Usage
@@ -103,10 +103,10 @@ INSTALLED_APPS = [
 ]
 ```
 
-### crafts-ai
+### ceptor-ai
 ```python
 # Thin layer pattern
-from crafts_ai.services import CartServiceBase
+from ceptor_ai.services import CartServiceBase
 
 class CartService(CartServiceBase):
     # Project-specific customizations only
@@ -122,9 +122,9 @@ class MyTest(BaseTestCase):
         pass
 ```
 
-### crafts-ai
+### ceptor-ai
 ```python
-from crafts_ai import package_info
+from ceptor_ai import package_info
 
 info = package_info()
 ```
@@ -134,11 +134,11 @@ info = package_info()
 ## Dependency Direction
 
 ```
-ctc-research.com  →  django-fusion, django-fusion, crafts-ai, crafts-ai
-structa.cloud     →  django-fusion, django-fusion, crafts-ai, crafts-ai
-crafts-ai      →  django-fusion
+ctc-research.com  →  django-fusion, django-fusion, ceptor-ai, ceptor-ai
+structa.cloud     →  django-fusion, django-fusion, ceptor-ai, ceptor-ai
+ceptor-ai      →  django-fusion
 django-fusion       →  (standalone)
-crafts-ai         →  (standalone)
+ceptor-ai         →  (standalone)
 ```
 
 ---

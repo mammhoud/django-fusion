@@ -138,7 +138,7 @@ Successfully integrated the privacy policy modal with the register page, allowin
 2. ✅ `ctc-research.com/apps/handlers/urls_privacy.py` - URL patterns configured
 3. ✅ `ctc-research.com/components/privacy/privacy_modal.html` - Modal template exists
 4. ✅ `ctc-research.com/apps/handlers/models/profiles/privacy_consent.py` - Models exist
-5. ✅ `venv/libs/crafts-ai/src/crafts_ai/templates/auth/register.html` - Already integrated
+5. ✅ `venv/libs/ceptor-ai/src/ceptor_ai/templates/auth/register.html` - Already integrated
 
 ## Testing Checklist
 

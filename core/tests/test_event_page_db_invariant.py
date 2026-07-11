@@ -14,7 +14,7 @@ LOUDLY — before the regression reaches users.
 
 Background
 ----------
-The legacy events template (applications/assets/templates/events/events.html)
+The legacy events template (core/assets/templates/events/events.html)
 contained 32 KiB of hardcoded HTML5 with ``event__item`` and ``event__area``
 CSS classes in its markup. A DB dump confirmed that zero EventPage rows store
 those markers in any concrete database field — the legacy markup lives
@@ -201,6 +201,6 @@ class TestEventPageDbInvariant:
             "No EventPage(slug='events') row may store legacy event__item / event__area\n"
             "CSS class markers in any concrete database field. Those markers live\n"
             "exclusively in the (now-unreachable) template at\n"
-            "applications/assets/templates/events/events.html.\n"
+            "core/assets/templates/events/events.html.\n"
             + "\n".join(failures)
         )

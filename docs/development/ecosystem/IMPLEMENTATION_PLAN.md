@@ -16,7 +16,7 @@ Phase 1: Analysis and Planning
   ↓
 Phase 2: django_fusion (Pure Django Foundation)
   ↓
-Phase 3: crafts_ai (Wagtail + Automation)
+Phase 3: ceptor_ai (Wagtail + Automation)
   ↓
 Phase 4: django_fusion (Testing Infrastructure)
   ↓
@@ -150,7 +150,7 @@ git reset --hard <rollback-tag>
 - [ ] No import errors
 - [ ] Changes committed
 
-### Phase 3: crafts_ai — Extract Wagtail + Automation Logic
+### Phase 3: ceptor_ai — Extract Wagtail + Automation Logic
 
 **Rollback Point**: `rollback-phase-3-start`
 

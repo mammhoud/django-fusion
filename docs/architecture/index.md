@@ -21,7 +21,7 @@ flowchart LR
     App --> SiteB[lms-demo]
     SiteA --> Shared[Root configs, tasks, assets, plugins]
     SiteB --> Shared
-    Shared --> Libs[django-fusion / crafts-ai / django-fusion]
+    Shared --> Libs[django-fusion / ceptor-ai / django-fusion]
     Shared --> Postgres[(PostgreSQL)]
     Shared --> Redis[(Redis)]
 ```

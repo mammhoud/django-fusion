@@ -8,7 +8,7 @@ A Django-based template customization tool with integrated AI chat, code editing
 
 ```bash
 # Install dependencies
-cd applications/tinker
+cd core/tinker
 make install-assets
 pip install -r requirements.txt
 
@@ -26,7 +26,7 @@ open http://localhost:5073
 
 ```bash
 # Build and run with docker-compose
-docker-compose -f applications/tinker/docker-compose.yml up -d
+docker-compose -f core/tinker/docker-compose.yml up -d
 
 # Access the app
 open http://tinker.localhost:5073
@@ -40,9 +40,9 @@ open http://tinker.localhost:5073
 - Show sections/blocks within each template
 
 **Configured Sites:**
-- CTC Research (`applications/ctc-research/templates/`)
-- LMS Demo (`applications/lms-demo/templates/`)
-- VResume (`applications/VResume/www/pages/templates/`)
+- CTC Research (`core/ctc-research/templates/`)
+- LMS Demo (`core/lms-demo/templates/`)
+- VResume (`core/VResume/www/pages/templates/`)
 
 ### 2. AI Chat Interface
 - Real-time conversation with streaming responses
@@ -302,7 +302,7 @@ python manage.py shell
 ### Build
 
 ```bash
-# Build image from applications/ context
+# Build image from core/ context
 docker build -f tinker/Dockerfile -t tinker:latest .
 
 # Or use docker-compose
@@ -430,7 +430,7 @@ docker-compose -f tinker/docker-compose.yml restart tinker
 Tinker integrates with the larger Structa ecosystem:
 
 - **Shared Libraries:** `django-fusion`, `ceptor-ai` via local imports
-- **Shared Templates:** Can load templates from `applications/assets/templates/`
+- **Shared Templates:** Can load templates from `core/assets/templates/`
 - **Shared Settings:** Uses `configs.site.configure_site_environment()`
 - **Multi-Site:** Discovers templates from CTC Research, LMS Demo, VResume
 - **Docker Network:** Connects to `common` and `traefik-net` networks

@@ -2,7 +2,7 @@ from django.urls import include, path
 
 urlpatterns = [
     # NOTE: allauth.urls is NOT included here — it lives at the top of
-    # applications/lms-demo/www/urls.py (single source of truth, matching
+    # core/lms-demo/www/urls.py (single source of truth, matching
     # CTC parity). Including it again would re-register URL names and
     # shadow the global allauth include under certain locale prefixes.
     # Registration views (allauth-backed login/signup)

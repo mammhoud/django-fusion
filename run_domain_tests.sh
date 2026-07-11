@@ -180,7 +180,7 @@ test_configuration() {
   fi
 
   # Check CLI site registry
-  if grep -q '"crm".*"crm-website"' /home/structa.cloud/applications/cli.py 2>/dev/null; then
+  if grep -q '"crm".*"crm-website"' /home/structa.cloud/core/cli.py 2>/dev/null; then
     log_success "CRM site registered in CLI"
   else
     log_failure "CRM site not registered in CLI"

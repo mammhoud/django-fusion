@@ -1,17 +1,17 @@
-# crafts-ai Usage Guide
+# ceptor-ai Usage Guide
 
-`crafts-ai` is the email and notification service library for the structa.cloud monorepo. It provides templated email sending, bulk delivery, and newsletter subscription management.
+`ceptor-ai` is the email and notification service library for the structa.cloud monorepo. It provides templated email sending, bulk delivery, and newsletter subscription management.
 
 ## Installation
 
 ```bash
-uv pip install -e applications/libs/crafts-ai/
+uv pip install -e core/libs/ceptor-ai/
 ```
 
 ## Email Tasks
 
 ```python
-from crafts_ai.tasks import send_email_task
+from ceptor_ai.tasks import send_email_task
 
 send_email_task.delay(
     to="user@example.com",
@@ -25,7 +25,7 @@ send_email_task.delay(
 ## Newsletter Subscription
 
 ```python
-from crafts_ai.newsletter import subscribe, unsubscribe
+from ceptor_ai.newsletter import subscribe, unsubscribe
 
 subscribe(email="user@example.com", list_id="ctc-research-newsletter")
 unsubscribe(email="user@example.com", list_id="ctc-research-newsletter")
@@ -47,8 +47,8 @@ All email templates receive these base variables automatically:
 The shared tasks worker handles rseal task modules. It is included in `compose/docker-compose.tasks.yml`:
 
 ```yaml
-# Tasks worker autodiscovers crafts_ai task modules
-# See applications/tasks/crafts_ai.py for registered modules
+# Tasks worker autodiscovers ceptor_ai task modules
+# See core/tasks/ceptor_ai.py for registered modules
 ```
 
 ## Notes

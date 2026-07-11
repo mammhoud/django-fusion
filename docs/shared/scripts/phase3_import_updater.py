@@ -15,7 +15,7 @@ class Phase3ImportUpdater:
         self.workspace_root = Path("/root/site")
         self.ctc_project = self.workspace_root / "ctc-research.com"
         self.structa_project = self.workspace_root / "structa.cloud"
-        self.crafts_ai_src = self.workspace_root / "venv/libs/crafts-ai/src/crafts_ai"
+        self.ceptor_ai_src = self.workspace_root / "venv/libs/ceptor-ai/src/ceptor_ai"
         self.updates_count = 0
 
     def log(self, message: str):
@@ -23,34 +23,34 @@ class Phase3ImportUpdater:
         print(f"[IMPORT_UPDATE] {message}")
 
     def fix_boundary_violations(self) -> int:
-        """Fix project-specific imports in crafts_ai files."""
-        self.log("\n=== Fixing Boundary Violations in crafts_ai ===")
+        """Fix project-specific imports in ceptor_ai files."""
+        self.log("\n=== Fixing Boundary Violations in ceptor_ai ===")
 
         violations_fixed = 0
 
         # Files with project-specific imports that should be removed or abstracted
         files_to_fix = [
-            self.crafts_ai_src / "pipelines/managers/user.py",
-            self.crafts_ai_src / "pipelines/models/users/team.py",
-            self.crafts_ai_src / "pipelines/models/locations/branch.py",
-            self.crafts_ai_src / "pipelines/models/workspace.py",
-            self.crafts_ai_src / "pipelines/services/certificate.py",
-            self.crafts_ai_src / "pipelines/site/mixins.py",
-            self.crafts_ai_src / "pipelines/site/payments.py",
-            self.crafts_ai_src / "pipelines/site/tags.py",
-            self.crafts_ai_src / "pipelines/signals/utils.py",
-            self.crafts_ai_src / "pipelines/snippets/tags.py",
-            self.crafts_ai_src / "pipelines/snippets/manage/services.py",
-            self.crafts_ai_src / "pipelines/snippets/manage/peoples.py",
-            self.crafts_ai_src / "pipelines/snippets/manage/partners.py",
-            self.crafts_ai_src / "pipelines/snippets/manage/events.py",
-            self.crafts_ai_src / "pipelines/snippets/manage/team.py",
-            self.crafts_ai_src / "contrib/snippets/services.py",
-            self.crafts_ai_src / "contrib/snippets/peoples.py",
-            self.crafts_ai_src / "contrib/snippets/tags.py",
-            self.crafts_ai_src / "handlers/models/manage_company.py",
-            self.crafts_ai_src / "handlers/models/blog_index.py",
-            self.crafts_ai_src / "comp/blocks.py",
+            self.ceptor_ai_src / "pipelines/managers/user.py",
+            self.ceptor_ai_src / "pipelines/models/users/team.py",
+            self.ceptor_ai_src / "pipelines/models/locations/branch.py",
+            self.ceptor_ai_src / "pipelines/models/workspace.py",
+            self.ceptor_ai_src / "pipelines/services/certificate.py",
+            self.ceptor_ai_src / "pipelines/site/mixins.py",
+            self.ceptor_ai_src / "pipelines/site/payments.py",
+            self.ceptor_ai_src / "pipelines/site/tags.py",
+            self.ceptor_ai_src / "pipelines/signals/utils.py",
+            self.ceptor_ai_src / "pipelines/snippets/tags.py",
+            self.ceptor_ai_src / "pipelines/snippets/manage/services.py",
+            self.ceptor_ai_src / "pipelines/snippets/manage/peoples.py",
+            self.ceptor_ai_src / "pipelines/snippets/manage/partners.py",
+            self.ceptor_ai_src / "pipelines/snippets/manage/events.py",
+            self.ceptor_ai_src / "pipelines/snippets/manage/team.py",
+            self.ceptor_ai_src / "contrib/snippets/services.py",
+            self.ceptor_ai_src / "contrib/snippets/peoples.py",
+            self.ceptor_ai_src / "contrib/snippets/tags.py",
+            self.ceptor_ai_src / "handlers/models/manage_company.py",
+            self.ceptor_ai_src / "handlers/models/blog_index.py",
+            self.ceptor_ai_src / "comp/blocks.py",
         ]
 
         for filepath in files_to_fix:
@@ -100,25 +100,25 @@ class Phase3ImportUpdater:
         return violations_fixed
 
     def update_project_imports(self, project_path: Path) -> int:
-        """Update imports in a project to use new crafts_ai locations."""
+        """Update imports in a project to use new ceptor_ai locations."""
         self.log(f"\n=== Updating imports in {project_path.name} ===")
 
         # Import replacements mapping
         replacements = {
             # Email templates
-            r'from apps\.handlers\.email_templates import': 'from crafts_ai.email.selectors import',
+            r'from apps\.handlers\.email_templates import': 'from ceptor_ai.email.selectors import',
             # Wagtail blocks
-            r'from apps\.handlers\.blocks import': 'from crafts_ai.comp.blocks import',
+            r'from apps\.handlers\.blocks import': 'from ceptor_ai.comp.blocks import',
             # Wagtail hooks
-            r'from apps\.handlers\.registration\.wagtail_hooks import': 'from crafts_ai.contrib.wagtail_hooks import',
+            r'from apps\.handlers\.registration\.wagtail_hooks import': 'from ceptor_ai.contrib.wagtail_hooks import',
             # Snippets
-            r'from apps\.handlers\.snippets\.base import': 'from crafts_ai.contrib.snippets.base import',
-            r'from apps\.handlers\.snippets\.tags import': 'from crafts_ai.contrib.snippets.tags import',
+            r'from apps\.handlers\.snippets\.base import': 'from ceptor_ai.contrib.snippets.base import',
+            r'from apps\.handlers\.snippets\.tags import': 'from ceptor_ai.contrib.snippets.tags import',
             # Services
-            r'from apps\.handlers\.services\.cart import': 'from crafts_ai.pipelines.services.cart import',
-            r'from apps\.handlers\.services\.person import': 'from crafts_ai.pipelines.services.person import',
-            r'from apps\.handlers\.services\.message import': 'from crafts_ai.pipelines.services.message import',
-            r'from apps\.handlers\.services\.form_submission import': 'from crafts_ai.pipelines.services.form_submission import',
+            r'from apps\.handlers\.services\.cart import': 'from ceptor_ai.pipelines.services.cart import',
+            r'from apps\.handlers\.services\.person import': 'from ceptor_ai.pipelines.services.person import',
+            r'from apps\.handlers\.services\.message import': 'from ceptor_ai.pipelines.services.message import',
+            r'from apps\.handlers\.services\.form_submission import': 'from ceptor_ai.pipelines.services.form_submission import',
         }
 
         updated_count = 0
@@ -143,7 +143,7 @@ class Phase3ImportUpdater:
         self.log("=" * 70)
 
         try:
-            # Fix boundary violations in crafts_ai
+            # Fix boundary violations in ceptor_ai
             violations_fixed = self.fix_boundary_violations()
 
             # Update imports in both projects

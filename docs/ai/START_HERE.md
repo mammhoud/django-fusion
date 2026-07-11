@@ -12,7 +12,7 @@ Kilo project configuration lives in the repository-level `.kilo/` directory:
   commands.
 - `.kilo/config.json` defines MCP servers available to Kilo.
 - `.kilo/commands/` stores project slash-command prompts, including component
-  and crafts-ai helpers.
+  and ceptor-ai helpers.
 - `.kilo/skills/` stores repository skills for deployment verification,
   SCSS/BEM conversion, and Wagtail field customization.
 
@@ -29,12 +29,12 @@ Recommended setup flow:
    - `frontend-developer` for HTML/CSS/JavaScript work.
    - `test-engineer` for test coverage.
    - `documentation-writer` for docs.
-   - `crafts-ai-toolsmith` for the standalone `crafts-ai` package.
-5. Use slash commands when they fit the task, for example `/crafts-ai` and the
+   - `ceptor-ai-toolsmith` for the standalone `ceptor-ai` package.
+5. Use slash commands when they fit the task, for example `/ceptor-ai` and the
    component-finding command in `.kilo/commands/find-component.md`.
 
 Do not replace repository settings with generic Django defaults. This is a
-monorepo under `applications/`, and site work should use the canonical site
+monorepo under `core/`, and site work should use the canonical site
 paths listed in `AGENTS.md`.
 
 ## 2. How AI tools should read `AGENTS.md`
@@ -48,13 +48,13 @@ AI tools must treat `AGENTS.md` files as scoped repository instructions:
 4. Treat direct user instructions and higher-level system/developer instructions
    as higher priority than `AGENTS.md`.
 5. For this repository, preserve the actual monorepo layout:
-   - shared settings in `applications/configs/`,
-   - shared assets and templates in `applications/assets/`,
-   - local reusable packages in `applications/libs/`,
-   - site code in `applications/ctc-research/`, `applications/lms-demo/`, and
-     `applications/VResume/`.
+   - shared settings in `core/configs/`,
+   - shared assets and templates in `core/assets/`,
+   - local reusable packages in `core/libs/`,
+   - site code in `core/ctc-research/`, `core/lms-demo/`, and
+     `core/VResume/`.
 6. Use `rg`, not recursive `grep`, for repository searches.
-7. Prefer `applications/Makefile` for site checks and orchestration unless a
+7. Prefer `core/Makefile` for site checks and orchestration unless a
    site-level Makefile target is specifically required.
 
 ## 3. How to customize templates safely
@@ -65,20 +65,20 @@ pages. Use this workflow before replacing markup.
 ### Find the page template
 
 1. Identify the site and page route first. Use canonical site names and paths:
-   - CTC Research: `applications/ctc-research/`
-   - LMS Demo: `applications/lms-demo/`
-   - VResume: `applications/VResume/`
+   - CTC Research: `core/ctc-research/`
+   - LMS Demo: `core/lms-demo/`
+   - VResume: `core/VResume/`
 2. Search layered template locations in this order:
-   - shared templates: `applications/assets/templates/`
-   - site root templates: `applications/<site>/templates/`
-   - site asset templates: `applications/<site>/assets/templates/`
-   - site app templates: `applications/<site>/www/**/templates/`
-   - plugin templates: `applications/<site>/plugins/**/templates/`
+   - shared templates: `core/assets/templates/`
+   - site root templates: `core/<site>/templates/`
+   - site asset templates: `core/<site>/assets/templates/`
+   - site app templates: `core/<site>/www/**/templates/`
+   - plugin templates: `core/<site>/plugins/**/templates/`
 3. Use targeted commands such as:
 
    ```bash
-   rg -n "template_name|extends|include|block content" applications/<site> applications/assets/templates
-   rg -n "class .*Page|template =|serve\(" applications/<site>/www applications/<site>/plugins
+   rg -n "template_name|extends|include|block content" core/<site> core/assets/templates
+   rg -n "class .*Page|template =|serve\(" core/<site>/www core/<site>/plugins
    ```
 
 ### Find the component include
@@ -103,7 +103,7 @@ pages. Use this workflow before replacing markup.
 
 ### Replace with a shared component
 
-1. Use `applications/assets/templates/` for cross-site components.
+1. Use `core/assets/templates/` for cross-site components.
 2. Use site-specific template directories only when presentation is unique to one
    site.
 3. Preserve accessible names, ARIA attributes, translation tags, and data
@@ -115,7 +115,7 @@ pages. Use this workflow before replacing markup.
 ### Validate the rendered page
 
 1. Run the narrowest relevant template, Django, or site check first.
-2. Prefer delegated Makefile commands from `applications/Makefile`, for example:
+2. Prefer delegated Makefile commands from `core/Makefile`, for example:
 
    ```bash
    make -C applications check WEBSITE=ctc
@@ -138,8 +138,8 @@ Current Kilo MCP configuration is in `.kilo/config.json`:
 
 - `deployment` MCP server runs `python mcp_server.py` with
   `DJANGO_SETTINGS_MODULE=core.settings`.
-- `crafts-ai` MCP server runs `uvicorn crafts_ai.mcp_server:app --host
-  127.0.0.1 --port 8002` with `PYTHONPATH=applications/libs/crafts-ai/src`.
+- `ceptor-ai` MCP server runs `uvicorn ceptor_ai.mcp_server:app --host
+  127.0.0.1 --port 8002` with `PYTHONPATH=core/libs/ceptor-ai/src`.
 
 There is no separate `django-fusion` MCP server entry in `.kilo/config.json` at the
 moment. If one is added later, document it beside the existing MCP entries,
@@ -161,44 +161,44 @@ assistant, include these files as the canonical attachment set:
 - `docs/ai/START_HERE.md`
 - `docs/ai/latest_features.md`
 - `docs/ai/mcp_reference.md`
-- `applications/libs/crafts-ai/docs/agents.md`
-- `applications/libs/crafts-ai/src/crafts_ai/mcp_server.py`
+- `core/libs/ceptor-ai/docs/agents.md`
+- `core/libs/ceptor-ai/src/ceptor_ai/mcp_server.py`
 
 The MCP server exposes the same high-level inventory at `/features` and the
 canonical path map at `/file-structure`.
 
-## 5. `crafts-ai` package usage
+## 5. `ceptor-ai` package usage
 
-The local `crafts-ai` package is available under `applications/libs/crafts-ai/`.
+The local `ceptor-ai` package is available under `core/libs/ceptor-ai/`.
 It exposes:
 
-- distribution directory: `applications/libs/crafts-ai/`
-- import package: `crafts_ai`
-- CLI command: `crafts-ai`
-- optional MCP app: `crafts_ai.mcp_server:app`
+- distribution directory: `core/libs/ceptor-ai/`
+- import package: `ceptor_ai`
+- CLI command: `ceptor-ai`
+- optional MCP app: `ceptor_ai.mcp_server:app`
 
 Install from the repository root:
 
 ```bash
-uv pip install -e applications/libs/crafts-ai/
+uv pip install -e core/libs/ceptor-ai/
 ```
 
 Install optional MCP dependencies when needed:
 
 ```bash
-uv pip install -e 'applications/libs/crafts-ai/[mcp]'
+uv pip install -e 'core/libs/ceptor-ai/[mcp]'
 ```
 
 Run quick checks:
 
 ```bash
-python -m crafts_ai info
-python -m crafts_ai health
-crafts-ai health
+python -m ceptor_ai info
+python -m ceptor_ai health
+ceptor-ai health
 ```
 
-Boundary rule: keep `crafts_ai` standalone and pure Python. Do not import Django
-or Wagtail from `crafts_ai`; put Django integration in a site app, adapter, or
+Boundary rule: keep `ceptor_ai` standalone and pure Python. Do not import Django
+or Wagtail from `ceptor_ai`; put Django integration in a site app, adapter, or
 explicit service boundary.
 
 ## 6. Ollama setup using `docs/ai/setup.md`
@@ -258,7 +258,7 @@ Rasa is not required for the current local AI workflow. If it is added, keep the
 integration explicit and isolated:
 
 1. Place Rasa under a clearly named service or package, for example
-   `services/rasa-nlu/`, `applications/libs/rasa-integration/`, or an equivalent
+   `services/rasa-nlu/`, `core/libs/rasa-integration/`, or an equivalent
    documented path.
 2. Define intents and entities in Rasa training data, and keep action names
    stable. Example intents might include `find_template`, `run_ai_task`,
@@ -289,19 +289,19 @@ integration explicit and isolated:
 Use these links when work is scoped to a specific site:
 
 - CTC Research:
-  - `applications/ctc-research/`
-  - `applications/ctc-research/Makefile`
-  - `applications/ctc-research/assets/readme.md`
+  - `core/ctc-research/`
+  - `core/ctc-research/Makefile`
+  - `core/ctc-research/assets/readme.md`
   - `docs/guides/COURSE_SYSTEM_IMPLEMENTATION.md`
   - `docs/guides/COURSES_SYSTEM_ARCHITECTURE.md`
 - LMS Demo:
-  - `applications/lms-demo/`
-  - `applications/lms-demo/Makefile`
+  - `core/lms-demo/`
+  - `core/lms-demo/Makefile`
   - `docs/guides/MAKEFILE_REFERENCE.md`
   - `docs/guides/SESSION_SUMMARY.md`
 - VResume:
-  - `applications/VResume/`
-  - `applications/VResume/Makefile`
+  - `core/VResume/`
+  - `core/VResume/Makefile`
   - `docs/development.md`
   - `docs/user_guide/index.md`
   - `docs/user_guide/portfolio.md`

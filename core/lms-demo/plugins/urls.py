@@ -21,7 +21,7 @@ app_name = "plugins"
 
 urlpatterns = [
     # NOTE: allauth.urls is NOT included here — it lives at the top of
-    # applications/lms-demo/www/urls.py (single source of truth, matching
+    # core/lms-demo/www/urls.py (single source of truth, matching
     # CTC parity). Including it here would re-register the same URL names
     # under i18n_patterns and cause reverse('account_login') shadowing.
     # Plugin namespaces — accounts is already provided by plugins.accounts.urls

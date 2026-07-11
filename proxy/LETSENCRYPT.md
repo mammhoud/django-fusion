@@ -241,7 +241,7 @@ Already wired in `proxy/docker-compose.traefik.yml`:
 ## Coolify deployment
 
 The production proxy is currently `default-proxy` managed by Coolify
-(see `applications/docker-compose.yml` comment "Traefik → managed by
+(see `core/docker-compose.yml` comment "Traefik → managed by
 Coolify"). To keep Coolify in sync with the local compose:
 
 1. In the Coolify UI for `default-proxy`:

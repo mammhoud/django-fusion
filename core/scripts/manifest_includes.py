@@ -42,17 +42,17 @@ Usage
 -----
 ::
 
-    python3 applications/scripts/manifest_includes.py
-    python3 applications/scripts/manifest_includes.py applications/assets/templates/
-    python3 applications/scripts/manifest_includes.py --json | jq '.buckets'
+    python3 core/scripts/manifest_includes.py
+    python3 core/scripts/manifest_includes.py core/assets/templates/
+    python3 core/scripts/manifest_includes.py --json | jq '.buckets'
 
 Default roots (without arguments) walk the conventional template trees
 across all three sites plus the shared asset tree::
 
-    applications/assets/templates/
-    applications/<site>/templates/        (one per site in applications/)
-    applications/<site>/assets/templates/ (one per site that has one)
-    applications/<site>/www/**/templates/ (Django-app templates)
+    core/assets/templates/
+    core/<site>/templates/        (one per site in core/)
+    core/<site>/assets/templates/ (one per site that has one)
+    core/<site>/www/**/templates/ (Django-app templates)
 
 Requires Django >= 4.1 (uses ``TokenType``, ``Lexer.tokenize``).
 The script will lazily ``settings.configure`` a TEMPLATES-only Django
@@ -303,10 +303,10 @@ def _line_for(raw: str, tok) -> int:
 # by this monorepo: shared assets + per-site templates + per-site assets
 # + per-site Django-app templates (``www/**/templates``).
 _DEFAULT_ROOT_GLOBS: tuple[str, ...] = (
-    "applications/assets/templates/",
-    "applications/*/templates/",
-    "applications/*/assets/templates/",
-    "applications/*/www/**/templates/",
+    "core/assets/templates/",
+    "core/*/templates/",
+    "core/*/assets/templates/",
+    "core/*/www/**/templates/",
 )
 
 # Directories that should never be walked even if they live under a
@@ -611,8 +611,8 @@ def main(argv: list[str]) -> int:
         help=(
             "Directories or files to audit. Defaults to the conventional "
             "template trees across the monorepo "
-            "(applications/assets/templates/, applications/<site>/templates/, "
-            "applications/<site>/assets/templates/, applications/<site>/www/**/templates/)."
+            "(core/assets/templates/, core/<site>/templates/, "
+            "core/<site>/assets/templates/, core/<site>/www/**/templates/)."
         ),
     )
     parser.add_argument(

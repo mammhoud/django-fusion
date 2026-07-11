@@ -432,7 +432,7 @@ class CeptorConfigPreloadView(View):
 
         from .ceptor import get_config_loader
 
-        # Use project root (three levels up: chat/ → customizer/ → applications/ → root)
+        # Use project root (three levels up: chat/ → customizer/ → core/ → root)
         # so .kilo/agent/*.json is found
         from pathlib import Path
 

@@ -1,4 +1,4 @@
-"""CI script: validate every Markdown link under ``applications/libs/**/docs/``.
+"""CI script: validate every Markdown link under ``core/libs/**/docs/``.
 
 Two link classes are validated:
 
@@ -21,7 +21,7 @@ Exit codes
 * ``1`` — at least one broken link, or a fatal scan error.
 
 The CI workflow in ``.github/workflows/check-links.yml`` runs this script on PRs and
-pushes that touch Markdown under ``applications/libs/**/docs/`` so the legacy-README
+pushes that touch Markdown under ``core/libs/**/docs/`` so the legacy-README
 class of bug cannot regress silently.
 """
 from __future__ import annotations
@@ -33,7 +33,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# This script lives at applications/scripts/check_markdown_links.py.
+# This script lives at core/scripts/check_markdown_links.py.
 # The repo root is two directories up.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SCOPE = REPO_ROOT / "applications" / "libs"

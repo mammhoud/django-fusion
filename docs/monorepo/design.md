@@ -208,7 +208,7 @@ docs/
   - [ctc-research.com](ctc-research.com/)
 - **Packages**
   - [django-fusion](packages/django-fusion/)
-  - [crafts-ai](packages/crafts-ai/)
+  - [ceptor-ai](packages/ceptor-ai/)
   - [django-fusion](packages/django-fusion/)
 - **Infrastructure**
   - [Docker](infrastructure/docker/)
@@ -259,15 +259,15 @@ HEALTHCHECK --interval=30s --timeout=5s --start-period=10s --retries=3 \
 
 ### Docker-Compose Configuration
 
-The following snippet is an additive overlay, not a replacement for `deploy/applications/docker-compose.yml`. Save it as `deploy/applications/docker-compose.infra.yml`.
+The following snippet is an additive overlay, not a replacement for `deploy/core/docker-compose.yml`. Save it as `deploy/core/docker-compose.infra.yml`.
 
 ```yaml
 # docker-compose.infra.yml
 # Overlay: Docsify service + per-site log volume declarations
 # Usage:
 #   docker compose \
-#     -f applications/docker-compose.yml \
-#     -f applications/docker-compose.infra.yml \
+#     -f core/docker-compose.yml \
+#     -f core/docker-compose.infra.yml \
 #     up -d
 
 networks:
@@ -574,7 +574,7 @@ The Docsify docs service can be validated by running `docker compose -f docker-c
 **Log Directory Isolation**
 - Add `LOG_DIR` derivation and `mkdir` guard to `configs/settings.py`
 - Update all handler `filename` values to use `LOG_DIR`
-- Add `mkdir -p /app/logs/$WEBSITE_IDENTIFIER` to `deploy/applications/django/entrypoint`
+- Add `mkdir -p /app/logs/$WEBSITE_IDENTIFIER` to `deploy/core/django/entrypoint`
 - Declare named volumes in compose overlay
 - Add volume mounts to all three website services
 
@@ -586,7 +586,7 @@ The Docsify docs service can be validated by running `docker compose -f docker-c
 - Update `docker-compose.docs.yml` to use `:ro` bind mount
 
 **Docker-Compose Overlay**
-- Create `deploy/applications/docker-compose.infra.yml`
+- Create `deploy/core/docker-compose.infra.yml`
 
 **Governance Pipeline**
 - Install `husky`, `markdownlint-cli`, `size-limit`, `lint-staged` in `assets/devDependencies`

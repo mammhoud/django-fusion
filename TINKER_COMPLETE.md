@@ -16,7 +16,7 @@ Tinker is a Django-based AI-powered template customizer and chat application tha
 ## ✅ What Was Completed
 
 ### 1. Directory & Configuration Rename
-- ✅ `applications/customizer/` → `applications/tinker/`
+- ✅ `core/customizer/` → `core/tinker/`
 - ✅ All 76 files migrated successfully
 - ✅ Settings updated: WEBSITE_IDENTIFIER "templatetinker" → "tinker"
 - ✅ Docker configuration updated (service name, image, volumes, env vars)
@@ -94,8 +94,8 @@ Tinker is a Django-based AI-powered template customizer and chat application tha
 
 **Status:** ✅ Already integrated, properly working
 
-- ✅ `django-fusion` library available at `applications/libs/django-fusion/`
-- ✅ Backwards compatibility symlink: `django-osoul → django-fusion`
+- ✅ `django-fusion` library available at `core/libs/django-fusion/`
+- ✅ Backwards compatibility symlink: `django-fusion → django-fusion`
 - ✅ Tinker imports: `from django_fusion.site.pages import PageCatalog, TemplateRoot`
 - ✅ Used in: `chat/customizer.py` for template catalog integration
 - ✅ No migration needed (already renamed in library)
@@ -119,7 +119,7 @@ All systems verified and working:
 ### Quick Start (Local Development)
 
 ```bash
-cd applications/tinker
+cd core/tinker
 
 # Option 1: Full setup in one command
 make run-full
@@ -162,7 +162,7 @@ make docker-run
 ## 📚 Documentation Structure
 
 ```
-applications/tinker/
+core/tinker/
 ├── README.md              (Start here: features & quick start)
 ├── API.md                 (API reference: endpoints & examples)
 ├── DEPLOYMENT.md          (Production guide: setup & operations)
@@ -227,7 +227,7 @@ applications/tinker/
 
 ### What is Django-Fusion?
 
-`django-fusion` (formerly `django-osoul`) is Structa Cloud's custom Django framework library that provides:
+`django-fusion` (formerly `django-fusion`) is Structa Cloud's custom Django framework library that provides:
 
 - **Template catalog system** – Discover pages and sections
 - **Component system** – Registered, reusable UI components
@@ -258,7 +258,7 @@ pages = catalog.pages()  # Discovers all pages
 
 A symlink exists for backwards compatibility:
 ```
-applications/libs/django-osoul → applications/libs/django-fusion
+core/libs/django-fusion → core/libs/django-fusion
 ```
 
 This allows old imports to work, but new code should use `django_fusion`.
@@ -371,7 +371,7 @@ make docker-run
 ### Directory Structure
 | Before | After |
 |--------|-------|
-| `applications/customizer/` | `applications/tinker/` |
+| `core/customizer/` | `core/tinker/` |
 | Service: `customizer` | Service: `tinker` |
 | Image: `customizer:latest` | Image: `tinker:latest` |
 
@@ -495,7 +495,7 @@ More scenarios in `DEPLOYMENT.md` (8+ troubleshooting sections)
 ### Created/Modified Files
 
 ```
-applications/tinker/
+core/tinker/
 ├── Makefile (NEW - 28 targets)           ✨
 ├── MAKEFILE.md (NEW - 18 KB)             ✨
 ├── README.md (UPDATED - 11.6 KB)         ✨
@@ -600,7 +600,7 @@ Root:
 
 ### To Get Started
 ```bash
-cd applications/tinker
+cd core/tinker
 make run-full
 # Access http://localhost:5073
 ```
@@ -642,7 +642,7 @@ make run-full
 
 ### Local Development
 ```bash
-cd applications/tinker
+cd core/tinker
 make run-full
 ```
 
@@ -676,4 +676,4 @@ make docker-run
 5. **TINKER_MIGRATION.md** – Migration overview
 6. **TINKER_COMPLETE.md** – This file
 
-All documentation available in `applications/tinker/` directory.
+All documentation available in `core/tinker/` directory.

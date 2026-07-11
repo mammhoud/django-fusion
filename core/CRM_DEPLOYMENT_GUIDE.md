@@ -14,7 +14,7 @@ WEBSITE=crm make dev
 
 ### 2. Build Assets
 ```bash
-cd /home/structa.cloud/applications/assets
+cd /home/structa.cloud/core/assets
 npm run build:crm
 ```
 
@@ -186,7 +186,7 @@ WEBSITE=crm make collectstatic-site
 
 ### Asset Build Fails
 ```bash
-cd applications/assets
+cd core/assets
 npm install
 npm run build:crm
 ```
@@ -203,7 +203,7 @@ done
 
 For issues or questions, refer to:
 - Main project: `/home/structa.cloud/AGENTS.md`
-- Monorepo guide: `/home/structa.cloud/applications/Makefile.md`
+- Monorepo guide: `/home/structa.cloud/core/Makefile.md`
 - CRM specific: This file
 
 ---

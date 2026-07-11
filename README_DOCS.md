@@ -215,9 +215,9 @@ The following report files were removed (consolidated into main docs):
 | `proxy/traefik/dynamic/*.yml` | Per-site routers | Yes | Yes |
 | `proxy/.env` | Cloudflare credentials | No | Yes |
 | `proxy/acme/acme.json` | Let's Encrypt store | No | No |
-| `applications/pyproject.toml` | Python dependencies | Yes | Rarely |
+| `core/pyproject.toml` | Python dependencies | Yes | Rarely |
 | `docker-compose.yml` | Container orchestration | Yes | Sometimes |
-| `applications/*/settings.py` | Site Django settings | Yes | Rarely |
+| `core/*/settings.py` | Site Django settings | Yes | Rarely |
 
 ---
 

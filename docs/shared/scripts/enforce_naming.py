@@ -19,9 +19,9 @@ SCAN_DIRS = [
     "ctc-research.com/apps/",
     "structa.cloud/apps/",
     "venv/libs/django-fusion/src/",
-    "venv/libs/crafts-ai/src/",
+    "venv/libs/ceptor-ai/src/",
     "venv/libs/django-fusion/src/",
-    "applications/libs/crafts-ai/src/",
+    "core/libs/ceptor-ai/src/",
 ]
 
 # Directories to skip

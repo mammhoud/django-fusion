@@ -11,7 +11,7 @@ The template customizer application has been successfully renamed from "customiz
 
 ### Key Achievements
 
-✅ **Renamed:** `applications/customizer/` → `applications/tinker/`  
+✅ **Renamed:** `core/customizer/` → `core/tinker/`  
 ✅ **Documented:** 2,500+ lines of comprehensive guides (README, API, DEPLOYMENT)  
 ✅ **Verified:** Django setup works, Docker builds successfully  
 ✅ **Ready:** For local development, Docker deployment, and production use  
@@ -22,7 +22,7 @@ The template customizer application has been successfully renamed from "customiz
 
 ### Directory Structure
 ```
-applications/
+core/
 ├── tinker/                    # ← Previously "customizer"
 │   ├── chat/                  # Django app (unchanged)
 │   ├── templates/             # HTML templates (unchanged)
@@ -167,7 +167,7 @@ applications/
 ### Local Development (5 minutes)
 
 ```bash
-cd applications/tinker
+cd core/tinker
 
 # Install dependencies
 pip install -r requirements.txt
@@ -186,7 +186,7 @@ make runserver
 
 ```bash
 # From workspace root
-docker-compose -f applications/tinker/docker-compose.yml up -d
+docker-compose -f core/tinker/docker-compose.yml up -d
 
 # Access: http://tinker.localhost:5073
 # (Requires Traefik proxy running)
@@ -309,7 +309,7 @@ TINKER_WORKERS=2
 
 ### Local Development
 - **Type:** SQLite
-- **Location:** `applications/tinker/db.sqlite3`
+- **Location:** `core/tinker/db.sqlite3`
 - **No setup needed:** Auto-created on first migration
 
 ### Docker
@@ -379,17 +379,17 @@ See `README.md` and `DEPLOYMENT.md` for more scenarios.
 - `ceptor-ai` – AI orchestration
 
 **Multi-Site Support:**
-- CTC Research (`applications/ctc-research/templates/`)
-- LMS Demo (`applications/lms-demo/templates/`)
-- VResume (`applications/VResume/www/pages/templates/`)
+- CTC Research (`core/ctc-research/templates/`)
+- LMS Demo (`core/lms-demo/templates/`)
+- VResume (`core/VResume/www/pages/templates/`)
 
 **Docker Networks:**
 - `common` – Shared service network
 - `traefik-net` – Traefik proxy network
 
 **Configuration Sharing:**
-- `applications/configs/` – Shared Django settings
-- `applications/assets/templates/` – Shared templates
+- `core/configs/` – Shared Django settings
+- `core/assets/templates/` – Shared templates
 
 ---
 
@@ -423,19 +423,19 @@ See `README.md` and `DEPLOYMENT.md` for more scenarios.
 
 ### Files to Read
 
-1. **Quick Start:** `applications/tinker/README.md`
-2. **API Reference:** `applications/tinker/API.md`
-3. **Deployment Guide:** `applications/tinker/DEPLOYMENT.md`
+1. **Quick Start:** `core/tinker/README.md`
+2. **API Reference:** `core/tinker/API.md`
+3. **Deployment Guide:** `core/tinker/DEPLOYMENT.md`
 
 ### Common Tasks
 
 | Task | Command |
 |------|---------|
-| Start dev server | `cd applications/tinker && make runserver` |
-| Build assets | `cd applications/tinker && make build` |
+| Start dev server | `cd core/tinker && make runserver` |
+| Build assets | `cd core/tinker && make build` |
 | Run migrations | `python manage.py migrate` |
 | Django shell | `python manage.py shell` |
-| Docker start | `docker-compose -f applications/tinker/docker-compose.yml up -d` |
+| Docker start | `docker-compose -f core/tinker/docker-compose.yml up -d` |
 | View logs | `docker-compose logs -f tinker` |
 | Backup database | See `DEPLOYMENT.md` |
 
@@ -473,9 +473,9 @@ See `README.md` and `DEPLOYMENT.md` for more scenarios.
 ## File Summary
 
 ### Created (New Files)
-- ✅ `/home/structa.cloud/applications/tinker/README.md` (11.6 KB)
-- ✅ `/home/structa.cloud/applications/tinker/API.md` (14.4 KB)
-- ✅ `/home/structa.cloud/applications/tinker/DEPLOYMENT.md` (14.3 KB)
+- ✅ `/home/structa.cloud/core/tinker/README.md` (11.6 KB)
+- ✅ `/home/structa.cloud/core/tinker/API.md` (14.4 KB)
+- ✅ `/home/structa.cloud/core/tinker/DEPLOYMENT.md` (14.3 KB)
 
 ### Modified (Existing Files)
 - ✅ `settings.py` – Updated identifiers
@@ -484,7 +484,7 @@ See `README.md` and `DEPLOYMENT.md` for more scenarios.
 - ✅ `docker-entrypoint.sh` – Updated environment
 
 ### Moved (Directory)
-- ✅ `applications/customizer/` → `applications/tinker/`
+- ✅ `core/customizer/` → `core/tinker/`
 
 ---
 
@@ -524,10 +524,10 @@ See `README.md` and `DEPLOYMENT.md` for more scenarios.
 
 ## Quick Links
 
-- **Local Dev:** `cd applications/tinker && make runserver`
-- **Docker Deploy:** `docker-compose -f applications/tinker/docker-compose.yml up -d`
-- **API Docs:** `applications/tinker/API.md`
-- **Deploy Guide:** `applications/tinker/DEPLOYMENT.md`
+- **Local Dev:** `cd core/tinker && make runserver`
+- **Docker Deploy:** `docker-compose -f core/tinker/docker-compose.yml up -d`
+- **API Docs:** `core/tinker/API.md`
+- **Deploy Guide:** `core/tinker/DEPLOYMENT.md`
 - **Troubleshooting:** See README.md or DEPLOYMENT.md
 
 ---

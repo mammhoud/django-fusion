@@ -8,7 +8,7 @@ from .base import BaseIndexPage
 class EventPage(BaseIndexPage):
     """A Wagtail page displaying a list of events."""
 
-    # LMS-only template — see `applications/lms-demo/templates/events/event_page.html`.
+    # LMS-only template — see `core/lms-demo/templates/events/event_page.html`.
     template = "events/event_page.html"
 
     class Meta:

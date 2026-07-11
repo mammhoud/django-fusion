@@ -40,17 +40,17 @@ class IntelligentMerger:
     """
 
     BOUNDARY_RULES = {
-        "crafts-ai": {
+        "ceptor-ai": {
             "forbidden": ["django", "wagtail", "celery"],
-            "path": "applications/libs/crafts-ai",
+            "path": "core/libs/ceptor-ai",
         },
         "django_fusion": {
-            "forbidden": ["wagtail", "celery", "crafts_ai"],
+            "forbidden": ["wagtail", "celery", "ceptor_ai"],
             "path": "venv/libs/django-fusion",
         },
-        "crafts_ai": {
+        "ceptor_ai": {
             "forbidden": [],  # No project-specific imports
-            "path": "venv/libs/crafts-ai",
+            "path": "venv/libs/ceptor-ai",
         },
         "django_fusion": {
             "forbidden": [],  # Should not be imported by production code
@@ -383,7 +383,7 @@ def write_merge_report(
         "All merge candidates were verified against the architecture constraints:",
         "",
         "- No old architecture patterns (`apps/handlers/`, `apps/LMS/`, `apps/pages/`)",
-        "- No boundary violations (crafts-ai-no-django, osoul-no-wagtail, rseal-no-projects, grep-test-only)",
+        "- No boundary violations (ceptor-ai-no-django, osoul-no-wagtail, rseal-no-projects, grep-test-only)",
         "- No duplication introduced",
         "- No test regressions",
         "",

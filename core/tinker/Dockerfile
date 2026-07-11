@@ -1,7 +1,7 @@
 # =============================================================================
 # Tinker (Template Customizer) Dockerfile
 # Self-contained container for the Structa template customizer.
-# Build context: structa.cloud/applications/  (parent of tinker/)
+# Build context: structa.cloud/core/  (parent of tinker/)
 # =============================================================================
 
 # ── Stage 1: Webpack asset build ─────────────────────────────────────────

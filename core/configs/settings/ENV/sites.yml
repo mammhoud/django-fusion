@@ -29,9 +29,9 @@ default:
       allowed_hosts: [vresume.structa.cloud, www.vresume.structa.cloud, resume.structa.cloud, localhost, 127.0.0.1]
       csrf_trusted_origins: [http://vresume.structa.cloud, https://vresume.structa.cloud, http://www.vresume.structa.cloud, https://www.vresume.structa.cloud, http://resume.structa.cloud, https://resume.structa.cloud]
       cors_allowed_origins: [http://vresume.structa.cloud, https://vresume.structa.cloud, http://www.vresume.structa.cloud, https://www.vresume.structa.cloud, http://resume.structa.cloud, https://resume.structa.cloud]
-    customizer:
-      path: customizer
-      aliases: [cust, template-customizer]
+    tinker:
+      path: tinker
+      aliases: [cust, customizer, template-customizer, tinker]
       domain: localhost
       port: 5073
       module: CMS

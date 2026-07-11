@@ -5,7 +5,7 @@ __pycache__/
 *$py.class
 migrations/*.py
 !migrations/__init__.py
-!django_grep.contrib/migrations/*
+!django_fusion.contrib/migrations/*
 # C extensions
 *.so
 # Distribution / packaging

@@ -84,7 +84,7 @@ SECRET_KEY=<50-char-random-string>
 ALLOWED_HOSTS=ctc-research.com,structa.cloud,docs.structa.cloud
 DEBUG=False
 
-# Email (for crafts-ai)
+# Email (for ceptor-ai)
 EMAIL_HOST=smtp.gmail.com
 EMAIL_PORT=587
 EMAIL_HOST_USER=<email>

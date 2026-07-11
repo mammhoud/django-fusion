@@ -6,7 +6,7 @@ Each website in the Structa Cloud workspace is a self-contained Django applicati
 
 | Attribute | ctc-research | lms-demo | VResume |
 |---|---|---|---|
-| **Directory** | `applications/ctc-research/` | `applications/lms-demo/` | `applications/VResume/` |
+| **Directory** | `core/ctc-research/` | `core/lms-demo/` | `core/VResume/` |
 | **Module** | LMS | LMS | CMS |
 | **Default Port** | 5070 | 5071 | 5072 |
 | **Site ID** | 1 | 2 | 3 |
@@ -268,7 +268,7 @@ runs with an empty database schedule.
 ## Running Website Commands
 
 ```bash
-# From the workspace root (applications/)
+# From the workspace root (core/)
 cd applications
 
 # Django management commands

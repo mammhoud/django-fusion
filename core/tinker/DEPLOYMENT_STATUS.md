@@ -106,7 +106,7 @@ cat logs/collectstatic.log
 
 ### Development
 ```bash
-cd applications/tinker
+cd core/tinker
 
 # 1. Migrate database
 python3 manage.py migrate
@@ -160,7 +160,7 @@ make docker-run  # or your production method
 
 ### Static Files ✅
 - `staticfiles/` - 192 collected files
-- `assets/bundles/customizer/` - Webpack output
+- `assets/bundles/tinker/` - Webpack output
 
 ### Documentation ✅
 - `DYNACONF_SETUP.md` - Complete reference (635 lines)
@@ -202,7 +202,7 @@ These are from Bootstrap using deprecated Sass syntax. The code works perfectly 
 ### Immediate (Before Launch)
 ```bash
 # 1. Apply migrations
-cd applications/tinker
+cd core/tinker
 python3 manage.py migrate
 
 # 2. Create admin user

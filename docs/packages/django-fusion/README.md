@@ -6,7 +6,7 @@ django-fusion is the pure Django foundation layer for the ecosystem. It provides
 ## Key Principles
 - **No Wagtail dependencies** - Must not import wagtail
 - **No Celery dependencies** - Must not import celery
-- **No crafts-ai dependencies** - Must remain independent
+- **No ceptor-ai dependencies** - Must remain independent
 
 ## Sub-modules
 
@@ -68,5 +68,5 @@ INSTALLED_APPS = [
 - [django-fusion README](../../../venv/libs/django-fusion/README.md)
 
 ## Related Packages
-- [crafts-ai](../crafts-ai/) - Wagtail automation (depends on django-fusion)
+- [ceptor-ai](../ceptor-ai/) - Wagtail automation (depends on django-fusion)
 - [django-fusion](../django-fusion/) - Testing infrastructure

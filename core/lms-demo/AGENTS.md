@@ -1,6 +1,6 @@
 # LMS Demo — Template Path Tree
 
-Path: `applications/lms-demo/`
+Path: `core/lms-demo/`
 
 ## Template Resolution Order (Django TEMPLATES_DIRS)
 

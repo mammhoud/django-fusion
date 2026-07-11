@@ -4,21 +4,21 @@ This guide explains how to connect **django-fusion routable viewsets**, **compon
 
 It is intentionally written against the repository layout used here, not a generic Django layout. Use these canonical paths when applying the examples:
 
-- `applications/libs/django-fusion/` — local reusable django-fusion package and routable component primitives.
-- `applications/customizer/` — customizer app, templates, views, and page-building UI.
-- `applications/assets/` — shared frontend assets, shared templates, static files, scripts, and locale files.
-- `applications/configs/` — shared Django settings and test settings.
-- `applications/www/` — shared/core Django code used by the application stack.
-- `applications/ctc-research/` — CTC Research site.
-- `applications/lms-demo/` — Structa/LMS demo site.
-- `applications/VResume/` — VResume site; keep the directory capitalized.
-- `applications/Makefile` — canonical dispatcher for site checks, tests, migrations, assets, and `WEBSITE=...` selection.
+- `core/libs/django-fusion/` — local reusable django-fusion package and routable component primitives.
+- `core/tinker/` — customizer app, templates, views, and page-building UI.
+- `core/assets/` — shared frontend assets, shared templates, static files, scripts, and locale files.
+- `core/configs/` — shared Django settings and test settings.
+- `core/www/` — shared/core Django code used by the application stack.
+- `core/ctc-research/` — CTC Research site.
+- `core/lms-demo/` — Structa/LMS demo site.
+- `core/VResume/` — VResume site; keep the directory capitalized.
+- `core/Makefile` — canonical dispatcher for site checks, tests, migrations, assets, and `WEBSITE=...` selection.
 
 ## Architecture
 
 ### 1. django-fusion viewsets
 
-`django-fusion` supplies routable viewset and site primitives from `applications/libs/django-fusion/`. A site project registers one or more application-level viewsets, and each application exposes page viewsets or fragment viewsets.
+`django-fusion` supplies routable viewset and site primitives from `core/libs/django-fusion/`. A site project registers one or more application-level viewsets, and each application exposes page viewsets or fragment viewsets.
 
 A typical site tree looks like this:
 
@@ -26,9 +26,9 @@ A typical site tree looks like this:
 2. The `Site` contains application objects such as `CustomizerApp`, `LMSApp`, or `BlogApp`.
 3. Each application returns viewset instances from `viewsets`.
 4. Viewsets expose full-page routes, fragment-only routes, form endpoints, or model-backed routes.
-5. Site URL configuration includes the site routes under a prefix such as `/osoul/` or `/customizer/`.
+5. Site URL configuration includes the site routes under a prefix such as `/osoul/` or `/tinker/`.
 
-Keep reusable framework behavior in `applications/libs/django-fusion/`. Keep site-specific registration in the relevant site path such as `applications/ctc-research/`, `applications/lms-demo/`, or `applications/VResume/`.
+Keep reusable framework behavior in `core/libs/django-fusion/`. Keep site-specific registration in the relevant site path such as `core/ctc-research/`, `core/lms-demo/`, or `core/VResume/`.
 
 ### 2. Component tags
 
@@ -36,13 +36,13 @@ Component tags render reusable templates from named component paths. Existing si
 
 Use component tags or `{% include %}` when a template represents a reusable card, navigator, panel, form field, pagination block, or layout primitive. Place templates according to how broadly they are reused:
 
-- Shared components: `applications/assets/templates/`.
-- Site root templates: `applications/<site>/templates/`.
-- Site asset templates: `applications/<site>/assets/templates/`.
-- Site Django app templates: `applications/<site>/www/**/templates/`.
-- Plugin templates: `applications/<site>/plugins/**/templates/`.
+- Shared components: `core/assets/templates/`.
+- Site root templates: `core/<site>/templates/`.
+- Site asset templates: `core/<site>/assets/templates/`.
+- Site Django app templates: `core/<site>/www/**/templates/`.
+- Plugin templates: `core/<site>/plugins/**/templates/`.
 
-For shared UI, prefer `applications/assets/templates/`. For visual differences between sites, keep site-specific overrides under the relevant canonical site path.
+For shared UI, prefer `core/assets/templates/`. For visual differences between sites, keep site-specific overrides under the relevant canonical site path.
 
 ### 3. HTMX fragments
 
@@ -99,7 +99,7 @@ sequenceDiagram
     participant Service as Page/Section Service
     participant Templates as Django Templates
 
-    Browser->>URLConf: GET /customizer/pages/
+    Browser->>URLConf: GET /tinker/pages/
     URLConf->>Site: Dispatch to registered Site routes
     Site->>App: Match customizer app namespace
     App->>Viewset: Resolve full-page route
@@ -122,7 +122,7 @@ sequenceDiagram
     participant Target as DOM Target
 
     User->>Browser: Select page or section
-    Browser->>Fragment: HX-GET /customizer/pages/home/sections/
+    Browser->>Fragment: HX-GET /tinker/pages/home/sections/
     Fragment->>Service: get_sections(page_slug="home")
     Service-->>Fragment: Ordered section data
     Fragment->>Template: Render customizer/pages/sections.html
@@ -143,19 +143,19 @@ flowchart TD
     G --> H[Sort pages and sections]
     H --> I[Return CustomizerPageData objects]
 
-    B -. canonical path .-> B1[applications/assets/]
-    C -. canonical paths .-> C1[applications/ctc-research/]
-    C -. canonical paths .-> C2[applications/lms-demo/]
-    C -. canonical paths .-> C3[applications/VResume/]
+    B -. canonical path .-> B1[core/assets/]
+    C -. canonical paths .-> C1[core/ctc-research/]
+    C -. canonical paths .-> C2[core/lms-demo/]
+    C -. canonical paths .-> C3[core/VResume/]
 ```
 
 ## Code examples
 
-The examples below are illustrative and should be adapted to the exact classes available in the site being changed. Keep shared framework code in `applications/libs/django-fusion/` and site-specific code in the appropriate canonical site path.
+The examples below are illustrative and should be adapted to the exact classes available in the site being changed. Keep shared framework code in `core/libs/django-fusion/` and site-specific code in the appropriate canonical site path.
 
 ### `site.py` viewset registration
 
-Place site-specific registration in a site module such as `applications/ctc-research/www/core/site.py` or equivalent. The exact import path can vary by site.
+Place site-specific registration in a site module such as `core/ctc-research/www/core/site.py` or equivalent. The exact import path can vary by site.
 
 ```python
 from __future__ import annotations
@@ -211,10 +211,10 @@ urlpatterns = [
 
 ### Page card component
 
-A shared page card can live under `applications/assets/templates/customizer/components/page_card.html` unless a site needs its own visual override.
+A shared page card can live under `core/assets/templates/tinker/components/page_card.html` unless a site needs its own visual override.
 
 ```django
-{# applications/assets/templates/customizer/components/page_card.html #}
+{# core/assets/templates/tinker/components/page_card.html #}
 <article class="customizer-page-card" data-page-slug="{{ page.slug }}">
   <header class="customizer-page-card__header">
     <h2 class="customizer-page-card__title">{{ page.title }}</h2>
@@ -251,7 +251,7 @@ A shared page card can live under `applications/assets/templates/customizer/comp
 A navigator component renders the sections for one selected page. It can be shared if every site has the same customizer experience.
 
 ```django
-{# applications/assets/templates/customizer/components/section_navigator.html #}
+{# core/assets/templates/tinker/components/section_navigator.html #}
 <nav class="customizer-section-nav" aria-label="Page sections">
   <h2 class="customizer-section-nav__title">{{ page.title }} sections</h2>
 
@@ -327,7 +327,7 @@ class MessageFormFragment(FragmentViewset):
 The corresponding template can target a message panel:
 
 ```django
-{# applications/assets/templates/customizer/fragments/message_form.html #}
+{# core/assets/templates/tinker/fragments/message_form.html #}
 <form
   class="customizer-message-form"
   method="post"
@@ -414,7 +414,7 @@ class CustomizerDiscoveryService:
         )
 
     def _load_site_pages(self) -> tuple[CustomizerPageData, ...]:
-        # Load site-specific definitions from applications/<site>/ when needed.
+        # Load site-specific definitions from core/<site>/ when needed.
         return ()
 
     def _merge_pages(
@@ -433,11 +433,11 @@ A customizer/django-fusion integration typically adds:
 
 - A site-level `Site` registration that mounts customizer page, section, and form viewsets.
 - A small set of django-fusion viewsets for full-page shell rendering and HTMX fragments.
-- Shared customizer component templates under `applications/assets/templates/` when reusable across sites.
-- Site-specific templates under `applications/ctc-research/`, `applications/lms-demo/`, or `applications/VResume/` only when necessary.
+- Shared customizer component templates under `core/assets/templates/` when reusable across sites.
+- Site-specific templates under `core/ctc-research/`, `core/lms-demo/`, or `core/VResume/` only when necessary.
 - A page/section discovery service that returns normalized data for templates and viewsets.
 - HTMX targets for section navigation, editor panels, form responses, and status messages.
-- Tests or checks run through `applications/Makefile` with the appropriate `WEBSITE=...` value when implementation code is added.
+- Tests or checks run through `core/Makefile` with the appropriate `WEBSITE=...` value when implementation code is added.
 
 ## What is not added yet
 
@@ -450,7 +450,7 @@ This guide does not add the runtime implementation. It does not yet add:
 - A migration plan for existing customizer templates or legacy fragments.
 - Browser-level tests for HTMX swaps.
 - Screenshot-based visual regression coverage.
-- Asset bundle entries in `applications/assets/scripts/` or `applications/webpack/`.
+- Asset bundle entries in `core/assets/scripts/` or `core/webpack/`.
 
 ## Implementation checklist
 
@@ -458,8 +458,8 @@ When turning this guide into code, use this order:
 
 1. Add or update shared service code in the correct reusable package or app.
 2. Register viewsets in the relevant site path.
-3. Add shared templates in `applications/assets/templates/`.
+3. Add shared templates in `core/assets/templates/`.
 4. Add site-specific overrides only under the affected canonical site path.
 5. Wire HTMX controls to named fragment routes.
-6. Run narrow checks first, then site checks through `applications/Makefile`.
+6. Run narrow checks first, then site checks through `core/Makefile`.
 7. If the change affects a runnable web UI, capture a screenshot of the updated page.

@@ -3,14 +3,14 @@
 Priority: 2 — after runtime boot/log errors are stable.
 
 ## Affected paths
-- `applications/assets/templates/`
-- `applications/ctc-research/templates/`
-- `applications/ctc-research/assets/templates/`
-- `applications/ctc-research/plugins/**/templates/`
-- `applications/lms-demo/templates/`
-- `applications/lms-demo/assets/templates/`
-- `applications/lms-demo/plugins/**/templates/`
-- `applications/VResume/**/templates/`
+- `core/assets/templates/`
+- `core/ctc-research/templates/`
+- `core/ctc-research/assets/templates/`
+- `core/ctc-research/plugins/**/templates/`
+- `core/lms-demo/templates/`
+- `core/lms-demo/assets/templates/`
+- `core/lms-demo/plugins/**/templates/`
+- `core/VResume/**/templates/`
 
 ## Intended behavior
 - CTC Research remains the reference for the current component tree, template organization, and include paths.
@@ -20,8 +20,8 @@ Priority: 2 — after runtime boot/log errors are stable.
 - Moved templates preserve Django/Wagtail context variables, tags, translations, forms, permissions, HTMX targets, and CMS-managed fields.
 
 ## Validation commands
-- `rg -n "components/blocks/.*/.*/" applications/assets/templates applications/ctc-research applications/lms-demo applications/VResume`
-- `rg -n "extends|include|template =|template'|template\"" applications/assets/templates applications/ctc-research applications/lms-demo applications/VResume`
+- `rg -n "components/blocks/.*/.*/" core/assets/templates core/ctc-research core/lms-demo core/VResume`
+- `rg -n "extends|include|template =|template'|template\"" core/assets/templates core/ctc-research core/lms-demo core/VResume`
 - `make -C applications check WEBSITE=ctc`
 - `make -C applications check WEBSITE=lms-demo`
 - `make -C applications check WEBSITE=VResume`

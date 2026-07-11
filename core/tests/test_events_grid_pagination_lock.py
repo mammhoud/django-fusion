@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-# applications/ is parent[1] (parent[0] is applications/tests).
+# core/ is parent[1] (parent[0] is core/tests).
 ROOT = Path(__file__).resolve().parents[1]
 
 GRID_PARTIAL = (

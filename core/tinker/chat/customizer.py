@@ -20,7 +20,7 @@ def customizer_apps() -> list[dict[str, object]]:
                     name=str(app_data.get("name") or app_data.get("label") or root),
                     path=root,
                     customizer_base_url=str(
-                        app_data.get("customizer_url", "/customizer/")
+                        app_data.get("customizer_url", "/tinker/")
                     ),
                 )
             ]

@@ -64,4 +64,4 @@ urlpatterns = [
 
 ## Related Packages
 - [django-fusion](../django-fusion/) - Pure Django foundation
-- [crafts-ai](../crafts-ai/) - Wagtail automation
+- [ceptor-ai](../ceptor-ai/) - Wagtail automation

@@ -22,17 +22,17 @@ This document summarizes all errors found during deployment and the fixes applie
 - `compose/Dockerfile` - Added `COPY _shared /app/_shared`
 - Created `_shared/plugins/components/contact/sections/form/form.html`
 
-### 2. crafts_ai Model Conflict Error
+### 2. ceptor_ai Model Conflict Error
 **Error:** `RuntimeError: Conflicting 'role' models in application 'django_fusion': <class 'django_fusion.models.auth.Role'> and <class 'django_fusion.site.auth.models.role.Role'>`
 
-**Root Cause:** crafts_ai package has two conflicting Role model definitions causing registration failure during import. The issue occurs when importing from `crafts_ai.site.payments`.
+**Root Cause:** ceptor_ai package has two conflicting Role model definitions causing registration failure during import. The issue occurs when importing from `ceptor_ai.site.payments`.
 
 **Fix Applied:**
-- Removed `crafts_ai` from INSTALLED_APPS in `configs/base/apps.py`
+- Removed `ceptor_ai` from INSTALLED_APPS in `configs/base/apps.py`
 - Added `RuntimeError` exception handling in payment URL imports in `ctc-research/plugins/lms/urls.py` and `lms-demo/plugins/lms/urls.py`
 
 **Files Modified:**
-- `configs/base/apps.py` - Removed crafts_ai from LOCAL_APPS
+- `configs/base/apps.py` - Removed ceptor_ai from LOCAL_APPS
 - `ctc-research/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
 - `lms-demo/plugins/lms/urls.py` - Changed exception from `ImportError` to `(ImportError, RuntimeError)`
 
@@ -42,7 +42,7 @@ This document summarizes all errors found during deployment and the fixes applie
 **Root Cause:** The Person model was used in type annotations but not imported at module level.
 
 **Fix Applied:**
-- Added import: `from crafts_ai.models import Person` at top of settings.py file
+- Added import: `from ceptor_ai.models import Person` at top of settings.py file
 
 **Files Modified:**
 - `ctc-research/plugins/profile/views/settings.py` - Added Person import
@@ -124,7 +124,7 @@ This ensures shared plugins are available in both website containers.
 
 ### ✅ Completed
 - [x] Contact form template structure fixed
-- [x] crafts_ai conflict resolved
+- [x] ceptor_ai conflict resolved
 - [x] Person model imports corrected
 - [x] Shared components directory created
 - [x] Dockerfile updated for build context
@@ -171,7 +171,7 @@ curl -k http://localhost/contact-page/
 ## GIT COMMITS
 
 All changes have been committed:
-- Commit: "Fix: Resolve crafts_ai model conflicts and create shared components directory"
+- Commit: "Fix: Resolve ceptor_ai model conflicts and create shared components directory"
 - Branch: generic
 
 ---

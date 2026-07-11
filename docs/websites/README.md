@@ -4,6 +4,6 @@ Current site-specific documentation is grouped here. Use these pages as entrypoi
 
 | Site | Canonical application path | Documentation |
 |---|---|---|
-| CTC Research | `applications/ctc-research/` | [ctc-research.md](ctc-research.md) |
-| LMS demo | `applications/lms-demo/` | [lms-demo.md](lms-demo.md) |
-| VResume | `applications/VResume/` | [vresume.md](vresume.md) |
+| CTC Research | `core/ctc-research/` | [ctc-research.md](ctc-research.md) |
+| LMS demo | `core/lms-demo/` | [lms-demo.md](lms-demo.md) |
+| VResume | `core/VResume/` | [vresume.md](vresume.md) |

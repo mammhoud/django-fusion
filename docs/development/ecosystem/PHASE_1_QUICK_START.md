@@ -74,12 +74,12 @@ Duplication Reduction: 40-60%
 ### Extraction Plan
 ```
 Week 2: Email Template Selection
-├─ Extract to crafts-ai
+├─ Extract to ceptor-ai
 ├─ Create deprecation shims
 └─ Update imports
 
 Week 3: Certificate Generation
-├─ Extract to crafts-ai
+├─ Extract to ceptor-ai
 ├─ Create deprecation shims
 └─ Update imports
 
@@ -250,7 +250,7 @@ Week 5: Wrap-up (READY)
 
 ## ✨ What's Next
 
-Phase 2 begins Week 2 with extraction of email template selection to crafts-ai.
+Phase 2 begins Week 2 with extraction of email template selection to ceptor-ai.
 
 **Ready to start?** Review the Phase 1 documents and assign task owners!
 

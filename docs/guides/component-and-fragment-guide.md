@@ -2,12 +2,12 @@
 
 ## Overview
 
-This guide covers using django-fusion and crafts-ai component systems with Wagtail pages.
+This guide covers using django-fusion and ceptor-ai component systems with Wagtail pages.
 
 ## Directory Structure
 
 ```
-applications/<site>/
+core/<site>/
 ├── templates/
 │   ├── components/           # Component templates
 │   │   ├── base/             # Base fragments
@@ -58,7 +58,7 @@ applications/<site>/
 
 ## Notification Component
 
-The shared notification component is located at `applications/assets/templates/plugins/notifications/notification.html`.
+The shared notification component is located at `core/assets/templates/plugins/notifications/notification.html`.
 
 Include it in `base.html` before `</body>`:
 
@@ -71,7 +71,7 @@ Include it in `base.html` before `</body>`:
 ### Site.py with ViewSets
 
 ```python
-# applications/<site>/site.py
+# core/<site>/site.py
 from django_fusion.site import ComponentViews, PageHandler
 from django_fusion.site.views.tags import register
 from wagtail.models import Page
@@ -90,7 +90,7 @@ def page_sections(context, page):
 ### Component ViewSet Pattern
 
 ```python
-# applications/<site>/www/apps/viewsets.py
+# core/<site>/www/apps/viewsets.py
 from django_fusion.site import ComponentViews
 from wagtail.models import Page
 
@@ -183,6 +183,58 @@ Examples:
 - `pages.home.sections.slider` - Slider section
 - `components.cards.page_card` - Page card component
 - `components.blocks.text_block` - Text block
+
+### Default Fragment Name Derivation
+
+Every `RoutableComponent` and `FragmentComponent` has a `get_fragment_name()`
+method that returns the dotted fragment identifier. The resolution order is:
+
+1. If `fragment_name` is explicitly set on the class, it is returned as-is.
+2. Otherwise, a default is derived from `route_name`::
+
+       route_name = "dashboard"
+       # → get_fragment_name() returns "components.dashboard"
+       # → template: "components/dashboard.html"
+
+This default links the component to the package's `components/` template
+directory (`django_fusion/comp/templates/components/`), which is registered
+via `APP_DIRS` and `COMPONENT_DIRS` in the project template configuration.
+
+### `template_name` and `fragment_name` Together
+
+Both attributes work together to control which template is used:
+
+- `template_name`: Full-page template (used when `strategy == "document"`,
+  i.e. regular browser navigation)
+- `fragment_name` (or `get_fragment_name()` default): Fragment template
+  (used when `strategy == "fragment"`, i.e. HTMX/Unpoly requests)
+
+If neither `fragment_name` nor `route_name` is set, `get_fragment_name()`
+returns `None` and the full-page `template_name` is used for all requests.
+
+Example with both set:
+
+```python
+class ProfileComponent(RoutableComponent):
+    route_name = "profile"
+    route_path = "profile/"
+    template_name = "profile/detail.html"       # full-page
+    fragment_name = "profile.fragments.detail"   # HTMX partial
+    # → "profile/detail.html" for regular requests
+    # → "profile/fragments/detail.html" for HTMX requests
+```
+
+Example with default derivation (no explicit `fragment_name`):
+
+```python
+class DashboardComponent(RoutableComponent):
+    route_name = "dashboard"
+    route_path = "dashboard/"
+    template_name = "dashboard.html"   # full-page
+    # fragment_name not set → defaults to "components.dashboard"
+    # → "dashboard.html" for regular requests
+    # → "components/dashboard.html" for HTMX requests
+```
 
 ## HTMX Events
 

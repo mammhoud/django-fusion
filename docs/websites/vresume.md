@@ -1,6 +1,6 @@
 # VResume Website
 
-VResume site-specific code lives in `applications/VResume/`.
+VResume site-specific code lives in `core/VResume/`.
 
 ## Current documentation
 

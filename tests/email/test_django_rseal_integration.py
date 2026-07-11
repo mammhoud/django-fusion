@@ -1,15 +1,15 @@
 """
-Integration tests for crafts-ai email features with websites.
+Integration tests for ceptor-ai email features with websites.
 
-These tests verify that crafts-ai email features work correctly
+These tests verify that ceptor-ai email features work correctly
 when integrated with ctc-research.com and structa.cloud.
 
-Note: Tests requiring crafts_ai.pipelines need the full project environment
+Note: Tests requiring ceptor_ai.pipelines need the full project environment
 with apps.handlers module. They are skipped if not available.
 
 IMPORTANT: These tests have a model conflict between:
-- crafts_ai.email.models.EmailTemplate
-- crafts_ai.pipelines.models.settings.templates.EmailTemplate
+- ceptor_ai.email.models.EmailTemplate
+- ceptor_ai.pipelines.models.settings.templates.EmailTemplate
 
 Run these tests in the project's own test environment where the correct
 model is configured.
@@ -31,20 +31,20 @@ structa_path = project_root / "structa.cloud"
 # These tests require the full project environment
 # Skip all tests in this module when running in workspace test environment
 pytestmark = pytest.mark.skip(
-    reason="crafts_ai.pipelines has model conflicts in workspace environment. "
+    reason="ceptor_ai.pipelines has model conflicts in workspace environment. "
            "Run these tests in the project's own test environment."
 )
 
 
 class TestDjangoRsealIntegration:
-    """Test crafts-ai integration with websites."""
+    """Test ceptor-ai integration with websites."""
 
-    def test_crafts_ai_available_in_ctc(self):
-        """Test that crafts-ai modules can be imported for CTC Research."""
+    def test_ceptor_ai_available_in_ctc(self):
+        """Test that ceptor-ai modules can be imported for CTC Research."""
         pass  # Skipped by module marker
 
-    def test_crafts_ai_available_in_structa(self):
-        """Test that crafts-ai modules can be imported for Structa Cloud."""
+    def test_ceptor_ai_available_in_structa(self):
+        """Test that ceptor-ai modules can be imported for Structa Cloud."""
         pass  # Skipped by module marker
 
     def test_email_template_usage_in_ctc(self):

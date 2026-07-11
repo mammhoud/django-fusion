@@ -42,21 +42,21 @@ DEPENDENCY_RULES = {
         "forbidden": ["wagtail", "celery", "django-q", "openai", "anthropic", "faker", "mcp"],
         "can_import_from": []
     },
-    "crafts-ai": {
+    "ceptor-ai": {
         "required": ["Django", "django-fusion", "wagtail", "celery", "faker", "toposort"],
-        "optional": {"ai": ["crafts-ai"], "mcp": ["mcp"]},
+        "optional": {"ai": ["ceptor-ai"], "mcp": ["mcp"]},
         "can_import_from": ["django-fusion"]
     },
-    "crafts-ai": {
+    "ceptor-ai": {
         "required": ["Faker", "toposort", "hypothesis"],
         "optional": {"openai": ["openai"], "anthropic": ["anthropic"], "mcp": ["mcp"]},
         "forbidden": ["Django"],
         "can_import_from": []
     },
     "django-fusion": {
-        "required": ["Django", "django-fusion", "crafts-ai", "pytest", "pytest-django"],
+        "required": ["Django", "django-fusion", "ceptor-ai", "pytest", "pytest-django"],
         "optional": {"selenium": ["selenium"], "playwright": ["playwright"]},
-        "can_import_from": ["django-fusion", "crafts-ai", "crafts-ai"]
+        "can_import_from": ["django-fusion", "ceptor-ai", "ceptor-ai"]
     }
 }
 
@@ -123,7 +123,7 @@ def get_all_package_imports(libs_dir: Path) -> Dict[str, Dict[str, Set[str]]]:
     """Get imports for all packages."""
     packages = {}
 
-    for package_name in ["django-fusion", "crafts-ai", "django-seed", "django-fusion"]:
+    for package_name in ["django-fusion", "ceptor-ai", "django-seed", "django-fusion"]:
         package_dir = libs_dir / package_name
         if package_dir.exists():
             print(f"Analyzing {package_name}...")
@@ -139,7 +139,7 @@ def build_dependency_graph(package_imports: Dict[str, Dict[str, Set[str]]]) -> D
     # Map module names to package names
     module_to_package = {
         "django_fusion": "django-fusion",
-        "crafts_ai": "crafts-ai",
+        "ceptor_ai": "ceptor-ai",
         "django_seed": "django-seed",
         "craftsai": "django-seed",
         "django_fusion": "django-fusion"
@@ -215,7 +215,7 @@ def check_forbidden_dependencies(package_imports: Dict[str, Dict[str, Set[str]]]
 
 def get_external_dependencies(package_imports: Dict[str, Dict[str, Set[str]]]) -> Dict[str, Set[str]]:
     """Get external (non-monorepo) dependencies for each package."""
-    internal_modules = {"django_fusion", "crafts_ai", "django_seed", "craftsai", "django_fusion"}
+    internal_modules = {"django_fusion", "ceptor_ai", "django_seed", "craftsai", "django_fusion"}
     stdlib_modules = {
         "os", "sys", "re", "json", "ast", "pathlib", "typing", "collections",
         "datetime", "time", "logging", "unittest", "io", "copy", "functools",
@@ -248,7 +248,7 @@ def generate_mermaid_graph(graph: Dict[str, Set[str]]) -> str:
     # Define nodes with colors
     colors = {
         "django-fusion": "#90EE90",
-        "crafts-ai": "#87CEEB",
+        "ceptor-ai": "#87CEEB",
         "django-seed": "#FFB6C1",
         "django-fusion": "#FFD700"
     }
@@ -596,9 +596,9 @@ PYPROJECT_FILES = [
     "ctc-research.com/pyproject.toml",
     "structa.cloud/pyproject.toml",
     "venv/libs/django-fusion/pyproject.toml",
-    "venv/libs/crafts-ai/pyproject.toml",
+    "venv/libs/ceptor-ai/pyproject.toml",
     "venv/libs/django-fusion/pyproject.toml",
-    "applications/libs/crafts-ai/pyproject.toml",
+    "core/libs/ceptor-ai/pyproject.toml",
 ]
 
 # Map pyproject path → source root(s) to scan for imports
@@ -606,9 +606,9 @@ SOURCE_ROOTS: Dict[str, List[str]] = {
     "ctc-research.com/pyproject.toml": ["ctc-research.com"],
     "structa.cloud/pyproject.toml": ["structa.cloud"],
     "venv/libs/django-fusion/pyproject.toml": ["venv/libs/django-fusion/src"],
-    "venv/libs/crafts-ai/pyproject.toml": ["venv/libs/crafts-ai/src"],
+    "venv/libs/ceptor-ai/pyproject.toml": ["venv/libs/ceptor-ai/src"],
     "venv/libs/django-fusion/pyproject.toml": ["venv/libs/django-fusion/src"],
-    "applications/libs/crafts-ai/pyproject.toml": ["applications/libs/crafts-ai"],
+    "core/libs/ceptor-ai/pyproject.toml": ["core/libs/ceptor-ai"],
 }
 
 
@@ -849,7 +849,7 @@ class DependencyAnalyzer:
             "wagtail-newsletter", "wagtail-transfer",
             "wagtailfontawesome",
             "celery",
-            "django-fusion", "crafts-ai", "django-fusion", "crafts-ai",
+            "django-fusion", "ceptor-ai", "django-fusion", "ceptor-ai",
         }
 
         # Map package name → typical Python import name

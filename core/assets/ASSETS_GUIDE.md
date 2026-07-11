@@ -67,7 +67,7 @@ npm --prefix assets run clean:all
 ### customizer
 - Source JS: `customizer/assets/static/js/`
 - Source SCSS: `customizer/assets/static/styles/`
-- Compiled bundles: `customizer/assets/bundles/customizer/`
+- Compiled bundles: `customizer/assets/bundles/tinker/`
 - Collectstatic output: `customizer/staticfiles/`
 - Build command: `node assets/scripts/workspace.mjs build --site customizer`
 - Has its own standalone webpack config (`customizer/assets/webpack.config.js`) and `package.json`

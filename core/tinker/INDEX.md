@@ -94,7 +94,7 @@
 
 ### Task: Start Development Server
 ```bash
-cd applications/tinker
+cd core/tinker
 export TINKER_ENV=development
 make run
 ```

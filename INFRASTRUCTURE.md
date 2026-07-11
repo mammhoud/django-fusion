@@ -396,7 +396,7 @@ sudo ufw status
 ```bash
 # Keep .env files gitignored
 cat .gitignore
-# Should contain: proxy/.env, applications/.env
+# Should contain: proxy/.env, core/.env
 
 # Store secrets securely
 # Do NOT commit: DB passwords, API keys, CSRF tokens

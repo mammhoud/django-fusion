@@ -71,11 +71,11 @@ class Group(django_fusion.models.Group):
 #### Services
 
 ```python
-class UserService(crafts_ai.pipelines.services.UserServiceBase):
+class UserService(ceptor_ai.pipelines.services.UserServiceBase):
     """
     Structa Alliance user service.
 
-    Delegates to crafts_ai.pipelines.services.UserServiceBase.
+    Delegates to ceptor_ai.pipelines.services.UserServiceBase.
 
     Methods:
         create_user(username, email, password, **kwargs): Create new user
@@ -90,11 +90,11 @@ class UserService(crafts_ai.pipelines.services.UserServiceBase):
     """
     pass
 
-class GroupService(crafts_ai.pipelines.services.GroupServiceBase):
+class GroupService(ceptor_ai.pipelines.services.GroupServiceBase):
     """
     Structa Alliance group service.
 
-    Delegates to crafts_ai.pipelines.services.GroupServiceBase.
+    Delegates to ceptor_ai.pipelines.services.GroupServiceBase.
 
     Methods:
         create_group(name, **kwargs): Create new group
@@ -116,11 +116,11 @@ Learning management system with courses, lessons, enrollments, and progress trac
 #### Models
 
 ```python
-class Course(crafts_ai.models.BasePage):
+class Course(ceptor_ai.models.BasePage):
     """
     Course model for Alliance LMS.
 
-    Extends crafts_ai.models.BasePage with course-specific fields.
+    Extends ceptor_ai.models.BasePage with course-specific fields.
 
     Attributes:
         title (str): Course title
@@ -139,7 +139,7 @@ class Course(crafts_ai.models.BasePage):
     """
     pass
 
-class Lesson(crafts_ai.models.BasePage):
+class Lesson(ceptor_ai.models.BasePage):
     """
     Lesson model for Alliance LMS.
 
@@ -198,11 +198,11 @@ class Cart(django_fusion.models.TimestampedModel):
 #### Services
 
 ```python
-class CartService(crafts_ai.pipelines.services.CartServiceBase):
+class CartService(ceptor_ai.pipelines.services.CartServiceBase):
     """
     Structa Alliance cart service.
 
-    Delegates to crafts_ai.pipelines.services.CartServiceBase.
+    Delegates to ceptor_ai.pipelines.services.CartServiceBase.
 
     Methods:
         add_to_cart(user, item, quantity): Add item to cart
@@ -216,7 +216,7 @@ class CartService(crafts_ai.pipelines.services.CartServiceBase):
     """
     pass
 
-class EnrollmentService(crafts_ai.pipelines.services.EnrollmentServiceBase):
+class EnrollmentService(ceptor_ai.pipelines.services.EnrollmentServiceBase):
     """
     Structa Alliance enrollment service.
 
@@ -240,7 +240,7 @@ CMS content management with Wagtail pages.
 #### Models
 
 ```python
-class HomePage(crafts_ai.models.BasePage):
+class HomePage(ceptor_ai.models.BasePage):
     """
     Home page model for structa.cloud.
 
@@ -255,7 +255,7 @@ class HomePage(crafts_ai.models.BasePage):
     """
     pass
 
-class ContentPage(crafts_ai.models.BasePage):
+class ContentPage(ceptor_ai.models.BasePage):
     """
     Generic content page model.
 
@@ -279,7 +279,7 @@ Blog functionality with posts, tags, and categories.
 #### Models
 
 ```python
-class BlogPost(crafts_ai.models.BasePage):
+class BlogPost(ceptor_ai.models.BasePage):
     """
     Blog post model for structa.cloud.
 

@@ -1,14 +1,14 @@
 # Template Root Instructions: Plugin-specific templates
 
 ## Scope
-This directory is a plugin-specific template root for `applications/lms-demo/plugins/blog/templates`. Follow the shared template rules in `applications/assets/templates/AGENTS.md` first, then apply these local notes.
+This directory is a plugin-specific template root for `core/lms-demo/plugins/blog/templates`. Follow the shared template rules in `core/assets/templates/AGENTS.md` first, then apply these local notes.
 
 ## Expected Template Structure
 Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
 
 ## Local Override Notes
 - Keep templates here focused on plugin behavior, plugin UI, and plugin-local overrides.
-- Prefer `applications/assets/templates` for cross-site components and shared behavior.
+- Prefer `core/assets/templates` for cross-site components and shared behavior.
 - Prefer this template root for presentation or overrides that are specific to this scope.
 - Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
 - Use `fragment_name` for fragment identifiers and context keys.

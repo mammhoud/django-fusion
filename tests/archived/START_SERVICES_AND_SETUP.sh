@@ -82,7 +82,7 @@ log_success "Static files collected"
 
 # Create/verify superuser
 log_step "Setting up superuser..."
-docker exec web-ctc-research python -m crafts_ai.scripts.superuser 2>&1 | grep -i "✅\|successfully\|created" || echo "✅ Superuser created"
+docker exec web-ctc-research python -m ceptor_ai.scripts.superuser 2>&1 | grep -i "✅\|successfully\|created" || echo "✅ Superuser created"
 log_success "Superuser ready"
 
 # Setup Wagtail home

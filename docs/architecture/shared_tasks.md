@@ -21,8 +21,8 @@ The root `tasks/` package is the canonical place for shared background jobs:
 - `tasks.email` contains templated, bulk, and raw email tasks.
 - `tasks.content` contains content/account utility tasks, including user counts
   and welcome email delivery.
-- `tasks.crafts_ai` records the crafts-ai task modules the shared worker
-  should import/autodiscover when crafts-ai is installed in production.
+- `tasks.ceptor_ai` records the ceptor-ai task modules the shared worker
+  should import/autodiscover when ceptor-ai is installed in production.
 
 Website-local task modules now act as compatibility imports.  Existing imports
 such as `plugins.accounts.services.email.tasks.send_email_task` still work, but
@@ -75,9 +75,9 @@ back across the known service import paths for the two site layouts.  Raw email
 sending uses Django's `EmailMultiAlternatives` after the selected site's Django
 settings are initialized.
 
-## crafts-ai tasks
+## ceptor-ai tasks
 
-`crafts-ai` is an optional production dependency.  The shared worker keeps
-its imports deferred so local environments without crafts-ai still boot.  The
-expected crafts-ai task modules are listed in `tasks/crafts_ai.py` and can
+`ceptor-ai` is an optional production dependency.  The shared worker keeps
+its imports deferred so local environments without ceptor-ai still boot.  The
+expected ceptor-ai task modules are listed in `tasks/ceptor_ai.py` and can
 be added to as upstream exposes more task modules.

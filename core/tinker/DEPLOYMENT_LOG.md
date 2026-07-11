@@ -18,11 +18,11 @@ The deployment executed with the following results:
    - 580 KiB new assets generated
    - CSS and JS properly minified
    - Build time: 23 seconds
-   - Output: `assets/bundles/customizer/`
+   - Output: `assets/bundles/tinker/`
 
 2. **Static Files Collection** - ✅ SUCCESS
    - 192 static files collected
-   - Collected to: `/home/structa.cloud/applications/tinker/staticfiles`
+   - Collected to: `/home/structa.cloud/core/tinker/staticfiles`
    - All CSS, JS, images, fonts available for serving
 
 ### ⚠️ Migration Step - ERROR (Expected)
@@ -41,7 +41,7 @@ The deployment executed with the following results:
 ✓ customizer@1.0.0 build
 ✓ webpack --mode production
 ✓ Mode: production
-✓ Output: /home/structa.cloud/applications/tinker/assets/bundles/customizer/
+✓ Output: /home/structa.cloud/core/tinker/assets/bundles/tinker/
 
 Assets Generated:
   - styles-3bbedd2c.rtl.css (251 KiB, RTL version)
@@ -61,8 +61,8 @@ Compiled: 23055 ms (23 seconds)
 
 ### Static Files Collection
 ```
-Source: assets/bundles/customizer/ and other static sources
-Destination: /home/structa.cloud/applications/tinker/staticfiles/
+Source: assets/bundles/tinker/ and other static sources
+Destination: /home/structa.cloud/core/tinker/staticfiles/
 
 Files Collected: 192
   - Bundles (JS, CSS): 7 files
@@ -140,7 +140,7 @@ path("customizer/", include("tinker.site")),  # OR adjust path as needed
 ### Step 1: Fix URLs
 Edit `urls.py` to reference correct module:
 ```bash
-cd /home/structa.cloud/applications/tinker
+cd /home/structa.cloud/core/tinker
 # Edit urls.py and update the customizer.site import
 ```
 
@@ -300,7 +300,7 @@ To complete deployment, run:
 # 1. Fix urls.py (edit and update customizer references to tinker)
 
 # 2. Apply migrations
-cd /home/structa.cloud/applications/tinker
+cd /home/structa.cloud/core/tinker
 python3 manage.py migrate
 
 # 3. Check everything

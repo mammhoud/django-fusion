@@ -51,7 +51,7 @@ Next steps:
 
 **Example:**
 ```bash
-cd applications/tinker
+cd core/tinker
 make setup
 make run
 # → Access http://localhost:5073
@@ -94,7 +94,7 @@ make run
 
 **Example:**
 ```bash
-cd applications/tinker
+cd core/tinker
 make run-full
 # (Takes ~3 minutes, then starts server)
 ```
@@ -739,7 +739,7 @@ make info
 # ║   Tinker Project Information                              ║
 # ╚════════════════════════════════════════════════════════════╝
 # 
-# 📍 Location: /home/structa.cloud/applications/tinker
+# 📍 Location: /home/structa.cloud/core/tinker
 # 🐍 Python: Python 3.11.X
 # 📦 Django: (4, 2, X, 'final', 0)
 # ...
@@ -1008,7 +1008,7 @@ make docker-run
 ## Troubleshooting Make Commands
 
 ### "Command not found"
-- Ensure you're in `applications/tinker/` directory
+- Ensure you're in `core/tinker/` directory
 - Check `which make` (should be `/usr/bin/make` or similar)
 
 ### "No targets specified"

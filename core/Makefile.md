@@ -1,8 +1,8 @@
 # Makefile Cheatsheet — Structa Cloud
 
-Path: `applications/Makefile`
+Path: `core/Makefile`
 
-Run all targets from `applications/` directory: `cd applications && make <target>`
+Run all targets from `core/` directory: `cd applications && make <target>`
 
 ## Quick Reference
 

@@ -23,9 +23,9 @@ SCAN_DIRS = [
     "ctc-research.com/apps",
     "structa.cloud/apps",
     "venv/libs/django-fusion/src",
-    "venv/libs/crafts-ai/src",
+    "venv/libs/ceptor-ai/src",
     "venv/libs/django-fusion/src",
-    "applications/libs/crafts-ai/src/crafts_ai",
+    "core/libs/ceptor-ai/src/ceptor_ai",
 ]
 
 # Class name patterns that indicate a parser

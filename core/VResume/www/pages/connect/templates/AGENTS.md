@@ -1,14 +1,14 @@
 # Template Root Instructions: App-specific templates
 
 ## Scope
-This directory is an app-specific template root for `applications/VResume/www/pages/connect/templates`. Follow the shared template rules in `applications/assets/templates/AGENTS.md` first, then apply these local notes.
+This directory is an app-specific template root for `core/VResume/www/pages/connect/templates`. Follow the shared template rules in `core/assets/templates/AGENTS.md` first, then apply these local notes.
 
 ## Expected Template Structure
 Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
 
 ## Local Override Notes
 - Keep templates here focused on the Django app that owns this template root.
-- Prefer `applications/assets/templates` for cross-site components and shared behavior.
+- Prefer `core/assets/templates` for cross-site components and shared behavior.
 - Prefer this template root for presentation or overrides that are specific to this scope.
 - Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
 - Use `fragment_name` for fragment identifiers and context keys.

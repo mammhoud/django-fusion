@@ -1,4 +1,4 @@
-"""Run customizer management commands with `python -m customizer`."""
+"""Run tinker management commands with `python -m tinker`."""
 
 from manage import main
 

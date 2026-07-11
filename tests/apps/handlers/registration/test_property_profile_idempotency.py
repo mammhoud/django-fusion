@@ -95,7 +95,7 @@ _old_db_config = _runner.setup_databases()
 
 # ---------------------------------------------------------------------------
 # Build a minimal in-memory Person model for testing.
-# The real Person lives in crafts_ai.pipelines.models.users.users and
+# The real Person lives in ceptor_ai.pipelines.models.users.users and
 # requires Wagtail + many migrations.  We create a lightweight substitute
 # that has the same interface (_ensure_profile_exists uses get_or_create
 # with user= as the lookup key and the profile fields as defaults).
@@ -136,13 +136,13 @@ with connection.schema_editor() as schema_editor:
         pass  # table may already exist if module is reloaded
 
 # ---------------------------------------------------------------------------
-# Patch crafts_ai.pipelines.models.users.users so that _ensure_profile_exists
+# Patch ceptor_ai.pipelines.models.users.users so that _ensure_profile_exists
 # imports PersonStub instead of the real Person model.
 # ---------------------------------------------------------------------------
-_ensure_mock("crafts_ai.pipelines")
-_ensure_mock("crafts_ai.pipelines.models")
-_ensure_mock("crafts_ai.pipelines.models.users")
-_users_mod = _ensure_mock("crafts_ai.pipelines.models.users.users")
+_ensure_mock("ceptor_ai.pipelines")
+_ensure_mock("ceptor_ai.pipelines.models")
+_ensure_mock("ceptor_ai.pipelines.models.users")
+_users_mod = _ensure_mock("ceptor_ai.pipelines.models.users.users")
 _users_mod.Person = PersonStub
 
 # ---------------------------------------------------------------------------

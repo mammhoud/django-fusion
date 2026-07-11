@@ -87,9 +87,9 @@ THIRD_PARTY_APPS = [
 # Each website defines its own LOCAL_APPS in its site-level settings.py
 # because each site ships a different set of plugins, page apps, and
 # www sub-packages.  See:
-#   applications/ctc-research/settings.py
-#   applications/lms-demo/settings.py
-#   applications/VResume/settings.py
+#   core/ctc-research/settings.py
+#   core/lms-demo/settings.py
+#   core/VResume/settings.py
 
 OPTIONAL_APP_MAP = {}
 

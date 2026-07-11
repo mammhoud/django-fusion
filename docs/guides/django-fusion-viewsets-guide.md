@@ -55,7 +55,7 @@ class MyPaginatedView(HTMXPaginationMixin, TemplateView):
 ### Page Component ViewSet
 
 ```python
-# applications/ctc-research/www/apps/viewsets.py
+# core/ctc-research/www/apps/viewsets.py
 from django_fusion.site import ComponentViews
 from wagtail.models import Page
 
@@ -75,7 +75,7 @@ class PageComponentViewSet(ComponentViews):
 ### Site Context with ViewSets
 
 ```python
-# applications/ctc-research/site.py
+# core/ctc-research/site.py
 from django_fusion.site import ComponentViews, PageHandler
 from django_fusion.site.views.tags import register
 from wagtail.models import Page
@@ -121,7 +121,7 @@ def page_sections(context, page):
 ### HTMX Fragment Requests with ViewSet
 
 ```python
-# applications/ctc-research/www/apps/views.py
+# core/ctc-research/www/apps/views.py
 from django_fusion.site import ComponentViews, HtmxDetails
 from django_fusion.site.response import HttpResponseClientRedirect
 from django.views.generic import TemplateView
@@ -175,7 +175,7 @@ class PageDetailView(TemplateView):
 ### 1. Define ViewSet
 
 ```python
-# applications/ctc-research/www/apps/viewsets.py
+# core/ctc-research/www/apps/viewsets.py
 from django_fusion.site import ComponentViews, PageHandler
 from django_fusion.site.plugins import HtmxDetails
 from wagtail.models import Page
@@ -210,7 +210,7 @@ class SitePageHandler(PageHandler):
 ### 2. Create Site Context Tags
 
 ```python
-# applications/ctc-research/site.py
+# core/ctc-research/site.py
 from django_fusion.site import ComponentViews, PageHandler
 from django_fusion.site.views.tags import register
 from wagtail.models import Page
@@ -293,7 +293,7 @@ def page_sections(context, page):
 ### ViewSet Handler for HTMX
 
 ```python
-# applications/ctc-research/www/apps/htmx.py
+# core/ctc-research/www/apps/htmx.py
 from django_fusion.site import ComponentViews, HtmxDetails
 from django_fusion.site.response import HttpResponseClientRedirect
 from django.views.generic import View

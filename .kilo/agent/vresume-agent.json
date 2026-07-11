@@ -10,5 +10,5 @@
     "bash": "deny"
   },
   "website": "VResume",
-  "template_root": "applications/VResume/www/pages/templates"
+  "template_root": "core/VResume/www/pages/templates"
 }

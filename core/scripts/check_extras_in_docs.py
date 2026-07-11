@@ -1,5 +1,5 @@
 """CI script: validate every ``[pkg-extras]`` reference in Markdown install
-commands under ``applications/libs/**/docs/`` against the corresponding lib's
+commands under ``core/libs/**/docs/`` against the corresponding lib's
 ``pyproject.toml`` ``[project.optional-dependencies]``.
 
 The script extracts every install command of the form::
@@ -9,7 +9,7 @@ The script extracts every install command of the form::
     uv pip install "pkg[a,b,c]"
     pip install "pkg[a,b,c]"
 
-then resolves each ``pkg`` to ``applications/libs/<pkg>/pyproject.toml`` and
+then resolves each ``pkg`` to ``core/libs/<pkg>/pyproject.toml`` and
 checks every extra is a declared key in that file's
 ``[project.optional-dependencies]`` table.
 
@@ -26,8 +26,8 @@ Notes
 -----
 
 * Library package names use hyphens (``ceptor-ai``, ``django-fusion``) per PEP
-  621; the dict under ``applications/libs`` mirrors that. So the mapping is
-  literally ``applications/libs/{pkg}/pyproject.toml``.
+  621; the dict under ``core/libs`` mirrors that. So the mapping is
+  literally ``core/libs/{pkg}/pyproject.toml``.
 * ``pip install`` is treated leniently: anything after the install command up to
   the closing quote of the first quoted token is considered irrelevant for
   extras validation.
@@ -66,7 +66,7 @@ if sys.version_info < (3, 11):
 
 import tomllib  # noqa: E402  (deliberately after the version gate above)
 
-# This script lives at applications/scripts/check_extras_in_docs.py.
+# This script lives at core/scripts/check_extras_in_docs.py.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SCOPE = REPO_ROOT / "applications" / "libs"
 

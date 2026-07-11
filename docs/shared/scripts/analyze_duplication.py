@@ -223,12 +223,12 @@ class DuplicationAnalyzer:
         # Check if either file is already in a package
         if 'venv/libs/django-fusion' in file_a or 'venv/libs/django-fusion' in file_b:
             return "already-extracted", "django_fusion", ""
-        elif 'venv/libs/crafts-ai' in file_a or 'venv/libs/crafts-ai' in file_b:
-            return "already-extracted", "crafts_ai", ""
+        elif 'venv/libs/ceptor-ai' in file_a or 'venv/libs/ceptor-ai' in file_b:
+            return "already-extracted", "ceptor_ai", ""
         elif 'venv/libs/django-fusion' in file_a or 'venv/libs/django-fusion' in file_b:
             return "already-extracted", "django_fusion", ""
-        elif 'applications/libs/crafts-ai' in file_a or 'applications/libs/crafts-ai' in file_b:
-            return "already-extracted", "crafts-ai", ""
+        elif 'core/libs/ceptor-ai' in file_a or 'core/libs/ceptor-ai' in file_b:
+            return "already-extracted", "ceptor-ai", ""
 
         # Analyze imports to determine category
         imports_a = set(self.modules[file_a].imports)
@@ -238,7 +238,7 @@ class DuplicationAnalyzer:
         # Check for Wagtail imports
         has_wagtail = any('wagtail' in imp.lower() for imp in all_imports)
         has_celery = any('celery' in imp.lower() for imp in all_imports)
-        has_crafts_ai = any('crafts_ai' in imp for imp in all_imports)
+        has_ceptor_ai = any('ceptor_ai' in imp for imp in all_imports)
 
         # Check for test-related imports
         has_pytest = any('pytest' in imp.lower() for imp in all_imports)
@@ -246,14 +246,14 @@ class DuplicationAnalyzer:
         has_hypothesis = any('hypothesis' in imp.lower() for imp in all_imports)
 
         # Determine category
-        if has_wagtail or has_celery or has_crafts_ai:
-            return "extract-to-rseal", "crafts_ai", self._determine_module_path(file_a)
+        if has_wagtail or has_celery or has_ceptor_ai:
+            return "extract-to-rseal", "ceptor_ai", self._determine_module_path(file_a)
         elif has_pytest or has_unittest or has_hypothesis:
             return "extract-to-grep", "django_fusion", self._determine_module_path(file_a)
         elif 'apps/handlers' in file_a or 'apps/handlers' in file_b:
             # Handler logic - check if it's pure Django or has Wagtail
             if has_wagtail:
-                return "extract-to-rseal", "crafts_ai", "handlers"
+                return "extract-to-rseal", "ceptor_ai", "handlers"
             else:
                 return "extract-to-osoul", "django_fusion", "handlers"
         else:
@@ -354,9 +354,9 @@ def main():
         'ctc-research.com/apps/',
         'structa.cloud/apps/',
         'venv/libs/django-fusion/',
-        'venv/libs/crafts-ai/',
+        'venv/libs/ceptor-ai/',
         'venv/libs/django-fusion/',
-        'applications/libs/crafts-ai/'
+        'core/libs/ceptor-ai/'
     ]
 
     # Filter out directories that don't exist

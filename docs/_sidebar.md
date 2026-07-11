@@ -52,8 +52,8 @@
 * **Packages**
   * [django-fusion](packages/django-fusion/README.md)
     * [Usage](packages/django-fusion/usage.md)
-  * [crafts-ai](packages/crafts-ai/README.md)
-    * [Usage](packages/crafts-ai/usage.md)
+  * [ceptor-ai](packages/ceptor-ai/README.md)
+    * [Usage](packages/ceptor-ai/usage.md)
   * [django-fusion](packages/django-fusion/README.md)
     * [Usage](packages/django-fusion/usage.md)
   * [nawaai](packages/nawaai/)

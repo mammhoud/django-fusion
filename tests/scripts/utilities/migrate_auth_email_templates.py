@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 """
-Migration script to move data from AuthEmailTemplate to crafts-ai EmailTemplate.
+Migration script to move data from AuthEmailTemplate to ceptor-ai EmailTemplate.
 
 This script migrates existing authentication email templates from the
-website-specific AuthEmailTemplate model to the shared crafts-ai
+website-specific AuthEmailTemplate model to the shared ceptor-ai
 EmailTemplate model.
 
 Usage:
@@ -43,8 +43,8 @@ def migrate_auth_email_templates():
     try:
         EmailTemplate = apps.get_model("pipelines", "EmailTemplate")
     except LookupError:
-        print("❌ crafts-ai EmailTemplate model not found.")
-        print("   Make sure 'crafts_ai.pipelines' is in INSTALLED_APPS.")
+        print("❌ ceptor-ai EmailTemplate model not found.")
+        print("   Make sure 'ceptor_ai.pipelines' is in INSTALLED_APPS.")
         return
 
     # Get all AuthEmailTemplate instances
@@ -108,7 +108,7 @@ def migrate_auth_email_templates():
     if migrated_count > 0:
         print("\n✅ Migration completed successfully!")
         print("\nNext steps:")
-        print("1. Update code to use crafts-ai EmailTemplate instead of AuthEmailTemplate")
+        print("1. Update code to use ceptor-ai EmailTemplate instead of AuthEmailTemplate")
         print("2. Remove AuthEmailTemplate model from models.py")
         print("3. Create and run Django migrations to remove AuthEmailTable table")
         print("4. Test email functionality with new templates")
@@ -125,7 +125,7 @@ def update_references_guide():
 
     print("\n1. Import statements to change:")
     print("   FROM: from www.apps.accounts.registration.models import AuthEmailTemplate")
-    print("   TO:   from crafts_ai.workflows.pipelines.models.settings.templates import EmailTemplate")
+    print("   TO:   from ceptor_ai.workflows.pipelines.models.settings.templates import EmailTemplate")
 
     print("\n2. Template type mapping:")
     print("   AuthEmailTemplate.REGISTRATION_CONFIRMATION -> EmailTemplate 'welcome'")
@@ -137,7 +137,7 @@ def update_references_guide():
 
     print("\n4. Using EmailService instead of direct email sending:")
     print("   FROM: send_mail(subject, message, from_email, [recipient])")
-    print("   TO:   from crafts_ai.communication.email.services import EmailService")
+    print("   TO:   from ceptor_ai.communication.email.services import EmailService")
     print("         service = EmailService()")
     print("         service.send_email(recipient, subject, template_name, context)")
 

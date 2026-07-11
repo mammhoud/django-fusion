@@ -126,6 +126,78 @@ class TestRoutableComponent(TestCase):
         with self.assertRaises(ValueError):
             comp.get_route_url()
 
+    # ------------------------------------------------------------------
+    # get_fragment_name() default derivation
+    # ------------------------------------------------------------------
+
+    def test_get_fragment_name_returns_explicit_value(self):
+        """When fragment_name is set, get_fragment_name() returns it as-is."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class ExplicitComp(RoutableComponent):
+            route_name = "my-route"
+            route_path = "my-route/"
+            fragment_name = "blog.fragments.post_list"
+            template_name = "base.html"
+
+        comp = ExplicitComp()
+        self.assertEqual(comp.get_fragment_name(), "blog.fragments.post_list")
+
+    def test_get_fragment_name_derives_from_route_name(self):
+        """When fragment_name is not set, get_fragment_name() derives from route_name."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class DerivedComp(RoutableComponent):
+            route_name = "dashboard"
+            route_path = "dashboard/"
+            template_name = "base.html"
+            # fragment_name NOT set
+
+        comp = DerivedComp()
+        self.assertEqual(comp.get_fragment_name(), "components.dashboard")
+
+    def test_get_fragment_name_returns_none_without_route_name(self):
+        """When neither fragment_name nor route_name is set, returns None."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class NoNameNoFragment(RoutableComponent):
+            route_name = None
+            route_path = "some/"
+            template_name = "base.html"
+            # fragment_name NOT set, route_name is None
+
+        comp = NoNameNoFragment()
+        self.assertIsNone(comp.get_fragment_name())
+
+    def test_get_fragment_name_template_path_conversion(self):
+        """The derived fragment_name maps to the components/ template dir."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class MyComp(RoutableComponent):
+            route_name = "settings"
+            route_path = "settings/"
+            template_name = "base.html"
+
+        comp = MyComp()
+        fragment = comp.get_fragment_name()
+        template_path = fragment.replace(".", "/") + ".html"
+        self.assertEqual(template_path, "components/settings.html")
+
+    def test_get_fragment_name_explicit_overrides_default(self):
+        """Explicit fragment_name takes priority over route_name derivation."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class OverrideComp(RoutableComponent):
+            route_name = "dashboard"
+            route_path = "dashboard/"
+            fragment_name = "profile.dashboard"
+            template_name = "base.html"
+
+        comp = OverrideComp()
+        # Should return the explicit value, not "components.dashboard"
+        self.assertEqual(comp.get_fragment_name(), "profile.dashboard")
+        self.assertNotEqual(comp.get_fragment_name(), "components.dashboard")
+
 
 # ---------------------------------------------------------------------------
 # FragmentComponent
@@ -237,6 +309,224 @@ class TestFragmentComponent(TestCase):
         # return fragment_template for non-HTMX
         names = comp.get_template_names()
         self.assertNotEqual(names, ["base.html"])  # falls back to parent resolution
+
+    def test_fragment_component_inherits_default_fragment_name(self):
+        """FragmentComponent inherits get_fragment_name() default from RoutableComponent."""
+        from django_fusion.comp.routes import FragmentComponent
+
+        class NoFragmentName(FragmentComponent):
+            route_name = "my-frag"
+            route_path = "my-frag/"
+            # fragment_name NOT set — should derive from route_name
+
+        comp = NoFragmentName()
+        self.assertEqual(comp.get_fragment_name(), "components.my-frag")
+
+    def test_fragment_component_explicit_fragment_name_overrides_default(self):
+        """Explicit fragment_name on FragmentComponent takes priority over route_name."""
+        from django_fusion.comp.routes import FragmentComponent
+
+        class ExplicitFrag(FragmentComponent):
+            route_name = "my-frag"
+            route_path = "my-frag/"
+            fragment_name = "blog.fragments.list"
+
+        comp = ExplicitFrag()
+        self.assertEqual(comp.get_fragment_name(), "blog.fragments.list")
+        self.assertNotEqual(comp.get_fragment_name(), "components.my-frag")
+
+
+# ---------------------------------------------------------------------------
+# PaginatedComponentView & PaginatedListView (page_handler.py versions)
+# ---------------------------------------------------------------------------
+
+class TestPaginatedComponentViewFragmentName(TestCase):
+    """Tests for get_fragment_name() on PaginatedComponentView."""
+
+    def test_explicit_fragment_name_returned_as_is(self):
+        """Explicit fragment_name takes priority over items_template derivation."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class ExplicitPaginated(PaginatedComponentView):
+            fragment_name = "my.custom_fragment"
+
+        view = ExplicitPaginated()
+        self.assertEqual(view.get_fragment_name(), "my.custom_fragment")
+
+    def test_derives_from_items_template(self):
+        """When fragment_name is not set, derives from items_template."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class DefaultPaginated(PaginatedComponentView):
+            items_template = "components/items/list.html"
+            # fragment_name NOT set
+
+        view = DefaultPaginated()
+        self.assertEqual(view.get_fragment_name(), "components.items.list")
+
+    def test_custom_items_template_derives_correctly(self):
+        """A custom items_template produces the right dotted name."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class CustomItems(PaginatedComponentView):
+            items_template = "blog/fragments/post_list.html"
+
+        view = CustomItems()
+        self.assertEqual(view.get_fragment_name(), "blog.fragments.post_list")
+
+    def test_template_path_conversion(self):
+        """The derived fragment_name maps to the correct template path."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class MyPaginated(PaginatedComponentView):
+            items_template = "components/items/table.html"
+
+        view = MyPaginated()
+        fragment = view.get_fragment_name()
+        template_path = fragment.replace(".", "/") + ".html"
+        self.assertEqual(template_path, "components/items/table.html")
+
+
+class TestPaginatedListViewFragmentName(TestCase):
+    """Tests for get_fragment_name() on PaginatedListView."""
+
+    def test_explicit_fragment_name_returned_as_is(self):
+        """Explicit fragment_name takes priority over model derivation."""
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class ExplicitListView(PaginatedListView):
+            fragment_name = "my.custom_list"
+            model = None
+
+        view = ExplicitListView()
+        self.assertEqual(view.get_fragment_name(), "my.custom_list")
+
+    def test_derives_from_model_meta(self):
+        """When fragment_name is not set, derives from model._meta."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class PaginatedArticle(models.Model):
+            title = models.CharField(max_length=100)
+
+            class Meta:
+                app_label = "tests"
+
+        class ArticleListView(PaginatedListView):
+            model = PaginatedArticle
+            fragment_name = None  # explicitly unset to test derivation
+
+        view = ArticleListView()
+        self.assertEqual(view.get_fragment_name(), "components.tests.paginatedarticle_list")
+
+    def test_model_derived_template_path_conversion(self):
+        """The model-derived fragment_name maps to the correct template path."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class PaginatedProduct(models.Model):
+            name = models.CharField(max_length=100)
+
+            class Meta:
+                app_label = "shop"
+
+        class ProductListView(PaginatedListView):
+            model = PaginatedProduct
+            fragment_name = None
+
+        view = ProductListView()
+        fragment = view.get_fragment_name()
+        template_path = fragment.replace(".", "/") + ".html"
+        self.assertEqual(template_path, "components/shop/paginatedproduct_list.html")
+
+    def test_falls_back_to_items_template_when_no_model(self):
+        """When neither fragment_name nor model is set, falls back to items_template."""
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class NoModelListView(PaginatedListView):
+            model = None
+            fragment_name = None
+            items_template = "components/items/list.html"
+
+        view = NoModelListView()
+        self.assertEqual(view.get_fragment_name(), "components.items.list")
+
+    def test_explicit_overrides_model_derivation(self):
+        """Explicit fragment_name takes priority over both model and items_template."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class PaginatedItem(models.Model):
+            name = models.CharField(max_length=50)
+
+            class Meta:
+                app_label = "tests"
+
+        class OverrideListView(PaginatedListView):
+            model = PaginatedItem
+            fragment_name = "custom.list_view"
+            items_template = "components/items/table.html"
+
+        view = OverrideListView()
+        self.assertEqual(view.get_fragment_name(), "custom.list_view")
+
+
+# ---------------------------------------------------------------------------
+# Legacy paginators.py versions
+# ---------------------------------------------------------------------------
+
+class TestLegacyPaginatorsFragmentName(TestCase):
+    """Tests for get_fragment_name() on the legacy paginators.py versions."""
+
+    def test_legacy_paginated_component_view_derives_from_items_template(self):
+        """Legacy PaginatedComponentView derives fragment_name from items_template."""
+        from django_fusion.site.paginators import PaginatedComponentView as LegacyPCV
+
+        class MyLegacyPCV(LegacyPCV):
+            items_template = "components/items/list.html"
+            # fragment_name NOT set
+
+        view = MyLegacyPCV()
+        self.assertEqual(view.get_fragment_name(), "components.items.list")
+
+    def test_legacy_paginated_component_view_explicit_override(self):
+        """Explicit fragment_name on legacy PaginatedComponentView takes priority."""
+        from django_fusion.site.paginators import PaginatedComponentView as LegacyPCV
+
+        class ExplicitLegacyPCV(LegacyPCV):
+            fragment_name = "my.explicit_fragment"
+
+        view = ExplicitLegacyPCV()
+        self.assertEqual(view.get_fragment_name(), "my.explicit_fragment")
+
+    def test_legacy_paginated_list_view_derives_from_model(self):
+        """Legacy PaginatedListView derives fragment_name from model._meta."""
+        from django.db import models
+        from django_fusion.site.paginators import PaginatedListView as LegacyPLV
+
+        class PaginatedCategory(models.Model):
+            name = models.CharField(max_length=50)
+
+            class Meta:
+                app_label = "tests"
+
+        class CategoryListView(LegacyPLV):
+            model = PaginatedCategory
+            fragment_name = None  # explicitly unset
+
+        view = CategoryListView()
+        self.assertEqual(view.get_fragment_name(), "components.tests.paginatedcategory_list")
+
+    def test_legacy_paginated_list_view_explicit_override(self):
+        """Explicit fragment_name on legacy PaginatedListView takes priority."""
+        from django_fusion.site.paginators import PaginatedListView as LegacyPLV
+
+        class ExplicitLegacyPLV(LegacyPLV):
+            fragment_name = "my.explicit_list"
+            model = None
+
+        view = ExplicitLegacyPLV()
+        self.assertEqual(view.get_fragment_name(), "my.explicit_list")
 
 
 # ---------------------------------------------------------------------------

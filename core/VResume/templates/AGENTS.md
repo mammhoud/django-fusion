@@ -4,20 +4,20 @@ Scope: this site template tree.
 
 ## Lookup Strategy
 
-Site templates here are resolved before the shared `applications/assets/templates/` layer. Keep files in this tree only when they are intentional site-specific overrides, branded shells, or templates that must shadow shared behavior.
+Site templates here are resolved before the shared `core/assets/templates/` layer. Keep files in this tree only when they are intentional site-specific overrides, branded shells, or templates that must shadow shared behavior.
 
 VResume has additional template directories at:
-- `applications/VResume/www/pages/templates/` — page-level templates
-- `applications/VResume/www/pages/connect/templates/` — connect/contact templates
-- `applications/VResume/plugins/accounts/templates/` — account/auth plugins
+- `core/VResume/www/pages/templates/` — page-level templates
+- `core/VResume/www/pages/connect/templates/` — connect/contact templates
+- `core/VResume/plugins/accounts/templates/` — account/auth plugins
 
 ## Override Rules
 
-- Prefer deleting exact duplicates and allowing Django to load `applications/assets/templates/<relative-path>`.
-- Keep thin overrides for branded variations; move reusable repeated markup into shared includes under `applications/assets/templates/components/`.
+- Prefer deleting exact duplicates and allowing Django to load `core/assets/templates/<relative-path>`.
+- Keep thin overrides for branded variations; move reusable repeated markup into shared includes under `core/assets/templates/components/`.
 - Preserve existing template names, include names, block names, and context variables to avoid breaking Wagtail/Django rendering.
 - Use `fragment_name` for fragment identifiers and context keys; do not introduce alternate fragment naming.
-- When adding or changing a site override, compare the same relative path in `applications/assets/templates/` first.
+- When adding or changing a site override, compare the same relative path in `core/assets/templates/` first.
 
 ## Template Structure
 

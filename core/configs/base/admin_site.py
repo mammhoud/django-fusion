@@ -41,9 +41,9 @@ MIGRATION_MODULES = settings.get("MIGRATION_MODULES", {})
 # This is a minimal shared baseline.  Each website overrides branding,
 # sidebar navigation, and site-specific items in its own settings.py
 # (after ``from configs.settings import *``).  See:
-#   applications/VResume/settings.py  — full VResume sidebar with page-model links
-#   applications/ctc-research/settings.py
-#   applications/lms-demo/settings.py
+#   core/VResume/settings.py  — full VResume sidebar with page-model links
+#   core/ctc-research/settings.py
+#   core/lms-demo/settings.py
 UNFOLD = {
     # ── Branding ──────────────────────────────────────────────────────────
     "SITE_HEADER": _("Admin"),

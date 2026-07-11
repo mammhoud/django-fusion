@@ -3,7 +3,7 @@
 # Usage: ./scripts/libs/check_boundaries.sh
 set -e
 
-LIBS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/applications/libs"
+LIBS="$(cd "$(dirname "${BASH_SOURCE[0]}")/../../../.." && pwd)/core/libs"
 PASS=0; FAIL=0
 
 check() {
@@ -33,18 +33,18 @@ check "osoul" "django-fusion/src/django_fusion/views" "from wagtail"
 check "osoul" "django-fusion/src" "import celery"
 check "osoul" "django-fusion/src" "import openai"
 check "osoul" "django-fusion/src" "import anthropic"
-check "osoul" "django-fusion/src" "from crafts_ai"
-check "osoul" "django-fusion/src" "import crafts_ai"
+check "osoul" "django-fusion/src" "from ceptor_ai"
+check "osoul" "django-fusion/src" "import ceptor_ai"
 
 echo ""
-echo "--- crafts-ai: must not import django ---"
-check "crafts_ai" "crafts-ai/src/crafts_ai" "^from django"
-check "crafts_ai" "crafts-ai/src/crafts_ai" "^import django"
+echo "--- ceptor-ai: must not import django ---"
+check "ceptor_ai" "ceptor-ai/src/ceptor_ai" "^from django"
+check "ceptor_ai" "ceptor-ai/src/ceptor_ai" "^import django"
 
 echo ""
-echo "--- crafts-ai: must not import django-fusion ---"
-check "rseal" "crafts-ai/src" "from django_fusion"
-check "rseal" "crafts-ai/src" "import django_fusion"
+echo "--- ceptor-ai: must not import django-fusion ---"
+check "rseal" "ceptor-ai/src" "from django_fusion"
+check "rseal" "ceptor-ai/src" "import django_fusion"
 
 echo ""
 echo "=== Results: $PASS passed, $FAIL failed ==="

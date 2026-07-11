@@ -47,7 +47,7 @@ urlpatterns = []
 
 # Health endpoints + allauth URLs (registered at top-level so they work
 # before i18n/Wagtail and are NOT gated by Wagtail availability — mirrors
-# applications/ctc-research/www/urls.py for /accounts/login/ parity).
+# core/ctc-research/www/urls.py for /accounts/login/ parity).
 # Localized /en/accounts/login/ etc. are out of scope for this site: a
 # `prefix_default_language=False` i18n mirror would either collide with
 # Wagtail's localized catch-all or duplicate URL names, and CTC's

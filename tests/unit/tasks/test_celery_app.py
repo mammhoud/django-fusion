@@ -12,7 +12,7 @@ class TestCeleryModule:
         import tasks.celery as celery_mod
         assert "tasks.email" in celery_mod.TASK_IMPORTS
         assert "tasks.content" in celery_mod.TASK_IMPORTS
-        assert "tasks.crafts_ai" in celery_mod.TASK_IMPORTS
+        assert "tasks.ceptor_ai" in celery_mod.TASK_IMPORTS
 
     def test_app_attribute_exists(self):
         import tasks.celery as celery_mod

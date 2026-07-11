@@ -1,6 +1,6 @@
 # VResume — Template Path Tree
 
-Path: `applications/VResume/`
+Path: `core/VResume/`
 
 ## Template Resolution Order (Django TEMPLATES_DIRS)
 

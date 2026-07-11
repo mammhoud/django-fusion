@@ -159,9 +159,9 @@ class TestRunner:
 
         packages = [
             ("django_fusion", "venv/libs/django-fusion"),
-            ("crafts_ai", "venv/libs/crafts-ai"),
+            ("ceptor_ai", "venv/libs/ceptor-ai"),
             ("django_fusion", "venv/libs/django-fusion"),
-            ("crafts_ai", "applications/libs/crafts-ai")
+            ("ceptor_ai", "core/libs/ceptor-ai")
         ]
 
         all_passed = True

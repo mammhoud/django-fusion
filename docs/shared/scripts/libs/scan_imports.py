@@ -12,14 +12,14 @@ LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 RULES = {
     "django-fusion": {
         "src": "django-fusion/src",
-        "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "crafts_ai", "django_fusion", "crafts_ai"],
+        "forbidden": ["wagtail", "celery", "django_q", "openai", "anthropic", "faker", "mcp", "ceptor_ai", "django_fusion", "ceptor_ai"],
     },
-    "crafts-ai": {
-        "src": "crafts-ai/src",
+    "ceptor-ai": {
+        "src": "ceptor-ai/src",
         "forbidden": ["django"],
     },
-    "crafts-ai": {
-        "src": "crafts-ai/src",
+    "ceptor-ai": {
+        "src": "ceptor-ai/src",
         "forbidden": ["django_fusion"],
     },
     "django-fusion": {

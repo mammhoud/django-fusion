@@ -30,9 +30,9 @@ STRUCTA_PROJECT = WORKSPACE_ROOT / "structa.cloud"
 # Packages to scan (exclude .venv, node_modules, etc.)
 PACKAGES = [
     VENV_LIBS / "django-fusion" / "src" / "django_fusion",
-    VENV_LIBS / "crafts-ai" / "src" / "crafts_ai",
+    VENV_LIBS / "ceptor-ai" / "src" / "ceptor_ai",
     VENV_LIBS / "django-fusion" / "src" / "django_fusion",
-    VENV_LIBS / "crafts-ai" / "src" / "crafts_ai",
+    VENV_LIBS / "ceptor-ai" / "src" / "ceptor_ai",
 ]
 
 # Template directories in each project

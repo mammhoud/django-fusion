@@ -2,7 +2,7 @@
 Pytest configuration for blog app tests.
 
 Sets up a minimal Django environment with only the apps needed for blog tests,
-avoiding the complex dependency chain of apps.pages and crafts_ai.
+avoiding the complex dependency chain of apps.pages and ceptor_ai.
 """
 import sys
 from unittest.mock import MagicMock
@@ -17,7 +17,7 @@ def pytest_configure(config):
 
     # Mock the apps.pages dependency chain before Django setup.
     # apps.blog.models.pages imports BasePage from www.apps.pages which pulls in
-    # crafts_ai and other heavy dependencies not needed for blog unit tests.
+    # ceptor_ai and other heavy dependencies not needed for blog unit tests.
     _mock_pages_deps()
 
     settings.configure(
@@ -121,7 +121,7 @@ def _mock_pages_deps():
 
     We provide a minimal BasePage stand-in with content_panels and
     search_fields so that BlogIndexPage can be defined without requiring
-    the full apps.pages / crafts_ai stack.
+    the full apps.pages / ceptor_ai stack.
     """
     class _MockBasePage:
         """Minimal stand-in for BasePage used only during test imports."""

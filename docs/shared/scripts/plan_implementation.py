@@ -91,7 +91,7 @@ class ImplementationPlanner:
         "2.13": 6.0,    # Extract foundation models
         "2.14": 4.0,    # Boundary check
 
-        # Phase 3: crafts_ai extractions
+        # Phase 3: ceptor_ai extractions
         "3.1": 8.0,     # Extract Wagtail handlers
         "3.2": 8.0,     # Extract CartServiceBase
         "3.3": 6.0,     # Extract PersonServiceBase
@@ -187,7 +187,7 @@ class ImplementationPlanner:
         "14.1": 6.0,    # Create ARCHITECTURE.md
         "14.2": 4.0,    # Create MIGRATION_GUIDE.md
         "14.3": 4.0,    # Write django_fusion README
-        "14.4": 4.0,    # Write crafts_ai README
+        "14.4": 4.0,    # Write ceptor_ai README
         "14.5": 4.0,    # Write django_fusion README
         "14.6": 3.0,    # Write nawaai README
         "14.7": 4.0,    # Write ctc-research README
@@ -363,7 +363,7 @@ class ImplementationPlanner:
     PHASE_DESCRIPTIONS = {
         1: "Analysis and Planning",
         2: "django_fusion — Extract Pure Django/Python Foundation",
-        3: "crafts_ai — Extract Wagtail + Automation Logic",
+        3: "ceptor_ai — Extract Wagtail + Automation Logic",
         4: "django_fusion — Extract Testing Infrastructure and Health Checks",
         5: "nawaai — Verify Pure Python Boundary",
         6: "Domain Restructuring — App Renames and Module Reorganization",
@@ -500,7 +500,7 @@ class ImplementationPlanner:
             "  ↓",
             "Phase 2: django_fusion (Pure Django Foundation)",
             "  ↓",
-            "Phase 3: crafts_ai (Wagtail + Automation)",
+            "Phase 3: ceptor_ai (Wagtail + Automation)",
             "  ↓",
             "Phase 4: django_fusion (Testing Infrastructure)",
             "  ↓",

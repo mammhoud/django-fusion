@@ -6,10 +6,10 @@ stable container with `hx-target`, and choose the replacement strategy with
 `hx-swap`.
 
 ```html
-<button hx-get="/customizer/fragments/page-card-grid/ctc-research/"
+<button hx-get="/tinker/fragments/page-card-grid/ctc-research/"
         hx-target="#customizer-page-grid"
         hx-swap="innerHTML"
-        hx-push-url="/customizer/websites/ctc-research/pages/">
+        hx-push-url="/tinker/websites/ctc-research/pages/">
   CTC Research
 </button>
 ```
@@ -20,7 +20,7 @@ changes, such as expanding the section list inside a single page card.
 
 The currently supported fragments are:
 
-- page navigator: `/customizer/fragments/page-navigator/`
-- page card grid: `/customizer/fragments/page-card-grid/<website_slug>/`
-- page section list: `/customizer/fragments/page-section-list/<website_slug>/<page_path>/`
-- message send result: `/customizer/fragments/message-send-result/`
+- page navigator: `/tinker/fragments/page-navigator/`
+- page card grid: `/tinker/fragments/page-card-grid/<website_slug>/`
+- page section list: `/tinker/fragments/page-section-list/<website_slug>/<page_path>/`
+- message send result: `/tinker/fragments/message-send-result/`

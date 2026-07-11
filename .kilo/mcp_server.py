@@ -4,9 +4,9 @@ This module is intentionally import-safe: it does not configure Django, execute
 Django management commands, or call external AI providers at import time.
 FastAPI endpoints for project-local MCP helpers.
 
-Run with the crafts-ai source package on the import path, for example:
+Run with the ceptor-ai source package on the import path, for example:
 
-    PYTHONPATH=applications/libs/crafts-ai/src uvicorn mcp_server:app \
+    PYTHONPATH=core/libs/ceptor-ai/src uvicorn mcp_server:app \
         --app-dir .kilo --host 127.0.0.1 --port 8002
 """
 
@@ -21,8 +21,6 @@ from typing import Any
 
 from fastapi import FastAPI
 from fastapi.responses import JSONResponse
-
-from crafts_ai.cli import package_info
 
 app = FastAPI(title="Structa Cloud MCP")
 
@@ -73,30 +71,30 @@ def _django_status() -> dict[str, Any]:
     }
 
 
-def get_django_osoul_info() -> dict[str, Any]:
-    """Return django-osoul package metadata."""
-    if _find_spec("django_osoul") is None:
+def get_django_fusion_info() -> dict[str, Any]:
+    """Return django-fusion package metadata."""
+    if _find_spec("django_fusion") is None:
         return {
             "available": False,
-            "error": "Optional package 'django_osoul' is not importable.",
+            "error": "Optional package 'django_fusion' is not importable.",
         }
 
-    osoul = import_module("django_osoul")
+    fusion = import_module("django_fusion")
     return {
         "available": True,
-        "version": getattr(osoul, "__version__", "unknown"),
-        "path": str(Path(osoul.__file__).parent),
+        "version": getattr(fusion, "__version__", "unknown"),
+        "path": str(Path(fusion.__file__).parent),
         "modules": ["site", "wagtail", "views", "comp", "routes", "contrib", "web", "health"],
     }
 
 
-def get_django_osoul_viewsets() -> dict[str, Any]:
-    """Get available django-osoul viewsets."""
-    if _find_spec("django_osoul") is None:
-        return {"available": False, "error": "django-osoul not installed"}
+def get_django_fusion_viewsets() -> dict[str, Any]:
+    """Get available django-fusion viewsets."""
+    if _find_spec("django_fusion") is None:
+        return {"available": False, "error": "django-fusion not installed"}
 
     try:
-        viewsets = import_module("django_osoul.site")
+        viewsets = import_module("django_fusion.site")
 
         component_views = getattr(viewsets, "ComponentViews", None)
         page_handler = getattr(viewsets, "PageHandler", None)
@@ -182,32 +180,32 @@ def get_openrouter_client() -> Any:
     )
 
 
-def get_crafts_ai_info() -> dict[str, Any]:
-    """Return crafts-ai package metadata when the optional package is available."""
-    if _find_spec("crafts_ai.cli") is None:
+def get_ceptor_ai_info() -> dict[str, Any]:
+    """Return ceptor-ai package metadata when the optional package is available."""
+    if _find_spec("ceptor_ai.cli") is None:
         return {
             "available": False,
-            "error": "Optional package 'crafts_ai' is not importable.",
+            "error": "Optional package 'ceptor_ai' is not importable.",
         }
 
-    cli = import_module("crafts_ai.cli")
+    cli = import_module("ceptor_ai.cli")
     package_info_fn = getattr(cli, "package_info", None)
     if package_info_fn is None:
         return {
             "available": False,
-            "error": "crafts_ai.cli.package_info is not available.",
+            "error": "ceptor_ai.cli.package_info is not available.",
         }
     return {"available": True, "package": package_info_fn()}
 
 
-def list_crafts_ai_agents() -> dict[str, Any]:
-    """Return known crafts-ai agent documentation without importing Django code."""
-    agent_module = "crafts_ai.agents"
+def list_ceptor_ai_agents() -> dict[str, Any]:
+    """Return known ceptor-ai agent documentation without importing Django code."""
+    agent_module = "ceptor_ai.agents"
     if _find_spec(agent_module) is None:
         return {
             "available": False,
             "agents": [],
-            "error": "Optional module 'crafts_ai.agents' is not importable.",
+            "error": "Optional module 'ceptor_ai.agents' is not importable.",
         }
 
     agents = import_module(agent_module)
@@ -231,7 +229,7 @@ def get_auth_features() -> dict[str, Any]:
     """Return auth feature availability across the project."""
     features = {
         "allauth": _find_spec("allauth") is not None,
-        "django_osoul_auth": _find_spec("django_osoul.site.auth") is not None,
+        "django_fusion_auth": _find_spec("django_fusion.site.auth") is not None,
         "social_auth": _find_spec("allauth.socialaccount") is not None,
         "mfa": _find_spec("allauth.mfa") is not None,
         "oauth2_provider": _find_spec("oauth2_provider") is not None,
@@ -247,8 +245,8 @@ async def health() -> dict[str, Any]:
         "status": "ok",
         "django": _django_status(),
         "optional_dependencies": {
-            "crafts_ai": _find_spec("crafts_ai") is not None,
-            "django_osoul": _find_spec("django_osoul") is not None,
+            "ceptor_ai": _find_spec("ceptor_ai") is not None,
+            "django_fusion": _find_spec("django_fusion") is not None,
             "openai": _find_spec("openai") is not None,
             "allauth": _find_spec("allauth") is not None,
         },
@@ -272,37 +270,37 @@ async def migration_status() -> Any:
     return result
 
 
-@app.get("/crafts-ai/info")
-async def crafts_ai_info() -> Any:
-    """Return crafts-ai metadata, or a structured dependency error."""
-    result = get_crafts_ai_info()
+@app.get("/ceptor-ai/info")
+async def ceptor_ai_info() -> Any:
+    """Return ceptor-ai metadata, or a structured dependency error."""
+    result = get_ceptor_ai_info()
     if not result["available"]:
         return _json_error(result["error"], 503)
     return {"ok": True, **result}
 
 
-@app.get("/crafts-ai/agents")
-async def crafts_ai_agents() -> Any:
-    """Return crafts-ai agent metadata, or a structured dependency error."""
-    result = list_crafts_ai_agents()
+@app.get("/ceptor-ai/agents")
+async def ceptor_ai_agents() -> Any:
+    """Return ceptor-ai agent metadata, or a structured dependency error."""
+    result = list_ceptor_ai_agents()
     if not result["available"]:
         return _json_error(result["error"], 503, agents=result["agents"])
     return {"ok": True, **result}
 
 
-@app.get("/django-osoul/info")
-async def django_osoul_info() -> Any:
-    """Return django-osoul metadata."""
-    result = get_django_osoul_info()
+@app.get("/django-fusion/info")
+async def django_fusion_info() -> Any:
+    """Return django-fusion metadata."""
+    result = get_django_fusion_info()
     if not result["available"]:
         return _json_error(result["error"], 503)
     return {"ok": True, **result}
 
 
-@app.get("/django-osoul/viewsets")
-async def django_osoul_viewsets() -> Any:
-    """Return django-osoul viewsets info."""
-    result = get_django_osoul_viewsets()
+@app.get("/django-fusion/viewsets")
+async def django_fusion_viewsets() -> Any:
+    """Return django-fusion viewsets info."""
+    result = get_django_fusion_viewsets()
     if not result["available"]:
         return _json_error(result["error"], 503)
     return {"ok": True, **result}

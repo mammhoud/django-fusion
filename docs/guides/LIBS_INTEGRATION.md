@@ -12,7 +12,7 @@ They follow a strict layered dependency order:
 ```
 django-fusion  (testing only — never in production code)
      ↑
-crafts-ai (automation layer — depends on django-fusion)
+ceptor-ai (automation layer — depends on django-fusion)
      ↑
 django-fusion (foundation layer — zero external lib dependencies)
 ```
@@ -23,7 +23,7 @@ Each library is installed into the workspace virtual environment via `uv`:
 # pyproject.toml (workspace root)
 [tool.uv.sources]
 django-fusion = { path = "libs/django-fusion", editable = true }
-crafts-ai = { path = "libs/crafts-ai", editable = true }
+ceptor-ai = { path = "libs/ceptor-ai", editable = true }
 django-fusion  = { path = "libs/django-fusion",  editable = true }
 ```
 
@@ -168,10 +168,10 @@ __all__ = ["ErrorTrackerMiddleware"]
 
 ---
 
-## crafts-ai (Automation)
+## ceptor-ai (Automation)
 
-**Location:** `libs/crafts-ai/`
-**PyPI:** `crafts-ai`
+**Location:** `libs/ceptor-ai/`
+**PyPI:** `ceptor-ai`
 
 ### What It Provides
 
@@ -188,13 +188,13 @@ Automation layer for pipelines, email, workflows, and privacy. Depends on `djang
 ```python
 INSTALLED_APPS = [
     # ...
-    "crafts_ai.pipelines",
-    "crafts_ai.chat",
-    "crafts_ai.email_tools",
-    "crafts_ai.newsletter",
-    "crafts_ai.tasks",
-    "crafts_ai.seeder",
-    "crafts_ai.ai",
+    "ceptor_ai.pipelines",
+    "ceptor_ai.chat",
+    "ceptor_ai.email_tools",
+    "ceptor_ai.newsletter",
+    "ceptor_ai.tasks",
+    "ceptor_ai.seeder",
+    "ceptor_ai.ai",
 ]
 ```
 
@@ -218,7 +218,7 @@ PRIVACY_CONSENT_MIDDLEWARE = {
 Selects and renders role-based email templates. Falls back to settings for site name/URL/email:
 
 ```python
-from crafts_ai.email import RoleBasedEmailTemplateSelector
+from ceptor_ai.email import RoleBasedEmailTemplateSelector
 
 selector = RoleBasedEmailTemplateSelector(
     site_name="CTC Research",
@@ -249,7 +249,7 @@ class CTCEmailSelector(RoleBasedEmailTemplateSelector):
 Class-level registry for named email templates:
 
 ```python
-from crafts_ai.email import EmailTemplateRegistry
+from ceptor_ai.email import EmailTemplateRegistry
 
 # Register templates at app startup (e.g. in AppConfig.ready())
 EmailTemplateRegistry.register("welcome", "emails/welcome.html", role="user")
@@ -263,7 +263,7 @@ info = EmailTemplateRegistry.get("welcome")
 #### CertificateServiceBase
 
 ```python
-from crafts_ai.pipelines.services import CertificateServiceBase
+from ceptor_ai.pipelines.services import CertificateServiceBase
 from apps.lms.models import Certificate
 
 class CertificateService(CertificateServiceBase):
@@ -289,7 +289,7 @@ ctc-research wraps `CertificateServiceBase` in `www/apps/services/certificates.p
 
 ```python
 # ctc-research/www/apps/services/certificates.py
-from crafts_ai.pipelines.services import CertificateServiceBase
+from ceptor_ai.pipelines.services import CertificateServiceBase
 from apps.lms.models import Certificate
 
 class CertificateService(CertificateServiceBase):
@@ -306,7 +306,7 @@ class CertificateService(CertificateServiceBase):
 
 2. Register them at startup (in an `AppConfig.ready()` method):
    ```python
-   from crafts_ai.email import EmailTemplateRegistry
+   from ceptor_ai.email import EmailTemplateRegistry
 
    class MyAppConfig(AppConfig):
        def ready(self):
@@ -319,7 +319,7 @@ class CertificateService(CertificateServiceBase):
 
 3. Use the selector in a view or task:
    ```python
-   from crafts_ai.email import RoleBasedEmailTemplateSelector
+   from ceptor_ai.email import RoleBasedEmailTemplateSelector
    from django.core.mail import send_mail
 
    selector = RoleBasedEmailTemplateSelector()
@@ -480,10 +480,10 @@ class PortfolioTest(BaseTestCase):
 | django-fusion (RoleHierarchyManager) | ✅ thin wrapper | ✅ | — |
 | django-fusion (GroupAccessControl) | ✅ thin wrapper | ✅ | — |
 | django-fusion (BaseModel/mixins) | ✅ | ✅ | ✅ |
-| crafts-ai (PrivacyConsentMiddleware) | ✅ thin wrapper | ✅ | — |
-| crafts-ai (CertificateServiceBase) | ✅ wrapped | ✅ | — |
-| crafts-ai (EmailTemplateRegistry) | ✅ | ✅ | partial |
-| crafts-ai (FormSubmissionService) | ✅ | ✅ | ✅ |
+| ceptor-ai (PrivacyConsentMiddleware) | ✅ thin wrapper | ✅ | — |
+| ceptor-ai (CertificateServiceBase) | ✅ wrapped | ✅ | — |
+| ceptor-ai (EmailTemplateRegistry) | ✅ | ✅ | partial |
+| ceptor-ai (FormSubmissionService) | ✅ | ✅ | ✅ |
 | django-fusion (BaseTestCase) | ✅ | ✅ | partial |
 | django-fusion (property-based testing) | ✅ | partial | — |
 
@@ -494,7 +494,7 @@ Legend: ✅ integrated, partial = partially used, — = not applicable
 ## See Also
 
 - `libs/django-fusion/README.md` — full osoul API reference
-- `libs/crafts-ai/README.md` — full rseal API reference
+- `libs/ceptor-ai/README.md` — full rseal API reference
 - `libs/django-fusion/README.md` — full grep API reference
 - `assets/ASSETS_GUIDE.md` — frontend build reference
 - `docs/infrastructure/INFRASTRUCTURE_GUIDE.md` — Docker/compose stack

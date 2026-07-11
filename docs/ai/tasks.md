@@ -80,10 +80,10 @@ Analyze all Django views for N+1 query patterns.
 The AI tasks use these files as context via `@codebase` and `@folder docs`:
 
 ```
-applications/
+core/
 ├── configs/settings/     ← YAML settings for all sites
 ├── libs/django-fusion/    ← Language & file utilities
-├── libs/crafts-ai/    ← Email & notification tasks
+├── libs/ceptor-ai/    ← Email & notification tasks
 ├── libs/django-fusion/     ← Search indexing
 └── tasks/                ← Shared Celery tasks
 

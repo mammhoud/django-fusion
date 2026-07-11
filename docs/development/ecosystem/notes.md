@@ -17,7 +17,7 @@ uv sync --directory /root/site/libs
 # Or install individually as editable
 uv pip install -e /root/site/libs/django-fusion
 uv pip install -e /root/site/libs/django-fusion
-uv pip install -e /root/site/libs/crafts-ai
+uv pip install -e /root/site/libs/ceptor-ai
 uv pip install -e /root/site/libs/django-seed
 ```
 
@@ -28,7 +28,7 @@ Workspace layout:
 ├── pyproject.toml      # uv workspace root
 ├── django-fusion/        # canonical base utilities
 ├── django-fusion/       # abstract models, managers, validators (depends on django-fusion)
-├── crafts-ai/       # AI integrations, Celery tasks, email models (depends on django-seed)
+├── ceptor-ai/       # AI integrations, Celery tasks, email models (depends on django-seed)
 └── django-seed/        # email automation, orchestration, seeding
 ```
 
@@ -43,7 +43,7 @@ Workspace layout:
 uv sync --directory /root/site/libs
 
 # Or add to a site's pyproject.toml as workspace dependencies
-uv add django-fusion django-seed django-fusion crafts-ai
+uv add django-fusion django-seed django-fusion ceptor-ai
 ```
 
 ### 1.2 Required Settings
@@ -92,7 +92,7 @@ ANTHROPIC_API_KEY=your-anthropic-key
 |---------|-------------|
 | `python manage.py invite_user --email user@example.com --role instructor` | Queue an invitation email |
 | `python manage.py send_pending_invitations` | Process all pending invitations |
-| `python manage.py send_emails` | Send all queued emails (crafts-ai) |
+| `python manage.py send_emails` | Send all queued emails (ceptor-ai) |
 | `python manage.py seed` | Seed the database with test data |
 
 ### 1.5 Setting Up Email Automation
@@ -160,17 +160,17 @@ Provides:
 - `django_seed.orchestrator` — full workflow orchestration
 - `django_seed.tasks` — `send_email_task`, `check_registrations_task`, `generate_weekly_report_task`
 
-### 2.4 crafts-ai (Tier 2 — AI & Celery Automation)
+### 2.4 ceptor-ai (Tier 2 — AI & Celery Automation)
 
-**GitHub:** https://github.com/mammhoud/crafts-ai
+**GitHub:** https://github.com/mammhoud/ceptor-ai
 **Depends on:** django-seed
 
 Unique modules (not in django-seed):
-- `crafts_ai.ai.integrations` — `OpenAIIntegration`, `ClaudeIntegration`, `AIIntegrationRegistry`
-- `crafts_ai.email.models` — `EmailLog` (rseal variant with token expiry), `EmailTemplate`
-- `crafts_ai.tasks.celery` — `send_email_task`, `process_queued_emails`, `retry_failed_emails`
-- `crafts_ai.management.commands.send_emails` — CLI to send queued emails
-- `crafts_ai.exceptions` — `RelayException`, `EmailSendError`, `WorkflowError`, `AIIntegrationError`
+- `ceptor_ai.ai.integrations` — `OpenAIIntegration`, `ClaudeIntegration`, `AIIntegrationRegistry`
+- `ceptor_ai.email.models` — `EmailLog` (rseal variant with token expiry), `EmailTemplate`
+- `ceptor_ai.tasks.celery` — `send_email_task`, `process_queued_emails`, `retry_failed_emails`
+- `ceptor_ai.management.commands.send_emails` — CLI to send queued emails
+- `ceptor_ai.exceptions` — `RelayException`, `EmailSendError`, `WorkflowError`, `AIIntegrationError`
 
 ---
 
@@ -185,13 +185,13 @@ Modules removed from django-fusion (use django-fusion instead):
 | `django_fusion.utils.datetime_utils` | `django_fusion.utils.datetime_utils` |
 | `django_fusion.models.mixins` | `django_fusion.models.mixins` |
 
-Modules removed from crafts-ai (use django-seed instead):
+Modules removed from ceptor-ai (use django-seed instead):
 
-| Removed from crafts-ai | Use instead |
+| Removed from ceptor-ai | Use instead |
 |---|---|
-| `crafts_ai.email.services` | `django_seed.services.email_service` |
-| `crafts_ai.management.commands.send_invitations_from_csv` | `django_seed.management.commands.send_invitations_from_csv` |
-| `crafts_ai.workflows.orchestrator` | `django_seed.orchestrator` |
+| `ceptor_ai.email.services` | `django_seed.services.email_service` |
+| `ceptor_ai.management.commands.send_invitations_from_csv` | `django_seed.management.commands.send_invitations_from_csv` |
+| `ceptor_ai.workflows.orchestrator` | `django_seed.orchestrator` |
 
 ---
 

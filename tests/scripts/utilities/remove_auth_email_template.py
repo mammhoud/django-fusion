@@ -3,7 +3,7 @@
 Script to help remove AuthEmailTemplate model and update references.
 
 This script provides guidance on removing the AuthEmailTemplate model
-and updating code to use crafts-ai EmailTemplate instead.
+and updating code to use ceptor-ai EmailTemplate instead.
 """
 
 import os
@@ -72,7 +72,7 @@ def generate_removal_steps():
 
     print("\nStep 5: Update all code references")
     print("   - Use the search patterns above to find all references")
-    print("   - Update imports to use crafts_ai.pipelines.models.settings.templates")
+    print("   - Update imports to use ceptor_ai.pipelines.models.settings.templates")
     print("   - Update template type references (see mapping guide)")
 
     print("\nStep 6: Create Django migrations")
@@ -100,8 +100,8 @@ def update_code_examples():
     print("   from www.apps.accounts.registration.models import AuthEmailTemplate")
     print("")
     print("   AFTER:")
-    print("   from crafts_ai.workflows.pipelines.models.settings.templates import EmailTemplate")
-    print("   from crafts_ai.communication.email.services import EmailService")
+    print("   from ceptor_ai.workflows.pipelines.models.settings.templates import EmailTemplate")
+    print("   from ceptor_ai.communication.email.services import EmailService")
 
     print("\n2. Getting a template:")
     print("   BEFORE:")
@@ -131,7 +131,7 @@ def update_code_examples():
     print("   )")
     print("")
     print("   AFTER:")
-    print("   from crafts_ai.communication.email.services import EmailService")
+    print("   from ceptor_ai.communication.email.services import EmailService")
     print("   service = EmailService()")
     print("   service.send_email(")
     print("       recipient=user.email,")
@@ -170,7 +170,7 @@ if __name__ == "__main__":
     print("IMPORTANT NOTES:")
     print("="*60)
     print("\n1. Always test in a development environment first")
-    print("2. Make sure crafts-ai is properly installed and configured")
+    print("2. Make sure ceptor-ai is properly installed and configured")
     print("3. Check that EmailTemplate migrations are applied")
     print("4. Verify email sending works before deploying to production")
     print("5. Consider keeping AuthEmailTemplate model commented out")

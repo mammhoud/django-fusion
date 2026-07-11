@@ -1,6 +1,6 @@
 # LMS Demo Website
 
-LMS demo site-specific code lives in `applications/lms-demo/`.
+LMS demo site-specific code lives in `core/lms-demo/`.
 
 ## Current documentation
 

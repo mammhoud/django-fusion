@@ -4,19 +4,19 @@ Priority: 1 — complete before template/library moves.
 
 ## Affected paths
 - `Makefile`
-- `applications/Makefile`
+- `core/Makefile`
 - `compose/`
-- `applications/configs/`
-- `applications/ctc-research/`
-- `applications/lms-demo/`
-- `applications/VResume/`
+- `core/configs/`
+- `core/ctc-research/`
+- `core/lms-demo/`
+- `core/VResume/`
 - `logs/`
-- `applications/*/logs/`
+- `core/*/logs/`
 - `../services` deployment Makefiles when present in the deployment checkout
 
 ## Intended behavior
-- Docker Compose paths resolve from the `applications/` dispatcher and use canonical project paths (`ctc-research`, `lms-demo`, `VResume`) consistently.
-- Containers mount shared application directories such as `applications/configs`, shared commands, and shared assets instead of copying divergent site-local copies.
+- Docker Compose paths resolve from the `core/` dispatcher and use canonical project paths (`ctc-research`, `lms-demo`, `VResume`) consistently.
+- Containers mount shared application directories such as `core/configs`, shared commands, and shared assets instead of copying divergent site-local copies.
 - Environment variables and service passwords are linked consistently between web, database, cache, worker, and deployment commands.
 - Runtime logs are isolated per website while shared logs remain under the top-level shared log directory.
 - Make targets can clean build, deploy, test, and website-specific runtime logs without deleting unrelated site logs.

@@ -209,7 +209,7 @@ App renames align with domain-driven architecture:
 | `from apps.handlers.mixins.group import GroupMixin` | `from django_fusion.mixins import GroupMixin` |
 | `from apps.handlers.mixins.views import ...` | `from django_fusion.mixins import ...` |
 | `from apps.handlers.mixins.models import ...` | `from django_fusion.mixins import ...` |
-| `from apps.handlers.mixins.service import ServiceMixin` | `from crafts_ai.pipelines.mixins.service import ServiceMixin` |
+| `from apps.handlers.mixins.service import ServiceMixin` | `from ceptor_ai.pipelines.mixins.service import ServiceMixin` |
 | `from apps.handlers.mixins import CacheMixin` | `from django_fusion.mixins import CacheMixin` |
 | `from apps.handlers.mixins import CacheSearchMixin` | `from django_fusion.mixins import CacheSearchMixin` |
 
@@ -219,7 +219,7 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.middleware.error_tracker import ErrorTrackerMiddleware` | `from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware` |
 | `from apps.handlers.middleware import ErrorTrackerMiddleware` | `from django_fusion.middlewares import ErrorTrackerMiddleware` |
-| `from apps.handlers.middleware.privacy import PrivacyConsentMiddleware` | `from crafts_ai.contrib.privacy.middleware import PrivacyConsentMiddleware` |
+| `from apps.handlers.middleware.privacy import PrivacyConsentMiddleware` | `from ceptor_ai.contrib.privacy.middleware import PrivacyConsentMiddleware` |
 | `from apps.handlers.middleware import SiteMiddleware` | `from django_fusion.middlewares import SiteMiddleware` |
 | `from apps.handlers.middleware import ReadonlyExceptionHandlerMiddleware` | `from django_fusion.middlewares import ReadonlyExceptionHandlerMiddleware` |
 
@@ -244,10 +244,10 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.services.user import UserService` | `from django_fusion.core.services.user import UserService` |
 | `from apps.handlers.services.group import GroupService` | `from django_fusion.core.services.group import GroupService` |
-| `from apps.LMS.services.cart import CartService` | `from apps.lms.services.cart import CartService` (thin subclass of `crafts_ai.pipelines.services.cart.CartServiceBase`) |
-| `from apps.LMS.services.person import PersonService` | `from apps.lms.services.person import PersonService` (thin subclass of `crafts_ai.pipelines.services.person.PersonServiceBase`) |
-| `from apps.LMS.services.message import MessageService` | `from apps.lms.services.message import MessageService` (thin subclass of `crafts_ai.pipelines.services.message.MessageServiceBase`) |
-| `from apps.LMS.services.form_submission import FormSubmissionService` | `from apps.lms.services.form_submission import FormSubmissionService` (thin subclass of `crafts_ai.pipelines.services.form_submission.FormSubmissionServiceBase`) |
+| `from apps.LMS.services.cart import CartService` | `from apps.lms.services.cart import CartService` (thin subclass of `ceptor_ai.pipelines.services.cart.CartServiceBase`) |
+| `from apps.LMS.services.person import PersonService` | `from apps.lms.services.person import PersonService` (thin subclass of `ceptor_ai.pipelines.services.person.PersonServiceBase`) |
+| `from apps.LMS.services.message import MessageService` | `from apps.lms.services.message import MessageService` (thin subclass of `ceptor_ai.pipelines.services.message.MessageServiceBase`) |
+| `from apps.LMS.services.form_submission import FormSubmissionService` | `from apps.lms.services.form_submission import FormSubmissionService` (thin subclass of `ceptor_ai.pipelines.services.form_submission.FormSubmissionServiceBase`) |
 
 ### Handlers
 
@@ -258,9 +258,9 @@ App renames align with domain-driven architecture:
 | `from apps.handlers.handlers.search import ...` | `from django_fusion.core.handlers.search import ...` |
 | `from apps.handlers.handlers.mixins.fragment import ...` | `from django_fusion.core.handlers.mixins.fragment import ...` |
 | `from apps.handlers.handlers.mixins.page import ...` | `from django_fusion.core.handlers.mixins.page import ...` |
-| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from crafts_ai.handlers.mixins.wagtail_page import ...` |
-| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from crafts_ai.handlers.mixins.wagtail_fragment import ...` |
-| `from apps.handlers.handlers.search import ...` (Wagtail) | `from crafts_ai.handlers.search import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from ceptor_ai.handlers.mixins.wagtail_page import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from ceptor_ai.handlers.mixins.wagtail_fragment import ...` |
+| `from apps.handlers.handlers.search import ...` (Wagtail) | `from ceptor_ai.handlers.search import ...` |
 
 ### Forms
 
@@ -302,20 +302,20 @@ App renames align with domain-driven architecture:
 
 | Before | After |
 |--------|-------|
-| `from apps.pages.comp.blocks import MediaBlock` | `from crafts_ai.comp.blocks import MediaBlock` |
-| `from apps.pages.comp.blocks import ContentBlock` | `from crafts_ai.comp.blocks import ContentBlock` |
-| `from apps.pages.snippets import ...` | `from crafts_ai.contrib.snippets import ...` |
-| `from apps.pages.wagtail_hooks import ...` | `from crafts_ai.contrib.wagtail_hooks import ...` |
-| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from crafts_ai.comp.blocks import OrganizationChooserBlock` |
-| `from apps.handlers.comp.blocks import EventSectionBlock` | `from crafts_ai.comp.blocks import EventSectionBlock` |
-| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from crafts_ai.comp.blocks import ServicesSectionBlock` |
+| `from apps.pages.comp.blocks import MediaBlock` | `from ceptor_ai.comp.blocks import MediaBlock` |
+| `from apps.pages.comp.blocks import ContentBlock` | `from ceptor_ai.comp.blocks import ContentBlock` |
+| `from apps.pages.snippets import ...` | `from ceptor_ai.contrib.snippets import ...` |
+| `from apps.pages.wagtail_hooks import ...` | `from ceptor_ai.contrib.wagtail_hooks import ...` |
+| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from ceptor_ai.comp.blocks import OrganizationChooserBlock` |
+| `from apps.handlers.comp.blocks import EventSectionBlock` | `from ceptor_ai.comp.blocks import EventSectionBlock` |
+| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from ceptor_ai.comp.blocks import ServicesSectionBlock` |
 
 ### Email Components
 
 | Before | After |
 |--------|-------|
-| `from apps.handlers.email.selectors import RoleBasedEmailTemplateSelector` | `from crafts_ai.email.selectors import RoleBasedEmailTemplateSelector` |
-| `from apps.handlers.email.registry import EmailTemplateRegistry` | `from crafts_ai.email.registry import EmailTemplateRegistry` |
+| `from apps.handlers.email.selectors import RoleBasedEmailTemplateSelector` | `from ceptor_ai.email.selectors import RoleBasedEmailTemplateSelector` |
+| `from apps.handlers.email.registry import EmailTemplateRegistry` | `from ceptor_ai.email.registry import EmailTemplateRegistry` |
 
 ### Testing Infrastructure
 
@@ -366,20 +366,20 @@ App renames align with domain-driven architecture:
 |--------|-------|
 | `from apps.handlers.rendering import TemplateRenderer` | `from django_fusion.rendering import TemplateRenderer` |
 
-### Package-Level Shims (crafts_ai re-exports from django_fusion)
+### Package-Level Shims (ceptor_ai re-exports from django_fusion)
 
-These crafts_ai paths re-export from django_fusion for backward compatibility:
+These ceptor_ai paths re-export from django_fusion for backward compatibility:
 
-| crafts_ai path | Actual source |
+| ceptor_ai path | Actual source |
 |-------------------|---------------|
-| `crafts_ai.pipelines.backends` | `django_fusion.backends` |
-| `crafts_ai.pipelines.filters` | `django_fusion.filters` |
-| `crafts_ai.pipelines.managers` | `django_fusion.managers` |
-| `crafts_ai.pipelines.middlewares` | `django_fusion.middlewares` |
-| `crafts_ai.pipelines.mixins` | `django_fusion.mixins` |
-| `crafts_ai.logging_config` | `django_fusion.logging_config` |
-| `crafts_ai.forms` | `django_fusion.forms` |
-| `crafts_ai.contrib` | `django_fusion.contrib` |
+| `ceptor_ai.pipelines.backends` | `django_fusion.backends` |
+| `ceptor_ai.pipelines.filters` | `django_fusion.filters` |
+| `ceptor_ai.pipelines.managers` | `django_fusion.managers` |
+| `ceptor_ai.pipelines.middlewares` | `django_fusion.middlewares` |
+| `ceptor_ai.pipelines.mixins` | `django_fusion.mixins` |
+| `ceptor_ai.logging_config` | `django_fusion.logging_config` |
+| `ceptor_ai.forms` | `django_fusion.forms` |
+| `ceptor_ai.contrib` | `django_fusion.contrib` |
 
 Prefer the canonical `django_fusion.*` paths in new code.
 
@@ -389,12 +389,12 @@ Prefer the canonical `django_fusion.*` paths in new code.
 
 This section documents all deprecated APIs, their replacements, migration paths, and common errors encountered during migration.
 
-### 1. ServiceMixin (Moved from django_fusion to crafts_ai)
+### 1. ServiceMixin (Moved from django_fusion to ceptor_ai)
 
 **Deprecated**: `django_fusion.mixins.service.ServiceMixin`
-**Replacement**: `crafts_ai.pipelines.mixins.service.ServiceMixin`
+**Replacement**: `ceptor_ai.pipelines.mixins.service.ServiceMixin`
 
-**Why it was deprecated**: ServiceMixin contained Wagtail dependencies, violating the `django_fusion` package's "no Wagtail" boundary rule. All Wagtail-related code must reside in `crafts_ai` to maintain clean separation between pure Django foundation logic and Wagtail automation logic.
+**Why it was deprecated**: ServiceMixin contained Wagtail dependencies, violating the `django_fusion` package's "no Wagtail" boundary rule. All Wagtail-related code must reside in `ceptor_ai` to maintain clean separation between pure Django foundation logic and Wagtail automation logic.
 
 **Before/After Example**:
 
@@ -409,7 +409,7 @@ class MyService(ServiceMixin):
         return self._wagtail_dependent_method()
 
 # AFTER (Replacement)
-from crafts_ai.pipelines.mixins.service import ServiceMixin
+from ceptor_ai.pipelines.mixins.service import ServiceMixin
 
 class MyService(ServiceMixin):
     """Service using correct ServiceMixin location."""
@@ -419,30 +419,30 @@ class MyService(ServiceMixin):
 ```
 
 **Migration Path**:
-1. Update import statement from `django_fusion.mixins.service` to `crafts_ai.pipelines.mixins.service`
+1. Update import statement from `django_fusion.mixins.service` to `ceptor_ai.pipelines.mixins.service`
 2. Verify no other `django_fusion` code imports Wagtail components
 3. Run boundary checker to ensure compliance: `python scripts/check_boundaries.py`
 
 **Common Migration Errors and Fixes**:
 - **ImportError**: `Cannot import name 'ServiceMixin' from 'django_fusion.mixins'`
-  - **Fix**: Update import to `from crafts_ai.pipelines.mixins.service import ServiceMixin`
+  - **Fix**: Update import to `from ceptor_ai.pipelines.mixins.service import ServiceMixin`
 - **Boundary Violation**: `django_fusion imports wagtail`
-  - **Fix**: Move all Wagtail-dependent code from `django_fusion` to `crafts_ai`
-- **Circular Dependency**: ServiceMixin now in `crafts_ai` but code needs pure Django version
-  - **Fix**: Extract pure Django functionality to separate mixin in `django_fusion`, keep Wagtail-dependent parts in `crafts_ai`
+  - **Fix**: Move all Wagtail-dependent code from `django_fusion` to `ceptor_ai`
+- **Circular Dependency**: ServiceMixin now in `ceptor_ai` but code needs pure Django version
+  - **Fix**: Extract pure Django functionality to separate mixin in `django_fusion`, keep Wagtail-dependent parts in `ceptor_ai`
 
-### 2. Seeder Shim (crafts_ai.seeder → django_fusion.seeder)
+### 2. Seeder Shim (ceptor_ai.seeder → django_fusion.seeder)
 
-**Deprecated**: `crafts_ai.seeder` (shim module that imported `django_fusion.seeder`)
+**Deprecated**: `ceptor_ai.seeder` (shim module that imported `django_fusion.seeder`)
 **Replacement**: `django_fusion.seeder` directly
 
-**Why it was deprecated**: The shim violated the "grep-test-only" boundary rule. `django_fusion` is a testing-only package and must not be imported by production code (`crafts_ai`). The shim created an indirect dependency that broke this rule.
+**Why it was deprecated**: The shim violated the "grep-test-only" boundary rule. `django_fusion` is a testing-only package and must not be imported by production code (`ceptor_ai`). The shim created an indirect dependency that broke this rule.
 
 **Before/After Example**:
 
 ```python
 # BEFORE (Deprecated)
-from crafts_ai.seeder import DatabaseSeeder  # Indirect import via shim
+from ceptor_ai.seeder import DatabaseSeeder  # Indirect import via shim
 
 seeder = DatabaseSeeder()
 seeder.seed_test_data()  # Production code importing test infrastructure
@@ -460,18 +460,18 @@ class MyTests(BaseTestCase):
 ```
 
 **Migration Path**:
-1. Remove all imports of `crafts_ai.seeder` from production code
+1. Remove all imports of `ceptor_ai.seeder` from production code
 2. Update test code to import `django_fusion.seeder` directly
 3. Ensure no production code imports `django_fusion` modules
 4. Run boundary checker: `python scripts/check_boundaries.py --rule grep-test-only`
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `No module named 'crafts_ai.seeder'`
+- **ImportError**: `No module named 'ceptor_ai.seeder'`
   - **Fix**: Update test code to use `django_fusion.seeder`, remove from production code
-- **Boundary Violation**: `crafts_ai imports django_fusion`
+- **Boundary Violation**: `ceptor_ai imports django_fusion`
   - **Fix**: Remove the shim module and update all imports
 - **Production Code Dependency**: Production code needs seeding functionality
-  - **Fix**: Move seeding logic to `django_fusion` or `crafts_ai` with proper boundaries
+  - **Fix**: Move seeding logic to `django_fusion` or `ceptor_ai` with proper boundaries
 
 ### 3. Direct CartService/PersonService/MessageService (Replaced by Thin Subclass Pattern)
 
@@ -504,12 +504,12 @@ class CartService:
 
 # AFTER (Replacement - Thin subclass pattern)
 # apps/lms/services/cart.py
-from crafts_ai.pipelines.services.cart import CartServiceBase
+from ceptor_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
     """
-    Thin subclass delegating to crafts_ai.pipelines.services.CartServiceBase.
+    Thin subclass delegating to ceptor_ai.pipelines.services.CartServiceBase.
     Only contains project-specific overrides.
     """
     cart_model = Cart
@@ -532,7 +532,7 @@ class CartService(CartServiceBase):
 
 **Migration Path**:
 1. Identify all service classes in project apps (`CartService`, `PersonService`, `MessageService`, `FormSubmissionService`)
-2. Replace with thin subclasses of corresponding base classes in `crafts_ai.pipelines.services`
+2. Replace with thin subclasses of corresponding base classes in `ceptor_ai.pipelines.services`
 3. Move business logic to package base classes
 4. Keep only project-specific overrides in project services
 5. Update all imports to use new service classes
@@ -540,7 +540,7 @@ class CartService(CartServiceBase):
 
 **Common Migration Errors and Fixes**:
 - **Missing Base Class**: `ImportError: cannot import name 'CartServiceBase'`
-  - **Fix**: Ensure `crafts_ai` is installed and import path is correct: `from crafts_ai.pipelines.services.cart import CartServiceBase`
+  - **Fix**: Ensure `ceptor_ai` is installed and import path is correct: `from ceptor_ai.pipelines.services.cart import CartServiceBase`
 - **Method Signature Mismatch**: Base class methods have different signatures
   - **Fix**: Update project service methods to match base class signatures, use `super()` to call base implementation
 - **Broken Tests**: Tests fail after migration to thin subclass pattern
@@ -602,12 +602,12 @@ class UserTest(BaseTestCase):
 - **Deprecated Assertions**: Custom assertions no longer available
   - **Fix**: Update to use `django_fusion.tests.assertions` or standard unittest assertions
 
-### 5. Direct Import of Project-Specific Handlers/Blocks (Moved to crafts_ai)
+### 5. Direct Import of Project-Specific Handlers/Blocks (Moved to ceptor_ai)
 
 **Deprecated**: Direct imports from project apps for Wagtail components
-**Replacement**: Imports from `crafts_ai` package
+**Replacement**: Imports from `ceptor_ai` package
 
-**Why it was deprecated**: Wagtail-specific components (handlers, blocks, snippets, hooks) belong in `crafts_ai` package, not in project apps. This ensures reusability across projects and clean separation of concerns.
+**Why it was deprecated**: Wagtail-specific components (handlers, blocks, snippets, hooks) belong in `ceptor_ai` package, not in project apps. This ensures reusability across projects and clean separation of concerns.
 
 **Before/After Examples**:
 
@@ -619,44 +619,44 @@ from apps.pages.snippets import FeaturedSnippet
 from apps.pages.wagtail_hooks import register_custom_hooks
 
 # AFTER (Replacement - Package imports)
-from crafts_ai.handlers.mixins.wagtail_page import WagtailPageHandlerMixin
-from crafts_ai.comp.blocks import OrganizationChooserBlock
-from crafts_ai.contrib.snippets import FeaturedSnippet
-from crafts_ai.contrib.wagtail_hooks import register_custom_hooks
+from ceptor_ai.handlers.mixins.wagtail_page import WagtailPageHandlerMixin
+from ceptor_ai.comp.blocks import OrganizationChooserBlock
+from ceptor_ai.contrib.snippets import FeaturedSnippet
+from ceptor_ai.contrib.wagtail_hooks import register_custom_hooks
 ```
 
 **Specific Replacements**:
 
 | Deprecated Import | Replacement Import |
 |-------------------|-------------------|
-| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from crafts_ai.handlers.mixins.wagtail_page import ...` |
-| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from crafts_ai.handlers.mixins.wagtail_fragment import ...` |
-| `from apps.handlers.handlers.search import ...` (Wagtail) | `from crafts_ai.handlers.search import ...` |
-| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from crafts_ai.comp.blocks import OrganizationChooserBlock` |
-| `from apps.handlers.comp.blocks import EventSectionBlock` | `from crafts_ai.comp.blocks import EventSectionBlock` |
-| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from crafts_ai.comp.blocks import ServicesSectionBlock` |
-| `from apps.pages.comp.blocks import MediaBlock` | `from crafts_ai.comp.blocks import MediaBlock` |
-| `from apps.pages.comp.blocks import ContentBlock` | `from crafts_ai.comp.blocks import ContentBlock` |
-| `from apps.pages.snippets import ...` | `from crafts_ai.contrib.snippets import ...` |
-| `from apps.pages.wagtail_hooks import ...` | `from crafts_ai.contrib.wagtail_hooks import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_page import ...` | `from ceptor_ai.handlers.mixins.wagtail_page import ...` |
+| `from apps.handlers.handlers.mixins.wagtail_fragment import ...` | `from ceptor_ai.handlers.mixins.wagtail_fragment import ...` |
+| `from apps.handlers.handlers.search import ...` (Wagtail) | `from ceptor_ai.handlers.search import ...` |
+| `from apps.handlers.comp.blocks import OrganizationChooserBlock` | `from ceptor_ai.comp.blocks import OrganizationChooserBlock` |
+| `from apps.handlers.comp.blocks import EventSectionBlock` | `from ceptor_ai.comp.blocks import EventSectionBlock` |
+| `from apps.handlers.comp.blocks import ServicesSectionBlock` | `from ceptor_ai.comp.blocks import ServicesSectionBlock` |
+| `from apps.pages.comp.blocks import MediaBlock` | `from ceptor_ai.comp.blocks import MediaBlock` |
+| `from apps.pages.comp.blocks import ContentBlock` | `from ceptor_ai.comp.blocks import ContentBlock` |
+| `from apps.pages.snippets import ...` | `from ceptor_ai.contrib.snippets import ...` |
+| `from apps.pages.wagtail_hooks import ...` | `from ceptor_ai.contrib.wagtail_hooks import ...` |
 
 **Migration Path**:
 1. Identify all Wagtail component imports in project code
-2. Update import statements to use `crafts_ai` paths
-3. Verify components exist in `crafts_ai` package
-4. Move any missing components from projects to `crafts_ai`
+2. Update import statements to use `ceptor_ai` paths
+3. Verify components exist in `ceptor_ai` package
+4. Move any missing components from projects to `ceptor_ai`
 5. Update templates referencing Wagtail components
 6. Run tests to verify functionality preserved
 
 **Common Migration Errors and Fixes**:
-- **ImportError**: `No module named 'crafts_ai.handlers.mixins.wagtail_page'`
-  - **Fix**: Ensure `crafts_ai` is installed and the component exists in the package
-- **Missing Component**: Component not yet moved to `crafts_ai`
-  - **Fix**: Move the component from project to `crafts_ai`, update all references
+- **ImportError**: `No module named 'ceptor_ai.handlers.mixins.wagtail_page'`
+  - **Fix**: Ensure `ceptor_ai` is installed and the component exists in the package
+- **Missing Component**: Component not yet moved to `ceptor_ai`
+  - **Fix**: Move the component from project to `ceptor_ai`, update all references
 - **Template Errors**: Templates reference old import paths
   - **Fix**: Update template `{% load %}` tags and component references
-- **Circular Dependencies**: `crafts_ai` imports project-specific code
-  - **Fix**: Ensure `crafts_ai` has no project imports, move shared code to packages
+- **Circular Dependencies**: `ceptor_ai` imports project-specific code
+  - **Fix**: Ensure `ceptor_ai` has no project imports, move shared code to packages
 
 ### 6. Additional Deprecated Patterns
 
@@ -673,7 +673,7 @@ from django_fusion.core.managers import UserManager
 ```
 
 **Deprecated**: Project-specific middleware implementations
-**Replacement**: Import middleware from `django_fusion.middlewares` or `crafts_ai.contrib`
+**Replacement**: Import middleware from `django_fusion.middlewares` or `ceptor_ai.contrib`
 
 **Example**:
 ```python
@@ -703,7 +703,7 @@ from django_fusion.forms import BaseStyledForm
 After updating deprecated APIs, verify:
 
 1. **Boundary Rules**: Run `python scripts/check_boundaries.py` - zero violations
-2. **Import Errors**: Run `python -c "import django_fusion; import crafts_ai; import django_fusion"` - no errors
+2. **Import Errors**: Run `python -c "import django_fusion; import ceptor_ai; import django_fusion"` - no errors
 3. **Test Suite**: Run full test suite for all packages and projects - all tests pass
 4. **Template Resolution**: Verify all templates render correctly
 5. **Service Functionality**: Test key service methods (cart operations, user management, messaging)
@@ -732,7 +732,7 @@ MIDDLEWARE = [
 MIDDLEWARE = [
     ...
     "django_fusion.middlewares.error_tracker.ErrorTrackerMiddleware",
-    "crafts_ai.contrib.privacy.middleware.PrivacyConsentMiddleware",
+    "ceptor_ai.contrib.privacy.middleware.PrivacyConsentMiddleware",
     ...
 ]
 ```
@@ -825,30 +825,30 @@ from apps.pages.models import HomePage
 from apps.content.models import HomePage
 ```
 
-#### ImportError: ModuleNotFoundError for django_fusion, crafts_ai, or django_fusion
+#### ImportError: ModuleNotFoundError for django_fusion, ceptor_ai, or django_fusion
 
 Ensure packages are installed and in your Python path:
 
 ```bash
 # Install all packages
 cd venv/libs/django-fusion && uv install
-cd venv/libs/crafts-ai && uv install
+cd venv/libs/ceptor-ai && uv install
 cd venv/libs/django-fusion && uv install
 
 # Verify imports work
-python -c "import django_fusion; import crafts_ai; import django_fusion; print('All imports successful')"
+python -c "import django_fusion; import ceptor_ai; import django_fusion; print('All imports successful')"
 ```
 
 #### ImportError: Cannot import name 'ServiceMixin' from 'django_fusion.mixins'
 
-`ServiceMixin` was moved to `crafts_ai` due to Wagtail dependencies:
+`ServiceMixin` was moved to `ceptor_ai` due to Wagtail dependencies:
 
 ```python
 # Before
 from django_fusion.mixins.service import ServiceMixin
 
 # After
-from crafts_ai.pipelines.mixins.service import ServiceMixin
+from ceptor_ai.pipelines.mixins.service import ServiceMixin
 ```
 
 ### 2. Migration Reversal Issues
@@ -910,7 +910,7 @@ Static files follow the same pattern as templates:
 
 Templatetags placement:
 
-1. Reusable templatetags moved to packages (`django_fusion/templatetags/` or `crafts_ai/templatetags/`)
+1. Reusable templatetags moved to packages (`django_fusion/templatetags/` or `ceptor_ai/templatetags/`)
 2. Project-specific templatetags remain in project `templatetags/` directories
 3. Update `{% load %}` statements with new module names
 
@@ -921,7 +921,7 @@ Templatetags placement:
 If you see `django_fusion imports wagtail` error:
 
 1. Run `python scripts/check_boundaries.py` to find all violations
-2. Move Wagtail-dependent code from `django_fusion` to `crafts_ai`
+2. Move Wagtail-dependent code from `django_fusion` to `ceptor_ai`
 3. Update all imports in both packages and projects
 4. Common violations: `ServiceMixin`, Wagtail block classes, Wagtail-specific handlers
 
@@ -939,7 +939,7 @@ If you see `django_fusion imports wagtail` error:
 
 1. Refactor Django-dependent code out of `nawaai`
 2. Use dependency injection or pure Python alternatives
-3. Move Django integration to `django_fusion` or `crafts_ai`
+3. Move Django integration to `django_fusion` or `ceptor_ai`
 
 #### Circular import detected
 
@@ -947,7 +947,7 @@ Circular dependencies break the dependency direction:
 
 1. Run `python scripts/detect_cycles.py` to find all cycles
 2. Apply suggested break strategies: extract interface, dependency injection, or event-based communication
-3. Common cycles: between `django_fusion` and `crafts_ai`, or within domain modules
+3. Common cycles: between `django_fusion` and `ceptor_ai`, or within domain modules
 
 ### 5. Test Failures After Migration
 
@@ -1096,11 +1096,11 @@ class CartService:
         pass
 
 # After: Thin subclass
-from crafts_ai.pipelines.services.cart import CartServiceBase
+from ceptor_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
-    """Delegates to crafts_ai.pipelines.services.CartServiceBase."""
+    """Delegates to ceptor_ai.pipelines.services.CartServiceBase."""
     cart_model = Cart
     # Only project-specific overrides here
 ```
@@ -1139,7 +1139,7 @@ import-linter --config .importlinter
 
 # Run all tests
 cd venv/libs/django-fusion && uv run pytest tests/ -v
-cd venv/libs/crafts-ai && uv run pytest tests/ -v
+cd venv/libs/ceptor-ai && uv run pytest tests/ -v
 cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd ctc-research.com && uv run pytest tests/ -v
 cd structa.cloud && uv run pytest tests/ -v
@@ -1187,7 +1187,7 @@ import-linter --config .importlinter
 
 # Run tests for all packages
 cd venv/libs/django-fusion && uv run pytest tests/ -v
-cd venv/libs/crafts-ai && uv run pytest tests/ -v
+cd venv/libs/ceptor-ai && uv run pytest tests/ -v
 cd venv/libs/django-fusion && uv run pytest tests/ -v
 cd venv/libs/nawaai && uv run pytest tests/ -v
 
@@ -1235,11 +1235,11 @@ class CartService:
 **After:**
 ```python
 # apps/lms/services/cart.py
-from crafts_ai.pipelines.services.cart import CartServiceBase
+from ceptor_ai.pipelines.services.cart import CartServiceBase
 from apps.lms.models import Cart
 
 class CartService(CartServiceBase):
-    """Delegates to crafts_ai.pipelines.services.CartServiceBase."""
+    """Delegates to ceptor_ai.pipelines.services.CartServiceBase."""
     cart_model = Cart
 
     # Only project-specific overrides
@@ -1305,7 +1305,7 @@ urlpatterns = [
 ## Summary of Key Changes
 
 1. **App Renames**: `handlers` → `accounts`, `LMS` → `lms`/`alliance`, `pages` → `content`
-2. **Package Extraction**: Business logic moved to `django_fusion` (pure Django) and `crafts_ai` (Wagtail + automation)
+2. **Package Extraction**: Business logic moved to `django_fusion` (pure Django) and `ceptor_ai` (Wagtail + automation)
 3. **Thin Layer Pattern**: Projects now delegate to package base classes
 4. **Testing Unification**: All tests use `django_fusion` infrastructure
 5. **Health Check Unification**: Health endpoints provided by `django_fusion.health`

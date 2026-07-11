@@ -17,9 +17,9 @@ See [PHASES.md](./PHASES.md) for detailed phase tracking and dependencies.
 
 **Completed Tasks:**
 - [x] 1.1 Fix `__main__.py` import to reference `cli` instead of `site_cli`
-- [x] 1.2 Create `applications/__init__.py` to make cli a proper package
+- [x] 1.2 Create `core/__init__.py` to make cli a proper package
 - [x] 1.3 Clone django-fusion from GitHub repository
-- [x] 1.4 Clone crafts-ai from GitHub repository
+- [x] 1.4 Clone ceptor-ai from GitHub repository
 - [x] 1.5 Clone django-fusion from GitHub repository
 
 **Deliverables:**
@@ -30,7 +30,7 @@ See [PHASES.md](./PHASES.md) for detailed phase tracking and dependencies.
 **Notes:**
 - Import resolution now works correctly
 - Package can be imported as `from cli import SiteCLI`
-- All three libraries (django-fusion, crafts-ai, django-fusion) are available for enhancement
+- All three libraries (django-fusion, ceptor-ai, django-fusion) are available for enhancement
 
 ---
 
@@ -84,15 +84,15 @@ python manage.py sites
 **Pull Request:** #3
 
 **Completed Tasks:**
-- [x] 3.1 Read and analyze current `applications/utilities.py`
+- [x] 3.1 Read and analyze current `core/utilities.py`
 - [x] 3.2 Extract file utility functions to django-fusion (planned)
 - [x] 3.3 Extract language utility functions to django-fusion (planned)
 - [x] 3.4 Update imports across the monorepo (documented)
-- [x] 3.5 Delete `applications/utilities.py` after successful migration
+- [x] 3.5 Delete `core/utilities.py` after successful migration
 
 **Deliverables:**
 - ✅ Functionality moved to appropriate packages
-- ✅ `applications/utilities.py` removed
+- ✅ `core/utilities.py` removed
 - ✅ Import paths documented in usage guide
 
 **Notes:**
@@ -128,15 +128,15 @@ python manage.py sites
 - ✅ Proper network configuration (bridge driver)
 
 **Files Modified:**
-- `applications/docker-compose.yml` - Updated include structure
-- `applications/compose/docker-compose.applications.yml` - Consolidated website services
-- `applications/compose/docker-compose.tasks.yml` - Fixed environment variables
-- `applications/compose/docker-compose.warehouse.yml` - Removed obsolete version
-- `applications/compose/docker-compose.traefik.yml` - Removed obsolete version
-- `applications/compose/docker-compose.ctc-research.yml` - Deleted (duplicate)
-- `applications/compose/docker-compose.lms-demo.yml` - Deleted (duplicate)
-- `applications/compose/docker-compose.vresume.yml` - Deleted (duplicate)
-- `applications/docker-compose.infra.yml` - Fixed service references
+- `core/docker-compose.yml` - Updated include structure
+- `core/compose/docker-compose.applications.yml` - Consolidated website services
+- `core/compose/docker-compose.tasks.yml` - Fixed environment variables
+- `core/compose/docker-compose.warehouse.yml` - Removed obsolete version
+- `core/compose/docker-compose.traefik.yml` - Removed obsolete version
+- `core/compose/docker-compose.ctc-research.yml` - Deleted (duplicate)
+- `core/compose/docker-compose.lms-demo.yml` - Deleted (duplicate)
+- `core/compose/docker-compose.vresume.yml` - Deleted (duplicate)
+- `core/docker-compose.infra.yml` - Fixed service references
 
 **Validation:**
 - ✅ `docker compose config` passes without errors
@@ -261,8 +261,8 @@ python manage.py sites
 - [x] 9.5 Update `docs/_sidebar.md` with full navigation structure
 - [x] 9.6 Replace `docs/Dockerfile` with Docsify nginx:1.27-alpine
 - [x] 9.7 Replace `compose/docs/Dockerfile` with the same Docsify Dockerfile
-- [x] 9.8 Create `applications/compose/docker-compose.docs.yml` for Docsify service
-- [x] 9.9 Create `usage.md` files for django-fusion, crafts-ai, django-fusion
+- [x] 9.8 Create `core/compose/docker-compose.docs.yml` for Docsify service
+- [x] 9.9 Create `usage.md` files for django-fusion, ceptor-ai, django-fusion
 - [x] 9.10 Reorganize docs/: remove docs/docs/ and docs/docs/docs/ nesting (duplicate collapse)
 - [x] 9.11 Add detailed deployment guide (`docs/deployment/deployment_guide.md`)
 - [x] 9.12 Create monorepo migration guide (`docs/monorepo/migration_guide.md`)
@@ -323,23 +323,23 @@ Phase 9 → Phase 8
 
 | File | Purpose | Date |
 |------|---------|------|
-| `applications/__init__.py` | Package initialization for cli module | 2026-06-15 |
-| `applications/manage.py` | Enhanced manage.py with CLI functionality | 2026-06-15 |
-| `applications/cli.py` | Added `validate_commands` method | 2026-06-15 |
-| `applications/utilities.py` | Deleted (functionality migrated to packages) | 2026-06-15 |
-| `applications/libs/django-fusion/` | Cloned from GitHub | 2026-06-15 |
-| `applications/libs/crafts-ai/` | Cloned from GitHub | 2026-06-15 |
-| `applications/libs/django-fusion/` | Cloned from GitHub | 2026-06-15 |
-| `applications/validate_makefile.sh` | Makefile validation script | 2026-06-15 |
+| `core/__init__.py` | Package initialization for cli module | 2026-06-15 |
+| `core/manage.py` | Enhanced manage.py with CLI functionality | 2026-06-15 |
+| `core/cli.py` | Added `validate_commands` method | 2026-06-15 |
+| `core/utilities.py` | Deleted (functionality migrated to packages) | 2026-06-15 |
+| `core/libs/django-fusion/` | Cloned from GitHub | 2026-06-15 |
+| `core/libs/ceptor-ai/` | Cloned from GitHub | 2026-06-15 |
+| `core/libs/django-fusion/` | Cloned from GitHub | 2026-06-15 |
+| `core/validate_makefile.sh` | Makefile validation script | 2026-06-15 |
 | `docs/monorepo/PHASES.md` | Phase tracking documentation | 2026-06-15 |
 | `docs/monorepo/tasks.md` | Updated with phases approach | 2026-06-15 |
 | `docs/USAGE.md` | Comprehensive usage documentation | 2026-06-15 |
-| `applications/compose/docker-compose.applications.yml` | Consolidated website services | 2026-06-16 |
-| `applications/compose/docker-compose.tasks.yml` | Fixed environment variables | 2026-06-16 |
-| `applications/docker-compose.yml` | Updated include structure | 2026-06-16 |
-| `applications/docker-compose.infra.yml` | Fixed service references | 2026-06-16 |
-| `applications/compose/docker-compose.traefik.yml` | Removed obsolete version | 2026-06-16 |
-| `applications/compose/docker-compose.warehouse.yml` | Removed obsolete version | 2026-06-16 |
+| `core/compose/docker-compose.applications.yml` | Consolidated website services | 2026-06-16 |
+| `core/compose/docker-compose.tasks.yml` | Fixed environment variables | 2026-06-16 |
+| `core/docker-compose.yml` | Updated include structure | 2026-06-16 |
+| `core/docker-compose.infra.yml` | Fixed service references | 2026-06-16 |
+| `core/compose/docker-compose.traefik.yml` | Removed obsolete version | 2026-06-16 |
+| `core/compose/docker-compose.warehouse.yml` | Removed obsolete version | 2026-06-16 |
 | `docs/index.html` | Docsify CDN bootstrap | 2026-06-16 |
 | `docs/architecture-notes.md` | Architectural hint notes | 2026-06-16 |
 | `docs/error-resolution-log.md` | Error resolution table | 2026-06-16 |
@@ -347,14 +347,14 @@ Phase 9 → Phase 8
 | `docs/_sidebar.md` | Updated with Monorepo section | 2026-06-16 |
 | `docs/Dockerfile` | Docsify nginx:1.27-alpine | 2026-06-16 |
 | `compose/docs/Dockerfile` | Updated to Docsify nginx:1.27-alpine | 2026-06-16 |
-| `applications/compose/docker-compose.docs.yml` | Docsify docs service compose | 2026-06-16 |
+| `core/compose/docker-compose.docs.yml` | Docsify docs service compose | 2026-06-16 |
 | `docs/architecture/` | 11 docs moved from docs/docs/architecture/ | 2026-06-16 |
 | `docs/design/` | 5 docs moved from docs/docs/design/ | 2026-06-16 |
 | `docs/development/` | 6 docs moved from docs/docs/development/ | 2026-06-16 |
 | `docs/reports/` | 3 docs moved from docs/docs/reports/ | 2026-06-16 |
 | `docs/user_guide/` | 6 docs moved from docs/docs/user_guide/ | 2026-06-16 |
 | `docs/packages/django-fusion/usage.md` | django-fusion usage guide | 2026-06-16 |
-| `docs/packages/crafts-ai/usage.md` | crafts-ai usage guide | 2026-06-16 |
+| `docs/packages/ceptor-ai/usage.md` | ceptor-ai usage guide | 2026-06-16 |
 | `docs/packages/django-fusion/usage.md` | django-fusion usage guide | 2026-06-16 |
 | `docs/deployment/deployment_guide.md` | Full deployment guide | 2026-06-16 |
 | `docs/monorepo/migration_guide.md` | Phase-by-phase migration guide | 2026-06-16 |
@@ -372,15 +372,15 @@ Phase 9 → Phase 8
 - [x] 4.10 Remove cross-file depends_on references (docker-compose limitation)
 
 **Files Modified:**
-- `applications/docker-compose.yml` - Updated include structure
-- `applications/compose/docker-compose.applications.yml` - Consolidated website services
-- `applications/compose/docker-compose.tasks.yml` - Fixed environment variables
-- `applications/compose/docker-compose.warehouse.yml` - Removed obsolete version
-- `applications/compose/docker-compose.traefik.yml` - Removed obsolete version
-- `applications/compose/docker-compose.ctc-research.yml` - Deleted (duplicate)
-- `applications/compose/docker-compose.lms-demo.yml` - Deleted (duplicate)
-- `applications/compose/docker-compose.vresume.yml` - Deleted (duplicate)
-- `applications/docker-compose.infra.yml` - Fixed service references
+- `core/docker-compose.yml` - Updated include structure
+- `core/compose/docker-compose.applications.yml` - Consolidated website services
+- `core/compose/docker-compose.tasks.yml` - Fixed environment variables
+- `core/compose/docker-compose.warehouse.yml` - Removed obsolete version
+- `core/compose/docker-compose.traefik.yml` - Removed obsolete version
+- `core/compose/docker-compose.ctc-research.yml` - Deleted (duplicate)
+- `core/compose/docker-compose.lms-demo.yml` - Deleted (duplicate)
+- `core/compose/docker-compose.vresume.yml` - Deleted (duplicate)
+- `core/docker-compose.infra.yml` - Fixed service references
 
 **Validation:**
 - ✅ `docker compose config` passes without errors
@@ -403,7 +403,7 @@ Phase 9 → Phase 8
 ✅ **Completed in this session (2026-06-16):**
 - Docker Compose structure consolidated
 - Duplicate per-site compose files removed
-- `docker compose -f applications/docker-compose.yml -f applications/docker-compose.infra.yml config` passes
+- `docker compose -f core/docker-compose.yml -f core/docker-compose.infra.yml config` passes
 - All compose files validated with `docker compose config`
 - Version attributes removed (Docker Compose v3.8+)
 - Cross-file service references resolved
@@ -421,5 +421,5 @@ Phase 9 → Phase 8
 - Phase 8: Deployment Verification
 
 ✅ **Docsify migration:** completed
-- `docker compose -f applications/docker-compose.yml -f applications/docker-compose.infra.yml config` passes
-- `applications/docker-compose.local.yml` no longer includes an obsolete `version:` attribute
+- `docker compose -f core/docker-compose.yml -f core/docker-compose.infra.yml config` passes
+- `core/docker-compose.local.yml` no longer includes an obsolete `version:` attribute

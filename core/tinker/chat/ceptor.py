@@ -227,7 +227,7 @@ class CeptorMCPService:
         """Run theme_analyzer on a project root."""
         return self.run_tool("theme_analyzer", root=root)
 
-    def map_components(self, root: str = ".", central: str = "applications/ctc-research") -> dict[str, Any]:
+    def map_components(self, root: str = ".", central: str = "core/ctc-research") -> dict[str, Any]:
         """Run component_mapper to find reusable components."""
         return self.run_tool("component_mapper", root=root, central=central)
 

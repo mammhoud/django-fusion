@@ -1,6 +1,6 @@
 # CTC Research Website
 
-CTC Research site-specific code lives in `applications/ctc-research/`.
+CTC Research site-specific code lives in `core/ctc-research/`.
 
 ## Current documentation
 

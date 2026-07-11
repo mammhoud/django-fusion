@@ -2,7 +2,7 @@
 """
 Duplicate Code Scanner for Django Libs Monorepo
 
-This script scans django-fusion, crafts-ai, django-seed (nawaai), and django-fusion
+This script scans django-fusion, ceptor-ai, django-seed (nawaai), and django-fusion
 packages for duplicate classes, functions, and modules using AST parsing.
 
 Generates a DUPLICATE_AUDIT.md file with findings.
@@ -47,7 +47,7 @@ class DuplicateScanner:
 
     def __init__(self, base_path: Path):
         self.base_path = base_path
-        self.packages = ["django-fusion", "crafts-ai", "django-seed", "django-fusion"]
+        self.packages = ["django-fusion", "ceptor-ai", "django-seed", "django-fusion"]
         self.symbols: Dict[Tuple[str, str], List[Symbol]] = defaultdict(list)
 
     def scan_all_packages(self):
@@ -167,7 +167,7 @@ class DuplicateScanner:
             "MessageMixin"
         ]
 
-        # Automation features → crafts-ai
+        # Automation features → ceptor-ai
         automation_patterns = [
             "EmailLog", "EmailService", "Seeder", "guessers", "providers",
             "send_invitations", "orchestrator", "email_tools", "pipelines", "routes",
@@ -196,7 +196,7 @@ class DuplicateScanner:
         for pattern in automation_patterns:
             if pattern.lower() in name.lower():
                 for symbol in symbols:
-                    if "crafts-ai" in symbol.file_path:
+                    if "ceptor-ai" in symbol.file_path:
                         return symbol.file_path
 
         for pattern in ai_patterns:
@@ -245,7 +245,7 @@ class DuplicateScanner:
         report = []
         report.append("# Duplicate Code Audit Report")
         report.append("")
-        report.append("This report identifies duplicate code symbols across django-fusion, crafts-ai, django-seed (nawaai), and django-fusion packages.")
+        report.append("This report identifies duplicate code symbols across django-fusion, ceptor-ai, django-seed (nawaai), and django-fusion packages.")
         report.append("")
         report.append(f"**Total Duplicates Found**: {len(duplicates)}")
         report.append("")
@@ -279,7 +279,7 @@ class DuplicateScanner:
         report.append("## Elimination Strategy")
         report.append("")
         report.append("1. **Foundation utilities** → django-fusion (keep osoul, remove from grep)")
-        report.append("2. **Automation features** → crafts-ai (keep rseal, remove from grep/seed)")
+        report.append("2. **Automation features** → ceptor-ai (keep rseal, remove from grep/seed)")
         report.append("3. **AI/MCP features** → nawaai (keep nawaai, rseal imports optionally)")
         report.append("4. **UI components** → django-fusion/comp/ (move from grep/rseal)")
         report.append("5. **Testing utilities** → django-fusion (new purpose, remove old code)")

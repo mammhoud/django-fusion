@@ -1,7 +1,7 @@
 # =============================================================================
 # Shared Django/Uvicorn/Celery container for all websites
 # Build context: repository root (i.e., the parent of structa.cloud/)
-# PROJECT_PATH is the site subdirectory inside applications/, e.g. "ctc-research".
+# PROJECT_PATH is the site subdirectory inside core/, e.g. "ctc-research".
 # =============================================================================
 
 # ── Stage 1: Pre-build webpack bundles ───────────────────────────────────────
@@ -10,14 +10,14 @@ ARG PROJECT_PATH=ctc-research
 WORKDIR /build
 
 # Install npm dependencies
-COPY applications/assets/package.json applications/assets/package-lock.json /build/assets/
+COPY core/assets/package.json core/assets/package-lock.json /build/assets/
 RUN cd /build/assets && npm ci --include=dev --legacy-peer-deps 2>&1
 
 # Copy build source files (shared + site-specific)
-COPY applications/assets/scripts /build/assets/scripts
-COPY applications/assets/static   /build/assets/static
-COPY applications/webpack          /build/webpack
-COPY applications/${PROJECT_PATH}/assets /build/${PROJECT_PATH}/assets
+COPY core/assets/scripts /build/assets/scripts
+COPY core/assets/static   /build/assets/static
+COPY core/webpack          /build/webpack
+COPY core/${PROJECT_PATH}/assets /build/${PROJECT_PATH}/assets
 
 # Build webpack bundles for this site
 ENV PROJECT_PATH=${PROJECT_PATH} \
@@ -68,23 +68,23 @@ RUN python -m pip install --no-cache-dir --upgrade pip uv \
 # ----------------------------------------------------------------------------
 # Install Python dependencies from the shared root manifest
 # ----------------------------------------------------------------------------
-COPY applications/pyproject.toml applications/uv.lock ${APP_HOME}/
+COPY core/pyproject.toml core/uv.lock ${APP_HOME}/
 
 
 # ----------------------------------------------------------------------------
 # Copy shared application code (always needed, regardless of PROJECT_PATH)
 # ----------------------------------------------------------------------------
-COPY applications/Makefile \
-     applications/manage.py \
-     applications/__about__.py \
-     applications/__main__.py \
-     applications/cli.py \
+COPY core/Makefile \
+     core/manage.py \
+     core/__about__.py \
+     core/__main__.py \
+     core/cli.py \
      ${APP_HOME}/
 
-COPY applications/configs ${APP_HOME}/configs
-COPY applications/assets  ${APP_HOME}/assets
-COPY applications/libs    ${APP_HOME}/libs
-COPY applications/tasks   ${APP_HOME}/tasks
+COPY core/configs ${APP_HOME}/configs
+COPY core/assets  ${APP_HOME}/assets
+COPY core/libs    ${APP_HOME}/libs
+COPY core/tasks   ${APP_HOME}/tasks
 
 RUN uv sync --frozen --no-install-project
 
@@ -96,7 +96,7 @@ RUN cd ${APP_HOME}/libs/django-fusion && uv pip install -e . --no-build-isolatio
 # ----------------------------------------------------------------------------
 # For production, this embeds the site code. For development, you can
 # override this directory with a volume mount (see compose volumes).
-COPY applications/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
+COPY core/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
 
 # ----------------------------------------------------------------------------
 # Copy pre-built webpack bundles from the asset builder stage

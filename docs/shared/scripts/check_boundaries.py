@@ -3,9 +3,9 @@
 Boundary Checker for Ecosystem Architectural Refactoring
 
 This script checks for boundary violations across the ecosystem:
-1. crafts-ai-no-django: crafts-ai must be pure Python with zero Django imports
-2. osoul-no-wagtail: django_fusion must not import wagtail, celery, or crafts_ai
-3. rseal-no-projects: crafts_ai must not import project-specific code
+1. ceptor-ai-no-django: ceptor-ai must be pure Python with zero Django imports
+2. osoul-no-wagtail: django_fusion must not import wagtail, celery, or ceptor_ai
+3. rseal-no-projects: ceptor_ai must not import project-specific code
 4. grep-test-only: django_fusion must not be imported by production code
 """
 
@@ -33,23 +33,23 @@ class BoundaryChecker:
     def __init__(self):
         self.violations: List[BoundaryViolation] = []
         self.rules = {
-            "crafts-ai-no-django": {
-                "source": "crafts-ai",
-                "forbidden_modules": ["django", "wagtail", "celery", "crafts_ai"],
-                "message": "crafts-ai must be pure Python with zero Django imports"
+            "ceptor-ai-no-django": {
+                "source": "ceptor-ai",
+                "forbidden_modules": ["django", "wagtail", "celery", "ceptor_ai"],
+                "message": "ceptor-ai must be pure Python with zero Django imports"
             },
             "osoul-no-wagtail": {
                 "source": "django_fusion",
-                "forbidden_modules": ["wagtail", "celery", "crafts_ai"],
-                "message": "django_fusion must not import wagtail, celery, or crafts_ai"
+                "forbidden_modules": ["wagtail", "celery", "ceptor_ai"],
+                "message": "django_fusion must not import wagtail, celery, or ceptor_ai"
             },
             "rseal-no-projects": {
-                "source": "crafts_ai",
+                "source": "ceptor_ai",
                 "forbidden_modules": ["apps.", "ctc-research", "structa.cloud"],
-                "message": "crafts_ai must not import project-specific code"
+                "message": "ceptor_ai must not import project-specific code"
             },
             "grep-test-only": {
-                "source": ["django_fusion", "crafts_ai", "apps"],
+                "source": ["django_fusion", "ceptor_ai", "apps"],
                 "forbidden_modules": ["django_fusion"],
                 "message": "django_fusion is test-only and must not be imported by production code"
             }
@@ -101,14 +101,14 @@ class BoundaryChecker:
         # Check each rule
         for rule_name, rule in self.rules.items():
             # Check if this file is from a source that has this rule
-            if rule_name == "crafts-ai-no-django":
-                if "crafts-ai" not in source_package:
+            if rule_name == "ceptor-ai-no-django":
+                if "ceptor-ai" not in source_package:
                     continue
             elif rule_name == "osoul-no-wagtail":
                 if "django_fusion" not in source_package:
                     continue
             elif rule_name == "rseal-no-projects":
-                if "crafts_ai" not in source_package:
+                if "ceptor_ai" not in source_package:
                     continue
             elif rule_name == "grep-test-only":
                 # Check if this is production code importing django_fusion
@@ -142,12 +142,12 @@ class BoundaryChecker:
         """Extract package name from filepath."""
         path_str = str(filepath)
 
-        if "crafts-ai" in path_str:
-            return "crafts-ai"
+        if "ceptor-ai" in path_str:
+            return "ceptor-ai"
         elif "django_fusion" in path_str:
             return "django_fusion"
-        elif "crafts_ai" in path_str:
-            return "crafts_ai"
+        elif "ceptor_ai" in path_str:
+            return "ceptor_ai"
         elif "django_fusion" in path_str:
             return "django_fusion"
         elif "apps" in path_str or "ctc-research" in path_str or "structa.cloud" in path_str:

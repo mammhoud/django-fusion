@@ -13,7 +13,7 @@ git tag rollback-phase-1-start -m "Rollback point: Before Phase 1 - Analysis and
 git tag rollback-phase-2-start -m "Rollback point: Before Phase 2 - django_fusion extraction"
 
 # Phase 3
-git tag rollback-phase-3-start -m "Rollback point: Before Phase 3 - crafts_ai extraction"
+git tag rollback-phase-3-start -m "Rollback point: Before Phase 3 - ceptor_ai extraction"
 
 # Phase 4
 git tag rollback-phase-4-start -m "Rollback point: Before Phase 4 - django_fusion extraction"

@@ -39,15 +39,15 @@ services:
       - "traefik.http.services.shared-media.loadbalancer.server.port=80"
     volumes:
       # Site build output staticfiles
-      - ../applications/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../applications/lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
-      - ../applications/VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
+      - ../core/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../core/lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
+      - ../core/VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
       # Shared application static files
-      - ../applications/assets/static:/var/www/static:ro
+      - ../core/assets/static:/var/www/static:ro
       # Site-specific media uploads
-      - ../applications/ctc-research/assets/media:/var/www/media/ctc-research:ro
-      - ../applications/lms-demo/assets/media:/var/www/media/lms-demo:ro
-      - ../applications/VResume/assets/media:/var/www/media/vresume:ro
+      - ../core/ctc-research/assets/media:/var/www/media/ctc-research:ro
+      - ../core/lms-demo/assets/media:/var/www/media/lms-demo:ro
+      - ../core/VResume/assets/media:/var/www/media/vresume:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
     networks:
       - traefik-net

@@ -34,9 +34,9 @@ from pathlib import Path
 import pytest
 
 
-# This test lives at applications/tests/test_cache_cross_worker_invalidation.py.
-# parents[0] = applications/tests/
-# parents[1] = applications/   <-- ROOT
+# This test lives at core/tests/test_cache_cross_worker_invalidation.py.
+# parents[0] = core/tests/
+# parents[1] = core/   <-- ROOT
 # parents[2] = the workspace root /home/structa.cloud/
 ROOT = Path(__file__).resolve().parents[1]
 PRODUCTION_PY = ROOT / "configs" / "settings" / "CD" / "production.py"

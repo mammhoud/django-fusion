@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-Phase 3 Extractor: Systematically extract Wagtail + Automation Logic to crafts_ai
+Phase 3 Extractor: Systematically extract Wagtail + Automation Logic to ceptor_ai
 """
 
 import json
@@ -17,7 +17,7 @@ class Phase3Extractor:
 
     def __init__(self):
         self.workspace_root = Path("/root/site")
-        self.crafts_ai_src = self.workspace_root / "venv/libs/crafts-ai/src/crafts_ai"
+        self.ceptor_ai_src = self.workspace_root / "venv/libs/ceptor-ai/src/ceptor_ai"
         self.ctc_project = self.workspace_root / "ctc-research.com"
         self.structa_project = self.workspace_root / "structa.cloud"
         self.extraction_log = []
@@ -42,7 +42,7 @@ class Phase3Extractor:
         """Task 3.1: Extract Wagtail handler mixins and page handlers."""
         self.log("\n=== TASK 3.1: Extract Wagtail Handler Mixins and Page Handlers ===")
 
-        handlers_target = self.crafts_ai_src / "handlers"
+        handlers_target = self.ceptor_ai_src / "handlers"
         handlers_target.mkdir(parents=True, exist_ok=True)
 
         wagtail_handler_files = [
@@ -60,7 +60,7 @@ class Phase3Extractor:
         extracted_count = 0
         for source_rel, target_rel in wagtail_handler_files:
             source = self.workspace_root / source_rel
-            target = self.crafts_ai_src / target_rel
+            target = self.ceptor_ai_src / target_rel
             if self.extract_file(source, target, "Wagtail handler"):
                 extracted_count += 1
 
@@ -68,16 +68,16 @@ class Phase3Extractor:
         return True
 
     def task_3_2_extract_cart_service_base(self) -> bool:
-        """Task 3.2: Extract CartServiceBase to crafts_ai."""
+        """Task 3.2: Extract CartServiceBase to ceptor_ai."""
         self.log("\n=== TASK 3.2: Extract CartServiceBase ===")
 
-        services_target = self.crafts_ai_src / "pipelines" / "services"
+        services_target = self.ceptor_ai_src / "pipelines" / "services"
         services_target.mkdir(parents=True, exist_ok=True)
 
         cart_service_base = '''"""
 CartServiceBase: Base class for cart service implementations.
 
-Canonical import: from crafts_ai.pipelines.services import CartServiceBase
+Canonical import: from ceptor_ai.pipelines.services import CartServiceBase
 """
 
 class CartServiceBase:
@@ -120,16 +120,16 @@ class CartServiceBase:
         return True
 
     def task_3_3_extract_person_service_base(self) -> bool:
-        """Task 3.3: Extract PersonServiceBase to crafts_ai."""
+        """Task 3.3: Extract PersonServiceBase to ceptor_ai."""
         self.log("\n=== TASK 3.3: Extract PersonServiceBase ===")
 
-        services_target = self.crafts_ai_src / "pipelines" / "services"
+        services_target = self.ceptor_ai_src / "pipelines" / "services"
         services_target.mkdir(parents=True, exist_ok=True)
 
         person_service_base = '''"""
 PersonServiceBase: Base class for person service implementations.
 
-Canonical import: from crafts_ai.pipelines.services import PersonServiceBase
+Canonical import: from ceptor_ai.pipelines.services import PersonServiceBase
 """
 
 class PersonServiceBase:
@@ -165,16 +165,16 @@ class PersonServiceBase:
         return True
 
     def task_3_4_extract_message_service_base(self) -> bool:
-        """Task 3.4: Extract MessageServiceBase to crafts_ai."""
+        """Task 3.4: Extract MessageServiceBase to ceptor_ai."""
         self.log("\n=== TASK 3.4: Extract MessageServiceBase ===")
 
-        services_target = self.crafts_ai_src / "pipelines" / "services"
+        services_target = self.ceptor_ai_src / "pipelines" / "services"
         services_target.mkdir(parents=True, exist_ok=True)
 
         message_service_base = '''"""
 MessageServiceBase: Base class for message service implementations.
 
-Canonical import: from crafts_ai.pipelines.services import MessageServiceBase
+Canonical import: from ceptor_ai.pipelines.services import MessageServiceBase
 """
 
 class MessageServiceBase:
@@ -203,16 +203,16 @@ class MessageServiceBase:
         return True
 
     def task_3_5_extract_form_submission_service(self) -> bool:
-        """Task 3.5: Extract FormSubmissionService to crafts_ai."""
+        """Task 3.5: Extract FormSubmissionService to ceptor_ai."""
         self.log("\n=== TASK 3.5: Extract FormSubmissionService ===")
 
-        services_target = self.crafts_ai_src / "pipelines" / "services"
+        services_target = self.ceptor_ai_src / "pipelines" / "services"
         services_target.mkdir(parents=True, exist_ok=True)
 
         form_service_base = '''"""
 FormSubmissionService: Base class for form submission service implementations.
 
-Canonical import: from crafts_ai.pipelines.services import FormSubmissionService
+Canonical import: from ceptor_ai.pipelines.services import FormSubmissionService
 """
 
 class FormSubmissionService:
@@ -244,7 +244,7 @@ class FormSubmissionService:
         """Task 3.6: Extract email template selectors and registries."""
         self.log("\n=== TASK 3.6: Extract Email Template Selectors and Registries ===")
 
-        email_target = self.crafts_ai_src / "email"
+        email_target = self.ceptor_ai_src / "email"
         email_target.mkdir(parents=True, exist_ok=True)
 
         source = self.ctc_project / "apps/handlers/email_templates.py"
@@ -257,10 +257,10 @@ class FormSubmissionService:
         return True
 
     def task_3_7_extract_wagtail_blocks(self) -> bool:
-        """Task 3.7: Extract Wagtail blocks to crafts_ai/comp/blocks/."""
+        """Task 3.7: Extract Wagtail blocks to ceptor_ai/comp/blocks/."""
         self.log("\n=== TASK 3.7: Extract Wagtail Blocks ===")
 
-        comp_target = self.crafts_ai_src / "comp"
+        comp_target = self.ceptor_ai_src / "comp"
         comp_target.mkdir(parents=True, exist_ok=True)
 
         source = self.ctc_project / "apps/handlers/blocks.py"
@@ -273,10 +273,10 @@ class FormSubmissionService:
         return True
 
     def task_3_8_extract_wagtail_snippets(self) -> bool:
-        """Task 3.8: Extract Wagtail snippets to crafts_ai."""
+        """Task 3.8: Extract Wagtail snippets to ceptor_ai."""
         self.log("\n=== TASK 3.8: Extract Wagtail Snippets ===")
 
-        snippets_target = self.crafts_ai_src / "contrib" / "snippets"
+        snippets_target = self.ceptor_ai_src / "contrib" / "snippets"
         snippets_target.mkdir(parents=True, exist_ok=True)
 
         snippet_files = [
@@ -300,10 +300,10 @@ class FormSubmissionService:
         return True
 
     def task_3_9_extract_wagtail_hooks(self) -> bool:
-        """Task 3.9: Extract Wagtail hooks to crafts_ai."""
+        """Task 3.9: Extract Wagtail hooks to ceptor_ai."""
         self.log("\n=== TASK 3.9: Extract Wagtail Hooks ===")
 
-        hooks_target = self.crafts_ai_src / "contrib"
+        hooks_target = self.ceptor_ai_src / "contrib"
         hooks_target.mkdir(parents=True, exist_ok=True)
 
         source = self.ctc_project / "apps/handlers/registration/wagtail_hooks.py"
@@ -319,7 +319,7 @@ class FormSubmissionService:
         """Task 3.10: Extract Unfold admin and Wagtail admin customizations."""
         self.log("\n=== TASK 3.10: Extract Admin Customizations ===")
 
-        admin_target = self.crafts_ai_src / "contrib" / "admin_site"
+        admin_target = self.ceptor_ai_src / "contrib" / "admin_site"
         admin_target.mkdir(parents=True, exist_ok=True)
 
         unfold_admin = admin_target / "unfold.py"
@@ -332,10 +332,10 @@ class FormSubmissionService:
         return True
 
     def task_3_11_extract_privacy_middleware(self) -> bool:
-        """Task 3.11: Extract PrivacyConsentMiddleware to crafts_ai."""
+        """Task 3.11: Extract PrivacyConsentMiddleware to ceptor_ai."""
         self.log("\n=== TASK 3.11: Extract PrivacyConsentMiddleware ===")
 
-        privacy_target = self.crafts_ai_src / "contrib" / "privacy"
+        privacy_target = self.ceptor_ai_src / "contrib" / "privacy"
         privacy_target.mkdir(parents=True, exist_ok=True)
 
         middleware_file = privacy_target / "middleware.py"
@@ -345,10 +345,10 @@ class FormSubmissionService:
         return True
 
     def task_3_12_extract_cache_utilities(self) -> bool:
-        """Task 3.12: Extract cache utilities to crafts_ai/contrib/cache/."""
+        """Task 3.12: Extract cache utilities to ceptor_ai/contrib/cache/."""
         self.log("\n=== TASK 3.12: Extract Cache Utilities ===")
 
-        cache_target = self.crafts_ai_src / "contrib" / "cache"
+        cache_target = self.ceptor_ai_src / "contrib" / "cache"
         cache_target.mkdir(parents=True, exist_ok=True)
 
         cache_utils = cache_target / "utils.py"
@@ -358,10 +358,10 @@ class FormSubmissionService:
         return True
 
     def task_3_13_extract_signals(self) -> bool:
-        """Task 3.13: Extract Django signals to crafts_ai/contrib/signals/."""
+        """Task 3.13: Extract Django signals to ceptor_ai/contrib/signals/."""
         self.log("\n=== TASK 3.13: Extract Django Signals ===")
 
-        signals_target = self.crafts_ai_src / "contrib" / "signals"
+        signals_target = self.ceptor_ai_src / "contrib" / "signals"
         signals_target.mkdir(parents=True, exist_ok=True)
 
         signals_file = signals_target / "__init__.py"
@@ -371,10 +371,10 @@ class FormSubmissionService:
         return True
 
     def task_3_14_extract_debug_tools(self) -> bool:
-        """Task 3.14: Extract debug tools to crafts_ai/contrib/debug_tools/."""
+        """Task 3.14: Extract debug tools to ceptor_ai/contrib/debug_tools/."""
         self.log("\n=== TASK 3.14: Extract Debug Tools ===")
 
-        debug_target = self.crafts_ai_src / "contrib" / "debug_tools"
+        debug_target = self.ceptor_ai_src / "contrib" / "debug_tools"
         debug_target.mkdir(parents=True, exist_ok=True)
 
         debug_file = debug_target / "__init__.py"
@@ -384,10 +384,10 @@ class FormSubmissionService:
         return True
 
     def task_3_15_extract_email_config(self) -> bool:
-        """Task 3.15: Extract email configuration utilities to crafts_ai/contrib/email_config/."""
+        """Task 3.15: Extract email configuration utilities to ceptor_ai/contrib/email_config/."""
         self.log("\n=== TASK 3.15: Extract Email Configuration Utilities ===")
 
-        email_config_target = self.crafts_ai_src / "contrib" / "email_config"
+        email_config_target = self.ceptor_ai_src / "contrib" / "email_config"
         email_config_target.mkdir(parents=True, exist_ok=True)
 
         email_config_file = email_config_target / "__init__.py"
@@ -397,10 +397,10 @@ class FormSubmissionService:
         return True
 
     def task_3_16_extract_orchestrator_cli(self) -> bool:
-        """Task 3.16: Extract Orchestrator CLI to crafts_ai/workflows/."""
+        """Task 3.16: Extract Orchestrator CLI to ceptor_ai/workflows/."""
         self.log("\n=== TASK 3.16: Extract Orchestrator CLI ===")
 
-        workflows_target = self.crafts_ai_src / "workflows"
+        workflows_target = self.ceptor_ai_src / "workflows"
         workflows_target.mkdir(parents=True, exist_ok=True)
 
         orchestrator_file = workflows_target / "orchestrator.py"
@@ -410,7 +410,7 @@ class FormSubmissionService:
         return True
 
     def task_3_17_boundary_check(self) -> bool:
-        """Task 3.17: Run full boundary check on crafts_ai."""
+        """Task 3.17: Run full boundary check on ceptor_ai."""
         self.log("\n=== TASK 3.17: Full Boundary Check ===")
 
         project_patterns = [
@@ -419,7 +419,7 @@ class FormSubmissionService:
         ]
 
         violations = []
-        for py_file in self.crafts_ai_src.rglob("*.py"):
+        for py_file in self.ceptor_ai_src.rglob("*.py"):
             content = py_file.read_text()
             for pattern in project_patterns:
                 if re.search(pattern, content):
@@ -436,7 +436,7 @@ class FormSubmissionService:
     def run_all_tasks(self) -> bool:
         """Run all Phase 3 tasks."""
         self.log("=" * 70)
-        self.log("PHASE 3: Extract Wagtail + Automation Logic to crafts_ai")
+        self.log("PHASE 3: Extract Wagtail + Automation Logic to ceptor_ai")
         self.log("=" * 70)
 
         tasks = [

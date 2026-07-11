@@ -13,7 +13,7 @@ WHAT WAS DELIVERED
 ================================================================================
 
 1. DYNACONF-ENABLED SETTINGS MODULE
-   File: applications/tinker/settings.py
+   File: core/tinker/settings.py
    - Rewrote Django settings to use Dynaconf
    - Supports environment variables for secrets
    - Lazy-loads registries for AI models and templates
@@ -32,7 +32,7 @@ WHAT WAS DELIVERED
    - .env.production.example (production guide)
 
 4. DJANGO-FUSION ENHANCEMENT
-   File: applications/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py
+   File: core/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py
    - DynaconfSettings class (280+ lines)
    - ModelsRegistry for type-safe model access
    - TemplateRegistry for type-safe site configuration
@@ -56,7 +56,7 @@ QUICK START
 ================================================================================
 
 DEVELOPMENT:
-  cd applications/tinker
+  cd core/tinker
   cp .env.example .env.development
   export TINKER_ENV=development
   make config-check              # Verify it works
@@ -153,7 +153,7 @@ Install:
 FILES STRUCTURE
 ================================================================================
 
-applications/tinker/
+core/tinker/
 ├── configs/
 │   ├── settings.yml                    ← Base config
 │   ├── settings.development.yml        ← Dev overrides
@@ -168,7 +168,7 @@ applications/tinker/
 ├── DYNACONF_SETUP.md                   ← Full documentation
 └── CONFIGURATION_SUMMARY.txt           ← This file
 
-applications/libs/django-fusion/src/django_fusion/config/
+core/libs/django-fusion/src/django_fusion/config/
 ├── __init__.py                         ← UPDATED (exports)
 └── dynaconf_loader.py                  ← NEW (280+ lines)
 

@@ -26,7 +26,7 @@ Complete deployment instructions for Tinker across different environments.
 
 ```bash
 # Navigate to tinker directory
-cd applications/tinker
+cd core/tinker
 
 # Create and activate virtual environment
 python3 -m venv venv
@@ -108,27 +108,27 @@ curl http://localhost:11434/api/tags
 ### Build Image
 
 ```bash
-# From applications/ directory
+# From core/ directory
 docker build -f tinker/Dockerfile -t tinker:latest .
 
 # Or use docker-compose
-docker-compose -f applications/tinker/docker-compose.yml build
+docker-compose -f core/tinker/docker-compose.yml build
 ```
 
 ### Run Service
 
 ```bash
 # Start tinker service
-docker-compose -f applications/tinker/docker-compose.yml up -d
+docker-compose -f core/tinker/docker-compose.yml up -d
 
 # View logs
-docker-compose -f applications/tinker/docker-compose.yml logs -f tinker
+docker-compose -f core/tinker/docker-compose.yml logs -f tinker
 
 # Stop service
-docker-compose -f applications/tinker/docker-compose.yml down
+docker-compose -f core/tinker/docker-compose.yml down
 
 # Remove volumes (careful!)
-docker-compose -f applications/tinker/docker-compose.yml down -v
+docker-compose -f core/tinker/docker-compose.yml down -v
 ```
 
 ### Environment Configuration
@@ -665,9 +665,9 @@ python manage.py shell
 >>> settings.CUSTOMIZER_APPS
 
 # Verify paths exist
-ls -la applications/ctc-research/templates/
-ls -la applications/lms-demo/templates/
-ls -la applications/VResume/www/pages/templates/
+ls -la core/ctc-research/templates/
+ls -la core/lms-demo/templates/
+ls -la core/VResume/www/pages/templates/
 
 # Restart service
 docker-compose restart tinker

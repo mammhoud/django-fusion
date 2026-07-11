@@ -1,7 +1,7 @@
 /**
  * Events Components — BEM Naming Convention
  * Source-of-truth for the events_grid include. Originally lived as an
- * inline <style> block in applications/assets/templates/events/includes/
+ * inline <style> block in core/assets/templates/events/includes/
  * events_grid.html; extracted to this shared partial so every site that
  * pulls in the shared stylesheet (via ~shared/styles/) gets the same
  * rules from a single, lint-friendly file.

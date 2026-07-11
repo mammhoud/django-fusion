@@ -7,20 +7,20 @@
       ],
       "env": {
         "DJANGO_SETTINGS_MODULE": "core.settings",
-        "PYTHONPATH": "applications/libs/crafts-ai/src"
+        "PYTHONPATH": "core/libs/ceptor-ai/src"
       }
     },
-    "crafts-ai": {
+    "ceptor-ai": {
       "command": "uvicorn",
       "args": [
-        "crafts_ai.mcp_server:app",
+        "ceptor_ai.mcp_server:app",
         "--host",
         "127.0.0.1",
         "--port",
         "8002"
       ],
       "env": {
-        "PYTHONPATH": "applications/libs/crafts-ai/src"
+        "PYTHONPATH": "core/libs/ceptor-ai/src"
       }
     }
   }

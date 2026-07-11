@@ -78,5 +78,5 @@ class ProjectViewSet(BaseSnippetViewSet):
 ```
 
 During migration, VResume also re-exports the shared base from
-`applications/VResume/www/core/snippets/` for older imports. New code should use
+`core/VResume/www/core/snippets/` for older imports. New code should use
 `django_fusion.wagtail.viewsets` directly.

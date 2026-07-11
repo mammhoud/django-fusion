@@ -5,7 +5,7 @@
 ## Installation
 
 ```bash
-uv pip install -e applications/libs/django-fusion/
+uv pip install -e core/libs/django-fusion/
 ```
 
 ## Add to INSTALLED_APPS

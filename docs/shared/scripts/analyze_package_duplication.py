@@ -2,7 +2,7 @@
 """
 Package Duplication Analyzer for Phase 6.10
 
-Scans django-fusion and crafts-ai packages to detect code duplication (≥70% similarity threshold).
+Scans django-fusion and ceptor-ai packages to detect code duplication (≥70% similarity threshold).
 Uses AST-based comparison for semantic similarity.
 """
 
@@ -44,7 +44,7 @@ class ModuleInfo:
 
 class PackageDuplicationAnalyzer:
     """
-    Scans django-fusion and crafts-ai packages for code similarity and duplication.
+    Scans django-fusion and ceptor-ai packages for code similarity and duplication.
     Uses AST-based comparison for semantic similarity.
     """
 
@@ -220,12 +220,12 @@ class PackageDuplicationAnalyzer:
         )
 
     def _categorize_duplication(self, file_a: str, file_b: str) -> Tuple[str, str, str]:
-        """Categorize duplication between django_fusion and crafts_ai packages."""
+        """Categorize duplication between django_fusion and ceptor_ai packages."""
         # Determine which package each file belongs to
         is_a_in_osoul = 'django-fusion' in file_a
         is_b_in_osoul = 'django-fusion' in file_b
-        is_a_in_rseal = 'crafts-ai' in file_a
-        is_b_in_rseal = 'crafts-ai' in file_b
+        is_a_in_rseal = 'ceptor-ai' in file_a
+        is_b_in_rseal = 'ceptor-ai' in file_b
 
         # Get imports for both files
         imports_a = set(self.modules[file_a].imports) if file_a in self.modules else set()
@@ -245,12 +245,12 @@ class PackageDuplicationAnalyzer:
             return "belongs-in-osoul", "django_fusion", self._determine_module_path(file_a)
         elif is_a_in_rseal and is_b_in_rseal:
             # Both in rseal - belongs-in-rseal
-            return "belongs-in-rseal", "crafts_ai", self._determine_module_path(file_a)
+            return "belongs-in-rseal", "ceptor_ai", self._determine_module_path(file_a)
         elif (is_a_in_osoul and is_b_in_rseal) or (is_a_in_rseal and is_b_in_osoul):
             # Cross-package duplication
             if has_wagtail or has_celery:
                 # Contains Wagtail/Celery - belongs-in-rseal
-                return "belongs-in-rseal", "crafts_ai", self._determine_module_path(file_a)
+                return "belongs-in-rseal", "ceptor_ai", self._determine_module_path(file_a)
             elif has_django_core and not (has_wagtail or has_celery):
                 # Pure Django - belongs-in-osoul
                 return "belongs-in-osoul", "django_fusion", self._determine_module_path(file_a)
@@ -266,8 +266,8 @@ class PackageDuplicationAnalyzer:
         # Extract relative path from package root
         if 'django-fusion' in file_path:
             rel_path = file_path.split('django-fusion/')[1]
-        elif 'crafts-ai' in file_path:
-            rel_path = file_path.split('crafts-ai/')[1]
+        elif 'ceptor-ai' in file_path:
+            rel_path = file_path.split('ceptor-ai/')[1]
         else:
             rel_path = os.path.basename(file_path)
 
@@ -285,7 +285,7 @@ class PackageDuplicationAnalyzer:
         report_lines = [
             "# Package Duplication Report",
             "",
-            "## Phase 6.10: Package Deduplication — Remove Duplication Between django_fusion and crafts_ai",
+            "## Phase 6.10: Package Deduplication — Remove Duplication Between django_fusion and ceptor_ai",
             "",
             f"Generated: {self._get_timestamp()}",
             "",
@@ -337,7 +337,7 @@ class PackageDuplicationAnalyzer:
                 report_lines.append(f"- Move to `django_fusion.{result.target_module}`")
                 report_lines.append(f"- Remove duplicate from other location")
             elif result.category == "belongs-in-rseal":
-                report_lines.append(f"- Move to `crafts_ai.{result.target_module}`")
+                report_lines.append(f"- Move to `ceptor_ai.{result.target_module}`")
                 report_lines.append(f"- Remove duplicate from other location")
             elif result.category == "should-be-shared":
                 report_lines.append(f"- Consider creating shared utility module")
@@ -358,7 +358,7 @@ def main():
     """Main entry point for the package duplication analyzer."""
     import argparse
 
-    parser = argparse.ArgumentParser(description='Analyze code duplication between django_fusion and crafts_ai packages')
+    parser = argparse.ArgumentParser(description='Analyze code duplication between django_fusion and ceptor_ai packages')
     parser.add_argument('--threshold', type=float, default=0.70,
                        help='Similarity threshold (default: 0.70)')
     parser.add_argument('--output', type=str, default='PACKAGE_DUPLICATION_REPORT.md',
@@ -368,7 +368,7 @@ def main():
 
     # Define package directories to scan
     package_a = 'venv/libs/django-fusion/'
-    package_b = 'venv/libs/crafts-ai/'
+    package_b = 'venv/libs/ceptor-ai/'
 
     if not os.path.exists(package_a):
         print(f"Error: Package directory not found: {package_a}")

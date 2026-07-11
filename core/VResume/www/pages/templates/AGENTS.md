@@ -4,26 +4,26 @@ Scope: this site template tree.
 
 ## Lookup Strategy
 
-Site templates here are resolved before the shared `applications/assets/templates/` layer. Keep files in this tree only when they are intentional site-specific overrides, branded shells, or templates that must shadow shared behavior.
+Site templates here are resolved before the shared `core/assets/templates/` layer. Keep files in this tree only when they are intentional site-specific overrides, branded shells, or templates that must shadow shared behavior.
 
 ## Override Rules
 
-- Prefer deleting exact duplicates and allowing Django to load `applications/assets/templates/<relative-path>`.
-- Keep thin overrides for branded variations; move reusable repeated markup into shared includes under `applications/assets/templates/components/`.
+- Prefer deleting exact duplicates and allowing Django to load `core/assets/templates/<relative-path>`.
+- Keep thin overrides for branded variations; move reusable repeated markup into shared includes under `core/assets/templates/components/`.
 - Preserve existing template names, include names, block names, and context variables to avoid breaking Wagtail/Django rendering.
 - Use `fragment_name` for fragment identifiers and context keys; do not introduce alternate fragment naming.
-- When adding or changing a site override, compare the same relative path in `applications/assets/templates/` first.
+- When adding or changing a site override, compare the same relative path in `core/assets/templates/` first.
 # Template Root Instructions: App-specific templates
 
 ## Scope
-This directory is an app-specific template root for `applications/VResume/www/pages/templates`. Follow the shared template rules in `applications/assets/templates/AGENTS.md` first, then apply these local notes.
+This directory is an app-specific template root for `core/VResume/www/pages/templates`. Follow the shared template rules in `core/assets/templates/AGENTS.md` first, then apply these local notes.
 
 ## Expected Template Structure
 Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
 
 ## Local Override Notes
 - Keep templates here focused on the Django app that owns this template root.
-- Prefer `applications/assets/templates` for cross-site components and shared behavior.
+- Prefer `core/assets/templates` for cross-site components and shared behavior.
 - Prefer this template root for presentation or overrides that are specific to this scope.
 - Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
 - Use `fragment_name` for fragment identifiers and context keys.

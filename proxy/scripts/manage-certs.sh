@@ -42,7 +42,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Certificate domains. First domain is the CN; the rest become SubjectAltName (SAN) entries.
-# Keep these in sync with the per-site ALLOWED_HOSTS in applications/<site>/docker-compose.yml.
+# Keep these in sync with the per-site ALLOWED_HOSTS in core/<site>/docker-compose.yml.
 DOMAINS=(
   "ctc-research:ctc-research.com www.ctc-research.com arch.ctc-research.com"
   "structa-cloud:structa.cloud www.structa.cloud core.structa.cloud"

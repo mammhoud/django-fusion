@@ -1,7 +1,7 @@
-# crafts-ai Documentation
+# ceptor-ai Documentation
 
 ## Overview
-crafts-ai is the Wagtail automation layer that builds on top of django-fusion. It provides pipelines, services, workflows, email handling, and Wagtail-specific components.
+ceptor-ai is the Wagtail automation layer that builds on top of django-fusion. It provides pipelines, services, workflows, email handling, and Wagtail-specific components.
 
 ## Key Principles
 - **Depends on django-fusion** - Uses base classes from django-fusion
@@ -46,7 +46,7 @@ Wagtail hooks
 ## Installation
 
 ```bash
-cd venv/libs/crafts-ai
+cd venv/libs/ceptor-ai
 uv sync
 ```
 
@@ -56,17 +56,17 @@ uv sync
 # In your Django settings
 INSTALLED_APPS = [
     ...
-    'crafts_ai',
+    'ceptor_ai',
     ...
 ]
 ```
 
 ## Thin Layer Pattern
-Projects should use thin subclasses of crafts-ai services:
+Projects should use thin subclasses of ceptor-ai services:
 
 ```python
 # In your project
-from crafts_ai.services import CartServiceBase
+from ceptor_ai.services import CartServiceBase
 
 class CartService(CartServiceBase):
     # Project-specific customizations only
@@ -74,8 +74,8 @@ class CartService(CartServiceBase):
 ```
 
 ## Documentation Links
-- [crafts-ai README](../../../venv/libs/crafts-ai/README.md)
+- [ceptor-ai README](../../../venv/libs/ceptor-ai/README.md)
 
 ## Related Packages
-- [django-fusion](../django-fusion/) - Base layer (crafts-ai depends on this)
+- [django-fusion](../django-fusion/) - Base layer (ceptor-ai depends on this)
 - [django-fusion](../django-fusion/) - Testing infrastructure

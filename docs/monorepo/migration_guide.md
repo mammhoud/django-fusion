@@ -6,7 +6,7 @@ Phase-by-phase migration notes for the structa.cloud monorepo.
 
 ## Phase 3: utilities.py → django-fusion
 
-**When**: If you have code importing from `applications/utilities.py`
+**When**: If you have code importing from `core/utilities.py`
 
 The file has been deleted. Update your imports:
 
@@ -75,10 +75,10 @@ docker compose up -d --build
 
 ```bash
 # Stop old MkDocs container
-docker compose -f applications/compose/docker-compose.docs.yml down
+docker compose -f core/compose/docker-compose.docs.yml down
 
 # Rebuild with new Docsify Dockerfile
-docker compose -f applications/compose/docker-compose.docs.yml up -d --build
+docker compose -f core/compose/docker-compose.docs.yml up -d --build
 ```
 
 ### Sidebar format

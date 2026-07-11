@@ -25,7 +25,7 @@ const postcss = require('postcss');
 // ─────────────────────────────────────────────────────────────
 const ASSETS_DIR = __dirname;                                // customizer/assets/
 const STATIC_DIR = path.join(ASSETS_DIR, 'static');           // customizer/assets/static/
-const BUNDLES_DIR = path.join(ASSETS_DIR, 'bundles', 'customizer'); // customizer/assets/bundles/customizer/
+const BUNDLES_DIR = path.join(ASSETS_DIR, 'bundles', 'customizer'); // customizer/assets/bundles/tinker/
 
 // BundleTracker – optional: generates bundles.json manifest read by
 // django-webpack-loader's {% render_bundle %} template tag.
@@ -94,7 +94,7 @@ module.exports = (env, argv) => {
 
     output: {
       path: BUNDLES_DIR,
-      publicPath: '/static/customizer/',
+      publicPath: '/static/tinker/',
       filename: isDev ? '[name].js' : '[name]-[contenthash:8].js',
       chunkFilename: isDev ? '[name].chunk.js' : '[name]-[contenthash:8].chunk.js',
       clean: !isDev,

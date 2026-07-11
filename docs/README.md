@@ -16,7 +16,7 @@ This is the canonical entrypoint for documentation for the Structa Cloud multi-s
 
 ## Repository map
 
-- `applications/` contains the Django sites, shared settings, shared frontend assets, reusable local libraries, scripts, tasks, and build tooling.
+- `core/` contains the Django sites, shared settings, shared frontend assets, reusable local libraries, scripts, tasks, and build tooling.
 - `docs/websites/` contains current site-specific documentation entrypoints.
 - `docs/archives/` contains historical reports, status snapshots, session notes, and completion summaries that may no longer describe current commands.
 

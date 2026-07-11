@@ -19,7 +19,7 @@ The root Makefile acts as the entry point and delegates specific tasks to compon
 │   └── docker-compose.caddy.yml
 ├── services/
 │   └── Makefile            (Manages shared services like Celery, emails, media)
-└── applications/
+└── core/
     └── [project_name]/
         └── Makefile        (Manages application-specific tasks)
 ```

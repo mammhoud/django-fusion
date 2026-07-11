@@ -98,7 +98,7 @@ Page (Wagtail)
 | **Header** | `head` | **Features strip** — repeating feature cards: icon class, image, title, description |
 | **Summary** | `summary` | **About block** — background image, years of experience, welcome text, main title, rich-text description, repeating service items (icon, title, description) |
 | **Summary** | `summary` | **Listing section** — subtitle, title, repeating index-page references each with page chooser, icon class, description |
-| **CTA** | `CTA` | **Contact card** — `ContactCardBlock` from crafts-ai |
+| **CTA** | `CTA` | **Contact card** — `ContactCardBlock` from ceptor-ai |
 | **CTA** | `CTA` | **Why Choose Us** — subtitle, title, description, highlight text, bullet methods list, image, page-link button |
 | **CTA** | `CTA` | **Clients** — repeating Organization snippet choosers |
 | **Contact Form** | `contact_form` | Styled contact form block (inherited from `BaseFormPage`) |
@@ -146,7 +146,7 @@ Page (Wagtail)
 | **Contact Form** | `contact_form` | Styled contact form block (inherited from `BaseFormPage`) |
 | **Contact Details** | `contact_details` | Repeating detail items: icon class, label, value (address / phone / email) |
 | **Map** | `map` | Embedded map block (Google Maps embed URL) |
-| **FAQ** | `faq` | `FAQSectionBlock` from crafts-ai — section title + repeating Q&A pairs |
+| **FAQ** | `faq` | `FAQSectionBlock` from ceptor-ai — section title + repeating Q&A pairs |
 
 ---
 

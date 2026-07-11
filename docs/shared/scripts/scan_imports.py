@@ -10,10 +10,10 @@ RULES = {
     "django-fusion": {
         "path": LIBS / "django-fusion/src/django_fusion",
         "forbidden": [r"^from wagtail", r"^import wagtail", r"^from celery",
-                      r"^import celery", r"^from crafts_ai", r"^import crafts_ai"],
+                      r"^import celery", r"^from ceptor_ai", r"^import ceptor_ai"],
     },
-    "crafts-ai": {
-        "path": LIBS / "crafts-ai/src/crafts_ai",
+    "ceptor-ai": {
+        "path": LIBS / "ceptor-ai/src/ceptor_ai",
         "forbidden": [r"^from django", r"^import django"],
     },
 }

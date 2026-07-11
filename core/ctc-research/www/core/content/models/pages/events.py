@@ -8,7 +8,7 @@ from .base import BaseIndexPage
 class EventPage(BaseIndexPage):
     """A Wagtail page displaying a list of events."""
 
-    # CTC-only template — see `applications/ctc-research/templates/events/event_page.html`.
+    # CTC-only template — see `core/ctc-research/templates/events/event_page.html`.
     template = "events/event_page.html"
 
     class Meta:

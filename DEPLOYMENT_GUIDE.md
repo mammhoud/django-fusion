@@ -71,7 +71,7 @@
 /home/structa.cloud/
 ├── .git/                          # Git repository
 ├── .github/                       # GitHub Actions workflows
-├── applications/                  # Main Django monorepo (see below)
+├── core/                  # Main Django monorepo (see below)
 ├── proxy/                         # Traefik proxy configuration
 ├── databases/                     # Database containers (PostgreSQL)
 ├── docs/                          # Project documentation
@@ -84,7 +84,7 @@
 ### Applications Monorepo Structure
 
 ```
-/home/structa.cloud/applications/
+/home/structa.cloud/core/
 ├── Makefile                       # Main dispatcher for all Django tasks
 ├── pyproject.toml                 # Workspace-level Python config
 ├── uv.lock                        # Frozen dependency lock file
@@ -196,7 +196,7 @@ docker-compose down
 
 | Variable | Example | Purpose |
 |----------|---------|---------|
-| `PROJECT_PATH` | `ctc-research` | Site subdirectory in applications/ |
+| `PROJECT_PATH` | `ctc-research` | Site subdirectory in core/ |
 | `WEBSITE` | `ctc-research` | Site identifier for Django |
 | `DJANGO_SITE` | `ctc-research` | Django site name (used in settings) |
 | `DATABASE_URL` | `postgresql://user:pass@postgres:5432/ctc_research_db` | Database connection |

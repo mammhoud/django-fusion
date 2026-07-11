@@ -18,9 +18,9 @@ LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
 
 PACKAGES = {
     "django-fusion":  ("django_fusion",  "Django foundation layer"),
-    "crafts-ai":  ("crafts_ai",  "Django automation engine"),
+    "ceptor-ai":  ("ceptor_ai",  "Django automation engine"),
     "django-fusion":   ("django_fusion",   "Django testing framework"),
-    "crafts-ai":     ("crafts_ai",     "Standalone AI/MCP toolkit"),
+    "ceptor-ai":     ("ceptor_ai",     "Standalone AI/MCP toolkit"),
 }
 
 DRY_RUN = "--dry-run" in sys.argv
@@ -155,7 +155,7 @@ def process_package(pkg_dir_name: str, pkg_namespace: str, pkg_desc: str) -> Non
     # Find src root
     src_root = pkg_dir / "src" / pkg_namespace
     if not src_root.exists():
-        # crafts-ai uses src layout
+        # ceptor-ai uses src layout
         src_root = pkg_dir / pkg_namespace
     if not src_root.exists():
         print(f"  skip {pkg_dir_name} (src root not found)")

@@ -22,7 +22,7 @@ Successfully completed Task 2: Migrated Tinker's configuration system to **Dynac
 - All 16 core Django settings configured from Dynaconf or env vars
 - 8 helper functions for AI model and template access
 
-**File**: `/home/structa.cloud/applications/tinker/settings.py` (315 lines)
+**File**: `/home/structa.cloud/core/tinker/settings.py` (315 lines)
 
 ### 2. **Created Dynaconf Configuration Files** ✅
 
@@ -62,7 +62,7 @@ Successfully completed Task 2: Migrated Tinker's configuration system to **Dynac
 
 ### 3. **Enhanced django-fusion with Dynaconf Module** ✅
 
-**File**: `/home/structa.cloud/applications/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py` (280+ lines)
+**File**: `/home/structa.cloud/core/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py` (280+ lines)
 
 **Classes**:
 - **DynaconfSettings**: Wrapper with Django utilities
@@ -144,23 +144,23 @@ Updated help section to include configuration management.
 
 ### New Files
 ```
-✅ /home/structa.cloud/applications/tinker/configs/settings.yml
-✅ /home/structa.cloud/applications/tinker/configs/settings.development.yml
-✅ /home/structa.cloud/applications/tinker/configs/settings.production.yml
-✅ /home/structa.cloud/applications/tinker/configs/models.yml
-✅ /home/structa.cloud/applications/tinker/.env.example
-✅ /home/structa.cloud/applications/tinker/.env.development
-✅ /home/structa.cloud/applications/tinker/.env.production.example
-✅ /home/structa.cloud/applications/tinker/DYNACONF_SETUP.md
-✅ /home/structa.cloud/applications/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py
+✅ /home/structa.cloud/core/tinker/configs/settings.yml
+✅ /home/structa.cloud/core/tinker/configs/settings.development.yml
+✅ /home/structa.cloud/core/tinker/configs/settings.production.yml
+✅ /home/structa.cloud/core/tinker/configs/models.yml
+✅ /home/structa.cloud/core/tinker/.env.example
+✅ /home/structa.cloud/core/tinker/.env.development
+✅ /home/structa.cloud/core/tinker/.env.production.example
+✅ /home/structa.cloud/core/tinker/DYNACONF_SETUP.md
+✅ /home/structa.cloud/core/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py
 ```
 
 ### Modified Files
 ```
-✅ /home/structa.cloud/applications/tinker/settings.py (completely rewritten)
-✅ /home/structa.cloud/applications/tinker/Makefile (added 4 config commands)
-✅ /home/structa.cloud/applications/tinker/requirements.txt (added dynaconf, pydantic)
-✅ /home/structa.cloud/applications/libs/django-fusion/src/django_fusion/config/__init__.py (updated exports)
+✅ /home/structa.cloud/core/tinker/settings.py (completely rewritten)
+✅ /home/structa.cloud/core/tinker/Makefile (added 4 config commands)
+✅ /home/structa.cloud/core/tinker/requirements.txt (added dynaconf, pydantic)
+✅ /home/structa.cloud/core/libs/django-fusion/src/django_fusion/config/__init__.py (updated exports)
 ```
 
 ---
@@ -234,7 +234,7 @@ Installed: `dynaconf==3.3.2`
 ### Development
 ```bash
 # Setup
-cd applications/tinker
+cd core/tinker
 cp .env.example .env.development
 
 # Check configuration
@@ -466,14 +466,14 @@ source .env.development
 ## Files for Review
 
 **High Priority**:
-- `/home/structa.cloud/applications/tinker/settings.py` - New Dynaconf-enabled settings
-- `/home/structa.cloud/applications/tinker/configs/settings.yml` - Base configuration
-- `/home/structa.cloud/applications/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py` - New module
-- `/home/structa.cloud/applications/tinker/DYNACONF_SETUP.md` - Full documentation
+- `/home/structa.cloud/core/tinker/settings.py` - New Dynaconf-enabled settings
+- `/home/structa.cloud/core/tinker/configs/settings.yml` - Base configuration
+- `/home/structa.cloud/core/libs/django-fusion/src/django_fusion/config/dynaconf_loader.py` - New module
+- `/home/structa.cloud/core/tinker/DYNACONF_SETUP.md` - Full documentation
 
 **Reference**:
-- `/home/structa.cloud/applications/tinker/.env.example` - Variable reference
-- `/home/structa.cloud/applications/tinker/Makefile` - New commands
+- `/home/structa.cloud/core/tinker/.env.example` - Variable reference
+- `/home/structa.cloud/core/tinker/Makefile` - New commands
 
 ---
 

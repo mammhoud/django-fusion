@@ -32,16 +32,16 @@ pip install poetry  # For package management
 
 ### Step 1.1: Audit Current Code
 
-**Objective:** Identify all foundation code in crafts-ai
+**Objective:** Identify all foundation code in ceptor-ai
 
 ```bash
-# List all files in crafts-ai
-find venv/libs/crafts-ai/src/crafts_ai -type f -name "*.py" | sort
+# List all files in ceptor-ai
+find venv/libs/ceptor-ai/src/ceptor_ai -type f -name "*.py" | sort
 
 # Identify foundation modules
-grep -r "class BaseModel" venv/libs/crafts-ai/
-grep -r "class.*Mixin" venv/libs/crafts-ai/
-grep -r "def.*route" venv/libs/crafts-ai/
+grep -r "class BaseModel" venv/libs/ceptor-ai/
+grep -r "class.*Mixin" venv/libs/ceptor-ai/
+grep -r "def.*route" venv/libs/ceptor-ai/
 ```
 
 **Foundation Modules to Move:**
@@ -73,11 +73,11 @@ touch venv/libs/django-fusion/src/django_fusion/routes/__init__.py
 
 ```bash
 # Copy files
-cp venv/libs/crafts-ai/src/crafts_ai/models/*.py \
+cp venv/libs/ceptor-ai/src/ceptor_ai/models/*.py \
    venv/libs/django-fusion/src/django_fusion/models/
 
 # Update imports in moved files
-# OLD: from crafts_ai.utils import helper
+# OLD: from ceptor_ai.utils import helper
 # NEW: from django_fusion.utils import helper
 ```
 
@@ -111,19 +111,19 @@ for root, dirs, files in os.walk('venv/libs/django-fusion/src/django_fusion'):
     for file in files:
         if file.endswith('.py'):
             file_path = os.path.join(root, file)
-            update_imports(file_path, 'crafts_ai', 'django_fusion')
+            update_imports(file_path, 'ceptor_ai', 'django_fusion')
 ```
 
 ### Step 1.4: Create Deprecation Shims
 
-**File: `venv/libs/crafts-ai/src/crafts_ai/compat/__init__.py`**
+**File: `venv/libs/ceptor-ai/src/ceptor_ai/compat/__init__.py`**
 
 ```python
 """
 Backward compatibility layer for moved modules.
 
 This module provides deprecation shims for code that has been moved to
-django-fusion. These imports will be removed in crafts-ai 3.0.0.
+django-fusion. These imports will be removed in ceptor-ai 3.0.0.
 """
 
 import warnings
@@ -133,7 +133,7 @@ def _deprecation_warning(old_path, new_path):
     warnings.warn(
         f"Importing from {old_path} is deprecated. "
         f"Use {new_path} instead. "
-        f"This will be removed in crafts-ai 3.0.0.",
+        f"This will be removed in ceptor-ai 3.0.0.",
         DeprecationWarning,
         stacklevel=3
     )
@@ -156,7 +156,7 @@ __all__ = [
 ]
 ```
 
-**File: `venv/libs/crafts-ai/src/crafts_ai/models/__init__.py`**
+**File: `venv/libs/ceptor-ai/src/ceptor_ai/models/__init__.py`**
 
 ```python
 """
@@ -170,9 +170,9 @@ import warnings
 from django_fusion.models import *
 
 warnings.warn(
-    "Importing from crafts_ai.models is deprecated. "
+    "Importing from ceptor_ai.models is deprecated. "
     "Use django_fusion.models instead. "
-    "This will be removed in crafts-ai 3.0.0.",
+    "This will be removed in ceptor-ai 3.0.0.",
     DeprecationWarning,
     stacklevel=2
 )
@@ -180,17 +180,17 @@ warnings.warn(
 
 ### Step 1.5: Update Internal Imports
 
-**Update all imports in crafts-ai:**
+**Update all imports in ceptor-ai:**
 
 ```bash
 # Find all imports of moved modules
-grep -r "from crafts_ai.models import" venv/libs/crafts-ai/
-grep -r "from crafts_ai.routes import" venv/libs/crafts-ai/
-grep -r "from crafts_ai.forms import" venv/libs/crafts-ai/
+grep -r "from ceptor_ai.models import" venv/libs/ceptor-ai/
+grep -r "from ceptor_ai.routes import" venv/libs/ceptor-ai/
+grep -r "from ceptor_ai.forms import" venv/libs/ceptor-ai/
 
 # Update to use django_fusion
-sed -i 's/from crafts_ai\.models/from django_fusion.models/g' \
-    venv/libs/crafts-ai/src/crafts_ai/**/*.py
+sed -i 's/from ceptor_ai\.models/from django_fusion.models/g' \
+    venv/libs/ceptor-ai/src/ceptor_ai/**/*.py
 ```
 
 ### Step 1.6: Run Tests
@@ -200,9 +200,9 @@ sed -i 's/from crafts_ai\.models/from django_fusion.models/g' \
 cd venv/libs/django-fusion
 pytest tests/ -v --cov=src/django_fusion
 
-# Run crafts-ai tests
-cd venv/libs/crafts-ai
-pytest tests/ -v --cov=src/crafts_ai
+# Run ceptor-ai tests
+cd venv/libs/ceptor-ai
+pytest tests/ -v --cov=src/ceptor_ai
 
 # Run integration tests
 cd venv/libs
@@ -222,7 +222,7 @@ def check_circular_imports():
     """Check for circular imports."""
     modules = [
         'django_fusion',
-        'crafts_ai',
+        'ceptor_ai',
         'django_fusion',
         'nawaai',
     ]
@@ -254,9 +254,9 @@ if __name__ == '__main__':
 
 ```bash
 # Find all AI-related code
-find venv/libs/crafts-ai -name "*ai*" -o -name "*llm*" -o -name "*mcp*"
-grep -r "from openai import" venv/libs/crafts-ai/
-grep -r "from anthropic import" venv/libs/crafts-ai/
+find venv/libs/ceptor-ai -name "*ai*" -o -name "*llm*" -o -name "*mcp*"
+grep -r "from openai import" venv/libs/ceptor-ai/
+grep -r "from anthropic import" venv/libs/ceptor-ai/
 ```
 
 ### Step 2.2: Create nawaai Structure
@@ -277,11 +277,11 @@ touch venv/libs/nawaai/src/nawaai/utils/__init__.py
 
 ```bash
 # Copy AI files
-cp venv/libs/crafts-ai/src/crafts_ai/ai/*.py \
+cp venv/libs/ceptor-ai/src/ceptor_ai/ai/*.py \
    venv/libs/nawaai/src/nawaai/ai/
 
 # Copy MCP files
-cp venv/libs/crafts-ai/src/crafts_ai/mcp/*.py \
+cp venv/libs/ceptor-ai/src/ceptor_ai/mcp/*.py \
    venv/libs/nawaai/src/nawaai/mcp/
 
 # Remove Django imports from moved files
@@ -325,7 +325,7 @@ for root, dirs, files in os.walk('venv/libs/nawaai/src/nawaai'):
 
 ### Step 2.5: Create Deprecation Shims
 
-**File: `venv/libs/crafts-ai/src/crafts_ai/ai/__init__.py`**
+**File: `venv/libs/ceptor-ai/src/ceptor_ai/ai/__init__.py`**
 
 ```python
 """
@@ -339,9 +339,9 @@ import warnings
 from nawaai.ai import *
 
 warnings.warn(
-    "Importing from crafts_ai.ai is deprecated. "
+    "Importing from ceptor_ai.ai is deprecated. "
     "Use nawaai.ai instead. "
-    "This will be removed in crafts-ai 3.0.0.",
+    "This will be removed in ceptor-ai 3.0.0.",
     DeprecationWarning,
     stacklevel=2
 )
@@ -350,14 +350,14 @@ warnings.warn(
 ### Step 2.6: Update Imports
 
 ```bash
-# Update imports in crafts-ai
-sed -i 's/from crafts_ai\.ai/from nawaai.ai/g' \
-    venv/libs/crafts-ai/src/crafts_ai/**/*.py
+# Update imports in ceptor-ai
+sed -i 's/from ceptor_ai\.ai/from nawaai.ai/g' \
+    venv/libs/ceptor-ai/src/ceptor_ai/**/*.py
 
 # Update imports in projects
-sed -i 's/from crafts_ai\.ai/from nawaai.ai/g' \
+sed -i 's/from ceptor_ai\.ai/from nawaai.ai/g' \
     ctc-research.com/**/*.py
-sed -i 's/from crafts_ai\.ai/from nawaai.ai/g' \
+sed -i 's/from ceptor_ai\.ai/from nawaai.ai/g' \
     structa.cloud/**/*.py
 ```
 
@@ -371,9 +371,9 @@ pytest tests/ -v --cov=src/nawaai
 # Verify no Django imports
 grep -r "from django" venv/libs/nawaai/src/nawaai/ && echo "ERROR: Django imports found" || echo "✓ No Django imports"
 
-# Run crafts-ai tests
-cd venv/libs/crafts-ai
-pytest tests/ -v --cov=src/crafts_ai
+# Run ceptor-ai tests
+cd venv/libs/ceptor-ai
+pytest tests/ -v --cov=src/ceptor_ai
 ```
 
 ---
@@ -384,7 +384,7 @@ pytest tests/ -v --cov=src/crafts_ai
 
 ```bash
 # Find all testing code
-find venv/libs/crafts-ai -name "*test*" -o -name "*factory*" -o -name "*fixture*"
+find venv/libs/ceptor-ai -name "*test*" -o -name "*factory*" -o -name "*fixture*"
 find venv/libs/django-seed -name "*seed*" -o -name "*factory*"
 ```
 
@@ -404,7 +404,7 @@ touch venv/libs/django-fusion/src/django_fusion/factories/__init__.py
 
 ```bash
 # Copy factory files
-cp venv/libs/crafts-ai/src/crafts_ai/seeder/*.py \
+cp venv/libs/ceptor-ai/src/ceptor_ai/seeder/*.py \
    venv/libs/django-fusion/src/django_fusion/factories/
 
 # Copy fixture files
@@ -412,7 +412,7 @@ cp venv/libs/django-seed/src/django_seed/seeding/*.py \
    venv/libs/django-fusion/src/django_fusion/fixtures/
 
 # Copy test utilities
-cp venv/libs/crafts-ai/src/crafts_ai/tests/*.py \
+cp venv/libs/ceptor-ai/src/ceptor_ai/tests/*.py \
    venv/libs/django-fusion/src/django_fusion/helpers/
 ```
 
@@ -579,13 +579,13 @@ pytest tests/ -v --cov
 **File: `MIGRATION_GUIDE.md`**
 
 ```markdown
-# Migration Guide: crafts-ai 2.0.0
+# Migration Guide: ceptor-ai 2.0.0
 
-This guide helps you migrate from crafts-ai 1.x to 2.0.0.
+This guide helps you migrate from ceptor-ai 1.x to 2.0.0.
 
 ## What Changed
 
-In crafts-ai 2.0.0, we reorganized the codebase to improve maintainability and reusability:
+In ceptor-ai 2.0.0, we reorganized the codebase to improve maintainability and reusability:
 
 - Foundation code moved to `django-fusion`
 - AI code moved to `nawaai`
@@ -597,9 +597,9 @@ In crafts-ai 2.0.0, we reorganized the codebase to improve maintainability and r
 
 **Before (1.x):**
 ```python
-from crafts_ai.models import BaseModel
-from crafts_ai.ai import LLMClient
-from crafts_ai.seeder import Seeder
+from ceptor_ai.models import BaseModel
+from ceptor_ai.ai import LLMClient
+from ceptor_ai.seeder import Seeder
 ```
 
 **After (2.0.0):**
@@ -616,7 +616,7 @@ Update your `pyproject.toml`:
 ```toml
 [dependencies]
 django-fusion = "^2.0.0"
-crafts-ai = "^2.0.0"
+ceptor-ai = "^2.0.0"
 django-fusion = "^2.0.0"
 nawaai = "^1.0.0"
 ```
@@ -636,7 +636,7 @@ pytest tests/ -v
 ## Need Help?
 
 - Check the [API Documentation](https://docs.example.com)
-- Open an [Issue](https://github.com/example/crafts-ai/issues)
+- Open an [Issue](https://github.com/example/ceptor-ai/issues)
 - Join our [Community](https://community.example.com)
 ```
 
@@ -668,30 +668,30 @@ def deprecated(old_path, new_path, version='3.0.0'):
 **Update README files:**
 
 ```markdown
-# crafts-ai 2.0.0
+# ceptor-ai 2.0.0
 
 ## Migration from 1.x
 
-If you're upgrading from crafts-ai 1.x, please see the [Migration Guide](../deployment/MIGRATION_GUIDE.md).
+If you're upgrading from ceptor-ai 1.x, please see the [Migration Guide](../deployment/MIGRATION_GUIDE.md).
 
 ## New Package Structure
 
 - **django-fusion:** Foundation layer (models, forms, middleware, etc.)
-- **crafts-ai:** Automation layer (email, tasks, workflows, etc.)
+- **ceptor-ai:** Automation layer (email, tasks, workflows, etc.)
 - **django-fusion:** Testing framework (factories, assertions, fixtures, etc.)
 - **nawaai:** AI/MCP toolkit (standalone, zero Django)
 
 ## Installation
 
 ```bash
-pip install django-fusion crafts-ai django-fusion nawaai
+pip install django-fusion ceptor-ai django-fusion nawaai
 ```
 
 ## Quick Start
 
 ```python
 from django_fusion.models import BaseModel
-from crafts_ai.email import send_email
+from ceptor_ai.email import send_email
 from django_fusion.factories import UserFactory
 from nawaai.ai import LLMClient
 ```
@@ -755,9 +755,9 @@ make html
 - Moved testing utilities to `django-fusion`
 
 ### Deprecated
-- Importing from `crafts_ai.models` (use `django_fusion.models`)
-- Importing from `crafts_ai.ai` (use `nawaai.ai`)
-- Importing from `crafts_ai.seeder` (use `django_fusion.factories`)
+- Importing from `ceptor_ai.models` (use `django_fusion.models`)
+- Importing from `ceptor_ai.ai` (use `nawaai.ai`)
+- Importing from `ceptor_ai.seeder` (use `django_fusion.factories`)
 
 ### Removed
 - Nothing in this release (backward compatibility maintained)
@@ -790,11 +790,11 @@ version = "2.0.0"
 description = "Foundation layer for Django projects"
 ```
 
-**File: `venv/libs/crafts-ai/pyproject.toml`**
+**File: `venv/libs/ceptor-ai/pyproject.toml`**
 
 ```toml
 [project]
-name = "crafts-ai"
+name = "ceptor-ai"
 version = "2.0.0"
 description = "Automation layer for Django projects"
 dependencies = [
@@ -812,7 +812,7 @@ version = "2.0.0"
 description = "Testing framework for Django projects"
 dependencies = [
     "django-fusion>=2.0.0",
-    "crafts-ai>=2.0.0",
+    "ceptor-ai>=2.0.0",
 ]
 ```
 
@@ -831,7 +831,7 @@ description = "AI/MCP toolkit"
 # Create git tags
 git tag -a v2.0.0 -m "Release version 2.0.0"
 git tag -a django-fusion-2.0.0 -m "django-fusion 2.0.0"
-git tag -a crafts-ai-2.0.0 -m "crafts-ai 2.0.0"
+git tag -a ceptor-ai-2.0.0 -m "ceptor-ai 2.0.0"
 git tag -a django-fusion-2.0.0 -m "django-fusion 2.0.0"
 git tag -a nawaai-1.0.0 -m "nawaai 1.0.0"
 
@@ -846,7 +846,7 @@ git push origin --tags
 cd venv/libs/django-fusion
 poetry build
 
-cd ../crafts-ai
+cd ../ceptor-ai
 poetry build
 
 cd ../django-fusion
@@ -872,7 +872,7 @@ poetry publish
 
 ### Architecture
 - [ ] Foundation layer (django-fusion) has zero automation imports
-- [ ] Automation layer (crafts-ai) depends only on foundation
+- [ ] Automation layer (ceptor-ai) depends only on foundation
 - [ ] AI layer (nawaai) has zero Django imports
 - [ ] Testing layer (django-fusion) depends on foundation + automation
 
@@ -948,7 +948,7 @@ After completing all phases:
 For questions or issues:
 
 - Check the [API Documentation](https://docs.example.com)
-- Open an [Issue](https://github.com/example/crafts-ai/issues)
+- Open an [Issue](https://github.com/example/ceptor-ai/issues)
 - Join our [Community](https://community.example.com)
 - Email support@example.com
 

@@ -6,8 +6,8 @@ This guide replaces the raw allauth template inventory with the project-specific
 
 Django resolves customized allauth templates by their allauth-relative names, such as `account/login.html` and `socialaccount/signup.html`. In this repository the CTC Research overrides live under:
 
-- `applications/ctc-research/plugins/templates/account/`
-- `applications/ctc-research/plugins/templates/socialaccount/`
+- `core/ctc-research/plugins/templates/account/`
+- `core/ctc-research/plugins/templates/socialaccount/`
 
 If a row below says **Allauth package default**, the project does not currently override that template and Django falls back to the installed `django-allauth` package template.
 
@@ -50,15 +50,15 @@ When adding or changing allauth templates:
 ## Cross-application alignment notes
 
 - `ctc-research` now follows the same visual contract used by `lms-demo` auth templates: `.fragment--form` > `.auth__card.card.card--form` > `.auth__form-header` / `.auth__form` / `.auth__footer`.
-- `lms-demo` keeps additional plugin-level templates under `applications/lms-demo/templates/auth/` and `applications/lms-demo/plugins/accounts/templates/auth/`; use those as copy references for auth SCSS class names and HTMX targets.
+- `lms-demo` keeps additional plugin-level templates under `core/lms-demo/templates/auth/` and `core/lms-demo/plugins/accounts/templates/auth/`; use those as copy references for auth SCSS class names and HTMX targets.
 - `VResume` currently carries the account plugin code and profile templates but does not include project-level `account/`, `socialaccount/`, or `auth/` template overrides. Treat CTC Research and LMS Demo as the active auth-template references before adding VResume overrides.
-- Non-allauth registration templates such as `applications/ctc-research/plugins/accounts/templates/auth/*.html` are still fragment-oriented and should remain aligned with the same `.auth__*` and `.form__*` class vocabulary.
+- Non-allauth registration templates such as `core/ctc-research/plugins/accounts/templates/auth/*.html` are still fragment-oriented and should remain aligned with the same `.auth__*` and `.form__*` class vocabulary.
 
 ## Allauth template map
 
 | Allauth template | Project override path |
 | --- | --- |
-| `account/account_inactive.html` | `applications/ctc-research/plugins/templates/account/account_inactive.html` |
+| `account/account_inactive.html` | `core/ctc-research/plugins/templates/account/account_inactive.html` |
 | `account/base_confirm_code.html` | Allauth package default (no project override) |
 | `account/base_entrance.html` | Allauth package default (no project override) |
 | `account/base_manage.html` | Allauth package default (no project override) |
@@ -66,10 +66,10 @@ When adding or changing allauth templates:
 | `account/base_manage_password.html` | Allauth package default (no project override) |
 | `account/base_manage_phone.html` | Allauth package default (no project override) |
 | `account/base_reauthenticate.html` | Allauth package default (no project override) |
-| `account/confirm_email_verification_code.html` | `applications/ctc-research/plugins/templates/account/confirm_email_verification_code.html` |
-| `account/confirm_login_code.html` | `applications/ctc-research/plugins/templates/account/confirm_login_code.html` |
+| `account/confirm_email_verification_code.html` | `core/ctc-research/plugins/templates/account/confirm_email_verification_code.html` |
+| `account/confirm_login_code.html` | `core/ctc-research/plugins/templates/account/confirm_login_code.html` |
 | `account/confirm_password_reset_code.html` | Allauth package default (no project override) |
-| `account/confirm_phone_verification_code.html` | `applications/ctc-research/plugins/templates/account/confirm_phone_verification_code.html` |
+| `account/confirm_phone_verification_code.html` | `core/ctc-research/plugins/templates/account/confirm_phone_verification_code.html` |
 | `account/email/account_already_exists_message.txt` | Allauth package default (no project override) |
 | `account/email/account_already_exists_subject.txt` | Allauth package default (no project override) |
 | `account/email/base_message.txt` | Allauth package default (no project override) |
@@ -98,11 +98,11 @@ When adding or changing allauth templates:
 | `account/email/password_set_subject.txt` | Allauth package default (no project override) |
 | `account/email/unknown_account_message.txt` | Allauth package default (no project override) |
 | `account/email/unknown_account_subject.txt` | Allauth package default (no project override) |
-| `account/email.html` | `applications/ctc-research/plugins/templates/account/email.html` |
+| `account/email.html` | `core/ctc-research/plugins/templates/account/email.html` |
 | `account/email_change.html` | Allauth package default (no project override) |
-| `account/email_confirm.html` | `applications/ctc-research/plugins/templates/account/email_confirm.html` |
-| `account/login.html` | `applications/ctc-research/plugins/templates/account/login.html` |
-| `account/logout.html` | `applications/ctc-research/plugins/templates/account/logout.html` |
+| `account/email_confirm.html` | `core/ctc-research/plugins/templates/account/email_confirm.html` |
+| `account/login.html` | `core/ctc-research/plugins/templates/account/login.html` |
+| `account/logout.html` | `core/ctc-research/plugins/templates/account/logout.html` |
 | `account/messages/cannot_delete_primary_email.txt` | Allauth package default (no project override) |
 | `account/messages/email_confirmation_failed.txt` | Allauth package default (no project override) |
 | `account/messages/email_confirmation_sent.txt` | Allauth package default (no project override) |
@@ -117,44 +117,44 @@ When adding or changing allauth templates:
 | `account/messages/phone_verified.txt` | Allauth package default (no project override) |
 | `account/messages/primary_email_set.txt` | Allauth package default (no project override) |
 | `account/messages/unverified_primary_email.txt` | Allauth package default (no project override) |
-| `account/password_change.html` | `applications/ctc-research/plugins/templates/account/password_change.html` |
-| `account/password_reset.html` | `applications/ctc-research/plugins/templates/account/password_reset.html` |
-| `account/password_reset_done.html` | `applications/ctc-research/plugins/templates/account/password_reset_done.html` |
-| `account/password_reset_from_key.html` | `applications/ctc-research/plugins/templates/account/password_reset_from_key.html` |
-| `account/password_reset_from_key_done.html` | `applications/ctc-research/plugins/templates/account/password_reset_from_key_done.html` |
-| `account/password_set.html` | `applications/ctc-research/plugins/templates/account/password_set.html` |
-| `account/phone_change.html` | `applications/ctc-research/plugins/templates/account/phone_change.html` |
-| `account/reauthenticate.html` | `applications/ctc-research/plugins/templates/account/reauthenticate.html` |
-| `account/request_login_code.html` | `applications/ctc-research/plugins/templates/account/request_login_code.html` |
-| `account/signup.html` | `applications/ctc-research/plugins/templates/account/signup.html` |
+| `account/password_change.html` | `core/ctc-research/plugins/templates/account/password_change.html` |
+| `account/password_reset.html` | `core/ctc-research/plugins/templates/account/password_reset.html` |
+| `account/password_reset_done.html` | `core/ctc-research/plugins/templates/account/password_reset_done.html` |
+| `account/password_reset_from_key.html` | `core/ctc-research/plugins/templates/account/password_reset_from_key.html` |
+| `account/password_reset_from_key_done.html` | `core/ctc-research/plugins/templates/account/password_reset_from_key_done.html` |
+| `account/password_set.html` | `core/ctc-research/plugins/templates/account/password_set.html` |
+| `account/phone_change.html` | `core/ctc-research/plugins/templates/account/phone_change.html` |
+| `account/reauthenticate.html` | `core/ctc-research/plugins/templates/account/reauthenticate.html` |
+| `account/request_login_code.html` | `core/ctc-research/plugins/templates/account/request_login_code.html` |
+| `account/signup.html` | `core/ctc-research/plugins/templates/account/signup.html` |
 | `account/signup_by_passkey.html` | Allauth package default (no project override) |
 | `account/signup_closed.html` | Allauth package default (no project override) |
-| `account/snippets/already_logged_in.html` | `applications/ctc-research/plugins/templates/account/snippets/already_logged_in.html` |
-| `account/snippets/warn_no_email.html` | `applications/ctc-research/plugins/templates/account/snippets/warn_no_email.html` |
-| `account/verification_sent.html` | `applications/ctc-research/plugins/templates/account/verification_sent.html` |
-| `account/verified_email_required.html` | `applications/ctc-research/plugins/templates/account/verified_email_required.html` |
-| `socialaccount/authentication_error.html` | `applications/ctc-research/plugins/templates/socialaccount/authentication_error.html` |
+| `account/snippets/already_logged_in.html` | `core/ctc-research/plugins/templates/account/snippets/already_logged_in.html` |
+| `account/snippets/warn_no_email.html` | `core/ctc-research/plugins/templates/account/snippets/warn_no_email.html` |
+| `account/verification_sent.html` | `core/ctc-research/plugins/templates/account/verification_sent.html` |
+| `account/verified_email_required.html` | `core/ctc-research/plugins/templates/account/verified_email_required.html` |
+| `socialaccount/authentication_error.html` | `core/ctc-research/plugins/templates/socialaccount/authentication_error.html` |
 | `socialaccount/base_entrance.html` | Allauth package default (no project override) |
 | `socialaccount/base_manage.html` | Allauth package default (no project override) |
-| `socialaccount/connections.html` | `applications/ctc-research/plugins/templates/socialaccount/connections.html` |
+| `socialaccount/connections.html` | `core/ctc-research/plugins/templates/socialaccount/connections.html` |
 | `socialaccount/email/account_connected_message.txt` | Allauth package default (no project override) |
 | `socialaccount/email/account_connected_subject.txt` | Allauth package default (no project override) |
 | `socialaccount/email/account_disconnected_message.txt` | Allauth package default (no project override) |
 | `socialaccount/email/account_disconnected_subject.txt` | Allauth package default (no project override) |
 | `socialaccount/login.html` | Allauth package default (no project override) |
-| `socialaccount/login_cancelled.html` | `applications/ctc-research/plugins/templates/socialaccount/login_cancelled.html` |
-| `socialaccount/login_redirect.html` | `applications/ctc-research/plugins/templates/socialaccount/login_redirect.html` |
+| `socialaccount/login_cancelled.html` | `core/ctc-research/plugins/templates/socialaccount/login_cancelled.html` |
+| `socialaccount/login_redirect.html` | `core/ctc-research/plugins/templates/socialaccount/login_redirect.html` |
 | `socialaccount/messages/account_connected.txt` | Allauth package default (no project override) |
 | `socialaccount/messages/account_connected_other.txt` | Allauth package default (no project override) |
 | `socialaccount/messages/account_connected_updated.txt` | Allauth package default (no project override) |
 | `socialaccount/messages/account_disconnected.txt` | Allauth package default (no project override) |
-| `socialaccount/signup.html` | `applications/ctc-research/plugins/templates/socialaccount/signup.html` |
-| `socialaccount/snippets/login.html` | `applications/ctc-research/plugins/templates/socialaccount/snippets/login.html` |
-| `socialaccount/snippets/login_extra.html` | `applications/ctc-research/plugins/templates/socialaccount/snippets/login_extra.html` |
-| `socialaccount/snippets/provider_list.html` | `applications/ctc-research/plugins/templates/socialaccount/snippets/provider_list.html` |
+| `socialaccount/signup.html` | `core/ctc-research/plugins/templates/socialaccount/signup.html` |
+| `socialaccount/snippets/login.html` | `core/ctc-research/plugins/templates/socialaccount/snippets/login.html` |
+| `socialaccount/snippets/login_extra.html` | `core/ctc-research/plugins/templates/socialaccount/snippets/login_extra.html` |
+| `socialaccount/snippets/provider_list.html` | `core/ctc-research/plugins/templates/socialaccount/snippets/provider_list.html` |
 
 ## Exceptions and related templates
 
-- `applications/ctc-research/plugins/templates/account/enrollment_success.html` is a profile/enrollment page, not a django-allauth override in the installed allauth template list. It continues to extend `profile/skeleton.html`.
+- `core/ctc-research/plugins/templates/account/enrollment_success.html` is a profile/enrollment page, not a django-allauth override in the installed allauth template list. It continues to extend `profile/skeleton.html`.
 - Snippet overrides under `account/snippets/` and `socialaccount/snippets/` are intentionally small partials and do not extend `base_auth.html`; they are included by page templates.
 - Email/message `.txt` templates are not wrapped in `base_auth.html`; use email base templates or allauth defaults as appropriate.
