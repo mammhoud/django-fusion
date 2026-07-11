@@ -44,7 +44,8 @@ backups/
 .env.*.local
 secrets.yml
 compose/config/secrets.yml
-
+core/libs
+core/libs/*
 # Test databases and dumps
 *.sqlite3
 *.dump
@@ -57,6 +58,6 @@ tmp/
 *.tmp
 *~
 *.swp
-
+tmp/*
 # Local virtualenv at the repo root
 .venv/

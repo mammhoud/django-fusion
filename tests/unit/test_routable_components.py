@@ -530,6 +530,235 @@ class TestLegacyPaginatorsFragmentName(TestCase):
 
 
 # ---------------------------------------------------------------------------
+# Integration: resolve_template_name() with derived fragment names
+# ---------------------------------------------------------------------------
+
+class TestResolveTemplateNameIntegration(TestCase):
+    """Integration tests verifying resolve_template_name() produces the correct
+    template path when fragment_name is derived from items_template or model._meta.
+
+    These tests exercise the full pipeline:
+        get_fragment_name() → dotted name → resolve_template_name() → path
+    """
+
+    # ------------------------------------------------------------------
+    # PaginatedComponentView — items_template derivation
+    # ------------------------------------------------------------------
+
+    def test_resolve_template_name_fragment_strategy_with_items_template(self):
+        """resolve_template_name() returns the items_template-derived path
+        when strategy is 'fragment' and fragment_name is not set."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class MyPaginated(PaginatedComponentView):
+            items_template = "components/items/list.html"
+            template_name = "full_page.html"
+            # fragment_name NOT set
+
+        view = MyPaginated()
+        view.strategy = "fragment"
+        self.assertEqual(view.resolve_template_name(), "components/items/list.html")
+
+    def test_resolve_template_name_document_strategy_uses_template_name(self):
+        """resolve_template_name() falls back to template_name when strategy
+        is 'document', even if items_template is set."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class MyPaginated(PaginatedComponentView):
+            items_template = "components/items/list.html"
+            template_name = "full_page.html"
+
+        view = MyPaginated()
+        view.strategy = "document"
+        self.assertEqual(view.resolve_template_name(), "full_page.html")
+
+    def test_resolve_template_name_fragment_with_custom_items_template(self):
+        """resolve_template_name() correctly converts a deeply nested
+        items_template path to the fragment template path."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class CustomItems(PaginatedComponentView):
+            items_template = "blog/fragments/post_list.html"
+            template_name = "blog/full_page.html"
+
+        view = CustomItems()
+        view.strategy = "fragment"
+        self.assertEqual(view.resolve_template_name(), "blog/fragments/post_list.html")
+
+    def test_resolve_template_name_explicit_fragment_overrides_items_template(self):
+        """Explicit fragment_name takes priority over items_template in
+        resolve_template_name()."""
+        from django_fusion.site.page_handler import PaginatedComponentView
+
+        class ExplicitFragment(PaginatedComponentView):
+            items_template = "components/items/list.html"
+            fragment_name = "my.custom_fragment"
+            template_name = "full_page.html"
+
+        view = ExplicitFragment()
+        view.strategy = "fragment"
+        self.assertEqual(view.resolve_template_name(), "my/custom_fragment.html")
+
+    # ------------------------------------------------------------------
+    # PaginatedListView — model._meta derivation
+    # ------------------------------------------------------------------
+
+    def test_resolve_template_name_fragment_strategy_with_model_meta(self):
+        """resolve_template_name() returns the model-derived path when
+        strategy is 'fragment', fragment_name is not set, and model is set."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class IntegrationArticle(models.Model):
+            title = models.CharField(max_length=100)
+
+            class Meta:
+                app_label = "tests"
+
+        class ArticleListView(PaginatedListView):
+            model = IntegrationArticle
+            fragment_name = None  # explicitly unset to test derivation
+            template_name = "articles/full_page.html"
+
+        view = ArticleListView()
+        view.strategy = "fragment"
+        self.assertEqual(view.resolve_template_name(), "components/tests/integrationarticle_list.html")
+
+    def test_resolve_template_name_document_strategy_uses_template_name_with_model(self):
+        """resolve_template_name() falls back to template_name when strategy
+        is 'document', even if model is set."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class IntegrationProduct(models.Model):
+            name = models.CharField(max_length=100)
+
+            class Meta:
+                app_label = "shop"
+
+        class ProductListView(PaginatedListView):
+            model = IntegrationProduct
+            fragment_name = None
+            template_name = "shop/full_page.html"
+
+        view = ProductListView()
+        view.strategy = "document"
+        self.assertEqual(view.resolve_template_name(), "shop/full_page.html")
+
+    def test_resolve_template_name_fragment_falls_back_to_items_template_without_model(self):
+        """resolve_template_name() uses items_template-derived path when
+        strategy is 'fragment', no model, and no explicit fragment_name."""
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class NoModelListView(PaginatedListView):
+            model = None
+            fragment_name = None
+            items_template = "components/items/table.html"
+            template_name = "table_full_page.html"
+
+        view = NoModelListView()
+        view.strategy = "fragment"
+        self.assertEqual(view.resolve_template_name(), "components/items/table.html")
+
+    def test_resolve_template_name_explicit_fragment_overrides_model(self):
+        """Explicit fragment_name takes priority over model._meta in
+        resolve_template_name()."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class IntegrationTag(models.Model):
+            name = models.CharField(max_length=50)
+
+            class Meta:
+                app_label = "tests"
+
+        class TagListView(PaginatedListView):
+            model = IntegrationTag
+            fragment_name = "custom.tags_list"
+            template_name = "tags/full_page.html"
+
+        view = TagListView()
+        view.strategy = "fragment"
+        self.assertEqual(view.resolve_template_name(), "custom/tags_list.html")
+
+    def test_resolve_template_name_model_meta_takes_priority_over_items_template(self):
+        """When both model and items_template are set (no explicit fragment_name),
+        model._meta derivation takes priority over items_template."""
+        from django.db import models
+        from django_fusion.site.page_handler import PaginatedListView
+
+        class IntegrationOrder(models.Model):
+            total = models.DecimalField(max_digits=10, decimal_places=2)
+
+            class Meta:
+                app_label = "shop"
+
+        class OrderListView(PaginatedListView):
+            model = IntegrationOrder
+            fragment_name = None
+            items_template = "components/items/list.html"
+            template_name = "orders/full_page.html"
+
+        view = OrderListView()
+        view.strategy = "fragment"
+        # model._meta wins → "components/shop/integrationorder_list.html"
+        self.assertEqual(
+            view.resolve_template_name(),
+            "components/shop/integrationorder_list.html",
+        )
+
+    # ------------------------------------------------------------------
+    # RoutableComponent — route_name derivation (for completeness)
+    # ------------------------------------------------------------------
+
+    def test_resolve_template_name_routable_component_with_route_name(self):
+        """resolve_template_name() returns the route_name-derived path when
+        strategy is 'fragment' and fragment_name is not set."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class DashboardComponent(RoutableComponent):
+            route_name = "dashboard"
+            route_path = "dashboard/"
+            template_name = "dashboard.html"
+            # fragment_name NOT set → defaults to "components.dashboard"
+
+        comp = DashboardComponent()
+        comp.strategy = "fragment"
+        self.assertEqual(comp.resolve_template_name(), "components/dashboard.html")
+
+    def test_resolve_template_name_routable_component_explicit_override(self):
+        """Explicit fragment_name on RoutableComponent takes priority over
+        route_name derivation in resolve_template_name()."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class ProfileComponent(RoutableComponent):
+            route_name = "profile"
+            route_path = "profile/"
+            template_name = "profile/detail.html"
+            fragment_name = "profile.fragments.detail"
+
+        comp = ProfileComponent()
+        comp.strategy = "fragment"
+        self.assertEqual(comp.resolve_template_name(), "profile/fragments/detail.html")
+
+    def test_resolve_template_name_routable_component_no_fragment_no_route_name(self):
+        """resolve_template_name() falls back to template_name when neither
+        fragment_name nor route_name is set, even in fragment strategy."""
+        from django_fusion.comp.routes import RoutableComponent
+
+        class BareComponent(RoutableComponent):
+            route_name = None
+            route_path = "bare/"
+            template_name = "bare_page.html"
+            # fragment_name NOT set, route_name is None → get_fragment_name() returns None
+
+        comp = BareComponent()
+        comp.strategy = "fragment"
+        # With no fragment name, resolve_template_name() falls back to template_name
+        self.assertEqual(comp.resolve_template_name(), "bare_page.html")
+
+
+# ---------------------------------------------------------------------------
 # FragmentDetector
 # ---------------------------------------------------------------------------
 

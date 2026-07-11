@@ -190,11 +190,13 @@ Every `RoutableComponent` and `FragmentComponent` has a `get_fragment_name()`
 method that returns the dotted fragment identifier. The resolution order is:
 
 1. If `fragment_name` is explicitly set on the class, it is returned as-is.
-2. Otherwise, a default is derived from `route_name`::
+2. Otherwise, a default is derived from `route_name`:
 
-       route_name = "dashboard"
-       # → get_fragment_name() returns "components.dashboard"
-       # → template: "components/dashboard.html"
+   ```python
+   route_name = "dashboard"
+   # → get_fragment_name() returns "components.dashboard"
+   # → template: "components/dashboard.html"
+   ```
 
 This default links the component to the package's `components/` template
 directory (`django_fusion/comp/templates/components/`), which is registered
@@ -234,6 +236,83 @@ class DashboardComponent(RoutableComponent):
     # fragment_name not set → defaults to "components.dashboard"
     # → "dashboard.html" for regular requests
     # → "components/dashboard.html" for HTMX requests
+```
+
+### Paginated View Fragment Name Derivation
+
+`PaginatedComponentView` and `PaginatedListView` also implement
+`get_fragment_name()` with their own default derivation strategies.
+
+#### PaginatedComponentView
+
+When `fragment_name` is not set, the default is derived from
+`items_template` by converting the path to a dotted name:
+
+```python
+class MyPaginatedView(PaginatedComponentView):
+    items_template = "components/items/list.html"
+    # fragment_name not set
+    # → get_fragment_name() returns "components.items.list"
+    # → template: "components/items/list.html"
+```
+
+This links the paginated view's fragment to the same template that
+renders its items, so HTMX requests automatically use the right partial.
+
+#### PaginatedListView
+
+When `fragment_name` is not set, the default is derived from the model's
+`app_label` and `model_name`:
+
+```python
+class ArticleListView(PaginatedListView):
+    model = Article  # app_label="blog", model_name="article"
+    fragment_name = None  # explicitly unset to opt in
+    # → get_fragment_name() returns "components.blog.article_list"
+    # → template: "components/blog/article_list.html"
+```
+
+This links the paginated list fragment to a model-specific template in
+the `components/` directory.
+
+> **Note:** The base `PaginatedListView` sets
+> `fragment_name = "components.paginated_list"` as a sensible default.
+> Subclasses that want model-derived derivation must explicitly set
+> `fragment_name = None` to opt in.
+
+#### Derivation Priority Chain
+
+For all paginated views, the resolution order is:
+
+1. **Explicit `fragment_name`** — returned as-is if set.
+2. **`model._meta`** (PaginatedListView only) —
+   `f"components.{app_label}.{model_name}_list"`.
+3. **`items_template`** (PaginatedComponentView and up) —
+   path converted to dotted name (e.g. `"components/items/list.html"`
+   → `"components.items.list"`).
+4. **`None`** — falls back to the base mixin, which returns `None`.
+
+Example showing the full chain:
+
+```python
+class ProductListView(PaginatedListView):
+    model = Product       # app_label="shop", model_name="product"
+    fragment_name = None  # unset → derives from model
+    # → "components.shop.product_list"
+    # → "components/shop/product_list.html"
+
+class CustomListView(PaginatedListView):
+    model = None          # no model
+    fragment_name = None  # unset
+    items_template = "shop/fragments/list.html"
+    # → falls back to items_template → "shop.fragments.list"
+    # → "shop/fragments/list.html"
+
+class OverrideListView(PaginatedListView):
+    model = Product
+    fragment_name = "my.custom_list"  # explicit → always wins
+    # → "my.custom_list"
+    # → "my/custom_list.html"
 ```
 
 ## HTMX Events
