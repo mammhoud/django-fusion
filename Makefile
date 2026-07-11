@@ -9,11 +9,11 @@ SHELL := /bin/bash
 # Directory layout – adjust these if your structure differs
 # -----------------------------------------------------------------
 WORKSPACE_ROOT    := .
-APPLICATIONS_DIR  := applications
+APPLICATIONS_DIR  := core
 PROXY_DIR         := proxy
 SERVICES_DIR      := services
 DATABASES_DIR     := databases
-CUSTOMIZER_DIR    := applications/customizer
+CUSTOMIZER_DIR    := core/customizer
 SOURCE_DIR        := source
 
 # -----------------------------------------------------------------
@@ -41,8 +41,8 @@ NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
 #    value would split it into multiple patterns.
 VALID_DEPLOY_ORDERS := postgres-first legacy
 DEPLOY_ORDER ?= postgres-first
-space :=
 empty :=
+space := $(empty) $(empty)
 # Build a `postgres-first|legacy` pattern string for the `case` statement.
 DEPLOY_ORDER_PATTERNS := $(subst $(space),|,$(VALID_DEPLOY_ORDERS))
 
@@ -55,7 +55,7 @@ DEPLOY_ORDER_PATTERNS := $(subst $(space),|,$(VALID_DEPLOY_ORDERS))
 PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
-	compose/docker-compose.applications.yml
+	compose/docker-compose.core.yml
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
