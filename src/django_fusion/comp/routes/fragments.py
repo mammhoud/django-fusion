@@ -44,6 +44,12 @@ class FragmentComponent(RoutableComponent):
     * ``fragment_name`` — dotted template identifier, e.g.
       ``"blog.fragments.post_list"`` → ``"blog/fragments/post_list.html"``.
       Set this instead of ``template_name`` for fragment-only components.
+      If not set, inherits the default derivation from
+      ``RoutableComponent.get_fragment_name()``::
+
+          route_name = "post-list-fragment"
+          # → "components.post-list-fragment"
+          # → "components/post-list-fragment.html"
     * ``htmx_only`` — return HTTP 400 for non-fragment requests when ``True``.
     * ``oob_fragments`` — ``{element_id: fragment_name}`` dict; each entry
       is rendered and appended as an ``hx-swap-oob`` div.
@@ -243,11 +249,13 @@ class FragmentComponent(RoutableComponent):
     def get_template_names(self) -> list[str]:
         """Return the fragment template for HTMX/Unpoly, full-page template otherwise.
 
-        Uses ``fragment_name`` (dotted) → path conversion.  Falls back to
+        Uses ``get_fragment_name()`` (dotted) → path conversion.  Falls back to
         ``template_name`` for non-fragment requests.
         """
-        if is_fragment_request(self.request) and self.fragment_name:
-            return [self.fragment_name.replace(".", "/") + ".html"]
+        if is_fragment_request(self.request):
+            fragment_name = self.get_fragment_name()
+            if fragment_name:
+                return [fragment_name.replace(".", "/") + ".html"]
         return super().get_template_names()
 
     def render_fragment_response(self, context: dict[str, Any]) -> HttpResponse:

@@ -31,6 +31,18 @@ class BaseTemplateContextMixin:
     strategy: str = "document"
 
     # -----------------------------------------
+    # Fragment name resolution — default derivation
+    # -----------------------------------------
+    def get_fragment_name(self) -> str | None:
+        """Return the dotted fragment identifier.
+
+        Default returns ``self.fragment_name`` as-is.  Subclasses
+        (notably ``RoutableComponent``) override this to derive a
+        default from the component's identity.
+        """
+        return self.fragment_name
+
+    # -----------------------------------------
     # Safe user profile access
     # -----------------------------------------
     def get_user_profile(self, user):
@@ -96,7 +108,7 @@ class BaseTemplateContextMixin:
             **base_context,
             "layout_path": self.layout_path,
             "strategy": self.strategy,
-            "fragment_name": self.fragment_name,
+            "fragment_name": self.get_fragment_name(),
             "template_name": self.template_name,
             "page_title": self.page_title,
             **template_data,
@@ -126,7 +138,7 @@ class FragmentHandlerMixin(BaseTemplateContextMixin):
         Used for HTMX/UnPoly partial requests.
         """
         # Determine fragment template
-        fragment_name = fragment_name or self.fragment_name
+        fragment_name = fragment_name or self.get_fragment_name()
 
         if fragment_name:
             # Convert dotted path to template path
@@ -185,10 +197,12 @@ class FragmentHandlerMixin(BaseTemplateContextMixin):
         """
         Resolve the appropriate template name based on strategy.
         """
-        if self.strategy == "fragment" and self.fragment_name:
-            return f"{self.fragment_name.replace('.', '/')}.html"
-        elif self.strategy == "fragment":
-            return self.fragment_template
+        if self.strategy == "fragment":
+            fragment_name = self.get_fragment_name()
+            if fragment_name:
+                return f"{fragment_name.replace('.', '/')}.html"
+            elif hasattr(self, 'fragment_template'):
+                return self.fragment_template
 
         return self.template_name or self.base_template_name
 

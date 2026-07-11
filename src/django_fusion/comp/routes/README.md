@@ -15,6 +15,34 @@ Declarative, class-based URL routing with integrated forms, tables, and template
 - **RoutableComponent**: Full-page views registered in Site/Application hierarchy
 - **FragmentComponent**: HTMX fragment-aware views with partial rendering
 
+#### Fragment Name Resolution
+
+Every routable component has a ``get_fragment_name()`` method that returns the
+dotted fragment identifier. The resolution order is:
+
+1. If ``fragment_name`` is explicitly set on the class, it is returned as-is.
+2. Otherwise, a default is derived from ``route_name``::
+
+       route_name = "dashboard"
+       # → get_fragment_name() returns "components.dashboard"
+       # → template: "components/dashboard.html"
+
+This default links the component to the package's ``components/`` template
+directory (``django_fusion/comp/templates/components/``), which is registered
+via ``APP_DIRS`` and ``COMPONENT_DIRS`` in the project template configuration.
+
+The dotted string maps to a template path by replacing dots with slashes and
+appending ``.html``::
+
+    "profile.blog"  →  "profile/blog.html"
+
+Both ``template_name`` and ``fragment_name`` work together:
+- ``template_name``: Full-page template (used when ``strategy == "document"``)
+- ``fragment_name`` (or ``get_fragment_name()``): Fragment template (used when
+  ``strategy == "fragment"``, i.e. HTMX/Unpoly requests)
+
+If neither is set, ``template_name`` defaults to ``"base_page.html
+
 ### Forms & Tables
 - **FormMixin**: Render forms with template cascading
 - **TableMixin**: Render tables with data binding
@@ -48,6 +76,19 @@ class DashboardComponent(RoutableComponent):
     route_path = "dashboard/"
     title = "Dashboard"
     template_name = "dashboard.html"
+    # fragment_name defaults to "components.dashboard"
+    # → resolves to "components/dashboard.html" for HTMX requests
+```
+
+Explicit fragment override:
+
+```python
+class ProfileComponent(RoutableComponent):
+    route_name = "profile"
+    route_path = "profile/"
+    template_name = "profile/detail.html"
+    fragment_name = "profile.fragments.detail"
+    # → "profile/fragments/detail.html" for HTMX requests
 ```
 
 ### Form Component

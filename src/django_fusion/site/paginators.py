@@ -209,7 +209,20 @@ class HTMXPaginationMixin(PaginatedBaseMixin):
 
 
 class PaginatedComponentView(HTMXPaginationMixin):
-    """Smart component view with built-in pagination."""
+    """Smart component view with built-in pagination.
+
+    Fragment name derivation
+    -----------------------
+    If ``fragment_name`` is not explicitly set, ``get_fragment_name()``
+    derives a default from ``items_template``::
+
+        items_template = "components/items/list.html"
+        # → get_fragment_name() returns "components.items.list"
+
+    This links the paginated view's fragment to the same template that
+    renders its items, so HTMX requests automatically use the right
+    partial without manual configuration.
+    """
 
     pagination_template: str = "components/pagination/default.html"
     items_template: str = "components/items/list.html"
@@ -217,6 +230,30 @@ class PaginatedComponentView(HTMXPaginationMixin):
     fragment_name: str | None = None
     items_fragment_selector: str = "#items-container"
     pagination_fragment_selector: str = "#pagination-container"
+
+    # ------------------------------------------------------------------
+    # Fragment name — default derived from items_template
+    # ------------------------------------------------------------------
+
+    def get_fragment_name(self) -> str | None:
+        """Return the dotted fragment identifier, with a default derivation.
+
+        If ``fragment_name`` is explicitly set, it is returned as-is.
+
+        Otherwise the default is derived from ``items_template`` so every
+        paginated component has a fragment path without manual
+        configuration::
+
+            items_template = "components/items/list.html"
+            # → "components.items.list"
+
+        Returns ``None`` when neither is set.
+        """
+        if self.fragment_name:
+            return self.fragment_name
+        if self.items_template:
+            return self.items_template.replace("/", ".").removesuffix(".html")
+        return None
 
     def setup(self, request: HttpRequest, *args, **kwargs):
         """Initialize view with pagination."""
@@ -296,13 +333,42 @@ class PaginatedComponentView(HTMXPaginationMixin):
 
 
 class PaginatedListView(PaginatedComponentView):
-    """List view with pagination for displaying querysets."""
+    """List view with pagination for displaying querysets.
+
+    Fragment name derivation
+    -----------------------
+    If ``fragment_name`` is not explicitly set, ``get_fragment_name()``
+    derives a default from the model's ``app_label`` and ``model_name``::
+
+        model = Article  # app_label="blog", model_name="article"
+        # → get_fragment_name() returns "components.blog.article_list"
+    """
 
     template_name: str = "components/paginated_list.html"
     fragment_name: str = "components.paginated_list"
 
     model = None
     ordering: str | None = None
+
+    # ------------------------------------------------------------------
+    # Fragment name — default derived from model metadata
+    # ------------------------------------------------------------------
+
+    def get_fragment_name(self) -> str | None:
+        """Return the dotted fragment identifier, with a model-derived default.
+
+        Priority:
+        1. Explicitly set ``fragment_name`` — returned as-is.
+        2. ``model._meta`` available — ``f"components.{app_label}.{model_name}_list"``
+        3. Fallback to ``PaginatedComponentView.get_fragment_name()``
+           (which derives from ``items_template``).
+        """
+        if self.fragment_name:
+            return self.fragment_name
+        if self.model is not None:
+            meta = self.model._meta
+            return f"components.{meta.app_label}.{meta.model_name}_list"
+        return super().get_fragment_name()
 
     def get_queryset(self):
         """Get queryset for the list."""

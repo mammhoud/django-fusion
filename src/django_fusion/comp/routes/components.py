@@ -23,6 +23,18 @@ Set fragment_name (dotted string) to identify the fragment template:
     fragment_name = "profile.dashboard"
     # → resolves to "profile/dashboard.html" when strategy == "fragment"
 
+If ``fragment_name`` is not explicitly set, ``get_fragment_name()`` derives
+a default from ``route_name``::
+
+    route_name = "dashboard"
+    # → get_fragment_name() returns "components.dashboard"
+    # → resolves to "components/dashboard.html"
+
+This default links the component to the package's ``components/`` template
+directory (``django_fusion/comp/templates/components/``), so every
+``RoutableComponent`` has a sensible fragment path without manual
+configuration.
+
 For the full-page template set template_name as usual.
 """
 
@@ -61,6 +73,13 @@ class RoutableComponent(ComponentViews, BaseViewset):
         fragment_name = "profile.dashboard"
         # → resolves to "profile/dashboard.html" when strategy == "fragment"
 
+    If ``fragment_name`` is not set, ``get_fragment_name()`` derives a default
+    from ``route_name``::
+
+        route_name = "dashboard"
+        # → get_fragment_name() returns "components.dashboard"
+        # → resolves to "components/dashboard.html"
+
     For the full-page template set ``template_name`` as usual.
 
     Example::
@@ -89,6 +108,37 @@ class RoutableComponent(ComponentViews, BaseViewset):
 
     # page_title alias — kept for backward compat with PageHandler-style views
     page_title: str | None = None  # type: ignore[assignment]
+
+    # ------------------------------------------------------------------
+    # Fragment name — default derived from route_name
+    # ------------------------------------------------------------------
+
+    def get_fragment_name(self) -> str | None:
+        """Return the dotted fragment identifier, with a default derivation.
+
+        If ``fragment_name`` is explicitly set, it is returned as-is.
+
+        Otherwise the default is derived from ``route_name`` so every
+        routable component has a fragment path without manual configuration::
+
+            route_name = "dashboard"
+            # → "components.dashboard"
+            # → template: "components/dashboard.html"
+
+        This links the component to the package's ``components/`` template
+directory
+        (``django_fusion/comp/templates/components/``), which is registered
+        via ``APP_DIRS`` and ``COMPONENT_DIRS`` in the project template
+        configuration.
+
+        Returns ``None`` when neither ``fragment_name`` nor ``route_name``
+        is set.
+        """
+        if self.fragment_name:
+            return self.fragment_name
+        if self.route_name:
+            return f"components.{self.route_name}"
+        return None
 
     def __init__(self, **kwargs: Any) -> None:
         super().__init__(**kwargs)

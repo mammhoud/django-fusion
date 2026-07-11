@@ -89,6 +89,27 @@ class BaseTemplateContextMixin:
     strategy: str = "document"
 
     # ------------------------------------------------------------------
+    # Fragment name resolution — single convention with default derivation
+    # ------------------------------------------------------------------
+
+    def get_fragment_name(self) -> str | None:
+        """Return the dotted fragment identifier for this view.
+
+        The default implementation returns ``self.fragment_name`` as-is.
+        Subclasses (notably ``RoutableComponent``) override this to derive
+        a default from the component's identity when ``fragment_name`` is
+        not explicitly set.
+
+        The returned dotted string maps to a template path by replacing
+        dots with slashes and appending ``.html``::
+
+            "profile.blog"  →  "profile/blog.html"
+
+        Returns ``None`` when no fragment name is available.
+        """
+        return self.fragment_name
+
+    # ------------------------------------------------------------------
     # Safe user profile access
     # ------------------------------------------------------------------
 
@@ -152,7 +173,7 @@ class BaseTemplateContextMixin:
             **base_context,
             "layout_path": self.layout_path,
             "strategy": self.strategy,
-            "fragment_name": self.fragment_name,
+            "fragment_name": self.get_fragment_name(),
             "template_name": self.template_name,
             "page_title": self.page_title,
             **template_data,
@@ -193,13 +214,16 @@ class FragmentHandlerMixin(BaseTemplateContextMixin):
     def resolve_template_name(self) -> str:
         """Return the template path for the current strategy.
 
-        Fragment strategy with ``fragment_name`` set:
+        Fragment strategy with a fragment name available (via
+        ``get_fragment_name()``):
             ``"profile.blog"``  →  ``"profile/blog.html"``
 
         Otherwise: ``template_name`` or ``base_template_name``.
         """
-        if self.strategy == "fragment" and self.fragment_name:
-            return self.fragment_name.replace(".", "/") + ".html"
+        if self.strategy == "fragment":
+            fragment_name = self.get_fragment_name()
+            if fragment_name:
+                return fragment_name.replace(".", "/") + ".html"
         return self.template_name or self.base_template_name
 
     # ------------------------------------------------------------------
@@ -235,7 +259,7 @@ class FragmentHandlerMixin(BaseTemplateContextMixin):
         title: str = "",
     ) -> HttpResponse:
         """Render the fragment template and set HTMX headers."""
-        context.update({"fragment_name": self.fragment_name, "is_fragment": True})
+        context.update({"fragment_name": self.get_fragment_name(), "is_fragment": True})
 
         # UnPoly title update
         try:
@@ -503,7 +527,7 @@ class WagtailPageMixin(FragmentHandlerMixin):
                 # Fragment path: pass fragment_name so base_page.html (if used) can
                 #                dispatch, but _render_fragment_response bypasses it.
                 "template_name": self.template_name if not is_fragment else None,
-                "fragment_name": self.fragment_name if is_fragment else None,
+                "fragment_name": self.get_fragment_name() if is_fragment else None,
             }
         )
         return context
