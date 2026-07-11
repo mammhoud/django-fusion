@@ -55,29 +55,41 @@ push: require-github-token
 # submodule remote.
 pull-libs: require-github-token
 	@echo "📥 Pulling each lib submodule from its GitHub repo..."
-	@for lib in $(APPLICATIONS_DIR)/libs/*/; do \
+	@fail=0; \
+	for lib in $(APPLICATIONS_DIR)/libs/*/; do \
 		lib_name=$$(basename $$lib); \
 		echo ""; \
 		echo "── $$lib_name ──"; \
 		case "$$lib_name" in \
-			django-fusion|ceptor-ai) ;; \
+			django-fusion) lib_url="https://github.com/mammhoud/django-fusion.git" ;; \
+			ceptor-ai)     lib_url="https://github.com/mammhoud/ceptor-ai.git" ;; \
 			*) echo "  ⏭️  Unknown lib — skipping"; continue ;; \
 		esac; \
-		cd "$$lib" || continue; \
+		cd "$$lib" || { fail=1; continue; }; \
 		branch=$$(git branch --show-current 2>/dev/null || echo generic); \
-		git fetch origin "$$branch" 2>&1 || { echo "  ❌ fetch failed for $$lib_name"; cd - >/dev/null; continue; }; \
+		git fetch "https://x-access-token:$(_github_token)@$${lib_url#https://}" "$$branch" 2>&1 || { echo "  ❌ fetch failed for $$lib_name"; fail=1; cd - >/dev/null; continue; }; \
 		ahead=$$(git rev-list --count "origin/$$branch"..HEAD 2>/dev/null || echo 0); \
 		behind=$$(git rev-list --count HEAD.."origin/$$branch" 2>/dev/null || echo 0); \
 		if [ "$$behind" = "0" ]; then \
 			echo "  ✅ $$lib_name already up to date"; \
 		else \
 			echo "  ↪️  pulling $$lib_name (ahead $$ahead, behind $$behind)"; \
-			git pull --rebase origin "$$branch" 2>&1 && echo "  ✅ $$lib_name pulled" || echo "  ❌ pull failed for $$lib_name"; \
+			if git pull --rebase origin "$$branch" 2>&1; then \
+				echo "  ✅ $$lib_name pulled"; \
+			else \
+				echo "  ❌ pull failed for $$lib_name"; \
+				echo "     resolve with: git -C $$lib rebase --continue | git -C $$lib rebase --abort"; \
+				fail=1; \
+			fi; \
 		fi; \
 		cd - >/dev/null; \
-	done
-	@echo ""
-	@echo "✅ pull-libs complete"
+	done; \
+	echo ""; \
+	if [ $$fail -ne 0 ]; then \
+		echo "❌ pull-libs failed"; \
+		exit 1; \
+	fi; \
+	echo "✅ pull-libs complete"
 
 # ── push-libs: commit + push each lib submodule ──
 # Libs are now git submodules pointing to their GitHub repos:
@@ -195,8 +207,7 @@ pull: require-github-token
 				;; \
 			*) echo "❌ PULL_MODE must be 'rebase' or 'merge' (got: '$$mode')"; exit 1 ;; \
 		esac; \
-	fi; \
-	$(MAKE) --no-print-directory pull-libs
+	fi
 
 # ── sync: bidirectional sync of local <-> origin ──
 # Default recipe: pull (rebase) then push.
@@ -217,3 +228,5 @@ sync: require-github-token
 		echo "  ℹ️  SYNC_SKIP_PUSH=1 — not pushing back to origin"; \
 	else \
 		echo ""; \
+		$(MAKE) --no-print-directory push; \
+	fi \
