@@ -2,12 +2,17 @@
 
 30-second setup guide for using forms and tables with routes.
 
+Paths in this file are repo-relative. From the standalone django-fusion
+repo, just `cd` to the root. From the Structa Cloud monorepo the submodule
+lives at `core/libs/django-fusion/` and the same `src/django_fusion/`
+tree is mounted there.
+
 ## 1. Import Mixins
 
 ```python
 from django_fusion.comp.routes import (
-    RoutableComponent, 
-    FormMixin, 
+    RoutableComponent,
+    FormMixin,
     TableMixin,
     FormTableMixin,
 )
@@ -37,7 +42,7 @@ class UserListComponent(RoutableComponent, TableMixin):
     table_name = "users"
     model = User
     template_name = "users/list.html"
-    
+
     def get_queryset(self):
         return User.objects.all()
 ```
@@ -54,7 +59,7 @@ class UserManagementComponent(RoutableComponent, FormTableMixin):
     form_class = SearchForm
     model = User
     template_name = "users/manage.html"
-    
+
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         context.update(self.get_form_table_context_data())
@@ -65,25 +70,23 @@ class UserManagementComponent(RoutableComponent, FormTableMixin):
 
 Your template is automatically looked up in this order:
 
-```
-1. applications/lms_demo/templates/components/form/user.html
-2. applications/assets/templates/components/form/user.html
-3. django_fusion/.../forms/form.html  (fallback)
+```text
+1. <site>/templates/components/form/user.html   (site-specific override)
+2. assets/templates/components/form/user.html   (shared assets)
+3. django_fusion/comp/templates/components/form/form.html   (generic fallback)
 ```
 
 ## 4. Create Site Template (Optional)
 
 To customize for your site, create:
 
-```
-applications/lms_demo/templates/components/form/user.html
+```text
+<your-site>/templates/components/form/user.html
 ```
 
-If not found, uses shared template at:
-
-```
-applications/assets/templates/components/form/user.html
-```
+If not found, the cascade falls through to the next layer, eventually
+reaching `src/django_fusion/comp/templates/...`. See DF-006 for the full
+resolution logic.
 
 ## 5. Add to Application
 
@@ -152,7 +155,7 @@ class AdminApp(Application):
         {{ form.search }}
         <button type="submit">Search</button>
     </form>
-    
+
     <!-- Results Table -->
     {% include "plugins/tables/users.html" %}
 </div>
@@ -174,8 +177,8 @@ def get_table_headers(self):
 def get_table_headers(self):
     return [
         {"label": "Username", "key": "username", "sortable": True},
-        {"label": "Email", "key": "email", "sortable": True},
-        {"label": "Active", "key": "is_active", "sortable": False},
+        {"label": "Email",    "key": "email",    "sortable": True},
+        {"label": "Active",   "key": "is_active", "sortable": False},
     ]
 ```
 
@@ -205,7 +208,7 @@ def get_form_kwargs(self):
 
 | Attribute | Type | Purpose |
 |-----------|------|---------|
-| `form_name` | str | Used for template lookup |
+| `form_name`  | str  | Used for template lookup |
 | `form_class` | class | Form to instantiate |
 | `form_kwargs` | dict | Kwargs for form init |
 
@@ -213,9 +216,9 @@ def get_form_kwargs(self):
 
 | Attribute | Type | Purpose |
 |-----------|------|---------|
-| `table_name` | str | Used for template lookup |
+| `table_name`    | str  | Used for template lookup |
 | `table_headers` | list | Column configuration |
-| `table_data` | list | Table rows |
+| `table_data`    | list | Table rows |
 
 ## Key Methods
 
@@ -246,42 +249,8 @@ get_table_context_data()     # Returns context dict for template
 get_form_table_context_data() # Returns merged form+table context
 ```
 
-## Template Cascade
-
-For `form_name = "user"`:
-
-```
-Site-specific       applications/lms_demo/templates/components/form/user.html
-                    ↓ (if not found)
-Shared assets       applications/assets/templates/components/form/user.html
-                    ↓ (if not found)
-Generic fallback    applications/libs/django-fusion/src/django_fusion/comp/templates/components/form/form.html
-                    ↓ (if not found)
-Django-fusion       django_fusion/comp/routes/templates/routable_components/forms/form.html
-```
-
-For `table_name = "users"`:
-
-```
-Site-specific       applications/lms_demo/templates/plugins/tables/users.html
-                    ↓ (if not found)
-Shared assets       applications/assets/templates/plugins/tables/users.html
-                    ↓ (if not found)
-Generic fallback    applications/libs/django-fusion/src/django_fusion/comp/templates/components/table.html
-                    ↓ (if not found)
-Django-fusion       django_fusion/comp/routes/templates/routable_components/tables/table.html
-```
-
-## File Paths
-
-```
-forms/            components/form/
-tables/           plugins/tables/
-```
-
 ## Next: Full Documentation
 
-- [Full API Reference](../../docs/FORMS_TABLES_INTEGRATION.md)
-- [Real Examples](../../docs/INTEGRATION_EXAMPLES.md)
-- [Module Overview](./README.md)
-
+- [DF-006 — Forms & Tables full reference](./docs/06-forms-and-tables.md)
+- [DF-012 — Integration examples](./docs/12-integration-examples.md)
+- [DF-000 — Documentation index](./docs/INDEX.md)

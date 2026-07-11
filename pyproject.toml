@@ -1,8 +1,37 @@
 [project]
 name = "django-fusion"
-version = "0.1.0"
-description = "Reusable Django and Wagtail helpers for Structa Cloud sites"
+version = "0.2.0"
+description = "Reusable Django and Wagtail helpers for Structa Cloud sites - component system, routing, forms/tables, allauth, Wagtail, and a `{% comp %}` template tag."
 requires-python = ">=3.11"
+license = { text = "MIT" }
+readme = "README.md"
+authors = [
+    { name = "Structa Cloud Team", email = "dev@structa.cloud" },
+]
+keywords = [
+    "django",
+    "wagtail",
+    "components",
+    "routing",
+    "htmx",
+    "allauth",
+    "templating",
+]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Framework :: Django",
+    "Framework :: Django :: 4.2",
+    "Framework :: Django :: 5.0",
+    "Intended Audience :: Developers",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Topic :: Internet :: WWW/HTTP :: Dynamic Content",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
 dependencies = [
     "attrs>=26.1.0",
     "django>=4.2",
@@ -11,16 +40,36 @@ dependencies = [
 ]
 
 [project.optional-dependencies]
-test = ["pytest"]
+test = [
+    "pytest",
+    "pytest-django",
+    "pytest-cov",
+    "hypothesis",
+]
+dev = [
+    "pytest",
+    "pytest-django",
+    "pytest-cov",
+    "hypothesis",
+    "build",
+    "twine",
+]
+
+[project.urls]
+Homepage = "https://github.com/mammhoud/django-fusion"
+Repository = "https://github.com/mammhoud/django-fusion.git"
+Issues = "https://github.com/mammhoud/django-fusion/issues"
+Documentation = "https://github.com/mammhoud/django-fusion/tree/generic/docs"
+Changelog = "https://github.com/mammhoud/django-fusion/blob/generic/CHANGELOG.md"
 
 [build-system]
 requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-package-dir = {"" = "src"}
+package_dir = {"" = "src"}
 packages = {find = {where = ["src"], include = ["django_fusion*"]}}
-include-package-data = true
+include_package_data = true
 
 # ---------------------------------------------------------------------------
 # Recognized environment variables (opt-in diagnostics)
@@ -32,7 +81,7 @@ include-package-data = true
 #     When this is set in the env, conftest.py prints the active
 #     Django TEMPLATES configuration (BACKEND, DIRS, APP_DIRS,
 #     builtins, libraries, context_processors) plus the value of
-#     DJANGO_SETTINGS_MODULE — useful when debugging "which settings
+#     DJANGO_SETTINGS_MODULE - useful when debugging "which settings
 #     is actually active" scenarios.
 #
 #     The guard is exact-match `os.environ.get("DJANGO_DEBUG_CONFTEST") == "1"`,
@@ -45,7 +94,7 @@ include-package-data = true
 #         DJANGO_DEBUG_CONFTEST=1 uv run pytest -s tests/test_form_components.py
 #
 # Other env vars considered and rejected (for posterity):
-#   - `DJANGO_SETTINGS_MODULE=tests.settings` — pytest-django would load
+#   - `DJANGO_SETTINGS_MODULE=tests.settings` - pytest-django would load
 #     `tests/settings.py`, but django-fusion's tests/ stubs use Python's
 #     regular sys.path import chain which pytest-django's lazy engine
 #     init can fail to resolve. The conftest-side `settings.configure()`
@@ -54,4 +103,4 @@ include-package-data = true
 [tool.pytest.ini_options]
 addopts = ["-v"]
 testpaths = ["tests"]
-pythonpath = ["src"] 
+pythonpath = ["src"]

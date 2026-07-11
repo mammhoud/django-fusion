@@ -1,6 +1,9 @@
 # django-fusion — AI Agent Instructions
 
-Path: `applications/libs/django-fusion/`
+This file is the canonical entry point for AI agents and human contributors
+working in the `django-fusion` repository. Path-relative links below are valid
+in both the standalone repo and the Structa Cloud submodule (which lives at
+`core/libs/django-fusion/` inside the monorepo).
 
 ## Canonical Import Paths
 
@@ -42,6 +45,7 @@ from django_fusion.comp.generic import (
 | Loaders | `django_fusion.comp.loaders` |
 | Middlewares | `django_fusion.core.middlewares` |
 | Cache | `django_fusion.core.cache` |
+| Dynaconf config | `django_fusion.config.dynaconf_loader` |
 
 ## Component Tag (`{% comp %}`)
 
@@ -55,49 +59,43 @@ from django_fusion.comp.generic import (
 
 ```
 django_fusion/
-├── comp/           # Component system: {% comp %} tag, registry, routes, generic CBVs
-│   ├── routes.py   # Site, Application, ModelViewset, RoutableComponent, FragmentComponent
-│   ├── generic.py  # ListModelView, CreateModelView, DeleteModelView, TableView
-│   └── registry.py # Component registration, LazyIncludeTemplate
-├── core/           # Handlers, managers, models, services, cache, middlewares, filters
-│   ├── handlers.py # PageHandler base class
-│   ├── managers.py  # Custom model managers
-│   ├── models.py   # TimeStampedModel, base models
-│   ├── services.py # BaseService
-│   ├── cache.py    # CacheService
-│   └── middlewares.py
-├── health/         # HealthCheckView, DatabaseHealthView, AssetsHealthView
-├── site/           # Auth mixins, context processors, paginators, notifications, plugins
-│   ├── auth/       # Allauth integration mixins
-│   ├── context/    # settings.py (brand_settings, social_settings context)
-│   └── paginators.py
-├── wagtail/        # StreamField blocks, AuthEmailTemplate snippet, viewsets
-│   ├── blocks.py
-│   ├── snippets.py
-│   └── viewsets.py
-├── contrib/        # admin, cache, debug_tools, email_config, enums, privacy, utils
-├── infrastructure/ # Management commands, scripts, templatetags, locale
-└── analyzer/       # Component scanner, parser, schemas
+├── analyzer/        # Component scanner, parser, schemas
+├── comp/            # Component system + routing + generic CBVs
+│   ├── registry.py  # Component registration, lazy include templates
+│   ├── routes/      # Site, Application, ModelViewset, RoutableComponent, FragmentComponent
+│   ├── generic.py   # ListModelView, CreateModelView, DeleteModelView, TableView
+│   ├── forms/       # FormMixin, TableMixin, FormTableMixin
+│   ├── loaders.py   # component_loader decorator
+│   ├── cache.py     # ComponentMapping cache (Redis fallback)
+│   └── templatetags/ # {% comp %}, {% slot %}, {% prop %}, {% var %}
+├── config/          # Configuration (dynaconf_loader, constants)
+├── contrib/         # admin, cache, debug_tools, email_config, privacy
+├── core/            # Handlers, managers, models, services, cache, middlewares
+├── health/          # HealthCheckView, DatabaseHealthView, AssetsHealthView
+├── infrastructure/  # Management commands, scripts, template tags, locale
+├── site/            # Auth mixins, context processors, paginators, plugins
+└── wagtail/         # StreamField blocks, AuthEmailTemplate snippet, viewsets
 ```
 
-## Component Conventions
+## Documentation Map (DF-0NN)
 
-- Props declaration: `{% prop title %}` / `{% prop summary="" %}`
-- Named slots: `{% slot header %}...{% endslot %}`
-- Vars (local state): `{% var key="value" %}`
-- Attrs passthrough: `class="{{ attrs }}"`
-- Fragment names follow dot-notation: `<site>.fragments.<app>.<name>`
-- `IncludePathComponent` maps plain template paths to component names verbatim
-- `register_default_partials()` auto-registers all `*.html` under `COMPONENTS_INCLUDE_PATH_ROOTS`
+Stable doc IDs — equally valid from the standalone repo or the submodule.
 
-## Documentation References
-
-| Topic | File |
-|-------|------|
-| Component system | `applications/libs/django-fusion/docs/COMPONENT_SYSTEM.md` |
-| Component tag API | `applications/libs/django-fusion/docs/COMPONENT_TAG.md` |
-| Routing system | `applications/libs/django-fusion/docs/ROUTING_SYSTEM.md` |
-| Forms & tables | `applications/libs/django-fusion/docs/FORMS_TABLES_INTEGRATION.md` |
-| Viewflow mapping | `applications/libs/django-fusion/docs/VIEWFLOW_MAPPING.md` |
-| Architecture overview | `applications/libs/django-fusion/docs/ARCHITECTURE_OVERVIEW.md` |
-| Health module | `applications/libs/django-fusion/docs/HEALTH.md` |
+| ID | Topic | File |
+|----|-------|------|
+| DF-000 | Documentation index | `docs/INDEX.md` |
+| DF-001 | Getting started | `docs/01-getting-started.md` |
+| DF-002 | Architecture overview | `docs/02-architecture.md` |
+| DF-003 | Component system (Python) | `docs/03-component-system.md` |
+| DF-004 | `{% comp %}` template tag | `docs/04-component-tag.md` |
+| DF-005 | Routing & viewsets | `docs/05-routing.md` |
+| DF-006 | Forms & tables | `docs/06-forms-and-tables.md` |
+| DF-007 | Settings & configuration | `docs/07-configuration.md` |
+| DF-008 | API reference | `docs/08-api-reference.md` |
+| DF-009 | Health checks | `docs/09-health.md` |
+| DF-010 | Wagtail integration | `docs/10-wagtail-integration.md` |
+| DF-011 | Best practices | `docs/11-best-practices.md` |
+| DF-012 | Integration examples | `docs/12-integration-examples.md` |
+| DF-013 | Troubleshooting | `docs/13-troubleshooting.md` |
+| DF-014 | FAQ | `docs/14-faq.md` |
+| DF-015 | Viewflow mapping | `docs/15-viewflow-mapping.md` |
