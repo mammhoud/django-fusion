@@ -66,25 +66,13 @@ pull-libs: require-github-token
 		esac; \
 		cd "$$lib" || { fail=1; continue; }; \
 		branch=$$(git branch --show-current 2>/dev/null || echo generic); \
-		if ! git fetch origin "$$branch" 2>&1; then \
-			echo "  ❌ fetch failed for $$lib_name"; \
-			fail=1; \
-			cd - >/dev/null; \
-			continue; \
-		fi; \
-		ahead=$$(git rev-list --count "origin/$$branch"..HEAD 2>/dev/null || echo 0); \
-		behind=$$(git rev-list --count HEAD.."origin/$$branch" 2>/dev/null || echo 0); \
-		if [ "$$behind" = "0" ]; then \
-			echo "  ✅ $$lib_name already up to date"; \
+		echo "  ↪️  pulling $$lib_name"; \
+		if git pull --rebase --autostash origin "$$branch" 2>&1; then \
+			echo "  ✅ $$lib_name up to date"; \
 		else \
-			echo "  ↪️  pulling $$lib_name (ahead $$ahead, behind $$behind)"; \
-			if git pull --rebase --autostash origin "$$branch" 2>&1; then \
-				echo "  ✅ $$lib_name pulled"; \
-			else \
-				echo "  ❌ pull failed for $$lib_name"; \
-				echo "     resolve with: git -C '$$lib' rebase --continue | git -C '$$lib' rebase --abort"; \
-				fail=1; \
-			fi; \
+			echo "  ❌ pull failed for $$lib_name"; \
+			echo "     resolve with: git -C '$$lib' rebase --continue | git -C '$$lib' rebase --abort"; \
+			fail=1; \
 		fi; \
 		cd - >/dev/null; \
 	done; \
@@ -140,10 +128,7 @@ endif
 	lib="$(APPLICATIONS_DIR)/libs/$(LIB)"; \
 	cd "$$lib" || exit 1; \
 	branch=$$(git branch --show-current 2>/dev/null || echo generic); \
-	git fetch origin "$$branch" 2>&1 || { echo "❌ fetch failed for $(LIB)"; exit 1; }; \
-	if [ "$$(git rev-list --count HEAD..origin/"$$branch" 2>/dev/null || echo 0)" != "0" ]; then \
-		git pull --rebase --autostash origin "$$branch" 2>&1 || { echo "❌ pull failed for $(LIB)"; exit 1; }; \
-	fi; \
+	git pull --rebase --autostash origin "$$branch" 2>&1 || { echo "❌ pull failed for $(LIB)"; exit 1; }; \
 	git add -A; \
 	if git diff --cached --quiet; then \
 		echo "  ℹ️  No new changes to commit"; \
