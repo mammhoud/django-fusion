@@ -64,6 +64,19 @@ compose/config/secrets.yml
 site/
 _build/
 docs/_build/
+docs-dist/
+docs/node_modules/
+*.drawio.bkp
+
+# Linting and Type Checking
+.ruff_cache/
+.mypy_cache/
+.pyre/
+.pytype/
+
+# OS Files
+.DS_Store
+Thumbs.db
 
 # Package lock files (optional - keep for reproducibility)
 # uv.lock
