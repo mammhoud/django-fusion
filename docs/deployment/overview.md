@@ -8,12 +8,12 @@ The stack is split into independently composable layers:
 
 | Layer | Compose file | Services |
 |---|---|---|
-| Warehouse | `compose/docker-compose.warehouse.yml` | PostgreSQL, Redis, optional Celery worker/beat definitions |
-| Application | `compose/docker-compose.yml` | Django ASGI application container |
-| Shared tasks | `compose/docker-compose.tasks.yml` | Shared Celery worker and beat |
-| Edge proxy | `compose/docker-compose.traefik.yml` | Traefik with TLS termination |
-| Static/media proxy | `compose/docker-compose.nginx.yml` | Optional Nginx layer |
-| Docs | `compose/docker-compose.docs.yml` | Documentation service |
+| Warehouse | `applications/databases/docker-compose.yml` | PostgreSQL, Redis, optional Celery worker/beat definitions |
+| Application | `applications/compose/docker-compose.yml` | Django ASGI application container |
+| Shared tasks | `applications/compose/docker-compose.tasks.yml` | Shared Celery worker and beat |
+| Edge proxy | `applications/proxy/docker-compose.traefik.yml` | Traefik with TLS termination |
+| Static/media proxy | `applications/proxy/docker-compose.nginx.yml` | Optional Nginx layer |
+| Docs | `applications/compose/docker-compose.docs.yml` | Documentation service |
 
 ## Required environment
 
@@ -43,10 +43,10 @@ Use `PROJECT_PATH=ctc-research` and `DJANGO_SITE=ctc-research` when deploying th
 
 ```bash
 docker network create traefik-net || true
-docker compose -f compose/docker-compose.warehouse.yml up -d vresume-postgres vresume-redis
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml up -d --build vresume-website
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat
-docker compose -f compose/docker-compose.traefik.yml up -d
+docker compose -f applications/databases/docker-compose.yml up -d vresume-postgres vresume-redis
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml up -d --build vresume-website
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat
+docker compose -f applications/proxy/docker-compose.traefik.yml up -d
 ```
 
 ## Verification gates
@@ -54,11 +54,11 @@ docker compose -f compose/docker-compose.traefik.yml up -d
 Run these before routing production traffic:
 
 ```bash
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml config
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" check
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" migrate --noinput
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" collectstatic --noinput
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml exec vresume-website python scripts/verify_runtime.py --site "$PROJECT_PATH" --strict-assets --strict-pages
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml config
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" check
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" migrate --noinput
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml exec vresume-website python manage.py --site "$PROJECT_PATH" collectstatic --noinput
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml exec vresume-website python scripts/verify_runtime.py --site "$PROJECT_PATH" --strict-assets --strict-pages
 curl -fL -H 'X-Forwarded-Proto: https' http://localhost:5072/health/
 ```
 
@@ -78,7 +78,7 @@ All Django and Celery compose services now mount `compose/logs` to `/app/logs`, 
 
 ```bash
 mkdir -p compose/logs
-docker compose -f compose/docker-compose.warehouse.yml -f compose/docker-compose.yml up -d --build vresume-website
+docker compose -f applications/databases/docker-compose.yml -f applications/compose/docker-compose.yml up -d --build vresume-website
 tail -f compose/logs/collectstatic.log
 ```
 
@@ -98,20 +98,20 @@ The task compose file supports either the shared queue pair or explicit site-sco
 
 ```bash
 # Shared worker/beat pair
-docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat
+docker compose -f applications/compose/docker-compose.yml -f applications/compose/docker-compose.tasks.yml up -d shared-tasks-worker shared-tasks-beat
 
 # CTC Research site-scoped worker/beat
-docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up -d ctc-research-tasks-worker ctc-research-tasks-beat
+docker compose -f applications/compose/docker-compose.yml -f applications/compose/docker-compose.tasks.yml up -d ctc-research-tasks-worker ctc-research-tasks-beat
 
 # LMS demo / Structa site-scoped worker/beat
-docker compose -f compose/docker-compose.yml -f compose/docker-compose.tasks.yml up -d lms-demo-tasks-worker lms-demo-tasks-beat
+docker compose -f applications/compose/docker-compose.yml -f applications/compose/docker-compose.tasks.yml up -d lms-demo-tasks-worker lms-demo-tasks-beat
 ```
 
 ### Delegate workflow for operators
 
 Use this checklist when delegating deploy verification across people or automation agents:
 
-1. **Build delegate:** run `docker compose -f compose/docker-compose.yml build vresume-website` and confirm no dependency drift.
+1. **Build delegate:** run `docker compose -f applications/compose/docker-compose.yml build vresume-website` and confirm no dependency drift.
 2. **Runtime delegate:** run `python manage.py --site <site> check`, `migrate`, `collectstatic`, and `scripts/verify_runtime.py` for each site.
 3. **Tasks delegate:** start the relevant Celery worker/beat pair and inspect `compose/logs` for import or broker errors.
 4. **Auth delegate:** submit HTMX login/register/password forms and verify `HX-Trigger` notification payloads and email backend output.

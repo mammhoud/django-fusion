@@ -44,7 +44,7 @@ All email templates receive these base variables automatically:
 
 ## Docker Compose Integration
 
-The shared tasks worker handles rseal task modules. It is included in `compose/docker-compose.tasks.yml`:
+The shared tasks worker handles rseal task modules. It is included in `applications/compose/docker-compose.tasks.yml`:
 
 ```yaml
 # Tasks worker autodiscovers ceptor_ai task modules

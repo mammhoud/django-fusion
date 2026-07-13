@@ -80,6 +80,7 @@ class Quiz(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Quiz")
         verbose_name_plural = _("Quizzes")
         ordering = ["title"]

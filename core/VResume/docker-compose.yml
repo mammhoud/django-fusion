@@ -11,7 +11,7 @@ services:
   vresume-web:
     build:
       context: ../..
-      dockerfile: compose/Dockerfile
+      dockerfile: applications/compose/Dockerfile
       args:
         PROJECT_PATH: VResume
     image: vresume-web:latest
@@ -84,7 +84,7 @@ services:
   vresume-worker:
     build:
       context: ../..
-      dockerfile: compose/Dockerfile
+      dockerfile: applications/compose/Dockerfile
       args:
         PROJECT_PATH: VResume
     image: vresume-worker:latest

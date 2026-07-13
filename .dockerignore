@@ -31,7 +31,8 @@
 # OS files
 **/.DS_Store
 **/Thumbs.db
-
+tmp/*
+tmp
 # Version control
 **/.git
 **/.gitignore

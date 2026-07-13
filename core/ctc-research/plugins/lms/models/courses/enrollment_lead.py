@@ -51,6 +51,7 @@ class CourseEnrollmentLead(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Course Enrollment Lead")
         verbose_name_plural = _("Course Enrollment Leads")
         ordering = ["-created_at"]

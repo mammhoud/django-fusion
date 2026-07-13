@@ -23,7 +23,7 @@ from pathlib import Path
 # Paths
 # ---------------------------------------------------------------------------
 WORKSPACE_ROOT = Path(__file__).resolve().parents[3]
-VENV_LIBS = WORKSPACE_ROOT / "applications" / "libs"
+VENV_LIBS = WORKSPACE_ROOT / "core" / "libs"
 CTC_PROJECT = WORKSPACE_ROOT / "ctc-research.com"
 STRUCTA_PROJECT = WORKSPACE_ROOT / "structa.cloud"
 

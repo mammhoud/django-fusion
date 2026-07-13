@@ -323,6 +323,7 @@ class Course(ClusterableModel, index.Indexed, ModelCacheMixin, DefaultBase):
     ]
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Course")
         verbose_name_plural = _("Courses")
         ordering = ["-publication_date", "-created_at"]

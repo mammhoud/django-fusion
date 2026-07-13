@@ -15,6 +15,7 @@ class CourseTag(models.Model):
     slug = models.SlugField(unique=True, db_index=True)
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Course Tag")
         verbose_name_plural = _("Course Tags")
         ordering = ["name"]

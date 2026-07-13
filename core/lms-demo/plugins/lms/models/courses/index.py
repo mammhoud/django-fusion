@@ -106,6 +106,7 @@ class CoursesPage(BaseIndexPage):
     ] + BaseIndexPage.content_panels
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Courses Page")
         verbose_name_plural = _("Courses Pages")
 

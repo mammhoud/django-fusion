@@ -457,7 +457,7 @@ Accept: application/json
 }
 ```
 
-**Location:** Loads from `.kilo/agent/*.json` in project root.
+**Location:** Loads from `applications/kilo/agent/*.json` in project root.
 
 ---
 

@@ -73,6 +73,7 @@ TEMPLATES = [
                 # It's also registered as a builtin, but {% load %} needs the library entry.
                 "components": "django_fusion.comp.templatetags.components",
                 "ui_tags": "django_fusion.templatetags.ui_tags",
+                "laces": "laces.templatetags.laces",
             },
             "builtins": _TEMPLATE_BUILTINS,
         },

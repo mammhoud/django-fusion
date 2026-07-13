@@ -56,6 +56,7 @@ class Enrollment(
     #     object_id_field="object_id",
     # )
     class Meta:
+        app_label = "lms"
         unique_together = ["student" ,'course']
         ordering = ["-created_at"]
         db_table = "Enrollments"

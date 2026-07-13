@@ -2,7 +2,7 @@
 
 Path: `core/Makefile`
 
-Run all targets from `core/` directory: `cd applications && make <target>`
+Run all targets from `core/` directory: `cd core && make <target>`
 
 ## Quick Reference
 

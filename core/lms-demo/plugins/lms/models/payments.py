@@ -103,6 +103,7 @@ class PaymentTransaction(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         ordering = ['-created_at']
         verbose_name = 'Payment Transaction'
         verbose_name_plural = 'Payment Transactions'

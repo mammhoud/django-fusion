@@ -306,8 +306,8 @@ OLLAMA_TIMEOUT = 60
 # Ceptor-AI Configuration
 # ============================================================
 CEPTOR_AI_ENABLED = True
-CEPTOR_AI_AGENTS_DIR = "../../.kilo/agent/"
-CEPTOR_AI_MODELS_FILE = "../../.kilo/models.yml"
+CEPTOR_AI_AGENTS_DIR = "../../applications/kilo/agent/"
+CEPTOR_AI_MODELS_FILE = "../../applications/kilo/models.yml"
 
 # ============================================================
 # Template Sites Configuration

@@ -48,6 +48,7 @@ class Review(DefaultBase):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Review")
         verbose_name_plural = _("Reviews")
         db_table = "reviews"

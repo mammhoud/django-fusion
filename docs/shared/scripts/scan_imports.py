@@ -4,7 +4,7 @@ import re
 import sys
 from pathlib import Path
 
-LIBS = Path(__file__).resolve().parents[3] / "applications" / "libs"
+LIBS = Path(__file__).resolve().parents[3] / "core" / "libs"
 
 RULES = {
     "django-fusion": {

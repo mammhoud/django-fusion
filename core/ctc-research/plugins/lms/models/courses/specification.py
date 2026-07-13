@@ -146,6 +146,7 @@ class Lesson(Orderable, ClusterableModel):
     ]
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Lesson")
         verbose_name_plural = _("Lessons")
         ordering = ["order"]

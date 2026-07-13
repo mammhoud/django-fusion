@@ -90,12 +90,19 @@ DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),VResume,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
 DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(SITE))))
+# Per-site celery worker service name, resolved from the per-site docker-compose.yml.
+# Mirrors the SITE→service mapping pattern used by DOCKER_SERVICE.
+#   ctc-research  → ctc-worker      (NOT ctc-research-worker; that's the global tasks compose name)
+#   lms-demo      → lms-worker
+#   vresume       → vresume-worker
+# Override per-call:  make docker-redeploy-with-worker WEBSITE=ctc-research DOCKER_WORKER=my-worker
+DOCKER_WORKER ?= $(if $(filter $(SITE),ctc-research),ctc-worker,$(if $(filter $(SITE),lms-demo),lms-worker,$(if $(filter $(SITE),vresume),vresume-worker,$(SITE)-worker)))
 export PROJECT_PATH := $(SITE)
 export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -145,6 +152,7 @@ help:
 		'  docker-build-server - Alias for docker-build' \
 		'  docker-rebuild - Rebuild selected website image without cache' \
 		'  docker-redeploy - Build and restart selected website service' \
+		'  docker-redeploy-with-worker - Like docker-redeploy, but also re-deploys the site celery worker IF a worker service exists in the per-site docker-compose.yml; otherwise web-only' \
 		'  docker-prune-containers - Remove stopped containers/orphans' \
 		'  docker-prune-data - Remove generated compose data (dangerous)' \
 		'  clean-site-logs - Remove logs for the selected website under $(LOG_DIR)/$(SITE)' \
@@ -249,7 +257,7 @@ docker-build-shared-media:
 	@mkdir -p $(LOG_BUILD_DIR)
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
 	 echo "[build] shared-media -> $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log"; \
-	 docker compose -f compose/docker-compose.nginx.yml build shared-media 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log
+	 docker compose -f applications/compose/docker-compose.nginx.yml build shared-media 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log
 
 docker-build-all: docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media
 
@@ -264,6 +272,45 @@ docker-redeploy docker-deploy deploy redeploy:
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
 	 echo "[deploy] $(DOCKER_SERVICE) -> $(LOG_DEPLOY_DIR)/deploy-$(SITE)-$$timestamp.log"; \
 	 $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) 2>&1 | tee $(LOG_DEPLOY_DIR)/deploy-$(SITE)-$$timestamp.log
+
+# -----------------------------------------------------------------
+# docker-redeploy-with-worker — redeploys the selected website's web service
+# AND its celery worker service IF a worker is defined in the per-site
+# docker-compose.yml. Sites without a worker (e.g., a future marketing-only
+# site) fall back to web-only redeploy with a visible notice — they do NOT
+# fail. This mirrors the user's "redeploy a website with the worker if found"
+# intent: redeploy succeeds for every SITE; whether the worker is rebuilt is
+# data-driven from the compose file at call time.
+#
+# Usage:
+#   make docker-redeploy-with-worker WEBSITE=lms-demo
+#   make docker-redeploy-with-worker WEBSITE=ctc-research
+#   make docker-redeploy-with-worker WEBSITE=vresume
+#   make docker-redeploy-with-worker WEBSITE=ctc-research DOCKER_WORKER=ctc-worker-beat
+#
+# Log: logs/deploy/deploy-with-worker-$(SITE)-$(timestamp).log
+# -----------------------------------------------------------------
+docker-redeploy-with-worker: | validate-worker-target
+	@mkdir -p $(LOG_DEPLOY_DIR)
+	@log=$(LOG_DEPLOY_DIR)/deploy-with-worker-$(SITE)-$$(date +%Y%m%d-%H%M%S).log; \
+	 echo "[deploy-with-worker] $(SITE) -> $$log" | tee $$log; \
+	 echo "  web    : $(DOCKER_SERVICE)" | tee -a $$log; \
+	 echo "  worker : $(DOCKER_WORKER)" | tee -a $$log; \
+	 if grep -qE '^[[:space:]]+$(DOCKER_WORKER)[[:space:]]*:' $(COMPOSE_FILE) 2>/dev/null; then \
+	   echo "  -> worker service detected in $(COMPOSE_FILE); redeploying web + worker" | tee -a $$log; \
+	   $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) $(DOCKER_WORKER) 2>&1 | tee -a $$log; \
+	 else \
+	   echo "  -> no worker service for $(SITE) in $(COMPOSE_FILE); redeploying web only" | tee -a $$log; \
+	   $(DOCKER_BUILD_ARGS) $(DOCKER_COMPOSE) up -d --build --remove-orphans $(DOCKER_SERVICE) 2>&1 | tee -a $$log; \
+	 fi
+
+# Internal helper: order-only prereq of docker-redeploy-with-worker.
+# Fails fast if DOCKER_WORKER contains whitespace or is empty.
+# (.PHONY declared in aggregate .PHONY line below — keep alphabetised there.)
+validate-worker-target:
+	@case '$(DOCKER_WORKER)' in \
+	  ''|*' '*|*["$(tab)"]*) echo "ERROR: DOCKER_WORKER='$(DOCKER_WORKER)' is invalid (empty or contains whitespace/tab)."; exit 1 ;; \
+	esac
 
 docker-up:
 	@mkdir -p $(LOG_DEPLOY_DIR)
@@ -298,8 +345,8 @@ vresume-up:
 
 docker-prune-data:
 	$(DOCKER_COMPOSE) down --volumes --remove-orphans
-	rm -rf compose/postgres/backups/* compose/data/*
-	mkdir -p compose/postgres/backups compose/data
+	rm -rf applications/compose/postgres/backups/* applications/compose/data/*
+	mkdir -p applications/compose/postgres/backups applications/compose/data
 
 build-assets-site:
 	mkdir -p $(LOG_DIR)
@@ -553,6 +600,7 @@ show-vars:
 	@echo "MANAGE=$(MANAGE)"
 	@echo "RUN_MODULE=$(RUN_MODULE)"
 	@echo "DOCKER_SERVICE=$(DOCKER_SERVICE)"
+	@echo "DOCKER_WORKER=$(DOCKER_WORKER)"
 	@echo "DOCKER_PROJECT_PATH=$(DOCKER_PROJECT_PATH)"
 	@echo "COMPOSE_FILE=$(COMPOSE_FILE)"
 	@echo "PYTHON=$(PYTHON)"
@@ -596,12 +644,12 @@ run-all:
 # Traefik SSL Certificate Operations
 docker-traefik-generate-certs:
 	@echo "Generating Traefik SSL certificates..."
-	bash proxy/scripts/generate-certs.sh
+	bash applications/proxy/scripts/generate-certs.sh
 
 docker-traefik-backup-certs:
 	@echo "Backing up Traefik SSL certificates..."
-	bash proxy/scripts/backup-certs.sh
+	bash applications/proxy/scripts/backup-certs.sh
 
 docker-traefik-restore-certs:
 	@echo "Restoring Traefik SSL certificates..."
-	bash proxy/scripts/restore-certs.sh
+	bash applications/proxy/scripts/restore-certs.sh

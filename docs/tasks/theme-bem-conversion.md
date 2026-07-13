@@ -4,8 +4,8 @@ Priority: 4 — large UI migration after runtime, auth, and shared template path
 
 ## Affected paths
 - `theme/`
-- `.kilo/mcp_server.py`
-- `.kilo/skills/`
+- `applications/kilo/mcp_server.py`
+- `applications/kilo/skills/`
 - `core/lms-demo/assets/static/styles/`
 - `core/lms-demo/templates/`
 - `core/lms-demo/plugins/**/templates/`

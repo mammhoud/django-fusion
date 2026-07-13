@@ -17,6 +17,18 @@ from __future__ import annotations
 from django_fusion.comp.routes import ModelViewset, ReadonlyModelViewset
 
 
+def _get_course_model():
+    """Lazy import to avoid circular deps during module load."""
+    from plugins.lms.models.courses import Course
+    return Course
+
+
+def _get_enrollment_model():
+    """Lazy import to avoid circular deps during module load."""
+    from plugins.lms.models.enrollment import Enrollment
+    return Enrollment
+
+
 class CourseViewset(ModelViewset):
     """
     Full CRUD interface for LMS courses.
@@ -32,9 +44,15 @@ class CourseViewset(ModelViewset):
       POST /app/lms/courses/<pk>/delete/  → delete submit
     """
 
-    from plugins.lms.models.courses import Course  # noqa: PLC0415 — lazy import avoids circular
+    # Model will be resolved lazily during initialization to avoid circular imports
+    model = None
 
-    model = Course
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.__class__.model is None:
+            from plugins.lms.models.courses import Course
+            self.__class__.model = Course
+
     icon = "school"
 
     # List view
@@ -48,26 +66,26 @@ class CourseViewset(ModelViewset):
     def has_add_permission(self, user):
         return user.is_staff
 
-    def has_change_permission(self, user, obj=None):
-        return user.is_staff
 
-    def has_delete_permission(self, user, obj=None):
-        return user.is_staff
+class EnrollmentViewset(ModelViewset):
+    """Full CRUD interface for LMS course enrollments."""
 
+    model = None
 
-class EnrollmentViewset(ReadonlyModelViewset):
-    """
-    Read-only list + detail for enrollments (staff only).
-    """
+    def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        if self.__class__.model is None:
+            from plugins.lms.models.enrollment import Enrollment
+            self.__class__.model = Enrollment
 
-    from plugins.lms.models.enrollment import Enrollment  # noqa: PLC0415
+    icon = "people"
 
-    model = Enrollment
-    icon = "how_to_reg"
-
-    list_columns = ("student", "course", "enrolled_at", "status")
-    list_filter_fields = ("status",)
-    list_search_fields = ("student__email", "course__title")
+    list_columns = ("user", "course", "status", "enrolled_at", "completed_at")
+    list_filter_fields = ("status", "enrolled_at", "completed_at")
+    list_search_fields = ("user__username", "user__email", "course__title")
 
     def has_view_permission(self, user, obj=None):
-        return user.is_staff
+        return user.is_authenticated
+
+    def has_change_permission(self, user, obj=None):
+        return user.is_staff or (obj and obj.user_id == user.id)

@@ -346,7 +346,7 @@ docker-compose -f tinker/docker-compose.yml exec tinker python manage.py creates
 
 **Fix:** Set `PYTHONPATH`:
 ```bash
-export PYTHONPATH="/home/structa.cloud/applications:$PYTHONPATH"
+export PYTHONPATH="/home/structa.cloud/core:$PYTHONPATH"
 python manage.py runserver
 ```
 

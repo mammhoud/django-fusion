@@ -1,150 +1,78 @@
-# Shared Packages Documentation
+# Shared packages
 
-> Reusable packages across the ecosystem
+The reusable Python packages live in `core/libs/` as editable submodules. They are
+first-class libraries, not copies of site code:
 
-## Overview
+| Package | Role | Framework boundary | Primary docs |
+|---|---|---|---|
+| [`django-fusion`](django-fusion/README.md) | Django/Wagtail components, routing, forms, and shared site primitives | Django-aware; keep site-specific behavior in adapters | [`README`](django-fusion/README.md), [`usage`](django-fusion/usage.md) |
+| [`ceptor-ai`](https://github.com/mammhoud/ceptor-ai) | Standalone AI, orchestration, CLI, and optional MCP metadata service | `ceptor_ai` must not import Django or Wagtail | `core/libs/ceptor-ai/README.md`, [`AI start here`](../ai/START_HERE.md) |
 
-This section contains documentation for shared packages used by all projects.
+Third-party library notes are under [`docs/libs/`](../libs/README.md). This page
+covers the two maintained internal packages only.
 
-## Packages
+## Install from this monorepo
 
-### [django-fusion](django-fusion/)
-**Pure Django foundation layer**
-
-Abstract models, managers, mixins, utilities, and components
-- No Wagtail dependencies
-- No Celery dependencies
-- No ceptor-ai dependencies
-
-**Sub-modules:**
-- `handlers/` - Page handlers
-- `managers/` - Custom managers
-- `mixins/` - Reusable mixins
-- `utils/` - Utility functions
-- `comp/` - Component library
-- `contrib/` - Extensions
-- `middlewares/` - Custom middleware
-- `filters/` - Django filters
-- `forms/` - Form classes
-- `backends/` - Auth backends
-- `adapters/` - Third-party adapters
-- `services/` - Service layer
-
-### [ceptor-ai](ceptor-ai/)
-**Wagtail automation layer**
-
-Pipelines, services, workflows, email handling, and Wagtail components
-- Depends on django-fusion
-- Wagtail-focused automation
-- No project-specific code
-
-**Sub-modules:**
-- `pipelines/` - Data processing
-- `services/` - Service layer (CartServiceBase)
-- `workflows/` - Workflow definitions
-- `email/` - Email handling
-- `signals/` - Django signals
-- `admin/` - Custom admin
-- `cache/` - Caching utilities
-- `commands/` - Management commands
-- `blocks/` - Wagtail blocks
-- `snippets/` - Wagtail snippets
-- `hooks/` - Wagtail hooks
-
-### [django-fusion](django-fusion/)
-**Unified testing framework**
-
-Test base classes, fixtures, factories, pytest plugins, and health checks
-- Test-only imports
-- Standalone (no dependencies)
-- Hypothesis integration
-
-**Features:**
-- `BaseTestCase` - Base test class
-- `st_email`, `st_slug`, `st_uuid` - Hypothesis strategies
-- Health check endpoints
-- Data seeding utilities
-
-### [ceptor-ai](ceptor-ai/)
-**Pure Python AI/MCP toolkit**
-
-AI integrations, chat functionality, and MCP server support
-- Zero Django imports
-- Standalone (no dependencies)
-- AI/NLP focused
-
-**Sub-modules:**
-- `ai/` - AI integrations
-- `chat/` - Chat functionality
-- `mcp/` - MCP server support
-- `orchestrator/` - Task orchestration
-- `seeder/` - Data seeding
-
----
-
-## Installation
+Run from `/home/structa.cloud` (or the repository root):
 
 ```bash
-# Install all packages
-cd venv/libs/django-fusion && uv sync
-cd venv/libs/ceptor-ai && uv sync
-cd venv/libs/django-fusion && uv sync
+uv pip install -e core/libs/django-fusion/
 uv pip install -e core/libs/ceptor-ai/
+# Add MCP dependencies only when the local HTTP app is needed:
+uv pip install -e 'core/libs/ceptor-ai/[mcp]'
 ```
 
-## Usage
+The submodules must be initialized first in a fresh checkout:
 
-### django-fusion
-```python
-# In settings.py
-INSTALLED_APPS = [
-    'django_fusion',
-    ...
-]
+```bash
+git submodule update --init --recursive
 ```
 
-### ceptor-ai
-```python
-# Thin layer pattern
-from ceptor_ai.services import CartServiceBase
+## Dependency direction
 
-class CartService(CartServiceBase):
-    # Project-specific customizations only
-    pass
+```text
+site applications ──► django-fusion
+site applications ──► ceptor-ai (only through an explicit integration boundary)
+ceptor-ai ──────────► optional django-fusion discovery at runtime
 ```
 
-### django-fusion
-```python
-from django_fusion import BaseTestCase
+`django-fusion` is the Django-aware foundation. `ceptor-ai` can be imported and
+used for CLI/MCP metadata without Django being configured. Do not reverse these
+boundaries by adding site models, settings, Wagtail, Celery, or database imports
+to the pure-Python AI surface.
 
-class MyTest(BaseTestCase):
-    def test_something(self):
-        pass
+## AI and MCP quick checks
+
+```bash
+python -m ceptor_ai info
+python -m ceptor_ai health
+PYTHONPATH=core/libs/ceptor-ai/src \
+  uvicorn ceptor_ai.mcp_server:app --host 127.0.0.1 --port 8002
+curl http://127.0.0.1:8002/health
 ```
 
-### ceptor-ai
-```python
-from ceptor_ai import package_info
+The Kilo configuration in `applications/kilo/config.json` uses the same command
+and port. See [`docs/ai/mcp_reference.md`](../ai/mcp_reference.md) for endpoint
+semantics, setup prompts, and troubleshooting.
 
-info = package_info()
+## Choosing the right package
+
+- Need `{% comp %}`, viewsets, forms/tables, or Wagtail integration? Use
+  `django-fusion` and follow its canonical import paths.
+- Need provider-agnostic AI helpers, orchestration, CLI metadata, or an optional
+  local MCP app? Use `ceptor-ai`.
+- Need site-specific behavior? Add a thin adapter in the site application and
+  keep the reusable package generic.
+
+## Validation
+
+After a package change, run the narrowest package tests first:
+
+```bash
+cd core/libs/django-fusion && uv run pytest
+cd core/libs/ceptor-ai && uv run pytest
 ```
 
----
-
-## Dependency Direction
-
-```
-ctc-research.com  →  django-fusion, django-fusion, ceptor-ai, ceptor-ai
-structa.cloud     →  django-fusion, django-fusion, ceptor-ai, ceptor-ai
-ceptor-ai      →  django-fusion
-django-fusion       →  (standalone)
-ceptor-ai         →  (standalone)
-```
-
----
-
-## Related Documentation
-
-- [Ecosystem Overview](../ecosystem/)
-- [ctc-research.com](../ctc-research/)
-- [structa.cloud](../structa-cloud/)
+When a package is consumed by a site, also run the relevant delegated checks from
+`core/Makefile` and update both package docs and the AI attachment set when the
+public surface changes.

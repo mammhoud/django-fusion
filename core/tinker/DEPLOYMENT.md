@@ -292,7 +292,7 @@ gunicorn \
 
 ### Enable Traefik Routing
 
-Create `proxy/traefik/dynamic/tinker.yml`:
+Create `applications/proxy/traefik/dynamic/tinker.yml`:
 
 ```yaml
 # Tinker router configuration
@@ -581,7 +581,7 @@ echo "✅ Backup complete: $BACKUP_DIR"
 
 ```bash
 # If issues persist at runtime:
-export PYTHONPATH="/app/applications:$PYTHONPATH"
+export PYTHONPATH="/app/core:$PYTHONPATH"
 python manage.py runserver
 ```
 

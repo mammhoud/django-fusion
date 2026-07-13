@@ -7,7 +7,7 @@ import ast
 import sys
 from pathlib import Path
 
-LIBS = Path(__file__).resolve().parents[4] / "applications" / "libs"
+LIBS = Path(__file__).resolve().parents[4] / "core" / "libs"
 
 RULES = {
     "django-fusion": {

@@ -35,16 +35,16 @@ docker compose -f "$WORKSPACE/docker-compose.yml" config > /dev/null 2>&1 && log
 # ==============================================================================
 log_header "Checking Traefik Configuration"
 
-[ -f "$WORKSPACE/compose/traefik/traefik.yml" ] && log_pass "traefik.yml exists" || log_fail "traefik.yml missing"
-[ -f "$WORKSPACE/compose/traefik/dynamic/media-servers.yml" ] && log_pass "media-servers.yml exists" || log_fail "media-servers.yml missing"
+[ -f "$WORKSPACE/applications/proxy/traefik/traefik.yml" ] && log_pass "traefik.yml exists" || log_fail "traefik.yml missing"
+[ -f "$WORKSPACE/applications/proxy/traefik/dynamic/media-servers.yml" ] && log_pass "media-servers.yml exists" || log_fail "media-servers.yml missing"
 
 # ==============================================================================
 # Check 4: Media Server Configuration
 # ==============================================================================
 log_header "Checking Media Server Configuration"
 
-grep -q "location /health/" "$WORKSPACE/compose/nginx/nginx.conf" && log_pass "Nginx health endpoint configured" || log_fail "Nginx health endpoint missing"
-grep -q "media.structa.cloud" "$WORKSPACE/compose/traefik/dynamic/media-servers.yml" && log_pass "Media domains configured" || log_fail "Media domains not configured"
+grep -q "location /health/" "$WORKSPACE/applications/proxy/nginx/nginx.conf" && log_pass "Nginx health endpoint configured" || log_fail "Nginx health endpoint missing"
+grep -q "media.structa.cloud" "$WORKSPACE/applications/proxy/traefik/dynamic/media-servers.yml" && log_pass "Media domains configured" || log_fail "Media domains not configured"
 
 # ==============================================================================
 # Check 5: Entry Points
@@ -80,8 +80,8 @@ log_header "Checking Assets Directory Structure"
 # ==============================================================================
 log_header "Checking Certificate System"
 
-[ -f "$WORKSPACE/compose/traefik/cert-backup.sh" ] && log_pass "Cert backup script exists" || log_fail "Cert backup script missing"
-[ -d "$WORKSPACE/compose/traefik/acme" ] && log_pass "ACME directory exists" || log_fail "ACME directory missing"
+[ -f "$WORKSPACE/applications/proxy/traefik/cert-backup.sh" ] && log_pass "Cert backup script exists" || log_fail "Cert backup script missing"
+[ -d "$WORKSPACE/applications/proxy/traefik/acme" ] && log_pass "ACME directory exists" || log_fail "ACME directory missing"
 
 # ==============================================================================
 # Summary

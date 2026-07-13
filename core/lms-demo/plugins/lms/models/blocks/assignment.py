@@ -12,5 +12,6 @@ class AssignmentBlock(blocks.StructBlock):
     )
 
     class Meta:
+        app_label = "lms"
         icon = "edit"
         template = "courses/blocks/assignment_block.html"

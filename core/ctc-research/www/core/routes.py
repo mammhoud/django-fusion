@@ -34,6 +34,7 @@ class LMSApp(Application):
 
     @viewprop
     def viewsets(self):
+        # Lazy import to avoid circular dependencies during module load
         from plugins.lms.components import CourseListFragment, DashboardComponent
         from plugins.lms.viewsets import CourseViewset, EnrollmentViewset
         return [
@@ -84,3 +85,53 @@ site = Site(
         BlogApp(),
     ],
 )
+
+# -----------------------------------------------------------------------
+# Backwards-compatible site variable
+# The actual Site instance is created lazily in get_site() to avoid
+# circular import issues during module load time when models are imported
+# before Django is fully initialized.
+# -----------------------------------------------------------------------
+_site = None
+
+
+def get_site():
+    """Lazy site creation - ensures Django is initialized before model imports."""
+    global _site
+    if _site is None:
+        _site = Site(
+            title="CTC Research",
+            viewsets=[
+                LMSApp(),
+                BlogApp(),
+            ],
+        )
+    return _site
+
+
+# For backwards compatibility, expose as 'site' but it's actually lazy
+site = get_site()
+
+# ---------------------------------------------------------------------------
+# Lazy site creation to avoid circular imports during module load
+# ---------------------------------------------------------------------------
+
+_site = None
+
+
+def get_site():
+    """Lazy site creation to ensure Django is initialized before model imports."""
+    global _site
+    if _site is None:
+        _site = Site(
+            title="CTC Research",
+            viewsets=[
+                LMSApp(),
+                BlogApp(),
+            ],
+        )
+    return _site
+
+
+# Keep 'site' for backwards compatibility, but use the lazy version
+site = get_site()

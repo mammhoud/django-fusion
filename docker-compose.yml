@@ -4,9 +4,9 @@
 # ============================================================
 
 include:
-  - databases/docker-compose.yml
-  - proxy/docker-compose.yml
-  - compose/docker-compose.applications.yml
+  - applications/databases/docker-compose.yml
+  - applications/proxy/docker-compose.yml
+  - applications/compose/docker-compose.applications.yml
   # - services/utilities/docker-compose.yml
   # - services/ollama/docker-compose.yml
   # - services/mailpit/docker-compose.yml

@@ -81,17 +81,17 @@ Use `fragment_name` only for fragment identifiers and context keys. Do not intro
 - For shared library work, run tests or checks that cover both the library and affected sites when practical.
 
 ## Infrastructure & Proxy
-- Traefik proxy (`default-proxy`) serves SSL on port 443. Certs are obtained via Let's Encrypt DNS-01 (Cloudflare) using Traefik's native `certificatesResolvers` block in `proxy/traefik/dynamic.yml`.
+- Traefik proxy (`default-proxy`) serves SSL on port 443. Certs are obtained via Let's Encrypt DNS-01 (Cloudflare) using Traefik's native `certificatesResolvers` block in `applications/proxy/traefik/dynamic.yml`.
 - Nginx media server (`shared-media`) serves static/media files for all sites.
-- ACME store lives at `proxy/acme/acme.json` (mode 0600), bind-mounted into the proxy at `/etc/traefik/acme/`. The directory is git-tracked (via `.gitkeep`); `acme.json` is gitignored.
-- Cloudflare credentials are read from env vars on the proxy container (`CF_DNS_API_TOKEN` recommended, or `CF_API_EMAIL` + `CF_API_KEY`). Local values come from `proxy/.env` (gitignored; copy from `proxy/.env.example`).
+- ACME store lives at `applications/proxy/acme/acme.json` (mode 0600), bind-mounted into the proxy at `/etc/traefik/acme/`. The directory is git-tracked (via `.gitkeep`); `acme.json` is gitignored.
+- Cloudflare credentials are read from env vars on the proxy container (`CF_DNS_API_TOKEN` recommended, or `CF_API_EMAIL` + `CF_API_KEY`). Local values come from `applications/proxy/.env` (gitignored; copy from `applications/proxy/.env.example`).
 - HTTPS routers opt into LE via `tls: { certResolver: letsencrypt }` in the per-site router file. The catchall router intentionally has no certResolver — Traefik falls back to its internal default cert for unmatched hosts.
-- The rollout is staged (see `proxy/LETSENCRYPT.md`): Stage 1 enables LE for `vresume.structa.cloud` on the Let's Encrypt **staging** CA; Stage 2 flips to the production CA and enables LE for ctc-research / structa-cloud / media / dashboard; Stage 3 deletes `proxy/traefik/dynamic/certs.yml`.
-- `proxy/traefik/dynamic/certs.yml` (static self-signed certs) is kept as a fallback until Stage 3. Until it's deleted, removing `certResolver` from a router causes it to fall back to the SAN-matched self-signed cert.
-- `proxy/scripts/manage-certs.sh` now provides `bootstrap-acme`, `status`, and `check-expiry` for the LE flow; the self-signed commands are retained as a legacy fallback.
+- The rollout is staged (see `applications/proxy/LETSENCRYPT.md`): Stage 1 enables LE for `vresume.structa.cloud` on the Let's Encrypt **staging** CA; Stage 2 flips to the production CA and enables LE for ctc-research / structa-cloud / media / dashboard; Stage 3 deletes `applications/proxy/traefik/dynamic/certs.yml`.
+- `applications/proxy/traefik/dynamic/certs.yml` (static self-signed certs) is kept as a fallback until Stage 3. Until it's deleted, removing `certResolver` from a router causes it to fall back to the SAN-matched self-signed cert.
+- `applications/proxy/scripts/manage-certs.sh` now provides `bootstrap-acme`, `status`, and `check-expiry` for the LE flow; the self-signed commands are retained as a legacy fallback.
 - Health checks on backend services must include the correct `Host` header (set via `hostname` in Traefik healthCheck config).
 - Media subdomains: `media.structa.cloud`, `media.ctc-research.com`, `media.lms-demo.com`, `media.vresume.structa.cloud`.
-- Legacy self-signed certs remain in `proxy/certs/` for rollback purposes; they are no longer the source of truth.
+- Legacy self-signed certs remain in `applications/proxy/certs/` for rollback purposes; they are no longer the source of truth.
 
 ## Authentication & Authorization
 - All sites use `django-allauth` for authentication with `django-fusion` auth mixins.

@@ -69,6 +69,7 @@ class Module(DefaultBase, Orderable, ClusterableModel):
     ]
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Module")
         verbose_name_plural = _("Modules")
         constraints = [

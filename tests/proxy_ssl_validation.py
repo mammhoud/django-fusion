@@ -224,14 +224,14 @@ class TestNginxMediaServer:
         """All site media directories must exist."""
         sites = ["ctc-research", "lms-demo", "VResume"]
         for site in sites:
-            media_dir = PROJECT_ROOT / "applications" / site / "assets" / "media"
+            media_dir = PROJECT_ROOT / "core" / site / "assets" / "media"
             assert media_dir.exists(), f"Media directory missing: {media_dir}"
 
     def test_staticfiles_directories_exist(self) -> None:
         """All site staticfiles directories must exist."""
         sites = ["ctc-research", "lms-demo", "VResume"]
         for site in sites:
-            static_dir = PROJECT_ROOT / "applications" / site / "assets" / "staticfiles"
+            static_dir = PROJECT_ROOT / "core" / site / "assets" / "staticfiles"
             assert static_dir.exists(), f"Staticfiles directory missing: {static_dir}"
 
 

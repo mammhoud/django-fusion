@@ -72,6 +72,11 @@ class Certificate(models.Model):
     )
 
     class Meta:
+        # Explicit app_label so Django can register this model under the
+        # matching INSTALLED_APPS entry ('plugins.lms.apps.LmsConfig') for
+        # Celery worker boot, where auto-detection by module path can fail
+        # when models live deeper than the standard <app>/models/ tree.
+        app_label = "lms"
         verbose_name = _("Certificate")
         verbose_name_plural = _("Certificates")
         ordering = ["-issued_at"]

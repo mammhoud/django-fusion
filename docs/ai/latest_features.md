@@ -15,8 +15,8 @@ human documentation describe the same capabilities.
 
 ## Agent-facing features
 
-- **Repository-aware Kilo setup**: `.kilo/config.json`, `.kilo/kilo.jsonc`,
-  `.kilo/commands/`, and `.kilo/skills/` define the local agent entrypoints.
+- **Repository-aware Kilo setup**: `applications/kilo/config.json`, `applications/kilo/kilo.jsonc`,
+  `applications/kilo/commands/`, and `applications/kilo/skills/` define the local agent entrypoints.
 - **ceptor-ai MCP bridge**: `core/libs/ceptor-ai/src/ceptor_ai/mcp_server.py`
   exposes metadata that can be read by local MCP clients without importing
   Django, Wagtail, Celery, or site modules.

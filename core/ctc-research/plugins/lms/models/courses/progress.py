@@ -41,6 +41,7 @@ class ModuleProgress(DefaultBase):
     time_spent_minutes = models.FloatField(default=0.0)
 
     class Meta:
+        app_label = "lms"
         unique_together = ['enrollment', 'module']
         ordering = ['module__order']
         indexes = [

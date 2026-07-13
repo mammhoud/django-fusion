@@ -6,20 +6,20 @@ template customization workflow, and optional integration plans.
 
 ## 1. Kilo Code setup for this repository
 
-Kilo project configuration lives in the repository-level `.kilo/` directory:
+Kilo project configuration lives in the repository-level `applications/kilo/` directory:
 
-- `.kilo/kilo.jsonc` defines Kilo permissions, indexing, named agents, and slash
+- `applications/kilo/kilo.jsonc` defines Kilo permissions, indexing, named agents, and slash
   commands.
-- `.kilo/config.json` defines MCP servers available to Kilo.
-- `.kilo/commands/` stores project slash-command prompts, including component
+- `applications/kilo/config.json` defines MCP servers available to Kilo.
+- `applications/kilo/commands/` stores project slash-command prompts, including component
   and ceptor-ai helpers.
-- `.kilo/skills/` stores repository skills for deployment verification,
+- `applications/kilo/skills/` stores repository skills for deployment verification,
   SCSS/BEM conversion, and Wagtail field customization.
 
 Recommended setup flow:
 
 1. Open the repository root in Kilo Code: `/workspace/structa.cloud`.
-2. Confirm Kilo is reading `.kilo/kilo.jsonc` from this repository, not a global
+2. Confirm Kilo is reading `applications/kilo/kilo.jsonc` from this repository, not a global
    default.
 3. Keep repository indexing enabled. The configured indexing provider is Ollama
    with the `nomic-embed-text:latest` embedding model and Qdrant vector store.
@@ -31,7 +31,7 @@ Recommended setup flow:
    - `documentation-writer` for docs.
    - `ceptor-ai-toolsmith` for the standalone `ceptor-ai` package.
 5. Use slash commands when they fit the task, for example `/ceptor-ai` and the
-   component-finding command in `.kilo/commands/find-component.md`.
+   component-finding command in `applications/kilo/commands/find-component.md`.
 
 Do not replace repository settings with generic Django defaults. This is a
 monorepo under `core/`, and site work should use the canonical site
@@ -118,9 +118,9 @@ pages. Use this workflow before replacing markup.
 2. Prefer delegated Makefile commands from `core/Makefile`, for example:
 
    ```bash
-   make -C applications check WEBSITE=ctc
-   make -C applications check WEBSITE=structa
-   make -C applications check WEBSITE=vresume
+make -C core check WEBSITE=ctc
+make -C core check WEBSITE=structa
+make -C core check WEBSITE=vresume
    ```
 
 3. If a runnable web page changed, render the page locally and inspect it in a
@@ -134,14 +134,14 @@ pages. Use this workflow before replacing markup.
 repository it is treated as local reusable infrastructure and should stay out of
 production application logic unless the existing docs explicitly call for it.
 
-Current Kilo MCP configuration is in `.kilo/config.json`:
+Current Kilo MCP configuration is in `applications/kilo/config.json`:
 
 - `deployment` MCP server runs `python mcp_server.py` with
   `DJANGO_SETTINGS_MODULE=core.settings`.
 - `ceptor-ai` MCP server runs `uvicorn ceptor_ai.mcp_server:app --host
   127.0.0.1 --port 8002` with `PYTHONPATH=core/libs/ceptor-ai/src`.
 
-There is no separate `django-fusion` MCP server entry in `.kilo/config.json` at the
+There is no separate `django-fusion` MCP server entry in `applications/kilo/config.json` at the
 moment. If one is added later, document it beside the existing MCP entries,
 include its command, environment, port, and whether it is safe for local-only or
 shared deployments.
@@ -218,7 +218,7 @@ current flow is:
 4. Configure Continue to use the local Ollama API at `http://localhost:11434`.
 5. Keep telemetry disabled for local/private workflows.
 
-Kilo indexing may use a separate Ollama base URL from `.kilo/kilo.jsonc`; verify
+Kilo indexing may use a separate Ollama base URL from `applications/kilo/kilo.jsonc`; verify
 that the configured host is intentional for your environment before indexing
 private code.
 

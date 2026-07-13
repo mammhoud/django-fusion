@@ -80,7 +80,7 @@
 
 | Property | Value |
 |----------|-------|
-| **Image** | Built from `compose/Dockerfile` |
+| **Image** | Built from `applications/compose/Dockerfile` |
 | **Container Name** | `ctc-research-website` |
 | **Port** | 5070 (internal, not exposed) |
 | **Status** | ✅ Healthy |
@@ -271,9 +271,9 @@ docker volume inspect structacloud_media
 ### Bind Mounts
 
 ```
-/home/structa.cloud/proxy/traefik/dynamic → /etc/traefik/dynamic (Traefik configs)
-/home/structa.cloud/proxy/acme → /etc/traefik/acme (Let's Encrypt store)
-/home/structa.cloud/proxy/certs → /etc/traefik/certs (Self-signed fallback)
+/home/structa.cloud/applications/proxy/traefik/dynamic → /etc/traefik/dynamic (Traefik configs)
+/home/structa.cloud/applications/applications/proxy/acme → /etc/traefik/acme (Let's Encrypt store)
+/home/structa.cloud/applications/proxy/certs → /etc/traefik/certs (Self-signed fallback)
 ```
 
 ### Backup Strategy
@@ -293,7 +293,7 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 **Let's Encrypt Certs:**
 ```bash
 # Backup ACME store
-cp -r /home/structa.cloud/proxy/acme/acme.json /home/structa.cloud/proxy/acme/backups/acme_$(date +%Y%m%d_%H%M%S).json
+cp -r /home/structa.cloud/applications/applications/proxy/acme/acme.json /home/structa.cloud/applications/applications/proxy/acme/backups/acme_$(date +%Y%m%d_%H%M%S).json
 
 # Traefik will auto-renew within 30 days before expiry
 ```
@@ -396,7 +396,7 @@ sudo ufw status
 ```bash
 # Keep .env files gitignored
 cat .gitignore
-# Should contain: proxy/.env, core/.env
+# Should contain: applications/proxy/.env, core/.env
 
 # Store secrets securely
 # Do NOT commit: DB passwords, API keys, CSRF tokens
@@ -437,7 +437,7 @@ docker restart ctc-research-website
 **Let's Encrypt cert issues:**
 ```bash
 # Restore from backup
-cp /home/structa.cloud/proxy/acme/backups/acme_*.json /home/structa.cloud/proxy/acme/acme.json
+cp /home/structa.cloud/applications/applications/proxy/acme/backups/acme_*.json /home/structa.cloud/applications/applications/proxy/acme/acme.json
 docker restart default-proxy
 ```
 
@@ -465,9 +465,9 @@ docker-compose up -d postgres
 docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 
 # Restore Let's Encrypt certs
-mkdir -p proxy/acme
-cp backup_acme.json proxy/acme/acme.json
-chmod 600 proxy/acme/acme.json
+mkdir -p applications/proxy/acme
+cp backup_acme.json applications/proxy/acme/acme.json
+chmod 600 applications/proxy/acme/acme.json
 
 # Start all services
 docker-compose up -d

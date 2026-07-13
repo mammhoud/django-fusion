@@ -101,8 +101,8 @@ OLLAMA:
 
 CEPTOR_AI:
   enabled: true
-  agents_dir: "../../.kilo/agent/"
-  models_file: "../../.kilo/models.yml"
+  agents_dir: "../../applications/kilo/agent/"
+  models_file: "../../applications/kilo/models.yml"
 
 # ============================================================
 # Template Sites Configuration

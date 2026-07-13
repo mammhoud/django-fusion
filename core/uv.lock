@@ -323,9 +323,10 @@ redis = [
 
 [[package]]
 name = "ceptor-ai"
-version = "0.1.0"
+version = "0.2.0"
 source = { editable = "libs/ceptor-ai" }
 dependencies = [
+    { name = "attrs" },
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "django-mcp-server" },
@@ -334,14 +335,23 @@ dependencies = [
 
 [package.metadata]
 requires-dist = [
+    { name = "attrs", specifier = ">=26.1.0" },
+    { name = "build", marker = "extra == 'dev'" },
     { name = "django", specifier = ">=4.2" },
     { name = "django-mcp-server", specifier = ">=0.1.0" },
     { name = "fastapi", marker = "extra == 'mcp'", specifier = ">=0.110" },
+    { name = "hypothesis", marker = "extra == 'dev'", specifier = ">=6.0" },
     { name = "hypothesis", marker = "extra == 'test'", specifier = ">=6.0" },
+    { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'dev'" },
+    { name = "pytest-cov", marker = "extra == 'test'" },
+    { name = "pytest-django", marker = "extra == 'dev'" },
+    { name = "pytest-django", marker = "extra == 'test'" },
+    { name = "twine", marker = "extra == 'dev'" },
     { name = "watchdog", specifier = ">=4.0" },
 ]
-provides-extras = ["mcp", "test"]
+provides-extras = ["mcp", "test", "dev"]
 
 [[package]]
 name = "certifi"
@@ -881,6 +891,37 @@ wheels = [
 ]
 
 [[package]]
+name = "django-fusion"
+version = "0.2.0"
+source = { editable = "libs/django-fusion" }
+dependencies = [
+    { name = "attrs" },
+    { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "pluggy" },
+    { name = "wagtail" },
+]
+
+[package.metadata]
+requires-dist = [
+    { name = "attrs", specifier = ">=26.1.0" },
+    { name = "build", marker = "extra == 'dev'" },
+    { name = "django", specifier = ">=4.2" },
+    { name = "hypothesis", marker = "extra == 'dev'" },
+    { name = "hypothesis", marker = "extra == 'test'" },
+    { name = "pluggy", specifier = ">=1.6.0" },
+    { name = "pytest", marker = "extra == 'dev'" },
+    { name = "pytest", marker = "extra == 'test'" },
+    { name = "pytest-cov", marker = "extra == 'dev'" },
+    { name = "pytest-cov", marker = "extra == 'test'" },
+    { name = "pytest-django", marker = "extra == 'dev'" },
+    { name = "pytest-django", marker = "extra == 'test'" },
+    { name = "twine", marker = "extra == 'dev'" },
+    { name = "wagtail" },
+]
+provides-extras = ["test", "dev"]
+
+[[package]]
 name = "django-heroicons"
 version = "0.0.8"
 source = { registry = "https://pypi.org/simple" }
@@ -970,24 +1011,6 @@ sdist = { url = "https://files.pythonhosted.org/packages/d5/7c/3307e17b872f545c8
 wheels = [
     { url = "https://files.pythonhosted.org/packages/21/0c/25f72060a39632fbd2d90e9c8b6052a09cd45b0598fc06c0758d313f0052/django_ninja-1.6.2-py3-none-any.whl", hash = "sha256:20095f5900bada22ea00cf1a58af50bdb285b2354c61a9d9b47d0dc89ac462d6", size = 2374994, upload-time = "2026-03-18T20:06:45.676Z" },
 ]
-
-[[package]]
-name = "django-fusion"
-version = "0.1.0"
-source = { editable = "libs/django-fusion" }
-dependencies = [
-    { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
-    { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
-    { name = "wagtail" },
-]
-
-[package.metadata]
-requires-dist = [
-    { name = "django", specifier = ">=4.2" },
-    { name = "pytest", marker = "extra == 'test'" },
-    { name = "wagtail" },
-]
-provides-extras = ["test"]
 
 [[package]]
 name = "django-paypal"
@@ -3336,12 +3359,12 @@ dependencies = [
     { name = "django-embed-video" },
     { name = "django-environ" },
     { name = "django-extensions" },
+    { name = "django-fusion" },
     { name = "django-heroicons" },
     { name = "django-htmx" },
     { name = "django-import-export" },
     { name = "django-modelcluster" },
     { name = "django-ninja" },
-    { name = "django-fusion" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
@@ -3421,12 +3444,12 @@ requires-dist = [
     { name = "django-embed-video" },
     { name = "django-environ" },
     { name = "django-extensions" },
+    { name = "django-fusion", editable = "libs/django-fusion" },
     { name = "django-heroicons" },
     { name = "django-htmx" },
     { name = "django-import-export" },
     { name = "django-modelcluster", specifier = ">=6.5" },
     { name = "django-ninja" },
-    { name = "django-fusion", editable = "libs/django-fusion" },
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },

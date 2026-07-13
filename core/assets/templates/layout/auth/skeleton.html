@@ -1,18 +1,18 @@
 {% extends 'base.html' %}
 {% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
-{% load render_bundle from webpack_loader laces laces %}
+{% load webpack_loader %}
 {% block meta %}
 {% comp 'partials/meta.html' /%}
 {% endblock meta %}
 {% block html_attr %}data-theme="light"{% endblock html_attr %}
 {% block styles %}
-    {% render_bundle 'static' 'css' %}
+    {{ block.super }}
 {% endblock styles %}
 
 {% block extrastyle %}
     {{ block.super }}
-    <link href="{% static 'fonts/flat-icons/flaticons.css' %}" rel="stylesheet" />
 {% endblock %}
+
 {% block css %}
 {% endblock css %}
 
@@ -51,13 +51,12 @@ data-page="auth"
 
 
 {% block scripts %}
-    {% render_bundle 'static' 'js' %}
+    {{ block.super }}
 {% endblock scripts %}
 
 {% block extra_scripts %}
     {{ block.super }}
 {% endblock %}
-
 
 {% block extra_assets %}
     {{ block.super }}

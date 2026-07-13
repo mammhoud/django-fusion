@@ -80,10 +80,10 @@ log_success "Docker Compose is available"
 log_info "Checking required files..."
 required_files=(
     "docker-compose.yml"
-    "compose/docker-compose.traefik.yml"
-    "compose/docker-compose.warehouse.yml"
-    "compose/docker-compose.yml"
-    "compose/docker-compose.nginx.yml"
+    "applications/compose/docker-compose.traefik.yml"
+    "applications/databases/docker-compose.yml"
+    "applications/compose/docker-compose.yml"
+    "applications/compose/docker-compose.nginx.yml"
     "ctc-research/docker-compose.yml"
     "lms-demo/docker-compose.yml"
     "VResume/docker-compose.yml"
@@ -265,7 +265,7 @@ log_info "PHASE 8: Certificate Backup"
 log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 log_info "Creating certificate backup..."
-cd compose/traefik
+cd applications/proxy/traefik
 ./cert-backup.sh backup >> "${LOG_FILE}" 2>&1 || log_warning "Certificate backup may have failed"
 log_success "Certificate backup created"
 cd "${ROOT_DIR}"

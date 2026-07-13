@@ -250,24 +250,24 @@ Reservations are set at half the limits to allow burst headroom.
 ## TLS / Certificates
 
 Traefik handles TLS termination using static self-signed certificates mounted from
-`proxy/certs/` (`/etc/traefik/certs` inside the container). See
-`proxy/traefik/dynamic/certs.yml` for the active cert list. No ACME / Let's Encrypt
+`applications/proxy/certs/` (`/etc/traefik/certs` inside the container). See
+`applications/proxy/traefik/dynamic/certs.yml` for the active cert list. No ACME / Let's Encrypt
 flow is configured — there is no `traefik_acme` volume and no `acme.json` storage.
 
 To regenerate self-signed certs (365 days):
 
 ```bash
-./proxy/scripts/manage-certs.sh generate-self-signed
+./applications/proxy/scripts/manage-certs.sh generate-self-signed
 ```
 
 To check expiry / validate / backup / restore:
 
 ```bash
-./proxy/scripts/manage-certs.sh list
-./proxy/scripts/manage-certs.sh check-expiry
-./proxy/scripts/manage-certs.sh validate
-./proxy/scripts/manage-certs.sh backup
-./proxy/scripts/manage-certs.sh restore <archive.tar.gz>
+./applications/proxy/scripts/manage-certs.sh list
+./applications/proxy/scripts/manage-certs.sh check-expiry
+./applications/proxy/scripts/manage-certs.sh validate
+./applications/proxy/scripts/manage-certs.sh backup
+./applications/proxy/scripts/manage-certs.sh restore <archive.tar.gz>
 ```
 
 ---

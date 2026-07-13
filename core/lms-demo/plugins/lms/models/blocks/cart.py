@@ -23,6 +23,7 @@ class CourseCartItem(CartItem):
     content_object = GenericForeignKey()
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Course Cart Item")
         verbose_name_plural = _("Course Cart Items")
         # unique_together = ("cart", "polymorphic_ctype", "object_id")

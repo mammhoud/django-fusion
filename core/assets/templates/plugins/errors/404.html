@@ -106,7 +106,7 @@
 
 
 {% block styles %}
-    {% load render_bundle from webpack_loader %}
+    {% load webpack_loader %}
     {% render_bundle 'static' 'css' %}
 {% endblock styles %}
 

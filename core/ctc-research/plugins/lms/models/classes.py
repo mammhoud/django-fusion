@@ -162,6 +162,7 @@ class Schedule(DefaultBase):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Schedule")
         verbose_name_plural = _("Schedules")
         ordering = ["start_date", "start_time"]

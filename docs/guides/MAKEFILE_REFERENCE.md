@@ -413,8 +413,8 @@ make docker-prune-data
 **Warning:** ⚠️ DANGEROUS - Removes database and volumes!
 
 **Removes:**
-- `compose/postgres/backups/*`
-- `compose/data/*`
+- `applications/databases/postgres/backups/*`
+- `applications/compose/data/*`
 
 ---
 
@@ -578,7 +578,7 @@ make docker-start-all
 ## Category 9: Delegation Targets
 
 ### `make compose`
-Delegate to compose/Makefile.
+Delegate to applications/compose/Makefile.
 
 ```bash
 make compose <target>
@@ -867,7 +867,7 @@ eval "$(make -C scripts/completion bash-completion)"
 ## See Also
 
 - `Makefile` - Root Makefile
-- `compose/Makefile` - Docker Compose targets
+- `applications/compose/Makefile` - Docker Compose targets
 - `assets/Makefile` - Frontend build targets
 - `tests/Makefile` - Testing targets
 - `ctc-research/Makefile` - CTC targets

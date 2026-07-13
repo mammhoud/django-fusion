@@ -44,6 +44,7 @@ class Wishlist(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Wishlist Item")
         verbose_name_plural = _("Wishlist Items")
         ordering = ["-created_at"]

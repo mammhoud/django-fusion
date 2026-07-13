@@ -45,9 +45,9 @@ ceptor-ai health
 
 ## Kilo integration
 
-Kilo exposes a `ceptor-ai` MCP server in `.kilo/config.json` and a
-`ceptor-ai-toolsmith` agent plus `/ceptor-ai` command in `.kilo/kilo.jsonc` and
-`.kilo/commands/ceptor-ai.md`. The MCP app is launched with:
+Kilo exposes a `ceptor-ai` MCP server in `applications/kilo/config.json` and a
+`ceptor-ai-toolsmith` agent plus `/ceptor-ai` command in `applications/kilo/kilo.jsonc` and
+`applications/kilo/commands/ceptor-ai.md`. The MCP app is launched with:
 
 ```bash
 uvicorn ceptor_ai.mcp_server:app --host 127.0.0.1 --port 8002
