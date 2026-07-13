@@ -146,6 +146,34 @@ moment. If one is added later, document it beside the existing MCP entries,
 include its command, environment, port, and whether it is safe for local-only or
 shared deployments.
 
+### Copy-paste MCP setup prompt
+
+Use this prompt with a repository-aware assistant when setting up or repairing
+MCP locally:
+
+> Set up the Structa Cloud `ceptor-ai` MCP server from the repository root. Read
+> `AGENTS.md`, `docs/ai/START_HERE.md`, `docs/ai/mcp_reference.md`,
+> `docs/ai/latest_features.md`, and `core/libs/ceptor-ai/AGENTS.md` first.
+> Install `core/libs/ceptor-ai` in editable mode with the `[mcp]` extra. Start
+> `ceptor_ai.mcp_server:app` using `PYTHONPATH=core/libs/ceptor-ai/src`, bound
+> only to `127.0.0.1:8002`. Verify `/health`, `/info`, `/features`, and
+> `/file-structure` with curl. Do not expose the port, add secrets to prompts or
+> responses, mutate files, or import Django/Wagtail into the standalone MCP
+> module. If setup fails, report the missing dependency and exact command before
+> changing `applications/kilo/config.json`.
+
+Validation commands:
+
+```bash
+uv pip install -e core/libs/ceptor-ai/
+uv pip install -e 'core/libs/ceptor-ai/[mcp]'
+PYTHONPATH=core/libs/ceptor-ai/src \\
+  uvicorn ceptor_ai.mcp_server:app --host 127.0.0.1 --port 8002
+# In another terminal:
+curl --fail http://127.0.0.1:8002/health
+curl --fail http://127.0.0.1:8002/features
+```
+
 Useful references:
 
 - `docs/packages/django-fusion/README.md`
