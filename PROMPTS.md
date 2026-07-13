@@ -77,3 +77,25 @@ status responses
 **Doc IDs:** `DF-009`
 **Related Tags:** HealthCheckView, DatabaseHealthView, AssetsHealthView,
 Docker HEALTHCHECK, Kubernetes probe
+
+---
+
+## PR-06 — Integrate with an AI/MCP Workflow Safely
+
+**Prompt:** Use `django-fusion` from an AI-assisted task or the optional
+`ceptor-ai` MCP metadata workflow. Inspect the target site's settings,
+canonical import paths, and nested `AGENTS.md` files first. Keep reusable
+component, routing, and health-check logic in django-fusion; put site-specific
+behavior in a thin adapter. Verify imports and the narrowest package/site tests
+before proposing edits.
+
+**Expected Input:** Site path, target library surface, existing tests
+**Expected Output:** Boundary-safe change plan, canonical imports, validation
+commands, and documentation links
+
+**Safety:** Do not place AI provider calls, MCP server startup, credentials, or
+site models in django-fusion. Do not assume an MCP endpoint can mutate files.
+Keep `ceptor-ai` optional and preserve django-fusion's framework boundaries.
+
+**Doc IDs:** `DF-000`, `docs/ai/mcp_reference.md`
+**Related Tags:** AI-assisted development, MCP, adapters, package boundaries
