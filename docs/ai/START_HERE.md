@@ -189,7 +189,7 @@ assistant, include these files as the canonical attachment set:
 - `docs/ai/START_HERE.md`
 - `docs/ai/latest_features.md`
 - `docs/ai/mcp_reference.md`
-- `core/libs/ceptor-ai/docs/agents.md`
+- `core/libs/ceptor-ai/AGENTS.md`
 - `core/libs/ceptor-ai/src/ceptor_ai/mcp_server.py`
 
 The MCP server exposes the same high-level inventory at `/features` and the

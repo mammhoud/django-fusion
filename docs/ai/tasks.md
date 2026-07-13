@@ -81,11 +81,10 @@ The AI tasks use these files as context via `@codebase` and `@folder docs`:
 
 ```
 core/
-├── configs/settings/     ← YAML settings for all sites
-├── libs/django-fusion/    ← Language & file utilities
-├── libs/ceptor-ai/    ← Email & notification tasks
-├── libs/django-fusion/     ← Search indexing
-└── tasks/                ← Shared Celery tasks
+├── configs/settings/       ← Shared settings for all sites
+├── libs/django-fusion/     ← Django/Wagtail components and routing
+├── libs/ceptor-ai/         ← AI helpers, CLI, and optional MCP metadata
+└── www/worker/             ← Shared worker and task modules
 
 docs/
 ├── architecture/         ← System design notes
