@@ -30,7 +30,7 @@
 - **[../../../libs/django-fusion/src/django_fusion/config/__init__.py](../../../libs/django-fusion/src/django_fusion/config/__init__.py)** - Updated exports
 
 ### 📋 Project Documentation
-- **[/DYNACONF_MIGRATION_COMPLETE.md](/DYNACONF_MIGRATION_COMPLETE.md)** - Migration completion report
+- **[DYNACONF_MIGRATION_COMPLETE.md](DYNACONF_MIGRATION_COMPLETE.md)** - Migration completion report
 
 ---
 

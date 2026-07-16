@@ -1,6 +1,6 @@
 # MCP Server — Agent Instructions
 
-Path: `.kilo/mcp_server.py`
+Path: `applications/kilo/mcp_server.py`
 
 ## Purpose
 
@@ -13,7 +13,7 @@ loading) at import time.
 
 ```bash
 # From project root, run the MCP server:
-uvicorn --app-dir .kilo mcp_server:app --host 0.0.0.0 --port 8100
+uvicorn --app-dir applications/kilo mcp_server:app --host 0.0.0.0 --port 8100
 ```
 
 ## Endpoints

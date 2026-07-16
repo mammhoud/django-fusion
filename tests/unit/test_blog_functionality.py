@@ -11,10 +11,10 @@ from django.contrib.auth import get_user_model
 from django.urls import reverse
 
 try:
-    from django_fusion.tests.base import BaseTestCase
+    from django.test import TestCase as BaseTestCase
 
-    from apps.blog.models import BlogCategory, BlogPost, BlogTag
-    from apps.blog.services import PostFilterService, TagService
+    from plugins.blog.models import BlogCategory, BlogPost, BlogTag
+    from plugins.blog.services import PostFilterService, TagService
     _DJANGO_AVAILABLE = True
 except ImportError:
     # Django not available, create mock base class
@@ -28,7 +28,7 @@ User = get_user_model() if _DJANGO_AVAILABLE else None
 
 @pytest.mark.skipif(not _DJANGO_AVAILABLE, reason="Django not available")
 @pytest.mark.django_db
-class TestBlogTagModel:
+class TestBlogTagModel(BaseTestCase):
     """Tests for the BlogTag model."""
 
     def setUp(self):
@@ -257,14 +257,14 @@ class TestBlogComponentsImportable:
     @pytest.mark.skipif(not _DJANGO_AVAILABLE, reason="Django not available")
     def test_blog_models_importable(self):
         """Test that blog models can be imported."""
-        from apps.blog.models import BlogCategory, BlogPost, BlogTag
+        from plugins.blog.models import BlogCategory, BlogPost, BlogTag
         assert all([BlogTag, BlogPost, BlogCategory])
 
     @pytest.mark.skipif(not _DJANGO_AVAILABLE, reason="Django not available")
     def test_blog_services_importable(self):
         """Test that blog services can be imported."""
         try:
-            from apps.blog.services import PostFilterService, TagService
+            from plugins.blog.services import PostFilterService, TagService
             assert all([TagService, PostFilterService])
         except ImportError:
             # Services might not exist yet
@@ -274,7 +274,7 @@ class TestBlogComponentsImportable:
     def test_blog_admin_importable(self):
         """Test that blog admin can be imported."""
         try:
-            from apps.blog.admin import BlogPostAdmin, BlogTagAdmin
+            from plugins.blog.admin import BlogPostAdmin, BlogTagAdmin
             assert all([BlogTagAdmin, BlogPostAdmin])
         except ImportError:
             # Admin might not exist yet
@@ -284,7 +284,7 @@ class TestBlogComponentsImportable:
     def test_blog_views_importable(self):
         """Test that blog views can be imported."""
         try:
-            from apps.blog.views import BlogPostDetailView, BlogPostListView
+            from plugins.blog.views import BlogPostDetailView, BlogPostListView
             assert all([BlogPostListView, BlogPostDetailView])
         except ImportError:
             # Views might not exist yet

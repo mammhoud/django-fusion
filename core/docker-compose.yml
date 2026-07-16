@@ -12,4 +12,4 @@ include:
   - path: ./lms-demo/docker-compose.yml
   - path: ./ctc-research/docker-compose.yml
   - path: ./VResume/docker-compose.yml
-  - path: ./crm/docker-compose.yml
+  # - path: ./crm/docker-compose.yml  # CRM directory is empty, not available

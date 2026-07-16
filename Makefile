@@ -24,6 +24,23 @@ COMPOSE_CMD := docker compose -f docker-compose.yml
 NETWORKS := common traefik-net internal utilities-net warehouse-net ollama-net
 
 # -----------------------------------------------------------------
+# Shared-task compose (Dramatiq worker + celery-beat scheduler).
+# The compose file pins `container_name: shared-worker` /
+# `container_name: shared-scheduler` literally, so TASKS_PROJECT_NAME
+# only affects *image tagging* (compose-shared-worker:latest etc.),
+# not container naming. Freezing it to 'compose' lets `make deploy-tasks`
+# reuse the locally cached images without rebuilding.
+# Override on the command line if your cache lives elsewhere, e.g.:
+#   make deploy-tasks TASKS_PROJECT_NAME=apps-tasks
+# -----------------------------------------------------------------
+TASKS_COMPOSE_FILE := applications/compose/docker-compose.tasks.yml
+TASKS_PROJECT_NAME := compose
+# Default DB for the shared task stack. The shared worker is site-agnostic
+# (it routes tasks to per-site queues), but Django still needs a database.
+# Default to the ctc-research DB; override with make deploy-tasks TASKS_DB_NAME=db_structa
+TASKS_DB_NAME ?= db_ctc
+
+# -----------------------------------------------------------------
 # Deploy-order selector — CI/release scripts should set this explicitly:
 #   make deploy DEPLOY_ORDER=postgres-first   # default, robust
 #   make deploy DEPLOY_ORDER=legacy           # back-compat, warns
@@ -55,9 +72,8 @@ DEPLOY_ORDER_PATTERNS := $(subst $(space),|,$(VALID_DEPLOY_ORDERS))
 PREFLIGHT_COMPOSE_FILES := \
 	$(DATABASES_DIR)/docker-compose.yml \
 	$(PROXY_DIR)/docker-compose.yml \
-	applications/compose/docker-compose.core.yml \
 	applications/compose/docker-compose.applications.yml \
-	applications/anytype/docker-compose.yml
+	applications/compose/docker-compose.tasks.yml
 
 # -----------------------------------------------------------------
 # Component Makefiles are invoked explicitly via delegation targets below.
@@ -66,7 +82,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 # PHONY targets – always run
 # -----------------------------------------------------------------
-.PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-docs
+.PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder deploy-customizer build-customizer clean-customizer
 .PHONY: deploy-utilities deploy-ollama deploy-mailpit
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
@@ -100,10 +116,14 @@ help:
 	@echo "                            Override order:  make deploy DEPLOY_ORDER=postgres-first  (default)"
 	@echo "                                              make deploy DEPLOY_ORDER=legacy"
 	@echo "  make deploy-app        - Build and start application services"
-        @echo "  make deploy-anytype    - Build and start Anytype service"
+	@echo "  make deploy-anytype    - Build and start Anytype service"
 	@echo "  make deploy-proxy      - Deploy and restart reverse proxy"
 	@echo "  make deploy-media      - Build and start media server"
-	@echo "  make deploy-tasks      - Start background task workers"
+	@echo "  make deploy-redis      - Start the shared default-redis broker"
+	@echo "  make deploy-tasks      - Deploy shared-worker (Dramatiq) + shared-scheduler (celery-beat) (starts Redis/Postgres if needed)"
+	@echo "  make status-tasks      - Show status of shared-worker + shared-scheduler"
+	@echo "  make logs-tasks        - Tail logs from shared-worker + shared-scheduler"
+	@echo "  make probe-health      - Probe each per-site container's /health/ via 'common' network (handles asymmetric ports/expose)"
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
@@ -239,7 +259,7 @@ deploy-all: preflight-network deploy-preflight
 		$(MAKE) --no-print-directory deploy-proxy; \
 	fi
 	@$(MAKE) --no-print-directory deploy-customizer
-        @$(MAKE) --no-print-directory deploy-anytype
+	@$(MAKE) --no-print-directory deploy-anytype
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
 	@$(MAKE) --no-print-directory deploy-mailpit
@@ -247,20 +267,147 @@ deploy-all: preflight-network deploy-preflight
 	@echo "✅ All services deployed"
 
 deploy-app:
-        @$(MAKE) -C $(CORE_DIR) docker-up
+	@$(MAKE) -C $(CORE_DIR) docker-up
 
 # Separate target for Anytype (non-Django application)
 deploy-anytype:
-        @cd applications/anytype && $(MAKE) up
+	@if [ -d "applications/anytype" ]; then \
+		cd applications/anytype && $(MAKE) up; \
+	else \
+		echo "  (skip) applications/anytype not present"; \
+	fi
 
-deploy-tasks:
-	@docker compose -f applications/compose/docker-compose.tasks.yml up -d
+# Internal helper: wait up to 30s for default-redis healthcheck to pass.
+# Depends on the container already being started (by deploy-redis or
+# deploy-databases). Keep as a separate target so deploy-redis and
+# deploy-tasks can share it without duplicating the loop.
+_wait-redis:
+	@for i in {1..30}; do \
+		status=$$(docker inspect --format='{{.State.Health.Status}}' default-redis 2>/dev/null || echo ''); \
+		if [ "$$status" = "healthy" ]; then \
+			echo "  ✓ default-redis is healthy"; \
+			break; \
+		fi; \
+		if [ "$$i" -eq 30 ]; then \
+			echo "  ⚠️  default-redis did not become healthy (continuing anyway)"; \
+		fi; \
+		sleep 1; \
+	done
+
+# Redis-only deploy — used by deploy-tasks and available standalone for
+# lighter "just need a broker" workflows.
+deploy-redis:
+	@echo "🚀 Ensuring default-redis is running..."
+	@docker compose -f $(DATABASES_DIR)/docker-compose.yml up -d default-redis
+	@$(MAKE) --no-print-directory _wait-redis
+	@echo "✅ default-redis ready"
+
+# Shared-task worker deploy: databases → parse-check → down → up.
+# Bakes the hand-rolled docker compose invocation into a reproducible
+# target so the cache-aligned --project-name flag and the idempotent
+# down/up steps all live in one place.
+# Depends on deploy-databases so that Postgres + default-redis are
+# already running before Dramatiq/Celery try to connect.
+deploy-tasks: deploy-databases _wait-redis
+	@echo "🚀 Deploying shared-task workers (Dramatiq + celery-beat)..."
+	@echo "  compose:  $(TASKS_COMPOSE_FILE)"
+	@echo "  project:  $(TASKS_PROJECT_NAME)"
+	@echo ""
+	@echo "  [1/3] compose parse-check..."
+	@DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
+		-f $(TASKS_COMPOSE_FILE) config -q || \
+		{ echo "❌ $(TASKS_COMPOSE_FILE) failed to parse"; exit 1; }
+	@echo "  ✓ parse OK"
+	@echo ""
+	@echo "  [2/3] bring down (idempotent)..."
+	@docker compose --project-name $(TASKS_PROJECT_NAME) \
+		-f $(TASKS_COMPOSE_FILE) down --remove-orphans 2>&1 | tail -3
+	@echo ""
+	@echo "  [3/3] bring up (no build; uses cached images)..."
+	@DB_NAME=$(TASKS_DB_NAME) docker compose --project-name $(TASKS_PROJECT_NAME) \
+		-f $(TASKS_COMPOSE_FILE) up -d --no-build --remove-orphans 2>&1 | tail -5
+	@echo ""
+	@echo "✅ shared-task deploy complete"
+
+# Status snapshot for the two task containers. Cheap: no docker
+# mutation, just inspect. Safe to run on every redeploy or in a
+# heartbeat job.
+status-tasks:
+	@echo "📊 shared-task status"
+	@echo "═══════════════════════════════════════════════════════════════"
+	@for c in shared-worker shared-scheduler; do \
+		printf "  %-18s " "$$c"; \
+		docker inspect --format='status={{.State.Status}}  exit={{.State.ExitCode}}  restarts={{.RestartCount}}  started={{.State.StartedAt}}' "$$c" 2>&1; \
+	done
+
+# Last 30 lines of shared-worker + shared-scheduler logs.
+# Each container prints independently so the more-verbose one
+# doesn't drown the other. Use `docker logs -f` interactively
+# for full streaming.
+logs-tasks:
+	@echo "📜 shared-worker — last 30 lines:"
+	@echo "───────────────────────────────────────────────────────────────"
+	@docker logs --tail 30 shared-worker 2>&1 || echo "  (container not found)"
+	@echo ""
+	@echo "📜 shared-scheduler — last 30 lines:"
+	@echo "───────────────────────────────────────────────────────────────"
+	@docker logs --tail 30 shared-scheduler 2>&1 || echo "  (container not found)"
+
+# -----------------------------------------------------------------
+# probe-health — issue an HTTP probe against each site's /health/
+#        endpoint via 'docker exec' from shared-worker (which sits
+#        on the 'common' network) with `Host: 127.0.0.1` so Django
+#        ALLOWED_HOSTS accepts the request.
+#
+# Why not a simple `curl http://<container>:<port>/health/`?
+#   1. lms-web + vresume-web only `expose:` their internal ports
+#      (no `ports:` mapping), so host-level curl returns HTTP 000
+#      (connection refused). shared-worker resolves them via
+#      Docker DNS on the same 'common' network, so this works.
+#   2. gunicorn rejects requests whose `Host:` header is not in
+#      the site's ALLOWED_HOSTS. Every per-site compose sets
+#      ALLOWED_HOSTS=...,localhost,127.0.0.1`, so spoofing
+#      `Host: 127.0.0.1` here is a safe shim.
+#   3. shared-worker must be running. The preflight exits non-zero
+#      if it's down, then the per-site loop still runs with
+#      obviously broken results — the per-site message will be
+#      'unreachable' rather than lie with a misleading 000.
+#
+# Add a new site to PROBE_HEALTH_SITES when wiring its compose,
+# keeping the `<container>:<internal-port>` shape.
+# -----------------------------------------------------------------
+PROBE_HEALTH_SITES := ctc-research-website:5070 lms-web:5071 vresume-web:5072
+
+probe-health:
+	@echo "📡 Probing each site's /health/ endpoint from inside the 'common' network..."
+	@if ! docker exec shared-worker true </dev/null 2>&1; then \
+		echo "  ⚠️  shared-worker is not running — bring it up first with 'make deploy-tasks'."; \
+		echo "     (the per-site loop will run but probe results will be misleading)"; \
+	fi
+	@for endpoint in $(PROBE_HEALTH_SITES); do \
+		container=$${endpoint%:*}; \
+		port=$${endpoint#*:}; \
+		printf "  %-22s " "$$endpoint"; \
+		code=$$(docker exec shared-worker curl -s -o /dev/null -w '%{http_code}' \
+			-H 'Host: 127.0.0.1' \
+			--max-time 6 \
+			"http://$$container:$$port/health/" 2>&1); \
+		if echo "$$code" | grep -Eq '^[0-9]+$$'; then \
+			if [ "$$code" -ge 200 ] && [ "$$code" -lt 400 ]; then \
+				echo "✅ HTTP $$code (healthy)"; \
+			else \
+				echo "❌ HTTP $$code (degraded)"; \
+			fi; \
+		else \
+			echo "⚠️  unreachable: $$code"; \
+		fi; \
+	done
 
 deploy-media:
 	@docker rm -f shared-media 2>/dev/null || true
 	# NOTE: no host-wide `docker volume prune` here — that would wipe volumes
 	# from other projects. If you need to prune, run `make prune-volumes`.
-	@docker compose -f $(SERVICES_DIR)/docker-compose.media.yml up -d
+	@docker compose -f $(PROXY_DIR)/docker-compose.nginx.yml up -d
 
 deploy-docs:
 	@docker compose -f applications/compose/docker-compose.docs.yml up -d
@@ -610,9 +757,9 @@ status:
 	@docker ps --filter "name=shared-media" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Media server not running)"
 	@echo ""
 	@echo "Databases:"
-        @echo ""
-        @echo "Anytype:"
-        @cd applications/anytype && $(MAKE) status || echo "  (Anytype not available)"
+	@echo ""
+	@echo "Anytype:"
+	@cd applications/anytype && $(MAKE) status || echo "  (Anytype not available)"
 	@docker ps --filter "name=postgres" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Postgres not running)"
 	@docker ps --filter "name=redis" --format "table {{.Names}}\t{{.Status}}" 2>/dev/null || echo "  (Redis not running)"
 

@@ -1,6 +1,6 @@
 {% extends 'base.html' %}
 {% load i18n static unfold %}
-{% load webpack_loader laces laces %}
+{% load webpack_loader %}
 {% block meta %}
     {% comp 'partials/meta.html' /%}
 {% endblock meta %}
@@ -25,7 +25,6 @@
     {% comp 'landing/header/landing.html' /%}
 {% endblock header %}
 
-
 {% block body %}
 
     {# ====================================================== #}
@@ -45,7 +44,6 @@
     <main class="landing-shell" data-usecase="landing" data-animate="fade-up">
     {% block content %}
 
-
     {% endblock content %}
     </main>
     {# ====================================================== #}
@@ -61,9 +59,7 @@
     {% block modal %}
     {% endblock modal %}
 
-
 {% endblock body %}
-
 
 {% block scripts %}
     {% render_bundle 'static' 'js' %}
@@ -72,7 +68,6 @@
 {% block extra_scripts %}
     {{ block.super }}
 {% endblock %}
-
 
 {% block extra_assets %}
     {{ block.super }}

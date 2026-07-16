@@ -11,7 +11,7 @@ set -uo pipefail
 
 WEBSITE="${1:-all}"
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-TESTS_DIR="$(cd "$SCRIPT_DIR/.." && pwd)"
+TESTS_DIR="$(cd "$SCRIPT_DIR/../../tests" && pwd)"
 
 PASS=0
 FAIL=0

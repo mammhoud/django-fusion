@@ -1,4 +1,3 @@
-version: '3.8'
 
 # ============================================================
 # Networks – all networks from both files
@@ -22,8 +21,8 @@ networks:
 volumes:
   postgres_data:
     name: postgres_data
-  # redis_data:
-  #   name: redis_data
+  redis_data:
+    name: redis_data
   coder_data:
     name: coder_data
 
@@ -81,40 +80,42 @@ services:
           memory: 1G
 
   # ----------------------------------------------------------
-  # Redis – merged & fixed
+  # Redis – shared broker for Dramatiq + Celery
+  # Container name MUST be default-redis; every site + the shared
+  # task stack resolve it at redis://default-redis:6379/<db>.
   # ----------------------------------------------------------
-  # redis:
-  #   image: redis:7-alpine
-  #   container_name: redis
-  #   restart: always
-  #   command: >
-  #     redis-server /usr/local/etc/redis/redis.conf
-  #     --appendonly yes
-  #     --requirepass ${REDIS_PASSWORD:-redis_password}
-  #   ports:
-  #     - "${REDIS_PORT:-6379}:6379"
-  #   volumes:
-  #     - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
-  #     - redis_data:/data
-  #   networks:
-  #     - common
-  #     - warehouse-net
-  #     - internal
-  #     - traefik-net
-  #     - site_network
-  #   healthcheck:
-  #     test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
-  #     interval: 10s
-  #     timeout: 5s
-  #     retries: 5
-  #   deploy:
-  #     resources:
-  #       limits:
-  #         cpus: '1'
-  #         memory: 512M
-  #       reservations:
-  #         cpus: '0.5'
-  #         memory: 256M
+  default-redis:
+    image: redis:7-alpine
+    container_name: default-redis
+    restart: always
+    command: >
+      redis-server /usr/local/etc/redis/redis.conf
+      --appendonly yes
+      --requirepass ${REDIS_PASSWORD:-redis_password}
+    ports:
+      - "${REDIS_PORT:-6379}:6379"
+    volumes:
+      - ./redis/redis.conf:/usr/local/etc/redis/redis.conf
+      - redis_data:/data
+    networks:
+      - common
+      - warehouse-net
+      - internal
+      - traefik-net
+      - site_network
+    healthcheck:
+      test: ["CMD", "redis-cli", "-a", "${REDIS_PASSWORD:-redis_password}", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
 
   # ----------------------------------------------------------
   # Coder – self‑hosted cloud development environments (coder.com)

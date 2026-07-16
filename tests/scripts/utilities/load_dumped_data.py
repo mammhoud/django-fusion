@@ -17,12 +17,12 @@ def bootstrap_workspace() -> Path:
     """Ensure standalone script execution can import workspace modules."""
     repo_root = Path(__file__).resolve().parents[3]
     os.chdir(repo_root)
-    path_text = str(repo_root)
-    # Ensure the workspace root is at the beginning of sys.path
-    # to override any site-specific paths that may be set by the container
-    if path_text in sys.path:
-        sys.path.remove(path_text)
-    sys.path.insert(0, path_text)
+    # The Django project lives under the `core/` subdirectory, so make sure
+    # both the repository root and `core/` are on sys.path.
+    for path in (str(repo_root), str(repo_root / "core")):
+        if path in sys.path:
+            sys.path.remove(path)
+        sys.path.insert(0, path)
     return repo_root
 
 
@@ -95,10 +95,11 @@ def wagtail_page_count() -> int | None:
 
 
 def clear_duplicate_permissions():
-    """Delete all GroupPagePermission entries to avoid duplicate key errors before loading fixtures."""
-    from wagtail.models import GroupPagePermission
+    """Delete all Wagtail group permission entries to avoid duplicate key errors before loading fixtures."""
+    from wagtail.models import GroupPagePermission, GroupCollectionPermission
     # Remove all existing permissions to ensure a clean import
     GroupPagePermission.objects.all().delete()
+    GroupCollectionPermission.objects.all().delete()
 
 
 
@@ -140,6 +141,31 @@ def main() -> int:
         print(f"ℹ️  Skipping dump fixture load because Wagtail already has {page_count} pages. Use --force to reload.")
         return 0
 
+    # When --force is used, wipe existing Wagtail pages so the dump can be
+    # reloaded cleanly. This avoids duplicate slug/content-type conflicts.
+    if args.force and page_count is not None and page_count > 2:
+        print("🧹  --force requested: clearing existing Wagtail pages before reload...")
+        from wagtail.models import Page
+        from django.db.models.signals import pre_delete, post_delete
+
+        # Mute deletion signals temporarily so Wagtail skips unpublish hooks
+        # and search/indexing callbacks that can crash when ContentType
+        # references are out of sync (e.g. a Group object being resolved as
+        # a Page during bulk deletion).
+        old_pre = pre_delete.receivers[:]
+        old_post = post_delete.receivers[:]
+        pre_delete.receivers.clear()
+        post_delete.receivers.clear()
+
+        try:
+            # Keep the root page (depth=1); delete everything below it.
+            Page.objects.filter(depth__gt=1).delete()
+        finally:
+            pre_delete.receivers.extend(old_pre)
+            post_delete.receivers.extend(old_post)
+
+        print("✅ Existing Wagtail pages cleared.")
+
     failures = 0
     for fixture in fixtures:
         print(f"📂 Loading fixture: {fixture}")
@@ -165,15 +191,22 @@ def run_fix_homepage() -> int:
     """
     from wagtail.models import Site, Page
     from django.contrib.contenttypes.models import ContentType
-    try:
-        site = Site.objects.get(is_default_site=True)
-    except Site.DoesNotExist:
+
+    # Use filter().first() instead of get() so that multiple sites marked as
+    # default do not crash the loader. Prefer the non-localhost hostname when
+    # available.
+    site = Site.objects.filter(is_default_site=True).order_by("hostname").first()
+    if site is None:
         print("⚠️ No default Site found")
         return 1
 
-    # Try to find an existing HomePage by slug at depth 2
+    # Try to find an existing HomePage by slug at depth 2.
+    # Use first() because translated sites may have multiple home pages
+    # (e.g. home, home-ar, home-de); the default locale page is enough.
     try:
-        home = Page.objects.get(slug="home", depth=2)
+        home = Page.objects.filter(slug="home", depth=2).first()
+        if home is None:
+            raise Page.DoesNotExist
     except Page.DoesNotExist:
         # Import the concrete HomePage model for creation
         try:

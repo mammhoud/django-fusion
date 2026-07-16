@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, PropertyMock, patch
 
 import pytest
 
-from tasks.content import (
+from www.worker.content import (
     get_users_count,
     send_user_welcome_notification,
     send_user_welcome_notification_task,
@@ -15,8 +15,8 @@ from tasks.content import (
 # ---------------------------------------------------------------------------
 
 class TestGetUsersCount:
-    @patch("tasks.content.import_first")
-    @patch("tasks.content.configure_django_for_website")
+    @patch("www.worker.content.import_first")
+    @patch("www.worker.content.configure_django_for_website")
     def test_returns_user_count(self, mock_configure, mock_import):
         mock_model = MagicMock()
         mock_model.objects.count.return_value = 42
@@ -32,8 +32,8 @@ class TestGetUsersCount:
 # ---------------------------------------------------------------------------
 
 class TestSendUserWelcomeNotificationTask:
-    @patch("tasks.content.import_first")
-    @patch("tasks.content.configure_django_for_website")
+    @patch("www.worker.content.import_first")
+    @patch("www.worker.content.configure_django_for_website")
     def test_sends_welcome_email(self, mock_configure, mock_import):
         mock_user = MagicMock()
         mock_user.email = "user@example.com"
@@ -68,8 +68,8 @@ class TestSendUserWelcomeNotificationTask:
         assert result is True
         mock_send_mail.assert_called_once()
 
-    @patch("tasks.content.import_first")
-    @patch("tasks.content.configure_django_for_website")
+    @patch("www.worker.content.import_first")
+    @patch("www.worker.content.configure_django_for_website")
     def test_skips_user_without_email(self, mock_configure, mock_import):
         mock_user = MagicMock()
         mock_user.email = ""
@@ -101,19 +101,18 @@ class TestSendUserWelcomeNotificationTask:
 # ---------------------------------------------------------------------------
 
 class TestSendUserWelcomeNotification:
-    @patch("tasks.content.send_user_welcome_notification_task")
-    def test_uses_delay_when_available(self, mock_task):
-        mock_task.delay = MagicMock()
+    @patch("www.worker.content.send_user_welcome_notification_task")
+    def test_uses_send_when_available(self, mock_task):
+        mock_task.send = MagicMock()
         mock_user = MagicMock()
         mock_user.pk = 5
 
         send_user_welcome_notification(mock_user)
-        mock_task.delay.assert_called_once_with(5)
+        mock_task.send.assert_called_once_with(5)
 
-    @patch("tasks.content.send_user_welcome_notification_task")
-    def test_calls_directly_without_delay(self, mock_task):
-        if hasattr(mock_task, "delay"):
-            del mock_task.delay
+    @patch("www.worker.content.send_user_welcome_notification_task")
+    def test_calls_directly_without_send(self, mock_task):
+        mock_task.send = None
         mock_user = MagicMock()
         mock_user.pk = 7
 

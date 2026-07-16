@@ -6,8 +6,8 @@ Tests group creation, role hierarchy, permission inheritance, and content access
 
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
-from www.core.CI.models.group import GroupContentAccess, RoleEmailMapping, WagtailGroupRole
-from www.core.CI.services.group_service import GroupManagementService
+from www.ci.models.group import GroupContentAccess, RoleEmailMapping, WagtailGroupRole
+from www.ci.services.group_service import GroupManagementService
 
 
 class WagtailGroupRoleTestCase(TestCase):

@@ -1,5 +1,4 @@
-{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags laces laces %}
-
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
 
 
 {% if brand_settings and brand_settings.logo %}
@@ -15,7 +14,6 @@
         
         {% comp "partials/header_links.html" /%}
         {% comp "partials/header_extra.html" /%}
-
 
        
     </div>

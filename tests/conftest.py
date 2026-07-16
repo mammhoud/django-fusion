@@ -64,17 +64,17 @@ def pytest_configure(config):
 def _register_aliases():
     alias_map = {
         # www.apps.blog aliases
-        "www.apps.blog":               "apps.blog",
-        "www.apps.blog.models":        "apps.blog.models",
-        "www.apps.blog.forms":         "apps.blog.forms",
-        "www.apps.blog.admin":         "apps.blog.admin",
-        "www.apps.blog.urls":          "apps.blog.urls",
-        "www.apps.blog.services":      "apps.blog.services",
-        "www.apps.blog.api":           "apps.blog.api",
-        "www.apps.blog.management":    "apps.blog.management",
-        "www.apps.blog.viewsets":      "apps.blog.viewsets",
-        "www.apps.blog.components":    "apps.blog.components",
-        "www.apps.blog.feeds":         "apps.blog.feeds",
+        "www.apps.blog":               "plugins.blog",
+        "www.apps.blog.models":        "plugins.blog.models",
+        "www.apps.blog.forms":         "plugins.blog.forms",
+        "www.apps.blog.admin":         "plugins.blog.admin",
+        "www.apps.blog.urls":          "plugins.blog.urls",
+        "www.apps.blog.services":      "plugins.blog.services",
+        "www.apps.blog.api":           "plugins.blog.api",
+        "www.apps.blog.management":    "plugins.blog.management",
+        "www.apps.blog.viewsets":      "plugins.blog.viewsets",
+        "www.apps.blog.components":    "plugins.blog.components",
+        "www.apps.blog.feeds":         "plugins.blog.feeds",
 
         # www.apps.accounts aliases
         "www.apps.accounts":           "accounts",

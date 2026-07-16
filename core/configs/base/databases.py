@@ -1,6 +1,7 @@
 # ====================================
 # 🗄️ Database Configuration
 # ====================================
+import os
 from pathlib import Path
 
 from ..settings.conf import settings
@@ -22,10 +23,23 @@ try:
 except Exception:
     db_conf = None
 
+def _resolve_env_placeholder(value: str, default: str = "") -> str:
+    """Resolve `@env VAR fallback` placeholders used in YAML config files."""
+    if isinstance(value, str) and value.startswith("@env "):
+        parts = value.split(maxsplit=2)
+        env_name = parts[1] if len(parts) > 1 else ""
+        fallback = parts[2] if len(parts) > 2 else default
+        return os.environ.get(env_name, fallback) if env_name else default
+    return value
+
+
 if db_conf:
     def _db_get(key, default=None):
         try:
-            return db_conf.get(key, default)
+            value = db_conf.get(key, default)
+            if isinstance(value, str) and value.startswith("@env "):
+                return _resolve_env_placeholder(value, default)
+            return value
         except ImportError:
             return default
 

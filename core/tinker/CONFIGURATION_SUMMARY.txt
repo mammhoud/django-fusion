@@ -48,7 +48,7 @@ WHAT WAS DELIVERED
 
 6. COMPREHENSIVE DOCUMENTATION
    - DYNACONF_SETUP.md (635 lines, full reference guide)
-   - DYNACONF_MIGRATION_COMPLETE.md (completion report)
+   - DYNACONF_MIGRATION_COMPLETE.md (completion report, local to core/tinker/)
    - CONFIGURATION_SUMMARY.txt (this file)
 
 ================================================================================
@@ -355,7 +355,7 @@ Read these for more information:
    - Usage examples and troubleshooting
    - Best practices and migration guide
 
-2. DYNACONF_MIGRATION_COMPLETE.md
+2. DYNACONF_MIGRATION_COMPLETE.md (in core/tinker/)
    - Completion report and summary
    - Files created/modified list
    - Integration details

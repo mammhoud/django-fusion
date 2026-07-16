@@ -1,5 +1,5 @@
 """Compatibility imports for shared content background tasks."""
 
-from tasks.content import get_users_count, send_user_welcome_notification, send_user_welcome_notification_task
+from www.worker.content import get_users_count, send_user_welcome_notification, send_user_welcome_notification_task
 
 __all__ = ["get_users_count", "send_user_welcome_notification", "send_user_welcome_notification_task"]

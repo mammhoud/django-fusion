@@ -8,7 +8,7 @@ from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 from django_fusion.core.managers import CachedManager
 
-from www.core.CI.services import *
+from www.ci.services import *
 
 if TYPE_CHECKING:
     from ..models import Person

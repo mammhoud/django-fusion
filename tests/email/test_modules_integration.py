@@ -1,5 +1,5 @@
 """
-Integration tests for ceptor-ai email features with websites.
+Integration tests for base modules email features with websites.
 
 These tests verify that ceptor-ai email features work correctly
 when integrated with ctc-research.com and structa.cloud.
@@ -36,7 +36,7 @@ pytestmark = pytest.mark.skip(
 )
 
 
-class TestDjangoRsealIntegration:
+class TestBaseModulesIntegration:
     """Test ceptor-ai integration with websites."""
 
     def test_ceptor_ai_available_in_ctc(self):

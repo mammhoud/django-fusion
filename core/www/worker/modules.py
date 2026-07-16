@@ -6,7 +6,7 @@ when ceptor-ai is installed; importing is deliberately deferred to the worker
 runtime so local/minimal environments can still boot.
 """
 
-DJANGO_RSEAL_TASK_MODULES = [
+TASK_MODULES = [
     "ceptor_ai.tasks",
     "ceptor_ai.workflows.tasks",
     "ceptor_ai.services.communication.tasks",

@@ -11,7 +11,7 @@ Tests cover:
 
 from django.template import Template, TemplateSyntaxError
 from django.test import TestCase
-from www.core.CI.utils import (
+from www.ci.utils import (
     TemplateValidationError,
     TemplateValidator,
     validate_template,

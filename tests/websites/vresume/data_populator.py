@@ -21,12 +21,8 @@ from pathlib import Path
 import django
 from PIL import Image as PILImage
 
-# === Django Setup ===
 if not os.environ.get("DJANGO_SETTINGS_MODULE"):
-    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs.settings")
-
-# Add the v1 directory to the Python path
-sys.path.insert(0, str(Path(__file__).parent.parent))
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "VResume.settings")
 
 try:
     django.setup()
@@ -208,7 +204,10 @@ class DataPopulator:
         staticfiles_dirs = getattr(settings, "STATICFILES_DIRS", [])
         if staticfiles_dirs:
             for static_dir in staticfiles_dirs:
-                p = Path(static_dir)
+                if isinstance(static_dir, (list, tuple)):
+                    p = Path(static_dir[1])
+                else:
+                    p = Path(static_dir)
                 if p not in search_roots:
                     search_roots.append(p)
 

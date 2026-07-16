@@ -1,13 +1,11 @@
-{% load laces %}
-{% load wagtailcore_tags wagtailimages_tags %}
 
+{% load wagtailcore_tags wagtailimages_tags %}
 
 {% for block in page.head %}
 {% if block.block_type == 'page_title' %}
 {% comp "content.page_title" / %}
 {% endif %}
 {% endfor %}
-
 
 {% for block in page.facts %}
 {% if block.block_type == 'about' %}

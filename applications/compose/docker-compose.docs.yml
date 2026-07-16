@@ -22,14 +22,13 @@ services:
       - common
     environment:
       - TZ=${TZ:-UTC}
-    deploy:
-      resources:
-        limits:
-          cpus: '0.25'
-          memory: 128M
-        reservations:
-          cpus: '0.10'
-          memory: 64M
+    # Explicit unique host forwarding — publish the docs container's port 80
+    # on host port 9080 instead of relying on the implicit 80/tcp exposure.
+    # 9080 chosen to avoid collisions with: 80 (traefik), 443 (traefik-tls),
+    # 5070 (ctc-research-web), 5432 (postgres), 7080/7443 (coder),
+    # 8080 (traefik-dashboard).
+    ports:
+      - "9080:80"
     healthcheck:
       test: ["CMD", "wget", "-qO-", "http://127.0.0.1/"]
       interval: 30s

@@ -49,3 +49,23 @@ default:
       allowed_hosts: [crm.structa.cloud, www.crm.structa.cloud, localhost, 127.0.0.1]
       csrf_trusted_origins: [http://crm.structa.cloud, https://crm.structa.cloud, http://www.crm.structa.cloud, https://www.crm.structa.cloud]
       cors_allowed_origins: [http://crm.structa.cloud, https://crm.structa.cloud, http://www.crm.structa.cloud, https://www.crm.structa.cloud]
+
+    # Sentinel `shared` site — referenced by `applications/compose/docker-compose.tasks.yml`
+    # so shared-worker + shared-scheduler can boot site-agnostically. The
+    # tasks compose previously defaulted WEBSITE / DJANGO_SITE to `ctc-research`
+    # as the only registered site that would survive the runtime site-tracker
+    # check in `core/configs/site.py:active_website_name()`. With this entry,
+    # the tasks stack can declare `WEBSITE=shared` and the celery/dramatiq
+    # autodiscover picks up www.worker task modules without impersonating any
+    # specific tenant. The app uses CMS module so it passes the Pydantic
+    # validator; the actual settings live at `core/shared/settings.py`.
+    shared:
+      path: shared
+      aliases: [shared, shared-worker, shared-scheduler, tasks]
+      domain: localhost
+      port: 5080
+      module: CMS
+      ssl_enabled: false
+      allowed_hosts: [localhost, 127.0.0.1]
+      csrf_trusted_origins: [http://localhost, http://127.0.0.1]
+      cors_allowed_origins: [http://localhost, http://127.0.0.1]

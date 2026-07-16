@@ -52,13 +52,28 @@ def selected_sites(site: str) -> list[str]:
 
 
 def python_bin(root: Path) -> str:
-    candidate = root / ".venv" / "bin" / "python"
-    return str(candidate) if candidate.exists() else sys.executable
+    # The project's Python dependencies are managed under core/.venv (or core/uv.lock),
+    # so prefer that environment over the repository-root .venv.
+    core_candidate = root / "core" / ".venv" / "bin" / "python"
+    if core_candidate.exists():
+        return str(core_candidate)
+    root_candidate = root / ".venv" / "bin" / "python"
+    if root_candidate.exists():
+        return str(root_candidate)
+    return sys.executable
 
 
 def run(cmd: list[str], root: Path, site: str, dry_run: bool = False) -> int:
     env = os.environ.copy()
-    env.update({"DJANGO_SITE": site, "DJANGO_WEBSITE": site, "WEBSITE": site, "PROJECT_PATH": site})
+    env.update({
+        "DJANGO_SITE": site,
+        "DJANGO_WEBSITE": site,
+        "WEBSITE": site,
+        "PROJECT_PATH": site,
+        # Use a separate SQLite database per site so migrations and fixtures
+        # for one site do not interfere with another.
+        "DB_NAME": str(root / f"{site}.sqlite3"),
+    })
     print("$", " ".join(cmd))
     if dry_run:
         return 0
@@ -66,7 +81,7 @@ def run(cmd: list[str], root: Path, site: str, dry_run: bool = False) -> int:
 
 
 def fixture_candidates(root: Path, site: str, include_shared: bool, include_dumps: bool) -> list[Path]:
-    site_dir = root / SITE_DIRS.get(site, site)
+    site_dir = root / "core" / SITE_DIRS.get(site, site)
     candidates: list[Path] = []
     for base in [site_dir / "assets" / "fixtures", root / "assets" / "fixtures"]:
         if not base.exists():
@@ -110,21 +125,41 @@ def main() -> int:
 
     for selected in selected_sites(site):
         if not args.skip_migrate:
-            rc = run([py, "manage.py", f"--site={selected}", "migrate", "--noinput"], root, selected, args.dry_run)
+            rc = run([py, "core/manage.py", f"--site={selected}", "migrate", "--noinput"], root, selected, args.dry_run)
             if rc != 0:
                 return rc
 
         if not args.skip_json:
             # Use the unified data populator that handles duplicate permissions and homepage fixing
-            rc = run([py, "tests/scripts/utilities/load_dumped_data.py", "--site", selected, "--include-dumps" if args.include_dumps else "--force"], root, selected, args.dry_run)
+            rc = run([py, "tests/scripts/utilities/load_dumped_data.py", selected, "--include-dumps" if args.include_dumps else "--force"], root, selected, args.dry_run)
             if rc != 0:
                 return rc
 
         if args.images or selected == "vresume":
             if selected == "vresume":
-                rc = run([py, "-m", "configs.tests.data_populator", "--verbose", *args.extra], root, selected, args.dry_run)
-                if rc != 0:
-                    return rc
+                # The VResume data populator lives under tests/websites/vresume/.
+                # Run it from the repo root so it can import configs.site and the
+                # VResume site modules with the correct PYTHONPATH.
+                populator_path = root / "tests" / "websites" / "vresume" / "data_populator.py"
+                env = os.environ.copy()
+                pythonpath_parts = [str(root / "core")]
+                if env.get("PYTHONPATH"):
+                    pythonpath_parts.append(env["PYTHONPATH"])
+                env.update({
+                    "DJANGO_SITE": selected,
+                    "DJANGO_WEBSITE": selected,
+                    "WEBSITE": selected,
+                    "PROJECT_PATH": selected,
+                    "DB_NAME": str(root / f"{selected}.sqlite3"),
+                    "DJANGO_SETTINGS_MODULE": f"{SITE_DIRS[selected]}.settings",
+                    "PYTHONPATH": os.pathsep.join(pythonpath_parts),
+                })
+                cmd = [py, str(populator_path), "--verbose"]
+                print("$", " ".join(cmd))
+                if not args.dry_run:
+                    rc = subprocess.run(cmd, cwd=root, env=env, check=False).returncode
+                    if rc != 0:
+                        return rc
             else:
                 print(f"No Python image/content populator registered for {selected}; JSON fixtures loaded only.")
 

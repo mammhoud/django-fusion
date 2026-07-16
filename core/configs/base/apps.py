@@ -69,7 +69,6 @@ THIRD_PARTY_APPS = [
     "allauth",
     "allauth.account",
     "allauth.socialaccount",
-    "laces",
     "webpack_loader",
     "django_htmx",
     "import_export",
@@ -81,6 +80,14 @@ THIRD_PARTY_APPS = [
     "django_rq",
     "django_celery_beat",
     "django_celery_results",
+    "django_dramatiq",
+]
+
+# Local shared libraries developed alongside the workspace.
+# These are filtered by availability so the base config remains usable
+# when a library is not installed in a given environment.
+LOCAL_LIBRARY_APPS = [
+    "django_fusion",
 ]
 
 # ── LOCAL_APPS ──────────────────────────────────────────────────────
@@ -95,11 +102,14 @@ OPTIONAL_APP_MAP = {}
 
 _registry = AppRegistry()
 EFFECTIVE_THIRD_PARTY_APPS = _registry.available_apps(THIRD_PARTY_APPS)
+EFFECTIVE_LOCAL_LIBRARY_APPS = _registry.available_apps(LOCAL_LIBRARY_APPS)
 
 INSTALLED_APPS: list[str] = AppRegistry.merge(
     APPS,
     EFFECTIVE_WAGTAIL_APPS,
+    EFFECTIVE_LOCAL_LIBRARY_APPS,
     EFFECTIVE_THIRD_PARTY_APPS,
+    ["www.worker"],
 )
 # Per-site LOCAL_APPS are appended by each website's settings.py after
 # the `from configs.settings import *` line.

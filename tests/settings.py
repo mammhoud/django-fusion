@@ -18,9 +18,9 @@ _tests_dir = Path(__file__).parent
 _websites_dir = _tests_dir.parent
 _workspace_root = _websites_dir.parent
 
-_ctc_path = _websites_dir / "ctc-research"
-_structa_path = _websites_dir / "lms-demo"
-_vresume_path = _websites_dir / "VResume"
+_ctc_path = _websites_dir / "core" / "ctc-research"
+_structa_path = _websites_dir / "core" / "lms-demo"
+_vresume_path = _websites_dir / "core" / "VResume"
 _rseal_tests = _workspace_root / "libs" / "ceptor-ai" / "tests"
 
 # Support both monorepo layout (websites/<site>) and single-site layout (repo root).
@@ -33,6 +33,7 @@ _plugin_roots = [
     _vresume_path / "plugins",
 ]
 _www_roots = [
+    _repo_root / "core" / "www",
     _repo_root / "www",
     _structa_path / "www",
     _ctc_path / "www",
@@ -62,7 +63,11 @@ for _p in _sys_paths:
         sys.path.insert(0, str(_p))
 
 # Keep only directories that actually exist to avoid invalid import roots.
-_plugin_paths = [str(p) for p in _plugin_roots if p.exists()]
+# Use only CTC Research's plugins for the `www.apps` namespace to avoid
+# app_label conflicts when multiple sites define apps with the same name
+# (e.g. blog). Tests that need a specific site's app should import it
+# directly from that site's path.
+_plugin_paths = [str(_ctc_path / "plugins")] if (_ctc_path / "plugins").exists() else []
 _www_paths = [str(p) for p in _www_roots if p.exists()]
 _core_paths = [str(p) for p in _core_roots if p.exists()]
 
@@ -87,14 +92,7 @@ if "attrs" not in sys.modules:
     sys.modules["attrs"] = _attrs
     sys.modules["attr"] = _attrs
 
-# 1. `apps` namespace package → structa.cloud/plugins  (so "apps.blog" resolves)
-if "apps" not in sys.modules:
-    _apps_mod = types.ModuleType("apps")
-    _apps_mod.__path__ = _plugin_paths
-    _apps_mod.__package__ = "apps"
-    sys.modules["apps"] = _apps_mod
-
-# 2. `www` / `www.apps` namespace stubs
+# 1. `www` / `www.apps` namespace stubs
 # www needs to point to www/core for Django imports
 if "www" not in sys.modules:
     _www_mod = types.ModuleType("www")
@@ -347,7 +345,7 @@ INSTALLED_APPS = [
     "allauth.socialaccount",
     # Remove ceptor_ai to avoid table conflicts with email_log
     # Blog app only — accounts/rseal have complex deps needing full project setup
-    "apps.blog",
+    "plugins.blog",
     # Skip apps.accounts to avoid admin autodiscover issues with www.apps.accounts.models.tags
 ]
 

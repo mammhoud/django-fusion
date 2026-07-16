@@ -1,5 +1,7 @@
 {% extends "base.html" %}
-{% load i18n wagtailcore_tags laces %}
+{% load i18n wagtailcore_tags %}
+
+{% block title %}{% firstof page.seo_title page_title page.title 'CTC Research' %}{% endblock %}
 
 {% block bodyclass %}page-{{ page.slug|default:"home" }}{% endblock %}
 

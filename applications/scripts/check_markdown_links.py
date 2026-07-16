@@ -33,7 +33,7 @@ import urllib.error
 import urllib.request
 from pathlib import Path
 
-# This script lives at core/scripts/check_markdown_links.py.
+# This script lives at applications/scripts/check_markdown_links.py.
 # The repo root is two directories up.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SCOPE = REPO_ROOT / "core" / "libs"

@@ -2,10 +2,20 @@
 
 Automated scripts for testing, validation, and deployment.
 
+> **Note:** Domain-level test scripts and shared test runners have been moved to
+> `applications/scripts/`. See that directory for `run_domain_tests.sh`,
+> `test_domain_urls.py`, `run_website_tests.sh`, and `run_container_tests.sh`.
+
 ## Directory Structure
 
 ```
-scripts/
+applications/scripts/
+├── run_domain_tests.sh          (Domain integration test suite)
+├── test_domain_urls.py          (Domain URL validation)
+├── run_website_tests.sh         (Cross-site smoke tests)
+└── run_container_tests.sh       (Container-based tests)
+
+tests/scripts/
 ├── README.md                    (this file)
 ├── Makefile                     (Test targets)
 ├── deployment/                  (Production deployment)
@@ -14,7 +24,6 @@ scripts/
 ├── validation/                  (System validation)
 │   ├── test_production.py
 │   ├── test_production_simple.py
-│   ├── test_domain_urls.py
 │   ├── verify_runtime.py
 │   ├── verify_assets_health.py
 │   └── verify-ssl-config.sh
@@ -27,8 +36,6 @@ scripts/
 │   ├── fix-homepage.py
 │   └── update-health-views.sh
 └── helpers/                     (Test runners)
-    ├── run_container_tests.sh
-    ├── run_website_tests.sh
     ├── health-check.sh
     └── test_vresume_pages.sh
 ```
@@ -42,7 +49,6 @@ scripts/
 ### Validation Scripts
 - `test_production.py` - Production tests
 - `test_production_simple.py` - Simplified production tests
-- `test_domain_urls.py` - Domain URL validation
 - `verify_runtime.py` - Runtime verification
 - `verify_assets_health.py` - Asset health check
 - `verify-ssl-config.sh` - SSL configuration validation
@@ -57,10 +63,14 @@ scripts/
 - `update-health-views.sh` - Update health views
 
 ### Helper Scripts
-- `run_container_tests.sh` - Run container tests
-- `run_website_tests.sh` - Run website tests
 - `health-check.sh` - Health check
 - `test_vresume_pages.sh` - Test VResume pages
+
+### Moved to `applications/scripts/`
+- `run_domain_tests.sh` - Domain integration test suite
+- `test_domain_urls.py` - Domain URL validation
+- `run_website_tests.sh` - Cross-site smoke tests
+- `run_container_tests.sh` - Container-based tests
 
 ## Usage
 
@@ -71,8 +81,9 @@ make test
 
 ### Run Specific Script
 ```bash
-python scripts/validation/test_production.py
-bash scripts/deployment/deploy-production.sh
+python tests/scripts/validation/test_production.py
+bash tests/scripts/deployment/deploy-production.sh
+bash applications/scripts/run_domain_tests.sh
 ```
 
 ### Populate Test Data

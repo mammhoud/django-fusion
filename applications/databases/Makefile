@@ -6,7 +6,7 @@ COMPOSE_FILE := docker-compose.yml
 
 up:
 	@echo "🟢 Starting databases..."
-	@docker compose -f $(COMPOSE_FILE) up -d postgres # redis
+	@docker compose -f $(COMPOSE_FILE) up -d postgres default-redis
 	@echo "✅ Databases are up"
 
 up-coder:

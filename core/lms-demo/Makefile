@@ -71,12 +71,18 @@ server: ## Production server (auto-select WSGI/ASGI based on SERVER_TYPE env var
 	TIMEOUT=$${TIMEOUT:-120}; \
 	LOG_LEVEL=$${LOG_LEVEL:-info}; \
 	SERVER_TYPE=$${SERVER_TYPE:-wsgi}; \
+	# IMPORTANT: default to the per-site `server:application` (defined in
+	# core/<site>/server.py) rather than the Django default www.{asgi,wsgi}:
+	# application. The bare `www.asgi/wsgi` modules skip the env-var bootstrap
+	# (`DJANGO_SITE`, `DJANGO_SETTINGS_MODULE`, etc.) that Dynaconf needs to
+	# load the postgres DATABASE settings — and silently fall back to the
+	# SQLite default database, which has no migrations applied.
 	if [ "$$SERVER_TYPE" = "asgi" ]; then \
-		APP_MODULE=$${APP_MODULE:-www.asgi:application}; \
+		APP_MODULE=$${APP_MODULE:-server:application}; \
 		echo "ASGI mode detected – using Uvicorn worker"; \
 		$(UV_RUN) gunicorn $$APP_MODULE --bind $$HOST:$$PORT --workers $$WORKERS --timeout $$TIMEOUT --log-level $$LOG_LEVEL -k uvicorn.workers.UvicornWorker; \
 	else \
-		APP_MODULE=$${APP_MODULE:-www.wsgi:application}; \
+		APP_MODULE=$${APP_MODULE:-server:application}; \
 		echo "WSGI mode detected – using sync workers"; \
 		$(UV_RUN) gunicorn $$APP_MODULE --bind $$HOST:$$PORT --workers $$WORKERS --timeout $$TIMEOUT --log-level $$LOG_LEVEL; \
 	fi

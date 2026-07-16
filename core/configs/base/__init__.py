@@ -2,6 +2,7 @@ from configs.base.admin_site import *
 from configs.base.apps import *
 from configs.base.assets import *
 from configs.base.auth import *
+from configs.base.cache import *
 from configs.base.databases import *
 from configs.base.emails import *
 from configs.base.i18n import *

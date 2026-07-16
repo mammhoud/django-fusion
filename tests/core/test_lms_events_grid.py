@@ -19,7 +19,7 @@ from pathlib import Path
 
 from django.test import SimpleTestCase
 
-ROOT = Path(__file__).resolve().parents[1]  # core/
+ROOT = Path(__file__).resolve().parents[2] / "core"  # core/
 
 
 class EventsMainGridIncludeTest(SimpleTestCase):

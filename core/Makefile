@@ -90,6 +90,8 @@ DOCKER_PROJECT_PATH := $(if $(filter $(SITE),vresume),VResume,$(SITE))
 DOCKER_BUILD_ARGS := PROJECT_PATH=$(DOCKER_PROJECT_PATH) WEBSITE=$(SITE) DJANGO_SITE=$(SITE) SERVER_TYPE=$(SERVER_TYPE)
 DOCKER_COMPOSE ?= docker compose -f $(COMPOSE_FILE)
 DOCKER_SERVICE := $(if $(filter $(SITE),ctc-research),ctc-research-website,$(if $(filter $(SITE),lms-demo),lms-web,$(if $(filter $(SITE),vresume),vresume-web,$(SITE))))
+# Internal health-check port for the selected website container.
+DOCKER_HEALTH_PORT := $(if $(filter $(SITE),ctc-research),5070,$(if $(filter $(SITE),lms-demo),5071,$(if $(filter $(SITE),vresume),5072,8000)))
 # Per-site celery worker service name, resolved from the per-site docker-compose.yml.
 # Mirrors the SITE→service mapping pattern used by DOCKER_SERVICE.
 #   ctc-research  → ctc-worker      (NOT ctc-research-worker; that's the global tasks compose name)
@@ -102,7 +104,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -130,7 +132,7 @@ help:
 		'  full-site-check- Build assets, collectstatic, migrate, load dumps, and verify runtime' \
 		'' \
 		'Delegation:' \
-		'  compose        - Delegate to compose/Makefile' \
+		'  compose        - Delegate to applications/compose/Makefile' \
 		'  assets         - Delegate to assets/Makefile' \
 		'  scripts        - Delegate to tests/scripts/Makefile' \
 		'  website-ctc    - Delegate to ctc-research/Makefile' \
@@ -159,7 +161,7 @@ help:
 		'  clean-logs     - Remove generated logs under $(LOG_DIR), preserving .gitkeep'
 
 compose:
-	$(MAKE) -C compose $(filter-out $@,$(MAKECMDGOALS))
+	$(MAKE) -C ../applications/compose $(filter-out $@,$(MAKECMDGOALS))
 
 assets:
 	$(MAKE) -C assets PROJECT_PATH=$(SITE) $(filter-out $@,$(MAKECMDGOALS))
@@ -257,7 +259,7 @@ docker-build-shared-media:
 	@mkdir -p $(LOG_BUILD_DIR)
 	@timestamp=$$(date +%Y%m%d-%H%M%S); \
 	 echo "[build] shared-media -> $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log"; \
-	 docker compose -f applications/compose/docker-compose.nginx.yml build shared-media 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log
+	 docker compose -f applications/proxy/docker-compose.nginx.yml build shared-media 2>&1 | tee $(LOG_BUILD_DIR)/docker-build-shared-media-$$timestamp.log
 
 docker-build-all: docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media
 
@@ -340,13 +342,9 @@ structa-up:
 
 vresume-up:
 	@$(MAKE) docker-up WEBSITE=vresume
-	$(DOCKER_COMPOSE) down --remove-orphans
-	docker container prune -f
 
 docker-prune-data:
 	$(DOCKER_COMPOSE) down --volumes --remove-orphans
-	rm -rf applications/compose/postgres/backups/* applications/compose/data/*
-	mkdir -p applications/compose/postgres/backups applications/compose/data
 
 build-assets-site:
 	mkdir -p $(LOG_DIR)
@@ -524,13 +522,17 @@ docker-logs-service:
 	@echo "Available services:"
 	docker compose -f docker-compose.yml ps --services
 
-# Health check all services
+# Check health of the currently selected website container.
 docker-health-check:
-	@echo "Checking health of all services..."
-	@for service in postgres redis traefik ctc-research-website lms-demo-website vresume-website; do \
-		echo "Checking $$service..."; \
-		docker compose -f docker-compose.yml exec -T $$service curl -f http://localhost:$$(docker compose -f docker-compose.yml port $$service 2>/dev/null | cut -d: -f2)/health/ 2>/dev/null && echo "✓ $$service is healthy" || echo "✗ $$service is not responding"; \
-	done
+	@echo "Checking health of $(DOCKER_SERVICE) on port $(DOCKER_HEALTH_PORT)..."
+	@docker exec $(DOCKER_SERVICE) curl -f -s http://127.0.0.1:$(DOCKER_HEALTH_PORT)/health/ 2>/dev/null && echo "✓ $(DOCKER_SERVICE) is healthy" || echo "✗ $(DOCKER_SERVICE) is not responding"
+
+# Probe health for all three website containers by wrapping docker-health-check per site.
+probe-health:
+	@echo "Probing health for all three sites..."
+	@$(MAKE) docker-health-check WEBSITE=ctc-research
+	@$(MAKE) docker-health-check WEBSITE=lms-demo
+	@$(MAKE) docker-health-check WEBSITE=vresume
 
 # Restart all services
 docker-restart-all:

@@ -1,10 +1,27 @@
 # ====================================
 # 💾 Cache & Redis Configuration
 # ====================================
+import importlib
 import multiprocessing
 
 from ..settings.conf import settings
 from ..settings.conf import settings as tracker
+
+
+def _dramatiq_middleware_available(path: str) -> bool:
+    """Best-effort middleware availability check for the dramatiq broker.
+
+    Mirrors `core.configs.base.middlewares._middleware_available` so a missing
+    optional middleware (e.g. ``dramatiq.middleware.Prometheus`` from
+    ``dramatiq-prometheus`` when that extra isn't installed) degrades the
+    middleware list at module-load time rather than crashing Django app init.
+    """
+    module_name, _, class_name = path.rpartition(".")
+    try:
+        module = importlib.import_module(module_name)
+    except Exception:
+        return False
+    return hasattr(module, class_name)
 
 # -------------------------------
 # Redis Configuration
@@ -95,6 +112,29 @@ Q_CLUSTER = {
 }
 
 # -------------------------------
+# Dramatiq Configuration
+# -------------------------------
+DRAMATIQ_BROKER = {
+    "BROKER": "dramatiq.brokers.redis.RedisBroker",
+    "OPTIONS": {
+        "url": REDIS_URL,
+    },
+    "MIDDLEWARE": [
+        m
+        for m in [
+            "dramatiq.middleware.Prometheus",
+            "dramatiq.middleware.AgeLimit",
+            "dramatiq.middleware.TimeLimit",
+            "dramatiq.middleware.Callbacks",
+            "dramatiq.middleware.Retries",
+            "django_dramatiq.middleware.AdminMiddleware",
+            "django_dramatiq.middleware.DbConnectionsMiddleware",
+        ]
+        if _dramatiq_middleware_available(m)
+    ],
+}
+
+# -------------------------------
 # Celery Configuration
 # -------------------------------
 CELERY_BROKER_URL = REDIS_URL
@@ -112,9 +152,9 @@ CELERY_WORKER_MAX_TASKS_PER_CHILD = 100
 CELERY_WORKER_CONCURRENCY = multiprocessing.cpu_count() * 2 + 1
 
 
-CELERY_TASK_ALWAYS_EAGER = settings.core.CELERY.TASK_ALWAYS_EAGER
-CELERY_FLOWER_USER = settings.core.CELERY.FLOWER_USER
-CELERY_FLOWER_PASSWORD = settings.core.CELERY.FLOWER_PASSWORD
+CELERY_TASK_ALWAYS_EAGER = settings.get("CELERY.TASK_ALWAYS_EAGER", False)
+CELERY_FLOWER_USER = settings.get("CELERY.FLOWER_USER", "")
+CELERY_FLOWER_PASSWORD = settings.get("CELERY.FLOWER_PASSWORD", "")
 CELERY_TASK_EAGER_PROPAGATES = True
 # CELERY_BROKER_USE_SSL = {"ssl_cert_reqs": ssl.CERT_NONE} if REDIS_SSL else None
 # CELERY_REDIS_BACKEND_USE_SSL = CELERY_BROKER_USE_SSL

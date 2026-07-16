@@ -1,4 +1,4 @@
-{% load static i18n wagtailcore_tags components_field laces %}
+{% load static i18n wagtailcore_tags components_field %}
 {# Contact Form Block Template - Enhanced for Wagtail Blocks #}
 
 <div class="contact-form-block {{ block_classes }}"
@@ -8,7 +8,6 @@
      data-background="{{ self.background_style }}">
 
   {% render_unhandled_fields unhandled_fields %}
-
 
   <!-- Form Header -->
   {% if value.form_title %}

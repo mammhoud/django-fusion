@@ -1,4 +1,4 @@
-"""Django settings for running site-specific template tests from core/.
+"""Django settings for running site-specific template tests from tests/core/.
 
 This module re-exports the workspace ``tests/settings.py`` and adds the
 ``core/assets/templates/`` directory to ``TEMPLATES.DIRS`` so that
@@ -9,9 +9,9 @@ Background
 ----------
 ``core/pyproject.toml`` pins ``DJANGO_SETTINGS_MODULE = "tests.settings"``
 and sets ``testpaths = ["tests", "libs/django-fusion/tests/analyzer"]``.
-When pytest is run from ``core/``, the ``tests`` testpath resolves to
-``core/tests/`` (a directory that did not exist before this shim), and
-``tests.settings`` resolves to this module.
+When pytest is run from the workspace root, the ``tests`` testpath resolves to
+``tests/core/`` for these site-specific tests, and ``tests.settings`` resolves to
+this module via the root settings import below.
 
 The root ``tests/settings.py`` (at the workspace root) holds the full Django
 configuration for the library test corpus (django-fusion analyzer, ceptor-ai,

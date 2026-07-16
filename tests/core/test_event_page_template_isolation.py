@@ -17,8 +17,8 @@ loudly before that copy ever reaches a Wagtail EventPage in another site.
 
 from pathlib import Path
 
-# parent[1] is core/ (parent[0] is core/tests).
-ROOT = Path(__file__).resolve().parents[1]
+# tests/ is parent[0], workspace root is parent[1]; canonical apps live under core/.
+ROOT = Path(__file__).resolve().parents[2] / "core"
 
 LMS_ONLY = ROOT / "lms-demo" / "templates" / "events" / "event_page.html"
 SHARED = ROOT / "assets" / "templates" / "events" / "event_page.html"
@@ -34,7 +34,7 @@ def test_lms_only_event_page_template_exists():
     content = LMS_ONLY.read_text()
     assert '{% extends "base_page.html" %}' in content
     assert '{% block content %}' in content
-    assert '{% comp_include "events/main.html" %}' in content
+    assert '{% comp "events/main.html" /%}' in content
 
 
 def test_shared_event_page_template_does_not_exist():

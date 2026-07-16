@@ -11,7 +11,7 @@ services:
   vresume-web:
     build:
       context: ../..
-      dockerfile: applications/compose/Dockerfile
+      dockerfile: core/compose/Dockerfile
       args:
         PROJECT_PATH: VResume
     image: vresume-web:latest
@@ -63,7 +63,6 @@ services:
       - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
-      - ../tasks:/app/tasks:z
       - ../www:/app/www:z
       - ../manage.py:/app/manage.py:z
       - ../cli.py:/app/cli.py:z
@@ -84,7 +83,7 @@ services:
   vresume-worker:
     build:
       context: ../..
-      dockerfile: applications/compose/Dockerfile
+      dockerfile: core/compose/Dockerfile
       args:
         PROJECT_PATH: VResume
     image: vresume-worker:latest
@@ -120,14 +119,13 @@ services:
       PROJECT_PATH: VResume
       WEBSITE_HOST: ${VRESUME_HOST:-vresume.structa.cloud}
       CELERY_TASK_DEFAULT_QUEUE: vresume
-    command: celery -A tasks.celery:app worker --loglevel=info --queues=vresume
+    command: celery -A www.worker.celery:app worker --loglevel=info --queues=vresume
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
       - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
-      - ../tasks:/app/tasks:z
       - ../www:/app/www:z
       - ../manage.py:/app/manage.py:z
       - ../cli.py:/app/cli.py:z

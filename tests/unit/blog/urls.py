@@ -11,7 +11,7 @@ def _get_osoul_urls():
     try:
         from django_fusion.web.routes import Application, Site
 
-        from apps.blog.components import BlogPostCreateFragment, BlogPostListFragment
+        from plugins.blog.components import BlogPostCreateFragment, BlogPostListFragment
 
         class BlogApp(Application):
             title = "Blog"
@@ -33,6 +33,6 @@ def _get_osoul_urls():
 
 urlpatterns = [
     path("admin/", admin.site.urls),
-    path("blog/", include("apps.blog.urls", namespace="blog")),
+    path("blog/", include("plugins.blog.urls", namespace="blog")),
     path("osoul/", include(_get_osoul_urls())),
 ]

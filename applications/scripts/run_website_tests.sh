@@ -7,7 +7,7 @@ if [[ ! -x "$PYTHON_BIN" ]]; then
   PYTHON_BIN="python"
 fi
 
-COMMON_ARGS=(../tests/websites/test_cross_site_smoke.py --confcutdir=../tests/websites -k "not hypothesis")
+COMMON_ARGS=(../../tests/websites/test_cross_site_smoke.py --confcutdir=../../tests/websites -k "not hypothesis")
 
 case "$WEBSITE" in
   ctc)

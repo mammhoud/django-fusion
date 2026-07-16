@@ -216,7 +216,10 @@ class DataPopulator:
         staticfiles_dirs = getattr(settings, "STATICFILES_DIRS", [])
         if staticfiles_dirs:
             for static_dir in staticfiles_dirs:
-                p = Path(static_dir)
+                if isinstance(static_dir, (list, tuple)):
+                    p = Path(static_dir[1])
+                else:
+                    p = Path(static_dir)
                 if p not in search_roots:
                     search_roots.append(p)
 

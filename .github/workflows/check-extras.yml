@@ -2,7 +2,7 @@
 # core/libs/**/docs/ references an extras key that does not exist
 # in the matching libs/<pkg>/pyproject.toml [project.optional-dependencies].
 #
-# Companion to core/scripts/check_extras_in_docs.py — that script
+# Companion to applications/scripts/check_extras_in_docs.py — that script
 # is the source of truth for what counts as an install command and which
 # extras are real. This workflow's job is to run it on the appropriate
 # triggers.
@@ -15,7 +15,7 @@ on:
       - 'core/libs/**/docs/**'
       - '**/pyproject.toml'
       - '.github/workflows/check-extras.yml'
-      - 'core/scripts/check_extras_in_docs.py'
+      - 'applications/scripts/check_extras_in_docs.py'
   push:
     branches: ['**']
     paths:
@@ -23,7 +23,7 @@ on:
       - 'core/libs/**/docs/**'
       - '**/pyproject.toml'
       - '.github/workflows/check-extras.yml'
-      - 'core/scripts/check_extras_in_docs.py'
+      - 'applications/scripts/check_extras_in_docs.py'
   workflow_dispatch:
 
 jobs:
@@ -37,4 +37,4 @@ jobs:
         with:
           python-version: '3.11'
       - name: Check Markdown install extras
-        run: python3 core/scripts/check_extras_in_docs.py
+        run: python3 applications/scripts/check_extras_in_docs.py

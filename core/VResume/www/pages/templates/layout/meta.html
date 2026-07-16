@@ -1,12 +1,10 @@
 {% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
 
 
-
 {# Simple logo logic #}
 {% if vresume_settings and vresume_settings.favicon %}
     {% image vresume_settings.favicon max-96x96 as favicon %}
 {% endif %}
-
 
 <meta charset="utf-8" />
 

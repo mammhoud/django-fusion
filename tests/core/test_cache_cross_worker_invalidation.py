@@ -34,11 +34,12 @@ from pathlib import Path
 import pytest
 
 
-# This test lives at core/tests/test_cache_cross_worker_invalidation.py.
-# parents[0] = core/tests/
-# parents[1] = core/   <-- ROOT
+# This test lives at tests/core/test_cache_cross_worker_invalidation.py.
+# parents[0] = tests/core/
+# parents[1] = tests/
 # parents[2] = the workspace root /home/structa.cloud/
-ROOT = Path(__file__).resolve().parents[1]
+# Canonical project files now live under core/.
+ROOT = Path(__file__).resolve().parents[2] / "core"
 PRODUCTION_PY = ROOT / "configs" / "settings" / "CD" / "production.py"
 CORE_PY = ROOT / "configs" / "settings" / "CD" / "core.py"
 

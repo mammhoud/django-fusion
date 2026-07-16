@@ -53,6 +53,7 @@ echo ""
 log_info "Starting production deployment..."
 log_info "Log file: ${LOG_FILE}"
 log_info "Error log: ${ERROR_LOG}"
+log_info "Prerequisite: ensure the stack is already running (e.g., 'make deploy' or 'docker compose -f docker-compose.yml up -d')."
 echo ""
 
 # ============================================================
@@ -80,14 +81,13 @@ log_success "Docker Compose is available"
 log_info "Checking required files..."
 required_files=(
     "docker-compose.yml"
-    "applications/compose/docker-compose.traefik.yml"
+    "applications/proxy/docker-compose.traefik.yml"
     "applications/databases/docker-compose.yml"
-    "applications/compose/docker-compose.yml"
-    "applications/compose/docker-compose.nginx.yml"
-    "ctc-research/docker-compose.yml"
-    "lms-demo/docker-compose.yml"
-    "VResume/docker-compose.yml"
-    "assets/package.json"
+    "applications/compose/docker-compose.applications.yml"
+    "applications/proxy/docker-compose.nginx.yml"
+    "core/ctc-research/docker-compose.yml"
+    "core/lms-demo/docker-compose.yml"
+    "core/VResume/docker-compose.yml"
 )
 
 for file in "${required_files[@]}"; do
@@ -157,7 +157,7 @@ log_info "PHASE 4: Starting Infrastructure Services"
 log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 log_info "Starting Traefik, PostgreSQL, Redis, and Media Server..."
-docker compose -f docker-compose.yml up -d traefik postgres redis shared-media >> "${LOG_FILE}" 2>&1
+docker compose -f docker-compose.yml up -d default-proxy postgres shared-media >> "${LOG_FILE}" 2>&1
 
 log_info "Waiting for infrastructure to initialize (90 seconds)..."
 for i in {1..18}; do
@@ -200,7 +200,7 @@ log_info "PHASE 5: Starting Website Services"
 log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 log_info "Starting CTC Research, LMS Demo, and VResume..."
-docker compose -f docker-compose.yml up -d web-ctc-research web-lms-demo web-vresume >> "${LOG_FILE}" 2>&1
+docker compose -f docker-compose.yml up -d ctc-research-website lms-web vresume-web >> "${LOG_FILE}" 2>&1
 
 log_info "Waiting for website services to initialize (120 seconds)..."
 for i in {1..24}; do
@@ -222,16 +222,47 @@ log_info "━━━━━━━━━━━━━━━━━━━━━━━�
 log_info "PHASE 6: Database Migration"
 log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
+# Ensure web services are running and healthy before executing migrations
+for service in ctc-research-website lms-web vresume-web; do
+    if ! docker compose -f docker-compose.yml ps -q "$service" >/dev/null 2>&1; then
+        log_error "Service $service is not running. Start the stack before running migrations."
+    fi
+    # Wait up to 60 seconds for the service to be healthy (or running if no healthcheck)
+    for i in {1..12}; do
+        status=$(docker inspect --format='{{.State.Health.Status}}' "$service" 2>/dev/null || echo "no-container")
+        running=$(docker inspect --format='{{.State.Running}}' "$service" 2>/dev/null || echo "false")
+        if [ "$status" = "healthy" ]; then
+            break
+        fi
+        # Services without a healthcheck report an empty status; accept running state instead
+        if [ -z "$status" ] && [ "$running" = "true" ]; then
+            break
+        fi
+        if [ "$status" = "unhealthy" ]; then
+            log_error "Service $service is unhealthy. Fix the health check before running migrations."
+        fi
+        if [ "$running" != "true" ]; then
+            log_error "Service $service is not running. Start the stack before running migrations."
+        fi
+        if [ "$i" -eq 12 ]; then
+            log_error "Service $service did not become healthy within 60 seconds."
+        fi
+        log_info "Waiting for $service to be healthy... ($i/12)"
+        sleep 5
+    done
+done
+log_success "All web services are running"
+
 log_info "Running migrations for CTC Research..."
-docker exec web-ctc-research python manage.py migrate --noinput >> "${LOG_FILE}" 2>&1 || log_warning "CTC Research migration may have issues"
+docker compose -f docker-compose.yml exec -T ctc-research-website python manage.py migrate --noinput >> "${LOG_FILE}" 2>&1 || log_warning "CTC Research migration may have issues"
 log_success "CTC Research migrations complete"
 
 log_info "Running migrations for LMS Demo..."
-docker exec web-lms-demo python manage.py migrate --noinput >> "${LOG_FILE}" 2>&1 || log_warning "LMS Demo migration may have issues"
+docker compose -f docker-compose.yml exec -T lms-web python manage.py migrate --noinput >> "${LOG_FILE}" 2>&1 || log_warning "LMS Demo migration may have issues"
 log_success "LMS Demo migrations complete"
 
 log_info "Running migrations for VResume..."
-docker exec web-vresume python manage.py migrate --noinput >> "${LOG_FILE}" 2>&1 || log_warning "VResume migration may have issues"
+docker compose -f docker-compose.yml exec -T vresume-web python manage.py migrate --noinput >> "${LOG_FILE}" 2>&1 || log_warning "VResume migration may have issues"
 log_success "VResume migrations complete"
 
 echo ""
@@ -244,16 +275,16 @@ log_info "PHASE 7: Collecting Static Files"
 log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 log_info "Collecting static files for CTC Research..."
-docker exec web-ctc-research python manage.py collectstatic --noinput >> "${LOG_FILE}" 2>&1
+docker compose -f docker-compose.yml exec -T ctc-research-website python manage.py collectstatic --noinput >> "${LOG_FILE}" 2>&1
 log_success "CTC Research static files collected"
 
 log_info "Collecting static files for LMS Demo..."
-docker exec web-lms-demo python manage.py collectstatic --noinput >> "${LOG_FILE}" 2>&1
+docker compose -f docker-compose.yml exec -T lms-web python manage.py collectstatic --noinput >> "${LOG_FILE}" 2>&1
 log_success "LMS Demo static files collected"
 
 log_info "Collecting static files for VResume..."
-docker exec web-vresume python manage.py collectstatic --noinput >> "${LOG_FILE}" 2>&1
-log_success "VResume static files collected"
+docker compose -f docker-compose.yml exec -T vresume-web python manage.py collectstatic --noinput >> "${LOG_FILE}" 2>&1
+log_success "VResume static files collected
 
 echo ""
 
@@ -265,7 +296,7 @@ log_info "PHASE 8: Certificate Backup"
 log_info "━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━"
 
 log_info "Creating certificate backup..."
-cd applications/proxy/traefik
+cd applications/proxy/scripts
 ./cert-backup.sh backup >> "${LOG_FILE}" 2>&1 || log_warning "Certificate backup may have failed"
 log_success "Certificate backup created"
 cd "${ROOT_DIR}"
@@ -326,13 +357,13 @@ echo "   • http://localhost/media/"
 echo ""
 echo "📋 Next Steps:"
 echo "   1. Create admin users:"
-echo "      docker exec -it web-ctc-research python manage.py createsuperuser"
-echo "      docker exec -it web-lms-demo python manage.py createsuperuser"
-echo "      docker exec -it web-vresume python manage.py createsuperuser"
+echo "      docker compose -f docker-compose.yml exec -it ctc-research-website python manage.py createsuperuser"
+echo "      docker compose -f docker-compose.yml exec -it lms-web python manage.py createsuperuser"
+echo "      docker compose -f docker-compose.yml exec -it vresume-web python manage.py createsuperuser"
 echo ""
 echo "   2. Load production data (if fixtures available):"
-echo "      docker exec web-ctc-research python manage.py loaddata fixtures/initial_data.json"
-echo "      docker exec web-lms-demo python manage.py loaddata fixtures/initial_data.json"
+echo "      docker compose -f docker-compose.yml exec -T ctc-research-website python manage.py loaddata fixtures/initial_data.json"
+echo "      docker compose -f docker-compose.yml exec -T lms-web python manage.py loaddata fixtures/initial_data.json"
 echo ""
 echo "   3. Run health checks:"
 echo "      bash run_full_test_suite.sh"

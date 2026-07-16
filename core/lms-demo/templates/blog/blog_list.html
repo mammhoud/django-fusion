@@ -1,5 +1,5 @@
 {% extends "landing/skeleton.html" %}
-{% load i18n laces %}
+{% load i18n %}
 
 {% block meta_tags %}
 <meta name="description" content="{% if current_tag %}{% blocktrans with tag=current_tag_obj.name|default:current_tag %}Posts tagged {{ tag }}{% endblocktrans %}{% elif current_category %}{% blocktrans with cat=current_category %}Category: {{ cat }}{% endblocktrans %}{% else %}{% trans 'Browse our latest blog posts' %}{% endif %}">

@@ -55,11 +55,16 @@ if importlib.util.find_spec("heroicons") is not None:
     _TEMPLATE_BUILTINS.append("heroicons.templatetags.heroicons")
 # Register django_fusion component tags (comp, slot, prop, var, css, js) as builtins
 # so templates can use {% comp %} without needing {% load components %} every time.
+# Avoid importing django_fusion.comp.configuration.conf here. That module
+# imports django.conf.settings and reads settings.DEBUG at import time; because
+# this file is itself imported while Django settings are still being built,
+# touching settings.DEBUG creates a circular import that re-enters the site
+# settings module before INSTALLED_APPS is defined. The constants below are
+# the canonical builtin module paths exported by django-fusion.
 if importlib.util.find_spec("django_fusion") is not None:
-    from django_fusion.comp.configuration.conf import COMPONENTS_BUILTINS, COMPONENTS_BUILTINS_UI
-    _TEMPLATE_BUILTINS.append(COMPONENTS_BUILTINS)
+    _TEMPLATE_BUILTINS.append("django_fusion.comp.templatetags.components")
     # Register ui_tags (table, pagination, search, form) as builtins
-    _TEMPLATE_BUILTINS.append(COMPONENTS_BUILTINS_UI)
+    _TEMPLATE_BUILTINS.append("django_fusion.templatetags.ui_tags")
 
 TEMPLATES = [
     {
@@ -73,7 +78,6 @@ TEMPLATES = [
                 # It's also registered as a builtin, but {% load %} needs the library entry.
                 "components": "django_fusion.comp.templatetags.components",
                 "ui_tags": "django_fusion.templatetags.ui_tags",
-                "laces": "laces.templatetags.laces",
             },
             "builtins": _TEMPLATE_BUILTINS,
         },

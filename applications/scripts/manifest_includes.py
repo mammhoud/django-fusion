@@ -42,9 +42,9 @@ Usage
 -----
 ::
 
-    python3 core/scripts/manifest_includes.py
-    python3 core/scripts/manifest_includes.py core/assets/templates/
-    python3 core/scripts/manifest_includes.py --json | jq '.buckets'
+    python3 applications/scripts/manifest_includes.py
+    python3 applications/scripts/manifest_includes.py core/assets/templates/
+    python3 applications/scripts/manifest_includes.py --json | jq '.buckets'
 
 Default roots (without arguments) walk the conventional template trees
 across all three sites plus the shared asset tree::

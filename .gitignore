@@ -43,7 +43,7 @@ backups/
 .env.local
 .env.*.local
 secrets.yml
-compose/config/secrets.yml
+applications/compose/config/secrets.yml
 core/libs
 core/libs/*
 # Test databases and dumps

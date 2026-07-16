@@ -4,7 +4,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tasks.email import (
+from www.worker.email import (
     EMAIL_SERVICE_PATHS,
     send_bulk_email_task,
     send_email_raw,
@@ -16,8 +16,8 @@ from tasks.email import (
 # ---------------------------------------------------------------------------
 
 class TestSendEmailTask:
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_successful_send(self, mock_configure, mock_import):
         mock_configure.return_value = "lms-demo"
         mock_service_instance = MagicMock()
@@ -40,8 +40,8 @@ class TestSendEmailTask:
             context={"name": "Alice"},
         )
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_send_with_none_context(self, mock_configure, mock_import):
         mock_configure.return_value = "lms-demo"
         mock_service_instance = MagicMock()
@@ -54,8 +54,8 @@ class TestSendEmailTask:
             to="u@e.com", subject="Hi", template="t.html", context={},
         )
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_raises_on_service_false(self, mock_configure, mock_import):
         mock_configure.return_value = "lms-demo"
         mock_service_instance = MagicMock()
@@ -72,8 +72,8 @@ class TestSendEmailTask:
 # ---------------------------------------------------------------------------
 
 class TestSendBulkEmailTask:
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_bulk_send_all_succeed(self, mock_configure, mock_import):
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = True
@@ -91,8 +91,8 @@ class TestSendBulkEmailTask:
         )
         assert result == {"success": 2, "failed": 0}
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_bulk_send_skips_no_email(self, mock_configure, mock_import):
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = True
@@ -108,8 +108,8 @@ class TestSendBulkEmailTask:
         )
         assert result == {"success": 1, "failed": 0}
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_bulk_send_counts_failures(self, mock_configure, mock_import):
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = False
@@ -121,8 +121,8 @@ class TestSendBulkEmailTask:
         )
         assert result == {"success": 0, "failed": 1}
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_bulk_send_catches_exceptions(self, mock_configure, mock_import):
         mock_service_instance = MagicMock()
         mock_service_instance.send.side_effect = RuntimeError("SMTP error")
@@ -134,8 +134,8 @@ class TestSendBulkEmailTask:
         )
         assert result == {"success": 0, "failed": 1}
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_bulk_send_merges_context(self, mock_configure, mock_import):
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = True
@@ -157,8 +157,8 @@ class TestSendBulkEmailTask:
 # ---------------------------------------------------------------------------
 
 class TestSendEmailRaw:
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_send_raw_email(self, mock_configure, mock_import):
         mock_email = MagicMock()
         mock_email.send.return_value = 1
@@ -179,8 +179,8 @@ class TestSendEmailRaw:
         mock_email.attach_alternative.assert_called_once_with("<p>hi</p>", "text/html")
         mock_email.attach.assert_called_once()
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_send_raw_email_no_reply_to(self, mock_configure, mock_import):
         mock_email = MagicMock()
         mock_email.send.return_value = 1
@@ -197,8 +197,8 @@ class TestSendEmailRaw:
         call_kwargs = mock_class.call_args[1]
         assert call_kwargs["reply_to"] is None
 
-    @patch("tasks.email.import_first")
-    @patch("tasks.email.configure_django_for_website")
+    @patch("www.worker.email.import_first")
+    @patch("www.worker.email.configure_django_for_website")
     def test_send_raw_returns_false_on_zero(self, mock_configure, mock_import):
         mock_email = MagicMock()
         mock_email.send.return_value = 0

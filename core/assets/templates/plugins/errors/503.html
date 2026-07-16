@@ -25,7 +25,6 @@
     <meta http-equiv="Retry-After" content="{{ retry_after|default:'3600' }}">
 {% endblock %}
 
-
 {% block styles %}
     {% load webpack_loader %}
     {% render_bundle 'static' 'css' %}

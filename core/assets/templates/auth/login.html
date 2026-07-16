@@ -1,5 +1,5 @@
 {% load i18n %}
-{% load static laces %}
+{% load static %}
 {# Context fields: form, request #}
 {# Placeholders: none #}
 <!-- SSE Connection for Real-time Notifications -->
@@ -12,7 +12,6 @@
         {% trans "Enter your credentials to access your account" %}
       </p>
     </header>
-
 
     <!-- Form Errors Container -->
     <div id="form-errors" class="mb-3">
@@ -114,7 +113,7 @@
           <span id="login-spinner" class="spinner-border spinner-border-sm ms-2 htmx-indicator"></span>
         </button>
       </div>
-      {% load socialaccount laces %}
+      {% load socialaccount %}
       {% get_providers as socialaccount_providers %}
       {% if socialaccount_providers %}
       <!-- Divider -->

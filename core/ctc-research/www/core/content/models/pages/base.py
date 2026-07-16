@@ -18,7 +18,9 @@ from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Page
 from wagtail.search import index
 
-from www.core.content.models._compat import ContactMethodBlock, FAQSectionBlock, Organization
+from ceptor_ai.blocks.contact.contact_methods import ContactMethodBlock
+from ceptor_ai.blocks.partials.faq import FAQSectionBlock
+from ceptor_ai.handlers.models.manage_company import Organization
 from www.core.content.models.contact import ContactSubmission
 
 from ..blocks.form import MinimalContactFormBlock

@@ -12,7 +12,7 @@ services:
   ctc-research-website:
     build:
       context: ../..
-      dockerfile: compose/Dockerfile
+      dockerfile: core/compose/Dockerfile
       args:
         PROJECT_PATH: ctc-research
     image: ctc-research-website:latest
@@ -65,7 +65,6 @@ services:
       - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
-      - ../tasks:/app/tasks:z
       - ../www:/app/www:z
       - ../manage.py:/app/manage.py:z
       - ../cli.py:/app/cli.py:z
@@ -84,7 +83,7 @@ services:
   ctc-worker:
     build:
       context: ../..
-      dockerfile: compose/Dockerfile
+      dockerfile: core/compose/Dockerfile
       args:
         PROJECT_PATH: ctc-research
     image: ctc-worker:latest
@@ -119,14 +118,13 @@ services:
       PROJECT_PATH: ctc-research
       WEBSITE_HOST: ${CTC_RESEARCH_HOST:-ctc-research.com}
       CELERY_TASK_DEFAULT_QUEUE: ctc-research
-    command: celery -A tasks.celery:app worker --loglevel=info --queues=ctc-research
+    command: celery -A www.worker.celery:app worker --loglevel=info --queues=ctc-research
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
       - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
-      - ../tasks:/app/tasks:z
       - ../www:/app/www:z
       - ../manage.py:/app/manage.py:z
       - ../cli.py:/app/cli.py:z

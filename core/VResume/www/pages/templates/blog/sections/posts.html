@@ -1,6 +1,6 @@
 {# Blog Posts Section #}
 {# Grid + list view with search/filter support and HTMX modal integration #}
-{% load i18n static wagtailimages_tags laces %}
+{% load i18n static wagtailimages_tags %}
 
 {% with post_list=page_obj.object_list|default:posts %}
 <div class="grid-section__listing" data-blog-grid>

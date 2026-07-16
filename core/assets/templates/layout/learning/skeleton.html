@@ -21,7 +21,6 @@
 {% comp 'learning/header/learning.html' /%}
 {% endblock header %}
 
-
 {% block body %}
 
 {# ====================================================== #}
@@ -42,7 +41,6 @@
 <main class="lms-shell" data-usecase="lms" data-animate="fade-up">
     {% block content %}
 
-
     {% endblock content %}
 </main>
 
@@ -52,11 +50,9 @@
     {{ block.super }}
 {% endblock %}
 
-
 {% block extra_scripts %}
     {{ block.super }}
 {% endblock %}
-
 
 {% block extra_assets %}
     {{ block.super }}

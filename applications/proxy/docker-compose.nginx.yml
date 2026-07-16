@@ -5,7 +5,7 @@
 
 networks:
   traefik-net:
-    name: traefik-net
+    external: true
   common:
     external: true
 

@@ -23,7 +23,7 @@ away in Phase 4.
 All three sites already share:
 - Postgres on `postgres:5432` (separate logical DBs: `db_structa`, `db_ctc`, `vresume`).
 - Redis on `default-redis:6379` (logical DBs `/0` cache, `/1` broker, `/2` results).
-- Celery image (`applications/compose/Dockerfile` with `PROJECT_PATH=…`).
+- Celery image (`core/compose/Dockerfile` with `PROJECT_PATH=…`).
 - `tasks.celery:app` module.
 
 The broker is already shared — consolidating the worker process is safe.
@@ -37,7 +37,7 @@ celery -A tasks.celery:app worker --loglevel=info -Q lms-demo,ctc-research,vresu
 ```
 
 subscribed to all three queues simultaneously. The image re-uses
-`applications/compose/Dockerfile` with a new build arg `WORKER_MODE=shared` that copies
+`core/compose/Dockerfile` with a new build arg `WORKER_MODE=shared` that copies
 `core/<site>/www/` for every site into one image under `/app/<site>/`.
 
 Per-site isolation is preserved **at the queue level** — a buggy task on one
@@ -96,7 +96,7 @@ report) use the explicit alias.
 
 ### Phase 1 — Code prep (no runtime change)
 1. Add `core/configs/settings_shared.py` with the multi-DB dict + SiteRouter.
-2. Update `core/webpack/` and `core/scripts/` (if they build shared-worker image) — no behaviour change.
+2. Update `core/webpack/` and `applications/scripts/` (if they build shared-worker image) — no behaviour change.
 3. Add `applications/compose/docker-compose.shared-worker.yml` with `shared-worker` service (initially stopped).
 4. Add new entry in `CELERY_TASK_ROUTES` only if a task name collides across sites (verify with `rg -n '@shared_task' core/`).
 

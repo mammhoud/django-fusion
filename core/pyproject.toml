@@ -43,6 +43,8 @@ dependencies = [
     "celery[redis]",
     "django-celery-beat",
     "django-celery-results",
+    "dramatiq[redis]",
+    "django-dramatiq",
     # Storage & media
     "django-storages[boto3]",
     # Config & env
@@ -122,17 +124,20 @@ DJANGO_SETTINGS_MODULE = "tests.settings"
 # django-fusion test corpus (which uses a different Django settings config)
 # into the same collection pass.
 testpaths = [
-    "tests",
+    "../tests",
     "libs/django-fusion/tests/analyzer",
 ]
 python_files = ["test_*.py", "*_test.py"]
 python_classes = ["Test*"]
 python_functions = ["test_*"]
-# ``.`` so ``from apps.*`` imports resolve (workspace tests rely on this).
-# ``libs/django-fusion/src`` so ``from django_fusion.analyzer.*`` resolves
-# when pytest is invoked from the workspace root, independent of whether
-# the editable install has materialised the .pth file.
+# ``..`` adds the workspace root so ``tests.settings`` resolves when pytest
+# is invoked from ``core/``. ``.`` so ``from apps.*`` imports resolve
+# (workspace tests rely on this). ``libs/django-fusion/src`` so
+# ``from django_fusion.analyzer.*`` resolves when pytest is invoked from
+# ``core/``, independent of whether the editable install has materialised
+# the .pth file.
 pythonpath = [
+    "..",
     ".",
     "libs/django-fusion/src",
 ]

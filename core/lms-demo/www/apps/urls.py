@@ -7,8 +7,17 @@ from django.contrib.auth import views as auth_views
 from django.urls import include, path
 from django.views.generic.base import TemplateView
 
+from plugins.products.views.cart import (
+    CartAddItemView,
+    CartCountView,
+    CartRemoveItemView,
+    CartSubtotalView,
+    CartUpdateQuantityView,
+    CartView,
+    CheckoutView,
+)
+
 from .apps import AccountsConfig
-from .site import *
 
 app_name = AccountsConfig.label
 

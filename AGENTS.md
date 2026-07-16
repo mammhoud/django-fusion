@@ -8,7 +8,7 @@ Structa Cloud is a Django monorepo under `core/`, with multiple site projects, s
 - `core/configs/` contains shared Django configuration and settings used across sites.
 - `core/assets/` contains shared frontend assets, shared templates, static files, locale files, and asset scripts.
 - `core/libs/` contains local reusable libraries that are developed alongside the sites.
-- `core/scripts/`, `core/tasks/`, and `core/webpack/` contain shared automation, task, and build tooling.
+- `applications/scripts/` contains shared automation and build tooling. `core/tasks/` and `core/webpack/` contain shared task and build tooling.
 - `core/www/` contains shared/core Django code used by the application stack.
 
 ## Canonical Site Paths
@@ -23,7 +23,7 @@ Each site can contain its own `assets/`, `plugins/`, `templates/`, `tests/`, `ww
 Shared settings live under `core/configs/`:
 - `core/configs/base/` for base configuration modules.
 - `core/configs/settings/` for environment/site settings.
-- `core/configs/tests/` for test settings and test configuration helpers.
+- `tests/core/configs/` for test settings and test configuration helpers.
 
 Prefer adding common settings in `core/configs/` rather than duplicating them inside individual sites. Keep site-specific overrides in the relevant site path.
 

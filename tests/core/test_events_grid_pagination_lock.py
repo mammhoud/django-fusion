@@ -22,8 +22,8 @@ from __future__ import annotations
 
 from pathlib import Path
 
-# core/ is parent[1] (parent[0] is core/tests).
-ROOT = Path(__file__).resolve().parents[1]
+# tests/ is parent[0], workspace root is parent[1]; canonical apps live under core/.
+ROOT = Path(__file__).resolve().parents[2] / "core"
 
 GRID_PARTIAL = (
     ROOT / "assets" / "templates" / "events" / "includes" / "events_grid.html"

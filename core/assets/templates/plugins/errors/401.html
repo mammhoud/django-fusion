@@ -25,7 +25,6 @@
     <meta http-equiv="WWW-Authenticate" content="Basic realm='{{ site_name|default:'Website' }}'">
 {% endblock %}
 
-
 {% block styles %}
     {% load webpack_loader %}
     {% render_bundle 'static' 'css' %}

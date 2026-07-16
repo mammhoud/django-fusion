@@ -93,6 +93,20 @@ print('JSON_END')
 # ── cached query (runs docker exec once per test session) ─────────────────
 
 
+def _container_available() -> bool:
+    """Return True if the lms-web container is running."""
+    try:
+        result = subprocess.run(
+            ["docker", "ps", "--filter", "name=lms-web", "--format", "{{.Names}}"],
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+    except (FileNotFoundError, subprocess.TimeoutExpired):
+        return False
+    return result.returncode == 0 and "lms-web" in result.stdout
+
+
 @functools.lru_cache(maxsize=1)
 def _query_event_pages() -> tuple[dict[str, Any], ...]:
     """Run the query script inside the lms-web container and return JSON rows.
@@ -100,6 +114,8 @@ def _query_event_pages() -> tuple[dict[str, Any], ...]:
     Cached via ``lru_cache`` so all 4 test methods share the same container
     exec result — no redundant docker calls.
     """
+    if not _container_available():
+        pytest.skip("lms-web container is not running")
     try:
         result = subprocess.run(
             DOCKER_EXEC + [QUERY_SCRIPT],

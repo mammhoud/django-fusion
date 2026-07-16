@@ -56,11 +56,11 @@ class VResumePageTest(BaseTestCase):
 
 ## Populating Test Content
 
-VResume's `VResume/www/tests/data_populator.py` creates sample portfolio content (Wagtail pages,
+VResume's `tests/websites/vresume/data_populator.py` creates sample portfolio content (Wagtail pages,
 images, blog posts) using Pillow for image generation. It is a standalone script invoked as:
 
 ```bash
-python manage.py --site=vresume shell < VResume/www/tests/data_populator.py
+python manage.py --site=vresume shell < tests/websites/vresume/data_populator.py
 ```
 
 For full integration with `django-fusion`, consider migrating data_populator to use

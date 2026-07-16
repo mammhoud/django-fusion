@@ -842,6 +842,20 @@ wheels = [
 ]
 
 [[package]]
+name = "django-dramatiq"
+version = "0.15.0"
+source = { registry = "https://pypi.org/simple" }
+dependencies = [
+    { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
+    { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
+    { name = "dramatiq" },
+]
+sdist = { url = "https://files.pythonhosted.org/packages/2b/b7/2a5ac56a5fd41fbe332221d3906168ace96df6a1f3c92d0839c4c7133cb2/django_dramatiq-0.15.0.tar.gz", hash = "sha256:e3cf1b2ac288fe4a7aa198c9450fe242ed312df8850f3f9e18ce01b8acc78b96", size = 15763, upload-time = "2025-11-13T15:53:40.115Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/4a/3a/4d2e6f89ee0b9a79a271f0ead1a6c25f6cab291735493b083e316ab86130/django_dramatiq-0.15.0-py3-none-any.whl", hash = "sha256:23f0bc418a860952adbf822c4aa3b9c46c51d3d9f50be0a8ed3d19a53380df1d", size = 12620, upload-time = "2025-11-13T15:53:38.878Z" },
+]
+
+[[package]]
 name = "django-embed-video"
 version = "1.4.10"
 source = { registry = "https://pypi.org/simple" }
@@ -1270,6 +1284,20 @@ source = { registry = "https://pypi.org/simple" }
 sdist = { url = "https://files.pythonhosted.org/packages/4f/61/8b7fab482ef246f931b57f55f370e68377a53dcf5259f3fcf01e4889d4af/draftjs_exporter-5.2.0.tar.gz", hash = "sha256:4d665f8c75fd173d2c99326405300e8defcf4961b9b2f16ff117486489c6760b", size = 19674, upload-time = "2026-01-02T14:19:38.17Z" }
 wheels = [
     { url = "https://files.pythonhosted.org/packages/53/e1/2f81aa30ba22ceabb6779ed5dbd6b27fbf6f28deabad91140d1a32f3da5b/draftjs_exporter-5.2.0-py3-none-any.whl", hash = "sha256:f5255510a9c1de60807c1ba4be9666fb44ba263841b63329c8ce70d66146764c", size = 26251, upload-time = "2026-01-02T14:19:36.843Z" },
+]
+
+[[package]]
+name = "dramatiq"
+version = "2.2.0"
+source = { registry = "https://pypi.org/simple" }
+sdist = { url = "https://files.pythonhosted.org/packages/29/fb/78b1b689c4a121fc762ab6f00674cfa7246980678117edb03cbb168e5f9f/dramatiq-2.2.0.tar.gz", hash = "sha256:70c9278b0a9b880aeb23b8e09c9d43b1421ac8e807ef18903f6dd059130474a1", size = 108462, upload-time = "2026-06-17T11:18:34.629Z" }
+wheels = [
+    { url = "https://files.pythonhosted.org/packages/ef/57/a9be0b205b24e794c833a5295497f914776eb4d606d5a25a5b290e8b75ec/dramatiq-2.2.0-py3-none-any.whl", hash = "sha256:2b2aa244b4098e154600c47cdb2c04cec6c3af44e9e159c319c6fc8b6f0ba90e", size = 127342, upload-time = "2026-06-17T11:18:33.433Z" },
+]
+
+[package.optional-dependencies]
+redis = [
+    { name = "redis" },
 ]
 
 [[package]]
@@ -3356,6 +3384,7 @@ dependencies = [
     { name = "django-colorfield" },
     { name = "django-crispy-forms" },
     { name = "django-debug-toolbar" },
+    { name = "django-dramatiq" },
     { name = "django-embed-video" },
     { name = "django-environ" },
     { name = "django-extensions" },
@@ -3378,6 +3407,7 @@ dependencies = [
     { name = "django-unfold" },
     { name = "django-webpack-loader" },
     { name = "draftjs-exporter" },
+    { name = "dramatiq", extra = ["redis"] },
     { name = "dynaconf", extra = ["vault"] },
     { name = "environ" },
     { name = "fido2" },
@@ -3441,6 +3471,7 @@ requires-dist = [
     { name = "django-colorfield" },
     { name = "django-crispy-forms" },
     { name = "django-debug-toolbar" },
+    { name = "django-dramatiq" },
     { name = "django-embed-video" },
     { name = "django-environ" },
     { name = "django-extensions" },
@@ -3464,6 +3495,7 @@ requires-dist = [
     { name = "django-unfold" },
     { name = "django-webpack-loader" },
     { name = "draftjs-exporter" },
+    { name = "dramatiq", extras = ["redis"] },
     { name = "dynaconf", extras = ["vault"] },
     { name = "environ" },
     { name = "fido2" },

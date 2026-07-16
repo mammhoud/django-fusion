@@ -66,7 +66,7 @@ if sys.version_info < (3, 11):
 
 import tomllib  # noqa: E402  (deliberately after the version gate above)
 
-# This script lives at core/scripts/check_extras_in_docs.py.
+# This script lives at applications/scripts/check_extras_in_docs.py.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 DEFAULT_SCOPE = REPO_ROOT / "applications" / "libs"
 

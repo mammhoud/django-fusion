@@ -1,6 +1,6 @@
 {# Portfolio Projects Section #}
 {# Grid + list view with search/filter support and HTMX modal integration #}
-{% load i18n static wagtailimages_tags laces %}
+{% load i18n static wagtailimages_tags %}
 
 {% with projects=page_obj.object_list|default:featured_projects %}
 <div class="grid-section__listing" data-portfolio-grid>

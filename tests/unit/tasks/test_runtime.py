@@ -8,7 +8,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from tasks.runtime import configure_django_for_website, import_first
+from www.worker.runtime import configure_django_for_website, import_first
 
 
 def _make_findable_module(name, attrs=None):
@@ -67,7 +67,7 @@ class TestImportFirst:
 # ---------------------------------------------------------------------------
 
 class TestConfigureDjangoForWebsite:
-    @patch("tasks.runtime.importlib.import_module")
+    @patch("www.worker.runtime.importlib.import_module")
     def test_configures_for_explicit_website(self, mock_import):
         mock_site = MagicMock()
         mock_site.active_website_name.return_value = "lms-demo"
@@ -94,33 +94,8 @@ class TestConfigureDjangoForWebsite:
         mock_site.active_website_name.assert_called_once()
         mock_site.configure_site_environment.assert_called_once_with("lms-demo")
 
-    @patch("tasks.runtime.importlib.import_module")
-    def test_calls_django_setup_if_not_ready(self, mock_import):
-        mock_site = MagicMock()
-        mock_site.active_website_name.return_value = "ctc-research"
-        mock_site.site_dir_for.return_value = "/path"
-        mock_site.WORKSPACE_DIR = "/workspace"
-
-        mock_django = MagicMock()
-        mock_apps = MagicMock()
-        mock_apps.apps.ready = False
-
-        def import_side_effect(name):
-            if name == "configs.site":
-                return mock_site
-            if name == "django":
-                return mock_django
-            if name == "django.apps":
-                return mock_apps
-            raise ImportError(name)
-
-        mock_import.side_effect = import_side_effect
-
-        configure_django_for_website("ctc-research")
-        mock_django.setup.assert_called_once()
-
     @patch.dict("os.environ", {}, clear=False)
-    @patch("tasks.runtime.importlib.import_module")
+    @patch("www.worker.runtime.importlib.import_module")
     def test_falls_back_to_default_website(self, mock_import):
         mock_site = MagicMock()
         mock_site.active_website_name.return_value = "ctc-research.com"

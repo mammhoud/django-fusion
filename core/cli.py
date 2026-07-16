@@ -54,6 +54,22 @@ SITES = {
         "port": 5074,
         "db_name": "db_crm",
     },
+    "shared": {
+        "path": "shared",
+        "project_path": "shared",
+        "service": "shared-worker",
+        "port": 5080,
+        # Sentinel-only loud-fail: shared-worker is the one site whose
+        # container can route tasks to any site DB at runtime, so a
+        # hardcoded db_name fallback would silently misroute cross-site
+        # data. Per-site workers have a fixed container↔DB pairing —
+        # their hardcoded db_name fallbacks are safe to keep.
+        # Ad-hoc invocations of `python core/cli.py ... --site shared`
+        # trip the explicit-empty guard rendered by `SiteCLI.site_env()`
+        # later in this file and raise a clear SystemExit instead of
+        # silently landing on the wrong DB.
+        "db_name": None,
+    },
 }
 
 SITE_ALIASES = {
@@ -74,6 +90,10 @@ SITE_ALIASES = {
     "sales": "crm",
     "inventory": "crm",
     "crm.structa.cloud": "crm",
+    "shared": "shared",
+    "shared-worker": "shared",
+    "shared-scheduler": "shared",
+    "tasks": "shared",
 }
 
 LIBS = {
@@ -153,6 +173,24 @@ class SiteCLI:
         """Return a complete environment dict for the current site."""
         cfg = self.config
         env = os.environ.copy()
+        # ── DB_NAME loud-fail for sentinel sites ──────────────────────────
+        # SITES["shared"]["db_name"] = None deliberately: docker-compose
+        # tasks.yml forces DB_NAME via ${DB_NAME:?...} before invoking the
+        # worker, but ad-hoc `python core/cli.py ... --site shared` runs
+        # outside that guard and previously fell through to "None" → "
+        # database 'None' does not exist". This check converts the opaque
+        # failure mode into a single clear SystemExit at configure time.
+        # Use explicit empty-string handling (`.strip()`) instead of truthy
+        # `or` so DB_NAME="" (operator typo) does not silently fall through
+        # to the cfg fallback.
+        db_name = env.get("DB_NAME", "").strip() or cfg.get("db_name")
+        if not db_name:
+            raise SystemExit(
+                f"DB_NAME not set and SITES[{self.site!r}] has no default. "
+                f"Sentinel site '{self.site}' requires an explicit DB_NAME — "
+                f"set it in env or via docker-compose tasks.yml "
+                f"applications/compose/docker-compose.tasks.yml loud-fail form."
+            )
         env.update(
             {
                 "DJANGO_SITE": self.site,
@@ -162,7 +200,7 @@ class SiteCLI:
                 "PROJECT_PATH": cfg["project_path"],
                 "DJANGO_WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
                 "WEBSITE_DIR": str(REPO_ROOT / cfg["path"]),
-                "DB_NAME": env.get("DB_NAME", cfg["db_name"]),
+                "DB_NAME": db_name,
                 "DJANGO_SETTINGS_MODULE": "settings",
                 "ALLOWED_HOSTS": "*",
             }
@@ -171,19 +209,39 @@ class SiteCLI:
         return env
 
     def configure_django(self) -> None:
-        """Set up sys.path and environment so Django can run for this site."""
+        """Set up sys.path and environment so Django can run for this site.
+
+        Sentinel sites (e.g., 'shared') are configuration constructs without
+        their own runtime directory; their workers boot using a tenant's
+        full settings module (the compose routes DJANGO_SETTINGS_MODULE to
+        `ctc-research.settings` directly). Skip the directory-existence
+        SystemExit + sys.path prepend when the site is a sentinel (marked
+        by `db_name: None` in SITES, which is the same marker that triggers
+        the loud-fail DB_NAME guard in `site_env()` below).
+        """
         cfg = self.config
         site_dir = REPO_ROOT / cfg["path"]
-        if not site_dir.exists():
+        is_sentinel = cfg.get("db_name") is None
+
+        if not site_dir.exists() and not is_sentinel:
             raise SystemExit(f"Site directory not found: {site_dir}")
 
-        for path in (site_dir / "www", site_dir, REPO_ROOT):
-            path_str = str(path)
-            if path_str not in sys.path:
-                sys.path.insert(0, path_str)
+        if site_dir.exists():
+            for path in (site_dir / "www", site_dir, REPO_ROOT):
+                path_str = str(path)
+                if path_str not in sys.path:
+                    sys.path.insert(0, path_str)
+        elif str(REPO_ROOT) not in sys.path:
+            # Sentinel: only insert REPO_ROOT so the workspace-level paths
+            # (configs, www) stay on sys.path. The DJANGO_SETTINGS_MODULE env
+            # explicitly points at a tenant's settings module.
+            sys.path.insert(0, str(REPO_ROOT))
 
         os.environ.update(self.site_env())
-        print(f"Using site '{self.site}' (site path: {site_dir})", file=sys.stderr)
+        print(
+            f"Using site '{self.site}' (site path: {site_dir}, sentinel={is_sentinel})",
+            file=sys.stderr,
+        )
 
     # ------------------------------------------------------------------
     #  Helpers (run, pop site arg)

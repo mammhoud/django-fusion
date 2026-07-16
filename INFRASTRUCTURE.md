@@ -80,7 +80,7 @@
 
 | Property | Value |
 |----------|-------|
-| **Image** | Built from `applications/compose/Dockerfile` |
+| **Image** | Built from `core/compose/Dockerfile` |
 | **Container Name** | `ctc-research-website` |
 | **Port** | 5070 (internal, not exposed) |
 | **Status** | ✅ Healthy |
@@ -272,7 +272,7 @@ docker volume inspect structacloud_media
 
 ```
 /home/structa.cloud/applications/proxy/traefik/dynamic → /etc/traefik/dynamic (Traefik configs)
-/home/structa.cloud/applications/applications/proxy/acme → /etc/traefik/acme (Let's Encrypt store)
+/home/structa.cloud/applications/proxy/acme → /etc/traefik/acme (Let's Encrypt store)
 /home/structa.cloud/applications/proxy/certs → /etc/traefik/certs (Self-signed fallback)
 ```
 
@@ -293,7 +293,7 @@ docker exec -i postgres psql -U structa_user ctc_research_db < backup.sql
 **Let's Encrypt Certs:**
 ```bash
 # Backup ACME store
-cp -r /home/structa.cloud/applications/applications/proxy/acme/acme.json /home/structa.cloud/applications/applications/proxy/acme/backups/acme_$(date +%Y%m%d_%H%M%S).json
+cp -r /home/structa.cloud/applications/proxy/acme/acme.json /home/structa.cloud/applications/proxy/acme/backups/acme_$(date +%Y%m%d_%H%M%S).json
 
 # Traefik will auto-renew within 30 days before expiry
 ```
@@ -437,7 +437,7 @@ docker restart ctc-research-website
 **Let's Encrypt cert issues:**
 ```bash
 # Restore from backup
-cp /home/structa.cloud/applications/applications/proxy/acme/backups/acme_*.json /home/structa.cloud/applications/applications/proxy/acme/acme.json
+cp /home/structa.cloud/applications/proxy/acme/backups/acme_*.json /home/structa.cloud/applications/proxy/acme/acme.json
 docker restart default-proxy
 ```
 

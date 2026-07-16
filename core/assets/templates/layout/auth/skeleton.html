@@ -25,9 +25,7 @@
 {% block header %}
 {% endblock header %}
 
-
 {% block bodyclass %}auth-page{% endblock %}
-
 
 {% block body_attr %}
 data-page="auth"
@@ -41,14 +39,12 @@ data-page="auth"
 </main>
 {% endblock body %}
 
-
 {% block extra_body %}
 {{ block.super }}
 {% if PASSKEY_LOGIN_ENABLED %}
 {% comp "plugins/mfa/webauthn/snippets/login_script.html" button_id="passkey_login" / %}
 {% endif %}
 {% endblock %}
-
 
 {% block scripts %}
     {{ block.super }}

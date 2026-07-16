@@ -1,6 +1,6 @@
 {% load i18n static %}
 {% load render_bundle from webpack_loader %}
-{% load vresume_settings_tags laces %}
+{% load vresume_settings_tags %}
 {% get_vresume_settings as settings %}
 
 {% get_current_language as LANGUAGE_CODE %}
@@ -26,7 +26,7 @@
 
     {% block favicon %}
         {% if settings.communications.VResumeSettings.favicon %}
-            {% load wagtailimages_tags laces %}
+            {% load wagtailimages_tags %}
             {% image settings.communications.VResumeSettings.favicon width-32 as favicon %}
             <link rel="icon" type="image/png" href="{{ favicon.url }}" sizes="32x32">
             <link rel="apple-touch-icon" href="{{ favicon.url }}">
@@ -129,6 +129,5 @@
     {% block extra_assets %}{% endblock %}
 
 </body>
-
 
 </html>

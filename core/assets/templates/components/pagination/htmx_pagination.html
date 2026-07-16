@@ -3,6 +3,6 @@
    Kept for existing callers. New code should use:
      {% comp_include "components/pagination.html" ... %}
    or
-     {% load ui_tags laces %}{% pagination ... %}
+     {% load ui_tags %}{% pagination ... %}
 #}
 {% comp "components/pagination.html" page_obj=page_obj query_string=query_string hx_target=hx_target / %}

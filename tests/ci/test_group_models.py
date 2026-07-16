@@ -7,7 +7,7 @@ Tests model structure and basic functionality without database operations.
 from django.contrib.auth.models import Group, Permission, User
 from django.contrib.contenttypes.models import ContentType
 from django.test import TestCase
-from www.core.CI.models.group import (
+from www.ci.models.group import (
     GroupContentAccess,
     RoleEmailMapping,
     WagtailGroupRole,

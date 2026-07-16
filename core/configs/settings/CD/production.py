@@ -95,6 +95,22 @@ CACHES["redis"] = {
     "TIMEOUT": CACHE_MIDDLEWARE_SECONDS,
 }
 
+# Re-declare the `session` alias that `core/configs/base/cache.py` defines
+# via `from configs.base import *`, but is then wiped out by `from .core import *`
+# in CD/core.py (which overwrites CACHES with {default, file} keys only).
+# Without `session`, `SESSION_ENGINE = django.contrib.sessions.backends.cache`
+# fails with `InvalidCacheBackendError: The connection 'session' doesn't exist.`
+_session_db = (_redis_url_no_password.rsplit("/", 1)[0]) + "/1"
+CACHES["session"] = {
+    "BACKEND": "django_redis.cache.RedisCache",
+    "LOCATION": _session_db,
+    "OPTIONS": {
+        "CLIENT_CLASS": "django_redis.client.DefaultClient",
+        "IGNORE_EXCEPTIONS": True,
+    },
+    "KEY_PREFIX": "django_session",
+}
+
 CACHE_MIDDLEWARE_ALIAS = "redis"
 
 # -------------------------------------------------------------------

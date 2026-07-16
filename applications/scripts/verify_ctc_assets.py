@@ -10,9 +10,9 @@ Audits the ctc-research.com frontend asset pipeline for consistency across:
   - Traefik routing (static/media path prefixes and media subdomain)
 
 Usage:
-    python core/scripts/verify_ctc_assets.py
-    python core/scripts/verify_ctc_assets.py --strict
-    python core/scripts/verify_ctc_assets.py --site ctc-research
+    python applications/scripts/verify_ctc_assets.py
+    python applications/scripts/verify_ctc_assets.py --strict
+    python applications/scripts/verify_ctc_assets.py --site ctc-research
 
 Exit codes:
     0 = all checks passed

@@ -96,54 +96,63 @@ class Command(BaseCommand):
         the default Wagtail 'Welcome to your new Wagtail site!' page.
         Prefers English locale (locale_id=1).
         Falls back to any live depth=2 page.
+        If no suitable HomePage exists, create one under the root page.
         """
         from wagtail.models import Page
+        from www.core.content.models.pages.home import HomePage
 
         WAGTAIL_DEFAULT_TITLE = "Welcome to your new Wagtail site!"
 
         # Try project-specific HomePage model first
-        for model_path in [
-            "www.core.content.models.pages.home.HomePage",
-            "www.core.content.models.HomePage",
-            "www.apps.content.models.pages.home.HomePage",
-        ]:
-            try:
-                module, cls = model_path.rsplit(".", 1)
-                import importlib
-                mod = importlib.import_module(module)
-                HomePageClass = getattr(mod, cls)
-                home = HomePageClass.objects.filter(live=True, depth=2).first()
-                if home:
-                    return home
-            except Exception:
-                continue
-
-        # Prefer English (locale_id=1), skip the default welcome page
-        home = (
-            Page.objects
-            .filter(live=True, depth=2, locale_id=1)
-            .exclude(title=WAGTAIL_DEFAULT_TITLE)
-            .order_by("path")
-            .first()
-        )
+        home = HomePage.objects.filter(live=True, depth=2).first()
         if home:
             return home
 
-        # Any live depth=2 page that isn't the welcome page
-        home = (
-            Page.objects
-            .filter(live=True, depth=2)
-            .exclude(title=WAGTAIL_DEFAULT_TITLE)
-            .order_by("path")
-            .first()
-        )
-        if home:
-            return home
+        # No HomePage yet — remove the default welcome page first, then create
+        # a HomePage under the root page.
+        self.stdout.write(self.style.WARNING(
+            "⚠️  No HomePage found — creating a default HomePage under the root page"
+        ))
 
-        # Last resort: keep startup idempotent on a freshly migrated database by
-        # using Wagtail's generated welcome page until real content fixtures are
-        # loaded.
-        return Page.objects.filter(live=True, depth=2).order_by("path").first()
+        # Remove the default Wagtail welcome page to free the 'home' slug.
+        # Prefer deleting the current default site's root page when it is a
+        # plain Wagtail Page (not a HomePage). Fall back to the legacy welcome
+        # page title only when no default site exists yet.
+        # Fetch the root node *after* deletion so treebeard's numchild state
+        # stays in sync and add_child() can compute the new path correctly.
+        welcome_page = None
+        default_site = Site.objects.filter(is_default_site=True).first()
+        if default_site and default_site.root_page:
+            root_page = default_site.root_page.specific
+            if not isinstance(root_page, HomePage):
+                welcome_page = default_site.root_page
+        if welcome_page is None:
+            welcome_page = Page.objects.filter(
+                depth=2, title=WAGTAIL_DEFAULT_TITLE
+            ).first()
+
+        if welcome_page:
+            welcome_page.delete()
+            self.stdout.write(self.style.SUCCESS(
+                "✅ Removed default Wagtail welcome page"
+            ))
+
+        root = Page.get_first_root_node()
+
+        home = HomePage(
+            title="Home",
+            slug="home",
+            live=True,
+            show_in_menus=True,
+            head=[],
+            summary=[],
+            CTA=[],
+            contact_form=[],
+        )
+        root.add_child(instance=home)
+        home.save_revision().publish()
+
+        return home
 
     def _resolve_hostname(self):
         """Resolve hostname from env or settings."""

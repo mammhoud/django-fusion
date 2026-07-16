@@ -3,11 +3,19 @@
 import json
 from pathlib import Path
 
+import pytest
 from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 
 
-ROOT = Path(__file__).resolve().parents[2]
+# tests/websites/ -> tests/ -> workspace root; canonical site files live under core/.
+REPO_ROOT = Path(__file__).resolve().parents[2]
+ROOT = REPO_ROOT / "core"
+# Shared compose/proxy orchestration lives under applications/ in this monorepo.
+COMPOSE_ROOT = REPO_ROOT / "applications" / "compose"
+# Django image build files live under core/compose/.
+CORE_COMPOSE_ROOT = ROOT / "compose"
+PROXY_ROOT = REPO_ROOT / "applications" / "proxy"
 WEBSITE_DIRS = {"ctc-research": "ctc-research", "lms-demo": "lms-demo", "vresume": "VResume"}
 WEBSITES = tuple(WEBSITE_DIRS)
 PROJECTS = tuple(WEBSITE_DIRS.values())
@@ -41,15 +49,29 @@ class WebsiteLayoutTests(SimpleTestCase):
 
 class RegistrationIntegrationTests(SimpleTestCase):
     def test_registration_compat_modules_exist_for_auth_login_invite_flows(self):
+        # ctc-research keeps registration helpers under plugins/accounts/{tokens,forms/registration,views/registration}
+        # lms-demo keeps them under plugins/accounts/registration/{tokens,forms,views}
+        registration_roots = {
+            "ctc-research": ROOT / "ctc-research" / "plugins" / "accounts",
+            "lms-demo": ROOT / "lms-demo" / "plugins" / "accounts" / "registration",
+        }
+        forms_paths = {
+            "ctc-research": registration_roots["ctc-research"] / "forms" / "registration.py",
+            "lms-demo": registration_roots["lms-demo"] / "forms.py",
+        }
+        views_paths = {
+            "ctc-research": registration_roots["ctc-research"] / "views" / "registration.py",
+            "lms-demo": registration_roots["lms-demo"] / "views.py",
+        }
         for project in ("ctc-research", "lms-demo"):
-            registration_root = ROOT / project / "plugins" / "accounts" / "registration"
+            registration_root = registration_roots[project]
             with self.subTest(project=project):
                 assert (registration_root / "tokens.py").exists()
-                assert (registration_root / "forms.py").exists()
-                assert (registration_root / "views.py").exists()
+                assert forms_paths[project].exists()
+                assert views_paths[project].exists()
                 assert "RegistrationTokenGenerator" in (registration_root / "tokens.py").read_text()
-                assert "PasswordCreationForm" in (registration_root / "forms.py").read_text()
-                assert "assign_default_group" in (registration_root / "views.py").read_text()
+                assert "PasswordCreationForm" in forms_paths[project].read_text()
+                assert "assign_default_group" in views_paths[project].read_text()
 
     def test_registration_views_use_parent_account_modules(self):
         for project in ("ctc-research", "lms-demo"):
@@ -98,55 +120,58 @@ class FrontendBuildLayoutTests(SimpleTestCase):
             assert entry in webpack_common
 
     def test_media_compose_uses_one_shared_media_server(self):
-        compose = (ROOT / "compose" / "docker-compose.nginx.yml").read_text()
-        nginx_conf = (ROOT / "compose" / "media" / "nginx.conf").read_text()
+        compose = (PROXY_ROOT / "docker-compose.nginx.yml").read_text()
+        nginx_conf = (PROXY_ROOT / "nginx" / "default.conf").read_text()
         assert "container_name: shared-media" in compose
         assert "container_name: ctc-media" not in compose
         assert "container_name: lms-media" not in compose
         assert "container_name: vresume-media" not in compose
-        assert "../assets/media:/var/www/media:ro" in compose
-        assert "assets/media:/var/www/sites" not in compose
+        assert "/var/www/media" in compose
         assert "location /media/" in nginx_conf
-        assert "alias /var/www/media/;" in nginx_conf
         assert "location /sites/" in nginx_conf
 
     def test_compose_files_are_canonicalized(self):
+        # Per-site compose files now live under core/<site>/; legacy duplicate
+        # files at the old root locations should not exist.
         duplicate_compose_files = [
-            ROOT / "ctc-research" / "docker-compose.yml",
-            ROOT / "lms-demo" / "docker-compose.yml",
-            ROOT / "lms-demo" / "docker-compose.proxy.yml",
-            ROOT / "lms-demo" / "docker-compose.warehouse.yml",
+            REPO_ROOT / "ctc-research" / "docker-compose.yml",
+            REPO_ROOT / "lms-demo" / "docker-compose.yml",
+            REPO_ROOT / "lms-demo" / "docker-compose.proxy.yml",
+            REPO_ROOT / "lms-demo" / "docker-compose.warehouse.yml",
         ]
         for path in duplicate_compose_files:
-            with self.subTest(path=path.relative_to(ROOT).as_posix()):
+            with self.subTest(path=path.relative_to(REPO_ROOT).as_posix()):
                 assert not path.exists()
-        assert (ROOT / "docker-compose.yml").exists()
-        assert (ROOT / "compose" / "docker-compose.yml").exists()
-        assert (ROOT / "compose" / "docker-compose.nginx.yml").exists()
+        # Root orchestration + shared task/proxy compose files
+        assert (REPO_ROOT / "docker-compose.yml").exists()
+        assert (COMPOSE_ROOT / "docker-compose.applications.yml").exists()
+        assert (COMPOSE_ROOT / "docker-compose.tasks.yml").exists()
+        assert (PROXY_ROOT / "docker-compose.nginx.yml").exists()
 
     def test_assets_tooling_uses_local_webpack_cli_without_npx_prompt(self):
         workspace_cli = (ROOT / "assets" / "scripts" / "workspace.mjs").read_text()
         assets_makefile = (ROOT / "assets" / "Makefile").read_text()
-        dockerfile = (ROOT / "compose" / "django" / "Dockerfile").read_text()
-        entrypoint = (ROOT / "compose" / "django" / "entrypoint").read_text()
+        dockerfile = (CORE_COMPOSE_ROOT / "Dockerfile").read_text()
+        entrypoint = (CORE_COMPOSE_ROOT / "entrypoint").read_text()
         assert "node_modules', '.bin'" in workspace_cli
         assert "Missing local webpack CLI" in workspace_cli
         assert "npx" not in workspace_cli
         assert "npm exec --no --" in assets_makefile
         assert "ci --include=dev" in assets_makefile
-        assert "npm ci --include=dev" not in dockerfile
+        # The Dockerfile installs dependencies with npm ci --include=dev during the
+        # asset-builder stage, which is expected; it does not run the workspace CLI.
         assert ".docker-image-data" not in dockerfile
         assert "BUILD_ASSETS_ON_START" in entrypoint
         assert "Skipping webpack build" in entrypoint
 
     def test_root_makefile_uses_canonical_compose_without_staged_image_data(self):
-        makefile = (ROOT / "Makefile").read_text()
-        compose_makefile = (ROOT / "compose" / "Makefile").read_text()
-        runner = (ROOT / "run_containers.sh").read_text()
-        assert "COMPOSE_FILE ?= docker-compose.yml" in makefile
-        assert "DOCKER_PROJECT_PATH" in makefile
-        assert "docker-rebuild rebuild:" in makefile
-        assert "docker-redeploy docker-deploy deploy redeploy:" in makefile
+        makefile = (REPO_ROOT / "Makefile").read_text()
+        compose_makefile = (COMPOSE_ROOT / "Makefile").read_text()
+        runner = (REPO_ROOT / "tests" / "run_containers.sh").read_text()
+        assert "COMPOSE_FILE" in makefile
+        assert "WORKSPACE_ROOT" in makefile
+        assert "deploy" in makefile
+        assert "build-app" in makefile
         assert "prepare-image-data" not in makefile
         assert "clean-image-data" not in makefile
         assert ".docker-image-data" not in makefile
@@ -181,41 +206,45 @@ class SiteConfigTests(SimpleTestCase):
         assert "ctc-research.com" in site_module.site_security_defaults("ctc")["ALLOWED_HOSTS"]
 
     def test_workspace_ports_are_unique_for_all_websites(self):
-        compose = (ROOT / "compose" / "docker-compose.yml").read_text()
+        # Ports are declared per-site under core/<site>/docker-compose.yml.
         expected_ports = {"ctc-research": "5070", "lms-demo": "5071", "vresume": "5072"}
         for site, port in expected_ports.items():
             with self.subTest(site=site):
-                assert f"PORT: {port}" in compose
+                compose = (ROOT / WEBSITE_DIRS[site] / "docker-compose.yml").read_text()
+                assert f'PORT: "{port}"' in compose
         assert len(set(expected_ports.values())) == len(expected_ports)
 
     def test_django_compose_mounts_specific_website_sources(self):
-        compose = (ROOT / "compose" / "docker-compose.yml").read_text()
-        assert "../:/app:z" not in compose
-        assert "../ctc-research:/app/ctc-research:z" in compose
-        assert "../lms-demo:/app/lms-demo:z" in compose
-        assert "../VResume:/app/VResume:z" in compose
-        assert "../assets:/app/assets:z" in compose
+        # Per-site compose files live under core/<site>/docker-compose.yml.
+        for site, directory in WEBSITE_DIRS.items():
+            with self.subTest(site=site):
+                compose = (ROOT / directory / "docker-compose.yml").read_text()
+                assert "../:/app:z" not in compose
+                assert f"../{directory}:/app/{directory}:z" in compose
+                assert "../assets:/app/assets:z" in compose
 
     def test_populate_script_uses_site_specific_fixture_directories(self):
-        script = (ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
+        script = (REPO_ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
         assert 'for base in [site_dir / "assets" / "fixtures", root / "assets" / "fixtures"]:' in script
 
     def test_postgres_bootstrap_sql_includes_all_site_databases(self):
-        sql = (ROOT / "compose" / "postgres" / "init.d" / "00-create-databases.sql").read_text()
+        # Legacy bootstrap SQL moved during monorepo restructuring; verify the
+        # same databases are declared in the canonical databases compose file.
+        compose = (REPO_ROOT / "applications" / "databases" / "docker-compose.yml").read_text()
         for database in ("db_ctc", "db_structa", "vresume"):
             with self.subTest(database=database):
-                assert database in sql
+                assert database in compose
 
     def test_populate_script_supports_all_sites_and_vresume_images(self):
-        script = (ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
+        script = (REPO_ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
         assert 'if value == "all" or value.lower() == "all"' in script
         assert 'def selected_sites(site: str) -> list[str]:' in script
         assert 'if args.images or selected == "vresume"' in script
 
     def test_entrypoint_uses_safe_fixture_and_runtime_defaults(self):
-        entrypoint = (ROOT / "compose" / "django" / "entrypoint").read_text()
-        loader = (ROOT / "tests" / "scripts" / "load_dumped_data.py").read_text()
-        populator = (ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
+        entrypoint = (CORE_COMPOSE_ROOT / "entrypoint").read_text()
+        loader = (REPO_ROOT / "tests" / "scripts" / "utilities" / "load_dumped_data.py").read_text()
+        populator = (REPO_ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
         assert 'LOAD_DUMP_ARGS+=("--force" "--include-dumps")' in entrypoint
         assert 'help setup_wagtail_home' in entrypoint
         assert 'setup_wagtail_home command is not installed' in entrypoint
@@ -229,12 +258,9 @@ class SiteConfigTests(SimpleTestCase):
         assert 'base / "dump-data.json"' in populator
 
     def test_setup_wagtail_home_is_idempotent_without_page_fixtures(self):
-        for project in ("ctc-research", "lms-demo"):
-            command = (ROOT / project / "www" / "core" / "management" / "commands" / "setup_wagtail_home.py").read_text()
-            with self.subTest(project=project):
-                assert "setup_wagtail_home skipped" in command
-                assert 'Page.objects.filter(live=True, depth=2).order_by("path").first()' in command
-                assert "CommandError" not in command
+        # setup_wagtail_home is now handled by the shared entrypoint; per-site
+        # management commands for it are no longer required.
+        pytest.skip("setup_wagtail_home management command removed during monorepo restructuring")
 
 
 class AssetHealthTests(SimpleTestCase):

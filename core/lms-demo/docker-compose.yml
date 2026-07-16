@@ -11,7 +11,7 @@ services:
   lms-web:
     build:
       context: ../..
-      dockerfile: compose/Dockerfile
+      dockerfile: core/compose/Dockerfile
       args:
         PROJECT_PATH: lms-demo
     image: lms-web:latest
@@ -63,7 +63,6 @@ services:
       - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
-      - ../tasks:/app/tasks:z
       - ../www:/app/www:z
       - ../manage.py:/app/manage.py:z
       - ../cli.py:/app/cli.py:z
@@ -84,7 +83,7 @@ services:
   lms-worker:
     build:
       context: ../..
-      dockerfile: compose/Dockerfile
+      dockerfile: core/compose/Dockerfile
       args:
         PROJECT_PATH: lms-demo
     image: lms-worker:latest
@@ -120,14 +119,13 @@ services:
       PROJECT_PATH: lms-demo
       WEBSITE_HOST: ${LMS_DEMO_HOST:-structa.cloud}
       CELERY_TASK_DEFAULT_QUEUE: lms-demo
-    command: celery -A tasks.celery:app worker --loglevel=info --queues=lms-demo
+    command: celery -A www.worker.celery:app worker --loglevel=info --queues=lms-demo
     volumes:
       - ../configs:/app/configs:z
       - ../assets:/app/assets:z
       - ../webpack:/app/webpack:z
       - ../libs:/app/libs:z
       - ../scripts:/app/scripts:z
-      - ../tasks:/app/tasks:z
       - ../www:/app/www:z
       - ../manage.py:/app/manage.py:z
       - ../cli.py:/app/cli.py:z

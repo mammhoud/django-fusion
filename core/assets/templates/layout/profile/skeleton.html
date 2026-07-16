@@ -1,6 +1,6 @@
 {% extends 'landing/skeleton.html' %}
 
-{% load i18n static unfold laces laces %}
+{% load i18n static unfold %}
 
 {% block modal %}
 <div id="modal-overlay" class="backdrop-blur-xs bg-base-900/80 bottom-0 fixed hidden left-0 mr-1 right-0 top-0 z-50">
@@ -20,7 +20,6 @@
     {% endblock content %}
 </main>
 {% endblock body %}
-
 
 {% block extra_assets %}
 {# Profile layout is auto-initialized by init.layout.js #}

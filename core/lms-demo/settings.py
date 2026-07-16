@@ -10,8 +10,15 @@ _SITE_DIR = Path(__file__).resolve().parent
 _WORKSPACE_DIR = _SITE_DIR.parent
 _SITE_APP_DIR = _SITE_DIR / "www"
 
-# Ensure correct import paths
-for _path in (str(_SITE_APP_DIR), str(_SITE_DIR), str(_WORKSPACE_DIR)):
+# Ensure correct import paths.
+# Iteration order is REVERSED so `sys.path.insert(0, …)` puts the per-site
+# `www/` (which carries `www.core`, `www.worker`, etc.) at the front of
+# sys.path[0], ahead of the workspace `/app` whose `/app/www` only contains
+# the shared `ci/` and `worker/` subpackages — without `core/`. Doing this
+# in the apparent “natural” order leaves `/app` at sys.path[0] and
+# `import www.core` then fails with ModuleNotFoundError because the workspace
+# `www` shadows the site `www`.
+for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR)):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)
@@ -47,6 +54,10 @@ WEBSITE_IDENTIFIER = "lms-demo"
 SITE_ID = 2
 
 # ── Local apps (site-specific plugins, www packages, and page apps) ──
+# NOTE: `www.worker` is NOT listed here because `core.configs.base.apps`
+# already registers it globally as a shared worker module — including it
+# here would register the same app label twice and Django would raise
+# `ImproperlyConfigured: Application labels aren't unique`.
 LOCAL_APPS = [
     "www.core",
     "www.core.content.apps.ContentConfig",
