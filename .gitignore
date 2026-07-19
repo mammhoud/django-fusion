@@ -80,3 +80,6 @@ Thumbs.db
 
 # Package lock files (optional - keep for reproducibility)
 # uv.lock
+
+# Ignore CTC Research docs - separate project
+ctc-research/

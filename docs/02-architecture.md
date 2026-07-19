@@ -18,7 +18,7 @@ django_fusion/
 │   └── templatetags/
 ├── config/          # conf, conf_utils, constants, dynaconf_loader
 ├── contrib/         # admin, cache utils, debug_tools, email_config, privacy
-├── core/            # Handlers, managers, models, services, cache, middlewares
+├── projects/            # Handlers, managers, models, services, cache, middlewares
 ├── health/          # /health/, /health/db/, /health/assets/
 ├── infrastructure/  # Management commands, scripts, template tags, locale
 ├── site/            # Allauth adapter, context processors, notifications, paginators
@@ -61,7 +61,7 @@ flowchart LR
 
 ## When would I touch this?
 
-- **`core/`** — when adding a foundational manager, model, or service that
+- **`projects/`** — when adding a foundational manager, model, or service that
   every app reuses (rare).
 - **`comp/`** — when extending the component system (most feature work).
 - **`site/` / `web/`** — when adding an auth flow or new context processor.

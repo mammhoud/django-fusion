@@ -32,6 +32,14 @@ class ImportStrategy(str, Enum):
 # ------------------------------------------------------------------
 # DJANGO BLOCK SETTINGS
 # ------------------------------------------------------------------
+def _default_debug() -> bool:
+    return settings.DEBUG
+
+
+def _default_not_debug() -> bool:
+    return not settings.DEBUG
+
+
 @dataclass
 class DjangoComponentsSettings:
     """Django Block component framework settings"""
@@ -40,17 +48,17 @@ class DjangoComponentsSettings:
     ENABLE_BLOCK_ATTRS: bool = False
     ADD_ASSET_PREFIX: bool | None = None
     COMPONENT_CACHE_TIMEOUT: int = 3600  # 1 hour
-    ENABLE_HOT_RELOAD: bool = settings.DEBUG
-    MINIFY_COMPONENTS: bool = not settings.DEBUG
+    ENABLE_HOT_RELOAD: bool = field(default_factory=_default_debug)
+    MINIFY_COMPONENTS: bool = field(default_factory=_default_not_debug)
     DEFAULT_COMPONENT_THEME: str = "default"
 
     # Component registration
     AUTO_DISCOVER_COMPONENTS: bool = False
 
     # Asset settings
-    ASSET_VERSIONING: bool = not settings.DEBUG
+    ASSET_VERSIONING: bool = field(default_factory=_default_not_debug)
     ASSET_CACHE_BUSTING: bool = True
-    BUNDLE_ASSETS: bool = not settings.DEBUG
+    BUNDLE_ASSETS: bool = field(default_factory=_default_not_debug)
 
     # Import settings
     IMPORT_STRATEGY: ImportStrategy = ImportStrategy.DJANGO

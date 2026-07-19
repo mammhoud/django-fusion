@@ -23,7 +23,7 @@ If you don't need dynamic HTML file rendering:
 
 1. Remove the custom template:
    ```
-   rm www/core/templates/components/base/dynamic.html
+   rm www/projects/templates/components/base/dynamic.html
    ```
 
 2. Remove the custom templatetag:

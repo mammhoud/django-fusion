@@ -9,8 +9,8 @@
 
 A: Python 3.11 (`requires-python = ">=3.11"` in `pyproject.toml`).
 Justified by the `from __future__ import annotations` imports in
-`core/services.py` and `core/models.py`, plus PEP 695 generic syntax
-in `core/cache.py`.
+`projects/services.py` and `projects/models.py`, plus PEP 695 generic syntax
+in `projects/cache.py`.
 
 ### Q: What's the minimum Django version?
 

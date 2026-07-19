@@ -76,7 +76,7 @@
 
             {% elif field_config.field_type == 'select' or field_config.field_type == 'dropdown' %}
             {# 'dropdown' alias is preserved for back-compat with legacy plugin
-               duplicates (lms-demo / ctc-research) that predate the rename. #}
+               duplicates (lms / ctc-research) that predate the rename. #}
             <select class="{% firstof class_select 'form-select' %}" id="field-{% if block %}{{ block.id }}-{% endif %}{{ field_config.name|default:'field' }}"
                     name="{{ field_config.name }}" {% if field_config.required %}required{% endif %}>
                 <option value="" disabled selected>

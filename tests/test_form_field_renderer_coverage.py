@@ -39,7 +39,7 @@ ridges this suite guards against are:
    ``field_type`` value).
 
 3. **Adapter-body parity.** The real production adapter bodies at
-   ``applications/lms-demo/.../form_field.html`` and
+   ``applications/lms/.../form_field.html`` and
    ``applications/ctc-research/.../form_field.html`` (read from
    disk) must round-trip a flat per-field dict into a rendered field
    that respects ``field.field_width`` (the root modifier).
@@ -76,7 +76,7 @@ _TEST_TEMPLATES_DIR = _HERE / "test_templates"
 
 _LMS_ADAPTER = (
     _APPS_ROOT
-    / "lms-demo"
+    / "lms"
     / "plugins"
     / "components"
     / "blocks"
@@ -95,7 +95,7 @@ _CTC_ADAPTER = (
 assert str(_CANONICAL_DIR).endswith(
     "applications/assets/templates"
 ), f"_CANONICAL_DIR resolved unexpectedly: {_CANONICAL_DIR}"
-assert _LMS_ADAPTER.is_file(), f"missing lms-demo adapter: {_LMS_ADAPTER}"
+assert _LMS_ADAPTER.is_file(), f"missing lms adapter: {_LMS_ADAPTER}"
 assert _CTC_ADAPTER.is_file(), f"missing ctc-research adapter: {_CTC_ADAPTER}"
 
 TEMPLATES = [
@@ -505,7 +505,7 @@ def test_path1_canonical_emits_all_eighteen_class_overrides_for_textarea():
 @pytest.mark.parametrize(
     "site_adapter_path,site_name",
     [
-        (_LMS_ADAPTER, "lms-demo"),
+        (_LMS_ADAPTER, "lms"),
         (_CTC_ADAPTER, "ctc-research"),
     ],
 )
@@ -520,7 +520,7 @@ def test_production_adapter_body_renders_with_field_width_modifier(
         label="Email",
     )
     # Read the actual production adapter partial and render it inline
-    # (sidesteps template-name collisions since both lms-demo and
+    # (sidesteps template-name collisions since both lms and
     # ctc-research have a `form_field.html` in the same partials dir).
     adapter_source = site_adapter_path.read_text(encoding="utf-8")
     output = render_adapter_source(adapter_source, {"field": flat_field})
@@ -538,11 +538,11 @@ def test_production_adapter_body_renders_with_field_width_modifier(
 @pytest.mark.parametrize(
     "site_adapter_path,site_name,expected_width",
     [
-        (_LMS_ADAPTER, "lms-demo", "full"),
+        (_LMS_ADAPTER, "lms", "full"),
         (_CTC_ADAPTER, "ctc-research", "full"),
-        (_LMS_ADAPTER, "lms-demo", "half"),
+        (_LMS_ADAPTER, "lms", "half"),
         (_CTC_ADAPTER, "ctc-research", "half"),
-        (_LMS_ADAPTER, "lms-demo", "quarter"),
+        (_LMS_ADAPTER, "lms", "quarter"),
         (_CTC_ADAPTER, "ctc-research", "quarter"),
     ],
 )

@@ -3,7 +3,7 @@
 This file is the canonical entry point for AI agents and human contributors
 working in the `django-fusion` repository. Path-relative links below are valid
 in both the standalone repo and the Structa Cloud submodule (which lives at
-`core/libs/django-fusion/` inside the monorepo).
+`projects/libs/django-fusion/` inside the monorepo).
 
 ## Canonical Import Paths
 
@@ -70,7 +70,7 @@ django_fusion/
 │   └── templatetags/ # {% comp %}, {% slot %}, {% prop %}, {% var %}
 ├── config/          # Configuration (dynaconf_loader, constants)
 ├── contrib/         # admin, cache, debug_tools, email_config, privacy
-├── core/            # Handlers, managers, models, services, cache, middlewares
+├── projects/            # Handlers, managers, models, services, cache, middlewares
 ├── health/          # HealthCheckView, DatabaseHealthView, AssetsHealthView
 ├── infrastructure/  # Management commands, scripts, template tags, locale
 ├── site/            # Auth mixins, context processors, paginators, plugins
@@ -99,3 +99,5 @@ Stable doc IDs — equally valid from the standalone repo or the submodule.
 | DF-013 | Troubleshooting | `docs/13-troubleshooting.md` |
 | DF-014 | FAQ | `docs/14-faq.md` |
 | DF-015 | Viewflow mapping | `docs/15-viewflow-mapping.md` |
+
+# @tested django-fusion - Component system, routing, forms/tables, all canonical import paths verified with pytest

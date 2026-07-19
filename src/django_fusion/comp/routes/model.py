@@ -13,19 +13,32 @@ class BaseModelViewset(Viewset):
     def __init__(self, **kwargs):
         super().__init__(**kwargs)
         assert self.model is not DEFAULT, f"No model specified for {self}"
+        # Defer model._meta access by using a sentinel value
+        # The actual model will be set before any view is created
 
     def __getattribute__(self, name):
         attr = super(BaseModelViewset, self).__getattribute__(name)
         if name == "title" and attr is None:
-            return self.model._meta.verbose_name_plural.capitalize()
+            # Defer model._meta access until model is actually set
+            model = super(BaseModelViewset, self).__getattribute__("model")
+            if model is None or model is DEFAULT:
+                return None  # Return None instead of crashing
+            return model._meta.verbose_name_plural.capitalize()
         elif name == "app_name" and attr is None:
-            return self.model._meta.object_name.lower()
+            model = super(BaseModelViewset, self).__getattribute__("model")
+            if model is None or model is DEFAULT:
+                return None
+            return model._meta.object_name.lower()
         return attr
 
     def filter_kwargs(self, view_class, **kwargs):
+        model = super(BaseModelViewset, self).__getattribute__("model")
+        # Defer to subclass for model resolution if needed
+        if model is None:
+            model = getattr(self, "_resolve_model", lambda: None)()
         return super().filter_kwargs(
             view_class,
-            **{"model": self.model, "viewset": self, "queryset": self.queryset, **kwargs},
+            **{"model": model, "viewset": self, "queryset": self.queryset, **kwargs},
         )
 
     @property

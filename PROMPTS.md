@@ -3,7 +3,7 @@
 Prompt entries below are tagged with the stable doc IDs (from
 `docs/INDEX.md`) they touch. Paths in `**Doc IDs**` lines are repo-relative
 and apply equally to the standalone repo or the Structa Cloud submodule at
-`core/libs/django-fusion/`.
+`projects/libs/django-fusion/`.
 
 ## PR-01 — Add a ModelViewset
 

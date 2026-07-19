@@ -71,10 +71,10 @@ from django_fusion.core.managers import CachedManager     # cache-aware manager
 from django_fusion.core.models import TimeStampedModel    # created/updated_at
 from django_fusion.core.services import BaseService       # CRUD-with-events base
 from django_fusion.core.cache import CacheService         # singleton cache API
-# middlewares: see src/django_fusion/core/middlewares.py
+# middlewares: see src/django_fusion/projects/middlewares.py
 ```
 
-> See `src/django_fusion/core/{handlers.py,managers.py,models.py,services.py,cache.py,middlewares.py}`
+> See `src/django_fusion/projects/{handlers.py,managers.py,models.py,services.py,cache.py,middlewares.py}`
 > for the full class list. Each top-level module exports a small public
 > surface; everything else is considered internal and may move without
 > notice.

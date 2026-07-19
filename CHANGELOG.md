@@ -59,7 +59,7 @@ and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.
 - Install path: `pip install -e applications/libs/django-fusion`
   (broken outside the Structa Cloud monorepo) replaced by
   `pip install django-fusion` for standalone, with the monorepo
-  `pip install -e core/libs/django-fusion` variant documented.
+  `pip install -e projects/libs/django-fusion` variant documented.
 
 ### Changed (pyproject.toml for PyPI readiness)
 
@@ -99,9 +99,9 @@ cp docs/ci/tests.yml .github/workflows/tests.yml
 
 # Commit & push from inside the submodule, with a token that has the
 # `workflow` scope:
-git -C core/libs/django-fusion add .github/workflows/tests.yml
-git -C core/libs/django-fusion commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
-git -C core/libs/django-fusion push origin generic
+git -C projects/libs/django-fusion add .github/workflows/tests.yml
+git -C projects/libs/django-fusion commit -m "ci: restore GitHub Actions workflow from docs/ci staging"
+git -C projects/libs/django-fusion push origin generic
 ```
 
 If the v0.2.0 push succeeds and CI is otherwise healthy, this

@@ -2,7 +2,7 @@
 
 > Source of truth: `src/django_fusion/config/conf.py`, `conf_utils.py`,
 > `constants.py`, `dynaconf_loader.py`, `pyproject.toml`,
-> `src/django_fusion/core/middlewares.py`.
+> `src/django_fusion/projects/middlewares.py`.
 
 ## Required `INSTALLED_APPS`
 
@@ -101,7 +101,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     # django-fusion opt-ins inserted by the importing site
-    # (specific class names live in src/django_fusion/core/middlewares.py)
+    # (specific class names live in src/django_fusion/projects/middlewares.py)
 ]
 ```
 

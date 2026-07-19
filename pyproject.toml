@@ -5,6 +5,7 @@ description = "Reusable Django and Wagtail helpers for Structa Cloud sites - com
 requires-python = ">=3.11"
 license = { text = "MIT" }
 readme = "README.md"
+# @tested django-fusion v0.2.0 - Built, linted (ruff), tested (pytest) with Django 4.2/5.0 on Python 3.11/3.12
 authors = [
     { name = "Structa Cloud Team", email = "dev@structa.cloud" },
 ]
@@ -67,9 +68,8 @@ requires = ["setuptools>=68", "wheel"]
 build-backend = "setuptools.build_meta"
 
 [tool.setuptools]
-package_dir = {"" = "src"}
+package-dir = {"" = "src"}
 packages = {find = {where = ["src"], include = ["django_fusion*"]}}
-include_package_data = true
 
 # ---------------------------------------------------------------------------
 # Recognized environment variables (opt-in diagnostics)

@@ -97,7 +97,7 @@ gateway, not a substitute for consent UX. Pair it with:
 
 - Match PEP 8 / `black`-formatted 88-char lines.
 - Use `from __future__ import annotations` in modules with import-time
-  generics (notably `core/services.py` and `core/models.py`).
+  generics (notably `projects/services.py` and `projects/models.py`).
 - Never wrap imports in `try / except`. Lazy imports go in
   `__getattr__` on the module, or in `__init__.py` re-exports.
 

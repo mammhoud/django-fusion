@@ -8,7 +8,7 @@ Component module for django_fusion.
 
 - `apps`
 - `configuration/`
-- `core/`
+- `projects/`
 - `management/`
 - `payloads/`
 - `plugins/`

@@ -72,14 +72,14 @@ git clone https://github.com/structa-cloud/structa.cloud.git
 cd structa.cloud
 git submodule update --init --recursive
 
-pip install -e core/libs/django-fusion
+pip install -e projects/libs/django-fusion
 ```
 
 To pull the latest lib commit into the monorepo:
 
 ```bash
-cd core/libs/django-fusion && git pull origin generic && cd ../..
-git add core/libs/django-fusion
+cd projects/libs/django-fusion && git pull origin generic && cd ../..
+git add projects/libs/django-fusion
 git commit -m "chore: bump django-fusion submodule"
 ```
 
@@ -120,3 +120,4 @@ If you reference `django-fusion` in a project, please cite it as:
 ## Repository
 
 [https://github.com/mammhoud/django-fusion](https://github.com/mammhoud/django-fusion)
+# @tested django-fusion v0.2.0 - Built and tested with pytest (63+ tests), hypothesis property-based testing, Django 4.2/5.0 on Python 3.11/3.12

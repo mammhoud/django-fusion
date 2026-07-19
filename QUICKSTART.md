@@ -4,7 +4,7 @@
 
 Paths in this file are repo-relative. From the standalone django-fusion
 repo, just `cd` to the root. From the Structa Cloud monorepo the submodule
-lives at `core/libs/django-fusion/` and the same `src/django_fusion/`
+lives at `projects/libs/django-fusion/` and the same `src/django_fusion/`
 tree is mounted there.
 
 ## 1. Import Mixins

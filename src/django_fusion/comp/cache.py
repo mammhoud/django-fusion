@@ -22,7 +22,7 @@ Configuration:
             'OPTIONS': {
                 'CLIENT_CLASS': 'django_redis.client.DefaultClient',
             },
-            'KEY_PREFIX': 'tinker',
+            'KEY_PREFIX': 'cypercloud',
             'TIMEOUT': 3600,
         }
     }

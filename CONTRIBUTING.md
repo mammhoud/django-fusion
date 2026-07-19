@@ -10,7 +10,7 @@ git clone https://github.com/mammhoud/django-fusion.git
 cd django-fusion
 
 # Or, inside the Structa Cloud monorepo, the submodule lives at:
-#   core/libs/django-fusion/
+#   projects/libs/django-fusion/
 
 # Create a virtualenv (Python 3.11+ per pyproject.toml requires-python)
 python3.11 -m venv .venv
@@ -21,7 +21,7 @@ pip install -e ".[test]"
 ```
 
 > Remark: `requires-python = ">=3.11"` — Python 3.10 will fail to import some
-> type annotations used in `core/services` and `core/models`.
+> type annotations used in `projects/services` and `projects/models`.
 
 ## Running the test suite
 
@@ -56,8 +56,8 @@ under `mammhoud/django-fusion`), restore the workflow to its normal
 location with this snippet from the submodule root:
 
 ```bash
-# Run this from inside the submodule root (e.g. core/libs/django-fusion)
-cd core/libs/django-fusion
+# Run this from inside the submodule root (e.g. projects/libs/django-fusion)
+cd projects/libs/django-fusion
 
 mkdir -p .github/workflows
 cp docs/ci/tests.yml .github/workflows/tests.yml
@@ -120,7 +120,7 @@ This repo currently uses Black-style 88-character formatting and PEP 8 type
 hints. Existing patterns:
 
 - `from __future__ import annotations` is used in `comp/routes.py` and
-  `core/services.py`
+  `projects/services.py`
 - Public classes use full type hints; private helpers may use abbreviations
 - Never wrap imports in `try`/`except` (see project AGENTS.md)
 

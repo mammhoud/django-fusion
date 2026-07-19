@@ -25,12 +25,12 @@ pip install -e ".[test]"
 
 > Remark: `requires-python = ">=3.11"` per `pyproject.toml`. Python 3.10
 > works in practice for most calls, but the type annotations in some
-> `core/*` modules assume 3.11+ syntax.
+> `projects/*` modules assume 3.11+ syntax.
 
 ### Structa Cloud monorepo (submodule)
 
 ```bash
-pip install -e core/libs/django-fusion
+pip install -e projects/libs/django-fusion
 ```
 
 ## Add to `INSTALLED_APPS`
