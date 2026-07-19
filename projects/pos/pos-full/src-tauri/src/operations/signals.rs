@@ -6,7 +6,7 @@
 //! - **Settings** — emitted on `save_settings()`
 //! - **Products** — emitted on `add_product()`, `update_product()`, `delete_product()`
 //!
-//! The cloud CRM server (pos-full/cloud/) and the sidecar can listen
+//! The cloud CRM server (shared-portal/cloud/) and the sidecar can listen
 //! for these events to trigger re-syncs or cache invalidations.
 //!
 //! ## Usage (subscriber)

@@ -9,7 +9,7 @@ class PosAppConfig(AppConfig):
     def ready(self):
         """Register POS models on app ready.
 
-        CRM and sync models have moved to pos-full/cloud/ —
+        CRM and sync models have moved to shared-portal/cloud/ —
         they run as a standalone cloud server alongside the sidecar.
         """
         pass

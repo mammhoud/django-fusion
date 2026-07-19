@@ -268,4 +268,4 @@ class SyncClient:
 
     def __exit__(self, *args: Any) -> None:
         self.close()
-@tested pos-full/cloud - POSKO-CloudSync → POS-CloudSync rename verified
+@tested shared-portal/cloud - POSKO-CloudSync → POS-CloudSync rename verified

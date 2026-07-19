@@ -75,8 +75,8 @@ make seed             # Reset DB + seed (PRESET=all|base|gaming|coffee)
 | `pos/sidecar/posapp/` | Django ORM mirror models (Full edition only) | 🟢 customizable |
 | `pos/sidecar/sync_client.py` | Solo → Cloud CRM sync client (Solo edition) | 🟢 customizable |
 | `pos/sidecar/sync_routes.py` | Sync API blueprint: status, config, trigger, push (Solo edition) | 🟢 customizable |
-| `pos-full/cloud/` | Standalone Cloud CRM server (Sanic, port 8766) | 🟢 customizable |
-| `pos-full/cloud/sync_proxy.py` | Accepts generic entity pushes from Solo edition | 🟢 customizable |
+| `shared-portal/cloud/` | Standalone Cloud CRM server (Sanic, port 8766) | 🟢 customizable |
+| `shared-portal/cloud/sync_proxy.py` | Accepts generic entity pushes from Solo edition | 🟢 customizable |
 | `pos-full/src-tauri/src/operations/signals.rs` | Change event broadcast channel (tokio) | 🟡 delegate |
 | `pos-full/src-tauri/src/operations/crm.rs` | Rust Diesel CRM CRUD operations | 🟢 customizable |
 | `pos/scripts/` | Build, dev, i18n, checksum utilities | 🟡 delegate |
@@ -95,7 +95,7 @@ make editions   # Generate editions from canonical source (pos-full)
 
 ### Cloud CRM Architecture
 
-The **Full Edition** includes a standalone **Cloud CRM server** (`pos-full/cloud/`) that provides:
+The **Full Edition** includes a standalone **Cloud CRM server** (`shared-portal/cloud/`) that provides:
 - CRM entity CRUD (contacts, companies, deals, pipelines, activities, notes)
 - Dashboard statistics, data export/import
 - Cloud sync management
@@ -104,7 +104,7 @@ The **Solo Edition** includes a **sync client** (`sidecar/sync_client.py`) that 
 
 ```
 +-------------------+       HTTP REST        +---------------------+
-|  pos-solo         |  ──────────────────>  |  pos-full/cloud/    |
+|  pos-solo         |  ──────────────────>  |  shared-portal/cloud/    |
 |  sidecar/server.py |  push products, sales |  cloud CRM + proxy  |
 |  port 8765        |  <──────────────────  |  port 8766          |
 +-------------------+       status, config   +---------------------+

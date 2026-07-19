@@ -4,7 +4,7 @@
 //! Companies, Contacts, Pipelines, Stages, Deals, Activities, and Notes.
 //!
 //! These Diesel-backed tables mirror the cloud CRM Django models and are designed
-//! for local-first operation — the cloud server (pos-full/cloud/) handles remote sync.
+//! for local-first operation — the cloud server (shared-portal/cloud/) handles remote sync.
 //!
 //! Change events are emitted via `crate::operations::signals` so that
 //! subscribers (sidecar, cloud sync, UI) can react to modifications.

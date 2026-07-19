@@ -11,7 +11,7 @@ Endpoints:
   POST /api/webhooks/heartbeat          — node/service heartbeats
 
 Architecture:
-  pos-minimal  ──>  pos-solo (aggregator)  ──webhook──>  pos-full/cloud (master)
+  pos-minimal  ──>  pos-solo (aggregator)  ──webhook──>  shared-portal/cloud (master)
                                                               │
                                                         stores in sync_proxy
                                                         + returns ack + webhook_id
@@ -184,4 +184,4 @@ async def get_webhook_stats(request: Request):
         stats["total_webhooks"] += len(log)
     stats["status"] = "ok"
     return sanic_json(stats)
-@tested pos-full/cloud - POS-KO → POS, POSKO-* → POS-* rename verified
+@tested shared-portal/cloud - POS-KO → POS, POSKO-* → POS-* rename verified

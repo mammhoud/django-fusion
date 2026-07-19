@@ -13,7 +13,7 @@ Everything from minimal, plus:
 - **Python/Sanic sidecar server** (`sidecar/server.py`)
 - **REST API** (35+ endpoints for products, sales, inventory, customers...)
 - **WebSocket support** for real-time communication
-- **Cloud CRM sync** — push products, sales, customers to pos-full/cloud/
+- **Cloud CRM sync** — push products, sales, customers to shared-portal/cloud/
 - **Sync client** (`sidecar/sync_client.py`) — HTTP client for cloud CRM
 - **Sync API** (`sidecar/sync_routes.py`) — manage sync status, trigger, logs
 - **Background sync loop** — automatic periodic sync with configurable interval
@@ -27,7 +27,7 @@ Everything from minimal, plus:
 
 - Django ORM models (`sidecar/posapp/` — Django app directory removed)
 - JSON seed fixtures for Django
-- Full cloud CRM server (that's in `pos-full/cloud/`)
+- Full cloud CRM server (that's in `shared-portal/cloud/`)
 
 > Need full cloud CRM server? Use the [`pos-full`](../pos-full/) edition.
 
@@ -50,7 +50,7 @@ The solo edition can sync local POS data to the pos-full cloud CRM server:
 
 ```bash
 # Start cloud CRM server (separate terminal)
-cd ../pos-full/cloud && python3 server.py --port 8766
+cd ../shared-portal/cloud && python3 server.py --port 8766
 
 # Configure sync on solo sidecar
 curl -X POST http://127.0.0.1:8765/api/sync/config \
@@ -86,7 +86,7 @@ ws://127.0.0.1:8765/ws/chat
 
 ```
 +-------------------+       HTTP REST        +-------------------+
-|  pos-solo         |  ──────────────────>  |  pos-full/cloud/  |
+|  pos-solo         |  ──────────────────>  |  shared-portal/cloud/  |
 |  sidecar/server.py |  push products, sales |  cloud CRM server |
 |  port 8765        |  <──────────────────  |  port 8766        |
 +-------------------+       pull CRM data    +-------------------+

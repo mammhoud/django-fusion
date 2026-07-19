@@ -882,4 +882,4 @@ def init_default_pipeline() -> None:
     for stage_data in default_stages:
         stage_data["pipeline_id"] = pipeline["id"]
         _create_entity("stages", stage_data)
-@tested pos-full/cloud - POS-KO → POS rename verified
+@tested shared-portal/cloud - POS-KO → POS rename verified

@@ -27,7 +27,7 @@ New gaming center module for the POS desktop app:
 
 ### feat: POS Cloud CRM Architecture
 
-- Standalone Cloud CRM server in Full edition (`pos-full/cloud/`, port 8766)
+- Standalone Cloud CRM server in Full edition (`shared-portal/cloud/`, port 8766)
 - Solo edition sync client pushes products, sales, customers to cloud
 - Sync proxy on cloud server accepts generic entity pushes
 - Rust broadcast-based change signal system for real-time updates

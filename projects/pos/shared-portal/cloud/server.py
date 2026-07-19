@@ -189,15 +189,15 @@ _start_time = datetime.utcnow()
 # Set data dir before importing blueprint
 os.environ["CLOUD_DATA_DIR"] = str(DATA_DIR)
 
-from crm_api import crm_bp, init_default_pipeline  # noqa: E402
+from .crm_api import crm_bp, init_default_pipeline  # noqa: E402
 app.blueprint(crm_bp)
 
 # Sync proxy — accepts generic pushes from pos-solo edition
-from sync_proxy import sync_proxy_bp  # noqa: E402
+from .sync_proxy import sync_proxy_bp  # noqa: E402
 app.blueprint(sync_proxy_bp)
 
 # Webhook receiver — accepts webhooks from Solo/Minimal nodes
-from webhook_receiver import webhook_bp  # noqa: E402
+from .webhook_receiver import webhook_bp  # noqa: E402
 app.blueprint(webhook_bp)
 
 
@@ -229,4 +229,4 @@ if __name__ == "__main__":
     init_default_pipeline()
 
     app.run(host=args.host, port=args.port, single_process=True, auto_reload=False)
-@tested pos-full/cloud - POS-KO → POS, POSKO-* → POS-* rename verified
+@tested shared-portal/cloud - POS-KO → POS, POSKO-* → POS-* rename verified

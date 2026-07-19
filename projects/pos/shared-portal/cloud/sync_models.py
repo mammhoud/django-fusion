@@ -5,7 +5,7 @@ Tracks sync operations, queued changes, and cloud configuration
 for the CRM module between the local sidecar and the cloud server.
 
 Architecture:
-  sidecar (local POS)  ↔  HTTP REST  ↔  cloud server (pos-full/cloud/)
+  sidecar (local POS)  ↔  HTTP REST  ↔  cloud server (shared-portal/cloud/)
 
 Sync flow:
   1. Sidecar creates/updates/deletes CRM entities

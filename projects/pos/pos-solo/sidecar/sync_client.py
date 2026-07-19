@@ -5,7 +5,7 @@ Provides a typed HTTP client that the solo sidecar uses to push
 local POS data (products, sales, customers) to the pos-full cloud CRM server.
 
 Architecture:
-  pos-solo (sidecar, port 8765)  →  pos-full/cloud/ (port 8766)
+  pos-solo (sidecar, port 8765)  →  shared-portal/cloud/ (port 8766)
 
 Sync flow:
   1. Solo sidecar reads local SQLite data via existing /api/* endpoints

@@ -102,7 +102,7 @@ Cloud Master
     │                           returns {webhook_id, status, timestamp}
 ```
 
-**Webhook Receiver** (`pos-full/cloud/webhook_receiver.py`):
+**Webhook Receiver** (`shared-portal/cloud/webhook_receiver.py`):
 - Accepts all webhook types on `/api/webhooks/*`
 - Stores each event as a JSONL record
 - Maintains stats for monitoring
@@ -127,7 +127,7 @@ Solo Server                     Cloud Master
 - Methods: `push_product()`, `push_sale()`, `push_customer()`, `push_inventory()`, `push_employee()`, `push_settings()`
 - Bulk operations: `bulk_push()`
 
-**Sync Proxy** (`pos-full/cloud/sync_proxy.py`):
+**Sync Proxy** (`shared-portal/cloud/sync_proxy.py`):
 - Generic receiver for POS entity pushes
 - Stores in `cloud_data/sync_proxy/<type>.json`
 - Maintains a sync log (last 1000 entries)
@@ -186,7 +186,7 @@ CLOUD_API_KEY=
 | `sync_client.py` | HTTP client for pushing POS entities to Cloud |
 | `sync_routes.py` | Sync API blueprint (status, config, trigger, push) |
 
-### pos-full/cloud/
+### shared-portal/cloud/
 
 | File | Purpose |
 |------|---------|
@@ -238,7 +238,7 @@ Processing: Store in JSONL → optional forward to Django → trigger sync
 |----------|------|
 | This document | [`docs/pos/network-architecture.md`](network-architecture.md) |
 | POS site docs | [`docs/sites/pos.md`](../editions.md) |
-| Cloud CRM docs | [`projects/pos/pos-full/cloud/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/pos/pos-full/cloud) |
+| Cloud CRM docs | [`projects/pos/shared-portal/cloud/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/pos/shared-portal/cloud) |
 | Solo sidecar docs | [`projects/pos/pos-solo/sidecar/README.md`](https://github.com/mammhoud/structa.cloud/tree/generic/projects/pos/pos-solo/sidecar) |
 | Minimal node agent | [`projects/pos/pos-minimal/sidecar/node_agent.py`](https://github.com/mammhoud/structa.cloud/blob/generic/projects/pos/pos-minimal/sidecar/node_agent.py) |
 | Root Makefile | [`projects/pos/Makefile`](../../projects/pos/Makefile) |

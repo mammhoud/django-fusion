@@ -3,10 +3,10 @@ POS Solo — Node Scanner.
 
 Discovers Minimal POS nodes on the local network, fetches their status/
 transactions/products, and forwards aggregated data to the Cloud Master
-(pos-full/cloud/).
+(shared-portal/cloud/).
 
 Architecture:
-  pos-minimal (nodes)  ──HTTP──>  pos-solo (scanner/aggregator)  ──HTTP──>  pos-full/cloud (master)
+  pos-minimal (nodes)  ──HTTP──>  pos-solo (scanner/aggregator)  ──HTTP──>  shared-portal/cloud (master)
 
 Scanner features:
   - Receives heartbeats from minimal nodes via /api/nodes/<id>/heartbeat

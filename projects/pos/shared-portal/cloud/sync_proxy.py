@@ -9,7 +9,7 @@ This allows the pos-solo sidecar to push any POS entity type to
 the cloud CRM without needing to know the internal CRM API structure.
 
 Architecture:
-  pos-solo (sidecar)  →  /api/sync/push/<type>  →  pos-full/cloud/
+  pos-solo (sidecar)  →  /api/sync/push/<type>  →  shared-portal/cloud/
 
 Entity mapping:
   products   → stored as CRM notes (product catalog snapshot)
@@ -199,4 +199,4 @@ async def sync_log(request: Request):
     """Get sync proxy history log."""
     log = _load_sync_log()
     return sanic_json(log)
-@tested pos-full/cloud - POS-KO → POS, POSKO-* → POS-* rename verified
+@tested shared-portal/cloud - POS-KO → POS, POSKO-* → POS-* rename verified

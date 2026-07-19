@@ -28,7 +28,7 @@
 | Django ORM models (30 tables) | ❌ | ❌ | ✅ |
 | WebSocket real-time chat | ❌ | ❌ | ✅ |
 | Cross-device data sync | ❌ | ❌ | ✅ |
-| Cloud CRM master server | ❌ | ❌ | ✅ |
+| Cloud CRM (shared-portal) | ❌ | ✅ | ✅ |
 | JSON seed fixtures | ❌ | ❌ | ✅ |
 | Change signals (broadcast) | ❌ | ❌ | ✅ |
 

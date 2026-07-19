@@ -10,7 +10,7 @@
 ┌──────────────────────┐       sync push       ┌──────────────────────┐
 │   POS Terminal #1    │ ───────────────────→  │                      │
 │   (pos-solo)          │  products, sales,     │   Cloud CRM Server   │
-│   port 8765           │  customers            │   (pos-full/cloud/)   │
+│   port 8765           │  customers            │   (shared-portal/cloud/)   │
 └──────────────────────┘                        │   port 8766           │
                                                  │                       │
 ┌──────────────────────┐       sync push       │  ┌─────────────────┐  │
@@ -28,7 +28,7 @@
                     ↓                            │  │ • stats         │  │
            ┌──────────────────┐                  │  │ • export/import │  │
            │  Cloud CRM Master │                  │  └─────────────────┘  │
-           │  (pos-full/cloud/) │                 └──────────────────────┘
+           │  (shared-portal/cloud/) │                 └──────────────────────┘
            │  • Sanic :8766    │
            │  • CRM CRUD       │
            │  • Sync proxy     │
@@ -40,7 +40,7 @@
 
 ## Components
 
-### Cloud CRM Server (`pos-full/cloud/`)
+### Cloud CRM Server (`shared-portal/cloud/`)
 
 | File | Purpose |
 |------|---------|
@@ -102,7 +102,7 @@
 ### Start the Server
 
 ```bash
-cd projects/pos/pos-full/cloud
+cd projects/pos/shared-portal/cloud
 pip install -r requirements.txt
 python server.py --port 8766
 ```

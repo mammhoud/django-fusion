@@ -2,10 +2,10 @@
 POS Solo — Webhook Sender.
 
 Forwards aggregated POS data (transactions, nodes, products) from the Solo
-aggregator to the Cloud Master (pos-full/cloud/) via HTTP webhooks.
+aggregator to the Cloud Master (shared-portal/cloud/) via HTTP webhooks.
 
 Architecture:
-  pos-solo (aggregator)  ──webhook──>  pos-full/cloud (master)
+  pos-solo (aggregator)  ──webhook──>  shared-portal/cloud (master)
 
 Webhook endpoints on master:
   POST /api/webhooks/node-aggregate    — aggregated node data from scanner

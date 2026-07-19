@@ -7,7 +7,7 @@ Python/Sanic server providing HTTP REST API, WebSocket support, and **cloud CRM 
 ```
 sidecar/
 ├── server.py           # 🔴 Sanic app — all routes + WS + sync blueprint
-├── sync_client.py      # 🟢 HTTP client for cloud CRM sync (pos-full/cloud/)
+├── sync_client.py      # 🟢 HTTP client for cloud CRM sync (shared-portal/cloud/)
 ├── sync_routes.py      # 🟢 Sync API blueprint (status, config, trigger, push)
 ├── requirements.txt    #    Python dependencies (sanic + httpx)
 ├── build.py            #    PyInstaller build script
@@ -31,13 +31,13 @@ sidecar/
 
 ## Cloud CRM Sync
 
-The solo edition can sync local POS data to the **pos-full cloud CRM server** (`pos-full/cloud/`).
+The solo edition can sync local POS data to the **pos-full cloud CRM server** (`shared-portal/cloud/`).
 
 ### Sync Architecture
 
 ```
 +--------------------+       HTTP REST        +---------------------+
-|  pos-solo          |  ──────────────────>  |  pos-full/cloud/    |
+|  pos-solo          |  ──────────────────>  |  shared-portal/cloud/    |
 |  sidecar/server.py |  push products, sales |  cloud CRM server   |
 |  port 8765         |  <──────────────────  |  port 8766          |
 +--------------------+       status, config   +---------------------+
@@ -58,7 +58,7 @@ The solo edition can sync local POS data to the **pos-full cloud CRM server** (`
 
 ```bash
 # Terminal 1: Start cloud CRM server
-cd ../pos-full/cloud && python3 server.py --port 8766
+cd ../shared-portal/cloud && python3 server.py --port 8766
 
 # Terminal 2: Start solo sidecar with sync
 cd ../pos-solo/sidecar && python3 server.py --db ../restaurant.db --port 8765
@@ -79,6 +79,6 @@ python server.py --db ../restaurant.db --port 8765
 ## Reference
 
 - [POS-Solo README →](../README.md)
-- [POS-Full Cloud CRM →](../../pos-full/cloud/README.md)
+- [POS-Full Cloud CRM →](../../shared-portal/cloud/README.md)
 - [Sidecar Docs →](../../docs/server/README.md)
 - [WebSocket Protocol →](../../docs/server/websocket.md)
