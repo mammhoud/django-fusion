@@ -67,6 +67,8 @@ dependencies = [
     # the analyzer suite + workspace tests have been validated against).
     "django-taggit>=6.1.0",
     "django-modelcluster>=6.5",
+    # POS Sidecar (Solo Extended)
+    "robyn",
     # Server
     "gunicorn",
     "uvicorn",

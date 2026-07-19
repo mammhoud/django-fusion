@@ -56,14 +56,24 @@ Add REST endpoints for ALL 29 tables currently only accessible via Rust invoke:
 └──────────────┘                    └──────────────┘
 ```
 
-### Phase 3: Django Ninja Extra APIs (Q4 2026)
+### Phase 3: django-bolt + Robyn APIs (Q4 2026)
 
-Replace Sanic with Django Ninja Extra for all API endpoints:
+**Full Edition:** Replace Django views with django-bolt for all API endpoints:
+- Rust-powered async handlers (60k+ RPS)
+- Auto-generated OpenAPI docs at `/bolt/docs`
+- Built-in JWT + API key authentication
+- Pydantic validation via `django_bolt.pydantic`
+- Native WebSocket for real-time sync
 
-- Auto-generated OpenAPI docs at `/api/docs`
-- Pydantic validation for all endpoints
-- Async support for real-time sync
-- Built-in auth with JWT tokens
+**Solo Extended:** Optional Robyn sidecar replacing Sanic:
+- Rust-powered async runtime (Robyn)
+- Auto-generated OpenAPI at `/docs`
+- Pydantic validation integration
+- SSE streaming support
+
+See also:
+- [django-bolt integration plan](../sidecar/django-bolt-integration.md)
+- [Robyn migration plan](../sidecar/robyn-migration.md)
 
 ### Phase 4: Multi-Store Dashboard (Q1 2027)
 

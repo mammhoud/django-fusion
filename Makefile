@@ -140,8 +140,9 @@ push-libs: require-github-token
 		echo ""; \
 		echo "── $$lib_name ──"; \
 		case "$$lib_name" in \
-			django-fusion) lib_url="https://github.com/mammhoud/django-fusion.git" ;; \
-			ceptor-ai)     lib_url="https://github.com/mammhoud/ceptor-ai.git" ;; \
+			django-fusion) lib_url="https://github.com/mammhoud/django-fusion.git"; branch="generic" ;; \
+			ceptor-ai)     lib_url="https://github.com/mammhoud/ceptor-ai.git"; branch="generic" ;; \
+			django-bolt)   lib_url="https://github.com/mammhoud/django-bolt.git"; branch="master" ;; \
 			*) echo "  ⏭️  Unknown lib — skipping"; continue ;; \
 		esac; \
 		cd "$$lib" || continue; \
@@ -151,7 +152,7 @@ push-libs: require-github-token
 		else \
 			git commit -m "chore($$lib_name): update from monorepo" 2>&1 || true; \
 		fi; \
-		GIT_ASKPASS=true git -c credential.helper='!printf "protocol=https\nhost=github.com\nusername=x-access-token\npassword=$(_github_token)\n"' push "$$lib_url" HEAD:generic 2>&1 && \
+		GIT_ASKPASS=true git -c credential.helper='!printf "protocol=https\nhost=github.com\nusername=x-access-token\npassword=$(_github_token)\n"' push "$$lib_url" HEAD:"$$branch" 2>&1 && \
 			echo "  🚀 Pushed $$lib_name → $$lib_url" || \
 			echo "  ❌ Push failed for $$lib_name"; \
 		cd - >/dev/null; \

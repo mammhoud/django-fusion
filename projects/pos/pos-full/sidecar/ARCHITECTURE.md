@@ -29,6 +29,7 @@ sidecar/
 | 🟢 Sync | `sync_routes.py` + `sync_client.py` | Push POS data to Cloud Master (Full edition) |
 | 🟢 Scanner | `node_scanner.py` | Receive heartbeats from Minimal nodes |
 | 🟢 Webhook | `webhook_sender.py` | Forward aggregated data to Cloud Master |
+| 🟢 Bolt | django-bolt (`bolt_api.py`) | High-performance API (60k+ RPS), Rust-powered async handlers |
 | 🔵 Portal | Django (`settings.py` + `shared/` + `portal/`) | Admin UI, menu dashboard, django-fusion viewsets |
 | 🔵 Node API | Django (`node/`) | Node registration, heartbeat, transaction endpoints |
 
@@ -61,12 +62,24 @@ graph TB
 # Start Sanic sidecar (API for Tauri frontend)
 python server.py --db ../restaurant.db --port 8765
 
-# Start Django portal (admin + node API)
+# Start Django portal (admin + bolt API + node API)
+pip install django-bolt
 python manage.py migrate
 python manage.py runserver 0.0.0.0:8080
 
 # Start node agent
 python manage.py run_node --master http://localhost:8080 --interval 60
+```
+
+### django-bolt API
+
+The Full edition Django portal includes a django-bolt API server for high-performance endpoints. See [django-bolt integration plan](../../../../docs/projects/pos/sidecar/django-bolt-integration.md) for details.
+
+```bash
+# Bolt API available at:
+# - Swagger UI:  http://localhost:8080/bolt/docs
+# - ReDoc:       http://localhost:8080/bolt/docs/redoc
+# - Scalar:      http://localhost:8080/bolt/docs/scalar
 ```
 
 ## Customization Points

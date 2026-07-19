@@ -26,6 +26,7 @@ sidecar/
 | Layer | Component | Role |
 |-------|-----------|------|
 | 🟢 API | `server.py` (Sanic) | REST API for Tauri frontend (chat, tickets, customers, invoices, data) |
+| 🟡 Extended | `robyn_server.py` (Robyn) | Optional high-performance variant (60k+ RPS, OpenAPI, Pydantic) |
 | 🟢 Sync | `sync_routes.py` + `sync_client.py` | Push POS data to Cloud Master (Full edition) |
 | 🟢 Scanner | `node_scanner.py` | Receive heartbeats from Minimal nodes |
 | 🟢 Webhook | `webhook_sender.py` | Forward aggregated data to Cloud Master |

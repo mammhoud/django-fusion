@@ -112,6 +112,25 @@ GET  /invoice/render/<id>?type=&design=  # Render printable invoice HTML
 | Data dir | `POS_DATA_DIR` | `./data` |
 | DB path | `--db` CLI arg | (none — data API disabled) |
 
+## Solo Extended — Robyn Variant
+
+For the Solo edition, an optional Robyn-based sidecar is available as a drop-in replacement for Sanic. See the [Robyn migration plan](robyn-migration.md) for details.
+
+```bash
+# Robyn sidecar (Solo Extended)
+pip install robyn[all]
+python3 robyn_server.py --db ../restaurant.db --port 8765
+```
+
+| Feature | Sanic (default) | Robyn (extended) |
+|---------|:---:|:---:|
+| Throughput | ~25k RPS | 60k+ RPS |
+| OpenAPI | Manual | Built-in |
+| Pydantic | Manual | Built-in |
+| WebSocket | ✅ | ✅ |
+| Hot reload | ✅ | ✅ |
+| AI/MCP | ❌ | ✅ |
+
 ## Development
 
 ```bash
