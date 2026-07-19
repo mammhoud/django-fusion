@@ -151,7 +151,7 @@ push-libs: require-github-token
 		else \
 			git commit -m "chore($$lib_name): update from monorepo" 2>&1 || true; \
 		fi; \
-		git push "https://x-access-token:$(_github_token)@$${lib_url#https://}" HEAD:generic 2>&1 && \
+		GIT_ASKPASS=true git -c credential.helper='!printf "protocol=https\nhost=github.com\nusername=x-access-token\npassword=$(_github_token)\n"' push "$$lib_url" HEAD:generic 2>&1 && \
 			echo "  🚀 Pushed $$lib_name → $$lib_url" || \
 			echo "  ❌ Push failed for $$lib_name"; \
 		cd - >/dev/null; \
@@ -176,7 +176,7 @@ endif
 	else \
 		git commit -m "chore($(LIB)): update from monorepo" 2>&1 || true; \
 	fi; \
-	git push "https://x-access-token:$(_github_token)@$${lib_url#https://}" HEAD:generic && \
+	GIT_ASKPASS=true git -c credential.helper='!printf "protocol=https\nhost=github.com\nusername=x-access-token\npassword=$(_github_token)\n"' push "$$lib_url" HEAD:generic && \
 		echo "🚀 $(LIB) pushed to $$lib_url" || \
 		echo "❌ Push failed"; \
 	cd - >/dev/null

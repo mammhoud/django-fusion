@@ -44,8 +44,6 @@ backups/
 .env.*.local
 secrets.yml
 applications/compose/config/secrets.yml
-libs
-libs/*
 # Test databases and dumps
 *.sqlite3
 *.dump
