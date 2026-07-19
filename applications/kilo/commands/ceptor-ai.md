@@ -16,10 +16,10 @@ Read these files before planning:
 - `docs/ai/START_HERE.md`
 - `docs/ai/mcp_reference.md`
 - `docs/ai/latest_features.md`
-- `core/libs/ceptor-ai/README.md`
-- `core/libs/ceptor-ai/PROMPTS.md`
+- `libs/ceptor-ai/README.md`
+- `libs/ceptor-ai/PROMPTS.md`
 
-Confirm that the repository uses `core/libs/`, not legacy `libs/`,
+Confirm that the repository uses `libs/`, not legacy `projects/libs/`,
 `venv/libs/`, or `.kilo` package paths.
 
 ## Package checks
@@ -27,7 +27,7 @@ Confirm that the repository uses `core/libs/`, not legacy `libs/`,
 Run from the repository root:
 
 ```bash
-uv pip install -e core/libs/ceptor-ai/
+uv pip install -e libs/ceptor-ai/
 python -m ceptor_ai info
 python -m ceptor_ai health
 ```
@@ -35,8 +35,8 @@ python -m ceptor_ai health
 For MCP work, install the optional extra and use the canonical ASGI target:
 
 ```bash
-uv pip install -e 'core/libs/ceptor-ai/[mcp]'
-PYTHONPATH=core/libs/ceptor-ai/src \
+uv pip install -e 'libs/ceptor-ai/[mcp]'
+PYTHONPATH=libs/ceptor-ai/src \
   uvicorn ceptor_ai.mcp_server:app --host 127.0.0.1 --port 8002
 ```
 
@@ -53,7 +53,7 @@ curl --fail http://127.0.0.1:8002/file-structure
 
 1. Keep `ceptor_ai` importable without Django settings.
 2. Do not import Django, Wagtail, Celery, database models, or site modules into
-   `core/libs/ceptor-ai/src/ceptor_ai/mcp_server.py`.
+   `libs/ceptor-ai/src/ceptor_ai/mcp_server.py`.
 3. Bind local MCP servers to `127.0.0.1`; never change to `0.0.0.0` without an
    explicit deployment review and authentication plan.
 4. Treat current MCP endpoints as read-only metadata. Do not add shell

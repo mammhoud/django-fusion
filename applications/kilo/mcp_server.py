@@ -6,7 +6,7 @@ FastAPI endpoints for project-local MCP helpers.
 
 Run with the ceptor-ai source package on the import path, for example:
 
-    PYTHONPATH=core/libs/ceptor-ai/src uvicorn mcp_server:app \
+    PYTHONPATH=libs/ceptor-ai/src uvicorn mcp_server:app \
         --app-dir .kilo --host 127.0.0.1 --port 8002
 """
 

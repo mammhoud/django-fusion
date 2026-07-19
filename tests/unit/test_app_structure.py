@@ -32,7 +32,7 @@ def test_registration_app_location(site_root, expected_name, expected_label):
     Feature: allauth-htmx-auth-pages, Test 15.1: Registration app location.
 
     Assert plugins/accounts/registration/ exists.
-    Assert www/core/handlers/registration/ does NOT exist.
+    Assert www/projects/handlers/registration/ does NOT exist.
     Assert apps.py has correct name and label.
     Validates: Task 1 (app restructuring)
     """
@@ -50,7 +50,7 @@ def test_registration_app_location(site_root, expected_name, expected_label):
     # Old location must NOT exist
     old_location = site_root / "www" / "core" / "handlers" / "registration"
     assert not old_location.exists(), \
-        f"{site_name}: www/core/handlers/registration/ must be deleted (moved to plugins/accounts/registration/)"
+        f"{site_name}: www/projects/handlers/registration/ must be deleted (moved to plugins/accounts/registration/)"
 
     # apps.py must have correct name and label
     apps_py = (new_location / "apps.py").read_text(encoding="utf-8")

@@ -7,7 +7,7 @@
       ],
       "env": {
         "DJANGO_SETTINGS_MODULE": "core.settings",
-        "PYTHONPATH": "core/libs/ceptor-ai/src"
+        "PYTHONPATH": "libs/ceptor-ai/src"
       }
     },
     "ceptor-ai": {
@@ -20,7 +20,7 @@
         "8002"
       ],
       "env": {
-        "PYTHONPATH": "core/libs/ceptor-ai/src"
+        "PYTHONPATH": "libs/ceptor-ai/src"
       }
     }
   }

@@ -1,0 +1,154 @@
+# ============================================================
+# LMS Demo (structa.cloud) Website + Worker
+# ============================================================
+x-site-infra-env: &site-infra-env
+  DB_TYPE: ${DB_TYPE:-postgres}
+  DB_HOST: ${DB_HOST:-postgres}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_NAME: ${DB_NAME_LMS:-db_structa}
+
+services:
+  lms-web:
+    build:
+      context: ../..
+      dockerfile: projects/compose/Dockerfile
+      args:
+        PROJECT_PATH: lms
+    image: lms-web:latest
+    container_name: lms-web
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      APP_MODULE: ${APP_MODULE:-server:application}
+      SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+      SERVER_ENV: ${SERVER_ENV:-production}
+      DEBUG: ${DEBUG:-False}
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+      RUN_SETUP: ${RUN_SETUP:-true}
+
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS:-db_structa}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_URL: redis://default-redis:6379/0
+      CELERY_BROKER_URL: redis://default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      LOG_DIR: /app/logs/lms
+      USE_X_FORWARDED_HOST: "true"
+      SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
+      WEBSITE: lms
+      DJANGO_SITE: lms
+      DJANGO_WEBSITE: lms
+      PROJECT_PATH: lms
+      WEBSITE_HOST: ${LMS_DEMO_HOST:-structa.cloud}
+      ALLOWED_HOSTS: structa.cloud,www.structa.cloud,core.structa.cloud,localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://structa.cloud,https://www.structa.cloud,https://core.structa.cloud
+      PORT: "5071"
+      CELERY_TASK_DEFAULT_QUEUE: lms
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5071/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../www:/app/www:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../lms:/app/lms:z
+      - lms-static:/app/lms/static:rw
+      - lms-media:/app/lms/media:rw
+      - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
+    expose:
+      - "5071"
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  lms-worker:
+    build:
+      context: ../..
+      dockerfile: projects/compose/Dockerfile
+      args:
+        PROJECT_PATH: lms
+    image: lms-worker:latest
+    container_name: lms-worker
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      # Full environment block (same as web, minus PORT and healthcheck specific vars)
+      RUNNING_ENV: docker
+      SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+      SERVER_ENV: ${SERVER_ENV:-production}
+      DEBUG: ${DEBUG:-False}
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_LMS:-db_structa}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_URL: redis://default-redis:6379/0
+      CELERY_BROKER_URL: redis://default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      LOG_DIR: /app/logs/lms
+      USE_X_FORWARDED_HOST: "true"
+      SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
+      WEBSITE: lms
+      DJANGO_SITE: lms
+      DJANGO_WEBSITE: lms
+      PROJECT_PATH: lms
+      WEBSITE_HOST: ${LMS_DEMO_HOST:-structa.cloud}
+      CELERY_TASK_DEFAULT_QUEUE: lms
+    command: celery -A www.worker.celery:app worker --loglevel=info --queues=lms
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../www:/app/www:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../lms:/app/lms:z
+      - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  lms-static:
+    external: true
+  lms-media:
+    external: true

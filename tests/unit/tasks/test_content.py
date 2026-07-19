@@ -23,7 +23,7 @@ class TestGetUsersCount:
         mock_get_user_model = MagicMock(return_value=mock_model)
         mock_import.return_value = mock_get_user_model
 
-        result = get_users_count(website="lms-demo")
+        result = get_users_count(website="lms")
         assert result == 42
 
 
@@ -64,7 +64,7 @@ class TestSendUserWelcomeNotificationTask:
 
         mock_import.side_effect = import_side_effect
 
-        result = send_user_welcome_notification_task(user_id=1, website="lms-demo")
+        result = send_user_welcome_notification_task(user_id=1, website="lms")
         assert result is True
         mock_send_mail.assert_called_once()
 

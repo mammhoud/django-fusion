@@ -1,0 +1,70 @@
+# LMS Demo — Template Path Tree
+
+Path: `projects/lms/`
+
+## Template Resolution Order (Django TEMPLATES_DIRS)
+
+1. `lms/templates/` — site-specific overrides (highest priority)
+2. `lms/plugins/<name>/templates/` — plugin templates
+3. `lms/plugins/components/` — site component blocks
+4. `assets/templates/` — shared cross-site templates (lowest priority)
+
+## Site Template Tree
+
+```
+lms/templates/
+├── base_page.html          # Extends shared base.html
+├── base_profile.html       # Profile-specific base template
+├── base_auth.html          # Auth-specific base template
+├── index.html              # Home page template (HTMX dispatcher)
+├── home/
+│   └── main.html           # Home page sections
+│   └── sections/
+│       └── clients.html    # Client logos section
+├── about/                   # About page templates
+├── auth/                    # Authentication templates
+├── contact/                 # Contact page templates
+├── errors/                  # Custom error pages (404, 500)
+├── registration/            # Registration templates
+└── services/                # Services page templates
+```
+
+## Plugin Template Tree
+
+```
+lms/plugins/
+├── accounts/templates/      # Auth & certification templates
+│   ├── auth/                # Authentication views
+│   └── certification/       # Certification templates
+├── blog/templates/          # Blog templates
+├── lms/templates/           # LMS email and learning templates
+│   ├── email/               # LMS email templates
+│   └── lms/                 # LMS page templates
+├── profile/templates/       # Profile templates
+└── components/              # Site-specific UI components
+    ├── auth/                # Auth components
+    ├── profile/             # Profile partials and settings
+    └── blocks/              # Content blocks
+```
+
+## Available Shared Components
+
+See `assets/templates/components/AGENTS.md` for the full inventory:
+chat, cookies, forms, modals, pagination.
+
+## Layout Variants
+
+Use `{% extends "layout/<variant>/skeleton.html" %}`:
+- `layout/apps/` — app-style layout
+- `layout/landing/` — marketing/landing layout
+- `layout/learning/` — LMS/learning layout
+- `layout/profile/` — user profile layout
+- `layout/auth/` — authentication layout (via `base_auth.html`)
+
+## Auth & Accounts
+- Adapter: `plugins.accounts.adapters.RegistrationAdapter`
+- Views: `plugins.accounts.views.allauth` (AllauthLoginView, AllauthSignupView)
+- HTMX fragment rendering for login/signup modals
+- Social auth adapter: `AuthHTMXSocialAccountAdapter`
+- Profile settings include 2FA (TOTP-based via `two_factor_enabled`)
+- Templates use `{% comp_include %}` for component tracking

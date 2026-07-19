@@ -1,66 +1,66 @@
 # Structa Cloud – AI Agent Instructions
 
 ## Project Overview
-Structa Cloud is a Django monorepo under `core/`, with multiple site projects, shared configuration, shared frontend assets, and local reusable Django libraries. Do not assume this repo uses a generic `core/tinker/design/components` app layout.
+Structa Cloud is a Django monorepo under `projects/`, with multiple site projects, shared configuration, shared frontend assets, and local reusable Django libraries. Do not assume this repo uses a generic `projects/cypercloud/design/components` app layout.
 
 ## Actual Monorepo Layout
-- `core/Makefile` is the primary Makefile for application, Django, asset, test, and site orchestration targets.
-- `core/configs/` contains shared Django configuration and settings used across sites.
-- `core/assets/` contains shared frontend assets, shared templates, static files, locale files, and asset scripts.
-- `core/libs/` contains local reusable libraries that are developed alongside the sites.
-- `applications/scripts/` contains shared automation and build tooling. `core/tasks/` and `core/webpack/` contain shared task and build tooling.
-- `core/www/` contains shared/core Django code used by the application stack.
+- `projects/Makefile` is the primary Makefile for application, Django, asset, test, and site orchestration targets.
+- `projects/configs/` contains shared Django configuration and settings used across sites.
+- `projects/assets/` contains shared frontend assets, shared templates, static files, locale files, and asset scripts.
+- `libs/` contains local reusable libraries that are developed alongside the sites.
+- `applications/scripts/` contains shared automation and build tooling. `projects/tasks/` and `projects/webpack/` contain shared task and build tooling.
+- `projects/www/` contains shared/core Django code used by the application stack.
 
 ## Canonical Site Paths
 Use these canonical paths when working on site-specific code:
-- `core/ctc-research/` — CTC Research site.
-- `core/lms-demo/` — Structa/LMS demo site.
-- `core/VResume/` — VResume site. Note the directory is capitalized, even though some Makefile aliases use `vresume`.
+- `projects/ctc-research/` — CTC Research site.
+- `projects/lms/` — Structa/LMS demo site.
+- `projects/portfolio/` — portfolio site. Note the directory is capitalized, even though some Makefile aliases use `vresume`.
 
 Each site can contain its own `assets/`, `plugins/`, `templates/`, `tests/`, `www/`, and site-level `Makefile` as applicable.
 
 ## Shared Settings
-Shared settings live under `core/configs/`:
-- `core/configs/base/` for base configuration modules.
-- `core/configs/settings/` for environment/site settings.
-- `tests/core/configs/` for test settings and test configuration helpers.
+Shared settings live under `projects/configs/`:
+- `projects/configs/base/` for base configuration modules.
+- `projects/configs/settings/` for environment/site settings.
+- `tests/projects/configs/` for test settings and test configuration helpers.
 
-Prefer adding common settings in `core/configs/` rather than duplicating them inside individual sites. Keep site-specific overrides in the relevant site path.
+Prefer adding common settings in `projects/configs/` rather than duplicating them inside individual sites. Keep site-specific overrides in the relevant site path.
 
 ## Shared Frontend Assets
-Shared frontend assets live under `core/assets/`:
-- `core/assets/templates/` for templates shared across sites.
-- `core/assets/static/` for shared static files.
-- `core/assets/scripts/` for shared frontend/build scripts.
-- `core/assets/locale/` for shared localization assets.
+Shared frontend assets live under `projects/assets/`:
+- `projects/assets/templates/` for templates shared across sites.
+- `projects/assets/static/` for shared static files.
+- `projects/assets/scripts/` for shared frontend/build scripts.
+- `projects/assets/locale/` for shared localization assets.
 
-When adding shared styles, scripts, images, or templates, place them in `core/assets/` unless they are truly site-specific.
+When adding shared styles, scripts, images, or templates, place them in `projects/assets/` unless they are truly site-specific.
 
 ## Local Libraries
-Local reusable libraries live under `core/libs/`:
-- `core/libs/django-fusion/`
-- `core/libs/ceptor-ai/`
+Local reusable libraries live under `libs/`:
+- `libs/django-fusion/`
+- `libs/ceptor-ai/`
 
 Treat these as first-class local packages. Make reusable framework-level changes in the appropriate library instead of copying logic into site projects.
 
 ## Makefile Delegation
-- The root `Makefile` should be a thin entrypoint that delegates application and site work to `core/Makefile`.
-- `core/Makefile` is the canonical dispatcher for Django checks, tests, migrations, asset builds, Docker/site commands, and `WEBSITE=...` selection.
-- Site Makefiles live in each `core/<site>/` directory, for example:
-  - `core/ctc-research/Makefile`
-  - `core/lms-demo/Makefile`
-  - `core/VResume/Makefile`
-- Prefer invoking site work through `core/Makefile` unless a site Makefile target is explicitly needed.
-- Preserve existing website aliases in `core/Makefile`; do not invent new canonical site names without updating the dispatcher.
+- The root `Makefile` should be a thin entrypoint that delegates application and site work to `projects/Makefile`.
+- `projects/Makefile` is the canonical dispatcher for Django checks, tests, migrations, asset builds, Docker/site commands, and `WEBSITE=...` selection.
+- Site Makefiles live in each `projects/<site>/` directory, for example:
+  - `projects/ctc-research/Makefile`
+  - `projects/lms/Makefile`
+  - `projects/portfolio/Makefile`
+- Prefer invoking site work through `projects/Makefile` unless a site Makefile target is explicitly needed.
+- Preserve existing website aliases in `projects/Makefile`; do not invent new canonical site names without updating the dispatcher.
 
 ## Template Conventions
 - Component template categories should not repeat the same folder name twice; for example, use `components/blocks/contact/contact_profile.html` instead of `components/blocks/contact/contact/contact_profile.html`.
 Template locations are intentionally layered. Check all relevant paths before adding or moving templates:
-- Shared templates: `core/assets/templates/`.
-- Site root templates: `core/<site>/templates/`.
-- Site asset templates: `core/<site>/assets/templates/`.
-- Site Django app templates: `core/<site>/www/**/templates/`.
-- Plugin templates: any template paths under `core/<site>/plugins/`, including plugin-level `templates/` directories.
+- Shared templates: `projects/assets/templates/`.
+- Site root templates: `projects/<site>/templates/`.
+- Site asset templates: `projects/<site>/assets/templates/`.
+- Site Django app templates: `projects/<site>/www/**/templates/`.
+- Plugin templates: any template paths under `projects/<site>/plugins/`, including plugin-level `templates/` directories.
 
 Use `{% include %}` for reusable components and pass only the required context. Prefer shared templates for cross-site UI and site templates for site-specific presentation.
 
@@ -77,7 +77,7 @@ Use `fragment_name` only for fragment identifiers and context keys. Do not intro
 ## Testing & Validation
 - Use `rg` instead of recursive `grep` for code searches.
 - Run the narrowest relevant checks first, then broader tests when practical.
-- For Django site work, prefer commands delegated through `core/Makefile` with the appropriate `WEBSITE=...` value.
+- For Django site work, prefer commands delegated through `projects/Makefile` with the appropriate `WEBSITE=...` value.
 - For shared library work, run tests or checks that cover both the library and affected sites when practical.
 
 ## Infrastructure & Proxy
@@ -90,7 +90,7 @@ Use `fragment_name` only for fragment identifiers and context keys. Do not intro
 - `applications/proxy/traefik/dynamic/certs.yml` (static self-signed certs) is kept as a fallback until Stage 3. Until it's deleted, removing `certResolver` from a router causes it to fall back to the SAN-matched self-signed cert.
 - `applications/proxy/scripts/manage-certs.sh` now provides `bootstrap-acme`, `status`, and `check-expiry` for the LE flow; the self-signed commands are retained as a legacy fallback.
 - Health checks on backend services must include the correct `Host` header (set via `hostname` in Traefik healthCheck config).
-- Media subdomains: `media.structa.cloud`, `media.ctc-research.com`, `media.lms-demo.com`, `media.vresume.structa.cloud`.
+- Media subdomains: `media.structa.cloud`, `media.ctc-research.com`, `media.lms.com`, `media.vresume.structa.cloud`.
 - Legacy self-signed certs remain in `applications/proxy/certs/` for rollback purposes; they are no longer the source of truth.
 
 ## Authentication & Authorization
@@ -162,8 +162,8 @@ from django_fusion.comp.generic import (
 | Cache | `django_fusion.core.cache` |
 
 ## Media & Static Files
-- Shared static files: `core/assets/static/`.
-- Site-specific staticfiles: `core/<site>/assets/staticfiles/`.
-- Site-specific media: `core/<site>/assets/media/`.
+- Shared static files: `projects/assets/static/`.
+- Site-specific staticfiles: `projects/<site>/assets/staticfiles/`.
+- Site-specific media: `projects/<site>/assets/media/`.
 - Nginx mounts each site's staticfiles under `/var/www/sites/<site>/static/`.
 - Traefik routes `PathPrefix(/static/)` and `PathPrefix(/media/)` to `shared-media:80`.

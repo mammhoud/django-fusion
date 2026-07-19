@@ -1,0 +1,53 @@
+{% extends "portal/base.html" %}
+
+{% block page_title %}Our Menu{% endblock %}
+
+{% block header_actions %}
+<a href="{% url 'portal-dashboard' %}" class="pos-btn pos-btn-ghost pos-btn-sm">← Back to Dashboard</a>
+{% endblock %}
+
+{% block content %}
+<p class="pos-text-muted" style="margin-bottom: 24px;">
+    {{ total_count }} items available
+</p>
+
+{% for cat_name, group in grouped_items.items %}
+<section style="margin-bottom: 32px;">
+    <h2 class="pos-heading">{{ cat_name }}</h2>
+    {% if group.category.description %}
+    <p class="pos-text-muted">{{ group.category.description }}</p>
+    {% endif %}
+
+    <div class="pos-grid" style="margin-top: 16px;">
+        {% for item in group.items %}
+        <div class="pos-card card--hover">
+            <div class="pos-flex-between">
+                <h3>{{ item.name }}</h3>
+                <span class="pos-badge {% if item.is_featured %}pos-badge-primary{% endif %}">
+                    {{ item.currency }} {{ item.price }}
+                </span>
+            </div>
+            {% if item.description %}
+            <p class="pos-text-muted" style="margin: 8px 0;">{{ item.description|truncatewords:20 }}</p>
+            {% endif %}
+            <div class="pos-flex pos-gap-sm" style="margin-top: 12px;">
+                {% if item.preparation_time %}
+                <span class="pos-badge pos-badge-success">{{ item.preparation_time }} min</span>
+                {% endif %}
+                {% if item.calories %}
+                <span class="pos-badge pos-badge-warning">{{ item.calories }} cal</span>
+                {% endif %}
+            </div>
+            <a href="{% url 'portal-menu-detail' slug=item.slug %}" class="pos-btn pos-btn-sm pos-btn-primary" style="margin-top: 12px;">
+                View Details
+            </a>
+        </div>
+        {% endfor %}
+    </div>
+</section>
+{% empty %}
+<div class="pos-card">
+    <p class="pos-text-muted pos-text-center">No menu items available yet.</p>
+</div>
+{% endfor %}
+{% endblock %}

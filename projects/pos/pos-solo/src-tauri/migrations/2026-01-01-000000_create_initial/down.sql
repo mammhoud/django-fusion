@@ -1,0 +1,19 @@
+DROP TRIGGER IF EXISTS update_products_updated_at;
+DROP TRIGGER IF EXISTS update_sales_updated_at;
+DROP TRIGGER IF EXISTS update_categories_updated_at;
+DROP TRIGGER IF EXISTS update_ingredients_updated_at;
+DROP TRIGGER IF EXISTS update_recipe_types_updated_at;
+DROP TRIGGER IF EXISTS update_recipes_updated_at;
+DROP TRIGGER IF EXISTS update_recipe_ingredients_updated_at;
+
+DROP TABLE IF EXISTS inventory_adjustments;
+DROP TABLE IF EXISTS inventory_transactions;
+DROP TABLE IF EXISTS recipe_ingredients;
+DROP TABLE IF EXISTS recipes;
+DROP TABLE IF EXISTS recipe_types;
+DROP TABLE IF EXISTS ingredients;
+DROP TABLE IF EXISTS sale_items;
+DROP TABLE IF EXISTS sales;
+DROP TABLE IF EXISTS products;
+DROP TABLE IF EXISTS categories;
+DROP TABLE IF EXISTS settings;

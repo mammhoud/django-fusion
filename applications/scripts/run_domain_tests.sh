@@ -12,7 +12,7 @@ set -e
 # "crm", but the site directory is empty and the crm-website container is not
 # running in this environment. CRM-specific checks are skipped when false.
 CRM_DEPLOYED=false
-if [ -d "/home/structa.cloud/core/crm" ] && [ "$(ls -A /home/structa.cloud/core/crm 2>/dev/null)" ]; then
+if [ -d "/home/structa.cloud/projects/crm" ] && [ "$(ls -A /home/structa.cloud/projects/crm 2>/dev/null)" ]; then
   CRM_DEPLOYED=true
 fi
 if docker ps --format '{{.Names}}' | grep -q "^crm-website$"; then
@@ -223,7 +223,7 @@ test_configuration() {
 
   # Check CLI site registry
   if [ "$CRM_DEPLOYED" = true ]; then
-    if grep -q '"crm".*"crm-website"' /home/structa.cloud/core/cli.py 2>/dev/null; then
+    if grep -q '"crm".*"crm-website"' /home/structa.cloud/projects/cli.py 2>/dev/null; then
       log_success "CRM site registered in CLI"
     else
       log_failure "CRM site not registered in CLI"
@@ -254,7 +254,7 @@ test_site_registration() {
   cd /home/structa.cloud/core
 
   # Test each site
-  local sites=("ctc-research" "lms-demo" "vresume")
+  local sites=("ctc-research" "lms" "vresume")
   if [ "$CRM_DEPLOYED" = true ]; then
     sites=("crm" "${sites[@]}")
   fi
@@ -262,7 +262,7 @@ test_site_registration() {
   for site in "${sites[@]}"; do
     # The CLI __main__ block only prints the current site; verify the site is
     # registered by checking the SITES dict in cli.py.
-    if grep -qE "^\s*\"$site\":\s*{" /home/structa.cloud/core/cli.py; then
+    if grep -qE "^\s*\"$site\":\s*{" /home/structa.cloud/projects/cli.py; then
       log_success "Site registered in CLI: $site"
     else
       log_failure "Site not in CLI registry: $site"
@@ -400,7 +400,7 @@ test_network_connectivity() {
 test_django_checks() {
   section "TEST 11: Django System Checks"
 
-  local sites=("ctc-research" "lms-demo" "vresume")
+  local sites=("ctc-research" "lms" "vresume")
   if [ "$CRM_DEPLOYED" = true ]; then
     sites=("crm" "${sites[@]}")
   fi
@@ -409,7 +409,7 @@ test_django_checks() {
     local container
     case "$site" in
       ctc-research) container="ctc-research-website" ;;
-      lms-demo) container="lms-web" ;;
+      lms) container="lms-web" ;;
       vresume) container="vresume-web" ;;
       crm) container="crm-website" ;;
     esac

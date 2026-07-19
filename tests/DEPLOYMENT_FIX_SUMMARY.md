@@ -1,7 +1,7 @@
 # Deployment Fix Progress & Summary (Session: 2026-06-09)
 
 ## Overview
-Working on fixing Django configuration, template loading, and model registry conflicts in a multi-site wagtail deployment (ctc-research, lms-demo, vresume).
+Working on fixing Django configuration, template loading, and model registry conflicts in a multi-site wagtail deployment (ctc-research, lms, vresume).
 
 ## Critical Issues Fixed
 
@@ -98,7 +98,7 @@ plugins/urls.py
 1. **Debug Container Startup**: Check gunicorn-error.log for actual startup errors
 2. **Verify Imports**: Ensure all required view/URL dependencies are available
 3. **Test Lazy Loading**: Verify dispatch methods are working correctly
-4. **Apply to Other Sites**: Apply same fixes to lms-demo if needed
+4. **Apply to Other Sites**: Apply same fixes to lms if needed
 5. **SSL/HTTPS**: Address self-signed certificate warnings after main functionality works
 
 ## Architecture Notes
@@ -187,7 +187,7 @@ docker compose exec -T ctc-research-website python -c "from plugins.profile.urls
    - `GET /health/` should return 200
    - `GET /auth/login/` should return 200 (allauth page)
    - `GET /en/` should return 200 (homepage or 404 but not 500)
-5. **APPLY**: Apply same fixes to lms-demo site
+5. **APPLY**: Apply same fixes to lms site
 6. **DOCUMENT**: Update this summary with resolution
 
 ### Files That Need Verification
@@ -242,7 +242,7 @@ The ctc-research site is now:
 ### Final Fixes Applied
 
 1. **Added ceptor_ai to INSTALLED_APPS** (`/root/site/websites/configs/base/apps.py`)
-   - Required because lms-demo imports from `ceptor_ai.models.default.DefaultBase`
+   - Required because lms imports from `ceptor_ai.models.default.DefaultBase`
 
 2. **Fixed lms/urls.py imports** (`/root/site/websites/ctc-research/plugins/lms/urls.py`)
    - Moved imports from star import to specific module-based imports
@@ -290,7 +290,7 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 
 1. Investigate and fix homepage/root URL rendering
 2. Verify error handler templates are available
-3. Apply same fixes to lms-demo site if needed
+3. Apply same fixes to lms site if needed
 4. Full end-to-end testing of all features
 
 
@@ -300,7 +300,7 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 
 **Deployment Status**: 
 - ctc-research: ✅ Running and healthy
-- lms-demo: ⏳ Not deployed in this session (same fixes apply)
+- lms: ⏳ Not deployed in this session (same fixes apply)
 - VResume: ⏳ Not deployed in this session (same fixes apply)
 
 ### Key Technical Improvements Made
@@ -324,12 +324,12 @@ curl -k -s -H "Host: ctc-research.local" https://127.0.0.1/accounts/login/
 
 ### To Deploy Same Fixes to Other Sites
 
-The fixes made to ctc-research can be applied identically to lms-demo and VResume:
+The fixes made to ctc-research can be applied identically to lms and VResume:
 
 ```bash
-# On lms-demo
-cp /root/site/websites/configs/base/templates.py /root/site/websites/lms-demo/configs/base/
-cp /root/site/websites/configs/base/apps.py /root/site/websites/lms-demo/configs/base/
+# On lms
+cp /root/site/websites/configs/base/templates.py /root/site/websites/lms/configs/base/
+cp /root/site/websites/configs/base/apps.py /root/site/websites/lms/configs/base/
 # Apply the same lms/urls.py and profile/views/settings.py fixes
 
 # Then redeploy

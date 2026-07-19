@@ -1,22 +1,22 @@
-"""Django settings for running site-specific template tests from tests/core/.
+"""Django settings for running site-specific template tests from tests/projects/.
 
 This module re-exports the workspace ``tests/settings.py`` and adds the
-``core/assets/templates/`` directory to ``TEMPLATES.DIRS`` so that
+``projects/assets/templates/`` directory to ``TEMPLATES.DIRS`` so that
 shared templates (e.g. ``events.html``) are discoverable when pytest is run
-from ``core/`` via ``make test-local`` (which is ``uv run pytest``).
+from ``projects/`` via ``make test-local`` (which is ``uv run pytest``).
 
 Background
 ----------
-``core/pyproject.toml`` pins ``DJANGO_SETTINGS_MODULE = "tests.settings"``
+``projects/pyproject.toml`` pins ``DJANGO_SETTINGS_MODULE = "tests.settings"``
 and sets ``testpaths = ["tests", "libs/django-fusion/tests/analyzer"]``.
 When pytest is run from the workspace root, the ``tests`` testpath resolves to
-``tests/core/`` for these site-specific tests, and ``tests.settings`` resolves to
+``tests/projects/`` for these site-specific tests, and ``tests.settings`` resolves to
 this module via the root settings import below.
 
 The root ``tests/settings.py`` (at the workspace root) holds the full Django
 configuration for the library test corpus (django-fusion analyzer, ceptor-ai,
 etc.). Site-specific tests need the same base but with the shared
-``core/assets/templates/`` directory added to ``TEMPLATES.DIRS`` so
+``projects/assets/templates/`` directory added to ``TEMPLATES.DIRS`` so
 that templates like ``events.html`` (which include ``events/includes/events_grid.html``)
 are discoverable without booting the full LMS Django settings module.
 """
@@ -43,8 +43,8 @@ for _attr in dir(_root_settings):
     if not _attr.startswith("_"):
         globals()[_attr] = getattr(_root_settings, _attr)
 
-# Add the shared core/assets/templates/ to TEMPLATES.DIRS so shared
+# Add the shared projects/assets/templates/ to TEMPLATES.DIRS so shared
 # templates (e.g. events.html, events/main.html, events/includes/events_grid.html)
-# are discoverable when running tests from core/.
+# are discoverable when running tests from projects/.
 _apps_dir = Path(__file__).resolve().parent.parent
 TEMPLATES[0]["DIRS"].append(str(_apps_dir / "assets" / "templates"))

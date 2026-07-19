@@ -1,9 +1,9 @@
-[submodule "core/libs/django-fusion"]
-	path = core/libs/django-fusion
+[submodule "libs/django-fusion"]
+	path = libs/django-fusion
 	url = https://github.com/mammhoud/django-fusion.git
 	branch = generic
 
-[submodule "core/libs/ceptor-ai"]
-	path = core/libs/ceptor-ai
+[submodule "libs/ceptor-ai"]
+	path = libs/ceptor-ai
 	url = https://github.com/mammhoud/ceptor-ai.git
 	branch = generic

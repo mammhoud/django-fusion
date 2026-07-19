@@ -70,8 +70,8 @@ class TestConfigureDjangoForWebsite:
     @patch("www.worker.runtime.importlib.import_module")
     def test_configures_for_explicit_website(self, mock_import):
         mock_site = MagicMock()
-        mock_site.active_website_name.return_value = "lms-demo"
-        mock_site.site_dir_for.return_value = "/path/to/lms-demo"
+        mock_site.active_website_name.return_value = "lms"
+        mock_site.site_dir_for.return_value = "/path/to/lms"
         mock_site.WORKSPACE_DIR = "/path/to/workspace"
 
         mock_django = MagicMock()
@@ -89,10 +89,10 @@ class TestConfigureDjangoForWebsite:
 
         mock_import.side_effect = import_side_effect
 
-        result = configure_django_for_website("lms-demo")
-        assert result == "lms-demo"
+        result = configure_django_for_website("lms")
+        assert result == "lms"
         mock_site.active_website_name.assert_called_once()
-        mock_site.configure_site_environment.assert_called_once_with("lms-demo")
+        mock_site.configure_site_environment.assert_called_once_with("lms")
 
     @patch.dict("os.environ", {}, clear=False)
     @patch("www.worker.runtime.importlib.import_module")

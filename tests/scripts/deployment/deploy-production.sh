@@ -85,9 +85,9 @@ required_files=(
     "applications/databases/docker-compose.yml"
     "applications/compose/docker-compose.applications.yml"
     "applications/proxy/docker-compose.nginx.yml"
-    "core/ctc-research/docker-compose.yml"
-    "core/lms-demo/docker-compose.yml"
-    "core/VResume/docker-compose.yml"
+    "projects/ctc-research/docker-compose.yml"
+    "projects/lms/docker-compose.yml"
+    "projects/portfolio/docker-compose.yml"
 )
 
 for file in "${required_files[@]}"; do

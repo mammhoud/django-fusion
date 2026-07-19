@@ -1,0 +1,550 @@
+[
+{
+  "model": "posapp.appsettings",
+  "pk": 1,
+  "fields": {
+    "restaurant_name": "POS KO",
+    "address": "123 Main Boulevard, Gulberg, Lahore",
+    "phone": "+92-300-1234567",
+    "email": "structa.cloud@gmail.com",
+    "tax_rate": "13",
+    "currency": "PKR",
+    "opening_time": "09:00",
+    "closing_time": "23:00",
+    "receipt_footer": "Thank you for dining with us! Follow us @pos_app",
+    "dine_in_tables": 15,
+    "delivery_fee": 50.0,
+    "delivery_fee_per_km": 15.0
+  }
+},
+{
+  "model": "posapp.category",
+  "pk": 1,
+  "fields": { "name": "Burgers & Sandwiches", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 2,
+  "fields": { "name": "Pizza", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 3,
+  "fields": { "name": "BBQ & Grills", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 4,
+  "fields": { "name": "Rice & Biryani", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 5,
+  "fields": { "name": "Karahi & Curries", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 6,
+  "fields": { "name": "Fast Food & Snacks", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 7,
+  "fields": { "name": "Beverages", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 8,
+  "fields": { "name": "Desserts", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 9,
+  "fields": { "name": "Chinese", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.category",
+  "pk": 10,
+  "fields": { "name": "Breakfast", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.product",
+  "pk": 1,
+  "fields": { "name": "Chicken Burger", "price": 350.0, "unit": "item", "category": 1, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 2,
+  "fields": { "name": "Beef Burger", "price": 400.0, "unit": "item", "category": 1, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 3,
+  "fields": { "name": "Zinger Burger", "price": 450.0, "unit": "item", "category": 1, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 4,
+  "fields": { "name": "Club Sandwich", "price": 350.0, "unit": "item", "category": 1, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 5,
+  "fields": { "name": "Paratha Roll", "price": 250.0, "unit": "item", "category": 1, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 6,
+  "fields": { "name": "Chicken Pizza (Medium)", "price": 800.0, "unit": "item", "category": 2, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 7,
+  "fields": { "name": "Chicken Pizza (Large)", "price": 1200.0, "unit": "item", "category": 2, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 8,
+  "fields": { "name": "Fajita Pizza (Medium)", "price": 900.0, "unit": "item", "category": 2, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 9,
+  "fields": { "name": "Fajita Pizza (Large)", "price": 1300.0, "unit": "item", "category": 2, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 10,
+  "fields": { "name": "Chicken Tikka (4 pcs)", "price": 450.0, "unit": "plate", "category": 3, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 11,
+  "fields": { "name": "Beef Seekh Kebab (6 pcs)", "price": 350.0, "unit": "plate", "category": 3, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 12,
+  "fields": { "name": "Chargah (Full)", "price": 1200.0, "unit": "item", "category": 3, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 13,
+  "fields": { "name": "Mutton Tikka (4 pcs)", "price": 600.0, "unit": "plate", "category": 3, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 14,
+  "fields": { "name": "Chicken Biryani", "price": 250.0, "unit": "plate", "category": 4, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 15,
+  "fields": { "name": "Mutton Biryani", "price": 350.0, "unit": "plate", "category": 4, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 16,
+  "fields": { "name": "Vegetable Biryani", "price": 200.0, "unit": "plate", "category": 4, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 17,
+  "fields": { "name": "Chicken Fried Rice", "price": 300.0, "unit": "plate", "category": 4, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 18,
+  "fields": { "name": "Chicken Karahi (Half)", "price": 900.0, "unit": "item", "category": 5, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 19,
+  "fields": { "name": "Chicken Karahi (Full)", "price": 1600.0, "unit": "item", "category": 5, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 20,
+  "fields": { "name": "Mutton Karahi (Half)", "price": 1200.0, "unit": "item", "category": 5, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 21,
+  "fields": { "name": "Mutton Karahi (Full)", "price": 2200.0, "unit": "item", "category": 5, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 22,
+  "fields": { "name": "Daal Makhni", "price": 250.0, "unit": "plate", "category": 5, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 23,
+  "fields": { "name": "French Fries", "price": 200.0, "unit": "plate", "category": 6, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 24,
+  "fields": { "name": "Chicken Nuggets (6 pcs)", "price": 300.0, "unit": "plate", "category": 6, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 25,
+  "fields": { "name": "Chicken Wings (6 pcs)", "price": 350.0, "unit": "plate", "category": 6, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 26,
+  "fields": { "name": "Spring Rolls (6 pcs)", "price": 250.0, "unit": "plate", "category": 6, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 27,
+  "fields": { "name": "Chicken Soup", "price": 250.0, "unit": "bowl", "category": 6, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 28,
+  "fields": { "name": "Soft Drink (500ml)", "price": 80.0, "unit": "bottle", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 29,
+  "fields": { "name": "Mineral Water (1.5L)", "price": 60.0, "unit": "bottle", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 30,
+  "fields": { "name": "Tea", "price": 80.0, "unit": "cup", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 31,
+  "fields": { "name": "Coffee", "price": 150.0, "unit": "cup", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 32,
+  "fields": { "name": "Milkshake", "price": 250.0, "unit": "glass", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 33,
+  "fields": { "name": "Fruit Juice", "price": 200.0, "unit": "glass", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 34,
+  "fields": { "name": "Lassi", "price": 120.0, "unit": "glass", "category": 7, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 35,
+  "fields": { "name": "Gulab Jamun (4 pcs)", "price": 150.0, "unit": "plate", "category": 8, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 36,
+  "fields": { "name": "Ice Cream", "price": 120.0, "unit": "scoop", "category": 8, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 37,
+  "fields": { "name": "Kheer", "price": 150.0, "unit": "bowl", "category": 8, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 38,
+  "fields": { "name": "Brownie with Ice Cream", "price": 350.0, "unit": "item", "category": 8, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 39,
+  "fields": { "name": "Chicken Manchurian", "price": 350.0, "unit": "plate", "category": 9, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 40,
+  "fields": { "name": "Veg Noodles", "price": 250.0, "unit": "plate", "category": 9, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 41,
+  "fields": { "name": "Chicken Noodles", "price": 300.0, "unit": "plate", "category": 9, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 42,
+  "fields": { "name": "Kung Pao Chicken", "price": 400.0, "unit": "plate", "category": 9, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 43,
+  "fields": { "name": "Halwa Puri (2 puri)", "price": 180.0, "unit": "plate", "category": 10, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 44,
+  "fields": { "name": "Chana Cholay", "price": 200.0, "unit": "plate", "category": 10, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 45,
+  "fields": { "name": "Omelette", "price": 150.0, "unit": "plate", "category": 10, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 46,
+  "fields": { "name": "Nihari", "price": 300.0, "unit": "bowl", "category": 10, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.product",
+  "pk": 47,
+  "fields": { "name": "Siri Paye", "price": 350.0, "unit": "bowl", "category": 10, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.deliverytype",
+  "pk": 1,
+  "fields": { "name": "Dine-in", "description": "Customer eats at the restaurant", "fee_multiplier": 1.0, "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.deliverytype",
+  "pk": 2,
+  "fields": { "name": "Takeaway", "description": "Customer picks up", "fee_multiplier": 1.0, "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.deliverytype",
+  "pk": 3,
+  "fields": { "name": "Delivery", "description": "Delivered to customer address", "fee_multiplier": 1.5, "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 1,
+  "fields": { "name": "Head Chef", "description": "Kitchen lead", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 2,
+  "fields": { "name": "Waiter", "description": "Floor service staff", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 3,
+  "fields": { "name": "Manager", "description": "Restaurant manager", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 4,
+  "fields": { "name": "Cleaner", "description": "Cleaning staff", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 5,
+  "fields": { "name": "Cashier", "description": "Billing staff", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 6,
+  "fields": { "name": "Driver", "description": "Delivery driver", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employeetype",
+  "pk": 7,
+  "fields": { "name": "Admin", "description": "System administrator", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.employee",
+  "pk": 1,
+  "fields": { "name": "Ali Ahmed", "phone": "+92-312-3456789", "email": "ali@pos.pk", "employee_type": 3, "salary": 55000.0, "is_active": true, "joined_at": "2025-06-15", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 2,
+  "fields": { "name": "Usman Khan", "phone": "+92-321-4567890", "email": "usman@pos.pk", "employee_type": 1, "salary": 45000.0, "is_active": true, "joined_at": "2025-06-15", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 3,
+  "fields": { "name": "Bilawal Shah", "phone": "+92-333-5678901", "email": "bilawal@pos.pk", "employee_type": 2, "salary": 30000.0, "is_active": true, "joined_at": "2025-07-01", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 4,
+  "fields": { "name": "Sara Zaman", "phone": "+92-334-6789012", "email": "sara@pos.pk", "employee_type": 2, "salary": 30000.0, "is_active": true, "joined_at": "2025-08-01", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 5,
+  "fields": { "name": "Kamran Ali", "phone": "+92-335-7890123", "email": "kamran@pos.pk", "employee_type": 5, "salary": 32000.0, "is_active": true, "joined_at": "2025-08-15", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 6,
+  "fields": { "name": "Ahsan Dar", "phone": "+92-336-8901234", "email": "ahsan@pos.pk", "employee_type": 1, "salary": 40000.0, "is_active": true, "joined_at": "2025-09-01", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 7,
+  "fields": { "name": "Nabeel Haider", "phone": "+92-337-9012345", "email": "nabeel@pos.pk", "employee_type": 6, "salary": 25000.0, "is_active": true, "joined_at": "2025-10-01", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 8,
+  "fields": { "name": "Maria Tariq", "phone": "+92-338-0123456", "email": "maria@pos.pk", "employee_type": 4, "salary": 20000.0, "is_active": true, "joined_at": "2025-10-10", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 9,
+  "fields": { "name": "Danish Iqbal", "phone": "+92-339-1234567", "email": "danish@pos.pk", "employee_type": 2, "salary": 28000.0, "is_active": true, "joined_at": "2025-11-01", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 10,
+  "fields": { "name": "Faraz Hussain", "phone": "+92-340-2345678", "email": "faraz@pos.pk", "employee_type": 5, "salary": 30000.0, "is_active": true, "joined_at": "2025-11-15", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 11,
+  "fields": { "name": "Saima Rana", "phone": "+92-341-3456789", "email": "saima@pos.pk", "employee_type": 4, "salary": 20000.0, "is_active": true, "joined_at": "2025-12-01", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.employee",
+  "pk": 12,
+  "fields": { "name": "Raheel Mirza", "phone": "+92-342-4567890", "email": "raheel@pos.pk", "employee_type": 6, "salary": 25000.0, "is_active": true, "joined_at": "2025-12-15", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z", "uploaded": false }
+},
+{
+  "model": "posapp.customer",
+  "pk": 1,
+  "fields": { "name": "Ahmed Raza", "phone": "+92-300-1000001", "email": "ahmed@email.com", "loyalty_points": 450.0, "notes": "Regular customer, prefers chicken dishes", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 2,
+  "fields": { "name": "Fatima Noor", "phone": "+92-300-1000002", "email": "fatima@email.com", "loyalty_points": 320.0, "notes": "Loves desserts and beverages", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 3,
+  "fields": { "name": "Bilal Hassan", "phone": "+92-300-1000003", "email": "bilal@email.com", "loyalty_points": 780.0, "notes": "VIP customer, orders frequently", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 4,
+  "fields": { "name": "Ayesha Malik", "phone": "+92-300-1000004", "email": "ayesha@email.com", "loyalty_points": 150.0, "notes": "New customer", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 5,
+  "fields": { "name": "Usman Dar", "phone": "+92-300-1000005", "email": "usman@email.com", "loyalty_points": 600.0, "notes": "Corporate client", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 6,
+  "fields": { "name": "Zainab Tariq", "phone": "+92-300-1000006", "email": "zainab@email.com", "loyalty_points": 220.0, "notes": "Vegetarian preference", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 7,
+  "fields": { "name": "Hassan Rizvi", "phone": "+92-300-1000007", "email": "hassan@email.com", "loyalty_points": 95.0, "notes": "Student discount", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 8,
+  "fields": { "name": "Sana Javed", "phone": "+92-300-1000008", "email": "sana@email.com", "loyalty_points": 510.0, "notes": "Family orders", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 9,
+  "fields": { "name": "Omar Sheikh", "phone": "+92-300-1000009", "email": "omar@email.com", "loyalty_points": 0.0, "notes": "Walk-in", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.customer",
+  "pk": 10,
+  "fields": { "name": "Nadia Qureshi", "phone": "+92-300-1000010", "email": "nadia@email.com", "loyalty_points": 380.0, "notes": "Loves BBQ items", "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.supplier",
+  "pk": 1,
+  "fields": { "name": "Al-Fatah Foods", "contact_name": "Imran Sheikh", "email": "imran@alfatah.pk", "phone": "+92-321-1112233", "address": "12 Industry Road, Lahore", "tax_id": "TAX-001", "payment_terms": "Net 30", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.supplier",
+  "pk": 2,
+  "fields": { "name": "Fresh Meat & Poultry", "contact_name": "Kamran Butt", "email": "kamran@freshmeat.pk", "phone": "+92-322-2223344", "address": "45 Mandi Road, Lahore", "tax_id": "TAX-002", "payment_terms": "Net 15", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.supplier",
+  "pk": 3,
+  "fields": { "name": "Metro Wholesale", "contact_name": "Sajid Ali", "email": "sajid@metro.pk", "phone": "+92-323-3334455", "address": "78 Canal Road, Lahore", "tax_id": "TAX-003", "payment_terms": "Net 30", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.supplier",
+  "pk": 4,
+  "fields": { "name": "Bakehouse Supplies", "contact_name": "Nazia Hassan", "email": "nazia@bakehouse.pk", "phone": "+92-324-4445566", "address": "90 Baker Street, Lahore", "tax_id": "TAX-004", "payment_terms": "Net 15", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.supplier",
+  "pk": 5,
+  "fields": { "name": "Beverage Distributors", "contact_name": "Rashid Mehmood", "email": "rashid@beverage.pk", "phone": "+92-325-5556677", "address": "33 Circular Road, Lahore", "tax_id": "TAX-005", "payment_terms": "Net 30", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.supplier",
+  "pk": 6,
+  "fields": { "name": "Dairy Fresh Co.", "contact_name": "Farah Khan", "email": "farah@dairyfresh.pk", "phone": "+92-326-6667788", "address": "55 Milk Plant, Lahore", "tax_id": "TAX-006", "payment_terms": "Net 7", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.role",
+  "pk": 1,
+  "fields": { "name": "Admin", "permissions": "[\"all\"]", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.role",
+  "pk": 2,
+  "fields": { "name": "Manager", "permissions": "[\"sales\",\"inventory\",\"employees\",\"reports\",\"settings\"]", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.role",
+  "pk": 3,
+  "fields": { "name": "Chef", "permissions": "[\"kitchen\",\"recipes\",\"inventory_read\"]", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.role",
+  "pk": 4,
+  "fields": { "name": "Waiter", "permissions": "[\"sales\",\"orders\"]", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.role",
+  "pk": 5,
+  "fields": { "name": "Cashier", "permissions": "[\"sales\",\"transactions\"]", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.role",
+  "pk": 6,
+  "fields": { "name": "Driver", "permissions": "[\"deliveries\"]", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.receipttemplate",
+  "pk": 1,
+  "fields": { "name": "Standard", "template_body": "<h2>{{restaurant_name}}</h2><p>{{address}}</p><table>{{items}}</table><p>Total: {{total}}</p><p>{{footer}}</p>", "is_default": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.receipttemplate",
+  "pk": 2,
+  "fields": { "name": "Compact", "template_body": "<p>{{restaurant_name}} — {{date}}</p><table>{{items}}</table><p>Total: {{total}}</p>", "is_default": false, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.receipttemplate",
+  "pk": 3,
+  "fields": { "name": "Detailed", "template_body": "<h2>{{restaurant_name}}</h2><p>{{address}} | {{phone}} | {{email}}</p><table>{{items}}</table><p>Subtotal: {{subtotal}} | Tax: {{tax}} | Total: {{total}}</p><p>{{footer}}</p>", "is_default": false, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.recipetype",
+  "pk": 1,
+  "fields": { "name": "Standard", "description": "Default recipe", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+},
+{
+  "model": "posapp.recipetype",
+  "pk": 2,
+  "fields": { "name": "Special", "description": "Special/seasonal variant", "is_active": true, "created_at": "2026-01-01T00:00:00Z", "updated_at": "2026-01-01T00:00:00Z" }
+}
+]

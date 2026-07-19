@@ -1,0 +1,210 @@
+import { useState, useEffect } from 'react';
+import { motion } from 'framer-motion';
+import { MdAccountBalance, MdAdd, MdDelete, MdSearch, MdClose } from 'react-icons/md';
+import { invoke } from '@tauri-apps/api/core';
+import PageLayout from '../components/PageLayout';
+import { useTranslation } from 'react-i18next';
+import { TaxReport } from '../types';
+import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
+
+export default function TaxReports() {
+  const { t } = useTranslation();
+  const [reports, setReports] = useState<TaxReport[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [showForm, setShowForm] = useState(false);
+  const [form, setForm] = useState({ period_start: '', period_end: '', total_sales: 0, total_tax: 0, transaction_count: 0 });
+
+  // AJAX-style debounced search + sort. Searches across period dates and totals
+  // as strings (date format is YYYY-MM-DD so substring matches work intuitively).
+  const {
+    query: search,
+    setQuery: setSearch,
+    debouncedQuery: debouncedSearch,
+    isPending: isFiltering,
+  } = useDebouncedSearch();
+  const [sortKey, setSortKey] = useState<'newest' | 'oldest' | 'sales-desc' | 'sales-asc'>('newest');
+
+  useEffect(() => {
+    loadReports();
+  }, []);
+
+  const loadReports = async (opts: { quiet?: boolean } = {}) => {
+    const { quiet = false } = opts;
+    if (!quiet) setIsLoading(true);
+    try {
+      const data = await invoke<TaxReport[]>('get_tax_reports');
+      setReports(data);
+    } catch (error) {
+      console.error('Error loading tax reports:', error);
+    } finally {
+      if (!quiet) setIsLoading(false);
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      await invoke('add_tax_report', { report: form });
+      setShowForm(false);
+      setForm({ period_start: '', period_end: '', total_sales: 0, total_tax: 0, transaction_count: 0 });
+      loadReports({ quiet: true });
+    } catch (error) {
+      console.error('Error saving tax report:', error);
+      loadReports({ quiet: true });
+    }
+  };
+
+  const handleDelete = async (id: number) => {
+    if (!confirm(t('common.confirmDelete'))) return;
+    try {
+      await invoke('delete_tax_report', { id });
+      loadReports({ quiet: true });
+    } catch (error) {
+      console.error('Error deleting tax report:', error);
+      loadReports({ quiet: true });
+    }
+  };
+
+  // Filtered + sorted list (debounced search + sort apply to visible grid)
+  const q = debouncedSearch.trim().toLowerCase();
+  const filteredReports = (() => {
+    let result = q
+      ? reports.filter(r => {
+          const haystack = [
+            r.period_start || '',
+            r.period_end || '',
+            String(r.total_sales ?? ''),
+            String(r.total_tax ?? ''),
+            String(r.transaction_count ?? ''),
+          ].join(' ').toLowerCase();
+          return haystack.includes(q);
+        })
+      : reports;
+    const sorted = [...result];
+    switch (sortKey) {
+      case 'sales-desc': sorted.sort((a, b) => b.total_sales - a.total_sales); break;
+      case 'sales-asc': sorted.sort((a, b) => a.total_sales - b.total_sales); break;
+      case 'oldest':
+        sorted.sort((a, b) => (a.period_start || '').localeCompare(b.period_start || '')); break;
+      case 'newest':
+      default:
+        sorted.sort((a, b) => (b.period_start || '').localeCompare(a.period_start || ''));
+    }
+    return sorted;
+  })();
+
+  return (
+    <PageLayout title={t('taxReports.title')} background="bg-slate-100 dark:bg-slate-900">
+      <div className="space-y-4">
+        <div className="flex justify-between items-center">
+          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('taxReports.title')}</h1>
+          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
+            <MdAdd /> {t('taxReports.addReport')}
+          </motion.button>
+        </div>
+
+        {/* ── Search + sort bar (debounced async UX) ── */}
+        <div className="card--glass rounded-xl p-3">
+          <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
+            <div className="relative flex-1">
+              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <input
+                type="text"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder={t('taxReports.searchPlaceholder') || 'Search by period or amount...'}
+                aria-label={t('taxReports.searchPlaceholder') || 'Search tax reports'}
+                className="w-full pl-10 pr-9 py-2 rounded-lg bg-white/50 dark:bg-white/5
+                  border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
+                  placeholder:text-slate-400 dark:placeholder:text-gray-500
+                  focus:outline-none focus:border-teal-400 transition-colors text-sm"
+              />
+              {isFiltering ? (
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  aria-label="filtering"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
+                    border-2 border-teal-400 border-t-transparent rounded-full"
+                />
+              ) : search ? (
+                <button
+                  onClick={() => setSearch('')}
+                  aria-label={t('common.clear')}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
+                >
+                  <MdClose className="w-4 h-4" />
+                </button>
+              ) : null}
+            </div>
+            <select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as 'newest' | 'oldest' | 'sales-desc' | 'sales-asc')}
+              aria-label={t('taxReports.sortBy') || 'Sort by'}
+              className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5
+                border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
+                text-sm focus:outline-none focus:border-teal-400 transition-colors sm:w-48"
+            >
+              <option value="newest">{t('taxReports.sortNewest') || 'Period (newest)'}</option>
+              <option value="oldest">{t('taxReports.sortOldest') || 'Period (oldest)'}</option>
+              <option value="sales-desc">{t('taxReports.sortSalesDesc') || 'Sales (high → low)'}</option>
+              <option value="sales-asc">{t('taxReports.sortSalesAsc') || 'Sales (low → high)'}</option>
+            </select>
+            <span className="text-xs text-slate-500 dark:text-gray-400 whitespace-nowrap px-2">
+              {filteredReports.length} / {reports.length}
+            </span>
+          </div>
+        </div>
+
+        {showForm && (
+          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="card--glass rounded-xl p-4 space-y-3">
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white sm:col-span-2" />
+            </div>
+            <div className="flex gap-2">
+              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">{t('common.save')}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">{t('common.cancel')}</button>
+            </div>
+          </motion.form>
+        )}
+
+        {isLoading ? (
+          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
+        ) : filteredReports.length === 0 ? (
+          <div className="text-center py-12 text-slate-500">
+            {debouncedSearch
+              ? (t('common.noDataFound') || 'No matches found.')
+              : (t('taxReports.noReports'))}
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+            {filteredReports.map(report => (
+              <motion.div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                <div className="flex items-start justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                      <MdAccountBalance className="w-5 h-5" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-slate-900 dark:text-white">{report.period_start} - {report.period_end}</h3>
+                      <p className="text-sm text-slate-500">{report.transaction_count} {t('taxReports.transactions')}</p>
+                    </div>
+                  </div>
+                  <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                </div>
+                <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
+                  <p>{t('taxReports.totalSales')}: {report.total_sales.toFixed(2)}</p>
+                  <p>{t('taxReports.totalTax')}: {report.total_tax.toFixed(2)}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        )}
+      </div>
+    </PageLayout>
+  );
+}

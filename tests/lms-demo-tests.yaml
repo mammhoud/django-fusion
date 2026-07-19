@@ -1,6 +1,6 @@
-site: lms-demo
+site: lms
 aliases: [structa, structa.cloud, lms]
-base_url: http://lms-demo.local
+base_url: http://lms.local
 port: 5071
 commands:
   check: python manage.py --site structa check

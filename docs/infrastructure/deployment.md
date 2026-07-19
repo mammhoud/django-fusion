@@ -1,6 +1,7 @@
-# Deployment Guide
+# Infrastructure — Deployment
 
-## Infrastructure overview
+> **Related Names:** `Docker`, `docker-compose`, `deployment`, `production`, `containers`, `Traefik`, `PostgreSQL`, `Redis`, `health-check`, `backup`
+> **Tags:** #deployment #docker #infrastructure #production
 
 ```
 ┌─────────────────────────────────────────────┐
@@ -32,7 +33,7 @@
 |---------|-----------|------|---------|
 | Traefik Proxy | `default-proxy` | 80, 443, 8080 | HTTPS reverse proxy |
 | CTC Research | `ctc-research-website` | 5070 | Django app |
-| LMS Demo | `lms-demo-website` | 5071 | Django app |
+| LMS Demo | `lms-website` | 5071 | Django app |
 | VResume | `vresume-website` | 5072 | Django app |
 | PostgreSQL | `postgres` | 5432 | Primary database |
 | Redis | `default-redis` | 6379 | Cache & sessions |
@@ -42,9 +43,9 @@
 
 ```
 /home/structa.cloud/
-├── core/                       # Django monorepo
+├── projects/                       # Django monorepo
 │   ├── ctc-research/
-│   ├── lms-demo/
+│   ├── lms/
 │   ├── VResume/
 │   ├── libs/django-fusion/
 │   ├── libs/ceptor-ai/
@@ -64,7 +65,7 @@
 ```bash
 docker build \
   --build-arg PROJECT_PATH=ctc-research \
-  -f core/compose/Dockerfile \
+  -f projects/compose/Dockerfile \
   -t structa-ctc-research:latest \
   .
 ```
@@ -80,14 +81,14 @@ Or manually:
 ```bash
 docker compose -f applications/databases/docker-compose.yml up -d
 docker compose -f applications/proxy/docker-compose.yml up -d
-cd core && make docker-up WEBSITE=ctc-research
+cd projects && make docker-up WEBSITE=ctc-research
 ```
 
 ## Environment variables
 
 | Variable | Example | Purpose |
 |----------|---------|---------|
-| `PROJECT_PATH` | `ctc-research` | Site subdirectory in `core/` |
+| `PROJECT_PATH` | `ctc-research` | Site subdirectory in `projects/` |
 | `WEBSITE` | `ctc-research` | Site identifier |
 | `DATABASE_URL` | `postgresql://user:pass@postgres:5432/dbname` | Database connection |
 | `REDIS_URL` | `redis://default-redis:6379/0` | Redis connection |

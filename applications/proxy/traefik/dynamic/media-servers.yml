@@ -35,14 +35,14 @@ http:
       tls:
         certResolver: letsencrypt-http
     lms-media-http:
-      rule: Host(`media.lms-demo.com`)
+      rule: Host(`media.lms.com`)
       entryPoints:
       - web
       middlewares:
       - redirect-to-https
       service: lms-media-service
     lms-media-https:
-      rule: Host(`media.lms-demo.com`)
+      rule: Host(`media.lms.com`)
       entryPoints:
       - web-secure
       middlewares:

@@ -24,8 +24,8 @@ Thumbs.db
 backups/
 
 # ----------------------------------------------------------------------
-# Project-wide ignores (mirrors the protections under core/.gitignore
-# for files that live outside `core/`).
+# Project-wide ignores (mirrors the protections under projects/.gitignore
+# for files that live outside `projects/`).
 # ----------------------------------------------------------------------
 
 # SSL/TLS private keys and certificates (proxy/certs/* self-signed legacy;
@@ -44,13 +44,15 @@ backups/
 .env.*.local
 secrets.yml
 applications/compose/config/secrets.yml
-core/libs
-core/libs/*
+libs
+libs/*
 # Test databases and dumps
 *.sqlite3
 *.dump
 *.sql.gz
-tests/test_db.sqlite3
+
+# @env placeholder literal filenames (from unresolved @env in YAML config)
+@env*
 tests/@env*
 
 # Transient working files
@@ -61,3 +63,8 @@ tmp/
 tmp/*
 # Local virtualenv at the repo root
 .venv/
+
+# Ignore CTC Research docs - separate project
+docs/ctc-research/
+docs/archives/
+ctc-research

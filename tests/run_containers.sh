@@ -20,9 +20,9 @@ case "$SITE" in
         DJANGO_SITE="ctc-research"
         SERVICE="ctc-research-website"
         ;;
-    structa|structa.cloud|lms|lms-demo)
-        DJANGO_SITE="lms-demo"
-        SERVICE="lms-demo-website"
+    structa|structa.cloud|lms|lms)
+        DJANGO_SITE="lms"
+        SERVICE="lms-website"
         ;;
     vresume|VResume|resume|vresume.structa.cloud)
         DJANGO_SITE="vresume"
@@ -30,7 +30,7 @@ case "$SITE" in
         ;;
     all)
         DJANGO_SITE="all"
-        SERVICE="ctc-research-website lms-demo-website vresume-website shared-media"
+        SERVICE="ctc-research-website lms-website vresume-website shared-media"
         ;;
     *)
         DJANGO_SITE="$SITE"

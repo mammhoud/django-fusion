@@ -124,7 +124,7 @@ PROJECT_PATH=ctc-research npm --prefix assets run build 2>&1 | grep -E "✓|✗|
 success "CTC Research assets built"
 
 log "Building assets for LMS Demo..."
-PROJECT_PATH=lms-demo npm --prefix assets run build 2>&1 | grep -E "✓|✗|error|warning|built in" | tee -a "$LOG_FILE"
+PROJECT_PATH=lms npm --prefix assets run build 2>&1 | grep -E "✓|✗|error|warning|built in" | tee -a "$LOG_FILE"
 success "LMS Demo assets built"
 
 log "Building assets for VResume..."
@@ -144,7 +144,7 @@ docker exec web-ctc-research python manage.py collectstatic --noinput --site ctc
 success "CTC Research static files collected"
 
 log "Collecting static files for LMS Demo..."
-docker exec web-lms-demo python manage.py collectstatic --noinput --site lms-demo 2>&1 | tail -10 | tee -a "$LOG_FILE" 2>/dev/null || warning "LMS Demo container not yet ready, skipping"
+docker exec web-lms python manage.py collectstatic --noinput --site lms 2>&1 | tail -10 | tee -a "$LOG_FILE" 2>/dev/null || warning "LMS Demo container not yet ready, skipping"
 
 log "Collecting static files for VResume..."
 docker exec web-vresume python manage.py collectstatic --noinput --site vresume 2>&1 | tail -10 | tee -a "$LOG_FILE" 2>/dev/null || warning "VResume container not yet ready, skipping"
@@ -157,7 +157,7 @@ echo ""
 log "PHASE 4: Verifying Asset Output"
 echo ""
 
-for site in ctc-research lms-demo VResume; do
+for site in ctc-research lms VResume; do
   if [ -d "${site}/assets/bundles" ]; then
     count=$(find "${site}/assets/bundles" -type f | wc -l)
     size=$(du -sh "${site}/assets/bundles" 2>/dev/null | cut -f1)

@@ -1,0 +1,8 @@
+
+{# projects/cypercloud/templates/fragments/message_send_result.html #}
+
+{% comp "components/alert.html"
+  is_success=is_success
+  message=message
+  errors=form.errors
+/%}

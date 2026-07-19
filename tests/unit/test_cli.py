@@ -20,7 +20,7 @@ import cli  # noqa: E402
 
 class TestResolve:
     def test_canonical_name_passes_through(self):
-        assert cli._resolve("lms-demo") == "lms-demo"
+        assert cli._resolve("lms") == "lms"
         assert cli._resolve("ctc-research") == "ctc-research"
         assert cli._resolve("vresume") == "vresume"
 
@@ -30,10 +30,10 @@ class TestResolve:
             ("ctc", "ctc-research"),
             ("ctc-website", "ctc-research"),
             ("ctc-research.com", "ctc-research"),
-            ("structa", "lms-demo"),
-            ("structa.cloud", "lms-demo"),
-            ("lms", "lms-demo"),
-            ("core", "lms-demo"),
+            ("structa", "lms"),
+            ("structa.cloud", "lms"),
+            ("lms", "lms"),
+            ("core", "lms"),
             ("VResume", "vresume"),
             ("resume", "vresume"),
             ("vresume.structa.cloud", "vresume"),
@@ -63,7 +63,7 @@ class TestWebsiteEnv:
         assert "DJANGO_SECRET_KEY" not in env
 
     def test_lms_demo_env(self):
-        env = cli._website_env("lms-demo")
+        env = cli._website_env("lms")
         assert env["DB_NAME"] == "db_structa"
 
     def test_vresume_env(self):
@@ -76,13 +76,13 @@ class TestWebsiteEnv:
 
     def test_existing_env_vars_preserved(self):
         with patch.dict(os.environ, {"DB_HOST": "custom-host", "REDIS_URL": "redis://custom:6379"}):
-            env = cli._website_env("lms-demo")
+            env = cli._website_env("lms")
             assert env["DB_HOST"] == "custom-host"
             assert env["REDIS_URL"] == "redis://custom:6379"
 
     def test_django_secret_key_removed(self):
         with patch.dict(os.environ, {"DJANGO_SECRET_KEY": "secret123"}):
-            env = cli._website_env("lms-demo")
+            env = cli._website_env("lms")
             assert "DJANGO_SECRET_KEY" not in env
 
 
@@ -142,12 +142,12 @@ class TestContainerCheck:
     @patch("cli.subprocess.run")
     def test_successful_container_check(self, mock_run):
         mock_run.return_value = MagicMock(returncode=0)
-        assert cli._container_check("lms-demo") is True
+        assert cli._container_check("lms") is True
 
     @patch("cli.subprocess.run")
     def test_failed_container_check(self, mock_run):
         mock_run.return_value = MagicMock(returncode=1)
-        assert cli._container_check("lms-demo") is False
+        assert cli._container_check("lms") is False
 
 
 # ---------------------------------------------------------------------------
@@ -159,14 +159,14 @@ class TestCLIMethods:
     def test_check_exits_zero_on_success(self, mock_check):
         c = cli.CLI()
         with pytest.raises(SystemExit) as exc_info:
-            c.check("lms-demo")
+            c.check("lms")
         assert exc_info.value.code == 0
 
     @patch("cli._local_check", return_value=False)
     def test_check_exits_one_on_failure(self, mock_check):
         c = cli.CLI()
         with pytest.raises(SystemExit) as exc_info:
-            c.check("lms-demo")
+            c.check("lms")
         assert exc_info.value.code == 1
 
     @patch("cli._run")
@@ -175,14 +175,14 @@ class TestCLIMethods:
     @patch("cli._container_check", return_value=True)
     def test_deploy_happy_path(self, mock_cc, mock_lc, mock_subrun, mock_run):
         c = cli.CLI()
-        c.deploy("lms-demo")
+        c.deploy("lms")
         assert mock_run.call_count >= 1
 
     @patch("cli._local_check", return_value=False)
     def test_deploy_aborts_on_local_check_failure(self, mock_lc):
         c = cli.CLI()
         with pytest.raises(SystemExit):
-            c.deploy("lms-demo")
+            c.deploy("lms")
 
     @patch("cli._run")
     @patch("cli._container_check", return_value=False)
@@ -190,12 +190,12 @@ class TestCLIMethods:
     def test_deploy_aborts_on_container_check_failure(self, mock_lc, mock_cc, mock_run):
         c = cli.CLI()
         with pytest.raises(SystemExit):
-            c.deploy("lms-demo")
+            c.deploy("lms")
 
     @patch("cli._run")
     def test_logs_command(self, mock_run):
         c = cli.CLI()
-        c.logs("lms-demo", tail=10)
+        c.logs("lms", tail=10)
         mock_run.assert_called_once()
         args = mock_run.call_args
         assert "--tail=10" in args[0][0]
@@ -203,14 +203,14 @@ class TestCLIMethods:
     @patch("cli._run")
     def test_logs_with_service(self, mock_run):
         c = cli.CLI()
-        c.logs("lms-demo", service="web")
+        c.logs("lms", service="web")
         args = mock_run.call_args[0][0]
         assert "web" in args
 
     @patch("cli._run")
     def test_down_command(self, mock_run):
         c = cli.CLI()
-        c.down("lms-demo")
+        c.down("lms")
         args = mock_run.call_args[0][0]
         assert "down" in args
         assert "--remove-orphans" in args
@@ -279,40 +279,40 @@ class TestBuildAssets:
     def test_build_assets_skips_missing_manage_py(self, mock_run, tmp_path, capsys):
         with patch.object(cli, "SCRIPT_DIR", tmp_path):
             c = cli.CLI()
-            c.build_assets(website="lms-demo")
+            c.build_assets(website="lms")
         mock_run.assert_not_called()
 
     @patch("cli.subprocess.run")
     def test_build_assets_runs_for_site_with_manage_py(self, mock_run, tmp_path):
-        site_dir = tmp_path / "lms-demo"
+        site_dir = tmp_path / "lms"
         site_dir.mkdir()
         (site_dir / "manage.py").write_text("pass")
         mock_run.return_value = MagicMock(returncode=0)
         with patch.object(cli, "SCRIPT_DIR", tmp_path):
             c = cli.CLI()
-            c.build_assets(website="lms-demo")
+            c.build_assets(website="lms")
         assert mock_run.call_count == 1
 
     @patch("cli.subprocess.run")
     def test_build_assets_exits_on_failure(self, mock_run, tmp_path):
-        site_dir = tmp_path / "lms-demo"
+        site_dir = tmp_path / "lms"
         site_dir.mkdir()
         (site_dir / "manage.py").write_text("pass")
         mock_run.return_value = MagicMock(returncode=1)
         with patch.object(cli, "SCRIPT_DIR", tmp_path):
             c = cli.CLI()
             with pytest.raises(SystemExit):
-                c.build_assets(website="lms-demo")
+                c.build_assets(website="lms")
 
     @patch("cli.subprocess.run")
     def test_build_assets_development_mode(self, mock_run, tmp_path):
-        site_dir = tmp_path / "lms-demo"
+        site_dir = tmp_path / "lms"
         site_dir.mkdir()
         (site_dir / "manage.py").write_text("pass")
         mock_run.return_value = MagicMock(returncode=0)
         with patch.object(cli, "SCRIPT_DIR", tmp_path):
             c = cli.CLI()
-            c.build_assets(website="lms-demo", production=False)
+            c.build_assets(website="lms", production=False)
         cmd = mock_run.call_args[0][0]
         assert "--development" in cmd
 

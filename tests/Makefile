@@ -19,10 +19,10 @@ integration:
 websites: ctc structa vresume
 
 ctc:
-	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/ctc-research ]; then echo tests/websites/ctc-research; elif [ -d core/ctc-research ]; then echo core/ctc-research; else echo tests/unit; fi)
+	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/ctc-research ]; then echo tests/websites/ctc-research; elif [ -d projects/ctc-research ]; then echo projects/ctc-research; else echo tests/unit; fi)
 
 structa:
-	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/structa ]; then echo tests/websites/structa; elif [ -d core/lms-demo ]; then echo core/lms-demo; else echo tests/unit; fi)
+	cd .. && ./.venv/bin/python -m pytest $(shell if [ -d tests/websites/structa ]; then echo tests/websites/structa; elif [ -d projects/lms ]; then echo projects/lms; else echo tests/unit; fi)
 
 vresume:
 	cd .. && ./.venv/bin/python -m pytest tests/websites/vresume

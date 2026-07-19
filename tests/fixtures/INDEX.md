@@ -61,7 +61,7 @@ done
 | `production/` | `cleaned-dump-data.json`, `just-locales.json` | Production seed data |
 | `test/` | `core-data.json`, `initial_choices.json`, `locales.json`, `pages.json`, `users.json` | Test environment data |
 | `by-model/auth/` | `auth-group.json`, `auth-permission.json`, `auth-user.json` | Auth model exports |
-| `by-model/wagtailcore/` | Page tree, site, workflow, collection fixtures | Wagtail CMS structure |
+| `by-model/wagtailprojects/` | Page tree, site, workflow, collection fixtures | Wagtail CMS structure |
 | `by-model/wagtailimages/` | `wagtailimages-image.json`, `wagtailimages-rendition.json` | Image library |
 | `by-model/handlers/` | `handlers-organization.json` | Organization data |
 | `by-model/modules/` | Activity types, status choices, derived status | LMS module config |
@@ -79,9 +79,9 @@ python manage.py --site=ctc-research loaddata tests/fixtures/lms/courses.json
 
 ---
 
-### lms-demo (LMS Demo)
+### lms (LMS Demo)
 
-**Location:** `lms-demo/assets/fixtures/`
+**Location:** `lms/assets/fixtures/`
 
 Minimal fixtures — the demo environment seeds data programmatically via `populate`.
 
@@ -90,7 +90,7 @@ Minimal fixtures — the demo environment seeds data programmatically via `popul
 | `auth/` | `group_dummy.json`, `user_dummy.json` | Test users and groups |
 | `sites/` | `site_dummy.json` | Django sites framework config |
 
-See `tests/fixtures/lms-demo/README.md` for details.
+See `tests/fixtures/lms/README.md` for details.
 
 ---
 

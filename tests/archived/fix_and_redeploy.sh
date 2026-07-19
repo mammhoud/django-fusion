@@ -13,7 +13,7 @@ YELLOW='\033[1;33m'
 NC='\033[0m' # No Color
 
 LOG_DIR="/root/site/websites/logs"
-WEBSITES=("ctc-research" "lms-demo" "VResume")
+WEBSITES=("ctc-research" "lms" "VResume")
 
 # Function to log messages
 log_info() {

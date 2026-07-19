@@ -1,5 +1,5 @@
 # check-extras: fail the build if any Markdown install command under
-# core/libs/**/docs/ references an extras key that does not exist
+# libs/**/docs/ references an extras key that does not exist
 # in the matching libs/<pkg>/pyproject.toml [project.optional-dependencies].
 #
 # Companion to applications/scripts/check_extras_in_docs.py — that script
@@ -11,16 +11,16 @@ name: check-extras
 on:
   pull_request:
     paths:
-      - 'core/libs/**/*.md'
-      - 'core/libs/**/docs/**'
+      - 'libs/**/*.md'
+      - 'libs/**/docs/**'
       - '**/pyproject.toml'
       - '.github/workflows/check-extras.yml'
       - 'applications/scripts/check_extras_in_docs.py'
   push:
     branches: ['**']
     paths:
-      - 'core/libs/**/*.md'
-      - 'core/libs/**/docs/**'
+      - 'libs/**/*.md'
+      - 'libs/**/docs/**'
       - '**/pyproject.toml'
       - '.github/workflows/check-extras.yml'
       - 'applications/scripts/check_extras_in_docs.py'

@@ -1,0 +1,610 @@
+{% comment %}
+projects/cypercloud/templates/chat.html
+Chat UI for TemplateTinker — sidebar, messages, streaming, Monaco code editor.
+Wired up by customizer/chat/views.py ChatView.
+{% endcomment %}
+{% load i18n static %}
+{% load render_bundle from webpack_loader %}
+
+<!DOCTYPE html>
+<html lang="en"
+      data-theme="classic-light"
+      dir="ltr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>
+    {% block title %}{{ conversation.title }} — TemplateTinker{% endblock %}
+  </title>
+
+  {% block meta_tags %}
+    <meta name="csrf-token" content="{{ csrf_token }}">
+  {% endblock %}
+
+  {% block favicon %}
+    <link rel="icon"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/icons/robot.svg">
+  {% endblock %}
+
+  {% block styles %}
+    {# 1. Webpack static bundle (customizer SCSS) #}
+    {% render_bundle 'styles' 'css' %}
+
+    {# 2. Bootstrap + Font Awesome CDN fallback #}
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
+    {# Font Awesome (for editor icons) #}
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    {# Monaco Editor CSS #}
+    <link rel="stylesheet"
+          data-name="vs/editor/editor.main"
+          href="https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs/editor/editor.main.min.css">
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/styles/github.min.css">
+  {% endblock %}
+
+  {% block extra_head %}
+    <script src="https://unpkg.com/htmx.org@1.9.10"
+            integrity="sha384-Fh6w5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5F5"></script>
+    <script src="https://unpkg.com/htmx-ext-json-enc@1.0.0/json-enc.js"></script>
+    {# Monaco Editor loader #}
+    <script src="https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs/loader.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.8.0/highlight.min.js"
+            defer></script>
+  {% endblock %}
+</head>
+
+<body class="bg-light"
+      hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+      data-nav="customizer-chat">
+
+  <div class="d-flex" style="height: 100vh; overflow: hidden;">
+
+    {# ═══════════════════════════════════════════════════════════ #}
+    {# SIDEBAR: dark theme, chat sessions + website templates    #}
+    {# ═══════════════════════════════════════════════════════════ #}
+    <nav class="side-nav d-flex flex-column flex-shrink-0"
+         id="sideNav"
+         aria-label="Chat navigator">
+
+      {# Brand #}
+      <div class="side-nav__brand">
+        <i class="fas fa-robot brand-icon"></i>
+        <span>TemplateTinker</span>
+      </div>
+
+      {# New chat button #}
+      <a href="{% url 'homepage' %}"
+         class="side-nav__new-chat-btn text-decoration-none">
+        <i class="fas fa-plus"></i>
+        <span>{% trans "New Chat" %}</span>
+      </a>
+
+      {# Chat history as code-block style #}
+      <div class="side-nav__section">{% trans "History" %}</div>
+      <div class="chat-history" id="chatHistory">
+        {% if recent_conversations %}
+          {% for session in recent_conversations %}
+            <div class="chat-history__item{% if session.id == conversation.id %} chat-history__item--active{% endif %}">
+              <a class="chat-history__clickable text-decoration-none"
+                 href="{% url 'chat' session.id %}">
+                <span class="chat-history__prefix">&gt; </span>
+                <span class="chat-history__title">{{ session.title|truncatechars:28 }}</span>
+              </a>
+              <button class="chat-history__rename-btn"
+                      type="button"
+                      title="{% trans 'Rename' %}"
+                      onclick="const n=prompt('{% trans 'Rename this chat:'|escapejs %}','{{ session.title|escapejs }}');if(n&&n.trim()){fetch('',{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token }}','Content-Type':'application/json'},body:JSON.stringify({action:'rename',session_id:{{ session.id }},title:n.trim()})}).then(()=>location.reload());}">
+                <i class="fas fa-pen"></i>
+              </button>
+            </div>
+          {% endfor %}
+        {% else %}
+          <div class="px-3 py-2" style="color:#94a3b8;font-size:13px;">{% trans "No chats yet" %}</div>
+        {% endif %}
+      </div>
+
+      {# Website nav links #}
+      <div class="side-nav__section">{% trans "Navigate" %}</div>
+      {% for website in customizer_apps %}
+        {% comp "components/nav_item.html"
+           website=website
+           slug=website.slug
+           name=website.name
+           hx_target="#customizer-page-grid-"|add:website.slug
+        /%}
+      {% endfor %}
+
+      {# Templates of selected website — loaded via htmx #}
+      <div id="template-sidebar-section">
+        {% comp "components/template_sidebar.html"
+           website_templates=sidebar_templates
+           website_name=sidebar_website_name
+           website_slug=sidebar_website_slug
+           default_website_slug=default_website_slug
+           model_id=model_id
+        /%}
+      </div>
+
+      {# ── Agents panel — populated by JS from /api/ceptor/config/ ── #}
+      <div class="side-nav__section" style="display:flex;align-items:center;justify-content:space-between;">
+        <span>{% trans "Agents" %}</span>
+        <button id="refreshAgentsBtn"
+                type="button"
+                title="{% trans 'Refresh agent list' %}"
+                style="background:none;border:none;color:#8b5a3c;cursor:pointer;font-size:12px;padding:0 4px;"
+                onclick="loadAgentConfigs()">
+          <i class="fas fa-sync-alt"></i>
+        </button>
+      </div>
+      <div id="agents-panel" class="agents-panel" style="max-height: 260px; overflow-y: auto; padding: 0 8px 8px;">
+        <div id="agents-placeholder" class="px-2 py-2" style="color:#94a3b8;font-size:12px;">
+          <i class="fas fa-spinner fa-pulse me-1"></i>
+          {% trans "Loading agents…" %}
+        </div>
+      </div>
+
+      {# Footer nav #}
+      <div class="side-nav__footer mt-auto">
+        <a class="side-nav__nav-item text-decoration-none"
+           href="{% url 'customizer_websites' %}">
+          <i class="fas fa-globe nav-icon"></i>
+          <span>{% trans "Websites" %}</span>
+        </a>
+        <a class="side-nav__nav-item text-decoration-none"
+           href="{% url 'homepage' %}">
+          <i class="fas fa-home nav-icon"></i>
+          <span>{% trans "Home" %}</span>
+        </a>
+      </div>
+    </nav>
+
+    {# ═══════════════════════════════════════════════════════════ #}
+    {# MAIN: chat header + messages area + input form            #}
+    {# ═══════════════════════════════════════════════════════════ #}
+    <main class="chat-main d-flex flex-column flex-grow-1" id="chatMain">
+
+      <header class="chat-header">
+        <div class="d-flex align-items-center">
+          <a href="{% url 'homepage' %}"
+             class="btn btn-outline-secondary btn-sm back-btn me-3"
+             title="{% trans 'Back to homepage' %}">
+            <i class="fas fa-arrow-left"></i>
+          </a>
+          <div>
+            <h5 class="chat-header__title mb-0" id="chatTitle">{{ conversation.title }}</h5>
+            <small class="text-muted">{{ messages.count }} {% trans "messages" %}</small>
+          </div>
+        </div>
+        <div class="d-flex align-items-center gap-2">
+          {# Ceptor chat server status indicator #}
+          <span class="chat-header__badge" id="ceptorStatus"
+                style="cursor: pointer;"
+                title="{% trans 'Click to check ceptor chat server status' %}"
+                onclick="checkCeptorStatus()">
+            <i class="fas fa-server"></i>
+            <span id="ceptorStatusText">Ceptor</span>
+          </span>
+          <span class="chat-header__badge">
+            <i class="fas fa-code"></i> Monaco Editor
+          </span>
+        </div>
+      </header>
+
+      {# Messages area with slide cards #}
+      <section id="chat-messages"
+               class="chat-messages flex-grow-1"
+               hx-on::after-swap="this.scrollTop = this.scrollHeight;">
+        {% if messages_with_content %}
+          {% for msg_data in messages_with_content %}
+            {% with message=msg_data.original formatted_content=msg_data.formatted_content %}
+              {% if message.is_user %}
+                {% comp "components/message_bubble.html"
+                   role="user"
+                   content=formatted_content
+                   timestamp=message.timestamp|date:"g:i A"
+                /%}
+              {% else %}
+                {% comp "components/message_bubble.html"
+                   role="assistant"
+                   content=formatted_content
+                   timestamp=message.timestamp|date:"g:i A"
+                /%}
+              {% endif %}
+            {% endwith %}
+          {% endfor %}
+        {% else %}
+          <div class="text-center text-muted py-5">
+            <i class="fas fa-code fs-1 d-block mb-2"></i>
+            <p class="mb-0">{% trans "No messages yet. Start the conversation below." %}</p>
+          </div>
+        {% endif %}
+      </section>
+
+      {# Slide navigation (prev/next buttons) #}
+      <div class="slide-nav" id="slideNav">
+        <button class="slide-nav__btn" id="prevBtn"
+                title="{% trans 'Previous exchange' %}"
+                disabled>
+          <i class="fas fa-chevron-up"></i>
+        </button>
+        <button class="slide-nav__btn" id="nextBtn"
+                title="{% trans 'Next exchange' %}"
+                disabled>
+          <i class="fas fa-chevron-down"></i>
+        </button>
+      </div>
+
+      {# Chat input area #}
+      <footer class="chat-input-area border-top">
+        <form hx-post="{% url 'chat' conversation.id %}"
+              hx-target="#chat-messages"
+              hx-swap="beforeend"
+              hx-on::after-request="if(event.detail.successful) this.reset()"
+              class="d-flex w-100 gap-2">
+          {% csrf_token %}
+          <input type="hidden" name="model_id" value="{{ model_id }}">
+          <textarea name="message"
+                    id="userInput"
+                    rows="1"
+                    class="form-control border-0 bg-light flex-grow-1"
+                    placeholder="{% trans 'Message TemplateTinker...' %}"
+                    required
+                    autocomplete="off"
+                    autofocus
+                    style="border: 1px solid #d0c7be !important; resize: none; border-radius: 12px;"></textarea>
+          <button type="submit"
+                  class="btn btn-primary send-btn flex-shrink-0"
+                  id="sendBtn"
+                  style="background-color: #8b5a3c; border-color: #8b5a3c; border-radius: 12px; width: 52px; height: 52px;"
+                  title="{% trans 'Send message' %}">
+            <i class="fas fa-paper-plane"></i>
+          </button>
+        </form>
+      </footer>
+
+    </main>
+  </div>
+
+  {# ═══════════════════════════════════════════════════════════ #}
+  {# SCRIPTS                                                  #}
+  {# ═══════════════════════════════════════════════════════════ #}
+  {% block scripts %}
+    {% render_bundle 'app' 'js' %}
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"
+            defer></script>
+
+    <script defer>
+      // ── Monaco Editor initialization on chat.html ──
+      (function() {
+        // Initialize Monaco when the page loads
+        window.require.config({
+          paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.39.0/min/vs' },
+        });
+
+        // Store editor instances globally
+        window.__monacoEditors = {};
+
+        // Helper to initialize an editor on a container
+        window.__initMonacoEditor = function(editorId, code, language) {
+          var container = document.getElementById('editor-' + editorId);
+          if (!container) return;
+
+          // Dispose existing instance
+          if (window.__monacoEditors[editorId]) {
+            window.__monacoEditors[editorId].dispose();
+          }
+
+          window.require(['vs/editor/editor.main'], function() {
+            var editor = monaco.editor.create(container, {
+              value: code || '',
+              language: language || 'html',
+              theme: 'vs-dark',
+              automaticLayout: true,
+              fontSize: 14,
+              fontFamily: 'JetBrains Mono, "Fira Code", monospace',
+              tabSize: 2,
+              insertSpaces: true,
+              wordWrap: 'on',
+              minimap: { enabled: false },
+              scrollbar: { vertical: 'auto', horizontal: 'auto' },
+              bracketPairColorization: { enabled: true },
+              renderWhitespace: 'selection',
+            });
+
+            window.__monacoEditors[editorId] = editor;
+
+            // Format action (Ctrl+F)
+            editor.addAction({
+              id: 'format-code-' + editorId,
+              label: 'Format',
+              keybindings: [monaco.KeyMod.CtrlCmd | monaco.KeyCode.KeyF],
+              run: function() {
+                editor.getAction('editor.action.formatDocument').run();
+              },
+            });
+
+            // Attach toolbar button events
+            attachToolbarEvents(editorId, editor);
+
+            editor.focus();
+          });
+        };
+
+        // ── Toolbar event delegation ──
+        function attachToolbarEvents(editorId, editor) {
+          var card = document.querySelector('.code-editor[data-chatid="' + editorId + '"]');
+          if (!card) return;
+
+          // Run button
+          var runBtn = card.querySelector('.toolbar-btn--run');
+          if (runBtn) {
+            runBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var code = editor.getValue();
+              var outputContainer = document.getElementById('output-' + editorId);
+              var outputContent = outputContainer ? outputContainer.querySelector('.output-content') : null;
+              if (!outputContainer || !outputContent) return;
+
+              outputContainer.classList.add('code-editor__output--visible');
+
+              var logs = [];
+              var originalLog = console.log;
+              console.log = function() {
+                logs.push(Array.from(arguments).map(function(a) {
+                  return typeof a === 'object' ? JSON.stringify(a, null, 2) : String(a);
+                }).join(' '));
+                originalLog.apply(console, arguments);
+              };
+
+              try {
+                var fn = new Function(code);
+                var result = fn();
+                if (result !== undefined && logs.length === 0) logs.push(String(result));
+                if (logs.length === 0) logs.push('✅ Code executed successfully (no output)');
+              } catch (err) {
+                logs.push('❌ Error: ' + err.message);
+              } finally {
+                console.log = originalLog;
+              }
+
+              outputContent.textContent = logs.join('\n');
+              outputContainer.scrollTop = outputContainer.scrollHeight;
+            });
+          }
+
+          // Format button
+          var formatBtn = card.querySelector('.toolbar-btn--format');
+          if (formatBtn) {
+            formatBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              editor.getAction('editor.action.formatDocument').run();
+            });
+          }
+
+          // Copy button
+          var copyBtn = card.querySelector('.toolbar-btn--copy');
+          if (copyBtn) {
+            copyBtn.addEventListener('click', function(e) {
+              e.stopPropagation();
+              var code = editor.getValue();
+              navigator.clipboard.writeText(code).then(function() {
+                var orig = copyBtn.innerHTML;
+                copyBtn.innerHTML = '<i class="fas fa-check"></i>';
+                setTimeout(function() { copyBtn.innerHTML = orig; }, 1200);
+              }).catch(function() { alert('Copy failed'); });
+            });
+          }
+        }
+
+        // ── Scroll to bottom on load ──
+        document.addEventListener('DOMContentLoaded', function() {
+          var cm = document.getElementById('chat-messages');
+          if (cm) cm.scrollTop = cm.scrollHeight;
+        });
+
+        // ── Slide navigation ──
+        window.__slideMessages = function() {
+          var messages = document.querySelectorAll('#chat-messages .message');
+          var pairs = [];
+          var i = 0;
+          while (i < messages.length) {
+            var el = messages[i];
+            if (el.classList.contains('message--user')) {
+              var pair = { user: el, assistant: null };
+              if (i + 1 < messages.length &&
+                  (messages[i + 1].classList.contains('message--assistant') ||
+                   messages[i + 1].classList.contains('message--code-editor'))) {
+                pair.assistant = messages[i + 1];
+                i += 2;
+              } else {
+                i += 1;
+              }
+              pairs.push(pair);
+            } else {
+              pairs.push({ user: null, assistant: el });
+              i += 1;
+            }
+          }
+
+          var current = 0;
+          var prevBtn = document.getElementById('prevBtn');
+          var nextBtn = document.getElementById('nextBtn');
+
+          function showPair(idx) {
+            messages.forEach(function(m) { m.style.display = 'none'; });
+            var pair = pairs[idx];
+            if (pair.user) pair.user.style.display = '';
+            if (pair.assistant) pair.assistant.style.display = '';
+            if (prevBtn) prevBtn.disabled = (idx <= 0);
+            if (nextBtn) nextBtn.disabled = (idx >= pairs.length - 1);
+          }
+
+          if (pairs.length > 1) {
+            if (prevBtn) {
+              prevBtn.style.display = '';
+              prevBtn.onclick = function() { if (current > 0) { current--; showPair(current); } };
+            }
+            if (nextBtn) {
+              nextBtn.style.display = '';
+              nextBtn.onclick = function() { if (current < pairs.length - 1) { current++; showPair(current); } };
+            }
+            showPair(current);
+          } else {
+            if (prevBtn) prevBtn.style.display = 'none';
+            if (nextBtn) nextBtn.style.display = 'none';
+          }
+        };
+        window.__slideMessages();
+
+        // ── Textarea auto-resize ──
+        var userInput = document.getElementById('userInput');
+        if (userInput) {
+          userInput.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+          });
+        }
+
+        // ── Ceptor chat server status checker ──
+        window.checkCeptorStatus = function() {
+          var badge = document.getElementById('ceptorStatus');
+          var text = document.getElementById('ceptorStatusText');
+          if (text) text.textContent = 'Checking...';
+          if (badge) badge.style.opacity = '0.7';
+          fetch('/api/ceptor/health/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              if (data && data.installed) {
+                text.textContent = 'Ceptor ✓';
+                badge.style.background = '#d4edda';
+                badge.style.color = '#155724';
+              } else {
+                text.textContent = 'Ceptor ✗';
+                badge.style.background = '#f8d7da';
+                badge.style.color = '#721c24';
+              }
+              badge.style.opacity = '1';
+              // Also refresh agents when status is clicked
+              loadAgentConfigs();
+            })
+            .catch(function() {
+              text.textContent = 'Ceptor ✗';
+              badge.style.background = '#f8d7da';
+              badge.style.color = '#721c24';
+              badge.style.opacity = '1';
+            });
+        };
+
+        // ── Agent configs loader ──
+        window.loadAgentConfigs = function() {
+          var panel = document.getElementById('agents-panel');
+          if (!panel) return;
+
+          var placeholder = document.getElementById('agents-placeholder');
+          if (placeholder) {
+            placeholder.innerHTML = '<i class="fas fa-spinner fa-pulse me-1"></i> Loading agents…';
+            placeholder.style.display = '';
+          }
+
+          fetch('/api/ceptor/config/')
+            .then(function(r) { return r.json(); })
+            .then(function(data) {
+              var agents = data.agent_configs || {};
+              var keys = Object.keys(agents);
+              var esc = window._escHtml;
+
+              if (keys.length === 0) {
+                panel.innerHTML = '<div class="px-2 py-2" style="color:#94a3b8;font-size:12px;">No agents configured</div>';
+                return;
+              }
+
+              // Count agents by mode
+              var modeCounts = {};
+              keys.forEach(function(k) {
+                var a = agents[k];
+                var mode = (a.mode || 'unknown').toLowerCase();
+                modeCounts[mode] = (modeCounts[mode] || 0) + 1;
+              });
+
+              // Summary row
+              var summaryParts = [];
+              Object.keys(modeCounts).sort().forEach(function(m) {
+                summaryParts.push(modeCounts[m] + ' ' + m);
+              });
+
+              var html = '<div class="agents-summary" style="font-size:11px;color:#64748b;padding:2px 8px 6px;border-bottom:1px solid #e2e8f0;margin-bottom:4px;">';
+              html += '<strong>' + keys.length + '</strong> agents (' + esc(summaryParts.join(', ')) + ')';
+              html += '</div>';
+
+              // Agent cards
+              keys.sort().forEach(function(filename) {
+                var a = agents[filename];
+                var name = esc(a.name || filename.replace('.json', ''));
+                var desc = esc(a.description || '');
+                var model = esc(a.model || '');
+                var mode = (a.mode || '').toLowerCase();
+                var perm = a.permission || {};
+                var editOk = perm.edit !== 'deny';
+                var bashOk = perm.bash !== 'deny';
+
+                // Mode badge color
+                var modeColor = '#3b82f6'; // blue default
+                if (mode === 'primary') modeColor = '#22c55e';
+                else if (mode === 'subagent') modeColor = '#8b5a3c';
+                else if (mode === 'assistant') modeColor = '#a855f7';
+
+                html += '<div class="agent-card" style="background:#f8f7f4;border:1px solid #e2e8f0;border-radius:8px;padding:8px 10px;margin-bottom:6px;cursor:pointer;transition:all 0.15s ease;"';
+                html += ' onmouseenter="this.style.borderColor=\'#8b5a3c\';this.style.boxShadow=\'0 2px 8px rgba(139,90,60,0.12)\';"';
+                html += ' onmouseleave="this.style.borderColor=\'#e2e8f0\';this.style.boxShadow=\'none\';"';
+                html += " onclick=\"this.querySelector('.agent-detail').classList.toggle('d-none')\">";
+
+                // Header row: name + mode badge
+                html += '<div style="display:flex;align-items:center;justify-content:space-between;gap:6px;">';
+                html += '<span style="font-size:13px;font-weight:600;color:#1e293b;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + name + '</span>';
+                html += '<span style="font-size:10px;font-weight:600;color:#fff;background:' + modeColor + ';padding:1px 6px;border-radius:4px;flex-shrink:0;">' + esc(mode) + '</span>';
+                html += '</div>';
+
+                // Description preview
+                if (desc) {
+                  html += '<div style="font-size:11px;color:#64748b;margin-top:2px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">' + desc.substring(0, 60) + (desc.length > 60 ? '…' : '') + '</div>';
+                }
+
+                // Expandable detail
+                html += '<div class="agent-detail d-none" style="margin-top:6px;padding-top:6px;border-top:1px solid #e2e8f0;">';
+                if (desc) {
+                  html += '<div style="font-size:11px;color:#475569;margin-bottom:4px;line-height:1.4;">' + desc + '</div>';
+                }
+                if (model) {
+                  html += '<div style="font-size:10px;color:#94a3b8;"><i class="fas fa-microchip me-1"></i>' + model + '</div>';
+                }
+                html += '<div style="font-size:10px;color:#94a3b8;margin-top:2px;">';
+                html += '<span style="color:' + (editOk ? '#22c55e' : '#ef4444') + ';"><i class="fas fa-' + (editOk ? 'check' : 'ban') + '"></i> edit</span>';
+                html += ' <span style="color:' + (bashOk ? '#22c55e' : '#ef4444') + ';"><i class="fas fa-' + (bashOk ? 'check' : 'ban') + '"></i> bash</span>';
+                html += '</div>';
+                html += '</div>';
+                html += '</div>';
+              });
+
+              panel.innerHTML = html;
+            })
+            .catch(function(err) {
+              panel.innerHTML = '<div class="px-2 py-2" style="color:#ef4444;font-size:12px;"><i class="fas fa-exclamation-triangle me-1"></i>Failed to load agents</div>';
+              console.error('Failed to load agent configs:', err);
+            });
+        };
+
+        // Auto-check on load
+        setTimeout(function() { checkCeptorStatus(); }, 1000);
+        // Load agents independently
+        setTimeout(function() { loadAgentConfigs(); }, 800);
+      })();
+    </script>
+  {% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,14 @@
+{
+    "extends": ["modern"],
+    "rules": {
+        "no-debugger": "error",
+        "no-unused-vars": "error",
+        "eqeqeq": ["error", "always"],
+        "semi": ["error", "always"],
+        "quotes": ["error", "double"],
+        "curly": ["error", "all"],
+        "prefer-const": "error",
+        "no-var": "error"
+    },
+    "ignorePatterns": ["dist/", "node_modules/", "public/", "src-tauri/target/"]
+}

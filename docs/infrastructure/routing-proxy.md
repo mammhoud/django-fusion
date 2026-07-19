@@ -1,6 +1,7 @@
 # Proxy & Routing
 
-## Traefik
+> **Related Names:** `Traefik`, `SSL`, `Let's Encrypt`, `Cloudflare`, `DNS-01`, `ACME`, `certificate`, `media`, `nginx`, `shared-media`
+> **Tags:** #proxy #ssl #letsencrypt #routing #infrastructure
 
 The default proxy (`default-proxy`) serves SSL on port 443.
 
@@ -37,10 +38,9 @@ Nginx media server (`shared-media`) serves static/media files for all sites.
 
 Media subdomains:
 
-- `media.structa.cloud`
-- `media.ctc-research.com`
-- `media.lms-demo.com`
-- `media.vresume.structa.cloud`
+- `media.structa.cloud` (LMS site)
+- `media.ctc-research.com` (CTC Research)
+- `media.vresume.structa.cloud` (VResume)
 
 ## Commands
 

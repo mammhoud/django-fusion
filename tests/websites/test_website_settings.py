@@ -8,15 +8,15 @@ from django.test import SimpleTestCase, override_settings
 from django.urls import reverse
 
 
-# tests/websites/ -> tests/ -> workspace root; canonical site files live under core/.
+# tests/websites/ -> tests/ -> workspace root; canonical site files live under projects/.
 REPO_ROOT = Path(__file__).resolve().parents[2]
 ROOT = REPO_ROOT / "core"
 # Shared compose/proxy orchestration lives under applications/ in this monorepo.
 COMPOSE_ROOT = REPO_ROOT / "applications" / "compose"
-# Django image build files live under core/compose/.
+# Django image build files live under projects/compose/.
 CORE_COMPOSE_ROOT = ROOT / "compose"
 PROXY_ROOT = REPO_ROOT / "applications" / "proxy"
-WEBSITE_DIRS = {"ctc-research": "ctc-research", "lms-demo": "lms-demo", "vresume": "VResume"}
+WEBSITE_DIRS = {"ctc-research": "ctc-research", "lms": "lms", "vresume": "VResume"}
 WEBSITES = tuple(WEBSITE_DIRS)
 PROJECTS = tuple(WEBSITE_DIRS.values())
 
@@ -50,20 +50,20 @@ class WebsiteLayoutTests(SimpleTestCase):
 class RegistrationIntegrationTests(SimpleTestCase):
     def test_registration_compat_modules_exist_for_auth_login_invite_flows(self):
         # ctc-research keeps registration helpers under plugins/accounts/{tokens,forms/registration,views/registration}
-        # lms-demo keeps them under plugins/accounts/registration/{tokens,forms,views}
+        # lms keeps them under plugins/accounts/registration/{tokens,forms,views}
         registration_roots = {
             "ctc-research": ROOT / "ctc-research" / "plugins" / "accounts",
-            "lms-demo": ROOT / "lms-demo" / "plugins" / "accounts" / "registration",
+            "lms": ROOT / "lms" / "plugins" / "accounts" / "registration",
         }
         forms_paths = {
             "ctc-research": registration_roots["ctc-research"] / "forms" / "registration.py",
-            "lms-demo": registration_roots["lms-demo"] / "forms.py",
+            "lms": registration_roots["lms"] / "forms.py",
         }
         views_paths = {
             "ctc-research": registration_roots["ctc-research"] / "views" / "registration.py",
-            "lms-demo": registration_roots["lms-demo"] / "views.py",
+            "lms": registration_roots["lms"] / "views.py",
         }
-        for project in ("ctc-research", "lms-demo"):
+        for project in ("ctc-research", "lms"):
             registration_root = registration_roots[project]
             with self.subTest(project=project):
                 assert (registration_root / "tokens.py").exists()
@@ -74,7 +74,7 @@ class RegistrationIntegrationTests(SimpleTestCase):
                 assert "assign_default_group" in views_paths[project].read_text()
 
     def test_registration_views_use_parent_account_modules(self):
-        for project in ("ctc-research", "lms-demo"):
+        for project in ("ctc-research", "lms"):
             source = (ROOT / project / "plugins" / "accounts" / "views" / "registration.py").read_text()
             with self.subTest(project=project):
                 assert "from ..tokens import registration_token_generator" in source
@@ -131,13 +131,13 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         assert "location /sites/" in nginx_conf
 
     def test_compose_files_are_canonicalized(self):
-        # Per-site compose files now live under core/<site>/; legacy duplicate
+        # Per-site compose files now live under projects/<site>/; legacy duplicate
         # files at the old root locations should not exist.
         duplicate_compose_files = [
             REPO_ROOT / "ctc-research" / "docker-compose.yml",
-            REPO_ROOT / "lms-demo" / "docker-compose.yml",
-            REPO_ROOT / "lms-demo" / "docker-compose.proxy.yml",
-            REPO_ROOT / "lms-demo" / "docker-compose.warehouse.yml",
+            REPO_ROOT / "lms" / "docker-compose.yml",
+            REPO_ROOT / "lms" / "docker-compose.proxy.yml",
+            REPO_ROOT / "lms" / "docker-compose.warehouse.yml",
         ]
         for path in duplicate_compose_files:
             with self.subTest(path=path.relative_to(REPO_ROOT).as_posix()):
@@ -206,8 +206,8 @@ class SiteConfigTests(SimpleTestCase):
         assert "ctc-research.com" in site_module.site_security_defaults("ctc")["ALLOWED_HOSTS"]
 
     def test_workspace_ports_are_unique_for_all_websites(self):
-        # Ports are declared per-site under core/<site>/docker-compose.yml.
-        expected_ports = {"ctc-research": "5070", "lms-demo": "5071", "vresume": "5072"}
+        # Ports are declared per-site under projects/<site>/docker-compose.yml.
+        expected_ports = {"ctc-research": "5070", "lms": "5071", "vresume": "5072"}
         for site, port in expected_ports.items():
             with self.subTest(site=site):
                 compose = (ROOT / WEBSITE_DIRS[site] / "docker-compose.yml").read_text()
@@ -215,7 +215,7 @@ class SiteConfigTests(SimpleTestCase):
         assert len(set(expected_ports.values())) == len(expected_ports)
 
     def test_django_compose_mounts_specific_website_sources(self):
-        # Per-site compose files live under core/<site>/docker-compose.yml.
+        # Per-site compose files live under projects/<site>/docker-compose.yml.
         for site, directory in WEBSITE_DIRS.items():
             with self.subTest(site=site):
                 compose = (ROOT / directory / "docker-compose.yml").read_text()

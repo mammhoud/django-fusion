@@ -1,0 +1,52 @@
+[package]
+name = "pos"
+version = "0.1.0"
+description = "A modern point-of-sale (POS) system for managing restaurant operations"
+authors = ["mammhoud <structa.cloud@gmail.com>"]
+license = "AGPL-3.0"
+homepage = "https://structa.cloud"
+repository = "https://github.com/mammhoud/POS-KO"
+edition = "2021"
+default-run = "pos"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[lib]
+# The `_lib` suffix may seem redundant but it is necessary
+# to make the lib name unique and wouldn't conflict with the bin name.
+# This seems to be only an issue on Windows, see https://github.com/rust-lang/cargo/issues/8519
+name = "pos_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[[bin]]
+name = "seed"
+path = "src/bin/seed.rs"
+# Reuse the same library dependencies for the seed binary.
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri = { version = "2", features = [] }
+tauri-plugin-opener = "2"
+tauri-plugin-dialog = "2"
+tauri-plugin-fs = "2"
+tauri-plugin-shell = "2"
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+base64 = "0.22"
+lettre = { version = "0.11", default-features = false, features = ["tokio1-rustls-tls", "smtp-transport", "builder"] }
+tokio = { version = "1", features = ["full"] }
+dotenvy = "0.15"
+
+# Diesel ORM
+diesel = { version = "2.2", features = ["sqlite", "chrono", "returning_clauses_for_sqlite_3_35"] }
+diesel_migrations = { version = "2.2", features = ["sqlite"] }
+chrono = { version = "0.4", features = ["serde"] }
+bcrypt = "0.16"
+rand = "0.8"
+once_cell = "1.20"
+thiserror = "1.0"
+
+
+# @tested pos-solo pos-full pos-minimal - pos_ko_lib renamed to pos_lib, rust-analyzer pass

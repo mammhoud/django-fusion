@@ -20,8 +20,8 @@ log_header() { echo -e "\n${BLUE}=== $1 ===${NC}\n"; }
 log_header "Checking Bundle Files"
 
 [ -f "$WORKSPACE/ctc-research/assets/bundles/ctc-research/bundles.json" ] && log_pass "Bundle: ctc-research" || log_fail "Bundle: ctc-research"
-[ -f "$WORKSPACE/lms-demo/assets/bundles/lms-demo/bundles.json" ] && log_pass "Bundle: lms-demo" || log_fail "Bundle: lms-demo"
-[ -f "$WORKSPACE/VResume/assets/bundles/vresume/bundles.json" ] && log_pass "Bundle: VResume" || log_fail "Bundle: VResume"
+[ -f "$WORKSPACE/lms/assets/bundles/lms/bundles.json" ] && log_pass "Bundle: lms" || log_fail "Bundle: lms"
+[ -f "$WORKSPACE/portfolio/assets/bundles/vresume/bundles.json" ] && log_pass "Bundle: VResume" || log_fail "Bundle: VResume"
 
 # ==============================================================================
 # Check 2: Docker Configuration
@@ -52,8 +52,8 @@ grep -q "media.structa.cloud" "$WORKSPACE/applications/proxy/traefik/dynamic/med
 log_header "Checking JavaScript Entry Points"
 
 [ -f "$WORKSPACE/ctc-research/assets/static/js/app.js" ] && log_pass "CTC entry point exists" || log_fail "CTC entry point missing"
-[ -f "$WORKSPACE/lms-demo/assets/static/js/app.js" ] && log_pass "LMS entry point exists" || log_fail "LMS entry point missing"
-[ -f "$WORKSPACE/VResume/assets/static/js/static.js" ] && log_pass "VResume entry point exists" || log_fail "VResume entry point missing"
+[ -f "$WORKSPACE/lms/assets/static/js/app.js" ] && log_pass "LMS entry point exists" || log_fail "LMS entry point missing"
+[ -f "$WORKSPACE/portfolio/assets/static/js/static.js" ] && log_pass "VResume entry point exists" || log_fail "VResume entry point missing"
 
 # ==============================================================================
 # Check 6: Usecase Configs
@@ -61,8 +61,8 @@ log_header "Checking JavaScript Entry Points"
 log_header "Checking Usecase Configurations"
 
 [ -f "$WORKSPACE/ctc-research/assets/static/js/usecase-config.js" ] && log_pass "CTC config exists" || log_fail "CTC config missing"
-[ -f "$WORKSPACE/lms-demo/assets/static/js/usecase-config.js" ] && log_pass "LMS config exists" || log_fail "LMS config missing"
-[ -f "$WORKSPACE/VResume/assets/static/js/usecases/config.js" ] && log_pass "VResume config exists" || log_fail "VResume config missing"
+[ -f "$WORKSPACE/lms/assets/static/js/usecase-config.js" ] && log_pass "LMS config exists" || log_fail "LMS config missing"
+[ -f "$WORKSPACE/portfolio/assets/static/js/usecases/config.js" ] && log_pass "VResume config exists" || log_fail "VResume config missing"
 
 # ==============================================================================
 # Check 7: Assets Structure

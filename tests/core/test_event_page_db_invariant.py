@@ -14,7 +14,7 @@ LOUDLY — before the regression reaches users.
 
 Background
 ----------
-The legacy events template (core/assets/templates/events/events.html)
+The legacy events template (projects/assets/templates/events/events.html)
 contained 32 KiB of hardcoded HTML5 with ``event__item`` and ``event__area``
 CSS classes in its markup. A DB dump confirmed that zero EventPage rows store
 those markers in any concrete database field — the legacy markup lives
@@ -37,14 +37,14 @@ import pytest
 
 # ── docker exec command template ──────────────────────────────────────────
 DOCKER_EXEC = [
-    "docker", "exec", "-w", "/app/lms-demo",
+    "docker", "exec", "-w", "/app/lms",
     "-e", "DJANGO_SETTINGS_MODULE=settings",
     "lms-web", "python", "-c",
 ]
 
 QUERY_SCRIPT = r"""
 import os, sys, json
-sys.path.insert(0, '/app/lms-demo')
+sys.path.insert(0, '/app/lms')
 os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'settings')
 import django; django.setup()
 
@@ -217,6 +217,6 @@ class TestEventPageDbInvariant:
             "No EventPage(slug='events') row may store legacy event__item / event__area\n"
             "CSS class markers in any concrete database field. Those markers live\n"
             "exclusively in the (now-unreachable) template at\n"
-            "core/assets/templates/events/events.html.\n"
+            "projects/assets/templates/events/events.html.\n"
             + "\n".join(failures)
         )

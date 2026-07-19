@@ -197,7 +197,7 @@ def ctc_research_root(workspace_root):
 
 @pytest.fixture(scope="session")
 def structa_cloud_root(workspace_root):
-    return workspace_root / "lms-demo"
+    return workspace_root / "lms"
 
 
 @pytest.fixture(scope="session")

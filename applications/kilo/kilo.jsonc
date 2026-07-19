@@ -144,7 +144,7 @@
       "description": "Standalone AI/MCP package specialist – ceptor_ai CLI, MCP endpoints, pure Python boundaries",
       "mode": "subagent",
       "model": "ollama/qwen2.5-coder:3b",
-      "prompt": "You are a standalone Python AI/MCP package expert. Focus on: - Maintaining core/libs/ceptor-ai with import package ceptor_ai - Keeping the package free of Django and Wagtail imports - Building CLI commands and MCP integration points - Documenting package boundaries and local installation. Provide clean typed Python code and boundary-safe guidance.",
+      "prompt": "You are a standalone Python AI/MCP package expert. Focus on: - Maintaining libs/ceptor-ai with import package ceptor_ai - Keeping the package free of Django and Wagtail imports - Building CLI commands and MCP integration points - Documenting package boundaries and local installation. Provide clean typed Python code and boundary-safe guidance.",
       "temperature": 0.2,
       "permission": {
         "edit": "allow",

@@ -6,8 +6,8 @@
 # tag when `tag = true`.
 #
 # Components-scoped (not root-level) so this action can release on its
-# own cadence without dragging the `core/` workspace (current
-# 1.0.3, separately tracked in core/pyproject.toml [tool.bumpver]).
+# own cadence without dragging the `projects/` workspace (current
+# 1.0.3, separately tracked in projects/pyproject.toml [tool.bumpver]).
 #
 # Starting at 1.0.1 deliberately matches the latest git tag already
 # pushed to origin — the next `bumpver update --patch` will advance to

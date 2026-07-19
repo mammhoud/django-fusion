@@ -70,7 +70,7 @@ SITE_SPECS = (
     SiteSmokeSpec(
         key="structa",
         label="LMS Demo",
-        root=APPS_ROOT / "lms-demo",
+        root=APPS_ROOT / "lms",
         public_templates=(
             "templates/home/main.html",
             "templates/about/main.html",

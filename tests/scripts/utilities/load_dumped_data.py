@@ -17,8 +17,8 @@ def bootstrap_workspace() -> Path:
     """Ensure standalone script execution can import workspace modules."""
     repo_root = Path(__file__).resolve().parents[3]
     os.chdir(repo_root)
-    # The Django project lives under the `core/` subdirectory, so make sure
-    # both the repository root and `core/` are on sys.path.
+    # The Django project lives under the `projects/` subdirectory, so make sure
+    # both the repository root and `projects/` are on sys.path.
     for path in (str(repo_root), str(repo_root / "core")):
         if path in sys.path:
             sys.path.remove(path)

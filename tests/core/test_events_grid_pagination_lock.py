@@ -22,7 +22,7 @@ from __future__ import annotations
 
 from pathlib import Path
 
-# tests/ is parent[0], workspace root is parent[1]; canonical apps live under core/.
+# tests/ is parent[0], workspace root is parent[1]; canonical apps live under projects/.
 ROOT = Path(__file__).resolve().parents[2] / "core"
 
 GRID_PARTIAL = (

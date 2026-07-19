@@ -179,7 +179,7 @@ class TestTraefikConfiguration:
         expected_hosts = [
             "media.structa.cloud",
             "media.ctc-research.com",
-            "media.lms-demo.com",
+            "media.lms.com",
             "media.vresume.structa.cloud",
         ]
         for host in expected_hosts:
@@ -222,14 +222,14 @@ class TestNginxMediaServer:
 
     def test_media_directories_exist(self) -> None:
         """All site media directories must exist."""
-        sites = ["ctc-research", "lms-demo", "VResume"]
+        sites = ["ctc-research", "lms", "VResume"]
         for site in sites:
             media_dir = PROJECT_ROOT / "core" / site / "assets" / "media"
             assert media_dir.exists(), f"Media directory missing: {media_dir}"
 
     def test_staticfiles_directories_exist(self) -> None:
         """All site staticfiles directories must exist."""
-        sites = ["ctc-research", "lms-demo", "VResume"]
+        sites = ["ctc-research", "lms", "VResume"]
         for site in sites:
             static_dir = PROJECT_ROOT / "core" / site / "assets" / "staticfiles"
             assert static_dir.exists(), f"Staticfiles directory missing: {static_dir}"

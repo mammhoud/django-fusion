@@ -184,8 +184,8 @@ def check_nginx_config(site: str) -> CheckResult:
     compose_text = read_text(compose)
 
     required_mounts = [
-        f"../core/{site}/assets/staticfiles:/var/www/sites/{site}/static:ro",
-        f"../core/{site}/assets/media:/var/www/media/{site}:ro",
+        f"../projects/{site}/assets/staticfiles:/var/www/sites/{site}/static:ro",
+        f"../projects/{site}/assets/media:/var/www/media/{site}:ro",
     ]
 
     for mount in required_mounts:
@@ -222,7 +222,7 @@ def check_bundles_json(site: str, strict: bool) -> CheckResult:
     bundles_json = CTC / "assets" / "bundles" / site / "bundles.json"
 
     if not bundles_json.exists():
-        msg = f"{bundles_json} not found. Run: npm --prefix core/assets run build:{site_alias(site)}"
+        msg = f"{bundles_json} not found. Run: npm --prefix projects/assets run build:{site_alias(site)}"
         if strict:
             result.add_error(msg)
         else:
@@ -248,7 +248,7 @@ def check_bundles_json(site: str, strict: bool) -> CheckResult:
 def get_domain(site: str) -> str:
     mapping = {
         "ctc-research": "ctc-research.com",
-        "lms-demo": "lms-demo.com",
+        "lms": "lms.com",
         "vresume": "vresume.structa.cloud",
     }
     return mapping.get(site, f"{site}.example.com")
@@ -257,7 +257,7 @@ def get_domain(site: str) -> str:
 def site_alias(site: str) -> str:
     mapping = {
         "ctc-research": "ctc",
-        "lms-demo": "structa",
+        "lms": "structa",
         "VResume": "vresume",
     }
     return mapping.get(site, site)

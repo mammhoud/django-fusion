@@ -2,7 +2,7 @@
 """Verify shared-worker processes tasks from each configured Dramatiq queue.
 
 This script enqueues one Dramatiq message per queue
-(default, shared, email, ctc-research, lms-demo, vresume) using the same
+(default, shared, email, ctc-research, lms, vresume) using the same
 broker the running shared-worker consumes from. It bypasses loading the full
 Django settings stack, which currently has a pre-existing import issue in
 ctc-research/settings.py.
@@ -29,7 +29,7 @@ QUEUES = [
     "shared",
     "email",
     "ctc-research",
-    "lms-demo",
+    "lms",
     "vresume",
 ]
 

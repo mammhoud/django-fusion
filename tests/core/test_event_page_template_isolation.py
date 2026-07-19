@@ -2,12 +2,12 @@
 Regression lock for the LMS EventPage template isolation
 
 Ensures the Wagtail-aware composition template that powers the LMS /events/
-Wagtail page stays out of the shared `core/assets/templates/` tree,
+Wagtail page stays out of the shared `projects/assets/templates/` tree,
 where CTC and VResume could accidentally pick it up.
 
 This freezes the architectural decision made in the option-(a) cleanup PR:
 the LMS-only Wagtail EventPage template lives at
-    core/lms-demo/templates/events/event_page.html
+    projects/lms/templates/events/event_page.html
 because Django's APP_DIRS chain resolves the lookup key
 `events/event_page.html` from there first.
 
@@ -17,10 +17,10 @@ loudly before that copy ever reaches a Wagtail EventPage in another site.
 
 from pathlib import Path
 
-# tests/ is parent[0], workspace root is parent[1]; canonical apps live under core/.
+# tests/ is parent[0], workspace root is parent[1]; canonical apps live under projects/.
 ROOT = Path(__file__).resolve().parents[2] / "core"
 
-LMS_ONLY = ROOT / "lms-demo" / "templates" / "events" / "event_page.html"
+LMS_ONLY = ROOT / "lms" / "templates" / "events" / "event_page.html"
 SHARED = ROOT / "assets" / "templates" / "events" / "event_page.html"
 
 
@@ -42,5 +42,5 @@ def test_shared_event_page_template_does_not_exist():
     assert not SHARED.exists(), (
         f"Found a shared event_page.html at {SHARED}. The LMS-only "
         f"composition must not leak into CTC or VResume via the shared "
-        f"core/assets/templates/ tree. Delete the shared copy."
+        f"projects/assets/templates/ tree. Delete the shared copy."
     )

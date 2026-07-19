@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+{% load static %}
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}POS Portal{% endblock %} — {{ site_name|default:"POS Portal" }}</title>
+    <link rel="stylesheet" href="{% static 'css/portal.css' %}">
+</head>
+<body class="pos-body">
+    <div class="pos-layout">
+        {# Sidebar navigation #}
+        {% comp "portal/components/sidebar.html" active_section=active_section / %}
+
+        {# Main content area #}
+        <main class="pos-main">
+            <header class="pos-header">
+                <h1 class="pos-heading">{% block page_title %}Dashboard{% endblock %}</h1>
+                <div class="pos-flex pos-gap-sm">
+                    {% block header_actions %}{% endblock %}
+                </div>
+            </header>
+
+            {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                <div class="pos-badge pos-badge-{% if message.tags %}{{ message.tags }}{% else %}primary{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+
+    <script src="{% static 'js/portal.js' %}"></script>
+</body>
+</html>

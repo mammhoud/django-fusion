@@ -19,7 +19,7 @@ _websites_dir = _tests_dir.parent
 _workspace_root = _websites_dir.parent
 
 _ctc_path = _websites_dir / "core" / "ctc-research"
-_structa_path = _websites_dir / "core" / "lms-demo"
+_structa_path = _websites_dir / "core" / "lms"
 _vresume_path = _websites_dir / "core" / "VResume"
 _rseal_tests = _workspace_root / "libs" / "ceptor-ai" / "tests"
 
@@ -265,7 +265,7 @@ for _mod_path in [
     if _mod_path not in sys.modules:
         sys.modules[_mod_path] = _page_mock
 
-# apps.content.tasks and apps.pages.tasks → real module at www/core/content/tasks.py
+# apps.content.tasks and apps.pages.tasks → real module at www/projects/content/tasks.py
 # (the test_tasks_recovery tests import from these paths)
 def _register_tasks_aliases():
     import importlib as _il

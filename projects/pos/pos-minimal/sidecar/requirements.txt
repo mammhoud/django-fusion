@@ -1,0 +1,8 @@
+# POS Portal dependencies
+# django-fusion is a local submodule at repo root
+-e ../../libs/django-fusion/
+django>=4.2,<5.1
+httpx>=0.27
+httpx>=0.27.0
+sanic>=23.0
+websockets>=11.0

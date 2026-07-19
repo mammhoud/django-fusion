@@ -35,11 +35,11 @@ SITES = {
         'static_dir': PROJECT_ROOT / 'ctc-research' / 'assets' / 'staticfiles',
         'bundles_dir': PROJECT_ROOT / 'ctc-research' / 'assets' / 'bundles',
     },
-    'lms-demo': {
+    'lms': {
         'port': 5071,
         'name': 'LMS Demo',
-        'static_dir': PROJECT_ROOT / 'lms-demo' / 'assets' / 'staticfiles',
-        'bundles_dir': PROJECT_ROOT / 'lms-demo' / 'assets' / 'bundles',
+        'static_dir': PROJECT_ROOT / 'lms' / 'assets' / 'staticfiles',
+        'bundles_dir': PROJECT_ROOT / 'lms' / 'assets' / 'bundles',
     },
     'vresume': {
         'port': 5072,

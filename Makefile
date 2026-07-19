@@ -9,11 +9,12 @@ SHELL := /bin/bash
 # Directory layout – adjust these if your structure differs
 # -----------------------------------------------------------------
 WORKSPACE_ROOT    := .
-CORE_DIR          := core
+CORE_DIR          := projects
 PROXY_DIR         := applications/proxy
 SERVICES_DIR      := services
 DATABASES_DIR     := applications/databases
-CUSTOMIZER_DIR    := core/tinker
+CYPERCLOUD_DIR    := projects/cypercloud
+POS_DIR           := projects/pos
 SOURCE_DIR        := source
 
 # -----------------------------------------------------------------
@@ -83,7 +84,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # PHONY targets – always run
 # -----------------------------------------------------------------
 .PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
-.PHONY: deploy-databases deploy-coder deploy-customizer build-customizer clean-customizer
+.PHONY: deploy-databases deploy-coder deploy-cypercloud build-cypercloud clean-cypercloud
 .PHONY: deploy-utilities deploy-ollama deploy-mailpit
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
 .PHONY: upgrade-coolify upgrade-postgres-coolify start-coolify stop-coolify
@@ -96,6 +97,152 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: ctc-research structa vresume proxy services databases
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 .PHONY: bump-app-patch bump-app-minor bump-app-major
+.PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
+.PHONY: push push-libs push-lib pull sync require-github-token
+
+# -----------------------------------------------------------------
+# Git push with GitHub token authentication
+# -----------------------------------------------------------------
+GITHUB_TOKEN ?=
+
+_github_token_files := .env projects/.env applications/proxy/.env
+_github_token := $(or \
+	$(GITHUB_TOKEN), \
+	$(shell cat $(_github_token_files) 2>/dev/null \
+		| grep -E '^(github|GITHUB_TOKEN|GH_TOKEN)=' \
+		| head -n 1 \
+		| cut -d= -f2- \
+		| tr -d "\042\047\040" ))
+
+require-github-token:
+ifndef _github_token
+	$(error GitHub token not found. Checked: env var GITHUB_TOKEN, then files $(_github_token_files). Set 'github=<token>' (or 'GITHUB_TOKEN=' / 'GH_TOKEN=') in one of those files, or export GITHUB_TOKEN.)
+endif
+
+push: require-github-token
+	@echo "🚀 Pushing repo to origin..."
+	@branch=$$(git branch --show-current); \
+	remote_url=$$(git remote get-url origin 2>/dev/null || echo ''); \
+	if [ -z "$$remote_url" ]; then \
+		echo "❌ No remote 'origin' configured"; \
+		exit 1; \
+	fi; \
+	echo "  Branch: $$branch"; \
+	echo "  Remote: $$remote_url"; \
+	GIT_ASKPASS=true git -c credential.helper='!printf "protocol=https\nhost=github.com\nusername=x-access-token\npassword=$(_github_token)\n"' \
+	  push origin "$$branch" && echo "✅ Push complete" || echo "❌ Push failed"
+	@$(MAKE) push-libs
+
+push-libs: require-github-token
+	@echo "📦 Pushing each lib submodule to its GitHub repo..."
+	@for lib in libs/*/; do \
+		lib_name=$$(basename $$lib); \
+		echo ""; \
+		echo "── $$lib_name ──"; \
+		case "$$lib_name" in \
+			django-fusion) lib_url="https://github.com/mammhoud/django-fusion.git" ;; \
+			ceptor-ai)     lib_url="https://github.com/mammhoud/ceptor-ai.git" ;; \
+			*) echo "  ⏭️  Unknown lib — skipping"; continue ;; \
+		esac; \
+		cd "$$lib" || continue; \
+		git add -A; \
+		if git diff --cached --quiet; then \
+			echo "  ℹ️  No new changes to commit"; \
+		else \
+			git commit -m "chore($$lib_name): update from monorepo" 2>&1 || true; \
+		fi; \
+		git push "https://x-access-token:$(_github_token)@$${lib_url#https://}" HEAD:generic 2>&1 && \
+			echo "  🚀 Pushed $$lib_name → $$lib_url" || \
+			echo "  ❌ Push failed for $$lib_name"; \
+		cd - >/dev/null; \
+	done
+	@echo ""
+	@echo "✅ push-libs complete"
+
+push-lib: require-github-token
+ifndef LIB
+	$(error Usage: make push-lib LIB=<django-fusion|ceptor-ai>)
+endif
+	@case "$(LIB)" in \
+		django-fusion) lib_url="https://github.com/mammhoud/django-fusion.git" ;; \
+		ceptor-ai)     lib_url="https://github.com/mammhoud/ceptor-ai.git" ;; \
+		*) echo "❌ Unknown lib: $(LIB) (expected: django-fusion or ceptor-ai)"; exit 1 ;; \
+	esac; \
+	lib="libs/$(LIB)"; \
+	cd "$$lib" || exit 1; \
+	git add -A; \
+	if git diff --cached --quiet; then \
+		echo "  ℹ️  No new changes to commit"; \
+	else \
+		git commit -m "chore($(LIB)): update from monorepo" 2>&1 || true; \
+	fi; \
+	git push "https://x-access-token:$(_github_token)@$${lib_url#https://}" HEAD:generic && \
+		echo "🚀 $(LIB) pushed to $$lib_url" || \
+		echo "❌ Push failed"; \
+	cd - >/dev/null
+
+pull: require-github-token
+	@branch=$$(git branch --show-current); \
+	if [ -z "$$branch" ]; then \
+		echo "❌ not on a branch (detached HEAD?)"; exit 1; \
+	fi; \
+	remote=$$(git remote get-url origin 2>/dev/null || echo ''); \
+	if [ -z "$$remote" ]; then \
+		echo "❌ no remote 'origin' configured"; exit 1; \
+	fi; \
+	echo "📥 Fetching origin/$$branch..."; \
+	git -c credential.helper='!printf "protocol=https\nhost=github.com\nusername=x-access-token\npassword=$(_github_token)\n"' \
+	  fetch origin "$$branch" || { echo "❌ fetch failed"; exit 1; }; \
+	ahead=$$(git rev-list --count "origin/$$branch"..HEAD 2>/dev/null || echo 0); \
+	behind=$$(git rev-list --count HEAD.."origin/$$branch" 2>/dev/null || echo 0); \
+	echo "  Local:  $$branch @ $$(git rev-parse --short HEAD)"; \
+	echo "  Remote: origin/$$branch @ $$(git rev-parse --short origin/$$branch)"; \
+	echo "  Ahead: $$ahead   Behind: $$behind"; \
+	if [ "$$behind" = "0" ]; then \
+		if [ "$$ahead" = "0" ]; then \
+			echo "✅ already up to date"; exit 0; \
+		fi; \
+		echo "  ℹ️  local-only commits; nothing to pull from origin"; exit 0; \
+	fi; \
+	if [ "$$ahead" = "0" ]; then \
+		echo "✅ fast-forwarding..."; \
+		git merge --ff-only "origin/$$branch" && \
+			echo "✅ pull complete (fast-forward)" || \
+			echo "❌ pull failed"; \
+	else \
+		echo "  ⚠️  branches diverged ($$ahead local ahead, $$behind remote ahead)"; \
+		mode=$${PULL_MODE:-rebase}; \
+		case "$$mode" in \
+			rebase) \
+				echo "  ↪️  rebasing local onto origin/$$branch (PULL_MODE=rebase, --autostash)..."; \
+				git -c rebase.autoStash=true rebase "origin/$$branch" && \
+					echo "✅ pull complete (rebase)" || \
+					{ echo "❌ rebase failed"; echo "   resolve with: git rebase --continue | git rebase --abort"; exit 1; }; \
+				;; \
+			merge) \
+				echo "  ↪️  merging origin/$$branch into $$branch (PULL_MODE=merge)..."; \
+				git merge --no-ff "origin/$$branch" && \
+					echo "✅ pull complete (merge)" || \
+					{ echo "❌ merge failed"; echo "   resolve with: git merge --continue | git merge --abort"; exit 1; }; \
+				;; \
+			*) echo "❌ PULL_MODE must be 'rebase' or 'merge' (got: '$$mode')"; exit 1 ;; \
+		esac; \
+	fi
+
+sync: require-github-token
+	@echo "🔄 Syncing local with origin..."; \
+	mode=$${SYNC_MODE:-rebase}; \
+	if [ "$$mode" = "rebase" ]; then \
+		$(MAKE) --no-print-directory pull PULL_MODE=rebase || exit 1; \
+	else \
+		$(MAKE) --no-print-directory pull PULL_MODE=merge || exit 1; \
+	fi; \
+	if [ "$$SYNC_SKIP_PUSH" = "1" ]; then \
+		echo "  ℹ️  SYNC_SKIP_PUSH=1 — not pushing back to origin"; \
+	else \
+		echo ""; \
+		$(MAKE) --no-print-directory push; \
+	fi
 
 # -----------------------------------------------------------------
 # Help – comprehensive overview
@@ -127,7 +274,7 @@ help:
 	@echo "  make deploy-docs       - Start documentation service"
 	@echo "  make deploy-databases  - Deploy databases (Postgres, Redis)"
 	@echo "  make deploy-coder      - Deploy Coder platform (coder.com) on top of Postgres"
-	@echo "  make deploy-customizer - Build, collectstatic, and migrate the template customizer"
+	@echo "  make deploy-cypercloud - Build, collectstatic, and migrate the cypercloud site"
 	@echo "  make create-networks   - Create all required Docker networks (idempotent)"
 	@echo "  make deploy-all        - Deploy all services (alias for deploy)"
 	@echo ""
@@ -172,13 +319,21 @@ help:
 	@echo "  make cert-check        - Check certificate expiry status"
 	@echo ""
 	@echo "Per-app shortcuts (delegate to component Makefiles):"
-	@echo "  make ctc-research      - Delegate to core/Makefile with WEBSITE=ctc-research"
-	@echo "  make structa           - Delegate to core/Makefile with WEBSITE=structa"
-	@echo "  make vresume           - Delegate to core/Makefile with WEBSITE=vresume"
-	@echo "  make customizer        - Delegate to core/tinker/Makefile (template customizer)"
+	@echo "  make ctc-research      - Delegate to projects/Makefile with WEBSITE=ctc-research"
+	@echo "  make structa           - Delegate to projects/Makefile with WEBSITE=structa"
+	@echo "  make vresume           - Delegate to projects/Makefile with WEBSITE=vresume"
+	@echo "  make cypercloud        - Delegate to projects/cypercloud/Makefile (AI chat customizer)"
+	@echo "  make pos               - Delegate to projects/pos/Makefile (POS desktop app)"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
+	@echo ""
+	@echo "Python venv (unified .venv at repo root via uv):"
+	@echo "  make venv-setup        - Create/update the unified .venv (uv sync)"
+	@echo "  make venv-sync         - Sync dependencies only (faster)"
+	@echo "  make venv-lock         - Regenerate uv.lock from pyproject.toml"
+	@echo "  make venv-clean        - Delete .venv (recreate with make venv-setup)"
+	@echo "  make venv-info         - Show venv status, Python version, paths"
 	@echo ""
 	@echo "Aspirational (require scaffolded component dirs):"
 	@echo "  make deploy-utilities  - Deploy monitoring stack (needs services/utilities/)"
@@ -258,7 +413,7 @@ deploy-all: preflight-network deploy-preflight
 		$(MAKE) --no-print-directory deploy-docs; \
 		$(MAKE) --no-print-directory deploy-proxy; \
 	fi
-	@$(MAKE) --no-print-directory deploy-customizer
+	@$(MAKE) --no-print-directory deploy-cypercloud
 	@$(MAKE) --no-print-directory deploy-anytype
 	@$(MAKE) --no-print-directory deploy-utilities
 	@$(MAKE) --no-print-directory deploy-ollama
@@ -423,20 +578,20 @@ deploy-coder:
 	@$(MAKE) -C $(DATABASES_DIR) deploy-coder
 	@echo "✅ Coder platform deployed"
 
-deploy-customizer:
-	@echo "🚀 Deploying customizer (build → collectstatic → migrate)..."
-	@$(MAKE) -C $(CUSTOMIZER_DIR) deploy
-	@echo "✅ Customizer deployed"
+deploy-cypercloud:
+	@echo "🚀 Deploying cypercloud (build → collectstatic → migrate)..."
+	@$(MAKE) -C $(CYPERCLOUD_DIR) deploy
+	@echo "✅ Cypercloud deployed"
 
-build-customizer:
-	@echo "🔨 Building customizer webpack bundles..."
-	@$(MAKE) -C $(CUSTOMIZER_DIR) build
-	@echo "✅ Customizer built"
+build-cypercloud:
+	@echo "🔨 Building cypercloud webpack bundles..."
+	@$(MAKE) -C $(CYPERCLOUD_DIR) build
+	@echo "✅ Cypercloud built"
 
-clean-customizer:
-	@echo "🧹 Cleaning customizer bundles..."
-	@$(MAKE) -C $(CUSTOMIZER_DIR) clean
-	@echo "✅ Customizer cleaned"
+clean-cypercloud:
+	@echo "🧹 Cleaning cypercloud bundles..."
+	@$(MAKE) -C $(CYPERCLOUD_DIR) clean
+	@echo "✅ Cypercloud cleaned"
 
 # -----------------------------------------------------------------
 # Aspirational deploy targets — component directories not in repo yet.
@@ -771,7 +926,7 @@ logs:
 	@echo ""
 	@echo "Application Logs:"
 	@docker logs ctc-research-website --tail 20 2>/dev/null || echo "  (ctc-research-website not found)"
-	@docker logs lms-demo-website --tail 20 2>/dev/null || echo "  (lms-demo-website not found)"
+	@docker logs lms-website --tail 20 2>/dev/null || echo "  (lms-website not found)"
 	@docker logs vresume-website --tail 20 2>/dev/null || echo "  (vresume-website not found)"
 	@echo ""
 	@echo "Media Server Logs:"
@@ -938,7 +1093,7 @@ verify-release:
 # `.bumpversion.toml` is the legacy-name alias kept as an option for
 # projects that pre-date the bumpver rename (the actively-installed
 # bumpver 2026.1132 reads `bumpver.toml` directly). The applications
-# workspace uses `core/pyproject.toml [tool.bumpver]` for
+# workspace uses `projects/pyproject.toml [tool.bumpver]` for
 # its own config (currently v1.0.3, separately tracked).
 #
 # Pattern rules (`bump-action-%` / `bump-app-%`) match the trailing
@@ -1040,9 +1195,13 @@ structa:
 vresume:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=vresume
 
-customizer:
-	@echo "📋 Customizer targets:"
-	@$(MAKE) -C $(CUSTOMIZER_DIR) help
+cypercloud:
+	@echo "📋 Cypercloud targets:"
+	@$(MAKE) -C $(CYPERCLOUD_DIR) help
+
+pos:
+	@echo "📋 POS targets:"
+	@$(MAKE) -C $(POS_DIR) help
 
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)
@@ -1054,7 +1213,52 @@ databases:
 	@$(MAKE) -C $(DATABASES_DIR)
 
 # -----------------------------------------------------------------
-# Generic forwarder – any unknown target routes to core/Makefile
+# Python venv management (unified .venv at repo root via uv)
+# -----------------------------------------------------------------
+
+venv-setup:          ## Create/update the unified .venv at repo root (uv sync)
+	@echo "🐍 Setting up unified .venv (Python $$(cat .python-version))..."
+	@uv sync
+	@echo ""
+	@echo "✅ Unified .venv ready at $(WORKSPACE_ROOT)/.venv"
+	@echo "   Python: $$(.venv/bin/python --version 2>&1)"
+	@echo "   Packages: $$(.venv/bin/pip list 2>/dev/null | wc -l) installed"
+	@echo ""
+	@echo "   Activate:  source .venv/bin/activate"
+	@echo "   Run tests: uv run pytest"
+	@echo "   Django:    uv run manage check"
+	@echo ""
+
+venv-sync:           ## Sync dependencies only (faster than full setup)
+	@uv sync
+	@echo "✅ Dependencies synced"
+
+venv-lock:           ## Regenerate uv.lock from pyproject.toml
+	@uv lock
+	@echo "✅ uv.lock regenerated"
+
+venv-clean:          ## Delete the unified .venv (recreate with make venv-setup)
+	@echo "🧹 Removing unified .venv..."
+	@rm -rf $(WORKSPACE_ROOT)/.venv
+	@echo "✅ .venv deleted. Run 'make venv-setup' to recreate."
+
+venv-info:           ## Show venv status and paths
+	@echo "🐍 Python Venv Info"
+	@echo "═══════════════════════════════════════════════════════════════"
+	@echo "   Python version: $$(cat .python-version 2>/dev/null || echo 'not set')"
+	@echo "   Docker Python:  python:3.11-slim (see projects/compose/Dockerfile)"
+	@echo "   Venv location:  $(WORKSPACE_ROOT)/.venv"
+	@if [ -d "$(WORKSPACE_ROOT)/.venv" ]; then \
+		echo "   Venv exists:    ✅"; \
+		echo "   Python:         $$(.venv/bin/python --version 2>&1)"; \
+		echo "   uv version:     $$(uv --version 2>&1)"; \
+	else \
+		echo "   Venv exists:    ❌ (run 'make venv-setup')"; \
+	fi
+	@echo ""
+
+# -----------------------------------------------------------------
+# Generic forwarder – any unknown target routes to projects/Makefile
 # (so `make check`, `make test-local`, `make runserver-local`, etc. work)
 # -----------------------------------------------------------------
 %:

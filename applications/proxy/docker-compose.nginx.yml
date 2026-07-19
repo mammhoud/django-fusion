@@ -35,19 +35,19 @@ services:
 
     labels:
       - "traefik.enable=true"
-      - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms-demo.com`) || Host(`media.vresume.structa.cloud`)"
+      - "traefik.http.routers.shared-media.rule=Host(`media.structa.cloud`) || Host(`media.ctc-research.com`) || Host(`media.lms.com`) || Host(`media.vresume.structa.cloud`)"
       - "traefik.http.services.shared-media.loadbalancer.server.port=80"
     volumes:
       # Site build output staticfiles
-      - ../core/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
-      - ../core/lms-demo/assets/staticfiles:/var/www/sites/lms-demo/static:ro
-      - ../core/VResume/assets/staticfiles:/var/www/sites/vresume/static:ro
+      - ../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro
+      - ../projects/lms/assets/staticfiles:/var/www/sites/lms/static:ro
+      - ../projects/portfolio/assets/staticfiles:/var/www/sites/vresume/static:ro
       # Shared application static files
-      - ../core/assets/static:/var/www/static:ro
+      - ../projects/assets/static:/var/www/static:ro
       # Site-specific media uploads
-      - ../core/ctc-research/assets/media:/var/www/media/ctc-research:ro
-      - ../core/lms-demo/assets/media:/var/www/media/lms-demo:ro
-      - ../core/VResume/assets/media:/var/www/media/vresume:ro
+      - ../projects/ctc-research/assets/media:/var/www/media/ctc-research:ro
+      - ../projects/lms/assets/media:/var/www/media/lms:ro
+      - ../projects/portfolio/assets/media:/var/www/media/vresume:ro
       - ./nginx/default.conf:/etc/nginx/conf.d/nginx.conf:ro
     networks:
       - traefik-net

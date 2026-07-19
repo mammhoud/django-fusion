@@ -45,10 +45,10 @@ volumes:
     name: ctc-research-static
   ctc-research-media:
     name: ctc-research-media
-  lms-demo-static:
-    name: lms-demo-static
-  lms-demo-media:
-    name: lms-demo-media
+  lms-static:
+    name: lms-static
+  lms-media:
+    name: lms-media
   vresume-static:
     name: vresume-static
   vresume-media:
@@ -73,9 +73,9 @@ volumes:
     name: caddy_data
   caddy_config:
     name: caddy_config
-  tinker-static:
-    name: tinker-static
-  tinker-media:
-    name: tinker-media
-  tinker-data:
-    name: tinker-data
+  cypercloud-static:
+    name: cypercloud-static
+  cypercloud-media:
+    name: cypercloud-media
+  cypercloud-data:
+    name: cypercloud-data

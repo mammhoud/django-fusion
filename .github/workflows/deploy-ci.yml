@@ -18,7 +18,7 @@ on:
       - '.github/actions/deploy-preflight/**'
       - '**/docker-compose*.yml'
       - '**/docker-compose*.yaml'
-      - 'core/libs/**/*.md'
+      - 'libs/**/*.md'
       - 'applications/scripts/check_markdown_links.py'
   push:
     branches: ['**']
@@ -29,7 +29,7 @@ on:
       - '.github/actions/deploy-preflight/**'
       - '**/docker-compose*.yml'
       - '**/docker-compose*.yaml'
-      - 'core/libs/**/*.md'
+      - 'libs/**/*.md'
       - 'applications/scripts/check_markdown_links.py'
   workflow_dispatch:
 

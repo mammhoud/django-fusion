@@ -193,7 +193,7 @@ For each of the 9 https routers above (2 ctc-research, 2 structa-cloud,
 for h in ctc-research.com www.ctc-research.com arch.ctc-research.com \
          structa.cloud www.structa.cloud core.structa.cloud \
          media.structa.cloud media.ctc-research.com \
-         media.lms-demo.com media.vresume.structa.cloud \
+         media.lms.com media.vresume.structa.cloud \
          traefik.structa.cloud; do
   iss=$(echo | openssl s_client -connect "$h:443" -servername "$h" 2>/dev/null \
         | openssl x509 -noout -issuer 2>/dev/null | sed 's/^issuer=//')
@@ -241,7 +241,7 @@ Already wired in `applications/proxy/docker-compose.traefik.yml`:
 ## Coolify deployment
 
 The production proxy is currently `default-proxy` managed by Coolify
-(see `core/docker-compose.yml` comment "Traefik → managed by
+(see `projects/docker-compose.yml` comment "Traefik → managed by
 Coolify"). To keep Coolify in sync with the local compose:
 
 1. In the Coolify UI for `default-proxy`:

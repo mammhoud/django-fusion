@@ -1,0 +1,26 @@
+# Cargo configuration for cross-compilation
+# This file configures Cargo to properly cross-compile for various target architectures
+
+# ARM64 / aarch64 Linux
+[target.aarch64-unknown-linux-gnu]
+linker = "aarch64-linux-gnu-gcc"
+# Uncomment and set if needed:
+# rustflags = ["-C", "link-arg=-Wl,-rpath,/usr/aarch64-linux-gnu/lib"]
+
+# ARMv7 Linux (32-bit ARM with hardware floating point)
+[target.armv7-unknown-linux-gnueabihf]
+linker = "arm-linux-gnueabihf-gcc"
+# Uncomment and set if needed:
+# rustflags = ["-C", "link-arg=-Wl,-rpath,/usr/arm-linux-gnueabihf/lib"]
+
+# Windows MinGW (cross-compilation from Linux)
+[target.x86_64-pc-windows-gnu]
+linker = "x86_64-w64-mingw32-gcc"
+ar = "x86_64-w64-mingw32-ar"
+
+# Additional environment variables for pkg-config cross-compilation
+# These can be overridden via environment variables at build time
+
+# Note: For cross-compilation to work properly with system libraries,
+# you also need to set environment variables. See build-cross.sh script.
+

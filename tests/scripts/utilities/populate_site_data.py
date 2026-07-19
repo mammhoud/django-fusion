@@ -26,17 +26,17 @@ SITE_ALIASES = {
     "ctc": "ctc-research",
     "ctc-research": "ctc-research",
     "ctc-research.com": "ctc-research",
-    "structa": "lms-demo",
-    "lms": "lms-demo",
-    "lms-demo": "lms-demo",
-    "structa.cloud": "lms-demo",
+    "structa": "lms",
+    "lms": "lms",
+    "lms": "lms",
+    "structa.cloud": "lms",
     "vresume": "vresume",
     "VResume": "vresume",
     "resume": "vresume",
 }
 SITE_DIRS = {
     "ctc-research": "ctc-research",
-    "lms-demo": "lms-demo",
+    "lms": "lms",
     "vresume": "VResume",
 }
 
@@ -52,7 +52,7 @@ def selected_sites(site: str) -> list[str]:
 
 
 def python_bin(root: Path) -> str:
-    # The project's Python dependencies are managed under core/.venv (or core/uv.lock),
+    # The project's Python dependencies are managed under projects/.venv (or projects/uv.lock),
     # so prefer that environment over the repository-root .venv.
     core_candidate = root / "core" / ".venv" / "bin" / "python"
     if core_candidate.exists():
@@ -125,7 +125,7 @@ def main() -> int:
 
     for selected in selected_sites(site):
         if not args.skip_migrate:
-            rc = run([py, "core/manage.py", f"--site={selected}", "migrate", "--noinput"], root, selected, args.dry_run)
+            rc = run([py, "projects/manage.py", f"--site={selected}", "migrate", "--noinput"], root, selected, args.dry_run)
             if rc != 0:
                 return rc
 

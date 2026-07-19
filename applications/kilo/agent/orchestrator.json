@@ -23,9 +23,9 @@
       "product-manager": "allow",
       "performance-optimizer": "allow",
       "data-engineer": "allow",
-      "template-tinker": "allow",
+      "template-cypercloud": "allow",
       "ctc-research-agent": "allow",
-      "lms-demo-agent": "allow",
+      "lms-agent": "allow",
       "vresume-agent": "allow"
     }
   }

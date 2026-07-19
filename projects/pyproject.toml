@@ -1,0 +1,163 @@
+[project]
+name = "websites-workspace"
+version = "1.0.3"
+description = "Shared Django workspace for Structa Cloud and CTC Research websites"
+requires-python = ">=3.11"
+dependencies = [
+    # Core
+    "click",
+    "colorlog",
+    "fire",
+    "django>=4.2",
+    "twilio>=9.0",
+    # Auth & accounts
+    "django-allauth[socialaccount]",
+    # UI & templates
+    "django-bird",
+    "django-colorfield",
+    "django-crispy-forms",
+    "django-heroicons",
+    "django-htmx",
+    "django-unfold",
+    # Dev tools
+    "bumpver",
+    "django-debug-toolbar",
+    "django-extensions",
+    "django-silk",
+    "django-stubs",
+    # Data & forms
+    "django-embed-video",
+    "django-import-export",
+    "django-simple-history",
+    "django-tables2",
+    "django-webpack-loader",
+    # API
+    "django-ninja",
+    "ninja",
+    # Payments
+    "django-paypal",
+    "stripe",
+    # Cache & queue
+    "django-redis",
+    "django-rq",
+    "celery[redis]",
+    "django-celery-beat",
+    "django-celery-results",
+    "dramatiq[redis]",
+    "django-dramatiq",
+    # Storage & media
+    "django-storages[boto3]",
+    # Config & env
+    "django-environ",
+    "dynaconf[vault]",
+    "environ",
+    # Logging & monitoring
+    "django-structlog",
+    "python-json-logger",
+    "structlog",
+    "sentry-sdk[django]",
+    # Wagtail CMS
+    "wagtail>=7.4.2",
+    "wagtail-font-awesome-svg",
+    "wagtail-newsletter[mailchimp]",
+    "wagtail-transfer",
+    "wagtailfontawesome",
+    # Wagtail transitive deps (installed together with wagtail; pinned here
+    # so a fresh `pip install` on a clean clone recovers the exact versions
+    # the analyzer suite + workspace tests have been validated against).
+    "django-taggit>=6.1.0",
+    "django-modelcluster>=6.5",
+    # Server
+    "gunicorn",
+    "uvicorn",
+    "watchfiles",
+    "whitenoise",
+    # DB
+    "psycopg",
+    "psycopg-binary",
+    # Utilities and tests
+    "draftjs-exporter",
+    "fido2",
+    "hypothesis",
+    "jinja2",
+    "jwt",
+    "livereload",
+    "marshmallow",
+    "pydantic",
+    "pydantic-settings",
+    "pytest",
+    "pytest-django",
+    "virtualenv",
+    # Internal libs (local workspace sources — see [tool.uv.sources])
+    "django-fusion",
+    "ceptor-ai",
+    "ollama>=0.6.2",
+    "httpx>=0.25.0",
+    "markdown>=3.5",
+
+]
+
+[project.optional-dependencies]
+test = ["pytest", "pytest-django", "hypothesis"]
+dev = ["bumpver", "django-stubs"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["configs", "tasks"]
+
+# Local sources for internal libs used by all websites.
+# django-grep was merged into libs/django-fusion; django-rseal was merged into libs/ceptor-ai.
+
+[tool.uv.sources]
+django-fusion = { path = "../libs/django-fusion", editable = true }
+ceptor-ai = { path = "../libs/ceptor-ai", editable = true }
+
+[tool.pytest.ini_options]        
+minversion = "7.0"
+addopts = ["--strict-markers", "--strict-config", "-v", "--tb=short", "--no-header", "--import-mode=importlib"]
+DJANGO_SETTINGS_MODULE = "tests.settings"
+# django-fusion analyzer tests live in their own sub-package so they can be
+# picked up from the workspace without dragging the rest of the
+# django-fusion test corpus (which uses a different Django settings config)
+# into the same collection pass.
+testpaths = [
+    "../tests",
+    "../libs/django-fusion/tests/analyzer",
+]
+python_files = ["test_*.py", "*_test.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+# ``..`` adds the workspace root so ``tests.settings`` resolves when pytest
+# is invoked from ``projects/``. ``.`` so ``from apps.*`` imports resolve
+# (workspace tests rely on this). ``libs/django-fusion/src`` so
+# ``from django_fusion.analyzer.*`` resolves when pytest is invoked from
+# ``projects/``, independent of whether the editable install has materialised
+# the .pth file.
+pythonpath = [
+    "..",
+    ".",
+    "../libs/django-fusion/src",
+]
+markers = [
+    "slow: marks tests as slow",
+    "integration: integration tests",
+    "unit: unit tests",
+    "django_db: enable database access for tests",
+]
+
+
+[tool.bumpver]
+current_version = "1.0.3"
+version_pattern = "MAJOR.MINOR.PATCH[-TAG]"
+commit_message = "bump version {old_version} -> {new_version}"
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"pyproject.toml" = ['version = "{version}"']
+"__about__.py"   = ['^__version__ = "{version}"']
+"VERSION"        = ['^{version}$']

@@ -2,15 +2,15 @@
 # Applications – Main Orchestration
 # ============================================================
 # Includes individual website compose files (current project
-# layout uses `core/`, not the legacy `applications/`).
+# layout uses `projects/`, not the legacy `applications/`).
 # ============================================================
 
 include:
-  - ./../../core/ctc-research/docker-compose.yml
-  - ./../../core/lms-demo/docker-compose.yml
-  - ./../../core/VResume/docker-compose.yml
-  # - ./../../core/crm/docker-compose.yml  # CRM directory empty, not available
-  - ./../../core/tinker/docker-compose.yml
+  - ./../../projects/ctc-research/docker-compose.yml
+  - ./../../projects/lms/docker-compose.yml
+  - ./../../projects/portfolio/docker-compose.yml
+  # - ./../../projects/crm/docker-compose.yml  # CRM directory empty, not available
+  - ./../../projects/cypercloud/docker-compose.yml
 
 # Networks and volumes are defined in the root docker-compose.yml
 # (common / traefik-net / internal + postgres_data / redis_data /

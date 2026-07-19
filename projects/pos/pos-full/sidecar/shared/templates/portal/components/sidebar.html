@@ -1,0 +1,26 @@
+<nav class="pos-sidebar">
+    <div class="pos-sidebar-header">
+        <h2>POS Portal</h2>
+        <p class="pos-text-muted">VResume Edition</p>
+    </div>
+
+    <div class="pos-nav">
+        <a href="{% url 'portal-dashboard' %}"
+           class="pos-nav-item {% if active_section == 'dashboard' %}active{% endif %}">
+            📊 Dashboard
+        </a>
+        <a href="{% url 'portal-menu' %}"
+           class="pos-nav-item {% if active_section == 'menu' %}active{% endif %}">
+            🍽️ Menu Items
+        </a>
+        <a href="{% url 'admin:index' %}"
+           class="pos-nav-item">
+            ⚙️ Admin
+        </a>
+    </div>
+
+    <div class="pos-sidebar-footer">
+        <p class="pos-text-muted">Powered by POS Portal</p>
+        <p class="pos-text-muted">structa.cloud</p>
+    </div>
+</nav>

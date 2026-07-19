@@ -51,19 +51,19 @@ class TestSharedMediaConfiguration:
         """shared-media must mount ctc-research staticfiles read-only."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
-        assert "../core/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro" in text
+        assert "../projects/ctc-research/assets/staticfiles:/var/www/sites/ctc-research/static:ro" in text
 
     def test_nginx_compose_mounts_ctc_media(self) -> None:
         """shared-media must mount ctc-research media read-only."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
-        assert "../core/ctc-research/assets/media:/var/www/media/ctc-research:ro" in text
+        assert "../projects/ctc-research/assets/media:/var/www/media/ctc-research:ro" in text
 
     def test_nginx_compose_mounts_shared_static(self) -> None:
         """shared-media must mount the workspace shared static files."""
         compose = PROXY / "docker-compose.nginx.yml"
         text = _read(compose)
-        assert "../core/assets/static:/var/www/static:ro" in text
+        assert "../projects/assets/static:/var/www/static:ro" in text
 
     def test_nginx_config_has_ctc_bundle_location(self) -> None:
         """Nginx must have a location for CTC webpack bundles."""
@@ -167,19 +167,19 @@ class TestLocalMediaServing:
         assert settings.MEDIA_URL == "/media/"
 
     def test_static_root_default_in_assets_config(self) -> None:
-        """STATIC_ROOT default in core/configs/base/assets.py must end with staticfiles."""
+        """STATIC_ROOT default in projects/configs/base/assets.py must end with staticfiles."""
         assets_py = CORE / "configs" / "base" / "assets.py"
         text = _read(assets_py)
         assert 'STATIC_ROOT = str(settings.get("STATIC_ROOT", ASSETS_DIR / "staticfiles"))' in text
 
     def test_media_root_in_assets_config(self) -> None:
-        """MEDIA_ROOT in core/configs/base/assets.py must be derived from MEDIA_DIR."""
+        """MEDIA_ROOT in projects/configs/base/assets.py must be derived from MEDIA_DIR."""
         assets_py = CORE / "configs" / "base" / "assets.py"
         text = _read(assets_py)
         assert "MEDIA_ROOT = str(MEDIA_DIR)" in text
 
     def test_staticfiles_dirs_include_bundles_in_assets_config(self) -> None:
-        """STATICFILES_DIRS in core/configs/base/assets.py must include the webpack bundles directory."""
+        """STATICFILES_DIRS in projects/configs/base/assets.py must include the webpack bundles directory."""
         assets_py = CORE / "configs" / "base" / "assets.py"
         text = _read(assets_py)
         assert '(f"bundles/{SITE_NAME}", SITE_BUNDLES_DIR)' in text

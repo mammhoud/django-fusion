@@ -43,16 +43,16 @@ Usage
 ::
 
     python3 applications/scripts/manifest_includes.py
-    python3 applications/scripts/manifest_includes.py core/assets/templates/
+    python3 applications/scripts/manifest_includes.py projects/assets/templates/
     python3 applications/scripts/manifest_includes.py --json | jq '.buckets'
 
 Default roots (without arguments) walk the conventional template trees
 across all three sites plus the shared asset tree::
 
-    core/assets/templates/
-    core/<site>/templates/        (one per site in core/)
-    core/<site>/assets/templates/ (one per site that has one)
-    core/<site>/www/**/templates/ (Django-app templates)
+    projects/assets/templates/
+    projects/<site>/templates/        (one per site in projects/)
+    projects/<site>/assets/templates/ (one per site that has one)
+    projects/<site>/www/**/templates/ (Django-app templates)
 
 Requires Django >= 4.1 (uses ``TokenType``, ``Lexer.tokenize``).
 The script will lazily ``settings.configure`` a TEMPLATES-only Django
@@ -303,10 +303,10 @@ def _line_for(raw: str, tok) -> int:
 # by this monorepo: shared assets + per-site templates + per-site assets
 # + per-site Django-app templates (``www/**/templates``).
 _DEFAULT_ROOT_GLOBS: tuple[str, ...] = (
-    "core/assets/templates/",
-    "core/*/templates/",
-    "core/*/assets/templates/",
-    "core/*/www/**/templates/",
+    "projects/assets/templates/",
+    "projects/*/templates/",
+    "projects/*/assets/templates/",
+    "projects/*/www/**/templates/",
 )
 
 # Directories that should never be walked even if they live under a
@@ -611,8 +611,8 @@ def main(argv: list[str]) -> int:
         help=(
             "Directories or files to audit. Defaults to the conventional "
             "template trees across the monorepo "
-            "(core/assets/templates/, core/<site>/templates/, "
-            "core/<site>/assets/templates/, core/<site>/www/**/templates/)."
+            "(projects/assets/templates/, projects/<site>/templates/, "
+            "projects/<site>/assets/templates/, projects/<site>/www/**/templates/)."
         ),
     )
     parser.add_argument(

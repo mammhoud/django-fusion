@@ -1,8 +1,8 @@
-# pytest-core — run the full test suite with cwd set to core/
+# pytest-core — run the full test suite with cwd set to projects/
 #
 # The workspace tests live at the repo root (tests/) and the django-fusion
-# analyzer tests live under core/libs/django-fusion/tests/analyzer. Running
-# pytest from core/ uses core/pyproject.toml, which points testpaths at both
+# analyzer tests live under libs/django-fusion/tests/analyzer. Running
+# pytest from projects/ uses projects/pyproject.toml, which points testpaths at both
 # trees so the full suite is discovered.
 name: pytest-core
 
@@ -10,24 +10,24 @@ on:
   pull_request:
     paths:
       - 'tests/**'
-      - 'core/**'
+      - 'projects/**'
       - '.github/workflows/pytest-core.yml'
   push:
     branches: ['**']
     paths:
       - 'tests/**'
-      - 'core/**'
+      - 'projects/**'
       - '.github/workflows/pytest-core.yml'
   workflow_dispatch:
 
 jobs:
   pytest:
-    name: Run pytest from core/
+    name: Run pytest from projects/
     runs-on: ubuntu-latest
     timeout-minutes: 15
     defaults:
       run:
-          working-directory: core
+          working-directory: projects
     steps:
       - uses: actions/checkout@v4
 

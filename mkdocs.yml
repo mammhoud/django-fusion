@@ -1,0 +1,137 @@
+# mkdocs.yml
+# MkDocs configuration for Structa Cloud documentation site
+# Served at: https://structa-cloud.readthedocs.io/
+
+site_name: Structa Cloud Documentation
+site_description: Documentation for Structa Cloud - Django monorepo with POS, LMS, AI, and more
+site_author: Structa Cloud Team
+site_url: https://structa.cloud/docs/
+
+repo_url: https://github.com/mammhoud/structa.cloud
+edit_uri: blob/generic/docs/
+
+copyright: "&copy; 2026 Structa Cloud"
+
+theme:
+  name: material
+  palette:
+    primary: indigo
+    accent: indigo
+  features:
+    - navigation.tabs
+    - navigation.sections
+    - navigation.top
+    - search.suggest
+    - search.highlight
+    - content.tabs.link
+    - content.code.annotation
+    - content.code.copy
+  language: en
+
+plugins:
+  - search
+  - awesome-pages
+  - git-revision-date-localized:
+      exclude:
+        - dev/
+  - minify:
+      minify_html: true
+
+not_in_nav: |
+  archives/
+
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/mammhoud/structa.cloud
+    - icon: fontawesome/brands/docker
+      link: https://hub.docker.com/u/mammhoud
+  consent:
+    title: Cookie consent
+    description: >-
+      We use cookies to recognize your repeated visits and preferences.
+
+markdown_extensions:
+  - admonition
+  - abbr
+  - attr_list
+  - def_list
+  - footnotes
+  - meta
+  - md_in_html
+  - toc:
+      permalink: true
+  - pymdownx.arithmatex:
+      generic: true
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.details
+  - pymdownx.highlight:
+      anchor_linenums: true
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: mammhoud
+      repo: structa.cloud
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences:
+      custom_fences:
+        - name: mermaid
+          class: mermaid
+          format: !!python/name:pymdownx.superfences.fence_code_format
+  - pymdownx.tabbed:
+      alternate_style: true
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+nav:
+  - Guides:
+    - Quickstart: guides/00-quickstart.md
+    - Setup: guides/01-setup.md
+    - Auth: guides/02-auth.md
+    - POS Dev: guides/03-dev.md
+    - Deploy: guides/04-deploy.md
+    - Customize: guides/05-customize.md
+    - Clone Site: guides/06-clone-site.md
+    - Best Practices: guides/07-best-practices.md
+  - Repo Overview: repo-overview.md
+  - Projects:
+    - Overview: projects/README.md
+    - LMS: projects/lms/README.md
+    - Portfolio: projects/portfolio/README.md
+    - Cypercloud:
+        - Overview: projects/cypercloud/README.md
+        - Platform Plan: projects/cypercloud/platform-plan.md
+    - Shared: projects/shared/README.md
+    - POS: projects/pos/README.md
+    - Libs: libs/README.md
+  - Infrastructure:
+    - Overview: infrastructure/README.md
+    - Proxy: infrastructure/proxy.md
+    - Deployment: infrastructure/deployment.md
+    - Routing & SSL: infrastructure/routing-proxy.md
+    - Shared Worker: infrastructure/worker-stack.md
+    - Docker: infrastructure/docker/README.md
+  - AI & Agents:
+    - Overview: ai/README.md
+    - Agents: ai/agents.md
+    - Prompts: ai/prompts.md
+  - Customization: customization/README.md
+  - Databases: databases/README.md
+  - Testing: tests/README.md
+  - Features: features/README.md
+  - Publishing:
+    - Overview: publish/README.md
+    - Docker Deploy: publish/docker-deploy.md
+    - POS Release: publish/pos-release.md
+    - CI/CD: publish/ci-cd.md
+  - Backend Env: back-env/README.md
+  - Changelogs:
+    - Overview: changelogs/README.md
+    - Repo Infra: changelogs/repo.md
+    - POS: changelogs/pos.md
+    - Libs: changelogs/libs.md

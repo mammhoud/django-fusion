@@ -1,6 +1,6 @@
-# lms-demo Test Fixtures
+# lms Test Fixtures
 
-lms-demo fixtures live alongside the application at `lms-demo/assets/fixtures/`, not here.
+lms fixtures live alongside the application at `lms/assets/fixtures/`, not here.
 This directory exists as a pointer/reference for the shared `tests/fixtures/INDEX.md`.
 
 ---
@@ -8,7 +8,7 @@ This directory exists as a pointer/reference for the shared `tests/fixtures/INDE
 ## Fixture Location
 
 ```
-lms-demo/assets/fixtures/
+lms/assets/fixtures/
 ├── auth/
 │   ├── group_dummy.json    — Test groups (Students, Instructors, Admins, etc.)
 │   └── user_dummy.json     — Test users (testuser, admin, instructor_demo)
@@ -18,14 +18,14 @@ lms-demo/assets/fixtures/
 
 ---
 
-## Loading lms-demo Fixtures
+## Loading lms Fixtures
 
 ```bash
 # Load auth fixtures
-python manage.py --site=lms-demo loaddata lms-demo/assets/fixtures/auth/user_dummy.json
+python manage.py --site=lms loaddata lms/assets/fixtures/auth/user_dummy.json
 
 # Load sites fixture
-python manage.py --site=lms-demo loaddata lms-demo/assets/fixtures/sites/site_dummy.json
+python manage.py --site=lms loaddata lms/assets/fixtures/sites/site_dummy.json
 ```
 
 Or use the workspace CLI:
@@ -43,8 +43,8 @@ from django_fusion.tests.base import BaseTestCase
 
 class LMSDemoTest(BaseTestCase):
     fixtures = [
-        'lms-demo/assets/fixtures/auth/user_dummy.json',
-        'lms-demo/assets/fixtures/sites/site_dummy.json',
+        'lms/assets/fixtures/auth/user_dummy.json',
+        'lms/assets/fixtures/sites/site_dummy.json',
         'tests/fixtures/lms/courses.json',
     ]
 
@@ -57,7 +57,7 @@ class LMSDemoTest(BaseTestCase):
 
 ## Why Minimal Fixtures?
 
-lms-demo is a demo environment that intentionally seeds data programmatically
+lms is a demo environment that intentionally seeds data programmatically
 rather than from static JSON fixtures. The `populate` workspace command runs
 scripts that create fresh, realistic demo content on each deploy:
 
@@ -76,6 +76,6 @@ For LMS course data in tests, use the shared fixtures in `tests/fixtures/lms/`:
 
 ## Notes
 
-- lms-demo shares the same application code as ctc-research (symlinked plugins/components).
+- lms shares the same application code as ctc-research (symlinked plugins/components).
 - The `site_dummy.json` sets the domain to `structa.cloud` (port 5071 in dev).
 - Database: `db_structa` (production) / `lms_demo` (dev warehouses).

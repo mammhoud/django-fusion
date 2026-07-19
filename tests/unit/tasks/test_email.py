@@ -19,7 +19,7 @@ class TestSendEmailTask:
     @patch("www.worker.email.import_first")
     @patch("www.worker.email.configure_django_for_website")
     def test_successful_send(self, mock_configure, mock_import):
-        mock_configure.return_value = "lms-demo"
+        mock_configure.return_value = "lms"
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = True
         mock_service_cls = MagicMock(return_value=mock_service_instance)
@@ -30,7 +30,7 @@ class TestSendEmailTask:
             subject="Welcome",
             template="welcome.html",
             context={"name": "Alice"},
-            website="lms-demo",
+            website="lms",
         )
         assert result is True
         mock_service_instance.send.assert_called_once_with(
@@ -43,7 +43,7 @@ class TestSendEmailTask:
     @patch("www.worker.email.import_first")
     @patch("www.worker.email.configure_django_for_website")
     def test_send_with_none_context(self, mock_configure, mock_import):
-        mock_configure.return_value = "lms-demo"
+        mock_configure.return_value = "lms"
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = True
         mock_service_cls = MagicMock(return_value=mock_service_instance)
@@ -57,7 +57,7 @@ class TestSendEmailTask:
     @patch("www.worker.email.import_first")
     @patch("www.worker.email.configure_django_for_website")
     def test_raises_on_service_false(self, mock_configure, mock_import):
-        mock_configure.return_value = "lms-demo"
+        mock_configure.return_value = "lms"
         mock_service_instance = MagicMock()
         mock_service_instance.send.return_value = False
         mock_service_cls = MagicMock(return_value=mock_service_instance)

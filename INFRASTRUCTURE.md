@@ -80,7 +80,7 @@
 
 | Property | Value |
 |----------|-------|
-| **Image** | Built from `core/compose/Dockerfile` |
+| **Image** | Built from `projects/compose/Dockerfile` |
 | **Container Name** | `ctc-research-website` |
 | **Port** | 5070 (internal, not exposed) |
 | **Status** | ✅ Healthy |
@@ -166,7 +166,7 @@ ALLOWED_HOSTS=ctc-research.com,www.ctc-research.com
 | **Port** | 80 (internal, proxied via Traefik) |
 | **Status** | ✅ Healthy |
 | **Log Driver** | `json-file` |
-| **Volumes** | `/var/www/sites/{ctc-research,vresume,lms-demo}` |
+| **Volumes** | `/var/www/sites/{ctc-research,vresume,lms}` |
 
 **Purpose:**
 - Serve static files (CSS, JS, images)
@@ -396,7 +396,7 @@ sudo ufw status
 ```bash
 # Keep .env files gitignored
 cat .gitignore
-# Should contain: applications/proxy/.env, core/.env
+# Should contain: applications/proxy/.env, projects/.env
 
 # Store secrets securely
 # Do NOT commit: DB passwords, API keys, CSRF tokens
