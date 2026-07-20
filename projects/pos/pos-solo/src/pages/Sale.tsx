@@ -2,7 +2,6 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdShoppingCart, MdCheckCircle, MdLocalPrintshop, MdFileDownload, MdSearch, MdClose } from 'react-icons/md';
 import { FaPlus, FaStore, FaTruck, FaHandPaper, FaUserTie, FaDoorOpen, FaMapMarkerAlt, FaFileInvoiceDollar } from 'react-icons/fa';
-import { invoke } from '@tauri-apps/api/core';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee } from '../types';
@@ -17,6 +16,12 @@ import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
+import { useProductStore } from '../stores/products';
+import { useCategoryStore } from '../stores/categories';
+import { useSettingsStore } from '../stores/settings';
+import { useEmployeeStore } from '../stores/employees';
+import { useDeliveryTypeStore } from '../stores/deliveryTypes';
+import { useSaleStore } from '../stores/sales';
 
 type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 
@@ -131,28 +136,34 @@ export default function Sale() {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, settingsRes, dtRes, empRes, categoriesRes] = await Promise.all([
-        invoke<Product[]>('get_products'),
-        invoke<Settings>('get_settings'),
-        invoke<DeliveryType[]>('get_delivery_types', { includeInactive: false }),
-        invoke<Employee[]>('get_employees', { includeInactive: false }),
-        invoke<{ id: number; name: string }[]>('get_categories'),
+      const productStore = useProductStore.getState();
+      const settingsStore = useSettingsStore.getState();
+      const dtStore = useDeliveryTypeStore.getState();
+      const empStore = useEmployeeStore.getState();
+      const catStore = useCategoryStore.getState();
+      await Promise.all([
+        productStore.fetchAll(),
+        settingsStore.fetch(),
+        dtStore.fetchAll(false),
+        empStore.fetchAll(false),
+        catStore.fetchAll(),
       ]);
 
-      setProducts(productsRes);
-      if (settingsRes) {
+      setProducts(useProductStore.getState().products);
+      if (useSettingsStore.getState().settings) {
+        const r = useSettingsStore.getState().settings;
         setSettings({
-          restaurant_name: settingsRes.restaurant_name || 'POS',
-          address: settingsRes.address || '',
-          phone: settingsRes.phone || '',
-          currency: settingsRes.currency || 'USD',
-          receipt_footer: settingsRes.receipt_footer || 'Thank you for your business!',
+          restaurant_name: r.restaurant_name || 'POS',
+          address: r.address || '',
+          phone: r.phone || '',
+          currency: r.currency || 'USD',
+          receipt_footer: r.receipt_footer || 'Thank you for your business!',
         });
       }
-      setDeliveryTypes(dtRes);
-      setEmployees(empRes);
-      setCategories(categoriesRes || []);
-      if (dtRes.length > 0) setDeliveryTypeId(dtRes[0].id);
+      setDeliveryTypes(useDeliveryTypeStore.getState().types);
+      setEmployees(useEmployeeStore.getState().employees);
+      setCategories(useCategoryStore.getState().categories || []);
+      if (useDeliveryTypeStore.getState().types.length > 0) setDeliveryTypeId(useDeliveryTypeStore.getState().types[0].id);
     } catch (error) {
       console.error('Error loading sale data:', error);
       // Even quiet reloads must fail loudly — silent reloads hide backend drift.
@@ -227,7 +238,7 @@ export default function Sale() {
         unit: item.unit,
       }));
 
-      await invoke('add_sale', { sale: saleData, items: itemsData });
+      await useSaleStore.getState().create(saleData, itemsData);
 
       // Generate receipt data
       const deliveryTypeName = orderType === 'delivery'

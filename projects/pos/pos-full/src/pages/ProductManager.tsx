@@ -1,7 +1,6 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { FaPlus, FaTrash, FaCheck, FaExclamationTriangle, FaImage, FaTimes, FaEdit, FaSearch } from 'react-icons/fa';
-import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { Product, NewProduct, UpdateProductPayload, Settings, Category } from '../types';
@@ -10,6 +9,9 @@ import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
+import { useProductStore } from '../stores/products';
+import { useCategoryStore } from '../stores/categories';
+import { useSettingsStore } from '../stores/settings';
 
 interface FormErrors {
   name?: string;
@@ -90,7 +92,9 @@ export default function ProductManager() {
   useEffect(() => {
     const loadSettings = async () => {
       try {
-        const response = await invoke<Settings>('get_settings');
+        const settingsStore = useSettingsStore.getState();
+        await settingsStore.fetch();
+        const response = useSettingsStore.getState().settings;
         if (response?.currency) {
           setCurrencySymbol(response.currency || 'USD');
         }
@@ -106,12 +110,14 @@ export default function ProductManager() {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, categoriesRes] = await Promise.all([
-        invoke<Product[]>('get_products'),
-        invoke<Category[]>('get_categories').catch(() => []),
+      const productStore = useProductStore.getState();
+      const categoryStore = useCategoryStore.getState();
+      await Promise.all([
+        productStore.fetchAll(),
+        categoryStore.fetchAll().catch(() => {}),
       ]);
-      setProducts(productsRes);
-      setCategories(categoriesRes || []);
+      setProducts(useProductStore.getState().products);
+      setCategories(useCategoryStore.getState().categories || []);
     } catch (error) {
       console.error('Error loading products:', error);
     } finally {
@@ -278,7 +284,7 @@ export default function ProductManager() {
         // get the authoritative updated row back — use it for our optimistic
         // splice so local state exactly matches the DB row (including any
         // server-side transforms like updated_at timestamps).
-        const updated = await invoke<Product>('update_product', { id: editingId, update });
+        const updated = await useProductStore.getState().update(editingId, update);
         setProducts(prev => prev.map(p => (p.id === editingId ? updated : p)));
       } else {
         const create: NewProduct = {
@@ -288,7 +294,7 @@ export default function ProductManager() {
           category_id: nextCategoryId,
           image: nextImage,
         };
-        const result = await invoke<Product>('add_product', { product: create });
+        const result = await useProductStore.getState().create(create);
 
         // Optimistic insert — prepend the new product so the user sees it instantly.
         setProducts(prev => [result, ...prev]);
@@ -335,7 +341,7 @@ export default function ProductManager() {
     setProducts(prev => prev.filter(p => p.id !== idToDelete));
 
     try {
-      await invoke('delete_product', { id: idToDelete });
+      await useProductStore.getState().remove(idToDelete);
 
       setSubmitStatus('success');
       setStatusMessage(t('productManager.successDeleted'));

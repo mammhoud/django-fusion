@@ -1,13 +1,13 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdPerson, MdPhone, MdEmail, MdStars, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { Customer } from '../types';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
+import { useCustomerStore } from '../stores/customers';
 
 export default function Customers() {
   const { t } = useTranslation();
@@ -38,8 +38,9 @@ export default function Customers() {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const data = await invoke<Customer[]>('get_customers');
-      setCustomers(data);
+      const store = useCustomerStore.getState();
+      await store.fetchAll();
+      setCustomers(useCustomerStore.getState().customers);
     } catch (error) {
       console.error('Error loading customers:', error);
       // Quiet reloads (post-mutation) must still surface failures — the user
@@ -54,9 +55,9 @@ export default function Customers() {
     e.preventDefault();
     try {
       if (editing) {
-        await invoke('update_customer', { id: editing.id, update: form });
+        await useCustomerStore.getState().update(editing.id, form);
       } else {
-        await invoke('add_customer', { customer: form });
+        await useCustomerStore.getState().create(form);
       }
       setShowForm(false);
       setEditing(null);
@@ -84,7 +85,7 @@ export default function Customers() {
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('delete_customer', { id });
+      await useCustomerStore.getState().remove(id);
       showSuccess(t('common.deleted'));
       loadCustomers({ quiet: true });
     } catch (error) {
