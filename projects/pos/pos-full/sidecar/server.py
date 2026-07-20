@@ -69,23 +69,27 @@ try:
     DB_PATH = BASE_DIR.parent / "restaurant.db"
 
     if not settings.configured:
-        settings.configure(
-            DEBUG=True,
-            DATABASES={
-                "default": {
-                    "ENGINE": "django.db.backends.sqlite3",
-                    "NAME": str(DB_PATH),
-                }
-            },
-            INSTALLED_APPS=[
-                "django.contrib.contenttypes",
-                "django.contrib.auth",
-                "models.PosFullConfig",  # Managed models (pos_full) — migrations + CRUD
-            ],
-            DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
-            USE_TZ=True,
-            SECRET_KEY=os.environ.get("DJANGO_SECRET_KEY", "pos-full-server-dev-key"),
+        # Import centralized config (configs/__init__.py)
+        from configs import (
+            DEBUG, DATABASES, INSTALLED_APPS, MIDDLEWARE,
+            TEMPLATES, ROOT_URLCONF, SECRET_KEY,
+            DEFAULT_AUTO_FIELD, USE_TZ, STATIC_URL, STATIC_ROOT,
         )
+        settings.configure(
+            DEBUG=DEBUG,
+            DATABASES=DATABASES,
+            INSTALLED_APPS=INSTALLED_APPS,
+            MIDDLEWARE=MIDDLEWARE,
+            TEMPLATES=TEMPLATES,
+            ROOT_URLCONF=ROOT_URLCONF,
+            SECRET_KEY=SECRET_KEY,
+            DEFAULT_AUTO_FIELD=DEFAULT_AUTO_FIELD,
+            USE_TZ=USE_TZ,
+            STATIC_URL=STATIC_URL,
+            STATIC_ROOT=STATIC_ROOT,
+        )
+        # Import admin registration (registers models with Django admin)
+        import configs.admin  # noqa: F401 — side-effect: registers admin models
     django.setup()
 
     # ── Django-managed node registry models ──
@@ -387,6 +391,36 @@ _register_crud(app, "config/cloud-links", CloudLink, "CloudLink")
 
 # ── Approval workflow CRUD ──
 _register_crud(app, "approvals", SyncApproval, "SyncApproval")
+
+# ===========================================================================
+# WebSocket: Entity event stream (real-time CRUD notifications for Redux)
+# ===========================================================================
+
+from streams import _entity_ws_clients
+
+@app.websocket("/ws/entities")
+async def entity_stream(websocket):
+    """WebSocket endpoint for entity change events.
+    Client connects to receive real-time notifications when any entity
+    (Product, Customer, Sale, etc.) is created, updated, or deleted.
+    The Redux middleware uses this to invalidate RTK Query caches."""
+    client_id = id(websocket)
+    _entity_ws_clients.add(websocket)
+    try:
+        import json as _json
+        from datetime import datetime as _dt, timezone as _tz
+        await websocket.send_text(_json.dumps({
+            "type": "connected",
+            "message": "Connected to entity event stream",
+            "client_id": client_id,
+            "timestamp": _dt.now(_tz.utc).isoformat(),
+        }))
+        while True:
+            msg = await websocket.receive_text()
+    except Exception:
+        pass
+    finally:
+        _entity_ws_clients.discard(websocket)
 
 
 # ===========================================================================

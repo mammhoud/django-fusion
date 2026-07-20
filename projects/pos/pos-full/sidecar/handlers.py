@@ -288,6 +288,8 @@ async def _log_sync(node_id: str, entity_type: str, entity_id: str,
 
 def _register_crud(app, prefix: str, model, name: str):
     """Register GET/POST/PATCH/DELETE routes for a model on a Robyn app.
+    After each mutation, broadcasts an entity_event via WebSocket for
+    real-time Redux cache invalidation.
 
     Args:
         app: Robyn application instance
@@ -311,6 +313,8 @@ def _register_crud(app, prefix: str, model, name: str):
     async def create_one(request):
         body = request.json() or {}
         obj = await _create(model, body)
+        from streams import _broadcast_entity_event
+        await _broadcast_entity_event(name, "create", obj)
         return Response(
             status_code=201,
             headers={"Content-Type": "application/json"},
@@ -323,6 +327,8 @@ def _register_crud(app, prefix: str, model, name: str):
         obj = await _update(model, pk, body)
         if not obj:
             return _error(404, f"{name} not found")
+        from streams import _broadcast_entity_event
+        await _broadcast_entity_event(name, "update", obj)
         return jsonify(obj)
 
     @app.delete(f"/{prefix}/:pk")
@@ -330,4 +336,6 @@ def _register_crud(app, prefix: str, model, name: str):
         ok = await _delete(model, pk)
         if not ok:
             return _error(404, f"{name} not found")
+        from streams import _broadcast_entity_event
+        await _broadcast_entity_event(name, "delete", {"id": pk})
         return jsonify({"status": "deleted"})

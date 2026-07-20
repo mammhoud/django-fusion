@@ -67,21 +67,17 @@ try:
     # Standalone DB — pos-solo uses managed=True models, no Rust backend
     DB_PATH = BASE_DIR.parent / "unified.db"
 
+    from configs import (
+        DEBUG, DATABASES, INSTALLED_APPS, SECRET_KEY,
+        DEFAULT_AUTO_FIELD, USE_TZ,
+    )
     settings.configure(
-        DEBUG=True,
-        DATABASES={
-            "default": {
-                "ENGINE": "django.db.backends.sqlite3",
-                "NAME": str(DB_PATH),
-            }
-        },
-        INSTALLED_APPS=[
-            "django.contrib.contenttypes",
-            "models.PosSoloConfig",     # Managed models (pos_unified) — migrations + CRUD
-        ],
-        DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
-        USE_TZ=True,
-        SECRET_KEY=os.environ.get("DJANGO_SECRET_KEY", "pos-server-dev-key"),
+        DEBUG=DEBUG,
+        DATABASES=DATABASES,
+        INSTALLED_APPS=INSTALLED_APPS,
+        DEFAULT_AUTO_FIELD=DEFAULT_AUTO_FIELD,
+        USE_TZ=USE_TZ,
+        SECRET_KEY=SECRET_KEY,
     )
     django.setup()
 

@@ -22,12 +22,15 @@ let nodeWs: WebSocket | null = null;
 let configWs: WebSocket | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
+// Derive WebSocket URL from the same base as the API
+const WS_BASE = 'http://localhost:8766'.replace('http', 'ws');
+
 function connectWebSocket(
   path: string,
   store: any,
   onMessage: (msg: WsMessage) => void,
 ): WebSocket {
-  const ws = new WebSocket(`ws://localhost:8766${path}`);
+  const ws = new WebSocket(`${WS_BASE}${path}`);
 
   ws.onopen = () => {
     console.log(`[Redux WS] Connected to ${path}`);
