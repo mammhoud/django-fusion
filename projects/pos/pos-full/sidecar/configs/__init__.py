@@ -83,6 +83,7 @@ UNFOLD = {
     "SITE_URL": "/",
     "SITE_ICON": None,
     "SITE_SYMBOL": "dashboard",
+    "DASHBOARD": "configs.dashboard.POSDashboardView",
     "SHOW_HISTORY": True,
     "SHOW_VIEW_ON_SITE": False,
     "THEME": "dark",  # dark | light

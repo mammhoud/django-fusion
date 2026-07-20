@@ -1,0 +1,199 @@
+"""
+POS Full — Unfold Admin Dashboard.
+
+Custom dashboard view with real-time POS KPI cards, charts,
+and recent activity feeds. Replaces the default admin index page.
+
+Registered via UNFOLD["DASHBOARD"] in configs/__init__.py.
+Unfold dashboard docs: https://unfoldadmin.com/docs/dashboard/
+"""
+
+from django.db.models import Sum, Count
+from django.db.models.functions import TruncDate
+from django.utils import timezone
+from datetime import timedelta
+from unfold.views import DashboardView
+
+from models.pos import Category, Product, Customer, Sale
+from models.node import Node
+from models.ops import SupportTicket, KitchenTicket
+from models.inventory import PurchaseOrder
+
+
+class POSDashboardView(DashboardView):
+    """Custom admin dashboard for POS Full Master Manager.
+
+    Replaces the default admin index with KPI cards, revenue charts,
+    and recent activity tables. All data is queried in real-time from
+    the Django ORM.
+    """
+
+    title = "POS Full — Master Manager Dashboard"
+    subtitle = "Real-time overview of all branch devices, sales, and operations"
+
+    def get_kpi_cards(self, request):
+        """KPI cards showing key business metrics.
+
+        Returns a list of dicts in Unfold KPI format:
+        { title, metric, footer, trend (optional) }
+        """
+        today = timezone.now().date()
+        this_month = today.replace(day=1)
+        last_month = (this_month - timedelta(days=1)).replace(day=1)
+
+        # Today's sales
+        today_sales = Sale.objects.filter(sale_date__date=today).aggregate(
+            count=Count("id"), revenue=Sum("total")
+        )
+
+        # Monthly revenue
+        month_sales = Sale.objects.filter(sale_date__date__gte=this_month).aggregate(
+            count=Count("id"), revenue=Sum("total")
+        )
+        last_month_sales = Sale.objects.filter(
+            sale_date__date__gte=last_month,
+            sale_date__date__lt=this_month,
+        ).aggregate(revenue=Sum("total"))
+
+        current_revenue = month_sales["revenue"] or 0
+        prev_revenue = last_month_sales["revenue"] or 0
+        revenue_trend = (
+            round(((current_revenue - prev_revenue) / prev_revenue) * 100, 1)
+            if prev_revenue > 0
+            else 0
+        )
+
+        # Node health
+        total_nodes = Node.objects.count()
+        online_nodes = Node.objects.filter(status="online").count()
+
+        # Alerts
+        open_support = SupportTicket.objects.filter(
+            status__in=["open", "in_progress"]
+        ).count()
+        pending_kitchen = KitchenTicket.objects.filter(status="pending").count()
+        pending_pos = PurchaseOrder.objects.filter(status="draft").count()
+        alert_count = open_support + pending_kitchen + pending_pos
+
+        return [
+            {
+                "title": "Today's Sales",
+                "metric": f"${today_sales['revenue'] or 0:,.2f}",
+                "footer": f"{today_sales['count'] or 0} transactions today",
+            },
+            {
+                "title": "Monthly Revenue",
+                "metric": f"${current_revenue:,.2f}",
+                "footer": (
+                    f"{month_sales['count'] or 0} transactions"
+                    + (f" · {revenue_trend:+.1f}% vs last month" if revenue_trend != 0 else "")
+                ),
+            },
+            {
+                "title": "Active Products",
+                "metric": str(Product.objects.filter(is_active=True).count()),
+                "footer": f"{Category.objects.count()} categories",
+            },
+            {
+                "title": "Customers",
+                "metric": str(Customer.objects.filter(is_active=True).count()),
+                "footer": f"Total: {Customer.objects.count()} registered",
+            },
+            {
+                "title": "Branch Nodes",
+                "metric": f"{online_nodes}/{total_nodes}",
+                "footer": (
+                    f"{online_nodes} online · {total_nodes - online_nodes} offline"
+                    if total_nodes > 0
+                    else "No nodes registered"
+                ),
+            },
+            {
+                "title": "Open Alerts",
+                "metric": str(alert_count),
+                "footer": (
+                    f"{open_support} support · {pending_kitchen} kitchen"
+                    f" · {pending_pos} POs"
+                ),
+            },
+        ]
+
+    def get_charts(self, request):
+        """Revenue chart — last 7 days.
+
+        Returns a list of dicts in Chart.js-compatible format:
+        { title, type, labels, datasets: [{ label, data, ... }] }
+        """
+        today = timezone.now().date()
+        days_ago = today - timedelta(days=7)
+
+        daily_sales = (
+            Sale.objects.filter(sale_date__date__gte=days_ago)
+            .annotate(day=TruncDate("sale_date"))
+            .values("day")
+            .annotate(total=Sum("total"))
+            .order_by("day")
+        )
+
+        return [
+            {
+                "title": "Revenue — Last 7 Days",
+                "type": "bar",
+                "labels": [d["day"].strftime("%a %m/%d") for d in daily_sales],
+                "datasets": [
+                    {
+                        "label": "Revenue ($)",
+                        "data": [float(d["total"] or 0) for d in daily_sales],
+                    }
+                ],
+            }
+        ]
+
+    def get_tables(self, request):
+        """Recent activity tables.
+
+        Returns a list of dicts in Unfold table format:
+        { title, headers: [...], rows: [[...], ...] }
+        """
+        # Recent sales
+        recent_sales = (
+            Sale.objects.select_related("customer")
+            .order_by("-sale_date")[:5]
+        )
+
+        # Recent nodes
+        recent_nodes = Node.objects.order_by("-last_seen")[:5]
+
+        return [
+            {
+                "title": "Recent Sales",
+                "headers": ["ID", "Customer", "Amount", "Status", "Date"],
+                "rows": [
+                    [
+                        str(s.id),
+                        str(s.customer) if s.customer else "Walk-in",
+                        f"${s.total:,.2f}",
+                        s.get_status_display(),
+                        s.sale_date.strftime("%Y-%m-%d %H:%M"),
+                    ]
+                    for s in recent_sales
+                ],
+            },
+            {
+                "title": "Node Status",
+                "headers": ["Node ID", "Type", "Status", "Last Seen"],
+                "rows": [
+                    [
+                        n.node_id,
+                        n.get_node_type_display(),
+                        n.get_status_display(),
+                        (
+                            n.last_seen.strftime("%Y-%m-%d %H:%M")
+                            if n.last_seen
+                            else "—"
+                        ),
+                    ]
+                    for n in recent_nodes
+                ],
+            },
+        ]
