@@ -9,12 +9,12 @@ Unfold dashboard docs: https://unfoldadmin.com/docs/dashboard/
 """
 
 from django.db.models import Sum, Count
-from django.db.models.functions import TruncDate
+from django.db.models.functions import TruncDate, TruncHour
 from django.utils import timezone
 from datetime import timedelta
 from unfold.views import DashboardView
 
-from models.pos import Category, Product, Customer, Sale
+from models.pos import Category, Product, Customer, Sale, SaleItem
 from models.node import Node
 from models.ops import SupportTicket, KitchenTicket
 from models.inventory import PurchaseOrder
@@ -119,14 +119,21 @@ class POSDashboardView(DashboardView):
         ]
 
     def get_charts(self, request):
-        """Revenue chart — last 7 days.
+        """Dashboard charts.
 
-        Returns a list of dicts in Chart.js-compatible format:
+        Returns a list of Chart.js-compatible dicts:
         { title, type, labels, datasets: [{ label, data, ... }] }
+
+        Charts:
+        1. Revenue — Last 7 Days (bar)
+        2. Top Products by Revenue (pie) — top 10
+        3. Sales by Payment Method (doughnut)
+        4. Hourly Sales Activity (bar — revenue by hour)
         """
         today = timezone.now().date()
         days_ago = today - timedelta(days=7)
 
+        # ── 1. Daily Revenue (Last 7 Days) — bar ──
         daily_sales = (
             Sale.objects.filter(sale_date__date__gte=days_ago)
             .annotate(day=TruncDate("sale_date"))
@@ -134,6 +141,52 @@ class POSDashboardView(DashboardView):
             .annotate(total=Sum("total"))
             .order_by("day")
         )
+
+        # ── 2. Top Products by Revenue (Last 7 Days) — pie ──
+        top_products = (
+            SaleItem.objects.filter(sale__sale_date__date__gte=days_ago)
+            .values("product_name")
+            .annotate(total=Sum("line_total"))
+            .order_by("-total")[:10]
+        )
+
+        # ── 3. Sales by Payment Method (Last 7 Days) — doughnut ──
+        payment_methods = (
+            Sale.objects.filter(sale_date__date__gte=days_ago)
+            .values("payment_method")
+            .annotate(count=Count("id"), total=Sum("total"))
+            .order_by("-total")
+        )
+
+        # Payment method display labels
+        PAYMENT_LABELS = {
+            "cash": "Cash",
+            "card": "Card",
+            "mobile": "Mobile",
+            "mixed": "Mixed",
+            "credit": "Store Credit",
+        }
+
+        # ── 4. Hourly Sales Activity (Last 7 Days) — bar ──
+        hourly_sales = (
+            Sale.objects.filter(sale_date__date__gte=days_ago)
+            .annotate(hour=TruncHour("sale_date"))
+            .values("hour")
+            .annotate(
+                count=Count("id"),
+                total=Sum("total"),
+            )
+            .order_by("hour")
+        )
+
+        # Aggregate hourly by extracting hour of day (0-23)
+        hourly_agg = {h: {"count": 0, "total": 0.0} for h in range(24)}
+        for h in hourly_sales:
+            hour = h["hour"].hour  # extract hour from truncated datetime
+            hourly_agg[hour] = {
+                "count": h["count"],
+                "total": float(h["total"] or 0),
+            }
 
         return [
             {
@@ -146,7 +199,54 @@ class POSDashboardView(DashboardView):
                         "data": [float(d["total"] or 0) for d in daily_sales],
                     }
                 ],
-            }
+            },
+            {
+                "title": "Top Products by Revenue — Last 7 Days",
+                "type": "pie",
+                "labels": [p["product_name"] for p in top_products],
+                "datasets": [
+                    {
+                        "label": "Revenue ($)",
+                        "data": [float(p["total"] or 0) for p in top_products],
+                    }
+                ],
+            },
+            {
+                "title": "Sales by Payment Method — Last 7 Days",
+                "type": "doughnut",
+                "labels": [
+                    PAYMENT_LABELS.get(p["payment_method"], p["payment_method"])
+                    for p in payment_methods
+                ],
+                "datasets": [
+                    {
+                        "label": "Revenue ($)",
+                        "data": [float(p["total"] or 0) for p in payment_methods],
+                    }
+                ],
+            },
+            {
+                "title": "Hourly Revenue — Last 7 Days",
+                "type": "bar",
+                "labels": [f"{h:02d}:00" for h in range(24)],
+                "datasets": [
+                    {
+                        "label": "Revenue ($)",
+                        "data": [hourly_agg[h]["total"] for h in range(24)],
+                    },
+                ],
+            },
+            {
+                "title": "Hourly Transactions — Last 7 Days",
+                "type": "bar",
+                "labels": [f"{h:02d}:00" for h in range(24)],
+                "datasets": [
+                    {
+                        "label": "Transactions",
+                        "data": [hourly_agg[h]["count"] for h in range(24)],
+                    },
+                ],
+            },
         ]
 
     def get_tables(self, request):
