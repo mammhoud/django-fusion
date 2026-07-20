@@ -40,6 +40,16 @@ class POSDashboardView(DashboardView):
         today = timezone.now().date()
         this_month = today.replace(day=1)
         last_month = (this_month - timedelta(days=1)).replace(day=1)
+        this_year = today.replace(month=1, day=1)
+        last_year = this_year.replace(year=this_year.year - 1)
+
+        # Same-day-range boundaries for period comparisons
+        # MTD comparison: same number of days in previous month
+        mtd_end = today
+        prev_mtd_end = last_month + timedelta(days=today.day - 1)
+        # YTD comparison: same number of days in previous year
+        ytd_end = today
+        prev_ytd_end = last_year + timedelta(days=today.timetuple().tm_yday - 1)
 
         # Today's sales
         today_sales = Sale.objects.filter(sale_date__date=today).aggregate(
@@ -76,6 +86,44 @@ class POSDashboardView(DashboardView):
             else 0
         )
 
+        # ── Month-to-Date (MTD) Revenue ──
+        # Current MTD: this_month → today
+        # Previous MTD (same period): last_month → prev_mtd_end
+        mtd_sales = Sale.objects.filter(
+            sale_date__date__gte=this_month, sale_date__date__lte=mtd_end
+        ).aggregate(revenue=Sum("total"), count=Count("id"))
+        mtd_revenue = mtd_sales["revenue"] or 0
+
+        prev_mtd_sales = Sale.objects.filter(
+            sale_date__date__gte=last_month, sale_date__date__lte=prev_mtd_end
+        ).aggregate(revenue=Sum("total"), count=Count("id"))
+        prev_mtd_revenue = prev_mtd_sales["revenue"] or 0
+
+        mtd_trend = (
+            round(((mtd_revenue - prev_mtd_revenue) / prev_mtd_revenue) * 100, 1)
+            if prev_mtd_revenue > 0
+            else 0
+        )
+
+        # ── Year-to-Date (YTD) Revenue ──
+        # Current YTD: Jan 1 → today
+        # Previous YTD (same period): Jan 1 last year → prev_ytd_end
+        ytd_sales = Sale.objects.filter(
+            sale_date__date__gte=this_year, sale_date__date__lte=ytd_end
+        ).aggregate(revenue=Sum("total"), count=Count("id"))
+        ytd_revenue = ytd_sales["revenue"] or 0
+
+        prev_ytd_sales = Sale.objects.filter(
+            sale_date__date__gte=last_year, sale_date__date__lte=prev_ytd_end
+        ).aggregate(revenue=Sum("total"), count=Count("id"))
+        prev_ytd_revenue = prev_ytd_sales["revenue"] or 0
+
+        ytd_trend = (
+            round(((ytd_revenue - prev_ytd_revenue) / prev_ytd_revenue) * 100, 1)
+            if prev_ytd_revenue > 0
+            else 0
+        )
+
         # Node health
         total_nodes = Node.objects.count()
         online_nodes = Node.objects.filter(status="online").count()
@@ -108,6 +156,22 @@ class POSDashboardView(DashboardView):
                 "footer": (
                     f"{month_count} orders this month"
                     + (f" · {aov_trend:+.1f}% vs last month" if aov_trend != 0 else "")
+                ),
+            },
+            {
+                "title": "MTD Revenue",
+                "metric": f"${mtd_revenue:,.2f}",
+                "footer": (
+                    f"{mtd_sales['count'] or 0} transactions"
+                    + (f" · {mtd_trend:+.1f}% vs last month" if mtd_trend != 0 else "")
+                ),
+            },
+            {
+                "title": "YTD Revenue",
+                "metric": f"${ytd_revenue:,.2f}",
+                "footer": (
+                    f"{ytd_sales['count'] or 0} transactions"
+                    + (f" · {ytd_trend:+.1f}% vs last year" if ytd_trend != 0 else "")
                 ),
             },
             {

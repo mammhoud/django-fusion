@@ -17,7 +17,7 @@
 | Dashboard | Products |
 |:---:|:---:|
 | ![Admin Dashboard](docs/screenshots/admin/admin-dashboard.svg) | ![Products List](docs/screenshots/admin/admin-products.svg) |
-| *6 KPI cards, 5 charts, 2 data tables* | *Paginated table with status badges* |
+| *9 KPI cards, 5 charts, 2 data tables* | *Paginated table with status badges* |
 
 | Customers | Sales |
 |:---:|:---:|
@@ -103,13 +103,15 @@ python3 manage.py runserver 0.0.0.0:8000
 | `make admin-bootstrap` | Full pipeline: migrate → ensure-superuser → runserver :8000 |
 | `make admin-ensure-superuser` | Idempotent superuser creation from env vars |
 
-### KPI Cards (7)
+### KPI Cards (9)
 
 | Card | Description | Data Source |
 |------|-------------|-------------|
 | 📈 Today's Sales | Current day revenue + transaction count | `Sale.sale_date` today filter |
 | 💰 Monthly Revenue | This month total with % vs last month trend | `Sale.sale_date` month aggregation |
 | 🧾 **Avg Order Value** | Revenue per order with % vs last month trend | `Sum(total) / Count(id)` this month |
+| 📅 **MTD Revenue** | Month-to-date revenue vs same period last month | `Sale.sale_date` this month range |
+| 🗓️ **YTD Revenue** | Year-to-date revenue vs same period last year | `Sale.sale_date` this year range |
 | 📦 Active Products | Total active products + category count | `Product.is_active` count |
 | 👥 Customers | Active + total registered customers | `Customer` model counts |
 | 🖥️ Branch Nodes | Online/total nodes ratio | `Node.status` filter |
