@@ -1,4 +1,9 @@
-import { defineStore } from 'pinia';
+/**
+ * Zustand Auth Store — manages authentication via Robyn sidecar API.
+ * Replaces: invoke('verify_user'), invoke('send_auth_confirmation_code'), invoke('login_user')
+ */
+
+import { create } from 'zustand';
 import api from './api';
 
 export interface User {
@@ -8,50 +13,47 @@ export interface User {
   created_at: string;
 }
 
-interface AuthState {
+interface AuthStore {
   user: User | null;
   isAuthenticated: boolean;
   loading: boolean;
   error: string | null;
+  login: (email: string, password: string) => Promise<void>;
+  verify: (email: string) => Promise<void>;
+  sendConfirmationCode: (email: string) => Promise<void>;
+  logout: () => void;
 }
 
-export const useAuthStore = defineStore('auth', {
-  state: (): AuthState => ({
-    user: null,
-    isAuthenticated: false,
-    loading: false,
-    error: null,
-  }),
+export const useAuthStore = create<AuthStore>((set) => ({
+  user: null,
+  isAuthenticated: false,
+  loading: false,
+  error: null,
 
-  actions: {
-    async login(email: string, password: string) {
-      this.loading = true;
-      try {
-        this.user = await api.post<User>('/auth/login', { email, password });
-        this.isAuthenticated = true;
-      } catch (e: any) {
-        this.error = e.message;
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async verify(email: string) {
-      try {
-        this.user = await api.post<User>('/auth/verify', { email });
-        this.isAuthenticated = true;
-      } catch {
-        this.isAuthenticated = false;
-      }
-    },
-
-    async sendConfirmationCode(email: string) {
-      return await api.post('/auth/send-code', { email });
-    },
-
-    logout() {
-      this.user = null;
-      this.isAuthenticated = false;
-    },
+  login: async (email, password) => {
+    set({ loading: true, error: null });
+    try {
+      const user = await api.post<User>('/auth/login', { email, password });
+      set({ user, isAuthenticated: true });
+    } catch (e: any) {
+      set({ error: e.message });
+    } finally {
+      set({ loading: false });
+    }
   },
-});
+
+  verify: async (email) => {
+    try {
+      const user = await api.post<User>('/auth/verify', { email });
+      set({ user, isAuthenticated: true });
+    } catch {
+      set({ isAuthenticated: false });
+    }
+  },
+
+  sendConfirmationCode: async (email) => {
+    await api.post('/auth/send-code', { email });
+  },
+
+  logout: () => set({ user: null, isAuthenticated: false }),
+}));

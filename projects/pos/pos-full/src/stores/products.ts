@@ -1,9 +1,9 @@
 /**
- * Pinia Product Store — manages products via Robyn sidecar API.
+ * Zustand Product Store — manages products via Robyn sidecar API.
  * Replaces: invoke('get_products'), invoke('add_product'), invoke('update_product'), invoke('delete_product')
  */
 
-import { defineStore } from 'pinia';
+import { create } from 'zustand';
 import api from './api';
 
 export interface Product {
@@ -18,43 +18,47 @@ export interface Product {
   uploaded: boolean;
 }
 
-interface ProductState {
+interface ProductStore {
   products: Product[];
   loading: boolean;
   error: string | null;
+  fetchAll: () => Promise<void>;
+  create: (data: Partial<Product>) => Promise<Product>;
+  update: (id: number, data: Partial<Product>) => Promise<Product>;
+  remove: (id: number) => Promise<void>;
 }
 
-export const useProductStore = defineStore('products', {
-  state: (): ProductState => ({
-    products: [],
-    loading: false,
-    error: null,
-  }),
+export const useProductStore = create<ProductStore>()((set) => ({
+  products: [],
+  loading: false,
+  error: null,
 
-  actions: {
-    async fetchAll() {
-      this.loading = true;
-      this.error = null;
-      try {
-        this.products = await api.get<Product[]>('/products');
-      } catch (e: any) {
-        this.error = e.message;
-      } finally {
-        this.loading = false;
-      }
-    },
-
-    async create(data: Partial<Product>) {
-      return await api.post<Product>('/products', data);
-    },
-
-    async update(id: number, data: Partial<Product>) {
-      return await api.patch<Product>(`/products/${id}`, data);
-    },
-
-    async remove(id: number) {
-      await api.delete(`/products/${id}`);
-      this.products = this.products.filter(p => p.id !== id);
-    },
+  fetchAll: async () => {
+    set({ loading: true, error: null });
+    try {
+      const products = await api.get<Product[]>('/products');
+      set({ products });
+    } catch (e: any) {
+      set({ error: e.message });
+    } finally {
+      set({ loading: false });
+    }
   },
-});
+
+  create: async (data) => {
+    const product = await api.post<Product>('/products', data);
+    set((state) => ({ products: [...state.products, product] });
+    return product;
+  },
+
+  update: async (id, data) => {
+    const product = await api.patch<Product>(`/products/${id}`, data);
+    set((state) => ({ products: state.products.map(p => p.id === id ? product : p) });
+    return product;
+  },
+
+  remove: async (id) => {
+    await api.delete(`/products/${id}`);
+    set((state) => ({ products: state.products.filter(p => p.id !== id) });
+  },
+}));

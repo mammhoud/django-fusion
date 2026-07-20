@@ -2,7 +2,7 @@
   "name": "pos-full",
   "private": true,
   "version": "0.1.0",
-  "description": "POS Full \u2014 POS desktop app + sidecar + Django data sync + WebSocket chat",
+  "description": "POS Full — POS desktop app + sidecar + Django data sync + WebSocket chat",
   "author": "mammhoud <structa.cloud@gmail.com>",
   "license": "AGPL-3.0",
   "homepage": "https://structa.cloud",
@@ -83,7 +83,8 @@
     "react-icons": "^5.4.0",
     "react-router-dom": "^6.27.0",
     "recharts": "^2.15.0",
-    "xlsx": "^0.18.5"
+    "xlsx": "^0.18.5",
+    "zustand": "^5.0.14"
   },
   "devDependencies": {
     "@tailwindcss/postcss": "^4.0.0",

@@ -1,14 +1,14 @@
 /**
- * POS-KO API Client — Pinia + Robyn Sidecar
+ * POS-KO API Client — Zustand + Robyn Sidecar
  *
  * Replaces all Tauri invoke() calls with HTTP requests to the Robyn sidecar.
- * Used by Pinia stores to perform CRUD operations over REST APIs.
+ * Used by Zustand stores to perform CRUD operations over REST APIs.
  *
  * Architecture:
- *   React (Pinia stores) → fetch() → Robyn sidecar (:8765/:8766) → Django ORM → SQLite
+ *   React (Zustand stores) → fetch() → Robyn sidecar (:8765/:8766) → Django ORM → SQLite
  */
 
-const API_BASE = 'http://localhost:8766'; // pos-full default; override via env
+const API_BASE = 'http://localhost:8766'; // pos-solo default; override via env
 
 export interface ApiResponse<T> {
   ok: boolean;
