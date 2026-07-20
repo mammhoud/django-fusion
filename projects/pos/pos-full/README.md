@@ -14,32 +14,17 @@
 
 ## 📸 Dashboard Preview
 
-```
-┌──────────────────────────────────────────────────────────────┐
-│  POS Full — Master Manager Dashboard                        │
-│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐   │
-│  │Sales │ │Monthly│ │Prod  │ │Cust  │ │Nodes │ │Alerts│   │
-│  │$1.2k │ │$45k  │ │ 532  │ │ 1.2k │ │12/15 │ │  3   │   │
-│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ └──────┘   │
-│  ┌─────────────────┐ ┌─────────────────┐                   │
-│  │ Revenue (7 days) │ │ Top Products     │                   │
-│  │ ████████████      │ │     ○ Prod A     │                   │
-│  │ ██████████       │ │    ○ Prod B      │                   │
-│  └─────────────────┘ └─────────────────┘                   │
-│  ┌─────────────────┐ ┌─────────────────┐                   │
-│  │ Payment Methods  │ │ Hourly Revenue   │                   │
-│  │  ○ Cash  45%     │ │ ██ ████ █████    │                   │
-│  │  ○ Card  40%     │ │ 6  12  18  24h   │                   │
-│  └─────────────────┘ └─────────────────┘                   │
-│  ┌────────────────────────────────────────────────────┐    │
-│  │ Recent Sales          │ Node Status               │    │
-│  │ #1234  Walk-in  $45   │ NODE-A  pos-full  online  │    │
-│  │ #1233  John D.  $120  │ NODE-B  pos-solo  online  │    │
-│  └────────────────────────────────────────────────────┘    │
-└──────────────────────────────────────────────────────────────┘
-```
+| Dashboard | Products |
+|:---:|:---:|
+| ![Admin Dashboard](docs/screenshots/admin/admin-dashboard.svg) | ![Products List](docs/screenshots/admin/admin-products.svg) |
+| *6 KPI cards, 5 charts, 2 data tables* | *Paginated table with status badges* |
 
-> *Screenshot placeholders: Replace with actual screenshots of your running instance*
+| Customers | Sales |
+|:---:|:---:|
+| ![Customers List](docs/screenshots/admin/admin-customers.svg) | ![Sales List](docs/screenshots/admin/admin-sales.svg) |
+| *Filterable customer registry* | *Payment method breakdown* |
+
+> **Tip:** Run `make admin-screenshots` after starting the server to capture live JPG screenshots from your running instance.
 
 ---
 
