@@ -53,13 +53,26 @@ class POSDashboardView(DashboardView):
         last_month_sales = Sale.objects.filter(
             sale_date__date__gte=last_month,
             sale_date__date__lt=this_month,
-        ).aggregate(revenue=Sum("total"))
+        ).aggregate(revenue=Sum("total"), count=Count("id"))
 
         current_revenue = month_sales["revenue"] or 0
         prev_revenue = last_month_sales["revenue"] or 0
         revenue_trend = (
             round(((current_revenue - prev_revenue) / prev_revenue) * 100, 1)
             if prev_revenue > 0
+            else 0
+        )
+
+        # Average Order Value (AOV) = total revenue / total orders this month
+        month_count = month_sales["count"] or 0
+        aov = (current_revenue / month_count) if month_count > 0 else 0
+
+        # Last month AOV for trend comparison
+        prev_month_count = last_month_sales.get("count") or 0
+        prev_aov = (prev_revenue / prev_month_count) if prev_month_count > 0 else 0
+        aov_trend = (
+            round(((aov - prev_aov) / prev_aov) * 100, 1)
+            if prev_aov > 0
             else 0
         )
 
@@ -85,8 +98,16 @@ class POSDashboardView(DashboardView):
                 "title": "Monthly Revenue",
                 "metric": f"${current_revenue:,.2f}",
                 "footer": (
-                    f"{month_sales['count'] or 0} transactions"
+                    f"{month_count} transactions"
                     + (f" · {revenue_trend:+.1f}% vs last month" if revenue_trend != 0 else "")
+                ),
+            },
+            {
+                "title": "Avg Order Value",
+                "metric": f"${aov:,.2f}",
+                "footer": (
+                    f"{month_count} orders this month"
+                    + (f" · {aov_trend:+.1f}% vs last month" if aov_trend != 0 else "")
                 ),
             },
             {
