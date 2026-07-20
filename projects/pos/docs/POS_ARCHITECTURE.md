@@ -18,9 +18,10 @@
 7. [Sync & Approval Pipeline](#7-sync--approval-pipeline)
 8. [Shared Module Map](#8-shared-module-map)
 9. [Rust Integration Points](#9-rust-integration-points)
-10. [Pinia / Frontend API Integration](#10-pinia--frontend-api-integration)
+10. [Frontend API Integration (Redux RTK Query)](#10-frontend-api-integration-redux-rtk-query)
 11. [Cloud Server Plan (Next Phase)](#11-cloud-server-plan-next-phase)
-12. [Roadmap & Next Steps](#12-roadmap--next-steps)
+12. [Unfold Admin Dashboard (pos-full)](#12-unfold-admin-dashboard-pos-full)
+13. [Roadmap & Next Steps](#13-roadmap--next-steps)
 
 ---
 
@@ -117,130 +118,141 @@ A **sidecar** is a companion process that runs alongside the Tauri desktop appli
 
 ## 2. Edition Architecture
 
-### 2.1 POS Solo (Standalone Node)
+### 2.1 POS Mini (Standalone Terminal)
+
+```
+┌─────────────────────────────────────────────────┐
+│           POS Mini (Standalone Terminal)         │
+│                                                   │
+│  Backend: Rust/Diesel (no sidecar)                │
+│  Frontend: Tauri + React + TypeScript            │
+│  Database: SQLite via Diesel ORM                 │
+│  Data ops: Tauri IPC `invoke()` commands         │
+│  Network: Fully offline-capable                   │
+│  Use case: Single terminal / minimal POS         │
+└─────────────────────────────────────────────────┘
+```
+
+**Key characteristics:**
+- No Python sidecar — pure Rust/Diesel backend
+- Data accessed via Tauri `invoke()` (not HTTP REST)
+- No cloud sync, no node registry, no admin panel
+- Smallest footprint, fastest startup
+
+### 2.2 POS Solo (Branch Device)
 
 ```
 ┌─────────────────────────────────────────────────┐
 │           POS Solo Server (port 8765)            │
 │                                                   │
 │  Database: restaurant.db                         │
-│  Models: all managed=True (models/ package (pos.py, menu.py))     │
-│  WebSocket: /ws/config only                       │
-│  Cloud: Push client → Full master                 │
-│  Use case: Single restaurant / standalone POS     │
+│  Models: all managed=True (models/ package)      │
+│  WebSocket: /ws/config only                      │
+│  Cloud: Push client → Full master                │
+│  Frontend: React + Redux RTK Query               │
+│  Use case: Branch device / single restaurant     │
 └─────────────────────────────────────────────────┘
 ```
 
 **Directory Structure:**
 ```
 pos-solo/sidecar/
-├── server.py              # Thin entry point: bootstrap + middleware + CRUD
+├── server.py              # Robyn entry point: bootstrap + middleware + CRUD
 ├── routes/                # Route handler modules
-│   ├── __init__.py        #   register_all(app)
-│   ├── state.py           #   Shared state, helpers, SyncClient, WS broadcast
-│   ├── info.py            #   /, /health, /stats
-│   ├── nodes.py           #   Node CRUD, register, heartbeat, WS /ws/config
-│   ├── config.py          #   Device/Master/Cloud config endpoints
-│   ├── sync.py            #   Sync status, trigger, push, cloud push
-│   └── approvals.py       #   Approve, reject, pending, receive
-├── models/                # Model package + Django app (pos_unified)
-│   ├── __init__.py        #   Minimal — imports PosSoloConfig only
-│   ├── apps.py            #   PosSoloConfig (label=pos_unified)
-│   ├── models.py          #   Django models_module (all 16 managed models)
-│   ├── pos.py             #   Product, Customer, Sale, etc.
-│   ├── menu.py            #   MenuItem, Menu, MenuItemAssignment
-│   ├── node.py            #   Node, Heartbeat, NodeEvent
-│   ├── config.py          #   DeviceConfig, MasterDevice, CloudLink
-│   ├── sync.py            #   SyncLog
-│   ├── posapp_app/        #   Django app for Rust-mirror models (managed=True)
-│   │   ├── apps.py        #     PosappConfig (label=posapp)
-│   │   ├── models.py      #     Imports ~30 posapp models for Django discovery
-│   │   └── migrations/    #     posapp migration files
-│   └── migrations/        # pos_unified migration files
-├── manage.py              # Django CLI (migrate, makemigrations, showmigrations)
+│   ├── __init__.py        # register_all(app)
+│   ├── state.py           # Shared state, SyncClient, WS broadcast
+│   ├── info.py            # /, /health, /stats
+│   ├── nodes.py           # Node CRUD, register, heartbeat, WS
+│   ├── config.py          # Device/Master/Cloud config, WS /ws/config
+│   ├── sync.py            # Sync status, trigger, push, cloud push
+│   └── approvals.py       # Approve, reject, pending
+├── models/                # Django ORM models (pos_unified)
+│   ├── pos.py             # Product, Customer, Sale, etc.
+│   ├── menu.py            # MenuItem, Menu, MenuItemAssignment
+│   ├── node.py            # Node, Heartbeat, NodeEvent
+│   ├── config.py          # DeviceConfig, MasterDevice, CloudLink
+│   └── sync.py            # SyncLog
 ├── tests/
 │   └── test_unified_api.py  # 155 tests
-├── Makefile               # Run, test, clean targets
-├── pyproject.toml          # Rye/UV project metadata
-└── requirements.txt        # Python dependencies
+├── Makefile               # Sidecar commands
+├── pyproject.toml          # Python project metadata
+└── requirements.txt        # Dependencies
 ```
 
-### 2.2 POS Full (Cloud Master)
+### 2.3 POS Full (Master Manager)
 
 ```
 ┌─────────────────────────────────────────────────┐
 │           POS Full Server (port 8766)            │
 │                                                   │
 │  Database: restaurant.db                         │
-│  Models: registry (managed) + posapp (Rust)       │
-│  WebSocket: /ws/nodes + /ws/config                 │
-│  Cloud: Master → Upstream CRM proxy               │
-│  Features: Approval queue, product sync engine    │
-│  Use case: Multi-node management / cloud master   │
+│  Admin Panel: Django Unfold (port 8000)          │
+│  Dashboard: 9 KPI cards, 5 charts, 2 tables     │
+│  WebSocket: /ws/entities + /ws/nodes + /ws/config │
+│  Cloud: Master ↔ Children sync                   │
+│  Features: Admin panel, node registry, sync      │
+│  Use case: Multi-branch management / cloud master │
 └─────────────────────────────────────────────────┘
 ```
 
 **Directory Structure:**
 ```
 pos-full/sidecar/
-├── server.py              # Thin entry point: bootstrap + middleware + CRUD
+├── configs/               # Centralized Django settings
+│   ├── __init__.py        # Django + Unfold settings
+│   ├── admin.py           # 17+ model admin registrations
+│   ├── dashboard.py       # Custom dashboard (9 KPI + 5 charts + 2 tables)
+│   └── urls.py            # Django URL configuration
+├── server.py              # Robyn entry point: bootstrap + middleware + CRUD
+├── manage.py              # Django CLI with --ensure-superuser flag
+├── handlers.py            # CRUD factory with WS broadcast
+├── streams.py             # WebSocket broadcast functions
 ├── routes/                # Route handler modules
-│   ├── __init__.py        #   register_all(app)
-│   ├── state.py           #   Shared state, helpers, SyncClient, WS broadcast
-│   ├── info.py            #   /, /health, /stats
-│   ├── nodes.py           #   Node CRUD, register, heartbeat, WS /ws/nodes
-│   ├── config.py          #   Device/Master/Cloud config, WS /ws/config
-│   ├── sync.py            #   Sync status, trigger, push/receive, cloud push
-│   ├── approvals.py       #   Approve, reject, stats
-│   └── webhooks.py        #   Webhook receive, list, stats
-├── models/                # Model package + Django app (pos_full)
-│   ├── __init__.py        #   Minimal — imports PosFullConfig only
-│   ├── apps.py            #   PosFullConfig (label=pos_full)
-│   ├── models.py          #   Django models_module (all 16 managed models)
-│   ├── node.py            #   Node, Heartbeat, NodeEvent
-│   ├── config.py          #   DeviceConfig, MasterDevice, CloudLink
-│   ├── sync.py            #   SyncLog
-│   ├── pos.py             #   Product, Customer, Sale, etc. (managed)
-│   ├── menu.py            #   MenuItem, Menu, MenuItemAssignment (managed)
-│   ├── core.py            #   Rust-backed posapp models
-│   ├── sales.py           #   Rust-backed posapp models
-│   ├── people.py          #   Rust-backed posapp models
-│   ├── inventory.py       #   Rust-backed posapp models
-│   ├── ops.py             #   Rust-backed posapp models
-│   ├── crm.py             #   Rust-backed CRM models
-│   └── migrations/        # pos_full migration files
-├── manage.py              # Django CLI (migrate, makemigrations, showmigrations)
+│   ├── nodes.py           # Node registration/heartbeat/WS
+│   ├── config.py          # Device config/WS
+│   ├── sync.py            # Sync status/trigger
+│   └── approvals.py       # Sync approval workflow
+├── models/                # Django ORM models (pos_full)
+│   ├── pos.py             # Category, Product, Customer, Sale...
+│   ├── node.py            # Node, Heartbeat, NodeEvent
+│   ├── config.py          # DeviceConfig, MasterDevice, CloudLink
+│   ├── inventory.py       # Supplier, PurchaseOrder
+│   ├── ops.py             # KitchenTicket, SupportTicket
+│   └── menu.py            # MenuItem, Menu
 ├── tests/
-│   ├── test_server.py     # 63 tests
-│   └── test_webhook_e2e.py # 10 tests
-├── Makefile               # Run, test, clean targets
-├── pyproject.toml          # Rye/UV project metadata
-└── requirements.txt        # Python dependencies
+│   └── test_server.py     # 53 tests
+├── Makefile               # Admin bootstrap + screenshot targets
+├── pyproject.toml          # Python project metadata
+└── requirements.txt        # Dependencies
 ```
 
 ### 2.3 Edition Comparison
 
-| Feature | Solo | Full |
-|---------|------|------|
-| **Server** | Robyn (port 8765) | Robyn (port 8766) |
-| **Route Organization** | `routes/` package (~790 lines, 7 modules) | `routes/` package (~1,420 lines, 8 modules) |
-| **DB File** | `restaurant.db` | `restaurant.db` |
-| **POS Models** | `models/ package (pos.py, menu.py)` (managed) | `posapp/models.py` (Rust-backed) |
-| **Registry Models** | `models/` package | `models/` package |
-| **Migrations** | ✅ pos_unified + posapp (PosSoloConfig + PosappConfig) | ✅ pos_full (PosFullConfig) |
-| **manage.py** | ✅ migrate, makemigrations, showmigrations | ✅ migrate, makemigrations, showmigrations |
-| **--migrate flag** | ✅ applies all 3 apps at startup | ✅ applies pos_full at startup |
-| **Node WebSocket** | ❌ | ✅ `/ws/nodes` |
-| **Config WebSocket** | ✅ `/ws/config` | ✅ `/ws/config` |
-| **Approval Workflow** | ✅ | ✅ |
-| **Product Sync Engine** | ✅ | ✅ |
-| **Token Auth** | ✅ | ✅ |
-| **Cloud Push** | ✅ (client) | ✅ (master + proxy) |
-| **Webhook Receiver** | ❌ | ✅ |
-| **Bolt API** | ❌ | ❌ (removed — see BOLT_INTEGRATION.md) |
-| **Rust POS Tables** | ❌ (all managed) | ✅ (30+ models, managed=False) |
-| **Total Endpoints** | ~60 | ~75 |
-| **Tests** | 155 | 63 |
+| Feature | pos-mini | pos-solo | pos-full |
+|---------|:--------:|:--------:|:--------:|
+| **Backend** | Rust/Diesel | Robyn + Django ORM | Robyn + Django ORM |
+| **Port** | N/A (Tauri IPC) | 8765 | 8766 |
+| **Admin Panel** | ❌ | ❌ | ✅ Unfold dashboard |
+| **Data Layer** | `invoke()` (Rust) | Redux RTK Query | Redux RTK Query |
+| **POS Models** | Rust/Diesel | managed (`pos_unified`) | managed (`pos_full`) |
+| **Manage.py** | ❌ | ✅ | ✅ |
+| **Configs/** | ❌ | ❌ | ✅ Django + Unfold |
+| **Dashboard** | ❌ | ❌ | ✅ 9 KPI + 5 charts + 2 tables |
+| **Node WebSocket** | ❌ | ❌ | ✅ `/ws/entities` + `/ws/nodes` |
+| **Config WebSocket** | ❌ | ✅ `/ws/config` | ✅ `/ws/config` |
+| **Paginated API** | ❌ | ✅ (60+ endpoints) | ✅ (30+ endpoints) |
+| **Approval Workflow** | ❌ | ✅ | ✅ |
+| **Product Sync Engine** | ❌ | ✅ | ✅ |
+| **Token Auth** | ❌ | ✅ | ✅ |
+| **Cloud Sync** | ❌ | ✅ (child→master) | ✅ (master↔children) |
+| **Webhook Receiver** | ❌ | ❌ | ✅ |
+| **Architecture Role** | Standalone | Branch device | Master manager |
+| **Tests** | — | 155 | 53 |
+
+**Key distinctions:**
+- **pos-mini** is a minimal Tauri desktop app with Rust/Diesel local CRUD — no sidecar, no API, no cloud sync.
+- **pos-solo** is a branch device with a local Robyn sidecar (port 8765), Redux frontend, and cloud sync pushing data to pos-full master.
+- **pos-full** is the master manager with a Robyn sidecar (port 8766), Unfold Django admin dashboard (port 8000), node registry, and full cloud sync in both directions.
 
 ---
 
@@ -826,11 +838,26 @@ pub async fn get_device_token(
 
 ---
 
-## 10. Pinia / Frontend API Integration
+## 10. Frontend API Integration (Redux RTK Query)
 
-### 10.1 Pinia Stores for Sidecar API
+> **Note:** Both pos-solo and pos-full use **Redux Toolkit (RTK Query)** for API state management, not Pinia. The Pinia examples below are preserved for reference if migrating from a Vue.js frontend.
 
-For a Vue.js (or React with Pinia) frontend, create Pinia stores that wrap the Robyn sidecar API:
+### 10.1 Redux Store Structure
+
+Both editions use Redux Toolkit with RTK Query for API caching:
+
+```
+src/store/
+├── api/
+│   ├── baseApi.ts        # createApi with tag types for cache invalidation
+│   └── endpoints/        # Entity endpoint slices (products, sales, customers)
+└── middleware/
+    └── websocket.ts      # WS entity cache invalidation (full) / config (solo)
+```
+
+### 10.2 Legacy Pinia Stores (Vue.js Reference)
+
+For a Vue.js frontend, create Pinia stores that wrap the Robyn sidecar API:
 
 ```
 src/stores/
@@ -1220,7 +1247,46 @@ Local POS Device (offline-capable):
 
 ---
 
-## 12. Roadmap & Next Steps
+## 12. Unfold Admin Dashboard (pos-full)
+
+pos-full includes a **Django Unfold** admin dashboard — a modern, dark-themed admin panel with real-time KPIs, charts, and CRUD management for all 17+ managed models.
+
+### Dashboard Features
+
+| Component | Count | Details |
+|-----------|:-----:|---------|
+| KPI Cards | 9 | Today's Sales, Monthly Revenue, Avg Order Value, MTD Revenue, YTD Revenue, Active Products, Customers, Branch Nodes, Open Alerts |
+| Charts | 5 | Revenue 7-day bar, Top Products pie, Payment doughnut, Hourly Revenue bar, Hourly Transactions bar |
+| Tables | 2 | Recent Sales (5 rows), Node Status (5 rows) |
+| Registered Models | 17+ | Product, Category, Customer, Sale, SaleItem, Employee, Inventory, Menu, Node, Config, Sync, etc. |
+
+### Access
+
+```bash
+cd pos-full/sidecar
+python3 manage.py migrate
+python3 manage.py --ensure-superuser   # Auto-create admin from env vars
+python3 manage.py runserver 0.0.0.0:8000
+# → http://localhost:8000/admin/
+```
+
+Or use the one-command bootstrap:
+
+```bash
+cd pos-full && make admin-bootstrap
+```
+
+### Screenshots
+
+| Dashboard | Products |
+|:---:|:---:|
+| ![Dashboard](../pos-full/docs/screenshots/admin/admin-dashboard.svg) | ![Products](../pos-full/docs/screenshots/admin/admin-products.svg) |
+
+Admin panel is **pos-full only** — pos-solo and pos-mini have no admin interface.
+
+---
+
+## 13. Roadmap & Next Steps
 
 ### ✅ Phase 1: Foundation (Complete)
 - [x] Robyn + Django ORM server for both editions
