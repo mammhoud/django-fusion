@@ -1,110 +1,366 @@
-# POS Full
+# POS Full — Master Manager
 
-> Complete enterprise POS — sidecar + Django ORM + WebSocket chat + data sync.
+> Central management server with Unfold admin dashboard, REST API, real-time WebSocket entity events, and Django ORM.
 
-This is the **full edition** of POS. Everything included: React frontend,
-Tauri/Rust backend, Python/Sanic sidecar, Django ORM models, WebSocket chat,
-cross-device data sync, JSON fixtures, and complete documentation.
+**pos-full** is the **master manager** edition of POS. It provides:
+- 🎛️ **Unfold Admin Dashboard** — dark-themed admin panel with KPI cards and charts
+- 🌐 **REST API** — Robyn sidecar on port `8766` with paginated CRUD endpoints
+- 🔌 **WebSocket entity events** — real-time CRUD notifications for Redux cache invalidation
+- 📊 **Node registry** — track all branch device status, heartbeats, and sync logs
+- ☁️ **Cloud CRM sync** — push/pull data with upstream CRM
+- 🏗️ **Django ORM** — 17+ managed models with automatic migrations
 
-## What's Included
+---
 
-Everything from extended, plus:
+## 📸 Dashboard Preview
 
-- **Django ORM models** (`sidecar/posapp/models.py`) — 30 models mirroring the Rust schema
-- **JSON seed fixtures** (`sidecar/posapp/fixtures/seed_data.json`)
-- **WebSocket real-time chat** with message history
-- **Data sync API** for multi-device synchronization
-- **Support ticket system** via sidecar
-- **Complete documentation** including server API, backend env, and data flow
+```
+┌──────────────────────────────────────────────────────────────┐
+│  POS Full — Master Manager Dashboard                        │
+│  ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐ ┌──────┐   │
+│  │Sales │ │Monthly│ │Prod  │ │Cust  │ │Nodes │ │Alerts│   │
+│  │$1.2k │ │$45k  │ │ 532  │ │ 1.2k │ │12/15 │ │  3   │   │
+│  └──────┘ └──────┘ └──────┘ └──────┘ └──────┘ └──────┘   │
+│  ┌─────────────────┐ ┌─────────────────┐                   │
+│  │ Revenue (7 days) │ │ Top Products     │                   │
+│  │ ████████████      │ │     ○ Prod A     │                   │
+│  │ ██████████       │ │    ○ Prod B      │                   │
+│  └─────────────────┘ └─────────────────┘                   │
+│  ┌─────────────────┐ ┌─────────────────┐                   │
+│  │ Payment Methods  │ │ Hourly Revenue   │                   │
+│  │  ○ Cash  45%     │ │ ██ ████ █████    │                   │
+│  │  ○ Card  40%     │ │ 6  12  18  24h   │                   │
+│  └─────────────────┘ └─────────────────┘                   │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │ Recent Sales          │ Node Status               │    │
+│  │ #1234  Walk-in  $45   │ NODE-A  pos-full  online  │    │
+│  │ #1233  John D.  $120  │ NODE-B  pos-solo  online  │    │
+│  └────────────────────────────────────────────────────┘    │
+└──────────────────────────────────────────────────────────────┘
+```
 
-## Quick Start
+> *Screenshot placeholders: Replace with actual screenshots of your running instance*
+
+---
+
+## 🚀 Quick Start
 
 ```bash
-pnpm install && cd src-tauri && cargo fetch && cd ..
+# 1. Install dependencies
 cd sidecar && pip install -r requirements.txt && cd ..
 
-# Terminal 1: Start full sidecar (Django + WebSocket)
-python3 sidecar/server.py
+# 2. Start the REST API server (Robyn sidecar)
+python3 sidecar/server.py --port 8766
 
-# Terminal 2: Start frontend
-pnpm dev
+# 3. (Optional) Start Django admin panel
+# In a separate terminal:
+python3 sidecar/manage.py migrate
+python3 sidecar/manage.py createsuperuser
+python3 sidecar/manage.py runserver 0.0.0.0:8000
+
+# 4. Start React frontend (in another terminal)
+pnpm install && pnpm dev
 ```
 
-## Sidecar API
+| Service | URL | Purpose |
+|---------|-----|---------|
+| **REST API** | `http://localhost:8766` | CRUD endpoints for all entities |
+| **Admin Panel** | `http://localhost:8000/admin/` | Unfold dark-themed dashboard |
+| **WebSocket** | `ws://localhost:8766/ws/entities` | Real-time entity events |
+| **WebSocket** | `ws://localhost:8766/ws/nodes` | Node status events |
+| **WebSocket** | `ws://localhost:8766/ws/config` | Config change events |
 
-The sidecar runs on `http://127.0.0.1:8765` by default with Django ORM backing.
+---
+
+## 🎛️ Admin Dashboard
+
+The admin panel uses **[Django Unfold](https://unfoldadmin.com/)** — a modern, dark-themed admin interface.
+
+### Access
 
 ```bash
-# Health check
-curl http://127.0.0.1:8765/api/health
+# Create admin superuser
+cd sidecar
+python3 manage.py createsuperuser
+# → Enter email, username, password
 
-# Full data sync
-curl http://127.0.0.1:8765/api/data/sales
-
-# WebSocket chat with persistence
-ws://127.0.0.1:8765/ws/chat
-
-# Django admin (if configured)
-# http://127.0.0.1:8765/admin/
+# Start admin panel
+python3 manage.py runserver 0.0.0.0:8000
+# → Open http://localhost:8000/admin/
 ```
 
-Full API reference: [`docs/server/README.md`](docs/server/README.md)
-Backend setup: [`docs/back-env/README.md`](docs/back-env/README.md)
+### KPI Cards (6)
 
-## Database
+| Card | Description | Data Source |
+|------|-------------|-------------|
+| 📈 Today's Sales | Current day revenue + transaction count | `Sale.sale_date` today filter |
+| 💰 Monthly Revenue | This month total with % vs last month trend | `Sale.sale_date` month aggregation |
+| 📦 Active Products | Total active products + category count | `Product.is_active` count |
+| 👥 Customers | Active + total registered customers | `Customer` model counts |
+| 🖥️ Branch Nodes | Online/total nodes ratio | `Node.status` filter |
+| ⚠️ Open Alerts | Support tickets + pending kitchen + draft POs | Aggregation across 3 models |
+
+### Charts (5)
+
+| Chart | Type | Description |
+|-------|------|-------------|
+| Revenue — Last 7 Days | `bar` | Daily revenue totals |
+| Top Products by Revenue | `pie` | Top 10 products by `SaleItem.line_total` |
+| Sales by Payment Method | `doughnut` | Cash / Card / Mobile / Mixed / Credit |
+| Hourly Revenue | `bar` | Revenue by hour of day (24 bins) |
+| Hourly Transactions | `bar` | Transaction count by hour of day |
+
+All charts filter to the **last 7 days** for real-time relevance.
+
+### Tables (2)
+
+| Table | Rows | Columns |
+|-------|------|---------|
+| Recent Sales | 5 | ID, Customer, Amount, Status, Date |
+| Node Status | 5 | Node ID, Type, Status, Last Seen |
+
+### Registered Models (17+)
+
+All managed models are registered in the admin with Unfold-themed UI:
+
+| Category | Models |
+|----------|--------|
+| **POS Core** | Product, Category, Customer, Sale, SaleItem, Employee, InventoryTransaction |
+| **Menu** | MenuItem, Menu, MenuItemAssignment |
+| **Operations** | Supplier, PurchaseOrder, PurchaseOrderItem, KitchenTicket, SupportTicket |
+| **Nodes & Sync** | Node, Heartbeat, NodeEvent, SyncLog, DeviceConfig, MasterDevice, CloudLink |
+| **System** | User, Group (Django auth) |
+
+Each model admin includes:
+- `list_filter_submit` — filter sidebar with Apply button
+- `list_fullwidth` — full-width table layout
+- `compressed_fields` — compact form fields
+- Material design icons in sidebar navigation
+
+---
+
+## 🌐 REST API
+
+The Robyn sidecar serves all CRUD endpoints with **pagination** support.
+
+### Pagination
+
+Every list endpoint supports `?page=` and `?per_page=` query params:
 
 ```bash
-# Rust/SQLite seed (29 tables)
-cargo run --manifest-path src-tauri/Cargo.toml --bin seed
-
-# Django fixtures (30 models)
-cd sidecar && python3 -c "
-import django; import os
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'posapp.apps')
-django.setup()
-from django.core.management import call_command
-call_command('loaddata', 'posapp/fixtures/seed_data.json')
-"
+curl "http://localhost:8766/products?page=1&per_page=20"
 ```
 
-## Directory Structure
+Response format:
+```json
+{
+  "data": [
+    { "id": 1, "name": "Coffee", "price": 4.50, ... }
+  ],
+  "pagination": {
+    "page": 1,
+    "per_page": 20,
+    "total": 532,
+    "total_pages": 27
+  }
+}
+```
+
+### Key Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| `GET/POST` | `/products` | List (paginated) / Create product |
+| `PATCH/DELETE` | `/products/:id` | Update / Delete product |
+| `GET/POST` | `/customers` | List / Create customer |
+| `GET/POST` | `/sales` | List / Create sale |
+| `GET/POST` | `/employees` | List / Create employee |
+| `GET/POST` | `/inventory` | List / Create inventory transaction |
+| `GET/POST` | `/suppliers` | List / Create supplier |
+| `GET/POST` | `/purchase-orders` | List / Create purchase order |
+| `GET/POST` | `/kitchen-tickets` | List / Create kitchen ticket |
+| `GET/POST` | `/support-tickets` | List / Create support ticket |
+| `GET/POST` | `/nodes/register` | Register a branch device node |
+| `POST` | `/nodes/heartbeat` | Branch device heartbeat |
+
+> Full endpoint list: ~30+ CRUD routes + 10+ custom routes
+
+---
+
+## 🔌 WebSocket Streams
+
+The sidecar provides three WebSocket endpoints for real-time features:
+
+### `/ws/entities` — Entity CRUD Events
+
+Broadcasts whenever any entity is created, updated, or deleted:
+
+```json
+{
+  "type": "entity_event",
+  "entity": "Product",
+  "action": "create",
+  "data": { "id": 42, "name": "Latte", "price": 5.50 },
+  "timestamp": "2026-07-20T12:00:00+00:00"
+}
+```
+
+**Used by**: Redux RTK Query middleware to auto-invalidate caches.
+
+### `/ws/nodes` — Node Status Events
+
+Tracks branch device registration, heartbeat, and status changes.
+
+### `/ws/config` — Configuration Events
+
+Configuration changes pushed to/from branch devices.
+
+---
+
+## 🏗️ Architecture
+
+```
+┌──────────────────────────────────────────────────────────────┐
+│  pos-full (Master Manager) — port 8766                       │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  React Frontend                  │                        │
+│  │  ┌────────────────────────────┐  │                        │
+│  │  │ Redux Toolkit (RTK Query)  │──│──→ fetch(:8766)        │
+│  │  │   ├─ Cache invalidation    │  │                        │
+│  │  │   ├─ Pagination            │  │                        │
+│  │  │   └─ WS middleware         │←─│─── WS(:8766)           │
+│  │  └────────────────────────────┘  │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  Django Admin (Unfold) :8000     │                        │
+│  │  ├─ Dashboard (KPIs+Charts)     │                        │
+│  │  └─ Model CRUD (17+ models)     │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  Robyn Sidecar :8766             │                        │
+│  │  ├─ CRUD endpoints (30+)        │                        │
+│  │  ├─ Paginated queries           │                        │
+│  │  ├─ WebSocket /ws/entities      │                        │
+│  │  ├─ WebSocket /ws/nodes, /ws/config                       │
+│  │  └─ Entity event broadcasting   │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  Django ORM (SQLite)             │                        │
+│  │  ├─ models/pos.py — POS core    │                        │
+│  │  ├─ models/node.py — Registry   │                        │
+│  │  ├─ models/config.py — Config   │                        │
+│  │  ├─ models/inventory.py — Ops   │                        │
+│  │  ├─ models/ops.py — Support     │                        │
+│  │  └─ models/menu.py — Menu       │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌────────────┐   ┌────────────┐  ┌────────────┐            │
+│  │ pos-solo   │   │ pos-solo   │  │ pos-mini   │            │
+│  │ Branch #1  │   │ Branch #2  │  │ (Rust/Diesel)           │
+│  └────────────┘   └────────────┘  └────────────┘            │
+│       └──────────────┬──────────────────────┘               │
+│                      │ HTTP / WS                              │
+│                      ▼                                       │
+│              pos-full Master :8766                            │
+└──────────────────────────────────────────────────────────────┘
+```
+
+---
+
+## 📁 Directory Structure
 
 ```
 pos-full/
-├── src/                    # React 19 + TypeScript + Tailwind
-│   ├── api/                # Full API: sidecar, chat, data, tickets
-│   ├── pages/              # 22 pages including Invoice, SupportChat
-│   └── utils/              # invoicePdf.ts, data utilities
-├── src-tauri/              # Tauri/Rust backend
-│   ├── src/operations/     # 25 CRUD modules including sidecar.rs
-│   └── templates/          # invoice.html, support_email.html
+├── src/                          # React + TypeScript + Tailwind
+│   ├── store/                    # Redux Toolkit (RTK Query)
+│   │   ├── api/
+│   │   │   ├── baseApi.ts        # createApi with 28 tagTypes
+│   │   │   └── endpoints/        # Entity endpoint slices
+│   │   └── middleware/
+│   │       └── websocket.ts      # WS entity cache invalidation
+│   ├── pages/                    # 22 page components
+│   └── components/               # Shared UI components
 ├── sidecar/
-│   ├── server.py           # Sanic REST + WebSocket (35+ endpoints)
-│   └── posapp/
-│       ├── models.py       # 30 Django ORM models (mirrors Rust schema)
-│       ├── apps.py         # Django app config
-│       └── fixtures/
-│           └── seed_data.json  # Matching seed data
-├── scripts/dev/            # 12 build/dev utilities
-└── docs/                   # Full documentation (17 files)
+│   ├── configs/                  # Centralized settings
+│   │   ├── __init__.py           # Django + Unfold settings
+│   │   ├── admin.py              # Model admin registrations (17+)
+│   │   ├── dashboard.py          # Custom dashboard (6 KPI + 5 charts + 2 tables)
+│   │   └── urls.py               # Django URL configuration
+│   ├── server.py                 # Robyn async server entry point
+│   ├── handlers.py               # CRUD factory with WS broadcast
+│   ├── streams.py                # WebSocket broadcast functions
+│   ├── models/                   # Django ORM models
+│   │   ├── pos.py                # Category, Product, Customer, Sale, ...
+│   │   ├── node.py               # Node, Heartbeat, NodeEvent
+│   │   ├── config.py             # DeviceConfig, MasterDevice, CloudLink
+│   │   ├── inventory.py          # Supplier, PurchaseOrder
+│   │   ├── ops.py                # KitchenTicket, SupportTicket
+│   │   └── menu.py               # MenuItem, Menu
+│   └── routes/                   # Custom Robyn route handlers
+│       ├── nodes.py              # Node registration/heartbeat/WS
+│       ├── config.py             # Device config/WS
+│       ├── sync.py               # Sync status/trigger
+│       └── approvals.py          # Sync approval workflow
+├── src-tauri/                    # Tauri/Rust shell
+└── scripts/                      # Dev/build utilities
 ```
 
-## Build
+---
+
+## 🧪 Testing
 
 ```bash
-pnpm build:desktop     # Production desktop app
-pnpm build:sidecar     # Build sidecar binary (PyInstaller)
-pnpm build:all         # Build all platforms
+cd sidecar
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_server.py -v --tb=short
+# → 53 tests pass (node registry, heartbeats, sync, events, broadcast)
 ```
 
-## Environment
+---
+
+## 🛠️ Configuration
+
+### Environment Variables
+
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `POS_FULL_HOST` | `0.0.0.0` | Sidecar bind address |
+| `POS_FULL_PORT` | `8766` | Sidecar port |
+| `POS_FULL_API_KEY` | `None` | API authentication key |
+| `DJANGO_SECRET_KEY` | `pos-full-master-...` | Django secret key |
+| `CLOUD_CRM_URL` | `""` | Upstream CRM API URL |
+| `CLOUD_API_KEY` | `None` | CRM API key |
+
+### Sidecar Arguments
 
 ```bash
-SUPERUSER_EMAIL=admin@pos.local
-SUPERUSER_PASSWORD=changeme
-SUPERUSER_NAME=Admin
-DATABASE_URL=restaurant.db
-SIDECAR_HOST=127.0.0.1
-SIDECAR_PORT=8765
-DJANGO_SETTINGS_MODULE=posapp.apps
+python3 server.py --host 0.0.0.0 --port 8766 --verbose
+python3 server.py --migrate          # Use Django migrations (vs schema_editor)
+python3 server.py --version          # Show version
 ```
+
+---
+
+## 📚 Edition Comparison
+
+| Feature | pos-mini | pos-solo | pos-full |
+|---------|----------|----------|----------|
+| Backend | Rust/Diesel | Robyn + Django | Robyn + Django |
+| Admin panel | ❌ | ❌ | ✅ Unfold dashboard |
+| Data ops | `invoke()` | Redux RTK Query | Redux RTK Query |
+| Paginated API | ❌ | ✅ | ✅ |
+| Entity WS events | ❌ | ✅ | ✅ |
+| Node registry | ❌ | ✅ | ✅ |
+| Cloud sync | ❌ | ✅ | ✅ |
+| WebSocket chat | ❌ | ❌ | ✅ |
+
+---
+
+## 🔗 Related
+
+- **pos-solo**: Branch device — [../pos-solo/](../pos-solo/)
+- **pos-mini**: Minimal Rust/Diesel edition — [../pos-mini/](../pos-mini/)
+- **Architecture docs**: [../../docs/POS_ARCHITECTURE.md](../../docs/POS_ARCHITECTURE.md)
