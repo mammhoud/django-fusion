@@ -17,6 +17,28 @@ logger = logging.getLogger("pos_server")
 _ws_clients: set[Any] = set()
 _ws_filters: dict[int, dict] = {}
 
+_entity_ws_clients: set[Any] = set()
+
+async def _broadcast_entity_event(entity_name: str, action: str, data: dict):
+    """Broadcast entity CRUD events to all connected entity WebSocket clients."""
+    if not _entity_ws_clients:
+        return
+    payload = json.dumps({
+        "type": "entity_event",
+        "entity": entity_name,
+        "action": action,
+        "data": data,
+        "timestamp": datetime.now(timezone.utc).isoformat(),
+    })
+    disconnected = set()
+    for ws in _entity_ws_clients:
+        try:
+            await ws.send_text(payload)
+        except Exception:
+            disconnected.add(ws)
+    _entity_ws_clients.difference_update(disconnected)
+
+
 async def _broadcast_node_event(event_type, node_id, data):
     if not _ws_clients:
         return

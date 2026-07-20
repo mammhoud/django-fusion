@@ -7,22 +7,24 @@ import { Customer } from '../types';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
-import { useCustomerStore } from '../stores/customers';
+import {
+  useGetCustomersQuery,
+  useAddCustomerMutation,
+  useUpdateCustomerMutation,
+  useDeleteCustomerMutation,
+} from '../store/api/endpoints/customers';
 
 export default function Customers() {
   const { t } = useTranslation();
   const [customers, setCustomers] = useState<Customer[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Customer | null>(null);
   const [form, setForm] = useState({ name: '', phone: '', email: '', notes: '' });
 
-  // Status toast — quick pipe through the shared hook so load / mutation
-  // errors can't silently disappear into console.error.
+  // Status toast
   const { status, showSuccess, showError, dismiss } = useStatusToast();
 
-  // AJAX-style debounced search — shared hook. Rename-destructure keeps the
-  // existing JSX variable names (`search`, `debouncedSearch`, `isFiltering`).
+  // Debounced search
   const {
     query: search,
     setQuery: setSearch,
@@ -30,41 +32,30 @@ export default function Customers() {
     isPending: isFiltering,
   } = useDebouncedSearch();
 
-  useEffect(() => {
-    loadCustomers();
-  }, []);
+  // RTK Query — paginated fetch with auto-caching
+  const [page] = useState(1);
+  const { data, isLoading } = useGetCustomersQuery({ page, per_page: 200 });
+  const [addCustomer] = useAddCustomerMutation();
+  const [updateCustomer] = useUpdateCustomerMutation();
+  const [deleteCustomer] = useDeleteCustomerMutation();
 
-  const loadCustomers = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const store = useCustomerStore.getState();
-      await store.fetchAll();
-      setCustomers(useCustomerStore.getState().customers);
-    } catch (error) {
-      console.error('Error loading customers:', error);
-      // Quiet reloads (post-mutation) must still surface failures — the user
-      // needs to know if their add/edit didn't actually persist.
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
+  // Sync RTK Query data to local state
+  useEffect(() => {
+    if (data?.data) setCustomers(data.data);
+  }, [data]);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editing) {
-        await useCustomerStore.getState().update(editing.id, form);
+        await updateCustomer({ id: editing.id, data: form }).unwrap();
       } else {
-        await useCustomerStore.getState().create(form);
+        await addCustomer(form).unwrap();
       }
       setShowForm(false);
       setEditing(null);
       setForm({ name: '', phone: '', email: '', notes: '' });
       showSuccess(t('common.saved'));
-      // Quiet reload — don't pulse the skeleton just because the form closed.
-      loadCustomers({ quiet: true });
     } catch (error) {
       console.error('Error saving customer:', error);
       showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
@@ -85,9 +76,8 @@ export default function Customers() {
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await useCustomerStore.getState().remove(id);
+      await deleteCustomer(id).unwrap();
       showSuccess(t('common.deleted'));
-      loadCustomers({ quiet: true });
     } catch (error) {
       console.error('Error deleting customer:', error);
       showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
@@ -119,7 +109,7 @@ export default function Customers() {
           </motion.button>
         </div>
 
-        {/* ── Search bar (debounced async UX) ── */}
+        {/* Search bar */}
         <div className="card--glass rounded-xl p-3">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">

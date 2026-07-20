@@ -388,6 +388,36 @@ _register_crud(app, "config/master", MasterDevice, "MasterDevice")
 _register_crud(app, "config/cloud-links", CloudLink, "CloudLink")
 _register_crud(app, "approvals", SyncApproval, "SyncApproval")
 
+# ===========================================================================
+# WebSocket: Entity event stream (real-time CRUD notifications for Redux)
+# ===========================================================================
+
+from streams import _entity_ws_clients
+
+@app.websocket("/ws/entities")
+async def entity_stream(websocket):
+    """WebSocket endpoint for entity change events.
+    Client connects to receive real-time notifications when any entity
+    (Product, Customer, Sale, etc.) is created, updated, or deleted.
+    The Redux middleware uses this to invalidate RTK Query caches."""
+    client_id = id(websocket)
+    _entity_ws_clients.add(websocket)
+    try:
+        import json as _json
+        from datetime import datetime as _dt, timezone as _tz
+        await websocket.send_text(_json.dumps({
+            "type": "connected",
+            "message": "Connected to entity event stream",
+            "client_id": client_id,
+            "timestamp": _dt.now(_tz.utc).isoformat(),
+        }))
+        while True:
+            msg = await websocket.receive_text()
+    except Exception:
+        pass
+    finally:
+        _entity_ws_clients.discard(websocket)
+
 
 # ===========================================================================
 # Register all custom route handlers from routes/ package

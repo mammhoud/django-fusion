@@ -9,9 +9,14 @@ import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
-import { useProductStore } from '../stores/products';
-import { useCategoryStore } from '../stores/categories';
-import { useSettingsStore } from '../stores/settings';
+import { useGetSettingsQuery } from '../store/api/endpoints/core';
+import {
+  useGetProductsQuery,
+  useAddProductMutation,
+  useUpdateProductMutation,
+  useDeleteProductMutation,
+} from '../store/api/endpoints/products';
+import { useGetCategoriesQuery } from '../store/api/endpoints/core';
 
 interface FormErrors {
   name?: string;
@@ -89,45 +94,30 @@ export default function ProductManager() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showAddModal, showDeleteModal]);
 
+  useEffect(() => {  // RTK Query — paginated products with auto-caching
+  const [page] = useState(1);
+  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({ page, per_page: 200 });
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: settingsData } = useGetSettingsQuery();
+  const [addProduct] = useAddProductMutation();
+  const [updateProduct] = useUpdateProductMutation();
+  const [deleteProduct] = useDeleteProductMutation();
+
+  // Sync RTK Query data to local state
   useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const settingsStore = useSettingsStore.getState();
-        await settingsStore.fetch();
-        const response = useSettingsStore.getState().settings;
-        if (response?.currency) {
-          setCurrencySymbol(response.currency || 'USD');
-        }
-      } catch (error) {
-        console.error('Error loading currency:', error);
-      }
-    };
-
-    loadSettings();
-  }, []);
-
-  const loadProducts = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const productStore = useProductStore.getState();
-      const categoryStore = useCategoryStore.getState();
-      await Promise.all([
-        productStore.fetchAll(),
-        categoryStore.fetchAll().catch(() => {}),
-      ]);
-      setProducts(useProductStore.getState().products);
-      setCategories(useCategoryStore.getState().categories || []);
-    } catch (error) {
-      console.error('Error loading products:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
-
+    if (productsData?.data) setProducts(productsData.data);
+  }, [productsData]);
   useEffect(() => {
-    loadProducts();
-  }, []);
+    if (categoriesData) setCategories(categoriesData);
+  }, [categoriesData]);
+  useEffect(() => {
+    if (settingsData?.currency) setCurrencySymbol(settingsData.currency);
+  }, [settingsData]);
+
+  // Override isLoading with RTK Query loading state
+  useEffect(() => {
+    setIsLoading(productsLoading);
+  }, [productsLoading]);
 
   // ----- Derived: filtered + sorted products -----
   const filteredProducts = useMemo(() => {
@@ -284,7 +274,7 @@ export default function ProductManager() {
         // get the authoritative updated row back — use it for our optimistic
         // splice so local state exactly matches the DB row (including any
         // server-side transforms like updated_at timestamps).
-        const updated = await useProductStore.getState().update(editingId, update);
+        const updated = await updateProduct({ id: editingId, data: update }).unwrap();
         setProducts(prev => prev.map(p => (p.id === editingId ? updated : p)));
       } else {
         const create: NewProduct = {
@@ -294,7 +284,7 @@ export default function ProductManager() {
           category_id: nextCategoryId,
           image: nextImage,
         };
-        const result = await useProductStore.getState().create(create);
+        const result = await addProduct(create).unwrap();
 
         // Optimistic insert — prepend the new product so the user sees it instantly.
         setProducts(prev => [result, ...prev]);
@@ -310,8 +300,7 @@ export default function ProductManager() {
           : t('productManager.successAdded')
       );
 
-      // Quiet background refetch to reconcile with backend (no skeleton flicker).
-      loadProducts({ quiet: true });
+      // RTK Query auto-caches — no manual refetch needed on mutation success
 
       setTimeout(() => setSubmitStatus('idle'), 3000);
     } catch (error) {
@@ -341,20 +330,17 @@ export default function ProductManager() {
     setProducts(prev => prev.filter(p => p.id !== idToDelete));
 
     try {
-      await useProductStore.getState().remove(idToDelete);
+      await deleteProduct(idToDelete).unwrap();
 
       setSubmitStatus('success');
       setStatusMessage(t('productManager.successDeleted'));
 
-      // Quietly reconcile with backend (no skeleton flicker).
-      loadProducts({ quiet: true });
+      // RTK Query auto-invalidates cache on delete
 
       setTimeout(() => setSubmitStatus('idle'), 3000);
     } catch (error) {
       console.error('Error deleting product:', error);
-      // Quiet refetch so the grid reflects the actual server state without
-      // triggering the skeleton flicker.
-      loadProducts({ quiet: true });
+      // RTK Query auto-invalidates cache on failure too
       setSubmitStatus('error');
       setStatusMessage(String(error) || t('productManager.errorDelete'));
       setTimeout(() => setSubmitStatus('idle'), 3000);

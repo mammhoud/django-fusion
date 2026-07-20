@@ -16,12 +16,9 @@ import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
-import { useProductStore } from '../stores/products';
-import { useCategoryStore } from '../stores/categories';
-import { useSettingsStore } from '../stores/settings';
-import { useEmployeeStore } from '../stores/employees';
-import { useDeliveryTypeStore } from '../stores/deliveryTypes';
-import { useSaleStore } from '../stores/sales';
+import { useGetProductsQuery } from '../store/api/endpoints/products';
+import { useGetCategoriesQuery, useGetSettingsQuery, useGetEmployeesQuery, useGetDeliveryTypesQuery } from '../store/api/endpoints/core';
+import { useAddSaleMutation } from '../store/api/endpoints/sales';
 
 type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 
@@ -132,55 +129,46 @@ export default function Sale() {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [employeeId, setEmployeeId] = useState<number>(0);
 
-  const loadData = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const productStore = useProductStore.getState();
-      const settingsStore = useSettingsStore.getState();
-      const dtStore = useDeliveryTypeStore.getState();
-      const empStore = useEmployeeStore.getState();
-      const catStore = useCategoryStore.getState();
-      await Promise.all([
-        productStore.fetchAll(),
-        settingsStore.fetch(),
-        dtStore.fetchAll(false),
-        empStore.fetchAll(false),
-        catStore.fetchAll(),
-      ]);
+  // RTK Query — all data loaded automatically with caching
+  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({ page: 1, per_page: 500 });
+  const { data: categoriesData } = useGetCategoriesQuery();
+  const { data: settingsData } = useGetSettingsQuery();
+  const { data: employeesData } = useGetEmployeesQuery();
+  const { data: dtData } = useGetDeliveryTypesQuery();
+  const [addSale] = useAddSaleMutation();
 
-      setProducts(useProductStore.getState().products);
-      if (useSettingsStore.getState().settings) {
-        const r = useSettingsStore.getState().settings;
-        setSettings({
-          restaurant_name: r.restaurant_name || 'POS',
-          address: r.address || '',
-          phone: r.phone || '',
-          currency: r.currency || 'USD',
-          receipt_footer: r.receipt_footer || 'Thank you for your business!',
-        });
-      }
-      setDeliveryTypes(useDeliveryTypeStore.getState().types);
-      setEmployees(useEmployeeStore.getState().employees);
-      setCategories(useCategoryStore.getState().categories || []);
-      if (useDeliveryTypeStore.getState().types.length > 0) setDeliveryTypeId(useDeliveryTypeStore.getState().types[0].id);
-    } catch (error) {
-      console.error('Error loading sale data:', error);
-      // Even quiet reloads must fail loudly — silent reloads hide backend drift.
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
-
+  // Sync RTK Query data to local state
   useEffect(() => {
-    loadData();
-    // loadData is referentially stable (it's defined inside the component
-    // without reactive captures); listing it as a dep would only re-run on
-    // every render. Empty deps here intentionally mirror the established
-    // mount-once pattern from other POS pages.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    if (productsData?.data) setProducts(productsData.data);
+  }, [productsData]);
+  useEffect(() => {
+    if (categoriesData) setCategories(categoriesData);
+  }, [categoriesData]);
+  useEffect(() => {
+    if (settingsData) {
+      setSettings({
+        restaurant_name: settingsData.restaurant_name || 'POS',
+        address: settingsData.address || '',
+        phone: settingsData.phone || '',
+        currency: settingsData.currency || 'USD',
+        receipt_footer: settingsData.receipt_footer || 'Thank you for your business!',
+      });
+    }
+  }, [settingsData]);
+  useEffect(() => {
+    if (employeesData) setEmployees(employeesData);
+  }, [employeesData]);
+  useEffect(() => {
+    if (dtData) {
+      setDeliveryTypes(dtData);
+      if (dtData.length > 0) setDeliveryTypeId(dtData[0].id);
+    }
+  }, [dtData]);
+
+  // Loading state
+  useEffect(() => {
+    setIsLoading(productsLoading);
+  }, [productsLoading]);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -238,7 +226,7 @@ export default function Sale() {
         unit: item.unit,
       }));
 
-      await useSaleStore.getState().create(saleData, itemsData);
+      await addSale({ sale: saleData, items: itemsData }).unwrap();
 
       // Generate receipt data
       const deliveryTypeName = orderType === 'delivery'
@@ -267,9 +255,7 @@ export default function Sale() {
       });
 
       setShowSuccessDialog(true);
-      // Quiet reload keeps prices/settings in sync with backend drift since the
-      // user started this sale — but the success dialog already covers UX feedback.
-      loadData({ quiet: true });
+      // RTK Query auto-invalidates cache on sale creation
     } catch (error) {
       console.error('Error saving sale:', error);
       showError(`${t('sale.errorCompleteSale')}: ${error instanceof Error ? error.message : String(error)}`);
