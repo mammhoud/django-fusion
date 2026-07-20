@@ -97,6 +97,8 @@ try:
     from models.node import Node, Heartbeat, NodeEvent
     from models.config import DeviceConfig, MasterDevice, CloudLink
     from models.sync import SyncLog
+    from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
+    from models.ops import KitchenTicket, SupportTicket
 
     # ── Shared approval models ──
     from shared.models.approval import SyncApproval
@@ -114,6 +116,8 @@ try:
         SyncApproval,
         DeviceToken,
         SignalEvent,
+        Supplier, PurchaseOrder, PurchaseOrderItem,
+        KitchenTicket, SupportTicket,
     ]
 
     # Config models for dedicated CRUD
@@ -363,8 +367,14 @@ _register_crud(app, "managed/inventory", InventoryTransaction, "InventoryTransac
 _register_crud(app, "managed/menu-items", MenuItem, "MenuItem")
 _register_crud(app, "managed/menus", Menu, "Menu")
 _register_crud(app, "managed/menu-assignments", MenuItemAssignment, "MenuItemAssignment")
-# Suppliers, purchase orders, kitchen tickets, support tickets — now use managed Django models
-# (previously posapp Rust-mirror; removed with Diesel ORM)
+# ── Suppliers & Procurement ──
+_register_crud(app, "suppliers", Supplier, "Supplier")
+_register_crud(app, "purchase-orders", PurchaseOrder, "PurchaseOrder")
+_register_crud(app, "purchase-order-items", PurchaseOrderItem, "PurchaseOrderItem")
+
+# ── Kitchen & Support ──
+_register_crud(app, "kitchen-tickets", KitchenTicket, "KitchenTicket")
+_register_crud(app, "support-tickets", SupportTicket, "SupportTicket")
 
 # ── Registry CRUD ──
 _register_crud(app, "heartbeats", Heartbeat, "Heartbeat")

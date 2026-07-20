@@ -71,7 +71,8 @@ from models.sync import SyncLog
 from shared.models.audit import SignalEvent
 from shared.models.token import DeviceToken
 from shared.models.approval import SyncApproval
-from models import posapp as pos_models
+from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
+from models.ops import KitchenTicket, SupportTicket
 from shared.__about__ import __version__
 
 # Create tables for all managed=True models
@@ -79,6 +80,8 @@ _TABLES = [
     Node, Heartbeat, NodeEvent, SyncLog,
     DeviceConfig, MasterDevice, CloudLink,
     SyncApproval, DeviceToken, SignalEvent,
+    Supplier, PurchaseOrder, PurchaseOrderItem,
+    KitchenTicket, SupportTicket,
 ]
 existing_tables = []
 try:
