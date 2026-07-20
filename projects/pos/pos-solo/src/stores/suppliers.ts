@@ -18,7 +18,7 @@ export const useSupplierStore = create<SupplierStore>()((set) => ({
     try { set({ suppliers: await api.get<Supplier[]>(`/suppliers?include_inactive=${includeInactive}`) }); }
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const s = await api.post<Supplier>('/suppliers', d); set((state) => ({ suppliers: [...state.suppliers, s] }); return s; },
-  update: async (id, d) => { const s = await api.patch<Supplier>(`/suppliers/${id}`, d); set((state) => ({ suppliers: state.suppliers.map(x => x.id === id ? s : x) }); return s; },
-  remove: async (id) => { await api.patch(`/suppliers/${id}`, { is_active: false }); set((state) => ({ suppliers: state.suppliers.filter(x => x.id !== id) }); },
+  create: async (d) => { const s = await api.post<Supplier>('/suppliers', d); set((state) => ({ suppliers: [...state.suppliers, s] })); return s; },
+  update: async (id, d) => { const s = await api.patch<Supplier>(`/suppliers/${id}`, d); set((state) => ({ suppliers: state.suppliers.map(x => x.id === id ? s : x) })); return s; },
+  remove: async (id) => { await api.patch(`/suppliers/${id}`, { is_active: false }); set((state) => ({ suppliers: state.suppliers.filter(x => x.id !== id) })); },
 }));

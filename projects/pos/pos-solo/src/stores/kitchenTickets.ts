@@ -17,7 +17,7 @@ export const useKitchenTicketStore = create<KTStore>()((set) => ({
     try { set({ tickets: await api.get<KitchenTicket[]>(`/kitchen-tickets${status ? '?status=' + status : ''}`) }); }
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const t = await api.post<KitchenTicket>('/kitchen-tickets', d); set((state) => ({ tickets: [...state.tickets, t] }); return t; },
-  update: async (id, d) => { const t = await api.patch<KitchenTicket>(`/kitchen-tickets/${id}`, d); set((state) => ({ tickets: state.tickets.map(x => x.id === id ? t : x) }); return t; },
-  remove: async (id) => { await api.delete(`/kitchen-tickets/${id}`); set((state) => ({ tickets: state.tickets.filter(x => x.id !== id) }); },
+  create: async (d) => { const t = await api.post<KitchenTicket>('/kitchen-tickets', d); set((state) => ({ tickets: [...state.tickets, t] })); return t; },
+  update: async (id, d) => { const t = await api.patch<KitchenTicket>(`/kitchen-tickets/${id}`, d); set((state) => ({ tickets: state.tickets.map(x => x.id === id ? t : x) })); return t; },
+  remove: async (id) => { await api.delete(`/kitchen-tickets/${id}`); set((state) => ({ tickets: state.tickets.filter(x => x.id !== id) })); },
 }));

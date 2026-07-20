@@ -45,15 +45,15 @@ export const useInventoryStore = create<InventoryStore>()((set) => ({
   },
   createIngredient: async (data) => {
     const i = await api.post<Ingredient>('/ingredients', data);
-    set((state) => ({ ingredients: [...state.ingredients, i] }); return i;
+    set((state) => ({ ingredients: [...state.ingredients, i] })); return i;
   },
   updateIngredient: async (id, data) => {
     const i = await api.patch<Ingredient>(`/ingredients/${id}`, data);
-    set((state) => ({ ingredients: state.ingredients.map(x => x.id === id ? i : x) }); return i;
+    set((state) => ({ ingredients: state.ingredients.map(x => x.id === id ? i : x) })); return i;
   },
   removeIngredient: async (id) => {
     await api.patch(`/ingredients/${id}`, { is_active: false });
-    set((state) => ({ ingredients: state.ingredients.filter(x => x.id !== id) });
+    set((state) => ({ ingredients: state.ingredients.filter(x => x.id !== id) }));
   },
   fetchTransactions: async (ingredientId?) => {
     set({ loading: true });
@@ -64,7 +64,7 @@ export const useInventoryStore = create<InventoryStore>()((set) => ({
   },
   addTransaction: async (tx, reason?, createdBy?) => {
     const t = await api.post<InventoryTransaction>('/inventory', { transaction: tx, adjustment_reason: reason, created_by: createdBy });
-    set((state) => ({ transactions: [...state.transactions, t] }); return t;
+    set((state) => ({ transactions: [...state.transactions, t] })); return t;
   },
   fetchAdjustments: async (ingredientId?) => {
     const q = ingredientId ? `?ingredient_id=${ingredientId}` : '';

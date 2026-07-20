@@ -18,8 +18,8 @@ export const usePurchaseOrderStore = create<POStore>()((set) => ({
   fetchAll: async () => { set({ loading: true, error: null });
     try { set({ orders: await api.get<PurchaseOrder[]>('/purchase-orders') }); } catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (order, items) => { const o = await api.post<PurchaseOrder>('/purchase-orders', { order, items }); set((state) => ({ orders: [...state.orders, o] }); return o; },
-  update: async (id, d) => { const o = await api.patch<PurchaseOrder>(`/purchase-orders/${id}`, d); set((state) => ({ orders: state.orders.map(x => x.id === id ? o : x) }); return o; },
-  remove: async (id) => { await api.delete(`/purchase-orders/${id}`); set((state) => ({ orders: state.orders.filter(x => x.id !== id) }); },
-  fetchItems: async (orderId) => { const i = await api.get<PurchaseOrderItem[]>(`/purchase-orders/${orderId}/items`); set((state) => ({ items: { ...state.items, [orderId]: i } }); },
+  create: async (order, items) => { const o = await api.post<PurchaseOrder>('/purchase-orders', { order, items }); set((state) => ({ orders: [...state.orders, o] })); return o; },
+  update: async (id, d) => { const o = await api.patch<PurchaseOrder>(`/purchase-orders/${id}`, d); set((state) => ({ orders: state.orders.map(x => x.id === id ? o : x) })); return o; },
+  remove: async (id) => { await api.delete(`/purchase-orders/${id}`); set((state) => ({ orders: state.orders.filter(x => x.id !== id) })); },
+  fetchItems: async (orderId) => { const i = await api.get<PurchaseOrderItem[]>(`/purchase-orders/${orderId}/items`); set((state) => ({ items: { ...state.items, [orderId]: i } })); },
 }));

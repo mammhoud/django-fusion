@@ -23,6 +23,6 @@ export const useCategoryStore = create<CategoryStore>()((set) => ({
   },
   create: async (data) => {
     const c = await api.post<Category>('/categories', data);
-    set((state) => ({ categories: [...state.categories, c] }); return c;
+    set((state) => ({ categories: [...state.categories, c] })); return c;
   },
 }));

@@ -17,7 +17,7 @@ export const useEmployeeScheduleStore = create<EmployeeScheduleStore>()((set) =>
     try { set({ schedules: await api.get<EmployeeSchedule[]>(`/employee-schedules${employeeId ? '?employee_id=' + employeeId : ''}`) }); }
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const s = await api.post<EmployeeSchedule>('/employee-schedules', d); set((state) => ({ schedules: [...state.schedules, s] }); return s; },
-  update: async (id, d) => { const s = await api.patch<EmployeeSchedule>(`/employee-schedules/${id}`, d); set((state) => ({ schedules: state.schedules.map(x => x.id === id ? s : x) }); return s; },
-  remove: async (id) => { await api.delete(`/employee-schedules/${id}`); set((state) => ({ schedules: state.schedules.filter(x => x.id !== id) }); },
+  create: async (d) => { const s = await api.post<EmployeeSchedule>('/employee-schedules', d); set((state) => ({ schedules: [...state.schedules, s] })); return s; },
+  update: async (id, d) => { const s = await api.patch<EmployeeSchedule>(`/employee-schedules/${id}`, d); set((state) => ({ schedules: state.schedules.map(x => x.id === id ? s : x) })); return s; },
+  remove: async (id) => { await api.delete(`/employee-schedules/${id}`); set((state) => ({ schedules: state.schedules.filter(x => x.id !== id) })); },
 }));

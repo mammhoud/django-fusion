@@ -39,16 +39,16 @@ export const useCustomerStore = create<CustomerStore>()((set) => ({
   },
   create: async (data) => {
     const c = await api.post<Customer>('/customers', data);
-    set((state) => ({ customers: [...state.customers, c] });
+    set((state) => ({ customers: [...state.customers, c] }));
     return c;
   },
   update: async (id, data) => {
     const c = await api.patch<Customer>(`/customers/${id}`, data);
-    set((state) => ({ customers: state.customers.map(x => x.id === id ? c : x) });
+    set((state) => ({ customers: state.customers.map(x => x.id === id ? c : x) }));
     return c;
   },
   remove: async (id) => {
     await api.delete(`/customers/${id}`);
-    set((state) => ({ customers: state.customers.filter(x => x.id !== id) });
+    set((state) => ({ customers: state.customers.filter(x => x.id !== id) }));
   },
 }));

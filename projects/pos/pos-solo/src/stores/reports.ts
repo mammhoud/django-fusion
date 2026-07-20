@@ -10,6 +10,6 @@ export const useReportStore = create<ReportStore>()((set) => ({
   fetchAll: async () => { set({ loading: true, error: null });
     try { set({ reports: await api.get<ReportMetadata[]>('/report-metadata') }); } catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const r = await api.post<ReportMetadata>('/report-metadata', d); set((state) => ({ reports: [...state.reports, r] }); return r; },
-  remove: async (id) => { await api.delete(`/report-metadata/${id}`); set((state) => ({ reports: state.reports.filter(x => x.id !== id) }); },
+  create: async (d) => { const r = await api.post<ReportMetadata>('/report-metadata', d); set((state) => ({ reports: [...state.reports, r] })); return r; },
+  remove: async (id) => { await api.delete(`/report-metadata/${id}`); set((state) => ({ reports: state.reports.filter(x => x.id !== id) })); },
 }));

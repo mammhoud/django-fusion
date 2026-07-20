@@ -18,7 +18,7 @@ export const useEmployeeTypeStore = create<EmployeeTypeStore>()((set) => ({
     try { set({ types: await api.get<EmployeeType[]>(`/employee-types?include_inactive=${includeInactive}`) }); }
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const t = await api.post<EmployeeType>('/employee-types', d); set((state) => ({ types: [...state.types, t] }); return t; },
-  update: async (id, d) => { const t = await api.patch<EmployeeType>(`/employee-types/${id}`, d); set((state) => ({ types: state.types.map(x => x.id === id ? t : x) }); return t; },
-  remove: async (id) => { await api.patch(`/employee-types/${id}`, { is_active: false }); set((state) => ({ types: state.types.filter(x => x.id !== id) }); },
+  create: async (d) => { const t = await api.post<EmployeeType>('/employee-types', d); set((state) => ({ types: [...state.types, t] })); return t; },
+  update: async (id, d) => { const t = await api.patch<EmployeeType>(`/employee-types/${id}`, d); set((state) => ({ types: state.types.map(x => x.id === id ? t : x) })); return t; },
+  remove: async (id) => { await api.patch(`/employee-types/${id}`, { is_active: false }); set((state) => ({ types: state.types.filter(x => x.id !== id) })); },
 }));

@@ -29,14 +29,14 @@ export const useEmployeeStore = create<EmployeeStore>()((set) => ({
   },
   create: async (data) => {
     const e = await api.post<Employee>('/employees', data);
-    set((state) => ({ employees: [...state.employees, e] }); return e;
+    set((state) => ({ employees: [...state.employees, e] })); return e;
   },
   update: async (id, data) => {
     const e = await api.patch<Employee>(`/employees/${id}`, data);
-    set((state) => ({ employees: state.employees.map(x => x.id === id ? e : x) }); return e;
+    set((state) => ({ employees: state.employees.map(x => x.id === id ? e : x) })); return e;
   },
   remove: async (id) => {
     await api.patch(`/employees/${id}`, { is_active: false });
-    set((state) => ({ employees: state.employees.filter(x => x.id !== id) });
+    set((state) => ({ employees: state.employees.filter(x => x.id !== id) }));
   },
 }));

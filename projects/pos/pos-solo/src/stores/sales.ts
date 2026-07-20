@@ -31,14 +31,14 @@ export const useSaleStore = create<SaleStore>()((set) => ({
   },
   create: async (sale, items) => {
     const s = await api.post<Sale>('/sales/with-items', { ...sale, items });
-    set((state) => ({ sales: [...state.sales, s] }); return s;
+    set((state) => ({ sales: [...state.sales, s] })); return s;
   },
   update: async (id, data) => {
     const s = await api.patch<Sale>(`/sales/${id}`, data);
-    set((state) => ({ sales: state.sales.map(x => x.id === id ? s : x) }); return s;
+    set((state) => ({ sales: state.sales.map(x => x.id === id ? s : x) })); return s;
   },
   remove: async (id) => {
     await api.delete(`/sales/${id}`);
-    set((state) => ({ sales: state.sales.filter(x => x.id !== id) });
+    set((state) => ({ sales: state.sales.filter(x => x.id !== id) }));
   },
 }));

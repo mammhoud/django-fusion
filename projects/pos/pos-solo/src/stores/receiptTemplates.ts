@@ -19,7 +19,7 @@ export const useReceiptTemplateStore = create<ReceiptTemplateStore>()((set) => (
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
   fetchDefault: async () => await api.get<ReceiptTemplate>('/receipt-templates/default'),
-  create: async (d) => { const t = await api.post<ReceiptTemplate>('/receipt-templates', d); set((state) => ({ templates: [...state.templates, t] }); return t; },
-  update: async (id, d) => { const t = await api.patch<ReceiptTemplate>(`/receipt-templates/${id}`, d); set((state) => ({ templates: state.templates.map(x => x.id === id ? t : x) }); return t; },
-  remove: async (id) => { await api.delete(`/receipt-templates/${id}`); set((state) => ({ templates: state.templates.filter(x => x.id !== id) }); },
+  create: async (d) => { const t = await api.post<ReceiptTemplate>('/receipt-templates', d); set((state) => ({ templates: [...state.templates, t] })); return t; },
+  update: async (id, d) => { const t = await api.patch<ReceiptTemplate>(`/receipt-templates/${id}`, d); set((state) => ({ templates: state.templates.map(x => x.id === id ? t : x) })); return t; },
+  remove: async (id) => { await api.delete(`/receipt-templates/${id}`); set((state) => ({ templates: state.templates.filter(x => x.id !== id) })); },
 }));
