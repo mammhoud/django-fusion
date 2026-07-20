@@ -19,6 +19,7 @@
 .PHONY: check typecheck cargo-check cargo-test cargo-clippy
 .PHONY: lint format clean install install-tauri-cli info seed db-seed
 .PHONY: test test-watch i18n-audit i18n-check i18n-fix i18n-fix-check port-kill
+.PHONY: admin-bootstrap admin-ensure-superuser
 
 # ── Default ────────────────────────────────────────────────────────────────
 
@@ -27,6 +28,10 @@ help:                 ## Show this help menu
 	@echo '╔══════════════════════════════════════════════════════════╗'
 	@echo '║  POS — Commands                                     ║'
 	@echo '╚══════════════════════════════════════════════════════════╝'
+	@echo ''
+	@echo '── Admin ────────────────────────────────────────────────────'
+	@echo '  make admin-bootstrap        Migrate + create superuser + start runserver :8000'
+	@echo '  make admin-ensure-superuser Create superuser from env vars (idempotent)'
 	@echo ''
 	@echo '── Development ──────────────────────────────────────────────'
 	@echo '  make dev              Start Vite dev server (localhost:1420, browser only)'
@@ -107,6 +112,21 @@ build-sidecar:        ## Build the Python/Sanic sidecar binary for the current p
 
 build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. build-sidecar-x86_64-unknown-linux-gnu)
 	node scripts/dev/build-sidecar.cjs --target $*
+
+
+# ── Admin ───────────────────────────────────────────────────────────────────
+
+admin-bootstrap:      ## Bootstrap admin: migrate + create superuser + start runserver
+	@echo '── Admin Bootstrap ──'
+	@echo '  → Running migrations...'
+	@cd sidecar && python3 manage.py migrate
+	@echo '  → Creating superuser from env vars (or defaults)...'
+	@cd sidecar && python3 manage.py --ensure-superuser
+	@echo '  → Starting admin panel at http://localhost:8000/admin/'
+	@cd sidecar && python3 manage.py runserver 0.0.0.0:8000
+
+admin-ensure-superuser: ## Create/update superuser from env vars (idempotent)
+	@cd sidecar && python3 manage.py --ensure-superuser
 
 # ── Screenshots ─────────────────────────────────────────────────────────────
 

@@ -78,16 +78,45 @@ The admin panel uses **[Django Unfold](https://unfoldadmin.com/)** — a modern,
 
 ### Access
 
+#### Quick bootstrap (auto-migrate + superuser + runserver)
+
 ```bash
-# Create admin superuser
+cd pos-full
+make admin-bootstrap
+# → Runs: migrate → auto-create superuser → start :8000
+# → Open http://localhost:8000/admin/
+```
+
+#### Manual setup
+
+```bash
+# 1. Create admin superuser (interactive)
 cd sidecar
 python3 manage.py createsuperuser
 # → Enter email, username, password
 
-# Start admin panel
+# Or auto-create from environment variables (idempotent):
+python3 manage.py --ensure-superuser
+# → Reads: POS_FULL_ADMIN_EMAIL, POS_FULL_ADMIN_PASSWORD, POS_FULL_ADMIN_NAME
+# → Defaults: admin@pos-full.local / admin123 / "POS Full Admin"
+
+# 2. Start admin panel
 python3 manage.py runserver 0.0.0.0:8000
 # → Open http://localhost:8000/admin/
 ```
+
+| Env Var | Default | Purpose |
+|---------|---------|---------|
+| `POS_FULL_ADMIN_EMAIL` | `admin@pos-full.local` | Superuser email / login |
+| `POS_FULL_ADMIN_PASSWORD` | `admin123` | Superuser password |
+| `POS_FULL_ADMIN_NAME` | `POS Full Admin` | Display name (split into first/last) |
+
+#### Makefile targets
+
+| Target | Description |
+|--------|-------------|
+| `make admin-bootstrap` | Full pipeline: migrate → ensure-superuser → runserver :8000 |
+| `make admin-ensure-superuser` | Idempotent superuser creation from env vars |
 
 ### KPI Cards (6)
 
