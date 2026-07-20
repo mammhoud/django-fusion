@@ -1,72 +1,93 @@
-# 📁 POS Sidecar Server (`sidecar/`)
+# 📁 POS Full Sidecar Server (`sidecar/`)
 
 ## What's Here
 
-Python/Sanic server providing HTTP REST API and WebSocket support for the POS desktop app.
-
-> **CRM moved to `cloud/`**: The CRM module now runs as an independent cloud server
-> (see [`cloud/README.md`](../cloud/README.md)). Run it alongside the sidecar for
-> full CRM capabilities.
+**Robyn** async Python server with **Django ORM** providing high-performance REST API (60k+ RPS), WebSocket real-time streaming, and Cloud Master orchestration for the POS Full desktop app.
 
 ```
 sidecar/
-├── server.py             # 🔴 Sanic app — all routes + WS
-├── requirements.txt      #    Python dependencies
-├── build.py              #    PyInstaller build script
-├── build.sh              #    Build shell wrapper
-└── posapp/               # 🔵 Django models (Rust-mirror tables)
-    ├── __init__.py
-    ├── apps.py
-    ├── models.py          # 29 Rust-managed mirror tables + SupportTicket
-    └── fixtures/
-        └── seed_data.json
+├── server.py                 # 🟢 Robyn app — REST + WebSocket (70+ endpoints)
+├── models/                   # 🔵 Django ORM models (managed=True)
+│   ├── __init__.py
+│   ├── node.py               # Node, Heartbeat, NodeEvent
+│   ├── config.py              # DeviceConfig, MasterDevice, CloudLink
+│   └── sync.py                # SyncLog
+├── posapp/                   # 🔵 Django ORM models (managed=False, Rust-owned)
+│   ├── __init__.py
+│   └── models.py              # 30+ Rust-mirror tables
+├── requirements.txt          # Python dependencies
+├── .env.example              # Environment variable template
+├── tests/                    # Pytest test suites
+│   ├── test_server.py        # 53 server tests
+│   └── test_webhook_e2e.py   # 10 webhook E2E tests
+├── Makefile                  # Sidecar commands
+├── pyproject.toml            # Python project metadata
+└── build.py / build.sh       # Build scripts
 ```
 
-## Customization Tags
+## Architecture
 
-| Module | Tag | How to customize |
-|--------|-----|-----------------|
-| `server.py` routes | 🟢 `customizable` | Add new endpoints |
-| `server.py` WebSocket | 🔴 `not-customizable` | Protocol must match frontend `chat.ts` |
-| `server.py` INVOICE_TEMPLATE | 🟢 `customizable` | Edit HTML template freely |
-| `server.py` DESIGN_CONFIGS | 🟢 `customizable` | Add new invoice designs |
-| `posapp/models.py` | 🔵 `template` | Mirrors Rust schema — keep in sync |
+```
+┌─────────────────────────────────────────────────────────────┐
+│  POS Full Server (Robyn, port 8766)                         │
+│  ┌──────────┐ ┌──────────┐ ┌─────────┐ ┌────────────────┐ │
+│  │ POS API  │ │ Node API │ │ Config  │ │ Sync / Approval │ │
+│  │ (CRUD)   │ │(register,│ │(devices,│ │(status, push,   │ │
+│  │          │ │ heartbeat)│ │ master, │ │ receive, queue) │ │
+│  │          │ │          │ │ cloud)  │ │                 │ │
+│  └────▲─────┘ └────▲─────┘ └────▲────┘ └───────▲────────┘ │
+│       │            │            │               │          │
+│       └────────────┴────────────┴───────────────┘          │
+│                         │                                  │
+│              Django ORM (full_portal.db)                    │
+│  ┌────────────────────────────────────────────────────┐    │
+│  │ models/node.py  (Node, Heartbeat, NodeEvent)       │    │
+│  │ models/config.py (DeviceConfig, MasterDevice, CL)  │    │
+│  │ models/sync.py   (SyncLog)                         │    │
+│  │ posapp/models.py (30+ Rust-backed, managed=False)  │    │
+│  │ shared/models/   (SignalEvent, SyncApproval, Token)│    │
+│  └────────────────────────────────────────────────────┘    │
+└────────────────────────────────────────────────────────────┘
 
-## Cloud CRM Integration
-
-The CRM system has been extracted into its own standalone cloud server at
-[`cloud/`](../cloud/). The sidecar communicates with the cloud server via HTTP
-using the `SyncClient`:
-
-```python
-from cloud.sync_client import SyncClient
-
-client = SyncClient(base_url="http://localhost:8766")
-client.push_contact({"first_name": "John", "last_name": "Doe"})
+                         │ WebSockets
+                         ▼
+┌─────────────────────────────────────────────────────────────┐
+│  /ws/nodes   — Node event stream (register, heartbeat, ...)│
+│  /ws/config  — Config change stream (config, approval, sync)│
+└─────────────────────────────────────────────────────────────┘
 ```
 
-See [`cloud/README.md`](../cloud/README.md) for full CRM API reference.
-
-## Running
+## Quick Start
 
 ```bash
 pip install -r requirements.txt
-python server.py --db ../restaurant.db --port 8765
+python3 server.py --port 8766                    # Start Robyn server
+DJANGO_SETTINGS_MODULE='' python3 -m pytest      # Run tests
 ```
 
-## Running with Cloud CRM
+## Key Features
 
-```bash
-# Terminal 1: Cloud CRM server (port 8766)
-python ../cloud/server.py --port 8766 --data-dir ../cloud_data
+| Feature | Description |
+|---------|-------------|
+| 🔄 **Product Sync** | Master→Child product/config push + Child→Master sales/reports with approval |
+| ✅ **Moderated Approvals** | `SyncApproval` model with approve/reject workflow |
+| 🔌 **Django Signals** | `config_changed`, `config_synced`, `device_status_changed` wired into endpoints |
+| 🌐 **WebSocket Streams** | `/ws/nodes` (node events) + `/ws/config` (config changes) with filters |
+| 🔑 **Token Auth** | DeviceToken system with SHA-256 hashing, roles, expiry, capabilities |
 
-# Terminal 2: Sidecar (port 8765)
-python server.py --db ../restaurant.db --port 8765
-```
+## Package Structure
 
-## Reference
+| Path | Purpose | Tag |
+|------|---------|:---:|
+| `server.py` | Robyn app — all routes, middleware, WS | 🟢 customizable |
+| `models/node.py` | Node, Heartbeat, NodeEvent | 🔵 template |
+| `models/config.py` | DeviceConfig, MasterDevice, CloudLink | 🔵 template |
+| `models/sync.py` | SyncLog | 🔵 template |
+| `posapp/models.py` | Rust-mirror models (30+ tables) | 🔵 template |
+| `tests/` | Pytest tests (63 total) | 🟢 customizable |
 
-- [Sidecar Docs →](../../docs/server/README.md)
-- [API Reference →](../../docs/server/api-reference.md)
-- [WebSocket Protocol →](../../docs/server/websocket.md)
-- [Cloud CRM Docs →](../cloud/README.md)
+## Related Docs
+
+- [Architecture](ARCHITECTURE.md)
+- [Sidecar v2 Reference](../../docs/SIDECAR_V2.md)
+- [POS Editons Overview](../README.md)

@@ -1,0 +1,52 @@
+[project]
+name = "pos-full-sidecar"
+dynamic = ["version"]
+description = "POS Full Edition — Robyn + Django ORM Cloud Master sidecar"
+readme = "README.md"
+requires-python = ">=3.11"
+license = { text = "AGPL-3.0" }
+authors = [
+    { name = "Structa Cloud", email = "dev@structa.cloud" },
+]
+
+dependencies = [
+    "robyn>=0.50,<1.0",
+    "django>=4.2,<5.1",
+    "asgiref>=3.8",
+    "sqlparse>=0.4",        # Django management commands (migrate, makemigrations)
+    "httpx>=0.27",
+    "pydantic>=2.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=7.0",
+    "pytest-asyncio>=0.23",
+]
+
+[project.scripts]
+pos-full-server = "server:main"
+
+[project.urls]
+Homepage = "https://github.com/mammhoud/structa.cloud"
+Documentation = "https://structa.cloud/docs/pos"
+
+[build-system]
+requires = ["setuptools>=64"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["models*", "routes*"]
+
+[tool.setuptools.dynamic]
+# Version from shared/__about__.py — the single source of truth.
+version = { attr = "shared.__about__.__version__" }
+
+[tool.setuptools]
+py-modules = ["server"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+asyncio_mode = "auto"

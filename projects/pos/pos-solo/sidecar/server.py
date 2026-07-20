@@ -78,7 +78,6 @@ try:
         INSTALLED_APPS=[
             "django.contrib.contenttypes",
             "models.PosSoloConfig",     # Managed models (pos_unified) — migrations + CRUD
-            "models.posapp_app.PosappConfig",  # Rust-mirror models (posapp, managed=True) — migrations
         ],
         DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
         USE_TZ=True,
@@ -94,25 +93,6 @@ try:
     from models.node import Node, Heartbeat, NodeEvent
     from models.config import DeviceConfig, MasterDevice, CloudLink
     from models.sync import SyncLog
-
-    # ── POS App models (Rust-schema mirror, managed=True in Solo) ──
-    from models import posapp as pos_models
-
-    _POS_MODELS = [
-        pos_models.Product, pos_models.Category, pos_models.Customer,
-        pos_models.Sale, pos_models.SaleItem, pos_models.Employee,
-        pos_models.EmployeeType, pos_models.DeliveryType,
-        pos_models.Ingredient, pos_models.InventoryTransaction,
-        pos_models.InventoryAdjustment, pos_models.InventoryAlert,
-        pos_models.Supplier, pos_models.PurchaseOrder,
-        pos_models.PurchaseOrderItem, pos_models.KitchenTicket,
-        pos_models.LoyaltyTransaction, pos_models.ReceiptTemplate,
-        pos_models.TaxReport, pos_models.EmployeeSchedule, pos_models.Payroll,
-        pos_models.User, pos_models.Role, pos_models.UserRole,
-        pos_models.ReportMetadata, pos_models.AppSettings,
-        pos_models.Recipe, pos_models.RecipeType, pos_models.RecipeIngredient,
-        pos_models.SupportTicket,
-    ]
 
     # ── Shared models ──
     from shared.models.approval import SyncApproval
@@ -130,9 +110,6 @@ try:
         DeviceToken,
         SignalEvent,
     ]
-
-    # Posapp models (separate from unified managed models)
-    _POSAPP_MODELS = _POS_MODELS
 
     _CONFIG_MODELS = [
         DeviceConfig, MasterDevice, CloudLink,
@@ -203,7 +180,7 @@ def _ensure_tables(use_migrations: bool) -> None:
         logger.info("Tables created via Django migrations (--migrate)")
     else:
         with connection.schema_editor() as schema_editor:
-            for model in _ALL_MODELS + _POSAPP_MODELS:
+            for model in _ALL_MODELS:
                 try:
                     schema_editor.create_model(model)
                 except Exception:
@@ -299,9 +276,7 @@ init_state(
     _DJANGO_READY=_DJANGO_READY,
     _PYDANTIC_READY=_PYDANTIC_READY,
     _ALL_MODELS=_ALL_MODELS,
-    _POS_MODELS=_POS_MODELS,
     _CONFIG_MODELS=_CONFIG_MODELS,
-    pos_models=pos_models,
     Category=Category,
     Product=Product,
     Customer=Customer,
@@ -406,20 +381,6 @@ _register_crud(app, "menu-assignments", MenuItemAssignment, "MenuItemAssignment"
 _register_crud(app, "nodes", Node, "Node")
 _register_crud(app, "heartbeats", Heartbeat, "Heartbeat")
 _register_crud(app, "sync-logs", SyncLog, "SyncLog")
-
-# ── POS App CRUD (Rust-schema mirror, managed=True in Solo) ──
-_register_crud(app, "posapp/products", pos_models.Product, "PosappProduct")
-_register_crud(app, "posapp/categories", pos_models.Category, "PosappCategory")
-_register_crud(app, "posapp/customers", pos_models.Customer, "PosappCustomer")
-_register_crud(app, "posapp/sales", pos_models.Sale, "PosappSale")
-_register_crud(app, "posapp/sale-items", pos_models.SaleItem, "PosappSaleItem")
-_register_crud(app, "posapp/employees", pos_models.Employee, "PosappEmployee")
-_register_crud(app, "posapp/ingredients", pos_models.Ingredient, "PosappIngredient")
-_register_crud(app, "posapp/inventory", pos_models.InventoryTransaction, "PosappInventory")
-_register_crud(app, "posapp/suppliers", pos_models.Supplier, "PosappSupplier")
-_register_crud(app, "posapp/purchase-orders", pos_models.PurchaseOrder, "PosappPurchaseOrder")
-_register_crud(app, "posapp/kitchen-tickets", pos_models.KitchenTicket, "PosappKitchenTicket")
-_register_crud(app, "posapp/support-tickets", pos_models.SupportTicket, "PosappSupportTicket")
 
 # ── Configuration CRUD ──
 _register_crud(app, "config/devices", DeviceConfig, "DeviceConfig")

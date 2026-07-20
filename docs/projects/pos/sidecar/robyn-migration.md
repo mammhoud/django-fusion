@@ -1,13 +1,14 @@
-# 🦋 Robyn Migration — Solo Sidecar
+# 🦋 Robyn Migration — Complete ✅
 
-> Migration plan: Sanic → [Robyn](https://github.com/sparckles/Robyn) for POS Solo extended sidecar.
+> **Status:** Migration complete — both Solo and Full editions now use Robyn with Django ORM.
+> The old Sanic-based sidecar has been fully replaced.
 
 ---
 
 ## Why Robyn?
 
-| Aspect | Sanic | Robyn |
-|--------|-------|-------|
+| Aspect | Sanic (old) | Robyn (current) |
+|--------|:-----------:|:----------------:|
 | Runtime | Pure Python (uvloop) | Rust-powered (actix/maturin) |
 | Throughput | ~25k RPS | 60k+ RPS |
 | OpenAPI | Manual/plugin | Built-in auto-generation |
@@ -19,146 +20,67 @@
 
 ---
 
-## Migration Overview
+## Current Architecture
 
-### Current (Sanic)
+Both server.py files are now Robyn-based with Django ORM:
 
-```python
-# server.py — Sanic
-from sanic import Sanic, response
-from sanic.websocket import WebSocketConnection
-
-app = Sanic("POS-Sidecar")
-
-@app.get("/health")
-async def health(request):
-    return response.json({"status": "ok"})
-
-@app.websocket("/ws/chat/<room_id>")
-async def chat(request, ws: WebSocketConnection, room_id: str):
-    while True:
-        data = await ws.recv()
-        await ws.send(json.dumps({"echo": data}))
+```
+projects/pos/
+├── pos-solo/sidecar/server.py    # Robyn — 60+ endpoints, port 8765
+├── pos-full/sidecar/server.py    # Robyn — 70+ endpoints, port 8766
+└── shared/                       # Shared module (package structure)
+    ├── signals/                  # Signal definitions
+    ├── models/                   # Shared models (audit, approval, token)
+    ├── handlers/                 # Signal receivers
+    ├── services/                 # ProductSyncEngine
+    ├── middleware/               # Auth middleware
+    └── api/                      # CRUD helpers
 ```
 
-### Target (Robyn)
+### Key Migration Details
 
-```python
-# robyn_server.py — Robyn
-from robyn import Robyn, jsonify, WebSocket
+| Component | Sanic (old) | Robyn (current) |
+|-----------|:-----------:|:----------------:|
+| Path params | `<param>` | `:param` |
+| JSON helpers | `response.json(data)` | `jsonify(data)` |
+| Request body | `request.json` (property) | `request.json()` (method) |
+| Query params | `request.args.get("q")` | `request.query_params.get("q")` |
+| Path params | `request.match_info["id"]` | `request.path_params["id"]` or function arg |
+| WebSocket | `websockets` async recv | `ws.receive_text()` / `ws.send_text()` |
+| Background tasks | `app.add_task(fn)` | `asyncio.create_task(fn)` |
+| CORS | Manual middleware | Manual middleware (compatible) |
+| Models | Flat files (`models.py`, `unified_models.py`) | Organized packages (`models/`) |
+| Shared | Flat files (`signals.py`, `auth.py`, etc.) | Organized packages (`signals/`, `middleware/`, etc.) |
 
-app = Robyn(__file__)
+### Package Restructure
 
-@app.get("/health")
-async def health(request):
-    return jsonify({"status": "ok"})
+Alongside the Robyn migration, the model and shared module files were restructured:
 
-@app.websocket("/ws/chat/:room_id")
-async def chat(ws: WebSocket, room_id: str):
-    while True:
-        data = await ws.receive()
-        await ws.send(json.dumps({"echo": data}))
+```
+# Before (flat files)
+models.py
+unified_models.py
+shared/signals.py
+shared/auth.py
+shared/server_base.py
+shared/signal_models.py
+shared/approval_models.py
+shared/signal_handlers.py
+shared/product_sync.py
+shared/cloud/token_models.py
+
+# After (organized packages)
+models/node.py, config.py, sync.py           # Full edition
+models/pos.py, menu.py, node.py, config.py, sync.py  # Solo edition
+shared/signals/__init__.py
+shared/models/audit.py, approval.py, token.py
+shared/handlers/signal.py
+shared/services/sync.py
+shared/middleware/auth.py
+shared/api/crud.py
 ```
 
----
-
-## Endpoint Migration Map
-
-| Sanic | Robyn | Notes |
-|-------|-------|-------|
-| `@app.get("/health")` | `@app.get("/health")` | Identical pattern |
-| `@app.post("/chat/<room>")` | `@app.post("/chat/:room")` | Path params: `<>` → `:` |
-| `@app.websocket("/ws/<id>")` | `@app.websocket("/ws/:id")` | Same pattern |
-| `response.json(data)` | `jsonify(data)` | Different helper |
-| `response.html(html)` | `Response(status_code=200, body=html, headers={"Content-Type": "text/html"})` | Different API |
-| `request.json` | `request.json()` | Method call vs property |
-| `request.args.get("q")` | `request.query_params.get("q")` | Different attr name |
-| `request.match_info["id"]` | `request.path_params["id"]` | Different attr name |
-| `app.add_task(fn)` | `asyncio.create_task(fn)` | Standard asyncio |
-| `app.static("/static", "./static")` | `app.serve_static("/static", "./static")` | Different method |
-
----
-
-## Implementation Phases
-
-### Phase 1: Drop-in Replacement (1 day)
-
-- Create `robyn_server.py` alongside `server.py`
-- Port all routes, WebSocket handlers, middleware
-- Keep `server.py` as fallback
-- Add `robyn` to `requirements.txt`: `robyn[all]>=0.50`
-
-### Phase 2: Pydantic Integration (1 day)
-
-```python
-from robyn import Robyn
-from pydantic import BaseModel, Field
-
-app = Robyn(__file__)
-
-class ChatMessage(BaseModel):
-    room_id: str = Field(min_length=1)
-    text: str = Field(max_length=5000)
-    sender: str
-
-@app.post("/chat/:room_id")
-async def post_chat(request, room_id: str):
-    body = request.json()
-    msg = ChatMessage(**body)  # Auto-validated
-    # ... persist and broadcast
-```
-
-### Phase 3: OpenAPI Generation (1 day)
-
-Robyn auto-generates OpenAPI docs at `/docs` (Swagger) and `/redoc` (ReDoc) — no extra config needed. Add custom descriptions:
-
-```python
-@app.get("/api/products", openapi_name="List Products",
-         openapi_tags=["Products"])
-async def list_products(request):
-    ...
-```
-
-### Phase 4: Performance Tuning (1 day)
-
-```python
-# Worker count for optimal CPU usage
-app.start(port=8765, workers=4)
-
-# Enable Rust optimizations
-# Set in .cargo/config.toml or env:
-# RUSTFLAGS="-C target-cpu=native"
-```
-
----
-
-## Compatibility Notes
-
-| Feature | Sanic | Robyn | Migration Effort |
-|---------|:-----:|:-----:|:----------------:|
-| REST routes | ✅ | ✅ | Low (syntax only) |
-| WebSocket | ✅ | ✅ | Low |
-| Middleware | ✅ | ✅ | Low (request/response hooks) |
-| Static files | ✅ | ✅ | Low |
-| Blueprints | ✅ | ❌ | Medium (use sub-routers) |
-| Background tasks | ✅ | ✅ | Low (asyncio tasks) |
-| Streaming | ✅ | ✅ | Low (SSE support) |
-| CORS | ✅ | ✅ | Low |
-| Jinja2 templates | ❌ | ✅ | New capability |
-
----
-
-## Rollback Plan
-
-Both `server.py` (Sanic) and `robyn_server.py` (Robyn) coexist during migration. Switch via env:
-
-```bash
-# Use Sanic (default)
-POS_SIDECAR_BACKEND=sanic python3 server.py
-
-# Use Robyn (extended)
-POS_SIDECAR_BACKEND=robyn python3 robyn_server.py
-```
+Old files preserved as backward-compatible re-export shims.
 
 ---
 
@@ -166,8 +88,7 @@ POS_SIDECAR_BACKEND=robyn python3 robyn_server.py
 
 | Resource | Path |
 |----------|------|
-| Robyn docs | [robyn.tech](https://robyn.tech/) |
-| Robyn GitHub | [sparckles/Robyn](https://github.com/sparckles/Robyn) |
 | Sidecar overview | [sidecar-readme.md](sidecar-readme.md) |
 | POS editions | [../editions.md](../editions.md) |
 | Cloud sync plan | [../cloud/sync-plan.md](../cloud/sync-plan.md) |
+| Sidecar v2 Reference | [SIDECAR_V2.md](../../../projects/pos/docs/SIDECAR_V2.md) |

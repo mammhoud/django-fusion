@@ -5,6 +5,20 @@
 
 ---
 
+## v1.2.0 — 20 July 2026
+
+### Added
+- **Sidecar v2 Documentation** — Comprehensive [`docs/SIDECAR_V2.md`](docs/SIDECAR_V2.md) with full architecture, 70+ API catalog, WebSocket streams, Django signals, and cloud bridge plan
+- **`docs/README.md` updated** — Modernised edition overview (Solo→Robyn, Full→Cloud Master), shared module map, and new whatʼ s new section
+- **`README.md` updated** — `SIDECAR_V2.md` added as top entry in documentation table
+
+### Changed
+- **Sidecar Sanic→Robyn migration documented** — All editions now use Robyn async Python server with Django ORM
+- **Solo edition** replaces Extended (Sanic→Robyn, unified models, approval workflow, product sync)
+- **Full edition** upgraded (Robyn + Cloud Master + Rust-backed posapp + django-bolt)
+
+---
+
 ## v1.1.0 — 19 July 2026
 
 ### Added

@@ -71,10 +71,12 @@ make seed             # Reset DB + seed (PRESET=all|base|gaming|coffee)
 | `pos/src-tauri/src/db/` | Database: schema, models, migrations, connection | 🔴 not-customizable |
 | `pos/src-tauri/src/operations/` | **25 CRUD modules** (auth, sales, products, inventory...) | 🟢 customizable |
 | `pos/src-tauri/src/email.rs` | SMTP email sending | 🟢 customizable |
-| `pos/sidecar/server.py` | REST + WebSocket API (35+ endpoints) | 🟢 customizable |
-| `pos/sidecar/posapp/` | Django ORM mirror models (Full edition only) | 🟢 customizable |
-| `pos/sidecar/sync_client.py` | Solo → Cloud CRM sync client (Solo edition) | 🟢 customizable |
-| `pos/sidecar/sync_routes.py` | Sync API blueprint: status, config, trigger, push (Solo edition) | 🟢 customizable |
+| `pos/sidecar/server.py` | Robyn REST + WebSocket API (60-70+ endpoints) | 🟢 customizable |
+| `pos/sidecar/models/pos.py` | Solo POS models (Category, Product, Customer, Sale...) | 🟢 customizable |
+| `pos/sidecar/models/menu.py` | Solo menu models (MenuItem, Menu, Assignment) | 🟢 customizable |
+| `pos/sidecar/models/node.py` | Node registry models (Node, Heartbeat, NodeEvent) | 🟢 customizable |
+| `pos/sidecar/models/config.py` | Config models (DeviceConfig, MasterDevice, CloudLink) | 🟢 customizable |
+| `pos/sidecar/models/sync.py` | Sync audit model (SyncLog) | 🟢 customizable |
 | `shared-portal/cloud/` | Standalone Cloud CRM server (Sanic, port 8766) | 🟢 customizable |
 | `shared-portal/cloud/sync_proxy.py` | Accepts generic entity pushes from Solo edition | 🟢 customizable |
 | `pos-full/src-tauri/src/operations/signals.rs` | Change event broadcast channel (tokio) | 🟡 delegate |
@@ -93,20 +95,58 @@ make seed             # Reset DB + seed (PRESET=all|base|gaming|coffee)
 make editions   # Generate editions from canonical source (pos-full)
 ```
 
-### Cloud CRM Architecture
+### Sidecar Architecture
 
-The **Full Edition** includes a standalone **Cloud CRM server** (`shared-portal/cloud/`) that provides:
-- CRM entity CRUD (contacts, companies, deals, pipelines, activities, notes)
-- Dashboard statistics, data export/import
-- Cloud sync management
+Both Solo and Full editions use **Robyn** (Rust-powered async Python server) with **Django ORM** for REST + WebSocket APIs.
 
-The **Solo Edition** includes a **sync client** (`sidecar/sync_client.py`) that pushes POS data (products, sales, customers) to the cloud CRM via a **sync proxy** on the cloud server (`cloud/sync_proxy.py`).
+### Shared Package Structure
 
 ```
-+-------------------+       HTTP REST        +---------------------+
-|  pos-solo         |  ──────────────────>  |  shared-portal/cloud/    |
-|  sidecar/server.py |  push products, sales |  cloud CRM + proxy  |
-|  port 8765        |  <──────────────────  |  port 8766          |
+projects/pos/shared/
+├── signals/               # Signal definitions (config_changed, config_synced, device_status_changed)
+├── models/                # Shared Django models
+│   ├── audit.py           #   SignalEvent (audit trail)
+│   ├── approval.py        #   SyncApproval (approve/reject workflow)
+│   └── token.py           #   DeviceToken (SHA-256 auth)
+├── handlers/              # Signal @receiver handlers
+│   └── signal.py          #   Logging, webhook delivery, audit persistence
+├── services/              # POS services
+│   └── sync.py            #   ProductSyncEngine
+├── middleware/             # Robyn middleware
+│   └── auth.py            #   create_auth_middleware, register_auth_routes
+├── api/                   # CRUD helpers
+│   └── crud.py            #   _ser, _paginate, _register_crud
+├── portal_viewsets.py     # Django Portal viewsets
+└── portal_urls.py         # Portal URL patterns
+```
+
+### Solo Edition Models (`pos-solo/sidecar/models/`)
+
+| Module | Models |
+|--------|--------|
+| `pos.py` | Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee |
+| `menu.py` | MenuItem, Menu, MenuItemAssignment |
+| `node.py` | Node, Heartbeat, NodeEvent |
+| `config.py` | DeviceConfig, MasterDevice, CloudLink |
+| `sync.py` | SyncLog |
+
+### Full Edition Models (`pos-full/sidecar/models/`)
+
+| Module | Models |
+|--------|--------|
+| `node.py` | Node, Heartbeat, NodeEvent |
+| `config.py` | DeviceConfig, MasterDevice, CloudLink |
+| `sync.py` | SyncLog |
+
+Plus 30+ Rust-backed tables in `posapp/models.py` (managed=False).
+
+### Sync Architecture
+
+```
++-------------------+       Robyn REST       +---------------------+
+|  pos-solo         |  ──────────────────>  |  pos-full (master)  |
+|  sidecar/server.py|  push products, sales |  port 8766          |
+|  port 8765        |  <──────────────────  |  + approval queue   |
 +-------------------+       status, config   +---------------------+
 ```
 

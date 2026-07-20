@@ -6,6 +6,7 @@ import "./i18n";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
+// API stores: import { useProducts } from "./stores/products";
 
 // Set initial dir/lang from saved language
 const savedLang = localStorage.getItem('language');

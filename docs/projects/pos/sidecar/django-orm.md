@@ -6,51 +6,58 @@
 
 ## Overview
 
-The Full edition sidecar (`pos-full/sidecar/posapp/`) includes Django ORM models that **mirror** the Rust/Diesel SQLite schema. The Solo edition includes a subset for cloud sync.
+Both Solo and Full sidecars now use **Django ORM** with Robyn servers. Models are organized into packages rather than flat files:
 
-**Key principle**: The Rust backend is the **source of truth** for writes. Django ORM is **read-optimized** and used for:
-- Django Admin dashboard
-- Complex reporting queries
-- Seed data (fixtures)
-- Cloud CRM data export
+| Edition | Model Files | Tables Managed |
+|---------|-------------|---------------|
+| **Solo** | `models/pos.py, menu.py, node.py, config.py, sync.py` | 17 tables (all managed=True) |
+| **Full** | `models/node.py, config.py, sync.py` + `posapp/models.py` | 7 registry tables (managed=True) + 30+ Rust-backed (managed=False) |
+
+**Key principle**: 
+- For **managed=True** models (registry, config, sync): The Robyn server creates and manages these tables via `schema_editor.create_model()`
+- For **managed=False** models (posapp): The Rust backend is the **source of truth** for writes. Django ORM is **read-optimized**
 
 ---
 
-## Model Mirroring Pattern
+## Model Organization (Package Structure)
 
-### Rust Side (Source of Truth)
-
-```rust
-// src-tauri/src/db/models.rs
-#[derive(Queryable, Insertable, Serialize)]
-#[diesel(table_name = products)]
-pub struct Product {
-    pub id: i32,
-    pub name: String,
-    pub sku: Option<String>,
-    pub price: f64,
-    pub category_id: i32,
-}
-```
-
-### Django Side (Read Mirror)
+### Solo Edition (`pos-solo/sidecar/models/`)
 
 ```python
-# sidecar/posapp/models.py
-from django.db import models
-
-class Product(models.Model):
-    name = models.CharField(max_length=255)
-    sku = models.CharField(max_length=100, unique=True, null=True)
-    price = models.DecimalField(max_digits=10, decimal_places=2)
-    category = models.ForeignKey('Category', on_delete=models.CASCADE)
-
-    class Meta:
-        db_table = 'products'       # ← Same SQLite table
-        managed = False             # ← Django won't create/alter this table
+# models/__init__.py — re-exports all models as package
+from models.pos import Category, Product, Customer, Sale, SaleItem, ...
+from models.menu import MenuItem, Menu, MenuItemAssignment
+from models.node import Node, Heartbeat, NodeEvent
+from models.config import DeviceConfig, MasterDevice, CloudLink
+from models.sync import SyncLog
 ```
 
-The `managed = False` + `db_table = 'products'` tells Django: "this table already exists in SQLite, don't touch its schema."
+Each file contains a logical group of models:
+
+| Module | Models | `app_label` | `db_table` prefix |
+|--------|--------|-------------|------------------|
+| `pos.py` | Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee | `pos_unified` | `unified_` |
+| `menu.py` | MenuItem, Menu, MenuItemAssignment | `pos_unified` | `unified_` |
+| `node.py` | Node, Heartbeat, NodeEvent | `pos_unified` | `unified_` |
+| `config.py` | DeviceConfig, MasterDevice, CloudLink | `pos_unified` | `unified_` |
+| `sync.py` | SyncLog | `pos_unified` | `unified_` |
+
+### Full Edition (`pos-full/sidecar/models/`)
+
+| Module | Models | `app_label` | `db_table` prefix |
+|--------|--------|-------------|------------------|
+| `node.py` | Node, Heartbeat, NodeEvent | `pos_full_registry` | `full_` |
+| `config.py` | DeviceConfig, MasterDevice, CloudLink | `pos_full_registry` | `full_` |
+| `sync.py` | SyncLog | `pos_full_registry` | `full_` |
+| `posapp/models.py` | 30+ Rust-backed tables | `posapp` | (same as Rust) |
+
+### Shared Models (`shared/models/`)
+
+| Module | Models | `app_label` | `db_table` |
+|--------|--------|-------------|-----------|
+| `audit.py` | SignalEvent | `pos_signals` | `pos_signal_events` |
+| `approval.py` | SyncApproval | `pos_approval` | `pos_sync_approvals` |
+| `token.py` | DeviceToken | `cloud_auth` | `cloud_device_tokens` |
 
 ---
 
@@ -58,163 +65,53 @@ The `managed = False` + `db_table = 'products'` tells Django: "this table alread
 
 ```python
 # sidecar/settings.py
-import os
+from pathlib import Path
+
+BASE_DIR = Path(__file__).resolve().parent
 
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(os.path.dirname(__file__), '..', 'restaurant.db'),
-        # ↑ Same SQLite file the Rust backend uses
+        'NAME': str(BASE_DIR / 'solo_portal.db'),  # or full_portal.db
     }
 }
 
 INSTALLED_APPS = [
-    'django.contrib.admin',
-    'django.contrib.contenttypes',
-    'django.contrib.auth',
-    'django.contrib.sessions',
-    'posapp',           # Django ORM mirror models
-    'shared',           # Shared portal models
-    'cloud',            # Cloud CRM models (Full only)
+    'django.contrib.contenttypes',   # Minimal — no auth/sessions needed
 ]
 ```
 
 ---
 
-## 30 Mirror Models (Full Edition)
-
-| Model | Table | Rust Source |
-|-------|-------|------------|
-| `Product` | `products` | `db/models.rs` |
-| `Category` | `categories` | `db/models.rs` |
-| `ProductVariant` | `product_variants` | `db/models.rs` |
-| `Inventory` | `inventory` | `db/models.rs` |
-| `Order` | `orders` | `db/models.rs` |
-| `OrderItem` | `order_items` | `db/models.rs` |
-| `Customer` | `customers` | `db/models.rs` |
-| `Payment` | `payments` | `db/models.rs` |
-| `PaymentMethod` | `payment_methods` | `db/models.rs` |
-| `Refund` | `refunds` | `db/models.rs` |
-| `Warehouse` | `warehouses` | `db/models.rs` |
-| `StockMovement` | `stock_movements` | `db/models.rs` |
-| `Supplier` | `suppliers` | `db/models.rs` |
-| `PurchaseOrder` | `purchase_orders` | `db/models.rs` |
-| `Register` | `registers` | `db/models.rs` |
-| `RegisterSession` | `register_sessions` | `db/models.rs` |
-| `Setting` | `settings` | `db/models.rs` |
-| `TaxRate` | `tax_rates` | `db/models.rs` |
-| `Discount` | `discounts` | `db/models.rs` |
-| `User` | `users` | `db/models.rs` |
-| `Role` | `roles` | `db/models.rs` |
-| `UserRole` | `user_roles` | `db/models.rs` |
-
-Plus 8 cloud CRM models in `cloud/models.py` (Full only).
-
----
-
 ## Use Cases
 
-### 1. Django Admin Dashboard
+### 1. CRUD via Robyn (`_register_crud`)
 
 ```python
-# sidecar/portal/admin.py
-from django.contrib import admin
-from posapp.models import Product, Order, Customer
+from shared.api.crud import _register_crud
 
-@admin.register(Product)
-class ProductAdmin(admin.ModelAdmin):
-    list_display = ['name', 'sku', 'price', 'category']
-    search_fields = ['name', 'sku']
-    list_filter = ['category', 'is_active']
-
-@admin.register(Order)
-class OrderAdmin(admin.ModelAdmin):
-    list_display = ['order_number', 'customer', 'grand_total', 'status', 'created_at']
-    list_filter = ['status', 'created_at']
-    readonly_fields = ['created_at', 'completed_at']
+_register_crud(app, "products", Product, "Product")
+_register_crud(app, "customers", Customer, "Customer")
 ```
 
-Access at `http://localhost:8765/admin/` when sidecar is running.
-
-### 2. Seed Data (Fixtures)
-
-```bash
-# Load seed data into the SQLite database via Django
-cd projects/pos/pos-full/sidecar
-python manage.py loaddata posapp/fixtures/seed_data.json
-```
-
-### 3. Complex Reports
+### 2. Complex Queries via sync_to_async
 
 ```python
-# Use Django ORM for queries that are hard in Rust/Diesel
-from posapp.models import Order, OrderItem
-from django.db.models import Sum, Count, Q
-from django.utils import timezone
+from asgiref.sync import sync_to_async
 
-def daily_sales_report(date=None):
-    if date is None:
-        date = timezone.now().date()
-
-    return Order.objects.filter(
-        created_at__date=date,
-        status='completed'
-    ).aggregate(
-        total_sales=Sum('grand_total'),
-        order_count=Count('id'),
-        avg_order=Avg('grand_total'),
-    )
-```
-
-### 4. Cloud CRM Export
-
-```python
-# Export POS data to Cloud CRM via Django ORM
-def export_to_cloud_crm():
-    products = list(Product.objects.values())
-    customers = list(Customer.objects.values())
-    orders = list(Order.objects.filter(
-        status='completed'
-    ).values())
-
+@sync_to_async
+def get_stats():
     return {
-        'products': products,
-        'customers': customers,
-        'orders': orders,
+        "products": Product.objects.count(),
+        "sales": Sale.objects.count(),
+        "revenue": Sale.objects.aggregate(total=Sum("total"))["total"],
     }
 ```
 
----
+### 3. Django Portal Pages
 
-## Minimal Edition: Sanic + Django ORM (No Rust ORM)
+The Django portal (`manage.py runserver`) uses django-fusion viewsets defined in `shared/portal_viewsets.py`.
 
-For the Minimal edition, you can skip the Rust/Diesel ORM entirely and use:
-
-```
-┌──────────────────────┐
-│   Vue 3 Frontend     │
-│   (Tauri invoke)     │
-└──────────┬───────────┘
-           │ HTTP (not invoke)
-┌──────────▼───────────┐
-│   Sanic Server        │
-│   port 8765           │
-│   + Django ORM        │
-└──────────┬───────────┘
-           │
-┌──────────▼───────────┐
-│      SQLite           │
-│   (restaurant.db)     │
-└──────────────────────┘
-```
-
-In this configuration:
-- The Vue frontend calls the Sanic API directly (HTTP) instead of Tauri `invoke()`
-- Django ORM handles ALL database operations (no Rust ORM)
-- The Rust layer just spawns the sidecar — no database operations in Rust
-- Ideal for rapid prototyping or when Django expertise > Rust expertise
-
-See [`django-ninja-plan.md`](django-ninja-plan.md) for using Django Ninja Extra instead of Sanic.
 
 ---
 

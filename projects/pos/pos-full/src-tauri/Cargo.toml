@@ -40,8 +40,6 @@ tokio = { version = "1", features = ["full"] }
 dotenvy = "0.15"
 
 # Diesel ORM
-diesel = { version = "2.2", features = ["sqlite", "chrono", "returning_clauses_for_sqlite_3_35"] }
-diesel_migrations = { version = "2.2", features = ["sqlite"] }
 chrono = { version = "0.4", features = ["serde"] }
 bcrypt = "0.16"
 rand = "0.8"

@@ -117,17 +117,24 @@ pos-{edition}/
 │   │   ├── operations/     # 25 CRUD modules (auth, sales, inventory...)
 │   │   └── email.rs        # SMTP email sender
 │   ├── migrations/         # Diesel SQLite migrations (6)
-│   └── icons/              # App icons (all platforms)
-├── sidecar/                # [Solo/Full] Python/Sanic API
-│   ├── server.py           # REST + WebSocket (35+ endpoints)
-│   └── posapp/             # [Full only] Django ORM models + fixtures
-├── portal/                 # [All] Django Portal with django-fusion
-│   ├── settings.py         # Django settings (per-edition)
-│   ├── manage.py           # Django management entry point
-│   ├── shared/             # Shared models, viewsets, templates
-│   ├── portal/             # Portal django-fusion viewsets
-│   ├── node/               # Node API views (solo/minimal)
-│   └── cloud/              # [Full only] Cloud CRM master
+│   └── icons/              # App icons (all platforms)├── sidecar/                 # [Solo/Full] Python/Robyn API + Django ORM
+│   ├── server.py           # Robyn REST + WebSocket (60-70+ endpoints)
+│   ├── models/             # Django ORM models (organized packages)
+│   │   ├── pos.py          #   [Solo] Category, Product, Customer, Sale
+│   │   ├── menu.py         #   [Solo] MenuItem, Menu, Assignment
+│   │   ├── node.py         #   Node, Heartbeat, NodeEvent
+│   │   ├── config.py       #   DeviceConfig, MasterDevice, CloudLink
+│   │   └── sync.py         #   SyncLog
+│   └── tests/              # Pytest suites (155 solo + 63 full)
+├── shared/                 # [All] Models, signals, viewsets, templates
+│   ├── signals/            #   Django signals (config_changed, etc.)
+│   ├── models/             #   SignalEvent, SyncApproval, DeviceToken
+│   ├── handlers/           #   Signal handlers (log, webhook, audit)
+│   ├── services/           #   ProductSyncEngine
+│   ├── middleware/          #   Auth middleware (bearer token + API key)
+│   ├── api/                #   CRUD helpers (_ser, _register_crud)
+│   ├── portal_viewsets.py  #   Portal viewsets (approvals, sync, menu)
+│   └── portal_urls.py      #   Portal URL patterns
 ├── scripts/
 │   ├── dev/                # Build, i18n, checksum utilities (12 scripts)
 │   └── github/             # CI/CD scripts
@@ -175,6 +182,7 @@ pos-{edition}/
 
 | Document | Description |
 |----------|-------------|
+| [`SIDECAR_V2.md`](docs/SIDECAR_V2.md) | **Sidecar v2 reference** — Robyn + Django ORM, 70+ APIs, WS streams, signals, approval, sync, cloud plan |
 | [`CHANGELOG.md`](CHANGELOG.md) | Full version history |
 | [`PUBLISH.md`](PUBLISH.md) | Marketplace publish kit (ThemeForest, CodeCanyon, Gumroad) |
 | [`docs/README.md`](docs/README.md) | Editions overview & architecture |

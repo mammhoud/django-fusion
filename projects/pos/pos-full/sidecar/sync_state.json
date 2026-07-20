@@ -1,0 +1,10 @@
+{
+  "enabled": true,
+  "cloud_url": "http://127.0.0.1:8082",
+  "api_key": "",
+  "last_sync": "2026-07-20T07:03:11.277731+00:00",
+  "status": "error",
+  "items_synced": 0,
+  "errors": 1,
+  "last_error": "All connection attempts failed"
+}

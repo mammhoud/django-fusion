@@ -1,7 +1,7 @@
 # POS — Project Tree
 
 > **Full edition:** `projects/pos/pos-full/`  
-> **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite + Python/Sanic + Django
+> **Stack:** Tauri 2 + React 19 + Rust (Diesel ORM) + SQLite + Robyn (Python async server) + Django ORM
 
 ---
 
@@ -212,60 +212,33 @@ pos-full/
 │       └── bin/
 │           └── seed.rs          # Seed binary — reset DB + apply presets
 │
-├── sidecar/                     # ── Python/Sanic Sidecar + Django Portal ──
-│   ├── server.py                # Sanic REST API entry (chat, sales, products, invoices, tickets)
-│   ├── sync_client.py           # Cloud CRM sync client (Solo → Cloud)
-│   ├── sync_routes.py           # Sync API Blueprint (status, config, trigger)
-│   ├── build.py                 # PyInstaller build script
-│   ├── build.sh                 # Shell build wrapper
-│   ├── requirements.txt         # Python dependencies (sanic, httpx, django)
-│   ├── ARCHITECTURE.md          # Sidecar architecture overview
-│   │
-│   ├── settings.py              # Django settings (portal + node API)
-│   ├── manage.py                # Django management entry
-│   ├── urls.py                  # Django URL configuration
-│   │
-│   ├── shared/                  # Django app: shared models & viewsets
-│   │   ├── models.py            # MenuItem, Category models
-│   │   ├── admin.py             # Django admin registration
-│   │   ├── portal_urls.py       # Portal URL patterns
-│   │   ├── portal_viewsets.py   # django-fusion viewsets
-│   │   ├── node_base.py         # Base node utilities
-│   │   ├── management/commands/
-│   │   │   └── seed_menu.py     # Menu seeding command
-│   │   ├── static/
-│   │   │   ├── css/portal.css   # Portal styles
-│   │   │   └── js/portal.js     # Portal scripts
-│   │   └── templates/portal/    # Portal templates
-│   │       ├── base.html        # Portal base template
-│   │       ├── dashboard.html   # Portal dashboard
-│   │       ├── 404.html         # Portal 404 page
-│   │       ├── menu_list.html   # Menu list view
-│   │       ├── menu_item_detail.html  # Menu item detail
-│   │       └── components/
-│   │           └── sidebar.html # Portal sidebar component
-│   │
-│   ├── portal/                  # Django app: portal views
+├── sidecar/                     # ── Robyn Sidecar (Python async + Django ORM) ──
+│   ├── server.py                # Robyn REST + WebSocket entry (~415 lines)
+│   ├── routes/                   # Route handler modules
+│   │   ├── __init__.py           #   register_all(app)
+│   │   ├── state.py              #   Shared helpers, SyncClient, WS broadcast
+│   │   ├── info.py               #   /, /health, /stats
+│   │   ├── nodes.py              #   Node CRUD, register, heartbeat, WS /ws/nodes
+│   │   ├── config.py             #   Device/Master/Cloud config, WS /ws/config
+│   │   ├── sync.py               #   Sync status, trigger, push/receive
+│   │   ├── approvals.py          #   Approve, reject, pending
+│   │   └── webhooks.py           #   Webhook receive, list, stats
+│   ├── models/                   # Django ORM models (managed)
 │   │   ├── __init__.py
-│   │   └── admin.py
-│   │
-│   ├── posapp/                  # Django app: POS mirror models (Full only)
-│   │   ├── __init__.py
-│   │   ├── apps.py              # Django AppConfig
-│   │   ├── models.py            # Django ORM models (mirror Rust schema)
-│   │   └── fixtures/
-│   │       └── seed_data.json   # Django-side seed data
-│   │
-│   └── cloud/                   # Cloud CRM server (Full only)
-│       ├── server.py            # Sanic cloud CRM server (port 8766)
-│       ├── api.py               # Cloud CRM REST API
-│       ├── api_urls.py          # API URL routes
-│       ├── models.py            # CRM models
-│       ├── sync_proxy.py        # Sync proxy — accepts entity pushes from Solo
-│       ├── sync_urls.py         # Sync URL routes
-│       ├── webhook_receiver.py  # Webhook endpoint
-│       ├── webhook_urls.py      # Webhook URL routes
-│       └── migrations/
+│   │   ├── node.py               #   Node, Heartbeat, NodeEvent
+│   │   ├── config.py             #   DeviceConfig, MasterDevice, CloudLink
+│   │   └── sync.py               #   SyncLog
+│   ├── posapp/                   # Rust-backed POS tables (managed=False)
+│   │   ├── models.py             #   30+ models mirroring Rust schema
+│   │   └── apps.py               #   PosAppConfig
+│   ├── tests/
+│   │   ├── test_server.py        # 53 tests
+│   │   ├── test_webhook_e2e.py   # 10 tests
+│   │   └── django_setup.py       # Standalone Django bootstrap helper
+│   ├── Makefile                  # Sidecar commands
+│   ├── pyproject.toml            # Rye/UV project metadata
+│   ├── requirements.txt          # Python dependencies
+│   └── ARCHITECTURE.md           # Sidecar architecture overview
 │
 ├── cloud/                       # ── Cloud CRM (standalone) ──
 │   ├── server.py                # Cloud CRM server entry

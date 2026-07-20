@@ -2,83 +2,81 @@
 
 ## What's Here
 
-Python/Sanic server providing HTTP REST API, WebSocket support, and **cloud CRM sync** for the POS Solo desktop app.
+**Robyn** async Python server with **Django ORM** providing a consolidated REST API (60+ endpoints), WebSocket real-time config streaming, and cloud sync client for the POS Solo desktop app.
 
 ```
 sidecar/
-├── server.py           # 🔴 Sanic app — all routes + WS + sync blueprint
-├── sync_client.py      # 🟢 HTTP client for cloud CRM sync (shared-portal/cloud/)
-├── sync_routes.py      # 🟢 Sync API blueprint (status, config, trigger, push)
-├── requirements.txt    #    Python dependencies (sanic + httpx)
-├── build.py            #    PyInstaller build script
-├── build.sh            #    Build shell wrapper
-└── posapp/             # 🔵 Django models (Category, Product, Customer, Sale, ...)
-    ├── __init__.py
-    └── models.py       #    Independent Django models (not Rust mirrors)
+├── server.py                 # 🟢 Robyn app — all routes (60+ endpoints) + middleware + WS
+├── models/                   # 🔵 Django ORM models (managed=True)
+│   ├── __init__.py
+│   ├── pos.py                # Category, Product, Customer, Sale, SaleItem, etc.
+│   ├── menu.py               # MenuItem, Menu, MenuItemAssignment
+│   ├── node.py               # Node, Heartbeat, NodeEvent
+│   ├── config.py              # DeviceConfig, MasterDevice, CloudLink
+│   └── sync.py                # SyncLog
+├── tests/
+│   └── test_unified_api.py   # 155 pytest tests
+├── requirements.txt          # Python dependencies
+├── Makefile                  # Sidecar commands
+├── build.py / build.sh       # Build scripts
+├── ARCHITECTURE.md           # Architecture docs
+└── README.md                 # This file
 ```
 
-## Customization Tags
-
-| Module | Tag | How to customize |
-|--------|-----|-----------------|
-| `server.py` routes | 🟢 `customizable` | Add new endpoints |
-| `server.py` WebSocket | 🔴 `not-customizable` | Protocol must match frontend `chat.ts` |
-| `server.py` INVOICE_TEMPLATE | 🟢 `customizable` | Edit HTML template freely |
-| `server.py` DESIGN_CONFIGS | 🟢 `customizable` | Add new invoice designs |
-| `sync_client.py` | 🟢 `customizable` | Add push methods for new entity types |
-| `sync_routes.py` | 🟢 `customizable` | Add new sync API endpoints |
-| `posapp/models.py` | 🔵 `template` | Django models — independent from Rust schema |
-
-## Cloud CRM Sync
-
-The solo edition can sync local POS data to the **pos-full cloud CRM server** (`shared-portal/cloud/`).
-
-### Sync Architecture
+## Architecture
 
 ```
-+--------------------+       HTTP REST        +---------------------+
-|  pos-solo          |  ──────────────────>  |  shared-portal/cloud/    |
-|  sidecar/server.py |  push products, sales |  cloud CRM server   |
-|  port 8765         |  <──────────────────  |  port 8766          |
-+--------------------+       status, config   +---------------------+
+┌──────────────────────────────────────────────────────┐
+│  POS Solo Server (Robyn, port 8765)                  │
+│  ┌─────────┐ ┌────────┐ ┌────────┐ ┌──────────────┐│
+│  │ POS API │ │Menu API│ │Node API│ │ Sync / Config││
+│  │ (CRUD)  │ │ (CRUD) │ │(manage)│ │ (status,     ││
+│  └────▲────┘ └────▲───┘ └────▲───┘ │  push, WS)  ││
+│       │           │          │     └──────▲───────┘│
+│       └───────────┴──────────┴────────────┘        │
+│                         │                          │
+│              Django ORM (restaurant.db)             │
+│  ┌───────────────────────────────────────────────┐ │
+│  │ models/pos.py   (Product, Sale, Customer...)  │ │
+│  │ models/menu.py  (MenuItem, Menu, Assignment)  │ │
+│  │ models/node.py  (Node, Heartbeat, Event)      │ │
+│  │ models/config.py (DeviceConfig, Master, Link) │ │
+│  │ models/sync.py  (SyncLog)                     │ │
+│  │ shared/models/  (SignalEvent, Approval, Token)│ │
+│  └───────────────────────────────────────────────┘ │
+└──────────────────────────────────────────────────────┘
 ```
 
-### Sync API Endpoints (Blueprint: `/api/sync/*`)
-
-| Endpoint | Description |
-|----------|-------------|
-| `GET /api/sync/status` | Current sync state (config, last_sync, items) |
-| `POST /api/sync/config` | Update sync config (cloud_url, interval, api_key) |
-| `POST /api/sync/trigger` | Trigger manual sync |
-| `GET /api/sync/log` | Sync history log |
-| `POST /api/sync/push/<type>` | Push single entity (products, sales, customers, etc.) |
-| `POST /api/sync/bulk-push/<type>` | Bulk-push multiple entities |
-
-### Quick Start (with Cloud CRM)
-
-```bash
-# Terminal 1: Start cloud CRM server
-cd ../shared-portal/cloud && python3 server.py --port 8766
-
-# Terminal 2: Start solo sidecar with sync
-cd ../pos-solo/sidecar && python3 server.py --db ../restaurant.db --port 8765
-
-# Configure sync
-curl -X POST http://127.0.0.1:8765/api/sync/config \
-  -H "Content-Type: application/json" \
-  -d '{"cloud_url": "http://localhost:8766", "sync_interval": 60}'
-```
-
-## Running
+## Quick Start
 
 ```bash
 pip install -r requirements.txt
-python server.py --db ../restaurant.db --port 8765
+python3 server.py --port 8765                     # Start Robyn server
+DJANGO_SETTINGS_MODULE='' python3 -m pytest -v    # Run 155 tests
 ```
 
-## Reference
+## Key Features
 
-- [POS-Solo README →](../README.md)
-- [POS-Full Cloud CRM →](../../shared-portal/cloud/README.md)
-- [Sidecar Docs →](../../docs/server/README.md)
-- [WebSocket Protocol →](../../docs/server/websocket.md)
+| Feature | Description |
+|---------|-------------|
+| ⚡ **High Performance** | Robyn Rust-powered async server (60k+ RPS) |
+| 🔄 **Django ORM** | 15 unified models in organized packages |
+| 🌐 **WebSocket** | Real-time config streaming via `/ws/config` |
+| 🔑 **Token Auth** | DeviceToken SHA-256 auth system |
+| ☁️ **Cloud Sync** | Push products, sales, nodes to Cloud Master |
+| ✅ **Full Test Suite** | 155 tests covering CRUD + relationships + edge cases |
+
+## Models Package Structure
+
+| Module | Models | Purpose |
+|--------|--------|---------|
+| `models/pos.py` | Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee | POS core entities |
+| `models/menu.py` | MenuItem, Menu, MenuItemAssignment | Menu management |
+| `models/node.py` | Node, Heartbeat, NodeEvent | Node registry |
+| `models/config.py` | DeviceConfig, MasterDevice, CloudLink | Configuration management |
+| `models/sync.py` | SyncLog | Sync operation audit |
+
+## Related Docs
+
+- [Architecture](ARCHITECTURE.md)
+- [Sidecar v2 Reference](../../docs/SIDECAR_V2.md)

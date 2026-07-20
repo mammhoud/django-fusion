@@ -18,19 +18,23 @@
 | Kitchen display system | ✅ | ✅ | ✅ |
 | POS-KO Gaming Center | ✅ | ✅ | ✅ |
 | Django Portal (admin UI) | ✅ | ✅ | ✅ |
-| Python/Sanic sidecar API | ❌ | ✅ | ✅ |
-| Python/Robyn sidecar (extended) | ❌ | 🟡 | ❌ |
+| Python/Robyn sidecar API | ❌ | ✅ (60+ endpoints) | ✅ (70+ endpoints) |
 | django-bolt API (Django portal) | ❌ | ❌ | ✅ |
 | REST API (35+ endpoints) | ❌ | ✅ | ✅ |
 | Invoice PDF generation | ❌ | ✅ | ✅ |
 | Chat support widget | ❌ | ✅ | ✅ |
 | Cloud CRM sync client | ❌ | ✅ | ✅ |
-| Django ORM models (30 tables) | ❌ | ❌ | ✅ |
-| WebSocket real-time chat | ❌ | ❌ | ✅ |
-| Cross-device data sync | ❌ | ❌ | ✅ |
-| Cloud CRM (shared-portal) | ❌ | ✅ | ✅ |
+| Django ORM models (organized packages) | ❌ | ✅ 17 tables (models/) | ✅ 7+30 tables (models/ + posapp/) |
+| WebSocket real-time streaming | ❌ | ✅ /ws/config | ✅ /ws/config + /ws/nodes |
+| Django Signals (config_changed, etc.) | ❌ | ✅ | ✅ |
+| Token-based auth (DeviceToken) | ❌ | ✅ | ✅ |
+| Moderated Approvals (SyncApproval) | ❌ | ✅ | ✅ |
+| Product Sync Engine | ❌ | ✅ (child) | ✅ (master) |
+| Cross-device data sync | ❌ | ✅ (push to master) | ✅ (cloud master) |
+| Cloud CRM (shared-portal) | ❌ | ✅ sync client | ✅ sync master |
 | JSON seed fixtures | ❌ | ❌ | ✅ |
 | Change signals (broadcast) | ❌ | ❌ | ✅ |
+| django-bolt API | ❌ | ❌ | ✅ (60k+ RPS) |
 
 ---
 
@@ -58,27 +62,22 @@ python3 sidecar/server.py --db restaurant.db --port 8765 &
 pnpm dev
 ```
 
-**Architecture:** React → Tauri invoke → Rust → SQLite ← Sanic sidecar → Cloud CRM
+**Architecture:** React → Tauri invoke → Rust → SQLite ← Robyn sidecar (60+ endpoints) → Cloud Master
 
-**Cloud Sync:** The Solo edition syncs products, sales, and customers to the Full edition's Cloud CRM server via `sync_client.py`.
+**Models:** Organized in `sidecar/models/` package:
+- `models/pos.py` — Category, Product, Customer, Sale, SaleItem, Inventory, Employee
+- `models/menu.py` — MenuItem, Menu, MenuItemAssignment
+- `models/node.py` — Node, Heartbeat, NodeEvent
+- `models/config.py` — DeviceConfig, MasterDevice, CloudLink
+- `models/sync.py` — SyncLog
 
-### Solo Extended (Robyn)
-
-An optional Robyn-based sidecar variant is available for the Solo edition, replacing Sanic with [Robyn](https://github.com/sparckles/Robyn) — a Rust-powered async Python web framework providing:
-- Higher throughput and lower latency vs Sanic
-- Built-in OpenAPI generation
-- Native WebSocket and SSE support
-- Pydantic validation integration
+**Cloud Sync:** The Solo edition pushes products, sales, and nodes to the Full edition's Cloud Master via the `SyncClient`.
 
 ```bash
-# Solo Extended with Robyn sidecar
 cd pos-solo && pnpm install
-pip install robyn[all]
-python3 sidecar/robyn_server.py --db restaurant.db --port 8765 &
+python3 sidecar/server.py --port 8765 &
 pnpm dev
 ```
-
-The Robyn variant is opt-in — the original Sanic sidecar remains the default for backward compatibility.
 
 ---
 
@@ -95,11 +94,26 @@ python3 sidecar/server.py &
 pnpm dev
 ```
 
-**Architecture:** React → Tauri → Rust → SQLite ← Sanic + Django ORM + django-bolt API + WebSocket ← Cloud CRM master
+**Architecture:** React → Tauri → Rust → SQLite ← Robyn (70+ endpoints) + Django ORM + WebSocket ← Cloud CRM master
 
-**django-bolt Integration:** The Full edition's Django portal uses [django-bolt](https://github.com/dj-bolt/django-bolt) for high-performance API endpoints (60k+ RPS), replacing standard Django views with Rust-powered async handlers. The bolt API is available at `http://localhost:8080/bolt/` alongside the standard Django admin at `/admin/`.
+**Models:** Organized in `sidecar/models/` package + `posapp/models.py`:
+- `models/node.py` — Node, Heartbeat, NodeEvent (managed=True)
+- `models/config.py` — DeviceConfig, MasterDevice, CloudLink (managed=True)
+- `models/sync.py` — SyncLog (managed=True)
+- `posapp/models.py` — 30+ Rust-mirror tables (managed=False)
 
-**Change Signals:** The Full edition includes a tokio broadcast-based change signal system that emits events when settings, products, or CRM entities are modified.
+**Django Signals:** Both editions use signals (`config_changed`, `config_synced`, `device_status_changed`) wired into all endpoints via `shared/signals/` and `shared/handlers/signal.py`.
+
+**django-bolt Integration:** The Full edition's Django portal uses [django-bolt](https://github.com/dj-bolt/django-bolt) for high-performance API endpoints (60k+ RPS) at `http://localhost:8080/bolt/`.
+
+**Token Auth:** Both editions support DeviceToken-based authentication via `shared/models/token.py` + `shared/middleware/auth.py`.
+
+```bash
+cd pos-full && pnpm install
+pip install -r sidecar/requirements.txt
+python3 sidecar/server.py --port 8766 &
+pnpm dev
+```
 
 ---
 

@@ -8,56 +8,78 @@
 
 | Edition | Backend | Frontend | Database |
 |---------|---------|----------|----------|
-| **Minimal** | Embedded Rust | Vue 3 (Tauri) | SQLite (file) |
-| **Solo** | Sidecar API (embedded) | Vue 3 (Tauri) | SQLite (file) |
-| **Full** | Sidecar API (external) | Vue 3 (Tauri) | SQLite (file) |
+| **Minimal** | Embedded Rust | React 19 (Tauri) | SQLite (file) |
+| **Solo** | Robyn + Django ORM (sidecar) | React 19 (Tauri) | SQLite (file, solo_portal.db) |
+| **Full** | Robyn + Django ORM + posapp (sidecar) | React 19 (Tauri) | SQLite (file, full_portal.db) |
 
 ---
 
 ## Sidecar Architecture
 
-### Solo (Embedded)
+Both editions use **Robyn** (Rust-powered Python async framework) with **Django ORM**.
+
+### Solo (Standalone Node)
 
 ```
-┌──────────────────────────┐
-│     Tauri App Window      │
-│  ┌──────────────────────┐ │
-│  │   Vue 3 Frontend     │ │
-│  │   (TypeScript)        │ │
-│  └──────┬───────────────┘ │
-│         │ invoke()        │
-│  ┌──────▼───────────────┐ │
-│  │   Rust Core (lib.rs)  │ │
-│  │   Tauri Commands      │ │
-│  └──────┬───────────────┘ │
-│         │ sidecar spawn   │
-│  ┌──────▼───────────────┐ │
-│  │   Sidecar Binary      │ │
-│  │   (Rust HTTP API)     │ │
-│  └──────────────────────┘ │
-└──────────────────────────┘
+┌────────────────────────────────────────────┐
+│     Tauri App / REST Client                 │
+│     (port 1420 for dev)                     │
+└──────────────────┬─────────────────────────┘
+                   │ HTTP REST / WebSocket
+┌──────────────────▼─────────────────────────┐
+│  Robyn Server (port 8765)                   │
+│  ┌─────────────────────────────────────┐   │
+│  │  Django ORM (solo_portal.db)        │   │
+│  │  models/pos.py, menu.py, node.py,   │   │
+│  │  models/config.py, sync.py          │   │
+│  └─────────────────────────────────────┘   │
+│  • 60+ REST endpoints                      │
+│  • WebSocket /ws/config                    │
+│  • Cloud sync client → Full master         │
+└────────────────────────────────────────────┘
 ```
 
-### Full (External Server)
+### Full (Cloud Master)
 
 ```
 ┌──────────────────┐     ┌──────────────────┐
 │  Tauri App #1    │     │  Tauri App #2    │
-│  (Terminal 1)    │     │  (Terminal 2)    │
 └────────┬─────────┘     └────────┬─────────┘
          │                        │
          └──────────┬─────────────┘
-                    │ HTTP API
-         ┌──────────▼─────────────┐
-         │   Sidecar Server       │
-         │   (Rust HTTP + WS)     │
-         │   :3000                │
-         └──────────┬─────────────┘
-                    │
-         ┌──────────▼─────────────┐
-         │   SQLite Database      │
-         │   (shared pos.db)      │
-         └────────────────────────┘
+                    │ HTTP REST
+┌───────────────────▼─────────────────────────┐
+│  Robyn Server (port 8766)                   │
+│  ┌─────────────────────────────────────┐   │
+│  │  Django ORM (full_portal.db)        │   │
+│  │  models/node.py, config.py, sync.py │   │
+│  │  posapp/models.py (Rust-backed)     │   │
+│  └─────────────────────────────────────┘   │
+│  • 70+ REST endpoints                      │
+│  • WebSocket /ws/nodes + /ws/config        │
+│  • Approval + product sync engine          │
+│  • django-bolt API (option, 60k+ RPS)      │
+└────────────────────────────────────────────┘
+
+                    │ accepts pushes from
+┌───────────────────▼─────────────────────────┐
+│  POS Solo / Minimal Nodes                   │
+│  (port 8765)                                │
+└────────────────────────────────────────────┘
+```
+
+### Shared Module Infrastructure
+
+```
+projects/pos/shared/        (reusable across both editions)
+├── signals/                Django signal definitions
+├── models/                 Shared models (audit, approval, token)
+├── handlers/               @receiver signal handlers
+├── services/               ProductSyncEngine
+├── middleware/              Auth middleware (bearer token + API key)
+├── api/                    CRUD helpers (_ser, _register_crud)
+├── portal_viewsets.py      Django Portal viewsets
+└── portal_urls.py          Portal URL patterns
 ```
 
 ---
@@ -70,25 +92,34 @@
 | Solo | None (localhost sidecar) |
 | Full | LAN/WiFi for multi-terminal |
 
-### Full Edition Ports
+### Port Assignments
 
 | Service | Port | Protocol |
 |---------|------|----------|
-| Sidecar HTTP API | `3000` | HTTP REST |
-| Sidecar WebSocket | `3001` | WS (real-time sync) |
+| Solo Robyn API | `8765` | HTTP REST + WebSocket |
+| Full Robyn API | `8766` | HTTP REST + WebSocket |
+| Solo Django Portal | `8080` | HTTP (Django) |
+| Full Django Portal | `8082` | HTTP (Django) |
+| Full Bolt API | `8082/bolt` | HTTP (django-bolt) |
 | Tauri Dev Server | `1420` | HTTP (Vite) |
+| Cloud CRM (legacy) | `8767` | HTTP (planned) |
 
 ---
 
 ## Build
 
 ```bash
-cd projects/pos/pos-full
-cargo build --release          # Rust backend
-cd ../pos-client
-npm install && npm run build   # Vue frontend
-cd ../pos-client/src-tauri
-cargo tauri build              # Tauri desktop bundle
+# Solo sidecar
+cd projects/pos/pos-solo/sidecar
+pip install -r requirements.txt
+python3 server.py --port 8765
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v  # 155 tests
+
+# Full sidecar
+cd projects/pos/pos-full/sidecar
+pip install -r requirements.txt
+python3 server.py --port 8766
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v  # 63 tests
 ```
 
 ---
