@@ -52,10 +52,11 @@ if not settings.configured:
         STATIC_URL=STATIC_URL,
         STATIC_ROOT=STATIC_ROOT,
     )
-    # Register admin models
-    import configs.admin  # noqa: F401
 
 django.setup()
+
+# Register admin models (must happen AFTER django.setup() or models won't be ready)
+import configs.admin  # noqa: F401
 
 from django.core.management import execute_from_command_line
 

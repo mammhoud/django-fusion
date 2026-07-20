@@ -19,7 +19,7 @@ from models.pos import Category, Product, Customer, Sale, SaleItem, InventoryTra
 from models.menu import MenuItem, Menu, MenuItemAssignment
 
 # ── Node & Config Models ──
-from models.node import Node, Heartbeat, NodeEvent
+from models.node import Node
 from models.config import DeviceConfig, MasterDevice, CloudLink
 from models.sync import SyncLog
 
@@ -40,22 +40,6 @@ class PurchaseOrderItemInline(TabularInline):
     extra = 0
 
 
-class HeartbeatInline(TabularInline):
-    model = Heartbeat
-    extra = 0
-    readonly_fields = ["received_at"]
-    can_delete = False
-    max_num = 0
-
-
-class NodeEventInline(TabularInline):
-    model = NodeEvent
-    extra = 0
-    readonly_fields = ["created_at"]
-    can_delete = False
-    max_num = 0
-
-
 # ── POS Core Admin Classes ──
 @admin.register(Category)
 class CategoryAdmin(ModelAdmin):
@@ -69,7 +53,7 @@ class CategoryAdmin(ModelAdmin):
 
 @admin.register(Product)
 class ProductAdmin(ModelAdmin):
-    list_display = ["id", "name", "price", "unit", "category", "is_active", "created_at"]
+    list_display = ["id", "name", "price", "category", "is_active", "created_at"]
     list_filter = ["is_active", "category"]
     list_filter_submit = True
     search_fields = ["name", "sku"]
@@ -120,8 +104,8 @@ class EmployeeAdmin(ModelAdmin):
 
 @admin.register(MenuItem)
 class MenuItemAdmin(ModelAdmin):
-    list_display = ["id", "name", "price", "is_active"]
-    list_filter = ["is_active"]
+    list_display = ["id", "name", "price", "is_available"]
+    list_filter = ["is_available"]
     search_fields = ["name"]
 
 
@@ -138,7 +122,7 @@ class NodeAdmin(ModelAdmin):
     list_filter_submit = True
     search_fields = ["node_id", "hostname"]
     ordering = ["-last_seen"]
-    inlines = [HeartbeatInline, NodeEventInline]
+    # Heartbeat/NodeEvent use node_id CharField (not FK) — see separate admin classes below
     list_fullwidth = True
 
 
@@ -161,12 +145,14 @@ class DeviceConfigAdmin(ModelAdmin):
 
 @admin.register(MasterDevice)
 class MasterDeviceAdmin(ModelAdmin):
-    list_display = ["id", "device_name", "is_master", "is_active"]
+    list_display = ["id", "name", "device_id", "device_type", "status", "is_active"]
+    list_filter = ["device_type", "status", "is_active"]
 
 
 @admin.register(CloudLink)
 class CloudLinkAdmin(ModelAdmin):
-    list_display = ["id", "name", "url", "is_active"]
+    list_display = ["id", "name", "cloud_url", "status", "is_primary", "is_active"]
+    list_filter = ["status", "is_active"]
 
 
 # ── Operations Admin Classes ──

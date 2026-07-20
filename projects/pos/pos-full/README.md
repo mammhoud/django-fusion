@@ -14,15 +14,15 @@
 
 ## 📸 Dashboard Preview
 
-| Dashboard | Products |
+| Dashboard (SVG mockup) | Products (SVG mockup) |
 |:---:|:---:|
 | ![Admin Dashboard](docs/screenshots/admin/admin-dashboard.svg) | ![Products List](docs/screenshots/admin/admin-products.svg) |
 | *9 KPI cards, 5 charts, 2 data tables* | *Paginated table with status badges* |
 
-| Customers | Sales |
+| Admin Login (live screenshot) | Real screenshots |
 |:---:|:---:|
-| ![Customers List](docs/screenshots/admin/admin-customers.svg) | ![Sales List](docs/screenshots/admin/admin-sales.svg) |
-| *Filterable customer registry* | *Payment method breakdown* |
+| ![Unfold Login Page](docs/screenshots/admin/01_admin_dashboard.jpg) | ![Products](docs/screenshots/admin/02_admin_products.jpg) · ![Customers](docs/screenshots/admin/03_admin_customers.jpg) · ![Sales](docs/screenshots/admin/04_admin_sales.jpg) |
+| *Unfold dark theme login page (1440×1080)* | *Login page shown; run `make admin-bootstrap` then log in to capture authenticated views* |
 
 > **Tip:** Run `make admin-screenshots` after starting the server to capture live JPG screenshots from your running instance.
 
