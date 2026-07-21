@@ -33,6 +33,16 @@ from django_fusion.comp.generic import (
 )
 ```
 
+### Forms & Tables (`comp.contrib`)
+
+```python
+from django_fusion.comp.contrib.tables import TableMixin, RowGenerator
+from django_fusion.comp.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
+```
+
+Legacy imports from ``django_fusion.comp.routes.forms_tables`` still work
+but are forwarded to ``comp.contrib`` internally.
+
 ### Other Canonical Paths
 
 | Module | Canonical Path |

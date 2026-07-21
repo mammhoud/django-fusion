@@ -31,7 +31,8 @@ from __future__ import annotations
 
 import pytest
 
-from django_fusion.comp.routes.forms_tables import FormMixin, TableMixin
+from django_fusion.comp.contrib.forms import FormMixin
+from django_fusion.comp.contrib.tables import TableMixin
 
 
 class _FormComponent(FormMixin):

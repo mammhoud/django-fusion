@@ -1,16 +1,14 @@
 """
-django_fusion.comp.forms — Form utilities and mixins.
+django_fusion.comp.forms — Form utilities and mixins (deprecated).
 
-This module provides form classes and mixins for django-fusion component forms.
-Note: Most functionality has been moved to HTMX handlers and form handlers.
+This module is DEPRECATED. Use the new canonical location instead:
+    from django_fusion.comp.contrib.forms import FormMixin, FormTagGenerator
 
-Classes:
-    LayoutElement: Base class for form layout elements.
-    FormAjaxCompleteMixin: Stub mixin (functionality moved to HTMX handlers).
-    FormDependentSelectMixin: Stub mixin (functionality moved to form handlers).
+The contrib package provides enhanced forms with ModelForm auto-creation,
+layout support, and FormTagGenerator for field-level rendering.
 
 Deprecated:
-    This module is deprecated. Use django.forms.ModelForm directly.
+    This module is deprecated. Use ``django_fusion.comp.contrib.forms``.
 """
 import os
 import warnings
