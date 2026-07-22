@@ -6,9 +6,9 @@ import { invoke } from '@tauri-apps/api/core';
 import SideNav from './SideNav';
 import { Settings } from '../types';
 import { useAuth, AuthUser } from '../contexts/AuthContext';
-// Bundled fallback logo (mirrors src-tauri/icons/logo-img.png).
+// Bundled fallback logo (animated POS Crest SVG).
 // settings.logo always takes priority when uploaded.
-import defaultLogo from '../assets/logo-img.png';
+import defaultLogo from '../assets/pos-crest.svg';
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
 

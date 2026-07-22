@@ -7,9 +7,9 @@ import { invoke } from '@tauri-apps/api/core';
 import { Settings } from '../types';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-// Bundled brand logo (mirrors src-tauri/icons/logo-img.png).
+// Bundled brand logo (animated POS Crest SVG).
 // User-uploaded settings.logo always takes priority when present.
-import defaultLogo from '../assets/logo-img.png';
+import defaultLogo from '../assets/pos-crest.svg';
 
 export default function Home() {
   const container = {

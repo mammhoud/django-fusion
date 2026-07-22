@@ -1,0 +1,97 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 500" width="100%" height="100%" style="max-width:400px; display:block; margin:auto;">
+  <defs>
+    <style>
+      .ribbon-path {
+        stroke-dasharray: 1500;
+        stroke-dashoffset: 1500;
+        animation: drawRibbon 3s ease forwards;
+      }
+      @keyframes drawRibbon {
+        to { stroke-dashoffset: 0; }
+      }
+      #lms-main-flow {
+        stroke-dasharray: 60 30;
+        animation: flowRibbon 4s linear infinite 3s;
+      }
+      @keyframes flowRibbon {
+        from { stroke-dashoffset: 0; }
+        to   { stroke-dashoffset: -180; }
+      }
+      #lms-shine {
+        stroke-dasharray: 40 1500;
+        animation: shineMove 3s linear infinite 3s;
+      }
+      @keyframes shineMove {
+        from { stroke-dashoffset: 1540; }
+        to   { stroke-dashoffset: 0; }
+      }
+      #lms-ribbon-container {
+        animation: floatLogo 5s ease-in-out infinite;
+        transform-origin: center;
+      }
+      @keyframes floatLogo {
+        0%,100% { transform: translateY(0px); }
+        50%     { transform: translateY(-10px); }
+      }
+      #lms-center-spark {
+        animation: lmsSparkPulse 2s ease-in-out infinite 3s;
+        transform-origin: center;
+      }
+      @keyframes lmsSparkPulse {
+        0%,100% { transform: scale(1); }
+        50%     { transform: scale(1.12); }
+      }
+    </style>
+    <linearGradient id="lms-ribbonTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#34D399"/>
+      <stop offset="50%" stop-color="#10B981"/>
+      <stop offset="100%" stop-color="#059669"/>
+      <animate attributeName="x1" values="0%;100%;0%" dur="6s" repeatCount="indefinite"/>
+      <animate attributeName="x2" values="100%;0%;100%" dur="6s" repeatCount="indefinite"/>
+    </linearGradient>
+    <linearGradient id="lms-ribbonDark" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0F172A"/>
+      <stop offset="100%" stop-color="#1E293B"/>
+    </linearGradient>
+    <linearGradient id="lms-isoGold" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#F59E0B"/>
+      <stop offset="100%" stop-color="#D97706"/>
+    </linearGradient>
+    <linearGradient id="lms-sparkCopper" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#B45309"/>
+    </linearGradient>
+    <filter id="lms-ribbonGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="8" flood-color="#059669" flood-opacity="0.3"/>
+    </filter>
+    <filter id="lms-isoShadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="8" stdDeviation="6" flood-color="#0F172A" flood-opacity="0.25"/>
+    </filter>
+    <filter id="lms-sparkGlow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="6" stdDeviation="6" flood-color="#EA580C" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+  <g id="lms-ribbon-container">
+    <path fill="none" stroke="url(#lms-ribbonDark)" stroke-width="26" stroke-linecap="round" stroke-linejoin="round" filter="url(#lms-ribbonGlow)"
+          d="M 240 120 C 160 120 120 175 120 250 C 120 325 175 380 250 380 C 325 380 370 325 360 260 C 350 195 285 185 230 215 C 195 235 205 280 250 270 C 285 260 305 225 295 190 C 285 155 240 135 195 155 C 150 175 140 230 150 280"/>
+    <path class="ribbon-path" id="lms-main-flow" fill="none" stroke="url(#lms-ribbonTeal)" stroke-width="22" stroke-linecap="round" stroke-linejoin="round"
+          d="M 240 120 C 160 120 120 175 120 250 C 120 325 175 380 250 380 C 325 380 370 325 360 260 C 350 195 285 185 230 215 C 195 235 205 280 250 270 C 285 260 305 225 295 190 C 285 155 240 135 195 155 C 150 175 140 230 150 280"/>
+    <path id="lms-shine" fill="none" stroke="#ffffff" stroke-width="6" stroke-linecap="round" opacity="0.8"
+          d="M 240 120 C 160 120 120 175 120 250 C 120 325 175 380 250 380 C 325 380 370 325 360 260 C 350 195 285 185 230 215 C 195 235 205 280 250 270 C 285 260 305 225 295 190 C 285 155 240 135 195 155 C 150 175 140 230 150 280"/>
+    <g filter="url(#lms-isoShadow)">
+      <path fill="url(#lms-isoGold)" d="M 250 100 L 130 170 L 130 230 L 250 160 Z"/>
+      <path fill="url(#lms-isoGold)" d="M 370 230 L 370 350 L 310 385 L 310 265 Z"/>
+      <path fill="url(#lms-isoGold)" d="M 190 385 L 310 385 L 250 420 Z"/>
+    </g>
+    <g filter="url(#lms-sparkGlow)">
+      <path fill="none" stroke="url(#lms-sparkCopper)" stroke-width="9" stroke-linecap="round"
+            d="M 250 100 C 175 150 175 350 250 400"/>
+      <path fill="none" stroke="url(#lms-sparkCopper)" stroke-width="9" stroke-linecap="round"
+            d="M 250 100 C 325 150 325 350 250 400"/>
+    </g>
+    <g id="lms-center-spark" filter="url(#lms-sparkGlow)">
+      <path fill="url(#lms-sparkCopper)"
+            d="M 250 200 Q 250 250 300 250 Q 250 250 250 300 Q 250 250 200 250 Q 250 250 250 200 Z"/>
+    </g>
+  </g>
+</svg>

@@ -4,8 +4,8 @@
 
 {% block branding_login %}
     <div style="text-align: center; margin-bottom: 20px;">
-        <img src="{% static 'images/logo.png' %}" alt="CTC Hub" width="150" />
-        <h2 style="margin-top: 10px;">Sign in to CTC Research</h2>
+        <img src="{% static 'images/brand/lms-ribbon.svg' %}" alt="Structa Cloud" width="180" />
+        <h2 style="margin-top: 10px; color: #134e4a;">Sign in to Structa Cloud</h2>
     </div>
 {% endblock %}
 
@@ -16,7 +16,7 @@
                 <div class="col-md-6 col-lg-5">
                     <div class="card shadow-lg border-0">
                         <div class="card-body p-5">
-                            <h2 class="text-center mb-4">{% block branding_login %}Sign in{% endblock %}</h2>
+                            <h2 class="text-center mb-4">{% block login_heading %}Sign in{% endblock %}</h2>
                             <form action="{% url 'wagtailadmin_login' %}" method="post" autocomplete="off" novalidate>
                                 {% csrf_token %}
                                 {% if form.errors %}

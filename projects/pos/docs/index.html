@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>POS — Structa Cloud Docs</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="//unpkg.com/docsify/themes/vue.css">
+  <style>
+    .app-nav { margin-right: 0; }
+    .sidebar-nav h2 { font-size: .9rem; text-transform: uppercase; letter-spacing: .05em; color: #64748b; }
+  </style>
+</head>
+<body>
+  <div id="app"></div>
+  <script>
+    window.$docsify = {
+      name: 'POS',
+      repo: 'structa.cloud',
+      loadSidebar: '_sidebar.md',
+      subMaxLevel: 3,
+      auto2top: true,
+      search: {
+        maxAge: 86400000,
+        paths: 'auto',
+        placeholder: 'Search…',
+      },
+    };
+  </script>
+  <script src="//unpkg.com/docsify/lib/docsify.min.js"></script>
+  <script src="//unpkg.com/docsify/lib/plugins/search.min.js"></script>
+  <script src="//unpkg.com/docsify-copy-code"></script>
+</body>
+</html>

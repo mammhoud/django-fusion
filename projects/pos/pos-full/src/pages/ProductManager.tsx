@@ -94,7 +94,7 @@ export default function ProductManager() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showAddModal, showDeleteModal]);
 
-  useEffect(() => {  // RTK Query — paginated products with auto-caching
+  // RTK Query — paginated products with auto-caching
   const [page] = useState(1);
   const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({ page, per_page: 200 });
   const { data: categoriesData } = useGetCategoriesQuery();
