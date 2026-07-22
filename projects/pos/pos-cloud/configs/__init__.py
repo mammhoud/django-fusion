@@ -118,7 +118,14 @@ UNFOLD = {
     "SITE_HEADER": "POS Cloud — Multi-Branch Management",
     "SITE_SUBHEADER": "Organizations • Branches • Leads • Reports",
     "SITE_URL": "/",
-    "SITE_ICON": None,
+    "SITE_ICON": {
+        "light": "/static/pos-crest.svg",
+        "dark": "/static/pos-crest.svg",
+    },
+    "SITE_LOGO": {
+        "light": "/static/pos-crest.svg",
+        "dark": "/static/pos-crest.svg",
+    },
     "SITE_SYMBOL": "store",
     "DASHBOARD": "configs.dashboard.POSCloudDashboard",
     "SHOW_HISTORY": True,

@@ -111,23 +111,35 @@
   }
 
   function setWsStatus(status) {
+    // Admin dashboard status dot
     var dot = document.getElementById("sync-status-dot");
     var label = document.getElementById("sync-status-label");
-    if (!dot || !label) return;
-    dot.setAttribute("data-sync-status", status);
-    dot.className = "w-2 h-2 rounded-full " + (
-      status === "connected" ? "bg-emerald-500" :
-      status === "connecting" ? "bg-amber-400" : "bg-gray-400"
-    );
-    label.textContent = status;
+    if (dot && label) {
+      dot.setAttribute("data-sync-status", status);
+      dot.className = "w-2 h-2 rounded-full " + (
+        status === "connected" ? "bg-emerald-500" :
+        status === "connecting" ? "bg-amber-400" : "bg-gray-400"
+      );
+      label.textContent = status;
+    }
+
+    // Log viewer reconnect indicator
+    var reconnectEl = document.getElementById("sync-log-reconnect");
+    if (reconnectEl) {
+      reconnectEl.style.display = status === "connected" ? "none" : "inline-flex";
+      var textEl = document.getElementById("sync-log-reconnect-text");
+      if (textEl) {
+        textEl.textContent = hasConnectedOnce ? "Reconnecting…" : "Connecting…";
+      }
+    }
   }
 
   // ── Sync Event Log Viewer ────────────────────────────────────────
 
-  /** Build and inject the log viewer panel into the bolt dashboard. */
+  /** Build and inject the log viewer panel into dashboards. */
   function createLogPanel() {
-    // Only create on bolt dashboard pages, and only once.
-    if (!location.pathname.startsWith("/apis")) return;
+    // Create on bolt dashboard and admin dashboard pages, once only.
+    if (!location.pathname.startsWith("/apis") && !location.pathname.startsWith("/admin")) return;
     if (logPanel || document.getElementById("sync-event-log")) return;
 
     var panel = document.createElement("div");
@@ -135,6 +147,10 @@
     panel.innerHTML =
       '<div class="sync-log-header">' +
         '<span class="sync-log-title">📡 Sync Event Log</span>' +
+        '<span class="sync-log-reconnect" id="sync-log-reconnect" style="display:none">' +
+          '<span class="sync-log-reconnect-dot"></span>' +
+          '<span class="sync-log-reconnect-text">Reconnecting…</span>' +
+        '</span>' +
         '<span class="sync-log-count" id="sync-log-count">0 events</span>' +
         '<button class="sync-log-toggle" id="sync-log-toggle" title="Minimize">▾</button>' +
         '<button class="sync-log-clear" id="sync-log-clear" title="Clear log">✖</button>' +
@@ -160,6 +176,18 @@
       "}" +
       ".sync-log-title { flex:1; }" +
       ".sync-log-count { font-size:11px;color:#94a3b8; }" +
+      ".sync-log-reconnect {" +
+        "display:inline-flex;align-items:center;gap:4px;" +
+        "font-size:11px;color:#fbbf24;" +
+      "}" +
+      ".sync-log-reconnect-dot {" +
+        "width:6px;height:6px;border-radius:50%;background:#fbbf24;" +
+        "animation:sync-log-pulse 1.2s ease-in-out infinite;" +
+      "}" +
+      "@keyframes sync-log-pulse {" +
+        "0%,100% { opacity:1; }" +
+        "50% { opacity:0.3; }" +
+      "}" +
       ".sync-log-clear {" +
         "background:none;border:none;color:#64748b;cursor:pointer;" +
         "font-size:14px;padding:0 2px;line-height:1;" +
@@ -346,6 +374,8 @@
 
   // ── Connection lifecycle ─────────────────────────────────────────
 
+  var hasConnectedOnce = false;
+
   function connect() {
     if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
     setWsStatus("connecting");
@@ -354,6 +384,7 @@
 
     ws.onopen = function () {
       console.log("[sync-events] Connected to", wsUrl());
+      hasConnectedOnce = true;
       setWsStatus("connected");
       reconnectDelay = RECONNECT_BASE_MS;
     };
