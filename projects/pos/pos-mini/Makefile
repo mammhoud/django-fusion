@@ -103,10 +103,10 @@ build-all:            ## Build all platforms sequentially
 # ── Sidecar ───────────────────────────────────────────────────────────────
 
 build-sidecar:        ## Build the Python/Sanic sidecar binary for the current platform
-	node scripts/dev/build-sidecar.cjs
+	node scripts/publish/build-sidecar.cjs
 
 build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. build-sidecar-x86_64-unknown-linux-gnu)
-	node scripts/dev/build-sidecar.cjs --target $*
+	node scripts/publish/build-sidecar.cjs --target $*
 
 # ── Screenshots ─────────────────────────────────────────────────────────────
 

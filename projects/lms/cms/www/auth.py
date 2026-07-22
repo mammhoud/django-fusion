@@ -31,16 +31,16 @@ class TokenAuthBackend(BaseAuthentication):
 
     Args:
         accept_types: Set of token types allowed for API auth.
-            Default: ``{\"access\", \"api\"}`` — rejects sync & refresh tokens.
+            Default: ``{"access", "api"}`` — rejects sync & refresh tokens.
         category: Optional filter — only tokens with this category value
-            are accepted (e.g. ``\"pos-branch-1\"`` to scope to one device).
+            are accepted (e.g. ``"pos-branch-1"`` to scope to one device).
 
     Example:
         # Accept only access tokens:
-        auth=[TokenAuthBackend(accept_types={\"access\"})]
+        auth=[TokenAuthBackend(accept_types={"access"})]
 
         # Accept access + api tokens for a specific category:
-        auth=[TokenAuthBackend(accept_types={\"access\", \"api\"}, category=\"mobile-app\")]
+        auth=[TokenAuthBackend(accept_types={"access", "api"}, category="mobile-app")]
     """
 
     def __init__(
@@ -48,32 +48,32 @@ class TokenAuthBackend(BaseAuthentication):
         accept_types: set[str] | None = None,
         category: str | None = None,
     ):
-        self.accept_types = accept_types or {\"access\", \"api\"}
+        self.accept_types = accept_types or {"access", "api"}
         self.category = category
 
     @property
     def scheme_name(self) -> str:
-        return \"token\"
+        return "token"
 
     def to_metadata(self) -> dict[str, Any]:
         """Metadata for bolt Rust-side header extraction + Python user resolution."""
         return {
-            \"type\": \"token\",
-            \"header\": \"authorization\",
-            \"accept_types\": sorted(self.accept_types),
-            \"category\": self.category,
+            "type": "token",
+            "header": "authorization",
+            "accept_types": sorted(self.accept_types),
+            "category": self.category,
         }
 
     async def get_user(self, user_id: str | None, auth_context: dict[str, Any]) -> Any | None:
         """Resolve User from the auth context after Rust extracts the token.
 
-        The raw token string is placed in ``auth_context[\"raw_token\"]`` by bolt's
+        The raw token string is placed in ``auth_context["raw_token"]`` by bolt's
         Rust layer (or by the Python fallback path).  We hash it and look it up
         in the Token table.
         """
         from www.content.models.others import Token
 
-        raw = auth_context.get(\"raw_token\") if auth_context else None
+        raw = auth_context.get("raw_token") if auth_context else None
         if not raw:
             return None
 
@@ -96,7 +96,7 @@ class TokenAuthBackend(BaseAuthentication):
         """Synchronous user resolution (used by sync handlers in thread pool)."""
         from www.content.models.others import Token
 
-        raw = auth_context.get(\"raw_token\") if auth_context else None
+        raw = auth_context.get("raw_token") if auth_context else None
         if not raw:
             return None
 
@@ -122,8 +122,8 @@ class TokenAuthBackend(BaseAuthentication):
 
 def extract_bearer_token(request) -> str | None:
     """Extract the ``Bearer <token>`` value from the request's Authorization header."""
-    auth_header = request.headers.get(\"authorization\", \"\") or request.headers.get(\"Authorization\", \"\")
-    if auth_header.lower().startswith(\"bearer \"):
+    auth_header = request.headers.get("authorization", "") or request.headers.get("Authorization", "")
+    if auth_header.lower().startswith("bearer "):
         return auth_header[7:].strip()
     return None
 
@@ -138,7 +138,7 @@ def authenticate_request(request, *, accept_types: set[str] | None = None):
         def my_handler(request):
             user = authenticate_request(request)
             if user is None:
-                return {\"error\": \"Unauthorized\"}, 401
+                return {"error": "Unauthorized"}, 401
             ...
     """
     raw = extract_bearer_token(request)
@@ -169,12 +169,12 @@ def auth_required(*, accept_types: set[str] | None = None, category: str | None 
 
     Shorthand so you can write::
 
-        @bolt.get(\"/me\", **auth_required())
+        @bolt.get("/me", **auth_required())
         def get_me(request): ...
 
     instead of::
 
-        @bolt.get(\"/me\", auth=[TokenAuthBackend()])
+        @bolt.get("/me", auth=[TokenAuthBackend()])
         def get_me(request): ...
     """
-    return {\"auth\": [TokenAuthBackend(accept_types=accept_types, category=category)]}
+    return {"auth": [TokenAuthBackend(accept_types=accept_types, category=category)]}

@@ -26,10 +26,21 @@ try {
     if (match) {
       dbUrl = match[1].trim();
     }
+  } else {
+    // No .env file — write a minimal one so subsequent cargo runs also see DATABASE_URL
+    try {
+      fs.writeFileSync(envPath, `DATABASE_URL=${dbUrl}\n`, 'utf8');
+      console.log(`📝 Created .env with DATABASE_URL=${dbUrl}`);
+    } catch {
+      // silently ignore — will export via execSync below
+    }
   }
 } catch {
   // silently ignore — use default
 }
+
+// Ensure it's set in the current process so cargo (pnpm db:seed) sees it
+process.env.DATABASE_URL = dbUrl;
 
 const dbPath = path.isAbsolute(dbUrl)
   ? dbUrl
@@ -46,7 +57,11 @@ console.log(`🆕 Database not found at ${dbPath}`);
 console.log('🌱 Running database seed...');
 
 try {
-  execSync('pnpm db:seed', { stdio: 'inherit', cwd: PROJECT_ROOT });
+  execSync('pnpm db:seed', {
+    stdio: 'inherit',
+    cwd: PROJECT_ROOT,
+    env: { ...process.env, DATABASE_URL: dbUrl },
+  });
   console.log('✅ Database seeded successfully!');
 } catch (error) {
   console.warn('⚠️  Database seed failed:', error.message);

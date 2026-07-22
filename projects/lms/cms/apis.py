@@ -693,3 +693,11 @@ def get_main_menu(request):
         })
 
     return {"data": items}
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# DRF-converted bolt endpoints — register all modular handlers
+# ═══════════════════════════════════════════════════════════════════════════
+
+from www.api.bolt.router import register_all_handlers
+register_all_handlers(bolt)
