@@ -3,6 +3,14 @@ django_fusion models — base models and mixins for Django applications.
 """
 from .auth import Role, UserRole  # noqa: F401
 from .base import BaseModel, TimeStampedModel, UUIDModel  # noqa: F401
+from .datatoken import (  # noqa: F401
+    DataToken,
+    DataTokenManager,
+    DataTokenMixin,
+    DataTokenQuerySet,
+    sync_log_success_handler,
+    untag_by_entity,
+)
 from .email import EmailLog, EmailTemplate, UserGroup  # noqa: F401
 from .integrations import Integration
 from .interaction.call import Call
@@ -45,4 +53,11 @@ __all__ = [
     # Auth models
     "UserRole",
     "Role",
+    # DataToken sync-tagging system
+    "DataToken",
+    "DataTokenManager",
+    "DataTokenMixin",
+    "DataTokenQuerySet",
+    "sync_log_success_handler",
+    "untag_by_entity",
 ]
