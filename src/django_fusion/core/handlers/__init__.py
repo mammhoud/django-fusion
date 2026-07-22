@@ -6,7 +6,7 @@ that can be used across projects without Wagtail dependencies.
 """
 
 from .base import ErrorTrackerMiddleware
-from .core import (
+from .emails import (
     DynamicComponentRenderer,
     EmailTemplateRegistry,
     EmailTemplateSelector,

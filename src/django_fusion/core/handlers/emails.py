@@ -1,8 +1,14 @@
 """
-Core handler classes and utilities for django_fusion.
+Handler classes and utilities for django_fusion — email templates, renderers, roles & access control.
 
-This module contains core handler functionality that is pure Django
-and can be used across projects without Wagtail dependencies.
+This module provides email template selection/registry, dynamic component rendering,
+and role-based access control utilities that are pure Django and can be used across
+projects without Wagtail dependencies.
+
+Canonical imports:
+    from django_fusion.core.handlers.emails import EmailTemplateRegistry, EmailTemplateSelector
+    from django_fusion.core.handlers.emails import DynamicComponentRenderer
+    from django_fusion.core.handlers.emails import RoleHierarchyManager, GroupAccessControl
 """
 
 from typing import List, Set, Tuple
@@ -347,7 +353,7 @@ class DynamicComponentRenderer:
     using the Django template engine, ensuring they can be used
     within the django-grep component ecosystem.
 
-    Canonical import: from django_fusion.handlers.core import DynamicComponentRenderer
+    Canonical import: from django_fusion.core.handlers.emails import DynamicComponentRenderer
     """
 
     def render(self, html_file, context) -> str:
@@ -398,7 +404,7 @@ class EmailTemplateSelector:
     Provides role-based email template selection and rendering with
     fallback to default templates.
 
-    Canonical import: from django_fusion.handlers.core import EmailTemplateSelector
+    Canonical import: from django_fusion.core.handlers.emails import EmailTemplateSelector
     """
 
     # Role to template mapping
@@ -564,7 +570,7 @@ class EmailTemplateRegistry:
 
     Provides a centralized registry for email templates with role-based lookup.
 
-    Canonical import: from django_fusion.handlers.core import EmailTemplateRegistry
+    Canonical import: from django_fusion.core.handlers.emails import EmailTemplateRegistry
     """
 
     _templates = {}
