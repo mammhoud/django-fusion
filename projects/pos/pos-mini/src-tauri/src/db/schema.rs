@@ -37,6 +37,7 @@ diesel::table! {
         unit -> Text,
         category_id -> Nullable<Integer>,
         image -> Nullable<Text>,
+        product_type -> Text,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,

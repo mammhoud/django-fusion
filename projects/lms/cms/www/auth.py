@@ -17,9 +17,12 @@ Usage (default for all routes):
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from django_bolt.auth.backends import BaseAuthentication
+
+logger = logging.getLogger(__name__)
 
 
 class TokenAuthBackend(BaseAuthentication):
@@ -71,7 +74,7 @@ class TokenAuthBackend(BaseAuthentication):
         Rust layer (or by the Python fallback path).  We hash it and look it up
         in the Token table.
         """
-        from www.content.models.others import Token
+        Token = _resolve_token_model()
 
         raw = auth_context.get("raw_token") if auth_context else None
         if not raw:
@@ -94,7 +97,7 @@ class TokenAuthBackend(BaseAuthentication):
 
     def get_user_sync(self, user_id: str | None, auth_context: dict[str, Any]) -> Any | None:
         """Synchronous user resolution (used by sync handlers in thread pool)."""
-        from www.content.models.others import Token
+        Token = _resolve_token_model()
 
         raw = auth_context.get("raw_token") if auth_context else None
         if not raw:
@@ -120,9 +123,47 @@ class TokenAuthBackend(BaseAuthentication):
 # ═══════════════════════════════════════════════════════════════════════════
 
 
+def _resolve_token_model():
+    """Get the Token model via Django's app registry to ensure proper initialization.
+
+    Using ``apps.get_model()`` forces Django's model metaclass to run,
+    which properly sets up ``.objects`` and other Manager attributes.
+    This is needed because direct ``import`` statements inside the bolt
+    TestClient's Rust sub-interpreter may bypass the metaclass, yielding
+    a plain Python class without Manager attributes.
+    """
+    try:
+        from django.apps import apps as _apps
+        Token = _apps.get_model("content", "Token")
+        if Token is not None:
+            return Token
+    except Exception as exc:
+        logger.debug("Token model lookup via apps.get_model failed: %s", exc)
+    # Fallback: direct import
+    from www.content.models.others import Token as _TokenDirect
+    return _TokenDirect
+
+
 def extract_bearer_token(request) -> str | None:
-    """Extract the ``Bearer <token>`` value from the request's Authorization header."""
-    auth_header = request.headers.get("authorization", "") or request.headers.get("Authorization", "")
+    """Extract the ``Bearer <token>`` value from the request's Authorization header.
+
+    Compatible with both Django HttpRequest (``request.headers`` as dict-like)
+    and bolt PyRequest (``request.headers`` as dict).  Falls back to
+    ``request.META`` for Django requests and returns ``None`` on failure.
+    """
+    # Try primary path: PyRequest.headers or DRF's request.headers (both dict-like)
+    try:
+        if hasattr(request, "headers") and isinstance(request.headers, dict):
+            auth_header = request.headers.get("authorization", "") or request.headers.get("Authorization", "")
+        elif hasattr(request, "META"):
+            # Django HttpRequest
+            auth_header = request.META.get("HTTP_AUTHORIZATION", "")
+        else:
+            return None
+    except Exception:
+        # Fallback for bare dict-like access failures
+        return None
+
     if auth_header.lower().startswith("bearer "):
         return auth_header[7:].strip()
     return None
@@ -145,7 +186,7 @@ def authenticate_request(request, *, accept_types: set[str] | None = None):
     if not raw:
         return None
 
-    from www.content.models.others import Token
+    Token = _resolve_token_model()
 
     token_obj, user = Token.validate_raw_token(raw, accept_types=accept_types)
     if user is None:

@@ -8,7 +8,7 @@ import logging
 
 from django.shortcuts import get_object_or_404
 
-from www.api.bolt_adapter import bolt_view, paginate_queryset, get_image_url, get_user_display_name
+from www.api.data_adapter import bolt_view, paginate_queryset, get_image_url, get_user_display_name
 
 logger = logging.getLogger(__name__)
 

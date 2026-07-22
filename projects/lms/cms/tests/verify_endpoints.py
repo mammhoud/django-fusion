@@ -134,7 +134,7 @@ bolt._handler_middleware.update(core_bolt._handler_middleware)
 bolt._next_handler_id = core_bolt._next_handler_id
 
 # Register extras (use fresh IDs — no overlap with core)
-from www.api.bolt.router import register_all_handlers
+from www.api.data.router import register_all_handlers
 register_all_handlers(bolt)
 
 print(f"Routes registered: {len(bolt._routes)} total")

@@ -1,5 +1,5 @@
-import { FaClipboardList, FaChartBar, FaHistory, FaCog, FaHeart, FaBoxes, FaUsers, FaMortarPestle, FaFileAlt, FaStickyNote } from 'react-icons/fa';
-import { MdPointOfSale } from 'react-icons/md';
+import { FaClipboardList, FaChartBar, FaHistory, FaCog, FaHeart, FaBoxes, FaUsers, FaMortarPestle, FaFileAlt, FaStickyNote, FaTruck } from 'react-icons/fa';
+import { MdPointOfSale, MdPeople, MdLocalShipping } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -421,6 +421,62 @@ export default function Home() {
                 <FaStickyNote className="w-10 h-10 mb-2" />
                 <span className="text-lg lg:text-base font-semibold text-center leading-tight">{t('nav.notes')}</span>
                 <span className="text-[11px] text-white/70 mt-1 text-center leading-tight max-w-[120px]">Draft, save & restore notes</span>
+              </>
+            )}
+          </motion.button>
+
+          <motion.button
+            variants={item}
+            onClick={() => handleNavigation('/customers')}
+            whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex flex-col items-center p-6 lg:p-5 bg-linear-to-br from-cyan-400 to-cyan-500 
+            dark:from-cyan-500 dark:to-cyan-600 text-white rounded-2xl transition-all duration-300
+            backdrop-blur-sm bg-opacity-90 h-full relative shadow-lg hover:shadow-xl border border-white/10"
+            disabled={loadingRoute !== null}
+          >
+            {loadingRoute === '/customers' ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-10 h-10 mb-2 border-4 border-white border-t-transparent rounded-full"
+                />
+                <span className="text-lg lg:text-base font-semibold text-center">{t('common.loading')}</span>
+              </>
+            ) : (
+              <>
+                <MdPeople className="w-10 h-10 mb-2" />
+                <span className="text-lg lg:text-base font-semibold text-center leading-tight">{t('nav.customers')}</span>
+                <span className="text-[11px] text-white/70 mt-1 text-center leading-tight max-w-[120px]">{t('nav.customersDesc')}</span>
+              </>
+            )}
+          </motion.button>
+
+          <motion.button
+            variants={item}
+            onClick={() => handleNavigation('/suppliers')}
+            whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex flex-col items-center p-6 lg:p-5 bg-linear-to-br from-amber-400 to-amber-500 
+            dark:from-amber-500 dark:to-amber-600 text-white rounded-2xl transition-all duration-300
+            backdrop-blur-sm bg-opacity-90 h-full relative shadow-lg hover:shadow-xl border border-white/10"
+            disabled={loadingRoute !== null}
+          >
+            {loadingRoute === '/suppliers' ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-10 h-10 mb-2 border-4 border-white border-t-transparent rounded-full"
+                />
+                <span className="text-lg lg:text-base font-semibold text-center">{t('common.loading')}</span>
+              </>
+            ) : (
+              <>
+                <MdLocalShipping className="w-10 h-10 mb-2" />
+                <span className="text-lg lg:text-base font-semibold text-center leading-tight">{t('nav.suppliers')}</span>
+                <span className="text-[11px] text-white/70 mt-1 text-center leading-tight max-w-[120px]">{t('nav.suppliersDesc')}</span>
               </>
             )}
           </motion.button>

@@ -1,5 +1,5 @@
 """
-Bolt Events API — detail, upcoming filter, registration.
+Data Events API — detail, upcoming filter, registration.
 
 Extends the existing bolt event endpoints in ``apis.py`` (which provide
 basic listing) with additional detail and registration endpoints.
@@ -11,7 +11,7 @@ import logging
 
 from django.utils import timezone
 
-from www.api.bolt.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
+from www.api.data.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
 from www.auth import TokenAuthBackend, auth_required
 
 logger = logging.getLogger(__name__)
@@ -46,14 +46,16 @@ def register_handlers(bolt):
                 is_active=True, is_visible=True,
                 start_date__gte=timezone.now(),
             ).order_by("start_date")[:6]
-        except Exception:
+        except Exception as exc:
+            logger.warning("Upcoming events (plugins.accounts) failed: %s", exc)
             try:
                 from www.content.models.blog import Event as EventModel
                 events = EventModel.objects.filter(
                     is_published=True,
                     event_date__gte=timezone.now(),
                 ).order_by("event_date")[:6]
-            except Exception:
+            except Exception as exc2:
+                logger.warning("Upcoming events (blog) also failed: %s", exc2)
                 events = []
 
         data = [_serialize_event(e) for e in events]

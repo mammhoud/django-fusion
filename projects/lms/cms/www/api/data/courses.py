@@ -1,5 +1,5 @@
 """
-Bolt Courses API — list, detail (full with modules/lessons), featured, categories.
+Data Courses API — list, detail (full with modules/lessons), featured, categories.
 
 Extends the existing bolt course endpoints in ``apis.py`` (which provide
 basic list/detail) with additional detail depth and a featured endpoint.
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 
-from www.api.bolt.helpers import paginate_queryset, get_image_url, get_user_display_name
+from www.api.data.helpers import paginate_queryset, get_image_url, get_user_display_name
 
 logger = logging.getLogger(__name__)
 

@@ -12,7 +12,7 @@ from django.contrib.auth import authenticate
 from django.contrib.auth.forms import PasswordResetForm
 from django.contrib.auth.models import User
 
-from www.api.bolt_adapter import bolt_view, login_required, parse_body
+from www.api.data_adapter import bolt_view, login_required, parse_body
 from www.content.models.others import Token
 
 logger = logging.getLogger(__name__)

@@ -14,7 +14,7 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from plugins.lms.models import Course, Enrollment, Review
-from www.api.bolt_adapter import (
+from www.api.data_adapter import (
     bolt_view, login_required, paginate_queryset, parse_body,
     get_image_url, get_user_display_name,
 )

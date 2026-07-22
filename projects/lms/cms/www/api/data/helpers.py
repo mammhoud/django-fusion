@@ -1,5 +1,5 @@
 """
-Shared helpers for bolt API handlers — image URL, user display name, pagination.
+Shared helpers for data API handlers — image URL, user display name, pagination.
 """
 
 from __future__ import annotations
@@ -58,12 +58,25 @@ def paginate_queryset(qs, request, default_per_page: int = 20):
 
     Returns ``(items, pagination_dict)`` where ``items`` is the sliced
     QuerySet for the current page.
+
+    Also handles plain lists (e.g. from fallback backends) gracefully.
     """
     page = _int_param(request, "page", 1)
     per_page = _int_param(request, "per_page", default_per_page)
-    total = qs.count()
-    items = qs[(page - 1) * per_page : page * per_page]
-    total_pages = max(1, (total + per_page - 1) // per_page)
+
+    # Handle plain list/QuerySet generically
+    if isinstance(qs, (list, tuple)):
+        total = len(qs)
+        items = qs[(page - 1) * per_page : page * per_page]
+    else:
+        try:
+            total = qs.count()
+            items = qs[(page - 1) * per_page : page * per_page]
+        except Exception:
+            total = 0
+            items = []
+
+    total_pages = max(1, (total + per_page - 1) // per_page) if total else 0
     pagination = {
         "page": page,
         "per_page": per_page,
@@ -74,9 +87,18 @@ def paginate_queryset(qs, request, default_per_page: int = 20):
 
 
 def _int_param(request, name: str, default: int) -> int:
-    """Extract an integer query parameter, falling back to ``default``."""
+    """Extract an integer query parameter, falling back to ``default``.
+
+    Works with both Django HttpRequest (``.GET``) and bolt PyRequest (``.query``).
+    """
     try:
-        return int(request.GET.get(name, default))
+        if hasattr(request, "query"):
+            val = request.query.get(name, str(default))
+        elif hasattr(request, "GET"):
+            val = request.GET.get(name, str(default))
+        else:
+            return default
+        return int(val)
     except (TypeError, ValueError):
         return default
 

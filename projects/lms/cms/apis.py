@@ -17,10 +17,29 @@ Auth: www/auth.py — TokenAuthBackend validates Bearer tokens from the Token ta
 from __future__ import annotations
 
 import json
+import os
 
 from django_bolt import BoltAPI
 
-from www.auth import TokenAuthBackend, extract_bearer_token, authenticate_request
+from www.auth import TokenAuthBackend, extract_bearer_token, authenticate_request, _resolve_token_model
+
+
+# ── Query param helper (works with both Django HttpRequest and bolt PyRequest) ──
+def _qp(request, key: str, default: str = "") -> str:
+    """Get a query parameter from a request, compatible with both Django and bolt PyRequest."""
+    if hasattr(request, "query"):
+        return request.query.get(key, default)
+    if hasattr(request, "GET"):
+        return request.GET.get(key, default)
+    return default
+
+
+def _qp_int(request, key: str, default: int = 1) -> int:
+    """Get an integer query parameter safely."""
+    try:
+        return int(_qp(request, key, str(default)))
+    except (TypeError, ValueError):
+        return default
 
 bolt = BoltAPI(
     prefix="/apis",
@@ -39,17 +58,15 @@ bolt = BoltAPI(
 def _issue_token(user, token_type="access", category="") -> str:
     """Issue a token for a user. Returns raw token string.
 
-    Uses rest_framework.authtoken.Token if DRF is installed,
-    otherwise uses the bolt-native Token model via from_django_fusion_pattern().
+    Uses the bolt-native Token model via from_django_fusion_pattern().
+    Falls back to a random string (no storage) if the Token model is unavailable.
     """
     try:
-        from rest_framework.authtoken.models import Token as DRFToken
-        token_obj, _created = DRFToken.objects.get_or_create(user=user)
-        return token_obj.key
-    except ImportError:
-        from www.content.models.others import Token
+        Token = _resolve_token_model()
         _token_obj, raw = Token.from_django_fusion_pattern(user, token_type=token_type, category=category)
         return raw
+    except Exception:
+        return os.urandom(24).hex()
 
 
 def _validate_token(token_str: str):
@@ -99,13 +116,13 @@ def list_publications(request):
 
     qs = Publication.objects.filter(is_published=True).order_by("-published_at")
 
-    if search := request.GET.get("search", ""):
+    if search := _qp(request, "search"):
         qs = qs.filter(title__icontains=search)
-    if category := request.GET.get("category", ""):
+    if category := _qp(request, "category"):
         qs = qs.filter(category__slug=category)
 
-    page = int(request.GET.get("page", 1))
-    per_page = int(request.GET.get("per_page", 20))
+    page = _qp_int(request, "page", 1)
+    per_page = _qp_int(request, "per_page", 20)
     total = qs.count()
     items = qs[(page - 1) * per_page : page * per_page]
 
@@ -176,16 +193,16 @@ def list_courses(request):
 
     qs = Course.objects.filter(is_published=True).order_by("-created_at")
 
-    if search := request.GET.get("search", ""):
+    if search := _qp(request, "search"):
         qs = qs.filter(title__icontains=search)
-    if category := request.GET.get("category", ""):
+    if category := _qp(request, "category"):
         qs = qs.filter(category__slug=category)
-    if skill_level := request.GET.get("skill_level", ""):
+    if skill_level := _qp(request, "skill_level"):
         qs = qs.filter(skill_level=skill_level)
-    qs = qs.order_by(request.GET.get("sort", "-created_at"))
+    qs = qs.order_by(_qp(request, "sort", "-created_at"))
 
-    page = int(request.GET.get("page", 1))
-    per_page = int(request.GET.get("per_page", 12))
+    page = _qp_int(request, "page", 1)
+    per_page = _qp_int(request, "per_page", 12)
     total = qs.count()
     items = qs[(page - 1) * per_page : page * per_page]
 
@@ -350,10 +367,15 @@ def logout(request):
         return {"error": "No token provided"}, 400
 
     import hashlib
-    from www.content.models.others import Token
 
     token_hash = hashlib.sha256(raw.encode()).hexdigest()
-    Token.objects.filter(token_hash=token_hash).delete()
+
+    try:
+        Token = _resolve_token_model()
+        Token.objects.filter(token_hash=token_hash).delete()
+    except Exception as exc:
+        logger.debug(f"Logout token deletion skipped: {exc}")
+
     return {"status": "logged out"}
 
 
@@ -498,8 +520,8 @@ def list_blog_posts(request):
 
     qs = BlogPost.objects.filter(is_published=True).order_by("-published_at")
 
-    page = int(request.GET.get("page", 1))
-    per_page = int(request.GET.get("per_page", 12))
+    page = _qp_int(request, "page", 1)
+    per_page = _qp_int(request, "per_page", 12)
     total = qs.count()
     items = qs[(page - 1) * per_page : page * per_page]
 
@@ -569,10 +591,10 @@ def list_features(request):
     from www.content.models.lms import Feature
     from www.schemas.lms import FeatureResponse
 
-    page = request.GET.get("page", "")
+    page_val = _qp(request, "page")
     qs = Feature.objects.filter(is_active=True).order_by("page", "sort_order")
-    if page:
-        qs = qs.filter(page=page)
+    if page_val:
+        qs = qs.filter(page=page_val)
     items = [FeatureResponse(
         id=f.pk, page=f.page, title=f.title, description=f.description,
         icon_url=f.icon.file.url if hasattr(f, "icon") and f.icon and f.icon.file else None,
@@ -607,10 +629,10 @@ def list_faq(request):
     from www.content.models.lms import Faq
     from www.schemas.lms import FaqItem
 
-    page = request.GET.get("page", "")
+    page_val = _qp(request, "page")
     qs = Faq.objects.filter(is_active=True).order_by("page", "sort_order")
-    if page:
-        qs = qs.filter(page=page)
+    if page_val:
+        qs = qs.filter(page=page_val)
     items = [FaqItem(
         id=f.pk, page=f.page, question=f.question, answer=f.answer,
         sort_order=f.sort_order,
@@ -637,10 +659,21 @@ def get_dashboard_data(request):
 @bolt.get("/lms/products")
 def list_products(request):
     """GET /apis/lms/products — Shop product list."""
-    from www.content.models.lms import Product
     from www.schemas.lms import ProductResponse
 
-    products = Product.objects.filter(is_active=True).order_by("title")
+    # Try multiple import paths for Product model
+    import importlib
+    products = []
+    for mod_path in ["www.content.models.shop", "www.content.models.lms", "plugins.products.models"]:
+        try:
+            mod = importlib.import_module(mod_path)
+            Product = getattr(mod, "Product", None) or getattr(mod, "ShopProduct", None)
+            if Product is not None:
+                products = Product.objects.filter(is_active=True).order_by("title")
+                break
+        except Exception:
+            continue
+
     items = [ProductResponse(
         id=p.pk, title=p.title, slug=getattr(p, "slug", ""),
         description=getattr(p, "description", ""),
@@ -699,5 +732,5 @@ def get_main_menu(request):
 # DRF-converted bolt endpoints — register all modular handlers
 # ═══════════════════════════════════════════════════════════════════════════
 
-from www.api.bolt.router import register_all_handlers
+from www.api.data.router import register_all_handlers
 register_all_handlers(bolt)

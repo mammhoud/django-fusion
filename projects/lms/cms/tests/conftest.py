@@ -193,7 +193,7 @@ def staff_user():
 def test_api():
     """Return a fresh BoltAPI instance with all bolt handlers registered."""
     from django_bolt import BoltAPI
-    from www.api.bolt.router import register_all_handlers
+    from www.api.data.router import register_all_handlers
 
     api = BoltAPI(prefix="/apis")
     register_all_handlers(api)

@@ -1,13 +1,13 @@
 """
-Bolt adapter — bridge bolt-style function views with Django URL routing.
+Data adapter — bridge data-style function views with Django URL routing.
 
-Provides a ``@bolt_view`` decorator that converts a bolt-style handler
+Provides a ``@bolt_view`` decorator that converts a data-style handler
 (returning dict or (dict, status)) into a Django function view suitable for
 use with ``django.urls.path()``.
 
 Usage::
 
-    from www.api.bolt_adapter import bolt_view
+    from www.api.data_adapter import bolt_view
 
     @bolt_view
     def my_endpoint(request):
@@ -25,7 +25,7 @@ from typing import Any, Callable
 
 from django.http import Http404, JsonResponse
 
-from www.api.bolt.helpers import (
+from www.api.data.helpers import (
     paginate_queryset,
     parse_body,
     get_current_user,
@@ -38,7 +38,7 @@ logger = logging.getLogger(__name__)
 
 
 def bolt_view(view_func: Callable) -> Callable:
-    """Decorator that adapts a bolt-style handler for Django URL routing.
+    """Decorator that adapts a data-style handler for Django URL routing.
 
     The wrapped function receives ``(request, *args, **kwargs)`` and should
     return either a dict (converted to 200 JsonResponse) or a tuple of

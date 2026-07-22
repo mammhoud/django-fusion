@@ -1,11 +1,11 @@
 """
 Shared API utilities — legacy helpers retained for backward compatibility.
 
-Most functionality has been replaced by ``www.api.bolt.helpers`` and
-``www.api.bolt_adapter``. This module re-exports for convenience.
+Most functionality has been replaced by ``www.api.data.helpers`` and
+``www.api.data_adapter``. This module re-exports for convenience.
 """
 
-from www.api.bolt_adapter import (
+from www.api.data_adapter import (
     paginate_queryset,
     parse_body,
     get_current_user,

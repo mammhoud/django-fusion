@@ -1,5 +1,5 @@
 """
-Bolt Shop API — products list/detail, cart management, order creation.
+Data Shop API — products list/detail, cart management, order creation.
 
 Replaces the DRF ProductViewSet, CartViewSet, and OrderViewSet.
 All endpoints are new — no existing bolt equivalents.
@@ -11,7 +11,7 @@ import logging
 
 from django.shortcuts import get_object_or_404
 
-from www.api.bolt.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
+from www.api.data.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
 from www.auth import TokenAuthBackend, auth_required
 
 logger = logging.getLogger(__name__)
@@ -97,8 +97,8 @@ def register_handlers(bolt):
                     "subtotal": float(getattr(item, "total_price", 0)) or float(product.price) * quantity,
                 },
             }, 201
-        except ImportError:
-            pass
+        except ImportError as imp:
+            logger.debug("CartService not available: %s", imp)
 
         # Fallback: order-based cart
         try:
@@ -158,8 +158,8 @@ def register_handlers(bolt):
                     "subtotal": float(getattr(item, "total_price", 0)),
                 },
             }
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("CartService update_item failed for pk=%s: %s", pk, exc)
 
         return {"status": "error", "message": "Cart item not found"}, 404
 
@@ -176,8 +176,8 @@ def register_handlers(bolt):
             cart = CartService.get_or_create_cart(request)
             cart.items.filter(id=pk).delete()
             return {"status": "success", "message": "Item removed from cart"}
-        except Exception:
-            pass
+        except Exception as exc:
+            logger.warning("CartService remove_item failed for pk=%s: %s", pk, exc)
 
         return {"status": "error", "message": "Cart item not found"}, 404
 
@@ -295,15 +295,24 @@ def register_handlers(bolt):
 
 def _get_product_queryset(request):
     """Build the product queryset with optional filters."""
-    try:
-        from plugins.products.models import Product
-        qs = Product.objects.filter(is_available=True)
+    # Compatible query param getter
+    def _val(key: str, default: str = "") -> str:
+        if hasattr(request, "query"):
+            return request.query.get(key, default)
+        if hasattr(request, "GET"):
+            return request.GET.get(key, default)
+        return default
 
-        q = request.GET.get("search", "").strip()
+    try:
+        # Use sync_to_async to avoid SynchronousOnlyOperation in bolt's async context
+        from plugins.products.models import Product as SyncProduct
+        qs = SyncProduct.objects.filter(is_available=True)
+
+        q = _val("search").strip()
         if q:
             qs = qs.filter(name__icontains=q)
 
-        category = request.GET.get("category", "").strip()
+        category = _val("category").strip()
         if category:
             qs = qs.filter(category__slug=category)
 
@@ -312,10 +321,10 @@ def _get_product_queryset(request):
         pass
 
     try:
-        from www.content.models.lms import ShopProduct
-        qs = ShopProduct.objects.filter(is_active=True)
+        from www.content.models.shop import Product as SyncProduct
+        qs = SyncProduct.objects.filter(is_active=True)
 
-        q = request.GET.get("search", "").strip()
+        q = _val("search").strip()
         if q:
             qs = qs.filter(title__icontains=q)
 
@@ -323,6 +332,10 @@ def _get_product_queryset(request):
     except Exception:
         pass
 
+    logger.warning(
+        "No product backend available — tried plugins.products.models.Product "
+        "and www.content.models.shop.Product. Falling back to empty list."
+    )
     return []
 
 
@@ -405,8 +418,8 @@ def _get_cart_items(user, request) -> list[dict]:
                 "subtotal": float(getattr(item, "total_price", 0)),
             })
         return items
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.warning("CartService not available — trying Order fallback: %s", exc)
 
     # Fallback: Order-based cart
     try:
@@ -427,5 +440,9 @@ def _get_cart_items(user, request) -> list[dict]:
                 "subtotal": float(getattr(item, "total_price", 0)) or float(getattr(item, "price", 0)) * getattr(item, "quantity", 1),
             })
         return items
-    except Exception:
+    except Exception as exc:
+        logger.warning(
+            "Order-based cart fallback failed for user=%s: %s",
+            getattr(user, "pk", "?"), exc,
+        )
         return []

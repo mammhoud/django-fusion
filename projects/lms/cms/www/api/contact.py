@@ -7,7 +7,7 @@ Matches the RTK Query slice at: store/api/endpoints/contact.ts
 import json
 import logging
 
-from www.api.bolt_adapter import bolt_view, parse_body
+from www.api.data_adapter import bolt_view, parse_body
 
 logger = logging.getLogger(__name__)
 

@@ -1,5 +1,5 @@
 """
-Bolt Contact API — inquiries management, mark-as-read.
+Data Contact API — inquiries management, mark-as-read.
 
 Extends the existing bolt contact submit endpoint in ``apis.py`` with
 admin-only inquiry listing and mark-read functionality.
@@ -10,7 +10,7 @@ from __future__ import annotations
 import json
 import logging
 
-from www.api.bolt.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
+from www.api.data.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
 from www.auth import TokenAuthBackend, auth_required
 
 logger = logging.getLogger(__name__)
@@ -71,7 +71,8 @@ def _get_submissions(request):
     try:
         from plugins.accounts.models.forms.submission import FormSubmission
         return FormSubmission.objects.filter(form_type="contact").order_by("-created_at")
-    except Exception:
+    except Exception as exc:
+        logger.warning("Contact submission backend not available: %s", exc)
         return []
 
 

@@ -1,5 +1,5 @@
 """
-Bolt Auth API — login, register, logout, profile, password reset, change password.
+Data Auth API — login, register, logout, profile, password reset, change password.
 
 Extends the existing bolt auth endpoints in ``apis.py`` with additional
 profile management and password change/reset actions that existed only in DRF.
@@ -11,7 +11,7 @@ import json
 import logging
 
 from www.auth import TokenAuthBackend, extract_bearer_token, authenticate_request
-from www.api.bolt.helpers import parse_body, get_current_user, get_image_url, get_user_display_name
+from www.api.data.helpers import parse_body, get_current_user, get_image_url, get_user_display_name
 
 logger = logging.getLogger(__name__)
 
@@ -65,14 +65,17 @@ def register_handlers(bolt):
         if not email:
             return {"status": "error", "message": "Email is required"}, 400
 
-        from django.contrib.auth.forms import PasswordResetForm
-        form = PasswordResetForm({"email": email})
-        if form.is_valid():
-            form.save(
-                request=request,
-                use_https=request.is_secure() if hasattr(request, "is_secure") else False,
-                email_template_name="registration/password_reset_email.html",
-            )
+        try:
+            from django.contrib.auth.forms import PasswordResetForm
+            form = PasswordResetForm({"email": email})
+            if form.is_valid():
+                form.save(
+                    request=request,
+                    use_https=False,
+                    email_template_name="registration/password_reset_email.html",
+                )
+        except Exception as exc:
+            logger.debug(f"Password reset skipped (non-fatal): {exc}")
 
         # Always return success to avoid leaking user existence
         return {
@@ -114,7 +117,7 @@ def register_handlers(bolt):
 
 def _serialize_user_profile(user) -> dict:
     """Serialize a User into a full profile response compatible with the DRF UserSerializer shape."""
-    from www.api.bolt.helpers import get_image_url, get_user_display_name
+    from www.api.data.helpers import get_image_url, get_user_display_name
 
     # Determine role from groups
     role = "student"

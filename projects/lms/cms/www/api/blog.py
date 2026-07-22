@@ -10,7 +10,7 @@ from django.db.models import Q
 from django.shortcuts import get_object_or_404
 
 from plugins.blog.models import BlogPost, BlogCategory
-from www.api.bolt_adapter import (
+from www.api.data_adapter import (
     bolt_view, paginate_queryset, parse_body,
     get_image_url, get_user_display_name,
 )

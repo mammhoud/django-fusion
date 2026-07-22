@@ -1,5 +1,5 @@
 """
-Bolt Blog API — detail, featured, related posts, categories.
+Data Blog API — detail, featured, related posts, categories.
 
 Extends the existing bolt blog endpoints in ``apis.py`` (which provide
 basic listing) with additional detail and discovery endpoints.
@@ -9,7 +9,7 @@ from __future__ import annotations
 
 import logging
 
-from www.api.bolt.helpers import paginate_queryset, get_image_url, get_user_display_name
+from www.api.data.helpers import paginate_queryset, get_image_url, get_user_display_name
 
 logger = logging.getLogger(__name__)
 

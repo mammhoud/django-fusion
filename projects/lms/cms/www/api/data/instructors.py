@@ -1,5 +1,5 @@
 """
-Bolt Instructors API — list, detail (with courses/reviews), dashboard stats, courses list, reviews list, profile update.
+Data Instructors API — list, detail (with courses/reviews), dashboard stats, courses list, reviews list, profile update.
 
 Replaces the DRF InstructorViewSet and InstructorCourseDeleteViewSet.
 All endpoints are new — no existing bolt equivalents beyond the basic
@@ -15,7 +15,7 @@ from django.contrib.auth.models import User
 from django.db.models import Avg, Count, Sum
 from django.utils import timezone
 
-from www.api.bolt.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
+from www.api.data.helpers import paginate_queryset, parse_body, get_current_user, get_image_url, get_user_display_name
 from www.auth import TokenAuthBackend, auth_required
 
 logger = logging.getLogger(__name__)
@@ -228,8 +228,8 @@ def _serialize_instructor(user) -> dict:
                 courses__instructor=user, is_active=True
             ).distinct().values_list("title", flat=True)[:10]
         )
-    except Exception:
-        pass
+    except Exception as exc:
+        logger.debug("Specialization lookup not available for instructor=%s: %s", user.pk, exc)
 
     courses_count = Course.objects.filter(instructor=user, is_published=True).count()
     students_count = (
@@ -286,7 +286,8 @@ def _get_instructor_courses(user) -> list[dict]:
             }
             for c in courses
         ]
-    except Exception:
+    except Exception as exc:
+        logger.warning("Instructor courses lookup failed for user=%s: %s", user.pk, exc)
         return []
 
 

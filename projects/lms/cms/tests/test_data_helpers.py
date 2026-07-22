@@ -8,7 +8,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from www.api.bolt.helpers import (
+from www.api.data.helpers import (
     get_image_url,
     get_user_display_name,
     paginate_queryset,

@@ -1,6 +1,6 @@
 """CTC Research — URL configuration (minimal, extended by plugins + api).
 
-All API endpoints are served via django-bolt (www.api.bolt.*) at /apis/.
+All API endpoints are served via django-bolt (www.api.data.*) at /apis/.
 The legacy /api/ routes remain for backward compatibility.
 """
 from django.urls import include, path

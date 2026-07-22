@@ -92,6 +92,7 @@ pub struct Product {
     pub unit: String,
     pub category_id: Option<i32>,
     pub image: Option<String>,
+    pub product_type: String,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
@@ -115,6 +116,7 @@ pub struct UpdateProduct {
     pub unit: Option<String>,
     pub category_id: Option<Option<i32>>,
     pub image: Option<Option<String>>,
+    pub product_type: Option<String>,
     pub uploaded: Option<bool>,
 }
 
