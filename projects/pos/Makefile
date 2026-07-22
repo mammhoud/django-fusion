@@ -1,68 +1,79 @@
 # ============================================================================
-# POS — Root Makefile (v2.0)
+# POS — Root Makefile (v2.1)
 # ============================================================================
-# Orchestrates 2 POS editions + Cloud CRM server + Django Portals:
+# Orchestrates 4 POS editions + Cloud CRM server + Django Portals:
+#   - pos-mini    : Minimal Tauri + Rust/Diesel — local CRUD, no sidecar
 #   - pos-solo    : Core + sidecar + Portal (node + server + cloud sync)
 #   - pos-full    : Core + sidecar + Portal (server + cloud CRM master)
+#   - pos-client  : Vue 3 + Tauri desktop app (separate client)
 #   - cloud       : Django-based cloud CRM server (pos-full/portal/cloud/)
 #
+# Design: Delegates to per-edition Makefiles via $(MAKE) -C.
+# This ensures each edition owns its own targets and the root Makefile
+# stays a thin dispatcher with aggregated convenience targets.
+#
 # Quick start:
-#   make editions     — generate all editions from pos-full source
-#   make clean        — delete all editions (regenerate with make editions)
-#   make setup-XXXX   — install dependencies for a specific edition
-#   make build-XXXX   — build a specific edition
-#   make portal-XXXX  — manage Django portals
-#   make cloud-XXXX   — manage cloud CRM server
+#   make editions              — generate all editions from pos-full source
+#   make setup-{mini,solo,full,client}  — install dependencies for an edition
+#   make dev-{mini,solo,full}          — start Vite dev server for an edition
+#   make build-{mini,solo,full}        — build desktop app for an edition
 
 .PHONY: help
 .PHONY: clean editions
-.PHONY: setup-solo setup-full
-.PHONY: build-solo build-full
-.PHONY: dev-solo dev-full
-.PHONY: check-solo check-full
-.PHONY: portal-setup portal-migrate portal-dev portal-seed portal-node
-.PHONY: cloud-setup cloud-dev cloud-check cloud-clean
+.PHONY: setup-mini setup-solo setup-full setup-client
+.PHONY: dev-mini dev-solo dev-full dev-all
+.PHONY: build-mini build-solo build-full build-client
+.PHONY: check-mini check-solo check-full
+.PHONY: server-install server-run server-dev server-check server-test server-clean
+.PHONY: server-full-install server-full-run server-full-dev server-full-check server-full-test server-full-clean
 .PHONY: screenshots publish
 
-EDITION ?= solo
+# ── Edition directories ────────────────────────────────────────────────────
+# Used for delegation targets below.
+POS_MINI  := pos-mini
+POS_SOLO  := pos-solo
+POS_FULL  := pos-full
+POS_CLIENT := pos-client
 
 # ── Default ────────────────────────────────────────────────────────────────
 
 help:                 ## Show this help menu
 	@echo ''
 	@echo '╔══════════════════════════════════════════════════════════╗'
-	@echo '║  POS v2.0 — Solo + Full Editions + Cloud CRM + Portals ║'
+	@echo '║  POS v2.1 — Mini + Solo + Full + Client Editions    ║'
 	@echo '╚══════════════════════════════════════════════════════════╝'
 	@echo ''
 	@echo '── Editions ────────────────────────────────────────────────'
 	@echo '  make editions          Generate all editions from source'
 	@echo '  make clean             Delete all editions + build artifacts'
 	@echo ''
-	@echo '── Solo Edition (with sidecar + cloud sync) ────────────────'
+	@echo '── POS Mini (Minimal Tauri + Rust/Diesel) ──────────────────'
+	@echo '  make setup-mini        Install dependencies (pnpm + cargo)'
+	@echo '  make dev-mini          Start Vite dev server (port 1420)'
+	@echo '  make build-mini        Build desktop app (production)'
+	@echo '  make check-mini        TypeScript + Rust compilation check'
+	@echo ''
+	@echo '── POS Solo (Branch device + sidecar + cloud sync) ─────────'
 	@echo '  make setup-solo        Install dependencies'
-	@echo '  make dev-solo          Start Vite + sidecar'
+	@echo '  make dev-solo          Start Vite + sidecar dev'
 	@echo '  make build-solo        Build desktop app + sidecar'
 	@echo '  make check-solo        Full type check'
 	@echo ''
-	@echo '── Full Edition (sidecar + Django + Cloud CRM) ─────────────'
-	@echo '  make setup-full        Install all dependencies'
+	@echo '── POS Full (Master manager + sidecar + Django admin) ──────'
+	@echo '  make setup-full        Install dependencies'
 	@echo '  make dev-full          Start full stack'
 	@echo '  make build-full        Build everything'
 	@echo '  make check-full        Full validation'
 	@echo ''
-	@echo '── Django Portals (EDITION=solo|full) ──────────────────────'
-	@echo '  make portal-setup      Install portal deps + migrate'
-	@echo '  make portal-dev        Start portal dev server'
-	@echo '  Examples:'
-	@echo '    make portal-dev EDITION=solo  # Solo portal on :8080'
-	@echo '    make portal-dev EDITION=full  # Full portal on :8082'
+	@echo '── POS Client (Vue 3 + Tauri desktop) ───────────────────────'
+	@echo '  make setup-client      Install dependencies (pnpm + cargo)'
+	@echo '  make dev-client        Start Vite dev server'
+	@echo '  make build-client      Build frontend for production'
 	@echo ''
-	@echo '── POS Client (Tauri + Vue 3) ──────────────────────────────'
-	@echo '  make client-setup      Install pos-client dependencies'
-	@echo '  make client-dev        Start pos-client dev server'
-	@echo '  make client-build      Build pos-client desktop app'
+	@echo '── All Editions ─────────────────────────────────────────────'
+	@echo '  make dev-all           Start all dev servers concurrently'
 	@echo ''
-	@echo '── POS Server (Consolidated Robyn + Django ORM) ──────────────'
+	@echo '── POS Server (Consolidated Robyn + Django ORM) ────────────'
 	@echo '  make server-install    Install dependencies'
 	@echo '  make server-run        Start server (port 8765)'
 	@echo '  make server-dev        Dev mode with hot reload'
@@ -70,7 +81,7 @@ help:                 ## Show this help menu
 	@echo '  make server-test       Run 155-test suite'
 	@echo '  make server-clean      Remove database'
 	@echo ''
-	@echo '── POS Full Server (Cloud Master, Robyn + Django ORM) ────────'
+	@echo '── POS Full Server (Cloud Master) ───────────────────────────'
 	@echo '  make server-full-install    Install dependencies'
 	@echo '  make server-full-run        Start server (port 8766)'
 	@echo '  make server-full-dev        Dev mode'
@@ -78,15 +89,13 @@ help:                 ## Show this help menu
 	@echo '  make server-full-test       Run 45-test suite'
 	@echo '  make server-full-clean      Remove database'
 	@echo ''
-	@echo '── Cloud CRM Server ────────────────────────────────────────'
-	@echo '  make cloud-setup       Install cloud server dependencies'
-	@echo '  make cloud-dev         Start cloud CRM server (port 8082)'
-	@echo '  make cloud-check       Validate cloud server imports'
-	@echo '  make cloud-clean       Remove cloud data'
-	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
 	@echo '  make screenshots       Capture marketplace screenshots'
 	@echo '  make publish           Prepare publish bundle'
+	@echo ''
+	@echo '── Direct edition access ───────────────────────────────────'
+	@echo '  Delegated: make -C pos-mini <target>  (or pos-solo, pos-full, pos-client)'
+	@echo '  See per-edition Makefile for full target list.'
 	@echo ''
 
 # ── Editions generation ───────────────────────────────────────────────────
@@ -113,166 +122,137 @@ clean:                ## Delete all editions + build artifacts
 	rm -rf node_modules/ dist/ src-tauri/target/ src-tauri/gen/
 	@echo '✓ Clean. Run `make editions` to regenerate.'
 
+# ── POS Mini Edition ───────────────────────────────────────────────────
+# Delegates to pos-mini/Makefile for all targets.
+
+setup-mini:           ## Install mini edition dependencies
+	$(MAKE) -C $(POS_MINI) install
+
+dev-mini:             ## Start mini Vite dev server (port 1420)
+	$(MAKE) -C $(POS_MINI) dev
+
+build-mini:           ## Build mini desktop app
+	$(MAKE) -C $(POS_MINI) build
+
+check-mini:           ## Full check (mini)
+	$(MAKE) -C $(POS_MINI) check
+
 # ── Solo Edition ──────────────────────────────────────────────────────────
+# Delegates to pos-solo/Makefile for frontend/Rust targets.
+# Sidecar/server targets are handled directly for edition-specific paths.
 
 setup-solo:           ## Install solo edition dependencies
-	cd pos-solo && pnpm install && cd src-tauri && cargo fetch && \
-	cd sidecar && pip install -r requirements.txt
+	$(MAKE) -C $(POS_SOLO) install
+	@cd $(POS_SOLO)/sidecar && pip install -r requirements.txt
 
-dev-solo:             ## Start solo dev (Vite + sidecar + sync)
-	cd pos-solo && python3 sidecar/server.py & pnpm dev
+dev-solo:             ## Start solo dev (Vite + sidecar)
+	cd $(POS_SOLO) && python3 sidecar/server.py & $(MAKE) -C $(POS_SOLO) dev
 
 build-solo:           ## Build solo desktop app + sidecar
-	cd pos-solo && pnpm build:desktop && pnpm build:sidecar
+	$(MAKE) -C $(POS_SOLO) build
+	$(MAKE) -C $(POS_SOLO) build-sidecar
 
 check-solo:           ## Full check (solo)
-	cd pos-solo && pnpm tsc --noEmit && cd src-tauri && cargo check && \
-	cd sidecar && python3 -c 'from server import app; print("✓ POS server")' && \
+	$(MAKE) -C $(POS_SOLO) check
+	@cd $(POS_SOLO)/sidecar && python3 -c 'from server import app; print("✓ POS server")' && \
 	python3 -c 'from unified_models import Node; print("✓ models OK")'
 
 # ── Full Edition ──────────────────────────────────────────────────────────
+# Delegates to pos-full/Makefile for frontend/Rust targets.
+# Admin and server targets handled directly.
 
 setup-full:           ## Install full edition dependencies
-	cd pos-full && pnpm install && cd src-tauri && cargo fetch && \
-	cd ../sidecar && pip install -r requirements.txt && \
+	$(MAKE) -C $(POS_FULL) install
+	cd $(POS_FULL)/sidecar && pip install -r requirements.txt && \
 	python3 -c 'import django; print("Django OK")'
 
-dev-full:             ## Start full stack (Vite + sidecar + Django)
-	cd pos-full && python3 sidecar/server.py & pnpm dev
+dev-full:             ## Start full stack (Vite + sidecar)
+	cd $(POS_FULL) && python3 sidecar/server.py & $(MAKE) -C $(POS_FULL) dev
 
 build-full:           ## Build full edition (everything)
-	cd pos-full && pnpm build:desktop && pnpm build:sidecar
+	$(MAKE) -C $(POS_FULL) build
+	$(MAKE) -C $(POS_FULL) build-sidecar
 
 check-full:           ## Full validation
-	cd pos-full && pnpm tsc --noEmit && cd src-tauri && cargo check && \
-	cd ../sidecar && python3 -c 'import server; print("sidecar OK")' && \
+	$(MAKE) -C $(POS_FULL) check
+	@cd $(POS_FULL)/sidecar && python3 -c 'import server; print("sidecar OK")' && \
 	python3 -c 'import django; import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE","posapp.apps"); print("Django OK")'
 
-# ── Django Portals (inside sidecar/) ──────────────────────────────────────
+# ── POS Client Edition ──────────────────────────────────────────────────
+# Delegates to pos-client/Makefile.
 
-portal-setup:         ## Install portal dependencies + run migrations
-	@echo '── Setting up $(EDITION) portal ──'
-	@echo "Django portal removed — use: cd pos-$$(EDITION)/sidecar && python3 server.py"
-	@echo '✓ $(EDITION) portal ready'
+setup-client:         ## Install pos-client dependencies
+	$(MAKE) -C $(POS_CLIENT) install
 
-portal-dev:           ## Start portal dev server
-	@echo '── Starting $(EDITION) portal ──'
-	@PORT=8080; \
-	if [ "$(EDITION)" = "full" ]; then PORT=8082; fi; \
-	@echo "Django portal removed — use: cd pos-$$(EDITION)/sidecar && python3 server.py"
+dev-client:           ## Start pos-client dev server
+	$(MAKE) -C $(POS_CLIENT) dev
 
-portal-seed:          ## Seed sample menu data
-	@echo '── Seeding $(EDITION) portal ──'
-	@echo "Django portal removed — seed_menu no longer available"
+build-client:         ## Build pos-client desktop app
+	$(MAKE) -C $(POS_CLIENT) build
 
-portal-node:          ## Run node agent
-	@echo '── Starting node agent for $(EDITION) portal ──'
-	@echo "Django portal removed — run_node no longer available"
-
-# ── Cloud CRM Server (pos-full/sidecar/cloud/) ───────────────────────────
-
-cloud-setup:          ## Install cloud CRM server dependencies
-	cd pos-full/sidecar && pip install -r requirements.txt
-	@echo '✓ Cloud server dependencies installed'
-
-cloud-dev:            ## Start cloud CRM server (port 8082)
-	@echo '── Starting Cloud CRM Server on port 8082 ──'
-# Django portal removed — Robyn server now handles everything
-
-cloud-check:          ## Validate cloud server imports
-	@echo '── Checking cloud server imports ──'
-	cd pos-full/sidecar && python3 -c '
-import importlib
-modules = ["shared", "portal", "cloud", "cloud.models", "cloud.api"]
-for m in modules:
-    try:
-        importlib.import_module(m)
-        print(f"  ✓ {m}")
-    except Exception as e:
-        print(f"  ✗ {m}: {e}")
-'
-	@echo '✓ Cloud server checked'
-
-cloud-clean:          ## Remove cloud CRM data
-	@echo '── Cleaning cloud data ──'
-	rm -rf pos-full/sidecar/*.db
-	rm -f pos-full/sidecar/**/*.pyc
-	rm -rf pos-full/sidecar/**/__pycache__/
-	@echo '✓ Cloud data cleaned'
-
-# ── POS Client ───────────────────────────────────────────────────────────
-
-client-setup:         ## Install pos-client dependencies
-	cd pos-client && pnpm install
-	@echo '✓ POS Client dependencies installed'
-
-client-dev:           ## Start pos-client dev server
-	cd pos-client && pnpm dev
-
-client-build:         ## Build pos-client desktop app
-	cd pos-client && pnpm tauri build
-
-# ── Combined: Full stack + Cloud CRM + Portal ────────────────────────────
+# ── All Editions ───────────────────────────────────────────────────────────
 
 dev-all:              ## Start all services (development)
 	@echo '── Starting all services ──'
-	@echo '  Portal on :8082, Sidecar on :8765, Client on :1420'
-# Django portal removed — Robyn server now handles everything
+	@echo '  Starting sidecar on :8765, Vite dev servers on :1420'
+	@echo '  Press Ctrl+C to stop.'
 	@sleep 1
-	@	cd pos-full/sidecar && python3 server.py --port 8765 &
+	@echo '  Starting POS Full sidecar...'
+	@cd $(POS_FULL)/sidecar && python3 server.py --port 8765 &
 	@sleep 1
-	cd pos-full && pnpm dev
-	@echo 'All services started. Press Ctrl+C to stop.'
+	@echo '  Starting POS Full Vite dev server...'
+	@cd $(POS_FULL) && pnpm dev
+	@echo '  Start other editions individually: make dev-{mini|solo|client}'
 
 # ── POS Server (Robyn + Django ORM) ────────────────────────────────
-# Consolidated server in pos-solo/sidecar/server.py
-# Integrates all POS entities in one database (restaurant.db)
+# Consolidated server in pos-solo/sidecar/server.py.
+# These are edition-specific and stay as direct commands.
 
 server-install:               ## Install POS server dependencies
-	cd pos-solo/sidecar && pip install -r requirements.txt && pip install robyn httpx asgiref
+	cd $(POS_SOLO)/sidecar && pip install -r requirements.txt && pip install robyn httpx asgiref
 	@echo '✓ POS server dependencies installed'
 
 server-run:                   ## Start POS server (port 8765)
-	cd pos-solo/sidecar && python3 server.py --port 8765
+	cd $(POS_SOLO)/sidecar && python3 server.py --port 8765
 
 server-dev:                   ## Start POS server with hot reload
-	cd pos-solo/sidecar && python3 server.py --port 8765 --dev --verbose
+	cd $(POS_SOLO)/sidecar && python3 server.py --port 8765 --dev --verbose
 
 server-check:                 ## Validate POS server imports
-	cd pos-solo/sidecar && python3 -c 'from unified_models import *; print("✓ unified_models OK"); from server import app; print("✓ server OK")'
+	cd $(POS_SOLO)/sidecar && python3 -c 'from unified_models import *; print("✓ unified_models OK"); from server import app; print("✓ server OK")'
 
 server-test:                  ## Run unified test suite (155 tests)
-	DJANGO_SETTINGS_MODULE='' python3 -m pytest pos-solo/sidecar/tests/test_unified_api.py -v --tb=short --import-mode=importlib
+	DJANGO_SETTINGS_MODULE='' python3 -m pytest $(POS_SOLO)/sidecar/tests/test_unified_api.py -v --tb=short --import-mode=importlib
 
 server-clean:                 ## Clean POS server data
-	rm -f pos-solo/restaurant.db
+	rm -f $(POS_SOLO)/restaurant.db
 	@echo '✓ Database cleaned'
 
 server-full-install:              ## Install POS Full server dependencies
-	cd pos-full/sidecar && pip install -r requirements.txt && pip install robyn httpx asgiref
+	cd $(POS_FULL)/sidecar && pip install -r requirements.txt && pip install robyn httpx asgiref
 	@echo '✓ POS Full server dependencies installed'
 
 server-full-run:                  ## Start POS Full server (port 8766)
-	cd pos-full/sidecar && python3 server.py --port 8766
+	cd $(POS_FULL)/sidecar && python3 server.py --port 8766
 
 server-full-dev:                  ## Start POS Full server with verbose output
-	cd pos-full/sidecar && python3 server.py --port 8766 --verbose
+	cd $(POS_FULL)/sidecar && python3 server.py --port 8766 --verbose
 
 server-full-check:                ## Validate POS Full server imports
-	cd pos-full/sidecar && DJANGO_SETTINGS_MODULE='' python3 -c 'from server import app; print("✓ POS Full server OK")'
+	cd $(POS_FULL)/sidecar && DJANGO_SETTINGS_MODULE='' python3 -c 'from server import app; print("✓ POS Full server OK")'
 
 server-full-test:                 ## Run POS Full test suite (45 tests)
-	DJANGO_SETTINGS_MODULE='' python3 -m pytest pos-full/sidecar/tests/test_server.py -v --tb=short --import-mode=importlib
+	DJANGO_SETTINGS_MODULE='' python3 -m pytest $(POS_FULL)/sidecar/tests/test_server.py -v --tb=short --import-mode=importlib
 
 server-full-clean:                ## Clean POS Full server data
-	rm -f pos-full/sidecar/full_portal.db
+	rm -f $(POS_FULL)/sidecar/full_portal.db
 	@echo '✓ Database cleaned'
 
 # ── Publishing ────────────────────────────────────────────────────────────
 
 screenshots:          ## Capture 6 marketplace screenshots
 	@if [ ! -d pos-full ]; then echo 'ERROR: pos-full/ not found.'; exit 1; fi
-	cd pos-full && make screenshots
+	$(MAKE) -C $(POS_FULL) screenshots
 
 publish:              ## Prepare publish bundle from full edition
 	@echo '── Preparing publish bundle ──'

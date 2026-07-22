@@ -324,7 +324,11 @@ help:
 	@echo "  make structa           - Delegate to projects/Makefile with WEBSITE=structa"
 	@echo "  make vresume           - Delegate to projects/Makefile with WEBSITE=vresume"
 	@echo "  make cypercloud        - Delegate to projects/cypercloud/Makefile (AI chat customizer)"
-	@echo "  make pos               - Delegate to projects/pos/Makefile (POS desktop app)"
+	@echo '  make pos               - Show POS targets from projects/pos/Makefile'
+	@echo '  make pos-mini          - Delegate to projects/pos/pos-mini/Makefile (minimal edition)'
+	@echo '  make pos-solo          - Delegate to projects/pos/pos-solo/Makefile (branch device)'
+	@echo '  make pos-full          - Delegate to projects/pos/pos-full/Makefile (master manager)'
+	@echo '  make pos-client        - Delegate to projects/pos/pos-client/Makefile (Vue 3 client)'
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -1139,6 +1143,9 @@ help-all:
 	@echo "═══════════════════════════════════════════════════════════════"
 	@echo "Individual Component Help:"
 	@echo "  make -C $(CORE_DIR) help    - Application service commands"
+	@echo "  make pos            - POS desktop app (projects/pos/Makefile)"
+	@echo "  make pos-{mini,solo,full,client}"
+	@echo "                      - Individual POS edition Makefiles"
 	@echo "  make -C $(PROXY_DIR) help           - Proxy management commands"
 	@echo "  make -C $(SERVICES_DIR) help        - Service-specific commands"
 	@echo "  make -C $(DATABASES_DIR) help       - Database commands"
@@ -1204,6 +1211,18 @@ pos:
 	@echo "📋 POS targets:"
 	@$(MAKE) -C $(POS_DIR) help
 
+pos-mini:
+	@$(MAKE) -C $(POS_DIR)/pos-mini $(filter-out $@,$(MAKECMDGOALS))
+
+pos-solo:
+	@$(MAKE) -C $(POS_DIR)/pos-solo $(filter-out $@,$(MAKECMDGOALS))
+
+pos-full:
+	@$(MAKE) -C $(POS_DIR)/pos-full $(filter-out $@,$(MAKECMDGOALS))
+
+pos-client:
+	@$(MAKE) -C $(POS_DIR)/pos-client $(filter-out $@,$(MAKECMDGOALS))
+
 proxy:
 	@$(MAKE) -C $(PROXY_DIR)
 
@@ -1263,4 +1282,16 @@ venv-info:           ## Show venv status and paths
 # (so `make check`, `make test-local`, `make runserver-local`, etc. work)
 # -----------------------------------------------------------------
 %:
-	@$(MAKE) -C $(CORE_DIR) $*
+	@true 2>/dev/null; \
+	if echo '$*' | grep -qE '^pos-'; then \
+		edition=$$(echo '$*' | sed 's/^pos-//'); \
+		if [ -d "$(POS_DIR)/pos-$$edition" ]; then \
+			$(MAKE) -C $(POS_DIR)/pos-$$edition $(filter-out pos-$$edition,$(MAKECMDGOALS)); \
+		else \
+			echo "❌ Unknown POS edition: pos-$$edition"; exit 1; \
+		fi; \
+	elif echo '$*' | grep -qE '^(setup|dev|build|check)-(mini|solo|full|client)$$'; then \
+		$(MAKE) -C $(POS_DIR) $*; \
+	else \
+		$(MAKE) -C $(CORE_DIR) $*; \
+	fi
