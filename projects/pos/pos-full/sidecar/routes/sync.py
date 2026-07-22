@@ -7,7 +7,8 @@ import logging
 from datetime import datetime, timezone
 
 from asgiref.sync import sync_to_async
-from robyn import jsonify, Response
+from robyn import jsonify, Response, Request
+from django.db import transaction as db_transaction
 
 from routes import state as S
 
@@ -16,6 +17,171 @@ logger = logging.getLogger("pos_full_server")
 
 def register_sync_routes(app):
     """Register sync-related routes."""
+
+    # ── Cashback endpoint ──
+
+    @app.patch("/sales/:pk/cashback")
+    async def set_cashback(request, pk: int):
+        """PATCH /sales/:pk/cashback — Set cashback amount on a sale.
+
+        Body: {"cashback_amount": 5.00}
+        Updates the cashback_amount field and recalculates total.
+        """
+        body = request.json() or {}
+        amount = body.get("cashback_amount", 0)
+
+        @sync_to_async
+        def _update():
+            from models.pos import Sale
+            try:
+                sale = Sale.objects.get(id=pk)
+                if sale.status in ("refunded", "cancelled"):
+                    return {"error": f"Cannot add cashback to {sale.status} sale"}
+                sale.cashback_amount = amount
+                # Recalculate total: subtotal - discount + tax - cashback
+                sale.total = sale.subtotal - sale.discount_amount + sale.tax_amount - sale.cashback_amount
+                sale.save(update_fields=["cashback_amount", "total", "updated_at"])
+                return S._ser(sale)
+            except Sale.DoesNotExist:
+                return None
+
+        result = await _update()
+        if not result:
+            return S._error(404, "Sale not found")
+        return jsonify(result)
+
+    # ── Return endpoint ──
+
+    @app.post("/sales/:pk/return")
+    async def return_sale_items(request, pk: int):
+        """POST /sales/:pk/return — Return items from a completed sale.
+
+        Body:
+            items: [{
+                "sale_item_id": 1,   # FK to SaleItem.id
+                "quantity": 1,        # Quantity being returned (can be partial)
+                "disposition": "waste" | "restock",  # Waste disposal or return to stock
+                "notes": "Damaged goods"  # Optional
+            }]
+            cashback_amount: 0       # Optional cashback on the return
+
+        For each item:
+        - Removes stock via InventoryTransaction
+        - Marks as "waste" (disposal) or "restock" (adds back to inventory)
+        - Recalculates sale total if full return
+        - Sets sale status to "refunded" if all items returned
+        """
+        body = request.json() or {}
+        items_to_return = body.get("items", [])
+        if not items_to_return:
+            return S._error(400, "items list is required")
+
+        @sync_to_async
+        def _process():
+            from models.pos import Sale, SaleItem, InventoryTransaction, Product
+            from decimal import Decimal
+
+            try:
+                sale = Sale.objects.get(id=pk)
+            except Sale.DoesNotExist:
+                return None
+
+            if sale.status in ("refunded", "cancelled"):
+                return {"error": f"Cannot return a {sale.status} sale"}
+
+            results = []
+            refunded_total = Decimal("0.00")
+
+            with db_transaction.atomic():
+                for item_data in items_to_return:
+                    si_id = item_data.get("sale_item_id")
+                    qty = abs(item_data.get("quantity", 0))
+                    disposition = item_data.get("disposition", "restock")
+                    notes = item_data.get("notes", "")
+
+                    if qty <= 0:
+                        results.append({"sale_item_id": si_id, "status": "skipped", "reason": "invalid quantity"})
+                        continue
+
+                    try:
+                        sale_item = SaleItem.objects.get(id=si_id, sale=sale)
+                    except SaleItem.DoesNotExist:
+                        results.append({"sale_item_id": si_id, "status": "error", "reason": "not found"})
+                        continue
+
+                    if qty > sale_item.quantity:
+                        results.append({
+                            "sale_item_id": si_id, "status": "error",
+                            "reason": f"only {sale_item.quantity} available, requested {qty}",
+                        })
+                        continue
+
+                    # Create inventory transaction based on disposition
+                    tx_type = "waste" if disposition == "waste" else "restock"
+                    InventoryTransaction.objects.create(
+                        product_id=sale_item.product_id,
+                        transaction_type=tx_type,
+                        quantity=qty,
+                        reference=f"return_sale_{pk}",
+                        inventory_id="main",
+                        notes=notes or f"Return from sale #{pk}: {sale_item.product_name}",
+                        created_by="system",
+                    )
+
+                    # Update sale item quantity (track partial returns)
+                    sale_item.quantity -= qty
+                    partial_line_total = sale_item.unit_price * qty
+                    refunded_total += partial_line_total
+                    if sale_item.quantity <= 0:
+                        sale_item.line_total = Decimal("0.00")
+                    else:
+                        sale_item.line_total = sale_item.unit_price * sale_item.quantity
+                    sale_item.save(update_fields=["quantity", "line_total", "updated_at"])
+
+                    results.append({
+                        "sale_item_id": si_id,
+                        "product_name": sale_item.product_name,
+                        "quantity_returned": qty,
+                        "disposition": disposition,
+                        "status": "returned",
+                    })
+
+                # Check if all items returned
+                all_returned = SaleItem.objects.filter(sale=sale, quantity__gt=0).count() == 0
+
+                # Update sale totals
+                sale.subtotal -= refunded_total
+                sale.total = sale.subtotal - sale.discount_amount + sale.tax_amount - sale.cashback_amount
+                if sale.total < 0:
+                    sale.total = Decimal("0.00")
+
+                # Apply return cashback if specified
+                return_cashback = Decimal(str(body.get("cashback_amount", 0)))
+                if return_cashback:
+                    sale.cashback_amount += return_cashback
+
+                if all_returned:
+                    sale.status = "refunded"
+                    sale.total = Decimal("0.00")
+
+                sale.save(update_fields=["subtotal", "total", "cashback_amount", "status", "updated_at"])
+
+            return {
+                "sale_id": pk,
+                "status": "refunded" if all_returned else "partially_returned",
+                "items_returned": len([r for r in results if r.get("status") == "returned"]),
+                "refunded_amount": float(refunded_total),
+                "sale_total": float(sale.total),
+                "sale_cashback": float(sale.cashback_amount),
+                "results": results,
+            }
+
+        result = await _process()
+        if result is None:
+            return S._error(404, "Sale not found")
+        if "error" in result:
+            return S._error(400, result["error"])
+        return jsonify(result)
 
     # ── Scheduler status ──
 

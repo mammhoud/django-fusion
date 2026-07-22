@@ -185,10 +185,15 @@ def _parse_args() -> argparse.Namespace:
 
 
 def _ensure_tables(use_migrations: bool) -> None:
-    """Create database tables for managed models.
+    """Create database tables for managed models and add missing columns.
 
     Called from main() after argparse, so importing server.py (e.g. for tests)
     never triggers migrations or schema changes.
+
+    For existing databases, ``_add_missing_columns()`` runs ``ALTER TABLE``
+    for every model field that isn't a relation — this handles model
+    changes (e.g. adding ``cashback_amount``) without requiring Django
+    migrations or a full database reset.
     """
     if use_migrations:
         from django.core.management import call_command
@@ -203,7 +208,67 @@ def _ensure_tables(use_migrations: bool) -> None:
                         schema_editor.create_model(model)
                 except Exception as e:
                     logger.debug(f"Could not create table for {model._meta.db_table}: {e}")
-        logger.info("Tables ensured via schema_editor (use --migrate for Django migrations)")
+        # Add missing columns for model fields added after initial creation
+        _add_missing_columns(table_names)
+        logger.info("Tables ensured via schema_editor + missing columns added (use --migrate for Django migrations)")
+
+
+def _add_missing_columns(existing_tables: set[str]) -> None:
+    """Check each registry model's table for missing columns and ALTER TABLE.
+
+    Iterates over all managed Django model fields.  For each field in a table
+    that already exists, checks whether the column exists in SQLite's
+    ``PRAGMA table_info``.  If missing, runs ``ALTER TABLE ADD COLUMN`` with
+    the field's nullable/default/type definition.
+
+    This keeps schema in sync without requiring Django migrations or
+    ``schema_editor.create_model()`` (which only works for new tables).
+    """
+    from django.db.models import Field
+
+    for model in _REGISTRY_MODELS:
+        db_table = model._meta.db_table
+        if db_table not in existing_tables:
+            continue  # Already created by _ensure_tables above
+
+        # Get existing column names from SQLite pragma
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(f'PRAGMA table_info("{db_table}")')
+                existing_cols = {row[1] for row in cursor.fetchall()}
+        except Exception:
+            logger.warning("Cannot inspect columns for %s — skipping", db_table)
+            continue
+
+        # Check each model field
+        for field in model._meta.local_fields:
+            col_name = field.column
+            if col_name in existing_cols:
+                continue
+            if field.primary_key or field.is_relation:
+                continue
+
+            # Build the ADD COLUMN SQL
+            try:
+                col_type = field.db_type(connection=connection)
+                nullable = "" if field.null else " NOT NULL"
+                default = ""
+                if field.has_default():
+                    default_val = field.get_default()
+                    if default_val is not None:
+                        if isinstance(default_val, str):
+                            default = f" DEFAULT '{default_val}'"
+                        elif isinstance(default_val, (int, float)):
+                            default = f" DEFAULT {default_val}"
+                        elif isinstance(default_val, bool):
+                            default = f" DEFAULT {1 if default_val else 0}"
+
+                sql = f'ALTER TABLE "{db_table}" ADD COLUMN "{col_name}" {col_type}{nullable}{default}'
+                with connection.cursor() as cursor:
+                    cursor.execute(sql)
+                logger.info("Added column %s.%s (%s)", db_table, col_name, col_type)
+            except Exception as e:
+                logger.debug("Could not add column %s.%s: %s", db_table, col_name, e)
 
 
 # ---------------------------------------------------------------------------
