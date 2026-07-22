@@ -11,10 +11,10 @@
 -- 1. UPDATE SETTINGS with realistic data
 -- ============================================================
 UPDATE settings SET
-    restaurant_name = 'POS KO',
+    restaurant_name = 'Forge',
     address = '123 Main Boulevard, Gulberg, Lahore',
     phone = '+92-300-1234567',
-    email = 'structa.cloud@gmail.com',
+    email = 'forge@structa.cloud',
     tax_rate = '13',
     opening_time = '09:00',
     closing_time = '23:00',

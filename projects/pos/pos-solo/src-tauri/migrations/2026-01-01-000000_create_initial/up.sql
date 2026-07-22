@@ -209,7 +209,7 @@ BEGIN UPDATE employees SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END
 
 -- Insert default settings
 INSERT OR IGNORE INTO settings (id, restaurant_name, currency, receipt_footer)
-VALUES (1, 'POS KO', 'PKR', 'Thank you for your business!');
+VALUES (1, 'Forge', 'PKR', 'Thank you for your business!');
 
 -- Insert default delivery types
 INSERT OR IGNORE INTO delivery_types (id, name, description, fee_multiplier) VALUES
@@ -239,7 +239,7 @@ INSERT OR IGNORE INTO recipe_types (id, name, description) VALUES
 
 -- 1. Update settings with realistic defaults
 UPDATE settings SET
-    restaurant_name = 'POS KO',
+    restaurant_name = 'Forge',
     address = '123 Main Boulevard, Gulberg, Lahore',
     phone = '+92-300-1234567',
     email = 'structa.cloud@gmail.com',

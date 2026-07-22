@@ -41,6 +41,8 @@ INSTALLED_APPS = [
     "django.contrib.staticfiles",
     # Django admin (themed by Unfold)
     "django.contrib.admin",
+    # Wagtail (required by django_fusion.core.models.mixins.display_mode)
+    "wagtail",
     # POS Full managed models
     "models.PosFullConfig",
 ]

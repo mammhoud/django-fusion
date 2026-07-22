@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { isTauri } from '../utils/tauri';
 
 export interface AuthUser {
   id: number;
@@ -111,6 +112,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   const checkAuthStatus = useCallback(async () => {
     try {
+      if (!isTauri) {
+        // Browser dev mode — no sidecar available, allow access
+        setIsAuthRequired(false);
+        setIsAuthenticated(true);
+        return;
+      }
       const required = await invoke<boolean>('check_auth_required');
       setIsAuthRequired(required);
       
@@ -148,6 +155,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [checkAuthStatus]);
 
   const login = useCallback(async (email: string, password: string, rememberMe?: boolean) => {
+    if (!isTauri) throw new Error('Tauri runtime not available — run in desktop app');
     setIsLoading(true);
     try {
       const result = await invoke<{ id: number; email: string; name: string }>('login_user', {
@@ -224,6 +232,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     name: string,
     rememberMe?: boolean
   ) => {
+    if (!isTauri) throw new Error('Tauri runtime not available — run in desktop app');
     setIsLoading(true);
     try {
       const result = await invoke<{ id: number; email: string; name: string }>('setup_account', {
@@ -246,6 +255,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const sendConfirmationCode = useCallback(async (email: string) => {
+    if (!isTauri) throw new Error('Tauri runtime not available — run in desktop app');
     setIsLoading(true);
     try {
       await invoke('send_auth_confirmation_code', { email });

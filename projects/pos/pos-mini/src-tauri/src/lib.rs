@@ -7,10 +7,48 @@ use operations::*;
 use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
 use tauri::{AppHandle, Manager};
 
-// Load environment variables at startup
+// Load environment variables at startup.
+// dotenvy::dotenv() looks in cwd, but Tauri runs from src-tauri/ or the
+// app bundle — not the project root where .env lives.  Search multiple
+// locations relative to the executable to cover dev + bundled modes.
 fn load_env() {
-    if let Err(e) = dotenvy::dotenv() {
-        eprintln!("Warning: Could not load .env file: {}", e);
+    let exe_dir = std::env::current_exe()
+        .ok()
+        .and_then(|e| e.parent().map(|p| p.to_path_buf()));
+
+    let candidates: Vec<std::path::PathBuf> = [
+        std::env::current_dir().ok().map(|d| d.join(".env")),
+        exe_dir.clone().map(|d| d.join(".env")),
+        exe_dir.clone().and_then(|d| d.parent().map(|p| p.join(".env"))),
+        exe_dir.and_then(|d| d.parent().and_then(|p| p.parent()).map(|p| p.join(".env"))),
+    ]
+    .into_iter()
+    .flatten()
+    .collect();
+
+    let mut loaded = false;
+    for path in &candidates {
+        if path.exists() {
+            match dotenvy::from_path(path) {
+                Ok(_) => {
+                    loaded = true;
+                    eprintln!("[env] loaded {}", path.display());
+                    break;
+                }
+                Err(e) => eprintln!("[env] failed {}: {}", path.display(), e),
+            }
+        }
+    }
+
+    if !loaded {
+        eprintln!(
+            "[env] .env not found (searched: {}). Using OS environment / defaults.",
+            candidates
+                .iter()
+                .map(|p| p.display().to_string())
+                .collect::<Vec<_>>()
+                .join(", ")
+        );
     }
 }
 

@@ -5,7 +5,7 @@
 
 -- 1. Revert business settings to restaurant defaults
 UPDATE settings SET
-    restaurant_name  = 'POS KO',
+    restaurant_name  = 'Forge',
     address          = '123 Main Street, Food District',
     phone            = '+1-555-0123',
     email            = 'hello@pos.com',

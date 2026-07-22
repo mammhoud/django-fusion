@@ -108,6 +108,29 @@ build-all:            ## Build all platforms sequentially
 
 # ── Sidecar ───────────────────────────────────────────────────────────────
 
+server:               ## Start the Python/Robyn sidecar server on port 8766 (http://127.0.0.1:8766)
+	@echo '── POS Full Sidecar ──'
+	@echo '  Starting on http://127.0.0.1:8766'
+	@echo '  API docs: http://127.0.0.1:8766/'
+	@echo '  Health:   http://127.0.0.1:8766/health'
+	@echo '  Sync status: http://127.0.0.1:8766/sync/status'
+	cd sidecar && python3 server.py --port 8766 --host 127.0.0.1
+
+server-dev:           ## Start sidecar with verbose logging + auto-migrate
+	cd sidecar && python3 server.py --port 8766 --host 127.0.0.1 --verbose --migrate
+
+server-check:         ## Start sidecar and run curl smoke-test against all endpoints
+	@echo '── Starting sidecar + smoke test ──'
+	@cd sidecar && python3 server.py --port 8766 --host 127.0.0.1 > /tmp/pos-full-smoke.log 2>&1 & \
+	sleep 4 && \
+	echo 'Health:' && curl -sf http://127.0.0.1:8766/health | python3 -m json.tool && \
+	echo 'Products:' && curl -sf 'http://127.0.0.1:8766/products?page=1&per_page=3' | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'  {len(d.get(\"data\",d))} items')" && \
+	echo 'Categories:' && curl -sf http://127.0.0.1:8766/categories | python3 -c "import sys,json; d=json.load(sys.stdin); data=d if isinstance(d,list) else d.get('data',d); print(f'  {len(data)} items')" && \
+	echo 'Sales:' && curl -sf 'http://127.0.0.1:8766/sales?page=1&per_page=3' | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'  {len(d.get(\"data\",d))} items')" && \
+	echo 'Sync status:' && curl -sf http://127.0.0.1:8766/sync/status | python3 -m json.tool && \
+	echo '' && echo '✅ Sidecar smoke test passed' && \
+	fuser -k 8766/tcp 2>/dev/null; true
+
 build-sidecar:        ## Build the Python/Sanic sidecar binary for the current platform
 	node scripts/dev/build-sidecar.cjs
 

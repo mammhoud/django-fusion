@@ -8,7 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from django_fusion.core.models import AbstractDataToken
+from django_fusion.core.models import BaseDeviceToken
 
 
 # ══════════════════════════════════════════════════════════════════════
@@ -490,30 +490,18 @@ class BranchInventory(models.Model):
 # ══════════════════════════════════════════════════════════════════════
 
 
-class DeviceToken(AbstractDataToken):
-    """Cloud-side token for POS device authentication and sync tracking.
+class DeviceToken(BaseDeviceToken):
+    """Cloud-side token inheriting all auth/sync behaviour from BaseDeviceToken.
 
-    Inherits ``sync_status``, ``app_type``, ``metadata``, ``created_at``,
-    and ``updated_at`` from :class:`AbstractDataToken`.
+    Adds a ``branch`` FK for multi-tenant filtering and overrides
+    ``role`` / ``node_type`` with cloud-specific choice labels.
 
-    Mirrors the sidecar DeviceToken (pos-full/sidecar/models/token.py)
-    on the cloud side so the central server can:
+    All fields (device_id, token_hash, sync_status, app_type, …),
+    auth methods (issue_token, validate_token, revoke, refresh, …),
+    and sync cascade (mark_data_synced, mark_data_sync_failed)
+    are inherited from :class:`django_fusion.core.models.BaseDeviceToken`.
 
-    *   **Validate** tokens from any POS edition (solo/full/mini).
-    *   **Track** sync progress per device via ``sync_status`` and
-        ``last_synced_at``.
-    *   **Cascade** sync confirmations to linked ``DataToken`` rows
-        via ``mark_data_synced()``.
-    *   **Revoke** access remotely by setting ``is_active=False``.
-
-    Unlike the sidecar copies, this cloud-side variant includes:
-
-    *   ``branch`` FK — links tokens to a specific Branch for
-        multi-tenant filtering.
-    *   ``Role`` TextChoices — for admin dashboard filtering.
-
-    Table: ``cloud_device_tokens`` (same name as sidecar copies for
-    cross-environment consistency).
+    Table: ``cloud_device_tokens`` (shared with pos-full/solo sidecars).
     """
 
     class Role(models.TextChoices):
@@ -522,35 +510,14 @@ class DeviceToken(AbstractDataToken):
         CASHIER = "cashier", "Cashier"
         VIEWER = "viewer", "Viewer"
 
-    # ── Core identity ──
-    device_id = models.CharField(
-        _("device ID"), max_length=100, db_index=True,
-        help_text="Device identifier. Multiple tokens per device allowed for refresh cycles.",
-    )
-    token_hash = models.CharField(
-        _("token hash"), max_length=128, unique=True,
-        help_text="SHA-256 hash of the raw token.",
-    )
-    token_prefix = models.CharField(
-        _("token prefix"), max_length=8,
-        help_text="First 8 characters of the raw token (for UI display).",
-    )
+    # ── Cloud-specific overrides ─────────────────────────────────
 
-    # ── Node / branch linkage ──
-    node_id_link = models.CharField(
-        _("node ID"), max_length=100, blank=True, default="", db_index=True,
-        help_text="Node identifier this token belongs to.",
-    )
-    branch = models.ForeignKey(
-        Branch, on_delete=models.SET_NULL, null=True, blank=True,
-        related_name="device_tokens", verbose_name=_("branch"),
-        help_text="Branch this device token is associated with.",
-    )
-
-    # ── Role & type (app_type inherited from AbstractDataToken) ──
+    # Override role with shorter admin labels (values are identical)
     role = models.CharField(
         _("role"), max_length=20, choices=Role.choices, default=Role.VIEWER, db_index=True,
     )
+
+    # Override node_type with shorter admin labels (values are identical)
     node_type = models.CharField(
         _("node type"), max_length=20,
         choices=[("pos-solo", "POS Solo"), ("pos-full", "POS Full"),
@@ -559,25 +526,17 @@ class DeviceToken(AbstractDataToken):
         default="pos-solo",
     )
 
-    # ── Capabilities ──
-    capabilities = models.JSONField(_("capabilities"), default=dict, blank=True)
-    allowed_entities = models.JSONField(_("allowed entities"), default=list, blank=True)
+    # ── Cloud-unique field ───────────────────────────────────────
 
-    # ── Lifecycle ──
-    issued_at = models.DateTimeField(_("issued at"), auto_now_add=True)
-    expires_at = models.DateTimeField(_("expires at"), help_text="When this token expires.")
-    last_used_at = models.DateTimeField(_("last used at"), null=True, blank=True)
-
-    # ── Device-level sync tracking ──
-    last_synced_at = models.DateTimeField(
-        _("last synced at"), null=True, blank=True,
-        help_text="When data tagged with this token was last confirmed synced.",
+    branch = models.ForeignKey(
+        Branch, on_delete=models.SET_NULL, null=True, blank=True,
+        related_name="device_tokens", verbose_name=_("branch"),
+        help_text="Branch this device token is associated with.",
     )
 
-    # ── State (sync_status & metadata inherited from AbstractDataToken) ──
-    is_active = models.BooleanField(_("active"), default=True)
-
     class Meta:
+        # NOTE: does NOT inherit BaseDeviceToken.Meta — we need abstract=False
+        # (the default).  BaseDeviceToken.Meta has abstract=True.
         app_label = "core"
         db_table = "cloud_device_tokens"
         verbose_name = _("device token")
@@ -592,36 +551,3 @@ class DeviceToken(AbstractDataToken):
             models.Index(fields=["app_type", "sync_status"]),
             models.Index(fields=["branch", "is_active"]),
         ]
-
-    def __str__(self):
-        return f"[{self.role}] {self.device_id} ({self.token_prefix}...)"
-
-    def is_expired(self) -> bool:
-        from django.utils import timezone
-        return timezone.now() >= self.expires_at
-
-    def mark_data_synced(self):
-        """Mark this token's data as synced and cascade to linked DataTokens.
-
-        Called when the cloud server confirms receipt of a sync batch.
-        Bulk-updates ALL pending DataToken rows matching this device's
-        ``node_id_link`` — a single query handles any number of rows.
-        """
-        from django.utils import timezone
-        self.sync_status = self.Status.SYNCED  # inherited from AbstractDataToken
-        self.last_synced_at = timezone.now()
-        self.save(update_fields=["sync_status", "last_synced_at", "updated_at"])
-        if self.node_id_link:
-            try:
-                from django_fusion.core.models import DataToken
-                DataToken.objects.filter(
-                    node_id=self.node_id_link,
-                    sync_status__in=[self.Status.PENDING, self.Status.SYNCING],
-                ).update(sync_status=self.Status.SYNCED, synced_at=timezone.now())
-            except ImportError:
-                pass
-
-    def mark_data_sync_failed(self):
-        """Mark this token's sync as failed (e.g. network error, invalid payload)."""
-        self.sync_status = self.Status.FAILED  # inherited from AbstractDataToken
-        self.save(update_fields=["sync_status", "updated_at"])

@@ -1,4 +1,11 @@
 @import "tailwindcss";
+@import "../../assets/css/base/_variables.css";
+@import "../../assets/css/base/_reset.css";
+@import "../../assets/css/components/_card.css";
+@import "../../assets/css/components/_receipt.css";
+@import "../../assets/css/utilities/_rtl.css";
+@import "../../assets/css/utilities/_animations.css";
+@import "../../assets/css/utilities/_scrollbar.css";
 
 @custom-variant dark (&:where(.dark, .dark *));
 
@@ -7,16 +14,3 @@
  * Import order: base → components → utilities, so utilities can
  * override component/base styles when needed.
  */
-
-/* ── Base ──────────────────────────────────────────────────────────── */
-@import "../../assets/css/base/_variables.css";
-@import "../../assets/css/base/_reset.css";
-
-/* ── Components ─────────────────────────────────────────────────────── */
-@import "../../assets/css/components/_card.css";
-@import "../../assets/css/components/_receipt.css";
-
-/* ── Utilities ──────────────────────────────────────────────────────── */
-@import "../../assets/css/utilities/_rtl.css";
-@import "../../assets/css/utilities/_animations.css";
-@import "../../assets/css/utilities/_scrollbar.css";

@@ -7,9 +7,9 @@ import { invoke } from '@tauri-apps/api/core';
 import { Settings } from '../types';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-// Bundled brand logo (animated POS Crest SVG).
-// User-uploaded settings.logo always takes priority when present.
 import defaultLogo from '../assets/pos-crest.svg';
+
+import { isTauri } from '../utils/tauri';
 
 export default function Home() {
   const container = {
@@ -62,6 +62,10 @@ export default function Home() {
 
   useEffect(() => {
     const loadSettings = async () => {
+      if (!isTauri) {
+        setRestaurantName('Forge');
+        return;
+      }
       try {
         const response = await invoke<Settings>('get_settings');
         if (response) {
@@ -74,6 +78,7 @@ export default function Home() {
         }
       } catch (error) {
         console.error('Error loading settings:', error);
+        setRestaurantName('Forge');
       }
     };
 

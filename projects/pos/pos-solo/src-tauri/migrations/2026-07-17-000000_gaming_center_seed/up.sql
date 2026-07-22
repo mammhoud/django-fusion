@@ -5,7 +5,7 @@
 
 -- 1. Switch default currency to USD & update business info
 UPDATE settings SET
-    restaurant_name  = 'Level Up Gaming Center',
+    restaurant_name  = 'Forge',
     address          = '42 Arcade Avenue, Downtown District',
     phone            = '+1-555-0-GAMING',
     email            = 'hello@levelupgaming.com',
