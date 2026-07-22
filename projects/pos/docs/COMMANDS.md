@@ -29,17 +29,26 @@
 
 ## Delegation Chain
 
-The POS command system uses a **layered delegation** pattern:
+The POS command system uses a **layered delegation** pattern with two access paths:
 
 ```
-     Root Makefile                          projects/pos/
-  ┌────────────────┐                    ┌──────────────────────┐
-  │ make pos-mini  │ ── pos-mini ──►    │ make setup-mini     │ ──► pos-mini/Makefile
-  │ make pos-solo  │ ── pos-solo ──►    │ make dev-solo       │ ──► pos-solo/Makefile
-  │ make pos-full  │ ── pos-full ──►    │ make build-full     │ ──► pos-full/Makefile
-  │ make pos-client│ ── pos-client ──►  │ make setup-client   │ ──► pos-client/Makefile
-  └────────────────┘                    └──────────────────────┘
+Path 1: Direct edition access (from repo root)
+  make pos-{mini|solo|full|client} <target>
+     └──► projects/pos/pos-{edition}/Makefile
+
+Path 2: Aggregated targets (from repo root via projects/pos/Makefile)
+  make setup-{mini|solo|full}
+  make dev-{mini|solo|full}
+  make build-{mini|solo|full}
+  make check-{mini|solo|full}
+     └──► projects/pos/Makefile ──► projects/pos/pos-{edition}/Makefile
+
+Path 3: Direct POS root access
+  make -C projects/pos <target>
+  make -C projects/pos/pos-{edition} <target>
 ```
+
+**Tip:** `make pos` (from repo root) or `make -C projects/pos help` shows the aggregated POS help menu.
 
 **From repo root:**
 ```bash
