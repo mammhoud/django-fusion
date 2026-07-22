@@ -1,8 +1,31 @@
 """
-Admin Dashboard Routes — POS Solo Edition.
+Admin Dashboard Routes — POS Full Edition.
 
-Same as pos-full admin but with added device peer promotion endpoint
-for branch-level device-to-device synchronization.
+Server-side rendered admin dashboard using Jinja2 templates.
+Authentication reuses the existing Employee model (admin/manager roles).
+All data queries go through Django ORM via sync_to_async.
+
+Pages:
+  GET  /admin                    → Login page (or redirect if logged in)
+  POST /admin/login               → Authenticate employee (form-encoded)
+  GET  /admin/logout              → Clear session
+  GET  /admin/dashboard           → Stats, cloud status, recent nodes, sync activity
+  GET  /admin/settings            → Cloud sync config, scheduler, database info
+  POST /admin/settings/cloud-save → Save cloud config (form-encoded)
+  POST /admin/settings/toggle-sync → Enable/disable scheduler
+  GET  /admin/devices             → Node list, master devices, device configs
+  POST /admin/devices/:id/promote → Promote node to master
+  POST /admin/devices/:id/toggle-active → Activate/deactivate node
+  GET  /admin/products            → Product list
+  GET  /admin/products/add        → Add product form
+  GET  /admin/products/:id/edit   → Edit product form
+  POST /admin/products/save       → Save product (form-encoded)
+  GET  /admin/users               → Employee list
+  GET  /admin/users/add           → Add user form
+  GET  /admin/users/:id/edit      → Edit user form
+  POST /admin/users/save          → Save user (form-encoded)
+  GET  /admin/sync-logs           → Sync log viewer with filter
+  POST /admin/sync-logs/clear     → Clear all sync logs
 """
 
 from __future__ import annotations
@@ -20,7 +43,7 @@ from asgiref.sync import sync_to_async
 from jinja2 import Environment, FileSystemLoader
 from robyn import Request, Response
 
-logger = logging.getLogger("pos_solo.admin")
+logger = logging.getLogger("pos_full.admin")
 
 # ---------------------------------------------------------------------------
 # Template engine
@@ -43,6 +66,7 @@ def _redirect(location: str) -> Response:
 
 
 def _parse_form(request: Request) -> dict:
+    """Parse form-encoded or JSON body into a dict."""
     body_bytes = request.body if hasattr(request, 'body') else b""
     if body_bytes:
         try:
@@ -61,7 +85,7 @@ def _parse_form(request: Request) -> dict:
 
 
 # ---------------------------------------------------------------------------
-# Session store
+# Session store (in-memory — resets on restart, acceptable for local admin)
 # ---------------------------------------------------------------------------
 
 _sessions: Dict[str, Dict[str, Any]] = {}
@@ -107,7 +131,7 @@ def _require_admin(request: Request) -> dict | None:
 def _base_context(request: Request, page: str, title: str) -> dict:
     session = _get_session(request)
     return {
-        "app_name": "POS Solo Admin",
+        "app_name": "POS Full Admin",
         "page": page,
         "page_title": title,
         "user_name": session["employee"]["name"] if session else "Guest",
@@ -125,6 +149,10 @@ def _get_version() -> str:
     except ImportError:
         return "unknown"
 
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
 
 def _load_sync_state() -> dict:
     try:
@@ -148,14 +176,16 @@ def _save_sync_state(state: dict) -> None:
 
 
 def register_admin_routes(app):
-    """Register all admin dashboard routes for POS Solo."""
+    """Register all admin dashboard routes."""
+
+    # ── Login page ──
 
     @app.get("/admin")
     @app.get("/admin/login")
     async def admin_login(request: Request):
         if _require_admin(request):
             return _redirect("/admin/dashboard")
-        return _html(_render("admin/login.html", {"app_name": "POS Solo Admin", "error": ""}))
+        return _html(_render("admin/login.html", {"app_name": "POS Full Admin", "error": ""}))
 
     @app.get("/admin/logout")
     async def admin_logout(request: Request):
@@ -189,14 +219,17 @@ def register_admin_routes(app):
             if emp.role not in ("admin", "manager"):
                 return None
             return {
-                "id": emp.id, "name": f"{emp.first_name} {emp.last_name}".strip(),
-                "role": emp.role, "email": emp.email or "",
+                "id": emp.id,
+                "name": f"{emp.first_name} {emp.last_name}".strip(),
+                "role": emp.role,
+                "email": emp.email or "",
             }
 
         emp_data = await _auth()
         if not emp_data:
             return _html(_render("admin/login.html", {
-                "app_name": "POS Solo Admin", "error": "Invalid PIN or insufficient permissions.",
+                "app_name": "POS Full Admin",
+                "error": "Invalid PIN or insufficient permissions. Admin/Manager role required.",
             }))
 
         token = _create_session(emp_data)
@@ -204,10 +237,14 @@ def register_admin_routes(app):
         resp.headers["Set-Cookie"] = f"admin_token={token}; Path=/; Max-Age={SESSION_TIMEOUT}; HttpOnly"
         return resp
 
+    # ── Dashboard ──
+
     @app.get("/admin/dashboard")
     async def admin_dashboard(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
+
         from routes import state as S
 
         @sync_to_async
@@ -235,17 +272,34 @@ def register_admin_routes(app):
                 for log in S.SyncLog.objects.all().order_by("-created_at")[:10]
             ]
 
+        stats = await _data()
+        nodes = await _nodes()
+        sync_logs = await _sync_logs()
+
+        cloud_data = _load_sync_state()
+        cloud = {
+            "url": cloud_data.get("cloud_url", os.environ.get("CLOUD_CRM_URL", "")),
+            "status": cloud_data.get("status", "idle"),
+            "last_sync": cloud_data.get("last_sync", None),
+            "enabled": cloud_data.get("enabled", True),
+        }
+
         ctx = _base_context(request, "dashboard", "Dashboard")
-        ctx.update({"stats": await _data(), "nodes": await _nodes(), "sync_logs": await _sync_logs(),
-                     "cloud": {"url": os.environ.get("CLOUD_CRM_URL", ""), "status": "idle", "last_sync": None, "enabled": True}})
+        ctx.update({"stats": stats, "nodes": nodes, "sync_logs": sync_logs, "cloud": cloud})
         return _html(_render("admin/dashboard.html", ctx))
+
+    # ── Settings ──
 
     @app.get("/admin/settings")
     async def admin_settings(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
+
         from routes import state as S
         cloud_data = _load_sync_state()
+        sched = getattr(S, 'sync_scheduler', None)
+
         ctx = _base_context(request, "settings", "Settings")
         ctx.update({
             "cloud": {
@@ -253,11 +307,11 @@ def register_admin_routes(app):
                 "api_key": cloud_data.get("api_key", "") or "",
                 "sync_interval": cloud_data.get("sync_interval", 60),
                 "enabled": cloud_data.get("enabled", True),
-                "node_id": cloud_data.get("node_id", "pos-solo-auto"),
+                "node_id": cloud_data.get("node_id", "pos-full-auto"),
             },
             "db_path": str(S.DB_PATH),
             "sync_state_path": str(S.SYNC_STATE_PATH),
-            "scheduler": {"running": False, "enabled": False, "interval_s": 0, "sync_count": 0, "error_count": 0, "node_id": "-", "last_sync_at": None},
+            "scheduler": sched.stats if sched else {"running": False, "enabled": False, "interval_s": 0, "sync_count": 0, "error_count": 0, "node_id": "-", "last_sync_at": None},
             "version": _get_version(),
             "uptime": int((datetime.now(timezone.utc) - S._start_time).total_seconds()),
             "model_count": len(S._ALL_MODELS),
@@ -282,19 +336,43 @@ def register_admin_routes(app):
     async def admin_test_cloud(request: Request):
         if not _require_admin(request):
             return _redirect("/admin")
+        cloud_data = _load_sync_state()
+        url = cloud_data.get("cloud_url", os.environ.get("CLOUD_CRM_URL", ""))
+        if not url:
+            return _redirect("/admin/settings")
+        try:
+            import httpx
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.get(f"{url.rstrip('/')}/health")
+                if resp.status_code == 200:
+                    cloud_data["status"] = "connected"
+                else:
+                    cloud_data["status"] = "error"
+        except Exception:
+            cloud_data["status"] = "disconnected"
+        _save_sync_state(cloud_data)
         return _redirect("/admin/settings")
 
     @app.post("/admin/settings/toggle-sync")
     async def admin_toggle_sync(request: Request):
         if not _require_admin(request):
             return _redirect("/admin")
+        from routes import state as S
+        sched = getattr(S, 'sync_scheduler', None)
+        if sched:
+            await sched.toggle(not sched._enabled)
         return _redirect("/admin/settings")
+
+    # ── Devices ──
 
     @app.get("/admin/devices")
     async def admin_devices(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
+
         from routes import state as S
+        node_filter = request.query_params.get("node_filter", "")
 
         @sync_to_async
         def _nodes():
@@ -314,11 +392,23 @@ def register_admin_routes(app):
                 for m in S.MasterDevice.objects.filter(is_active=True)
             ]
 
+        @sync_to_async
+        def _configs():
+            qs = S.DeviceConfig.objects.filter(is_active=True)
+            if node_filter:
+                qs = qs.filter(node_id__icontains=node_filter)
+            return [
+                {"node_id": dc.node_id, "config_key": dc.config_key,
+                 "config_value": json.dumps(dc.config_value)[:80],
+                 "category": dc.category, "version": dc.version}
+                for dc in qs.order_by("node_id", "config_key")[:50]
+            ]
+
         ctx = _base_context(request, "devices", "Devices")
         ctx["nodes"] = await _nodes()
         ctx["masters"] = await _masters()
-        ctx["device_configs"] = []
-        ctx["node_filter"] = ""
+        ctx["device_configs"] = await _configs()
+        ctx["node_filter"] = node_filter
         return _html(_render("admin/devices.html", ctx))
 
     @app.post("/admin/devices/:node_id/promote")
@@ -365,9 +455,12 @@ def register_admin_routes(app):
         await _toggle()
         return _redirect("/admin/devices")
 
+    # ── Products ──
+
     @app.get("/admin/products")
     async def admin_products(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
 
@@ -391,7 +484,8 @@ def register_admin_routes(app):
 
     @app.get("/admin/products/add")
     async def admin_products_add(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
 
@@ -415,7 +509,8 @@ def register_admin_routes(app):
 
     @app.get("/admin/products/:product_id/edit")
     async def admin_products_edit(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
         product_id = int(request.path_params.get("product_id", "0"))
@@ -448,6 +543,7 @@ def register_admin_routes(app):
         edit = await _product()
         if not edit:
             return _redirect("/admin/products")
+
         ctx = _base_context(request, "products", "Products")
         ctx["products"] = await _data()
         ctx["categories"] = await _cats()
@@ -465,8 +561,10 @@ def register_admin_routes(app):
         @sync_to_async
         def _save():
             defaults = {
-                "name": body.get("name", ""), "sku": body.get("sku", None),
-                "price": float(body.get("price", 0)), "stock_quantity": int(body.get("stock_quantity", 0)),
+                "name": body.get("name", ""),
+                "sku": body.get("sku", None),
+                "price": float(body.get("price", 0)),
+                "stock_quantity": int(body.get("stock_quantity", 0)),
                 "description": body.get("description", ""),
                 "is_active": body.get("is_active") in (True, "1", 1, "true", "on"),
             }
@@ -484,9 +582,12 @@ def register_admin_routes(app):
         await _save()
         return _redirect("/admin/products")
 
+    # ── Users ──
+
     @app.get("/admin/users")
     async def admin_users(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
 
@@ -513,7 +614,8 @@ def register_admin_routes(app):
 
     @app.get("/admin/users/add")
     async def admin_users_add(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
 
@@ -540,7 +642,8 @@ def register_admin_routes(app):
 
     @app.get("/admin/users/:user_id/edit")
     async def admin_users_edit(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
         user_id = int(request.path_params.get("user_id", "0"))
@@ -611,9 +714,12 @@ def register_admin_routes(app):
         await _save()
         return _redirect("/admin/users")
 
+    # ── Sync Logs ──
+
     @app.get("/admin/sync-logs")
     async def admin_sync_logs(request: Request):
-        if not _require_admin(request):
+        session = _require_admin(request)
+        if not session:
             return _redirect("/admin")
         from routes import state as S
         status_filter = request.query_params.get("status_filter", "")

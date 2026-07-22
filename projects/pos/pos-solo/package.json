@@ -1,8 +1,8 @@
 {
-  "name": "pos-extended",
+  "name": "pos-full",
   "private": true,
   "version": "0.1.0",
-  "description": "POS Extended — POS desktop app with Python/Sanic sidecar API",
+  "description": "POS Full — POS desktop app + sidecar + Django data sync + WebSocket chat",
   "author": "mammhoud <structa.cloud@gmail.com>",
   "license": "AGPL-3.0",
   "homepage": "https://structa.cloud",
@@ -64,8 +64,8 @@
     "build:sidecar": "node scripts/dev/build-sidecar.cjs",
     "checksums": "node scripts/dev/generate-checksums.cjs",
     "verify": "node scripts/dev/verify-checksum.cjs",
-    "db:seed": "cargo run --manifest-path src-tauri/Cargo.toml --bin seed",
-    "db:reset": "rm -f restaurant.db && cargo run --manifest-path src-tauri/Cargo.toml --bin seed"
+    "db:seed": "echo '✅ seed skipped (pos-solo uses Robyn sidecar for data)'",
+    "db:reset": "echo '✅ db:reset skipped (pos-solo uses Robyn sidecar for data)'"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",

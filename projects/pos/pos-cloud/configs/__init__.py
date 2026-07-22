@@ -30,9 +30,14 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
 
+    # Wagtail (required by django-fusion core models)
+    "wagtail",
+    "wagtail.admin",
+
     # Third-party
     "channels",
     "django_fusion",
+    "django_fusion.ci.apps.CIIntegrationConfig",  # CI app — DataToken, Call, Notification, Integration
     "rest_framework",
     "django_filters",
     "django_bolt",
@@ -187,6 +192,8 @@ UNFOLD = {
                 "items": [
                     {"title": "Users", "icon": "person", "link": "/admin/auth/user/"},
                     {"title": "Groups", "icon": "groups", "link": "/admin/auth/group/"},
+                    {"title": "Device Tokens", "icon": "key", "link": "/admin/core/devicetoken/"},
+                    {"title": "Sync Logs", "icon": "sync", "link": "/admin/core/branchsynclog/"},
                 ],
             },
         ],
@@ -208,6 +215,14 @@ UNFOLD = {
         },
     ],
 }
+
+# ══════════════════════════════════════════════════════════════════════
+# Wagtail (minimal — only needed by django-fusion model imports)
+# ══════════════════════════════════════════════════════════════════════
+
+WAGTAIL_SITE_NAME = "POS Cloud"
+WAGTAILADMIN_BASE_URL = "http://localhost:8082"
+WAGTAIL_I18N_ENABLED = False
 
 # ══════════════════════════════════════════════════════════════════════
 # django-fusion Component Configuration

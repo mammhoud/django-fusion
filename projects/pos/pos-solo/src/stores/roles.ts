@@ -18,9 +18,9 @@ export const useRoleStore = create<RoleStore>()((set) => ({
     try { set({ roles: await api.get<Role[]>('/roles') }); }
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const r = await api.post<Role>('/roles', d); set((state) => ({ roles: [...state.roles, r] })); return r; },
-  update: async (id, d) => { const r = await api.patch<Role>(`/roles/${id}`, d); set((state) => ({ roles: state.roles.map(x => x.id === id ? r : x) })); return r; },
-  remove: async (id) => { await api.patch(`/roles/${id}`, { is_active: false }); set((state) => ({ roles: state.roles.filter(x => x.id !== id) })); },
+  create: async (d) => { const r = await api.post<Role>('/roles', d); set((state) => ({ roles: [...state.roles, r] }); return r; },
+  update: async (id, d) => { const r = await api.patch<Role>(`/roles/${id}`, d); set((state) => ({ roles: state.roles.map(x => x.id === id ? r : x) }); return r; },
+  remove: async (id) => { await api.patch(`/roles/${id}`, { is_active: false }); set((state) => ({ roles: state.roles.filter(x => x.id !== id) }); },
   fetchUserRoles: async (userId) => await api.get<Role[]>(`/users/${userId}/roles`),
   assign: async (userId, roleId) => { await api.post('/user-roles', { user_id: userId, role_id: roleId }); },
   unassign: async (userId, roleId) => { await api.delete(`/user-roles/${userId}/${roleId}`); },

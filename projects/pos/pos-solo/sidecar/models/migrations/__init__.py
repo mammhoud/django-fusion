@@ -1,1 +1,1 @@
-# POS Solo — Django migration package
+# POS Full — Django migration package

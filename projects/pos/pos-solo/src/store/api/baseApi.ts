@@ -9,7 +9,7 @@
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
 
-const API_BASE = 'http://localhost:8766'; // pos-full master API (single source of truth)
+const API_BASE = 'http://localhost:8766'; // pos-full master API
 
 export interface PaginatedResponse<T> {
   data: T[];

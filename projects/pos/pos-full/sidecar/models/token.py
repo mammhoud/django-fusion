@@ -51,7 +51,18 @@ def token_prefix(raw_token: str) -> str:
 
 
 class DeviceToken(models.Model):
-    """Token-based authentication for POS devices across branches."""
+    """Token-based authentication for POS devices across branches.
+
+    Linked to django-fusion's DataToken sync-tagging system for tracking
+    which rows have been synced and when.
+    """
+
+    # ── App type flag (used for DataToken scoping) ──
+    class AppType(models.TextChoices):
+        POS_SOLO = "pos-solo", "POS Solo"
+        POS_FULL = "pos-full", "POS Full"
+        POS_MINI = "pos-mini", "POS Mini"
+        CLOUD = "cloud", "Cloud Server"
 
     device_id = models.CharField(
         max_length=100, db_index=True,
@@ -65,11 +76,20 @@ class DeviceToken(models.Model):
     )
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default="viewer", db_index=True)
     node_type = models.CharField(max_length=20, choices=NODE_TYPE_CHOICES, default="pos-solo")
+    app_type = models.CharField(max_length=20, choices=AppType.choices, default=AppType.POS_SOLO, db_index=True,
+                                help_text="Application type flag for DataToken sync scoping")
     capabilities = models.JSONField(default=dict, blank=True)
     allowed_entities = models.JSONField(default=list, blank=True)
     issued_at = models.DateTimeField(auto_now_add=True)
     expires_at = models.DateTimeField(help_text="When this token expires")
     last_used_at = models.DateTimeField(null=True, blank=True)
+    # ── DataToken sync tracking ──
+    last_synced_at = models.DateTimeField(null=True, blank=True,
+                                           help_text="When data tagged with this token was last confirmed synced")
+    sync_status = models.CharField(max_length=20, default="pending",
+                                    choices=[("pending", "Pending"), ("syncing", "Syncing"),
+                                             ("synced", "Synced"), ("failed", "Failed")],
+                                    db_index=True, help_text="Sync status of data tagged with this token")
     is_active = models.BooleanField(default=True)
     metadata = models.JSONField(default=dict, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
@@ -84,6 +104,8 @@ class DeviceToken(models.Model):
             models.Index(fields=["device_id", "is_active"]),
             models.Index(fields=["role"]),
             models.Index(fields=["expires_at"]),
+            models.Index(fields=["sync_status"]),
+            models.Index(fields=["app_type", "sync_status"]),
         ]
         verbose_name = "device token"
         verbose_name_plural = "device tokens"
@@ -136,13 +158,38 @@ class DeviceToken(models.Model):
     def to_dict(self):
         return {
             "device_id": self.device_id, "token_prefix": self.token_prefix,
-            "role": self.role, "node_type": self.node_type,
+            "role": self.role, "node_type": self.node_type, "app_type": self.app_type,
             "capabilities": self.capabilities, "allowed_entities": self.allowed_entities,
             "issued_at": self.issued_at.isoformat() if self.issued_at else None,
             "expires_at": self.expires_at.isoformat() if self.expires_at else None,
             "last_used_at": self.last_used_at.isoformat() if self.last_used_at else None,
+            "last_synced_at": self.last_synced_at.isoformat() if self.last_synced_at else None,
+            "sync_status": self.sync_status,
             "is_active": self.is_active,
         }
+
+    def mark_data_synced(self):
+        """Mark this token's associated data as synced and update last_synced_at.
+
+        Also cascades to linked DataTokens matching this device's node_id_link."""
+        self.sync_status = "synced"
+        self.last_synced_at = _now()
+        self.save(update_fields=["sync_status", "last_synced_at", "updated_at"])
+        # ── Cascade to linked DataTokens ──
+        if self.node_id_link:
+            try:
+                from django_fusion.core.models import DataToken
+                DataToken.objects.filter(
+                    node_id=self.node_id_link,
+                    sync_status__in=["pending", "syncing"],
+                ).update(sync_status="synced", synced_at=_now())
+            except ImportError:
+                pass
+
+    def mark_data_sync_failed(self):
+        """Mark this token's sync as failed."""
+        self.sync_status = "failed"
+        self.save(update_fields=["sync_status", "updated_at"])
 
     def has_entity_access(self, entity_type):
         if not self.allowed_entities:

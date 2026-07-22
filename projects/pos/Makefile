@@ -118,18 +118,26 @@ editions:             ## Generate all editions (canonical source: pos-full/)
 	else \
 		cp -a pos-full pos-solo; \
 		rm -rf pos-solo/sidecar/posapp/; \
-		echo '  └─ pos-solo created from pos-full (no sync files — cp from pos-solo-backup if available)'; \
+		rm -f pos-solo/src-tauri/src/bin/seed.rs; \
+		# Remove [[bin]] seed section from Cargo.toml (3-line block + optional trailing comment + blank line) \
+		sed -i.bak '/^\[\[bin\]\]$$/,/^$$/{ /^\[\[bin\]\]$$/d; /^name = "seed"$$/d; /^path = "src\/bin\/seed.rs"$$/d; /^# Reuse.*seed binary/d; /^$$/d; }' pos-solo/src-tauri/Cargo.toml; \
+		# Make db:seed / db:reset no-ops in package.json \
+		sed -i.bak2 's|"cargo run --manifest-path src-tauri/Cargo.toml --bin seed"|"echo '\''✅ seed skipped (pos-solo uses Robyn sidecar for data)'\''"|' pos-solo/package.json; \
+		sed -i.bak3 's|"rm -f restaurant.db && cargo run --manifest-path src-tauri/Cargo.toml --bin seed"|"echo '\''✅ db:reset skipped (pos-solo uses Robyn sidecar for data)'\''"|' pos-solo/package.json; \
+		rm -f pos-solo/src-tauri/Cargo.toml.bak pos-solo/package.json.bak2 pos-solo/package.json.bak3; \
+		echo '  └─ pos-solo created from pos-full (no sync files, seed binary excluded, db:seed→no-op)'; \
 	fi
 	@echo ''
 	@echo '✓ 2 editions generated:'
 	@du -sh pos-solo pos-full
 	@echo ''
 
-clean:                ## Delete all editions + build artifacts
+clean:                ## Delete generated editions + build artifacts
 	@echo '── Cleaning editions ──'
-	rm -rf pos-solo/ pos-full/
+	rm -rf pos-solo/
 	rm -rf node_modules/ dist/ src-tauri/target/ src-tauri/gen/
 	@echo '✓ Clean. Run `make editions` to regenerate.'
+	@echo '  (pos-full/ preserved as canonical source)'
 
 # ── POS Mini Edition ───────────────────────────────────────────────────
 # Delegates to pos-mini/Makefile for all targets.
@@ -273,14 +281,7 @@ cloud-dev:            ## Start daphne with auto-reload
 	cd $(POS_CLOUD) && daphne configs.asgi:application --port 8082 --bind 0.0.0.0 --reload
 
 cloud-check:          ## Validate Django imports
-	cd $(POS_CLOUD) && python3 -c '
-import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs")
-import django; django.setup()
-from core.models import Organization, Branch, BranchProduct
-from core.sync_api import sync_receive_products, _broadcast_sync_event
-from core.consumers import SyncEventConsumer
-print("✓ POS Cloud imports OK")
-'
+	cd $(POS_CLOUD) && python3 -c 'import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE","configs"); import django; django.setup(); from core.models import Organization, Branch, BranchProduct; from core.sync_api import sync_receive_products, _broadcast_sync_event; from core.consumers import SyncEventConsumer; print("✓ POS Cloud imports OK")'
 
 cloud-test:           ## Run cloud test suite
 	cd $(POS_CLOUD) && python3 -m pytest tests/ -v --tb=short || echo 'Tests not found or failed'

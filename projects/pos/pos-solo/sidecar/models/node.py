@@ -1,5 +1,5 @@
 """
-POS Solo node registry models — Node, Heartbeat, NodeEvent.
+POS Full Node Registry models — Node, Heartbeat, NodeEvent.
 """
 
 from __future__ import annotations
@@ -8,7 +8,7 @@ from django.db import models
 
 
 class Node(models.Model):
-    """Registered POS node in the network."""
+    """Registered POS node in the network (Full edition as cloud master)."""
 
     NODE_TYPES = [
         ("pos-minimal", "POS Minimal"), ("pos-solo", "POS Solo"),
@@ -42,8 +42,8 @@ class Node(models.Model):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_nodes"
+        app_label = "pos_full"
+        db_table = "full_nodes"
         ordering = ["-last_seen"]
         indexes = [
             models.Index(fields=["status", "last_seen"]),
@@ -80,8 +80,8 @@ class Heartbeat(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_heartbeats"
+        app_label = "pos_full"
+        db_table = "full_heartbeats"
         ordering = ["-received_at"]
         indexes = [models.Index(fields=["node_id", "received_at"])]
 
@@ -112,8 +112,8 @@ class NodeEvent(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_node_events"
+        app_label = "pos_full"
+        db_table = "full_node_events"
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["node_id", "event_type"]),

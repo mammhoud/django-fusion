@@ -17,7 +17,7 @@ export const usePayrollStore = create<PayrollStore>()((set) => ({
     try { set({ payrolls: await api.get<Payroll[]>(`/payrolls${employeeId ? '?employee_id=' + employeeId : ''}`) }); }
     catch (e: any) { set({ error: e.message }); } finally { set({ loading: false }); }
   },
-  create: async (d) => { const p = await api.post<Payroll>('/payrolls', d); set((state) => ({ payrolls: [...state.payrolls, p] })); return p; },
-  update: async (id, d) => { const p = await api.patch<Payroll>(`/payrolls/${id}`, d); set((state) => ({ payrolls: state.payrolls.map(x => x.id === id ? p : x) })); return p; },
-  remove: async (id) => { await api.delete(`/payrolls/${id}`); set((state) => ({ payrolls: state.payrolls.filter(x => x.id !== id) })); },
+  create: async (d) => { const p = await api.post<Payroll>('/payrolls', d); set((state) => ({ payrolls: [...state.payrolls, p] }); return p; },
+  update: async (id, d) => { const p = await api.patch<Payroll>(`/payrolls/${id}`, d); set((state) => ({ payrolls: state.payrolls.map(x => x.id === id ? p : x) }); return p; },
+  remove: async (id) => { await api.delete(`/payrolls/${id}`); set((state) => ({ payrolls: state.payrolls.filter(x => x.id !== id) }); },
 }));

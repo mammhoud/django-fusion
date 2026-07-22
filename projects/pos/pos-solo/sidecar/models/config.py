@@ -1,5 +1,5 @@
 """
-POS Solo configuration models — DeviceConfig, MasterDevice, CloudLink.
+POS Full configuration models — DeviceConfig, MasterDevice, CloudLink.
 """
 
 from __future__ import annotations
@@ -37,8 +37,8 @@ class DeviceConfig(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_device_configs"
+        app_label = "pos_full"
+        db_table = "full_device_configs"
         unique_together = [("node_id", "config_key")]
         ordering = ["node_id", "config_key"]
         verbose_name = "device configuration"
@@ -92,8 +92,8 @@ class MasterDevice(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_master_devices"
+        app_label = "pos_full"
+        db_table = "full_master_devices"
         ordering = ["name"]
         indexes = [
             models.Index(fields=["status"]),
@@ -136,8 +136,8 @@ class CloudLink(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_cloud_links"
+        app_label = "pos_full"
+        db_table = "full_cloud_links"
         ordering = ["-is_primary", "name"]
         verbose_name = "cloud link"
 

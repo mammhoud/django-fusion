@@ -123,7 +123,10 @@ nav:
   - Customization: customization/README.md
   - Databases: databases/README.md
   - Testing: tests/README.md
-  - Features: features/README.md
+  - Features:
+    - Overview: features/README.md
+    - Feature Roadmap: features/feature-roadmap.md
+    - DataToken Sync Tagging: features/data-token-sync-tagging.md
   - Publishing:
     - Overview: publish/README.md
     - Docker Deploy: publish/docker-deploy.md

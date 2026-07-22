@@ -1,5 +1,5 @@
 """
-POS Solo sync log model — SyncLog.
+POS Full sync log model — SyncLog.
 """
 
 from __future__ import annotations
@@ -8,13 +8,13 @@ from django.db import models
 
 
 class SyncLog(models.Model):
-    """Audit log for data sync operations to cloud master."""
+    """Audit log for data sync operations from nodes to this cloud master."""
 
     SYNC_STATUS_CHOICES = [
         ("pending", "Pending"), ("in_progress", "In Progress"),
         ("success", "Success"), ("failed", "Failed"),
     ]
-    SYNC_DIRECTION_CHOICES = [("push", "Push to Cloud"), ("pull", "Pull from Cloud")]
+    SYNC_DIRECTION_CHOICES = [("push", "Push from Node"), ("pull", "Pull by Master")]
 
     node_id = models.CharField(max_length=100, db_index=True)
     entity_type = models.CharField(max_length=50)
@@ -33,8 +33,8 @@ class SyncLog(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_sync_logs"
+        app_label = "pos_full"
+        db_table = "full_sync_logs"
         ordering = ["-created_at"]
         indexes = [models.Index(fields=["node_id", "status"])]
 

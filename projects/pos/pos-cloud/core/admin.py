@@ -15,6 +15,7 @@ from .models import (
     BranchProduct,
     BranchSale,
     BranchInventory,
+    DeviceToken,
 )
 
 
@@ -102,3 +103,17 @@ class BranchSaleAdmin(ModelAdmin):
 class BranchInventoryAdmin(ModelAdmin):
     list_display = ["source_id", "branch", "product_name", "transaction_type", "quantity", "transaction_date"]
     list_filter = ["branch", "transaction_type"]
+
+
+@admin.register(DeviceToken)
+class DeviceTokenAdmin(ModelAdmin):
+    list_display = ["device_id", "role", "app_type", "sync_status", "branch", "is_active"]
+    list_filter = ["role", "app_type", "sync_status", "is_active", "branch"]
+    search_fields = ["device_id", "token_prefix", "node_id_link"]
+    readonly_fields = ["issued_at", "created_at", "updated_at", "token_hash"]
+    fieldsets = (
+        ("Identity", {"fields": ("device_id", "token_hash", "token_prefix", "node_id_link", "branch")}),
+        ("Role & Type", {"fields": ("role", "app_type", "node_type", "capabilities", "allowed_entities")}),
+        ("Sync Tracking", {"fields": ("sync_status", "last_synced_at")}),
+        ("Lifecycle", {"fields": ("is_active", "issued_at", "expires_at", "last_used_at", "metadata")}),
+    )

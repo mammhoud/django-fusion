@@ -1,7 +1,7 @@
 [project]
-name = "pos-solo-sidecar"
+name = "pos-full-sidecar"
 dynamic = ["version"]
-description = "POS Solo Edition — Robyn + Django ORM standalone sidecar"
+description = "POS Full Edition — Robyn + Django ORM Cloud Master sidecar"
 readme = "README.md"
 requires-python = ">=3.11"
 license = { text = "AGPL-3.0" }
@@ -25,7 +25,7 @@ dev = [
 ]
 
 [project.scripts]
-pos-solo-server = "server:main"
+pos-full-server = "server:main"
 
 [project.urls]
 Homepage = "https://github.com/mammhoud/structa.cloud"

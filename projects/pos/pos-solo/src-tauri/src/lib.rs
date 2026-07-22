@@ -28,7 +28,6 @@ fn send_support_email(
     email::send_support_email(name, email, subject, message)
 }
 
-// Helper function to get window state file path (desktop only)
 fn get_window_state_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
     let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;

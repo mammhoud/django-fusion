@@ -123,11 +123,25 @@ async def _get(model, pk: int) -> dict | None:
     return await _q()
 
 
-async def _create(model, data: dict) -> dict:
-    """Create a new model instance."""
+async def _create(model, data: dict, tag_for_sync: bool = False, node_id: str = "", token_prefix: str = "") -> dict:
+    """Create a new model instance, optionally tagging it with a DataToken for sync."""
     @sync_to_async
     def _c():
         obj = model.objects.create(**data)
+        # ── Auto-tag with DataToken for cloud sync tracking ──
+        if tag_for_sync and node_id:
+            try:
+                from django_fusion.core.models import DataToken
+                token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}"
+                DataToken.objects.tag_row(
+                    model_instance=obj,
+                    token=token,
+                    node_id=node_id,
+                    sync_order=0,
+                    metadata={"entity_id": str(obj.pk), "model": model.__name__},
+                )
+            except ImportError:
+                pass  # django-fusion not available — skip tagging
         return _ser(obj)
     return await _c()
 

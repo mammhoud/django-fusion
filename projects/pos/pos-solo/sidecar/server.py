@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-POS Server - Robyn + Django ORM (Standalone Edition).
+POS Full Server - Robyn + Django ORM (Cloud Master Edition).
 
 Single Robyn async server providing all REST + WebSocket APIs using Django ORM
 for database access. Route handlers are organized in the routes/ package.
@@ -8,20 +8,21 @@ for database access. Route handlers are organized in the routes/ package.
 Architecture:
     server.py  (thin entry point: bootstrap, middleware, init_state, register_all)
         └── routes/__init__.py  (register_all -> routes/)
-            ├── routes/info.py       (/, /health)
-            ├── routes/nodes.py      (node CRUD, register, heartbeat, WS /ws/nodes)
+            ├── routes/info.py       (/, /health, /stats)
+            ├── routes/nodes.py      (nodes, node config, WS /ws/nodes)
             ├── routes/config.py     (device config, master, cloud links, WS /ws/config)
             ├── routes/sync.py       (sync status, trigger, push/receive, cloud push)
-            └── routes/approvals.py  (approve, reject, stats)
+            ├── routes/approvals.py  (approve, reject, stats)
+            └── routes/webhooks.py   (receive, list, stats)
 
-Database:  ../unified.db (standalone — no Rust backend sharing)
+Database:  full_portal.db
 Framework: Robyn (async) + Django ORM (database)
 
 Usage:
-    python server.py                          # Default: port 8765
-    python server.py --port 8765 --verbose     # Dev mode
-    python server.py --version                 # Show version
-    pos-solo-server --port 8765                # Via pyproject.toml entry point
+    python server.py --port 8766               # Default: port 8766
+    python server.py --port 8766 --verbose      # Dev mode
+    python server.py --version                  # Show version
+    pos-full-server --port 8766                 # Via pyproject.toml entry point
 
 Full docs: projects/pos/docs/POS_ARCHITECTURE.md
 """
@@ -42,14 +43,14 @@ if str(_PATH) not in sys.path:
 
 # Fast-path: --version does not require Django bootstrap
 if "--version" in sys.argv:
-    from __about__ import __title_solo__, __version__
-    print(f"{__title_solo__} v{__version__}")
+    from __about__ import __title_full__, __version__
+    print(f"{__title_full__} v{__version__}")
     sys.exit(0)
 
 from robyn import Robyn, Response, Request
 
 # ---------------------------------------------------------------------------
-# Django ORM bootstrap - standalone database (unified.db, pos-solo does not share with Rust)
+# Django ORM bootstrap - shared database (full_portal.db)
 # ---------------------------------------------------------------------------
 
 _DJANGO_READY: bool = False
@@ -60,23 +61,36 @@ try:
     from django.db import connection
 
     BASE_DIR = Path(__file__).resolve().parent
-    # Standalone DB — pos-solo uses managed=True models, no Rust backend
-    DB_PATH = BASE_DIR.parent / "unified.db"
+    # Shared database with Rust backend (pos-full/restaurant.db)
+    DB_PATH = BASE_DIR.parent / "restaurant.db"
 
-    from configs import (
-        DEBUG, DATABASES, INSTALLED_APPS, SECRET_KEY,
-        DEFAULT_AUTO_FIELD, USE_TZ,
-    )
-    settings.configure(
-        DEBUG=DEBUG,
-        DATABASES=DATABASES,
-        INSTALLED_APPS=INSTALLED_APPS,
-        DEFAULT_AUTO_FIELD=DEFAULT_AUTO_FIELD,
-        USE_TZ=USE_TZ,
-        SECRET_KEY=SECRET_KEY,
-    )
+    if not settings.configured:
+        # Import centralized config (configs/__init__.py)
+        from configs import (
+            DEBUG, DATABASES, INSTALLED_APPS, MIDDLEWARE,
+            TEMPLATES, ROOT_URLCONF, SECRET_KEY,
+            DEFAULT_AUTO_FIELD, USE_TZ, STATIC_URL, STATIC_ROOT,
+        )
+        settings.configure(
+            DEBUG=DEBUG,
+            DATABASES=DATABASES,
+            INSTALLED_APPS=INSTALLED_APPS,
+            MIDDLEWARE=MIDDLEWARE,
+            TEMPLATES=TEMPLATES,
+            ROOT_URLCONF=ROOT_URLCONF,
+            SECRET_KEY=SECRET_KEY,
+            DEFAULT_AUTO_FIELD=DEFAULT_AUTO_FIELD,
+            USE_TZ=USE_TZ,
+            STATIC_URL=STATIC_URL,
+            STATIC_ROOT=STATIC_ROOT,
+        )
+        # Import admin registration AFTER settings but before setup()
+        # (admin.py registers models which requires app registry ready after setup)
     django.setup()
+    # Import admin registration AFTER django.setup() (requires app registry)
+    import configs.admin  # noqa: F401 — side-effect: registers admin models
 
+    # ── Django-managed node registry models ──
     from models.pos import (
         Category, Product, Customer, Sale, SaleItem,
         InventoryTransaction, Employee,
@@ -85,6 +99,8 @@ try:
     from models.node import Node, Heartbeat, NodeEvent
     from models.config import DeviceConfig, MasterDevice, CloudLink
     from models.sync import SyncLog
+    from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
+    from models.ops import KitchenTicket, SupportTicket
 
     # ── Local shared-style models ──
     from models.approval import SyncApproval
@@ -92,7 +108,8 @@ try:
     from models.token import DeviceToken
     from models.audit import SignalEvent
 
-    _ALL_MODELS = [
+    # Registry models (managed=True)
+    _REGISTRY_MODELS = [
         Category, Product, Customer, Sale, SaleItem,
         InventoryTransaction, Employee,
         MenuItem, Menu, MenuItemAssignment,
@@ -101,11 +118,16 @@ try:
         SyncApproval,
         DeviceToken,
         SignalEvent,
+        Supplier, PurchaseOrder, PurchaseOrderItem,
+        KitchenTicket, SupportTicket,
     ]
 
+    # Config models for dedicated CRUD
     _CONFIG_MODELS = [
         DeviceConfig, MasterDevice, CloudLink,
     ]
+
+    _ALL_MODELS = _REGISTRY_MODELS
 
     # Product sync engine
     sync_engine = ProductSyncEngine(
@@ -121,7 +143,7 @@ try:
     # This avoids running migrations/calls when server.py is imported by tests.
 
     _DJANGO_READY = True
-    logging.info("POS Server - Django ORM ready (db: %s)", DB_PATH)
+    logging.info("POS Full Server - Django ORM ready (db: %s)", DB_PATH)
 
 except Exception as exc:
     logging.critical("Django ORM bootstrap failed: %s", exc)
@@ -136,27 +158,29 @@ logging.basicConfig(
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
     datefmt="%Y-%m-%d %H:%M:%S",
 )
-logger = logging.getLogger("pos_server")
+logger = logging.getLogger("pos_full_server")
 
-HOST: str = os.environ.get("POS_HOST", "0.0.0.0")
-PORT: int = int(os.environ.get("POS_PORT", "8765"))
-API_KEY: str | None = os.environ.get("POS_API_KEY", None)
-CLOUD_CRM_URL: str = os.environ.get("CLOUD_CRM_URL", "http://127.0.0.1:8767")
-CLOUD_API_KEY: str | None = os.environ.get("CLOUD_API_KEY", None)
+HOST: str = os.environ.get("POS_FULL_HOST", "0.0.0.0")
+PORT: int = int(os.environ.get("POS_FULL_PORT", "8766"))
+API_KEY: str | None = os.environ.get("POS_FULL_API_KEY", None)
 _start_time: datetime = datetime.now(timezone.utc)
 
 
 def _parse_args() -> argparse.Namespace:
-    p = argparse.ArgumentParser(description="POS Server - Robyn + Django ORM")
+    p = argparse.ArgumentParser(description="POS Full Server - Robyn + Django ORM")
     p.add_argument("--host", default=HOST)
     p.add_argument("--port", type=int, default=PORT)
     p.add_argument("--api-key", default=API_KEY)
-    p.add_argument("--cloud-url", default=CLOUD_CRM_URL)
-    p.add_argument("--cloud-key", default=CLOUD_API_KEY)
     p.add_argument("--dev", action="store_true")
     p.add_argument("--version", action="store_true")
     p.add_argument("--verbose", action="store_true")
     p.add_argument("--migrate", action="store_true", help="Use Django migrations (not schema_editor)")
+    p.add_argument("--sync-interval", type=int, default=None,
+                   help="Seconds between auto-sync cycles (env: POS_FULL_SYNC_INTERVAL, default: 60)")
+    p.add_argument("--sync-node-id", default=None,
+                   help="Node ID for scheduled sync (env: POS_FULL_NODE_ID, default: pos-full-auto)")
+    p.add_argument("--no-sync", action="store_true",
+                   help="Disable scheduled branch sync (env: POS_FULL_SYNC_ENABLED=false)")
     return p.parse_args()
 
 
@@ -172,7 +196,7 @@ def _ensure_tables(use_migrations: bool) -> None:
         logger.info("Tables created via Django migrations (--migrate)")
     else:
         table_names = connection.introspection.table_names()
-        for model in _ALL_MODELS:
+        for model in _REGISTRY_MODELS:
             if model._meta.db_table not in table_names:
                 try:
                     with connection.schema_editor() as schema_editor:
@@ -190,32 +214,10 @@ _PYDANTIC_READY: bool = False
 try:
     from pydantic import BaseModel, Field, ValidationError
 
-    class ProductCreate(BaseModel):
-        name: str = Field(min_length=1, max_length=200)
-        price: float = Field(gt=0)
-        sku: str | None = None
-        category_id: int | None = None
-        stock_quantity: int = 0
-        description: str = ""
-        model_config = {"extra": "allow"}
-
-    class CustomerCreate(BaseModel):
-        first_name: str = Field(min_length=1)
-        last_name: str = ""
-        email: str | None = None
-        phone: str = ""
-        model_config = {"extra": "allow"}
-
-    class SaleCreate(BaseModel):
-        customer_id: int | None = None
-        payment_method: str = "cash"
-        items: list[dict] = Field(min_length=1)
-        model_config = {"extra": "allow"}
-
     class NodeRegisterRequest(BaseModel):
         node_id: str | None = None
         hostname: str | None = None
-        node_type: str = "pos-solo"
+        node_type: str = "pos-full"
         version: str = "unknown"
         api_version: str = "1.0"
         status: str = "online"
@@ -259,6 +261,9 @@ from middleware.auth import create_auth_middleware, register_auth_routes, get_to
 import signal_handlers  # noqa: F401 - registers @receiver handlers
 import sync_signals  # noqa: F401 - registers sync tracking receivers
 
+# ── Signal Models (audit trail) ──
+from models.audit import SignalEvent
+
 
 # ===========================================================================
 # Initialize shared state for route modules
@@ -270,17 +275,8 @@ init_state(
     _DJANGO_READY=_DJANGO_READY,
     _PYDANTIC_READY=_PYDANTIC_READY,
     _ALL_MODELS=_ALL_MODELS,
+    _REGISTRY_MODELS=_REGISTRY_MODELS,
     _CONFIG_MODELS=_CONFIG_MODELS,
-    Category=Category,
-    Product=Product,
-    Customer=Customer,
-    Sale=Sale,
-    SaleItem=SaleItem,
-    InventoryTransaction=InventoryTransaction,
-    Employee=Employee,
-    MenuItem=MenuItem,
-    Menu=Menu,
-    MenuItemAssignment=MenuItemAssignment,
     Node=Node,
     Heartbeat=Heartbeat,
     NodeEvent=NodeEvent,
@@ -293,8 +289,8 @@ init_state(
     SignalEvent=SignalEvent,
     sync_engine=sync_engine,
     DB_PATH=DB_PATH,
-    CLOUD_CRM_URL=CLOUD_CRM_URL,
-    CLOUD_API_KEY=CLOUD_API_KEY,
+    CLOUD_CRM_URL=os.environ.get("CLOUD_CRM_URL", ""),
+    CLOUD_API_KEY=os.environ.get("CLOUD_API_KEY", None),
     SYNC_STATE_PATH=BASE_DIR / "sync_state.json",
     _start_time=_start_time,
     BASE_DIR=BASE_DIR,
@@ -303,6 +299,7 @@ init_state(
     fire_device_status_changed=fire_device_status_changed,
     NodeRegisterRequest=NodeRegisterRequest if _PYDANTIC_READY else None,
     HeartbeatRequest=HeartbeatRequest if _PYDANTIC_READY else None,
+    sync_scheduler=None,  # set in main() after scheduler is created
 )
 
 
@@ -361,18 +358,36 @@ app.before_request()(create_auth_middleware(
 
 from routes.state import _register_crud
 
-# Register all CRUD endpoints
+# ── POS Core CRUD (managed Django models) ──
 _register_crud(app, "products", Product, "Product")
+_register_crud(app, "categories", Category, "Category")
 _register_crud(app, "customers", Customer, "Customer")
 _register_crud(app, "sales", Sale, "Sale")
 _register_crud(app, "sale-items", SaleItem, "SaleItem")
-_register_crud(app, "inventory", InventoryTransaction, "Inventory")
 _register_crud(app, "employees", Employee, "Employee")
-_register_crud(app, "categories", Category, "Category")
-_register_crud(app, "menu-items", MenuItem, "MenuItem")
-_register_crud(app, "menus", Menu, "Menu")
-_register_crud(app, "menu-assignments", MenuItemAssignment, "MenuItemAssignment")
-_register_crud(app, "nodes", Node, "Node")
+_register_crud(app, "inventory", InventoryTransaction, "InventoryTransaction")
+
+# ── Managed POS Core CRUD (models/ package, full_* tables) ──
+_register_crud(app, "managed/categories", Category, "Category")
+_register_crud(app, "managed/products", Product, "Product")
+_register_crud(app, "managed/customers", Customer, "Customer")
+_register_crud(app, "managed/sales", Sale, "Sale")
+_register_crud(app, "managed/sale-items", SaleItem, "SaleItem")
+_register_crud(app, "managed/employees", Employee, "Employee")
+_register_crud(app, "managed/inventory", InventoryTransaction, "InventoryTransaction")
+_register_crud(app, "managed/menu-items", MenuItem, "MenuItem")
+_register_crud(app, "managed/menus", Menu, "Menu")
+_register_crud(app, "managed/menu-assignments", MenuItemAssignment, "MenuItemAssignment")
+# ── Suppliers & Procurement ──
+_register_crud(app, "suppliers", Supplier, "Supplier")
+_register_crud(app, "purchase-orders", PurchaseOrder, "PurchaseOrder")
+_register_crud(app, "purchase-order-items", PurchaseOrderItem, "PurchaseOrderItem")
+
+# ── Kitchen & Support ──
+_register_crud(app, "kitchen-tickets", KitchenTicket, "KitchenTicket")
+_register_crud(app, "support-tickets", SupportTicket, "SupportTicket")
+
+# ── Registry CRUD ──
 _register_crud(app, "heartbeats", Heartbeat, "Heartbeat")
 _register_crud(app, "sync-logs", SyncLog, "SyncLog")
 
@@ -380,6 +395,8 @@ _register_crud(app, "sync-logs", SyncLog, "SyncLog")
 _register_crud(app, "config/devices", DeviceConfig, "DeviceConfig")
 _register_crud(app, "config/master", MasterDevice, "MasterDevice")
 _register_crud(app, "config/cloud-links", CloudLink, "CloudLink")
+
+# ── Approval workflow CRUD ──
 _register_crud(app, "approvals", SyncApproval, "SyncApproval")
 
 # ===========================================================================
@@ -427,16 +444,16 @@ register_all(app)
 
 
 def main():
-    """Start the POS Server.
+    """Start the POS Full Server.
 
-    Entry point for `pos-solo-server` console script (via pyproject.toml).
-    Also called by `if __name__ == "__main__":` when run directly.
+    Entry point called by `if __name__ == "__main__":`.
+    Handles --migrate flag for Django migration-based table creation.
     """
     args = _parse_args()
 
     if args.version:
-        from __about__ import __title_solo__, __version__
-        print(f"{__title_solo__} v{__version__}")
+        from __about__ import __title_full__, __version__
+        print(f"{__title_full__} v{__version__}")
         return
 
     if not _DJANGO_READY:
@@ -446,33 +463,70 @@ def main():
     # Create/ensure database tables (migrations or schema_editor)
     _ensure_tables(args.migrate)
 
+    # ── Scheduled branch sync to POS Cloud ──
+    from services.scheduler import create_scheduler
+    sync_scheduler = create_scheduler(
+        interval=args.sync_interval,
+        enabled=not args.no_sync,
+        node_id=args.sync_node_id,
+    )
+
     if args.verbose:
-        logging.getLogger("pos_server").setLevel(logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)
 
     logger.info("=" * 60)
-    logger.info("POS Server starting on %s:%s", args.host, args.port)
+    logger.info("POS Full Server starting on %s:%d", args.host or HOST, args.port or PORT)
     logger.info("Database: %s", DB_PATH)
     logger.info("Django ORM: %s | Pydantic: %s", _DJANGO_READY, _PYDANTIC_READY)
-    logger.info("Models loaded: %d total", len(_ALL_MODELS))
+    logger.info("Models loaded: %d Registry = %d total",
+                len(_REGISTRY_MODELS), len(_ALL_MODELS))
     logger.info("=" * 60)
 
-    # Register auth routes
-    register_auth_routes(app, token_model=DeviceToken)
-
-    # Log available endpoints
+    # Log available routes for verification
+    routes_logged = False
     logger.info("── Available API Endpoints ──")
     logger.info("  CRUD:   /products, /customers, /sales, /inventory, ...")
-    logger.info("  Nodes:  POST /nodes/register, POST /nodes/heartbeat, PATCH/DELETE /nodes/:node_id")
+    logger.info("  Nodes:  GET/POST/DELETE /nodes, /nodes/register, /nodes/heartbeat")
     logger.info("  Config: GET/POST/DELETE /nodes/:node_id/config, /config/*")
-    logger.info("  Sync:   GET /sync/status | POST /sync/trigger | POST /cloud/push/:type")
-    logger.info("  Auth:   POST /auth/token | POST /auth/refresh | GET /auth/verify")
-    logger.info("  WS:     /ws/config (config events)")
+    logger.info("  Sync:   GET /sync/status | POST /sync/trigger | POST /api/sync/push/:type")
+    logger.info("  Auth:   GET/POST /auth/* (token management)")
+    logger.info("  WS:     /ws/nodes (node events) | /ws/config (config events)")
     logger.info("  Info:   GET /, /health, /stats")
-    logger.info("  Approvals: POST /approvals/:pk/approve|reject, GET /approvals/stats")
-    logger.info("  Sync Push: POST /sync/receive/sales|reports|inventory")
+    logger.info("  Approvals: POST /approvals/:pk/approve|reject")
+    logger.info("  Webhooks:  POST /webhooks/receive/:signal | GET /webhooks/receive")
     logger.info("─" * 60)
 
-    app.start(host=args.host, port=args.port)
+    # ── Start scheduled branch sync (daemon thread with own event loop) ──
+    if sync_scheduler._enabled:
+        import threading
+        import asyncio as _asyncio
+
+        async def _run_scheduler(sched):
+            await sched.start()
+            # Keep the event loop alive while scheduler runs
+            while sched._running:
+                await _asyncio.sleep(1)
+
+        def _thread_target():
+            loop = _asyncio.new_event_loop()
+            _asyncio.set_event_loop(loop)
+            try:
+                loop.run_until_complete(_run_scheduler(sync_scheduler))
+            finally:
+                loop.close()
+
+        _sched_thread = threading.Thread(target=_thread_target, daemon=True, name="branch-sync-scheduler")
+        _sched_thread.start()
+        # Make scheduler stats available to route handlers
+        from routes import state as _routes_state
+        _routes_state.sync_scheduler = sync_scheduler
+
+    logger.info(
+        "Auto-sync: enabled=%s interval=%ds node_id=%s",
+        sync_scheduler._enabled, sync_scheduler.interval, sync_scheduler.node_id,
+    )
+
+    app.start(host=args.host or HOST, port=args.port or PORT)
 
 
 if __name__ == "__main__":

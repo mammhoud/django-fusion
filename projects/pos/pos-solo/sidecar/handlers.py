@@ -1,8 +1,11 @@
 """
-POS Server (Solo) — shared request handlers, serialization, CRUD factory, and sync client.
+POS Full Server — shared request handlers, serialization, CRUD factory, and sync client.
 
 Extracted from routes/state.py. All handler utilities are imported by routes/state.py
 which re-exports them for route modules.
+
+State references (models, paths, etc.) are accessed via routes.state globals,
+so handlers are decoupled from server.py imports.
 """
 
 from __future__ import annotations
@@ -11,15 +14,22 @@ import json
 import logging
 from datetime import datetime, timezone
 from decimal import Decimal
+from pathlib import Path
 from typing import Any
 
 from asgiref.sync import sync_to_async
 from robyn import jsonify, Response
 
-logger = logging.getLogger("pos_server")
+logger = logging.getLogger("pos_full_server")
+
+
+# ===========================================================================
+# Serialization helpers
+# ===========================================================================
 
 
 def _ser(obj) -> dict:
+    """Serialize a Django model instance to a plain dict."""
     data = {}
     for field in obj._meta.fields:
         val = getattr(obj, field.attname, None)
@@ -32,17 +42,25 @@ def _ser(obj) -> dict:
 
 
 def _ser_node(node) -> dict:
+    """Serialize a Node with all fields."""
     if node is None:
         return {}
     return {
-        "node_id": node.node_id, "hostname": node.hostname,
-        "node_type": node.node_type, "version": node.version,
-        "api_version": node.api_version, "status": node.status,
-        "status_message": node.status_message, "is_active": node.is_active,
-        "product_count": node.product_count, "transaction_count": node.transaction_count,
+        "node_id": node.node_id,
+        "hostname": node.hostname,
+        "node_type": node.node_type,
+        "version": node.version,
+        "api_version": node.api_version,
+        "status": node.status,
+        "status_message": node.status_message,
+        "is_active": node.is_active,
+        "product_count": node.product_count,
+        "transaction_count": node.transaction_count,
         "customer_count": node.customer_count,
         "ip_address": str(node.ip_address) if node.ip_address else None,
-        "port": node.port, "capabilities": node.capabilities, "metadata": node.metadata,
+        "port": node.port,
+        "capabilities": node.capabilities,
+        "metadata": node.metadata,
         "first_seen": node.first_seen.isoformat() if node.first_seen else None,
         "last_seen": node.last_seen.isoformat() if node.last_seen else None,
         "last_synced_at": node.last_synced_at.isoformat() if node.last_synced_at else None,
@@ -50,28 +68,52 @@ def _ser_node(node) -> dict:
 
 
 def _paginate(qs, page: int = 1, per_page: int = 50) -> dict:
+    """Paginate a queryset and return data + pagination metadata."""
     page = max(1, page)
     per_page = max(1, min(per_page, 200))
     total = qs.count()
     start = (page - 1) * per_page
     items = list(qs[start:start + per_page])
-    return {"data": [_ser(i) for i in items], "pagination": {"page": page, "per_page": per_page, "total": total, "total_pages": max(1, -(-total // per_page))}}
+    return {
+        "data": [_ser(i) for i in items],
+        "pagination": {
+            "page": page,
+            "per_page": per_page,
+            "total": total,
+            "total_pages": max(1, -(-total // per_page)),
+        },
+    }
 
 
 def _error(status: int, msg: str) -> Response:
-    return Response(status_code=status, headers={"Content-Type": "application/json"}, description=json.dumps({"error": msg}))
+    """Build a JSON error response."""
+    return Response(
+        status_code=status,
+        headers={"Content-Type": "application/json"},
+        description=json.dumps({"error": msg}),
+    )
+
+
+# ===========================================================================
+# CRUD helpers (async wrappers around Django ORM)
+# ===========================================================================
 
 
 async def _list(model, request) -> dict:
+    """Paginated list endpoint for a model."""
     page = int(str(request.query_params.get("page", "1")))
     per_page = int(str(request.query_params.get("per_page", "50")))
+
     @sync_to_async
     def _q():
-        return _paginate(model.objects.all(), page, per_page)
+        qs = model.objects.all()
+        return _paginate(qs, page, per_page)
+
     return await _q()
 
 
 async def _get(model, pk: int) -> dict | None:
+    """Get a single model instance by ID."""
     @sync_to_async
     def _q():
         try:
@@ -81,14 +123,31 @@ async def _get(model, pk: int) -> dict | None:
     return await _q()
 
 
-async def _create(model, data: dict) -> dict:
+async def _create(model, data: dict, tag_for_sync: bool = False, node_id: str = "", token_prefix: str = "") -> dict:
+    """Create a new model instance, optionally tagging it with a DataToken for sync."""
     @sync_to_async
     def _c():
-        return _ser(model.objects.create(**data))
+        obj = model.objects.create(**data)
+        # ── Auto-tag with DataToken for cloud sync tracking ──
+        if tag_for_sync and node_id:
+            try:
+                from django_fusion.core.models import DataToken
+                token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}"
+                DataToken.objects.tag_row(
+                    model_instance=obj,
+                    token=token,
+                    node_id=node_id,
+                    sync_order=0,
+                    metadata={"entity_id": str(obj.pk), "model": model.__name__},
+                )
+            except ImportError:
+                pass  # django-fusion not available — skip tagging
+        return _ser(obj)
     return await _c()
 
 
 async def _update(model, pk: int, data: dict) -> dict | None:
+    """Update an existing model instance by ID."""
     @sync_to_async
     def _u():
         try:
@@ -104,6 +163,7 @@ async def _update(model, pk: int, data: dict) -> dict | None:
 
 
 async def _delete(model, pk: int) -> bool:
+    """Delete a model instance by ID."""
     @sync_to_async
     def _d():
         try:
@@ -115,17 +175,32 @@ async def _delete(model, pk: int) -> bool:
 
 
 async def _count(model) -> int:
+    """Count model instances."""
     @sync_to_async
     def _c():
         return model.objects.count()
     return await _c()
 
 
-# Sync state and client
+# ===========================================================================
+# Sync client and state management
+# ===========================================================================
+
+
 def _load_sync_state() -> dict:
+    """Load sync configuration from JSON state file."""
     from routes.state import SYNC_STATE_PATH, CLOUD_CRM_URL, CLOUD_API_KEY
+
     if not SYNC_STATE_PATH or not SYNC_STATE_PATH.exists():
-        return {"enabled": True, "cloud_url": CLOUD_CRM_URL or "", "api_key": CLOUD_API_KEY or "", "last_sync": None, "status": "idle", "items_synced": 0, "errors": 0}
+        return {
+            "enabled": True,
+            "cloud_url": CLOUD_CRM_URL or "",
+            "api_key": CLOUD_API_KEY or "",
+            "last_sync": None,
+            "status": "idle",
+            "items_synced": 0,
+            "errors": 0,
+        }
     try:
         with open(SYNC_STATE_PATH) as f:
             return json.load(f)
@@ -134,15 +209,20 @@ def _load_sync_state() -> dict:
 
 
 def _save_sync_state(state: dict) -> None:
+    """Save sync configuration to JSON state file."""
     from routes.state import SYNC_STATE_PATH
+
     if SYNC_STATE_PATH:
         with open(SYNC_STATE_PATH, "w") as f:
             json.dump(state, f, indent=2, default=str)
 
 
 class SyncClient:
+    """HTTP client for pushing data to an upstream CRM master."""
+
     def __init__(self, base_url: str = "", api_key: str | None = None, timeout: float = 30.0):
         from routes.state import CLOUD_CRM_URL, CLOUD_API_KEY
+
         state = _load_sync_state()
         self.base_url = (base_url or state.get("cloud_url", "") or CLOUD_CRM_URL).rstrip("/")
         self.api_key = api_key or state.get("api_key", "") or CLOUD_API_KEY
@@ -167,7 +247,10 @@ class SyncClient:
         try:
             import httpx
             async with httpx.AsyncClient(timeout=self.timeout) as client:
-                resp = await client.post(f"{self.base_url}/api/sync/push/{entity_type}", json=data, headers=self._headers())
+                resp = await client.post(
+                    f"{self.base_url}/api/sync/push/{entity_type}",
+                    json=data, headers=self._headers(),
+                )
                 resp.raise_for_status()
                 return resp.json()
         except Exception as exc:
@@ -198,18 +281,36 @@ class SyncClient:
             return {"status": "unreachable"}
 
 
-async def _log_sync(node_id, entity_type, entity_id, status, error=""):
+async def _log_sync(node_id: str, entity_type: str, entity_id: str,
+                    status: str, error: str = "") -> None:
     from routes.state import SyncLog
+
     @sync_to_async
     def _log():
-        SyncLog.objects.create(node_id=node_id, entity_type=entity_type, entity_id=entity_id, direction="push", status=status, error_message=error)
+        SyncLog.objects.create(
+            node_id=node_id, entity_type=entity_type,
+            entity_id=entity_id, direction="push",
+            status=status, error_message=error,
+        )
     await _log()
+
+
+# ===========================================================================
+# Generic CRUD router factory
+# ===========================================================================
 
 
 def _register_crud(app, prefix: str, model, name: str):
     """Register GET/POST/PATCH/DELETE routes for a model on a Robyn app.
     After each mutation, broadcasts an entity_event via WebSocket for
-    real-time UI updates (Redux cache invalidation)."""
+    real-time Redux cache invalidation.
+
+    Args:
+        app: Robyn application instance
+        prefix: URL prefix for the routes (e.g., "products")
+        model: Django model class
+        name: Human-readable model name for error messages
+    """
 
     @app.get(f"/{prefix}")
     async def list_all(request):

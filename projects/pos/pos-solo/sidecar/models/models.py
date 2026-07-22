@@ -1,5 +1,5 @@
 """
-Django models module for the pos_unified app.
+Django models module for the pos_full app.
 
 Loaded by Django during import_models() which is called at the correct time
 in django.setup() — after the app registry is initialized. This avoids the

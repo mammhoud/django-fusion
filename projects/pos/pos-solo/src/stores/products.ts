@@ -47,18 +47,18 @@ export const useProductStore = create<ProductStore>()((set) => ({
 
   create: async (data) => {
     const product = await api.post<Product>('/products', data);
-    set((state) => ({ products: [...state.products, product] }));
+    set((state) => ({ products: [...state.products, product] });
     return product;
   },
 
   update: async (id, data) => {
     const product = await api.patch<Product>(`/products/${id}`, data);
-    set((state) => ({ products: state.products.map(p => p.id === id ? product : p) }));
+    set((state) => ({ products: state.products.map(p => p.id === id ? product : p) });
     return product;
   },
 
   remove: async (id) => {
     await api.delete(`/products/${id}`);
-    set((state) => ({ products: state.products.filter(p => p.id !== id) }));
+    set((state) => ({ products: state.products.filter(p => p.id !== id) });
   },
 }));

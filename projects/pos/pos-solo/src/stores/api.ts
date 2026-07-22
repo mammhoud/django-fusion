@@ -8,7 +8,7 @@
  *   React (Zustand stores) → fetch() → Robyn sidecar (:8765/:8766) → Django ORM → SQLite
  */
 
-const API_BASE = 'http://localhost:8765'; // pos-solo default; override via env
+const API_BASE = 'http://localhost:8766'; // pos-solo default; override via env
 
 export interface ApiResponse<T> {
   ok: boolean;

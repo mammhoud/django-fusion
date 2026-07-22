@@ -1,15 +1,30 @@
-# POS Solo — Branch Device
+# POS Full — Master Manager
 
-> Desktop POS + Robyn sidecar API server with cloud CRM sync to pos-full master.
+> Central management server with Unfold admin dashboard, REST API, real-time WebSocket entity events, and Django ORM.
 
-**pos-solo** is the **branch device** edition of POS. It provides a standalone POS terminal with a local REST API, WebSocket real-time events, and cloud sync to the pos-full master manager.
+**pos-full** is the **master manager** edition of POS. It provides:
+- 🎛️ **Unfold Admin Dashboard** — dark-themed admin panel with KPI cards and charts
+- 🌐 **REST API** — Robyn sidecar on port `8766` with paginated CRUD endpoints
+- 🔌 **WebSocket entity events** — real-time CRUD notifications for Redux cache invalidation
+- 📊 **Node registry** — track all branch device status, heartbeats, and sync logs
+- ☁️ **Cloud CRM sync** — push/pull data with upstream CRM
+- 🏗️ **Django ORM** — 17+ managed models with automatic migrations
 
-- 🌐 **REST API** — Robyn async sidecar on port `8765` with 60+ CRUD endpoints
-- 🔌 **WebSocket config streaming** — real-time configuration push/pull with Redux cache invalidation
-- ☁️ **Cloud CRM sync** — push products, sales, customers, and nodes to pos-full master
-- 🏗️ **Django ORM** — 17 unified managed models (no Rust DB dependency)
-- 🎨 **React + Tailwind** — modern POS terminal UI with Redux RTK Query
-- ✅ **155 passing tests** — full CRUD, filtering, pagination, and validation coverage
+---
+
+## 📸 Dashboard Preview
+
+| Dashboard (SVG mockup) | Products (SVG mockup) |
+|:---:|:---:|
+| ![Admin Dashboard](docs/screenshots/admin/admin-dashboard.svg) | ![Products List](docs/screenshots/admin/admin-products.svg) |
+| *9 KPI cards, 5 charts, 2 data tables* | *Paginated table with status badges* |
+
+| Admin Login (live screenshot) | Real screenshots |
+|:---:|:---:|
+| ![Unfold Login Page](docs/screenshots/admin/01_admin_dashboard.jpg) | ![Products](docs/screenshots/admin/02_admin_products.jpg) · ![Customers](docs/screenshots/admin/03_admin_customers.jpg) · ![Sales](docs/screenshots/admin/04_admin_sales.jpg) |
+| *Unfold dark theme login page (1440×1080)* | *Login page shown; run `make admin-bootstrap` then log in to capture authenticated views* |
+
+> **Tip:** Run `make admin-screenshots` after starting the server to capture live JPG screenshots from your running instance.
 
 ---
 
@@ -18,71 +33,126 @@
 ```bash
 # 1. Install dependencies
 cd sidecar && pip install -r requirements.txt && cd ..
-pnpm install
-# (Optional for Tauri desktop builds only)
-# cd src-tauri && cargo fetch && cd ..
 
 # 2. Start the REST API server (Robyn sidecar)
-python3 sidecar/server.py --port 8765
+python3 sidecar/server.py --port 8766
 
-# 3. Start React frontend (in another terminal)
-pnpm dev
+# 3. (Optional) Start Django admin panel
+# In a separate terminal:
+python3 sidecar/manage.py migrate
+python3 sidecar/manage.py createsuperuser
+python3 sidecar/manage.py runserver 0.0.0.0:8000
 
-# 4. (Optional) Start pos-full master for cloud sync
-# See ../pos-full/README.md for master setup
+# 4. Start React frontend (in another terminal)
+pnpm install && pnpm dev
 ```
 
 | Service | URL | Purpose |
 |---------|-----|---------|
-| **REST API** | `http://localhost:8765` | CRUD endpoints for all entities |
-| **Frontend** | `http://localhost:1420` | POS terminal UI (Vite dev) |
-| **WebSocket** | `ws://localhost:8765/ws/config` | Real-time config events |
-| **Master API** | `http://localhost:8766` | pos-full master (cloud sync target) |
+| **REST API** | `http://localhost:8766` | CRUD endpoints for all entities |
+| **Admin Panel** | `http://localhost:8000/admin/` | Unfold dark-themed dashboard |
+| **WebSocket** | `ws://localhost:8766/ws/entities` | Real-time entity events |
+| **WebSocket** | `ws://localhost:8766/ws/nodes` | Node status events |
+| **WebSocket** | `ws://localhost:8766/ws/config` | Config change events |
 
 ---
 
-## 🏗️ Architecture
+## 🎛️ Admin Dashboard
 
+The admin panel uses **[Django Unfold](https://unfoldadmin.com/)** — a modern, dark-themed admin interface.
+
+### Access
+
+#### Quick bootstrap (auto-migrate + superuser + runserver)
+
+```bash
+cd pos-full
+make admin-bootstrap
+# → Runs: migrate → auto-create superuser → start :8000
+# → Open http://localhost:8000/admin/
 ```
-┌──────────────────────────────────────────────────────────────┐
-│  pos-solo (Branch Device) — port 8765                        │
-│                                                              │
-│  ┌──────────────────────────────────┐                        │
-│  │  React Frontend (Tauri)          │                        │
-│  │  ┌────────────────────────────┐  │                        │
-│  │  │ Redux Toolkit (RTK Query)  │──│──→ fetch(:8765)        │
-│  │  │   ├─ Cache invalidation    │  │                        │
-│  │  │   ├─ Pagination            │  │                        │
-│  │  │   └─ WS middleware         │←─│─── WS(:8765)           │
-│  │  └────────────────────────────┘  │                        │
-│  └──────────────────────────────────┘                        │
-│                                                              │
-│  ┌──────────────────────────────────┐                        │
-│  │  Robyn Sidecar :8765             │                        │
-│  │  ├─ CRUD endpoints (60+)        │                        │
-│  │  ├─ Paginated queries           │                        │
-│  │  ├─ WebSocket /ws/config        │                        │
-│  │  ├─ Node registration/heartbeat │                        │
-│  │  └─ Cloud sync client           │                        │
-│  └──────────────────────────────────┘                        │
-│                                                              │
-│  ┌──────────────────────────────────┐                        │
-│  │  Django ORM (SQLite)             │                        │
-│  │  ├─ models/pos.py — POS core    │                        │
-│  │  ├─ models/menu.py — Menu       │                        │
-│  │  ├─ models/node.py — Registry   │                        │
-│  │  ├─ models/config.py — Config   │                        │
-│  │  └─ models/sync.py — Sync       │                        │
-│  └──────────────────────────────────┘                        │
-│                                                              │
-│       │ HTTP / WS                                            │
-│       ▼                                                      │
-│  ┌──────────────────────────────────┐                        │
-│  │  pos-full Master :8766           │                        │
-│  │  (Central management, admin)     │                        │
-│  └──────────────────────────────────┘                        │
-└──────────────────────────────────────────────────────────────┘
+
+#### Manual setup
+
+```bash
+# 1. Create admin superuser (interactive)
+cd sidecar
+python3 manage.py createsuperuser
+# → Enter email, username, password
+
+# Or auto-create from environment variables (idempotent):
+python3 manage.py --ensure-superuser
+# → Reads: POS_FULL_ADMIN_EMAIL, POS_FULL_ADMIN_PASSWORD, POS_FULL_ADMIN_NAME
+# → Defaults: admin@pos-full.local / admin123 / "POS Full Admin"
+
+# 2. Start admin panel
+python3 manage.py runserver 0.0.0.0:8000
+# → Open http://localhost:8000/admin/
 ```
+
+| Env Var | Default | Purpose |
+|---------|---------|---------|
+| `POS_FULL_ADMIN_EMAIL` | `admin@pos-full.local` | Superuser email / login |
+| `POS_FULL_ADMIN_PASSWORD` | `admin123` | Superuser password |
+| `POS_FULL_ADMIN_NAME` | `POS Full Admin` | Display name (split into first/last) |
+
+#### Makefile targets
+
+| Target | Description |
+|--------|-------------|
+| `make admin-bootstrap` | Full pipeline: migrate → ensure-superuser → runserver :8000 |
+| `make admin-ensure-superuser` | Idempotent superuser creation from env vars |
+
+### KPI Cards (9)
+
+| Card | Description | Data Source |
+|------|-------------|-------------|
+| 📈 Today's Sales | Current day revenue + transaction count | `Sale.sale_date` today filter |
+| 💰 Monthly Revenue | This month total with % vs last month trend | `Sale.sale_date` month aggregation |
+| 🧾 **Avg Order Value** | Revenue per order with % vs last month trend | `Sum(total) / Count(id)` this month |
+| 📅 **MTD Revenue** | Month-to-date revenue vs same period last month | `Sale.sale_date` this month range |
+| 🗓️ **YTD Revenue** | Year-to-date revenue vs same period last year | `Sale.sale_date` this year range |
+| 📦 Active Products | Total active products + category count | `Product.is_active` count |
+| 👥 Customers | Active + total registered customers | `Customer` model counts |
+| 🖥️ Branch Nodes | Online/total nodes ratio | `Node.status` filter |
+| ⚠️ Open Alerts | Support tickets + pending kitchen + draft POs | Aggregation across 3 models |
+
+### Charts (5)
+
+| Chart | Type | Description |
+|-------|------|-------------|
+| Revenue — Last 7 Days | `bar` | Daily revenue totals |
+| Top Products by Revenue | `pie` | Top 10 products by `SaleItem.line_total` |
+| Sales by Payment Method | `doughnut` | Cash / Card / Mobile / Mixed / Credit |
+| Hourly Revenue | `bar` | Revenue by hour of day (24 bins) |
+| Hourly Transactions | `bar` | Transaction count by hour of day |
+
+All charts filter to the **last 7 days** for real-time relevance.
+
+### Tables (2)
+
+| Table | Rows | Columns |
+|-------|------|---------|
+| Recent Sales | 5 | ID, Customer, Amount, Status, Date |
+| Node Status | 5 | Node ID, Type, Status, Last Seen |
+
+### Registered Models (17+)
+
+All managed models are registered in the admin with Unfold-themed UI:
+
+| Category | Models |
+|----------|--------|
+| **POS Core** | Product, Category, Customer, Sale, SaleItem, Employee, InventoryTransaction |
+| **Menu** | MenuItem, Menu, MenuItemAssignment |
+| **Operations** | Supplier, PurchaseOrder, PurchaseOrderItem, KitchenTicket, SupportTicket |
+| **Nodes & Sync** | Node, Heartbeat, NodeEvent, SyncLog, DeviceConfig, MasterDevice, CloudLink |
+| **System** | User, Group (Django auth) |
+
+Each model admin includes:
+- `list_filter_submit` — filter sidebar with Apply button
+- `list_fullwidth` — full-width table layout
+- `compressed_fields` — compact form fields
+- Material design icons in sidebar navigation
 
 ---
 
@@ -95,7 +165,7 @@ The Robyn sidecar serves all CRUD endpoints with **pagination** support.
 Every list endpoint supports `?page=` and `?per_page=` query params:
 
 ```bash
-curl "http://localhost:8765/products?page=1&per_page=20"
+curl "http://localhost:8766/products?page=1&per_page=20"
 ```
 
 Response format:
@@ -119,138 +189,142 @@ Response format:
 |--------|----------|-------------|
 | `GET/POST` | `/products` | List (paginated) / Create product |
 | `PATCH/DELETE` | `/products/:id` | Update / Delete product |
-| `GET/POST` | `/categories` | List / Create category |
 | `GET/POST` | `/customers` | List / Create customer |
 | `GET/POST` | `/sales` | List / Create sale |
-| `GET/POST` | `/sale-items` | List / Create sale item |
 | `GET/POST` | `/employees` | List / Create employee |
 | `GET/POST` | `/inventory` | List / Create inventory transaction |
-| `GET/POST` | `/menu-items` | List / Create menu item |
-| `GET/POST` | `/menus` | List / Create menu |
 | `GET/POST` | `/suppliers` | List / Create supplier |
 | `GET/POST` | `/purchase-orders` | List / Create purchase order |
 | `GET/POST` | `/kitchen-tickets` | List / Create kitchen ticket |
 | `GET/POST` | `/support-tickets` | List / Create support ticket |
-| `GET/POST` | `/nodes/register` | Register as branch device |
-| `POST` | `/nodes/heartbeat` | Send heartbeat to master |
-| `GET` | `/sync/status` | Cloud sync status |
-| `POST` | `/sync/trigger` | Trigger manual sync |
+| `GET/POST` | `/nodes/register` | Register a branch device node |
+| `POST` | `/nodes/heartbeat` | Branch device heartbeat |
 
-> **Full endpoint list:** ~60+ CRUD routes + 10+ custom routes
+> Full endpoint list: ~30+ CRUD routes + 10+ custom routes
 
 ---
 
 ## 🔌 WebSocket Streams
 
-The sidecar provides one WebSocket endpoint for real-time features:
+The sidecar provides three WebSocket endpoints for real-time features:
 
-### `/ws/config` — Configuration Events
+### `/ws/entities` — Entity CRUD Events
 
-Broadcasts whenever configuration is changed, synced, or pushed:
+Broadcasts whenever any entity is created, updated, or deleted:
 
 ```json
 {
-  "type": "config_changed",
-  "node_id": "NODE-A",
-  "config_key": "sync_interval",
-  "data": { "value": 60 },
+  "type": "entity_event",
+  "entity": "Product",
+  "action": "create",
+  "data": { "id": 42, "name": "Latte", "price": 5.50 },
   "timestamp": "2026-07-20T12:00:00+00:00"
 }
 ```
 
 **Used by**: Redux RTK Query middleware to auto-invalidate caches.
 
+### `/ws/nodes` — Node Status Events
+
+Tracks branch device registration, heartbeat, and status changes.
+
+### `/ws/config` — Configuration Events
+
+Configuration changes pushed to/from branch devices.
+
 ---
 
-## ☁️ Cloud Sync
+## 🏗️ Architecture
 
-pos-solo can push local data to the pos-full master manager:
-
-```bash
-# Configure sync target
-curl -X POST http://127.0.0.1:8765/sync/config \
-  -H "Content-Type: application/json" \
-  -d '{"cloud_url": "http://localhost:8766", "sync_interval": 60}'
-
-# Check sync status
-curl http://127.0.0.1:8765/sync/status
-
-# Trigger manual sync
-curl -X POST http://127.0.0.1:8765/sync/trigger
 ```
-
-| Sync Direction | Payload | Endpoint |
-|----------------|---------|----------|
-| Solo → Master | Products, sales, customers | `POST /sync/push/:type` (type=products, sales, customers) |
-| Solo → Master | Nodes, heartbeats | `POST /sync/push/:type` (type=nodes, heartbeats) |
-| Master → Solo | Config, approved changes | `GET /sync/pull/:type` (type=config, approvals) |
+┌──────────────────────────────────────────────────────────────┐
+│  pos-full (Master Manager) — port 8766                       │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  React Frontend                  │                        │
+│  │  ┌────────────────────────────┐  │                        │
+│  │  │ Redux Toolkit (RTK Query)  │──│──→ fetch(:8766)        │
+│  │  │   ├─ Cache invalidation    │  │                        │
+│  │  │   ├─ Pagination            │  │                        │
+│  │  │   └─ WS middleware         │←─│─── WS(:8766)           │
+│  │  └────────────────────────────┘  │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  Django Admin (Unfold) :8000     │                        │
+│  │  ├─ Dashboard (KPIs+Charts)     │                        │
+│  │  └─ Model CRUD (17+ models)     │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  Robyn Sidecar :8766             │                        │
+│  │  ├─ CRUD endpoints (30+)        │                        │
+│  │  ├─ Paginated queries           │                        │
+│  │  ├─ WebSocket /ws/entities      │                        │
+│  │  ├─ WebSocket /ws/nodes, /ws/config                       │
+│  │  └─ Entity event broadcasting   │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌──────────────────────────────────┐                        │
+│  │  Django ORM (SQLite)             │                        │
+│  │  ├─ models/pos.py — POS core    │                        │
+│  │  ├─ models/node.py — Registry   │                        │
+│  │  ├─ models/config.py — Config   │                        │
+│  │  ├─ models/inventory.py — Ops   │                        │
+│  │  ├─ models/ops.py — Support     │                        │
+│  │  └─ models/menu.py — Menu       │                        │
+│  └──────────────────────────────────┘                        │
+│                                                              │
+│  ┌────────────┐   ┌────────────┐  ┌────────────┐            │
+│  │ pos-solo   │   │ pos-solo   │  │ pos-mini   │            │
+│  │ Branch #1  │   │ Branch #2  │  │ (Rust/Diesel)           │
+│  └────────────┘   └────────────┘  └────────────┘            │
+│       └──────────────┬──────────────────────┘               │
+│                      │ HTTP / WS                              │
+│                      ▼                                       │
+│              pos-full Master :8766                            │
+└──────────────────────────────────────────────────────────────┘
+```
 
 ---
 
 ## 📁 Directory Structure
 
 ```
-pos-solo/
+pos-full/
 ├── src/                          # React + TypeScript + Tailwind
 │   ├── store/                    # Redux Toolkit (RTK Query)
 │   │   ├── api/
-│   │   │   ├── baseApi.ts        # createApi with tag types
+│   │   │   ├── baseApi.ts        # createApi with 28 tagTypes
 │   │   │   └── endpoints/        # Entity endpoint slices
 │   │   └── middleware/
-│   │       └── websocket.ts      # WS config cache invalidation
-│   ├── pages/                    # POS page components
-│   ├── components/               # Shared UI components
-│   ├── hooks/                    # Custom React hooks
-│   ├── i18n/                     # Internationalization
-│   └── utils/                    # Utility functions
+│   │       └── websocket.ts      # WS entity cache invalidation
+│   ├── pages/                    # 22 page components
+│   └── components/               # Shared UI components
 ├── sidecar/
+│   ├── configs/                  # Centralized settings
+│   │   ├── __init__.py           # Django + Unfold settings
+│   │   ├── admin.py              # Model admin registrations (17+)
+│   │   ├── dashboard.py          # Custom dashboard (6 KPI + 5 charts + 2 tables)
+│   │   └── urls.py               # Django URL configuration
 │   ├── server.py                 # Robyn async server entry point
-│   ├── routes/                   # Custom route handlers
-│   │   ├── info.py               # /, /health, /stats
-│   │   ├── nodes.py              # Node registration/heartbeat/WS
-│   │   ├── config.py             # Device config/WS
-│   │   ├── sync.py               # Cloud sync client
-│   │   └── approvals.py          # Sync approval workflow
+│   ├── handlers.py               # CRUD factory with WS broadcast
+│   ├── streams.py                # WebSocket broadcast functions
 │   ├── models/                   # Django ORM models
-│   │   ├── pos.py                # Category, Product, Customer, Sale...
-│   │   ├── menu.py               # MenuItem, Menu
+│   │   ├── pos.py                # Category, Product, Customer, Sale, ...
 │   │   ├── node.py               # Node, Heartbeat, NodeEvent
 │   │   ├── config.py             # DeviceConfig, MasterDevice, CloudLink
-│   │   └── sync.py               # SyncLog
-│   ├── tests/
-│   │   └── test_unified_api.py   # 155 pytest tests
-│   ├── streams.py                # WebSocket broadcast functions
-│   ├── handlers.py               # CRUD factory with WS broadcast
-│   └── ARCHITECTURE.md           # Detailed architecture docs
+│   │   ├── inventory.py          # Supplier, PurchaseOrder
+│   │   ├── ops.py                # KitchenTicket, SupportTicket
+│   │   └── menu.py               # MenuItem, Menu
+│   └── routes/                   # Custom Robyn route handlers
+│       ├── nodes.py              # Node registration/heartbeat/WS
+│       ├── config.py             # Device config/WS
+│       ├── sync.py               # Sync status/trigger
+│       └── approvals.py          # Sync approval workflow
 ├── src-tauri/                    # Tauri/Rust shell
 └── scripts/                      # Dev/build utilities
 ```
-
----
-
-## 📊 Models Package
-
-All models use `app_label=pos_unified` and `db_table` prefix `unified_`:
-
-| Model | Module | Table | Purpose |
-|-------|--------|-------|---------|
-| `Category` | `models/pos.py` | `unified_categories` | Product categories |
-| `Product` | `models/pos.py` | `unified_products` | POS products |
-| `Customer` | `models/pos.py` | `unified_customers` | Customer records |
-| `Sale` | `models/pos.py` | `unified_sales` | POS transactions |
-| `SaleItem` | `models/pos.py` | `unified_sale_items` | Line items |
-| `InventoryTransaction` | `models/pos.py` | `unified_inventory` | Stock movements |
-| `Employee` | `models/pos.py` | `unified_employees` | Staff records |
-| `MenuItem` | `models/menu.py` | `unified_menu_items` | Menu items |
-| `Menu` | `models/menu.py` | `unified_menus` | Named menus |
-| `MenuItemAssignment` | `models/menu.py` | `unified_menu_assignments` | Through table |
-| `Node` | `models/node.py` | `unified_nodes` | Registered nodes |
-| `Heartbeat` | `models/node.py` | `unified_heartbeats` | Heartbeat audit |
-| `NodeEvent` | `models/node.py` | `unified_node_events` | Lifecycle events |
-| `SyncLog` | `models/sync.py` | `unified_sync_logs` | Sync audit trail |
-| `DeviceConfig` | `models/config.py` | `unified_device_configs` | Per-node config |
-| `MasterDevice` | `models/config.py` | `unified_master_devices` | Master devices |
-| `CloudLink` | `models/config.py` | `unified_cloud_links` | Cloud connections |
 
 ---
 
@@ -258,8 +332,8 @@ All models use `app_label=pos_unified` and `db_table` prefix `unified_`:
 
 ```bash
 cd sidecar
-DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_unified_api.py -v --tb=short --import-mode=importlib
-# → 155 tests pass (CRUD, filtering, pagination, validation)
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_server.py -v --tb=short
+# → 53 tests pass (node registry, heartbeats, sync, events, broadcast)
 ```
 
 ---
@@ -270,19 +344,18 @@ DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_unified_api.py -v --tb=sh
 
 | Variable | Default | Description |
 |----------|---------|-------------|
-| `POS_HOST` | `0.0.0.0` | Sidecar bind address |
-| `POS_PORT` | `8765` | Sidecar port |
-| `POS_API_KEY` | `None` | API authentication key |
-| `MASTER_URL` | `http://localhost:8766` | pos-full master URL |
-| `MASTER_API_KEY` | `None` | Master API key for auth |
+| `POS_FULL_HOST` | `0.0.0.0` | Sidecar bind address |
+| `POS_FULL_PORT` | `8766` | Sidecar port |
+| `POS_FULL_API_KEY` | `None` | API authentication key |
+| `DJANGO_SECRET_KEY` | `pos-full-master-...` | Django secret key |
 | `CLOUD_CRM_URL` | `""` | Upstream CRM API URL |
 | `CLOUD_API_KEY` | `None` | CRM API key |
-| `SYNC_INTERVAL` | `60` | Auto-sync interval (seconds) |
 
 ### Sidecar Arguments
 
 ```bash
-python3 server.py --host 0.0.0.0 --port 8765 --verbose
+python3 server.py --host 0.0.0.0 --port 8766 --verbose
+python3 server.py --migrate          # Use Django migrations (vs schema_editor)
 python3 server.py --version          # Show version
 ```
 
@@ -291,22 +364,20 @@ python3 server.py --version          # Show version
 ## 📚 Edition Comparison
 
 | Feature | pos-mini | pos-solo | pos-full |
-|---------|:--------:|:--------:|:--------:|
+|---------|----------|----------|----------|
 | Backend | Rust/Diesel | Robyn + Django | Robyn + Django |
 | Admin panel | ❌ | ❌ | ✅ Unfold dashboard |
 | Data ops | `invoke()` | Redux RTK Query | Redux RTK Query |
-| Paginated API | ❌ | ✅ 60+ endpoints | ✅ 30+ endpoints |
-| Entity WS events | ❌ | ✅ `/ws/config` | ✅ `/ws/entities` |
-| Node registry | ❌ | ✅ (child) | ✅ (master) |
-| Cloud sync | ❌ | ✅ (child→master) | ✅ (master↔children) |
+| Paginated API | ❌ | ✅ | ✅ |
+| Entity WS events | ❌ | ✅ | ✅ |
+| Node registry | ❌ | ✅ | ✅ |
+| Cloud sync | ❌ | ✅ | ✅ |
 | WebSocket chat | ❌ | ❌ | ✅ |
-| Architecture role | Standalone | Branch device | Master manager |
 
 ---
 
 ## 🔗 Related
 
-- **pos-full**: Master manager with admin dashboard — [../pos-full/](../pos-full/)
+- **pos-solo**: Branch device — [../pos-solo/](../pos-solo/)
 - **pos-mini**: Minimal Rust/Diesel edition — [../pos-mini/](../pos-mini/)
-- **Sidecar architecture**: [sidecar/ARCHITECTURE.md](sidecar/ARCHITECTURE.md)
-- **Architecture overview**: [../../docs/POS_ARCHITECTURE.md](../../docs/POS_ARCHITECTURE.md)
+- **Architecture docs**: [../../docs/POS_ARCHITECTURE.md](../../docs/POS_ARCHITECTURE.md)

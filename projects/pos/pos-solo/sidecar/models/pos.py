@@ -25,8 +25,8 @@ class Category(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_categories"
+        app_label = "pos_full"
+        db_table = "full_categories"
         verbose_name_plural = "categories"
         ordering = ["display_order", "name"]
 
@@ -65,8 +65,8 @@ class Product(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_products"
+        app_label = "pos_full"
+        db_table = "full_products"
         ordering = ["name"]
 
     def __str__(self) -> str:
@@ -92,8 +92,8 @@ class Customer(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_customers"
+        app_label = "pos_full"
+        db_table = "full_customers"
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
@@ -137,8 +137,8 @@ class Sale(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_sales"
+        app_label = "pos_full"
+        db_table = "full_sales"
         ordering = ["-sale_date"]
 
     def __str__(self) -> str:
@@ -161,8 +161,8 @@ class SaleItem(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_sale_items"
+        app_label = "pos_full"
+        db_table = "full_sale_items"
         ordering = ["id"]
 
     def __str__(self) -> str:
@@ -190,8 +190,8 @@ class InventoryTransaction(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_inventory"
+        app_label = "pos_full"
+        db_table = "full_inventory"
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
@@ -223,8 +223,8 @@ class Employee(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_employees"
+        app_label = "pos_full"
+        db_table = "full_employees"
         ordering = ["last_name", "first_name"]
 
     def __str__(self) -> str:

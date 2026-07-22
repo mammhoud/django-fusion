@@ -1,29 +1,29 @@
-# POS Solo — Sidecar Architecture
-
-## Package Structure
+# POS Full — Sidecar Architecture
 
 ```
 sidecar/
-├── server.py                 # 🟢 Thin entry point: bootstrap + middleware + CRUD (~420 lines)
+├── server.py                 # 🟢 Thin entry point: bootstrap + middleware + CRUD (~415 lines)
 ├── routes/                   # 🟢 Route handler modules
 │   ├── __init__.py           #   register_all(app)
 │   ├── state.py              #   Shared helpers, SyncClient, WS broadcast, _register_crud
-│   ├── info.py               #   /, /health, /stats (~45 lines)
-│   ├── nodes.py              #   Node CRUD, register, heartbeat, WS /ws/config (~180 lines)
-│   ├── config.py             #   Device/Master/Cloud config (~95 lines)
-│   ├── sync.py               #   Sync status, trigger, push (~140 lines)
-│   └── approvals.py          #   Approve, reject, pending (~40 lines)
-├── models/                   # 🔵 Django ORM models (all managed=True)
+│   ├── info.py               #   /, /health, /stats (~60 lines)
+│   ├── nodes.py              #   Node CRUD, register, heartbeat, WS /ws/nodes (~350 lines)
+│   ├── config.py             #   Device/Master/Cloud config, WS /ws/config (~140 lines)
+│   ├── sync.py               #   Sync status, trigger, push/receive (~300 lines)
+│   ├── approvals.py          #   Approve, reject, pending (~70 lines)
+│   └── webhooks.py           #   Webhook receive, list, stats (~80 lines)
+├── models/                   # 🔵 Django ORM models
 │   ├── __init__.py
-│   ├── pos.py                # Category, Product, Customer, Sale, SaleItem, Inventory, Employee
-│   ├── menu.py               # MenuItem, Menu, MenuItemAssignment
 │   ├── node.py               # Node, Heartbeat, NodeEvent
 │   ├── config.py              # DeviceConfig, MasterDevice, CloudLink
 │   └── sync.py                # SyncLog
+├── posapp/                   # 🔵 Django models (Rust-mirror, managed=False)
+│   ├── __init__.py
+│   └── models.py              # 30+ tables
 ├── tests/
-│   ├── test_unified_api.py   # 155 tests (decoupled from server.py)
+│   ├── test_server.py        # 53 tests
+│   ├── test_webhook_e2e.py   # 10 tests (decoupled from server.py)
 │   └── django_setup.py       # Standalone Django bootstrap helper
-├── Makefile                  # Sidecar commands
 └── requirements.txt          # Dependencies
 ```
 
@@ -33,14 +33,141 @@ sidecar/
 |-------|-----------|------|
 | 🟢 Server | `server.py` | Thin entry point: Django bootstrap, middleware, CRUD registration, `init_state()`, `register_all()` |
 | 🟢 Routes | `routes/info.py` | `GET /`, `/health`, `/stats` |
-| 🟢 Routes | `routes/nodes.py` | Node CRUD, register, heartbeat, WS `/ws/config` |
-| 🟢 Routes | `routes/config.py` | Device/Master/Cloud config, WS `/ws/config` |
-| 🟢 Routes | `routes/sync.py` | Sync status, trigger, push, cloud push |
+| 🟢 Routes | `routes/nodes.py` | Node CRUD, register, heartbeat, history, WS `/ws/nodes` |
+| 🟢 Routes | `routes/config.py` | Device/Master/Cloud config CRUD, WS `/ws/config` |
+| 🟢 Routes | `routes/sync.py` | Sync status, trigger, push/receive, cloud push |
 | 🟢 Routes | `routes/approvals.py` | Approve, reject, pending, receive endpoints |
+| 🟢 Routes | `routes/webhooks.py` | Webhook receive, list, stats |
 | 🟢 State | `routes/state.py` | Shared helpers (`_ser`, `_list`, `_register_crud`), `SyncClient`, WS broadcast |
-| 🔵 Models | `models/` package | All 17 unified models (managed=True): pos, menu, node, config, sync |
+| 🔵 Models | `models/` package | Node, Heartbeat, NodeEvent, SyncLog, DeviceConfig, MasterDevice, CloudLink |
 | 🔵 Shared | `shared/` package | DeviceToken, SyncApproval, SignalEvent, signals, handlers, ProductSyncEngine |
 | 🔵 Tests | `tests/django_setup.py` | Standalone Django bootstrap (decoupled from server.py) |
+| 🔵 Portal | — | Removed — Robyn server.py handles everything |
+
+## Architecture
+
+```mermaid
+graph TB
+    subgraph "POS Full (sidecar/)"
+        SERVER[server.py<br/>Thin entry point<br/>~415 lines]
+        ROUTES[routes/ package<br/>info, nodes, config, sync<br/>approvals, webhooks]
+        STATE[routes/state.py<br/>Shared helpers, SyncClient<br/>WS broadcast, _register_crud]
+        MODELS[models/ package<br/>node, config, sync]
+        SHARED[shared/ package<br/>models, signals, handlers]
+        POSAPP[posapp/models.py<br/>Rust-backed tables]
+    end
+
+    subgraph "External Nodes"
+        SOLO[POS Solo nodes<br/>port 8765]
+        MINIMAL[POS Minimal nodes]
+    end
+
+    SERVER -->|init_state| STATE
+    SERVER -->|register_all| ROUTES
+    ROUTES -->|import state as S| STATE
+    ROUTES -->|CRUD| MODELS
+    ROUTES -->|CRUD| POSAPP
+    ROUTES -->|Signals| SHARED
+    ROUTES -->|REST + WS| Tauri[POS Desktop App]
+    SOLO -.->|Sync Push| ROUTES
+    MINIMAL -.->|Heartbeat| ROUTES
+
+    style SERVER fill:#2563eb,color:#fff
+    style ROUTES fill:#2563eb,color:#fff
+    style MODELS fill:#7c3aed,color:#fff
+```
+
+## Usage
+
+```bash
+# Start Robyn server (main API — no Django portal required)
+python3 server.py --port 8766
+
+# Run tests (uses standalone django_setup.py helper)
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v --import-mode=importlib
+```
+
+## Test Results (Session: 2026-07-20)
+
+**Run command:**
+```bash
+DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_server.py tests/test_data_sync.py tests/test_webhook_e2e.py -v --import-mode=importlib
+```
+
+| Suite | Tests | Passed | Failed | Skipped |
+|-------|------:|------:|------:|------:|
+| `test_server.py` | 53 | 53 | 0 | 0 |
+| `test_data_sync.py` (ModelParity) | 6 | 6 | 0 | 0 |
+| `test_data_sync.py` (RealCrossORM) | 12 | 0 | 0 | 12 |
+| `test_webhook_e2e.py` | 10 | 10 | 0 | 0 |
+| **TOTAL** | **81** | **69** | **0** | **12** |
+
+### Analysis
+
+- **69/69 non-Rust tests passed (100%)** ✅ — all server, data model parity, and webhook tests pass
+- **12 skipped**: `TestRealCrossORM` — requires Rust-built `restaurant.db` with expected tables. Run `cargo build` in `src-tauri/` to populate.
+- **Webhook fix**: `WEBHOOK_URLS` now uses lazy env var loading (`_WebhookUrls(dict)` subclass in `shared/handlers/signal.py`) so tests can set env vars after module import.
+
+## Sync State
+
+Current `sync_state.json`:
+```json
+{
+  "enabled": true,
+  "cloud_url": "http://127.0.0.1:8082",
+  "api_key": "",
+  "last_sync": "2026-07-20T07:03:11.277731+00:00",
+  "status": "error",
+  "items_synced": 0,
+  "errors": 1,
+  "last_error": "All connection attempts failed"
+}
+```
+
+- **Status**: `error` — cloud CRM at `http://127.0.0.1:8082` is not running (expected in dev).
+- **Sync endpoints**: 13 (status, config, log, trigger, cloud push, API push, receive sales/reports/inventory, push products/configs/catalog)
+- **Sync engine**: `ProductSyncEngine` (shared/services/sync.py) — approval-queue workflow for master↔child sync
+- **Database**: `restaurant.db` (270 KB, shared with Rust backend)
+
+## Streams (WebSocket)
+
+Two WebSocket channels provided by `streams.py`:
+
+| Endpoint | Event Types | Broadcast Function |
+|----------|------------|-------------------|
+| `/ws/nodes` | `node_register`, `node_deregister`, `heartbeat`, `sync_complete`, `sync_push` | `_broadcast_node_event()` |
+| `/ws/config` | `config_changed`, `config_synced`, `configs_pushed`, `catalog_pushed`, `products_pushed` | `_broadcast_config_event()` |
+
+Filtering: Clients can subscribe to specific `node_id`, `event_type`, or `node_types` via WebSocket filters.
+
+## HTML Serving Capability
+
+The sidecar currently serves **REST JSON + WebSocket only** — no HTML templates. HTML templates exist in the Tauri frontend (`src-tauri/templates/`):
+- `support_email.html` — support ticket email body
+- `invoice.html` — invoice PDF template (used by ReportLab on server-side)
+
+**Potential additions (not implemented):**
+- Dashboard HTML page at `/` (Jinja2/Mako template rendering)
+- Node management UI at `/admin/nodes`
+- Sync status dashboard at `/sync/dashboard`
+- API documentation page (Swagger/ReDoc via Robyn's OpenAPI)
+
+To add HTML serving, Robyn supports `@app.get("/", const=True)` with `serve_file()` or Jinja2 template rendering via `robyn.templating`.
+
+## Models
+
+| Model | File | Table | Purpose |
+|-------|------|-------|---------|
+| `Node` | `models/node.py` | `full_nodes` | Registered POS nodes |
+| `Heartbeat` | `models/node.py` | `full_heartbeats` | Heartbeat audit log |
+| `NodeEvent` | `models/node.py` | `full_node_events` | Node lifecycle events |
+| `SyncLog` | `models/sync.py` | `full_sync_logs` | Sync operation audit |
+| `DeviceConfig` | `models/config.py` | `full_device_configs` | Per-node config |
+| `MasterDevice` | `models/config.py` | `full_master_devices` | Master devices |
+| `CloudLink` | `models/config.py` | `full_cloud_links` | Cloud connections |
+| `SyncApproval` | `shared/models/approval.py` | `pos_sync_approvals` | Approval queue |
+| `DeviceToken` | `shared/models/token.py` | `cloud_device_tokens` | Auth tokens |
+| `SignalEvent` | `shared/models/audit.py` | `pos_signal_events` | Audit trail |
 
 ## Shared Module Map
 
@@ -60,109 +187,3 @@ projects/pos/shared/
 └── api/
     └── crud.py               # _ser, _paginate, _register_crud helpers
 ```
-
-## Architecture
-
-```mermaid
-graph TB
-    subgraph "POS Solo (sidecar/)"
-        SERVER[server.py<br/>Thin entry point<br/>~420 lines]
-        ROUTES[routes/ package<br/>info, nodes, config<br/>sync, approvals]
-        STATE[routes/state.py<br/>Shared helpers, SyncClient<br/>WS broadcast, _register_crud]
-        MODELS[models/ package<br/>pos, menu, node, config, sync]
-        SHARED[shared/ package<br/>signals, models, handlers]
-        SYNC[Sync Client<br/>Push to Cloud Master]
-    end
-
-    subgraph "Cloud (Full Edition)"
-        MASTER[Cloud Master<br/>port 8766]
-    end
-
-    SERVER -->|init_state| STATE
-    SERVER -->|register_all| ROUTES
-    ROUTES -->|import state as S| STATE
-    ROUTES -->|CRUD| MODELS
-    ROUTES -->|Signals| SHARED
-    ROUTES -->|REST + WS| Tauri[POS Desktop App]
-    SYNC -.->|Push nodes, products,<br/>sales to master| MASTER
-
-    style SERVER fill:#2563eb,color:#fff
-    style ROUTES fill:#2563eb,color:#fff
-    style MODELS fill:#7c3aed,color:#fff
-```
-
-## Usage
-
-```bash
-# Start Robyn server (main API — no Django portal required)
-python3 server.py --port 8765
-
-# Run tests (uses standalone django_setup.py helper)
-DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/ -v --import-mode=importlib
-```
-
-## Test Results (Session: 2026-07-20)
-
-**Run command:**
-```bash
-DJANGO_SETTINGS_MODULE='' python3 -m pytest tests/test_unified_api.py -v --import-mode=importlib
-```
-
-| Suite | Tests | Passed | Failed | Skipped |
-|-------|------:|------:|------:|------:|
-| `test_unified_api.py` | 155 | 155 | 0 | 0 |
-| **TOTAL** | **155** | **155** | **0** | **0** |
-
-### Analysis
-
-- **155/155 passed (100%)** ✅ — all unified model CRUD, filtering, pagination, and validation tests pass.
-- Solo edition uses managed=True models (no Rust DB dependency), making tests fully self-contained.
-- Test DB is created in-memory or as `unified.db` in the sidecar directory.
-
-## Streams (WebSocket)
-
-Single WebSocket channel provided by `streams.py`:
-
-| Endpoint | Event Types | Broadcast Function |
-|----------|------------|-------------------|
-| `/ws/config` | `config_changed`, `config_synced`, `configs_pushed`, `catalog_pushed`, `products_pushed` | `_broadcast_config_event()` |
-
-Filtering: Clients can subscribe to specific `node_id` or `event_type` via WebSocket filters.
-
-## HTML Serving Capability
-
-Same as pos-full: REST JSON + WebSocket only. See `projects/pos/pos-full/sidecar/ARCHITECTURE.md#html-serving-capability` for potential additions.
-
-## Sync
-
-| Feature | Pos-Solo | Pos-Full |
-|---------|:---:|:---:|
-| Sync endpoints | 11 | 13 |
-| Sync direction | Child → Master | Master ↔ Children |
-| Approval workflow | ✅ | ✅ |
-| Cloud push | ✅ (configured via `CLOUD_CRM_URL`) | ✅ |
-| Rust DB mirror | ❌ | ✅ (posapp/) |
-
-## Models
-
-All models share `app_label=pos_unified` and `db_table` prefix `unified_`:
-
-| Model | Module | Table | Purpose |
-|-------|--------|-------|---------|
-| `Category` | `models/pos.py` | `unified_categories` | Product/menu categories |
-| `Product` | `models/pos.py` | `unified_products` | POS products |
-| `Customer` | `models/pos.py` | `unified_customers` | Customer records |
-| `Sale` | `models/pos.py` | `unified_sales` | POS transactions |
-| `SaleItem` | `models/pos.py` | `unified_sale_items` | Line items |
-| `InventoryTransaction` | `models/pos.py` | `unified_inventory` | Stock movements |
-| `Employee` | `models/pos.py` | `unified_employees` | Staff records |
-| `MenuItem` | `models/menu.py` | `unified_menu_items` | Menu items |
-| `Menu` | `models/menu.py` | `unified_menus` | Named menus |
-| `MenuItemAssignment` | `models/menu.py` | `unified_menu_assignments` | Through table |
-| `Node` | `models/node.py` | `unified_nodes` | Registered nodes |
-| `Heartbeat` | `models/node.py` | `unified_heartbeats` | Heartbeat audit |
-| `NodeEvent` | `models/node.py` | `unified_node_events` | Lifecycle events |
-| `SyncLog` | `models/sync.py` | `unified_sync_logs` | Sync audit |
-| `DeviceConfig` | `models/config.py` | `unified_device_configs` | Per-node config |
-| `MasterDevice` | `models/config.py` | `unified_master_devices` | Master devices |
-| `CloudLink` | `models/config.py` | `unified_cloud_links` | Cloud connections |

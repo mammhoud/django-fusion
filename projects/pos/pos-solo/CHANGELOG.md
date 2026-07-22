@@ -1,5 +1,5 @@
-# POS Solo — Changelog
+# POS Full — Changelog
 
 > See [`../CHANGELOG.md`](../CHANGELOG.md) for the full POS changelog.
 >
-> The Solo edition shares the same version history as the canonical Full edition.
+> The Full edition is the canonical source; all editions share the same version history.

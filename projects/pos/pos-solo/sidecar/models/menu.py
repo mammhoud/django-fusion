@@ -36,8 +36,8 @@ class MenuItem(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_menu_items"
+        app_label = "pos_full"
+        db_table = "full_menu_items"
         ordering = ["category__display_order", "display_order", "name"]
 
     def __str__(self) -> str:
@@ -63,8 +63,8 @@ class Menu(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_menus"
+        app_label = "pos_full"
+        db_table = "full_menus"
         ordering = ["display_order", "name"]
 
     def __str__(self) -> str:
@@ -86,8 +86,8 @@ class MenuItemAssignment(models.Model):
     sync_status = models.CharField(max_length=20, default="pending", choices=[("pending", "Pending"), ("synced", "Synced"), ("failed", "Failed")])
 
     class Meta:
-        app_label = "pos_unified"
-        db_table = "unified_menu_assignments"
+        app_label = "pos_full"
+        db_table = "full_menu_assignments"
         ordering = ["display_order"]
 
     def __str__(self) -> str:
