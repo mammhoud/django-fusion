@@ -2,8 +2,12 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { MdRestaurantMenu, MdEdit, MdDelete, MdAdd, MdRemove } from 'react-icons/md';
 import { FaPlus, FaSave, FaSearch, FaCubes, FaUtensils } from 'react-icons/fa';
-import { invoke } from '@tauri-apps/api/core';
-import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient, Product, Ingredient } from '../types';
+import { isTauri } from '../utils/tauri';
+import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient } from '../types';
+import { useGetRecipesQuery } from '../store/api/endpoints/kitchen';
+import { useAddRecipeMutation, useUpdateRecipeMutation, useDeleteRecipeMutation } from '../store/api/endpoints/kitchen';
+import { useGetProductsQuery } from '../store/api/endpoints/products';
+import { useGetIngredientsQuery } from '../store/api/endpoints/legacy';
 import PageLayout from '../components/PageLayout';
 import { SkeletonCard, SkeletonList } from '../components/Skeleton';
 import { useTranslation } from 'react-i18next';
@@ -26,9 +30,9 @@ export default function Recipes() {
   const [isLoading, setIsLoading] = useState(true);
 
   // Data states
-  const [recipes, setRecipes] = useState<Recipe[]>([]);
-  const [products, setProducts] = useState<Product[]>([]);
-  const [ingredients, setIngredients] = useState<Ingredient[]>([]);
+  const [recipes, setRecipes] = useState<any[]>([]);
+  const [products, setProducts] = useState<any[]>([]);
+  const [ingredients, setIngredients] = useState<any[]>([]);
   const [recipeIngredientsMap, setRecipeIngredientsMap] = useState<Record<number, RecipeIngredient[]>>({});
 
   // Search
@@ -64,36 +68,57 @@ export default function Recipes() {
     return costPerUnit * quantity;
   };
 
+  // ── RTK Query Data Hooks ──
+  const { data: recipesRes = [], isLoading: recipesLoading } = useGetRecipesQuery();
+  const { data: productsData } = useGetProductsQuery({ page: 1, per_page: 200 });
+  const { data: ingredientsRes = [] } = useGetIngredientsQuery({ includeInactive: true });
+  const [addRecipe] = useAddRecipeMutation();
+  const [updateRecipe] = useUpdateRecipeMutation();
+  const [deleteRecipe] = useDeleteRecipeMutation();
+
   const loadData = useCallback(async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [recipesRes, productsRes, ingredientsRes] = await Promise.all([
-        invoke<Recipe[]>('get_recipes', { includeInactive: true }),
-        invoke<Product[]>('get_products'),
-        invoke<Ingredient[]>('get_ingredients', { includeInactive: true }),
-      ]);
-      setRecipes(recipesRes);
-      setProducts(productsRes);
-      setIngredients(ingredientsRes);
-
-      // Load ingredients for each recipe
+      // Recipe ingredients — Tauri-only (no HTTP endpoint for recipe-ingredients yet)
       const ingredientsMap: Record<number, RecipeIngredient[]> = {};
-      await Promise.all(recipesRes.map(async (r) => {
-        try {
-          const ris = await invoke<RecipeIngredient[]>('get_recipe_ingredients', { recipeId: r.id });
-          ingredientsMap[r.id] = ris;
-        } catch { ingredientsMap[r.id] = []; }
-      }));
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        await Promise.all(recipesRes.map(async (r) => {
+          try {
+            const ris = await invoke<RecipeIngredient[]>('get_recipe_ingredients', { recipeId: r.id });
+            ingredientsMap[r.id] = ris;
+          } catch { ingredientsMap[r.id] = []; }
+        }));
+      } else {
+        console.warn('Recipe ingredients require Tauri desktop mode');
+      }
       setRecipeIngredientsMap(ingredientsMap);
     } catch (error) {
-      console.error('Error loading data:', error);
+      console.error('Error loading recipe ingredients:', error);
     } finally {
       if (!quiet) setIsLoading(false);
     }
-  }, []);
+  }, [recipesRes]);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // Sync RTK Query data into local state
+  useEffect(() => {
+    setRecipes(recipesRes);
+    setIsLoading(recipesLoading || false);
+  }, [recipesRes, recipesLoading]);
+
+  useEffect(() => {
+    if (productsData?.data) {
+      // API returns paginated; flatten to match expected Product[]
+      setProducts(productsData.data as any);
+    }
+  }, [productsData]);
+
+  useEffect(() => {
+    setIngredients(ingredientsRes);
+  }, [ingredientsRes]);
 
   const showStatus = (type: 'success' | 'error', msg: string) => {
     setToast({ type, message: msg });
@@ -144,10 +169,17 @@ export default function Recipes() {
   const handleCreateRecipe = async () => {
     if (newRecipe.product_id === 0 || newRecipe.yield_quantity <= 0 || newRecipeIngredients.length === 0) return;
     try {
-      await invoke('create_recipe', {
-        recipe: newRecipe,
-        ingredients: newRecipeIngredients.map(ri => ({ ...ri, recipe_id: 0 })),
-      });
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        await invoke('create_recipe', {
+          recipe: newRecipe,
+          ingredients: newRecipeIngredients.map(ri => ({ ...ri, recipe_id: 0 })),
+        });
+      } else {
+        // Fallback: create recipe without ingredients (Recipe model has no ingredients field via REST)
+        await addRecipe(newRecipe as any).unwrap();
+        console.warn('Recipe created without ingredients — requires Tauri desktop mode for ingredient linking');
+      }
       setShowAddRecipe(false);
       setNewRecipe({ product_id: 0, recipe_type_id: 1, yield_quantity: 1 });
       setNewRecipeIngredients([]);
@@ -187,36 +219,43 @@ export default function Recipes() {
   const handleSaveEdit = async () => {
     if (!showEditRecipe || editYield <= 0) return;
     try {
-      // Update yield
-      await invoke('update_recipe', {
-        id: showEditRecipe,
-        update: { yield_quantity: editYield },
-      });
-
-      // Persist ingredient changes
       const currentIngredients = recipeIngredientsMap[showEditRecipe] || [];
       const editIds = new Set(editIngredients.filter(ri => ri.id > 0).map(ri => ri.id));
 
-      // Delete removed ingredients
-      for (const ri of currentIngredients) {
-        if (!editIds.has(ri.id)) {
-          await invoke('delete_recipe_ingredient', { id: ri.id });
-        }
-      }
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
 
-      // Add new ingredients
-      for (const ri of editIngredients) {
-        if (ri.id < 0) {
-          await invoke('add_recipe_ingredient', {
-            ingredient: {
-              recipe_id: showEditRecipe,
-              ingredient_id: ri.ingredient_id,
-              quantity: ri.quantity,
-              unit: ri.unit,
-              preparation_note: ri.preparation_note,
-            }
-          });
+        // Update yield
+        await invoke('update_recipe', {
+          id: showEditRecipe,
+          update: { yield_quantity: editYield },
+        });
+
+        // Delete removed ingredients
+        for (const ri of currentIngredients) {
+          if (!editIds.has(ri.id)) {
+            await invoke('delete_recipe_ingredient', { id: ri.id });
+          }
         }
+
+        // Add new ingredients
+        for (const ri of editIngredients) {
+          if (ri.id < 0) {
+            await invoke('add_recipe_ingredient', {
+              ingredient: {
+                recipe_id: showEditRecipe,
+                ingredient_id: ri.ingredient_id,
+                quantity: ri.quantity,
+                unit: ri.unit,
+                preparation_note: ri.preparation_note,
+              }
+            });
+          }
+        }
+      } else {
+        // Fallback: update recipe yield without ingredients via RTK
+        await updateRecipe({ id: showEditRecipe, data: { yield_quantity: editYield } as any }).unwrap();
+        console.warn('Recipe yield updated without ingredient changes — requires Tauri desktop mode');
       }
 
       setShowEditRecipe(null);
@@ -229,7 +268,7 @@ export default function Recipes() {
   const handleDeleteRecipe = async () => {
     if (!showDeleteRecipe) return;
     try {
-      await invoke('soft_delete_recipe', { id: showDeleteRecipe.id });
+      await deleteRecipe(showDeleteRecipe.id).unwrap();
       setShowDeleteRecipe(null);
       loadData({ quiet: true });
       showStatus('success', t('recipes.successDeleted'));
@@ -237,7 +276,7 @@ export default function Recipes() {
   };
 
   // ── Loading ──
-  if (isLoading) {
+  if (isLoading || recipesLoading) {
     return (
       <PageLayout title={t('recipes.title')} background="bg-slate-100 dark:bg-slate-900">
         <div className="space-y-6">

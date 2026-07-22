@@ -1,16 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdRestaurant, MdCheckCircle, MdAccessTime, MdSearch, MdClose } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { KitchenTicket } from '../types';
+import { useGetKitchenTicketsQuery, useUpdateKitchenTicketMutation } from '../store/api/endpoints/kitchen';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 
 export default function KitchenDisplay() {
   const { t } = useTranslation();
-  const [tickets, setTickets] = useState<KitchenTicket[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('pending');
 
   // AJAX-style debounced text search — searches across ticket id / sale_id / notes.
@@ -23,32 +20,17 @@ export default function KitchenDisplay() {
     isPending: isFiltering,
   } = useDebouncedSearch();
 
-  useEffect(() => {
-    loadTickets({ quiet: false });
-    const interval = setInterval(() => loadTickets({ quiet: true }), 10000);
-    return () => clearInterval(interval);
-  }, [filter]);
-
-  const loadTickets = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const data = await invoke<KitchenTicket[]>('get_kitchen_tickets', { status: filter === 'all' ? null : filter });
-      setTickets(data);
-    } catch (error) {
-      console.error('Error loading kitchen tickets:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
+  const { data: tickets = [], isLoading } = useGetKitchenTicketsQuery(
+    { status: filter === 'all' ? undefined : filter },
+    { pollingInterval: 10000 }
+  );
+  const [updateKitchenTicket] = useUpdateKitchenTicketMutation();
 
   const updateStatus = async (id: number, status: string) => {
     try {
-      await invoke('update_kitchen_ticket', { id, update: { status } });
-      loadTickets({ quiet: true });
+      await updateKitchenTicket({ id, data: { status } }).unwrap();
     } catch (error) {
       console.error('Error updating ticket:', error);
-      loadTickets({ quiet: true });
     }
   };
 

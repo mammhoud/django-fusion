@@ -1,4 +1,5 @@
 import { createContext, useContext, useState, useEffect, useCallback, useRef, ReactNode } from 'react';
+// Static invoke import is safe here — all invoke() calls are behind `if (isTauri)` guards
 import { invoke } from '@tauri-apps/api/core';
 import { isTauri } from '../utils/tauri';
 

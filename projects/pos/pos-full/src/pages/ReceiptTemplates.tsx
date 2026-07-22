@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdReceipt, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { ReceiptTemplate } from '../types';
+import { useGetReceiptTemplatesQuery, useAddReceiptTemplateMutation, useUpdateReceiptTemplateMutation, useDeleteReceiptTemplateMutation } from '../store/api/endpoints/receipts';
+import type { ReceiptTemplate } from '../store/api/endpoints/receipts';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 
 export default function ReceiptTemplates() {
   const { t } = useTranslation();
-  const [templates, setTemplates] = useState<ReceiptTemplate[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<ReceiptTemplate | null>(null);
   const [form, setForm] = useState({ name: '', template_body: '', is_default: false });
@@ -24,55 +22,39 @@ export default function ReceiptTemplates() {
   } = useDebouncedSearch();
   const [sortKey, setSortKey] = useState<'name-asc' | 'name-desc' | 'newest' | 'default-first'>('default-first');
 
-  useEffect(() => {
-    loadTemplates();
-  }, []);
-
-  const loadTemplates = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const data = await invoke<ReceiptTemplate[]>('get_receipt_templates');
-      setTemplates(data);
-    } catch (error) {
-      console.error('Error loading templates:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
+  const { data: templates = [], isLoading, error } = useGetReceiptTemplatesQuery();
+  const [addReceiptTemplate] = useAddReceiptTemplateMutation();
+  const [updateReceiptTemplate] = useUpdateReceiptTemplateMutation();
+  const [deleteReceiptTemplate] = useDeleteReceiptTemplateMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editing) {
-        await invoke('update_receipt_template', { id: editing.id, update: form });
+        await updateReceiptTemplate({ id: editing.id, data: form }).unwrap();
       } else {
-        await invoke('add_receipt_template', { template: form });
+        await addReceiptTemplate(form).unwrap();
       }
       setShowForm(false);
       setEditing(null);
       setForm({ name: '', template_body: '', is_default: false });
-      loadTemplates({ quiet: true });
     } catch (error) {
       console.error('Error saving template:', error);
-      loadTemplates({ quiet: true });
     }
   };
 
   const handleEdit = (template: ReceiptTemplate) => {
     setEditing(template);
-    setForm({ name: template.name, template_body: template.template_body, is_default: template.is_default });
+    setForm({ name: template.name, template_body: template.content || template.template_body, is_default: template.is_default });
     setShowForm(true);
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('delete_receipt_template', { id });
-      loadTemplates({ quiet: true });
+      await deleteReceiptTemplate(id).unwrap();
     } catch (error) {
       console.error('Error deleting template:', error);
-      loadTemplates({ quiet: true });
     }
   };
 

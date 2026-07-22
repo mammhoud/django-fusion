@@ -1,10 +1,9 @@
-import { FaClipboardList, FaChartBar, FaHistory, FaCog, FaHeart, FaBoxes, FaUsers, FaMortarPestle, FaFileAlt } from 'react-icons/fa';
+import { FaClipboardList, FaChartBar, FaHistory, FaCog, FaHeart, FaBoxes, FaUsers, FaMortarPestle, FaFileAlt, FaStickyNote } from 'react-icons/fa';
 import { MdPointOfSale } from 'react-icons/md';
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/core';
-import { Settings } from '../types';
+import { useGetSettingsQuery } from '../store/api/endpoints/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import defaultLogo from '../assets/pos-crest.svg';
@@ -49,9 +48,12 @@ export default function Home() {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [restaurantName, setRestaurantName] = useState('POS');
+  const [restaurantName, setRestaurantName] = useState('Forge');
   const [logo, setLogo] = useState<string | null>(null);
   const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
+
+  // ── RTK Query hooks ──
+  const { data: settingsRes } = useGetSettingsQuery();
 
   const handleNavigation = (route: string) => {
     setLoadingRoute(route);
@@ -60,30 +62,37 @@ export default function Home() {
     }, 300);
   };
 
+  // Sync settings from RTK
   useEffect(() => {
-    const loadSettings = async () => {
-      if (!isTauri) {
-        setRestaurantName('Forge');
-        return;
+    if (settingsRes) {
+      const s = settingsRes as any;
+      if (s.restaurant_name) {
+        setRestaurantName(s.restaurant_name);
       }
-      try {
-        const response = await invoke<Settings>('get_settings');
-        if (response) {
-          if (response.restaurant_name) {
-            setRestaurantName(response.restaurant_name);
-          }
-          if (response.logo) {
-            setLogo(response.logo);
-          }
-        }
-      } catch (error) {
-        console.error('Error loading settings:', error);
-        setRestaurantName('Forge');
+      if (s.logo) {
+        setLogo(s.logo);
       }
-    };
+    } else if (!isTauri) {
+      // Browser dev mode fallback
+      setRestaurantName('Forge');
+    }
+  }, [settingsRes]);
 
-    loadSettings();
-  }, []);
+  // Legacy Tauri-only fallback if RTK is not available
+  useEffect(() => {
+    if (!isTauri || settingsRes) return;
+    const loadLegacy = async () => {
+      const { invoke } = await import('@tauri-apps/api/core');
+      try {
+        const response = await invoke<any>('get_settings');
+        if (response) {
+          if (response.restaurant_name) setRestaurantName(response.restaurant_name);
+          if (response.logo) setLogo(response.logo);
+        }
+      } catch { /* silent */ }
+    };
+    loadLegacy();
+  }, [settingsRes]);
 
   return (
     <PageLayout
@@ -390,6 +399,34 @@ export default function Home() {
 
           <motion.button
             variants={item}
+            onClick={() => handleNavigation('/notes')}
+            whileHover={{ y: -5 }}
+            whileTap={{ scale: 0.98 }}
+            className="flex flex-col items-center p-6 lg:p-5 bg-linear-to-br from-amber-400 to-amber-500 
+            dark:from-amber-500 dark:to-amber-600 text-white rounded-2xl transition-all duration-300
+            backdrop-blur-sm bg-opacity-90 h-full relative shadow-lg hover:shadow-xl border border-white/10"
+            disabled={loadingRoute !== null}
+          >
+            {loadingRoute === '/notes' ? (
+              <>
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-10 h-10 mb-2 border-4 border-white border-t-transparent rounded-full"
+                />
+                <span className="text-lg lg:text-base font-semibold text-center">{t('common.loading')}</span>
+              </>
+            ) : (
+              <>
+                <FaStickyNote className="w-10 h-10 mb-2" />
+                <span className="text-lg lg:text-base font-semibold text-center leading-tight">{t('nav.notes')}</span>
+                <span className="text-[11px] text-white/70 mt-1 text-center leading-tight max-w-[120px]">Draft, save & restore notes</span>
+              </>
+            )}
+          </motion.button>
+
+          <motion.button
+            variants={item}
             onClick={() => handleNavigation('/about')}
             whileHover={{ y: -5 }}
             whileTap={{ scale: 0.98 }}
@@ -415,7 +452,6 @@ export default function Home() {
               </>
             )}
           </motion.button>
-
 
         </motion.div>
     </PageLayout>

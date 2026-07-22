@@ -8,8 +8,9 @@ import {
   LineChart, Line, AreaChart, Area, BarChart, Bar,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell
 } from 'recharts';
-import { invoke } from '@tauri-apps/api/core';
-import { AnalyticsData, Settings } from '../types';
+import { useGetAnalyticsQuery } from '../store/api/endpoints/legacy';
+import type { AnalyticsData } from '../store/api/endpoints/legacy';
+import { useGetSettingsQuery } from '../store/api/endpoints/core';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
 
@@ -17,26 +18,29 @@ const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function Analytics() {
   const { t } = useTranslation();
-  const [data, setData] = useState<AnalyticsData>({
-    daily_revenue: [],
-    top_products: [],
-    product_distribution: [],
-    summary: { total_orders: 0, total_revenue: 0, average_order_value: 0 }
-  });
-  const [currency, setCurrency] = useState('USD');
-  const [loading, setLoading] = useState(true);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
 
   // Status toast — load failures must surface visibly even when there is no
   // future date-range reload path to apply the `quiet` flag to.
   const { status, showError, dismiss } = useStatusToast();
 
+  const { data: analyticsData, isLoading, error } = useGetAnalyticsQuery();
+  const { data: settingsData } = useGetSettingsQuery();
+
+  const data: AnalyticsData = {
+    daily_revenue: analyticsData?.daily_revenue || [],
+    top_products: analyticsData?.top_products || [],
+    product_distribution: analyticsData?.product_distribution || [],
+    summary: analyticsData?.summary || { total_orders: 0, total_revenue: 0, average_order_value: 0 }
+  };
+  const currency = settingsData?.currency || 'USD';
+  const loading = isLoading;
+
   // Keyboard shortcuts
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return;
       if (e.metaKey || e.ctrlKey || e.altKey) return;
-      
       if (e.key === '?' || e.key === '/') {
         e.preventDefault();
         setShowShortcutHelp(prev => !prev);
@@ -45,50 +49,6 @@ export default function Analytics() {
     };
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, []);
-
-  const loadData = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setLoading(true);
-    try {
-      const [analyticsRes, settingsRes] = await Promise.all([
-        invoke<AnalyticsData>('get_analytics'),
-        invoke<Settings>('get_settings')
-      ]);
-
-      // Ensure we have valid data structure
-      setData({
-        daily_revenue: analyticsRes?.daily_revenue || [],
-        top_products: analyticsRes?.top_products || [],
-        product_distribution: analyticsRes?.product_distribution || [],
-        summary: analyticsRes?.summary || {
-          total_orders: 0,
-          total_revenue: 0,
-          average_order_value: 0
-        }
-      });
-      setCurrency(settingsRes?.currency || 'USD');
-    } catch (error) {
-      console.error('Error loading analytics data:', error);
-      // Even when the load is quiet, the failure must be visible — silent
-      // reloads would leave the user staring at an empty dashboard.
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-      // Set empty data structure on error so the UI degrades gracefully
-      setData({
-        daily_revenue: [],
-        top_products: [],
-        product_distribution: [],
-        summary: { total_orders: 0, total_revenue: 0, average_order_value: 0 }
-      });
-    } finally {
-      if (!quiet) setLoading(false);
-    }
-  };
-
-  useEffect(() => {
-    loadData();
-    // mount-once only; loadData captures no reactive state.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Calculate growth rate

@@ -2,7 +2,7 @@ import { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { FaCode, FaHeart, FaEnvelope, FaPaperPlane, FaCheck, FaExclamationTriangle } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from '@tauri-apps/api/core';
+import { isTauri } from '../utils/tauri';
 import packageJson from '../../package.json';
 import BackButton from '../components/BackButton';
 import PageLayout from '../components/PageLayout';
@@ -78,12 +78,19 @@ export default function About() {
     setSubmitStatus('idle');
     setErrorMessage('');
     try {
-      await invoke('send_support_email', {
-        name: supportForm.name,
-        email: supportForm.email,
-        subject: supportForm.subject,
-        message: supportForm.message
-      });
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        await invoke('send_support_email', {
+          name: supportForm.name,
+          email: supportForm.email,
+          subject: supportForm.subject,
+          message: supportForm.message
+        });
+      } else {
+        console.info('Support email requires Tauri desktop mode — form data logged to console:', supportForm);
+        // Simulate success in browser dev mode
+        await new Promise(resolve => setTimeout(resolve, 1000));
+      }
       setSubmitStatus('success');
       setSupportForm({ name: '', email: '', subject: '', message: '' });
       setFormErrors({});

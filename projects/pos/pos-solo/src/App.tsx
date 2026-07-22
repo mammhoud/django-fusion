@@ -21,6 +21,7 @@ import Payroll from './pages/Payroll';
 import ReceiptTemplates from './pages/ReceiptTemplates';
 import TaxReports from './pages/TaxReports';
 import Roles from './pages/Roles';
+import Notes from './pages/Notes';
 import SupportChat from './pages/SupportChat';
 import InvoicePage from './pages/InvoicePage';
 import ChatSupport from './components/ChatSupport';
@@ -49,6 +50,7 @@ const routeOrder: Record<string, number> = {
   '/roles': 18,
   '/support-chat': 19,
   '/invoice': 20,
+  '/notes': 21,
 };
 
 function PageWrapper({ children, direction, isFirstRender }: { children: React.ReactNode; direction: number; isFirstRender: boolean }) {
@@ -152,6 +154,7 @@ function AnimatedRoutes() {
           <Route path="/roles" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Roles /></PageWrapper>} />
           <Route path="/support-chat" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><SupportChat /></PageWrapper>} />
           <Route path="/invoice" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><InvoicePage /></PageWrapper>} />
+          <Route path="/notes" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Notes /></PageWrapper>} />
         </Routes>
       </AnimatePresence>
       {/* Global floating chat widget — visible on all authenticated pages */}

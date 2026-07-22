@@ -5,7 +5,7 @@ import { MdClose, MdPointOfSale, MdLogout, MdHelpOutline, MdPeople, MdLocalShipp
 import {
   FaClipboardList, FaChartBar, FaHistory, FaBoxes, FaUsers,
   FaMortarPestle, FaFileAlt, FaCog, FaHeart, FaHome, FaMoneyBillWave,
-  FaComments, FaFileInvoiceDollar
+  FaComments, FaFileInvoiceDollar, FaStickyNote
 } from 'react-icons/fa';
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
@@ -39,6 +39,7 @@ const navItems: NavItem[] = [
   { label: 'nav.invoice', route: '/invoice', icon: FaFileInvoiceDollar, gradient: 'from-teal-400 to-teal-500' },
   { label: 'nav.taxReports', route: '/tax-reports', icon: MdAccountBalance, gradient: 'from-indigo-400 to-indigo-500' },
   { label: 'nav.roles', route: '/roles', icon: MdSecurity, gradient: 'from-red-400 to-red-500' },
+  { label: 'nav.notes', route: '/notes', icon: FaStickyNote, gradient: 'from-amber-400 to-amber-500' },
   { label: 'nav.supportChat', route: '/support-chat', icon: FaComments, gradient: 'from-cyan-400 to-cyan-500' },
   { label: 'nav.settings', route: '/settings', icon: FaCog, gradient: 'from-gray-400 to-gray-500' },
   { label: 'nav.about', route: '/about', icon: FaHeart, gradient: 'from-pink-400 to-pink-500' },

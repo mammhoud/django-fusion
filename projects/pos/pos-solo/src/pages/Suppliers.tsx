@@ -1,10 +1,10 @@
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdBusiness, MdPhone, MdEmail, MdLocationOn, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { Supplier } from '../types';
+import { useGetSuppliersQuery, useAddSupplierMutation, useUpdateSupplierMutation, useDeleteSupplierMutation } from '../store/api/endpoints/suppliers';
+import type { Supplier } from '../store/api/endpoints/suppliers';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
@@ -13,8 +13,6 @@ type SortKey = 'name-asc' | 'name-desc' | 'newest';
 
 export default function Suppliers() {
   const { t } = useTranslation();
-  const [suppliers, setSuppliers] = useState<Supplier[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Supplier | null>(null);
   const [form, setForm] = useState({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' });
@@ -33,39 +31,23 @@ export default function Suppliers() {
   } = useDebouncedSearch();
   const [sortKey, setSortKey] = useState<SortKey>('newest');
 
-  useEffect(() => {
-    loadSuppliers();
-  }, []);
-
-  const loadSuppliers = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const data = await invoke<Supplier[]>('get_suppliers', { includeInactive: false });
-      setSuppliers(data);
-    } catch (error) {
-      console.error('Error loading suppliers:', error);
-      // Quiet reload failure still needs to be loud — user must know if the
-      // post-CRUD reconciliation failed.
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
+  const { data: suppliers = [], isLoading, error } = useGetSuppliersQuery({ include_inactive: false });
+  const [addSupplier] = useAddSupplierMutation();
+  const [updateSupplier] = useUpdateSupplierMutation();
+  const [deleteSupplier] = useDeleteSupplierMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editing) {
-        await invoke('update_supplier', { id: editing.id, update: form });
+        await updateSupplier({ id: editing.id, data: form }).unwrap();
       } else {
-        await invoke('add_supplier', { supplier: form });
+        await addSupplier(form).unwrap();
       }
       setShowForm(false);
       setEditing(null);
       setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' });
       showSuccess(t('common.saved'));
-      loadSuppliers({ quiet: true });
     } catch (error) {
       console.error('Error saving supplier:', error);
       showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
@@ -89,9 +71,8 @@ export default function Suppliers() {
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('soft_delete_supplier', { id });
+      await deleteSupplier(id).unwrap();
       showSuccess(t('common.deleted'));
-      loadSuppliers({ quiet: true });
     } catch (error) {
       console.error('Error deleting supplier:', error);
       showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);

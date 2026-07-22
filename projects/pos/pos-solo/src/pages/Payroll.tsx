@@ -1,46 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdAttachMoney, MdAdd, MdDelete } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { Payroll as PayrollType, Employee } from '../types';
+import { useGetPayrollRecordsQuery, useAddPayrollMutation, useDeletePayrollMutation } from '../store/api/endpoints/payroll';
+import { useGetEmployeesQuery } from '../store/api/endpoints/core';
 
 export default function Payroll() {
   const { t } = useTranslation();
-  const [payrolls, setPayrolls] = useState<PayrollType[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ employee_id: 0, period_start: '', period_end: '', regular_hours: 0, overtime_hours: 0, total_pay: 0, status: 'pending' });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const [payrollsData, employeesData] = await Promise.all([
-        invoke<PayrollType[]>('get_payrolls', { employeeId: null }),
-        invoke<Employee[]>('get_employees', { includeInactive: false }),
-      ]);
-      setPayrolls(payrollsData);
-      setEmployees(employeesData);
-    } catch (error) {
-      console.error('Error loading payrolls:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data: payrolls = [], isLoading, error } = useGetPayrollRecordsQuery();
+  const { data: employees = [] } = useGetEmployeesQuery();
+  const [addPayroll] = useAddPayrollMutation();
+  const [deletePayroll] = useDeletePayrollMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await invoke('add_payroll', { payroll: form });
+      await addPayroll(form).unwrap();
       setShowForm(false);
       setForm({ employee_id: 0, period_start: '', period_end: '', regular_hours: 0, overtime_hours: 0, total_pay: 0, status: 'pending' });
-      await loadData();
     } catch (error) {
       console.error('Error saving payroll:', error);
     }
@@ -49,8 +30,7 @@ export default function Payroll() {
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('delete_payroll', { id });
-      await loadData();
+      await deletePayroll(id).unwrap();
     } catch (error) {
       console.error('Error deleting payroll:', error);
     }

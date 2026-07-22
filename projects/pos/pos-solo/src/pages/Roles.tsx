@@ -1,16 +1,14 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdSecurity, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { Role } from '../types';
+import { useGetRolesQuery, useAddRoleMutation, useUpdateRoleMutation, useDeleteRoleMutation } from '../store/api/endpoints/roles';
+import type { Role } from '../store/api/endpoints/roles';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 
 export default function Roles() {
   const { t } = useTranslation();
-  const [roles, setRoles] = useState<Role[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [editing, setEditing] = useState<Role | null>(null);
   const [form, setForm] = useState({ name: '', permissions: '[]' });
@@ -25,55 +23,39 @@ export default function Roles() {
   } = useDebouncedSearch();
   const [sortKey, setSortKey] = useState<'newest' | 'name-asc' | 'name-desc'>('newest');
 
-  useEffect(() => {
-    loadRoles();
-  }, []);
-
-  const loadRoles = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const data = await invoke<Role[]>('get_roles');
-      setRoles(data);
-    } catch (error) {
-      console.error('Error loading roles:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
+  const { data: roles = [], isLoading, error } = useGetRolesQuery();
+  const [addRole] = useAddRoleMutation();
+  const [updateRole] = useUpdateRoleMutation();
+  const [deleteRole] = useDeleteRoleMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       if (editing) {
-        await invoke('update_role', { id: editing.id, update: form });
+        await updateRole({ id: editing.id, data: form }).unwrap();
       } else {
-        await invoke('add_role', { role: form });
+        await addRole(form).unwrap();
       }
       setShowForm(false);
       setEditing(null);
       setForm({ name: '', permissions: '[]' });
-      loadRoles({ quiet: true });
     } catch (error) {
       console.error('Error saving role:', error);
-      loadRoles({ quiet: true });
     }
   };
 
   const handleEdit = (role: Role) => {
     setEditing(role);
-    setForm({ name: role.name, permissions: role.permissions });
+    setForm({ name: role.name, permissions: Array.isArray(role.permissions) ? JSON.stringify(role.permissions) : role.permissions });
     setShowForm(true);
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('soft_delete_role', { id });
-      loadRoles({ quiet: true });
+      await deleteRole(id).unwrap();
     } catch (error) {
       console.error('Error deleting role:', error);
-      loadRoles({ quiet: true });
     }
   };
 

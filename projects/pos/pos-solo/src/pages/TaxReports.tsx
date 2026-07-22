@@ -1,16 +1,13 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdAccountBalance, MdAdd, MdDelete, MdSearch, MdClose } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { TaxReport } from '../types';
+import { useGetTaxReportsQuery, useAddTaxReportMutation, useDeleteTaxReportMutation } from '../store/api/endpoints/payroll';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 
 export default function TaxReports() {
   const { t } = useTranslation();
-  const [reports, setReports] = useState<TaxReport[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ period_start: '', period_end: '', total_sales: 0, total_tax: 0, transaction_count: 0 });
 
@@ -24,44 +21,27 @@ export default function TaxReports() {
   } = useDebouncedSearch();
   const [sortKey, setSortKey] = useState<'newest' | 'oldest' | 'sales-desc' | 'sales-asc'>('newest');
 
-  useEffect(() => {
-    loadReports();
-  }, []);
-
-  const loadReports = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const data = await invoke<TaxReport[]>('get_tax_reports');
-      setReports(data);
-    } catch (error) {
-      console.error('Error loading tax reports:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  };
+  const { data: reports = [], isLoading, error } = useGetTaxReportsQuery();
+  const [addTaxReport] = useAddTaxReportMutation();
+  const [deleteTaxReport] = useDeleteTaxReportMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await invoke('add_tax_report', { report: form });
+      await addTaxReport(form).unwrap();
       setShowForm(false);
       setForm({ period_start: '', period_end: '', total_sales: 0, total_tax: 0, transaction_count: 0 });
-      loadReports({ quiet: true });
     } catch (error) {
       console.error('Error saving tax report:', error);
-      loadReports({ quiet: true });
     }
   };
 
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('delete_tax_report', { id });
-      loadReports({ quiet: true });
+      await deleteTaxReport(id).unwrap();
     } catch (error) {
       console.error('Error deleting tax report:', error);
-      loadReports({ quiet: true });
     }
   };
 

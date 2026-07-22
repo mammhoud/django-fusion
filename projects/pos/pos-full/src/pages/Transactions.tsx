@@ -6,8 +6,11 @@ import {
   MdArrowUpward, MdArrowDownward, MdHelpOutline
 } from 'react-icons/md';
 import { FaFileInvoiceDollar, FaDownload } from 'react-icons/fa';
-import { invoke } from '@tauri-apps/api/core';
-import { Transaction, Settings } from '../types';
+import { useDeleteTransactionMutation } from '../store/api/endpoints/kitchen';
+import { useGetTransactionsQuery } from '../store/api/endpoints/legacy';
+import { useGetSettingsQuery } from '../store/api/endpoints/core';
+import type { Transaction } from '../store/api/endpoints/legacy';
+import type { Settings } from '../store/api/endpoints/core';
 import DatePicker from '../components/DatePicker';
 import Receipt from '../components/Receipt';
 import { InvoiceType } from '../types';
@@ -30,8 +33,6 @@ interface ProductStat {
 
 export default function Transactions() {
   const { t } = useTranslation();
-  const [transactions, setTransactions] = useState<Transaction[]>([]);
-  const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState<TabId>('timeTotal');
   const [startDate, setStartDate] = useState<string>("");
   const [endDate, setEndDate] = useState<string>("");
@@ -53,50 +54,25 @@ export default function Transactions() {
   const [invoiceType, setInvoiceType] = useState<InvoiceType>('tax');
   const [isInvoiceDownloading, setIsInvoiceDownloading] = useState(false);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
-  const [settings, setSettings] = useState<Settings>({
-    restaurant_name: 'POS',
-    address: '',
-    phone: '',
-    currency: 'USD',
-    receipt_footer: 'Thank you for your business!'
-  });
   const receiptRef = useRef<HTMLDivElement>(null);
 
   // Status toast — load + delete errors surface visibly; quiet reload keeps
   // the skeleton from pulsing just because a delete succeeded.
   const { status, showSuccess, showError, dismiss } = useStatusToast();
 
-  useEffect(() => {
-    loadData();
-  }, []);
+  const { data: transactions = [], isLoading, error } = useGetTransactionsQuery();
+  const { data: settingsData } = useGetSettingsQuery();
+  const [deleteTransactionMutation] = useDeleteTransactionMutation();
 
-  const loadData = async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setLoading(true);
-    try {
-      const [transactionsRes, settingsRes] = await Promise.all([
-        invoke<Transaction[]>('get_transactions'),
-        invoke<Settings>('get_settings')
-      ]);
-
-      setTransactions(transactionsRes);
-      if (settingsRes) {
-        setSettings({
-          restaurant_name: settingsRes.restaurant_name || 'POS',
-          address: settingsRes.address || '',
-          phone: settingsRes.phone || '',
-          currency: settingsRes.currency || 'USD',
-          receipt_footer: settingsRes.receipt_footer || 'Thank you for your business!'
-        });
-      }
-    } catch (error) {
-      console.error('Error loading transactions:', error);
-      // Even quiet reloads must surface — silent reloads would leave the user
-      // looking at a stale list with no indication their data is out of date.
-      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
-    } finally {
-      if (!quiet) setLoading(false);
-    }
+  const settings: Settings = {
+    restaurant_name: settingsData?.restaurant_name || 'POS',
+    address: settingsData?.address || '',
+    phone: settingsData?.phone || '',
+    email: settingsData?.email || '',
+    currency: settingsData?.currency || 'USD',
+    receipt_footer: settingsData?.receipt_footer || 'Thank you for your business!',
+    logo: settingsData?.logo,
+    tax_rate: settingsData?.tax_rate || '',
   };
 
   const filteredTransactions = useMemo(() => {
@@ -192,12 +168,8 @@ export default function Transactions() {
     if (!confirm(t('transactions.deleteConfirm'))) return;
 
     try {
-      await invoke('delete_transaction', { id });
-      setTransactions(prev => prev.filter(t => t.id !== id));
+      await deleteTransactionMutation(id).unwrap();
       showSuccess(t('common.deleted'));
-      // Quiet reload reconciles list + analytics dependencies without
-      // re-pulsing the skeleton.
-      loadData({ quiet: true });
     } catch (error) {
       console.error('Error deleting transaction:', error);
       showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);

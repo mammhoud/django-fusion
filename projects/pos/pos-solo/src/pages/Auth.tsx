@@ -5,7 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
 import ThemeToggle from '../components/ThemeToggle';
-import { invoke } from '@tauri-apps/api/core';
+import { isTauri } from '../utils/tauri';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login';
 
@@ -38,23 +38,29 @@ export default function Auth() {
     const init = async () => {
       setStep('checking');
       try {
-        // Check if auth is required
-        const required = await invoke<boolean>('check_auth_required');
-        if (required) {
-          // Check if any users exist
-          const hasUsers = await invoke<boolean>('has_users');
-          setHasExistingUsers(hasUsers);
-          setStep(hasUsers ? 'login' : 'register');
+        if (isTauri) {
+          const { invoke } = await import('@tauri-apps/api/core');
+          // Check if auth is required
+          const required = await invoke<boolean>('check_auth_required');
+          if (required) {
+            // Check if any users exist
+            const hasUsers = await invoke<boolean>('has_users');
+            setHasExistingUsers(hasUsers);
+            setStep(hasUsers ? 'login' : 'register');
 
-          // Pre-fill superuser email if configured via env vars
-          if (hasUsers) {
-            const superEmail = await invoke<string | null>('get_superuser_email');
-            if (superEmail) {
-              setEmail(superEmail);
+            // Pre-fill superuser email if configured via env vars
+            if (hasUsers) {
+              const superEmail = await invoke<string | null>('get_superuser_email');
+              if (superEmail) {
+                setEmail(superEmail);
+              }
             }
+          } else {
+            // Auth not required — this shouldn't render, but just in case
+            setStep('login');
           }
         } else {
-          // Auth not required — this shouldn't render, but just in case
+          // Browser dev mode — skip auth check (AuthContext handles it)
           setStep('login');
         }
       } catch (err) {

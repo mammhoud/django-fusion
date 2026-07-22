@@ -1,4 +1,4 @@
-import { useState, useRef, useEffect, useCallback } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
@@ -6,10 +6,12 @@ import {
   FaUsers, FaDatabase, FaLock, FaClock
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { invoke } from '@tauri-apps/api/core';
+import { isTauri } from '../utils/tauri';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { readFile, writeFile } from '@tauri-apps/plugin-fs';
-import { Settings as SettingsType, Employee } from '../types';
+import { useGetSettingsQuery, useUpdateSettingsMutation } from '../store/api/endpoints/core';
+import { useGetEmployeesQuery } from '../store/api/endpoints/core';
+import type { Settings as SettingsType } from '../types';
 import BackButton from '../components/BackButton';
 import PageLayout from '../components/PageLayout';
 import LanguageToggle from '../components/LanguageToggle';
@@ -337,6 +339,11 @@ export default function Settings() {
     delivery_fee_per_km: 0
   });
 
+  // ── RTK Query hooks ──
+  const { data: settingsRes } = useGetSettingsQuery();
+  const [updateSettings] = useUpdateSettingsMutation();
+  const { data: employeesRes = [] } = useGetEmployeesQuery();
+
   const [isSuccess, setIsSuccess] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | undefined>(undefined);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -349,6 +356,20 @@ export default function Settings() {
   const [errorMessage, setErrorMessage] = useState('');
   const [employeeCount, setEmployeeCount] = useState(0);
   const [activeEmployeeCount, setActiveEmployeeCount] = useState(0);
+
+  // Sync RTK data into local state
+  useEffect(() => {
+    if (settingsRes) {
+      setSettings(prev => ({ ...prev, ...settingsRes as unknown as Partial<SettingsType> }));
+      const s = settingsRes as any;
+      if (s?.logo) setLogoPreview(s.logo);
+    }
+  }, [settingsRes]);
+
+  useEffect(() => {
+    setEmployeeCount(employeesRes.length);
+    setActiveEmployeeCount(employeesRes.filter((e: any) => e.is_active).length);
+  }, [employeesRes]);
 
   // Password change state
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
@@ -464,7 +485,6 @@ export default function Settings() {
     e.preventDefault();
     const { valid, errors: newErrors } = validateForm();
     if (!valid) {
-      // Check which tabs have errors
       const errFields = Object.keys(newErrors) as (keyof FormErrors)[];
       const tabsWithErrors: TabId[] = [];
       for (const field of errFields) {
@@ -473,8 +493,6 @@ export default function Settings() {
           tabsWithErrors.push(tab);
         }
       }
-
-      // Auto-navigate to the first tab with errors
       if (tabsWithErrors.length > 0) {
         setActiveTab(tabsWithErrors[0]);
       }
@@ -484,7 +502,7 @@ export default function Settings() {
     setSubmitStatus('idle');
     setErrorMessage('');
     try {
-      await invoke('save_settings', { settings });
+      await updateSettings(settings as any).unwrap();
       setSubmitStatus('success');
       setIsSuccess(true);
       setErrors({});
@@ -516,10 +534,14 @@ export default function Settings() {
           binary += String.fromCharCode.apply(null, Array.from(chunk));
         }
         const base64 = btoa(binary);
-        await invoke('import_database_cmd', { data: base64 });
+        if (isTauri) {
+          const { invoke } = await import('@tauri-apps/api/core');
+          await invoke('import_database_cmd', { data: base64 });
+        } else {
+          console.warn('import_database_cmd is only available in Tauri desktop mode');
+        }
         setIsSuccess(true);
         setTimeout(() => setIsSuccess(false), 3000);
-        loadSettings();
       }
     } catch (error) {
       console.error('Error importing database:', error);
@@ -538,11 +560,16 @@ export default function Settings() {
     setPasswordChangeSuccess(false);
     setPasswordChangeError('');
     try {
-      await invoke('change_password_cmd', {
-        email: user.email,
-        oldPassword: passwordOld,
-        newPassword: passwordNew,
-      });
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        await invoke('change_password_cmd', {
+          email: user.email,
+          oldPassword: passwordOld,
+          newPassword: passwordNew,
+        });
+      } else {
+        throw new Error('Password change requires Tauri desktop mode');
+      }
       setPasswordChangeSuccess(true);
       setPasswordOld('');
       setPasswordNew('');
@@ -558,7 +585,13 @@ export default function Settings() {
   const handleExportDatabase = async () => {
     setIsExporting(true);
     try {
-      const base64Data = await invoke<string>('export_database_cmd');
+      let base64Data: string;
+      if (isTauri) {
+        const { invoke } = await import('@tauri-apps/api/core');
+        base64Data = await invoke<string>('export_database_cmd');
+      } else {
+        throw new Error('Database export requires Tauri desktop mode');
+      }
       const date = new Date().toISOString().split('T')[0];
       const filePath = await save({
         defaultPath: `restaurant-database-${date}.db`,
@@ -580,33 +613,6 @@ export default function Settings() {
       setIsExporting(false);
     }
   };
-
-  const loadSettings = useCallback(async () => {
-    try {
-      const loadedSettings = await invoke<SettingsType>('get_settings');
-      if (loadedSettings) {
-        setSettings(prev => ({ ...prev, ...loadedSettings }));
-        if (loadedSettings.logo) setLogoPreview(loadedSettings.logo);
-      }
-    } catch (error) {
-      console.error('Error loading settings:', error);
-    }
-  }, []);
-
-  const loadEmployeeStats = useCallback(async () => {
-    try {
-      const employees = await invoke<Employee[]>('get_employees');
-      setEmployeeCount(employees.length);
-      setActiveEmployeeCount(employees.filter(e => e.is_active).length);
-    } catch {
-      // Silently fail — employee stats are non-critical
-    }
-  }, []);
-
-  useEffect(() => {
-    loadSettings();
-    loadEmployeeStats();
-  }, [loadSettings, loadEmployeeStats]);
 
   // ---- Shared Input Classes ----
   const inputClass = (fieldName?: keyof FormErrors) =>

@@ -1,5 +1,16 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useGetSettingsQuery } from '../store/api/endpoints/core';
+import { useGetProductsQuery } from '../store/api/endpoints/products';
+import { useGetSalesQuery } from '../store/api/endpoints/sales';
+import { useGetEmployeesQuery, useGetDeliveryTypesQuery } from '../store/api/endpoints/core';
+import {
+  useGetIngredientsQuery,
+  useGetInventoryTransactionsQuery,
+  useGetRecipesQuery,
+  useGetAnalyticsQuery,
+  useGetTransactionsQuery,
+} from '../store/api/endpoints/legacy';
 import { 
   MdAttachMoney, MdShoppingCart, 
   MdPeople, MdInventory, MdMenuBook, MdWarning,
@@ -11,7 +22,6 @@ import PageLayout from '../components/PageLayout';
 import { SkeletonTable, SkeletonCard } from '../components/Skeleton';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
-import { invoke } from '@tauri-apps/api/core';
 import { 
   Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction, 
   Recipe, Employee, Product, Transaction, DeliveryType
@@ -76,47 +86,47 @@ export default function Reports() {
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
 
-  useEffect(() => {
-    const loadAll = async () => {
-      try {
-        const [
-          settingsRes, analyticsRes, salesRes,
-          ingredientsRes, invTxnsRes, recipesRes,
-          productsRes,          employeesRes,
-          transactionsRes,
-          deliveryTypesRes
-        ] = await Promise.all([
-          invoke<Settings>('get_settings'),
-          invoke<AnalyticsData>('get_analytics').catch(() => null),
-          invoke<Sale[]>('get_sales'),
-          invoke<Ingredient[]>('get_ingredients', { includeInactive: true }),
-          invoke<InventoryTransaction[]>('get_inventory_transactions', { ingredientId: null }),
-          invoke<Recipe[]>('get_recipes', { includeInactive: true }),
-          invoke<Product[]>('get_products'),
-          invoke<Employee[]>('get_employees', { includeInactive: true }),
-          invoke<Transaction[]>('get_transactions'),
-          invoke<DeliveryType[]>('get_delivery_types', { includeInactive: true }),
-        ]);
+  // ── RTK Query data fetching ──
+  const { data: settingsData, isLoading: settingsLoading } = useGetSettingsQuery();
+  const { data: analyticsData } = useGetAnalyticsQuery();
+  const { data: salesData, isLoading: salesLoading } = useGetSalesQuery({ page: 1, per_page: 1000 });
+  const { data: ingredientsData, isLoading: ingredientsLoading } = useGetIngredientsQuery({ includeInactive: true });
+  const { data: invTxnsData } = useGetInventoryTransactionsQuery({ ingredientId: null });
+  const { data: recipesData, isLoading: recipesLoading } = useGetRecipesQuery({ includeInactive: true });
+  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({ page: 1, per_page: 1000, include_inactive: true } as any);
+  const { data: employeesData, isLoading: empsLoading } = useGetEmployeesQuery();
+  const { data: transactionsData } = useGetTransactionsQuery();
+  const { data: deliveryTypesData } = useGetDeliveryTypesQuery();
 
-        setCurrency(settingsRes?.currency || 'USD');
-        setRestaurantName(settingsRes?.restaurant_name || 'POS');
-        setAnalytics(analyticsRes);
-        setSales(Array.isArray(salesRes) ? salesRes : []);
-        setIngredients(Array.isArray(ingredientsRes) ? ingredientsRes : []);
-        setInventoryTxns(Array.isArray(invTxnsRes) ? invTxnsRes : []);
-        setRecipes(Array.isArray(recipesRes) ? recipesRes : []);
-        setProducts(Array.isArray(productsRes) ? productsRes : []);
-        setEmployees(Array.isArray(employeesRes) ? employeesRes : []);
-        setTransactions(Array.isArray(transactionsRes) ? transactionsRes : []);
-        setDeliveryTypes(Array.isArray(deliveryTypesRes) ? deliveryTypesRes : []);
-      } catch (error) {
-        console.error('Error loading report data:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
-    loadAll();
-  }, []);
+  useEffect(() => {
+    if (!settingsLoading && !salesLoading && !ingredientsLoading && !recipesLoading && !productsLoading && !empsLoading) {
+      setCurrency((settingsData as any)?.currency || 'USD');
+      setRestaurantName((settingsData as any)?.restaurant_name || 'POS');
+      setAnalytics((analyticsData as any) || null);
+      const s = salesData as any;
+      setSales(Array.isArray(s?.data) ? s.data : Array.isArray(s) ? s : []);
+      setIngredients(Array.isArray(ingredientsData) ? ingredientsData : []);
+      setInventoryTxns(Array.isArray(invTxnsData) ? invTxnsData : []);
+      setRecipes(Array.isArray(recipesData) ? recipesData : []);
+      const p = productsData as any;
+      setProducts(Array.isArray(p?.data) ? p.data : Array.isArray(p) ? p : []);
+      setEmployees(Array.isArray(employeesData) ? employeesData : []);
+      setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
+      setDeliveryTypes(Array.isArray(deliveryTypesData) ? deliveryTypesData : []);
+      setLoading(false);
+    }
+  }, [
+    settingsData, settingsLoading,
+    analyticsData,
+    salesData, salesLoading,
+    ingredientsData, ingredientsLoading,
+    invTxnsData,
+    recipesData, recipesLoading,
+    productsData, productsLoading,
+    employeesData, empsLoading,
+    transactionsData,
+    deliveryTypesData,
+  ]);
 
   // ---- Help Modal State ----
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);

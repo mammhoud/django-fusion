@@ -1,8 +1,17 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect, useCallback } from 'react';
+import { useState, useEffect } from 'react';
 import { MdPeople, MdEdit, MdDelete, MdWork } from 'react-icons/md';
 import { FaUsers, FaUserTag, FaMoneyBillWave, FaPlus, FaSave, FaSearch, FaPhone, FaEnvelope, FaCalendarAlt } from 'react-icons/fa';
-import { invoke } from '@tauri-apps/api/core';
+import {
+  useGetEmployeesQuery,
+  useAddEmployeeMutation,
+  useUpdateEmployeeMutation,
+  useSoftDeleteEmployeeMutation,
+  useGetEmployeeTypesQuery,
+  useAddEmployeeTypeMutation,
+  useUpdateEmployeeTypeMutation,
+  useSoftDeleteEmployeeTypeMutation,
+} from '../store/api/endpoints/legacy';
 import { Employee, NewEmployee, EmployeeType, NewEmployeeType } from '../types';
 import PageLayout from '../components/PageLayout';
 import { SkeletonList, SkeletonTable } from '../components/Skeleton';
@@ -74,24 +83,25 @@ export default function Employees() {
 
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
-  const loadData = useCallback(async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const [emps, types] = await Promise.all([
-        invoke<Employee[]>('get_employees', { includeInactive: true }),
-        invoke<EmployeeType[]>('get_employee_types', { includeInactive: true }),
-      ]);
-      setEmployees(emps);
-      setEmployeeTypes(types);
-    } catch (error) {
-      console.error('Error loading employee data:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  }, []);
+  // ── RTK Query data fetching ──
+  const { data: employeesData, isLoading: empsLoading } = useGetEmployeesQuery();
+  const { data: employeeTypesData, isLoading: typesLoading } = useGetEmployeeTypesQuery({ includeInactive: true });
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    if (!empsLoading && !typesLoading) {
+      setEmployees(Array.isArray(employeesData) ? employeesData : []);
+      setEmployeeTypes(Array.isArray(employeeTypesData) ? employeeTypesData : []);
+      setIsLoading(false);
+    }
+  }, [employeesData, employeeTypesData, empsLoading, typesLoading]);
+
+  // ── Mutations ──
+  const [addEmployee] = useAddEmployeeMutation();
+  const [updateEmployee] = useUpdateEmployeeMutation();
+  const [softDeleteEmployee] = useSoftDeleteEmployeeMutation();
+  const [addEmployeeType] = useAddEmployeeTypeMutation();
+  const [updateEmployeeType] = useUpdateEmployeeTypeMutation();
+  const [softDeleteEmployeeType] = useSoftDeleteEmployeeTypeMutation();
 
   const showStatus = (type: 'success' | 'error', msg: string) => {
     setToast({ type, message: msg });
@@ -125,10 +135,9 @@ export default function Employees() {
   const handleAddEmployee = async () => {
     if (!newEmployee.name.trim() || newEmployee.employee_type_id === 0) return;
     try {
-      await invoke('add_employee', { employee: newEmployee });
+      await addEmployee({ employee: newEmployee }).unwrap();
       setShowAddEmployee(false);
       setNewEmployee({ ...initialNewEmployee });
-      loadData({ quiet: true });
       showStatus('success', 'Employee added successfully!');
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -136,7 +145,7 @@ export default function Employees() {
   const handleUpdateEmployee = async () => {
     if (!editEmployee || !editEmployee.name.trim()) return;
     try {
-      await invoke('update_employee', {
+      await updateEmployee({
         id: editEmployee.id,
         update: {
           name: editEmployee.name,
@@ -145,10 +154,9 @@ export default function Employees() {
           employee_type_id: editEmployee.employee_type_id,
           salary: editEmployee.salary,
         }
-      });
+      }).unwrap();
       setShowEditEmployee(null);
       setEditEmployee(null);
-      loadData({ quiet: true });
       showStatus('success', 'Employee updated!');
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -156,9 +164,8 @@ export default function Employees() {
   const handleDeleteEmployee = async () => {
     if (!showDeleteEmployee) return;
     try {
-      await invoke('soft_delete_employee', { id: showDeleteEmployee.id });
+      await softDeleteEmployee({ id: showDeleteEmployee.id }).unwrap();
       setShowDeleteEmployee(null);
-      loadData({ quiet: true });
       showStatus('success', 'Employee deactivated.');
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -167,10 +174,9 @@ export default function Employees() {
   const handleAddType = async () => {
     if (!newType.name.trim()) return;
     try {
-      await invoke('add_employee_type', { employeeType: newType });
+      await addEmployeeType({ employeeType: newType }).unwrap();
       setShowAddType(false);
       setNewType({ name: '', description: null });
-      loadData({ quiet: true });
       showStatus('success', 'Employee type added!');
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -178,16 +184,15 @@ export default function Employees() {
   const handleUpdateType = async () => {
     if (!editType || !editType.name.trim()) return;
     try {
-      await invoke('update_employee_type', {
+      await updateEmployeeType({
         id: editType.id,
         update: {
           name: editType.name,
           description: editType.description || null,
         }
-      });
+      }).unwrap();
       setShowEditType(null);
       setEditType(null);
-      loadData({ quiet: true });
       showStatus('success', 'Employee type updated!');
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -195,9 +200,8 @@ export default function Employees() {
   const handleDeleteType = async () => {
     if (!showDeleteType) return;
     try {
-      await invoke('soft_delete_employee_type', { id: showDeleteType.id });
+      await softDeleteEmployeeType({ id: showDeleteType.id }).unwrap();
       setShowDeleteType(null);
-      loadData({ quiet: true });
       showStatus('success', 'Employee type deactivated.');
     } catch (e) { showStatus('error', String(e)); }
   };

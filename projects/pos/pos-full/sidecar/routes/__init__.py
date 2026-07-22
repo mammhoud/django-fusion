@@ -41,3 +41,6 @@ def register_all(app):
 
     from routes import admin as _admin
     _admin.register_admin_routes(app)
+
+    from routes import data as _data
+    _data.register_data_routes(app)

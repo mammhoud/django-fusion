@@ -10,6 +10,7 @@ from asgiref.sync import sync_to_async
 from robyn import jsonify, Response, Request
 from django.db import transaction as db_transaction
 
+from middleware.auth import get_token_info
 from routes import state as S
 
 logger = logging.getLogger("pos_full_server")
@@ -33,11 +34,12 @@ def register_sync_routes(app):
         @sync_to_async
         def _update():
             from models.pos import Sale
+            from decimal import Decimal
             try:
                 sale = Sale.objects.get(id=pk)
                 if sale.status in ("refunded", "cancelled"):
                     return {"error": f"Cannot add cashback to {sale.status} sale"}
-                sale.cashback_amount = amount
+                sale.cashback_amount = Decimal(str(amount))
                 # Recalculate total: subtotal - discount + tax - cashback
                 sale.total = sale.subtotal - sale.discount_amount + sale.tax_amount - sale.cashback_amount
                 sale.save(update_fields=["cashback_amount", "total", "updated_at"])
@@ -76,6 +78,11 @@ def register_sync_routes(app):
         if not items_to_return:
             return S._error(400, "items list is required")
 
+        # Capture auth info BEFORE the sync_to_async barrier (ContextVar won't
+        # propagate through thread pool boundaries)
+        token_info = get_token_info()
+        created_by = token_info.get("device_id", "system") if token_info else "system"
+
         @sync_to_async
         def _process():
             from models.pos import Sale, SaleItem, InventoryTransaction, Product
@@ -91,6 +98,10 @@ def register_sync_routes(app):
 
             results = []
             refunded_total = Decimal("0.00")
+
+            # Guard against None cashback
+            if sale.cashback_amount is None:
+                sale.cashback_amount = Decimal("0.00")
 
             with db_transaction.atomic():
                 for item_data in items_to_return:
@@ -125,7 +136,7 @@ def register_sync_routes(app):
                         reference=f"return_sale_{pk}",
                         inventory_id="main",
                         notes=notes or f"Return from sale #{pk}: {sale_item.product_name}",
-                        created_by="system",
+                        created_by=created_by,
                     )
 
                     # Update sale item quantity (track partial returns)

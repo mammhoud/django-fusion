@@ -1,8 +1,16 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import { MdInventory, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { FaBoxes, FaHistory, FaExclamationTriangle, FaPlus, FaSave } from 'react-icons/fa';
-import { invoke } from '@tauri-apps/api/core';
+import {
+  useGetIngredientsQuery,
+  useAddIngredientMutation,
+  useUpdateIngredientMutation,
+  useSoftDeleteIngredientMutation,
+  useGetInventoryTransactionsQuery,
+  useGetInventoryAdjustmentsQuery,
+} from '../store/api/endpoints/legacy';
+import { useAddInventoryTransactionMutation } from '../store/api/endpoints/inventory';
 import { Ingredient, NewIngredient, InventoryTransaction, NewInventoryTransaction, InventoryAdjustment } from '../types';
 import PageLayout from '../components/PageLayout';
 import { SkeletonTable, SkeletonList, SkeletonCard } from '../components/Skeleton';
@@ -95,26 +103,25 @@ export default function Inventory() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [activeTab]);
 
-  const loadData = useCallback(async (opts: { quiet?: boolean } = {}) => {
-    const { quiet = false } = opts;
-    if (!quiet) setIsLoading(true);
-    try {
-      const [ingredientsRes, transactionsRes, adjustmentsRes] = await Promise.all([
-        invoke<Ingredient[]>('get_ingredients', { includeInactive: true }),
-        invoke<InventoryTransaction[]>('get_inventory_transactions', { ingredientId: null }),
-        invoke<InventoryAdjustment[]>('get_inventory_adjustments', { ingredientId: null }),
-      ]);
-      setIngredients(ingredientsRes);
-      setTransactions(transactionsRes);
-      setAdjustments(adjustmentsRes);
-    } catch (error) {
-      console.error('Error loading inventory data:', error);
-    } finally {
-      if (!quiet) setIsLoading(false);
-    }
-  }, []);
+  // ── RTK Query data fetching ──
+  const { data: ingredientsData, isLoading: ingredientsLoading } = useGetIngredientsQuery({ includeInactive: true });
+  const { data: txnData } = useGetInventoryTransactionsQuery({ ingredientId: null });
+  const { data: adjData } = useGetInventoryAdjustmentsQuery({ ingredientId: null });
 
-  useEffect(() => { loadData(); }, [loadData]);
+  useEffect(() => {
+    if (!ingredientsLoading) {
+      setIngredients(Array.isArray(ingredientsData) ? ingredientsData : []);
+      setTransactions(Array.isArray(txnData) ? txnData : []);
+      setAdjustments(Array.isArray(adjData) ? adjData : []);
+      setIsLoading(false);
+    }
+  }, [ingredientsData, txnData, adjData, ingredientsLoading]);
+
+  // ── Mutations ──
+  const [addIngredient] = useAddIngredientMutation();
+  const [updateIngredient] = useUpdateIngredientMutation();
+  const [softDeleteIngredient] = useSoftDeleteIngredientMutation();
+  const [addInventoryTransaction] = useAddInventoryTransactionMutation();
 
   const showStatus = (type: 'success' | 'error', msg: string) => {
     setToast({ type, message: msg });
@@ -162,10 +169,9 @@ export default function Inventory() {
   const handleAddIngredient = async () => {
     if (!newIngredient.name.trim()) return;
     try {
-      await invoke('add_ingredient', { ingredient: newIngredient });
+      await addIngredient({ ingredient: newIngredient }).unwrap();
       setShowAddIngredient(false);
       setNewIngredient({ name: '', unit: 'kg', current_quantity: 0, reorder_level: 0, reorder_quantity: 0, cost_per_unit: 0 });
-      loadData({ quiet: true });
       showStatus('success', t('inventory.successAdded'));
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -173,7 +179,7 @@ export default function Inventory() {
   const handleUpdateIngredient = async () => {
     if (!editForm || !editForm.name.trim()) return;
     try {
-      await invoke('update_ingredient', {
+      await updateIngredient({
         id: editForm.id,
         update: {
           name: editForm.name,
@@ -183,10 +189,9 @@ export default function Inventory() {
           reorder_quantity: editForm.reorder_quantity,
           cost_per_unit: editForm.cost_per_unit,
         }
-      });
+      }).unwrap();
       setShowEditIngredient(null);
       setEditForm(null);
-      loadData({ quiet: true });
       showStatus('success', t('inventory.successUpdated'));
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -194,9 +199,8 @@ export default function Inventory() {
   const handleDeleteIngredient = async () => {
     if (!showDeleteConfirm) return;
     try {
-      await invoke('soft_delete_ingredient', { id: showDeleteConfirm.id });
+      await softDeleteIngredient({ id: showDeleteConfirm.id }).unwrap();
       setShowDeleteConfirm(null);
-      loadData({ quiet: true });
       showStatus('success', t('inventory.successDeleted'));
     } catch (e) { showStatus('error', String(e)); }
   };
@@ -205,15 +209,16 @@ export default function Inventory() {
   const handleAddTransaction = async () => {
     if (newTransaction.ingredient_id === 0 || newTransaction.quantity_change === 0) return;
     try {
-      await invoke('add_inventory_transaction', {
-        transaction: newTransaction,
-        adjustmentReason: adjustmentReason || null,
-        createdBy: createdBy || null,
-      });
+      await addInventoryTransaction({
+        ingredient_id: newTransaction.ingredient_id,
+        transaction_type: newTransaction.transaction_type,
+        quantity: newTransaction.quantity_change,
+        notes: adjustmentReason || null,
+        created_by: createdBy || null,
+      }).unwrap();
       setShowAddTransaction(false);
       setNewTransaction({ ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0 });
       setAdjustmentReason('');
-      loadData({ quiet: true });
       showStatus('success', t('inventory.successTransaction'));
     } catch (e) { showStatus('error', String(e)); }
   };

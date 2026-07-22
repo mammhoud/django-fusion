@@ -101,6 +101,11 @@ try:
     from models.sync import SyncLog
     from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
     from models.ops import KitchenTicket, SupportTicket
+    from models.hr import Payroll, EmployeeSchedule, TaxReport
+    from models.notes import Note
+
+    # ── Extra managed models (Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment) ──
+    from models.extra import Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment
 
     # ── Local shared-style models ──
     from models.approval import SyncApproval
@@ -120,6 +125,10 @@ try:
         SignalEvent,
         Supplier, PurchaseOrder, PurchaseOrderItem,
         KitchenTicket, SupportTicket,
+        Payroll, EmployeeSchedule, TaxReport,
+        Note,
+        # ── Extra managed models (added 2026-07-22) ──
+        Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
     ]
 
     # Config models for dedicated CRUD
@@ -463,6 +472,26 @@ _register_crud(app, "config/cloud-links", CloudLink, "CloudLink")
 
 # ── Approval workflow CRUD ──
 _register_crud(app, "approvals", SyncApproval, "SyncApproval")
+
+# ── HR / Payroll CRUD ──
+_register_crud(app, "payroll", Payroll, "Payroll")
+_register_crud(app, "employee-schedules", EmployeeSchedule, "EmployeeSchedule")
+_register_crud(app, "tax-reports", TaxReport, "TaxReport")
+
+# ── Notes CRUD ──
+_register_crud(app, "notes", Note, "Note")
+
+# ── Extra managed CRUD (added 2026-07-22) with DataToken auto-tagging ──
+_register_crud(app, "ingredients", Ingredient, "Ingredient",
+               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
+_register_crud(app, "recipes", Recipe, "Recipe",
+               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
+_register_crud(app, "receipt-templates", ReceiptTemplate, "ReceiptTemplate",
+               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
+_register_crud(app, "roles", Role, "Role",
+               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
+_register_crud(app, "inventory-adjustments", InventoryAdjustment, "InventoryAdjustment",
+               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
 
 # ===========================================================================
 # WebSocket: Entity event stream (real-time CRUD notifications for Redux)

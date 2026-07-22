@@ -20,7 +20,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { invoke } from '@tauri-apps/api/core';
 
 import {
   MdDownload, MdPrint, MdAdd, MdDelete,
@@ -34,6 +33,9 @@ import Invoice, { PageDesign, InvoiceItem } from '../components/Invoice';
 import { Customer, Settings, InvoiceType as AppInvoiceType, INVOICE_TYPE_LABELS } from '../types';
 import { sidecar, data } from '../api';
 import type { InvoiceType, InvoiceDesign } from '../api';
+import { useGetSettingsQuery } from '../store/api/endpoints/core';
+import { useGetCustomersQuery } from '../store/api/endpoints/customers';
+import { isTauri } from '../utils/tauri';
 
 // ---- Constants -------------------------------------------------------------
 
@@ -62,6 +64,10 @@ export default function InvoicePage() {
 
   const [searchParams] = useSearchParams();
   const invoiceRef = useRef<HTMLDivElement>(null);
+
+  // ---- RTK Query hooks -----
+  const { data: settingsRes } = useGetSettingsQuery();
+  const { data: customersRes } = useGetCustomersQuery({ page: 1, per_page: 200 });
 
   // ---- Settings -----
   const [settings, setSettings] = useState<Settings | null>(null);
@@ -94,16 +100,23 @@ export default function InvoicePage() {
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
 
-  // ---- Load settings + customers on mount -----
+  // ---- Sync settings + customers from RTK -----
   useEffect(() => {
-    invoke<Settings>('get_settings').then(s => {
-      setSettings(s);
+    if (settingsRes) {
+      setSettings(settingsRes as any);
+      const s = settingsRes as any;
       if (s.tax_rate) setTaxRate(parseFloat(s.tax_rate) || 0);
       if (s.currency) setCurrency(s.currency);
-    }).catch(() => {});
+    }
+  }, [settingsRes]);
 
-    invoke<Customer[]>('get_customers').then(setCustomers).catch(() => {});
+  useEffect(() => {
+    if (customersRes?.data) {
+      setCustomers(customersRes.data);
+    }
+  }, [customersRes]);
 
+  useEffect(() => {
     sidecar.healthCheck().then(setSidecarRunning);
   }, []);
 
@@ -128,17 +141,20 @@ export default function InvoicePage() {
         if (sale.customer_id) setSelectedCustomerId(sale.customer_id);
         return;
       }
-      // Fallback: load from Rust backend
-      try {
-        const sales = await invoke<any[]>('get_sales');
-        const sale = sales.find(s => s.id === parseInt(saleId));
-        if (sale) {
-          setInvoiceNumber(`INV-${sale.id}`);
-          setDate(sale.date ?? date);
-          setCurrency(sale.currency ?? 'USD');
-          if (sale.customer_id) setSelectedCustomerId(sale.customer_id);
-        }
-      } catch { /* silent */ }
+      // Fallback: load from Tauri Rust backend
+      if (isTauri) {
+        try {
+          const { invoke } = await import('@tauri-apps/api/core');
+          const sales = await invoke<any[]>('get_sales');
+          const sale = sales.find(s => s.id === parseInt(saleId));
+          if (sale) {
+            setInvoiceNumber(`INV-${sale.id}`);
+            setDate(sale.date ?? date);
+            setCurrency(sale.currency ?? 'USD');
+            if (sale.customer_id) setSelectedCustomerId(sale.customer_id);
+          }
+        } catch { /* silent */ }
+      }
     };
     loadFromSidecar();
   // eslint-disable-next-line react-hooks/exhaustive-deps

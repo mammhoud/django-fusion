@@ -1,46 +1,27 @@
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdSchedule, MdAdd, MdDelete } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
-import { EmployeeSchedule as EmployeeScheduleType, Employee } from '../types';
+import { useGetEmployeeSchedulesQuery, useAddEmployeeScheduleMutation, useDeleteEmployeeScheduleMutation } from '../store/api/endpoints/payroll';
+import { useGetEmployeesQuery } from '../store/api/endpoints/core';
 
 export default function EmployeeSchedule() {
   const { t } = useTranslation();
-  const [schedules, setSchedules] = useState<EmployeeScheduleType[]>([]);
-  const [employees, setEmployees] = useState<Employee[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
   const [form, setForm] = useState({ employee_id: 0, shift_start: '', shift_end: '', status: 'scheduled', notes: '' });
 
-  useEffect(() => {
-    loadData();
-  }, []);
-
-  const loadData = async () => {
-    try {
-      setIsLoading(true);
-      const [schedulesData, employeesData] = await Promise.all([
-        invoke<EmployeeScheduleType[]>('get_employee_schedules', { employeeId: null }),
-        invoke<Employee[]>('get_employees', { includeInactive: false }),
-      ]);
-      setSchedules(schedulesData);
-      setEmployees(employeesData);
-    } catch (error) {
-      console.error('Error loading schedules:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
+  const { data: schedules = [], isLoading, error } = useGetEmployeeSchedulesQuery({});
+  const { data: employees = [] } = useGetEmployeesQuery();
+  const [addEmployeeSchedule] = useAddEmployeeScheduleMutation();
+  const [deleteEmployeeSchedule] = useDeleteEmployeeScheduleMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await invoke('add_employee_schedule', { schedule: form });
+      await addEmployeeSchedule(form).unwrap();
       setShowForm(false);
       setForm({ employee_id: 0, shift_start: '', shift_end: '', status: 'scheduled', notes: '' });
-      await loadData();
     } catch (error) {
       console.error('Error saving schedule:', error);
     }
@@ -49,8 +30,7 @@ export default function EmployeeSchedule() {
   const handleDelete = async (id: number) => {
     if (!confirm(t('common.confirmDelete'))) return;
     try {
-      await invoke('delete_employee_schedule', { id });
-      await loadData();
+      await deleteEmployeeSchedule(id).unwrap();
     } catch (error) {
       console.error('Error deleting schedule:', error);
     }

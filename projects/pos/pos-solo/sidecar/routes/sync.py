@@ -10,6 +10,7 @@ from asgiref.sync import sync_to_async
 from robyn import jsonify, Response, Request
 from django.db import transaction as db_transaction
 
+from middleware.auth import get_token_info
 from routes import state as S
 
 logger = logging.getLogger("pos_full_server")
@@ -76,6 +77,11 @@ def register_sync_routes(app):
         if not items_to_return:
             return S._error(400, "items list is required")
 
+        # Capture auth info BEFORE the sync_to_async barrier (ContextVar won't
+        # propagate through thread pool boundaries)
+        token_info = get_token_info()
+        created_by = token_info.get("device_id", "system") if token_info else "system"
+
         @sync_to_async
         def _process():
             from models.pos import Sale, SaleItem, InventoryTransaction, Product
@@ -125,7 +131,7 @@ def register_sync_routes(app):
                         reference=f"return_sale_{pk}",
                         inventory_id="main",
                         notes=notes or f"Return from sale #{pk}: {sale_item.product_name}",
-                        created_by="system",
+                        created_by=created_by,
                     )
 
                     # Update sale item quantity (track partial returns)

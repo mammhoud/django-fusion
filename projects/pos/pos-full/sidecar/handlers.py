@@ -20,6 +20,8 @@ from typing import Any
 from asgiref.sync import sync_to_async
 from robyn import jsonify, Response
 
+from middleware.auth import get_token_info as _get_token_info
+
 logger = logging.getLogger("pos_full_server")
 
 
@@ -124,9 +126,22 @@ async def _get(model, pk: int) -> dict | None:
 
 
 async def _create(model, data: dict, tag_for_sync: bool = False, node_id: str = "", token_prefix: str = "") -> dict:
-    """Create a new model instance, optionally tagging it with a DataToken for sync."""
+    """Create a new model instance, optionally tagging it with a DataToken for sync.
+
+    Pre-extracts auth context (get_token_info) before the sync_to_async barrier
+    because ContextVar doesn't propagate through thread pool boundaries.
+    If the model has a 'created_by' field and no value was provided, sets it
+    from the authenticated user's device_id.
+    """
+    # Capture auth context BEFORE the sync_to_async barrier
+    _token_info = _get_token_info()
+
     @sync_to_async
     def _c():
+        # Auto-fill created_by from auth context if model has the field
+        if hasattr(model, 'created_by') and 'created_by' not in data:
+            if _token_info and _token_info.get("device_id"):
+                data['created_by'] = _token_info['device_id']
         obj = model.objects.create(**data)
         # ── Auto-tag with DataToken for cloud sync tracking ──
         if tag_for_sync and node_id:
@@ -300,7 +315,9 @@ async def _log_sync(node_id: str, entity_type: str, entity_id: str,
 # ===========================================================================
 
 
-def _register_crud(app, prefix: str, model, name: str):
+def _register_crud(app, prefix: str, model, name: str,
+                   tag_for_sync: bool = False, node_id: str = "",
+                   token_prefix: str = ""):
     """Register GET/POST/PATCH/DELETE routes for a model on a Robyn app.
     After each mutation, broadcasts an entity_event via WebSocket for
     real-time Redux cache invalidation.
@@ -310,6 +327,9 @@ def _register_crud(app, prefix: str, model, name: str):
         prefix: URL prefix for the routes (e.g., "products")
         model: Django model class
         name: Human-readable model name for error messages
+        tag_for_sync: If True, auto-create a DataToken when a new row is created
+        node_id: Node identifier for the DataToken (used when tag_for_sync=True)
+        token_prefix: Prefix for the DataToken token string
     """
 
     @app.get(f"/{prefix}")
@@ -326,7 +346,10 @@ def _register_crud(app, prefix: str, model, name: str):
     @app.post(f"/{prefix}")
     async def create_one(request):
         body = request.json() or {}
-        obj = await _create(model, body)
+        obj = await _create(model, body,
+                            tag_for_sync=tag_for_sync,
+                            node_id=node_id,
+                            token_prefix=token_prefix)
         from streams import _broadcast_entity_event
         await _broadcast_entity_event(name, "create", obj)
         return Response(

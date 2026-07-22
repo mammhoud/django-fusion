@@ -5,6 +5,6 @@
   "last_sync": null,
   "status": "error",
   "items_synced": 0,
-  "errors": 1901,
-  "last_error": "Server error '500 Internal Server Error' for url 'http://127.0.0.1:8082/api/sync/push/products'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/500"
+  "errors": 2001,
+  "last_error": "Client error '404 Not Found' for url 'http://127.0.0.1:8082/api/sync/push/heartbeat'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
 }

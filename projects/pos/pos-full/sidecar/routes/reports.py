@@ -18,6 +18,7 @@ from asgiref.sync import sync_to_async
 from robyn import jsonify, Response, Request
 from django.db.models import Sum, Count, Q, F
 
+from middleware.auth import get_token_info
 from routes import state as S
 
 logger = logging.getLogger("pos_full_server.reports")
@@ -313,7 +314,11 @@ async def create_inventory_transfer(request: Request):
     source = body.get("source_inventory", "")
     target = body.get("target_inventory", "")
     items = body.get("items", [])
-    created_by = body.get("created_by", "system")
+
+    # Pre-extract auth context BEFORE sync_to_async barrier (ContextVar
+    # doesn't propagate through thread pool boundaries)
+    token_info = get_token_info()
+    created_by = token_info.get("device_id", "system") if token_info else body.get("created_by", "system")
 
     if not source or not target:
         return jsonify({"error": "source_inventory and target_inventory required"})
@@ -366,8 +371,7 @@ async def create_inventory_transfer(request: Request):
                 inventory_id=source,
                 transfer_to_inventory=target,
                 created_by=created_by,
-                reference=body.get("reference", ""),
-                reference_id=batch_ref,
+                reference=batch_ref,
                 notes=item.get("notes", f"Transfer to {target}"),
             )
             # Credit target
@@ -378,7 +382,6 @@ async def create_inventory_transfer(request: Request):
                 inventory_id=target,
                 created_by=created_by,
                 reference=batch_ref,
-                reference_id=batch_ref,
                 notes=item.get("notes", f"Transfer from {source}"),
             )
             created.append({
