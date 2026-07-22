@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="posCopper" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#EA580C"/>
+      <stop offset="100%" stop-color="#9A3412"/>
+    </linearGradient>
+    <linearGradient id="posOrange" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#FB923C"/>
+      <stop offset="100%" stop-color="#EA580C"/>
+    </linearGradient>
+  </defs>
+  <!-- Outer ring -->
+  <circle cx="256" cy="235" r="150" fill="none" stroke="url(#posCopper)" stroke-width="14"/>
+  <!-- Inner ring -->
+  <circle cx="256" cy="235" r="110" fill="none" stroke="url(#posOrange)" stroke-width="6" opacity="0.7"/>
+  <!-- Shield -->
+  <path fill="none" stroke="url(#posCopper)" stroke-width="12" stroke-linejoin="round"
+        d="M 256 105 L 316 165 L 296 245 L 256 365 L 216 245 L 196 165 Z"/>
+  <path fill="url(#posOrange)" opacity="0.15"
+        d="M 256 105 L 316 165 L 296 245 L 256 365 L 216 245 L 196 165 Z"/>
+  <!-- Center spark -->
+  <polygon points="256,215 276,235 256,255 236,235" fill="url(#posCopper)"/>
+</svg>

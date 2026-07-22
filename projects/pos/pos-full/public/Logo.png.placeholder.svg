@@ -1,8 +1,17 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" fill="none">
+  <!-- Bg with crest colors -->
   <rect width="512" height="512" rx="64" fill="#0f172a"/>
-  <path d="M256 80c-44.2 0-80 35.8-80 80 0 44.2 80 160 80 160s80-115.8 80-160c0-44.2-35.8-80-80-80z" fill="#1e3a5f" opacity="0.5"/>
-  <path d="M256 120l-120 70v140l120 70 120-70V190l-120-70z" fill="#f97316" stroke="#ffffff" stroke-width="8"/>
-  <path d="M256 160l-80 46.7v93.3L256 346l80-46.7V206.7L256 160z" fill="#1e3a5f" stroke="#ffffff" stroke-width="4"/>
-  <path d="M256 200l-40 23.3v46.7L256 293l40-23.3v-46.7L256 200z" fill="#f97316"/>
-  <text x="256" y="420" text-anchor="middle" font-family="Arial, sans-serif" font-size="36" font-weight="bold" fill="#ffffff">structa.cloud</text>
+  <!-- Subtle ring -->
+  <circle cx="256" cy="256" r="180" fill="none" stroke="#EA580C" stroke-width="3" opacity="0.2"/>
+  <circle cx="256" cy="256" r="150" fill="none" stroke="#FB923C" stroke-width="2" opacity="0.15"/>
+  <!-- Shield simplified -->
+  <path d="M 256 120 L 316 180 L 296 260 L 256 380 L 216 260 L 196 180 Z"
+        fill="none" stroke="#EA580C" stroke-width="8" stroke-linejoin="round" opacity="0.6"/>
+  <path d="M 256 120 L 316 180 L 296 260 L 256 380 L 216 260 L 196 180 Z"
+        fill="#FB923C" opacity="0.08"/>
+  <!-- Diamond -->
+  <polygon points="256,226 276,256 256,286 236,256" fill="#EA580C" opacity="0.7"/>
+  <!-- Text -->
+  <text x="256" y="450" text-anchor="middle" font-family="Arial, sans-serif" font-size="40" font-weight="bold" fill="#f8fafc" letter-spacing="3">FORGE</text>
+  <text x="256" y="485" text-anchor="middle" font-family="Arial, sans-serif" font-size="16" fill="#94a3b8">Point of Sale</text>
 </svg>
