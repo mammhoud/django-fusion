@@ -66,3 +66,6 @@ tmp/*
 docs/ctc-research/
 docs/archives/
 ctc-research
+
+# Node modules (websites/)
+websites/next-lms/node_modules/
