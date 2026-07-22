@@ -239,6 +239,8 @@ class BranchSyncScheduler:
             from django_fusion.core.models import DataToken
             results = await self._sync_via_datatoken(cloud, _log_sync)
             self._last_sync_at = datetime.now(timezone.utc)
+            # ── Run cleanup after successful sync — purge old synced tokens and stale logs
+            await self._run_cleanup()
             return results
         except ImportError:
             logger.debug("django-fusion not available — falling back to table scans")
@@ -327,6 +329,8 @@ class BranchSyncScheduler:
             self._sync_count + 1,
             len(products), len(sales), len(inventory),
         )
+        # ── Run cleanup after fallback sync too — purge old tokens and stale logs
+        await self._run_cleanup()
         return results
 
     async def _sync_via_datatoken(self, cloud, _log_sync) -> dict:
@@ -444,6 +448,65 @@ class BranchSyncScheduler:
             len(synced_token_ids),
         )
         return results
+
+    # ------------------------------------------------------------------
+    # Cleanup tasks — run after each successful sync cycle
+    # ------------------------------------------------------------------
+
+    async def _run_cleanup(self) -> None:
+        """Post-sync cleanup: purge old synced DataTokens and stale sync logs.
+
+        Runs after each successful sync cycle to keep the DataToken table
+        from growing unboundedly. Cleans:
+          1. DataToken rows that have been marked as synced and are older
+             than 7 days (configurable via POS_FULL_TOKEN_RETENTION_DAYS).
+          2. SyncLog entries older than 30 days (configurable via
+             POS_FULL_SYNC_LOG_RETENTION_DAYS).
+        """
+        token_retention = int(os.environ.get("POS_FULL_TOKEN_RETENTION_DAYS", "7"))
+        log_retention = int(os.environ.get("POS_FULL_SYNC_LOG_RETENTION_DAYS", "30"))
+
+        try:
+            from django_fusion.core.models import DataToken
+            from datetime import timedelta
+
+            cutoff = datetime.now(timezone.utc) - timedelta(days=token_retention)
+
+            @sync_to_async
+            def _purge_tokens():
+                deleted, _ = DataToken.objects.filter(
+                    is_synced=True,
+                    synced_at__lt=cutoff,
+                ).delete()
+                return deleted
+
+            purged = await _purge_tokens()
+            if purged:
+                logger.info("Cleanup: purged %d synced DataToken(s) older than %d days",
+                            purged, token_retention)
+        except ImportError:
+            pass  # django-fusion not available — skip DataToken cleanup
+        except Exception as exc:
+            logger.debug("DataToken cleanup skipped: %s", exc)
+
+        # ── Purge stale sync logs ──
+        try:
+            from routes.state import SyncLog
+            from datetime import timedelta
+
+            log_cutoff = datetime.now(timezone.utc) - timedelta(days=log_retention)
+
+            @sync_to_async
+            def _purge_logs():
+                deleted, _ = SyncLog.objects.filter(created_at__lt=log_cutoff).delete()
+                return deleted
+
+            purged_logs = await _purge_logs()
+            if purged_logs:
+                logger.info("Cleanup: purged %d SyncLog(s) older than %d days",
+                            purged_logs, log_retention)
+        except Exception as exc:
+            logger.debug("SyncLog cleanup skipped: %s", exc)
 
     # ------------------------------------------------------------------
     # Django ORM queries (sync_to_async wrappers)

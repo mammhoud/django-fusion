@@ -80,7 +80,7 @@ assets/templates/
 │   │   └── certificate.html         Printable certificate (standalone HTML)
 │   │
 │   └── chat/
-│       └── bubble.html              Floating chat widget (rseal × nawaai)
+│       └── bubble.html              Floating chat widget (ceptor × nawaai)
 │
 ├── plugins/                         ── Plugin / integration templates ──
 │   ├── emails/                      Transactional email templates

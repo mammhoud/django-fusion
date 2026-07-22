@@ -57,7 +57,7 @@ Shared Django portal with django-fusion viewsets across all editions:
   - Line 71: `[ceptor-ai](../ceptor-ai/)` corrected to `[ceptor-ai](../../../ceptor-ai/)`
   - Line 73: removed broken `[django-fusion](../django-fusion/)` (target `docs/django-fusion/` absent)
   - Renamed "Related Packages" → "Related Package" (singular — the monorepo has exactly two libs)
-- `libs/ceptor-ai/docs/legacy-django-rseal/README.md`
+- `libs/ceptor-ai/docs/legacy-django-ceptor/README.md`
   - Line 77: `../../../venv/libs/ceptor-ai/README.md` → `../../README.md`
   - Line 80: `../django-fusion/` → `../../../django-fusion/`
   - Line 81: removed duplicate broken link with stale "Testing infrastructure" description

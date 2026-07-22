@@ -217,6 +217,36 @@ def _ensure_tables(use_migrations: bool) -> None:
                         schema_editor.create_model(model)
                 except Exception as e:
                     logger.debug(f"Could not create table for {model._meta.db_table}: {e}")
+
+        # ── Ensure django_content_type table (needed by DataToken.tag_row → ContentType.get_for_model) ──
+        if "django_content_type" not in table_names:
+            try:
+                from django.contrib.contenttypes.models import ContentType
+                with connection.schema_editor() as schema_editor:
+                    schema_editor.create_model(ContentType)
+                logger.info("Created django_content_type table for DataToken/ContentType lookups")
+            except Exception as e:
+                logger.warning("Could not create django_content_type table: %s", e)
+
+        # ── Ensure ci_datatoken table (needed by DataToken.objects.create / tag_row) ──
+        if "ci_datatoken" not in table_names:
+            try:
+                from django_fusion.core.models import DataToken
+                with connection.schema_editor() as schema_editor:
+                    schema_editor.create_model(DataToken)
+                logger.info("Created ci_datatoken table for DataToken sync tracking")
+            except Exception as e:
+                logger.warning("Could not create ci_datatoken table: %s", e)
+
+        # ── Populate content types so ContentType.objects.get_for_model() doesn't fail on lookup ──
+        try:
+            from django.contrib.contenttypes.management import create_contenttypes
+            from django.apps import apps
+            for app_config in apps.get_app_configs():
+                create_contenttypes(app_config, interactive=False, verbosity=0)
+        except Exception as e:
+            logger.debug("Could not auto-populate content types: %s", e)
+
         # Add missing columns for model fields added after initial creation
         _add_missing_columns(table_names)
         logger.info("Tables ensured via schema_editor + missing columns added (use --migrate for Django migrations)")
@@ -432,66 +462,66 @@ app.before_request()(create_auth_middleware(
 
 from routes.state import _register_crud
 
-# ── POS Core CRUD (managed Django models) ──
-_register_crud(app, "products", Product, "Product")
-_register_crud(app, "categories", Category, "Category")
-_register_crud(app, "customers", Customer, "Customer")
-_register_crud(app, "sales", Sale, "Sale")
-_register_crud(app, "sale-items", SaleItem, "SaleItem")
-_register_crud(app, "employees", Employee, "Employee")
-_register_crud(app, "inventory", InventoryTransaction, "InventoryTransaction")
+# ── POS Core CRUD with DataToken sync tagging ──
+# Read node_id from env (same variable used by --sync-node-id CLI flag)
+_DATA_TOKEN_NODE_ID = os.environ.get("POS_FULL_NODE_ID", "pos-full-auto")
+_tag_sync = dict(tag_for_sync=True, node_id=_DATA_TOKEN_NODE_ID, token_prefix="pos_full")
+
+_register_crud(app, "products", Product, "Product", **_tag_sync)
+_register_crud(app, "categories", Category, "Category", **_tag_sync)
+_register_crud(app, "customers", Customer, "Customer", **_tag_sync)
+_register_crud(app, "sales", Sale, "Sale", **_tag_sync)
+_register_crud(app, "sale-items", SaleItem, "SaleItem", **_tag_sync)
+_register_crud(app, "employees", Employee, "Employee", **_tag_sync)
+_register_crud(app, "inventory", InventoryTransaction, "InventoryTransaction", **_tag_sync)
 
 # ── Managed POS Core CRUD (models/ package, full_* tables) ──
-_register_crud(app, "managed/categories", Category, "Category")
-_register_crud(app, "managed/products", Product, "Product")
-_register_crud(app, "managed/customers", Customer, "Customer")
-_register_crud(app, "managed/sales", Sale, "Sale")
-_register_crud(app, "managed/sale-items", SaleItem, "SaleItem")
-_register_crud(app, "managed/employees", Employee, "Employee")
-_register_crud(app, "managed/inventory", InventoryTransaction, "InventoryTransaction")
-_register_crud(app, "managed/menu-items", MenuItem, "MenuItem")
-_register_crud(app, "managed/menus", Menu, "Menu")
-_register_crud(app, "managed/menu-assignments", MenuItemAssignment, "MenuItemAssignment")
+_register_crud(app, "managed/categories", Category, "Category", **_tag_sync)
+_register_crud(app, "managed/products", Product, "Product", **_tag_sync)
+_register_crud(app, "managed/customers", Customer, "Customer", **_tag_sync)
+_register_crud(app, "managed/sales", Sale, "Sale", **_tag_sync)
+_register_crud(app, "managed/sale-items", SaleItem, "SaleItem", **_tag_sync)
+_register_crud(app, "managed/employees", Employee, "Employee", **_tag_sync)
+_register_crud(app, "managed/inventory", InventoryTransaction, "InventoryTransaction", **_tag_sync)
+_register_crud(app, "managed/menu-items", MenuItem, "MenuItem", **_tag_sync)
+_register_crud(app, "managed/menus", Menu, "Menu", **_tag_sync)
+_register_crud(app, "managed/menu-assignments", MenuItemAssignment, "MenuItemAssignment", **_tag_sync)
+
 # ── Suppliers & Procurement ──
-_register_crud(app, "suppliers", Supplier, "Supplier")
-_register_crud(app, "purchase-orders", PurchaseOrder, "PurchaseOrder")
-_register_crud(app, "purchase-order-items", PurchaseOrderItem, "PurchaseOrderItem")
+_register_crud(app, "suppliers", Supplier, "Supplier", **_tag_sync)
+_register_crud(app, "purchase-orders", PurchaseOrder, "PurchaseOrder", **_tag_sync)
+_register_crud(app, "purchase-order-items", PurchaseOrderItem, "PurchaseOrderItem", **_tag_sync)
 
 # ── Kitchen & Support ──
-_register_crud(app, "kitchen-tickets", KitchenTicket, "KitchenTicket")
-_register_crud(app, "support-tickets", SupportTicket, "SupportTicket")
+_register_crud(app, "kitchen-tickets", KitchenTicket, "KitchenTicket", **_tag_sync)
+_register_crud(app, "support-tickets", SupportTicket, "SupportTicket", **_tag_sync)
 
 # ── Registry CRUD ──
-_register_crud(app, "heartbeats", Heartbeat, "Heartbeat")
-_register_crud(app, "sync-logs", SyncLog, "SyncLog")
+_register_crud(app, "heartbeats", Heartbeat, "Heartbeat", **_tag_sync)
+_register_crud(app, "sync-logs", SyncLog, "SyncLog", **_tag_sync)
 
 # ── Configuration CRUD ──
-_register_crud(app, "config/devices", DeviceConfig, "DeviceConfig")
-_register_crud(app, "config/master", MasterDevice, "MasterDevice")
-_register_crud(app, "config/cloud-links", CloudLink, "CloudLink")
+_register_crud(app, "config/devices", DeviceConfig, "DeviceConfig", **_tag_sync)
+_register_crud(app, "config/master", MasterDevice, "MasterDevice", **_tag_sync)
+_register_crud(app, "config/cloud-links", CloudLink, "CloudLink", **_tag_sync)
 
 # ── Approval workflow CRUD ──
-_register_crud(app, "approvals", SyncApproval, "SyncApproval")
+_register_crud(app, "approvals", SyncApproval, "SyncApproval", **_tag_sync)
 
 # ── HR / Payroll CRUD ──
-_register_crud(app, "payroll", Payroll, "Payroll")
-_register_crud(app, "employee-schedules", EmployeeSchedule, "EmployeeSchedule")
-_register_crud(app, "tax-reports", TaxReport, "TaxReport")
+_register_crud(app, "payroll", Payroll, "Payroll", **_tag_sync)
+_register_crud(app, "employee-schedules", EmployeeSchedule, "EmployeeSchedule", **_tag_sync)
+_register_crud(app, "tax-reports", TaxReport, "TaxReport", **_tag_sync)
 
 # ── Notes CRUD ──
-_register_crud(app, "notes", Note, "Note")
+_register_crud(app, "notes", Note, "Note", **_tag_sync)
 
 # ── Extra managed CRUD (added 2026-07-22) with DataToken auto-tagging ──
-_register_crud(app, "ingredients", Ingredient, "Ingredient",
-               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
-_register_crud(app, "recipes", Recipe, "Recipe",
-               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
-_register_crud(app, "receipt-templates", ReceiptTemplate, "ReceiptTemplate",
-               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
-_register_crud(app, "roles", Role, "Role",
-               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
-_register_crud(app, "inventory-adjustments", InventoryAdjustment, "InventoryAdjustment",
-               tag_for_sync=True, node_id="pos-full-auto", token_prefix="pos_full")
+_register_crud(app, "ingredients", Ingredient, "Ingredient", **_tag_sync)
+_register_crud(app, "recipes", Recipe, "Recipe", **_tag_sync)
+_register_crud(app, "receipt-templates", ReceiptTemplate, "ReceiptTemplate", **_tag_sync)
+_register_crud(app, "roles", Role, "Role", **_tag_sync)
+_register_crud(app, "inventory-adjustments", InventoryAdjustment, "InventoryAdjustment", **_tag_sync)
 
 # ===========================================================================
 # WebSocket: Entity event stream (real-time CRUD notifications for Redux)

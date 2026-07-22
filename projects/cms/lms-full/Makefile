@@ -144,7 +144,7 @@ install: ## Install Python dependencies
 	@$(UV) sync
 	@echo -e "$(GREEN)✅ Installed$(NC)"
 
-install-internal: ## Refresh mammhoud GitHub packages (django-fusion/rseal/grep)
+install-internal: ## Refresh mammhoud GitHub packages (django-fusion/ceptor/grep)
 	$(call clean_broken_venv)
 	@echo -e "$(BLUE)Installing mammhoud GitHub packages...$(NC)"
 	@$(UV) sync --upgrade-package django-fusion --upgrade-package ceptor-ai

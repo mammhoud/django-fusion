@@ -157,12 +157,21 @@ async def _create(model, data: dict, tag_for_sync: bool = False, node_id: str = 
                 )
             except ImportError:
                 pass  # django-fusion not available — skip tagging
+            except Exception as exc:
+                logger.debug("DataToken tagging skipped: %s", exc)  # e.g. missing django_content_type table
         return _ser(obj)
     return await _c()
 
 
-async def _update(model, pk: int, data: dict) -> dict | None:
-    """Update an existing model instance by ID."""
+async def _update(model, pk: int, data: dict, tag_for_sync: bool = False, node_id: str = "", token_prefix: str = "") -> dict | None:
+    """Update an existing model instance by ID.
+
+    If tag_for_sync is True, creates a DataToken for the updated row
+    so the change is picked up by the next sync cycle.
+    """
+    # Capture auth context BEFORE the sync_to_async barrier
+    _token_info = _get_token_info()
+
     @sync_to_async
     def _u():
         try:
@@ -171,18 +180,60 @@ async def _update(model, pk: int, data: dict) -> dict | None:
                 if hasattr(obj, key):
                     setattr(obj, key, val)
             obj.save()
+            # ── Tag updated row for sync tracking ──
+            if tag_for_sync and node_id:
+                try:
+                    from django_fusion.core.models import DataToken
+                    token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}"
+                    DataToken.objects.tag_row(
+                        model_instance=obj,
+                        token=token,
+                        node_id=node_id,
+                        sync_order=1,
+                        metadata={"entity_id": str(obj.pk), "model": model.__name__, "action": "update"},
+                    )
+                except ImportError:
+                    pass
+                except Exception as exc:
+                    logger.debug("DataToken tagging skipped on update: %s", exc)
             return _ser(obj)
         except model.DoesNotExist:
             return None
     return await _u()
 
 
-async def _delete(model, pk: int) -> bool:
-    """Delete a model instance by ID."""
+async def _delete(model, pk: int, tag_for_sync: bool = False, node_id: str = "", token_prefix: str = "") -> bool:
+    """Delete a model instance by ID.
+
+    If tag_for_sync is True, logs a deletion DataToken so the sync
+    cycle can propagate the removal to the cloud.
+    """
     @sync_to_async
     def _d():
         try:
-            model.objects.get(id=pk).delete()
+            obj = model.objects.get(id=pk)
+            # ── Tag deletion for sync before removing the row ──
+            if tag_for_sync and node_id:
+                try:
+                    from django_fusion.core.models import DataToken
+                    token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}_deleted"
+                    # Use tag_row with the still-available instance, then record deletion
+                    DataToken.objects.tag_row(
+                        model_instance=obj,
+                        token=token,
+                        node_id=node_id,
+                        sync_order=2,
+                        metadata={
+                            "entity_id": str(obj.pk),
+                            "model": model.__name__,
+                            "action": "delete",
+                        },
+                    )
+                except ImportError:
+                    pass
+                except Exception as exc:
+                    logger.debug("DataToken tagging skipped on delete: %s", exc)
+            obj.delete()
             return True
         except model.DoesNotExist:
             return False
@@ -315,6 +366,24 @@ async def _log_sync(node_id: str, entity_type: str, entity_id: str,
 # ===========================================================================
 
 
+# ── Small helper to safely parse Robyn route params ──
+# Robyn (< v0.29) has a bug where type hints on route params cause
+# an AttributeError in _param_utils.py.  We work around it by accepting
+# pk as a raw string and converting manually.
+
+
+def _parse_pk(pk: str, name: str) -> tuple[int, None] | tuple[None, Response]:
+    """Parse a route ``pk`` param to int, returning an error Response on failure.
+
+    Returns:
+        ``(int_pk, None)`` on success, ``(None, error_response)`` on failure.
+    """
+    try:
+        return int(pk), None
+    except (TypeError, ValueError):
+        return None, _error(400, f"Invalid {name} ID: {pk}")
+
+
 def _register_crud(app, prefix: str, model, name: str,
                    tag_for_sync: bool = False, node_id: str = "",
                    token_prefix: str = ""):
@@ -337,8 +406,11 @@ def _register_crud(app, prefix: str, model, name: str,
         return jsonify(await _list(model, request))
 
     @app.get(f"/{prefix}/:pk")
-    async def get_one(request, pk: int):
-        obj = await _get(model, pk)
+    async def get_one(request, pk):
+        pk_int, err = _parse_pk(pk, name)
+        if err:
+            return err
+        obj = await _get(model, pk_int)
         if not obj:
             return _error(404, f"{name} not found")
         return jsonify(obj)
@@ -359,9 +431,15 @@ def _register_crud(app, prefix: str, model, name: str,
         )
 
     @app.patch(f"/{prefix}/:pk")
-    async def update_one(request, pk: int):
+    async def update_one(request, pk):
+        pk_int, err = _parse_pk(pk, name)
+        if err:
+            return err
         body = request.json() or {}
-        obj = await _update(model, pk, body)
+        obj = await _update(model, pk_int, body,
+                            tag_for_sync=tag_for_sync,
+                            node_id=node_id,
+                            token_prefix=token_prefix)
         if not obj:
             return _error(404, f"{name} not found")
         from streams import _broadcast_entity_event
@@ -369,10 +447,16 @@ def _register_crud(app, prefix: str, model, name: str,
         return jsonify(obj)
 
     @app.delete(f"/{prefix}/:pk")
-    async def delete_one(request, pk: int):
-        ok = await _delete(model, pk)
+    async def delete_one(request, pk):
+        pk_int, err = _parse_pk(pk, name)
+        if err:
+            return err
+        ok = await _delete(model, pk_int,
+                           tag_for_sync=tag_for_sync,
+                           node_id=node_id,
+                           token_prefix=token_prefix)
         if not ok:
             return _error(404, f"{name} not found")
         from streams import _broadcast_entity_event
-        await _broadcast_entity_event(name, "delete", {"id": pk})
+        await _broadcast_entity_event(name, "delete", {"id": pk_int})
         return jsonify({"status": "deleted"})

@@ -177,7 +177,7 @@ dependencies = [
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
-    { name = "django-rseal" },
+    { name = "django-ceptor" },
     { name = "django-silk" },
     { name = "django-simple-history" },
     { name = "django-storages", extra = ["boto3"] },
@@ -244,7 +244,7 @@ requires-dist = [
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
-    { name = "django-rseal", git = "https://github.com/mammhoud/django-rseal?branch=generic" },
+    { name = "django-ceptor", git = "https://github.com/mammhoud/django-ceptor?branch=generic" },
     { name = "django-silk" },
     { name = "django-simple-history" },
     { name = "django-storages", extras = ["boto3"] },
@@ -708,7 +708,7 @@ dependencies = [
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
-    { name = "django-rseal" },
+    { name = "django-ceptor" },
     { name = "django-silk" },
     { name = "django-simple-history" },
     { name = "django-storages", extra = ["boto3"] },
@@ -775,7 +775,7 @@ requires-dist = [
     { name = "django-paypal" },
     { name = "django-redis" },
     { name = "django-rq" },
-    { name = "django-rseal", git = "https://github.com/mammhoud/django-rseal?branch=generic" },
+    { name = "django-ceptor", git = "https://github.com/mammhoud/django-ceptor?branch=generic" },
     { name = "django-silk" },
     { name = "django-simple-history" },
     { name = "django-storages", extras = ["boto3"] },
@@ -1095,7 +1095,7 @@ dependencies = [
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.4", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "django-fusion" },
-    { name = "django-rseal" },
+    { name = "django-ceptor" },
     { name = "pytest" },
     { name = "pytest-django" },
 ]
@@ -1242,9 +1242,9 @@ wheels = [
 ]
 
 [[package]]
-name = "django-rseal"
+name = "django-ceptor"
 version = "0.1.0"
-source = { git = "https://github.com/mammhoud/django-rseal?branch=generic#400bf45d04cf46bdd9d2b9275f64711230b3ea84" }
+source = { git = "https://github.com/mammhoud/django-ceptor?branch=generic#400bf45d04cf46bdd9d2b9275f64711230b3ea84" }
 dependencies = [
     { name = "celery" },
     { name = "django", version = "5.2.13", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },

@@ -21,7 +21,7 @@ _workspace_root = _websites_dir.parent
 _lms_path = _websites_dir / "projects" / "lms" / "cms"
 _portfolio_path = _websites_dir / "projects" / "cms" / "portfolio"
 _lms_full_path = _websites_dir / "projects" / "cms" / "lms-full"
-_rseal_tests = _workspace_root / "libs" / "ceptor-ai" / "tests"
+_ceptor_tests = _workspace_root / "libs" / "ceptor-ai" / "tests"
 
 # Support both monorepo layout (projects/<site>/cms) and single-site layout.
 _repo_root = _websites_dir
@@ -60,7 +60,7 @@ _sys_paths = [
     _lms_full_path / "plugins",
     _lms_path,
     _lms_path / "plugins",
-    _rseal_tests,
+    _ceptor_tests,
 ]
 for _p in _sys_paths:
     if _p.exists() and str(_p) not in sys.path:
@@ -194,7 +194,7 @@ if "www.apps.accounts.renderers" not in sys.modules:
         _stub.dynamic_renderer = MagicMock()
         sys.modules["www.apps.accounts.renderers"] = _stub
 
-# Registration modules moved under accounts.*; keep django-fusion/rseal and
+# Registration modules moved under accounts.*; keep django-fusion/ceptor and
 # legacy tests that import www.apps.accounts.registration.* working.
 def _register_registration_aliases():
     _alias_targets = {
@@ -347,7 +347,7 @@ INSTALLED_APPS = [
     "allauth.account",
     "allauth.socialaccount",
     # Remove ceptor_ai to avoid table conflicts with email_log
-    # Blog app only — accounts/rseal have complex deps needing full project setup
+    # Blog app only — accounts/ceptor have complex deps needing full project setup
     "plugins.blog",
     # Skip apps.accounts to avoid admin autodiscover issues with www.apps.accounts.models.tags
 ]
@@ -436,7 +436,7 @@ MIGRATION_MODULES = {
     "pipelines": None,
     "accounts": None,
     "blog": None,
-    # All rseal sub-apps
+    # All ceptor sub-apps
     "email": None,
     "chat": None,
     "mcp_designer": None,

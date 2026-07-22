@@ -111,7 +111,7 @@ build-backend = "hatchling.build"
 packages = ["configs", "tasks"]
 
 # Local sources for internal libs used by all websites.
-# django-grep was merged into libs/django-fusion; django-rseal was merged into libs/ceptor-ai.
+# django-grep was merged into libs/django-fusion; django-ceptor was merged into libs/ceptor-ai.
 
 [tool.uv.sources]
 django-fusion = { path = "../libs/django-fusion", editable = true }

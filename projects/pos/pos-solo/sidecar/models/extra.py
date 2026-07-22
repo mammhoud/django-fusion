@@ -181,7 +181,18 @@ class Role(models.Model):
 # ===========================================================================
 
 class InventoryAdjustment(models.Model):
-    """Manual adjustment to ingredient/stock quantities."""
+    """Manual adjustment to ingredient/stock quantities.
+
+    Supports deltas (``quantity``) and snapshots (``previous_quantity`` / ``new_quantity``).
+    If ``new_quantity`` is not provided, it is computed as ``previous_quantity + quantity``.
+    """
+
+    ADJUSTMENT_TYPES = [
+        ("addition", "Addition — stock increased"),
+        ("removal", "Removal — stock decreased"),
+        ("adjustment", "Adjustment — manual correction"),
+        ("transfer", "Transfer — moved between locations"),
+    ]
 
     ADJUSTMENT_REASONS = [
         ("damage", "Damage / Spoilage"),
@@ -196,8 +207,27 @@ class InventoryAdjustment(models.Model):
         Ingredient, on_delete=models.CASCADE, related_name="adjustments",
         help_text="Ingredient being adjusted",
     )
-    previous_quantity = models.DecimalField(max_digits=12, decimal_places=3)
-    new_quantity = models.DecimalField(max_digits=12, decimal_places=3)
+
+    # ── Delta (the actual change amount, positive or negative) ──
+    quantity = models.DecimalField(
+        max_digits=12, decimal_places=3, default=0,
+        help_text="Change amount (positive = addition, negative = removal)",
+    )
+    adjustment_type = models.CharField(
+        max_length=20, choices=ADJUSTMENT_TYPES, default="adjustment",
+        help_text="Type of inventory adjustment",
+    )
+
+    # ── Snapshots (before/after state) ──
+    previous_quantity = models.DecimalField(
+        max_digits=12, decimal_places=3, null=True, blank=True,
+        help_text="Stock level before adjustment",
+    )
+    new_quantity = models.DecimalField(
+        max_digits=12, decimal_places=3, null=True, blank=True,
+        help_text="Stock level after adjustment",
+    )
+
     reason = models.CharField(max_length=20, choices=ADJUSTMENT_REASONS, default="correction")
     notes = models.TextField(blank=True, default="")
     created_by = models.CharField(max_length=100, blank=True, default="")
@@ -216,4 +246,37 @@ class InventoryAdjustment(models.Model):
         ordering = ["-created_at"]
 
     def __str__(self) -> str:
-        return f"{self.get_reason_display()} — {self.ingredient.name}"
+        return f"{self.get_adjustment_type_display()} — {self.ingredient.name}"
+
+    def save(self, *args, **kwargs):
+        """Auto-populate previous_quantity from ingredient, compute new_quantity from delta,
+        and update the ingredient's live stock level (only on create, not PATCH)."""
+        from decimal import Decimal as _D
+
+        is_new_instance = self.pk is None
+        qty = _D(str(self.quantity)) if isinstance(self.quantity, float) else self.quantity
+
+        if self.previous_quantity is None and self.ingredient_id:
+            try:
+                ing = Ingredient.objects.get(id=self.ingredient_id)
+                self.previous_quantity = ing.current_quantity
+            except Ingredient.DoesNotExist:
+                pass
+
+        if self.new_quantity is None and qty != 0 and self.previous_quantity is not None:
+            self.new_quantity = self.previous_quantity + qty
+
+        super().save(*args, **kwargs)
+
+        # ── Update the ingredient's live stock level (only on create, not PATCH) ──
+        if is_new_instance and qty != 0 and self.ingredient_id:
+            try:
+                ing = Ingredient.objects.get(id=self.ingredient_id)
+                ing.current_quantity = (
+                    self.new_quantity
+                    if self.new_quantity is not None
+                    else ing.current_quantity + qty
+                )
+                ing.save(update_fields=["current_quantity", "updated_at"])
+            except Ingredient.DoesNotExist:
+                pass

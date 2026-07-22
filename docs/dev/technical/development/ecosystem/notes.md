@@ -167,7 +167,7 @@ Provides:
 
 Unique modules (not in django-seed):
 - `ceptor_ai.ai.integrations` — `OpenAIIntegration`, `ClaudeIntegration`, `AIIntegrationRegistry`
-- `ceptor_ai.email.models` — `EmailLog` (rseal variant with token expiry), `EmailTemplate`
+- `ceptor_ai.email.models` — `EmailLog` (ceptor variant with token expiry), `EmailTemplate`
 - `ceptor_ai.tasks.celery` — `send_email_task`, `process_queued_emails`, `retry_failed_emails`
 - `ceptor_ai.management.commands.send_emails` — CLI to send queued emails
 - `ceptor_ai.exceptions` — `RelayException`, `EmailSendError`, `WorkflowError`, `AIIntegrationError`
