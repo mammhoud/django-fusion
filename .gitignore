@@ -48,6 +48,9 @@ applications/compose/config/secrets.yml
 *.sqlite3
 *.dump
 *.sql.gz
+*.db-journal
+*.db-wal
+*.db-shm
 
 # @env placeholder literal filenames (from unresolved @env in YAML config)
 @env*
