@@ -83,7 +83,7 @@ PREFLIGHT_COMPOSE_FILES := \
 # -----------------------------------------------------------------
 # PHONY targets – always run
 # -----------------------------------------------------------------
-.PHONY: help info deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
+.PHONY: help deploy deploy-all deploy-proxy deploy-app deploy-anytype deploy-media deploy-tasks deploy-redis _wait-redis status-tasks logs-tasks probe-health deploy-docs
 .PHONY: deploy-databases deploy-coder deploy-cypercloud build-cypercloud clean-cypercloud
 .PHONY: deploy-utilities deploy-ollama deploy-mailpit
 .PHONY: deploy-coolify restart-coolify build-coolify list-coolify
@@ -1194,10 +1194,6 @@ compose-merged-down:
 # -----------------------------------------------------------------
 # Per-app shortcuts (forward to individual component Makefiles)
 # -----------------------------------------------------------------
-# No-op targets so `make pos-{edition} info` doesn't trigger the %: forwarder
-info:
-	@true
-
 ctc-research:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=ctc-research
 
@@ -1297,5 +1293,7 @@ venv-info:           ## Show venv status and paths
 	elif echo '$*' | grep -qE '^(setup|dev|build|check)-(mini|solo|full|client)$$'; then \
 		$(MAKE) -C $(POS_DIR) $*; \
 	else \
-		$(MAKE) -C $(CORE_DIR) $*; \
+		if grep -qE '^$*[^a-zA-Z]' $(CORE_DIR)/Makefile 2>/dev/null; then \
+			$(MAKE) -C $(CORE_DIR) $*; \
+		fi \
 	fi
