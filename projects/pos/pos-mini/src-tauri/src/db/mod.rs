@@ -13,7 +13,7 @@ pub const MIGRATIONS: EmbeddedMigrations = embed_migrations!("migrations");
 pub type DbConnection = SqliteConnection;
 
 /// Establish a connection to the SQLite database.
-pub fn establish_connection(db_path: &PathBuf) -> Result<SqliteConnection, diesel::ConnectionError> {
+pub fn establish_connection(db_path: &std::path::Path) -> Result<SqliteConnection, diesel::ConnectionError> {
     let database_url = db_path.to_str().expect("Invalid DB path");
     SqliteConnection::establish(database_url)
 }
@@ -62,7 +62,7 @@ pub fn get_db_path_from_env() -> Result<PathBuf, String> {
 }
 
 /// Run pending migrations.
-pub fn run_migrations(db_path: &PathBuf) -> Result<(), String> {
+pub fn run_migrations(db_path: &std::path::Path) -> Result<(), String> {
     let mut conn = establish_connection(db_path).map_err(|e| format!("Connection error: {}", e))?;
     conn.run_pending_migrations(MIGRATIONS)
         .map_err(|e| format!("Migration error: {}", e))?;
@@ -70,6 +70,6 @@ pub fn run_migrations(db_path: &PathBuf) -> Result<(), String> {
 }
 
 /// Helper to open connection for operations
-pub fn open_conn(db_path: &PathBuf) -> Result<SqliteConnection, String> {
+pub fn open_conn(db_path: &std::path::Path) -> Result<SqliteConnection, String> {
     establish_connection(db_path).map_err(|e| format!("Database connection error: {}", e))
 }

@@ -364,9 +364,23 @@ INSERT OR IGNORE INTO ingredients (id, name, unit, current_quantity, reorder_lev
     (35, 'Noodles',                'kg',    6.0,   3.0,   5.0,   150.00),
     (36, 'Soy Sauce',              'liter', 2.0,   1.0,   2.0,   180.00),
     (37, 'Gulab Jamun Mix',        'kg',    4.0,   2.0,   3.0,   280.00),
-    (38, 'Rice Flour',             'kg',    3.0,   1.5,   3.0,   100.00),
-    (39, 'Lentils (Daal Chana)',  'kg',    8.0,   4.0,   6.0,   140.00),
-    (40, 'Mango Pulp',             'kg',    3.0,   1.0,   3.0,   350.00);
+    (38, 'Rice Flour',             'kg',    3.0,   1.5,   3.0,   100.00),    (39, 'Lentils (Daal Chana)',  'kg',    8.0,   4.0,    6.0,   140.00),
+    (40, 'Mango Pulp',             'kg',    3.0,   1.0,    3.0,   350.00),
+    (41, 'Dried Fenugreek Leaves', 'kg',    2.0,   1.0,    2.0,   400.00),
+    (42, 'Mixed Vegetables (Peas/Carrot/Beans)', 'kg', 10.0,  5.0,  8.0,   80.00),
+    (43, 'Butter',                 'kg',    5.0,   2.0,    4.0,   450.00),
+    (44, 'Spring Roll Pastry',     'pack',  8.0,   4.0,    6.0,   120.00),
+    (45, 'Cardamom',               'kg',    1.0,   0.5,    1.0,   1800.00),
+    (46, 'Almonds',                'kg',    3.0,   1.5,    3.0,   1200.00),
+    (47, 'Pistachios',             'kg',    2.0,   1.0,    2.0,   1500.00),
+    (48, 'Peanuts',                'kg',    5.0,   2.5,    5.0,   250.00),
+    (49, 'Bread Slices',           'loaf',  10.0,  5.0,    8.0,   120.00),
+    (50, 'Lemon',                  'kg',    5.0,   2.0,    5.0,   100.00),
+    (51, 'Cinnamon Sticks',        'kg',    1.0,   0.5,    1.0,   900.00),
+    (52, 'Black Pepper',           'kg',    1.5,   0.75,   1.5,   600.00),
+    (53, 'Cumin Seeds',            'kg',    2.0,   1.0,    2.0,   350.00),
+    (54, 'Turmeric Powder',        'kg',    2.0,   1.0,    2.0,   200.00),
+    (55, 'Red Chili Powder',       'kg',    3.0,   1.5,    3.0,   300.00);
 
 -- 5. Recipes
 INSERT OR IGNORE INTO recipes (id, product_id, recipe_type_id, yield_quantity) VALUES
@@ -383,7 +397,34 @@ INSERT OR IGNORE INTO recipes (id, product_id, recipe_type_id, yield_quantity) V
     (11, 39, 1, 1.0),   -- Chicken Manchurian
     (12, 43, 1, 1.0),   -- Halwa Puri
     (13, 4,  1, 1.0),   -- Club Sandwich
-    (14, 25, 1, 1.0);   -- Chicken Wings
+    (14, 25, 1, 1.0),   -- Chicken Wings
+    (15, 3,  1, 1.0),   -- Zinger Burger
+    (16, 5,  1, 1.0),   -- Paratha Roll
+    (17, 8,  1, 1.0),   -- Fajita Pizza Medium
+    (18, 11, 1, 1.0),   -- Beef Seekh Kebab
+    (19, 12, 1, 1.0),   -- Chargah
+    (20, 13, 1, 1.0),   -- Mutton Tikka
+    (21, 15, 1, 1.0),   -- Mutton Biryani
+    (22, 16, 1, 1.0),   -- Vegetable Biryani
+    (23, 17, 1, 1.0),   -- Chicken Fried Rice
+    (24, 20, 1, 1.0),   -- Mutton Karahi Half
+    (25, 22, 1, 1.0),   -- Daal Makhni
+    (26, 24, 1, 1.0),   -- Chicken Nuggets
+    (27, 26, 1, 1.0),   -- Spring Rolls
+    (28, 27, 1, 1.0),   -- Chicken Soup
+    (29, 31, 1, 1.0),   -- Coffee
+    (30, 32, 1, 1.0),   -- Milkshake
+    (31, 34, 1, 1.0),   -- Lassi
+    (32, 36, 1, 1.0),   -- Ice Cream
+    (33, 37, 1, 1.0),   -- Kheer
+    (34, 38, 1, 1.0),   -- Brownie with Ice Cream
+    (35, 40, 1, 1.0),   -- Veg Noodles
+    (36, 41, 1, 1.0),   -- Chicken Noodles
+    (37, 42, 1, 1.0),   -- Kung Pao Chicken
+    (38, 44, 1, 1.0),   -- Chana Cholay
+    (39, 45, 1, 1.0),   -- Omelette
+    (40, 46, 1, 1.0),   -- Nihari
+    (41, 47, 1, 1.0);   -- Siri Paye
 
 -- 6. Recipe ingredients
 INSERT OR IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, preparation_note) VALUES
@@ -463,7 +504,199 @@ INSERT OR IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity, un
     -- Chicken Wings
     (14, 34, 0.400, 'kg',  'Marinated in spicy sauce'),
     (14, 6,  0.030, 'liter', 'Deep fry'),
-    (14, 20, 0.010, 'kg',  'Seasoning');
+    (14, 20, 0.010, 'kg',  'Seasoning'),
+    -- Zinger Burger
+    (15, 1,  0.180, 'kg',  'Crispy fried chicken fillet'),
+    (15, 33, 1.0,   'unit',  'Toasted bun with sesame'),
+    (15, 5,  0.050, 'kg',  'Flour coating with spices'),
+    (15, 32, 0.025, 'kg',  'Garlic mayo spread'),
+    (15, 23, 0.020, 'kg',  'Shredded lettuce'),
+    (15, 7,  0.030, 'kg',  'Sliced tomato'),
+    (15, 6,  0.030, 'liter', 'Deep frying'),
+    -- Paratha Roll
+    (16, 5,  0.100, 'kg',  'Paratha dough'),
+    (16, 1,  0.150, 'kg',  'Spiced chicken filling'),
+    (16, 8,  0.030, 'kg',  'Caramelized onions'),
+    (16, 24, 0.020, 'kg',  'Thinly sliced capsicum'),
+    (16, 32, 0.015, 'kg',  'Mayonnaise drizzle'),
+    (16, 6,  0.020, 'liter', 'For cooking paratha'),
+    -- Fajita Pizza Medium
+    (17, 30, 0.250, 'kg',  'Pizza dough base'),
+    (17, 11, 0.080, 'kg',  'Fajita sauce spread'),
+    (17, 10, 0.150, 'kg',  'Mozzarella topping'),
+    (17, 1,  0.150, 'kg',  'Fajita spiced chicken'),
+    (17, 24, 0.030, 'kg',  'Capsicum strips'),
+    (17, 8,  0.030, 'kg',  'Onion rings'),
+    (17, 7,  0.040, 'kg',  'Diced tomatoes'),
+    -- Beef Seekh Kebab
+    (18, 2,  0.400, 'kg',  'Minced beef blend'),
+    (18, 8,  0.040, 'kg',  'Finely chopped onion'),
+    (18, 25, 0.015, 'kg',  'Ginger garlic paste'),
+    (18, 26, 0.010, 'kg',  'Chopped green chilies'),
+    (18, 20, 0.012, 'kg',  'Kebab masala spices'),
+    (18, 27, 0.003, 'kg',  'Seasoning'),
+    (18, 21, 0.083, 'dozen', 'Egg for binding'),
+    -- Chargah (Whole Roasted Chicken)
+    (19, 1,  1.200, 'kg',  'Whole chicken'),
+    (19, 9,  0.150, 'kg',  'Yogurt marinade'),
+    (19, 25, 0.030, 'kg',  'Ginger garlic paste'),
+    (19, 20, 0.020, 'kg',  'Chargah masala'),
+    (19, 6,  0.060, 'liter', 'Basting oil'),
+    (19, 27, 0.005, 'kg',  'Salt'),
+    -- Mutton Tikka
+    (20, 3,  0.400, 'kg',  'Mutton chunks'),
+    (20, 9,  0.080, 'kg',  'Yogurt marinade'),
+    (20, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (20, 20, 0.015, 'kg',  'Tikka masala'),
+    (20, 6,  0.030, 'liter', 'For basting'),
+    (20, 41, 0.010, 'kg',  'Dried fenugreek leaves'),
+    -- Mutton Biryani
+    (21, 4,  0.250, 'kg',  'Soaked basmati rice'),
+    (21, 3,  0.200, 'kg',  'Mutton pieces'),
+    (21, 9,  0.050, 'kg',  'For marination'),
+    (21, 8,  0.060, 'kg',  'Fried onions'),
+    (21, 7,  0.050, 'kg',  'Chopped tomatoes'),
+    (21, 20, 0.012, 'kg',  'Biryani masala'),
+    (21, 6,  0.035, 'liter', 'For cooking'),
+    (21, 17, 0.050, 'liter', 'Warm milk for layering'),
+    (21, 41, 0.005, 'kg',  'Fresh mint leaves'),
+    -- Vegetable Biryani
+    (22, 4,  0.250, 'kg',  'Basmati rice'),
+    (22, 9,  0.050, 'kg',  'Yogurt'),
+    (22, 8,  0.050, 'kg',  'Sliced onions'),
+    (22, 7,  0.050, 'kg',  'Chopped tomatoes'),
+    (22, 22, 0.080, 'kg',  'Potato cubes'),
+    (22, 42, 0.050, 'kg',  'Mixed vegetables (peas,carrot,beans)'),
+    (22, 20, 0.010, 'kg',  'Biryani masala'),
+    (22, 6,  0.030, 'liter', 'For cooking'),
+    -- Chicken Fried Rice
+    (23, 4,  0.200, 'kg',  'Cooked basmati rice, cooled'),
+    (23, 1,  0.150, 'kg',  'Diced chicken'),
+    (23, 21, 0.083, 'dozen', 'Scrambled egg'),
+    (23, 8,  0.030, 'kg',  'Diced onion'),
+    (23, 42, 0.040, 'kg',  'Mixed vegetables'),
+    (23, 36, 0.010, 'liter', 'Soy sauce'),
+    (23, 6,  0.020, 'liter', 'For stir-frying'),
+    -- Mutton Karahi Half
+    (24, 3,  0.400, 'kg',  'Mutton pieces on bone'),
+    (24, 7,  0.150, 'kg',  'Pureed tomatoes'),
+    (24, 8,  0.080, 'kg',  'Sliced onion'),
+    (24, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (24, 20, 0.012, 'kg',  'Karahi masala'),
+    (24, 6,  0.050, 'liter', 'Cooking oil'),
+    (24, 9,  0.050, 'kg',  'Yogurt for gravy'),
+    (24, 26, 0.010, 'kg',  'Green chilies for garnish'),
+    -- Daal Makhni
+    (25, 39, 0.200, 'kg',  'Black lentils, soaked overnight'),
+    (25, 7,  0.060, 'kg',  'Tomato puree'),
+    (25, 8,  0.030, 'kg',  'Finely chopped onion'),
+    (25, 25, 0.010, 'kg',  'Ginger garlic paste'),
+    (25, 18, 0.030, 'liter', 'Fresh cream'),
+    (25, 43, 0.020, 'kg',  'Butter'),
+    (25, 20, 0.008, 'kg',  'Masala spices'),
+    -- Chicken Nuggets
+    (26, 1,  0.200, 'kg',  'Minced chicken'),
+    (26, 5,  0.060, 'kg',  'Bread crumb coating'),
+    (26, 21, 0.083, 'dozen', 'Egg wash'),
+    (26, 27, 0.002, 'kg',  'Seasoning'),
+    (26, 6,  0.040, 'liter', 'Deep frying'),
+    -- Spring Rolls
+    (27, 44, 0.100, 'kg',  'Spring roll pastry sheets'),
+    (27, 23, 0.050, 'kg',  'Shredded cabbage'),
+    (27, 1,  0.080, 'kg',  'Minced chicken'),
+    (27, 42, 0.030, 'kg',  'Shredded carrots and beans'),
+    (27, 36, 0.005, 'liter', 'Soy sauce'),
+    (27, 6,  0.030, 'liter', 'Deep frying'),
+    -- Chicken Soup
+    (28, 1,  0.150, 'kg',  'Shredded chicken'),
+    (28, 35, 0.050, 'kg',  'Egg noodles'),
+    (28, 42, 0.030, 'kg',  'Fine chopped vegetables'),
+    (28, 25, 0.005, 'kg',  'Ginger paste'),
+    (28, 36, 0.010, 'liter', 'Soy sauce'),
+    (28, 21, 0.042, 'dozen', 'Egg drop'),
+    -- Coffee
+    (29, 29, 0.010, 'kg',  'Brewed coffee grounds'),
+    (29, 17, 0.150, 'liter', 'Hot milk'),
+    (29, 18, 0.020, 'liter', 'Whipped cream topping'),
+    (29, 16, 0.008, 'kg',  'Sugar to taste'),
+    -- Milkshake
+    (30, 17, 0.250, 'liter', 'Full cream milk'),
+    (30, 19, 0.080, 'kg',  'Vanilla ice cream'),
+    (30, 16, 0.015, 'kg',  'Sugar'),
+    (30, 18, 0.020, 'liter', 'Whipped cream topping'),
+    -- Lassi
+    (31, 9,  0.200, 'kg',  'Fresh yogurt'),
+    (31, 17, 0.100, 'liter', 'Chilled milk'),
+    (31, 16, 0.015, 'kg',  'Sugar'),
+    (31, 45, 0.002, 'kg',  'Cardamom powder'),
+    -- Ice Cream
+    (32, 17, 0.300, 'liter', 'Full cream milk'),
+    (32, 18, 0.100, 'liter', 'Heavy cream'),
+    (32, 16, 0.050, 'kg',  'Sugar'),
+    (32, 19, 0.050, 'kg',  'Vanilla essence'),
+    -- Kheer (Rice Pudding)
+    (33, 4,  0.080, 'kg',  'Broken basmati rice'),
+    (33, 17, 0.500, 'liter', 'Full cream milk'),
+    (33, 16, 0.060, 'kg',  'Sugar'),
+    (33, 45, 0.003, 'kg',  'Cardamom pods'),
+    (33, 46, 0.015, 'kg',  'Chopped almonds and pistachios'),
+    -- Brownie with Ice Cream
+    (34, 5,  0.080, 'kg',  'Brownie batter flour'),
+    (34, 43, 0.040, 'kg',  'Butter'),
+    (34, 16, 0.040, 'kg',  'Sugar'),
+    (34, 21, 0.083, 'dozen', 'Eggs'),
+    (34, 19, 0.080, 'kg',  'Vanilla ice cream scoop'),
+    -- Veg Noodles
+    (35, 35, 0.150, 'kg',  'Egg noodles'),
+    (35, 42, 0.050, 'kg',  'Mixed vegetables'),
+    (35, 36, 0.010, 'liter', 'Soy sauce'),
+    (35, 6,  0.015, 'liter', 'For stir-frying'),
+    (35, 24, 0.020, 'kg',  'Capsicum strips'),
+    -- Chicken Noodles
+    (36, 35, 0.150, 'kg',  'Egg noodles'),
+    (36, 1,  0.100, 'kg',  'Shredded chicken'),
+    (36, 42, 0.040, 'kg',  'Mixed vegetables'),
+    (36, 36, 0.012, 'liter', 'Soy sauce'),
+    (36, 6,  0.015, 'liter', 'For stir-frying'),
+    (36, 21, 0.083, 'dozen', 'Scrambled egg'),
+    -- Kung Pao Chicken
+    (37, 1,  0.250, 'kg',  'Diced chicken thigh'),
+    (37, 35, 0.080, 'kg',  'Roasted peanuts'),
+    (37, 36, 0.015, 'liter', 'Soy sauce'),
+    (37, 24, 0.030, 'kg',  'Diced capsicum'),
+    (37, 8,  0.030, 'kg',  'Spring onion'),
+    (37, 6,  0.020, 'liter', 'Stir-fry oil'),
+    (37, 26, 0.010, 'kg',  'Dried red chilies'),
+    -- Chana Cholay
+    (38, 39, 0.250, 'kg',  'Chickpeas, soaked overnight'),
+    (38, 8,  0.040, 'kg',  'Finely chopped onion'),
+    (38, 7,  0.050, 'kg',  'Tomato puree'),
+    (38, 25, 0.010, 'kg',  'Ginger garlic paste'),
+    (38, 20, 0.010, 'kg',  'Chana masala'),
+    (38, 6,  0.020, 'liter', 'For cooking'),
+    (38, 26, 0.008, 'kg',  'Green chilies'),
+    -- Omelette
+    (39, 21, 0.250, 'dozen', '3 eggs'),
+    (39, 8,  0.020, 'kg',  'Chopped onion'),
+    (39, 7,  0.020, 'kg',  'Diced tomato'),
+    (39, 26, 0.005, 'kg',  'Chopped green chili'),
+    (39, 27, 0.002, 'kg',  'Salt and pepper'),
+    (39, 6,  0.010, 'liter', 'For cooking'),
+    -- Nihari
+    (40, 2,  0.400, 'kg',  'Beef shank, bone-in'),
+    (40, 5,  0.040, 'kg',  'Nihari flour paste (for thickening)'),
+    (40, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (40, 20, 0.012, 'kg',  'Nihari masala'),
+    (40, 6,  0.030, 'liter', 'For slow cooking'),
+    (40, 25, 0.010, 'kg',  'Julienned ginger for garnish'),
+    -- Siri Paye
+    (41, 3,  0.500, 'kg',  'Goat trotters/shanks'),
+    (41, 5,  0.030, 'kg',  'Flour paste for thickening'),
+    (41, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (41, 8,  0.040, 'kg',  'Onion slices'),
+    (41, 20, 0.012, 'kg',  'Paye masala'),
+    (41, 6,  0.020, 'liter', 'Cooking oil'),
+    (41, 25, 0.010, 'kg',  'Fresh ginger strips for garnish');
 
 -- 7. Employees (12 sample staff)
 INSERT OR IGNORE INTO employees (id, name, phone, email, employee_type_id, salary, joined_at) VALUES

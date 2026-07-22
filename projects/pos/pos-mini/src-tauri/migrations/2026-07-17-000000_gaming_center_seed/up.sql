@@ -276,11 +276,11 @@ INSERT OR IGNORE INTO sale_items (sale_id, product_name, price, quantity, unit) 
     (32, 'Candy Mix',                            1.50, 2, 'item');
 
 -- 10. Clear old food-related seed data (recipes, ingredients etc. not relevant to gaming)
-DELETE FROM recipe_ingredients WHERE recipe_id BETWEEN 1 AND 14;
-DELETE FROM recipes WHERE id BETWEEN 1 AND 14;
+DELETE FROM recipe_ingredients WHERE recipe_id BETWEEN 1 AND 41;
+DELETE FROM recipes WHERE id BETWEEN 1 AND 41;
 DELETE FROM inventory_adjustments WHERE id BETWEEN 1 AND 2;
 DELETE FROM inventory_transactions WHERE id BETWEEN 1 AND 31;
-DELETE FROM ingredients WHERE id BETWEEN 1 AND 40;
+DELETE FROM ingredients WHERE id BETWEEN 1 AND 55;
 -- Auto-generated product image UPDATEs for gaming center seed
 -- Run AFTER the gaming center migration has been applied
 
