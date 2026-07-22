@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-APPS_ROOT = REPO_ROOT / "core"
+APPS_ROOT = REPO_ROOT / "projects"
 
 
 @dataclass(frozen=True)
@@ -39,7 +39,7 @@ SITE_SPECS = (
     SiteSmokeSpec(
         key="ctc",
         label="CTC Research",
-        root=APPS_ROOT / "ctc-research",
+        root=APPS_ROOT / "lms" / "cms",
         public_templates=(
             "templates/home/main.html",
             "templates/about/main.html",
@@ -61,16 +61,16 @@ SITE_SPECS = (
             "page.contact_form",
         ),
         component_templates=(
-            str(SHARED_TEMPLATES / "home" / "sections" / "slider.html"),
-            str(SHARED_TEMPLATES / "home" / "sections" / "listing.html"),
-            str(SHARED_TEMPLATES / "services" / "includes" / "services_section.html"),
-            str(SHARED_TEMPLATES / "contact" / "sections" / "form.html"),
+            "templates/home/sections/slider.html",
+            "templates/home/sections/listing.html",
+            "templates/blog/components/post_card.html",
+            "templates/team/sections/_member_info.html",
         ),
     ),
     SiteSmokeSpec(
         key="structa",
         label="LMS Demo",
-        root=APPS_ROOT / "lms",
+        root=APPS_ROOT / "lms" / "cms",
         public_templates=(
             "templates/home/main.html",
             "templates/about/main.html",
@@ -103,7 +103,7 @@ SITE_SPECS = (
     SiteSmokeSpec(
         key="vresume",
         label="VResume",
-        root=APPS_ROOT / "VResume",
+        root=APPS_ROOT / "cms" / "portfolio",
         public_templates=(
             "www/pages/templates/home/main.html",
             "www/pages/templates/about/main.html",

@@ -19,7 +19,8 @@ from pathlib import Path
 
 from django.test import SimpleTestCase
 
-ROOT = Path(__file__).resolve().parents[2] / "core"  # projects/
+_WORKSPACE = Path(__file__).resolve().parents[2]  # workspace root
+ROOT = _WORKSPACE / "projects"  # projects/
 
 
 class EventsMainGridIncludeTest(SimpleTestCase):

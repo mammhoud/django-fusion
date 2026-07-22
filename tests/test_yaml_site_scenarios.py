@@ -52,7 +52,7 @@ def load_yaml_subset(path: Path) -> dict:
 def test_yaml_scenario_files_exist_for_all_sites():
     assert {path.name for path in SCENARIOS} == {
         "ctc-website-tests.yaml",
-        "lms-tests.yaml",
+        "lms-demo-tests.yaml",
         "vresume-tests.yaml",
     }
 

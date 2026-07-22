@@ -10,13 +10,15 @@ from django.urls import reverse
 
 # tests/websites/ -> tests/ -> workspace root; canonical site files live under projects/.
 REPO_ROOT = Path(__file__).resolve().parents[2]
-ROOT = REPO_ROOT / "core"
+ROOT = REPO_ROOT / "projects"
 # Shared compose/proxy orchestration lives under applications/ in this monorepo.
 COMPOSE_ROOT = REPO_ROOT / "applications" / "compose"
-# Django image build files live under projects/compose/.
+# Docker image build files live under projects/compose/.
 CORE_COMPOSE_ROOT = ROOT / "compose"
 PROXY_ROOT = REPO_ROOT / "applications" / "proxy"
-WEBSITE_DIRS = {"ctc-research": "ctc-research", "lms": "lms", "vresume": "VResume"}
+# Sites were restructured: old core/{ctc-research,lms} → projects/lms/cms/,
+# old core/VResume → projects/cms/portfolio/.
+WEBSITE_DIRS = {"ctc-research": "lms/cms", "lms": "lms/cms", "vresume": "cms/portfolio"}
 WEBSITES = tuple(WEBSITE_DIRS)
 PROJECTS = tuple(WEBSITE_DIRS.values())
 
@@ -44,7 +46,9 @@ class WebsiteLayoutTests(SimpleTestCase):
                 "sites/site_dummy.json",
             ):
                 with self.subTest(website=website, fixture=relative):
-                    assert (fixture_root / relative).exists()
+                    assert (fixture_root / relative).exists(), (
+                        f"Missing fixture at {fixture_root / relative}"
+                    )
 
 
 class RegistrationIntegrationTests(SimpleTestCase):
@@ -52,16 +56,16 @@ class RegistrationIntegrationTests(SimpleTestCase):
         # ctc-research keeps registration helpers under plugins/accounts/{tokens,forms/registration,views/registration}
         # lms keeps them under plugins/accounts/registration/{tokens,forms,views}
         registration_roots = {
-            "ctc-research": ROOT / "ctc-research" / "plugins" / "accounts",
-            "lms": ROOT / "lms" / "plugins" / "accounts" / "registration",
+            "ctc-research": ROOT / "lms" / "cms" / "plugins" / "accounts",
+            "lms": ROOT / "lms" / "cms" / "plugins" / "accounts",
         }
         forms_paths = {
             "ctc-research": registration_roots["ctc-research"] / "forms" / "registration.py",
-            "lms": registration_roots["lms"] / "forms.py",
+            "lms": registration_roots["lms"] / "forms" / "registration.py",
         }
         views_paths = {
             "ctc-research": registration_roots["ctc-research"] / "views" / "registration.py",
-            "lms": registration_roots["lms"] / "views.py",
+            "lms": registration_roots["lms"] / "views" / "registration.py",
         }
         for project in ("ctc-research", "lms"):
             registration_root = registration_roots[project]
@@ -75,7 +79,7 @@ class RegistrationIntegrationTests(SimpleTestCase):
 
     def test_registration_views_use_parent_account_modules(self):
         for project in ("ctc-research", "lms"):
-            source = (ROOT / project / "plugins" / "accounts" / "views" / "registration.py").read_text()
+            source = (ROOT / "lms" / "cms" / "plugins" / "accounts" / "views" / "registration.py").read_text()
             with self.subTest(project=project):
                 assert "from ..tokens import registration_token_generator" in source
                 assert "from ..forms.registration import PasswordCreationForm, RegistrationForm" in source
@@ -113,8 +117,8 @@ class FrontendBuildLayoutTests(SimpleTestCase):
         webpack_common = (ROOT / "webpack" / "common.config.js").read_text()
         assert not (ROOT / "base").exists()
         assert (ROOT / "assets" / "static" / "js" / "base" / "utils" / "index.js").exists()
-        assert (ROOT / "VResume" / "assets" / "static" / "js" / "lib" / "dom.js").read_text().strip() == "// Shared DOM helpers live in the workspace assets package.\nexport { DOM, DOM as default } from 'shared/js/utility/dom.js';"
-        assert (ROOT / "VResume" / "assets" / "static" / "js" / "lib" / "url.js").read_text().strip() == "// Shared URL tracking mixin lives in the workspace assets package.\nexport { URLTrackerMixin } from 'shared/js/utility/url.js';"
+        assert (ROOT / "cms" / "portfolio" / "assets" / "static" / "js" / "lib" / "dom.js").read_text().strip() == "// Shared DOM helpers live in the workspace assets package.\nexport { DOM, DOM as default } from 'shared/js/utility/dom.js';"
+        assert (ROOT / "cms" / "portfolio" / "assets" / "static" / "js" / "lib" / "url.js").read_text().strip() == "// Shared URL tracking mixin lives in the workspace assets package.\nexport { URLTrackerMixin } from 'shared/js/utility/url.js';"
         assert "'@base'" in webpack_common
         for entry in ("ctc-app.js", "lms-app.js", "vresume-app.js"):
             assert entry in webpack_common
@@ -207,20 +211,37 @@ class SiteConfigTests(SimpleTestCase):
 
     def test_workspace_ports_are_unique_for_all_websites(self):
         # Ports are declared per-site under projects/<site>/docker-compose.yml.
-        expected_ports = {"ctc-research": "5070", "lms": "5071", "vresume": "5072"}
+        # ctc-research and lms now share projects/lms/cms/docker-compose.yml,
+        # so deduplicate by compose file path and verify unique ports.
+        expected_ports = {"ctc-research": "5070", "lms": "5070", "vresume": "5072"}
+        seen_compose = set()
+        seen_ports = set()
         for site, port in expected_ports.items():
-            with self.subTest(site=site):
-                compose = (ROOT / WEBSITE_DIRS[site] / "docker-compose.yml").read_text()
+            compose_path = ROOT / WEBSITE_DIRS[site] / "docker-compose.yml"
+            if compose_path in seen_compose:
+                continue
+            seen_compose.add(compose_path)
+            assert port not in seen_ports, f"Duplicate port {port} across unique sites"
+            seen_ports.add(port)
+            with self.subTest(site=site, compose=compose_path.relative_to(ROOT).as_posix()):
+                compose = compose_path.read_text()
                 assert f'PORT: "{port}"' in compose
-        assert len(set(expected_ports.values())) == len(expected_ports)
 
     def test_django_compose_mounts_specific_website_sources(self):
         # Per-site compose files live under projects/<site>/docker-compose.yml.
+        # ctc-research and lms share the same compose file; deduplicate by
+        # checking each unique file only once.
+        _mount_dirs = {"ctc-research": "ctc-research", "vresume": "VResume"}
+        _seen = set()
         for site, directory in WEBSITE_DIRS.items():
-            with self.subTest(site=site):
-                compose = (ROOT / directory / "docker-compose.yml").read_text()
+            compose_path = ROOT / directory / "docker-compose.yml"
+            if compose_path in _seen:
+                continue
+            _seen.add(compose_path)
+            with self.subTest(site=site, compose=compose_path.relative_to(ROOT).as_posix()):
+                compose = compose_path.read_text()
                 assert "../:/app:z" not in compose
-                assert f"../{directory}:/app/{directory}:z" in compose
+                assert f"../{_mount_dirs[site]}:/app/{_mount_dirs[site]}:z" in compose
                 assert "../assets:/app/assets:z" in compose
 
     def test_populate_script_uses_site_specific_fixture_directories(self):

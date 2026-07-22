@@ -22,7 +22,7 @@ def test_website_task_modules_reexport_shared_tasks():
         pytest.skip("dramatiq is not installed in this environment")
 
     task_file = (
-        ROOT / "core" / "ctc-research" / "plugins" / "accounts" / "management" / "services" / "email" / "tasks.py"
+        ROOT / "projects" / "lms" / "cms" / "plugins" / "accounts" / "management" / "services" / "email" / "tasks.py"
     )
     assert task_file.exists(), f"Expected task file at {task_file}"
     spec = importlib.util.spec_from_file_location("ctc_email_tasks", task_file)

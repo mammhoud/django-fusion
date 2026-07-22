@@ -18,44 +18,48 @@ _tests_dir = Path(__file__).parent
 _websites_dir = _tests_dir.parent
 _workspace_root = _websites_dir.parent
 
-_ctc_path = _websites_dir / "core" / "ctc-research"
-_structa_path = _websites_dir / "core" / "lms"
-_vresume_path = _websites_dir / "core" / "VResume"
+_lms_path = _websites_dir / "projects" / "lms" / "cms"
+_portfolio_path = _websites_dir / "projects" / "cms" / "portfolio"
+_lms_full_path = _websites_dir / "projects" / "cms" / "lms-full"
 _rseal_tests = _workspace_root / "libs" / "ceptor-ai" / "tests"
 
-# Support both monorepo layout (websites/<site>) and single-site layout (repo root).
+# Support both monorepo layout (projects/<site>/cms) and single-site layout.
 _repo_root = _websites_dir
 
+# Map old site names to their new paths under projects/:
+# - "ctc-research" and "lms" (old core/) → projects/lms/cms/
+# - "VResume" (old core/)               → projects/cms/portfolio/
+# - lms-full                             → projects/cms/lms-full/
+_ctc_path = _lms_path
+_structa_path = _lms_path
+_vresume_path = _portfolio_path
+
 _plugin_roots = [
-    _repo_root / "plugins",
-    _structa_path / "plugins",
-    _ctc_path / "plugins",
-    _vresume_path / "plugins",
+    _lms_path / "plugins",
+    _portfolio_path / "plugins",
+    _lms_full_path / "plugins",
 ]
 _www_roots = [
-    _repo_root / "core" / "www",
-    _repo_root / "www",
-    _structa_path / "www",
-    _ctc_path / "www",
-    _vresume_path / "www",
+    _lms_path / "www",
+    _portfolio_path / "www",
+    _lms_full_path / "www",
+    _websites_dir / "projects" / "www",
 ]
 _core_roots = [
-    _repo_root / "www" / "core",
-    _structa_path / "www" / "core",
-    _ctc_path / "www" / "core",
-    _vresume_path / "www" / "core",
+    _lms_path / "www" / "core",
+    _portfolio_path / "www" / "core",
+    _lms_full_path / "www" / "core",
 ]
 
 _sys_paths = [
     # Inserted with sys.path.insert(0), so lower-priority roots come first.
     _repo_root,
-    _repo_root / "plugins",
-    _vresume_path,
-    _vresume_path / "plugins",
-    _structa_path,
-    _structa_path / "plugins",
-    _ctc_path,
-    _ctc_path / "plugins",
+    _portfolio_path,
+    _portfolio_path / "plugins",
+    _lms_full_path,
+    _lms_full_path / "plugins",
+    _lms_path,
+    _lms_path / "plugins",
     _rseal_tests,
 ]
 for _p in _sys_paths:
@@ -67,7 +71,7 @@ for _p in _sys_paths:
 # app_label conflicts when multiple sites define apps with the same name
 # (e.g. blog). Tests that need a specific site's app should import it
 # directly from that site's path.
-_plugin_paths = [str(_ctc_path / "plugins")] if (_ctc_path / "plugins").exists() else []
+_plugin_paths = [str(_lms_path / "plugins")] if (_lms_path / "plugins").exists() else []
 _www_paths = [str(p) for p in _www_roots if p.exists()]
 _core_paths = [str(p) for p in _core_roots if p.exists()]
 
@@ -270,10 +274,9 @@ for _mod_path in [
 def _register_tasks_aliases():
     import importlib as _il
     _task_candidates = [
-        _repo_root / "www" / "core" / "content" / "tasks.py",
-        _structa_path / "www" / "core" / "content" / "tasks.py",
-        _ctc_path / "www" / "core" / "content" / "tasks.py",
-        _vresume_path / "www" / "core" / "content" / "tasks.py",
+        _lms_path / "www" / "core" / "content" / "tasks.py",
+        _portfolio_path / "www" / "core" / "content" / "tasks.py",
+        _lms_full_path / "www" / "core" / "content" / "tasks.py",
     ]
     _content_tasks_file = next((p for p in _task_candidates if p.exists()), None)
     if _content_tasks_file is None:

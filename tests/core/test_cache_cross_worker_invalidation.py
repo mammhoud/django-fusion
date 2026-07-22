@@ -34,14 +34,14 @@ from pathlib import Path
 import pytest
 
 
-# This test lives at tests/projects/test_cache_cross_worker_invalidation.py.
-# parents[0] = tests/projects/
+# This test lives at tests/core/test_cache_cross_worker_invalidation.py.
+# parents[0] = tests/core/
 # parents[1] = tests/
 # parents[2] = the workspace root /home/structa.cloud/
-# Canonical project files now live under projects/.
-ROOT = Path(__file__).resolve().parents[2] / "core"
-PRODUCTION_PY = ROOT / "configs" / "settings" / "CD" / "production.py"
-CORE_PY = ROOT / "configs" / "settings" / "CD" / "core.py"
+# Config files moved from core/configs/settings/CD/ to projects/configs/settings/CD/
+_SRC = Path(__file__).resolve().parents[2] / "projects" / "configs" / "settings" / "CD"
+PRODUCTION_PY = _SRC / "production.py"
+CORE_PY = _SRC / "core.py"
 
 
 # Both of these MUST resolve to a SHARED (non-LocMemCache) backend so that
@@ -249,7 +249,7 @@ def _run_cache_op_in_subprocess(cache_dir: str, snippet: str) -> str:
         capture_output=True,
         text=True,
         timeout=20,
-        cwd=str(ROOT),
+        cwd=str(Path(__file__).resolve().parents[2]),
     )
     if result.returncode != 0:
         raise AssertionError(

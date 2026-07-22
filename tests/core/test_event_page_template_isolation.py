@@ -18,10 +18,12 @@ loudly before that copy ever reaches a Wagtail EventPage in another site.
 from pathlib import Path
 
 # tests/ is parent[0], workspace root is parent[1]; canonical apps live under projects/.
-ROOT = Path(__file__).resolve().parents[2] / "core"
+_ROOT = Path(__file__).resolve().parents[2]
 
-LMS_ONLY = ROOT / "lms" / "templates" / "events" / "event_page.html"
-SHARED = ROOT / "assets" / "templates" / "events" / "event_page.html"
+# LMS-only template: projects/lms/cms/templates/events/event_page.html
+# Shared tree: projects/assets/templates/events/event_page.html
+LMS_ONLY = _ROOT / "projects" / "lms" / "cms" / "templates" / "events" / "event_page.html"
+SHARED = _ROOT / "projects" / "assets" / "templates" / "events" / "event_page.html"
 
 
 def test_lms_only_event_page_template_exists():
