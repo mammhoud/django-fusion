@@ -1,9 +1,137 @@
 # 🔄 Recent Changes — Session Log
 
-> **Related Names:** `changelog`, `recent`, `updates`, `infrastructure restructuring`, `auth tests`, `profile button`, `sidecar API`, `scripts reorganization`, `documentation`
+> **Related Names:** `changelog`, `recent`, `updates`, `websocket`, `bolt dashboard`, `cloud sync`, `Makefile`, `branding`
 > **Tags:** #changelog #recent #updates
 
 Documentation for features and changes added in the most recent development session.
+
+---
+
+## django-fusion — DataToken Sync-Tagging System
+
+### What Changed
+Added a lightweight sync-tagging model to `django-fusion` that marks database rows for ordered synchronisation:
+
+- **`DataToken` model** — GenericForeignKey tagging for ANY model row (supports int, UUID, slug PKs via `CharField` object_id)
+- **`DataTokenManager`** — sync-aware queryset: `unsynced()`, `for_node()`, `ordered()`, `roots()`, `sync_batch()`
+- **`DataTokenMixin`** — drop-in mixin for models: `tag_for_sync()`, `mark_synced()`, `untag_for_sync()` with cached ContentType
+- **Parent/child tree** — self-referential FK for ordered sync trees (invoice → items, depth-first)
+- **Progress tracking** — `sync_status`, `retry_count`, `error_message`, `synced_at` on every token
+- **Auto-untag signal** — `sync_log_success_handler` (plain function, manual connection to SyncLog)
+- **Audit trail** — `untag_for_sync()` marks synced by default, `force_delete=True` for hard deletes
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `libs/django-fusion/src/django_fusion/core/models/datatoken.py` | New — DataToken model + manager + mixin + signal handler (~370 lines) |
+| `libs/django-fusion/src/django_fusion/core/models/__init__.py` | Updated — 6 new exports |
+| `docs/features/data-token-sync-tagging.md` | New — full documentation (161 lines) |
+
+### Benefits
+- **Faster sync** — ordered batch queries (indexed) instead of full table scans
+- **Data integrity** — parent→child tree ensures invoice before items
+- **Multi-node** — `node_id` scoping for per-device sync windows
+- **Retry control** — built-in `retry_count` + `error_message` tracking
+- **UUID PK support** — `CharField(255)` object_id works with any PK type
+
+---
+
+## POS Cloud — Bolt Dashboard HTML Page
+
+### What Changed
+Added a fully self-contained analytics dashboard HTML page at `/apis/data/`:
+
+- **Dark-themed dashboard** matching Unfold admin (slate bg, emerald green accent)
+- **6 KPI cards** — Products, Sales, Inventory Txs, Branches, Organizations, Sync Events — with `data-sync-card` attributes for live WS updates
+- **Status indicator** — `sync-status-dot` + `sync-status-label` managed by `bolt-sync-events.js`
+- **API endpoint links** — 5 cards linking to bolt data endpoints
+- **Quick admin links** — 5 cards linking to Unfold admin sections
+- **Auto-refresh** — `fetchStats()` hydrates KPIs on load and every 30s
+- **No duplicate WebSocket** — inline WS code removed; `bolt-sync-events.js` (injected by middleware) handles all live updates
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `projects/pos/pos-cloud/configs/urls.py` | Updated — `DASHBOARD_HTML` constant + `_bolt_dispatch` now serves HTML when `route` is empty |
+
+### Dashboard Verification
+- All 6 API endpoints verified: 200 OK (stats, products, sales, inventory, branches, sync-logs)
+- WebSocket broadcasts: 3/3 entity types received live (products, sales, inventory)
+- pos-full scheduler: 752 syncs, 0 errors, running with 10s interval
+- Sync log viewer panel: appears at bottom-right, 50-entry ring buffer
+
+---
+
+## POS Cloud — WebSocket Sync Events + Real-Time Dashboard
+
+### What Changed
+Added real-time WebSocket sync event pipeline to the POS Cloud Django server:
+
+- **Django Channels ASGI server** with `daphne` replacing WSGI-only gunicorn
+- **WebSocket endpoint** at `/ws/sync-events/` — `SyncEventConsumer` broadcasts live events
+- **Channel layer** (in-memory for dev, Redis-ready for prod) connecting sync receivers → WebSocket
+- **4 sync receivers** (`products`, `sales`, `inventory`, `heartbeat`) broadcast events on every push
+- **BoltAPI catch-all bridge** at `/apis/data/*` — bridges Django URL dispatcher to `django_bolt` internal routing
+- **Path rename**: `/bolt/` → `/apis/`, `/bolt-api/` → `/apis/data/`
+
+### Dashboard Enhancements
+- **Sync event log viewer** — fixed-position panel (bottom-right) showing last 50 live events with colored badges, relative timestamps, collapse toggle, clear button, and reconnect indicator (pulsing amber dot)
+- **Admin dashboard badges** — live sync activity counters (Products, Sales, Inventory, Heartbeat) with delta badges (+N pulse), WS status dot (green/amber/gray), and server-rendered initial values
+- **BoltSyncEventsMiddleware** — injects JS script into `/apis/` and `/admin/` page responses
+
+### Sync Enhancements
+- **`/sync/scheduler/interval`** endpoint — change sync interval at runtime (PATCH, validated ≥5s)
+- **Inventory transaction_type mapping** — `in/out` → `addition/removal` for pos-cloud compatibility
+- **Scheduled sync** — `BranchSyncScheduler` with `_refresh_interval()` for persisted config
+
+### Branding
+- **pos-crest.svg** — animated SVG crest logo deployed to all 3 POS editions (`src/assets/`, `src-tauri/icons/`, `sidecar/static/`) and pos-cloud (`core/static/`)
+- Updated Unfold admin settings (`SITE_ICON`, `SITE_LOGO`) and sidecar admin templates
+
+### Files Changed
+| File | Change |
+|------|--------|
+| `projects/pos/pos-cloud/configs/asgi.py` | New — ASGI app with ProtocolTypeRouter |
+| `projects/pos/pos-cloud/core/consumers.py` | New — SyncEventConsumer (AsyncWebsocketConsumer) |
+| `projects/pos/pos-cloud/core/static/js/bolt-sync-events.js` | New — WebSocket client + log viewer + badge updater |
+| `projects/pos/pos-cloud/core/middleware.py` | New — JS injection middleware |
+| `projects/pos/pos-cloud/core/sync_api.py` | Updated — `_broadcast_sync_event()` in all 4 receivers |
+| `projects/pos/pos-cloud/configs/__init__.py` | Updated — daphne, channels, ASGI, CHANNEL_LAYERS, SITE_ICON/LOGO |
+| `projects/pos/pos-cloud/configs/urls.py` | Updated — BoltAPI catch-all bridge, path renames |
+| `projects/pos/pos-cloud/templates/admin/dashboard.html` | Updated — live sync activity badges |
+| `projects/pos/pos-cloud/configs/dashboard.py` | Updated — sync stats context |
+| `projects/pos/pos-cloud/pyproject.toml` | Updated — channels, daphne deps |
+| `projects/pos/pos-cloud/.env` | New — Django superuser + DB config |
+
+---
+
+## POS — Makefile Cloud Targets
+
+### What Changed
+Added 6 new `cloud-*` targets to `projects/pos/Makefile`:
+
+| Target | Purpose |
+|--------|---------|
+| `make cloud-install` | Install dependencies + migrate |
+| `make cloud-run` | Start daphne ASGI server on :8082 |
+| `make cloud-dev` | Start with `--reload` for development |
+| `make cloud-check` | Validate Django imports |
+| `make cloud-test` | Run cloud test suite |
+| `make cloud-clean` | Remove database + bytecode cache |
+
+---
+
+## POS — .env Files for All Editions
+
+### What Changed
+Created `.env` files with sensible defaults for all 4 editions:
+
+| Edition | File | Key Config |
+|---------|------|------------|
+| pos-mini | `.env` (28 lines) | SUPERUSER + DATABASE_URL + PRESET |
+| pos-solo | `.env` (34 lines) | + SIDECAR_HOST/PORT + POS_NODE_ID |
+| pos-full | `.env` (50 lines) | + CLOUD_CRM_URL + SYNC_INTERVAL + Django admin |
+| pos-cloud | `.env` (43 lines) | + DJANGO_SUPERUSER + DB config + SERVER_PORT |
 
 ---
 

@@ -26,6 +26,7 @@
 .PHONY: check-mini check-solo check-full
 .PHONY: server-install server-run server-dev server-check server-test server-clean
 .PHONY: server-full-install server-full-run server-full-dev server-full-check server-full-test server-full-clean
+.PHONY: cloud-install cloud-run cloud-dev cloud-check cloud-test cloud-clean
 .PHONY: screenshots publish
 
 # ── Edition directories ────────────────────────────────────────────────────
@@ -88,6 +89,14 @@ help:                 ## Show this help menu
 	@echo '  make server-full-check      Validate imports'
 	@echo '  make server-full-test       Run 45-test suite'
 	@echo '  make server-full-clean      Remove database'
+	@echo ''
+	@echo '── POS Cloud Server (Django ASGI + Unfold Admin + Bolt Dashboard) ──'
+	@echo '  make cloud-install     Install cloud server dependencies'
+	@echo '  make cloud-run         Start daphne ASGI server (port 8082)'
+	@echo '  make cloud-dev         Start with auto-reload'
+	@echo '  make cloud-check       Validate Django imports'
+	@echo '  make cloud-test        Run cloud test suite'
+	@echo '  make cloud-clean       Remove cloud database'
 	@echo ''
 	@echo '── Publishing ──────────────────────────────────────────────'
 	@echo '  make screenshots       Capture marketplace screenshots'
@@ -247,6 +256,41 @@ server-full-test:                 ## Run POS Full test suite (45 tests)
 server-full-clean:                ## Clean POS Full server data
 	rm -f $(POS_FULL)/sidecar/full_portal.db
 	@echo '✓ Database cleaned'
+
+# ── POS Cloud Server (Django ASGI + Unfold Admin + Bolt Dashboard) ─────
+
+POS_CLOUD := pos-cloud
+
+cloud-install:        ## Install cloud server dependencies
+	pip install channels daphne django-unfold django-bolt django-fusion django-filter djangorestframework msgspec
+	cd $(POS_CLOUD) && python3 manage.py migrate
+	@echo '✓ POS Cloud server dependencies installed'
+
+cloud-run:            ## Start daphne ASGI server (port 8082)
+	cd $(POS_CLOUD) && daphne configs.asgi:application --port 8082 --bind 0.0.0.0
+
+cloud-dev:            ## Start daphne with auto-reload
+	cd $(POS_CLOUD) && daphne configs.asgi:application --port 8082 --bind 0.0.0.0 --reload
+
+cloud-check:          ## Validate Django imports
+	cd $(POS_CLOUD) && python3 -c '
+import os; os.environ.setdefault("DJANGO_SETTINGS_MODULE", "configs")
+import django; django.setup()
+from core.models import Organization, Branch, BranchProduct
+from core.sync_api import sync_receive_products, _broadcast_sync_event
+from core.consumers import SyncEventConsumer
+print("✓ POS Cloud imports OK")
+'
+
+cloud-test:           ## Run cloud test suite
+	cd $(POS_CLOUD) && python3 -m pytest tests/ -v --tb=short || echo 'Tests not found or failed'
+
+cloud-clean:          ## Remove cloud database and bytecode cache
+	rm -f $(POS_CLOUD)/pos_cloud.db
+	find $(POS_CLOUD) -type d -name __pycache__ -exec rm -rf {} + 2>/dev/null || true
+	find $(POS_CLOUD) -name '*.pyc' -delete 2>/dev/null || true
+	@echo '✓ Cloud database and cache cleaned'
+
 
 # ── Publishing ────────────────────────────────────────────────────────────
 

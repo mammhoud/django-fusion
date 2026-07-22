@@ -75,6 +75,21 @@
 | **Offline Queue** | All | Queue transactions when offline, sync when back online |
 | **Barcode Scanner** | Solo+ | Native barcode scanning with camera/device scanner |
 
+### ✅ Done — Shipped
+
+| Feature | Edition | Description |
+|---------|---------|-------------|
+| **WebSocket Sync Events** | ☁️ | Real-time sync event broadcasting via Django Channels to bolt dashboard + Unfold admin |
+| **Bolt Analytics Dashboard** | ☁️ | Self-contained HTML dashboard at `/apis/data/` — 6 KPI cards, live WS updates, sync event log viewer |
+| **Sync Event Log Viewer** | ☁️ | Fixed-position panel (50-entry ring buffer, collapse, reconnect indicator) on bolt + admin dashboards |
+| **DataToken Sync Tagging** | 🔧 | django-fusion model for ordered sync row tagging with parent/child trees, progress tracking, auto-untag |
+| **Cloud Sync Scheduler** | Full | `BranchSyncScheduler` with configurable interval, toggle, and pos-cloud push |
+| **pos-cloud Makefile Targets** | ☁️ | `make cloud-run`, `cloud-dev`, `cloud-check`, `cloud-test`, `cloud-clean` |
+| **POS Crest Branding** | All | Animated SVG crest logo across all editions + pos-cloud Unfold admin |
+| **.env Config Files** | All | `.env` files with sensible defaults for all 4 editions (mini, solo, full, cloud) |
+
+> 🔧 = django-fusion library  |  ☁️ = pos-cloud server
+
 ### P2 🟢 — Planned
 
 | Feature | Edition | Description |
@@ -186,6 +201,12 @@
 ---
 
 ## django-fusion (Component Framework)
+
+### ✅ Done — Shipped
+
+| Feature | Description |
+|---------|-------------|
+| **DataToken Sync Tagging** | GenericForeignKey-based sync row tagging with parent/child tree, progress tracking, auto-untag, UUID PK support |
 
 ### P1 🟡 — Next Up
 

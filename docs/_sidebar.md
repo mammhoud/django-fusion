@@ -72,6 +72,7 @@
   - [Testing Strategies](tests/testing-strategies.md)
 - [🎯 Features](features/)
   - [Feature Roadmap](features/feature-roadmap.md)
+  - [DataToken Sync Tagging](features/data-token-sync-tagging.md)
 - [📦 Publishing](publish/)
   - [Docker Deploy](publish/docker-deploy.md)
   - [POS Release](publish/pos-release.md)
