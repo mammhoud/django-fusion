@@ -84,7 +84,7 @@ class EmailLog(models.Model):
 
     class Meta:
         app_label = 'django_fusion'
-        db_table = 'email_log'
+        db_table = 'df_email_log'
         ordering = ['-timestamp']
         indexes = [
             models.Index(fields=['status', 'timestamp']),
@@ -391,7 +391,7 @@ class EmailTemplate(models.Model):
 
     class Meta:
         app_label = 'django_fusion'
-        db_table = 'email_template'
+        db_table = 'df_email_template'
         ordering = ['template_type', 'name', 'version']
         indexes = [
             models.Index(fields=['template_type', 'is_active']),
@@ -408,7 +408,7 @@ class EmailTemplate(models.Model):
             models.UniqueConstraint(
                 fields=["template_type", "language", "version"],
                 condition=models.Q(is_default=True),
-                name="unique_default_template_per_type_language_version",
+                name="df_unique_default_template_per_type_language_version",
             )
         ]
 
@@ -540,7 +540,7 @@ class UserGroup(models.Model):
 
     class Meta:
         app_label = 'django_fusion'
-        db_table = 'user_group'
+        db_table = 'df_user_group'
         ordering = ['name']
 
     def __str__(self):

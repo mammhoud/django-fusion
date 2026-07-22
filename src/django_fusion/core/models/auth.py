@@ -52,7 +52,7 @@ class UserRole(models.Model):
 
     class Meta:
         app_label = 'django_fusion'
-        db_table = 'user_role'
+        db_table = 'df_user_role'
         unique_together = [['user', 'role']]
         ordering = ['user', '-role']
 
