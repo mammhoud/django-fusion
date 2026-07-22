@@ -125,6 +125,8 @@ class Sale(models.Model):
     subtotal = models.DecimalField(max_digits=12, decimal_places=2)
     tax_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
     discount_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0)
+    cashback_amount = models.DecimalField(max_digits=10, decimal_places=2, default=0,
+        help_text="Cashback/reward amount applied to this sale")
     total = models.DecimalField(max_digits=12, decimal_places=2)
     payment_method = models.CharField(max_length=20, choices=PAYMENT_METHODS, default="cash")
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default="completed")
@@ -175,6 +177,10 @@ class InventoryTransaction(models.Model):
     TRANSACTION_TYPES = [
         ("in", "Stock In"), ("out", "Stock Out"),
         ("adjustment", "Adjustment"), ("return", "Return"),
+        ("transfer_out", "Transfer Out (to other inventory)"),
+        ("transfer_in", "Transfer In (from other inventory)"),
+        ("waste", "Waste / Disposal"),
+        ("restock", "Restock (from return)"),
     ]
 
     product = models.ForeignKey(Product, on_delete=models.CASCADE, related_name="inventory_transactions")
@@ -183,6 +189,11 @@ class InventoryTransaction(models.Model):
     reference = models.CharField(max_length=100, blank=True, default="")
     notes = models.TextField(blank=True, default="")
     created_by = models.CharField(max_length=100, blank=True, default="")
+    # Multi-inventory support
+    inventory_id = models.CharField(max_length=50, blank=True, default="main", db_index=True,
+        help_text="Inventory/location identifier. 'main' = primary stock.")
+    transfer_to_inventory = models.CharField(max_length=50, blank=True, default="",
+        help_text="Target inventory ID for transfer_out transactions (pos-full only).")
     created_at = models.DateTimeField(auto_now_add=True)
     # Sync tracking
     is_synced = models.BooleanField(default=False, db_index=True)

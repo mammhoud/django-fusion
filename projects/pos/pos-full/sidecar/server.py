@@ -348,7 +348,7 @@ def add_cors(response: Response):
 app.before_request()(create_auth_middleware(
     token_model=DeviceToken,
     api_key=API_KEY,
-    public_paths={"/", "/health"},
+    public_paths={"/", "/health", "/auth/token", "/auth/verify", "/docs", "/openapi.json"},
 ))
 
 
