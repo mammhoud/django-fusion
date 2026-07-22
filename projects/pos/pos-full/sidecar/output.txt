@@ -1,0 +1,17 @@
+INFO:pos_full_server:============================================================
+INFO:pos_full_server:POS Full Server starting on 0.0.0.0:8766
+INFO:pos_full_server:Database: /home/structa.cloud/projects/pos/pos-full/restaurant.db
+INFO:pos_full_server:Django ORM: True | Pydantic: True
+INFO:pos_full_server:Models loaded: 25 Registry = 25 total
+INFO:pos_full_server:============================================================
+INFO:pos_full_server:── Available API Endpoints ──
+INFO:pos_full_server:  CRUD:   /products, /customers, /sales, /inventory, ...
+INFO:pos_full_server:  Nodes:  GET/POST/DELETE /nodes, /nodes/register, /nodes/heartbeat
+INFO:pos_full_server:  Config: GET/POST/DELETE /nodes/:node_id/config, /config/*
+INFO:pos_full_server:  Sync:   GET /sync/status | POST /sync/trigger | POST /api/sync/push/:type
+INFO:pos_full_server:  Auth:   GET/POST /auth/* (token management)
+INFO:pos_full_server:  WS:     /ws/nodes (node events) | /ws/config (config events)
+INFO:pos_full_server:  Info:   GET /, /health, /stats
+INFO:pos_full_server:  Approvals: POST /approvals/:pk/approve|reject
+INFO:pos_full_server:  Webhooks:  POST /webhooks/receive/:signal | GET /webhooks/receive
+INFO:pos_full_server:────────────────────────────────────────────────────────────

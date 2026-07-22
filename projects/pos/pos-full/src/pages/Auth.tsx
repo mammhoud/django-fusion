@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaEnvelope, FaLock, FaUser, FaKey, FaCheck, FaArrowRight, FaShieldAlt } from 'react-icons/fa';
+import { FaEnvelope, FaLock, FaUser, FaKey, FaCheck, FaArrowRight, FaShieldAlt, FaEye, FaEyeSlash } from 'react-icons/fa';
 import { useAuth } from '../contexts/AuthContext';
 import { useTranslation } from 'react-i18next';
 import LanguageToggle from '../components/LanguageToggle';
@@ -29,6 +29,9 @@ export default function Auth() {
   const [success, setSuccess] = useState('');
   const [codeSending, setCodeSending] = useState(false);
   const [rememberMe, setRememberMe] = useState(true);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [showLoginPassword, setShowLoginPassword] = useState(false);
 
   // Determine initial step on mount
   useEffect(() => {
@@ -62,6 +65,13 @@ export default function Auth() {
     };
     init();
   }, []);
+
+  // Auto-dismiss errors after 6 seconds
+  useEffect(() => {
+    if (!error) return;
+    const timer = setTimeout(() => setError(''), 6000);
+    return () => clearTimeout(timer);
+  }, [error]);
 
   const clearMessages = () => {
     setError('');
@@ -99,6 +109,10 @@ export default function Auth() {
     }
     if (!email.trim()) {
       setError(t('auth.validationEmailRequired'));
+      return;
+    }
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError(t('auth.validationEmailInvalid'));
       return;
     }
     if (!code.trim()) {
@@ -147,6 +161,8 @@ export default function Auth() {
   const switchToRegister = () => {
     clearMessages();
     setCode('');
+    setPassword('');
+    setConfirmPassword('');
     setStep('register');
   };
 
@@ -320,15 +336,25 @@ export default function Auth() {
                     <FaLock className="inline mr-2 text-teal-400" />
                     {t('auth.password')}
                   </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white 
-                      placeholder:text-white/30 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30
-                      transition-all duration-200"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      className="w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border border-white/20 text-white 
+                        placeholder:text-white/30 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30
+                        transition-all duration-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword(!showPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                      aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                    >
+                      {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Confirm Password */}
@@ -337,15 +363,32 @@ export default function Auth() {
                     <FaLock className="inline mr-2 text-teal-400" />
                     {t('auth.confirmPassword')}
                   </label>
-                  <input
-                    type="password"
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="••••••••"
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white 
-                      placeholder:text-white/30 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30
-                      transition-all duration-200"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showConfirmPassword ? 'text' : 'password'}
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      placeholder="••••••••"
+                      onKeyDown={(e) => e.key === 'Enter' && handleRegister()}
+                      className={`w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border text-white 
+                        placeholder:text-white/30 focus:outline-none focus:ring-1 focus:ring-teal-400/30
+                        transition-all duration-200 ${
+                          confirmPassword && password === confirmPassword
+                            ? 'border-green-400/40 focus:border-green-400'
+                            : confirmPassword
+                              ? 'border-red-400/40 focus:border-red-400'
+                              : 'border-white/20 focus:border-teal-400'
+                        }`}
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                      aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                    >
+                      {showConfirmPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Create Account Button */}
@@ -426,16 +469,26 @@ export default function Auth() {
                     <FaLock className="inline mr-2 text-teal-400" />
                     {t('auth.password')}
                   </label>
-                  <input
-                    type="password"
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="••••••••"
-                    onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
-                    className="w-full px-4 py-3 rounded-lg bg-white/5 border border-white/20 text-white 
-                      placeholder:text-white/30 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30
-                      transition-all duration-200"
-                  />
+                  <div className="relative">
+                    <input
+                      type={showLoginPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="••••••••"
+                      onKeyDown={(e) => e.key === 'Enter' && handleLogin()}
+                      className="w-full px-4 py-3 pr-12 rounded-lg bg-white/5 border border-white/20 text-white 
+                        placeholder:text-white/30 focus:outline-none focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30
+                        transition-all duration-200"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowLoginPassword(!showLoginPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-white/40 hover:text-white/80 transition-colors"
+                      aria-label={showLoginPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                    >
+                      {showLoginPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                    </button>
+                  </div>
                 </div>
 
                 {/* Remember Me */}

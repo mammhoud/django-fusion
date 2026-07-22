@@ -38,3 +38,6 @@ def register_all(app):
 
     from routes import reports as _reports
     _reports.register_report_routes(app)
+
+    from routes import admin as _admin
+    _admin.register_admin_routes(app)

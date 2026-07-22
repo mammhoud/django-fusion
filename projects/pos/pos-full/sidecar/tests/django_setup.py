@@ -9,9 +9,9 @@ Usage:
     from tests.django_setup import _DJANGO_READY
     assert _DJANGO_READY, "Django ORM bootstrap failed"
 
-    # Shared modules are already importable after this:
-    from shared.models.audit import SignalEvent
-    from shared.signals import fire_config_changed, ...
+    # Local modules are already importable after this:
+    from models.audit import SignalEvent
+    from signals import fire_config_changed, ...
 """
 
 from __future__ import annotations
@@ -26,16 +26,14 @@ logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
-# Path setup — mirror server.py to make shared/ importable
+# Path setup — add sidecar dir for local imports
 # ---------------------------------------------------------------------------
 
 _HERE = Path(__file__).resolve().parent  # tests/
 _SIDECAR = _HERE.parent                   # sidecar/
-_POS_FULL = _SIDECAR.parent               # pos-full/
-_POS = _POS_FULL.parent                   # pos/  <-- shared module lives here
 
-if str(_POS) not in sys.path:
-    sys.path.insert(0, str(_POS))
+if str(_SIDECAR) not in sys.path:
+    sys.path.insert(0, str(_SIDECAR))
 
 # ---------------------------------------------------------------------------
 # Django ORM bootstrap
@@ -48,7 +46,7 @@ try:
     from django.conf import settings
 
     # Shared database with Rust backend (pos-full/restaurant.db)
-    DB_PATH = _POS_FULL / "restaurant.db"
+    DB_PATH = _SIDECAR.parent / "restaurant.db"
 
     if not settings.configured:
         settings.configure(
@@ -73,10 +71,10 @@ try:
 
     from django.db import connection
 
-    # ── Import all shared models used by webhook tests ──
-    from shared.models.audit import SignalEvent
-    from shared.models.token import DeviceToken
-    from shared.models.approval import SyncApproval
+    # ── Import all local models used by webhook tests ──
+    from models.audit import SignalEvent
+    from models.token import DeviceToken
+    from models.approval import SyncApproval
 
     # ── Import local registry models ──
     from models.node import Node, Heartbeat, NodeEvent
@@ -110,11 +108,11 @@ try:
                 pass
 
     # ── Import signal handlers (side-effect: registers @receiver handlers) ──
-    import shared.handlers.signal  # noqa: F401
-    from shared.handlers.signal import WEBHOOK_URLS, _send_webhook
+    import signal_handlers  # noqa: F401
+    from signal_handlers import WEBHOOK_URLS, _send_webhook
 
     # ── Import signal fire functions ──
-    from shared.signals import (  # noqa: F401 — re-exported via __all__
+    from signals import (  # noqa: F401 — re-exported via __all__
         fire_config_changed,
         fire_device_status_changed,
         fire_config_synced,

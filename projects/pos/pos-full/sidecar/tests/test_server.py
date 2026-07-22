@@ -31,11 +31,6 @@ _SIDECAR_DIR = Path(__file__).resolve().parent.parent  # sidecar/
 if str(_SIDECAR_DIR) not in sys.path:
     sys.path.insert(0, str(_SIDECAR_DIR))
 
-# Add projects/pos/ to path for shared module
-_POS = _SIDECAR_DIR.parent.parent  # pos/
-if str(_POS) not in sys.path:
-    sys.path.insert(0, str(_POS))
-
 # ---------------------------------------------------------------------------
 # Django ORM bootstrap (in-memory database — independent of other test files)
 # ---------------------------------------------------------------------------
@@ -68,12 +63,12 @@ from django.test import TestCase
 from models.node import Node, Heartbeat, NodeEvent
 from models.config import DeviceConfig, MasterDevice, CloudLink
 from models.sync import SyncLog
-from shared.models.audit import SignalEvent
-from shared.models.token import DeviceToken
-from shared.models.approval import SyncApproval
+from models.audit import SignalEvent
+from models.token import DeviceToken
+from models.approval import SyncApproval
 from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
 from models.ops import KitchenTicket, SupportTicket
-from shared.__about__ import __version__
+from __about__ import __version__
 
 # Create tables for all managed=True models
 _TABLES = [

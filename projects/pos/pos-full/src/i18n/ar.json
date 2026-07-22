@@ -178,7 +178,9 @@
     "searchProducts": "ابحث عن منتجات...",
     "allCategories": "جميع الفئات",
     "categoryFilter": "تصفية حسب الفئة",
-    "noProductsMatch": "لا توجد منتجات تطابق بحثك."
+    "noProductsMatch": "لا توجد منتجات تطابق بحثك.",
+    "viewCart": "عرض السلة",
+    "editCart": "تعديل السلة"
   },
   "analytics": {
     "title": "لوحة التحليلات",
@@ -725,6 +727,10 @@
     "switchToAr": "التبديل إلى العربية",
     "fr": "Français",
     "switchToFr": "التبديل إلى الفرنسية",
+    "de": "Deutsch",
+    "switchToDe": "التبديل إلى الألمانية",
+    "es": "Español",
+    "switchToEs": "التبديل إلى الإسبانية",
     "selectLanguage": "اللغة"
   },
   "datePicker": {
@@ -792,7 +798,9 @@
     "validationPasswordRequired": "الرجاء إدخال كلمة المرور",
     "validationPasswordLength": "يجب أن تكون كلمة المرور 6 أحرف على الأقل",
     "validationPasswordMatch": "كلمات المرور غير متطابقة",
-    "rememberMe": "تذكرني"
+    "rememberMe": "تذكرني",
+    "showPassword": "إظهار كلمة المرور",
+    "hidePassword": "إخفاء كلمة المرور"
   },
   "confirmDialog": {
     "cancel": "إلغاء",

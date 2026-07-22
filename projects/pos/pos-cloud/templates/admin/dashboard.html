@@ -1,0 +1,164 @@
+{% extends "unfold/layouts/skeleton.html" %}
+
+{% block content %}
+<div id="pos-cloud-dashboard">
+
+  <!-- ═══ Live Sync Activity Badges ═══ -->
+  <div class="mb-6" data-sync-section="activity">
+    <div class="flex items-center gap-3 mb-3">
+      <h2 class="text-sm font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Live Sync Activity</h2>
+      <span id="sync-status-dot" class="w-2 h-2 rounded-full bg-gray-400" data-sync-status="disconnected" title="WebSocket status"></span>
+      <span id="sync-status-label" class="text-xs text-gray-400">disconnected</span>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+      <!-- Products badge -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4" data-sync-card="products">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Products</p>
+            <p class="text-xl font-bold text-gray-900 dark:text-white" data-sync-count="products">{{ sync_stats.products_synced }}</p>
+          </div>
+          <span class="material-symbols-outlined text-2xl text-emerald-500">inventory_2</span>
+        </div>
+        <div class="mt-1" data-sync-badge="products" style="display:none">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 rounded-full">
+            <span data-sync-delta="products">+0</span> just now
+          </span>
+        </div>
+      </div>
+      <!-- Sales badge -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4" data-sync-card="sales">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Sales</p>
+            <p class="text-xl font-bold text-gray-900 dark:text-white" data-sync-count="sales">{{ sync_stats.sales_synced }}</p>
+          </div>
+          <span class="material-symbols-outlined text-2xl text-blue-500">shopping_cart</span>
+        </div>
+        <div class="mt-1" data-sync-badge="sales" style="display:none">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 rounded-full">
+            <span data-sync-delta="sales">+0</span> just now
+          </span>
+        </div>
+      </div>
+      <!-- Inventory badge -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4" data-sync-card="inventory">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Inventory</p>
+            <p class="text-xl font-bold text-gray-900 dark:text-white" data-sync-count="inventory">{{ sync_stats.inventory_synced }}</p>
+          </div>
+          <span class="material-symbols-outlined text-2xl text-amber-500">warehouse</span>
+        </div>
+        <div class="mt-1" data-sync-badge="inventory" style="display:none">
+          <span class="inline-flex items-center gap-1 px-2 py-0.5 text-xs font-medium bg-amber-100 text-amber-700 dark:bg-amber-900/30 dark:text-amber-400 rounded-full">
+            <span data-sync-delta="inventory">+0</span> just now
+          </span>
+        </div>
+      </div>
+      <!-- Heartbeat -->
+      <div class="bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4" data-sync-card="heartbeat">
+        <div class="flex items-center justify-between">
+          <div>
+            <p class="text-xs text-gray-400 uppercase tracking-wide">Last Sync</p>
+            <p class="text-lg font-bold text-gray-900 dark:text-white" data-sync-last-branch>{{ sync_stats.last_sync_branch }}</p>
+          </div>
+          <span class="material-symbols-outlined text-2xl text-purple-500">sync</span>
+        </div>
+        <p class="text-xs text-gray-400 mt-1" data-sync-last-time="{% if sync_stats.last_sync_at %}{{ sync_stats.last_sync_at }}{% endif %}">
+          {% if sync_stats.last_sync_at %}{{ sync_stats.last_sync_at }}{% else %}Never{% endif %}
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPI Cards -->
+  <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+    {% for card in cards %}
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between">
+        <div>
+          <p class="text-sm text-gray-500 dark:text-gray-400">{{ card.title }}</p>
+          <p class="text-2xl font-bold text-gray-900 dark:text-white">{{ card.value }}</p>
+        </div>
+        <span class="material-symbols-outlined text-3xl text-emerald-500">{{ card.icon }}</span>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+
+  <!-- Main Grid -->
+  <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <!-- Left: Recent Leads -->
+    <div class="lg:col-span-2 bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex items-center justify-between mb-4">
+        <h2 class="text-lg font-semibold text-gray-900 dark:text-white">Recent Leads</h2>
+        <a href="/admin/core/lead/" class="text-sm text-emerald-600 hover:text-emerald-700">View All →</a>
+      </div>
+      {% if recent_leads %}
+      <div class="overflow-x-auto">
+        <table class="w-full text-sm">
+          <thead>
+            <tr class="border-b border-gray-200 dark:border-gray-700">
+              <th class="text-left py-2 text-gray-500">Name</th>
+              <th class="text-left py-2 text-gray-500">Status</th>
+              <th class="text-left py-2 text-gray-500">Created</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for lead in recent_leads %}
+            <tr class="border-b border-gray-100 dark:border-gray-700/50">
+              <td class="py-2">{{ lead.first_name }} {{ lead.last_name }}</td>
+              <td class="py-2">
+                <span class="px-2 py-1 text-xs rounded-full 
+                  {% if lead.status == 'new' %}bg-blue-100 text-blue-800
+                  {% elif lead.status == 'won' %}bg-green-100 text-green-800
+                  {% elif lead.status == 'lost' %}bg-red-100 text-red-800
+                  {% else %}bg-gray-100 text-gray-800{% endif %}">
+                  {{ lead.get_status_display }}
+                </span>
+              </td>
+              <td class="py-2 text-gray-500">{{ lead.created_at|date:"M d, Y" }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+      {% else %}
+      <p class="text-gray-400 text-center py-8">No leads yet. <a href="/admin/core/lead/add/" class="text-emerald-600">Create one →</a></p>
+      {% endif %}
+    </div>
+
+    <!-- Right: Quick Actions -->
+    <div class="bg-white dark:bg-gray-800 rounded-lg shadow p-6 border border-gray-200 dark:border-gray-700">
+      <h2 class="text-lg font-semibold text-gray-900 dark:text-white mb-4">Quick Actions</h2>
+      <div class="space-y-3">
+        <a href="/admin/core/lead/add/" class="block w-full text-center px-4 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition-colors">
+          + New Lead
+        </a>
+        <a href="/admin/core/organization/add/" class="block w-full text-center px-4 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors">
+          + New Organization
+        </a>
+        <a href="/admin/core/branch/add/" class="block w-full text-center px-4 py-3 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition-colors">
+          + New Branch
+        </a>
+        <a href="/reports/" class="block w-full text-center px-4 py-3 bg-gray-600 text-white rounded-lg hover:bg-gray-700 transition-colors">
+          Generate Report
+        </a>
+      </div>
+
+      {% if recent_reports %}
+      <h3 class="text-sm font-medium text-gray-500 mt-6 mb-2">Recent Reports</h3>
+      <ul class="space-y-2 text-sm">
+        {% for report in recent_reports %}
+        <li class="flex items-center justify-between">
+          <span class="text-gray-700 dark:text-gray-300 truncate mr-2">{{ report.title }}</span>
+          <span class="text-gray-400 text-xs">{{ report.created_at|timesince }} ago</span>
+        </li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -35,18 +35,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Add shared-portal to Python path (canonical source for 'shared' module)
-# Must come BEFORE any shared imports (including --version fast-path)
-# ---------------------------------------------------------------------------
-
+# Path setup — ensure sidecar dir is importable
 _PATH = Path(__file__).resolve().parent
-if str(_PATH.parent.parent) not in sys.path:
-    sys.path.insert(0, str(_PATH.parent.parent))
+if str(_PATH) not in sys.path:
+    sys.path.insert(0, str(_PATH))
 
 # Fast-path: --version does not require Django bootstrap
 if "--version" in sys.argv:
-    from shared.__about__ import __title_solo__, __version__
+    from __about__ import __title_solo__, __version__
     print(f"{__title_solo__} v{__version__}")
     sys.exit(0)
 
@@ -90,11 +86,11 @@ try:
     from models.config import DeviceConfig, MasterDevice, CloudLink
     from models.sync import SyncLog
 
-    # ── Shared models ──
-    from shared.models.approval import SyncApproval
-    from shared.services.sync import ProductSyncEngine
-    from shared.models.token import DeviceToken
-    from shared.models.audit import SignalEvent
+    # ── Local shared-style models ──
+    from models.approval import SyncApproval
+    from services.sync import ProductSyncEngine
+    from models.token import DeviceToken
+    from models.audit import SignalEvent
 
     _ALL_MODELS = [
         Category, Product, Customer, Sale, SaleItem,
@@ -172,15 +168,17 @@ def _ensure_tables(use_migrations: bool) -> None:
     """
     if use_migrations:
         from django.core.management import call_command
-        call_command("migrate", verbosity=0)
+        call_command("migrate", interactive=False, verbosity=0)
         logger.info("Tables created via Django migrations (--migrate)")
     else:
-        with connection.schema_editor() as schema_editor:
-            for model in _ALL_MODELS:
+        table_names = connection.introspection.table_names()
+        for model in _ALL_MODELS:
+            if model._meta.db_table not in table_names:
                 try:
-                    schema_editor.create_model(model)
-                except Exception:
-                    pass
+                    with connection.schema_editor() as schema_editor:
+                        schema_editor.create_model(model)
+                except Exception as e:
+                    logger.debug(f"Could not create table for {model._meta.db_table}: {e}")
         logger.info("Tables ensured via schema_editor (use --migrate for Django migrations)")
 
 
@@ -247,19 +245,19 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 # ── Signals ──
-from shared.signals import (
+from signals import (
     fire_config_changed,
     fire_config_synced,
     fire_device_status_changed,
 )
 
 # ── Token Authentication ──
-from shared.models.token import DeviceToken
-from shared.middleware.auth import create_auth_middleware, register_auth_routes, get_token_info
+from models.token import DeviceToken
+from middleware.auth import create_auth_middleware, register_auth_routes, get_token_info
 
 # ── Signal Handlers (logging, webhooks, audit) ──
-import shared.handlers.signal  # noqa: F401 - registers @receiver handlers
-import shared.sync_signals  # noqa: F401 - registers sync tracking receivers
+import signal_handlers  # noqa: F401 - registers @receiver handlers
+import sync_signals  # noqa: F401 - registers sync tracking receivers
 
 
 # ===========================================================================
@@ -437,7 +435,7 @@ def main():
     args = _parse_args()
 
     if args.version:
-        from shared.__about__ import __title_solo__, __version__
+        from __about__ import __title_solo__, __version__
         print(f"{__title_solo__} v{__version__}")
         return
 

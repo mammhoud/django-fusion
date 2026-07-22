@@ -6,7 +6,7 @@ from datetime import datetime, timezone
 from asgiref.sync import sync_to_async
 from robyn import jsonify
 from routes import state as S
-from shared.__about__ import __version__, __title_solo__, __service_name_solo__
+from __about__ import __version__, __title_solo__, __service_name_solo__
 
 
 def register_info_routes(app):

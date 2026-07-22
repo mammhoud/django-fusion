@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { MdShoppingCart, MdCheckCircle, MdLocalPrintshop, MdFileDownload, MdSearch, MdClose } from 'react-icons/md';
 import { FaPlus, FaStore, FaTruck, FaHandPaper, FaUserTie, FaDoorOpen, FaMapMarkerAlt, FaFileInvoiceDollar } from 'react-icons/fa';
@@ -46,6 +46,7 @@ export default function Sale() {
     employeeName?: string;
   } | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
+  const productsGridRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<Settings>({
     restaurant_name: 'POS',
     address: '',
@@ -64,6 +65,8 @@ export default function Sale() {
   const [invoiceType, setInvoiceType] = useState<InvoiceType>('tax');
   const [isInvoiceDownloading, setIsInvoiceDownloading] = useState(false);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
+  const [showFloatingCart, setShowFloatingCart] = useState(false);
+  const [miniCartOpen, setMiniCartOpen] = useState(false);
   // AJAX-style debounced search: 250 ms idle window with isSearching flag for
   // the spinner. Shared hook — see src/hooks/useDebouncedSearch.ts.
   // We rename-destructure so the rest of this file keeps using the original
@@ -121,6 +124,35 @@ export default function Sale() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [cart.length, showSuccessDialog, isSelling]);
+
+  // Scroll observer: show floating cart when user scrolls past the products grid
+  useEffect(() => {
+    const grid = productsGridRef.current;
+    if (!grid) return;
+
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (!entry.isIntersecting && cart.length > 0) {
+          setShowFloatingCart(true);
+        } else if (entry.isIntersecting) {
+          setShowFloatingCart(false);
+          setMiniCartOpen(false);
+        }
+      },
+      { threshold: 0.05, rootMargin: '0px 0px -60px 0px' }
+    );
+
+    observer.observe(grid);
+    return () => observer.disconnect();
+  }, [cart.length]);
+
+  // Auto-hide floating cart when cart becomes empty
+  useEffect(() => {
+    if (cart.length === 0) {
+      setShowFloatingCart(false);
+      setMiniCartOpen(false);
+    }
+  }, [cart.length]);
 
   // Order details
   const [orderType, setOrderType] = useState<OrderType>('dine-in');
@@ -676,20 +708,54 @@ export default function Sale() {
                   </button>
                 ) : null}
               </div>
-              <select
-                value={selectedCategory}
-                onChange={e => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-                disabled={isLoading || categories.length === 0}
+              {/* Category tag pills — clickable chips for quick filtering */}
+              <div
+                className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:w-auto flex-1 scrollbar-thin
+                  scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
+                role="group"
                 aria-label={t('sale.categoryFilter')}
-                className="px-3 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                  text-slate-900 dark:text-white text-sm focus:outline-none focus:border-teal-400 transition-colors
-                  disabled:opacity-60 disabled:cursor-not-allowed sm:w-48"
               >
-                <option value="all">{t('sale.allCategories')}</option>
+                {/* "All" tag — always first */}
+                <motion.button
+                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                  onClick={() => setSelectedCategory('all')}
+                  disabled={isLoading}
+                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap
+                    ${isLoading
+                      ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                      : selectedCategory === 'all'
+                        ? 'bg-teal-500 text-white shadow-md shadow-teal-500/20'
+                        : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-teal-100 dark:hover:bg-teal-800/30 hover:text-teal-700 dark:hover:text-teal-300 border border-slate-200 dark:border-gray-700'
+                    }`}
+                  aria-pressed={selectedCategory === 'all'}
+                >
+                  {t('sale.allCategories')}
+                </motion.button>
+
                 {categories.map(category => (
-                  <option key={category.id} value={category.id}>{category.name}</option>
+                  <motion.button
+                    key={category.id}
+                    whileHover={{ scale: isLoading ? 1 : 1.05 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.95 }}
+                    onClick={() => setSelectedCategory(
+                      selectedCategory === category.id ? 'all' : category.id
+                    )}
+                    disabled={isLoading}
+                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap
+                      ${isLoading
+                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                        : selectedCategory === category.id
+                          ? 'bg-teal-500 text-white shadow-md shadow-teal-500/20'
+                          : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-teal-100 dark:hover:bg-teal-800/30 hover:text-teal-700 dark:hover:text-teal-300 border border-slate-200 dark:border-gray-700'
+                      }`}
+                    aria-pressed={selectedCategory === category.id}
+                  >
+                    {category.name || t('product.noCategory')}
+                  </motion.button>
                 ))}
-              </select>
+              </div>
+
             </div>
             {/* Result counter — always rendered; faded to opacity 0 when no filter active so the
                 card height never jumps and the slot never shows blank whitespace. aria-hidden
@@ -707,7 +773,7 @@ export default function Sale() {
           </motion.div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div ref={productsGridRef} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {isLoading ? (
               Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
@@ -870,6 +936,195 @@ export default function Sale() {
             )}
           </motion.button>
       </div>
+
+      {/* Floating Cart Toggle — appears when user scrolls past the products grid */}
+      {showFloatingCart && cart.length > 0 && !showSuccessDialog && (
+        <>
+          {/* FAB Button */}
+          <motion.button
+            initial={{ opacity: 0, scale: 0.5, y: 20 }}
+            animate={{ opacity: 1, scale: 1, y: 0 }}
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => setMiniCartOpen(prev => !prev)}
+            className="fixed bottom-6 right-6 z-40 flex items-center gap-3
+              bg-teal-500 hover:bg-teal-600 text-white rounded-full shadow-xl shadow-teal-500/30
+              transition-colors duration-200"
+            aria-label={t('sale.viewCart')}
+          >
+            {/* Item count badge */}
+            <span className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center
+              bg-red-500 text-white text-xs font-bold rounded-full shadow-md
+              border-2 border-white dark:border-slate-900">
+              {cart.length}
+            </span>
+            <div className="flex items-center gap-2 pl-5 pr-2 py-3">
+              <motion.div
+                animate={miniCartOpen ? { rotate: 180 } : { rotate: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                <MdShoppingCart className="w-6 h-6" />
+              </motion.div>
+              <span className="font-bold text-sm pr-2">
+                {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
+              </span>
+            </div>
+          </motion.button>
+
+          {/* Mini Invoice Panel + Backdrop */}
+          <AnimatePresence>
+            {miniCartOpen && (
+              <>
+                {/* Backdrop */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
+                  onClick={() => setMiniCartOpen(false)}
+                />
+                {/* Panel */}
+                <motion.div
+                  initial={{ opacity: 0, y: '100%' }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: '100%' }}
+                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
+                  className="fixed bottom-24 right-6 z-50 w-80 max-w-[calc(100vw-3rem)]
+                    bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200
+                    dark:border-slate-700 overflow-hidden"
+                >
+                  {/* Header */}
+                  <div className="flex items-center justify-between px-4 py-3
+                    bg-gradient-to-r from-teal-500 to-teal-600 text-white">
+                    <div className="flex items-center gap-2">
+                      <MdShoppingCart className="w-5 h-5" />
+                      <h3 className="font-semibold text-sm">{t('sale.cartSummary')}</h3>
+                      <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
+                        {cart.length}
+                      </span>
+                    </div>
+                    <button
+                      onClick={() => setMiniCartOpen(false)}
+                      className="p-1 rounded-lg hover:bg-white/20 transition-colors"
+                      aria-label={t('common.close')}
+                    >
+                      <MdClose className="w-5 h-5" />
+                    </button>
+                  </div>
+
+                  {/* Items list */}
+                  <div className="max-h-56 overflow-y-auto px-4 py-2 space-y-1 scrollbar-thin
+                    scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                    {cart.map(item => (
+                      <div key={item.id} className="flex items-center justify-between py-1.5
+                        border-b border-slate-100 dark:border-slate-700/50 last:border-0">
+                        <div className="flex-1 min-w-0 pr-2">
+                          <p className="text-sm text-slate-900 dark:text-white truncate">
+                            {item.name}
+                          </p>
+                          <p className="text-xs text-slate-500 dark:text-gray-400">
+                            {item.quantity} {item.unit} &times; {settings.currency} {item.price.toFixed(2)}
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          <button
+                            onClick={() => updateQuantity(
+                              item.id,
+                              Math.max(0, item.quantity - (item.unit === 'item' || item.unit === 'items' ? 1 : 0.5)),
+                              item.unit
+                            )}
+                            className="w-6 h-6 flex items-center justify-center rounded-full
+                              bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-gray-300
+                              hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-500
+                              transition-colors text-xs font-bold"
+                            aria-label={t('sale.decreaseQuantity')}
+                          >
+                            &minus;
+                          </button>
+                          <span className="text-sm font-semibold text-teal-600 dark:text-teal-400 w-12 text-center">
+                            {settings.currency} {(item.price * item.quantity).toFixed(2)}
+                          </span>
+                          <button
+                            onClick={() => updateQuantity(
+                              item.id,
+                              item.quantity + (item.unit === 'item' || item.unit === 'items' ? 1 : 0.5),
+                              item.unit
+                            )}
+                            className="w-6 h-6 flex items-center justify-center rounded-full
+                              bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-gray-300
+                              hover:bg-teal-100 dark:hover:bg-teal-900/30 hover:text-teal-500
+                              transition-colors text-xs font-bold"
+                            aria-label={t('sale.increaseQuantity')}
+                          >
+                            +
+                          </button>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+
+                  {/* Totals */}
+                  <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/50 border-t
+                    border-slate-200 dark:border-slate-700 space-y-1">
+                    <div className="flex justify-between text-xs text-slate-600 dark:text-gray-400">
+                      <span>{t('sale.subtotal')}</span>
+                      <span>{settings.currency} {totalAmount.toFixed(2)}</span>
+                    </div>
+                    {deliveryFee > 0 && (
+                      <div className="flex justify-between text-xs text-slate-600 dark:text-gray-400">
+                        <span>{t('sale.deliveryFee')}</span>
+                        <span>{settings.currency} {deliveryFee.toFixed(2)}</span>
+                      </div>
+                    )}
+                    <div className="flex justify-between font-bold text-slate-900 dark:text-white pt-1
+                      border-t border-slate-200 dark:border-slate-700">
+                      <span>{t('sale.total')}</span>
+                      <span className="text-teal-600 dark:text-teal-400">
+                        {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Actions */}
+                  <div className="p-4 pt-2 space-y-2">
+                    <motion.button
+                      whileHover={{ scale: 1.02 }}
+                      whileTap={{ scale: 0.98 }}
+                      onClick={() => { setMiniCartOpen(false); handleSell(); }}
+                      disabled={isSelling || isLoading}
+                      className="w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white
+                        font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed
+                        flex items-center justify-center gap-2"
+                    >
+                      {isSelling ? (
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                        />
+                      ) : (
+                        <MdCheckCircle className="w-4 h-4" />
+                      )}
+                      {t('sale.completeSale')}
+                    </motion.button>
+                    <button
+                      onClick={() => {
+                        setMiniCartOpen(false);
+                        productsGridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                      }}
+                      className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-700
+                        text-slate-700 dark:text-gray-300 font-medium text-sm
+                        hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
+                    >
+                      {t('sale.editCart')}
+                    </button>
+                  </div>
+                </motion.div>
+              </>
+            )}
+          </AnimatePresence>
+        </>
+      )}
 
       {/* Success Dialog */}
       {showSuccessDialog && receiptData && (

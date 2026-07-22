@@ -73,7 +73,7 @@ if _PYDANTIC_READY:
 
 async def get_crm_dashboard(request: Request):
     """GET /crm/dashboard — CRM summary statistics."""
-    from shared.models.crm import Contact, Company, Deal, Activity
+    from models.crm import Contact, Company, Deal, Activity
 
     @sync_to_async
     def _stats():
@@ -96,7 +96,7 @@ async def get_crm_dashboard(request: Request):
 
 async def list_crm_contacts(request: Request):
     """GET /crm/contacts — List CRM contacts with search and pagination."""
-    from shared.models.crm import Contact
+    from models.crm import Contact
     from django.db.models import Q
 
     q_param = request.query_params.get("q", "")
@@ -136,7 +136,7 @@ async def list_crm_contacts(request: Request):
 
 async def get_crm_contact(request: Request, contact_id: int):
     """GET /crm/contacts/:contact_id — Get a single contact by ID."""
-    from shared.models.crm import Contact
+    from models.crm import Contact
 
     @sync_to_async
     def _q():
@@ -162,7 +162,7 @@ async def get_crm_contact(request: Request, contact_id: int):
 
 async def create_crm_contact(request: Request):
     """POST /crm/contacts — Create a new CRM contact."""
-    from shared.models.crm import Contact
+    from models.crm import Contact
 
     try:
         body = request.json() or {}
@@ -212,7 +212,7 @@ async def create_crm_contact(request: Request):
 
 async def list_crm_companies(request: Request):
     """GET /crm/companies — List CRM companies with search and pagination."""
-    from shared.models.crm import Company
+    from models.crm import Company
     from django.db.models import Q
 
     q_param = request.query_params.get("q", "")
@@ -253,7 +253,7 @@ async def list_crm_companies(request: Request):
 
 async def list_crm_deals(request: Request):
     """GET /crm/deals — List CRM deals with stage filtering and pagination."""
-    from shared.models.crm import Deal
+    from models.crm import Deal
 
     stage_id = int(str(request.query_params.get("stage_id", "0")))
     page = int(str(request.query_params.get("page", "1")))
@@ -291,7 +291,7 @@ async def list_crm_deals(request: Request):
 
 async def create_crm_deal(request: Request):
     """POST /crm/deals — Create a new CRM deal."""
-    from shared.models.crm import Deal
+    from models.crm import Deal
 
     try:
         body = request.json() or {}
@@ -341,7 +341,7 @@ async def create_crm_deal(request: Request):
 
 async def get_crm_pipelines(request: Request):
     """GET /crm/pipelines — List CRM pipelines with their stages."""
-    from shared.models.crm import Pipeline
+    from models.crm import Pipeline
 
     @sync_to_async
     def _load():
@@ -376,7 +376,7 @@ async def get_crm_pipelines(request: Request):
 
 async def list_crm_activities(request: Request):
     """GET /crm/activities — List CRM activities with filtering."""
-    from shared.models.crm import Activity
+    from models.crm import Activity
 
     contact_id = int(str(request.query_params.get("contact_id", "0")))
     deal_id = int(str(request.query_params.get("deal_id", "0")))
@@ -420,7 +420,7 @@ async def list_crm_activities(request: Request):
 
 async def list_crm_notes(request: Request):
     """GET /crm/notes — List CRM notes with filtering."""
-    from shared.models.crm import CRMNote
+    from models.crm import CRMNote
 
     contact_id = int(str(request.query_params.get("contact_id", "0")))
     deal_id = int(str(request.query_params.get("deal_id", "0")))

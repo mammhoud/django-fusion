@@ -17,6 +17,71 @@ logger = logging.getLogger("pos_full_server")
 def register_sync_routes(app):
     """Register sync-related routes."""
 
+    # ── Scheduler status ──
+
+    @app.get("/sync/scheduler")
+    async def scheduler_status(request):
+        sched = getattr(S, 'sync_scheduler', None)
+        if not sched:
+            return jsonify({"status": "not_configured", "scheduler_running": False})
+        return jsonify({
+            "status": "ok",
+            "scheduler": sched.stats,
+        })
+
+    @app.post("/sync/scheduler/toggle")
+    async def scheduler_toggle(request):
+        """POST /sync/scheduler/toggle — Enable or disable the scheduler at runtime.
+
+        Body: {"enabled": true} or {"enabled": false}
+        Persists the state to sync_state.json so it survives restarts.
+        """
+        sched = getattr(S, 'sync_scheduler', None)
+        if not sched:
+            return jsonify({"status": "not_configured", "scheduler_running": False})
+
+        body = request.json() or {}
+        if "enabled" not in body:
+            return S._error(400, "Missing 'enabled' field (true or false)")
+
+        enabled = bool(body["enabled"])
+        new_state = await sched.toggle(enabled)
+        return jsonify({
+            "status": "ok",
+            "action": "enabled" if enabled else "disabled",
+            "scheduler": new_state,
+        })
+
+    @app.patch("/sync/scheduler/interval")
+    async def scheduler_interval(request):
+        """PATCH /sync/scheduler/interval — Change the sync interval at runtime.
+
+        Body: {"seconds": 30}
+        Minimum: 5 seconds. Takes effect on the next sleep cycle — no restart needed.
+        Persists to sync_state.json so it survives restarts.
+        """
+        sched = getattr(S, 'sync_scheduler', None)
+        if not sched:
+            return jsonify({"status": "not_configured", "scheduler_running": False})
+
+        body = request.json() or {}
+        if "seconds" not in body:
+            return S._error(400, "Missing 'seconds' field (minimum 5)")
+
+        try:
+            seconds = int(body["seconds"])
+        except (ValueError, TypeError):
+            return S._error(400, "'seconds' must be an integer")
+
+        result = await sched.update_interval(seconds)
+        if result.get("status") == "error":
+            return S._error(400, result["message"])
+        return jsonify({
+            "status": "ok",
+            "action": "interval_updated",
+            "scheduler": result,
+        })
+
     # ── Sales with items ──
 
     @app.post("/sales/with-items")
@@ -283,6 +348,66 @@ def register_sync_routes(app):
                 status="success" if result.errors == 0 else "partial",
             )
         return jsonify(result.__dict__)
+
+    # ── Branch sync push to POS Cloud ──
+
+    @app.post("/sync/push/branch-data")
+    async def push_branch_data(request):
+        """POST /sync/push/branch-data — Push full branch dataset to POS Cloud.
+
+        Pushes products, sales, and inventory in a single batch.
+        The POS Cloud sync receiver deduplicates by (branch, source_id).
+        """
+        body = request.json() or {}
+        node_id = body.get("node_id", "unknown")
+        cloud = S.SyncClient()
+
+        results = {"products": 0, "sales": 0, "inventory": 0, "heartbeat": False}
+
+        # Push products
+        products = body.get("products", [])
+        if products:
+            r = await cloud._push("products", {
+                "node_id": node_id, "products": products,
+            })
+            results["products"] = len(products)
+            await S._log_sync(node_id, "products_branch", "batch",
+                              r.get("status", "unknown"),
+                              r.get("error", ""))
+
+        # Push sales
+        sales = body.get("sales", [])
+        if sales:
+            r = await cloud._push("sales", {
+                "node_id": node_id, "sales": sales,
+            })
+            results["sales"] = len(sales)
+            await S._log_sync(node_id, "sales_branch", "batch",
+                              r.get("status", "unknown"),
+                              r.get("error", ""))
+
+        # Push inventory
+        inventory = body.get("inventory", [])
+        if inventory:
+            r = await cloud._push("inventory", {
+                "node_id": node_id, "transactions": inventory,
+            })
+            results["inventory"] = len(inventory)
+            await S._log_sync(node_id, "inventory_branch", "batch",
+                              r.get("status", "unknown"),
+                              r.get("error", ""))
+
+        # Send heartbeat
+        r = await cloud._push("heartbeat", {
+            "node_id": node_id,
+            "status": body.get("status", "online"),
+            "product_count": len(products),
+            "sales_count": len(sales),
+        })
+        results["heartbeat"] = True
+
+        await S._broadcast_node_event("branch_sync", node_id, results)
+        return jsonify({"status": "pushed", "results": results})
 
     @app.post("/sync/push/catalog")
     async def push_catalog(request):

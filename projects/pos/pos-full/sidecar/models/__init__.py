@@ -19,4 +19,4 @@ from sub-modules:
     from models.ops import KitchenTicket, SupportTicket
 """
 
-from models.apps import PosFullConfig  # noqa: F401 - register AppConfig
+from .apps import PosFullConfig  # noqa: F401 - register AppConfig

@@ -36,18 +36,14 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
-# ---------------------------------------------------------------------------
-# Add shared-portal to Python path (canonical source for 'shared' module)
-# Must come BEFORE any shared imports (including --version fast-path)
-# ---------------------------------------------------------------------------
-
+# Path setup — ensure sidecar dir is importable
 _PATH = Path(__file__).resolve().parent
-if str(_PATH.parent.parent) not in sys.path:
-    sys.path.insert(0, str(_PATH.parent.parent))
+if str(_PATH) not in sys.path:
+    sys.path.insert(0, str(_PATH))
 
 # Fast-path: --version does not require Django bootstrap
 if "--version" in sys.argv:
-    from shared.__about__ import __title_full__, __version__
+    from __about__ import __title_full__, __version__
     print(f"{__title_full__} v{__version__}")
     sys.exit(0)
 
@@ -88,9 +84,11 @@ try:
             STATIC_URL=STATIC_URL,
             STATIC_ROOT=STATIC_ROOT,
         )
-        # Import admin registration (registers models with Django admin)
-        import configs.admin  # noqa: F401 — side-effect: registers admin models
+        # Import admin registration AFTER settings but before setup()
+        # (admin.py registers models which requires app registry ready after setup)
     django.setup()
+    # Import admin registration AFTER django.setup() (requires app registry)
+    import configs.admin  # noqa: F401 — side-effect: registers admin models
 
     # ── Django-managed node registry models ──
     from models.pos import (
@@ -104,11 +102,11 @@ try:
     from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem
     from models.ops import KitchenTicket, SupportTicket
 
-    # ── Shared approval models ──
-    from shared.models.approval import SyncApproval
-    from shared.services.sync import ProductSyncEngine
-    from shared.models.token import DeviceToken
-    from shared.models.audit import SignalEvent
+    # ── Local shared-style models ──
+    from models.approval import SyncApproval
+    from services.sync import ProductSyncEngine
+    from models.token import DeviceToken
+    from models.audit import SignalEvent
 
     # Registry models (managed=True)
     _REGISTRY_MODELS = [
@@ -177,6 +175,12 @@ def _parse_args() -> argparse.Namespace:
     p.add_argument("--version", action="store_true")
     p.add_argument("--verbose", action="store_true")
     p.add_argument("--migrate", action="store_true", help="Use Django migrations (not schema_editor)")
+    p.add_argument("--sync-interval", type=int, default=None,
+                   help="Seconds between auto-sync cycles (env: POS_FULL_SYNC_INTERVAL, default: 60)")
+    p.add_argument("--sync-node-id", default=None,
+                   help="Node ID for scheduled sync (env: POS_FULL_NODE_ID, default: pos-full-auto)")
+    p.add_argument("--no-sync", action="store_true",
+                   help="Disable scheduled branch sync (env: POS_FULL_SYNC_ENABLED=false)")
     return p.parse_args()
 
 
@@ -188,15 +192,17 @@ def _ensure_tables(use_migrations: bool) -> None:
     """
     if use_migrations:
         from django.core.management import call_command
-        call_command("migrate", verbosity=0)
+        call_command("migrate", interactive=False, verbosity=0)
         logger.info("Tables created via Django migrations (--migrate)")
     else:
-        with connection.schema_editor() as schema_editor:
-            for model in _REGISTRY_MODELS:
+        table_names = connection.introspection.table_names()
+        for model in _REGISTRY_MODELS:
+            if model._meta.db_table not in table_names:
                 try:
-                    schema_editor.create_model(model)
-                except Exception:
-                    pass
+                    with connection.schema_editor() as schema_editor:
+                        schema_editor.create_model(model)
+                except Exception as e:
+                    logger.debug(f"Could not create table for {model._meta.db_table}: {e}")
         logger.info("Tables ensured via schema_editor (use --migrate for Django migrations)")
 
 
@@ -241,22 +247,22 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 # ── Signals ──
-from shared.signals import (
+from signals import (
     fire_config_changed,
     fire_config_synced,
     fire_device_status_changed,
 )
 
 # ── Token Authentication ──
-from shared.models.token import DeviceToken
-from shared.middleware.auth import create_auth_middleware, register_auth_routes, get_token_info
+from models.token import DeviceToken
+from middleware.auth import create_auth_middleware, register_auth_routes, get_token_info
 
 # ── Signal Handlers (logging, webhooks, audit) ──
-import shared.handlers.signal  # noqa: F401 - registers @receiver handlers
-import shared.sync_signals  # noqa: F401 - registers sync tracking receivers
+import signal_handlers  # noqa: F401 - registers @receiver handlers
+import sync_signals  # noqa: F401 - registers sync tracking receivers
 
 # ── Signal Models (audit trail) ──
-from shared.models.audit import SignalEvent
+from models.audit import SignalEvent
 
 
 # ===========================================================================
@@ -293,6 +299,7 @@ init_state(
     fire_device_status_changed=fire_device_status_changed,
     NodeRegisterRequest=NodeRegisterRequest if _PYDANTIC_READY else None,
     HeartbeatRequest=HeartbeatRequest if _PYDANTIC_READY else None,
+    sync_scheduler=None,  # set in main() after scheduler is created
 )
 
 
@@ -445,7 +452,7 @@ def main():
     args = _parse_args()
 
     if args.version:
-        from shared.__about__ import __title_full__, __version__
+        from __about__ import __title_full__, __version__
         print(f"{__title_full__} v{__version__}")
         return
 
@@ -455,6 +462,14 @@ def main():
 
     # Create/ensure database tables (migrations or schema_editor)
     _ensure_tables(args.migrate)
+
+    # ── Scheduled branch sync to POS Cloud ──
+    from services.scheduler import create_scheduler
+    sync_scheduler = create_scheduler(
+        interval=args.sync_interval,
+        enabled=not args.no_sync,
+        node_id=args.sync_node_id,
+    )
 
     if args.verbose:
         logging.getLogger().setLevel(logging.DEBUG)
@@ -480,6 +495,36 @@ def main():
     logger.info("  Approvals: POST /approvals/:pk/approve|reject")
     logger.info("  Webhooks:  POST /webhooks/receive/:signal | GET /webhooks/receive")
     logger.info("─" * 60)
+
+    # ── Start scheduled branch sync (daemon thread with own event loop) ──
+    if sync_scheduler._enabled:
+        import threading
+        import asyncio as _asyncio
+
+        async def _run_scheduler(sched):
+            await sched.start()
+            # Keep the event loop alive while scheduler runs
+            while sched._running:
+                await _asyncio.sleep(1)
+
+        def _thread_target():
+            loop = _asyncio.new_event_loop()
+            _asyncio.set_event_loop(loop)
+            try:
+                loop.run_until_complete(_run_scheduler(sync_scheduler))
+            finally:
+                loop.close()
+
+        _sched_thread = threading.Thread(target=_thread_target, daemon=True, name="branch-sync-scheduler")
+        _sched_thread.start()
+        # Make scheduler stats available to route handlers
+        from routes import state as _routes_state
+        _routes_state.sync_scheduler = sync_scheduler
+
+    logger.info(
+        "Auto-sync: enabled=%s interval=%ds node_id=%s",
+        sync_scheduler._enabled, sync_scheduler.interval, sync_scheduler.node_id,
+    )
 
     app.start(host=args.host or HOST, port=args.port or PORT)
 

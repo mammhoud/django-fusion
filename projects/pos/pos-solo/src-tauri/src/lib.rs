@@ -3,7 +3,6 @@ pub mod email;
 
 use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_shell::ShellExt;
 
 // Load environment variables at startup
 fn load_env() {

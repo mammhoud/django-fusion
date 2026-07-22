@@ -6,8 +6,6 @@ use db::{get_db_path, run_migrations};
 use operations::*;
 use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
 use tauri::{AppHandle, Manager};
-use tauri_plugin_shell::ShellExt;
-use chrono::NaiveDateTime;
 
 // Load environment variables at startup
 fn load_env() {

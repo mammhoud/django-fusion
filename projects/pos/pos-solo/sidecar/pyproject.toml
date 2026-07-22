@@ -40,8 +40,8 @@ where = ["."]
 include = ["models*", "routes*"]
 
 [tool.setuptools.dynamic]
-# Version from shared/__about__.py — the single source of truth.
-version = { attr = "shared.__about__.__version__" }
+# Version from local __about__.py.
+version = { attr = "__about__.__version__" }
 
 [tool.setuptools]
 py-modules = ["server"]

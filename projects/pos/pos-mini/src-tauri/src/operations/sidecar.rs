@@ -17,7 +17,7 @@
 
 use once_cell::sync::OnceCell;
 use std::sync::Mutex;
-use tauri::AppHandle;
+use tauri::{AppHandle, Manager};
 use tauri_plugin_shell::{process::CommandChild, ShellExt};
 
 // ---- Global process handle -------------------------------------------------

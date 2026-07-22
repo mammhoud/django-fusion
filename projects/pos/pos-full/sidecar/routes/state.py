@@ -54,6 +54,9 @@ fire_config_changed = None
 fire_config_synced = None
 fire_device_status_changed = None
 
+# Scheduled sync (set by server.py after scheduler creation)
+sync_scheduler = None
+
 
 def init_state(**kwargs):
     """Initialize shared state with values from server.py after Django bootstrap."""

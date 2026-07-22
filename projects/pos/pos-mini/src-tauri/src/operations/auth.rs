@@ -68,7 +68,7 @@ pub fn get_superuser_email() -> Option<String> {
 /// If SUPERUSER_EMAIL + SUPERUSER_PASSWORD are set, creates or updates the superuser.
 /// Called during app setup (after migrations run).
 pub fn ensure_superuser_exists(db_path: &PathBuf) -> Result<(), String> {
-    let email = match env::var("SUPERUSER_EMAIL") {
+    let super_email = match env::var("SUPERUSER_EMAIL") {
         Ok(e) if !e.is_empty() => e,
         _ => return Ok(()), // Not configured, nothing to do
     };
@@ -82,7 +82,7 @@ pub fn ensure_superuser_exists(db_path: &PathBuf) -> Result<(), String> {
 
     // Check if a user with this email already exists
     let existing = users::table
-        .filter(users::email.eq(&email))
+        .filter(users::email.eq(&super_email))
         .first::<User>(&mut conn)
         .ok();
 
@@ -92,11 +92,11 @@ pub fn ensure_superuser_exists(db_path: &PathBuf) -> Result<(), String> {
         if !pw_matches {
             let pw_hash = bcrypt::hash(&password, bcrypt::DEFAULT_COST)
                 .map_err(|e| format!("Failed to hash password: {}", e))?;
-            diesel::update(users::table.filter(users::email.eq(&email)))
+            diesel::update(users::table.filter(users::email.eq(&super_email)))
                 .set(password_hash.eq(pw_hash))
                 .execute(&mut conn)
                 .map_err(|e| format!("Failed to update superuser password: {}", e))?;
-            eprintln!("[superuser] Updated password for existing user: {}", email);
+            eprintln!("[superuser] Updated password for existing user: {}", super_email);
         }
         return Ok(());
     }
@@ -105,12 +105,12 @@ pub fn ensure_superuser_exists(db_path: &PathBuf) -> Result<(), String> {
     let pw_hash = bcrypt::hash(&password, bcrypt::DEFAULT_COST)
         .map_err(|e| format!("Failed to hash password: {}", e))?;
 
-    let name = env::var("SUPERUSER_NAME").unwrap_or_else(|_| "Admin".to_string());
+    let super_name = env::var("SUPERUSER_NAME").unwrap_or_else(|_| "Admin".to_string());
 
     let new_user = NewUser {
-        email: email.clone(),
+        email: super_email.clone(),
         password_hash: pw_hash,
-        name,
+        name: super_name,
     };
 
     diesel::insert_into(users::table)
@@ -118,7 +118,7 @@ pub fn ensure_superuser_exists(db_path: &PathBuf) -> Result<(), String> {
         .execute(&mut conn)
         .map_err(|e| format!("Failed to create superuser: {}", e))?;
 
-    eprintln!("[superuser] Created superuser: {}", email);
+    eprintln!("[superuser] Created superuser: {}", super_email);
     Ok(())
 }
 

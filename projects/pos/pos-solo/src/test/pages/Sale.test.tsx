@@ -230,8 +230,9 @@ describe('Sale Page', () => {
       expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
     });
 
-    const categorySelect = screen.getByLabelText(/sale\.categoryFilter|Filter by category/);
-    await userEvent.selectOptions(categorySelect, '2');
+    // Click the "Sides" category tag pill
+    const sidesTag = screen.getByRole('button', { name: 'Sides' });
+    await userEvent.click(sidesTag);
 
     await waitFor(() => {
       expect(screen.queryByText('Chicken Burger')).not.toBeInTheDocument();
@@ -247,14 +248,17 @@ describe('Sale Page', () => {
       expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
     });
 
-    const categorySelect = screen.getByLabelText(/sale\.categoryFilter|Filter by category/);
-    await userEvent.selectOptions(categorySelect, '2');
+    // Click "Sides" tag to filter
+    const sidesTag = screen.getByRole('button', { name: 'Sides' });
+    await userEvent.click(sidesTag);
 
     await waitFor(() => {
       expect(screen.queryByText('Chicken Burger')).not.toBeInTheDocument();
     });
 
-    await userEvent.selectOptions(categorySelect, 'all');
+    // Click "All" tag to reset
+    const allTag = screen.getByRole('button', { name: /sale\.allCategories|All categories/ });
+    await userEvent.click(allTag);
 
     await waitFor(() => {
       expect(screen.getByText('Chicken Burger')).toBeInTheDocument();

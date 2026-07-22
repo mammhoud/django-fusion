@@ -69,9 +69,9 @@ from tests.django_setup import _DJANGO_READY  # noqa: E402
 assert _DJANGO_READY, "Django ORM bootstrap failed"
 
 # ── Re-imported here for local clarity; already imported in django_setup.py ──
-from shared.models.audit import SignalEvent  # noqa: E402
-from shared.handlers.signal import WEBHOOK_URLS, _send_webhook  # noqa: E402
-from shared.signals import (  # noqa: E402
+from models.audit import SignalEvent  # noqa: E402
+from signal_handlers import WEBHOOK_URLS, _send_webhook  # noqa: E402
+from signals import (  # noqa: E402
     fire_config_changed,
     fire_device_status_changed,
     fire_config_synced,

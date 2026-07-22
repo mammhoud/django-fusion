@@ -790,7 +790,9 @@
     "validationPasswordRequired": "Please enter a password",
     "validationPasswordLength": "Password must be at least 6 characters",
     "validationPasswordMatch": "Passwords do not match",
-    "rememberMe": "Remember me"
+    "rememberMe": "Remember me",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "confirmDialog": {
     "cancel": "Cancel",

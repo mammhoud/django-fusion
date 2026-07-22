@@ -723,6 +723,10 @@
     "switchToEn": "Passer en anglais",
     "switchToAr": "التبديل إلى العربية",
     "switchToFr": "Passer en français",
+    "de": "Deutsch",
+    "switchToDe": "Passer à l'allemand",
+    "es": "Español",
+    "switchToEs": "Passer à l'espagnol",
     "selectLanguage": "Langue"
   },
   "datePicker": {
@@ -790,7 +794,9 @@
     "validationPasswordRequired": "Veuillez entrer un mot de passe",
     "validationPasswordLength": "Le mot de passe doit avoir au moins 6 caractères",
     "validationPasswordMatch": "Les mots de passe ne correspondent pas",
-    "rememberMe": "Se souvenir de moi"
+    "rememberMe": "Se souvenir de moi",
+    "showPassword": "Afficher le mot de passe",
+    "hidePassword": "Masquer le mot de passe"
   },
   "confirmDialog": {
     "cancel": "Annuler",

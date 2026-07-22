@@ -10,3 +10,4 @@ pydantic>=2.0
 # Test dependencies
 pytest>=7.0
 pytest-asyncio>=0.23
+Jinja2>=3.1.0

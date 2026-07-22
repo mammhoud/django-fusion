@@ -179,7 +179,9 @@
     "searchProducts": "Search products...",
     "allCategories": "All Categories",
     "categoryFilter": "Filter by category",
-    "noProductsMatch": "No products match your search."
+    "noProductsMatch": "No products match your search.",
+    "viewCart": "View Cart",
+    "editCart": "Edit Cart"
   },
   "analytics": {
     "title": "Analytics Dashboard",
@@ -790,7 +792,9 @@
     "validationPasswordRequired": "Please enter a password",
     "validationPasswordLength": "Password must be at least 6 characters",
     "validationPasswordMatch": "Passwords do not match",
-    "rememberMe": "Remember me"
+    "rememberMe": "Remember me",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "confirmDialog": {
     "cancel": "Cancel",

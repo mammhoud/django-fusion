@@ -11,4 +11,4 @@ from sub-modules:
     from models.posapp import Product as PosProduct, ...
 """
 
-from models.apps import PosSoloConfig  # noqa: F401 - register AppConfig
+from .apps import PosSoloConfig  # noqa: F401 - register AppConfig
