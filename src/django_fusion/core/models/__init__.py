@@ -4,6 +4,8 @@ django_fusion models — base models and mixins for Django applications.
 from .auth import Role, UserRole  # noqa: F401
 from .base import BaseModel, TimeStampedModel, UUIDModel  # noqa: F401
 from .datatoken import (  # noqa: F401
+    AbstractDataToken,
+    BaseDeviceToken,
     DataToken,
     DataTokenManager,
     DataTokenMixin,
@@ -54,6 +56,8 @@ __all__ = [
     "UserRole",
     "Role",
     # DataToken sync-tagging system
+    "AbstractDataToken",
+    "BaseDeviceToken",
     "DataToken",
     "DataTokenManager",
     "DataTokenMixin",

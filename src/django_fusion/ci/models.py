@@ -5,7 +5,7 @@ autodetector discovers them through this module so that ``makemigrations CI``
 creates migrations in ``django_fusion/ci/migrations/``.
 """
 
-from django_fusion.core.models.datatoken import DataToken  # noqa: F401
+from django_fusion.core.models.datatoken import AbstractDataToken, BaseDeviceToken, DataToken  # noqa: F401
 from django_fusion.core.models.integrations import Integration  # noqa: F401
 
 # NOTE: Call and Notification are imported by django_fusion.core.models.__init__.py
