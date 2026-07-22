@@ -95,6 +95,7 @@ class FooterLinkGroup(models.Model):
     ]
 
     class Meta:
+        app_label = "content"
         ordering = ["sort_order"]
 
 
@@ -115,6 +116,7 @@ class FooterLink(models.Model):
     ]
 
     class Meta:
+        app_label = "content"
         ordering = ["sort_order"]
 
 
@@ -187,6 +189,7 @@ class SiteSettings(BaseSiteSetting, ClusterableModel):
     ]
 
     class Meta:
+        app_label = "content"
         verbose_name = _("site settings")
         verbose_name_plural = _("site settings")
 
