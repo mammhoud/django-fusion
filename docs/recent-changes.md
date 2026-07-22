@@ -7,32 +7,46 @@ Documentation for features and changes added in the most recent development sess
 
 ---
 
-## django-fusion — DataToken Sync-Tagging System
+## django-fusion — DataToken Sync-Tagging System (v2 — Abstract Base)
 
 ### What Changed
-Added a lightweight sync-tagging model to `django-fusion` that marks database rows for ordered synchronisation:
+Added a lightweight sync-tagging model to `django-fusion` that marks database rows
+for ordered synchronisation, now with an abstract base shared by DeviceToken:
 
-- **`DataToken` model** — GenericForeignKey tagging for ANY model row (supports int, UUID, slug PKs via `CharField` object_id)
-- **`DataTokenManager`** — sync-aware queryset: `unsynced()`, `for_node()`, `ordered()`, `roots()`, `sync_batch()`
-- **`DataTokenMixin`** — drop-in mixin for models: `tag_for_sync()`, `mark_synced()`, `untag_for_sync()` with cached ContentType
-- **Parent/child tree** — self-referential FK for ordered sync trees (invoice → items, depth-first)
-- **Progress tracking** — `sync_status`, `retry_count`, `error_message`, `synced_at` on every token
-- **Auto-untag signal** — `sync_log_success_handler` (plain function, manual connection to SyncLog)
-- **Audit trail** — `untag_for_sync()` marks synced by default, `force_delete=True` for hard deletes
+- **`AbstractDataToken`** — abstract base with shared fields (`sync_status`, `app_type`,
+  `metadata`, `created_at`, `updated_at`) + `Status`/`AppType` enums + base helpers
+- **`DataToken(AbstractDataToken)`** — GenericForeignKey tagging for ANY model row
+  (supports int, UUID, slug PKs via `CharField` object_id), parent/child tree ordering,
+  progress tracking (`retry_count`, `error_message`, `synced_at`)
+- **`DataTokenManager`** — sync-aware queryset: `unsynced()`, `for_node()`, `ordered()`,
+  `roots()`, `sync_batch()`, `tag_row()` (now with `app_type` param)
+- **`DataTokenMixin`** — drop-in mixin for models: `tag_for_sync()`, `mark_synced()`,
+  `untag_for_sync()` with cached ContentType
+- **Auto-untag signal** — `sync_log_success_handler` (plain function, manual connection)
+- **`DeviceToken(AbstractDataToken)`** — all 3 copies (pos-full, pos-solo, pos-cloud) now
+  inherit shared fields instead of duplicating `sync_status`/`app_type`/`metadata`
+- **DeviceToken ↔ DataToken cascade** — `mark_data_synced()` bulk-updates linked
+  DataTokens via `node_id_link`
 
 ### Files Changed
 | File | Change |
 |------|--------|
-| `libs/django-fusion/src/django_fusion/core/models/datatoken.py` | New — DataToken model + manager + mixin + signal handler (~370 lines) |
-| `libs/django-fusion/src/django_fusion/core/models/__init__.py` | Updated — 6 new exports |
-| `docs/features/data-token-sync-tagging.md` | New — full documentation (161 lines) |
+| `libs/django-fusion/.../datatoken.py` | +AbstractDataToken base, DataToken inherits, +app_type field, +index |
+| `libs/django-fusion/.../models/__init__.py` | +AbstractDataToken export |
+| `libs/django-fusion/.../ci/models.py` | +AbstractDataToken re-export |
+| `libs/django-fusion/.../ci/migrations/0002_*.py` | +app_type field, +[app_type, sync_status] index |
+| `pos-full/sidecar/models/token.py` | DeviceToken(AbstractDataToken), removed dup fields |
+| `pos-solo/sidecar/models/token.py` | DeviceToken(AbstractDataToken), removed dup fields |
+| `pos-cloud/core/models.py` | DeviceToken(AbstractDataToken), removed dup enums/fields |
+| `pos-cloud/core/migrations/0003_*.py` | Alter sync_status, app_type, metadata (now inherited) |
+| `docs/features/data-token-sync-tagging.md` | Updated with v2 architecture diagram + DeviceToken cascade |
 
 ### Benefits
-- **Faster sync** — ordered batch queries (indexed) instead of full table scans
+- **Cross-model consistency** — `Status`/`AppType` enums shared, no field duplication
+- **Faster sync** — ordered batch queries (indexed) with `app_type` filtering
 - **Data integrity** — parent→child tree ensures invoice before items
 - **Multi-node** — `node_id` scoping for per-device sync windows
-- **Retry control** — built-in `retry_count` + `error_message` tracking
-- **UUID PK support** — `CharField(255)` object_id works with any PK type
+- **Device cascade** — single `mark_data_synced()` propagates to all linked DataTokens
 
 ---
 
