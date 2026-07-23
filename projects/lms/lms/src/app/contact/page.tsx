@@ -4,9 +4,13 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { HiMail, HiPhone, HiLocationMarker, HiClock } from 'react-icons/hi';
 import { useSubmitContactMutation } from '@/store/api/endpoints/contact';
+import { useGetPageQuery } from '@/store/api/endpoints/pages';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import ErrorState from '@/components/ui/ErrorState';
 
 export default function ContactPage() {
   const [form, setForm] = useState({ name: '', email: '', subject: '', message: '' });
+  const { data: page, isLoading: pageLoading, error: pageError } = useGetPageQuery('contact');
   const [submit, { isLoading, isSuccess, error }] = useSubmitContactMutation();
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -17,18 +21,21 @@ export default function ContactPage() {
     } catch { /* error handled by RTK */ }
   };
 
-  const contactInfo = [
-    { icon: HiMail, label: 'Email', value: 'support@lmsplatform.com', href: 'mailto:support@lmsplatform.com' },
-    { icon: HiPhone, label: 'Phone', value: '+1 (555) 123-4567', href: 'tel:+15551234567' },
-    { icon: HiLocationMarker, label: 'Address', value: '123 Learning St, Education City, EC 10001' },
-    { icon: HiClock, label: 'Hours', value: 'Mon-Fri 9:00 AM - 6:00 PM EST' },
-  ];
+  if (pageLoading) return <LoadingSkeleton variant="detail" />;
+  if (pageError || !page) return <ErrorState message="Unable to load contact content." />;
+
+  const iconMap = { email: HiMail, phone: HiPhone, address: HiLocationMarker, hours: HiClock };
+  const hero = page.blocks.find((block) => block.type === 'hero');
+  const contactInfo = (page.blocks.find((block) => block.type === 'contact_methods')?.items || []).map((item) => ({
+    ...item,
+    icon: iconMap[item.type as keyof typeof iconMap] || HiMail,
+  }));
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <div className="text-center mb-12">
-        <h1 className="text-3xl font-bold text-gray-900">Contact Us</h1>
-        <p className="text-gray-500 mt-2">We&apos;d love to hear from you</p>
+        <h1 className="text-3xl font-bold text-gray-900">{hero?.heading || page.title}</h1>
+        <p className="text-gray-500 mt-2">{hero?.intro}</p>
       </div>
 
       <div className="grid md:grid-cols-3 gap-8">
