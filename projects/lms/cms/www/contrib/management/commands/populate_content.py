@@ -17,7 +17,7 @@ from pathlib import Path
 from typing import Any
 
 from django.core.management.base import BaseCommand, CommandError
-from django_fusion.management.commands.base import BaseCommand
+from django_fusion.site.management.commands.base import BaseCommand
 
 # NOTE: Wagtail imports are deferred inside handle() to allow this module
 # to be imported/patched in tests before Django's app registry is fully ready.

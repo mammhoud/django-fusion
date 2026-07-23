@@ -5,7 +5,8 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
-from django_fusion.site import NotificationMixin, PageHandler
+from django_fusion.site.interface.notifications import NotificationMixin
+from django_fusion.site.interface.page_handler import PageHandler
 
 from plugins.accounts.management.services import CertificateService
 

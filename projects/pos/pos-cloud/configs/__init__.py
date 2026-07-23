@@ -37,7 +37,7 @@ INSTALLED_APPS = [
     # Third-party
     "channels",
     "django_fusion",
-    "django_fusion.ci.apps.CIIntegrationConfig",  # CI app — DataToken, Call, Notification, Integration
+    "django_fusion.site.interface.apps.CIIntegrationConfig",  # CI app — DataToken, Call, Notification, Integration
     "rest_framework",
     "django_filters",
     "django_bolt",

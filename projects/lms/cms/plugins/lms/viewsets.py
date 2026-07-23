@@ -14,7 +14,7 @@ Usage::
 
 from __future__ import annotations
 
-from django_fusion.comp.routes import ModelViewset, ReadonlyModelViewset
+from django_fusion.routes import ModelViewset, ReadonlyModelViewset
 
 
 def _get_course_model():

@@ -12,7 +12,7 @@ from dataclasses import dataclass
 
 from django.urls import path
 from django.views import View
-from django_fusion.site import HtmxDetails
+from django_fusion.site.interface.plugins import HtmxDetails
 
 from chat.views import (
     MessageSendResultFragmentView,

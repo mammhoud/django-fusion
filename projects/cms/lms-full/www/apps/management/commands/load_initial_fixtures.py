@@ -4,7 +4,7 @@ Handles fixture loading with proper ordering and validation
 """
 
 from django.core.management.base import BaseCommand, CommandError
-from django_fusion.management.commands.base import BaseCommand
+from django_fusion.site.management.commands.base import BaseCommand
 from django.core.management import call_command
 from pathlib import Path
 

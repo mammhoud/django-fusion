@@ -3,7 +3,7 @@ import shutil
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django_fusion.management.commands.base import BaseCommand
+from django_fusion.site.management.commands.base import BaseCommand
 
 
 class Command(BaseCommand):
