@@ -852,6 +852,23 @@
     "typeProforma": "Proforma Invoice",
     "typeCredit": "Credit Note",
     "typeReceipt": "Receipt",
+    "typeSelling": "Selling Invoice",
+    "typeGoodsTransfer": "Goods Transfer",
+    "customType": "Custom ({type})",
+    "searchTypes": "Search or type new...",
+    "noTypesFound": "No matching types. Press Enter to create",
+    "categoryLabel": "Invoice Category",
+    "categoryDirection": "Direction",
+    "directionCollection": "Collection (Cash In)",
+    "directionPayment": "Payment (Cash Out)",
+    "categoryGetGoods": "Get Goods",
+    "categoryTransferGoods": "Transfer Goods In",
+    "categoryProducts": "Products",
+    "categoryProduction": "Production Creation",
+    "categoryEmployeeMeal": "Employee Meal",
+    "categoryAllTransactions": "All Transactions",
+    "categoryPaySupplier": "Pay Supplier",
+    "categoryTransferOut": "Transfer Goods Out",
     "downloadInvoice": "Download Invoice",
     "invoiceNumber": "Invoice #",
     "date": "Date",
@@ -867,7 +884,8 @@
     "total": "Total",
     "notes": "Notes",
     "taxId": "Tax ID",
-    "poweredBy": "Powered by Structa Cloud"
+    "poweredBy": "Powered by Structa Cloud",
+    "shippingFee": "Shipping Fee"
   },
   "statusToast": {
     "dismiss": "Dismiss"

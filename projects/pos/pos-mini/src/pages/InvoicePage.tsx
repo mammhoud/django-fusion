@@ -17,7 +17,7 @@
  *   2. /invoice?sale=<id>   — pre-filled from an existing sale record
  */
 
-import { useState, useEffect, useRef, useCallback } from 'react';
+import { useState, useEffect, useRef, useCallback, useMemo } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
@@ -25,19 +25,20 @@ import { invoke } from '@tauri-apps/api/core';
 import {
   MdDownload, MdPrint, MdAdd, MdDelete,
   MdOpenInNew, MdRefresh, MdArrowDropDown,
+  MdSearch, MdClose,
 } from 'react-icons/md';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 
 import PageLayout from '../components/PageLayout';
 import Invoice, { PageDesign, InvoiceItem } from '../components/Invoice';
-import { Customer, Settings, InvoiceType as AppInvoiceType, INVOICE_TYPE_LABELS } from '../types';
+import { Customer, Settings, InvoiceType as AppInvoiceType, INVOICE_TYPE_LABELS, INVOICE_CATEGORIES, InvoiceDirection } from '../types';
 import { sidecar, data } from '../api';
 import type { InvoiceType, InvoiceDesign } from '../api';
 
 // ---- Constants -------------------------------------------------------------
 
-const INVOICE_TYPES: AppInvoiceType[] = ['tax', 'commercial', 'proforma', 'credit', 'receipt'];
+const INVOICE_TYPES: AppInvoiceType[] = ['tax', 'commercial', 'proforma', 'credit', 'receipt', 'selling', 'goods_transfer'];
 const PAGE_DESIGNS: { value: PageDesign; label: string; desc: string }[] = [
   { value: 'modern',  label: 'Modern',  desc: 'Dark gradient header' },
   { value: 'classic', label: 'Classic', desc: 'Bordered with teal rule' },
@@ -93,6 +94,40 @@ export default function InvoicePage() {
   const [sidecarRunning, setSidecarRunning] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [toast, setToast] = useState<{ msg: string; type: 'ok' | 'err' } | null>(null);
+
+  // ---- ComboBox state -----
+  const [comboSearch, setComboSearch] = useState('');
+  const [comboOpen, setComboOpen] = useState(false);
+  const comboRef = useRef<HTMLDivElement>(null);
+
+  // ---- Invoice category state -----
+  const [invoiceDirection, setInvoiceDirection] = useState<InvoiceDirection>('collection');
+  const [invoiceCategory, setInvoiceCategory] = useState('products');
+
+  // Close combo on outside click
+  useEffect(() => {
+    const handler = (e: MouseEvent) => {
+      if (comboRef.current && !comboRef.current.contains(e.target as Node)) setComboOpen(false);
+    };
+    document.addEventListener('mousedown', handler);
+    return () => document.removeEventListener('mousedown', handler);
+  }, []);
+
+  // Filtrate types for combo
+  const filteredTypes = useMemo(() => {
+    const q = comboSearch.toLowerCase();
+    const matches = INVOICE_TYPES.filter(t => INVOICE_TYPE_LABELS[t].toLowerCase().includes(q) || t.toLowerCase().includes(q));
+    // If search doesn't match any existing type, show "create new" option
+    if (q && !INVOICE_TYPES.some(t => t.toLowerCase() === q.toLowerCase())) {
+      matches.push('__custom__' as any);
+    }
+    return matches;
+  }, [comboSearch]);
+
+  // Filter categories by direction
+  const filteredCategories = useMemo(() =>
+    INVOICE_CATEGORIES.filter(c => c.direction === invoiceDirection),
+  [invoiceDirection]);
 
   // ---- Load settings + customers on mount -----
   useEffect(() => {
@@ -306,20 +341,80 @@ export default function InvoicePage() {
             <div className="card--glass rounded-xl p-4 space-y-4">
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Invoice Type</label>
-                <div className="grid grid-cols-1 gap-1.5">
-                  {INVOICE_TYPES.map(type => (
-                    <button
-                      key={type}
-                      onClick={() => setInvoiceType(type)}
-                      className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition-all ${
-                        invoiceType === type
-                          ? 'bg-teal-600 text-white shadow-sm'
-                          : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200 dark:hover:bg-slate-600'
-                      }`}
-                    >
-                      {INVOICE_TYPE_LABELS[type]}
+                {/* ComboBox: searchable + writable */}
+                <div ref={comboRef} className="relative">
+                  <div className="relative">
+                    <MdSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <input
+                      value={comboOpen ? comboSearch : INVOICE_TYPE_LABELS[invoiceType]}
+                      onChange={e => { setComboSearch(e.target.value); setComboOpen(true); }}
+                      onFocus={() => { setComboSearch(''); setComboOpen(true); }}
+                      onKeyDown={e => {
+                        if (e.key === 'Enter' && comboSearch.trim()) {
+                          const match = INVOICE_TYPES.find(t => t.toLowerCase() === comboSearch.toLowerCase());
+                          setInvoiceType(match || (comboSearch as AppInvoiceType));
+                          setComboOpen(false);
+                          setComboSearch('');
+                        }
+                      }}
+                      placeholder="Search or type new..."
+                      className="w-full bg-slate-100 dark:bg-slate-700 border-0 rounded-lg pl-9 pr-8 py-2 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500 outline-none"
+                    />
+                    <button onClick={() => setComboOpen(!comboOpen)} className="absolute right-2 top-1/2 -translate-y-1/2">
+                      <MdArrowDropDown className={`w-5 h-5 text-slate-400 transition-transform ${comboOpen ? 'rotate-180' : ''}`} />
                     </button>
-                  ))}
+                  </div>
+                  {comboOpen && (
+                    <div className="absolute z-50 w-full mt-1 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl shadow-xl max-h-52 overflow-y-auto">
+                      {filteredTypes.length === 0 && (
+                        <div className="px-3 py-2 text-xs text-slate-400 italic">No matching types. Press Enter to create "{comboSearch}"</div>
+                      )}
+                      {filteredTypes.map(t => (
+                        <button
+                          key={t}
+                          onClick={() => {
+                            if (t === '__custom__') {
+                              setInvoiceType(comboSearch as AppInvoiceType);
+                            } else {
+                              setInvoiceType(t);
+                            }
+                            setComboOpen(false);
+                            setComboSearch('');
+                          }}
+                          className={`w-full text-left px-3 py-2 text-sm transition-colors ${
+                            invoiceType === t
+                              ? 'bg-teal-600 text-white'
+                              : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
+                          } ${t === '__custom__' ? 'border-t border-slate-100 dark:border-slate-700 font-medium text-teal-600 dark:text-teal-400' : ''}`}
+                        >
+                          {t === '__custom__' ? `+ Create "${comboSearch}"` : INVOICE_TYPE_LABELS[t]}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Invoice Category */}
+              <div>
+                <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Category</label>
+                <div className="space-y-2">
+                  {/* Direction toggle */}
+                  <div className="flex rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
+                    {(['collection', 'payment'] as InvoiceDirection[]).map(d => (
+                      <button key={d} onClick={() => { setInvoiceDirection(d); setInvoiceCategory(filteredCategories[0]?.id || ''); }}
+                        className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${invoiceDirection === d ? 'bg-teal-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'}`}>
+                        {d === 'collection' ? 'Collection' : 'Payment'}
+                      </button>
+                    ))}
+                  </div>
+                  {/* Category dropdown */}
+                  <select value={invoiceCategory} onChange={e => setInvoiceCategory(e.target.value)}
+                    className="w-full bg-slate-100 dark:bg-slate-700 border-0 rounded-lg px-3 py-2 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500 outline-none">
+                    {filteredCategories.map(c => (
+                      <option key={c.id} value={c.id}>{c.label}{c.description ? ` — ${c.description}` : ''}</option>
+                    ))}
+                  </select>
                 </div>
               </div>
 
@@ -494,6 +589,7 @@ export default function InvoicePage() {
               taxRate={taxRate}
               notes={notes || undefined}
               footer={footer || undefined}
+              category={invoiceCategory}
             />
           </div>
         </main>

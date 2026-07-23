@@ -333,6 +333,7 @@ export interface PurchaseOrder {
   reference_number?: string | null;
   status: string;
   total_amount: number;
+  shipping_fee?: number;
   expected_date?: string | null;
   notes?: string | null;
   created_at: string;
@@ -385,7 +386,7 @@ export interface LoyaltyTransaction {
   created_at: string;
 }
 
-export type InvoiceType = 'tax' | 'commercial' | 'proforma' | 'credit' | 'receipt';
+export type InvoiceType = 'tax' | 'commercial' | 'proforma' | 'credit' | 'receipt' | 'selling' | 'goods_transfer';
 
 export const INVOICE_TYPE_LABELS: Record<InvoiceType, string> = {
   tax: 'TAX INVOICE',
@@ -393,12 +394,36 @@ export const INVOICE_TYPE_LABELS: Record<InvoiceType, string> = {
   proforma: 'PROFORMA INVOICE',
   credit: 'CREDIT NOTE',
   receipt: 'RECEIPT',
+  selling: 'SELLING INVOICE',
+  goods_transfer: 'GOODS TRANSFER',
 };
+
+// ---- Invoice Categories ----
+export type InvoiceDirection = 'collection' | 'payment';
+
+export interface InvoiceCategory {
+  id: string;
+  direction: InvoiceDirection;
+  label: string;
+  description?: string;
+}
+
+export const INVOICE_CATEGORIES: InvoiceCategory[] = [
+  { id: 'get_goods', direction: 'collection', label: 'Get Goods', description: 'Inventory received from supplier' },
+  { id: 'transfer_goods', direction: 'collection', label: 'Transfer Goods In', description: 'Goods transfer received' },
+  { id: 'products', direction: 'collection', label: 'Products', description: 'Product sales invoice' },
+  { id: 'production_creation', direction: 'collection', label: 'Production Creation', description: 'Created from production' },
+  { id: 'all_transactions', direction: 'collection', label: 'All Transactions', description: 'Combined transaction record' },
+  { id: 'employee_meal', direction: 'payment', label: 'Employee Meal', description: 'Staff meal deduction' },
+  { id: 'pay_supplier', direction: 'payment', label: 'Pay Supplier', description: 'Payment to supplier' },
+  { id: 'transfer_out', direction: 'payment', label: 'Transfer Goods Out', description: 'Goods transfer sent' },
+];
 
 export interface ReceiptTemplate {
   id: number;
   name: string;
   template_body: string;
+  category?: string | null;
   is_default: boolean;
   created_at: string;
   updated_at: string;

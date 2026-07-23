@@ -620,6 +620,7 @@ pub struct PurchaseOrder {
     pub reference_number: Option<String>,
     pub status: String,
     pub total_amount: f64,
+    pub shipping_fee: f64,
     pub expected_date: Option<NaiveDateTime>,
     pub notes: Option<String>,
     pub created_at: NaiveDateTime,
@@ -633,6 +634,7 @@ pub struct NewPurchaseOrder {
     pub reference_number: Option<String>,
     pub status: String,
     pub total_amount: f64,
+    pub shipping_fee: f64,
     pub expected_date: Option<NaiveDateTime>,
     pub notes: Option<String>,
 }
@@ -644,6 +646,7 @@ pub struct UpdatePurchaseOrder {
     pub reference_number: Option<Option<String>>,
     pub status: Option<String>,
     pub total_amount: Option<f64>,
+    pub shipping_fee: Option<f64>,
     pub expected_date: Option<Option<NaiveDateTime>>,
     pub notes: Option<Option<String>>,
 }
@@ -770,6 +773,7 @@ pub struct ReceiptTemplate {
     pub id: i32,
     pub name: String,
     pub template_body: String,
+    pub category: Option<String>,
     pub is_default: bool,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
@@ -780,6 +784,7 @@ pub struct ReceiptTemplate {
 pub struct NewReceiptTemplate {
     pub name: String,
     pub template_body: String,
+    pub category: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -787,6 +792,7 @@ pub struct NewReceiptTemplate {
 pub struct UpdateReceiptTemplate {
     pub name: Option<String>,
     pub template_body: Option<String>,
+    pub category: Option<Option<String>>,
     pub is_default: Option<bool>,
 }
 

@@ -36,17 +36,31 @@ export interface InvoiceProps {
   notes?: string;
   /** Custom footer message (e.g. "Thank you for your business") */
   footer?: string;
+  /** Invoice category ID for categorization badge */
+  category?: string;
 }
 
 // ---- Constants -------------------------------------------------------------
 
-/** Tailwind accent colours per invoice type */
-const TYPE_ACCENT: Record<InvoiceType, { badge: string; total: string; border: string }> = {
+const TYPE_ACCENT: Record<string, { badge: string; total: string; border: string }> = {
   tax:        { badge: 'bg-teal-700 text-white',         total: 'bg-teal-700 text-white',       border: 'border-teal-200' },
   commercial: { badge: 'bg-indigo-700 text-white',       total: 'bg-indigo-700 text-white',     border: 'border-indigo-200' },
   proforma:   { badge: 'bg-amber-600 text-white',        total: 'bg-amber-600 text-white',      border: 'border-amber-200' },
   credit:     { badge: 'bg-rose-600 text-white',         total: 'bg-rose-600 text-white',       border: 'border-rose-200' },
   receipt:    { badge: 'bg-emerald-600 text-white',      total: 'bg-emerald-600 text-white',    border: 'border-emerald-200' },
+  selling:    { badge: 'bg-sky-600 text-white',          total: 'bg-sky-600 text-white',        border: 'border-sky-200' },
+  goods_transfer: { badge: 'bg-violet-600 text-white',   total: 'bg-violet-600 text-white',     border: 'border-violet-200' },
+};
+
+const CATEGORY_LABELS: Record<string, string> = {
+  get_goods: 'Get Goods',
+  transfer_goods: 'Transfer In',
+  products: 'Products',
+  production_creation: 'Production',
+  employee_meal: 'Employee Meal',
+  all_transactions: 'All Transactions',
+  pay_supplier: 'Pay Supplier',
+  transfer_out: 'Transfer Out',
 };
 
 // ---- Design wrappers -------------------------------------------------------
@@ -91,6 +105,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
       taxRate = 0,
       notes,
       footer,
+      category,
     },
     ref
   ) => {
@@ -100,7 +115,8 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
     const taxAmount = (subtotal * taxRate) / 100;
     const total = subtotal + taxAmount;
 
-    const accent = TYPE_ACCENT[invoiceType];
+    const accent = TYPE_ACCENT[invoiceType] || TYPE_ACCENT['commercial'];
+    const catLabel = category ? (CATEGORY_LABELS[category] || category) : null;
     const isModern = pageDesign === 'modern';
     const textMuted = isModern ? 'text-white/70' : 'text-slate-500';
     const textHeading = isModern ? 'text-white' : 'text-slate-900';
@@ -133,11 +149,18 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
               </div>
             </div>
 
-            {/* Invoice type badge + meta */}
+            {/* Invoice type badge + category + meta */}
             <div className="text-right shrink-0">
-              <span className={`inline-block px-4 py-1.5 text-xs font-bold tracking-widest uppercase rounded-md shadow ${accent.badge}`}>
-                {INVOICE_TYPE_LABELS[invoiceType]}
-              </span>
+              <div className="flex items-center justify-end gap-2 mb-2">
+                <span className={`inline-block px-4 py-1.5 text-xs font-bold tracking-widest uppercase rounded-md shadow ${accent.badge}`}>
+                  {INVOICE_TYPE_LABELS[invoiceType] || String(invoiceType).toUpperCase()}
+                </span>
+                {catLabel && (
+                  <span className="inline-block px-3 py-1.5 text-[10px] font-semibold tracking-wide uppercase rounded-md bg-slate-100 dark:bg-white/10 text-slate-600 dark:text-white/60 border border-slate-200 dark:border-white/10">
+                    {catLabel}
+                  </span>
+                )}
+              </div>
               <div className="mt-3 space-y-1">
                 <p className={`text-sm ${textMuted}`}>
                   <span className={`font-semibold ${textHeading}`}>{t('invoice.invoiceNumber')}:</span>{' '}
@@ -310,7 +333,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
                 {/* Invoice type pill + url */}
                 <div className="flex flex-col items-end gap-1">
                   <span className={`text-[10px] font-bold px-2.5 py-0.5 rounded-full ${accent.badge}`}>
-                    {INVOICE_TYPE_LABELS[invoiceType]}
+                    {INVOICE_TYPE_LABELS[invoiceType] || String(invoiceType).toUpperCase()}
                   </span>
                   <p className="text-[10px] text-slate-400 tracking-wide">https://structa.cloud</p>
                 </div>
