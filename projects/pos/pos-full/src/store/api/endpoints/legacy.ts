@@ -31,7 +31,7 @@ export interface InventoryAdjustment {
 // ── Employee Types ──
 export interface EmployeeType {
   id: number; name: string;
-  description?: string | null; is_active: boolean;
+  description?: string; is_active: boolean;
 }
 
 // ── Transactions ──

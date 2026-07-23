@@ -3,14 +3,14 @@ import { MdLightMode, MdDarkMode } from 'react-icons/md';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function ThemeToggle() {
-  const { theme, toggleTheme } = useTheme();
-  const isDark = theme === 'dark';
+  const { mode, toggleMode } = useTheme();
+  const isDark = mode === 'dark';
 
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.92 }}
-      onClick={toggleTheme}
+      onClick={toggleMode}
       className="relative w-[72px] h-[36px] rounded-full p-1 flex items-center
         cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
         shadow-md hover:shadow-lg"

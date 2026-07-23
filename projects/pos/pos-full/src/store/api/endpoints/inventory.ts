@@ -2,11 +2,10 @@
 import { api, PaginatedResponse } from '../baseApi';
 
 export interface InventoryTransaction {
-  id: number; product: number; product_name?: string;
+  id: number; ingredient_id: number;
   transaction_type: 'in' | 'out' | 'adjustment' | 'return' | 'transfer_out' | 'transfer_in' | 'waste' | 'restock';
-  quantity: number; reference: string; notes: string;
-  inventory_id: string; transfer_to_inventory: string;
-  created_by: string; created_at: string; updated_at: string;
+  quantity_change: number; reference_id?: number | null;
+  note?: string | null; created_at: string;
 }
 
 export interface InventoryCountItem {

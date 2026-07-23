@@ -72,7 +72,6 @@
     "supportChatDesc": "Help & support",
     "customersDesc": "Manage customers",
     "suppliersDesc": "Manage suppliers",
-    "notesDesc": "Draft, save & restore notes",
     "home": "Home",
     "navigation": "Navigation",
     "footer": "POS KO Restaurant Management",
@@ -197,9 +196,7 @@
     "searchProducts": "Search products...",
     "allCategories": "All Categories",
     "categoryFilter": "Filter by category",
-    "noProductsMatch": "No products match your search.",
-    "viewCart": "View Cart",
-    "editCart": "Edit Cart"
+    "noProductsMatch": "No products match your search."
   },
   "analytics": {
     "title": "Analytics Dashboard",
@@ -649,7 +646,27 @@
       "dining": "Dining",
       "delivery": "Delivery",
       "employees": "Employees",
-      "database": "Database"
+      "database": "Database",
+      "appearance": "Appearance"
+    },
+    "appearanceTab": {
+      "title": "Theme Customization",
+      "description": "Choose a color theme variant for the app interface. Works with light and dark mode.",
+      "themeVariant": "Theme Variant",
+      "themeDefault": "Default",
+      "themeCorporate": "Corporate",
+      "themeLuxury": "Luxury",
+      "themePastel": "Pastel",
+      "themeCyberpunk": "Cyberpunk",
+      "defaultDesc": "Clean slate & indigo tones — the original POS look",
+      "corporateDesc": "Professional blue palette for a business environment",
+      "luxuryDesc": "Rich gold and warm hues for premium establishments",
+      "pastelDesc": "Soft candy colors — light, playful, and inviting",
+      "cyberpunkDesc": "Neon futuristic glow for gaming centers & tech spots",
+      "activeLabel": "Active",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "modeDescription": "Toggle between light and dark display"
     },
     "generalTab": {
       "languageLabel": "Language",

@@ -2,7 +2,7 @@
 import { api } from '../baseApi';
 
 export interface ReceiptTemplate {
-  id: number; name: string; content: string; is_default: boolean;
+  id: number; name: string; template_body: string; is_default: boolean;
   created_at: string; updated_at: string;
 }
 

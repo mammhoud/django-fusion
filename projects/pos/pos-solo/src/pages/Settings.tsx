@@ -1,22 +1,19 @@
-import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-import {
-  FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
+import { useState, useRef, useEffect, useCallback } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';import { FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
   FaExclamationTriangle, FaGlobe, FaBriefcase, FaUtensils, FaTruck,
-  FaUsers, FaDatabase, FaLock, FaClock
+  FaUsers, FaDatabase, FaLock, FaClock, FaPaintBrush
 } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
-import { isTauri } from '../utils/tauri';
+import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { readFile, writeFile } from '@tauri-apps/plugin-fs';
-import { useGetSettingsQuery, useUpdateSettingsMutation } from '../store/api/endpoints/core';
-import { useGetEmployeesQuery } from '../store/api/endpoints/core';
-import type { Settings as SettingsType } from '../types';
+import { Settings as SettingsType, Employee } from '../types';
 import BackButton from '../components/BackButton';
 import PageLayout from '../components/PageLayout';
 import LanguageToggle from '../components/LanguageToggle';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
+import { useTheme, THEME_VARIANTS } from '../contexts/ThemeContext';
 
 interface FormErrors {
   restaurant_name?: string;
@@ -30,7 +27,7 @@ interface FormErrors {
   delivery_fee_per_km?: string;
 }
 
-type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database';
+type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database' | 'appearance';
 
 interface TabDefinition {
   id: TabId;
@@ -58,6 +55,7 @@ const tabs: TabDefinition[] = [
   { id: 'delivery', label: 'Delivery', icon: FaTruck },
   { id: 'employees', label: 'Employees', icon: FaUsers },
   { id: 'database', label: 'Database', icon: FaDatabase },
+  { id: 'appearance', label: 'Appearance', icon: FaPaintBrush },
 ];
 
 const tabVariants = {
@@ -321,6 +319,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
+  const { mode, variant, setVariant, toggleMode } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('general');
   const [settings, setSettings] = useState<SettingsType>({
@@ -339,11 +338,6 @@ export default function Settings() {
     delivery_fee_per_km: 0
   });
 
-  // ── RTK Query hooks ──
-  const { data: settingsRes } = useGetSettingsQuery();
-  const [updateSettings] = useUpdateSettingsMutation();
-  const { data: employeesRes = [] } = useGetEmployeesQuery();
-
   const [isSuccess, setIsSuccess] = useState(false);
   const [logoPreview, setLogoPreview] = useState<string | undefined>(undefined);
   const [isNavigating, setIsNavigating] = useState(false);
@@ -356,20 +350,6 @@ export default function Settings() {
   const [errorMessage, setErrorMessage] = useState('');
   const [employeeCount, setEmployeeCount] = useState(0);
   const [activeEmployeeCount, setActiveEmployeeCount] = useState(0);
-
-  // Sync RTK data into local state
-  useEffect(() => {
-    if (settingsRes) {
-      setSettings(prev => ({ ...prev, ...settingsRes as unknown as Partial<SettingsType> }));
-      const s = settingsRes as any;
-      if (s?.logo) setLogoPreview(s.logo);
-    }
-  }, [settingsRes]);
-
-  useEffect(() => {
-    setEmployeeCount(employeesRes.length);
-    setActiveEmployeeCount(employeesRes.filter((e: any) => e.is_active).length);
-  }, [employeesRes]);
 
   // Password change state
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
@@ -485,6 +465,7 @@ export default function Settings() {
     e.preventDefault();
     const { valid, errors: newErrors } = validateForm();
     if (!valid) {
+      // Check which tabs have errors
       const errFields = Object.keys(newErrors) as (keyof FormErrors)[];
       const tabsWithErrors: TabId[] = [];
       for (const field of errFields) {
@@ -493,6 +474,8 @@ export default function Settings() {
           tabsWithErrors.push(tab);
         }
       }
+
+      // Auto-navigate to the first tab with errors
       if (tabsWithErrors.length > 0) {
         setActiveTab(tabsWithErrors[0]);
       }
@@ -502,7 +485,7 @@ export default function Settings() {
     setSubmitStatus('idle');
     setErrorMessage('');
     try {
-      await updateSettings(settings as any).unwrap();
+      await invoke('save_settings', { settings });
       setSubmitStatus('success');
       setIsSuccess(true);
       setErrors({});
@@ -534,14 +517,10 @@ export default function Settings() {
           binary += String.fromCharCode.apply(null, Array.from(chunk));
         }
         const base64 = btoa(binary);
-        if (isTauri) {
-          const { invoke } = await import('@tauri-apps/api/core');
-          await invoke('import_database_cmd', { data: base64 });
-        } else {
-          console.warn('import_database_cmd is only available in Tauri desktop mode');
-        }
+        await invoke('import_database_cmd', { data: base64 });
         setIsSuccess(true);
         setTimeout(() => setIsSuccess(false), 3000);
+        loadSettings();
       }
     } catch (error) {
       console.error('Error importing database:', error);
@@ -560,16 +539,11 @@ export default function Settings() {
     setPasswordChangeSuccess(false);
     setPasswordChangeError('');
     try {
-      if (isTauri) {
-        const { invoke } = await import('@tauri-apps/api/core');
-        await invoke('change_password_cmd', {
-          email: user.email,
-          oldPassword: passwordOld,
-          newPassword: passwordNew,
-        });
-      } else {
-        throw new Error('Password change requires Tauri desktop mode');
-      }
+      await invoke('change_password_cmd', {
+        email: user.email,
+        oldPassword: passwordOld,
+        newPassword: passwordNew,
+      });
       setPasswordChangeSuccess(true);
       setPasswordOld('');
       setPasswordNew('');
@@ -585,13 +559,7 @@ export default function Settings() {
   const handleExportDatabase = async () => {
     setIsExporting(true);
     try {
-      let base64Data: string;
-      if (isTauri) {
-        const { invoke } = await import('@tauri-apps/api/core');
-        base64Data = await invoke<string>('export_database_cmd');
-      } else {
-        throw new Error('Database export requires Tauri desktop mode');
-      }
+      const base64Data = await invoke<string>('export_database_cmd');
       const date = new Date().toISOString().split('T')[0];
       const filePath = await save({
         defaultPath: `restaurant-database-${date}.db`,
@@ -613,6 +581,33 @@ export default function Settings() {
       setIsExporting(false);
     }
   };
+
+  const loadSettings = useCallback(async () => {
+    try {
+      const loadedSettings = await invoke<SettingsType>('get_settings');
+      if (loadedSettings) {
+        setSettings(prev => ({ ...prev, ...loadedSettings }));
+        if (loadedSettings.logo) setLogoPreview(loadedSettings.logo);
+      }
+    } catch (error) {
+      console.error('Error loading settings:', error);
+    }
+  }, []);
+
+  const loadEmployeeStats = useCallback(async () => {
+    try {
+      const employees = await invoke<Employee[]>('get_employees');
+      setEmployeeCount(employees.length);
+      setActiveEmployeeCount(employees.filter(e => e.is_active).length);
+    } catch {
+      // Silently fail — employee stats are non-critical
+    }
+  }, []);
+
+  useEffect(() => {
+    loadSettings();
+    loadEmployeeStats();
+  }, [loadSettings, loadEmployeeStats]);
 
   // ---- Shared Input Classes ----
   const inputClass = (fieldName?: keyof FormErrors) =>
@@ -957,6 +952,86 @@ export default function Settings() {
     </div>
   );
 
+  const renderAppearanceTab = () => (
+    <div className="max-w-2xl mx-auto">
+      {/* Light / Dark Mode Toggle */}
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 mb-6 border border-indigo-200 dark:border-indigo-700/30">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
+            {mode === 'dark' ? (
+              <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+            ) : (
+              <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+            )}
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 dark:text-white">{mode === 'dark' ? t('settings.appearanceTab.darkMode') : t('settings.appearanceTab.lightMode')}</h3>
+            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.appearanceTab.modeDescription')}</p>
+          </div>
+        </div>
+        <button
+          type="button"
+          onClick={toggleMode}
+          className={`relative w-full h-14 rounded-xl flex items-center justify-between px-5 transition-all duration-300 ${mode === 'dark' ? 'bg-slate-800 border border-slate-600' : 'bg-amber-50 border border-amber-200'}`}
+        >
+          <span className={`text-sm font-medium ${mode === 'dark' ? 'text-slate-300' : 'text-amber-700'}`}>
+            {mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
+          </span>
+          <div className={`w-12 h-7 rounded-full p-1 transition-colors duration-300 ${mode === 'dark' ? 'bg-indigo-500' : 'bg-amber-400'}`}>
+            <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${mode === 'dark' ? 'translate-x-5' : 'translate-x-0'}`} />
+          </div>
+        </button>
+      </div>
+
+      {/* Theme Variant Selector */}
+      <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/30 dark:to-slate-700/20 rounded-xl p-6 border border-slate-200 dark:border-gray-700">
+        <div className="flex items-center gap-3 mb-5">
+          <div className="bg-teal-100 dark:bg-teal-800/30 rounded-full p-2.5">
+            <FaPaintBrush className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+          </div>
+          <div>
+            <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.appearanceTab.title')}</h3>
+            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.appearanceTab.description')}</p>
+          </div>
+        </div>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {THEME_VARIANTS.map((v) => {
+            const isActive = variant === v.id;
+            const descKey = `settings.appearanceTab.${v.id}Desc`;
+            return (
+              <motion.button
+                key={v.id}
+                type="button"
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => setVariant(v.id)}
+                className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive ? 'border-teal-400 dark:border-teal-500 bg-teal-50 dark:bg-teal-900/20 shadow-md shadow-teal-500/10' : 'border-slate-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 hover:border-slate-300 dark:hover:border-gray-600'}`}
+              >
+                <span className="text-2xl">{v.icon}</span>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center gap-2">
+                    <span className="font-semibold text-slate-900 dark:text-white text-sm">
+                      {t(`settings.appearanceTab.theme${v.label}`, v.label)}
+                    </span>
+                    {isActive && (
+                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-teal-100 dark:bg-teal-800/40 text-teal-700 dark:text-teal-300">
+                        {t('settings.appearanceTab.activeLabel')}
+                      </span>
+                    )}
+                  </div>
+                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
+                    {t(descKey, v.description)}
+                  </p>
+                </div>
+              </motion.button>
+            );
+          })}
+        </div>
+      </div>
+    </div>
+  );
+
   const renderDatabaseTab = () => (
     <div className="max-w-lg mx-auto">
       <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 mb-8 border border-purple-200 dark:border-purple-700/30">
@@ -1147,6 +1222,7 @@ export default function Settings() {
               {activeTab === 'delivery' && renderDeliveryTab()}
               {activeTab === 'employees' && renderEmployeesTab()}
               {activeTab === 'database' && renderDatabaseTab()}
+              {activeTab === 'appearance' && renderAppearanceTab()}
             </motion.div>
           </AnimatePresence>
         </div>
