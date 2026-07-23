@@ -65,7 +65,7 @@ export default function Roles() {
     let result = q
       ? roles.filter(r =>
           r.name.toLowerCase().includes(q) ||
-          (r.permissions || '').toLowerCase().includes(q)
+          (typeof r.permissions === 'string' ? r.permissions : '').toLowerCase().includes(q)
         )
       : roles;
     const sorted = [...result];

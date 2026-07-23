@@ -66,9 +66,17 @@ pub fn start_sidecar(app: AppHandle) -> Result<String, String> {
         eprintln!("[sidecar] bundled binary not found, falling back to python");
         let project_dir = std::env::current_dir()
             .map_err(|e| format!("current dir: {e}"))?;
-        let python_cmd = if cfg!(windows) { "python" } else { "python3" };
+        // Prefer the virtual environment Python so that dependencies
+        // (robyn, django, etc.) installed in .venv are available.
+        let python_cmd = if cfg!(windows) {
+            let venv_python = project_dir.join(".venv").join("Scripts").join("python.exe");
+            if venv_python.exists() { venv_python.to_string_lossy().into_owned() } else { "python".to_string() }
+        } else {
+            let venv_python = project_dir.join(".venv").join("bin").join("python");
+            if venv_python.exists() { venv_python.to_string_lossy().into_owned() } else { "python3".to_string() }
+        };
         app.shell()
-            .command(python_cmd)
+            .command(&python_cmd)
             .current_dir(project_dir)
             .args([&["sidecar/server.py"], &args[..]].concat())
             .spawn()

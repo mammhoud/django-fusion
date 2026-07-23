@@ -2,10 +2,10 @@
 import { api, PaginatedResponse } from '../baseApi';
 
 export interface Supplier {
-  id: number; name: string; contact_name: string;
-  email: string; phone: string; tax_id: string;
-  payment_terms: string; is_active: boolean;
-  created_at: string; updated_at: string;
+  id: number; name: string; contact_name?: string | null;
+  email?: string | null; phone?: string | null; address?: string | null;
+  tax_id?: string | null; payment_terms?: string | null;
+  is_active: boolean; created_at: string; updated_at: string;
 }
 
 export interface PurchaseOrder {

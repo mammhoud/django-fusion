@@ -8,6 +8,23 @@ export default {
   theme: {
     extend: {
       colors: {
+        // Theme-driven colors — override via CSS custom properties
+        theme: {
+          primary: 'var(--theme-primary, #6366f1)',
+          'primary-hover': 'var(--theme-primary-hover, #4f46e5)',
+          'primary-light': 'var(--theme-primary-light, #e0e7ff)',
+          secondary: 'var(--theme-secondary, #8b5cf6)',
+          accent: 'var(--theme-accent, #06b6d4)',
+          'accent-light': 'var(--theme-accent-light, #cffafe)',
+          surface: 'var(--theme-surface, #ffffff)',
+          'surface-elevated': 'var(--theme-surface-elevated, #f8fafc)',
+          text: 'var(--theme-text, #0f172a)',
+          'text-muted': 'var(--theme-text-muted, #64748b)',
+          border: 'var(--theme-border, #e2e8f0)',
+          success: 'var(--theme-success, #10b981)',
+          warning: 'var(--theme-warning, #f59e0b)',
+          danger: 'var(--theme-danger, #ef4444)',
+        },
         // Light theme colors
         light: {
           bg: {

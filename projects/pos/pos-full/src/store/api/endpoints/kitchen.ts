@@ -1,7 +1,7 @@
 /** RTK Query endpoints — Kitchen Tickets, Recipes, Supplier Transactions. */
 import { api } from '../baseApi';
 
-export interface KitchenTicket { id: number; order_id: number; table_number: number | null; items: any[]; status: 'pending' | 'preparing' | 'ready' | 'served'; notes: string; created_at: string; updated_at: string; }
+export interface KitchenTicket { id: number; sale_id: number; status: string; priority: number; notes?: string | null; created_at: string; completed_at?: string | null; }
 export interface Recipe { id: number; name: string; product_id: number; ingredients: { ingredient_id: number; quantity: number; unit: string; }[]; instructions: string; yield_quantity: number; created_at: string; updated_at: string; }
 export interface Transaction { id: number; supplier_id: number; type: 'payment' | 'purchase'; amount: number; reference: string; notes: string; created_at: string; }
 

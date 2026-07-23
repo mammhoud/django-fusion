@@ -65,12 +65,12 @@ function invalidateEntity(store: any, entity: string, action: string, data?: { i
 
   // Invalidate LIST tag — causes all queries for this entity to refetch
   if (action === 'create' || action === 'delete') {
-    store.dispatch(api.util.invalidateTags([{ type: entity, id: 'LIST' }]));
+    store.dispatch(api.util.invalidateTags([{ type: entity as any, id: 'LIST' }]));
   }
 
   // Invalidate specific item tag — causes detail queries to refetch
   if (action === 'update' && data?.id) {
-    store.dispatch(api.util.invalidateTags([{ type: entity, id: data.id }]));
+    store.dispatch(api.util.invalidateTags([{ type: entity as any, id: data.id }]));
   }
 
   console.log(`[Redux WS] Invalidated ${entity} cache (action: ${action})`);
@@ -101,7 +101,7 @@ export const websocketMiddleware: Middleware = (store) => {
 
 // Expose for manual reconnect / status checks
 export const wsStatus = () => ({
-  entity: entityWs?.readyState ?? 'not_connected',
-  node: nodeWs?.readyState ?? 'not_connected',
-  config: configWs?.readyState ?? 'not_connected',
+  entity: (entityWs as WebSocket | null)?.readyState ?? 'not_connected',
+  node: (nodeWs as WebSocket | null)?.readyState ?? 'not_connected',
+  config: (configWs as WebSocket | null)?.readyState ?? 'not_connected',
 });

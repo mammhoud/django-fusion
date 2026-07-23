@@ -211,10 +211,9 @@ export default function Inventory() {
     try {
       await addInventoryTransaction({
         ingredient_id: newTransaction.ingredient_id,
-        transaction_type: newTransaction.transaction_type,
-        quantity: newTransaction.quantity_change,
-        notes: adjustmentReason || null,
-        created_by: createdBy || null,
+        transaction_type: newTransaction.transaction_type as any,
+        quantity_change: newTransaction.quantity_change,
+        note: adjustmentReason || null,
       }).unwrap();
       setShowAddTransaction(false);
       setNewTransaction({ ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0 });

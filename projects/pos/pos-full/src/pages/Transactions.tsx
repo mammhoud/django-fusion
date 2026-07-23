@@ -65,6 +65,7 @@ export default function Transactions() {
   const [deleteTransactionMutation] = useDeleteTransactionMutation();
 
   const settings: Settings = {
+    id: settingsData?.id ?? 1,
     restaurant_name: settingsData?.restaurant_name || 'POS',
     address: settingsData?.address || '',
     phone: settingsData?.phone || '',
@@ -195,10 +196,10 @@ export default function Transactions() {
         date: showReceiptDialog.date,
         from: {
           name: settings.restaurant_name || 'POS',
-          address: settings.address,
-          phone: settings.phone,
-          email: settings.email,
-          logo: settings.logo,
+          address: settings.address ?? undefined,
+          phone: settings.phone ?? undefined,
+          email: settings.email ?? undefined,
+          logo: settings.logo ?? undefined,
         },
         to: {
           name: 'Walk-in Customer',
@@ -211,7 +212,7 @@ export default function Transactions() {
         })),
         currency: showReceiptDialog.currency,
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
-        notes: settings.receipt_footer,
+        notes: settings.receipt_footer ?? undefined,
       });
     } catch (error) {
       console.error('Error generating invoice PDF:', error);
@@ -628,7 +629,7 @@ export default function Transactions() {
     { key: 'invoices', label: 'Invoices', icon: <MdReceipt className="w-5 h-5" /> },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageLayout title={t('transactions.title')} background="bg-slate-100 dark:bg-slate-900">
         <div className="space-y-6">
@@ -1534,7 +1535,7 @@ export default function Transactions() {
                 totalAmount={showReceiptDialog.total_amount}
                 date={showReceiptDialog.date}
                 time={showReceiptDialog.time}
-                settings={settings}
+                settings={settings as any}
                 receiptNumber={showReceiptDialog.id.toString()}
               />
             </div>

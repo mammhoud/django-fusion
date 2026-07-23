@@ -24,9 +24,11 @@ export const { useGetCategoriesQuery } = categoriesApi;
 
 // ── Settings ──
 export interface Settings {
-  id: number; restaurant_name: string | null; address: string | null;
-  phone: string | null; email: string | null; tax_rate: string | null;
-  currency: string; receipt_footer: string | null; logo: string | null;
+  id: number; restaurant_name?: string | null; address?: string | null;
+  phone?: string | null; email?: string | null; tax_rate?: string | null;
+  currency?: string; receipt_footer?: string | null; logo?: string | null;
+  opening_time?: string | null; closing_time?: string | null;
+  dine_in_tables?: number; delivery_fee?: number; delivery_fee_per_km?: number;
 }
 
 export const settingsApi = api.injectEndpoints({
@@ -46,8 +48,9 @@ export const { useGetSettingsQuery, useUpdateSettingsMutation } = settingsApi;
 
 // ── Employees ──
 export interface Employee {
-  id: number; name: string; phone: string | null; email: string | null;
+  id: number; name: string; phone?: string; email?: string;
   employee_type_id: number; salary: number; is_active: boolean;
+  joined_at?: string;
 }
 
 export const employeesApi = api.injectEndpoints({
@@ -66,7 +69,7 @@ export const { useGetEmployeesQuery } = employeesApi;
 
 // ── Delivery Types ──
 export interface DeliveryType {
-  id: number; name: string; description: string | null;
+  id: number; name: string; description?: string;
   fee_multiplier: number; is_active: boolean;
 }
 

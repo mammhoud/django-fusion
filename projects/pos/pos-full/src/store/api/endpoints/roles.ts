@@ -2,7 +2,7 @@
 import { api } from '../baseApi';
 
 export interface Role {
-  id: number; name: string; permissions: string[];
+  id: number; name: string; permissions: string;
   is_active: boolean; created_at: string; updated_at: string;
 }
 

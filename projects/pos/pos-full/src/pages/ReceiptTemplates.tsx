@@ -45,7 +45,7 @@ export default function ReceiptTemplates() {
 
   const handleEdit = (template: ReceiptTemplate) => {
     setEditing(template);
-    setForm({ name: template.name, template_body: template.content || template.template_body, is_default: template.is_default });
+    setForm({ name: template.name, template_body: template.template_body, is_default: template.is_default });
     setShowForm(true);
   };
 

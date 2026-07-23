@@ -1,7 +1,8 @@
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { MdShoppingCart, MdCheckCircle, MdLocalPrintshop, MdFileDownload, MdSearch, MdClose } from 'react-icons/md';
+import { MdShoppingCart, MdCheckCircle, MdLocalPrintshop, MdFileDownload, MdSearch, MdClose, MdChevronRight, MdChevronLeft, MdTune } from 'react-icons/md';
 import { FaPlus, FaStore, FaTruck, FaHandPaper, FaUserTie, FaDoorOpen, FaMapMarkerAlt, FaFileInvoiceDollar } from 'react-icons/fa';
+import { invoke } from '@tauri-apps/api/core';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee } from '../types';
@@ -16,9 +17,6 @@ import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
-import { useGetProductsQuery } from '../store/api/endpoints/products';
-import { useGetCategoriesQuery, useGetSettingsQuery, useGetEmployeesQuery, useGetDeliveryTypesQuery } from '../store/api/endpoints/core';
-import { useAddSaleMutation } from '../store/api/endpoints/sales';
 
 type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 
@@ -46,7 +44,6 @@ export default function Sale() {
     employeeName?: string;
   } | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
-  const productsGridRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<Settings>({
     restaurant_name: 'POS',
     address: '',
@@ -65,8 +62,8 @@ export default function Sale() {
   const [invoiceType, setInvoiceType] = useState<InvoiceType>('tax');
   const [isInvoiceDownloading, setIsInvoiceDownloading] = useState(false);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
-  const [showFloatingCart, setShowFloatingCart] = useState(false);
-  const [miniCartOpen, setMiniCartOpen] = useState(false);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarHovered, setSidebarHovered] = useState(false);
   // AJAX-style debounced search: 250 ms idle window with isSearching flag for
   // the spinner. Shared hook — see src/hooks/useDebouncedSearch.ts.
   // We rename-destructure so the rest of this file keeps using the original
@@ -125,35 +122,6 @@ export default function Sale() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [cart.length, showSuccessDialog, isSelling]);
 
-  // Scroll observer: show floating cart when user scrolls past the products grid
-  useEffect(() => {
-    const grid = productsGridRef.current;
-    if (!grid) return;
-
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (!entry.isIntersecting && cart.length > 0) {
-          setShowFloatingCart(true);
-        } else if (entry.isIntersecting) {
-          setShowFloatingCart(false);
-          setMiniCartOpen(false);
-        }
-      },
-      { threshold: 0.05, rootMargin: '0px 0px -60px 0px' }
-    );
-
-    observer.observe(grid);
-    return () => observer.disconnect();
-  }, [cart.length]);
-
-  // Auto-hide floating cart when cart becomes empty
-  useEffect(() => {
-    if (cart.length === 0) {
-      setShowFloatingCart(false);
-      setMiniCartOpen(false);
-    }
-  }, [cart.length]);
-
   // Order details
   const [orderType, setOrderType] = useState<OrderType>('dine-in');
   const [tableNumber, setTableNumber] = useState<number>(1);
@@ -161,46 +129,49 @@ export default function Sale() {
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [employeeId, setEmployeeId] = useState<number>(0);
 
-  // RTK Query — all data loaded automatically with caching
-  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({ page: 1, per_page: 500 });
-  const { data: categoriesData } = useGetCategoriesQuery();
-  const { data: settingsData } = useGetSettingsQuery();
-  const { data: employeesData } = useGetEmployeesQuery();
-  const { data: dtData } = useGetDeliveryTypesQuery();
-  const [addSale] = useAddSaleMutation();
+  const loadData = async (opts: { quiet?: boolean } = {}) => {
+    const { quiet = false } = opts;
+    if (!quiet) setIsLoading(true);
+    try {
+      const [productsRes, settingsRes, dtRes, empRes, categoriesRes] = await Promise.all([
+        invoke<Product[]>('get_products'),
+        invoke<Settings>('get_settings'),
+        invoke<DeliveryType[]>('get_delivery_types', { includeInactive: false }),
+        invoke<Employee[]>('get_employees', { includeInactive: false }),
+        invoke<{ id: number; name: string }[]>('get_categories'),
+      ]);
 
-  // Sync RTK Query data to local state
-  useEffect(() => {
-    if (productsData?.data) setProducts(productsData.data);
-  }, [productsData]);
-  useEffect(() => {
-    if (categoriesData) setCategories(categoriesData);
-  }, [categoriesData]);
-  useEffect(() => {
-    if (settingsData) {
-      setSettings({
-        restaurant_name: settingsData.restaurant_name || 'POS',
-        address: settingsData.address || '',
-        phone: settingsData.phone || '',
-        currency: settingsData.currency || 'USD',
-        receipt_footer: settingsData.receipt_footer || 'Thank you for your business!',
-      });
+      setProducts(productsRes);
+      if (settingsRes) {
+        setSettings({
+          restaurant_name: settingsRes.restaurant_name || 'POS',
+          address: settingsRes.address || '',
+          phone: settingsRes.phone || '',
+          currency: settingsRes.currency || 'USD',
+          receipt_footer: settingsRes.receipt_footer || 'Thank you for your business!',
+        });
+      }
+      setDeliveryTypes(dtRes);
+      setEmployees(empRes);
+      setCategories(categoriesRes || []);
+      if (dtRes.length > 0) setDeliveryTypeId(dtRes[0].id);
+    } catch (error) {
+      console.error('Error loading sale data:', error);
+      // Even quiet reloads must fail loudly — silent reloads hide backend drift.
+      showError(`${t('common.error')}: ${error instanceof Error ? error.message : String(error)}`);
+    } finally {
+      if (!quiet) setIsLoading(false);
     }
-  }, [settingsData]);
-  useEffect(() => {
-    if (employeesData) setEmployees(employeesData as Employee[]);
-  }, [employeesData]);
-  useEffect(() => {
-    if (dtData) {
-      setDeliveryTypes(dtData as DeliveryType[]);
-      if (dtData.length > 0) setDeliveryTypeId(dtData[0].id);
-    }
-  }, [dtData]);
+  };
 
-  // Loading state
   useEffect(() => {
-    setIsLoading(productsLoading);
-  }, [productsLoading]);
+    loadData();
+    // loadData is referentially stable (it's defined inside the component
+    // without reactive captures); listing it as a dep would only re-run on
+    // every render. Empty deps here intentionally mirror the established
+    // mount-once pattern from other POS pages.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const addToCart = (product: Product) => {
     setCart(prev => {
@@ -258,7 +229,7 @@ export default function Sale() {
         unit: item.unit,
       }));
 
-      await addSale({ sale: saleData, items: itemsData }).unwrap();
+      await invoke('add_sale', { sale: saleData, items: itemsData });
 
       // Generate receipt data
       const deliveryTypeName = orderType === 'delivery'
@@ -287,7 +258,9 @@ export default function Sale() {
       });
 
       setShowSuccessDialog(true);
-      // RTK Query auto-invalidates cache on sale creation
+      // Quiet reload keeps prices/settings in sync with backend drift since the
+      // user started this sale — but the success dialog already covers UX feedback.
+      loadData({ quiet: true });
     } catch (error) {
       console.error('Error saving sale:', error);
       showError(`${t('sale.errorCompleteSale')}: ${error instanceof Error ? error.message : String(error)}`);
@@ -517,159 +490,155 @@ export default function Sale() {
   const filterActive = debouncedSearchQuery.trim() !== '' || selectedCategory !== 'all';
 
   return (        <PageLayout title={t('sale.title')} background="bg-slate-100 dark:bg-slate-900">
-      <div>
-          {/* Order Type Selector */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            className="card--glass rounded-xl p-4 mb-4"
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">{/* ── Sidebar Toggle Button (desktop only) ── */}
+        <div          className="hidden lg:flex items-start pt-1 -mr-2 z-20">
+          <motion.button
+            whileHover={{ scale: 1.08 }}
+            whileTap={{ scale: 0.92 }}
+            onClick={() => { setSidebarOpen(o => !o); setSidebarHovered(false); }}
+            className="sticky top-24 p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm
+              border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md
+              text-slate-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400
+              transition-all duration-300 z-10"
+            aria-label={sidebarOpen ? 'Hide order panel' : 'Show order panel'}
           >
-            <div className="flex items-center gap-2 mb-3">
-              <MdShoppingCart className="text-teal-500" />
-              <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
-            </div>
-            <div className="grid grid-cols-3 gap-3">
-              {ORDER_TYPES.map(ot => (
-                <motion.button
-                  key={ot.key}
-                  whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.98 }}
-                  onClick={() => setOrderType(ot.key)}
-                  disabled={isLoading}
-                  className={`flex flex-col items-center gap-1.5 p-3 rounded-xl font-medium text-sm transition-all ${
-                    isLoading
-                      ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-                      : orderType === ot.key
-                        ? 'bg-teal-500 text-white shadow-lg'
-                        : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-800/30'
-                  }`}
-                >
-                  <span className="text-lg">{ot.icon}</span>
-                  <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
-                </motion.button>
-              ))}
-            </div>
+            {sidebarOpen ? <MdChevronRight className="w-5 h-5" /> : <MdChevronLeft className="w-5 h-5" />}
+          </motion.button>
+        </div>
 
-            {/* Conditional Fields */}
-            {orderType === 'dine-in' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
-              >
-                <FaDoorOpen className="text-slate-400" />
-                <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.table')}</label>
-                <select
-                  value={tableNumber}
-                  onChange={e => setTableNumber(Number(e.target.value))}
-                  disabled={isLoading}
-                  className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                    text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
-                >
-                  {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
-                    <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
-                  ))}
-                </select>
-              </motion.div>
-            )}
-
-            {orderType === 'delivery' && (
-              <motion.div
-                initial={{ opacity: 0, height: 0 }}
-                animate={{ opacity: 1, height: 'auto' }}
-                className="space-y-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
-              >
-                <div className="flex items-center gap-3">
-                  <FaTruck className="text-slate-400" />
-                  <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.deliveryType')}</label>
-                  <select
-                    value={deliveryTypeId}
-                    onChange={e => setDeliveryTypeId(Number(e.target.value))}
+        {/* ── Main Content (products + cart) ── */}
+        <div className="flex-1 min-w-0">{/* Order Type Selector — visible on mobile only */}
+          <div className="lg:hidden">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="card--glass rounded-xl p-4 mb-4"
+            >
+              <div className="flex items-center gap-2 mb-3">
+                <MdShoppingCart className="text-teal-500" />
+                <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
+              </div>
+              <div className="grid grid-cols-3 gap-3">
+                {ORDER_TYPES.map(ot => (
+                  <motion.button
+                    key={ot.key}
+                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
+                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                    onClick={() => setOrderType(ot.key)}
                     disabled={isLoading}
-                    className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                      text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl font-medium text-sm transition-all ${
+                      isLoading
+                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                        : orderType === ot.key
+                          ? 'bg-teal-500 text-white shadow-lg'
+                          : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-800/30'
+                    }`}
                   >
-                    {deliveryTypes.map(dt => (
-                      <option key={dt.id} value={dt.id}>
-                        {dt.name} {dt.fee_multiplier > 1 ? `(${dt.fee_multiplier}x fee)` : ''}
-                      </option>
+                    <span className="text-lg">{ot.icon}</span>
+                    <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
+                  </motion.button>
+                ))}
+              </div>
+              {orderType === 'dine-in' && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
+                >
+                  <FaDoorOpen className="text-slate-400" />
+                  <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.table')}</label>
+                  <select
+                    value={tableNumber}
+                    onChange={e => setTableNumber(Number(e.target.value))}
+                    disabled={isLoading}
+                    className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                  >
+                    {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
+                      <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
                     ))}
                   </select>
-                </div>
-                <div className="flex items-center gap-3">
-                  <FaMapMarkerAlt className="text-slate-400" />
-                  <input
-                    type="text"
-                    value={deliveryAddress}
-                    onChange={e => setDeliveryAddress(e.target.value)}
-                    placeholder={t('sale.deliveryAddress')}
-                    disabled={isLoading}
-                    className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                      text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
-                  />
-                </div>
-                {settings.delivery_fee && settings.delivery_fee > 0 && (
-                  <p className="text-xs text-slate-500 dark:text-gray-400 ml-8">
-                    Delivery fee: {settings.currency} {settings.delivery_fee.toFixed(2)}
-                    {settings.delivery_fee_per_km ? ` + ${settings.delivery_fee_per_km.toFixed(2)}/km` : ''}
-                  </p>
-                )}
-              </motion.div>
-            )}
-          </motion.div>
+                </motion.div>
+              )}
+              {orderType === 'delivery' && (
+                <motion.div
+                  initial={{ opacity: 0, height: 0 }}
+                  animate={{ opacity: 1, height: 'auto' }}
+                  className="space-y-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
+                >
+                  <div className="flex items-center gap-3">
+                    <FaTruck className="text-slate-400" />
+                    <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.deliveryType')}</label>
+                    <select
+                      value={deliveryTypeId}
+                      onChange={e => setDeliveryTypeId(Number(e.target.value))}
+                      disabled={isLoading}
+                      className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                    >
+                      {deliveryTypes.map(dt => (
+                        <option key={dt.id} value={dt.id}>{dt.name} {dt.fee_multiplier > 1 ? `(${dt.fee_multiplier}x fee)` : ''}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <FaMapMarkerAlt className="text-slate-400" />
+                    <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
+                      placeholder={t('sale.deliveryAddress')} disabled={isLoading}
+                      className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
+                  </div>
+                  {settings.delivery_fee && settings.delivery_fee > 0 && (
+                    <p className="text-xs text-slate-500 dark:text-gray-400 ml-8">
+                      Delivery fee: {settings.currency} {settings.delivery_fee.toFixed(2)}
+                      {settings.delivery_fee_per_km ? ` + ${settings.delivery_fee_per_km.toFixed(2)}/km` : ''}
+                    </p>
+                  )}
+                </motion.div>
+              )}
+            </motion.div>
 
-          {/* Employee Assignment */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.05 }}
-            className="card--glass rounded-xl p-4 mb-4"
-          >
-            <div className="flex items-center gap-3">
-              <FaUserTie className="text-slate-400" />
-              <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
-              <select
-                value={employeeId}
-                onChange={e => setEmployeeId(Number(e.target.value))}
-                disabled={isLoading}
-                className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                  text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                <option value={0}>{t('sale.noAssignment')}</option>
-                {employees.map(emp => (
-                  <option key={emp.id} value={emp.id}>{emp.name}</option>
-                ))}
-              </select>
-            </div>
-          </motion.div>
-
-          {/* Total Amount Card */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-            className="card--glass rounded-xl p-4 sm:p-6 mb-6 sm:mb-8
-              transition-colors duration-300"
-          >
-            <div className="flex justify-between items-center">
-              <div>
-                <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white mb-1">{t('sale.totalAmount')}</h2>
-                <p className={`text-3xl sm:text-4xl font-bold ${isLoading ? 'text-slate-400 dark:text-slate-500 animate-pulse' : 'text-teal-600 dark:text-teal-400'}`}>
-                  {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
-                </p>
-                {deliveryFee > 0 && (
-                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
-                    ({settings.currency} {totalAmount.toFixed(2)} + {settings.currency} {deliveryFee.toFixed(2)} delivery)
-                  </p>
-                )}
+            {/* Employee Assignment — mobile */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.05 }}
+              className="card--glass rounded-xl p-4 mb-4"
+            >
+              <div className="flex items-center gap-3">
+                <FaUserTie className="text-slate-400" />
+                <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
+                <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
+                  className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                >
+                  <option value={0}>{t('sale.noAssignment')}</option>
+                  {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
+                </select>
               </div>
-              <div className="text-slate-600 dark:text-white/60">
-                {t('sale.itemsSelected', { count: cart.length })}
-              </div>
-            </div>
-          </motion.div>
+            </motion.div>
 
-          {/* Product Search & Category Filter */}
+            {/* Total Amount Card — mobile */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 }}
+              className="card--glass rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 transition-colors duration-300"
+            >
+              <div className="flex justify-between items-center">
+                <div>
+                  <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white mb-1">{t('sale.totalAmount')}</h2>
+                  <p className={`text-3xl sm:text-4xl font-bold ${isLoading ? 'text-slate-400 dark:text-slate-500 animate-pulse' : 'text-teal-600 dark:text-teal-400'}`}>
+                    {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
+                  </p>
+                  {deliveryFee > 0 && (
+                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                      ({settings.currency} {totalAmount.toFixed(2)} + {settings.currency} {deliveryFee.toFixed(2)} delivery)
+                    </p>
+                  )}
+                </div>
+                <div className="text-slate-600 dark:text-white/60">{t('sale.itemsSelected', { count: cart.length })}</div>
+              </div>
+            </motion.div>
+           </div>
+
+          {/* ── Product Search & Category Filter ── */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
@@ -708,54 +677,20 @@ export default function Sale() {
                   </button>
                 ) : null}
               </div>
-              {/* Category tag pills — clickable chips for quick filtering */}
-              <div
-                className="flex items-center gap-1.5 overflow-x-auto pb-1 sm:w-auto flex-1 scrollbar-thin
-                  scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent"
-                role="group"
+              <select
+                value={selectedCategory}
+                onChange={e => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
+                disabled={isLoading || categories.length === 0}
                 aria-label={t('sale.categoryFilter')}
+                className="px-3 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
+                  text-slate-900 dark:text-white text-sm focus:outline-none focus:border-teal-400 transition-colors
+                  disabled:opacity-60 disabled:cursor-not-allowed sm:w-48"
               >
-                {/* "All" tag — always first */}
-                <motion.button
-                  whileHover={{ scale: isLoading ? 1 : 1.05 }}
-                  whileTap={{ scale: isLoading ? 1 : 0.95 }}
-                  onClick={() => setSelectedCategory('all')}
-                  disabled={isLoading}
-                  className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap
-                    ${isLoading
-                      ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-                      : selectedCategory === 'all'
-                        ? 'bg-teal-500 text-white shadow-md shadow-teal-500/20'
-                        : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-teal-100 dark:hover:bg-teal-800/30 hover:text-teal-700 dark:hover:text-teal-300 border border-slate-200 dark:border-gray-700'
-                    }`}
-                  aria-pressed={selectedCategory === 'all'}
-                >
-                  {t('sale.allCategories')}
-                </motion.button>
-
+                <option value="all">{t('sale.allCategories')}</option>
                 {categories.map(category => (
-                  <motion.button
-                    key={category.id}
-                    whileHover={{ scale: isLoading ? 1 : 1.05 }}
-                    whileTap={{ scale: isLoading ? 1 : 0.95 }}
-                    onClick={() => setSelectedCategory(
-                      selectedCategory === category.id ? 'all' : category.id
-                    )}
-                    disabled={isLoading}
-                    className={`shrink-0 px-3 py-1.5 rounded-full text-xs font-medium transition-all duration-200 whitespace-nowrap
-                      ${isLoading
-                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
-                        : selectedCategory === category.id
-                          ? 'bg-teal-500 text-white shadow-md shadow-teal-500/20'
-                          : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-400 hover:bg-teal-100 dark:hover:bg-teal-800/30 hover:text-teal-700 dark:hover:text-teal-300 border border-slate-200 dark:border-gray-700'
-                      }`}
-                    aria-pressed={selectedCategory === category.id}
-                  >
-                    {category.name || t('product.noCategory')}
-                  </motion.button>
+                  <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
-              </div>
-
+              </select>
             </div>
             {/* Result counter — always rendered; faded to opacity 0 when no filter active so the
                 card height never jumps and the slot never shows blank whitespace. aria-hidden
@@ -773,7 +708,7 @@ export default function Sale() {
           </motion.div>
 
           {/* Products Grid */}
-          <div ref={productsGridRef} className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {isLoading ? (
               Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
@@ -935,196 +870,183 @@ export default function Sale() {
               </>
             )}
           </motion.button>
-      </div>
+        </div>{/* end main-content */}
 
-      {/* Floating Cart Toggle — appears when user scrolls past the products grid */}
-      {showFloatingCart && cart.length > 0 && !showSuccessDialog && (
-        <>
-          {/* FAB Button */}
-          <motion.button
-            initial={{ opacity: 0, scale: 0.5, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
-            onClick={() => setMiniCartOpen(prev => !prev)}
-            className="fixed bottom-6 right-6 z-40 flex items-center gap-3
-              bg-teal-500 hover:bg-teal-600 text-white rounded-full shadow-xl shadow-teal-500/30
-              transition-colors duration-200"
-            aria-label={t('sale.viewCart')}
+        {/* ── Desktop Sidebar — Order Details Panel ── */}
+        <div
+          onMouseEnter={() => { if (!sidebarOpen) setSidebarHovered(true); }}
+          onMouseLeave={() => setSidebarHovered(false)}
+          className="hidden lg:block relative"
+        >
+          <motion.div
+            initial={false}
+            animate={{
+              width: (sidebarOpen || sidebarHovered) ? 280 : 0,
+              opacity: (sidebarOpen || sidebarHovered) ? 1 : 0,
+            }}
+            transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+            className="sticky top-24 overflow-hidden"
           >
-            {/* Item count badge */}
-            <span className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center
-              bg-red-500 text-white text-xs font-bold rounded-full shadow-md
-              border-2 border-white dark:border-slate-900">
-              {cart.length}
-            </span>
-            <div className="flex items-center gap-2 pl-5 pr-2 py-3">
+            <div className="w-[280px] space-y-4">
+              {/* Order Type Card */}
               <motion.div
-                animate={miniCartOpen ? { rotate: 180 } : { rotate: 0 }}
-                transition={{ duration: 0.3 }}
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="card--glass rounded-xl p-4"
               >
-                <MdShoppingCart className="w-6 h-6" />
-              </motion.div>
-              <span className="font-bold text-sm pr-2">
-                {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
-              </span>
-            </div>
-          </motion.button>
-
-          {/* Mini Invoice Panel + Backdrop */}
-          <AnimatePresence>
-            {miniCartOpen && (
-              <>
-                {/* Backdrop */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  animate={{ opacity: 1 }}
-                  exit={{ opacity: 0 }}
-                  className="fixed inset-0 z-40 bg-black/20 backdrop-blur-sm"
-                  onClick={() => setMiniCartOpen(false)}
-                />
-                {/* Panel */}
-                <motion.div
-                  initial={{ opacity: 0, y: '100%' }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: '100%' }}
-                  transition={{ type: 'spring', damping: 25, stiffness: 300 }}
-                  className="fixed bottom-24 right-6 z-50 w-80 max-w-[calc(100vw-3rem)]
-                    bg-white dark:bg-slate-800 rounded-2xl shadow-2xl border border-slate-200
-                    dark:border-slate-700 overflow-hidden"
-                >
-                  {/* Header */}
-                  <div className="flex items-center justify-between px-4 py-3
-                    bg-gradient-to-r from-teal-500 to-teal-600 text-white">
-                    <div className="flex items-center gap-2">
-                      <MdShoppingCart className="w-5 h-5" />
-                      <h3 className="font-semibold text-sm">{t('sale.cartSummary')}</h3>
-                      <span className="text-xs bg-white/20 px-2 py-0.5 rounded-full">
-                        {cart.length}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => setMiniCartOpen(false)}
-                      className="p-1 rounded-lg hover:bg-white/20 transition-colors"
-                      aria-label={t('common.close')}
+                <div className="flex items-center gap-2 mb-3">
+                  <MdTune className="text-teal-500" />
+                  <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
+                </div>
+                <div className="flex flex-col gap-2">
+                  {ORDER_TYPES.map(ot => (
+                    <motion.button
+                      key={ot.key}
+                      whileHover={{ scale: isLoading ? 1 : 1.02, x: 4 }}
+                      whileTap={{ scale: isLoading ? 1 : 0.98 }}
+                      onClick={() => setOrderType(ot.key)}
+                      disabled={isLoading}
+                      className={`flex items-center gap-3 p-3 rounded-xl font-medium text-sm transition-all ${
+                        isLoading
+                          ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
+                          : orderType === ot.key
+                            ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20'
+                            : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900/20'
+                      }`}
                     >
-                      <MdClose className="w-5 h-5" />
-                    </button>
-                  </div>
+                      <span className={`text-lg ${orderType === ot.key ? '' : 'text-teal-500 dark:text-teal-400'}`}>{ot.icon}</span>
+                      <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
+                      {orderType === ot.key && (
+                        <MdCheckCircle className="ml-auto w-4 h-4" />
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
 
-                  {/* Items list */}
-                  <div className="max-h-56 overflow-y-auto px-4 py-2 space-y-1 scrollbar-thin
-                    scrollbar-thumb-slate-300 dark:scrollbar-thumb-slate-600 scrollbar-track-transparent">
+                {/* Dine-in: Table Selector */}
+                {orderType === 'dine-in' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-white/10"
+                  >
+                    <FaDoorOpen className="text-slate-400 text-sm" />
+                    <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
+                      className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1"
+                    >
+                      {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
+                        <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
+                      ))}
+                    </select>
+                  </motion.div>
+                )}
+
+                {/* Delivery: Type + Address */}
+                {orderType === 'delivery' && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: 'auto' }}
+                    className="space-y-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-white/10"
+                  >
+                    <div className="flex items-center gap-2">
+                      <FaTruck className="text-slate-400 text-sm" />
+                      <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
+                        className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1"
+                      >
+                        {deliveryTypes.map(dt => (
+                          <option key={dt.id} value={dt.id}>{dt.name}</option>
+                        ))}
+                      </select>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <FaMapMarkerAlt className="text-slate-400 text-sm" />
+                      <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
+                        placeholder={t('sale.deliveryAddress')} disabled={isLoading}
+                        className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1" />
+                    </div>
+                    {settings.delivery_fee && settings.delivery_fee > 0 && (
+                      <p className="text-[11px] text-slate-500 dark:text-gray-400">
+                        Fee: {settings.currency} {settings.delivery_fee.toFixed(2)}
+                        {settings.delivery_fee_per_km ? ` + ${settings.delivery_fee_per_km}/km` : ''}
+                      </p>
+                    )}
+                  </motion.div>
+                )}
+              </motion.div>
+
+              {/* Employee Assignment Card */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 }}
+                className="card--glass rounded-xl p-4"
+              >
+                <div className="flex items-center gap-2 mb-2">
+                  <FaUserTie className="text-slate-400" />
+                  <label className="text-sm font-medium text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
+                </div>
+                <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
+                  className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm"
+                >
+                  <option value={0}>{t('sale.noAssignment')}</option>
+                  {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
+                </select>
+              </motion.div>
+
+              {/* Total Amount Card */}
+              <motion.div
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="card--glass rounded-xl p-4 transition-colors duration-300"
+              >
+                <h2 className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">{t('sale.totalAmount')}</h2>
+                <p className={`text-2xl font-bold mb-1 ${isLoading ? 'text-slate-400 animate-pulse' : 'text-teal-600 dark:text-teal-400'}`}>
+                  {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
+                </p>
+                {deliveryFee > 0 && (
+                  <p className="text-[11px] text-slate-500 dark:text-gray-400">
+                    Subtotal: {settings.currency} {totalAmount.toFixed(2)} + Delivery: {settings.currency} {deliveryFee.toFixed(2)}
+                  </p>
+                )}
+                <div className="text-xs text-slate-500 dark:text-gray-400 mt-2">
+                  {t('sale.itemsSelected', { count: cart.length })}
+                </div>
+              </motion.div>
+
+              {/* Cart mini-summary in sidebar */}
+              {cart.length > 0 && (
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.15 }}
+                  className="card--glass rounded-xl p-4 max-h-[200px] overflow-y-auto"
+                >
+                  <h3 className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">{t('sale.cartSummary')}</h3>
+                  <div className="space-y-1.5">
                     {cart.map(item => (
-                      <div key={item.id} className="flex items-center justify-between py-1.5
-                        border-b border-slate-100 dark:border-slate-700/50 last:border-0">
-                        <div className="flex-1 min-w-0 pr-2">
-                          <p className="text-sm text-slate-900 dark:text-white truncate">
-                            {item.name}
-                          </p>
-                          <p className="text-xs text-slate-500 dark:text-gray-400">
-                            {item.quantity} {item.unit} &times; {settings.currency} {item.price.toFixed(2)}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-1.5 shrink-0">
-                          <button
-                            onClick={() => updateQuantity(
-                              item.id,
-                              Math.max(0, item.quantity - (item.unit === 'item' || item.unit === 'items' ? 1 : 0.5)),
-                              item.unit
-                            )}
-                            className="w-6 h-6 flex items-center justify-center rounded-full
-                              bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-gray-300
-                              hover:bg-red-100 dark:hover:bg-red-900/30 hover:text-red-500
-                              transition-colors text-xs font-bold"
-                            aria-label={t('sale.decreaseQuantity')}
-                          >
-                            &minus;
-                          </button>
-                          <span className="text-sm font-semibold text-teal-600 dark:text-teal-400 w-12 text-center">
-                            {settings.currency} {(item.price * item.quantity).toFixed(2)}
-                          </span>
-                          <button
-                            onClick={() => updateQuantity(
-                              item.id,
-                              item.quantity + (item.unit === 'item' || item.unit === 'items' ? 1 : 0.5),
-                              item.unit
-                            )}
-                            className="w-6 h-6 flex items-center justify-center rounded-full
-                              bg-slate-200 dark:bg-slate-700 text-slate-700 dark:text-gray-300
-                              hover:bg-teal-100 dark:hover:bg-teal-900/30 hover:text-teal-500
-                              transition-colors text-xs font-bold"
-                            aria-label={t('sale.increaseQuantity')}
-                          >
-                            +
-                          </button>
-                        </div>
+                      <div key={item.id} className="flex justify-between text-xs text-slate-700 dark:text-white/70">
+                        <span className="truncate mr-2">{item.name} ×{item.quantity}</span>
+                        <span className="font-medium flex-shrink-0">{settings.currency} {(item.price * item.quantity).toFixed(2)}</span>
                       </div>
                     ))}
                   </div>
-
-                  {/* Totals */}
-                  <div className="px-4 py-2 bg-slate-50 dark:bg-slate-800/50 border-t
-                    border-slate-200 dark:border-slate-700 space-y-1">
-                    <div className="flex justify-between text-xs text-slate-600 dark:text-gray-400">
-                      <span>{t('sale.subtotal')}</span>
-                      <span>{settings.currency} {totalAmount.toFixed(2)}</span>
-                    </div>
-                    {deliveryFee > 0 && (
-                      <div className="flex justify-between text-xs text-slate-600 dark:text-gray-400">
-                        <span>{t('sale.deliveryFee')}</span>
-                        <span>{settings.currency} {deliveryFee.toFixed(2)}</span>
-                      </div>
-                    )}
-                    <div className="flex justify-between font-bold text-slate-900 dark:text-white pt-1
-                      border-t border-slate-200 dark:border-slate-700">
-                      <span>{t('sale.total')}</span>
-                      <span className="text-teal-600 dark:text-teal-400">
-                        {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
-                      </span>
-                    </div>
-                  </div>
-
-                  {/* Actions */}
-                  <div className="p-4 pt-2 space-y-2">
-                    <motion.button
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      onClick={() => { setMiniCartOpen(false); handleSell(); }}
-                      disabled={isSelling || isLoading}
-                      className="w-full py-2.5 rounded-xl bg-teal-500 hover:bg-teal-600 text-white
-                        font-semibold text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed
-                        flex items-center justify-center gap-2"
-                    >
-                      {isSelling ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                          className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                        />
-                      ) : (
-                        <MdCheckCircle className="w-4 h-4" />
-                      )}
-                      {t('sale.completeSale')}
-                    </motion.button>
-                    <button
-                      onClick={() => {
-                        setMiniCartOpen(false);
-                        productsGridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                      }}
-                      className="w-full py-2 rounded-xl bg-slate-100 dark:bg-slate-700
-                        text-slate-700 dark:text-gray-300 font-medium text-sm
-                        hover:bg-slate-200 dark:hover:bg-slate-600 transition-colors"
-                    >
-                      {t('sale.editCart')}
-                    </button>
-                  </div>
                 </motion.div>
-              </>
-            )}
-          </AnimatePresence>
-        </>
-      )}
+              )}
+            </div>
+          </motion.div>
+
+          {/* Collapsed peek tab — visible on hover when sidebar is closed */}
+          {!sidebarOpen && !sidebarHovered && (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="absolute right-0 top-24 w-4 h-32 rounded-l-lg bg-teal-400/30 dark:bg-teal-500/20 cursor-pointer hover:bg-teal-400/50 dark:hover:bg-teal-500/40 transition-colors"
+              onMouseEnter={() => setSidebarHovered(true)}
+            />
+          )}
+        </div>
+      </div>
 
       {/* Success Dialog */}
       {showSuccessDialog && receiptData && (
