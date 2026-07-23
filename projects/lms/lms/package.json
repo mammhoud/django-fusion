@@ -6,7 +6,8 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "test:contract": "node tests/frontend-contract.test.mjs"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",
