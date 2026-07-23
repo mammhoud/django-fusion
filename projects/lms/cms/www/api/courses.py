@@ -11,8 +11,12 @@ from django.shortcuts import get_object_or_404
 
 from plugins.lms.models import Course, CourseCategory
 from www.api.data_adapter import (
-    bolt_view, paginate_queryset, parse_body,
-    get_image_url, get_user_display_name,
+    bolt_view,
+    paginate_queryset,
+    parse_body,
+    get_image_url,
+    get_user_display_name,
+    paginated_response,
 )
 
 logger = logging.getLogger(__name__)
@@ -22,7 +26,10 @@ def _serialize_course(course: Course) -> dict:
     """Serialize a Course to the frontend-expected format."""
     try:
         instructor = course.instructor
-        instructor_name = f"{instructor.first_name} {instructor.last_name}".strip() or instructor.username
+        instructor_name = (
+            f"{instructor.first_name} {instructor.last_name}".strip()
+            or instructor.username
+        )
     except Exception:
         instructor_name = ""
         instructor = None
@@ -43,12 +50,16 @@ def _serialize_course(course: Course) -> dict:
         "description": course.description or "",
         "image": image_url,
         "price": float(course.final_price),
-        "original_price": float(course.original_price) if course.original_price else None,
+        "original_price": (
+            float(course.original_price) if course.original_price else None
+        ),
         "instructor": course.instructor_id,
         "instructor_name": instructor_name,
         "instructor_avatar": "",
         "category_name": categories[0] if categories else "",
-        "category_id": course.categories.first().id if course.categories.exists() else None,
+        "category_id": (
+            course.categories.first().id if course.categories.exists() else None
+        ),
         "categories": categories,
         "difficulty_level": course.difficulty_level,
         "language": course.language,
@@ -83,21 +94,25 @@ def _build_curriculum(course) -> list[dict]:
     for mod in course.modules.all().order_by("order"):
         lessons = []
         for lesson in mod.lessons.all().order_by("order"):
-            lessons.append({
-                "id": lesson.id,
-                "title": lesson.title,
-                "duration": lesson.duration,
-                "video_url": lesson.video_url or "",
-                "is_preview": lesson.is_preview,
-            })
-        modules.append({
-            "id": mod.id,
-            "title": mod.title,
-            "description": mod.description or "",
-            "order": mod.order,
-            "lessons": lessons,
-            "lessons_count": len(lessons),
-        })
+            lessons.append(
+                {
+                    "id": lesson.id,
+                    "title": lesson.title,
+                    "duration": lesson.duration,
+                    "video_url": lesson.video_url or "",
+                    "is_preview": lesson.is_preview,
+                }
+            )
+        modules.append(
+            {
+                "id": mod.id,
+                "title": mod.title,
+                "description": mod.description or "",
+                "order": mod.order,
+                "lessons": lessons,
+                "lessons_count": len(lessons),
+            }
+        )
     return modules
 
 
@@ -112,7 +127,9 @@ def course_list(request):
     q = request.GET.get("search", "").strip()
     if q:
         queryset = queryset.filter(
-            Q(title__icontains=q) | Q(short_description__icontains=q) | Q(description__icontains=q)
+            Q(title__icontains=q)
+            | Q(short_description__icontains=q)
+            | Q(description__icontains=q)
         )
 
     category = request.GET.get("category", "").strip()
@@ -129,9 +146,12 @@ def course_list(request):
 
     sort = request.GET.get("sorting", "-created_at")
     allowed_sorts = {
-        "newest": "-created_at", "oldest": "created_at",
-        "price_asc": "final_price", "price_desc": "-final_price",
-        "popular": "-enrolled_count", "rating": "-average_rating",
+        "newest": "-created_at",
+        "oldest": "created_at",
+        "price_asc": "final_price",
+        "price_desc": "-final_price",
+        "popular": "-enrolled_count",
+        "rating": "-average_rating",
     }
     queryset = queryset.order_by(allowed_sorts.get(sort, "-created_at"))
 
@@ -139,12 +159,9 @@ def course_list(request):
     page_size = int(request.GET.get("page_size", 12))
     items, pagination = paginate_queryset(queryset, request, page_size)
 
-    return {
-        "count": pagination["total"],
-        "next": None,
-        "previous": None,
-        "results": [_serialize_course(c) for c in items],
-    }
+    return paginated_response(
+        items, pagination, request, [_serialize_course(c) for c in items]
+    )
 
 
 @bolt_view
@@ -152,15 +169,21 @@ def course_detail(request, pk):
     """GET /api/courses/<pk>/ — Get full course details."""
     try:
         course = Course.objects.get(
-            Q(pk=pk) | Q(slug=pk), is_published=True, is_active=True,
+            Q(pk=pk) | Q(slug=pk),
+            is_published=True,
+            is_active=True,
         )
     except Course.DoesNotExist:
         return {"status": "error", "message": "Course not found"}, 404
 
     data = _serialize_course(course)
     data["curriculum"] = _build_curriculum(course)
-    data["objectives"] = course.objectives_list if hasattr(course, "objectives_list") else []
-    data["requirements"] = course.requirements_list if hasattr(course, "requirements_list") else []
+    data["objectives"] = (
+        course.objectives_list if hasattr(course, "objectives_list") else []
+    )
+    data["requirements"] = (
+        course.requirements_list if hasattr(course, "requirements_list") else []
+    )
 
     return {"status": "success", "data": data}
 
@@ -172,18 +195,22 @@ def featured_courses(request):
         is_published=True, is_active=True, is_featured=True
     )[:6]
     return {
-        "status": "success",
-        "count": courses.count(),
         "results": [_serialize_course(c) for c in courses],
+        "count": courses.count(),
+        "next": None,
+        "previous": None,
     }
 
 
 @bolt_view
 def category_list(request):
     """GET /api/categories/ — List all active course categories."""
-    categories = CourseCategory.objects.filter(is_active=True).order_by("order", "title")
+    categories = CourseCategory.objects.filter(is_active=True).order_by(
+        "order", "title"
+    )
     return {
-        "status": "success",
-        "count": categories.count(),
         "results": [_serialize_category(c) for c in categories],
+        "count": categories.count(),
+        "next": None,
+        "previous": None,
     }

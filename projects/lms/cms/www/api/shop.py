@@ -11,8 +11,13 @@ from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
 from www.api.data_adapter import (
-    bolt_view, login_required, paginate_queryset, parse_body,
-    get_image_url, get_user_display_name,
+    bolt_view,
+    login_required,
+    paginate_queryset,
+    parse_body,
+    get_image_url,
+    get_user_display_name,
+    paginated_response,
 )
 
 logger = logging.getLogger(__name__)
@@ -22,6 +27,7 @@ def _get_products(request):
     """Try to get products from available models, fallback to empty."""
     try:
         from plugins.products.models import Product
+
         queryset = Product.objects.filter(is_available=True)
         q = request.GET.get("search", "").strip()
         if q:
@@ -57,11 +63,14 @@ def _serialize_product(product) -> dict:
         "description": getattr(product, "description", ""),
         "price": float(getattr(product, "price", 0)),
         "discounted_price": (
-            float(product.discounted_price) if getattr(product, "discounted_price", None) else None
+            float(product.discounted_price)
+            if getattr(product, "discounted_price", None)
+            else None
         ),
         "images": images,
         "category": getattr(product, "category_id", None),
-        "category_name": getattr(product, "category_name", "") or str(getattr(product, "category", "")),
+        "category_name": getattr(product, "category_name", "")
+        or str(getattr(product, "category", "")),
         "stock": getattr(product, "stock", 0) or getattr(product, "quantity", 0),
         "is_available": getattr(product, "is_available", True),
         "created_at": getattr(product, "created_at", timezone.now()).isoformat(),
@@ -72,18 +81,21 @@ def _get_cart_items(request):
     """Get cart items from available cart service or session."""
     try:
         from plugins.products.services.cart_service import CartService
+
         cart = CartService.get_or_create_cart(request)
         items = []
         for item in cart.items.all():
-            items.append({
-                "id": item.id,
-                "product": item.product_id or str(item.id),
-                "product_name": item.product_name,
-                "product_image": "",
-                "product_price": float(item.price),
-                "quantity": item.quantity,
-                "subtotal": float(item.total_price),
-            })
+            items.append(
+                {
+                    "id": item.id,
+                    "product": item.product_id or str(item.id),
+                    "product_name": item.product_name,
+                    "product_image": "",
+                    "product_price": float(item.price),
+                    "quantity": item.quantity,
+                    "subtotal": float(item.total_price),
+                }
+            )
         return items
     except Exception:
         return []
@@ -91,18 +103,28 @@ def _get_cart_items(request):
 
 # ── Product Views ──
 
+
 @bolt_view
 def product_list(request):
     """GET /api/shop/products/ — List all shop products."""
     products = _get_products(request)
     page = int(request.GET.get("page", 1))
-    items, pagination = paginate_queryset(products, request) if hasattr(products, "count") else (products, {"page": 1, "per_page": 20, "total": len(products) if isinstance(products, list) else 0, "total_pages": 0})
-    return {
-        "count": pagination["total"],
-        "next": None,
-        "previous": None,
-        "results": [_serialize_product(p) for p in items],
-    }
+    items, pagination = (
+        paginate_queryset(products, request)
+        if hasattr(products, "count")
+        else (
+            products,
+            {
+                "page": 1,
+                "per_page": 20,
+                "total": len(products) if isinstance(products, list) else 0,
+                "total_pages": 0,
+            },
+        )
+    )
+    return paginated_response(
+        items, pagination, request, [_serialize_product(p) for p in items]
+    )
 
 
 @bolt_view
@@ -110,6 +132,7 @@ def product_detail(request, pk):
     """GET /api/shop/products/<pk>/ — Get single product details."""
     try:
         from plugins.products.models import Product
+
         product = get_object_or_404(Product, pk=pk)
     except Exception:
         return {"status": "error", "message": "Product not found"}, 404
@@ -119,12 +142,13 @@ def product_detail(request, pk):
 
 # ── Cart Views ──
 
+
 @bolt_view
 @login_required
 def cart_view(request):
     """GET /api/shop/cart/ — Get current user's cart items."""
     items = _get_cart_items(request)
-    return {"status": "success", "count": len(items), "results": items}
+    return {"results": items, "count": len(items), "next": None, "previous": None}
 
 
 @bolt_view
@@ -141,6 +165,7 @@ def cart_add(request):
     try:
         from plugins.products.services.cart_service import CartService
         from plugins.products.models import Product
+
         product = get_object_or_404(Product, pk=product_id)
         cart = CartService.get_or_create_cart(request)
 
@@ -158,7 +183,11 @@ def cart_add(request):
                 "product": product_id,
                 "product_name": product.name,
                 "quantity": quantity,
-                "subtotal": float(item.total_price) if hasattr(item, "total_price") else float(product.price) * quantity,
+                "subtotal": (
+                    float(item.total_price)
+                    if hasattr(item, "total_price")
+                    else float(product.price) * quantity
+                ),
             },
         }
     except Exception as e:
@@ -178,13 +207,18 @@ def cart_item_view(request, item_id):
         quantity = body.get("quantity", 1)
         try:
             from plugins.products.services.cart_service import CartService
+
             cart = CartService.get_or_create_cart(request)
             item = cart.items.get(id=item_id)
             item.quantity = quantity
             item.save(update_fields=["quantity"])
             return {
                 "status": "success",
-                "data": {"id": item.id, "quantity": item.quantity, "subtotal": float(item.total_price)},
+                "data": {
+                    "id": item.id,
+                    "quantity": item.quantity,
+                    "subtotal": float(item.total_price),
+                },
             }
         except Exception as e:
             logger.error("Cart update error: %s", e)
@@ -193,6 +227,7 @@ def cart_item_view(request, item_id):
     elif request.method == "DELETE":
         try:
             from plugins.products.services.cart_service import CartService
+
             cart = CartService.get_or_create_cart(request)
             cart.items.filter(id=item_id).delete()
             return {"status": "success", "message": "Item removed from cart"}
@@ -202,6 +237,7 @@ def cart_item_view(request, item_id):
 
 
 # ── Order Views ──
+
 
 @bolt_view
 @login_required
@@ -216,6 +252,7 @@ def order_create(request):
 
     try:
         from plugins.products.models import Order
+
         order = Order.objects.create(
             user=request.user,
             shipping_address=shipping_address,
@@ -232,7 +269,11 @@ def order_create(request):
                 "status": order.status,
                 "payment_method": payment_method,
                 "shipping_address": shipping_address,
-                "created_at": order.created_at.isoformat() if hasattr(order, "created_at") else None,
+                "created_at": (
+                    order.created_at.isoformat()
+                    if hasattr(order, "created_at")
+                    else None
+                ),
             },
         }
     except Exception as e:
@@ -246,14 +287,13 @@ def order_list(request):
     """GET /api/shop/orders/ — List user's orders."""
     try:
         from plugins.products.models import Order
+
         orders = Order.objects.filter(user=request.user).order_by("-created_at")
         page = int(request.GET.get("page", 1))
         items, pagination = paginate_queryset(orders, request)
 
         return {
-            "count": pagination["total"],
-            "next": None,
-            "previous": None,
+            **paginated_response(items, pagination, request, []),
             "results": [
                 {
                     "id": o.id,
@@ -262,10 +302,12 @@ def order_list(request):
                     "status": o.status,
                     "payment_method": getattr(o, "payment_method", ""),
                     "shipping_address": getattr(o, "shipping_address", ""),
-                    "created_at": o.created_at.isoformat() if hasattr(o, "created_at") else None,
+                    "created_at": (
+                        o.created_at.isoformat() if hasattr(o, "created_at") else None
+                    ),
                 }
                 for o in items
             ],
         }
     except Exception:
-        return {"status": "success", "count": 0, "results": []}
+        return {"results": [], "count": 0, "next": None, "previous": None}
