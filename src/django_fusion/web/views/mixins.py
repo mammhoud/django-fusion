@@ -4,7 +4,7 @@ django_fusion.views.mixins
 
 Generic, reusable view mixins for Django projects.
 
-These mixins have **no dependency** on django-rseal, Wagtail, Celery, or any
+These mixins have **no dependency** on django-ceptor, Wagtail, Celery, or any
 application-layer package.  They are safe to use in any Django project that
 installs django-fusion.
 

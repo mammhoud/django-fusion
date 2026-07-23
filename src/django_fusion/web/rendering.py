@@ -7,7 +7,7 @@ Generic template renderer for Django projects.
 Provides HTML rendering, email rendering (HTML + text + subject),
 component rendering, and an HttpResponse helper.
 
-This module has **no dependency** on django-rseal, Wagtail, or any
+This module has **no dependency** on django-ceptor, Wagtail, or any
 application-layer package.
 
 Classes

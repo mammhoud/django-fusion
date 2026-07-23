@@ -1160,7 +1160,7 @@ with `class="breadcrumbs mb-3"` via the auto-included `{{ attrs }}`.
 indicator, unread badge, and `fetch`-based message submission.
 
 **Use Case**: Embedding an AI/chat assistant in the corner of any page.
-Pairs with the rseal × nawaai backend exposed by `ceptor-ai`.
+Pairs with the ceptor × nawaai backend exposed by `ceptor-ai`.
 
 **Template Syntax**:
 
@@ -1207,21 +1207,21 @@ def render_chat_widget(request) -> str:
 **Styling & Customization**:
 
 The component ships with its own scoped CSS using CSS custom properties
-(`--rseal-chat-primary`, `--rseal-chat-radius`, etc.). Override them in
+(`--ceptor-chat-primary`, `--ceptor-chat-radius`, etc.). Override them in
 your theme to rebrand without forking the template:
 
 ```scss
 :root {
-    --rseal-chat-primary: #6366f1;     /* brand primary */
-    --rseal-chat-primary-dark: #4f46e5;
-    --rseal-chat-radius: 0.75rem;     /* tighter than default */
+    --ceptor-chat-primary: #6366f1;     /* brand primary */
+    --ceptor-chat-primary-dark: #4f46e5;
+    --ceptor-chat-radius: 0.75rem;     /* tighter than default */
 }
 ```
 
 **Behaviour**:
 
 The widget manages its own session ID via `sessionStorage` (key
-`rseal_chat_sid`) and posts `{message, session_id}` JSON to the
+`ceptor_chat_sid`) and posts `{message, session_id}` JSON to the
 configured endpoint. CSRF token is read from the page.
 
 ---

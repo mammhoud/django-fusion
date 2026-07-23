@@ -62,7 +62,7 @@ Wagtail-block variants live one level down in the consumer projects.
 
 | Component | Template | Usage |
 |-----------|----------|-------|
-| Chat bubble | `chat/bubble.html` | Floating widget + slide-up panel (rseal/nawaai integration via ceptor-ai). |
+| Chat bubble | `chat/bubble.html` | Floating widget + slide-up panel (ceptor/nawaai integration via ceptor-ai). |
 | Cookie consent | `cookies/cookie-consent.html` | Cookie preferences UI (essential/analytics/marketing/preferences). Cloned into a modal by cookie-consent.js. |
 | Cookie policy | `cookies/cookie-policy.html` | Default cookie policy modal content. |
 | Privacy policy | `cookies/privacy-policy.html` | Default privacy policy modal content. |

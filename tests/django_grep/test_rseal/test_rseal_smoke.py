@@ -1,8 +1,8 @@
-"""Smoke tests for django-rseal modules."""
+"""Smoke tests for django-ceptor modules."""
 import pytest
 
 
-def test_rseal_renderer_import():
+def test_ceptor_renderer_import():
     from ceptor_ai.renderer import TemplateRenderer
     renderer = TemplateRenderer()
     assert renderer is not None
@@ -13,7 +13,7 @@ def test_rseal_renderer_import():
     assert hasattr(renderer, "get_default")
 
 
-def test_rseal_newsletter_import():
+def test_ceptor_newsletter_import():
     from ceptor_ai.communication.newsletter import EmailDesigner, NewsletterEnhancer
     enhancer = NewsletterEnhancer()
     designer = EmailDesigner()
@@ -21,17 +21,17 @@ def test_rseal_newsletter_import():
     assert designer is not None
 
 
-def test_rseal_seeder_import():
+def test_ceptor_seeder_import():
     from ceptor_ai.seeder import ModelSeeder, Provider, Seeder
     assert Seeder is not None
 
 
-def test_rseal_email_models_completeness():
+def test_ceptor_email_models_completeness():
     from ceptor_ai.communication.email.models import EmailLog, EmailTemplate, UserGroup, UserRole
     assert all([EmailLog, EmailTemplate, UserRole, UserGroup])
 
 
-def test_rseal_ai_import():
+def test_ceptor_ai_import():
     from ceptor_ai.ai.integrations import (
         AIIntegrationRegistry,
         ClaudeIntegration,
