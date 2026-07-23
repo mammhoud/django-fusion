@@ -87,7 +87,7 @@ export default function EmployeeSchedule() {
                   <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
                 </div>
                 <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
-                  <p>{new Date(schedule.shift_start).toLocaleString()} - {new Date(schedule.shift_end).toLocaleTimeString()}</p>
+                  <p>{new Date(schedule.shift_start || schedule.start_time).toLocaleString()} - {new Date(schedule.shift_end || schedule.end_time).toLocaleTimeString()}</p>
                   {schedule.notes && <p>{schedule.notes}</p>}
                 </div>
               </motion.div>

@@ -9,6 +9,7 @@
 
 import { Middleware } from '@reduxjs/toolkit';
 import { api } from '../api/baseApi';
+import { SIDECAR_WS_BASE } from '../../config/sidecar';
 
 interface WsMessage {
   type: 'connected' | 'entity_event' | 'node_event' | 'config_event';
@@ -23,7 +24,7 @@ let configWs: WebSocket | null = null;
 let reconnectTimer: ReturnType<typeof setTimeout> | null = null;
 
 // Derive WebSocket URL from the same base as the API
-const WS_BASE = 'http://localhost:8766'.replace('http', 'ws');
+const WS_BASE = SIDECAR_WS_BASE;
 
 function connectWebSocket(
   path: string,

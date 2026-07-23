@@ -9,7 +9,7 @@
 //! `start_sidecar` / `stop_sidecar` / `sidecar_status` via `invoke()`.
 //!
 //! Communication between the React frontend and the sidecar happens
-//! over `http://127.0.0.1:8765` (HTTP REST + WebSocket). The Rust
+//! over `http://127.0.0.1:8766` (HTTP REST + WebSocket). The Rust
 //! side only manages the process lifecycle.
 //!
 //! In development the bundled binary may not exist; we fall back to
@@ -56,16 +56,24 @@ pub fn start_sidecar(app: AppHandle) -> Result<String, String> {
     }
 
     let db = db_path_str(&app);
-    let args = vec!["--db", &db, "--port", "8765", "--host", "127.0.0.1"];
+    let args = vec!["--db", &db, "--port", "8766", "--host", "127.0.0.1"];
 
     // Try the bundled sidecar first; fall back to python in development.
     let (mut rx, child) = if let Ok(cmd) = app.shell().sidecar("pos-sidecar") {
-        cmd.args(args.clone()).spawn()
+        cmd.args(args.clone())
+            .spawn()
             .map_err(|e| format!("sidecar spawn error: {e}"))?
     } else {
         eprintln!("[sidecar] bundled binary not found, falling back to python");
-        let project_dir = std::env::current_dir()
-            .map_err(|e| format!("current dir: {e}"))?;
+        let project_dir = std::env::current_dir().map_err(|e| format!("current dir: {e}"))?;
+        let project_dir = if project_dir.file_name().and_then(|n| n.to_str()) == Some("src-tauri") {
+            project_dir
+                .parent()
+                .map(std::path::Path::to_path_buf)
+                .unwrap_or(project_dir)
+        } else {
+            project_dir
+        };
         let python_cmd = if cfg!(windows) { "python" } else { "python3" };
         app.shell()
             .command(python_cmd)
@@ -84,12 +92,10 @@ pub fn start_sidecar(app: AppHandle) -> Result<String, String> {
             while let Some(event) = rx.recv().await {
                 match event {
                     CommandEvent::Stdout(line) => {
-                        let _ = String::from_utf8(line)
-                            .map(|s| eprintln!("[sidecar stdout] {s}"));
+                        let _ = String::from_utf8(line).map(|s| eprintln!("[sidecar stdout] {s}"));
                     }
                     CommandEvent::Stderr(line) => {
-                        let _ = String::from_utf8(line)
-                            .map(|s| eprintln!("[sidecar stderr] {s}"));
+                        let _ = String::from_utf8(line).map(|s| eprintln!("[sidecar stderr] {s}"));
                     }
                     CommandEvent::Terminated(status) => {
                         eprintln!("[sidecar] terminated: {:?}", status);
