@@ -17,17 +17,71 @@ Path: `django_fusion/comp/analyzer`
 - `urls.py`
 - `views.py`
 
-## Architecture
+## Architecture / ERD
 
-```flowchart
-flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+```mermaid
+erDiagram
+    CompUsage {
+        Any path
+        Any kind
+        Field kwargs
+    }
+    SectionMarker {
+        Any name
+        Any marker_type
+        Any line
+    }
+    ParsedTemplate {
+        Any extends
+        Any blocks
+        Any comps
+        Field sections
+    }
+    Prop {
+        Any name
+    }
+    Slot {
+        Any name
+    }
+    Component {
+        Any name
+        Any path
+        Field props
+        Field slots
+    }
+    Block {
+        Any name
+    }
+    Section {
+        Any name
+        Any id
+        Any marker_type
+    }
+    Template {
+        Any name
+        Any path
+        Field blocks
+        Field sections
+    }
+    PageComponentUsage {
+        Any component_id
+        Field props
+    }
+    Page {
+        Any title
+        Any path
+        Field components
+    }
+    AnalyzeRequest {
+        Field filters
+    }
+    ScannedFile {
+        Any path
+        Any relative_path
+        Any content
+        ConfigDict model_config
+    }
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -37,11 +91,22 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.analyzer import ...
+from django_fusion.comp.analyzer.models import CompUsage
 
-# TODO: replace with a concrete example for this package.
+# Query and create instances
+qs = CompUsage.objects.all()
+obj = CompUsage.objects.create(kwargs='...')
 ```
 
+```python
+from django_fusion.comp.analyzer import AnalyzeView
+
+# Wire into urls.py
+from django.urls import path
+urlpatterns = [
+    path('analyzeview/', AnalyzeView.as_view()),
+]
+```
 ## Commands / Entry Points
 
 *No management commands are defined here by default.*

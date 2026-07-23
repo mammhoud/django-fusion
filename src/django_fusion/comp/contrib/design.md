@@ -11,15 +11,11 @@ Path: `django_fusion/comp/contrib`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> comp.contrib
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -29,9 +25,9 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.contrib import ...
-
-# TODO: replace with a concrete example for this package.
+# Contrib package for third-party component integrations.
+# Import specific integrations once they are added here, e.g.:
+# from django_fusion.comp.contrib import my_extension
 ```
 
 ## Commands / Entry Points

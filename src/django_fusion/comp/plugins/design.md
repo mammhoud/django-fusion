@@ -16,15 +16,11 @@ Path: `django_fusion/comp/plugins`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> comp.plugins
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -34,9 +30,14 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.plugins import ...
+from django_fusion.comp.plugins.manager import pm
+from django_fusion.comp.plugins import hookspecs
 
-# TODO: replace with a concrete example for this package.
+# Call a hook implemented by registered plugins
+results = pm.hook.get_template_directories()
+
+# Register a custom plugin module (replace with your module)
+# pm.register(my_plugin_module, "my_project.plugin")
 ```
 
 ## Commands / Entry Points

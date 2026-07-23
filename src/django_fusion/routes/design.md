@@ -19,17 +19,76 @@ Path: `django_fusion/routes`
 - `sites.py`
 - `template_resolver.py`
 
-## Architecture
+## Architecture / Class Diagram
 
-```flowchart
-flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+```mermaid
+classDiagram
+    class BaseModelViewset {
+      +filter_kwargs()
+      +index_path()
+      +has_view_permission()
+      +get_list_page_actions()
+      +get_list_view_kwargs()
+    }
+    Viewset <|-- BaseModelViewset
+    class Viewset {
+      +viewsets()
+      +filter_kwargs()
+      +urls()
+    }
+    BaseViewset <|-- Viewset
+    class _IndexRedirectView {
+      +get_redirect_url()
+    }
+    RedirectView <|-- _IndexRedirectView
+    class RoutableComponent {
+      +get_fragment_name()
+      +urls()
+      +setup()
+      +has_permission()
+      +get_route_url()
+    }
+    ComponentViews <|-- RoutableComponent
+    BaseViewset <|-- RoutableComponent
+    class FragmentComponent {
+      +dispatch()
+      +setup()
+      +get()
+      +get_queryset()
+      +get_fragment_context()
+    }
+    RoutableComponent <|-- FragmentComponent
+    class Application {
+      +get_context_data()
+      +has_view_permission()
+      +menu_items()
+    }
+    IndexViewMixin <|-- Application
+    Viewset <|-- Application
+    class Site {
+      +menu_items()
+      +has_view_permission()
+      +register()
+      +get_absolute_url()
+    }
+    IndexViewMixin <|-- Site
+    Viewset <|-- Site
+    class ModelViewset {
+      +get_object_url()
+      +get_success_url()
+    }
+    ListBulkActionsMixin <|-- ModelViewset
+    CreateViewMixin <|-- ModelViewset
+    UpdateViewMixin <|-- ModelViewset
+    AppMenuMixin <|-- ModelViewset
+    BaseModelViewset <|-- ModelViewset
+    class ReadonlyModelViewset {
+    }
+    DetailViewMixin <|-- ReadonlyModelViewset
+    ListBulkActionsMixin <|-- ReadonlyModelViewset
+    AppMenuMixin <|-- ReadonlyModelViewset
+    BaseModelViewset <|-- ReadonlyModelViewset
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -39,11 +98,14 @@ flowchart LR
 ## Usage Example
 
 ```python
-from routes import ...
+from django_fusion.routes import BaseModelViewset
 
-# TODO: replace with a concrete example for this package.
+# Wire into urls.py
+from django.urls import path
+urlpatterns = [
+    path('basemodelviewset/', BaseModelViewset.as_view()),
+]
 ```
-
 ## Commands / Entry Points
 
 *No management commands are defined here by default.*

@@ -18,15 +18,11 @@ Path: `django_fusion/comp/configuration`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> comp.configuration
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -36,9 +32,11 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.configuration import ...
+from django_fusion.comp.configuration.conf import get_settings
 
-# TODO: replace with a concrete example for this package.
+settings = get_settings()
+cache_timeout = settings.COMPONENT_CACHE_TIMEOUT
+cache_key = settings.get_component_cache_key("my_component")
 ```
 
 ## Commands / Entry Points

@@ -14,17 +14,14 @@ Path: `django_fusion/contrib/admin`
 - `email_admin.py`
 - `wagtail_hooks.py`
 
-## Architecture
+## Architecture / Class Diagram
 
-```flowchart
-flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+```mermaid
+classDiagram
+    class AuthEmailTemplateViewSet {
+    }
+    SnippetViewSet <|-- AuthEmailTemplateViewSet
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -34,11 +31,14 @@ flowchart LR
 ## Usage Example
 
 ```python
-from contrib.admin import ...
+from django_fusion.contrib.admin import AuthEmailTemplateViewSet
 
-# TODO: replace with a concrete example for this package.
+# Wire into urls.py
+from django.urls import path
+urlpatterns = [
+    path('authemailtemplateviewset/', AuthEmailTemplateViewSet.as_view()),
+]
 ```
-
 ## Commands / Entry Points
 
 *No management commands are defined here by default.*

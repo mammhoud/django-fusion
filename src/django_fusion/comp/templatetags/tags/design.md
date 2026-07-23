@@ -18,15 +18,11 @@ Path: `django_fusion/comp/templatetags/tags`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> comp.templatetags.tags
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -36,9 +32,10 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.templatetags.tags import ...
+from django_fusion.comp.templatetags.tags import example_function
 
-# TODO: replace with a concrete example for this package.
+# Replace example_function with a real symbol from this package
+result = example_function()
 ```
 
 ## Commands / Entry Points

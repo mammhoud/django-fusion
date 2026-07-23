@@ -14,15 +14,11 @@ Path: `django_fusion/comp/core`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> comp.core
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -32,9 +28,13 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.core import ...
+from django_fusion.comp.core._init import components, Component
 
-# TODO: replace with a concrete example for this package.
+# Resolve a component by its dotted/template name
+component = components.get_component("button")
+
+# Inspect the component
+print(component.name, component.path)
 ```
 
 ## Commands / Entry Points

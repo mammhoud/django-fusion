@@ -14,12 +14,11 @@ Path: `django_fusion/models/mixins`
 
 ## Architecture
 
-```erd
-erDiagram
-    %% Generic entity-relationship placeholder.
-    Replace with actual models discovered in this package.
+```mermaid
+flowchart LR
+    Request --> models.mixins
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -29,11 +28,11 @@ erDiagram
 ## Usage Example
 
 ```python
-from models.mixins import ...
+from django_fusion.models.mixins.models import DisplayModeMixin
 
-# TODO: replace with a concrete example for this package.
+# Create an instance
+obj = DisplayModeMixin.objects.create(display_mode='...', modal_size='...', display_mode_panels='...')
 ```
-
 ## Commands / Entry Points
 
 *No management commands are defined here by default.*

@@ -13,17 +13,16 @@ Path: `django_fusion/components/forms`
 - `mixins.py`
 - `tag_generator.py`
 
-## Architecture
+## Architecture / Class Diagram
 
-```flowchart
-flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+```mermaid
+classDiagram
+    class FormTableMixin {
+      +get_form_table_context_data()
+    }
+    FormMixin <|-- FormTableMixin
+    TableMixin <|-- FormTableMixin
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -33,11 +32,12 @@ flowchart LR
 ## Usage Example
 
 ```python
-from components.forms import ...
+from django_fusion.components.forms import FormTableMixin
 
-# TODO: replace with a concrete example for this package.
+# Use the mixin in your own view/component class
+class MyView(FormTableMixin, TemplateView):
+    pass
 ```
-
 ## Commands / Entry Points
 
 *No management commands are defined here by default.*

@@ -18,15 +18,11 @@ Path: `django_fusion/comp/loader`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> comp.loader
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -36,9 +32,14 @@ flowchart LR
 ## Usage Example
 
 ```python
-from comp.loader import ...
+from django_fusion.comp.loader.discovery import discover_sections
+from django_fusion.comp.loader.templates import get_template_names
 
-# TODO: replace with a concrete example for this package.
+# Discover reusable section templates
+sections = discover_sections()
+
+# Resolve possible template names for a component
+names = get_template_names("input")
 ```
 
 ## Commands / Entry Points

@@ -17,17 +17,14 @@ Path: `django_fusion/fragments`
 - `urls.py`
 - `views.py`
 
-## Architecture
+## Architecture / Class Diagram
 
-```flowchart
-flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+```mermaid
+classDiagram
+    class FragmentRequestView {
+      +get()
+    }
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -37,11 +34,14 @@ flowchart LR
 ## Usage Example
 
 ```python
-from fragments import ...
+from django_fusion.fragments import FragmentRequestView
 
-# TODO: replace with a concrete example for this package.
+# Wire into urls.py
+from django.urls import path
+urlpatterns = [
+    path('fragmentrequestview/', FragmentRequestView.as_view()),
+]
 ```
-
 ## Commands / Entry Points
 
 *No management commands are defined here by default.*

@@ -14,15 +14,11 @@ Path: `django_fusion/core`
 
 ## Architecture
 
-```flowchart
+```mermaid
 flowchart LR
-    A[Request] --> B{Handler}
-    B --> C[Service/Logic]
-    C --> D[Response/Template]
-    style A fill:#f9f,stroke:#333
-    style D fill:#bbf,stroke:#333
+    Request --> core
+    {package_name} --> Response
 ```
-
 ## Request Flow
 
 1. A request enters the Django view/handler defined in this package.
@@ -32,9 +28,22 @@ flowchart LR
 ## Usage Example
 
 ```python
-from core import ...
+from django_fusion.core.rendering import TemplateRenderer
 
-# TODO: replace with a concrete example for this package.
+renderer = TemplateRenderer.get_default()
+
+# Render a template to a string
+html = renderer.render("emails/welcome.html", {"name": "Alice"}, request)
+
+# Render an email bundle (HTML + text + subject)
+email = renderer.render_email(
+    "emails/welcome.html",
+    context={"name": "Alice"},
+    subject="Welcome!",
+)
+
+# Return an HttpResponse
+response = renderer.render_to_response("pages/home.html", {"title": "Home"}, request)
 ```
 
 ## Commands / Entry Points
