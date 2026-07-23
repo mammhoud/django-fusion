@@ -504,7 +504,7 @@ def register_admin_routes(app):
         ctx = _base_context(request, "products", "Products")
         ctx["products"] = await _data()
         ctx["categories"] = await _cats()
-        ctx["edit_product"] = {"name": "", "sku": "", "price": "", "stock": 0, "description": "", "active": True, "category_id": None}
+        ctx["edit_product"] = {"name": "", "sku": "", "price": "", "stock": 0, "description": "", "active": True, "category_id": None, "border_color": ""}
         return _html(_render("admin/products.html", ctx))
 
     @app.get("/admin/products/:product_id/edit")
@@ -536,6 +536,7 @@ def register_admin_routes(app):
                     "price": float(p.price), "stock": p.stock_quantity or 0,
                     "description": p.description or "", "active": p.is_active,
                     "category_id": p.category_id,
+                    "border_color": p.border_color or "",
                 }
             except S.Product.DoesNotExist:
                 return None
@@ -567,6 +568,7 @@ def register_admin_routes(app):
                 "stock_quantity": int(body.get("stock_quantity", 0)),
                 "description": body.get("description", ""),
                 "is_active": body.get("is_active") in (True, "1", 1, "true", "on"),
+                "border_color": body.get("border_color", ""),
             }
             cat_id = body.get("category_id")
             if cat_id:

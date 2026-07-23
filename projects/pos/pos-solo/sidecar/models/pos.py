@@ -57,6 +57,8 @@ class Product(models.Model):
     low_stock_threshold = models.IntegerField(default=10)
     description = models.TextField(blank=True, default="")
     image_url = models.URLField(blank=True, default="")
+    border_color = models.CharField(max_length=7, blank=True, default="",
+        help_text="Hex border color for product card display (e.g., #6366f1)")
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
     # Sync tracking
