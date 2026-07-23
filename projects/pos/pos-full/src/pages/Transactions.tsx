@@ -213,6 +213,7 @@ export default function Transactions() {
         currency: showReceiptDialog.currency,
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
         notes: settings.receipt_footer ?? undefined,
+        category: 'products',
       });
     } catch (error) {
       console.error('Error generating invoice PDF:', error);

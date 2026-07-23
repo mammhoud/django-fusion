@@ -64,7 +64,7 @@ export default function Inventory() {
   });
   const [editForm, setEditForm] = useState<Ingredient | null>(null);
   const [newTransaction, setNewTransaction] = useState<NewInventoryTransaction>({
-    ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0
+    ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0, shipping_fee: 0
   });
   const [adjustmentReason, setAdjustmentReason] = useState('');
   const [createdBy, setCreatedBy] = useState('');
@@ -213,10 +213,11 @@ export default function Inventory() {
         ingredient_id: newTransaction.ingredient_id,
         transaction_type: newTransaction.transaction_type as any,
         quantity_change: newTransaction.quantity_change,
+        shipping_fee: newTransaction.shipping_fee ?? 0,
         note: adjustmentReason || null,
-      }).unwrap();
+      } as any).unwrap();
       setShowAddTransaction(false);
-      setNewTransaction({ ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0 });
+      setNewTransaction({ ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0, shipping_fee: 0 });
       setAdjustmentReason('');
       showStatus('success', t('inventory.successTransaction'));
     } catch (e) { showStatus('error', String(e)); }
@@ -251,6 +252,10 @@ export default function Inventory() {
         const ing = ingredients.find(i => i.id === tx.ingredient_id);
         return <span className={`font-semibold ${tx.quantity_change >= 0 ? 'text-green-500' : 'text-red-500'}`}>{tx.quantity_change >= 0 ? '+' : ''}{tx.quantity_change} {ing?.unit || ''}</span>;
       }
+    },
+    {
+      key: 'shipping_fee', label: 'Shipping', colSpan: 1, sortable: true, hideOnMobile: true,
+      render: (tx) => <span className="text-slate-600 dark:text-gray-400">{tx.shipping_fee ? `${tx.shipping_fee.toFixed(2)}` : '—'}</span>
     },
     {
       key: 'note', label: 'Note', colSpan: 1, hideOnMobile: true,
@@ -716,7 +721,7 @@ export default function Inventory() {
               <option key={ing.id} value={ing.id}>{ing.name} ({ing.current_quantity} {ing.unit})</option>
             ))}
           </select></div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.type')} *</label>
             <select value={newTransaction.transaction_type} onChange={e => setNewTransaction(p => ({ ...p, transaction_type: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white">
@@ -728,6 +733,18 @@ export default function Inventory() {
               placeholder={t('inventory.quantityPlaceholder')}
               className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
             <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('inventory.positiveHint')}</p>
+          </div>
+          <div>
+            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.shippingFee', 'Shipping Fee')}</label>
+            <input
+              type="number"
+              step="0.01"
+              min="0"
+              value={newTransaction.shipping_fee ?? 0}
+              onChange={e => setNewTransaction(p => ({ ...p, shipping_fee: Number(e.target.value) }))}
+              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white"
+            />
+            <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('inventory.shippingFeeHint', 'Applied to goods transactions')}</p>
           </div>
         </div>
         <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.note')}</label>

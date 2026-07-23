@@ -15,6 +15,7 @@ from typing import Set, Tuple
 
 from django.contrib.auth.models import Group, Permission
 from django.core.management.base import BaseCommand, CommandError
+from django_fusion.management.commands.base import BaseCommand
 
 
 class GroupHierarchyManager:

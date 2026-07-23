@@ -20,6 +20,7 @@ from pathlib import Path
 from typing import Any
 
 from django.core.management.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 
 # Use dynaconf's vendored ruamel.yaml since PyYAML may not be installed separately.
 # dynaconf bundles ruamel.yaml under dynaconf.vendor.ruamel.yaml.

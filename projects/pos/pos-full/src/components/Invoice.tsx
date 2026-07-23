@@ -1,6 +1,6 @@
 import { forwardRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { InvoiceType, INVOICE_TYPE_LABELS } from '../types';
+import { InvoiceType, INVOICE_TYPE_LABELS, INVOICE_CATEGORY_LABELS, INVOICE_CATEGORY_I18N_KEYS } from '../types';
 
 // ---- Types -----------------------------------------------------------------
 
@@ -52,16 +52,7 @@ const TYPE_ACCENT: Record<string, { badge: string; total: string; border: string
   goods_transfer: { badge: 'bg-violet-600 text-white',   total: 'bg-violet-600 text-white',     border: 'border-violet-200' },
 };
 
-const CATEGORY_LABELS: Record<string, string> = {
-  get_goods: 'Get Goods',
-  transfer_goods: 'Transfer In',
-  products: 'Products',
-  production_creation: 'Production',
-  employee_meal: 'Employee Meal',
-  all_transactions: 'All Transactions',
-  pay_supplier: 'Pay Supplier',
-  transfer_out: 'Transfer Out',
-};
+
 
 // ---- Design wrappers -------------------------------------------------------
 
@@ -116,7 +107,11 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
     const total = subtotal + taxAmount;
 
     const accent = TYPE_ACCENT[invoiceType] || TYPE_ACCENT['commercial'];
-    const catLabel = category ? (CATEGORY_LABELS[category] || category) : null;
+    const catLabel = category
+      ? (INVOICE_CATEGORY_I18N_KEYS[category]
+          ? t(INVOICE_CATEGORY_I18N_KEYS[category], { defaultValue: INVOICE_CATEGORY_LABELS[category] || category })
+          : (INVOICE_CATEGORY_LABELS[category] || category))
+      : null;
     const isModern = pageDesign === 'modern';
     const textMuted = isModern ? 'text-white/70' : 'text-slate-500';
     const textHeading = isModern ? 'text-white' : 'text-slate-900';

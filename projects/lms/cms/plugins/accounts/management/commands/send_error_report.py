@@ -17,6 +17,7 @@ from datetime import timedelta
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
