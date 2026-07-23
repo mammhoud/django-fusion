@@ -12,6 +12,16 @@ export interface ProductCardColor {
 
 export const PRODUCT_SKELETON_COUNT = 14;
 
+/** Convert a 6-char hex color (#RRGGBB) to rgba with the given alpha. */
+function hexToRgba(hex: string, alpha: number): string {
+  const h = hex.replace('#', '');
+  if (h.length !== 6) return hex + '10';
+  const r = parseInt(h.substring(0, 2), 16);
+  const g = parseInt(h.substring(2, 4), 16);
+  const b = parseInt(h.substring(4, 6), 16);
+  return `rgba(${r}, ${g}, ${b}, ${alpha})`;
+}
+
 export const PRODUCT_CARD_COLORS: ProductCardColor[] = [
   { bg: 'bg-rose-100/70 dark:bg-rose-900/20', border: 'border-rose-300 dark:border-rose-700/50', initial: 'text-rose-500 dark:text-rose-300', badge: 'bg-rose-500', icon: 'text-rose-400' },
   { bg: 'bg-sky-100/70 dark:bg-sky-900/20', border: 'border-sky-300 dark:border-sky-700/50', initial: 'text-sky-500 dark:text-sky-300', badge: 'bg-sky-500', icon: 'text-sky-400' },
@@ -52,15 +62,20 @@ export default function ProductCard({
     setImageError(false);
   }, [product.image]);
 
+  // When a custom border_color is set, use static Tailwind classes for
+  // everything except the border/background colors which are applied via
+  // inline styles (Tailwind JIT cannot compile dynamic color classes).
+  const borderHex = product.border_color;
+  const hasCustomColor = !!borderHex && !isSelected;
+
   const baseClasses = isSelected
     ? selectedClassName
-    : product.border_color
-      ? `bg-white/70 dark:bg-white/5 border-[${product.border_color}] dark:border-[${product.border_color}]`
+    : hasCustomColor
+      ? 'bg-white/70 dark:bg-white/5'
       : `${color.bg} ${color.border}`;
 
-  // Parse custom border color for inline style (Tailwind JIT doesn't support dynamic colors)
-  const customBorderStyle = product.border_color && !isSelected
-    ? { borderColor: product.border_color, backgroundColor: product.border_color + '10' }
+  const customBorderStyle: React.CSSProperties = hasCustomColor && borderHex
+    ? { borderColor: borderHex, backgroundColor: hexToRgba(borderHex, 0.06) }
     : {};
 
   return (
@@ -79,7 +94,7 @@ export default function ProductCard({
       <div className={`w-16 h-16 sm:w-20 sm:h-20 mb-3 rounded-xl overflow-hidden
         flex items-center justify-center border-2 ${isSelected ? 'border-teal-300 dark:border-teal-500/50' : product.border_color ? '' : color.border}
         bg-white/70 dark:bg-white/10 shadow-sm`}
-        style={product.border_color && !isSelected ? { borderColor: product.border_color } : {}}>
+        style={hasCustomColor ? { borderColor: borderHex } : {}}>
         {product.image && !imageError ? (
           <img
             src={product.image}

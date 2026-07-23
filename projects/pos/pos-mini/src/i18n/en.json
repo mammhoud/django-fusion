@@ -126,6 +126,7 @@
     "category": "Category",
     "noCategory": "— No category —",
     "noProducts": "No products available. Add your first product!",
+    "borderColor": "Border Color",
     "deleteTitle": "Delete Product?",
     "deleteConfirm": "Are you sure you want to delete",
     "deleteWarning": "This action cannot be undone.",
