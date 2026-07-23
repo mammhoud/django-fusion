@@ -32,7 +32,7 @@ export default function FaqPage() {
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{hero?.heading || page.title}</h1>
           <p className="text-lg text-indigo-200 mb-8">{hero?.intro}</p>
-          <div className="relative max-w-xl mx-auto"><HiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" /><input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search FAQs..." className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 bg-white shadow-lg focus:ring-2 focus:ring-indigo-300 outline-none" /></div>
+          <div className="relative max-w-xl mx-auto" role="search"><label htmlFor="faq-search" className="sr-only">Search FAQs</label><HiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" aria-hidden="true" /><input id="faq-search" name="faq-search" type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search FAQs..." aria-label="Search FAQs" className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 bg-white shadow-lg focus:ring-2 focus:ring-indigo-300 outline-none" /></div>
         </div>
       </section>
       <div className="max-w-3xl mx-auto px-4 py-16"><div className="space-y-8">{filteredCategories.map((category, catIdx) => (

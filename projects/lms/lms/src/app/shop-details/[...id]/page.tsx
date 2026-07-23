@@ -116,7 +116,7 @@ export default function ShopDetailsPage() {
           <div>
             <div className="flex items-start justify-between">
               <div>
-                <p className="text-sm text-indigo-600 font-medium mb-1">{displayProduct.category || mockProduct.category}</p>
+                <p className="text-sm text-indigo-600 font-medium mb-1">{displayProduct.category_name || displayProduct.category || mockProduct.category}</p>
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">{displayProduct.name}</h1>
                 <div className="flex items-center gap-3 mb-4">
                   <div className="flex items-center gap-1">
