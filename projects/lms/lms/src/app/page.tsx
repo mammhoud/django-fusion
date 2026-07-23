@@ -1,24 +1,32 @@
 'use client';
 
 import Link from 'next/link';
+import type { Route } from 'next';
 import { motion } from 'framer-motion';
 import { HiAcademicCap, HiUserGroup, HiBookOpen, HiStar, HiChevronRight } from 'react-icons/hi';
 import { useGetFeaturedCoursesQuery, useGetCoursesQuery } from '@/store/api/endpoints/courses';
 import { useGetInstructorsQuery } from '@/store/api/endpoints/instructors';
+import { useGetPageQuery } from '@/store/api/endpoints/pages';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
 import EmptyState from '@/components/ui/EmptyState';
 
 export default function HomePage() {
+  const { data: page } = useGetPageQuery('home');
   const { data: featuredCourses, isLoading: coursesLoading } = useGetFeaturedCoursesQuery();
   const { data: coursesData } = useGetCoursesQuery({ page: 1 });
   const { data: instructorsData } = useGetInstructorsQuery({ page: 1 });
 
+  const pageStats = page?.blocks.find((block) => block.type === 'stats')?.items || [];
+  const hero = page?.blocks.find((block) => block.type === 'hero');
+  const featuredHeader = page?.blocks.find((block) => block.key === 'featured_courses');
+  const cta = page?.blocks.find((block) => block.type === 'cta');
+
   const stats = [
     { icon: HiBookOpen, label: 'Courses', value: coursesData?.count ?? 0 },
     { icon: HiUserGroup, label: 'Instructors', value: instructorsData?.count ?? 0 },
-    { icon: HiAcademicCap, label: 'Students', value: '5K+' },
-    { icon: HiStar, label: 'Reviews', value: '12K+' },
+    { icon: HiAcademicCap, label: pageStats[0]?.label || 'Students', value: pageStats[0]?.value || '5K+' },
+    { icon: HiStar, label: pageStats[1]?.label || 'Reviews', value: pageStats[1]?.value || '12K+' },
   ];
 
   return (
@@ -33,17 +41,17 @@ export default function HomePage() {
             className="text-center max-w-3xl mx-auto"
           >
             <h1 className="text-4xl md:text-6xl font-bold mb-6 leading-tight">
-              Learn Without Limits
+              {hero?.heading || 'Learn Without Limits'}
             </h1>
             <p className="text-lg md:text-xl text-indigo-200 mb-10 leading-relaxed">
-              Master new skills with expert-led courses, interactive content, and a community of learners.
+              {hero?.intro || 'Master new skills with expert-led courses, interactive content, and a community of learners.'}
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/courses" className="bg-white text-indigo-700 px-8 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
-                Explore Courses
+              <Link href={(hero?.ctas?.[0]?.href || '/courses') as Route} className="bg-white text-indigo-700 px-8 py-3 rounded-lg font-semibold hover:bg-indigo-50 transition-colors">
+                {hero?.ctas?.[0]?.label || 'Explore Courses'}
               </Link>
-              <Link href="/registration" className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
-                Get Started Free
+              <Link href={(hero?.ctas?.[1]?.href || '/registration') as Route} className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
+                {hero?.ctas?.[1]?.label || 'Get Started Free'}
               </Link>
             </div>
           </motion.div>
@@ -76,8 +84,8 @@ export default function HomePage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between mb-10">
             <div>
-              <h2 className="text-3xl font-bold text-gray-900">Featured Courses</h2>
-              <p className="text-gray-500 mt-2">Most popular courses picked for you</p>
+              <h2 className="text-3xl font-bold text-gray-900">{featuredHeader?.heading || 'Featured Courses'}</h2>
+              <p className="text-gray-500 mt-2">{featuredHeader?.intro || 'Most popular courses picked for you'}</p>
             </div>
             <Link href="/courses" className="text-indigo-600 font-medium flex items-center gap-1 hover:text-indigo-700">
               View All <HiChevronRight className="w-4 h-4" />
@@ -141,17 +149,17 @@ export default function HomePage() {
       <section className="py-20 bg-gradient-to-r from-indigo-600 to-purple-700">
         <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            Ready to Start Learning?
+            {cta?.heading || 'Start Learning Today'}
           </h2>
           <p className="text-lg text-indigo-200 mb-8">
-            Join thousands of students and start your learning journey today.
+            {cta?.intro || 'Join thousands of students and start your learning journey today.'}
           </p>
           <Link
-            href="/registration"
+            href={(cta?.ctas?.[0]?.href || '/registration') as Route}
             className="inline-block bg-white text-indigo-700 px-10 py-4 rounded-lg font-bold text-lg
                        hover:bg-indigo-50 transition-colors shadow-lg"
           >
-            Create Free Account
+            {cta?.ctas?.[0]?.label || 'Create Free Account'}
           </Link>
         </div>
       </section>

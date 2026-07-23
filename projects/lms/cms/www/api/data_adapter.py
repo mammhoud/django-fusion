@@ -31,6 +31,7 @@ from www.api.data.helpers import (
     get_current_user,
     get_image_url,
     get_user_display_name,
+    paginated_response,
 )
 from www.auth import authenticate_request, extract_bearer_token
 
@@ -44,6 +45,7 @@ def bolt_view(view_func: Callable) -> Callable:
     return either a dict (converted to 200 JsonResponse) or a tuple of
     ``(dict, status_code)``.
     """
+
     @functools.wraps(view_func)
     def wrapper(request, *args, **kwargs):
         try:
@@ -60,6 +62,7 @@ def bolt_view(view_func: Callable) -> Callable:
                 {"status": "error", "message": "Internal server error"},
                 status=500,
             )
+
     return wrapper
 
 
@@ -68,6 +71,7 @@ def login_required(view_func: Callable) -> Callable:
 
     Checks token auth first, then Django session auth.
     """
+
     @functools.wraps(view_func)
     def wrapper(request, *args, **kwargs):
         if not request.user.is_authenticated:
@@ -80,6 +84,7 @@ def login_required(view_func: Callable) -> Callable:
                 status=401,
             )
         return view_func(request, *args, **kwargs)
+
     return wrapper
 
 
@@ -92,6 +97,7 @@ __all__ = [
     "get_current_user",
     "get_image_url",
     "get_user_display_name",
+    "paginated_response",
     "authenticate_request",
     "extract_bearer_token",
 ]

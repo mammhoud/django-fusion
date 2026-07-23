@@ -1,9 +1,9 @@
 """
-CTC Research — Django settings (django-bolt exclusive, no DRF).
+Structa LMS — Django settings (django-bolt exclusive, no DRF).
 
-Serves Wagtail CMS on port 8086 + django-bolt API on port 8087.
-Connected to next-LMS Next.js frontend via bolt API.
-Follows monorepo pattern: configs.site + configs.settings base.
+Serves the Structa Cloud LMS site on port 5071 and exposes the
+django-bolt API under ``/apis`` for the LMS frontend. Follows the
+monorepo pattern: configs.site + configs.settings base.
 """
 
 import os
@@ -22,7 +22,7 @@ for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR), str(_PROJ
 
 # ── Site configuration (monorepo pattern) ──
 from configs.site import configure_site_environment
-configure_site_environment("ctc-research", module="CTC Research", default_port=8086)
+configure_site_environment("lms", module="LMS", default_port=5071)
 
 from configs.settings import *
 
@@ -32,12 +32,12 @@ ASGI_APPLICATION = "server.application"
 WSGI_APPLICATION = "server.application"
 
 # ── Site identity ──
-WEBSITE_NAME = "ctc-research"
-WEBSITE_IDENTIFIER = "ctc-research"
-SITE_ID = 3
+WEBSITE_NAME = "lms"
+WEBSITE_IDENTIFIER = "lms"
+SITE_ID = 2
 
 # ── Wagtail admin branding ──
-WAGTAIL_SITE_NAME = "CTC Hub"
+WAGTAIL_SITE_NAME = "Structa LMS"
 
 # ── Local apps ──
 LOCAL_APPS = [
@@ -59,7 +59,7 @@ for _app in _OPTIONAL_APPS:
         LOCAL_APPS.append(_app)
     except ImportError:
         pass
-# Filter out shared apps that don't exist in ctc-research
+# Filter out shared apps that do not exist in the LMS site
 _SHARED_APPS_TO_REMOVE = {"www.worker"}
 INSTALLED_APPS = [a for a in INSTALLED_APPS if a not in _SHARED_APPS_TO_REMOVE]
 INSTALLED_APPS += LOCAL_APPS
@@ -67,19 +67,19 @@ INSTALLED_APPS += LOCAL_APPS
 # ── django-bolt configuration (exclusive API layer) ──
 BOLT_API = {
     "prefix": "/apis",
-    "namespace": "ctc-research-bolt",
-    "title": "CTC Research API",
+    "namespace": "lms-bolt",
+    "title": "Structa LMS API",
     "version": "1.0.0",
-    "description": "High-performance bolt API for CTC Research — serves next-LMS frontend",
+    "description": "High-performance bolt API for the Structa LMS frontend",
     "auth": {
         "enabled": True,
         "token_header": "Authorization",
-        "token_prefix": "Token",
+        "token_prefix": "Bearer",
         "token_model": "django.contrib.auth.models.User",
     },
 }
 
-# ── CORS for next-LMS frontend (only if corsheaders is installed) ──
+# ── CORS for Structa LMS frontend (only if corsheaders is installed) ──
 _CORS_AVAILABLE = False
 try:
     __import__("corsheaders")
@@ -93,7 +93,12 @@ if _CORS_AVAILABLE:
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:1420",
-    "https://lms.structa.cloud",
+    "http://structa.cloud",
+    "https://structa.cloud",
+    "http://www.structa.cloud",
+    "https://www.structa.cloud",
+    "http://core.structa.cloud",
+    "https://core.structa.cloud",
 ]
 CORS_ALLOW_CREDENTIALS = True
 

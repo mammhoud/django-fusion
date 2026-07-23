@@ -18,10 +18,33 @@ class TestGetProfile:
 
     def test_returns_401_when_unauthenticated(self, test_api):
         with TestClient(test_api) as client:
-            resp = client.get("/apis/auth/profile")
+            resp = client.get("/apis/auth/profile/")
             assert resp.status_code == 401
             data = resp.json()
             assert data["status"] == "error"
+
+    def test_rejects_malformed_bearer_token(self, test_api):
+        with TestClient(test_api) as client:
+            resp = client.get(
+                "/apis/auth/profile/",
+                headers={"Authorization": "Bearer not-a-real-token"},
+            )
+            assert resp.status_code in (401, 403)
+            data = resp.json()
+            assert data["status"] == "error"
+
+    def test_accepts_bearer_token_for_api_profile_url(
+        self, test_api, auth_token, test_user
+    ):
+        with TestClient(test_api) as client:
+            resp = client.get(
+                "/apis/auth/profile/",
+                headers={"Authorization": f"Bearer {auth_token}"},
+            )
+            assert resp.status_code == 200
+            data = resp.json()
+            assert data["status"] == "success"
+            assert data["data"]["id"] == test_user.pk
 
     def test_returns_profile_with_valid_token(self, test_api, auth_token, test_user):
         with TestClient(test_api) as client:

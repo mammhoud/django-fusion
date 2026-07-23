@@ -20,8 +20,11 @@ export const api = createApi({
   reducerPath: 'api',
   baseQuery: fetchBaseQuery({
     baseUrl: API_BASE,
-    prepareHeaders: (headers) => {
-      const token = typeof window !== 'undefined' ? localStorage.getItem('lms_token') : null;
+    prepareHeaders: (headers, { getState }) => {
+      const state = getState() as { requestSession?: { token?: string | null } };
+      const token =
+        state.requestSession?.token ??
+        (typeof window !== 'undefined' ? localStorage.getItem('lms_token') : null);
       if (token) {
         headers.set('Authorization', `Bearer ${token}`);
       }
@@ -40,6 +43,7 @@ export const api = createApi({
     'Assignment', 'Submission',
     'Announcement',
     'Wishlist',
+    'Page',
     'Dashboard',
     'User', 'Auth',
   ],

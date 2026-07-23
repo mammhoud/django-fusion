@@ -62,7 +62,9 @@ def paginate_queryset(qs, request, default_per_page: int = 20):
     Also handles plain lists (e.g. from fallback backends) gracefully.
     """
     page = _int_param(request, "page", 1)
-    per_page = _int_param(request, "per_page", default_per_page)
+    per_page = _int_param(request, "per_page", 0) or _int_param(
+        request, "page_size", default_per_page
+    )
 
     # Handle plain list/QuerySet generically
     if isinstance(qs, (list, tuple)):
@@ -122,4 +124,34 @@ def get_current_user(request):
     if hasattr(request, "user") and request.user and not request.user.is_anonymous:
         return request.user
     from www.auth import authenticate_request
+
     return authenticate_request(request)
+
+
+def paginated_response(items, pagination: dict, request, results: list[dict]) -> dict:
+    """Return the canonical DRF-style paginated list response."""
+    page = int(pagination.get("page", 1) or 1)
+    per_page = int(pagination.get("per_page", 20) or 20)
+    total = int(pagination.get("total", 0) or 0)
+    total_pages = int(pagination.get("total_pages", 1) or 1)
+
+    def page_url(page_number: int) -> str | None:
+        if page_number < 1 or page_number > total_pages:
+            return None
+        try:
+            query = request.GET.copy()
+            query["page"] = str(page_number)
+            if "page_size" in query:
+                query["page_size"] = str(per_page)
+            else:
+                query["per_page"] = str(per_page)
+            return request.build_absolute_uri(f"{request.path}?{query.urlencode()}")
+        except Exception:
+            return None
+
+    return {
+        "results": results,
+        "count": total,
+        "next": page_url(page + 1) if page < total_pages else None,
+        "previous": page_url(page - 1) if page > 1 else None,
+    }
