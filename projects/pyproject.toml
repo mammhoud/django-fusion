@@ -94,6 +94,7 @@ dependencies = [
     "ollama>=0.6.2",
     "httpx>=0.25.0",
     "markdown>=3.5",
+    "msgspec>=0.21.1",
 ]
 
 [project.optional-dependencies]

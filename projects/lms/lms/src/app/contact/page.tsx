@@ -71,24 +71,24 @@ export default function ContactPage() {
 
             <div className="grid md:grid-cols-2 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
-                <input type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
+                <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+                <input id="contact-name" name="name" type="text" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })}
                   className="input-field" placeholder="Your name" required />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
-                <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
+                <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+                <input id="contact-email" name="email" type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
                   className="input-field" placeholder="your@email.com" required />
               </div>
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
-              <input type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}
+              <label htmlFor="contact-subject" className="block text-sm font-medium text-gray-700 mb-1">Subject</label>
+              <input id="contact-subject" name="subject" type="text" value={form.subject} onChange={(e) => setForm({ ...form, subject: e.target.value })}
                 className="input-field" placeholder="How can we help?" required />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Message</label>
-              <textarea rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
+              <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700 mb-1">Message</label>
+              <textarea id="contact-message" name="message" rows={5} value={form.message} onChange={(e) => setForm({ ...form, message: e.target.value })}
                 className="input-field" placeholder="Tell us more about your inquiry..." required />
             </div>
             <button type="submit" disabled={isLoading} className="btn-primary w-full flex items-center justify-center gap-2">

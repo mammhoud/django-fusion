@@ -88,7 +88,7 @@ class Command(BaseCommand):
             self.style.NOTICE(
                 "NOTE: Block mapping is approximate (STATIC_PAGES → Wagtail StreamField).\n"
                 "      The frontend API continues to use STATIC_PAGES as its source.\n"
-                "      Pages without Wagtail models (faq, privacy) are skipped.\n"
+                "      All major pages including faq and privacy now have Wagtail models.\n"
             )
         )
 
@@ -97,7 +97,9 @@ class Command(BaseCommand):
 
         from www.core.content.models.pages.about import AboutPage
         from www.core.content.models.pages.contact import ContactPage
+        from www.core.content.models.pages.faq import FaqPage
         from www.core.content.models.pages.home import HomePage
+        from www.core.content.models.pages.privacy import PrivacyPage
 
         self.WagtailPage = WagtailPage
         self.Site = Site
@@ -105,6 +107,8 @@ class Command(BaseCommand):
         self.HomePage = HomePage
         self.AboutPage = AboutPage
         self.ContactPage = ContactPage
+        self.FaqPage = FaqPage
+        self.PrivacyPage = PrivacyPage
 
         # ── Locale ───────────────────────────────────────────────
         self.locale, _ = Locale.objects.get_or_create(language_code="en")
@@ -122,13 +126,8 @@ class Command(BaseCommand):
                 continue
             if slug == "home":
                 results.append(self._populate_home(home, data))
-            elif slug in ("about-us", "contact"):
+            elif slug in ("about-us", "contact", "faq", "privacy"):
                 results.append(self._seed_child_page(home, slug, data))
-            else:
-                # FAQ and Privacy — no dedicated Wagtail model
-                results.append(
-                    (slug, "skip", "No dedicated Wagtail page model; uses STATIC_PAGES")
-                )
 
         # ── Site configuration ───────────────────────────────────
         site = self._configure_site(home)
@@ -195,6 +194,8 @@ class Command(BaseCommand):
         model_map = {
             "about-us": self.AboutPage,
             "contact": self.ContactPage,
+            "faq": self.FaqPage,
+            "privacy": self.PrivacyPage,
         }
         model_class = model_map.get(slug)
         if model_class is None:
@@ -224,6 +225,10 @@ class Command(BaseCommand):
             self._populate_about_page(page, data)
         elif slug == "contact":
             self._populate_contact_page(page, data)
+        elif slug == "faq":
+            self._populate_faq_page(page, data)
+        elif slug == "privacy":
+            self._populate_privacy_page(page, data)
 
         rev = page.save_revision(log_action=True)
         rev.publish()
@@ -413,6 +418,74 @@ class Command(BaseCommand):
             rev.publish()
             page.refresh_from_db()
 
+    def _populate_faq_page(self, page, data):
+        """Populate FaqPage StreamFields from STATIC_PAGES blocks."""
+        if self.dry_run:
+            return
+        head_blocks = []
+        faq_group_blocks = []
+        cta_blocks = []
+
+        for block in data.get("blocks", []):
+            btype = block.get("type")
+            if btype == "hero":
+                head_blocks.append(("page_title", {
+                    "page_title_background": None,
+                    "page_title": block.get("heading", "FAQs"),
+                    "breadcrumb_home_text": "Home",
+                }))
+            elif btype == "faq_groups":
+                for group in block.get("groups", []):
+                    items = [
+                        {"question": item.get("question", ""), "answer": item.get("answer", "")}
+                        for item in group.get("items", [])
+                    ]
+                    faq_group_blocks.append(("faq_group", {
+                        "title": group.get("title", ""),
+                        "items": items,
+                    }))
+            elif btype == "cta":
+                cta_blocks.append(("cta_section", {
+                    "heading": block.get("heading", ""),
+                    "intro": block.get("intro", ""),
+                    "cta_buttons": [
+                        {"label": btn.get("label", ""), "href": btn.get("href", "")}
+                        for btn in block.get("ctas", [])
+                    ],
+                }))
+
+        with transaction.atomic():
+            if head_blocks:
+                page.head = head_blocks
+            if faq_group_blocks:
+                page.faq_groups = faq_group_blocks
+            if cta_blocks:
+                page.cta = cta_blocks
+            rev = page.save_revision(log_action=True)
+            rev.publish()
+            page.refresh_from_db()
+
+    def _populate_privacy_page(self, page, data):
+        """Populate PrivacyPage StreamFields from STATIC_PAGES blocks."""
+        if self.dry_run:
+            return
+        body_blocks = []
+
+        for block in data.get("blocks", []):
+            btype = block.get("type")
+            if btype == "rich_section":
+                body_blocks.append(("rich_section", {
+                    "heading": block.get("heading", ""),
+                    "html": block.get("html", ""),
+                }))
+
+        with transaction.atomic():
+            if body_blocks:
+                page.body = body_blocks
+            rev = page.save_revision(log_action=True)
+            rev.publish()
+            page.refresh_from_db()
+
     # ── Site ─────────────────────────────────────────────────────────
 
     def _configure_site(self, home_page):
@@ -458,6 +531,8 @@ class Command(BaseCommand):
                     "content.homepage",
                     "content.aboutpage",
                     "content.contactpage",
+                    "content.faqpage",
+                    "content.privacypage",
                     output=f,
                     indent=2,
                     natural_foreign=True,
