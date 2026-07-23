@@ -15,7 +15,7 @@ _WORKSPACE_DIR = _SITE_DIR.parent
 _PROJECTS_DIR = _SITE_DIR.parents[2] / "projects"  # projects/configs/
 _SITE_APP_DIR = _SITE_DIR / "www"
 
-for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR), str(_PROJECTS_DIR)):
+for _path in (str(_PROJECTS_DIR), str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR)):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)
@@ -46,6 +46,8 @@ LOCAL_APPS = [
     "www.content.apps.ContentConfig",
     "plugins.accounts.apps.AccountsConfig",
     "plugins.research.apps.ResearchConfig",
+    "plugins.lms",
+    "plugins.blog",
 ]
 # ── Optional packages (may not be installed in all environments) ──
 _OPTIONAL_APPS = [

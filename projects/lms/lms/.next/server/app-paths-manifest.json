@@ -1,12 +1,8 @@
 {
-  "/contact/page": "app/contact/page.js",
-  "/blog/page": "app/blog/page.js",
-  "/courses/page": "app/courses/page.js",
-  "/page": "app/page.js",
-  "/shop/page": "app/shop/page.js",
-  "/events/page": "app/events/page.js",
+  "/instructor-details/[...id]/page": "app/instructor-details/[...id]/page.js",
   "/faq/page": "app/faq/page.js",
+  "/contact/page": "app/contact/page.js",
+  "/page": "app/page.js",
   "/login/page": "app/login/page.js",
-  "/registration/page": "app/registration/page.js",
-  "/instructors/page": "app/instructors/page.js"
+  "/shop-details/[...id]/page": "app/shop-details/[...id]/page.js"
 }
