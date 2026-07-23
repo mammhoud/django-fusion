@@ -160,7 +160,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
 CREATE TABLE IF NOT EXISTS inventory_transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     ingredient_id INTEGER NOT NULL REFERENCES ingredients(id) ON DELETE CASCADE,
-    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('purchase', 'usage', 'waste', 'adjustment', 'return')),
+    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('purchase', 'usage', 'waste', 'adjustment', 'return', 'goods_transfer')),
     quantity_change REAL NOT NULL,
     reference_id INTEGER,
     note TEXT,
@@ -901,6 +901,7 @@ CREATE TABLE purchase_orders (
     reference_number TEXT,
     status TEXT NOT NULL DEFAULT 'draft',
     total_amount REAL NOT NULL DEFAULT 0,
+    shipping_fee REAL NOT NULL DEFAULT 0,
     expected_date TIMESTAMP,
     notes TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
@@ -962,6 +963,7 @@ CREATE TABLE receipt_templates (
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     template_body TEXT NOT NULL,
+    category TEXT,
     is_default BOOLEAN NOT NULL DEFAULT 0,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
@@ -1283,7 +1285,7 @@ CREATE TABLE IF NOT EXISTS recipe_ingredients (
 CREATE TABLE IF NOT EXISTS inventory_transactions (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     ingredient_id INTEGER NOT NULL REFERENCES ingredients(id) ON DELETE CASCADE,
-    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('purchase', 'usage', 'waste', 'adjustment', 'return')),
+    transaction_type TEXT NOT NULL CHECK (transaction_type IN ('purchase', 'usage', 'waste', 'adjustment', 'return', 'goods_transfer')),
     quantity_change REAL NOT NULL,
     reference_id INTEGER,
     note TEXT,
