@@ -65,6 +65,7 @@ export default function Transactions() {
   const [deleteTransactionMutation] = useDeleteTransactionMutation();
 
   const settings: Settings = {
+    id: settingsData?.id ?? 0,
     restaurant_name: settingsData?.restaurant_name || 'POS',
     address: settingsData?.address || '',
     phone: settingsData?.phone || '',
@@ -163,6 +164,17 @@ export default function Transactions() {
 
   const totalAllTime = transactions.reduce((sum, t) => sum + t.total_amount, 0);
   const totalFiltered = filteredTransactions.reduce((sum, t) => sum + t.total_amount, 0);
+
+  useEffect(() => {
+    if (!error) return;
+    const message =
+      error instanceof Error
+        ? error.message
+        : typeof error === 'object' && error !== null && 'message' in error
+          ? String((error as { message?: unknown }).message)
+          : String(error);
+    showError(message);
+  }, [error, showError]);
 
   const handleDeleteTransaction = async (id: number) => {
     if (!confirm(t('transactions.deleteConfirm'))) return;

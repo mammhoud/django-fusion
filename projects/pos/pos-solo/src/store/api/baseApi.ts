@@ -8,8 +8,9 @@
  */
 
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { SIDECAR_BASE } from '../../config/sidecar';
 
-const API_BASE = 'http://localhost:8766'; // pos-full master API
+const API_BASE = SIDECAR_BASE;
 
 export interface PaginatedResponse<T> {
   data: T[];
