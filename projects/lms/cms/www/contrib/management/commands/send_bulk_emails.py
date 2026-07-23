@@ -14,7 +14,7 @@ from typing import Any, Dict, List
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.core.management.base import BaseCommand, CommandError
-from django_fusion.management.commands.base import BaseCommand
+from django_fusion.site.management.commands.base import BaseCommand
 from django.template import Context, Template
 from django.utils import timezone
 from django.utils.html import strip_tags

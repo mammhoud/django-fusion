@@ -8,7 +8,7 @@ Usage:
     {% comp "core.modals.report_modal" report=report branch=branch / %}
 """
 
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 
 
 class LeadModal(FragmentComponent):

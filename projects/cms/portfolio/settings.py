@@ -109,7 +109,7 @@ LOCAL_APPS = [
     "www.core",
     "plugins.accounts.apps.AccountsConfig",
     "ceptor_ai",
-    "django_fusion.analyzer.apps.AnalyzerAppConfig",
+    "django_fusion.comp.analyzer.apps.AnalyzerAppConfig",
     "pages.home",
     "pages.about",
     "pages.cv",

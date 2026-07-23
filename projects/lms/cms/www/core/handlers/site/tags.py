@@ -6,7 +6,8 @@ from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_GET, require_POST
-from django_fusion.site import NotificationMixin, PageHandler
+from django_fusion.site.interface.notifications import NotificationMixin
+from django_fusion.site.interface.page_handler import PageHandler
 from plugins.accounts.models import (
     PersonTag,
     PersonTagCategory,

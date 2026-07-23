@@ -8,7 +8,7 @@ Usage:
     {% comp "core.tables.reports_table" reports=reports / %}
 """
 
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 
 
 class BranchesTable(FragmentComponent):

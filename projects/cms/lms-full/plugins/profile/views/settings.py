@@ -4,7 +4,8 @@ from django.http import HttpRequest, JsonResponse
 from django.shortcuts import redirect, render
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django_fusion.site import NotificationMixin, PageHandler
+from django_fusion.site.interface.notifications import NotificationMixin
+from django_fusion.site.interface.page_handler import PageHandler
 from ceptor_ai.models import Person
 from ceptor_ai.site.mixins import ProfileContextMixin, ProfileOperationsMixin
 

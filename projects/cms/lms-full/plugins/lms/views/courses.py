@@ -8,7 +8,7 @@ from django.utils.decorators import method_decorator
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.vary import vary_on_cookie
 from django.views.generic import ListView, TemplateView
-from django_fusion.site import PageHandler
+from django_fusion.site.interface.page_handler import PageHandler
 from django_fusion.web.views import FilterMixin, SearchMixin
 from ceptor_ai.models import CachingStorage
 
