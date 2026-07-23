@@ -1,8 +1,8 @@
 {
-  "name": "pos-full",
+  "name": "pos-solo",
   "private": true,
   "version": "0.1.0",
-  "description": "POS Full — POS desktop app + sidecar + Django data sync + WebSocket chat",
+  "description": "POS Solo — POS desktop app + local sidecar + Redux data sync + WebSocket updates",
   "author": "mammhoud <structa.cloud@gmail.com>",
   "license": "AGPL-3.0",
   "homepage": "https://structa.cloud",
@@ -50,7 +50,7 @@
   ],
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "node scripts/dev/start-browser-dev.cjs",
     "dev:desktop": "pnpm tauri dev",
     "build": "tsc && vite build",
     "preview": "vite preview",

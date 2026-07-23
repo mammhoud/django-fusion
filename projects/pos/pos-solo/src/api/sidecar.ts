@@ -11,11 +11,8 @@
 
 // ---- Constants -------------------------------------------------------------
 
-/** Base URL of the Sanic sidecar (always runs locally) */
-export const SIDECAR_BASE = 'http://127.0.0.1:8765';
-
-/** WebSocket base URL */
-export const SIDECAR_WS_BASE = 'ws://127.0.0.1:8765';
+export { SIDECAR_BASE, SIDECAR_WS_BASE } from '../config/sidecar';
+import { SIDECAR_BASE, SIDECAR_WS_BASE } from '../config/sidecar';
 
 /** Default request timeout in ms */
 const DEFAULT_TIMEOUT_MS = 10_000;
