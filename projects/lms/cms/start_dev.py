@@ -32,6 +32,7 @@ paths = [
     str(repo_root),                              # repo root
     str(repo_root / "libs" / "django-fusion" / "src"),
     str(repo_root / "libs" / "ceptor-ai" / "src"),
+    str(repo_root / "libs" / "django-bolt" / "python"),
 ]
 
 for p in reversed(paths):

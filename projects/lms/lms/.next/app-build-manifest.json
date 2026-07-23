@@ -65,6 +65,66 @@
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
       "static/chunks/app/faq/page.js"
+    ],
+    "/course-details/[...id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/course-details/[...id]/page.js"
+    ],
+    "/cart/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/cart/page.js"
+    ],
+    "/cart/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/cart/layout.js"
+    ],
+    "/student-dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/student-dashboard/page.js"
+    ],
+    "/student-dashboard/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/student-dashboard/layout.js"
+    ],
+    "/shop-details/[...id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/shop-details/[...id]/page.js"
+    ],
+    "/blog-details/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/blog-details/page.js"
+    ],
+    "/enroll/checkout/[enrollmentId]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/enroll/checkout/[enrollmentId]/page.js"
+    ],
+    "/enroll/checkout/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/enroll/checkout/layout.js"
+    ],
+    "/instructor-dashboard/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/instructor-dashboard/page.js"
+    ],
+    "/instructor-dashboard/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/instructor-dashboard/layout.js"
+    ],
+    "/instructor-details/[...id]/page": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/chunks/app/instructor-details/[...id]/page.js"
     ]
   }
 }

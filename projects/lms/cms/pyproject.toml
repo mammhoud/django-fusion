@@ -3,7 +3,24 @@ name = "ctc-research"
 version = "1.0.3"
 description = "CTC Research website — part of Structa Cloud workspace"
 requires-python = ">=3.11"
-dependencies = []
+dependencies = [
+    "ceptor-ai",
+    "django-allauth>=65.18.0",
+    "django-colorfield>=0.14.0",
+    "django-embed-video>=1.4.10",
+    "django-fusion",
+    "django-import-export>=4.4.1",
+    "django-modelcluster>=6.5",
+    "django-unfold>=0.91.0",
+    "dynaconf>=3.3.3",
+    "msgspec>=0.21.1",
+    "pillow>=10.0.0",
+    "pydantic>=2.13.4",
+    "pydantic-settings>=2.14.2",
+    "twilio>=9.10.9",
+    "wagtail>=7.4.2",
+    "willow>=1.12.0",
+]
 
 [build-system]
 requires = ["hatchling"]
@@ -11,3 +28,7 @@ build-backend = "hatchling.build"
 
 [tool.hatch.build.targets.wheel]
 packages = ["."]
+
+[tool.uv.sources]
+django-fusion = { path = "../../../libs/django-fusion", editable = true }
+ceptor-ai = { path = "../../../libs/ceptor-ai", editable = true }
