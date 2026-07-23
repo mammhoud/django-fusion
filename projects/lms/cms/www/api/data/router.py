@@ -35,6 +35,7 @@ def register_all_handlers(bolt):
     from www.api.data.shop import register_handlers as register_shop
     from www.api.data.events import register_handlers as register_events
     from www.api.data.contact import register_handlers as register_contact
+    from www.api.data.payments import register_handlers as register_payments
 
     register_auth(bolt)
     register_courses(bolt)
@@ -44,5 +45,6 @@ def register_all_handlers(bolt):
     register_shop(bolt)
     register_events(bolt)
     register_contact(bolt)
+    register_payments(bolt)
 
     logger.info("All data API handlers registered from www.api.data package")

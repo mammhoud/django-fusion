@@ -1,42 +1,54 @@
 import { api } from '../baseApi';
 
 export interface LoginRequest {
-  username: string;
+  email: string;
   password: string;
 }
 
 export interface RegisterRequest {
-  username: string;
   email: string;
   password: string;
-  password2: string;
+  first_name?: string;
+  last_name?: string;
+}
+
+export interface UserInfo {
+  id: number;
+  email: string;
+  username: string;
   first_name: string;
   last_name: string;
-  role: 'student' | 'instructor';
 }
 
+/**
+ * JWT auth response — returned by login, register, and refresh endpoints.
+ */
 export interface AuthResponse {
-  token: string;
-  user: {
-    id: number;
-    username: string;
-    email: string;
-    first_name: string;
-    last_name: string;
-    role: string;
-    avatar: string;
-  };
+  access: string;
+  refresh: string;
+  user: UserInfo;
+  expires_in: number;
 }
 
+/**
+ * Refresh request body.
+ */
+export interface RefreshRequest {
+  refresh: string;
+}
+
+/**
+ * User profile — returned by GET /apis/auth/me and /apis/auth/profile.
+ */
 export interface UserProfile {
   id: number;
   username: string;
   email: string;
   first_name: string;
   last_name: string;
+  role: 'student' | 'instructor' | 'admin';
   avatar: string;
   bio: string;
-  role: 'student' | 'instructor' | 'admin';
   date_joined: string;
   last_login: string;
 }
@@ -45,7 +57,7 @@ export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/apis/auth/login/',
+        url: '/apis/auth/login',
         method: 'POST',
         body: credentials,
       }),
@@ -53,29 +65,36 @@ export const authApi = api.injectEndpoints({
     }),
     register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (data) => ({
-        url: '/apis/auth/register/',
+        url: '/apis/auth/register',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: [{ type: 'Auth', id: 'CURRENT' }, { type: 'User', id: 'LIST' }],
     }),
     logout: builder.mutation<void, void>({
-      query: () => ({ url: '/apis/auth/logout/', method: 'POST' }),
+      query: () => ({ url: '/apis/auth/logout', method: 'POST' }),
       invalidatesTags: [{ type: 'Auth', id: 'CURRENT' }],
     }),
+    refreshToken: builder.mutation<AuthResponse, RefreshRequest>({
+      query: (data) => ({
+        url: '/apis/auth/refresh',
+        method: 'POST',
+        body: data,
+      }),
+    }),
     getProfile: builder.query<UserProfile, void>({
-      query: () => '/apis/auth/profile/',
+      query: () => '/apis/auth/profile',
       providesTags: [{ type: 'Auth', id: 'CURRENT' }],
     }),
     updateProfile: builder.mutation<UserProfile, Partial<UserProfile>>({
-      query: (data) => ({ url: '/apis/auth/profile/', method: 'PATCH', body: data }),
+      query: (data) => ({ url: '/apis/auth/profile', method: 'PATCH', body: data }),
       invalidatesTags: [{ type: 'Auth', id: 'CURRENT' }, { type: 'User', id: 'LIST' }],
     }),
     resetPassword: builder.mutation<void, { email: string }>({
-      query: (data) => ({ url: '/apis/auth/password-reset/', method: 'POST', body: data }),
+      query: (data) => ({ url: '/apis/auth/password-reset', method: 'POST', body: data }),
     }),
     changePassword: builder.mutation<void, { old_password: string; new_password: string }>({
-      query: (data) => ({ url: '/apis/auth/change-password/', method: 'POST', body: data }),
+      query: (data) => ({ url: '/apis/auth/change-password', method: 'POST', body: data }),
     }),
   }),
 });
@@ -84,6 +103,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useLogoutMutation,
+  useRefreshTokenMutation,
   useGetProfileQuery,
   useUpdateProfileMutation,
   useResetPasswordMutation,
