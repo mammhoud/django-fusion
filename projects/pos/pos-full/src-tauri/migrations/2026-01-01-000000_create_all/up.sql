@@ -25,12 +25,15 @@ CREATE TABLE IF NOT EXISTS categories (
 );
 
 -- Products
+-- Products (with image + product_type columns built-in)
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
     price REAL NOT NULL,
     unit TEXT NOT NULL DEFAULT 'item',
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
+    image TEXT,
+    border_color TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     uploaded BOOLEAN NOT NULL DEFAULT 0
@@ -364,9 +367,23 @@ INSERT OR IGNORE INTO ingredients (id, name, unit, current_quantity, reorder_lev
     (35, 'Noodles',                'kg',    6.0,   3.0,   5.0,   150.00),
     (36, 'Soy Sauce',              'liter', 2.0,   1.0,   2.0,   180.00),
     (37, 'Gulab Jamun Mix',        'kg',    4.0,   2.0,   3.0,   280.00),
-    (38, 'Rice Flour',             'kg',    3.0,   1.5,   3.0,   100.00),
-    (39, 'Lentils (Daal Chana)',  'kg',    8.0,   4.0,   6.0,   140.00),
-    (40, 'Mango Pulp',             'kg',    3.0,   1.0,   3.0,   350.00);
+    (38, 'Rice Flour',             'kg',    3.0,   1.5,   3.0,   100.00),    (39, 'Lentils (Daal Chana)',  'kg',    8.0,   4.0,    6.0,   140.00),
+    (40, 'Mango Pulp',             'kg',    3.0,   1.0,    3.0,   350.00),
+    (41, 'Dried Fenugreek Leaves', 'kg',    2.0,   1.0,    2.0,   400.00),
+    (42, 'Mixed Vegetables (Peas/Carrot/Beans)', 'kg', 10.0,  5.0,  8.0,   80.00),
+    (43, 'Butter',                 'kg',    5.0,   2.0,    4.0,   450.00),
+    (44, 'Spring Roll Pastry',     'pack',  8.0,   4.0,    6.0,   120.00),
+    (45, 'Cardamom',               'kg',    1.0,   0.5,    1.0,   1800.00),
+    (46, 'Almonds',                'kg',    3.0,   1.5,    3.0,   1200.00),
+    (47, 'Pistachios',             'kg',    2.0,   1.0,    2.0,   1500.00),
+    (48, 'Peanuts',                'kg',    5.0,   2.5,    5.0,   250.00),
+    (49, 'Bread Slices',           'loaf',  10.0,  5.0,    8.0,   120.00),
+    (50, 'Lemon',                  'kg',    5.0,   2.0,    5.0,   100.00),
+    (51, 'Cinnamon Sticks',        'kg',    1.0,   0.5,    1.0,   900.00),
+    (52, 'Black Pepper',           'kg',    1.5,   0.75,   1.5,   600.00),
+    (53, 'Cumin Seeds',            'kg',    2.0,   1.0,    2.0,   350.00),
+    (54, 'Turmeric Powder',        'kg',    2.0,   1.0,    2.0,   200.00),
+    (55, 'Red Chili Powder',       'kg',    3.0,   1.5,    3.0,   300.00);
 
 -- 5. Recipes
 INSERT OR IGNORE INTO recipes (id, product_id, recipe_type_id, yield_quantity) VALUES
@@ -383,7 +400,34 @@ INSERT OR IGNORE INTO recipes (id, product_id, recipe_type_id, yield_quantity) V
     (11, 39, 1, 1.0),   -- Chicken Manchurian
     (12, 43, 1, 1.0),   -- Halwa Puri
     (13, 4,  1, 1.0),   -- Club Sandwich
-    (14, 25, 1, 1.0);   -- Chicken Wings
+    (14, 25, 1, 1.0),   -- Chicken Wings
+    (15, 3,  1, 1.0),   -- Zinger Burger
+    (16, 5,  1, 1.0),   -- Paratha Roll
+    (17, 8,  1, 1.0),   -- Fajita Pizza Medium
+    (18, 11, 1, 1.0),   -- Beef Seekh Kebab
+    (19, 12, 1, 1.0),   -- Chargah
+    (20, 13, 1, 1.0),   -- Mutton Tikka
+    (21, 15, 1, 1.0),   -- Mutton Biryani
+    (22, 16, 1, 1.0),   -- Vegetable Biryani
+    (23, 17, 1, 1.0),   -- Chicken Fried Rice
+    (24, 20, 1, 1.0),   -- Mutton Karahi Half
+    (25, 22, 1, 1.0),   -- Daal Makhni
+    (26, 24, 1, 1.0),   -- Chicken Nuggets
+    (27, 26, 1, 1.0),   -- Spring Rolls
+    (28, 27, 1, 1.0),   -- Chicken Soup
+    (29, 31, 1, 1.0),   -- Coffee
+    (30, 32, 1, 1.0),   -- Milkshake
+    (31, 34, 1, 1.0),   -- Lassi
+    (32, 36, 1, 1.0),   -- Ice Cream
+    (33, 37, 1, 1.0),   -- Kheer
+    (34, 38, 1, 1.0),   -- Brownie with Ice Cream
+    (35, 40, 1, 1.0),   -- Veg Noodles
+    (36, 41, 1, 1.0),   -- Chicken Noodles
+    (37, 42, 1, 1.0),   -- Kung Pao Chicken
+    (38, 44, 1, 1.0),   -- Chana Cholay
+    (39, 45, 1, 1.0),   -- Omelette
+    (40, 46, 1, 1.0),   -- Nihari
+    (41, 47, 1, 1.0);   -- Siri Paye
 
 -- 6. Recipe ingredients
 INSERT OR IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity, unit, preparation_note) VALUES
@@ -463,7 +507,199 @@ INSERT OR IGNORE INTO recipe_ingredients (recipe_id, ingredient_id, quantity, un
     -- Chicken Wings
     (14, 34, 0.400, 'kg',  'Marinated in spicy sauce'),
     (14, 6,  0.030, 'liter', 'Deep fry'),
-    (14, 20, 0.010, 'kg',  'Seasoning');
+    (14, 20, 0.010, 'kg',  'Seasoning'),
+    -- Zinger Burger
+    (15, 1,  0.180, 'kg',  'Crispy fried chicken fillet'),
+    (15, 33, 1.0,   'unit',  'Toasted bun with sesame'),
+    (15, 5,  0.050, 'kg',  'Flour coating with spices'),
+    (15, 32, 0.025, 'kg',  'Garlic mayo spread'),
+    (15, 23, 0.020, 'kg',  'Shredded lettuce'),
+    (15, 7,  0.030, 'kg',  'Sliced tomato'),
+    (15, 6,  0.030, 'liter', 'Deep frying'),
+    -- Paratha Roll
+    (16, 5,  0.100, 'kg',  'Paratha dough'),
+    (16, 1,  0.150, 'kg',  'Spiced chicken filling'),
+    (16, 8,  0.030, 'kg',  'Caramelized onions'),
+    (16, 24, 0.020, 'kg',  'Thinly sliced capsicum'),
+    (16, 32, 0.015, 'kg',  'Mayonnaise drizzle'),
+    (16, 6,  0.020, 'liter', 'For cooking paratha'),
+    -- Fajita Pizza Medium
+    (17, 30, 0.250, 'kg',  'Pizza dough base'),
+    (17, 11, 0.080, 'kg',  'Fajita sauce spread'),
+    (17, 10, 0.150, 'kg',  'Mozzarella topping'),
+    (17, 1,  0.150, 'kg',  'Fajita spiced chicken'),
+    (17, 24, 0.030, 'kg',  'Capsicum strips'),
+    (17, 8,  0.030, 'kg',  'Onion rings'),
+    (17, 7,  0.040, 'kg',  'Diced tomatoes'),
+    -- Beef Seekh Kebab
+    (18, 2,  0.400, 'kg',  'Minced beef blend'),
+    (18, 8,  0.040, 'kg',  'Finely chopped onion'),
+    (18, 25, 0.015, 'kg',  'Ginger garlic paste'),
+    (18, 26, 0.010, 'kg',  'Chopped green chilies'),
+    (18, 20, 0.012, 'kg',  'Kebab masala spices'),
+    (18, 27, 0.003, 'kg',  'Seasoning'),
+    (18, 21, 0.083, 'dozen', 'Egg for binding'),
+    -- Chargah (Whole Roasted Chicken)
+    (19, 1,  1.200, 'kg',  'Whole chicken'),
+    (19, 9,  0.150, 'kg',  'Yogurt marinade'),
+    (19, 25, 0.030, 'kg',  'Ginger garlic paste'),
+    (19, 20, 0.020, 'kg',  'Chargah masala'),
+    (19, 6,  0.060, 'liter', 'Basting oil'),
+    (19, 27, 0.005, 'kg',  'Salt'),
+    -- Mutton Tikka
+    (20, 3,  0.400, 'kg',  'Mutton chunks'),
+    (20, 9,  0.080, 'kg',  'Yogurt marinade'),
+    (20, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (20, 20, 0.015, 'kg',  'Tikka masala'),
+    (20, 6,  0.030, 'liter', 'For basting'),
+    (20, 41, 0.010, 'kg',  'Dried fenugreek leaves'),
+    -- Mutton Biryani
+    (21, 4,  0.250, 'kg',  'Soaked basmati rice'),
+    (21, 3,  0.200, 'kg',  'Mutton pieces'),
+    (21, 9,  0.050, 'kg',  'For marination'),
+    (21, 8,  0.060, 'kg',  'Fried onions'),
+    (21, 7,  0.050, 'kg',  'Chopped tomatoes'),
+    (21, 20, 0.012, 'kg',  'Biryani masala'),
+    (21, 6,  0.035, 'liter', 'For cooking'),
+    (21, 17, 0.050, 'liter', 'Warm milk for layering'),
+    (21, 41, 0.005, 'kg',  'Fresh mint leaves'),
+    -- Vegetable Biryani
+    (22, 4,  0.250, 'kg',  'Basmati rice'),
+    (22, 9,  0.050, 'kg',  'Yogurt'),
+    (22, 8,  0.050, 'kg',  'Sliced onions'),
+    (22, 7,  0.050, 'kg',  'Chopped tomatoes'),
+    (22, 22, 0.080, 'kg',  'Potato cubes'),
+    (22, 42, 0.050, 'kg',  'Mixed vegetables (peas,carrot,beans)'),
+    (22, 20, 0.010, 'kg',  'Biryani masala'),
+    (22, 6,  0.030, 'liter', 'For cooking'),
+    -- Chicken Fried Rice
+    (23, 4,  0.200, 'kg',  'Cooked basmati rice, cooled'),
+    (23, 1,  0.150, 'kg',  'Diced chicken'),
+    (23, 21, 0.083, 'dozen', 'Scrambled egg'),
+    (23, 8,  0.030, 'kg',  'Diced onion'),
+    (23, 42, 0.040, 'kg',  'Mixed vegetables'),
+    (23, 36, 0.010, 'liter', 'Soy sauce'),
+    (23, 6,  0.020, 'liter', 'For stir-frying'),
+    -- Mutton Karahi Half
+    (24, 3,  0.400, 'kg',  'Mutton pieces on bone'),
+    (24, 7,  0.150, 'kg',  'Pureed tomatoes'),
+    (24, 8,  0.080, 'kg',  'Sliced onion'),
+    (24, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (24, 20, 0.012, 'kg',  'Karahi masala'),
+    (24, 6,  0.050, 'liter', 'Cooking oil'),
+    (24, 9,  0.050, 'kg',  'Yogurt for gravy'),
+    (24, 26, 0.010, 'kg',  'Green chilies for garnish'),
+    -- Daal Makhni
+    (25, 39, 0.200, 'kg',  'Black lentils, soaked overnight'),
+    (25, 7,  0.060, 'kg',  'Tomato puree'),
+    (25, 8,  0.030, 'kg',  'Finely chopped onion'),
+    (25, 25, 0.010, 'kg',  'Ginger garlic paste'),
+    (25, 18, 0.030, 'liter', 'Fresh cream'),
+    (25, 43, 0.020, 'kg',  'Butter'),
+    (25, 20, 0.008, 'kg',  'Masala spices'),
+    -- Chicken Nuggets
+    (26, 1,  0.200, 'kg',  'Minced chicken'),
+    (26, 5,  0.060, 'kg',  'Bread crumb coating'),
+    (26, 21, 0.083, 'dozen', 'Egg wash'),
+    (26, 27, 0.002, 'kg',  'Seasoning'),
+    (26, 6,  0.040, 'liter', 'Deep frying'),
+    -- Spring Rolls
+    (27, 44, 0.100, 'kg',  'Spring roll pastry sheets'),
+    (27, 23, 0.050, 'kg',  'Shredded cabbage'),
+    (27, 1,  0.080, 'kg',  'Minced chicken'),
+    (27, 42, 0.030, 'kg',  'Shredded carrots and beans'),
+    (27, 36, 0.005, 'liter', 'Soy sauce'),
+    (27, 6,  0.030, 'liter', 'Deep frying'),
+    -- Chicken Soup
+    (28, 1,  0.150, 'kg',  'Shredded chicken'),
+    (28, 35, 0.050, 'kg',  'Egg noodles'),
+    (28, 42, 0.030, 'kg',  'Fine chopped vegetables'),
+    (28, 25, 0.005, 'kg',  'Ginger paste'),
+    (28, 36, 0.010, 'liter', 'Soy sauce'),
+    (28, 21, 0.042, 'dozen', 'Egg drop'),
+    -- Coffee
+    (29, 29, 0.010, 'kg',  'Brewed coffee grounds'),
+    (29, 17, 0.150, 'liter', 'Hot milk'),
+    (29, 18, 0.020, 'liter', 'Whipped cream topping'),
+    (29, 16, 0.008, 'kg',  'Sugar to taste'),
+    -- Milkshake
+    (30, 17, 0.250, 'liter', 'Full cream milk'),
+    (30, 19, 0.080, 'kg',  'Vanilla ice cream'),
+    (30, 16, 0.015, 'kg',  'Sugar'),
+    (30, 18, 0.020, 'liter', 'Whipped cream topping'),
+    -- Lassi
+    (31, 9,  0.200, 'kg',  'Fresh yogurt'),
+    (31, 17, 0.100, 'liter', 'Chilled milk'),
+    (31, 16, 0.015, 'kg',  'Sugar'),
+    (31, 45, 0.002, 'kg',  'Cardamom powder'),
+    -- Ice Cream
+    (32, 17, 0.300, 'liter', 'Full cream milk'),
+    (32, 18, 0.100, 'liter', 'Heavy cream'),
+    (32, 16, 0.050, 'kg',  'Sugar'),
+    (32, 19, 0.050, 'kg',  'Vanilla essence'),
+    -- Kheer (Rice Pudding)
+    (33, 4,  0.080, 'kg',  'Broken basmati rice'),
+    (33, 17, 0.500, 'liter', 'Full cream milk'),
+    (33, 16, 0.060, 'kg',  'Sugar'),
+    (33, 45, 0.003, 'kg',  'Cardamom pods'),
+    (33, 46, 0.015, 'kg',  'Chopped almonds and pistachios'),
+    -- Brownie with Ice Cream
+    (34, 5,  0.080, 'kg',  'Brownie batter flour'),
+    (34, 43, 0.040, 'kg',  'Butter'),
+    (34, 16, 0.040, 'kg',  'Sugar'),
+    (34, 21, 0.083, 'dozen', 'Eggs'),
+    (34, 19, 0.080, 'kg',  'Vanilla ice cream scoop'),
+    -- Veg Noodles
+    (35, 35, 0.150, 'kg',  'Egg noodles'),
+    (35, 42, 0.050, 'kg',  'Mixed vegetables'),
+    (35, 36, 0.010, 'liter', 'Soy sauce'),
+    (35, 6,  0.015, 'liter', 'For stir-frying'),
+    (35, 24, 0.020, 'kg',  'Capsicum strips'),
+    -- Chicken Noodles
+    (36, 35, 0.150, 'kg',  'Egg noodles'),
+    (36, 1,  0.100, 'kg',  'Shredded chicken'),
+    (36, 42, 0.040, 'kg',  'Mixed vegetables'),
+    (36, 36, 0.012, 'liter', 'Soy sauce'),
+    (36, 6,  0.015, 'liter', 'For stir-frying'),
+    (36, 21, 0.083, 'dozen', 'Scrambled egg'),
+    -- Kung Pao Chicken
+    (37, 1,  0.250, 'kg',  'Diced chicken thigh'),
+    (37, 35, 0.080, 'kg',  'Roasted peanuts'),
+    (37, 36, 0.015, 'liter', 'Soy sauce'),
+    (37, 24, 0.030, 'kg',  'Diced capsicum'),
+    (37, 8,  0.030, 'kg',  'Spring onion'),
+    (37, 6,  0.020, 'liter', 'Stir-fry oil'),
+    (37, 26, 0.010, 'kg',  'Dried red chilies'),
+    -- Chana Cholay
+    (38, 39, 0.250, 'kg',  'Chickpeas, soaked overnight'),
+    (38, 8,  0.040, 'kg',  'Finely chopped onion'),
+    (38, 7,  0.050, 'kg',  'Tomato puree'),
+    (38, 25, 0.010, 'kg',  'Ginger garlic paste'),
+    (38, 20, 0.010, 'kg',  'Chana masala'),
+    (38, 6,  0.020, 'liter', 'For cooking'),
+    (38, 26, 0.008, 'kg',  'Green chilies'),
+    -- Omelette
+    (39, 21, 0.250, 'dozen', '3 eggs'),
+    (39, 8,  0.020, 'kg',  'Chopped onion'),
+    (39, 7,  0.020, 'kg',  'Diced tomato'),
+    (39, 26, 0.005, 'kg',  'Chopped green chili'),
+    (39, 27, 0.002, 'kg',  'Salt and pepper'),
+    (39, 6,  0.010, 'liter', 'For cooking'),
+    -- Nihari
+    (40, 2,  0.400, 'kg',  'Beef shank, bone-in'),
+    (40, 5,  0.040, 'kg',  'Nihari flour paste (for thickening)'),
+    (40, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (40, 20, 0.012, 'kg',  'Nihari masala'),
+    (40, 6,  0.030, 'liter', 'For slow cooking'),
+    (40, 25, 0.010, 'kg',  'Julienned ginger for garnish'),
+    -- Siri Paye
+    (41, 3,  0.500, 'kg',  'Goat trotters/shanks'),
+    (41, 5,  0.030, 'kg',  'Flour paste for thickening'),
+    (41, 25, 0.020, 'kg',  'Ginger garlic paste'),
+    (41, 8,  0.040, 'kg',  'Onion slices'),
+    (41, 20, 0.012, 'kg',  'Paye masala'),
+    (41, 6,  0.020, 'liter', 'Cooking oil'),
+    (41, 25, 0.010, 'kg',  'Fresh ginger strips for garnish');
 
 -- 7. Employees (12 sample staff)
 INSERT OR IGNORE INTO employees (id, name, phone, email, employee_type_id, salary, joined_at) VALUES
@@ -585,3 +821,305 @@ INSERT OR IGNORE INTO inventory_transactions (id, ingredient_id, transaction_typ
 INSERT OR IGNORE INTO inventory_adjustments (id, ingredient_id, previous_quantity, new_quantity, reason, created_by) VALUES
     (1, 1, 25.0, 24.5, 'Count correction - found 0.5kg less chicken',       'Ali Ahmed'),
     (2, 8, 20.0, 19.0, 'Count correction - weight discrepancy in onions',   'Usman Khan');
+-- Users table for authentication
+CREATE TABLE IF NOT EXISTS users (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    email TEXT UNIQUE NOT NULL,
+    password_hash TEXT NOT NULL,
+    name TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TRIGGER IF NOT EXISTS update_users_updated_at AFTER UPDATE ON users
+BEGIN UPDATE users SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END;
+-- Add image column to products table (base64-encoded image data)
+-- Enterprise feature schema extensions for POS
+
+-- 1. USER MANAGEMENT (Roles & Permissions)
+CREATE TABLE roles (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL UNIQUE,
+    permissions TEXT NOT NULL DEFAULT '[]',
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE user_roles (
+    user_id INTEGER NOT NULL,
+    role_id INTEGER NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    PRIMARY KEY (user_id, role_id),
+    FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE,
+    FOREIGN KEY (role_id) REFERENCES roles(id) ON DELETE CASCADE
+);
+
+-- 2. ADVANCED REPORTING (PDF/Excel Metadata)
+CREATE TABLE report_metadata (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    report_type TEXT NOT NULL,
+    format TEXT NOT NULL,
+    file_path TEXT NOT NULL,
+    parameters TEXT,
+    generated_by INTEGER,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (generated_by) REFERENCES users(id) ON DELETE SET NULL
+);
+
+-- 3. INVENTORY MANAGEMENT (Stock Alerts)
+CREATE TABLE inventory_alerts (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    ingredient_id INTEGER NOT NULL,
+    alert_type TEXT NOT NULL DEFAULT 'low_stock',
+    alert_message TEXT NOT NULL,
+    is_resolved BOOLEAN NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    resolved_at TIMESTAMP,
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE
+);
+
+-- 4. SUPPLIER MANAGEMENT (Suppliers & Purchase Orders)
+CREATE TABLE suppliers (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    contact_name TEXT,
+    email TEXT,
+    phone TEXT,
+    address TEXT,
+    tax_id TEXT,
+    payment_terms TEXT,
+    is_active BOOLEAN NOT NULL DEFAULT 1,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE purchase_orders (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    supplier_id INTEGER NOT NULL,
+    reference_number TEXT,
+    status TEXT NOT NULL DEFAULT 'draft',
+    total_amount REAL NOT NULL DEFAULT 0,
+    expected_date TIMESTAMP,
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (supplier_id) REFERENCES suppliers(id) ON DELETE CASCADE
+);
+
+CREATE TABLE purchase_order_items (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    purchase_order_id INTEGER NOT NULL,
+    ingredient_id INTEGER NOT NULL,
+    quantity REAL NOT NULL,
+    cost_per_unit REAL NOT NULL,
+    received_quantity REAL NOT NULL DEFAULT 0,
+    FOREIGN KEY (purchase_order_id) REFERENCES purchase_orders(id) ON DELETE CASCADE,
+    FOREIGN KEY (ingredient_id) REFERENCES ingredients(id) ON DELETE CASCADE
+);
+
+-- 5. KITCHEN DISPLAY SYSTEM (Order Tickets)
+CREATE TABLE kitchen_tickets (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    sale_id INTEGER NOT NULL UNIQUE,
+    status TEXT NOT NULL DEFAULT 'pending',
+    priority INTEGER NOT NULL DEFAULT 0,
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    completed_at TIMESTAMP,
+    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE CASCADE
+);
+
+-- 6. CUSTOMER MANAGEMENT (Loyalty & CRM)
+CREATE TABLE customers (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    phone TEXT,
+    email TEXT,
+    loyalty_points REAL NOT NULL DEFAULT 0,
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+CREATE TABLE loyalty_transactions (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    customer_id INTEGER NOT NULL,
+    sale_id INTEGER,
+    points_change REAL NOT NULL,
+    reason TEXT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (customer_id) REFERENCES customers(id) ON DELETE CASCADE,
+    FOREIGN KEY (sale_id) REFERENCES sales(id) ON DELETE SET NULL
+);
+
+-- Link sales to customers
+ALTER TABLE sales ADD COLUMN customer_id INTEGER REFERENCES customers(id) ON DELETE SET NULL;
+
+-- 7. RECEIPT CUSTOMIZATION (Advanced Templates)
+CREATE TABLE receipt_templates (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    name TEXT NOT NULL,
+    template_body TEXT NOT NULL,
+    is_default BOOLEAN NOT NULL DEFAULT 0,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 8. TAX REPORTS (Automated Summaries)
+CREATE TABLE tax_reports (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    period_start TEXT NOT NULL,
+    period_end TEXT NOT NULL,
+    total_sales REAL NOT NULL,
+    total_tax REAL NOT NULL,
+    transaction_count INTEGER NOT NULL DEFAULT 0,
+    generated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 9. EMPLOYEE MANAGEMENT (Scheduling & Payroll)
+CREATE TABLE employee_schedules (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    employee_id INTEGER NOT NULL,
+    shift_start TIMESTAMP NOT NULL,
+    shift_end TIMESTAMP NOT NULL,
+    status TEXT NOT NULL DEFAULT 'scheduled',
+    notes TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+);
+
+CREATE TABLE payrolls (
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT,
+    employee_id INTEGER NOT NULL,
+    period_start TEXT NOT NULL,
+    period_end TEXT NOT NULL,
+    regular_hours REAL NOT NULL DEFAULT 0,
+    overtime_hours REAL NOT NULL DEFAULT 0,
+    total_pay REAL NOT NULL DEFAULT 0,
+    status TEXT NOT NULL DEFAULT 'pending',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    FOREIGN KEY (employee_id) REFERENCES employees(id) ON DELETE CASCADE
+);
+
+-- Seed default roles
+INSERT INTO roles (name, permissions, is_active) VALUES
+('Admin', '["*"]', 1),
+('Manager', '["view_sales","view_inventory","view_employees","view_reports","manage_products","manage_customers"]', 1),
+('Cashier', '["view_sales","create_sale","view_customers"]', 1),
+('Kitchen', '["view_kitchen_tickets","update_kitchen_tickets"]', 1);
+
+-- Seed default receipt template
+INSERT INTO receipt_templates (name, template_body, is_default) VALUES
+('Default', '<h1>{{restaurant_name}}</h1><p>{{address}}</p><p>Tel: {{phone}}</p><hr/><p>Receipt #: {{receipt_number}}</p><p>Date: {{date}} {{time}}</p><hr/><ul>{{#items}}<li>{{name}} x {{quantity}} {{unit}} - {{currency}}{{price}}</li>{{/items}}</ul><hr/><p>Total: {{currency}}{{total}}</p><p>{{footer}}</p>', 1);
+
+-- =============================================================================
+-- ENTERPRISE FEATURE SEED DATA
+-- =============================================================================
+
+-- Suppliers
+INSERT OR IGNORE INTO suppliers (id, name, contact_name, email, phone, address, tax_id, payment_terms, is_active) VALUES
+(1, 'Fresh Foods Co.', 'Ahmed Malik', 'ahmed@freshfoods.com', '+92-300-555-0101', '12 Industrial Area, Lahore', 'NTN-1234567', 'Net 30', 1),
+(2, 'City Meat Suppliers', 'Usman Butt', 'usman@citymeat.com', '+92-300-555-0102', '45 Meat Market, Township', 'NTN-2345678', 'Net 15', 1),
+(3, 'Al-Rashid Grocers', 'Rashid Khan', 'rashid@alrashid.com', '+92-300-555-0103', '78 Main Bazaar, Gulberg', 'NTN-3456789', 'Cash on Delivery', 1),
+(4, 'Punjab Beverages', 'Sajid Ali', 'sajid@punjabbev.com', '+92-300-555-0104', '33 Beverage Road, Faisal Town', 'NTN-4567890', 'Net 30', 1),
+(5, 'Green Valley Produce', 'Hassan Raza', 'hassan@greenvalley.com', '+92-300-555-0105', '90 Farm Road, Raiwind', 'NTN-5678901', 'Net 7', 1),
+(6, 'Mega Mart Wholesale', 'Bilal Ahmed', 'bilal@megamart.com', '+92-300-555-0106', '55 Wholesale Market, Ichhra', 'NTN-6789012', 'Net 45', 1);
+
+-- Customers
+INSERT OR IGNORE INTO customers (id, name, phone, email, loyalty_points, notes) VALUES
+(1, 'Ahmad Raza', '+92-300-111-1001', 'ahmad.raza@gmail.com', 250, 'Regular customer - likes chicken biryani'),
+(2, 'Fatima Zahra', '+92-300-111-1002', 'fatima.z@yahoo.com', 120, 'Orders for office meetings'),
+(3, 'Omar Farooq', '+92-300-111-1003', 'omar.farooq@hotmail.com', 450, 'VIP - catering orders'),
+(4, 'Zainab Ali', '+92-300-111-1004', 'zainab.ali@gmail.com', 80, 'Weekend family orders'),
+(5, 'Hassan Abbas', '+92-300-111-1005', 'hassan.abbas@gmail.com', 310, 'Prefers BBQ items'),
+(6, 'Noor Fatima', '+92-300-111-1006', 'noor.f@outlook.com', 180, 'Desert lover - often orders kheer'),
+(7, 'Bilal Hussain', '+92-300-111-1007', 'bilal.h@yahoo.com', 60, 'New customer - breakfast orders'),
+(8, 'Ayesha Khan', '+92-300-111-1008', 'ayesha.khan@gmail.com', 520, 'Top spender - monthly corporate'),
+(9, 'Usman Ghani', '+92-300-111-1009', 'usman.ghani@gmail.com', 200, 'Likes Chinese dishes'),
+(10, 'Sarah Ahmed', '+92-300-111-1010', 'sarah.ahmed@gmail.com', 95, 'Healthy eater - salads and grilled');
+
+-- Inventory alerts (low stock items)
+INSERT OR IGNORE INTO inventory_alerts (id, ingredient_id, alert_type, alert_message, is_resolved) VALUES
+(1, 3, 'low_stock', 'Mutton is running low (below 5kg reorder level)', 0),
+(2, 10, 'low_stock', 'Mozzarella Cheese is low (below 4kg reorder level)', 0),
+(3, 29, 'low_stock', 'Coffee Beans nearly depleted (below 0.5kg)', 0),
+(4, 37, 'low_stock', 'Gulab Jamun Mix is running low', 0),
+(5, 18, 'low_stock', 'Cream stock is low', 0);
+
+-- Employee schedules (2 weeks of shifts)
+INSERT OR IGNORE INTO employee_schedules (id, employee_id, shift_start, shift_end, status, notes) VALUES
+(1, 1, '2026-07-14 09:00:00', '2026-07-14 17:00:00', 'scheduled', 'Manager morning shift'),
+(2, 2, '2026-07-14 09:00:00', '2026-07-14 17:00:00', 'scheduled', 'Chef AM'),
+(3, 3, '2026-07-14 14:00:00', '2026-07-14 22:00:00', 'scheduled', 'Chef PM'),
+(4, 4, '2026-07-14 09:00:00', '2026-07-14 17:00:00', 'scheduled', 'Waiter AM'),
+(5, 5, '2026-07-14 14:00:00', '2026-07-14 22:00:00', 'scheduled', 'Waiter PM'),
+(6, 6, '2026-07-14 14:00:00', '2026-07-14 22:00:00', 'scheduled', 'Waiter PM'),
+(7, 7, '2026-07-14 09:00:00', '2026-07-14 17:00:00', 'scheduled', 'Cashier AM'),
+(8, 1, '2026-07-15 09:00:00', '2026-07-15 17:00:00', 'scheduled', 'Manager morning shift'),
+(9, 2, '2026-07-15 14:00:00', '2026-07-15 22:00:00', 'scheduled', 'Chef PM'),
+(10, 8, '2026-07-15 09:00:00', '2026-07-15 17:00:00', 'scheduled', 'Delivery driver AM'),
+(11, 9, '2026-07-15 14:00:00', '2026-07-15 22:00:00', 'scheduled', 'Delivery driver PM'),
+(12, 10, '2026-07-15 09:00:00', '2026-07-15 13:00:00', 'scheduled', 'Cleaner AM');
+
+-- Payroll records (bi-weekly)
+INSERT OR IGNORE INTO payrolls (id, employee_id, period_start, period_end, regular_hours, overtime_hours, total_pay, status) VALUES
+(1, 1, '2026-07-01', '2026-07-14', 80, 4, 30000.00, 'paid'),
+(2, 2, '2026-07-01', '2026-07-14', 80, 8, 23500.00, 'paid'),
+(3, 3, '2026-07-01', '2026-07-14', 80, 5, 21000.00, 'paid'),
+(4, 4, '2026-07-01', '2026-07-14', 80, 2, 13000.00, 'paid'),
+(5, 5, '2026-07-01', '2026-07-14', 80, 3, 13000.00, 'paid'),
+(6, 6, '2026-07-01', '2026-07-14', 80, 0, 12500.00, 'paid'),
+(7, 7, '2026-07-01', '2026-07-14', 80, 6, 16000.00, 'paid'),
+(8, 10, '2026-07-01', '2026-07-14', 40, 0, 4500.00, 'paid');
+
+-- Purchase orders
+INSERT OR IGNORE INTO purchase_orders (id, supplier_id, reference_number, status, total_amount, expected_date, notes) VALUES
+(1, 1, 'PO-2026-001', 'received', 45000.00, '2026-07-10 10:00:00', 'Weekly fresh produce order'),
+(2, 2, 'PO-2026-002', 'received', 32000.00, '2026-07-11 08:00:00', 'Bi-weekly meat supply'),
+(3, 3, 'PO-2026-003', 'pending', 18500.00, '2026-07-18 10:00:00', 'Dry goods and spices restock'),
+(4, 4, 'PO-2026-004', 'received', 12000.00, '2026-07-12 09:00:00', 'Beverages for the month'),
+(5, 5, 'PO-2026-005', 'draft', 8900.00, '2026-07-20 08:00:00', 'Fresh vegetables order'),
+(6, 6, 'PO-2026-006', 'pending', 25000.00, '2026-07-19 11:00:00', 'Monthly wholesale supplies');
+
+-- Purchase order items
+INSERT OR IGNORE INTO purchase_order_items (id, purchase_order_id, ingredient_id, quantity, cost_per_unit, received_quantity) VALUES
+-- PO 1: Fresh Foods (produce)
+(1, 1, 7, 25.0, 85.0, 25.0),
+(2, 1, 8, 30.0, 65.0, 30.0),
+(3, 1, 22, 30.0, 45.0, 30.0),
+(4, 1, 42, 20.0, 75.0, 20.0),
+(5, 1, 50, 10.0, 90.0, 10.0),
+-- PO 2: City Meat (meat)
+(6, 2, 1, 30.0, 420.0, 30.0),
+(7, 2, 2, 20.0, 520.0, 20.0),
+(8, 2, 3, 15.0, 1050.0, 15.0),
+-- PO 3: Al-Rashid Grocers (dry goods)
+(9, 3, 4, 25.0, 170.0, 0.0),
+(10, 3, 5, 30.0, 65.0, 0.0),
+(11, 3, 20, 5.0, 230.0, 0.0),
+(12, 3, 53, 3.0, 330.0, 0.0),
+(13, 3, 55, 5.0, 280.0, 0.0),
+-- PO 4: Punjab Beverages
+(14, 4, 14, 20.0, 450.0, 20.0),
+(15, 4, 15, 15.0, 340.0, 15.0),
+-- PO 5: Green Valley (vegetables)
+(16, 5, 7, 15.0, 88.0, 0.0),
+(17, 5, 8, 20.0, 68.0, 0.0),
+(18, 5, 26, 5.0, 125.0, 0.0),
+-- PO 6: Mega Mart Wholesale
+(19, 6, 6, 30.0, 300.0, 0.0),
+(20, 6, 10, 12.0, 720.0, 0.0),
+(21, 6, 11, 8.0, 360.0, 0.0),
+(22, 6, 16, 20.0, 100.0, 0.0);
+
+-- Tax reports
+INSERT OR IGNORE INTO tax_reports (id, period_start, period_end, total_sales, total_tax, transaction_count) VALUES
+(1, '2026-07-01', '2026-07-07', 185000.00, 24050.00, 42),
+(2, '2026-07-08', '2026-07-14', 203500.00, 26455.00, 48),
+(3, '2026-07-01', '2026-07-14', 388500.00, 50505.00, 90);
+-- Add product_type column to products table
+-- Supports: 'product' (default), 'rent', 'creation', 'service', 'digital'
+ALTER TABLE products ADD COLUMN product_type TEXT NOT NULL DEFAULT 'product';

@@ -26,6 +26,7 @@ export default function ProductManager() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0 });
+  const [borderColor, setBorderColor] = useState('#6366f1');
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -220,6 +221,7 @@ export default function ProductManager() {
     setErrors({});
     setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
     setProductImage(null);
+    setBorderColor('#6366f1');
     setOriginalImage(null);
   };
 
@@ -227,6 +229,7 @@ export default function ProductManager() {
     setEditingProduct(null);
     setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
     setProductImage(null);
+    setBorderColor('#6366f1');
     setOriginalImage(null);
     setErrors({});
     setShowAddModal(true);
@@ -241,6 +244,7 @@ export default function ProductManager() {
       category_id: product.category_id ?? 0,
     });
     setProductImage(product.image ?? null);
+    setBorderColor(product.border_color || '#6366f1');
     setOriginalImage(product.image ?? null);
     setErrors({});
     setShowAddModal(true);
@@ -269,6 +273,7 @@ export default function ProductManager() {
           price: parsedPrice,
           unit: trimmedUnit,
           category_id: nextCategoryId,
+          border_color: borderColor || null,
         };
         const imageChanged = nextImage !== (originalImage || null);
         if (imageChanged) {
@@ -287,6 +292,7 @@ export default function ProductManager() {
           unit: trimmedUnit,
           category_id: nextCategoryId,
           image: nextImage,
+          border_color: borderColor || null,
         };
         const result = await invoke<Product>('add_product', { product: create });
 
@@ -581,7 +587,8 @@ export default function ProductManager() {
                       <img
                         src={productImage}
                         alt="Product preview"
-                        className="w-20 h-20 rounded-lg object-cover border border-slate-300 dark:border-gray-600"
+                        className="w-20 h-20 rounded-lg object-cover border-2"
+                        style={{ borderColor: borderColor }}
                       />
                       <button
                         type="button"
@@ -616,6 +623,45 @@ export default function ProductManager() {
                   <p className="text-xs text-slate-500 dark:text-gray-400">
                     PNG, JPG, GIF, WebP<br />Optional product photo
                   </p>
+                </div>
+              </div>
+
+              {/* Border Color Picker */}
+              <div>
+                <label className="block text-slate-900 dark:text-white mb-2">{t('productManager.borderColor') || 'Border Color'}</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={borderColor}
+                    onChange={(e) => setBorderColor(e.target.value)}
+                    className="w-12 h-10 rounded-lg cursor-pointer border-2 border-slate-300 dark:border-gray-600
+                      bg-transparent p-0.5"
+                    title="Choose border color for product card"
+                  />
+                  <input
+                    type="text"
+                    value={borderColor}
+                    onChange={(e) => setBorderColor(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
+                      text-slate-900 dark:text-white border border-slate-300 dark:border-transparent
+                      focus:outline-none focus:border-teal-400 transition-colors text-sm font-mono"
+                    placeholder="#6366f1"
+                    pattern="^#[0-9a-fA-F]{6}$"
+                  />
+                  <div className="flex gap-1">
+                    {['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#ef4444', '#22c55e'].map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setBorderColor(c)}
+                        className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${
+                          borderColor === c ? 'border-slate-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-slate-400' : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: c }}
+                        title={c}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 

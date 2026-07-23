@@ -1,6 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { FaPlus, FaTrash, FaCheck, FaExclamationTriangle, FaImage, FaTimes, FaEdit, FaSearch } from 'react-icons/fa';
+import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { Product, NewProduct, UpdateProductPayload, Settings, Category } from '../types';
@@ -9,14 +10,6 @@ import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
-import { useGetSettingsQuery } from '../store/api/endpoints/core';
-import {
-  useGetProductsQuery,
-  useAddProductMutation,
-  useUpdateProductMutation,
-  useDeleteProductMutation,
-} from '../store/api/endpoints/products';
-import { useGetCategoriesQuery } from '../store/api/endpoints/core';
 
 interface FormErrors {
   name?: string;
@@ -33,6 +26,7 @@ export default function ProductManager() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
   const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0 });
+  const [borderColor, setBorderColor] = useState('#6366f1');
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -94,30 +88,41 @@ export default function ProductManager() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showAddModal, showDeleteModal]);
 
-  // RTK Query — paginated products with auto-caching
-  const [page] = useState(1);
-  const { data: productsData, isLoading: productsLoading } = useGetProductsQuery({ page, per_page: 200 });
-  const { data: categoriesData } = useGetCategoriesQuery();
-  const { data: settingsData } = useGetSettingsQuery();
-  const [addProduct] = useAddProductMutation();
-  const [updateProduct] = useUpdateProductMutation();
-  const [deleteProduct] = useDeleteProductMutation();
+  useEffect(() => {
+    const loadSettings = async () => {
+      try {
+        const response = await invoke<Settings>('get_settings');
+        if (response?.currency) {
+          setCurrencySymbol(response.currency || 'USD');
+        }
+      } catch (error) {
+        console.error('Error loading currency:', error);
+      }
+    };
 
-  // Sync RTK Query data to local state
-  useEffect(() => {
-    if (productsData?.data) setProducts(productsData.data);
-  }, [productsData]);
-  useEffect(() => {
-    if (categoriesData) setCategories(categoriesData);
-  }, [categoriesData]);
-  useEffect(() => {
-    if (settingsData?.currency) setCurrencySymbol(settingsData.currency);
-  }, [settingsData]);
+    loadSettings();
+  }, []);
 
-  // Override isLoading with RTK Query loading state
+  const loadProducts = async (opts: { quiet?: boolean } = {}) => {
+    const { quiet = false } = opts;
+    if (!quiet) setIsLoading(true);
+    try {
+      const [productsRes, categoriesRes] = await Promise.all([
+        invoke<Product[]>('get_products'),
+        invoke<Category[]>('get_categories').catch(() => []),
+      ]);
+      setProducts(productsRes);
+      setCategories(categoriesRes || []);
+    } catch (error) {
+      console.error('Error loading products:', error);
+    } finally {
+      if (!quiet) setIsLoading(false);
+    }
+  };
+
   useEffect(() => {
-    setIsLoading(productsLoading);
-  }, [productsLoading]);
+    loadProducts();
+  }, []);
 
   // ----- Derived: filtered + sorted products -----
   const filteredProducts = useMemo(() => {
@@ -216,6 +221,7 @@ export default function ProductManager() {
     setErrors({});
     setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
     setProductImage(null);
+    setBorderColor('#6366f1');
     setOriginalImage(null);
   };
 
@@ -223,6 +229,7 @@ export default function ProductManager() {
     setEditingProduct(null);
     setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
     setProductImage(null);
+    setBorderColor('#6366f1');
     setOriginalImage(null);
     setErrors({});
     setShowAddModal(true);
@@ -237,6 +244,7 @@ export default function ProductManager() {
       category_id: product.category_id ?? 0,
     });
     setProductImage(product.image ?? null);
+    setBorderColor(product.border_color || '#6366f1');
     setOriginalImage(product.image ?? null);
     setErrors({});
     setShowAddModal(true);
@@ -265,6 +273,7 @@ export default function ProductManager() {
           price: parsedPrice,
           unit: trimmedUnit,
           category_id: nextCategoryId,
+          border_color: borderColor || null,
         };
         const imageChanged = nextImage !== (originalImage || null);
         if (imageChanged) {
@@ -274,7 +283,7 @@ export default function ProductManager() {
         // get the authoritative updated row back — use it for our optimistic
         // splice so local state exactly matches the DB row (including any
         // server-side transforms like updated_at timestamps).
-        const updated = await updateProduct({ id: editingId, data: update }).unwrap();
+        const updated = await invoke<Product>('update_product', { id: editingId, update });
         setProducts(prev => prev.map(p => (p.id === editingId ? updated : p)));
       } else {
         const create: NewProduct = {
@@ -283,8 +292,9 @@ export default function ProductManager() {
           unit: trimmedUnit,
           category_id: nextCategoryId,
           image: nextImage,
+          border_color: borderColor || null,
         };
-        const result = await addProduct(create).unwrap();
+        const result = await invoke<Product>('add_product', { product: create });
 
         // Optimistic insert — prepend the new product so the user sees it instantly.
         setProducts(prev => [result, ...prev]);
@@ -300,7 +310,8 @@ export default function ProductManager() {
           : t('productManager.successAdded')
       );
 
-      // RTK Query auto-caches — no manual refetch needed on mutation success
+      // Quiet background refetch to reconcile with backend (no skeleton flicker).
+      loadProducts({ quiet: true });
 
       setTimeout(() => setSubmitStatus('idle'), 3000);
     } catch (error) {
@@ -330,17 +341,20 @@ export default function ProductManager() {
     setProducts(prev => prev.filter(p => p.id !== idToDelete));
 
     try {
-      await deleteProduct(idToDelete).unwrap();
+      await invoke('delete_product', { id: idToDelete });
 
       setSubmitStatus('success');
       setStatusMessage(t('productManager.successDeleted'));
 
-      // RTK Query auto-invalidates cache on delete
+      // Quietly reconcile with backend (no skeleton flicker).
+      loadProducts({ quiet: true });
 
       setTimeout(() => setSubmitStatus('idle'), 3000);
     } catch (error) {
       console.error('Error deleting product:', error);
-      // RTK Query auto-invalidates cache on failure too
+      // Quiet refetch so the grid reflects the actual server state without
+      // triggering the skeleton flicker.
+      loadProducts({ quiet: true });
       setSubmitStatus('error');
       setStatusMessage(String(error) || t('productManager.errorDelete'));
       setTimeout(() => setSubmitStatus('idle'), 3000);
@@ -573,7 +587,8 @@ export default function ProductManager() {
                       <img
                         src={productImage}
                         alt="Product preview"
-                        className="w-20 h-20 rounded-lg object-cover border border-slate-300 dark:border-gray-600"
+                        className="w-20 h-20 rounded-lg object-cover border-2"
+                        style={{ borderColor: borderColor }}
                       />
                       <button
                         type="button"
@@ -608,6 +623,45 @@ export default function ProductManager() {
                   <p className="text-xs text-slate-500 dark:text-gray-400">
                     PNG, JPG, GIF, WebP<br />Optional product photo
                   </p>
+                </div>
+              </div>
+
+              {/* Border Color Picker */}
+              <div>
+                <label className="block text-slate-900 dark:text-white mb-2">{t('productManager.borderColor') || 'Border Color'}</label>
+                <div className="flex items-center gap-3">
+                  <input
+                    type="color"
+                    value={borderColor}
+                    onChange={(e) => setBorderColor(e.target.value)}
+                    className="w-12 h-10 rounded-lg cursor-pointer border-2 border-slate-300 dark:border-gray-600
+                      bg-transparent p-0.5"
+                    title="Choose border color for product card"
+                  />
+                  <input
+                    type="text"
+                    value={borderColor}
+                    onChange={(e) => setBorderColor(e.target.value)}
+                    className="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
+                      text-slate-900 dark:text-white border border-slate-300 dark:border-transparent
+                      focus:outline-none focus:border-teal-400 transition-colors text-sm font-mono"
+                    placeholder="#6366f1"
+                    pattern="^#[0-9a-fA-F]{6}$"
+                  />
+                  <div className="flex gap-1">
+                    {['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#ef4444', '#22c55e'].map(c => (
+                      <button
+                        key={c}
+                        type="button"
+                        onClick={() => setBorderColor(c)}
+                        className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${
+                          borderColor === c ? 'border-slate-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-slate-400' : 'border-transparent'
+                        }`}
+                        style={{ backgroundColor: c }}
+                        title={c}
+                      />
+                    ))}
+                  </div>
                 </div>
               </div>
 

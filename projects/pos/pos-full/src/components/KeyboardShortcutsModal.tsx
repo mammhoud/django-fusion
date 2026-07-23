@@ -14,7 +14,7 @@ export default function KeyboardShortcutsModal({ isOpen, onClose }: KeyboardShor
       isOpen={isOpen}
       onClose={onClose}
       title={t('transactions.shortcutTitle')}
-      size="sm"
+      size="xl"
     >
       <div className="space-y-4">
         {/* Sorting Section */}
