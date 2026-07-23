@@ -1,8 +1,8 @@
 """
-Tests for bolt contact API endpoints — inquiries listing, mark-as-read.
+Tests for contact API endpoints — inquiries listing, mark-as-read.
 
-The basic contact submit endpoint is defined in ``apis.py`` (not in bolt extras).
-These tests cover only the admin-only listing endpoints in the bolt extras.
+The basic contact submit endpoint is defined in ``apis.py`` (not in data API extras).
+These tests cover only the admin-only listing endpoints in the data API extras.
 """
 
 from __future__ import annotations

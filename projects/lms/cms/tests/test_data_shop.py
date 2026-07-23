@@ -1,5 +1,5 @@
 """
-Tests for bolt shop API endpoints — products, cart, orders.
+Tests for shop API endpoints — products, cart, orders.
 """
 
 from __future__ import annotations

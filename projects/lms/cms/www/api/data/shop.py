@@ -2,7 +2,7 @@
 Data Shop API — products list/detail, cart management, order creation.
 
 Replaces the DRF ProductViewSet, CartViewSet, and OrderViewSet.
-All endpoints are new — no existing bolt equivalents.
+All endpoints are new — no existing data API equivalents.
 """
 
 from __future__ import annotations
@@ -304,7 +304,7 @@ def _get_product_queryset(request):
         return default
 
     try:
-        # Use sync_to_async to avoid SynchronousOnlyOperation in bolt's async context
+        # Use sync_to_async to avoid SynchronousOnlyOperation in the async context
         from plugins.products.models import Product as SyncProduct
         qs = SyncProduct.objects.filter(is_available=True)
 

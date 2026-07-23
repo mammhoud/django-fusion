@@ -92,7 +92,7 @@ export default function Payroll() {
                   <p>{payroll.period_start} - {payroll.period_end}</p>
                   <p>{t('payroll.regularHours')}: {payroll.regular_hours}</p>
                   <p>{t('payroll.overtimeHours')}: {payroll.overtime_hours}</p>
-                  <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {payroll.total_pay.toFixed(2)}</p>
+                  <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {(payroll.total_pay ?? 0).toFixed(2)}</p>
                 </div>
               </motion.div>
             ))}

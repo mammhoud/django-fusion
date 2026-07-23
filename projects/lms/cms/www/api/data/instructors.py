@@ -2,7 +2,7 @@
 Data Instructors API — list, detail (with courses/reviews), dashboard stats, courses list, reviews list, profile update.
 
 Replaces the DRF InstructorViewSet and InstructorCourseDeleteViewSet.
-All endpoints are new — no existing bolt equivalents beyond the basic
+All endpoints are new — no existing data API equivalents beyond the basic
 ``/apis/lms/instructors`` list.
 """
 

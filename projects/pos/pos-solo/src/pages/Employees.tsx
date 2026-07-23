@@ -2,8 +2,8 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { MdPeople, MdEdit, MdDelete, MdWork } from 'react-icons/md';
 import { FaUsers, FaUserTag, FaMoneyBillWave, FaPlus, FaSave, FaSearch, FaPhone, FaEnvelope, FaCalendarAlt } from 'react-icons/fa';
+import { useGetEmployeesQuery } from '../store/api/endpoints/core';
 import {
-  useGetEmployeesQuery,
   useAddEmployeeMutation,
   useUpdateEmployeeMutation,
   useSoftDeleteEmployeeMutation,
@@ -89,8 +89,8 @@ export default function Employees() {
 
   useEffect(() => {
     if (!empsLoading && !typesLoading) {
-      setEmployees(Array.isArray(employeesData) ? employeesData : []);
-      setEmployeeTypes(Array.isArray(employeeTypesData) ? employeeTypesData : []);
+      setEmployees((Array.isArray(employeesData) ? employeesData : []) as Employee[]);
+      setEmployeeTypes((Array.isArray(employeeTypesData) ? employeeTypesData : []) as EmployeeType[]);
       setIsLoading(false);
     }
   }, [employeesData, employeeTypesData, empsLoading, typesLoading]);

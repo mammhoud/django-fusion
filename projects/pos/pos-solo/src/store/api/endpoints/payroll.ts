@@ -1,9 +1,9 @@
 /** RTK Query endpoints — Payroll, Tax Reports, Employee Schedules. */
 import { api } from '../baseApi';
 
-export interface Payroll { id: number; employee_id: number; base_salary: number; deductions: number; bonuses: number; net_pay: number; period_start: string; period_end: string; status: string; created_at: string; }
-export interface TaxReport { id: number; report_type: string; total_tax: number; period_start: string; period_end: string; status: string; created_at: string; }
-export interface EmployeeSchedule { id: number; employee_id: number; day_of_week: string; start_time: string; end_time: string; }
+export interface Payroll { id: number; employee_id: number; base_salary: number; deductions: number; bonuses: number; net_pay: number; period_start: string; period_end: string; status: string; created_at: string; regular_hours?: number; overtime_hours?: number; total_pay?: number; }
+export interface TaxReport { id: number; report_type: string; total_tax: number; period_start: string; period_end: string; status: string; created_at: string; total_sales?: number; transaction_count?: number; }
+export interface EmployeeSchedule { id: number; employee_id: number; day_of_week: string; start_time: string; end_time: string; status?: string; shift_start?: string; shift_end?: string; notes?: string; }
 
 export const payrollApi = api.injectEndpoints({
   endpoints: (build) => ({

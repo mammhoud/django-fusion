@@ -2,6 +2,7 @@
 
 from django.db import models
 from django.utils import timezone
+from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
@@ -20,17 +21,17 @@ class BlogPost(index.Indexed, models.Model):
     is_published = models.BooleanField(default=True, db_index=True)
 
     panels = [
-        MultiFieldPanel([FieldPanel("title"), FieldPanel("slug"), FieldPanel("author"), FieldPanel("category")], heading="Post Details"),
+        MultiFieldPanel([FieldPanel("title"), FieldPanel("slug"), FieldPanel("author"), FieldPanel("category")], heading=_("Post Details")),
         FieldPanel("excerpt"), FieldPanel("content"),
-        MultiFieldPanel([FieldPanel("featured_image"), FieldPanel("published_at"), FieldPanel("is_published")], heading="Publishing"),
+        MultiFieldPanel([FieldPanel("featured_image"), FieldPanel("published_at"), FieldPanel("is_published")], heading=_("Publishing")),
     ]
 
     search_fields = [index.SearchField("title", boost=10), index.SearchField("excerpt", boost=5), index.FilterField("is_published")]
 
     class Meta:
         app_label = "content"
-        verbose_name = "blog post"
-        verbose_name_plural = "blog posts"
+        verbose_name = _("blog post")
+        verbose_name_plural = _("blog posts")
         ordering = ["-published_at"]
 
     def __str__(self): return self.title
@@ -55,8 +56,8 @@ class Event(index.Indexed, models.Model):
 
     class Meta:
         app_label = "content"
-        verbose_name = "event"
-        verbose_name_plural = "events"
+        verbose_name = _("event")
+        verbose_name_plural = _("events")
         ordering = ["event_date"]
 
     def __str__(self): return self.title
@@ -79,8 +80,8 @@ class Testimonial(models.Model):
 
     class Meta:
         app_label = "content"
-        verbose_name = "testimonial"
-        verbose_name_plural = "testimonials"
+        verbose_name = _("testimonial")
+        verbose_name_plural = _("testimonials")
         ordering = ["sort_order"]
 
     def __str__(self): return f"{self.name} — {self.designation}"

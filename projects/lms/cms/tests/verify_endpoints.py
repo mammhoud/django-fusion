@@ -2,7 +2,7 @@
 """
 /apis/ endpoint verification script.
 
-Uses the bolt TestClient in-process (same Rust Actix infrastructure as
+Uses the TestClient in-process (same Rust Actix infrastructure as
 production) to verify every endpoint.  Results are equivalent to curl
 against a running ``runbolt`` server.
 """
@@ -186,7 +186,7 @@ with TestClient(bolt) as client:
     test("GET", "/auth/me", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"})
     test("GET", "/auth/me", desc="no auth")
 
-    print("\n── Auth (bolt extras) ──")
+    print("\n── Auth (data API extras) ──")
     test("GET", "/auth/profile", desc="unauth")
     test("GET", "/auth/profile", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"})
     test("PATCH", "/auth/profile", json={"first_name": "Upd"}, headers={"Authorization": f"Bearer {_AUTH_TOKEN}"})
@@ -217,14 +217,14 @@ with TestClient(bolt) as client:
     test("GET", "/events/99999", desc="not found")
     test("POST", "/events/register", json={}, desc="missing fields")
 
-    print("\n── Students (bolt extras) ──")
+    print("\n── Students (data API extras) ──")
     test("GET", f"/students/{_user.pk}/dashboard", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"})
     test("GET", "/students/99999/dashboard", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"}, desc="wrong user")
     test("GET", "/students/1/dashboard", desc="unauth")
     test("GET", f"/students/{_user.pk}/enrollments", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"})
     test("POST", "/enrollments", json={"course_id": 99999}, headers={"Authorization": f"Bearer {_AUTH_TOKEN}"}, desc="bad course")
 
-    print("\n── Instructors (bolt extras) ──")
+    print("\n── Instructors (data API extras) ──")
     test("GET", "/instructors")
     test("GET", "/instructors/99999", desc="not found")
     test("PATCH", "/instructors/99999", json={"first_name": "X"}, headers={"Authorization": f"Bearer {_AUTH_TOKEN}"}, desc="not found")
@@ -236,7 +236,7 @@ with TestClient(bolt) as client:
     test("GET", "/contact/inquiries", headers={"Authorization": f"Bearer {_STAFF_TOKEN}"})
     test("GET", "/contact/inquiries", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"}, desc="non-staff")
 
-    print("\n── Shop (bolt extras) ──")
+    print("\n── Shop (data API extras) ──")
     test("GET", "/shop/products")
     test("GET", "/shop/products/99999", desc="not found")
     test("GET", "/shop/cart", headers={"Authorization": f"Bearer {_AUTH_TOKEN}"})

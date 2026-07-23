@@ -1,5 +1,5 @@
 """
-Tests for bolt API helper functions — pagination, request parsing, auth helpers.
+Tests for API helper functions — pagination, request parsing, auth helpers.
 """
 
 from __future__ import annotations
@@ -95,16 +95,19 @@ class TestIntParam:
     def test_extracts_valid_int(self):
         request = MagicMock()
         request.GET = {"page": "3"}
+        del request.query  # MagicMock has every attr — force Django GET fallback
         assert _int_param(request, "page", 1) == 3
 
     def test_returns_default_on_missing(self):
         request = MagicMock()
         request.GET = {}
+        del request.query
         assert _int_param(request, "page", 1) == 1
 
     def test_returns_default_on_invalid(self):
         request = MagicMock()
         request.GET = {"page": "abc"}
+        del request.query
         assert _int_param(request, "page", 1) == 1
 
 
@@ -122,6 +125,7 @@ class TestPaginateQueryset:
 
         request = MagicMock()
         request.GET = {"page": "1", "per_page": "2"}
+        del request.query  # MagicMock has every attr — force Django GET fallback
 
         result, pagination = paginate_queryset(qs, request, default_per_page=20)
 
@@ -139,6 +143,7 @@ class TestPaginateQueryset:
 
         request = MagicMock()
         request.GET = {"page": "2", "per_page": "2"}
+        del request.query
 
         result, pagination = paginate_queryset(qs, request, default_per_page=20)
 
@@ -153,6 +158,7 @@ class TestPaginateQueryset:
 
         request = MagicMock()
         request.GET = {"page": "1"}
+        del request.query
 
         result, pagination = paginate_queryset(qs, request, default_per_page=20)
 
@@ -168,6 +174,7 @@ class TestPaginateQueryset:
 
         request = MagicMock()
         request.GET = {"page": "1"}
+        del request.query
 
         result, pagination = paginate_queryset(qs, request, default_per_page=10)
 

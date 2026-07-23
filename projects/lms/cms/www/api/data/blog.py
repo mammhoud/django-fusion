@@ -1,7 +1,7 @@
 """
 Data Blog API — detail, featured, related posts, categories.
 
-Extends the existing bolt blog endpoints in ``apis.py`` (which provide
+Extends the existing blog endpoints in ``apis.py`` (which provide
 basic listing) with additional detail and discovery endpoints.
 """
 

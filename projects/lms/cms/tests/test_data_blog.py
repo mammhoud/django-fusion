@@ -1,5 +1,5 @@
 """
-Tests for bolt blog API endpoints — detail, featured, related posts, categories.
+Tests for blog API endpoints — detail, featured, related posts, categories.
 """
 
 from __future__ import annotations

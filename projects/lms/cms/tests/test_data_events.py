@@ -1,5 +1,5 @@
 """
-Tests for bolt events API endpoints — detail, upcoming, registration.
+Tests for events API endpoints — detail, upcoming, registration.
 """
 
 from __future__ import annotations

@@ -33,8 +33,8 @@ class Feature(models.Model):
     class Meta:
         app_label = "content"
         ordering = ["page", "sort_order"]
-        verbose_name = "feature"
-        verbose_name_plural = "features"
+        verbose_name = _("feature")
+        verbose_name_plural = _("features")
 
     def __str__(self):
         return self.title
@@ -63,8 +63,8 @@ class Instructor(models.Model):
     class Meta:
         app_label = "content"
         ordering = ["sort_order"]
-        verbose_name = "instructor"
-        verbose_name_plural = "instructors"
+        verbose_name = _("instructor")
+        verbose_name_plural = _("instructors")
 
     def __str__(self):
         return self.name
@@ -87,8 +87,8 @@ class Faq(models.Model):
     class Meta:
         app_label = "content"
         ordering = ["page", "sort_order"]
-        verbose_name = "FAQ"
-        verbose_name_plural = "FAQs"
+        verbose_name = _("FAQ")
+        verbose_name_plural = _("FAQs")
 
     def __str__(self):
         return self.question[:80]
@@ -112,8 +112,8 @@ class DashboardCounter(models.Model):
     class Meta:
         app_label = "content"
         ordering = ["sort_order"]
-        verbose_name = "dashboard counter"
-        verbose_name_plural = "dashboard counters"
+        verbose_name = _("dashboard counter")
+        verbose_name_plural = _("dashboard counters")
 
     def __str__(self):
         return f"{self.label}: {self.value}"
@@ -144,8 +144,8 @@ class ShopProduct(models.Model):
     class Meta:
         app_label = "content"
         ordering = ["title"]
-        verbose_name = "shop product"
-        verbose_name_plural = "shop products"
+        verbose_name = _("shop product")
+        verbose_name_plural = _("shop products")
 
     def __str__(self):
         return self.title
@@ -178,8 +178,8 @@ class MenuItem(models.Model):
     class Meta:
         app_label = "content"
         ordering = ["sort_order"]
-        verbose_name = "menu item"
-        verbose_name_plural = "menu items"
+        verbose_name = _("menu item")
+        verbose_name_plural = _("menu items")
 
     def __str__(self):
         return self.title

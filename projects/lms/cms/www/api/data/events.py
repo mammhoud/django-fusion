@@ -1,7 +1,7 @@
 """
 Data Events API — detail, upcoming filter, registration.
 
-Extends the existing bolt event endpoints in ``apis.py`` (which provide
+Extends the existing event endpoints in ``apis.py`` (which provide
 basic listing) with additional detail and registration endpoints.
 """
 

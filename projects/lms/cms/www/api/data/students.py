@@ -2,7 +2,7 @@
 Data Students API — dashboard, enrollments, progress tracking.
 
 Replaces the DRF StudentViewSet and EnrollmentViewSet.
-All endpoints are new — no existing bolt equivalents.
+All endpoints are new — no existing data API equivalents.
 """
 
 from __future__ import annotations

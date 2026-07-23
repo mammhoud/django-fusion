@@ -1,5 +1,5 @@
 """
-Tests for bolt instructors API endpoints — list, detail, dashboard, courses, reviews.
+Tests for instructors API endpoints — list, detail, dashboard, courses, reviews.
 """
 
 from __future__ import annotations

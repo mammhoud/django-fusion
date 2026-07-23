@@ -71,7 +71,7 @@ export default function Transactions() {
     email: settingsData?.email || '',
     currency: settingsData?.currency || 'USD',
     receipt_footer: settingsData?.receipt_footer || 'Thank you for your business!',
-    logo: settingsData?.logo,
+    logo: settingsData?.logo ?? null,
     tax_rate: settingsData?.tax_rate || '',
   };
 
@@ -195,10 +195,10 @@ export default function Transactions() {
         date: showReceiptDialog.date,
         from: {
           name: settings.restaurant_name || 'POS',
-          address: settings.address,
-          phone: settings.phone,
-          email: settings.email,
-          logo: settings.logo,
+          address: settings.address ?? undefined,
+          phone: settings.phone ?? undefined,
+          email: settings.email ?? undefined,
+          logo: settings.logo ?? undefined,
         },
         to: {
           name: 'Walk-in Customer',
@@ -211,7 +211,7 @@ export default function Transactions() {
         })),
         currency: showReceiptDialog.currency,
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
-        notes: settings.receipt_footer,
+        notes: settings.receipt_footer ?? undefined,
       });
     } catch (error) {
       console.error('Error generating invoice PDF:', error);
@@ -252,7 +252,7 @@ export default function Transactions() {
         yPos += 5;
       }
       if (settings.phone) {
-        pdf.text(`Tel: ${settings.phone}`, pageWidth / 2, yPos, { align: 'center' });
+        pdf.text(`Tel: ${settings.phone!}`, pageWidth / 2, yPos, { align: 'center' });
         yPos += 5;
       }
 
@@ -628,7 +628,7 @@ export default function Transactions() {
     { key: 'invoices', label: 'Invoices', icon: <MdReceipt className="w-5 h-5" /> },
   ];
 
-  if (loading) {
+  if (isLoading) {
     return (
       <PageLayout title={t('transactions.title')} background="bg-slate-100 dark:bg-slate-900">
         <div className="space-y-6">
@@ -640,7 +640,7 @@ export default function Transactions() {
             <StatusToast /> JSX in the main return below wouldn't render until
             the failure had already auto-dismissed. */}
         <StatusToast
-          type={status?.type ?? 'success'}
+          type={(status?.type || 'success') as 'success' | 'error'}
           message={status?.message ?? ''}
           visible={!!status}
           onDismiss={dismiss}
@@ -1534,7 +1534,7 @@ export default function Transactions() {
                 totalAmount={showReceiptDialog.total_amount}
                 date={showReceiptDialog.date}
                 time={showReceiptDialog.time}
-                settings={settings}
+                settings={settings as unknown as import('../types').Settings}
                 receiptNumber={showReceiptDialog.id.toString()}
               />
             </div>

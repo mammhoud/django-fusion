@@ -32,9 +32,9 @@ export default function Roles() {
     e.preventDefault();
     try {
       if (editing) {
-        await updateRole({ id: editing.id, data: form }).unwrap();
+        await updateRole({ id: editing.id, data: form as any }).unwrap();
       } else {
-        await addRole(form).unwrap();
+        await addRole(form as any).unwrap();
       }
       setShowForm(false);
       setEditing(null);
@@ -65,7 +65,7 @@ export default function Roles() {
     let result = q
       ? roles.filter(r =>
           r.name.toLowerCase().includes(q) ||
-          (r.permissions || '').toLowerCase().includes(q)
+          (Array.isArray(r.permissions) ? r.permissions.join(' ') : r.permissions || '').toLowerCase().includes(q)
         )
       : roles;
     const sorted = [...result];

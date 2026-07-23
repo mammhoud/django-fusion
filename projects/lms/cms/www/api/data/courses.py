@@ -1,7 +1,7 @@
 """
 Data Courses API — list, detail (full with modules/lessons), featured, categories.
 
-Extends the existing bolt course endpoints in ``apis.py`` (which provide
+Extends the existing course endpoints in ``apis.py`` (which provide
 basic list/detail) with additional detail depth and a featured endpoint.
 """
 

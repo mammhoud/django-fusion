@@ -24,7 +24,7 @@ logger = logging.getLogger(__name__)
 def register_all_handlers(bolt):
     """Register all data API endpoints on the given ``BoltAPI`` instance.
 
-    Call this after creating the bolt instance and before running the server.
+    Call this after creating the BoltAPI instance and before running the server.
     Each domain module exports a ``register_handlers(bolt)`` function.
     """
     from www.api.data.auth import register_handlers as register_auth

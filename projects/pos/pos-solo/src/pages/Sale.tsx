@@ -188,11 +188,11 @@ export default function Sale() {
     }
   }, [settingsData]);
   useEffect(() => {
-    if (employeesData) setEmployees(employeesData);
+    if (employeesData) setEmployees(employeesData as Employee[]);
   }, [employeesData]);
   useEffect(() => {
     if (dtData) {
-      setDeliveryTypes(dtData);
+      setDeliveryTypes(dtData as DeliveryType[]);
       if (dtData.length > 0) setDeliveryTypeId(dtData[0].id);
     }
   }, [dtData]);

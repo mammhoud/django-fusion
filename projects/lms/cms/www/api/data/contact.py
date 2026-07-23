@@ -1,7 +1,7 @@
 """
 Data Contact API — inquiries management, mark-as-read.
 
-Extends the existing bolt contact submit endpoint in ``apis.py`` with
+Extends the existing contact submit endpoint in ``apis.py`` with
 admin-only inquiry listing and mark-read functionality.
 """
 

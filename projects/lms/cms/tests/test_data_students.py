@@ -1,5 +1,5 @@
 """
-Tests for bolt students API endpoints — dashboard, enrollments, progress.
+Tests for students API endpoints — dashboard, enrollments, progress.
 """
 
 from __future__ import annotations

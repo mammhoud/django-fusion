@@ -1,5 +1,5 @@
 """
-Tests for bolt auth API endpoints — profile, password change/reset.
+Tests for auth API endpoints — profile, password change/reset.
 
 Uses ``TestClient`` from django_bolt.testing with a real BoltAPI instance
 that has all handlers registered.

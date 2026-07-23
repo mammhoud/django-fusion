@@ -1,5 +1,5 @@
 """
-Tests for bolt courses API endpoints — featured, detail.
+Tests for courses API endpoints — featured, detail.
 
 These endpoints query the Course model which may not exist in test DB,
 so we test graceful empty-state responses.
@@ -49,12 +49,12 @@ class TestCourseDetail:
 class TestCategories:
     """GET /apis/courses/categories — already in apis.py, not duplicated."""
 
-    def test_categories_endpoint_not_duplicated_in_bolt_extras(self, test_api):
+    def test_categories_endpoint_not_duplicated_in_extras(self, test_api):
         """The categories endpoint is defined in apis.py, not duplicated in
-        the bolt extra handlers.  We simply verify the bolt API runs."""
+        the data API extra handlers.  We simply verify the data API runs."""
         with TestClient(test_api) as client:
-            # This endpoint exists in apis.py but is NOT in our bolt handlers
-            # which only add the bolt extra endpoints.  We just verify
+            # This endpoint exists in apis.py but is NOT in our data API handlers
+            # which only add the data API extra endpoints.  We just verify
             # that the registered handlers don't conflict.
             resp = client.get("/apis/courses/featured")
             assert resp.status_code != 404  # our handler exists

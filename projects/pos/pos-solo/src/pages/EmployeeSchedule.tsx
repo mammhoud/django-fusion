@@ -19,7 +19,7 @@ export default function EmployeeSchedule() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await addEmployeeSchedule(form).unwrap();
+      await (addEmployeeSchedule as (args: any) => any)(form).unwrap();
       setShowForm(false);
       setForm({ employee_id: 0, shift_start: '', shift_end: '', status: 'scheduled', notes: '' });
     } catch (error) {

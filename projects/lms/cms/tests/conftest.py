@@ -1,5 +1,5 @@
 """
-pytest configuration for LMS bolt API endpoint tests.
+pytest configuration for LMS data API endpoint tests.
 
 Configures Django, sets up the database, and creates test data inside a
 session-scoped fixture (``django_db_setup``) that uses
@@ -11,6 +11,7 @@ at fixture-evaluation time.
 from __future__ import annotations
 
 import hashlib
+import importlib
 import os
 import sys
 from pathlib import Path
@@ -190,14 +191,52 @@ def staff_user():
 
 
 @pytest.fixture()
-def test_api():
-    """Return a fresh BoltAPI instance with all bolt handlers registered."""
-    from django_bolt import BoltAPI
-    from www.api.data.router import register_all_handlers
+def test_api(django_db_blocker):
+    """Return a combined BoltAPI instance with core + extras routes.
 
-    api = BoltAPI(prefix="/apis")
-    register_all_handlers(api)
-    return api
+    Mirrors the pattern in ``verify_endpoints.py``:
+      1. Patch BoltAPI to accept extra kwargs (needed by ``apis.py``)
+      2. Import ``apis`` to get the core bolt instance
+      3. Copy core routes onto a fresh BoltAPI
+      4. Register extras from ``www.api.data.router.register_all_handlers()``
+    """
+    with django_db_blocker.unblock():
+        from django_bolt import BoltAPI
+
+        # Patch to accept kwargs that apis.py passes but the installed bolt
+        # version doesn't support (namespace, title, version, description)
+        _orig_init = BoltAPI.__init__
+
+        def _patched_init(self, *args, **kwargs):
+            kwargs.pop("namespace", None)
+            kwargs.pop("title", None)
+            kwargs.pop("version", None)
+            kwargs.pop("description", None)
+            return _orig_init(self, *args, **kwargs)
+
+        BoltAPI.__init__ = _patched_init
+
+        # Import core apis.py (triggers route registration on its ``bolt`` instance)
+        import apis
+        importlib.reload(apis)
+        core_bolt = apis.bolt
+
+        # Restore original __init__
+        BoltAPI.__init__ = _orig_init
+
+        # Build a fresh bolt instance and copy core routes
+        api = BoltAPI(prefix="/apis")
+        api._routes.extend(core_bolt._routes)
+        api._handlers.update(core_bolt._handlers)
+        api._handler_meta.update(core_bolt._handler_meta)
+        api._handler_middleware.update(core_bolt._handler_middleware)
+        api._next_handler_id = core_bolt._next_handler_id
+
+        # Register extras
+        from www.api.data.router import register_all_handlers
+        register_all_handlers(api)
+
+        return api
 
 
 @pytest.fixture()

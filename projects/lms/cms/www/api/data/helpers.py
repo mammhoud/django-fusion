@@ -76,7 +76,7 @@ def paginate_queryset(qs, request, default_per_page: int = 20):
             total = 0
             items = []
 
-    total_pages = max(1, (total + per_page - 1) // per_page) if total else 0
+    total_pages = max(1, (total + per_page - 1) // per_page) if total else 1
     pagination = {
         "page": page,
         "per_page": per_page,
@@ -89,7 +89,7 @@ def paginate_queryset(qs, request, default_per_page: int = 20):
 def _int_param(request, name: str, default: int) -> int:
     """Extract an integer query parameter, falling back to ``default``.
 
-    Works with both Django HttpRequest (``.GET``) and bolt PyRequest (``.query``).
+    Works with both Django HttpRequest (``.GET``) and PyRequest (``.query``).
     """
     try:
         if hasattr(request, "query"):
@@ -118,7 +118,7 @@ def parse_body(request) -> dict[str, Any]:
 
 
 def get_current_user(request):
-    """Safely get the current user from a bolt request."""
+    """Safely get the current user from a request."""
     if hasattr(request, "user") and request.user and not request.user.is_anonymous:
         return request.user
     from www.auth import authenticate_request

@@ -28,7 +28,7 @@ export default function KitchenDisplay() {
 
   const updateStatus = async (id: number, status: string) => {
     try {
-      await updateKitchenTicket({ id, data: { status } }).unwrap();
+      await updateKitchenTicket({ id, data: { status } as any }).unwrap();
     } catch (error) {
       console.error('Error updating ticket:', error);
     }

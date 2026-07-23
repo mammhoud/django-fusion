@@ -1,7 +1,7 @@
 """
 Data Auth API — login, register, logout, profile, password reset, change password.
 
-Extends the existing bolt auth endpoints in ``apis.py`` with additional
+Extends the existing auth endpoints in ``apis.py`` with additional
 profile management and password change/reset actions that existed only in DRF.
 """
 

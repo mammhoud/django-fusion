@@ -110,9 +110,9 @@ export default function Reports() {
       setRecipes(Array.isArray(recipesData) ? recipesData : []);
       const p = productsData as any;
       setProducts(Array.isArray(p?.data) ? p.data : Array.isArray(p) ? p : []);
-      setEmployees(Array.isArray(employeesData) ? employeesData : []);
+      setEmployees((Array.isArray(employeesData) ? employeesData : []) as Employee[]);
       setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
-      setDeliveryTypes(Array.isArray(deliveryTypesData) ? deliveryTypesData : []);
+      setDeliveryTypes((Array.isArray(deliveryTypesData) ? deliveryTypesData : []) as DeliveryType[]);
       setLoading(false);
     }
   }, [

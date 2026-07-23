@@ -213,9 +213,9 @@ export default function Inventory() {
         ingredient_id: newTransaction.ingredient_id,
         transaction_type: newTransaction.transaction_type,
         quantity: newTransaction.quantity_change,
-        notes: adjustmentReason || null,
-        created_by: createdBy || null,
-      }).unwrap();
+        notes: adjustmentReason || undefined,
+        created_by: createdBy || undefined,
+      } as any).unwrap();
       setShowAddTransaction(false);
       setNewTransaction({ ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0 });
       setAdjustmentReason('');

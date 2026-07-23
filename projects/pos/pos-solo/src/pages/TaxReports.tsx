@@ -62,8 +62,8 @@ export default function TaxReports() {
       : reports;
     const sorted = [...result];
     switch (sortKey) {
-      case 'sales-desc': sorted.sort((a, b) => b.total_sales - a.total_sales); break;
-      case 'sales-asc': sorted.sort((a, b) => a.total_sales - b.total_sales); break;
+      case 'sales-desc': sorted.sort((a, b) => (b.total_sales ?? 0) - (a.total_sales ?? 0)); break;
+      case 'sales-asc': sorted.sort((a, b) => (a.total_sales ?? 0) - (b.total_sales ?? 0)); break;
       case 'oldest':
         sorted.sort((a, b) => (a.period_start || '').localeCompare(b.period_start || '')); break;
       case 'newest':
@@ -177,7 +177,7 @@ export default function TaxReports() {
                   <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
                 </div>
                 <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
-                  <p>{t('taxReports.totalSales')}: {report.total_sales.toFixed(2)}</p>
+                  <p>{t('taxReports.totalSales')}: {(report.total_sales ?? 0).toFixed(2)}</p>
                   <p>{t('taxReports.totalTax')}: {report.total_tax.toFixed(2)}</p>
                 </div>
               </motion.div>
