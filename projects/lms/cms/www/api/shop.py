@@ -205,6 +205,15 @@ def cart_item_view(request, item_id):
 
 @bolt_view
 @login_required
+def orders_view(request):
+    """GET/POST /api/shop/orders/ — List or create current user's orders."""
+    if request.method == "POST":
+        return order_create.__wrapped__.__wrapped__(request)
+    return order_list.__wrapped__.__wrapped__(request)
+
+
+@bolt_view
+@login_required
 def order_create(request):
     """POST /api/shop/orders/ — Create order from cart."""
     body = parse_body(request)

@@ -54,7 +54,7 @@ urlpatterns = [
     path("shop/cart/", shop.cart_view, name="shop_cart"),
     path("shop/cart/add/", shop.cart_add, name="shop_cart_add"),
     path("shop/cart/<item_id>/", shop.cart_item_view, name="shop_cart_item"),
-    path("shop/orders/", shop.order_list, name="shop_order_list"),
+    path("shop/orders/", shop.orders_view, name="shop_orders"),
 
     # ── Events ──
     path("events/", events.event_list, name="event_list"),

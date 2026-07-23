@@ -121,6 +121,7 @@ def register_view(request):
 
 
 @bolt_view
+@login_required
 def logout_view(request):
     """POST /api/auth/logout/ — Invalidate the current API token."""
     if hasattr(request, "auth_token") and request.auth_token:

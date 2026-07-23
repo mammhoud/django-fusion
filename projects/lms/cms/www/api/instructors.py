@@ -159,6 +159,7 @@ def instructor_dashboard(request, pk):
 # ── Instructor Courses ──
 
 @bolt_view
+@login_required
 def instructor_courses(request, pk):
     """GET /api/instructors/<pk>/courses/ — List courses by instructor."""
     instructor = get_object_or_404(User, pk=pk)
@@ -173,6 +174,7 @@ def instructor_courses(request, pk):
 # ── Instructor Reviews ──
 
 @bolt_view
+@login_required
 def instructor_reviews(request, pk):
     """GET /api/instructors/<pk>/reviews/ — List reviews for instructor's courses."""
     instructor = get_object_or_404(User, pk=pk)

@@ -83,6 +83,7 @@ def student_dashboard(request):
 # ── Student Enrollments ──
 
 @bolt_view
+@login_required
 def student_enrollments(request, pk=None):
     """GET /api/students/<pk>/enrollments/ — List student's enrollments."""
     user = request.user
