@@ -8,10 +8,12 @@
 
 import { configureStore } from '@reduxjs/toolkit';
 import { api } from './api/baseApi';
+import { sessionReducer } from './session/sessionSlice';
 
 export const store = configureStore({
   reducer: {
     [api.reducerPath]: api.reducer,
+    requestSession: sessionReducer,
   },
   middleware: (getDefaultMiddleware) =>
     getDefaultMiddleware().concat(api.middleware),
