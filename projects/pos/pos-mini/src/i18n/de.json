@@ -62,13 +62,29 @@
     "reportsDesc": "Generate reports",
     "settingsDesc": "Configure system",
     "aboutDesc": "App information",
+    "kitchenDesc": "Kitchen order display",
+    "scheduleDesc": "Employee scheduling",
+    "payrollDesc": "Manage payroll",
+    "receiptTemplatesDesc": "Customize receipts",
+    "taxReportsDesc": "Tax & fiscal reports",
+    "invoiceDesc": "Generate invoices",
+    "rolesDesc": "Role permissions",
+    "supportChatDesc": "Help & support",
+    "customersDesc": "Manage customers",
+    "suppliersDesc": "Manage suppliers",
     "home": "Home",
     "navigation": "Navigation",
-    "footer": "POS KO Restaurant Management"
+    "footer": "POS KO Restaurant Management",
+    "categorySales": "Sales & Operations",
+    "categoryProducts": "Inventory & Products",
+    "categoryStaff": "Staff & Customers",
+    "categoryReports": "Reports & Analytics",
+    "categorySystem": "Settings & System"
   },
   "home": {
     "title": "POS KO",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "dashboard": "Dashboard"
   },
   "about": {
     "title": "About POS KO",
@@ -110,6 +126,7 @@
     "category": "Category",
     "noCategory": "— No category —",
     "noProducts": "No products available. Add your first product!",
+    "borderColor": "Border Color",
     "deleteTitle": "Delete Product?",
     "deleteConfirm": "Are you sure you want to delete",
     "deleteWarning": "This action cannot be undone.",
@@ -211,8 +228,6 @@
     "allTimeTotal": "All Time Total",
     "filteredTotal": "Filtered Period Total",
     "filteredTransactions": "Filtered Transactions",
-    "productStats": "Product Statistics",
-    "statsBreakdown": "Stats Breakdown",
     "totalSold": "Total Sold",
     "revenue": "Revenue",
     "avgPrice": "Avg. Price",
@@ -281,7 +296,8 @@
     "sortDate": "Date",
     "sortAmount": "Amount",
     "sortType": "Type"
-  },"inventory": {
+  },
+  "inventory": {
     "title": "Inventory Management",
     "totalIngredients": "Total Ingredients",
     "lowStockItems": "Low Stock Items",
@@ -307,7 +323,6 @@
     "status": "Status",
     "inStock": "In Stock",
     "lowStock": "Low Stock",
-    "outOfStock": "Out of Stock",
     "noIngredients": "No ingredients yet. Add your first one!",
     "transactionLog": "Transaction Log",
     "allIngredientsFilter": "All Ingredients",
@@ -384,8 +399,7 @@
     "employees": "employees",
     "employeeCount_one": "{count} employee",
     "employeeCount_other": "{count} employees",
-    "namePlaceholder": "Enter employee name",
-    "typeNamePlaceholder": "e.g., Sous Chef, Host, Bartender"
+    "namePlaceholder": "Enter employee name"
   },
   "recipes": {
     "title": "Recipe Manager",
@@ -481,8 +495,6 @@
     "noProducts": "No products found",
     "activeEmployees": "Active Employees",
     "employeesWithSales": "Employees with Sales",
-    "totalOrders": "Total Orders",
-    "totalRevenue": "Total Revenue",
     "employeePerformance": "Employee Sales Performance",
     "noEmployeeSales": "No employee sales data",
     "noEmployeeSalesHint": "Assign employees to sales to see performance metrics",
@@ -631,7 +643,27 @@
       "dining": "Dining",
       "delivery": "Delivery",
       "employees": "Employees",
-      "database": "Database"
+      "database": "Database",
+      "appearance": "Appearance"
+    },
+    "appearanceTab": {
+      "title": "Theme Customization",
+      "description": "Choose a color theme variant for the app interface. Works with light and dark mode.",
+      "themeVariant": "Theme Variant",
+      "themeDefault": "Default",
+      "themeCorporate": "Corporate",
+      "themeLuxury": "Luxury",
+      "themePastel": "Pastel",
+      "themeCyberpunk": "Cyberpunk",
+      "defaultDesc": "Clean slate & indigo tones — the original POS look",
+      "corporateDesc": "Professional blue palette for a business environment",
+      "luxuryDesc": "Rich gold and warm hues for premium establishments",
+      "pastelDesc": "Soft candy colors — light, playful, and inviting",
+      "cyberpunkDesc": "Neon futuristic glow for gaming centers & tech spots",
+      "activeLabel": "Active",
+      "lightMode": "Light Mode",
+      "darkMode": "Dark Mode",
+      "modeDescription": "Toggle between light and dark display"
     },
     "generalTab": {
       "languageLabel": "Language",
@@ -746,11 +778,11 @@
     "switchToAr": "التبديل إلى العربية",
     "fr": "Français",
     "switchToFr": "Switch to French",
+    "selectLanguage": "Language",
     "de": "Deutsch",
     "switchToDe": "Zu Deutsch wechseln",
     "es": "Español",
-    "switchToEs": "Cambiar a Español",
-    "selectLanguage": "Language"
+    "switchToEs": "Cambiar a Español"
   },
   "datePicker": {
     "selectDate": "Select date",
@@ -762,8 +794,29 @@
     "noYears": "No years found",
     "clear": "Clear",
     "done": "Done",
-    "months": ["January","February","March","April","May","June","July","August","September","October","November","December"],
-    "daysShort": ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"]
+    "months": [
+      "January",
+      "February",
+      "March",
+      "April",
+      "May",
+      "June",
+      "July",
+      "August",
+      "September",
+      "October",
+      "November",
+      "December"
+    ],
+    "daysShort": [
+      "Sun",
+      "Mon",
+      "Tue",
+      "Wed",
+      "Thu",
+      "Fri",
+      "Sat"
+    ]
   },
   "auth": {
     "createAccount": "Konto erstellen",
@@ -821,6 +874,23 @@
     "typeProforma": "Proforma Invoice",
     "typeCredit": "Credit Note",
     "typeReceipt": "Receipt",
+    "typeSelling": "Selling Invoice",
+    "typeGoodsTransfer": "Goods Transfer",
+    "customType": "Custom ({type})",
+    "searchTypes": "Search or type new...",
+    "noTypesFound": "No matching types. Press Enter to create",
+    "categoryLabel": "Invoice Category",
+    "categoryDirection": "Direction",
+    "directionCollection": "Collection (Cash In)",
+    "directionPayment": "Payment (Cash Out)",
+    "categoryGetGoods": "Get Goods",
+    "categoryTransferGoods": "Transfer Goods In",
+    "categoryProducts": "Products",
+    "categoryProduction": "Production Creation",
+    "categoryEmployeeMeal": "Employee Meal",
+    "categoryAllTransactions": "All Transactions",
+    "categoryPaySupplier": "Pay Supplier",
+    "categoryTransferOut": "Transfer Goods Out",
     "downloadInvoice": "Download Invoice",
     "invoiceNumber": "Invoice #",
     "date": "Date",
@@ -836,7 +906,8 @@
     "total": "Total",
     "notes": "Notes",
     "taxId": "Tax ID",
-    "poweredBy": "Powered by Structa Cloud"
+    "poweredBy": "Powered by Structa Cloud",
+    "shippingFee": "Shipping Fee"
   },
   "statusToast": {
     "dismiss": "Dismiss"
@@ -911,8 +982,8 @@
     "searchPlaceholder": "Search templates...",
     "sortBy": "Sort by",
     "sortDefaultFirst": "Default first",
-    "sortNameAsc": "Name (A\u2192Z)",
-    "sortNameDesc": "Name (Z\u2192A)",
+    "sortNameAsc": "Name (A→Z)",
+    "sortNameDesc": "Name (Z→A)",
     "sortNewest": "Newest"
   },
   "taxReports": {
@@ -927,8 +998,8 @@
     "sortBy": "Sort by",
     "sortNewest": "Period (newest)",
     "sortOldest": "Period (oldest)",
-    "sortSalesDesc": "Sales (high \u2192 low)",
-    "sortSalesAsc": "Sales (low \u2192 high)"
+    "sortSalesDesc": "Sales (high → low)",
+    "sortSalesAsc": "Sales (low → high)"
   },
   "roles": {
     "title": "User Roles",
@@ -939,7 +1010,7 @@
     "searchPlaceholder": "Search roles...",
     "sortBy": "Sort by",
     "sortNewest": "Newest",
-    "sortNameAsc": "Name (A\u2192Z)",
-    "sortNameDesc": "Name (Z\u2192A)"
+    "sortNameAsc": "Name (A→Z)",
+    "sortNameDesc": "Name (Z→A)"
   }
 }

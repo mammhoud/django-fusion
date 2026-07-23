@@ -347,7 +347,9 @@
     "successUpdated": "Ingredient updated!",
     "successDeleted": "Ingredient deactivated.",
     "successTransaction": "Transaction recorded!",
-    "quantityPlaceholder": "Positive = add, Negative = remove"
+    "quantityPlaceholder": "Positive = add, Negative = remove",
+    "shippingFee": "Shipping Fee",
+    "shippingFeeHint": "Applied to goods transactions"
   },
   "employees": {
     "title": "Employee Manager",

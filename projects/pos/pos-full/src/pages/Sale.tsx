@@ -323,6 +323,7 @@ export default function Sale() {
         currency: settings.currency || 'USD',
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
         notes: settings.receipt_footer,
+        category: 'products',
       });
     } catch (error) {
       console.error('Error generating invoice PDF:', error);

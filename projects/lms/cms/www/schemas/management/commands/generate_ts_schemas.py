@@ -15,6 +15,7 @@ from pathlib import Path
 from typing import Any
 
 from django.core.management.base import BaseCommand
+from django_fusion.management.commands.base import BaseCommand
 
 # __file__ = .../ctc-research/www/schemas/management/commands/generate_ts_schemas.py
 # parents[5] = websites/

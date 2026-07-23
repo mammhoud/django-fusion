@@ -191,6 +191,9 @@ class InventoryTransaction(models.Model):
     reference = models.CharField(max_length=100, blank=True, default="")
     notes = models.TextField(blank=True, default="")
     created_by = models.CharField(max_length=100, blank=True, default="")
+    # Shipping / handling fee applied to this goods transaction
+    shipping_fee = models.DecimalField(max_digits=10, decimal_places=2, default=0,
+        help_text="Shipping or handling fee for this goods transaction.")
     # Multi-inventory support
     inventory_id = models.CharField(max_length=50, blank=True, default="main", db_index=True,
         help_text="Inventory/location identifier. 'main' = primary stock.")
