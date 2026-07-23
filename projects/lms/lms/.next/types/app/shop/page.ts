@@ -1,4 +1,4 @@
-// File: /home/structa.cloud/projects/lms/lms/src/app/shop/page.tsx
+// File: /Users/mammhoud/Documents/Projects/structa.cloud/projects/lms/lms/src/app/shop/page.tsx
 import * as entry from '../../../../src/app/shop/page.js'
 import type { ResolvingMetadata, ResolvingViewport } from 'next/dist/lib/metadata/types/metadata-interface.js'
 

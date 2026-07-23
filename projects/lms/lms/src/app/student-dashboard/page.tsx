@@ -4,7 +4,7 @@ import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import { useGetDashboardQuery, useGetStudentEnrollmentsQuery } from '@/store/api/endpoints/students';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { HiAcademicCap, HiClock, HiCheckCircle, HiChartBar, HiBookOpen } from 'react-icons/hi';
+import { HiAcademicCap, HiClock, HiCheckCircle, HiChartBar, HiBookOpen, HiHeart, HiUser, HiArrowRight, HiStar } from 'react-icons/hi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
 import EmptyState from '@/components/ui/EmptyState';
@@ -65,12 +65,43 @@ export default function StudentDashboard() {
         ))}
       </div>
 
+      {/* Quick Navigation */}
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-10">
+        {[
+          { href: '/student-dashboard/enrolled-courses', label: 'My Courses', icon: HiAcademicCap, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+          { href: '/student-dashboard/history', label: 'History', icon: HiClock, color: 'text-purple-600', bg: 'bg-purple-100' },
+          { href: '/student-dashboard/quiz', label: 'Quizzes', icon: HiChartBar, color: 'text-yellow-600', bg: 'bg-yellow-100' },
+          { href: '/student-dashboard/reviews', label: 'Reviews', icon: HiStar, color: 'text-green-600', bg: 'bg-green-100' },
+          { href: '/student-dashboard/wishlist', label: 'Wishlist', icon: HiHeart, color: 'text-red-600', bg: 'bg-red-100' },
+          { href: '/student-dashboard/profile', label: 'Profile', icon: HiUser, color: 'text-blue-600', bg: 'bg-blue-100' },
+        ].map((nav, idx) => (
+          <motion.div
+            key={nav.href}
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.1 + idx * 0.05 }}
+          >
+            <Link
+              href={nav.href as any}
+              className="card p-4 flex flex-col items-center text-center gap-2 hover:shadow-md transition-all duration-200 group"
+            >
+              <div className={`${nav.bg} w-10 h-10 rounded-lg flex items-center justify-center group-hover:scale-110 transition-transform`}>
+                <nav.icon className={`w-5 h-5 ${nav.color}`} />
+              </div>
+              <span className="text-xs font-medium text-gray-600 group-hover:text-gray-900 transition-colors">
+                {nav.label}
+              </span>
+            </Link>
+          </motion.div>
+        ))}
+      </div>
+
       {/* Enrolled Courses */}
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900">My Courses</h2>
-          <Link href="/courses" className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
-            Browse More Courses
+          <Link href="/student-dashboard/enrolled-courses" className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+            View All
           </Link>
         </div>
 
@@ -78,7 +109,7 @@ export default function StudentDashboard() {
           <LoadingSkeleton variant="list" count={3} />
         ) : (
           <div className="space-y-4">
-            {enrollments?.map((enrollment, idx) => (
+            {enrollments?.slice(0, 3).map((enrollment, idx) => (
               <motion.div
                 key={enrollment.id}
                 initial={{ opacity: 0, x: -20 }}
@@ -86,8 +117,12 @@ export default function StudentDashboard() {
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
                 className="card p-5 flex items-center gap-5"
               >
-                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <HiAcademicCap className="w-8 h-8 text-white/60" />
+                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                  {enrollment.course_thumbnail ? (
+                    <img src={enrollment.course_thumbnail} alt="" className="w-full h-full object-cover" />
+                  ) : (
+                    <HiAcademicCap className="w-8 h-8 text-white/60" />
+                  )}
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link href={`/course-details/${enrollment.course}`}
@@ -100,7 +135,7 @@ export default function StudentDashboard() {
                   <div className="mt-3">
                     <div className="flex items-center justify-between text-sm mb-1">
                       <span className="text-gray-500">Progress</span>
-                      <span className="font-medium text-gray-700">{enrollment.progress}%</span>
+                      <span className="font-medium text-gray-700">{Math.round(enrollment.progress)}%</span>
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
@@ -110,8 +145,13 @@ export default function StudentDashboard() {
                     </div>
                   </div>
                 </div>
-                {enrollment.is_completed && (
+                {enrollment.is_completed ? (
                   <HiCheckCircle className="w-8 h-8 text-green-500 flex-shrink-0" />
+                ) : (
+                  <Link href={`/course-details/${enrollment.course}`}
+                        className="flex-shrink-0 text-indigo-600 text-sm font-medium hover:text-indigo-700">
+                    Continue <HiArrowRight className="w-4 h-4 inline" />
+                  </Link>
                 )}
               </motion.div>
             ))}
