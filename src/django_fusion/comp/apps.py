@@ -10,7 +10,7 @@ class CoreExtAppConfig(AppConfig):
     def ready(self):
         from .plugins import pm
         from .registry import register_default_partials, register_include_paths
-        from .static.staticfiles import asset_types
+        from .configuration.staticfiles import asset_types
 
         for pre_ready in pm.hook.pre_ready():
             pre_ready()
@@ -59,7 +59,7 @@ class CoreExtAppConfig(AppConfig):
             "components/cookies/privacy-policy.html",
         ])
 
-        from .webpack_compat import _patch_webpack_loader
+        from .plugins.webpack_compat import _patch_webpack_loader
 
         _patch_webpack_loader()
 

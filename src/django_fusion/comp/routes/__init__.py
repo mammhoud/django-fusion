@@ -35,7 +35,8 @@ from .detection import (  # noqa: F401
     add_fragment_detection_to_request,
     detect_fragment_strategy,
 )
-from .forms_tables import FormMixin, FormTableMixin, TableMixin  # noqa: F401 (forwarded to contrib)
+from django_fusion.comp.contrib.forms import FormMixin, FormTableMixin  # noqa: F401
+from django_fusion.comp.contrib.tables import TableMixin  # noqa: F401
 from .fragments import FragmentComponent  # noqa: F401
 from .template_resolver import TemplateResolverMixin  # noqa: F401
 from .model import BaseModelViewset  # noqa: F401

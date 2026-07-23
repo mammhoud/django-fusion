@@ -15,9 +15,8 @@ pm.add_hookspecs(hookspecs)
 pm.load_setuptools_entrypoints("django-block")
 
 DEFAULT_PLUGINS: list[str] = [
-    "core.conf",
-    "django_fusion.comp.staticfiles",
-    "django_fusion.comp.templates",
+    "django_fusion.comp.configuration.staticfiles",
+    "django_fusion.comp.loader.templates",
 ]
 
 for plugin in DEFAULT_PLUGINS:

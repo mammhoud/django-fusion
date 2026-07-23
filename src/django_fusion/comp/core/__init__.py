@@ -1,12 +1,9 @@
+"""django_fusion.comp.core
+
+Core component registry and data structures.
 """
-Core component initialization for django_fusion.
+from __future__ import annotations
 
-Modules:
-- _init: Component initialization
-- up: Component setup and utilities
-"""
+from django_fusion.comp.core._init import Component, components
 
-from ._init import *  # noqa: F401, F403
-from .up import *  # noqa: F401, F403
-
-__all__ = []
+__all__ = ["Component", "components"]

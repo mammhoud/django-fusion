@@ -14,7 +14,7 @@ from django_fusion.contrib.utils import unique_ordered
 COMPONENTS_SETTINGS_NAME = "COMPONENTS"
 COMPONENTS_BUILTINS = "django_fusion.comp.templatetags.components"
 COMPONENTS_BUILTINS_UI = "django_fusion.templatetags.ui_tags"
-COMPONENTS_FINDER = "django_fusion.comp.staticfiles.BlockAssetFinder"
+COMPONENTS_FINDER = "django_fusion.comp.configuration.staticfiles.BlockAssetFinder"
 
 
 # ------------------------------------------------------------------

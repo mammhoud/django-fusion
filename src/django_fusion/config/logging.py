@@ -1,46 +1,31 @@
 """
 logging_config.py
 -----------------
-Provides a get_logging_config() helper that returns a Django-compatible
-LOGGING dictionary with:
+Provides a Django-compatible ``LOGGING`` dictionary and a structlog
+configuration helper for django-fusion projects.
 
-  - RotatingFileHandler  : rotates at 100 MB per file
-  - TimedRotatingFileHandler : daily rotation, keeps 90 days of backups
-  - structlog-compatible JSON formatter for machine-readable logs
-  - Console handler for development
+In development, logs are rendered as colored, human-readable lines.
+In production, logs are emitted as structured JSON.
 
-Usage in settings.py::
+Usage in ``settings.py``::
 
-    from django_fusion.config.logging import get_logging_config
+    from django_fusion.config.logging import configure_structlog, get_logging_config
 
-    LOGGING = get_logging_config(
-        log_dir='/var/log/myapp',
-        log_level='INFO',
-    )
+    LOGGING = get_logging_config(log_dir="logs", log_level="INFO")
+    configure_structlog(is_dev=DEBUG)
 
-    # Then configure structlog to use standard-library logging:
-    import structlog
-    structlog.configure(
-        processors=[
-            structlog.stdlib.filter_by_level,
-            structlog.stdlib.add_logger_name,
-            structlog.stdlib.add_log_level,
-            structlog.stdlib.PositionalArgumentsFormatter(),
-            structlog.processors.TimeStamper(fmt='iso'),
-            structlog.processors.StackInfoRenderer(),
-            structlog.processors.format_exc_info,
-            structlog.processors.UnicodeDecoder(),
-            structlog.stdlib.render_to_log_kwargs,
-        ],
-        context_class=dict,
-        logger_factory=structlog.stdlib.LoggerFactory(),
-        wrapper_class=structlog.stdlib.BoundLogger,
-        cache_logger_on_first_use=True,
-    )
+The module also exposes ``get_colored_console_renderer`` and
+``get_json_renderer`` helpers for projects that want to build their own
+structlog processor chain.
 """
 
+from __future__ import annotations
+
+import logging
 import os
 from pathlib import Path
+
+import structlog
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -48,6 +33,65 @@ from pathlib import Path
 MAX_BYTES = 100 * 1024 * 1024   # 100 MB per file before size-based rotation
 BACKUP_COUNT_SIZE = 10           # Keep 10 size-rotated backups alongside timed ones
 BACKUP_COUNT_DAYS = 90           # Keep 90 days of timed-rotation backups
+
+
+# ---------------------------------------------------------------------------
+# Renderers
+# ---------------------------------------------------------------------------
+
+def get_colored_console_renderer() -> structlog.dev.ConsoleRenderer:
+    """Return a structlog colored console renderer for development."""
+    return structlog.dev.ConsoleRenderer(colors=True)
+
+
+def get_json_renderer() -> structlog.processors.JSONRenderer:
+    """Return a structlog JSON renderer for production / structured logging."""
+    return structlog.processors.JSONRenderer()
+
+
+# ---------------------------------------------------------------------------
+# Processors
+# ---------------------------------------------------------------------------
+
+def get_shared_processors() -> list:
+    """Return processors shared between dev and prod configurations."""
+    return [
+        structlog.stdlib.filter_by_level,
+        structlog.stdlib.add_logger_name,
+        structlog.stdlib.add_log_level,
+        structlog.stdlib.PositionalArgumentsFormatter(),
+        structlog.processors.TimeStamper(fmt="iso"),
+        structlog.processors.StackInfoRenderer(),
+        structlog.processors.format_exc_info,
+        structlog.processors.UnicodeDecoder(),
+    ]
+
+
+# ---------------------------------------------------------------------------
+# Public helpers
+# ---------------------------------------------------------------------------
+
+def configure_structlog(is_dev: bool = True) -> None:
+    """
+    Configure structlog for the running process.
+
+    Args:
+        is_dev: When ``True`` (default), emit colored, human-readable logs
+                to the console. When ``False``, emit structured JSON.
+    """
+    processors = get_shared_processors()
+    if is_dev:
+        processors.append(get_colored_console_renderer())
+    else:
+        processors.append(get_json_renderer())
+
+    structlog.configure(
+        processors=processors,
+        context_class=dict,
+        logger_factory=structlog.stdlib.LoggerFactory(),
+        wrapper_class=structlog.stdlib.BoundLogger,
+        cache_logger_on_first_use=True,
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -93,7 +137,7 @@ def get_logging_config(
     Args:
         log_dir:           Directory where log files will be written.
                            Created automatically if it does not exist.
-        log_level:         Log level for ceptor_ai loggers (default INFO).
+        log_level:         Log level for django-fusion loggers (default INFO).
         django_log_level:  Log level for Django's own loggers (default WARNING).
 
     Returns:

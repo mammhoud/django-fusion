@@ -34,7 +34,7 @@ class AssetNode(template.Node):
 
     def render(self, context: Context) -> str:
         from django_fusion.comp.core._init import components
-        from django_fusion.comp.static.staticfiles import Asset, get_component_assets
+        from django_fusion.comp.configuration.staticfiles import Asset, get_component_assets
 
         template = getattr(context, "template", None)
         if not template:

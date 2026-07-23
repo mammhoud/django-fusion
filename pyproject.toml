@@ -35,8 +35,10 @@ classifiers = [
 ]
 dependencies = [
     "attrs>=26.1.0",
+    "colorama>=0.4.6",
     "django>=4.2",
     "pluggy>=1.6.0",
+    "structlog>=24.1.0",
     "wagtail",
 ]
 

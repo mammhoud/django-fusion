@@ -18,8 +18,8 @@ from django.template.loader import select_template
 from django_fusion.comp.configuration.conf import _settings
 from django_fusion.comp.configuration.params import Param, Params, Value
 from django_fusion.comp.plugins.manager import pm
-from django_fusion.comp.static.staticfiles import Asset, AssetType
-from django_fusion.comp.templates.templates import (
+from django_fusion.comp.configuration.staticfiles import Asset, AssetType
+from django_fusion.comp.loader.templates import (
     find_components_in_template,
     get_component_directories,
     get_template_names,
