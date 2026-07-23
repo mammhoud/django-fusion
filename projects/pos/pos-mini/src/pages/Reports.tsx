@@ -1,10 +1,11 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { 
   MdAttachMoney, MdShoppingCart, 
   MdPeople, MdInventory, MdMenuBook, MdWarning,
   MdTrendingUp, MdDateRange, MdStore, MdDashboard,
-  MdReceipt, MdBarChart
+  MdReceipt, MdBarChart, MdAccountBalance
 } from 'react-icons/md';
 import { FaFilePdf, FaDownload } from 'react-icons/fa';
 import PageLayout from '../components/PageLayout';
@@ -23,7 +24,7 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
 } from 'recharts';
 
-type Tab = 'overview' | 'sales' | 'inventory' | 'recipes' | 'employees' | 'transactions' | 'productsSales' | 'invoices' | 'dailyComparison' | 'deliveryTracking' | 'periodComparison';
+type Tab = 'overview' | 'sales' | 'inventory' | 'recipes' | 'employees' | 'transactions' | 'productsSales' | 'invoices' | 'dailyComparison' | 'deliveryTracking' | 'periodComparison' | 'taxReports';
 
 interface EmployeeSalesData {
   employeeId: number;
@@ -52,6 +53,7 @@ interface LowStockItem {
 
 export default function Reports() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('sales');
   const [currency, setCurrency] = useState('USD');
   const [restaurantName, setRestaurantName] = useState('POS');
@@ -851,6 +853,7 @@ export default function Reports() {
     { key: 'recipes' as Tab, label: 'Recipes', icon: <MdMenuBook className="w-5 h-5" /> },
     { key: 'employees' as Tab, label: 'Employees', icon: <MdPeople className="w-5 h-5" /> },
     { key: 'transactions' as Tab, label: 'Transactions', icon: <MdDateRange className="w-5 h-5" /> },
+    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <MdAccountBalance className="w-5 h-5" /> },
   ];
 
   if (loading) {
@@ -990,7 +993,13 @@ export default function Reports() {
           {tabs.map(tab => (
             <button
               key={tab.key}
-              onClick={() => setActiveTab(tab.key)}
+              onClick={() => {
+                if (tab.key === 'taxReports') {
+                  navigate('/tax-reports');
+                } else {
+                  setActiveTab(tab.key);
+                }
+              }}
               className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 justify-center ${
                 activeTab === tab.key
                   ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'

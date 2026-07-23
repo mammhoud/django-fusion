@@ -62,13 +62,29 @@
     "reportsDesc": "Generate reports",
     "settingsDesc": "Configure system",
     "aboutDesc": "App information",
+    "kitchenDesc": "Kitchen order display",
+    "scheduleDesc": "Employee scheduling",
+    "payrollDesc": "Manage payroll",
+    "receiptTemplatesDesc": "Customize receipts",
+    "taxReportsDesc": "Tax & fiscal reports",
+    "invoiceDesc": "Generate invoices",
+    "rolesDesc": "Role permissions",
+    "supportChatDesc": "Help & support",
+    "customersDesc": "Manage customers",
+    "suppliersDesc": "Manage suppliers",
     "home": "Home",
     "navigation": "Navigation",
-    "footer": "POS KO Restaurant Management"
+    "footer": "POS KO Restaurant Management",
+    "categorySales": "Sales & Operations",
+    "categoryProducts": "Inventory & Products",
+    "categoryStaff": "Staff & Customers",
+    "categoryReports": "Reports & Analytics",
+    "categorySystem": "Settings & System"
   },
   "home": {
     "title": "POS KO",
-    "loading": "Loading..."
+    "loading": "Loading...",
+    "dashboard": "Dashboard"
   },
   "about": {
     "title": "About POS KO",

@@ -7,7 +7,7 @@ interface ModalProps {
   title: string;
   children: React.ReactNode;
   footer?: React.ReactNode;
-  size?: 'sm' | 'md' | 'lg';
+  size?: 'sm' | 'md' | 'lg' | 'xl' | 'full';
   borderColor?: string;
 }
 
@@ -15,6 +15,8 @@ const sizeClasses: Record<string, string> = {
   sm: 'max-w-md',
   md: 'max-w-lg',
   lg: 'max-w-xl',
+  xl: 'max-w-4xl',
+  full: 'max-w-6xl',
 };
 
 export default function Modal({

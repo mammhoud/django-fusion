@@ -54,7 +54,14 @@ export default function ProductCard({
 
   const baseClasses = isSelected
     ? selectedClassName
-    : `${color.bg} ${color.border}`;
+    : product.border_color
+      ? `bg-white/70 dark:bg-white/5 border-[${product.border_color}] dark:border-[${product.border_color}]`
+      : `${color.bg} ${color.border}`;
+
+  // Parse custom border color for inline style (Tailwind JIT doesn't support dynamic colors)
+  const customBorderStyle = product.border_color && !isSelected
+    ? { borderColor: product.border_color, backgroundColor: product.border_color + '10' }
+    : {};
 
   return (
     <motion.div
@@ -63,14 +70,16 @@ export default function ProductCard({
       transition={{ delay: (index ?? 0) * 0.04 }}
       whileHover={{ y: -3, scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
+      style={customBorderStyle}
       className={`rounded-xl p-3 sm:p-4 flex flex-col items-center text-center
         border-2 backdrop-blur-sm hover:shadow-lg transition-all duration-300 group relative
         ${baseClasses} ${className}`}
     >
       {/* Product Image */}
       <div className={`w-16 h-16 sm:w-20 sm:h-20 mb-3 rounded-xl overflow-hidden
-        flex items-center justify-center border-2 ${isSelected ? 'border-teal-300 dark:border-teal-500/50' : color.border}
-        bg-white/70 dark:bg-white/10 shadow-sm`}>
+        flex items-center justify-center border-2 ${isSelected ? 'border-teal-300 dark:border-teal-500/50' : product.border_color ? '' : color.border}
+        bg-white/70 dark:bg-white/10 shadow-sm`}
+        style={product.border_color && !isSelected ? { borderColor: product.border_color } : {}}>
         {product.image && !imageError ? (
           <img
             src={product.image}
