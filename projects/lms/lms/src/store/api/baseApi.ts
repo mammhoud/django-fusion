@@ -40,6 +40,7 @@ export const api = createApi({
     'Assignment', 'Submission',
     'Announcement',
     'Wishlist',
+    'Page',
     'Dashboard',
     'User', 'Auth',
   ],
