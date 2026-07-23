@@ -74,13 +74,20 @@ TEST_SETTINGS: dict = {
     "INSTALLED_APPS": [
         "django.contrib.contenttypes",
         "django.contrib.auth",
+        "django.contrib.sessions",
+        "django.contrib.messages",
         # `django_fusion.comp` is the sub-app that owns
         # CoreExtAppConfig. Without it, `ready()` never runs and the
         # component registry stays empty.
         "django_fusion.comp",
     ],
-    "MIDDLEWARE": [],
-    "ROOT_URLCONF": "tests.urls",
+    "MIDDLEWARE": [
+        "django.contrib.sessions.middleware.SessionMiddleware",
+        "django.contrib.auth.middleware.AuthenticationMiddleware",
+    ],
+    # ``tests/`` is added to ``sys.path`` by ``tests/conftest.py``,
+    # so the urlconf module is importable as ``urls`` directly.
+    "ROOT_URLCONF": "urls",
     "SECRET_KEY": "test-secret-key",
     "STATIC_URL": "/static/",
     "USE_TZ": True,
@@ -119,7 +126,7 @@ TEST_SETTINGS: dict = {
                     "django_fusion.comp.templatetags.components",
                     # `attrs` (in pyproject.toml dependencies) is the
                     # runtime dep of ui_tags — must be importable.
-                    "django_fusion.templatetags.ui_tags",
+                    "django_fusion.comp.templatetags.ui_tags",
                 ],
             },
         },

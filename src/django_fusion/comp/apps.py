@@ -9,7 +9,6 @@ class CoreExtAppConfig(AppConfig):
 
     def ready(self):
         from .plugins import pm
-        from .registry import register_default_partials, register_include_paths
         from .configuration.staticfiles import asset_types
 
         for pre_ready in pm.hook.pre_ready():
@@ -17,22 +16,41 @@ class CoreExtAppConfig(AppConfig):
 
         pm.hook.register_asset_types(register_type=asset_types.register_type)
 
-        # Pre-warm the include-path-to-component registry so the first
-        # render of `{% comp "partials/..." %}` does not pay the
-        # lazy-load cost. Sites extend this list with the
-        # ``COMPONENTS_INCLUDE_PATH_ROOTS`` Django setting.
-        register_default_partials()
+        # Register django-fusion built-in component templates.
+        _register_builtin_component_paths()
 
-        # Register django-fusion built-in component templates so they are
-        # available to {% comp %} without manual registration.
-        #
-        # All paths are relative to the django-fusion app's templates
-        # directory (`django_fusion/comp/templates/`) and resolve via
-        # Django's standard template loader. Sites that need additional
-        # components can either add their own paths to
-        # ``COMPONENTS_INCLUDE_PATH_ROOTS`` or extend this list in a
-        # subclass AppConfig.ready() that runs after this one.
-        register_include_paths([
+        from .plugins.webpack_compat import _patch_webpack_loader
+
+        _patch_webpack_loader()
+
+        for ready in pm.hook.ready():
+            ready()
+
+
+def _register_builtin_component_paths():
+    """Register default partials and built-in component templates.
+
+    Extracted so tests can re-populate the registry without calling
+    ``AppConfig.ready()`` again.
+    """
+    from .registry import register_default_partials, register_include_paths
+
+    # Pre-warm the include-path-to-component registry so the first
+    # render of `{% comp "partials/..." %}` does not pay the
+    # lazy-load cost. Sites extend this list with the
+    # ``COMPONENTS_INCLUDE_PATH_ROOTS`` Django setting.
+    register_default_partials()
+
+    # Register django-fusion built-in component templates so they are
+    # available to {% comp %} without manual registration.
+    #
+    # All paths are relative to the django-fusion app's templates
+    # directory (`django_fusion/comp/templates/`) and resolve via
+    # Django's standard template loader. Sites that need additional
+    # components can either add their own paths to
+    # ``COMPONENTS_INCLUDE_PATH_ROOTS`` or extend this list in a
+    # subclass AppConfig.ready() that runs after this one.
+    register_include_paths([
             # ── Single-file components ──
             "components/breadcrumbs.html",
             "components/button.html",
@@ -58,10 +76,3 @@ class CoreExtAppConfig(AppConfig):
             "components/cookies/cookie-policy.html",
             "components/cookies/privacy-policy.html",
         ])
-
-        from .plugins.webpack_compat import _patch_webpack_loader
-
-        _patch_webpack_loader()
-
-        for ready in pm.hook.ready():
-            ready()

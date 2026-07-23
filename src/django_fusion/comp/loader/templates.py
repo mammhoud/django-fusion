@@ -17,7 +17,7 @@ from django.template.utils import get_app_template_dirs
 from pluggy import HookimplMarker as _HookimplMarker
 
 from django_fusion.comp.configuration.conf import _settings
-from django_fusion.site.utils import get_files_from_dirs, unique_ordered
+from django_fusion.site.interface.utils import get_files_from_dirs, unique_ordered
 
 hookimpl = _HookimplMarker("django_fusion.comp")
 from django_fusion.comp.templatetags.tags.block import BlockNode  # noqa: E402

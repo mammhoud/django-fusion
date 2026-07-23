@@ -1,0 +1,4 @@
+<a {{ attrs }}{% if is_active %} aria-current="page"{% endif %}>
+  {% if icon %}<i class="{{ icon }} me-2"></i>{% endif %}
+  <span>{{ label }}</span>
+</a>

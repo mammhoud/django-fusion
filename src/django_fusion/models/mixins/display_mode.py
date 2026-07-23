@@ -30,7 +30,7 @@ class DisplayModeMixin(models.Model):
     and modal overlay rendering.
 
     The field is used by ``WagtailPageMixin`` (in
-    ``django_fusion.site._context_mixins``) to decide whether to serve
+    ``django_fusion.site.interface._context_mixins``) to decide whether to serve
     the page as a full document or as a fragment target for an overlay.
     """
 

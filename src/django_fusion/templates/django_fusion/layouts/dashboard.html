@@ -1,0 +1,12 @@
+{% extends "django_fusion/skeletons/default.html" %}
+
+{% block body_class %}df-layout df-layout--dashboard{% endblock body_class %}
+
+{% block content %}
+<aside class="df-sidebar">
+    {% block sidebar %}{% endblock sidebar %}
+</aside>
+<div class="df-dashboard-main">
+    {% block dashboard_content %}{% endblock dashboard_content %}
+</div>
+{% endblock content %}

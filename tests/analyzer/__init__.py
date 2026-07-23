@@ -1,4 +1,4 @@
-"""Tests for django_fusion.analyzer sub-modules.
+"""Tests for django_fusion.comp.analyzer sub-modules.
 
 Each module under this subpackage focuses on one analyzer component
 (parser, scanner, view, ...). The flat `tests/test_analyzer_*.py` files

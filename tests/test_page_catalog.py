@@ -4,7 +4,7 @@ from types import SimpleNamespace
 import pytest
 from django.test import override_settings
 
-from django_fusion.site.pages import PageCatalog, TemplateRoot
+from django_fusion.site.interface.pages import PageCatalog, TemplateRoot
 
 
 def write_template(root: Path, name: str, content: str = "") -> None:

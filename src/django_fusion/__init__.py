@@ -2,11 +2,8 @@
 
 Package layout
 --------------
-django_fusion.analyzer       Template scanner and component analyzer app.
 django_fusion.comp           Server-side component system (slots, props, HTMX loaders).
   .cache                    Redis-backed component mapping cache with fallback.
-  .routes                   URL route builders: model, fragment, component, site.
-  .generic                  Generic CBVs: list, create, update, delete, search.
   .configuration            Component manifest, options, and config schema.
   .core                     Component bootstrap and lifecycle.
   .forms                    Form layout helpers for component rendering.
@@ -17,14 +14,13 @@ django_fusion.comp           Server-side component system (slots, props, HTMX lo
   .templates                Template discovery, URL routing, and rendering engine.
   .templatetags             ``comp``, ``slot``, ``prop``, ``var``, ``css``, ``js``,
                             plus UI tags: card, field, menu, modal, table.
+django_fusion.components     Reusable component mixins and generic CBVs.
+  .forms                    Form rendering mixins and tag generators.
+  .tables                   Table rendering mixins and row generators.
+  .generic                  Generic CBVs: list, create, update, delete, search.
 django_fusion.config         Package-level configuration constants and conf helpers.
   .dynaconf_loader          Multi-environment YAML configuration with Dynaconf.
 django_fusion.contrib        Shared admin, cache utils, debug tools, and privacy helpers.
-  .admin                    Custom admin site and Wagtail admin hooks.
-  .cache                    Cache utility functions for views and managers.
-  .debug_tools              Dev-only tools: autoreload, monitoring, Sentry, Prometheus.
-  .email_config             Email configuration helpers.
-  .privacy                  Privacy middleware and consent helpers.
 django_fusion.core           Foundational layer — models, managers, services, utils.
   .cache                    Pluggable cache manager base classes.
   .filters                  Queryset filters: token, revision, cache-aware.
@@ -36,15 +32,18 @@ django_fusion.core           Foundational layer — models, managers, services, 
   .utils                    Utilities: data, formatting, security.
 django_fusion.health         Lightweight health-check endpoint.
 django_fusion.infrastructure Locale, management command base, scripts, template tags.
-django_fusion.site           Site layer — pagination, context, auth.
-  .adapters                 Site-level allauth adapter.
-  .auth                     Auth forms, role/token models, allauth adapters.
-  .choices                  Choice enums: cart, contact, message, styles, token.
-  .context                  Context processors: auth, cookies, HTMX, languages.
-  .enums                    Environment and upload enums.
-  .responses                HTTP response helpers and exception schemas.
-  .schemas                  Pydantic response schemas, serializers, user schemas.
-  .views                    Site-level views: notifications, tag management.
+django_fusion.routes         Declarative, class-based URL routing for Django projects.
+django_fusion.site           Unified site layer.
+  .management               Management commands and scripts.
+  .interface                 Site interface layer (formerly ci) — pagination, context, auth.
+    .adapters                 Site-level allauth adapter.
+    .auth                     Auth forms, role/token models, allauth adapters.
+    .choices                  Choice enums: cart, contact, message, styles, token.
+    .context                  Context processors: auth, cookies, HTMX, languages.
+    .enums                    Environment and upload enums.
+    .responses                HTTP response helpers and exception schemas.
+    .schemas                  Pydantic response schemas, serializers, user schemas.
+    .views                    Site-level views: notifications, tag management.
 django_fusion.wagtail        Wagtail integration: blocks, snippets, viewsets.
 django_fusion.web            Web layer: allauth adapters, auth backends, view mixins.
   .adapters                 django-allauth account and social adapters.
@@ -53,8 +52,10 @@ django_fusion.web            Web layer: allauth adapters, auth backends, view mi
 
 Canonical import paths
 -----------------------
-Routing:           from django_fusion.comp.routes import Viewset, Site, ...
-Generic CBVs:      from django_fusion.comp.generic import ListModelView, ...
+Routing:           from django_fusion.routes import Viewset, Site, ...
+Generic CBVs:      from django_fusion.components.generic import ListModelView, ...
+Forms/Tables:      from django_fusion.components.forms import FormMixin
+                   from django_fusion.components.tables import TableMixin
 Component Cache:   from django_fusion.comp.cache import get_component_map_cache
 Handlers:          from django_fusion.core.handlers import ...
 Managers:          from django_fusion.core.managers import ...

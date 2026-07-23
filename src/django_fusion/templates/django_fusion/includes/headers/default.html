@@ -1,0 +1,8 @@
+<header class="df-header" data-component="header">
+    <div class="df-header__brand">
+        <a href="/">{{ site_name|default:"Site" }}</a>
+    </div>
+    <nav class="df-header__nav" aria-label="Primary">
+        {% block header_nav %}{% endblock header_nav %}
+    </nav>
+</header>

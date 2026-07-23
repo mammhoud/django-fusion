@@ -12,7 +12,7 @@ from django.conf import settings
 def component_logger() -> logging.Logger:
     log_dir = Path(getattr(settings, "BASE_DIR", Path.cwd())) / "applications" / "logs" / "components"
     log_dir.mkdir(parents=True, exist_ok=True)
-    logger = logging.getLogger("django_fusion.components")
+    logger = logging.getLogger("django_fusion.fragments")
     if not logger.handlers:
         handler = TimedRotatingFileHandler(log_dir / "component_errors.log", when="midnight", backupCount=14)
         handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(message)s"))

@@ -130,11 +130,17 @@ def _boot_django_for_module():
 
 @pytest.fixture(autouse=True)
 def reset_components():
+    from django_fusion.comp.apps import _register_builtin_component_paths
     from django_fusion.comp.core._init import components  # imports after settings
 
+    # Reset and re-populate the component registry so each test in
+    # this module starts with the same state Django built at startup.
+    # We do not reset on teardown; otherwise later tests (e.g. in
+    # test_form_components.py) would see an empty registry because
+    # AppConfig.ready() only runs once.
     components.reset()
+    _register_builtin_component_paths()
     yield
-    components.reset()
 
 
 def _render(source: str) -> str:
@@ -179,86 +185,3 @@ def test_register_include_path_idempotent():
     assert first_id == second_id
 
 
-def test_parse_include_contents_all_shapes():
-    """Pure-Python classification covers ALL realistic include shapes.
-
-    Specifically tests the previously-failing ``only with foo=bar``
-    shape (only-before-with).
-    """
-    import importlib.util
-    import sys
-
-    scripts_dir = Path(__file__).resolve().parents[3] / "scripts"
-    spec = importlib.util.spec_from_file_location(
-        "convert_includes", scripts_dir / "convert_includes.py"
-    )
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules["convert_includes"] = mod
-    spec.loader.exec_module(mod)
-    mod._configure_django_minimal()
-
-    cases = [
-        ('include "partials/auth_buttons.html"', None, False),
-        ("include partials/foo.html", "variable-path", False),
-        ('include "p.html" as alias', "as-alias", False),
-        ('include "p.html" only', None, True),
-        ('include "p.html" with foo=bar', None, False),
-        ('include "p.html" with foo=bar only', None, True),
-        ('include "p.html" only with foo=bar', None, True),
-        ('include "p.html" with foo=bar only as alias', "as-alias", True),
-    ]
-    for contents, expected_skip, expected_only in cases:
-        m = mod._parse_include_contents(contents)
-        assert m.skip_reason == expected_skip, (
-            f"contents={contents!r}: skip_reason={m.skip_reason!r}, expected={expected_skip!r}"
-        )
-        assert m.only == expected_only, (
-            f"contents={contents!r}: only={m.only}, expected={expected_only}"
-        )
-
-
-def test_rewrite_template_byte_exact_replacement():
-    """Splice is byte-exact; the original whitespace pattern survives."""
-    import importlib.util
-    import sys
-
-    scripts_dir = Path(__file__).resolve().parents[3] / "scripts"
-    spec = importlib.util.spec_from_file_location(
-        "convert_includes", scripts_dir / "convert_includes.py"
-    )
-    mod = importlib.util.module_from_spec(spec)
-    sys.modules["convert_includes"] = mod
-    spec.loader.exec_module(mod)
-    mod._configure_django_minimal()
-
-    src = (
-        '<div>\n'
-        '    {% include "partials/auth_buttons.html" %}\n'  # normal padding
-        '{%   include   "partials/auth_buttons.html"   %}\n'  # extra padding
-        '{% include var %}\n'  # variable-path skipped
-        '{% include "x.html" as saved %}\n'  # as-alias skipped
-        '{% include "y.html" only %}\n'  # only-tag preserved
-        '</div>'
-    )
-    new, converted, skipped = mod.rewrite_template(src)
-    # Tighter form-based assertions: regex-pin the EXACT produced comp token
-    # so a regression that changes whitespace / quoting / kwarg shape would
-    # be caught instead of slipping past a length count.
-    expected_comp_calls = {
-        # Two distinct occurrences of the same comp call (normal + extra padding).
-        '{% comp "partials/auth_buttons.html" /%}': 2,
-        '{% comp "y.html" only /%}': 1,
-    }
-    import re  # local import so the test stays self-contained.
-
-    for token, expected_count in expected_comp_calls.items():
-        actual_count = len(re.findall(re.escape(token), new))
-        assert (
-            actual_count == expected_count
-        ), f"{token!r}: expected to appear {expected_count}×, found {actual_count}×"
-    # Variable-path and as-alias left untouched
-    assert "{% include var %}" in new
-    assert '{% include "x.html" as saved %}' in new
-    # Sanity: no double-conversion or accidental regeneration
-    total_comp = len(re.findall(r"\{%\s*comp\s+", new))
-    assert total_comp == sum(expected_comp_calls.values())

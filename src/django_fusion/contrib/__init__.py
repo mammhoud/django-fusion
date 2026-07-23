@@ -2,36 +2,80 @@
 
 Sub-packages
 ------------
-contrib.admin           Custom admin site class and Wagtail admin Wagtail hooks.
-contrib.cache           Cache utility functions (key builders, invalidation helpers).
-contrib.debug_tools     Dev-only diagnostics: autoreload, Sentry, Prometheus, error views.
-contrib.email_config    Email backend configuration helpers.
-contrib.enums           Shared choice enums used across contrib modules.
+contrib.admin           Custom admin site class and Wagtail admin hooks.
+contrib.cache           Cache utility functions.
+contrib.debug_tools     Dev-only diagnostics.
+contrib.email_config    Email backend helpers.
+contrib.enums           Shared choice enums.
 contrib.privacy         Privacy consent middleware and cookie policy helpers.
 contrib.utils           Miscellaneous shared utility functions.
 """
 
+from __future__ import annotations
+
 import re
 from functools import cached_property
-
-# ── Safe direct imports (module-level, no submodule loading) ────────────────
-from django_fusion.site import (
-    DEFAULT,
-    camel_case_to_underscore,
-    list_path_components,
-    strip_suffixes,
-)
 
 # ── Backward-compat aliases ─────────────────────────────────────────────────
 ViewProp = cached_property
 
 
-# ── Local utilities ─────────────────────────────────────────────────────────
+# ── Utility functions (re-exported from django_fusion.site.interface) ──────────────────
+
+def camel_case_to_underscore(name: str) -> str:
+    """Convert CamelCase to underscore_case.
+
+    Examples::
+
+        >>> camel_case_to_underscore("MyClassName")
+        'my_class_name'
+    """
+    s1 = re.sub(r"(.)([A-Z][a-z]+)", r"_\2", name)
+    return re.sub(r"([a-z0-9])([A-Z])", r"_\2", s1).lower()
+
+
+def list_path_components(path: str) -> list[str]:
+    """Split a dotted / URL-style path into its components.
+
+    Examples::
+
+        >>> list_path_components("foo/bar/baz")
+        ['foo', 'bar', 'baz']
+        >>> list_path_components("foo.bar.baz")
+        ['foo', 'bar', 'baz']
+    """
+    return [part for part in re.split(r"[./]", path) if part]
+
+
+def strip_suffixes(name: str, suffixes: list[str]) -> str:
+    """Remove any of the given suffixes from ``name``.
+
+    Examples::
+
+        >>> strip_suffixes("MyListView", ["View"])
+        'MyList'
+    """
+    for suffix in suffixes:
+        if name.endswith(suffix):
+            name = name[: -len(suffix)]
+    return name
+
 
 def camel_case_to_title(name: str) -> str:
     """Convert CamelCase to Title Case (e.g. MyModel → My Model)."""
-    s1 = re.sub(r"(.)([A-Z][a-z]+)", r"\1 \2", name)
-    return re.sub(r"([a-z0-9])([A-Z])", r"\1 \2", s1)
+    s1 = re.sub(r"(.)([A-Z][a-z]+)", r" \2", name)
+    return re.sub(r"([a-z0-9])([A-Z])", r" \2", s1)
+
+
+# ── Sentinel ────────────────────────────────────────────────────────────────
+class _DEFAULT:
+    """Sentinel indicating "use the default value"."""
+
+    def __repr__(self) -> str:
+        return "<DEFAULT>"
+
+
+DEFAULT = _DEFAULT()
 
 
 def first_not_default(*values, default=None):
@@ -78,11 +122,15 @@ def __getattr__(name: str):
     _lazy_site_classes = {"ComponentViews", "NotificationMixin", "PageHandler"}
 
     if name in _lazy_site_classes:
-        import django_fusion.site
-
-        val = getattr(django_fusion.site, name)
-        globals()[name] = val
-        return val
+        if name == "NotificationMixin":
+            from django_fusion.site.interface.notifications import NotificationMixin
+            return NotificationMixin
+        elif name == "ComponentViews":
+            from django_fusion.site.interface.page_handler import ComponentViews
+            return ComponentViews
+        elif name == "PageHandler":
+            from django_fusion.site.interface.page_handler import PageHandler
+            return PageHandler
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

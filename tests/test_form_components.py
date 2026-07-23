@@ -6,8 +6,23 @@ by Django's template loader AND by the django-fusion ``{% comp %}``
 tag after the templates were consolidated into the django-fusion
 package.
 """
+import pytest
 from django.template.loader import get_template
 from django_fusion.comp.core._init import components
+
+
+@pytest.fixture(autouse=True)
+def _ensure_builtin_components_registered():
+    """Make sure built-in component paths are registered before each test.
+
+    Other tests may reset the registry, so re-populate it here without
+    re-running ``AppConfig.ready()``.
+    """
+    from django_fusion.comp.apps import _register_builtin_component_paths
+
+    if "components/form/form_block.html" not in components._components:
+        _register_builtin_component_paths()
+    yield
 
 
 def test_form_block_loads_via_template_loader():

@@ -20,7 +20,7 @@ from django.core.files.storage import FileSystemStorage
 from pluggy import HookimplMarker as _HookimplMarker
 
 from django_fusion.comp.configuration.conf import _settings
-from django_fusion.site.utils import get_files_from_dirs
+from django_fusion.site.interface.utils import get_files_from_dirs
 
 hookimpl = _HookimplMarker("django_fusion.comp")
 from django_fusion.comp.apps import CoreExtAppConfig

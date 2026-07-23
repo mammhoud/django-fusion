@@ -1,0 +1,14 @@
+{% comment %}
+Base fragment wrapper.
+
+Extend this template when building reusable fragments that need a consistent
+outer element. Blocks:
+  - fragment_id: id attribute for the wrapper (default: none)
+  - fragment_class: CSS classes for the wrapper
+  - fragment_content: the actual fragment content
+{% endcomment %}
+{% block fragment_outer %}
+<div{% if fragment_id %} id="{{ fragment_id }}"{% endif %} class="df-fragment {{ fragment_class|default:"" }}">
+    {% block fragment_content %}{% endblock fragment_content %}
+</div>
+{% endblock fragment_outer %}

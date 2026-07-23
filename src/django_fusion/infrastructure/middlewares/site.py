@@ -10,8 +10,8 @@ from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.template.response import SimpleTemplateResponse
 
-from django_fusion.site.adapters.main import DjangoAdapter
-from django_fusion.site.plugins import HtmxDetails
+from django_fusion.comp.fragment.plugins.htmx import HtmxDetails
+from django_fusion.comp.fragment.plugins.unpoly import DjangoAdapter, Unpoly
 import logging
 
 logger = logging.getLogger(__name__)
@@ -77,7 +77,7 @@ class SiteMiddleware:
         """
         # HTMX integration
         request.htmx = HtmxDetails(request)  # type: ignore[attr-defined]
-        request.is_htmx = request.headers.get("HX-Request", "").lower() == "true"
+        request.is_htmx = bool(request.htmx)
 
         # Unpoly integration
         up_params = self._get_up_params(request)
@@ -85,7 +85,7 @@ class SiteMiddleware:
             request.GET = self._remove_up_params(request.GET, up_params)
 
         request.is_unpoly = "X-Up-Version" in request.headers
-        request.up = DjangoAdapter(request)  # type: ignore[attr-defined]
+        request.up = Unpoly(DjangoAdapter(request))
         request._up_params = up_params  # stored for finalization
 
     # -------------------------

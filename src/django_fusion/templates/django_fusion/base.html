@@ -1,0 +1,15 @@
+{% load i18n static %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:"en-us" }}" dir="{% if LANGUAGE_BIDI %}rtl{% else %}ltr{% endif %}">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{{ page_title|default:"Page" }}{% endblock title %}</title>
+    {% block meta %}{% endblock meta %}
+    {% block css %}{% endblock css %}
+</head>
+<body class="{% block body_class %}{% endblock body_class %}" data-page="{{ page_type|default:"" }}">
+    {% block body %}{% endblock body %}
+    {% block scripts %}{% endblock scripts %}
+</body>
+</html>

@@ -1,7 +1,7 @@
 """
-Utility re-exports from django_fusion.site.
+Utility re-exports from django_fusion.site.interface.
 
-This module provides re-exports of utility functions from django_fusion.site
+This module provides re-exports of utility functions from django_fusion.site.interface
 for backward compatibility and convenience.
 
 Functions:
@@ -12,6 +12,6 @@ Usage::
     from django_fusion.contrib.utils import unique_ordered
 """
 
-from django_fusion.site.utils import unique_ordered
+from django_fusion.site.interface.utils import unique_ordered
 
 __all__ = ["unique_ordered"]

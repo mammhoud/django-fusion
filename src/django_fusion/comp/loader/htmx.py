@@ -15,7 +15,7 @@ def _slow_logger() -> logging.Logger:
     log_dir = Path(getattr(settings, "BASE_DIR", Path.cwd())) / "applications" / "logs" / "components"
     log_dir.mkdir(parents=True, exist_ok=True)
     handler_path = log_dir / "slow_components.log"
-    logger = logging.getLogger("django_fusion.components.slow")
+    logger = logging.getLogger("django_fusion.fragments.slow")
     if not logger.handlers:
         handler = logging.FileHandler(handler_path)
         handler.setFormatter(logging.Formatter("%(asctime)s %(message)s"))

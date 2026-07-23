@@ -57,12 +57,17 @@ def _build_attrs(
     target: str = "#panel-content",
     layer: str | None = None,
     extra_classes: str = "",
+    *,
+    is_active: bool = False,
     **extra: Any,
 ) -> dict[str, str]:
     """Build HTML attributes dict with Unpoly-first + HTMX fallback."""
+    classes = [extra_classes.strip() or "nav-link"]
+    if is_active:
+        classes.append("active")
     attrs: dict[str, str] = {
         "href": url,
-        "class": extra_classes.strip() or "nav-link",
+        "class": " ".join(classes),
     }
 
     if _unpoly_enabled():
@@ -76,6 +81,7 @@ def _build_attrs(
         attrs["hx-get"] = url
         attrs["hx-target"] = target
         attrs["hx-trigger"] = "click"
+        attrs["hx-push-url"] = "true"
 
     return attrs
 
@@ -120,8 +126,6 @@ def nav_link(
         {% nav_link url="/blog/" label="Blog" target="#main-content" layer="modal" %}
     """
     resolved_url = _resolve_url(url)
-    link_attrs = _build_attrs(resolved_url, target=target, layer=layer, extra_classes=css_class)
-
     is_active = False
     if request or context.get("request"):
         req = request or context["request"]
@@ -130,6 +134,14 @@ def nav_link(
             current_path == resolved_url
             or (url and current_path.startswith(resolved_url) and resolved_url != "/")
         )
+
+    link_attrs = _build_attrs(
+        resolved_url,
+        target=target,
+        layer=layer,
+        extra_classes=css_class,
+        is_active=is_active,
+    )
 
     return {
         "url": resolved_url,
@@ -167,17 +179,18 @@ def nav_panel(
     resolved_links = []
     for link in links or []:
         resolved_url = _resolve_url(link.get("url", ""))
+        req = request or context.get("request")
+        is_active = False
+        if req:
+            is_active = req.path == resolved_url
+
         link_attrs = _build_attrs(
             resolved_url,
             target=link.get("target", target),
             layer=link.get("layer"),
             extra_classes=link.get("css_class", ""),
+            is_active=is_active,
         )
-
-        req = request or context.get("request")
-        is_active = False
-        if req:
-            is_active = req.path == resolved_url
 
         resolved_links.append({
             "url": resolved_url,

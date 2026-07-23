@@ -57,10 +57,10 @@ def get_privacy_html():
             # Fallback: basic conversion without markdown lib
             import re
             html = md_text.replace("\n\n", "</p><p>")
-            html = re.sub(r"^# (.+)$", r"<h1>\1</h1>", html, flags=re.MULTILINE)
-            html = re.sub(r"^## (.+)$", r"<h2>\1</h2>", html, flags=re.MULTILINE)
-            html = re.sub(r"^### (.+)$", r"<h3>\1</h3>", html, flags=re.MULTILINE)
-            html = re.sub(r"\*\*(.+?)\*\*", r"<strong>\1</strong>", html)
+            html = re.sub(r"^# (.+)$", r"<h1></h1>", html, flags=re.MULTILINE)
+            html = re.sub(r"^## (.+)$", r"<h2></h2>", html, flags=re.MULTILINE)
+            html = re.sub(r"^### (.+)$", r"<h3></h3>", html, flags=re.MULTILINE)
+            html = re.sub(r"\*\*(.+?)\*\*", r"<strong></strong>", html)
             html = f"<p>{html}</p>"
 
         _cached_html = html

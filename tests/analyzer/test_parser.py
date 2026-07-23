@@ -1,4 +1,4 @@
-"""Unit tests for ``django_fusion.analyzer.parser``.
+"""Unit tests for ``django_fusion.comp.analyzer.parser``.
 
 This module is intentionally structured around **fixtures, not magic
 strings**: the 3 ``{% comp %}`` invocation forms (self_closing,
@@ -27,12 +27,11 @@ Tests guard three invariants the parser MUST hold:
 
 from __future__ import annotations
 
-import dataclasses
 from pathlib import Path
 
 import pytest
 
-from django_fusion.analyzer.parser import (
+from django_fusion.comp.analyzer.parser import (
     CompUsage,
     parse_kwargs,
     parse_template,
@@ -377,9 +376,9 @@ class TestCustomizerFragment:
 # ────────────────────────────────────────────────────────────────────
 # CompUsage dataclass shape
 # ────────────────────────────────────────────────────────────────────
-class TestCompUsageDataclass:
+class TestCompUsageModel:
     def test_fields_are_exactly_path_kind_kwargs(self):
-        fields = [f.name for f in dataclasses.fields(CompUsage)]
+        fields = list(CompUsage.model_fields.keys())
         assert fields == ["path", "kind", "kwargs"]
 
     def test_three_known_kind_values(self):

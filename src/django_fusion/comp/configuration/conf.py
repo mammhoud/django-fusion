@@ -13,7 +13,7 @@ from django_fusion.contrib.utils import unique_ordered
 # ------------------------------------------------------------------
 COMPONENTS_SETTINGS_NAME = "COMPONENTS"
 COMPONENTS_BUILTINS = "django_fusion.comp.templatetags.components"
-COMPONENTS_BUILTINS_UI = "django_fusion.templatetags.ui_tags"
+COMPONENTS_BUILTINS_UI = "django_fusion.comp.templatetags.ui_tags"
 COMPONENTS_FINDER = "django_fusion.comp.configuration.staticfiles.BlockAssetFinder"
 
 
@@ -89,3 +89,8 @@ class DjangoComponentsSettings:
 
 
 _settings = DjangoComponentsSettings()
+
+
+def get_settings() -> DjangoComponentsSettings:
+    """Return the shared DjangoComponentsSettings instance."""
+    return _settings
