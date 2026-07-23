@@ -74,7 +74,7 @@ BOLT_API = {
     "auth": {
         "enabled": True,
         "token_header": "Authorization",
-        "token_prefix": "Token",
+        "token_prefix": "Bearer",
         "token_model": "django.contrib.auth.models.User",
     },
 }
