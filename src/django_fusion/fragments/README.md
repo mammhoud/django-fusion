@@ -166,6 +166,14 @@ curl "http://localhost:8000/fragments/?q=components.home.hero&page_path=/"
 For Wagtail pages, ``page.get_context(request)`` is merged. For regular
 Django class-based views, ``get_context_data()`` is merged.
 
+Page context is merged **after** the fragment/component context, so
+host-page variables can override values computed by the component. If you
+need the component values to win, use distinct keys.
+
+To override the shared templates in your own project, place templates under
+``templates/django_fusion/`` (matching the same relative path as the library
+templates).
+
 ## Examples
 
 ### Application with a landing layout
