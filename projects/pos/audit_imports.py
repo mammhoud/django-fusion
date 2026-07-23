@@ -55,6 +55,9 @@ def split_names(text: str) -> set[str]:
         # Handle `Foo as Bar`
         if " as " in part:
             part = part.split(" as ")[0].strip()
+        # Handle inline type-only specifier: `type Note`
+        if part.startswith("type "):
+            part = part[5:].strip()
         names.add(part)
     return names
 

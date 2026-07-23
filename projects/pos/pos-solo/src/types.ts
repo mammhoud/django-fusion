@@ -244,6 +244,7 @@ export interface InventoryTransaction {
   ingredient_id: number;
   transaction_type: string;
   quantity_change: number;
+  shipping_fee: number;
   reference_id: number | null;
   note: string | null;
   created_at: string;
@@ -253,6 +254,7 @@ export interface NewInventoryTransaction {
   ingredient_id: number;
   transaction_type: string;
   quantity_change: number;
+  shipping_fee?: number;
   reference_id?: number | null;
   note?: string | null;
 }
@@ -418,6 +420,23 @@ export const INVOICE_CATEGORIES: InvoiceCategory[] = [
   { id: 'pay_supplier', direction: 'payment', label: 'Pay Supplier', description: 'Payment to supplier' },
   { id: 'transfer_out', direction: 'payment', label: 'Transfer Goods Out', description: 'Goods transfer sent' },
 ];
+
+export const INVOICE_CATEGORY_LABELS: Record<string, string> = INVOICE_CATEGORIES.reduce((acc, c) => {
+  acc[c.id] = c.label;
+  return acc;
+}, {} as Record<string, string>);
+
+/** i18n translation keys for invoice category labels. */
+export const INVOICE_CATEGORY_I18N_KEYS: Record<string, string> = {
+  get_goods: 'invoice.categoryGetGoods',
+  transfer_goods: 'invoice.categoryTransferGoods',
+  products: 'invoice.categoryProducts',
+  production_creation: 'invoice.categoryProduction',
+  employee_meal: 'invoice.categoryEmployeeMeal',
+  all_transactions: 'invoice.categoryAllTransactions',
+  pay_supplier: 'invoice.categoryPaySupplier',
+  transfer_out: 'invoice.categoryTransferOut',
+};
 
 export interface ReceiptTemplate {
   id: number;

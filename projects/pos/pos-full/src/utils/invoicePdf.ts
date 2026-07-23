@@ -1,5 +1,5 @@
 import jsPDF from 'jspdf';
-import { InvoiceType, INVOICE_TYPE_LABELS } from '../types';
+import { InvoiceType, INVOICE_TYPE_LABELS, INVOICE_CATEGORY_LABELS } from '../types';
 
 export interface InvoicePdfData {
   invoiceType: InvoiceType;
@@ -26,6 +26,8 @@ export interface InvoicePdfData {
   taxRate?: number;
   notes?: string;
   footer?: string;
+  /** Invoice category ID for printed badge/label */
+  category?: string;
 }
 
 export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
@@ -85,7 +87,7 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
     infoY += 5;
   }
 
-  // --- Invoice type badge ---
+  // --- Invoice type badge + category badge ---
   pdf.setFillColor(13, 148, 136);
   pdf.setTextColor(255, 255, 255);
   pdf.setFontSize(12);
@@ -94,6 +96,16 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   const labelWidth = pdf.getTextWidth(label) + 10;
   pdf.roundedRect(pageWidth - margin - labelWidth, y + 14, labelWidth, 8, 2, 2, 'F');
   pdf.text(label, pageWidth - margin - labelWidth / 2, y + 19, { align: 'center' });
+
+  if (data.category) {
+    const catLabel = INVOICE_CATEGORY_LABELS[data.category] || data.category.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase());
+    pdf.setFillColor(241, 245, 249);
+    pdf.setTextColor(100, 116, 139);
+    pdf.setFontSize(10);
+    const catWidth = pdf.getTextWidth(catLabel) + 10;
+    pdf.roundedRect(pageWidth - margin - catWidth, y + 25, catWidth, 6, 1.5, 1.5, 'FD');
+    pdf.text(catLabel, pageWidth - margin - catWidth / 2, y + 29, { align: 'center' });
+  }
 
   // --- Invoice meta ---
   pdf.setTextColor(17, 24, 39);
