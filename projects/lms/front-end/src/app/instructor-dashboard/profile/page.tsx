@@ -53,7 +53,7 @@ export default function InstructorProfilePage() {
 
       <form onSubmit={handleSubmit} className="card p-8 space-y-5">
         <div className="flex items-center gap-4 mb-6">
-          <div className="w-20 h-20 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center text-white text-2xl font-bold">
+          <div className="w-20 h-20 avatar-sm flex items-center justify-center text-white text-2xl font-bold">
             {profile?.first_name?.[0]}{profile?.last_name?.[0]}
           </div>
           <div><h2 className="font-semibold text-gray-900 text-lg">{profile?.first_name} {profile?.last_name}</h2><p className="text-sm text-gray-500">{profile?.email}</p></div>

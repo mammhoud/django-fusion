@@ -23,7 +23,7 @@ export default function InstructorQuizPage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-indigo-600 mb-1 block transition-colors">
+            <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-1 block transition-colors">
               ← Back to Dashboard
             </Link>
             <h1 className="text-2xl font-bold text-gray-900">Quiz Management</h1>
@@ -42,7 +42,7 @@ export default function InstructorQuizPage() {
               key={f}
               onClick={() => setFilter(f as any)}
               className={`px-4 py-2 text-sm rounded-lg transition-all font-medium ${
-                filter === f ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
+                filter === f ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
               }`}
             >
               {f === 'all' ? 'All' : f}
@@ -77,7 +77,7 @@ export default function InstructorQuizPage() {
                 </div>
 
                 <div className="flex items-center gap-2">
-                  <button className="p-2 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                  <button className="p-2 text-gray-400 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors">
                     <HiPencil className="w-4 h-4" />
                   </button>
                   <button className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors">

@@ -12,12 +12,12 @@ function BlogDetailsContent() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <Link href="/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-indigo-600 mb-8 transition-colors">
+      <Link href="/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-8 transition-colors">
         <HiArrowLeft className="w-4 h-4" /> Back to Blog
       </Link>
 
       <motion.article initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="bg-gradient-to-br from-indigo-500 to-purple-600 h-64 rounded-xl flex items-center justify-center mb-8">
+        <div className="card-gradient h-64 rounded-xl flex items-center justify-center mb-8">
           <HiTag className="w-20 h-20 text-white/40" />
         </div>
 
@@ -40,7 +40,7 @@ function BlogDetailsContent() {
 
 export default function BlogDetailsPage() {
   return (
-    <Suspense fallback={<div className="max-w-4xl mx-auto px-4 py-10"><div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
+    <Suspense fallback={<div className="max-w-4xl mx-auto px-4 py-10"><div className="w-12 h-12 border-4 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
       <BlogDetailsContent />
     </Suspense>
   );

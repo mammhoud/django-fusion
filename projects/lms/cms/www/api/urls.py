@@ -43,6 +43,11 @@ urlpatterns = [
     ),
     # ── Instructors ──
     path("instructors/", instructors.instructor_list, name="instructor_list"),
+    path(
+        "instructors/me/dashboard/",
+        instructors.instructor_dashboard_me,
+        name="instructor_dashboard_me",
+    ),
     path("instructors/<pk>/", instructors.instructor_detail, name="instructor_detail"),
     path(
         "instructors/<pk>/dashboard/",

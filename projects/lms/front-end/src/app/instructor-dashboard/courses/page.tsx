@@ -45,7 +45,7 @@ export default function InstructorCoursesPage() {
                 <tr key={course.id} className="hover:bg-gray-50">
                   <td className="px-6 py-4">
                     <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded flex items-center justify-center">
+                      <div className="w-10 h-10 card-gradient rounded flex items-center justify-center">
                         <HiBookOpen className="w-5 h-5 text-white" />
                       </div>
                       <div>
@@ -63,8 +63,8 @@ export default function InstructorCoursesPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/course-details/${course.id}` as any} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors"><HiEye className="w-4 h-4" /></Link>
-                      <Link href={`/instructor-dashboard/courses/${course.id}/edit` as any} className="p-2 text-gray-400 hover:text-indigo-600 transition-colors"><HiPencil className="w-4 h-4" /></Link>
+                      <Link href={`/course-details/${course.id}` as any} className="p-2 text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors"><HiEye className="w-4 h-4" /></Link>
+                      <Link href={`/instructor-dashboard/courses/${course.id}/edit` as any} className="p-2 text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors"><HiPencil className="w-4 h-4" /></Link>
                       <button onClick={() => deleteCourse(course.id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors"><HiTrash className="w-4 h-4" /></button>
                     </div>
                   </td>
