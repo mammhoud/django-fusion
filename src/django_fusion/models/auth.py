@@ -34,7 +34,7 @@ class UserRole(models.Model):
         on_delete=models.CASCADE,
         null=True,
         blank=True,
-        related_name='roles'
+        related_name='df_roles'
     )
     role = models.CharField(
         max_length=50,
@@ -47,7 +47,7 @@ class UserRole(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='assigned_roles'
+        related_name='df_assigned_roles'
     )
 
     class Meta:

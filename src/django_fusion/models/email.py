@@ -55,7 +55,7 @@ class EmailLog(models.Model):
         on_delete=models.SET_NULL,
         null=True,
         blank=True,
-        related_name='email_logs'
+        related_name='df_email_logs'
     )
     group_name = models.CharField(max_length=100, blank=True)
     task_id = models.CharField(max_length=255, blank=True, db_index=True)
@@ -534,7 +534,7 @@ class UserGroup(models.Model):
     name = models.CharField(max_length=100, unique=True, db_index=True)
     description = models.TextField(blank=True)
     score = models.IntegerField(default=0)
-    users = models.ManyToManyField('auth.User', related_name='email_groups')
+    users = models.ManyToManyField('auth.User', related_name='df_email_groups')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
