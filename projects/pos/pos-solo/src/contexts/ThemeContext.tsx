@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
+import { createContext, useContext, useEffect, useState, useCallback, ReactNode } from 'react';
 
 type Mode = 'light' | 'dark';
 export type ThemeVariant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk';
@@ -12,16 +12,34 @@ export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; de
 ];
 
 interface ThemeContextType {
+  /** The resolved visual mode (always 'light' or 'dark') */
   mode: Mode;
+  /** The active theme variant */
   variant: ThemeVariant;
+  /** Whether the mode follows the OS preference */
+  followSystem: boolean;
+  /** Toggle between light and dark (disables followSystem) */
   toggleMode: () => void;
+  /** Set a specific mode and disable followSystem */
   setMode: (mode: Mode) => void;
+  /** Set theme variant */
   setVariant: (variant: ThemeVariant) => void;
+  /** Enable or disable OS preference following */
+  setFollowSystem: (follow: boolean) => void;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
+function getSystemPreference(): Mode {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+}
+
 export function ThemeProvider({ children }: { children: ReactNode }) {
+  const [followSystem, setFollowSystemState] = useState<boolean>(() => {
+    const saved = localStorage.getItem('theme-follow-system');
+    return saved === 'true';
+  });
+
   const [mode, setModeState] = useState<Mode>(() => {
     // Migrate from legacy 'theme' key (light/dark) if present
     const legacy = localStorage.getItem('theme') as Mode | null;
@@ -31,7 +49,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     }
     const saved = localStorage.getItem('theme-mode') as Mode | null;
     if (saved === 'light' || saved === 'dark') return saved;
-    return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    return getSystemPreference();
   });
 
   const [variant, setVariantState] = useState<ThemeVariant>(() => {
@@ -39,6 +57,19 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     if (saved && THEME_VARIANTS.some(v => v.id === saved)) return saved;
     return 'default';
   });
+
+  // Listen for OS preference changes when followSystem is active
+  useEffect(() => {
+    if (!followSystem) return;
+    const mq = window.matchMedia('(prefers-color-scheme: dark)');
+    const handler = (e: MediaQueryListEvent) => {
+      setModeState(e.matches ? 'dark' : 'light');
+    };
+    mq.addEventListener('change', handler);
+    // Sync immediately in case preference changed since initial load
+    setModeState(mq.matches ? 'dark' : 'light');
+    return () => mq.removeEventListener('change', handler);
+  }, [followSystem]);
 
   // Apply mode + variant to <html>
   useEffect(() => {
@@ -48,17 +79,32 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     root.setAttribute('data-theme', variant);
     localStorage.setItem('theme-mode', mode);
     localStorage.setItem('theme-variant', variant);
-  }, [mode, variant]);
+    localStorage.setItem('theme-follow-system', String(followSystem));
+  }, [mode, variant, followSystem]);
 
-  const toggleMode = () => {
+  const toggleMode = useCallback(() => {
+    setFollowSystemState(false);
     setModeState(prev => (prev === 'light' ? 'dark' : 'light'));
-  };
+  }, []);
 
-  const setMode = (newMode: Mode) => setModeState(newMode);
-  const setVariant = (newVariant: ThemeVariant) => setVariantState(newVariant);
+  const setMode = useCallback((newMode: Mode) => {
+    setFollowSystemState(false);
+    setModeState(newMode);
+  }, []);
+
+  const setVariant = useCallback((newVariant: ThemeVariant) => {
+    setVariantState(newVariant);
+  }, []);
+
+  const setFollowSystem = useCallback((follow: boolean) => {
+    setFollowSystemState(follow);
+    if (follow) {
+      setModeState(getSystemPreference());
+    }
+  }, []);
 
   return (
-    <ThemeContext.Provider value={{ mode, variant, toggleMode, setMode, setVariant }}>
+    <ThemeContext.Provider value={{ mode, variant, followSystem, toggleMode, setMode, setVariant, setFollowSystem }}>
       {children}
     </ThemeContext.Provider>
   );

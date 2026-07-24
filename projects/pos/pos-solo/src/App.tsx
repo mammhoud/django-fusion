@@ -82,7 +82,7 @@ function PageWrapper({ children, direction, isFirstRender }: { children: React.R
         opacity: { duration: 0.25 },
         scale: { duration: 0.25 },
       }}
-      style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
+      className="w-full min-h-full overflow-y-auto"
     >
       {children}
     </motion.div>

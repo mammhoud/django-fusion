@@ -11,8 +11,24 @@ The Structa Cloud monorepo uses AI extensively through three mechanisms:
 | Mechanism | Location | Purpose |
 |-----------|----------|---------|
 | **AGENTS.md files** | Root + per-project dirs | AI coding assistant behavioral instructions |
-| **Prompt templates** | Cypercloud, POS, ceptor-ai | Chat prompts, code generation, translation |
-| **MCP Servers** | Kilo (applications/kilo), ceptor-ai | Model Context Protocol tool execution |
+| **Prompt templates** | Cypercloud, POS, ceptor-ai, `docs/ai/` | Chat prompts, code generation, translation |
+| **MCP Servers** | Kilo (`applications/kilo`), ceptor-ai (`libs/ceptor-ai`) | Model Context Protocol tool execution |
+
+### How They Work Together
+
+```
+AGENTS.md files
+  └─ Tell AI assistants HOW to work in this codebase
+     └─ Conventions, paths, rules, constraints
+
+Prompt templates
+  └─ Tell AI assistants WHAT to generate or review
+     └─ Reusable prompts for common tasks
+
+MCP Servers
+  └─ Give AI assistants TOOLS to execute
+     └─ Code search, file reading, test running, doc retrieval
+```
 
 ---
 
@@ -20,23 +36,38 @@ The Structa Cloud monorepo uses AI extensively through three mechanisms:
 
 | Backend | Env Var | Default Model | Notes |
 |---------|---------|---------------|-------|
-| **Ollama** | `OLLAMA_BASE_URL` | `gemma3:4b` | Local, self-hosted, no API key |
-| **OpenAI** | `OPENAI_API_KEY` | `gpt-4o` | Requires API key |
-| **Anthropic** | `ANTHROPIC_API_KEY` | `claude-3-opus` | Requires API key |
-| **Google Gemini** | `GEMINI_API_KEY` | `gemini-2.0-flash` | Requires API key |
+| **Ollama** | `OLLAMA_BASE_URL` | `gemma3:4b` | Local, self-hosted, no API key required |
+| **OpenAI** | `OPENAI_API_KEY` | `gpt-4o` | Requires API key, best for complex tasks |
+| **Anthropic** | `ANTHROPIC_API_KEY` | `claude-3.5-sonnet` | Requires API key, strong code understanding |
+| **Google Gemini** | `GEMINI_API_KEY` | `gemini-2.0-flash` | Requires API key, fast inference |
 
 ---
 
-## AGENTS.md Map
+## AGENTS.md Hierarchy
+
+AGENTS.md files form a hierarchical instruction system:
+
+```
+Root AGENTS.md ─── Monorepo-wide conventions
+  ├── projects/<site>/AGENTS.md ─── Site-specific rules
+  ├── libs/<lib>/AGENTS.md ─── Library conventions
+  ├── projects/assets/templates/AGENTS.md ─── Template rules
+  └── applications/<tool>/AGENTS.md ─── Infrastructure rules
+```
+
+AI agents load ALL AGENTS.md files from root to leaf — later files override earlier ones.
+
+### Complete AGENTS.md Map
 
 | Location | Scope |
 |----------|-------|
-| [Root AGENTS.md](https://github.com/mammhoud/structa.cloud/blob/generic/AGENTS.md) | Monorepo-wide conventions, template paths, Makefile delegation |
-| `projects/ctc-research/AGENTS.md` | CTC Research site structure, template resolution |
+| [Root AGENTS.md](../AGENTS.md) | Monorepo-wide conventions, template paths, Makefile delegation |
 | `projects/lms/AGENTS.md` | LMS site conventions, plugins, components |
-| `projects/portfolio/AGENTS.md` | VResume site structure, page templates |
+| `projects/portfolio/AGENTS.md` | Portfolio/VResume site structure, page templates |
 | `projects/cypercloud/templates/AGENTS.md` | AI chat customizer conventions |
 | `projects/assets/templates/AGENTS.md` | Template organization, resolution order |
+| `projects/assets/templates/components/AGENTS.md` | Shared component inventory |
+| `projects/assets/templates/plugins/AGENTS.md` | Plugin template conventions |
 | `libs/django-fusion/AGENTS.md` | Component system, routing, canonical imports |
 | `libs/ceptor-ai/AGENTS.md` | AI assistant, MCP server, chat client |
 | `applications/kilo/AGENTS.md` | Kilo MCP server, tool definitions |
@@ -47,69 +78,79 @@ The Structa Cloud monorepo uses AI extensively through three mechanisms:
 # [Section Name] — AI Agent Instructions
 ## Scope
 ## Conventions
+## Key Files
 ## Customization Tips
+## Related Docs
 ```
 
 ---
 
-## Prompt Types
+## Prompt Types & Use Cases
 
-| Type | Used In | Description |
-|------|---------|-------------|
-| **Chat Prompts** | Cypercloud, POS sidecar | Real-time streaming chat |
-| **Agent Prompts** | ceptor-ai MCP | Tool-calling prompts |
-| **Code Generation** | Cypercloud Monaco editor | Syntax-aware code synthesis |
-| **Translation** | POS i18n audit | Bulk translation prompts |
-| **System Prompts** | AGENTS.md files | Per-project behavioral instructions |
+| Type | Used In | Description | Temperature |
+|------|---------|-------------|:-----------:|
+| **Chat Prompts** | Cypercloud, POS sidecar | Real-time streaming chat | 0.5–0.7 |
+| **Code Generation** | All projects | New models, views, templates | 0.0–0.3 |
+| **Code Review** | All projects | Security, performance, style audits | 0.0–0.2 |
+| **Translation** | POS i18n audit | Bulk translation prompts | 0.3–0.5 |
+| **System Prompts** | AGENTS.md files | Per-project behavioral instructions | — |
+| **MCP Tool Prompts** | Kilo, ceptor-ai | Tool-calling prompts | 0.0–0.2 |
 
-### Chat System Prompt Template
-
-```markdown
-You are an AI assistant for the Structa Cloud monorepo.
-You have access to:
-- Django sites: ctc-research, lms, VResume, cypercloud
-- Desktop app: POS (Tauri + React + Rust)
-- Libraries: django-fusion, ceptor-ai
-
-Answer questions about code, suggest improvements,
-and generate code following project conventions.
-```
+See [prompts.md](prompts.md) for the full template library.
 
 ---
 
 ## MCP Integration
 
-The [Kilo MCP server](../../applications/kilo/) provides Model Context Protocol tools for AI agents working on this monorepo:
+Two MCP servers provide tool access to AI assistants:
 
-| Tool | Purpose |
-|------|---------|
-| `search_codebase` | Search for code patterns across the monorepo |
-| `read_files` | Read specific source files |
-| `run_tests` | Execute test suites |
-| `get_docs` | Retrieve documentation |
+### Kilo MCP Server (`applications/kilo/`)
 
-Ceptor-AI (`libs/ceptor-ai/`) provides the MCP client-side protocol implementation used by Cypercloud.
+| Tool | Purpose | Parameters |
+|------|---------|------------|
+| `search_codebase` | Search for code patterns | `pattern`, `file_types`, `directory` |
+| `read_files` | Read source files | `paths`, `max_lines` |
+| `run_tests` | Execute test suites | `project`, `test_path`, `verbose` |
+| `get_docs` | Retrieve documentation | `path`, `section` |
+
+### Ceptor-AI MCP Server (`libs/ceptor-ai/`)
+
+| Endpoint | Method | Purpose |
+|----------|--------|---------|
+| `/health` | GET | Server health status |
+| `/features` | GET | List registered MCP tools |
+| `/tools` | GET | Tool schema definitions |
+| `/file-structure` | GET | Repository file tree |
+
+See [mcp-integration.md](mcp-integration.md) for full details.
 
 ---
 
-## Best Practices
+## AI Workflow Best Practices
 
-### For AGENTS.md
-- Be **specific** about file paths, import conventions, and naming rules
-- Use **examples** of correct and incorrect code
-- Reference **actual source files** the agent needs to know about
-- Keep prompts **concise** — AI agents have limited context windows
+### For Code Generation
 
-### For Chat Prompts
-- Use **streaming** via SSE for real-time UX
+1. **Read** the relevant AGENTS.md files first
+2. **Search** the codebase for existing patterns
+3. **Generate** code following conventions
+4. **Review** output against AGENTS.md rules
+5. **Test** generated code with project test suite
+
+### For Code Review
+
+1. **Load** the file's context (imports, dependencies)
+2. **Check** against AGENTS.md conventions
+3. **Verify** canonical import paths
+4. **Test** for common issues (N+1, XSS, CSRF)
+5. **Report** findings with file:line references
+
+### For AI Chat
+
 - Include **system context** about codebase structure
-- Code generation: temperature 0.0–0.3 for deterministic output
+- Reference **actual source files** for precision
+- Use **streaming** via SSE for real-time UX
+- Code generation: temperature 0.0–0.3
 - Creative tasks: temperature 0.7+
-
-### For MCP Tools
-- Define **clear tool schemas** with required/optional parameters
-- Return **structured JSON** for consistent parsing
-- Include **error handling** guidance
 
 ---
 
@@ -119,6 +160,9 @@ Ceptor-AI (`libs/ceptor-ai/`) provides the MCP client-side protocol implementati
 |----------|------|
 | Agent instructions (detail) | [`agents.md`](agents.md) |
 | Prompt engineering (detail) | [`prompts.md`](prompts.md) |
-| Cypercloud AI chat | [`docs/projects/cypercloud/`](../projects/cypercloud/) |
-| Ceptor-AI library | [`libs/`](../libs/) |
-| Best practices | [`docs/best-practices/`](../best-practices/) |
+| MCP integration (detail) | [`mcp-integration.md`](mcp-integration.md) |
+| Cypercloud AI chat | [`../projects/cypercloud/`](../projects/cypercloud/) |
+| Ceptor-AI library | [`libs/ceptor-ai/`](../../libs/ceptor-ai/) |
+| django-fusion library | [`libs/django-fusion/`](../../libs/django-fusion/) |
+| Kilo MCP server | [`../../applications/kilo/`](../../applications/kilo/) |
+| Best practices | [`../guides/07-best-practices.md`](../guides/07-best-practices.md) |

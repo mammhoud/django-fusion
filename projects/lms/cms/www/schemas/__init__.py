@@ -35,6 +35,8 @@ from www.schemas.auth import (  # noqa: F401
     RegisterRequest,
     UserResponse,
     AuthTokenResponse,
+    AuthRefreshRequest,
+    AuthRefreshResponse,
 )
 
 from www.schemas.contact import (  # noqa: F401
@@ -55,6 +57,19 @@ from www.schemas.blog import (  # noqa: F401
     BlogPostResponse,
     EventResponse,
     TestimonialResponse,
+)
+
+from www.schemas.enrollment import (  # noqa: F401
+    EnrollmentResponse,
+    CreateEnrollmentRequest,
+    MyEnrollmentsResponse,
+    ProgressEntryResponse,
+    ProgressUpdateRequest,
+    DashboardDataResponse,
+    PaymentInitRequest,
+    PaymentInitResponse,
+    PaymentVerifyRequest,
+    PaymentVerifyResponse,
 )
 
 from www.schemas.lms import (  # noqa: F401

@@ -1,75 +1,12 @@
-/media/email_templates/
-
-# Python bytecode
-__pycache__/
-*.pyc
-*.pyo
-
-# Logs
-*.log
-logs/
-logs/*
-**/logs/*.log
-gunicorn-error.log
-
-# OS files
-.DS_Store
-Thumbs.db
-
-# IDE
-.idea/
-.claude/
-
-# Backups
-backups/
-
-# ----------------------------------------------------------------------
-# Project-wide ignores (mirrors the protections under projects/.gitignore
-# for files that live outside `projects/`).
-# ----------------------------------------------------------------------
-
-# SSL/TLS private keys and certificates (proxy/certs/* self-signed legacy;
-# real LE certs live in proxy/acme/acme.json which is gitignored below)
-*.pem
-*.key
-*.crt
-*.p12
-*.pfx
-
-# Local environment files with secrets (.env.example is the safe template to commit)
-*.env
-.env
-*.env.backup*
-.env.local
-.env.*.local
-secrets.yml
-applications/compose/config/secrets.yml
-# Test databases and dumps
-*.sqlite3
-*.dump
-*.sql.gz
-*.db-journal
-*.db-wal
-*.db-shm
-
-# @env placeholder literal filenames (from unresolved @env in YAML config)
-@env*
-tests/@env*
-
-# Transient working files
-tmp/
-*.tmp
-*~
-*.swp
-tmp/*
-# Local virtualenv at the repo root
-.venv/
-
-# Ignore CTC Research docs - separate project
-docs/ctc-research/
-docs/archives/
-ctc-research
-
-# Node modules (websites/)
-websites/next-lms/node_modules/
+# Node.js dependencies
+node_modules/
+.npm
+.eslintcache
 .next
+# Rust build artifacts (Tauri)
+**/target/
+**/*.rs.bk
+cargo-lock.toml
+
+# macOS system files
+.DS_Store

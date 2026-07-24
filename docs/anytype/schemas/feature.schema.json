@@ -1,0 +1,170 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "urn:anytype:schema:2026-07-24:type-bookmark:ver-1.0",
+  "type": "object",
+  "title": "Feature",
+  "x-app": "Anytype",
+  "x-icon-name": "color-wand",
+  "x-plural": "Features\n",
+  "x-schema-version": "1.0",
+  "x-type-key": "bookmark",
+  "properties": {
+    "id": {
+      "description": "Unique identifier of the Anytype object",
+      "readOnly": true,
+      "type": "string",
+      "x-hidden": true,
+      "x-key": "id",
+      "x-order": 0
+    },
+    "Object type": {
+      "const": "Feature",
+      "description": "Relation that stores the object's type",
+      "readOnly": true,
+      "type": "string",
+      "x-featured": true,
+      "x-format": "object",
+      "x-key": "type",
+      "x-order": 1
+    },
+    "Backlinks": {
+      "description": "List of links coming to object",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true,
+      "type": "array",
+      "x-featured": true,
+      "x-format": "object",
+      "x-key": "backlinks",
+      "x-order": 2
+    },
+    "Source": {
+      "format": "uri",
+      "readOnly": true,
+      "type": "string",
+      "x-featured": true,
+      "x-format": "url",
+      "x-key": "source",
+      "x-order": 3
+    },
+    "Tag": {
+      "examples": [
+        "Documentation",
+        "Publishing",
+        "LMS",
+        "Human",
+        "pre-installed",
+        "Staging",
+        "Done",
+        "Development"
+      ],
+      "items": {
+        "type": "string"
+      },
+      "type": "array",
+      "x-featured": true,
+      "x-format": "tag",
+      "x-key": "tag",
+      "x-order": 4
+    },
+    "Picture": {
+      "description": "Path to the file in the export",
+      "type": "string",
+      "x-format": "file",
+      "x-key": "picture",
+      "x-order": 5
+    },
+    "Creation date": {
+      "description": "Date when the object was initially created",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string",
+      "x-format": "date",
+      "x-key": "createdDate",
+      "x-order": 6
+    },
+    "Created by": {
+      "description": "Human which created this object",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true,
+      "type": "array",
+      "x-format": "object",
+      "x-key": "creator",
+      "x-object-types": [
+        "bafyreibqaa6xthqapenk2ktrujv4hcroenc72kxuuzexlbxydrn2gv34ra"
+      ],
+      "x-order": 7
+    },
+    "Links": {
+      "description": "Outgoing links",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true,
+      "type": "array",
+      "x-format": "object",
+      "x-key": "links",
+      "x-order": 8
+    },
+    "Last modified date": {
+      "description": "Date when the object was modified last time",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string",
+      "x-format": "date",
+      "x-hidden": true,
+      "x-key": "lastModifiedDate",
+      "x-order": 9
+    },
+    "Last modified by": {
+      "description": "Human who updated the object last time",
+      "items": {
+        "type": "string"
+      },
+      "readOnly": true,
+      "type": "array",
+      "x-format": "object",
+      "x-hidden": true,
+      "x-key": "lastModifiedBy",
+      "x-object-types": [
+        "bafyreibqaa6xthqapenk2ktrujv4hcroenc72kxuuzexlbxydrn2gv34ra"
+      ],
+      "x-order": 10
+    },
+    "Last opened date": {
+      "description": "Date when the object was modified last opened",
+      "format": "date-time",
+      "readOnly": true,
+      "type": "string",
+      "x-format": "date",
+      "x-hidden": true,
+      "x-key": "lastOpenedDate",
+      "x-order": 11
+    },
+    "Emoji": {
+      "type": "string",
+      "x-format": "emoji",
+      "x-hidden": true,
+      "x-key": "iconEmoji",
+      "x-order": 12
+    },
+    "Image": {
+      "description": "Path to the file in the export",
+      "type": "string",
+      "x-format": "file",
+      "x-hidden": true,
+      "x-key": "iconImage",
+      "x-order": 13
+    },
+    "Cover image or color": {
+      "type": "string",
+      "x-format": "longtext",
+      "x-hidden": true,
+      "x-key": "coverId",
+      "x-order": 14
+    }
+  }
+}

@@ -663,7 +663,13 @@
       "activeLabel": "Active",
       "lightMode": "Light Mode",
       "darkMode": "Dark Mode",
-      "modeDescription": "Toggle between light and dark display"
+      "modeDescription": "Toggle between light and dark display",
+      "systemMode": "Systemmodus",
+      "systemDescription": "Folgt dem Design Ihres Geräts",
+      "fixedDescription": "Manuell zwischen Hell und Dunkel wählen",
+      "lightLabel": "Hell",
+      "darkLabel": "Dunkel",
+      "autoLabel": "Auto"
     },
     "generalTab": {
       "languageLabel": "Language",

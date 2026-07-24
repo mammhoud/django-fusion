@@ -1,9 +1,11 @@
 'use client';
 
+import { useEffect } from 'react';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
-import { HiStar, HiClock, HiUser, HiAcademicCap, HiPlay, HiCheckCircle, HiArrowLeft } from 'react-icons/hi';
+import { HiStar, HiClock, HiUser, HiAcademicCap, HiPlay, HiCheckCircle, HiArrowLeft, HiLockClosed } from 'react-icons/hi';
+import { useCheckout, type CheckoutStep } from '@/hooks/useCheckout';
 import { useGetCourseQuery } from '@/store/api/endpoints/courses';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
@@ -13,6 +15,25 @@ export default function CourseDetailsPage() {
   const courseId = Number(params?.id?.[0] ?? 0);
   const { data: course, isLoading } = useGetCourseQuery(courseId, { skip: !courseId });
 
+  // ── Enrollment via useCheckout ──────────────────────────────────────
+  const price = course ? (course.discounted_price || course.price) : 0;
+  const isFree = course ? course.price === 0 : false;
+  const { step, enrollment, error, enroll } = useCheckout({ courseId, price, isFree });
+
+  // Redirect to checkout when enrollment is created for a paid course
+  const enrollmentId = enrollment?.id;
+  useEffect(() => {
+    if (step === 'enrolled_paid' && enrollmentId) {
+      window.location.href = `/enroll/checkout/${enrollmentId}`;
+    }
+  }, [step, enrollmentId]);
+
+  // ── Helpers ─────────────────────────────────────────────────────────
+  const isEnrolling = step === 'enrolling';
+  const isEnrolled = step === 'enrolled_free' || step === 'enrolled_paid';
+  const showButton = !isEnrolling && !isEnrolled;
+
+  // ── Loading state ───────────────────────────────────────────────────
   if (isLoading) {
     return (
       <div className="max-w-4xl mx-auto px-4 py-10">
@@ -21,10 +42,45 @@ export default function CourseDetailsPage() {
     );
   }
 
+  // ── Not found state ─────────────────────────────────────────────────
   if (!course) {
     return (
       <ErrorState fullPage message="Course not found. It may have been removed or is no longer available." />
     );
+  }
+
+  // ═════════════════════════════════════════════════════════════════════
+  // Render Enrollment UI based on current checkout step
+  // ═════════════════════════════════════════════════════════════════════
+  function renderEnrollmentBadge(step: CheckoutStep) {
+    switch (step) {
+      case 'enrolling':
+        return (
+          <button
+            disabled
+            className="btn-primary w-full flex items-center justify-center gap-2 opacity-70 cursor-not-allowed"
+          >
+            <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            Enrolling...
+          </button>
+        );
+      case 'enrolled_free':
+        return (
+          <div className="flex items-center gap-2 text-green-600 bg-green-50 px-4 py-3 rounded-xl text-sm font-medium">
+            <HiCheckCircle className="w-5 h-5" />
+            Successfully enrolled! Redirecting...
+          </div>
+        );
+      case 'enrolled_paid':
+        return (
+          <div className="flex items-center gap-2 text-indigo-600 bg-indigo-50 px-4 py-3 rounded-xl text-sm font-medium">
+            <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+            Redirecting to checkout...
+          </div>
+        );
+      default:
+        return null;
+    }
   }
 
   return (
@@ -48,8 +104,8 @@ export default function CourseDetailsPage() {
             <span className="flex items-center gap-1"><HiAcademicCap className="w-4 h-4" /> {course.students_count} students</span>
           </div>
           <div className="mt-6">
-            <span className="text-3xl font-bold">${course.discounted_price || course.price}</span>
-            {course.discounted_price && <span className="text-lg line-through text-white/40 ml-2">${course.price}</span>}
+            <span className="text-3xl font-bold">${price}</span>
+            {course.discounted_price && <span className="text-lg line-through text-indigo-300 ml-2">${course.price}</span>}
           </div>
         </div>
 
@@ -78,16 +134,45 @@ export default function CourseDetailsPage() {
             </section>
           </div>
 
-          <div className="card p-6 h-fit lg:sticky lg:top-24">
-            <Link href={`/lesson`} className="btn-primary w-full text-center block mb-4">
-              Start Learning
-            </Link>
+          <div className="card p-6 h-fit lg:sticky lg:top-24 space-y-4">
+            {renderEnrollmentBadge(step)}
+
+            {showButton && (
+              <button
+                onClick={enroll}
+                className="btn-primary w-full flex items-center justify-center gap-2"
+              >
+                {isFree ? (
+                  <>
+                    <HiAcademicCap className="w-5 h-5" />
+                    Enroll for Free
+                  </>
+                ) : (
+                  <>
+                    <HiLockClosed className="w-4 h-4" />
+                    Enroll Now — ${price}
+                  </>
+                )}
+              </button>
+            )}
+
+            {error && (
+              <p className="text-sm text-red-600 mt-2">{error}</p>
+            )}
+
             <div className="space-y-3 text-sm text-gray-500">
               <div className="flex justify-between"><span>Duration</span><span className="text-gray-700 font-medium">{course.duration}</span></div>
               <div className="flex justify-between"><span>Level</span><span className="text-gray-700 font-medium capitalize">{course.level}</span></div>
               <div className="flex justify-between"><span>Language</span><span className="text-gray-700 font-medium">{course.language}</span></div>
               <div className="flex justify-between"><span>Students</span><span className="text-gray-700 font-medium">{course.students_count}</span></div>
             </div>
+            {course.discounted_price && (
+              <div className="bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+                <p className="text-sm text-green-700 font-medium">
+                  🎉 Discounted from ${course.price} to ${course.discounted_price}
+                </p>
+              </div>
+            )}
           </div>
         </div>
       </motion.div>

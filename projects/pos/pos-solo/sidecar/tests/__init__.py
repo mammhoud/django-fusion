@@ -1,0 +1,1 @@
+"""POS Solo sidecar tests."""
