@@ -41,7 +41,7 @@ if not settings.configured:
     )
     django.setup()
 
-from django_fusion.routes import FragmentComponent
+from django_fusion.comp.routes import FragmentComponent
 
 
 # ── Tests: fragment class structure ────────────────────────────────
