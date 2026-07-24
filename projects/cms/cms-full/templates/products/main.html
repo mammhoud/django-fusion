@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+{% block content %}
+<main>
+    <!-- Page Title Section -->
+    {% comp "products/page_title.html" /%}
+    
+    <!-- Main Content Sections -->
+    {% for block in page.body %}
+        {% if block.block_type == 'products_section' %}
+            {% comp "products/products.html" /%}
+        {% elif block.block_type == 'clients' %}
+            {% comp "products/clients.html" /%}
+        {% endif %}
+    {% endfor %}
+</main>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Isotope filtering for products layout
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize Isotope
+    var grid = document.querySelector('.grid');
+    if (grid) {
+        var iso = new Isotope(grid, {
+            itemSelector: '.grid-item',
+            layoutMode: 'fitRows'
+        });
+
+        // Filter buttons
+        var filterButtons = document.querySelectorAll('.filter-button-group button');
+        filterButtons.forEach(function(button) {
+            button.addEventListener('click', function() {
+                // Remove active class from all buttons
+                filterButtons.forEach(function(btn) {
+                    btn.classList.remove('active');
+                });
+                // Add active class to clicked button
+                this.classList.add('active');
+                
+                // Filter items
+                var filterValue = this.getAttribute('data-filter');
+                iso.arrange({
+                    filter: filterValue
+                });
+            });
+        });
+    }
+});
+</script>
+{% endblock %}

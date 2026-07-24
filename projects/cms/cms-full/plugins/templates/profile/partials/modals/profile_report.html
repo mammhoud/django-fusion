@@ -1,0 +1,82 @@
+{% extends "base_modal.html" %}
+{% load static i18n %}
+
+{# Report User Modal #}
+{% block modal_icon_block %}<i class="bi bi-flag-fill text-warning"></i>{% endblock %}
+{% block modal_title_block %}<span class="text-warning">{% trans "Report User" %}</span>{% endblock %}
+
+{# Full body override to include form wrapper #}
+{% block modal_full_body %}
+<form id="reportForm">
+    {# Modal Body #}
+    <div class="modal-body p-4">
+        <p class="mb-4">
+            {% trans "Please tell us why you're reporting" %}
+            <strong id="report-user-name"></strong>.
+        </p>
+        <input type="hidden" id="report-user-id">
+
+        {# Report Reason #}
+        <div class="mb-4">
+            <label class="form-label fw-medium mb-2">
+                {% trans "Reason for Reporting" %}
+            </label>
+            <select class="form-select" id="report-reason" required>
+                <option value="" selected disabled>
+                    {% trans "Select a reason" %}
+                </option>
+                <option value="spam">
+                    {% trans "Spam or fake account" %}
+                </option>
+                <option value="harassment">
+                    {% trans "Harassment or bullying" %}
+                </option>
+                <option value="inappropriate">
+                    {% trans "Inappropriate content" %}
+                </option>
+                <option value="impersonation">
+                    {% trans "Impersonation" %}
+                </option>
+                <option value="other">
+                    {% trans "Other" %}
+                </option>
+            </select>
+        </div>
+
+        {# Additional Details #}
+        <div class="mb-4">
+            <label class="form-label fw-medium mb-2">
+                {% trans "Additional Details" %}
+                <span class="text-muted fw-normal">({% trans "Optional" %})</span>
+            </label>
+            <textarea class="form-control"
+                      id="report-details"
+                      rows="4"
+                      placeholder="{% trans 'Please provide any additional details that might help us understand your report...' %}"></textarea>
+        </div>
+
+        {# Confidentiality Notice #}
+        <div class="alert alert-info border-info bg-info-subtle mb-0">
+            <div class="d-flex gap-2">
+                <i class="bi bi-shield-check"></i>
+                <div>
+                    <p class="mb-0 small">
+                        {% trans "Your report is confidential. We will review this report and take appropriate action if necessary." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {# Modal Footer #}
+    <div class="modal-footer border-top">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            {% trans "Cancel" %}
+        </button>
+        <button type="submit" class="btn btn-warning text-white">
+            <i class="bi bi-flag me-2"></i>
+            {% trans "Submit Report" %}
+        </button>
+    </div>
+</form>
+{% endblock %}
