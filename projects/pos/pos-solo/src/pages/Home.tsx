@@ -125,52 +125,120 @@ export default function Home() {
   return (
     <PageLayout
       showNav={false}
-      background="bg-linear-to-br from-slate-50 via-indigo-50 to-slate-50 dark:from-slate-950 dark:via-indigo-950 dark:to-slate-950"
-      padding="py-12 md:py-16 lg:py-12"
+      background="bg-linear-to-br from-slate-50 via-indigo-50/30 to-white dark:from-slate-950 dark:via-indigo-950/30 dark:to-slate-950"
+      padding="py-8 md:py-12 lg:py-10"
     >
       {/* Dashboard content wrapped with FusionPage for fragment-rendering support */}
       <FusionPage standalone data={{ settingsRes, restaurantName, logo }} skeletonVariant="detail">
         {(data, fallback) => (
           <>
-            <motion.div className="text-center mb-10 md:mb-12" initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
-              <motion.div initial={iconAnimation.initial} animate={iconAnimation.animate} whileHover={{ rotate: 360 }} transition={{ duration: 0.6 }}
-                className="bg-white/40 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-white/20 dark:border-white/5">
-                <img src={logo || defaultLogo} alt="Logo" className="w-14 h-14 md:w-18 md:h-18 object-contain" onError={(e) => { e.currentTarget.style.display = 'none'; }} />
+            {/* Hero Header — compact on desktop, centered on mobile */}
+            <motion.div
+              className="text-center mb-8 lg:mb-10"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <motion.div
+                initial={iconAnimation.initial}
+                animate={iconAnimation.animate}
+                whileHover={{ rotate: 360 }}
+                transition={{ duration: 0.6 }}
+                className="bg-white/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-4 w-fit mx-auto mb-4 shadow-lg border border-white/30 dark:border-white/5"
+              >
+                <img
+                  src={logo || defaultLogo}
+                  alt="Logo"
+                  className="w-12 h-12 md:w-16 md:h-16 object-contain"
+                  onError={(e) => { e.currentTarget.style.display = 'none'; }}
+                />
               </motion.div>
-              <motion.h1 className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 py-2"
-                initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.3 }}>{restaurantName}</motion.h1>
-              <motion.p className="text-slate-500 dark:text-slate-400 mt-2 text-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
+              <motion.h1
+                className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600 dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 py-2"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.3 }}
+              >
+                {restaurantName}
+              </motion.h1>
+              <motion.p
+                className="text-slate-500 dark:text-slate-400 mt-1 text-sm"
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.4 }}
+              >
                 {t('home.dashboard') || 'Dashboard'}
               </motion.p>
             </motion.div>
 
-            <div className="max-w-6xl mx-auto px-2 space-y-8">
+            {/* Desktop-optimized grid: categories stack vertically, items use responsive grid */}
+            <div className="max-w-7xl mx-auto px-1 sm:px-2 space-y-6 lg:space-y-8">
               {MENU_CATEGORIES.map((cat, catIdx) => (
-                <motion.section key={cat.id} initial={{ opacity: 0, y: 30 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: catIdx * 0.08 }}>
-                  <div className="flex items-center gap-2.5 mb-3 pl-1">
-                    <span className={cat.color}>{cat.icon}</span>
-                    <h2 className={`text-sm font-semibold uppercase tracking-wider ${cat.color}`}>{t(cat.label)}</h2>
+                <motion.section
+                  key={cat.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: catIdx * 0.06 }}
+                  className="fly-card p-3 sm:p-4 lg:p-5"
+                >
+                  {/* Category header with decorative line */}
+                  <div className="flex items-center gap-2.5 mb-3 lg:mb-4 pl-1">
+                    <span className={`${cat.color} flex-shrink-0`}>{cat.icon}</span>
+                    <h2 className={`text-xs sm:text-sm font-bold uppercase tracking-wider ${cat.color}`}>
+                      {t(cat.label)}
+                    </h2>
                     <div className={`flex-1 h-px bg-gradient-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30`} />
                   </div>
-                  <motion.div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4" variants={container} initial="hidden" animate="show">
+
+                  {/* Responsive grid: mobile=2cols, tablet=3-4cols, desktop=5-6cols */}
+                  <motion.div
+                    className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-2 sm:gap-3 lg:gap-4"
+                    variants={container}
+                    initial="hidden"
+                    animate="show"
+                  >
                     {(MENU_ITEMS[cat.id] || []).map((menuItem) => {
                       const Icon = menuItem.icon;
                       const isLoading = loadingRoute === menuItem.route;
                       return (
-                        <motion.button key={menuItem.route} variants={item} onClick={() => handleNavigation(menuItem.route)}
-                          whileHover={{ y: -4, scale: 1.02 }} whileTap={{ scale: 0.97 }} disabled={loadingRoute !== null}
-                          className={`relative flex flex-col items-center p-4 rounded-2xl transition-all duration-300 bg-white/80 dark:bg-white/5 backdrop-blur-sm border-2 ${menuItem.borderColor} hover:shadow-xl hover:border-opacity-100 group disabled:opacity-60`}>
-                          <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl bg-gradient-to-r ${menuItem.color} opacity-80`} />
+                        <motion.button
+                          key={menuItem.route}
+                          variants={item}
+                          onClick={() => handleNavigation(menuItem.route)}
+                          whileHover={{ y: -4, scale: 1.02 }}
+                          whileTap={{ scale: 0.97 }}
+                          disabled={loadingRoute !== null}
+                          className={`relative flex flex-col items-center p-3 sm:p-4 rounded-xl sm:rounded-2xl
+                            transition-all duration-300 bg-white/80 dark:bg-white/[0.04]
+                            backdrop-blur-sm border-2 ${menuItem.borderColor}
+                            hover:shadow-xl hover:border-opacity-100 group
+                            disabled:opacity-60 dark:hover:bg-white/[0.08]`}
+                        >
+                          {/* Top accent bar */}
+                          <div className={`absolute top-0 left-0 right-0 h-0.5 sm:h-1 rounded-t-xl bg-gradient-to-r ${menuItem.color} opacity-80`} />
+
                           {isLoading ? (
-                            <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                              className="w-8 h-8 mb-1.5 border-3 border-slate-300 border-t-slate-600 rounded-full" />
+                            <motion.div
+                              animate={{ rotate: 360 }}
+                              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                              className="w-7 h-7 sm:w-8 sm:h-8 mb-1.5 border-3 border-slate-300 border-t-slate-600 rounded-full"
+                            />
                           ) : (
-                            <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-2 bg-gradient-to-br ${menuItem.color} text-white shadow-md group-hover:scale-110 transition-transform duration-300`}>
-                              <Icon className="w-6 h-6" />
+                            <div
+                              className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl flex items-center justify-center mb-1.5 sm:mb-2
+                                bg-linear-to-br ${menuItem.color} text-white shadow-md
+                                group-hover:scale-110 group-hover:shadow-lg transition-all duration-300`}
+                            >
+                              <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
                             </div>
                           )}
-                          <span className="text-sm font-semibold text-slate-800 dark:text-white text-center leading-tight">{t(menuItem.label)}</span>
-                          <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 text-center leading-tight max-w-[110px]">{t(menuItem.label + 'Desc')}</span>
+
+                          <span className="text-xs sm:text-sm font-semibold text-slate-800 dark:text-white text-center leading-tight">
+                            {t(menuItem.label)}
+                          </span>
+                          <span className="text-[10px] text-slate-500 dark:text-slate-400 mt-0.5 text-center leading-tight max-w-[110px] line-clamp-2">
+                            {t(menuItem.label + 'Desc')}
+                          </span>
                         </motion.button>
                       );
                     })}

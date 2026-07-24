@@ -28,13 +28,12 @@ function ProfileDropdown({
   const initials = (user.name?.charAt(0) || user.email.charAt(0)).toUpperCase();
 
   return (
-    <div className="relative">
+    <div className="fly-dropdown">
       <motion.button
         whileHover={{ scale: 1.03 }}
         whileTap={{ scale: 0.97 }}
         onClick={onToggle}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl card--glass
-          hover:shadow-md transition-shadow"
+        className="fly-btn fly-btn--ghost flex items-center gap-2"
         aria-label="User profile"
         aria-expanded={open}
       >
@@ -56,11 +55,10 @@ function ProfileDropdown({
             animate={{ opacity: 1, y: 4, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-1 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl
-              border border-slate-200 dark:border-slate-700 overflow-hidden z-50"
+            className="fly-dropdown__menu fly-dropdown__menu--right fly-dropdown__menu--open"
           >
             {/* User info header */}
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+            <div className="px-3 py-2 mb-1">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-700
                   flex items-center justify-center text-white font-bold shadow-sm shrink-0">
@@ -76,16 +74,15 @@ function ProfileDropdown({
                 </div>
               </div>
             </div>
+            <hr className="fly-dropdown__divider" />
 
             {/* Logout action */}
-            <div className="p-2">
+            <div className="mt-1">
               <motion.button
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                  text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
-                  transition-colors text-sm font-medium"
+                className="fly-dropdown__item fly-dropdown__item--danger w-full"
               >
                 <MdLogout className="w-4 h-4" />
                 Sign Out

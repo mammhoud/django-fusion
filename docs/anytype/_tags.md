@@ -1,4 +1,4 @@
-# AnyType Tags — POS Documentation
+# AnyType Tags — Documentation System
 
 > **Import Instruction:** Create a Multi-select Property named "Tags" and add these options.
 > Apply to documentation objects for cross-cutting categorization.
@@ -11,13 +11,29 @@
 - `#pos-full` — Enterprise Django + sidecar (multi-branch, cloud sync)
 - `#pos-cloud` — Cloud-hosted multi-tenant SaaS
 
+## By Platform/Stack
+- `#django` — Django framework, ORM, admin
+- `#wagtail` — Wagtail CMS, StreamField, pages
+- `#rust` — Rust language, Tauri, Actix
+- `#react` — React, Next.js, frontend
+- `#tauri` — Tauri desktop shell, Rust commands, native APIs
+- `#python` — Python scripts, utilities
+- `#docker` — Docker, containers, compose
+- `#postgres` — PostgreSQL database
+- `#sqlite` — SQLite embedded database
+- `#nginx` — Nginx proxy, static/media serving
+- `#traefik` — Traefik reverse proxy, SSL
+
 ## By Component
-- `#frontend` — React/Next.js UI, Tailwind CSS, Framer Motion
+- `#frontend` — React, Tailwind CSS, Framer Motion, HTMX
 - `#backend` — Django, Rust, ORM, database logic
 - `#sidecar` — Robyn Python server, REST API, websocket
-- `#tauri` — Tauri desktop shell, Rust commands, native APIs
 - `#database` — SQLite, PostgreSQL, migrations, schema
 - `#sync` — Data sync (LAN, cloud, offline queues)
+- `#api` — REST API, endpoints, integration
+- `#cms` — Content management system, Wagtail
+- `#auth` — Authentication, roles, permissions
+- `#i18n` — Internationalization, RTL, translations
 
 ## By Feature Area
 - `#sales` — POS checkout, cart, order management
@@ -27,8 +43,10 @@
 - `#customers` — CRM, loyalty, feedback
 - `#payments` — Payment processing, invoicing
 - `#kitchen` — Kitchen display system, tickets
-- `#auth` — Authentication, roles, permissions
-- `#i18n` — Internationalization, RTL, translations
+- `#crm` — Customer relationship management
+- `#lms` — Learning management system
+- `#blog` — Blog, content publishing
+- `#portfolio` — Portfolio, resume, showcase
 
 ## By Theme
 - `#theme-default` — Default teal/indigo palette
@@ -42,3 +60,27 @@
 - `#in-progress` — Partially implemented
 - `#planned` — Design complete, not yet built
 - `#needs-review` — Requires verification
+- `#blocked` — Blocked by dependency
+- `#deprecated` — No longer supported
+
+## By Goal Category
+- `#product-goal` — Product-level strategic objective
+- `#business-goal` — Business/monetization objective
+- `#technical-goal` — Technical/architecture objective
+- `#design-goal` — Design/UX objective
+- `#growth-goal` — Growth/adoption objective
+
+## By Content Type
+- `#tutorial` — Step-by-step tutorial
+- `#reference` — API/command reference
+- `#explanation` — Conceptual explanation
+- `#announcement` — Release/feature announcement
+- `#case-study` — Real-world use case
+- `#documentation` — General documentation
+- `#specification` — Technical specification
+
+## By Priority
+- `#critical` — Must-do, blocking others
+- `#high` — Important, should be soon
+- `#medium` — Nice to have
+- `#low` — Future consideration
