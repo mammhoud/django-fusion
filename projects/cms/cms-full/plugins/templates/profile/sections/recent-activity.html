@@ -1,0 +1,35 @@
+{% load i18n %}
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+<div class="profile__card card">
+    <div class="profile__card-header card-header d-flex justify-content-between align-items-center">
+        <h5 class="profile__card-title mb-0">{% trans "Recent Activity" %}</h5>
+        <a href="" class="profile__card-link btn btn-sm btn-light">
+            {% trans "View All" %}
+        </a>
+    </div>
+    <div class="profile__card-body card-body">
+        <div class="profile__timeline">
+            {% for activity in recent_activities %}
+            <div class="profile__timeline-item d-flex gap-3 py-3 {% if not forloop.last %}border-bottom{% endif %}">
+                <div class="profile__timeline-icon">
+                    <div class="rounded-circle bg-{{ activity.color }}-subtle p-2">
+                        <i class="bi bi-{{ activity.icon }} text-{{ activity.color }}"></i>
+                    </div>
+                </div>
+                <div class="profile__timeline-content flex-grow-1">
+                    <h6 class="profile__timeline-title mb-1">{{ activity.title }}</h6>
+                    <p class="profile__timeline-text text-muted mb-1">{{ activity.description }}</p>
+                    <small class="profile__timeline-time text-muted">
+                        <i class="bi bi-clock me-1"></i>{{ activity.time|timesince }} {% trans "ago" %}
+                    </small>
+                </div>
+            </div>
+            {% empty %}
+            <div class="profile__empty-state text-center py-5">
+                <i class="bi bi-activity fs-1 text-muted mb-3"></i>
+                <p class="text-muted mb-0">{% trans "No recent activity" %}</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</div>

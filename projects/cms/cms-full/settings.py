@@ -1,5 +1,4 @@
 """Website-local Django settings for cms-full (merged CTC Research + LMS)."""
-import os
 import sys
 from pathlib import Path
 
@@ -7,13 +6,10 @@ _SITE_DIR = Path(__file__).resolve().parent
 _WORKSPACE_DIR = _SITE_DIR.parent
 _SITE_APP_DIR = _SITE_DIR / "www"
 
-# lms/cms provides comprehensive API views, schemas, and plugins.research
-_LMS_CMS_DIR = _SITE_DIR.parents[1] / "lms" / "cms"
-
-# Priority: lms/cms first (comprehensive API), then self (local plugins+templates)
+# All plugins, templates, and www/ modules are self-contained — no external
+# lms/cms dependency. Sys.path order matters: _SITE_APP_DIR must be first
+# so `import www.core` resolves to the local www/ package.
 for _path in reversed((
-    str(_LMS_CMS_DIR),
-    str(_LMS_CMS_DIR / "www"),
     str(_SITE_DIR),
     str(_SITE_APP_DIR),
     str(_WORKSPACE_DIR),
@@ -38,20 +34,17 @@ SITE_ID = 3
 WAGTAIL_SITE_NAME = "Structa CMS Full"
 
 LOCAL_APPS = [
-    # Core — from lms/cms (on sys.path)
+    # Core — self-contained (from merged CTC Research)
     "www.core",
     "www.core.content.apps.ContentConfig",
     "www.core.handlers.apps.AccountsConfig",
-    "www.schemas.apps.SchemaConfig",
-    # Plugins — copied from ctc-research into local plugins/
+    # Plugins — self-contained (from merged CTC Research)
     "plugins.accounts.apps.AccountsConfig",
     "plugins.lms.apps.LmsConfig",
     "plugins.blog.apps.BlogConfig",
     "plugins.products.apps.ProductsConfig",
     "plugins.profile.apps.ProfileConfig",
     "plugins.pages",
-    # Plugins — from lms/cms (on sys.path)
-    "plugins.research.apps.ResearchConfig",
     # Shared
     "ceptor_ai",
     "django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",

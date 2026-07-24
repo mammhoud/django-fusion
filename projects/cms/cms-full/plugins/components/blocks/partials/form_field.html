@@ -1,0 +1,111 @@
+{% load i18n %}
+{# Form Field Partial Template - Renders individual form fields #}
+
+<div class="contact-form__field contact-form__field--{{ field.field_width|default:'full' }}"
+     {% if field.conditional_field %}
+     data-conditional-field="{{ field.conditional_field }}"
+     data-conditional-value="{{ field.conditional_value }}"
+     {% endif %}>
+  
+  {% if show_labels and field.field_type != 'hidden' %}
+  <label class="contact-form__label" for="field-{{ field.name }}">
+    {{ field.label }}
+    {% if field.required %}<span class="required">*</span>{% endif %}
+  </label>
+  {% endif %}
+
+  <div class="contact-form__input-group {% if show_icons and field.icon %}has-icon icon-{{ icon_style|default:'inside' }}{% endif %}">
+    {% if show_icons and field.icon %}
+    <span class="contact-form__icon">
+      <i class="fas fa-{{ field.icon }}" aria-hidden="true"></i>
+    </span>
+    {% endif %}
+
+    {% if field.field_type == 'textarea' %}
+    <textarea id="field-{{ field.name }}"
+              name="{{ field.name }}"
+              class="contact-form__textarea"
+              placeholder="{{ field.placeholder }}"
+              {% if field.required %}required{% endif %}
+              {% if field.min_length %}minlength="{{ field.min_length }}"{% endif %}
+              {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}>{{ field.default_value }}</textarea>
+    
+    {% elif field.field_type == 'select' %}
+    <select id="field-{{ field.name }}"
+            name="{{ field.name }}"
+            class="contact-form__select"
+            {% if field.required %}required{% endif %}>
+      <option value="">{{ field.placeholder|default:_("Select an option") }}</option>
+      {% for choice in field.choices %}
+      <option value="{{ choice.value }}" {% if choice.value == field.default_value %}selected{% endif %}>
+        {{ choice.label }}
+      </option>
+      {% endfor %}
+    </select>
+    
+    {% elif field.field_type == 'checkbox' %}
+    <label class="contact-form__checkbox-group">
+      <input type="checkbox"
+             id="field-{{ field.name }}"
+             name="{{ field.name }}"
+             class="contact-form__checkbox"
+             {% if field.default_value == 'true' %}checked{% endif %}
+             {% if field.required %}required{% endif %}>
+      <span class="contact-form__checkbox-label">{{ field.placeholder }}</span>
+    </label>
+    
+    {% elif field.field_type == 'radio' %}
+    <div class="contact-form__radio-group">
+      {% for choice in field.choices %}
+      <label class="contact-form__radio-item">
+        <input type="radio"
+               name="{{ field.name }}"
+               value="{{ choice.value }}"
+               class="contact-form__radio"
+               {% if choice.value == field.default_value %}checked{% endif %}
+               {% if field.required %}required{% endif %}>
+        <span class="contact-form__radio-label">{{ choice.label }}</span>
+      </label>
+      {% endfor %}
+    </div>
+    
+    {% elif field.field_type == 'file' %}
+    <label class="contact-form__file" for="field-{{ field.name }}">
+      <i class="fas fa-cloud-upload-alt" aria-hidden="true"></i>
+      <span>{{ field.placeholder|default:_("Choose a file or drag it here") }}</span>
+      <input type="file"
+             id="field-{{ field.name }}"
+             name="{{ field.name }}"
+             {% if field.required %}required{% endif %}>
+    </label>
+    
+    {% elif field.field_type == 'hidden' %}
+    <input type="hidden"
+           id="field-{{ field.name }}"
+           name="{{ field.name }}"
+           value="{{ field.default_value }}">
+    
+    {% else %}
+    <input type="{{ field.field_type }}"
+           id="field-{{ field.name }}"
+           name="{{ field.name }}"
+           class="contact-form__input"
+           placeholder="{{ field.placeholder }}"
+           value="{{ field.default_value }}"
+           {% if field.required %}required{% endif %}
+           {% if field.min_length %}minlength="{{ field.min_length }}"{% endif %}
+           {% if field.max_length %}maxlength="{{ field.max_length }}"{% endif %}
+           {% if field.min_value %}min="{{ field.min_value }}"{% endif %}
+           {% if field.max_value %}max="{{ field.max_value }}"{% endif %}
+           {% if field.pattern %}pattern="{{ field.pattern }}"{% endif %}>
+    {% endif %}
+  </div>
+
+  {% if field.help_text %}
+  <span class="contact-form__help-text">{{ field.help_text }}</span>
+  {% endif %}
+  
+  {% if field.error_message %}
+  <span class="contact-form__error">{{ field.error_message }}</span>
+  {% endif %}
+</div>
