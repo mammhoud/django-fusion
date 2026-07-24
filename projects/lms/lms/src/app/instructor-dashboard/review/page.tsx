@@ -34,7 +34,7 @@ export default function InstructorReviewPage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-indigo-600 mb-1 block transition-colors">
+          <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-1 block transition-colors">
             ← Back to Dashboard
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Reviews</h1>
@@ -77,7 +77,7 @@ export default function InstructorReviewPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search reviews..."
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none text-sm"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none text-sm"
             />
           </div>
           <div className="flex gap-1">
@@ -86,7 +86,7 @@ export default function InstructorReviewPage() {
                 key={r === null ? 'all' : r}
                 onClick={() => setRatingFilter(r)}
                 className={`px-3 py-2 text-sm rounded-lg transition-all ${
-                  ratingFilter === r ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                  ratingFilter === r ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                 }`}
               >
                 {r === null ? 'All' : r + (r > 1 ? '★' : '★')}
@@ -119,16 +119,16 @@ export default function InstructorReviewPage() {
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">{review.text}</p>
                   <div className="flex items-center gap-4 mt-3">
-                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition-colors">
+                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors">
                       <HiThumbUp className="w-3.5 h-3.5" />
                       Helpful ({review.helpful})
                     </button>
-                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-indigo-600 transition-colors">
+                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors">
                       <HiFlag className="w-3.5 h-3.5" />
                       Report
                     </button>
                     <button className={`flex items-center gap-1 text-xs transition-colors ${
-                      review.replied ? 'text-green-600' : 'text-gray-400 hover:text-indigo-600'
+                      review.replied ? 'text-green-600' : 'text-gray-400 hover:text-[rgb(var(--ctc-primary))]'
                     }`}>
                       <HiChat className="w-3.5 h-3.5" />
                       {review.replied ? 'Replied' : 'Reply'}

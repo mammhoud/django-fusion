@@ -18,7 +18,7 @@ _SITE_APP_DIR = _SITE_DIR / "www"
 # in the apparent “natural” order leaves `/app` at sys.path[0] and
 # `import www.core` then fails with ModuleNotFoundError because the workspace
 # `www` shadows the site `www`.
-for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR)):
+for _path in reversed((str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR))):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)
