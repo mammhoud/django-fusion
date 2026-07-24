@@ -14,7 +14,7 @@ from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 from django_fusion.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
-from django_fusion.site.utils import get_root_redirect_pattern
+from django_fusion.site.interface.utils import get_root_redirect_pattern
 from www.core.routes import site
 
 # Optional imports with safe fallbacks

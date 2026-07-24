@@ -1,7 +1,7 @@
-{# Backward-compatible shim — delegates to django-fusion components/table.html
+{# Backward-compatible shim — delegates to django-fusion fusion/components/table.html
    Kept for existing callers. New code should use:
-     {% comp_include "components/table.html" ... %}
+     {% comp_include "fusion/components/table.html" ... %}
    or
-     {% load ui_tags %}{% table ... %}
+     {% load components %}{% table ... %}
 #}
-{% comp "components/table.html" headers=headers rows=rows hx_target=hx_target table_class=table_class empty_message=empty_message table=table / %}
+{% comp "fusion/components/table.html" headers=headers rows=rows hx_target=hx_target table_class=table_class empty_message=empty_message table=table / %}

@@ -84,7 +84,7 @@ if not settings.configured:
         TEMPLATES=[
             {
                 "BACKEND": "django.template.backends.django.DjangoTemplates",
-                "DIRS": [],
+                "DIRS": [str(_SITE_DIR / "templates")],
                 "OPTIONS": {
                     "context_processors": [
                         "django.template.context_processors.debug",
@@ -92,7 +92,10 @@ if not settings.configured:
                         "django.contrib.auth.context_processors.auth",
                         "django.contrib.messages.context_processors.messages",
                     ],
-                    "loaders": ["django.template.loaders.app_directories.Loader"],
+                    "loaders": [
+                        "django.template.loaders.filesystem.Loader",
+                        "django.template.loaders.app_directories.Loader",
+                    ],
                 },
             },
         ],

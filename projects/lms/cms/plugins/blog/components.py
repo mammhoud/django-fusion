@@ -12,7 +12,7 @@ from __future__ import annotations
 from django import forms
 from django.db.models import Q
 from django.http import HttpResponse
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 
 
 class BlogPostListFragment(FragmentComponent):

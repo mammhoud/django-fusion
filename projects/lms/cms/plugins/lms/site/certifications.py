@@ -10,7 +10,8 @@ from django.views.decorators.http import require_POST
 from plugins.accounts.management.services import CertificateService
 
 logger = logging.getLogger(__name__)
-from django_fusion.site import NotificationMixin, PageHandler
+from django_fusion.site.interface.notifications import NotificationMixin
+from django_fusion.site.interface.page_handler import PageHandler
 
 User = get_user_model()
 
@@ -135,4 +136,3 @@ class CertificationsView(PageHandler, NotificationMixin):
             return JsonResponse(
                 {"status": "error", "message": f"Error uploading certificate: {str(e)}"}, status=500
             )
-

@@ -10,7 +10,7 @@ from allauth.account.views import SignupView as AllauthBaseSignupView
 from django.http import HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse
-from django_fusion.site import PageHandler
+from django_fusion.site.interface.page_handler import PageHandler
 
 from ..services.notifications import trigger_notification
 

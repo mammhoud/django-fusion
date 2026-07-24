@@ -5,7 +5,8 @@ import logging
 from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.views.decorators.http import require_POST
-from django_fusion.site import NotificationMixin, PageHandler
+from django_fusion.site.interface.notifications import NotificationMixin
+from django_fusion.site.interface.page_handler import PageHandler
 
 logger = logging.getLogger(__name__)
 from plugins.lms.management.services.courses import CourseService
@@ -134,4 +135,3 @@ class CoursesView(PageHandler, NotificationMixin):
             return JsonResponse(
                 {"status": "error", "message": f"Error enrolling in course: {str(e)}"}, status=500
             )
-

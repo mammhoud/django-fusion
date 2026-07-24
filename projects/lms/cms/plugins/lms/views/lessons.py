@@ -6,7 +6,7 @@ from django.shortcuts import get_object_or_404, redirect
 from django.utils import timezone
 
 logger = logging.getLogger(__name__)
-from django_fusion.site import PageHandler
+from django_fusion.site.interface.page_handler import PageHandler
 
 from ..models import Course, Lesson
 from ..management.services.courses import CourseService

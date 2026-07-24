@@ -82,7 +82,18 @@ urlpatterns = [
     path("events/", events.event_list, name="event_list"),
     path("events/<pk>/", events.event_detail, name="event_detail"),
     # ── Pages ──
+    path("fusion/health", fusion_health.fusion_health, name="fusion_health"),
     path("pages/<slug:slug>/", pages.page_detail, name="page_detail"),
+    path(
+        "pages/<slug:slug>/fragment/",
+        pages.page_fragment,
+        name="page_fragment",
+    ),
+    path(
+        "pages/<slug:slug>/data/",
+        pages.page_data,
+        name="page_data",
+    ),
     # ── Contact ──
     path("contact/", contact.contact_submit, name="contact_submit"),
 ]

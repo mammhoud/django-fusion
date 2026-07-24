@@ -86,7 +86,7 @@ class ContactSubmission(models.Model):
 class Token(models.Model):
     """Bolt-native token model — stores SHA-256 hash only.
 
-    Distinct from django_fusion.site.auth.models.Token (JWT-based, in tokens table).
+    Distinct from django_fusion.site.interface.auth.models.Token (JWT-based, in tokens table).
     This is a lighter bolt-only token that keeps the raw value out of the database.
 
     Token types control what the token can do:
