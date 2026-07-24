@@ -2,34 +2,23 @@
 
 import { useState } from 'react';
 import { HiChevronDown, HiSearch } from 'react-icons/hi';
-import { FusionPage } from '@/components/FusionPage';
-import type { CmsPage } from '@/store/api/endpoints/pages';
+import { useGetPageQuery } from '@/store/api/endpoints/pages';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
+import ErrorState from '@/components/ui/ErrorState';
 
 export default function FaqPage() {
-  return (
-    <FusionPage slug="faq">
-      {(page, _fallback) => <FaqPageContent page={page} />}
-    </FusionPage>
-  );
-}
-
-function FaqPageContent({ page }: { page: CmsPage | undefined }) {
+  const { data: page, isLoading, error } = useGetPageQuery('faq');
   const [searchQuery, setSearchQuery] = useState('');
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
-  const hero = page?.blocks.find((block) => block.type === 'hero');
-  const faqGroups = page?.blocks.find((block) => block.type === 'faq_groups')?.groups || [];
-  const cta = page?.blocks.find((block) => block.type === 'cta');
+  if (isLoading) return <LoadingSkeleton variant="detail" />;
+  if (error || !page) return <ErrorState message="Unable to load FAQ content." />;
 
+  const hero = page.blocks.find((block) => block.type === 'hero');
+  const faqGroups = page.blocks.find((block) => block.type === 'faq_groups')?.groups || [];
+  const cta = page.blocks.find((block) => block.type === 'cta');
   const filteredCategories = faqGroups
-    .map((cat) => ({
-      ...cat,
-      items: cat.items.filter(
-        (item) =>
-          item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
-          item.answer.toLowerCase().includes(searchQuery.toLowerCase())
-      ),
-    }))
+    .map((cat) => ({ ...cat, items: cat.items.filter((item) => item.question.toLowerCase().includes(searchQuery.toLowerCase()) || item.answer.toLowerCase().includes(searchQuery.toLowerCase())) }))
     .filter((cat) => cat.items.length > 0);
 
   const toggleItem = (categoryIdx: number, itemIdx: number) => {

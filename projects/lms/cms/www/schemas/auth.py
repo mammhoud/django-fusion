@@ -1,14 +1,16 @@
 """
-Auth API schemas — Login, Register (Pydantic).
+Auth API schemas — Login, Register, JWT token response (Pydantic).
 
 Endpoints:
     POST /apis/auth/login     → AuthTokenResponse | ErrorResponse (401)
     POST /apis/auth/register  → AuthTokenResponse (201) | ErrorResponse (400, 409)
+    POST /apis/auth/refresh   → AuthRefreshResponse | ErrorResponse (401)
 """
 
 from __future__ import annotations
 
 from pydantic import BaseModel
+from typing import Optional
 
 
 class LoginRequest(BaseModel):
@@ -38,7 +40,22 @@ class UserResponse(BaseModel):
 
 
 class AuthTokenResponse(BaseModel):
-    """Successful auth response (login or register)."""
+    """Successful auth response (login or register) — JWT tokens."""
 
-    key: str
+    access: str
+    refresh: str
     user: UserResponse
+    expires_in: int = 1800
+
+
+class AuthRefreshRequest(BaseModel):
+    """POST /apis/auth/refresh request body."""
+
+    refresh: str
+
+
+class AuthRefreshResponse(BaseModel):
+    """Successful token refresh response."""
+
+    access: str
+    expires_in: int = 1800

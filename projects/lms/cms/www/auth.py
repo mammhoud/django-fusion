@@ -1,49 +1,206 @@
 """
-CTC Research — Bolt-native token authentication backend.
+CTC Research — JWT + legacy token authentication backend.
 
-Provides a BaseAuthentication subclass that validates bolt-native Token
-records (SHA-256 hashed) from the Authorization: Bearer <token> header.
+Provides:
+- ``JWTTokenAuthBackend``: validates JWT access tokens (HS256) from Bearer header.
+- ``TokenAuthBackend``: validates SHA-256 hashed tokens from the ``Token`` table.
+- ``auth_required()``: convenience factory for route decorators.
 
-Usage (per-route):
-    from www.auth import TokenAuthBackend
+Usage (per-route — JWT preferred for new endpoints):
+    from www.auth import JWTTokenAuthBackend, auth_required
 
-    @bolt.get("/protected", auth=[TokenAuthBackend()])
+    # JWT auth (default for new endpoints)
+    @bolt.get("/protected", auth=[JWTTokenAuthBackend()])
     def my_handler(request): ...
 
-Usage (default for all routes):
-    # In settings.py or BoltAPI init:
-    BOLT_AUTHENTICATION_CLASSES = [TokenAuthBackend()]
+    # Legacy token auth (for backward compat)
+    @bolt.get("/legacy", auth=[TokenAuthBackend()])
+    def legacy_handler(request): ...
+
+    # Shortcut — always uses JWTTokenAuthBackend
+    @bolt.get("/me", **auth_required())
+    def get_me(request): ...
 """
 
 from __future__ import annotations
 
 import logging
+from datetime import datetime, timedelta, timezone
 from typing import Any
 
+import jwt as pyjwt
+from django.conf import settings
 from django_bolt.auth.backends import BaseAuthentication
 
 logger = logging.getLogger(__name__)
 
 
-class TokenAuthBackend(BaseAuthentication):
-    """Bolt-native token authentication — validates against the Token table.
+# ═══════════════════════════════════════════════════════════════════════════
+# JWT encode / decode helpers
+# ═══════════════════════════════════════════════════════════════════════════
 
-    Extracts ``Bearer <token>`` from the ``Authorization`` header, SHA-256 hashes
-    it, and looks up the matching ``Token`` record.  Only tokens whose
-    ``token_type`` is in ``accept_types`` pass authentication.
+
+def _get_jwt_config() -> dict:
+    """Return the JWT_AUTH dict from settings, with defaults."""
+    return getattr(settings, "JWT_AUTH", {})
+
+
+def _jwt_encode(payload: dict) -> str:
+    """Sign and encode a JWT payload using the project's JWT_AUTH settings."""
+    cfg = _get_jwt_config()
+    signing_key = cfg.get("SIGNING_KEY", settings.SECRET_KEY)
+    algorithm = cfg.get("ALGORITHM", "HS256")
+    return pyjwt.encode(payload, signing_key, algorithm=algorithm)
+
+
+def _jwt_decode(token: str) -> dict | None:
+    """Decode and validate a JWT token. Returns the payload dict or None on failure."""
+    cfg = _get_jwt_config()
+    signing_key = cfg.get("SIGNING_KEY", settings.SECRET_KEY)
+    algorithm = cfg.get("ALGORITHM", "HS256")
+    try:
+        return pyjwt.decode(token, signing_key, algorithms=[algorithm])
+    except pyjwt.ExpiredSignatureError:
+        logger.debug("JWT expired")
+        return None
+    except pyjwt.InvalidTokenError as exc:
+        logger.debug("Invalid JWT: %s", exc)
+        return None
+
+
+def issue_jwt_tokens(user) -> dict:
+    """Issue access + refresh JWT tokens for the given user.
+
+    Returns::
+        {
+            "access": "<jwt>",
+            "refresh": "<jwt>",
+            "user": { id, email, username, first_name, last_name },
+            "expires_in": 1800,  # seconds
+        }
+    """
+    cfg = _get_jwt_config()
+    access_lifetime = cfg.get("ACCESS_TOKEN_LIFETIME", timedelta(minutes=30))
+    refresh_lifetime = cfg.get("REFRESH_TOKEN_LIFETIME", timedelta(days=7))
+    user_id_claim = cfg.get("USER_ID_CLAIM", "user_id")
+    user_id_field = cfg.get("USER_ID_FIELD", "id")
+
+    now = datetime.now(tz=timezone.utc)
+
+    # ── Access token payload ──
+    access_payload = {
+        "token_type": "access",
+        user_id_claim: getattr(user, user_id_field),
+        "email": user.email,
+        "username": user.username,
+        "first_name": user.first_name,
+        "last_name": user.last_name,
+        "iat": now,
+        "exp": now + access_lifetime,
+    }
+    access_token = _jwt_encode(access_payload)
+
+    # ── Refresh token payload ──
+    refresh_payload = {
+        "token_type": "refresh",
+        user_id_claim: getattr(user, user_id_field),
+        "email": user.email,
+        "iat": now,
+        "exp": now + refresh_lifetime,
+    }
+    refresh_token = _jwt_encode(refresh_payload)
+
+    total_seconds = int(access_lifetime.total_seconds())
+
+    return {
+        "access": access_token,
+        "refresh": refresh_token,
+        "expires_in": total_seconds,
+    }
+
+
+def jwt_get_user_from_payload(payload: dict):
+    """Resolve a Django User from a validated JWT payload."""
+    cfg = _get_jwt_config()
+    user_id_claim = cfg.get("USER_ID_CLAIM", "user_id")
+    user_id = payload.get(user_id_claim)
+    if user_id is None:
+        return None
+    from django.contrib.auth.models import User
+    try:
+        return User.objects.get(pk=user_id, is_active=True)
+    except User.DoesNotExist:
+        return None
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# JWTTokenAuthBackend — primary auth backend for new endpoints
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class JWTTokenAuthBackend(BaseAuthentication):
+    """JWT-based authentication backend for django-bolt.
+
+    Extracts ``Bearer <jwt-access-token>`` from the ``Authorization`` header,
+    validates the JWT (signature + expiry), and resolves the user.
+    Only tokens whose ``token_type`` is in ``accept_types`` pass.
 
     Args:
-        accept_types: Set of token types allowed for API auth.
-            Default: ``{"access", "api"}`` — rejects sync & refresh tokens.
-        category: Optional filter — only tokens with this category value
-            are accepted (e.g. ``"pos-branch-1"`` to scope to one device).
+        accept_types: Allowed JWT token_type values.
+            Default: ``{"access"}`` — rejects refresh & other types.
 
     Example:
-        # Accept only access tokens:
-        auth=[TokenAuthBackend(accept_types={"access"})]
+        auth=[JWTTokenAuthBackend(accept_types={"access"})]
+        auth=[JWTTokenAuthBackend(accept_types={"access", "api"})]
+    """
 
-        # Accept access + api tokens for a specific category:
-        auth=[TokenAuthBackend(accept_types={"access", "api"}, category="mobile-app")]
+    def __init__(self, accept_types: set[str] | None = None):
+        self.accept_types = accept_types or {"access"}
+
+    @property
+    def scheme_name(self) -> str:
+        return "jwt"
+
+    def to_metadata(self) -> dict[str, Any]:
+        return {
+            "type": "jwt",
+            "header": "authorization",
+            "accept_types": sorted(self.accept_types),
+        }
+
+    async def get_user(self, user_id: str | None, auth_context: dict[str, Any]) -> Any | None:
+        return self._resolve(auth_context)
+
+    def get_user_sync(self, user_id: str | None, auth_context: dict[str, Any]) -> Any | None:
+        return self._resolve(auth_context)
+
+    def _resolve(self, auth_context: dict[str, Any]) -> Any | None:
+        raw = auth_context.get("raw_token") if auth_context else None
+        if not raw:
+            return None
+
+        payload = _jwt_decode(raw)
+        if payload is None:
+            return None
+
+        token_type = payload.get("token_type")
+        if token_type not in self.accept_types:
+            logger.debug("JWT token_type '%s' not in accept_types %s", token_type, self.accept_types)
+            return None
+
+        return jwt_get_user_from_payload(payload)
+
+
+# ═══════════════════════════════════════════════════════════════════════════
+# TokenAuthBackend — legacy SHA-256 token backend (kept for backward compat)
+# ═══════════════════════════════════════════════════════════════════════════
+
+
+class TokenAuthBackend(BaseAuthentication):
+    """Legacy SHA-256 token authentication — validates against the Token table.
+
+    **Prefer JWTTokenAuthBackend for new endpoints.**
+    Kept for backward compatibility with existing tokens in the database.
     """
 
     def __init__(
@@ -59,7 +216,6 @@ class TokenAuthBackend(BaseAuthentication):
         return "token"
 
     def to_metadata(self) -> dict[str, Any]:
-        """Metadata for bolt Rust-side header extraction + Python user resolution."""
         return {
             "type": "token",
             "header": "authorization",
@@ -68,35 +224,12 @@ class TokenAuthBackend(BaseAuthentication):
         }
 
     async def get_user(self, user_id: str | None, auth_context: dict[str, Any]) -> Any | None:
-        """Resolve User from the auth context after Rust extracts the token.
-
-        The raw token string is placed in ``auth_context["raw_token"]`` by bolt's
-        Rust layer (or by the Python fallback path).  We hash it and look it up
-        in the Token table.
-        """
-        Token = _resolve_token_model()
-
-        raw = auth_context.get("raw_token") if auth_context else None
-        if not raw:
-            return None
-
-        token_obj, user = Token.validate_raw_token(raw, accept_types=self.accept_types)
-        if user is None:
-            return None
-
-        if self.category and token_obj.category != self.category:
-            return None
-
-        # Update last-used timestamp (fire-and-forget — non-critical)
-        try:
-            token_obj.update_last_used()
-        except Exception:
-            pass
-
-        return user
+        return self._resolve(auth_context)
 
     def get_user_sync(self, user_id: str | None, auth_context: dict[str, Any]) -> Any | None:
-        """Synchronous user resolution (used by sync handlers in thread pool)."""
+        return self._resolve(auth_context)
+
+    def _resolve(self, auth_context: dict[str, Any]) -> Any | None:
         Token = _resolve_token_model()
 
         raw = auth_context.get("raw_token") if auth_context else None
@@ -124,14 +257,7 @@ class TokenAuthBackend(BaseAuthentication):
 
 
 def _resolve_token_model():
-    """Get the Token model via Django's app registry to ensure proper initialization.
-
-    Using ``apps.get_model()`` forces Django's model metaclass to run,
-    which properly sets up ``.objects`` and other Manager attributes.
-    This is needed because direct ``import`` statements inside the bolt
-    TestClient's Rust sub-interpreter may bypass the metaclass, yielding
-    a plain Python class without Manager attributes.
-    """
+    """Get the legacy Token model via Django's app registry."""
     try:
         from django.apps import apps as _apps
         Token = _apps.get_model("content", "Token")
@@ -139,29 +265,23 @@ def _resolve_token_model():
             return Token
     except Exception as exc:
         logger.debug("Token model lookup via apps.get_model failed: %s", exc)
-    # Fallback: direct import
     from www.content.models.others import Token as _TokenDirect
     return _TokenDirect
 
 
 def extract_bearer_token(request) -> str | None:
-    """Extract the ``Bearer <token>`` value from the request's Authorization header.
+    """Extract ``Bearer <token>`` from the Authorization header.
 
-    Compatible with both Django HttpRequest (``request.headers`` as dict-like)
-    and bolt PyRequest (``request.headers`` as dict).  Falls back to
-    ``request.META`` for Django requests and returns ``None`` on failure.
+    Compatible with Django HttpRequest, PyRequest, and bare dicts.
     """
-    # Try primary path: PyRequest.headers or DRF's request.headers (both dict-like)
     try:
         if hasattr(request, "headers") and isinstance(request.headers, dict):
             auth_header = request.headers.get("authorization", "") or request.headers.get("Authorization", "")
         elif hasattr(request, "META"):
-            # Django HttpRequest
             auth_header = request.META.get("HTTP_AUTHORIZATION", "")
         else:
             return None
     except Exception:
-        # Fallback for bare dict-like access failures
         return None
 
     if auth_header.lower().startswith("bearer "):
@@ -170,34 +290,52 @@ def extract_bearer_token(request) -> str | None:
 
 
 def authenticate_request(request, *, accept_types: set[str] | None = None):
-    """Validate the bearer token on a request.  Returns user or None.
+    """Validate a bearer token on a request.
 
-    This is the Python-side fallback path — call it inside a handler when
-    bolt's Rust-side auth didn't pick up the token (e.g. for custom types).
-
-    Example:
-        def my_handler(request):
-            user = authenticate_request(request)
-            if user is None:
-                return {"error": "Unauthorized"}, 401
-            ...
+    Tries JWT first, then falls back to legacy SHA-256 Token table lookup.
+    Returns user or None.
     """
     raw = extract_bearer_token(request)
     if not raw:
         return None
 
-    Token = _resolve_token_model()
+    # Try JWT first
+    payload = _jwt_decode(raw)
+    if payload is not None:
+        token_type = payload.get("token_type")
+        if accept_types is None or token_type in accept_types:
+            user = jwt_get_user_from_payload(payload)
+            if user is not None:
+                return user
 
+    # Fallback to legacy token
+    Token = _resolve_token_model()
     token_obj, user = Token.validate_raw_token(raw, accept_types=accept_types)
-    if user is None:
+    if user is not None:
+        try:
+            token_obj.update_last_used()
+        except Exception:
+            pass
+        return user
+
+    return None
+
+
+def authenticate_jwt_request(request, *, accept_types: set[str] | None = None):
+    """Validate a JWT-only bearer token. Returns user or None."""
+    raw = extract_bearer_token(request)
+    if not raw:
         return None
 
-    try:
-        token_obj.update_last_used()
-    except Exception:
-        pass
+    payload = _jwt_decode(raw)
+    if payload is None:
+        return None
 
-    return user
+    token_type = payload.get("token_type")
+    if accept_types is not None and token_type not in accept_types:
+        return None
+
+    return jwt_get_user_from_payload(payload)
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -205,8 +343,8 @@ def authenticate_request(request, *, accept_types: set[str] | None = None):
 # ═══════════════════════════════════════════════════════════════════════════
 
 
-def auth_required(*, accept_types: set[str] | None = None, category: str | None = None):
-    """Return ``auth=[TokenAuthBackend(...)]`` for use in route decorators.
+def auth_required(*, accept_types: set[str] | None = None):
+    """Return ``auth=[JWTTokenAuthBackend(...)]`` for use in route decorators.
 
     Shorthand so you can write::
 
@@ -215,7 +353,10 @@ def auth_required(*, accept_types: set[str] | None = None, category: str | None 
 
     instead of::
 
-        @bolt.get("/me", auth=[TokenAuthBackend()])
+        @bolt.get("/me", auth=[JWTTokenAuthBackend()])
         def get_me(request): ...
+
+    Note: ``auth_required()`` now defaults to **JWT**.  Use
+    ``auth=[TokenAuthBackend()]`` explicitly if you need legacy SHA-256 tokens.
     """
-    return {"auth": [TokenAuthBackend(accept_types=accept_types, category=category)]}
+    return {"auth": [JWTTokenAuthBackend(accept_types=accept_types)]}

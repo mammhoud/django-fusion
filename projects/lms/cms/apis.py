@@ -17,11 +17,15 @@ Auth: www/auth.py — TokenAuthBackend validates Bearer tokens from the Token ta
 from __future__ import annotations
 
 import json
-import os
 
 from django_bolt import BoltAPI
 
-from www.auth import TokenAuthBackend, extract_bearer_token, authenticate_request, _resolve_token_model
+from www.auth import (
+    JWTTokenAuthBackend, TokenAuthBackend,
+    extract_bearer_token, authenticate_request,
+    issue_jwt_tokens, authenticate_jwt_request,
+    _jwt_decode, jwt_get_user_from_payload,
+)
 
 
 # ── Query param helper (works with both Django HttpRequest and bolt PyRequest) ──
@@ -49,46 +53,6 @@ bolt = BoltAPI(
     description="High-performance API for CTC Research — serves next-LMS frontend",
 )
 
-# ═══════════════════════════════════════════════════════════════════════════
-# Bolt-native token helpers — delegated to Token.from_django_fusion_pattern()
-# and Token.validate_raw_token() classmethods (see www.content.models.others).
-# ═══════════════════════════════════════════════════════════════════════════
-
-
-def _issue_token(user, token_type="access", category="") -> str:
-    """Issue a token for a user. Returns raw token string.
-
-    Uses the bolt-native Token model via from_django_fusion_pattern().
-    Falls back to a random string (no storage) if the Token model is unavailable.
-    """
-    try:
-        Token = _resolve_token_model()
-        _token_obj, raw = Token.from_django_fusion_pattern(user, token_type=token_type, category=category)
-        return raw
-    except Exception:
-        return os.urandom(24).hex()
-
-
-def _validate_token(token_str: str):
-    """Validate a token. Returns user or None."""
-    from django.core.exceptions import ObjectDoesNotExist
-
-    try:
-        from rest_framework.authtoken.models import Token as DRFToken
-        token_obj = DRFToken.objects.select_related("user").get(key=token_str)
-        return token_obj.user
-    except ImportError:
-        pass
-    except ObjectDoesNotExist:
-        pass  # Not a DRF token — fall through to Token lookup
-
-    # Fall back to bolt-native Token lookup via classmethod
-    try:
-        from www.content.models.others import Token
-        _token_obj, user = Token.validate_raw_token(token_str)
-        return user
-    except Exception:
-        return None
 
 
 # ═══════════════════════════════════════════════════════════════════════════
@@ -263,13 +227,13 @@ def list_categories(request):
 
 
 # ═══════════════════════════════════════════════════════════════════════════
-# Auth (bolt-native, no DRF)
+# Auth (JWT-based, no DRF)
 # ═══════════════════════════════════════════════════════════════════════════
 
 
 @bolt.post("/auth/login")
 def login(request):
-    """POST /apis/auth/login — Authenticate and return token."""
+    """POST /apis/auth/login — Authenticate and return JWT access + refresh tokens."""
     from www.schemas import LoginRequest, UserResponse, AuthTokenResponse
 
     body = json.loads(request.body)
@@ -289,20 +253,22 @@ def login(request):
     if user is None:
         return {"error": "Invalid credentials"}, 401
 
-    token = _issue_token(user, token_type="access")
+    tokens = issue_jwt_tokens(user)
     response = AuthTokenResponse(
-        key=token,
+        access=tokens["access"],
+        refresh=tokens["refresh"],
         user=UserResponse(
             id=user.pk, email=user.email, username=user.username,
             first_name=user.first_name, last_name=user.last_name,
         ),
+        expires_in=tokens["expires_in"],
     )
     return response.model_dump()
 
 
 @bolt.post("/auth/register")
 def register(request):
-    """POST /apis/auth/register — Create account and return token."""
+    """POST /apis/auth/register — Create account and return JWT access + refresh tokens."""
     from www.schemas import RegisterRequest, UserResponse, AuthTokenResponse
 
     body = json.loads(request.body)
@@ -322,26 +288,24 @@ def register(request):
         username=req.email, email=req.email, password=req.password,
         first_name=req.first_name, last_name=req.last_name,
     )
-    token = _issue_token(user, token_type="access")
+    tokens = issue_jwt_tokens(user)
     response = AuthTokenResponse(
-        key=token,
+        access=tokens["access"],
+        refresh=tokens["refresh"],
         user=UserResponse(
             id=user.pk, email=user.email, username=user.username,
             first_name=user.first_name, last_name=user.last_name,
         ),
+        expires_in=tokens["expires_in"],
     )
     return response.model_dump(), 201
 
 
-@bolt.get("/auth/me", auth=[TokenAuthBackend()])
+@bolt.get("/auth/me", auth=[JWTTokenAuthBackend()])
 def get_me(request):
     """GET /apis/auth/me — Return the authenticated user's profile.
 
-    Requires: Authorization: Bearer <access-token>
-
-    Uses dual-path auth: bolt's Rust layer populates request.user when the
-    backend is natively supported; falls back to Python-side validation via
-    authenticate_request() for custom token types.
+    Requires: Authorization: Bearer <jwt-access-token>
     """
     from www.schemas import UserResponse
 
@@ -356,56 +320,57 @@ def get_me(request):
     ).model_dump()
 
 
-@bolt.post("/auth/logout", auth=[TokenAuthBackend()])
+@bolt.post("/auth/logout", auth=[JWTTokenAuthBackend()])
 def logout(request):
-    """POST /apis/auth/logout — Delete the token used for this request.
+    """POST /apis/auth/logout — Logout (stateless JWT — client discards tokens).
 
-    Requires: Authorization: Bearer <access-token>
+    Requires: Authorization: Bearer <jwt-access-token>
+    JWT tokens are stateless; this endpoint simply acknowledges the logout.
+    The client should discard both access and refresh tokens.
     """
-    raw = extract_bearer_token(request)
-    if not raw:
-        return {"error": "No token provided"}, 400
-
-    import hashlib
-
-    token_hash = hashlib.sha256(raw.encode()).hexdigest()
-
-    try:
-        Token = _resolve_token_model()
-        Token.objects.filter(token_hash=token_hash).delete()
-    except Exception as exc:
-        logger.debug(f"Logout token deletion skipped: {exc}")
-
     return {"status": "logged out"}
 
 
-@bolt.post("/auth/refresh", auth=[TokenAuthBackend(accept_types={"refresh"})])
+@bolt.post("/auth/refresh")
 def refresh_token(request):
-    """POST /apis/auth/refresh — Exchange a refresh token for a new access token.
+    """POST /apis/auth/refresh — Exchange a refresh JWT for a new access JWT.
 
-    Requires: Authorization: Bearer <refresh-token>
+    Request body::
+        { "refresh": "<jwt-refresh-token>" }
+
     Returns a fresh access token.
     """
-    raw = extract_bearer_token(request)
-    if not raw:
-        return {"error": "No refresh token provided"}, 400
+    body = json.loads(request.body)
+    refresh_raw = body.get("refresh", "")
 
-    # Validate the refresh token specifically
-    from www.content.models.others import Token
-    token_obj, user = Token.validate_raw_token(raw, accept_types={"refresh"})
-    if user is None:
+    if not refresh_raw:
+        return {"error": "refresh token is required"}, 400
+
+    # Decode and validate the refresh JWT
+    payload = _jwt_decode(refresh_raw)
+    if payload is None:
         return {"error": "Invalid or expired refresh token"}, 401
 
-    # Issue a fresh access token
-    new_token = _issue_token(user, token_type="access")
+    token_type = payload.get("token_type")
+    if token_type != "refresh":
+        return {"error": "Token is not a refresh token"}, 401
 
-    from www.schemas import UserResponse, AuthTokenResponse
+    user = jwt_get_user_from_payload(payload)
+    if user is None:
+        return {"error": "User not found"}, 401
+
+    # Issue a fresh access JWT (no new refresh token — rotation is handled client-side)
+    tokens = issue_jwt_tokens(user)
+
+    from www.schemas import AuthRefreshResponse, AuthTokenResponse, UserResponse
     return AuthTokenResponse(
-        key=new_token,
+        access=tokens["access"],
+        refresh=tokens["refresh"],
         user=UserResponse(
             id=user.pk, email=user.email, username=user.username,
             first_name=user.first_name, last_name=user.last_name,
         ),
+        expires_in=tokens["expires_in"],
     ).model_dump()
 
 

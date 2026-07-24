@@ -231,7 +231,7 @@ def _ensure_tables(use_migrations: bool) -> None:
         # ── Ensure ci_datatoken table (needed by DataToken.objects.create / tag_row) ──
         if "ci_datatoken" not in table_names:
             try:
-                from django_fusion.models import DataToken
+                from django_fusion.core.models import DataToken
                 with connection.schema_editor() as schema_editor:
                     schema_editor.create_model(DataToken)
                 logger.info("Created ci_datatoken table for DataToken sync tracking")

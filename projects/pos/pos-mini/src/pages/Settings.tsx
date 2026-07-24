@@ -319,7 +319,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
-  const { mode, variant, setVariant, toggleMode } = useTheme();
+  const { mode, variant, followSystem, setVariant, setMode, toggleMode, setFollowSystem } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('general');
   const [settings, setSettings] = useState<SettingsType>({
@@ -954,7 +954,7 @@ export default function Settings() {
 
   const renderAppearanceTab = () => (
     <div className="max-w-2xl mx-auto">
-      {/* Light / Dark Mode Toggle */}
+      {/* Light / Dark / System Mode Toggle */}
       <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 mb-6 border border-indigo-200 dark:border-indigo-700/30">
         <div className="flex items-center gap-3 mb-5">
           <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
@@ -965,22 +965,58 @@ export default function Settings() {
             )}
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">{mode === 'dark' ? t('settings.appearanceTab.darkMode') : t('settings.appearanceTab.lightMode')}</h3>
+            <h3 className="font-semibold text-slate-900 dark:text-white">
+              {followSystem ? t('settings.appearanceTab.systemMode') : (mode === 'dark' ? t('settings.appearanceTab.darkMode') : t('settings.appearanceTab.lightMode'))}
+            </h3>
             <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.appearanceTab.modeDescription')}</p>
           </div>
         </div>
-        <button
-          type="button"
-          onClick={toggleMode}
-          className={`relative w-full h-14 rounded-xl flex items-center justify-between px-5 transition-all duration-300 ${mode === 'dark' ? 'bg-slate-800 border border-slate-600' : 'bg-amber-50 border border-amber-200'}`}
-        >
-          <span className={`text-sm font-medium ${mode === 'dark' ? 'text-slate-300' : 'text-amber-700'}`}>
-            {mode === 'dark' ? '🌙 Dark' : '☀️ Light'}
+
+        {/* Mode selector: three choices */}
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+          <button
+            type="button"
+            onClick={() => { setMode('light'); }}
+            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${!followSystem && mode === 'light' ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 hover:border-slate-300'}`}
+          >
+            <span className="text-lg">☀️</span>
+            <span className={`${!followSystem && mode === 'light' ? 'text-amber-700 dark:text-amber-300' : 'text-slate-700 dark:text-slate-300'}`}>Light</span>
+            {!followSystem && mode === 'light' && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setMode('dark'); }}
+            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${!followSystem && mode === 'dark' ? 'border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 hover:border-slate-300'}`}
+          >
+            <span className="text-lg">🌙</span>
+            <span className={`${!followSystem && mode === 'dark' ? 'text-indigo-600 dark:text-indigo-300' : 'text-slate-700 dark:text-slate-300'}`}>Dark</span>
+            {!followSystem && mode === 'dark' && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-400" />
+            )}
+          </button>
+          <button
+            type="button"
+            onClick={() => { setFollowSystem(true); }}
+            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${followSystem ? 'border-teal-400 bg-teal-50 dark:bg-teal-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 hover:border-slate-300'}`}
+          >
+            <span className="text-lg">🖥️</span>
+            <span className={`${followSystem ? 'text-teal-600 dark:text-teal-300' : 'text-slate-700 dark:text-slate-300'}`}>Auto</span>
+            {followSystem && (
+              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400" />
+            )}
+          </button>
+        </div>
+
+        {/* Current mode indicator */}
+        <div className="mt-3 flex items-center justify-center gap-2">
+          <span className="text-xs text-slate-500 dark:text-gray-400">
+            {followSystem
+              ? t('settings.appearanceTab.systemDescription', 'Current: {{mode}}', { mode: mode === 'dark' ? '🌙 Dark' : '☀️ Light' })
+              : t('settings.appearanceTab.fixedDescription', 'Fixed to {{mode}}', { mode: mode === 'dark' ? '🌙 Dark' : '☀️ Light' })}
           </span>
-          <div className={`w-12 h-7 rounded-full p-1 transition-colors duration-300 ${mode === 'dark' ? 'bg-indigo-500' : 'bg-amber-400'}`}>
-            <div className={`w-5 h-5 bg-white rounded-full shadow-md transition-transform duration-300 ${mode === 'dark' ? 'translate-x-5' : 'translate-x-0'}`} />
-          </div>
-        </button>
+        </div>
       </div>
 
       {/* Theme Variant Selector */}

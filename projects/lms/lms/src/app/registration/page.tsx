@@ -5,10 +5,24 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { HiAcademicCap, HiEye, HiEyeOff } from 'react-icons/hi';
 import { useRegisterMutation } from '@/store/api/endpoints/auth';
+import { useAppDispatch } from '@/store/hooks';
+import { setTokens } from '@/store/session/sessionSlice';
+
+interface FormState {
+  email: string;
+  first_name: string;
+  last_name: string;
+  password: string;
+  password2: string;
+  role?: string;
+}
 
 export default function RegistrationPage() {
   const router = useRouter();
-  const [form, setForm] = useState<{ username: string; email: string; first_name: string; last_name: string; password: string; password2: string; role: 'student' | 'instructor' }>({ username: '', email: '', first_name: '', last_name: '', password: '', password2: '', role: 'student' });
+  const dispatch = useAppDispatch();
+  const [form, setForm] = useState<FormState>({
+    email: '', first_name: '', last_name: '', password: '', password2: '',
+  });
   const [showPassword, setShowPassword] = useState(false);
   const [register, { isLoading, error }] = useRegisterMutation();
 
@@ -16,9 +30,19 @@ export default function RegistrationPage() {
     e.preventDefault();
     if (form.password !== form.password2) return;
     try {
-      const result = await register(form).unwrap();
-      localStorage.setItem('lms_token', result.token);
-      router.push(form.role === 'instructor' ? '/instructor-dashboard' : '/student-dashboard');
+      const result = await register({
+        email: form.email,
+        password: form.password,
+        first_name: form.first_name,
+        last_name: form.last_name,
+      }).unwrap();
+      // Persist JWT tokens to Redux store + localStorage
+      dispatch(setTokens({
+        access: result.access,
+        refresh: result.refresh,
+        expires_in: result.expires_in,
+      }));
+      router.push('/student-dashboard');
     } catch { /* handled by RTK */ }
   };
 
@@ -34,7 +58,7 @@ export default function RegistrationPage() {
         <form onSubmit={handleSubmit} className="card p-8 space-y-4">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {(error as any)?.data?.detail || 'Registration failed. Please try again.'}
+              {(error as any)?.data?.error || 'Registration failed. Please try again.'}
             </div>
           )}
 
@@ -49,12 +73,6 @@ export default function RegistrationPage() {
               <input type="text" value={form.last_name} onChange={(e) => setForm({...form, last_name: e.target.value})}
                 className="input-field" required />
             </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
-            <input type="text" value={form.username} onChange={(e) => setForm({...form, username: e.target.value})}
-              className="input-field" required />
           </div>
 
           <div>

@@ -10,6 +10,7 @@
 |---------|--------|-------------|
 | **Course Management** | ✅ Live | Wagtail-based course pages with modules |
 | **Student Enrollment** | ✅ Live | Self-enrollment and admin-managed |
+| **Unified Checkout** | ✅ Live | `useCheckout` hook combining enrollment + payment state machine |
 | **Certifications** | ✅ Live | Auto-generated completion certificates |
 | **Blog** | ✅ Live | Wagtail blog with tags and categories |
 | **Auth** | ✅ Live | django-allauth with social login |
@@ -17,7 +18,7 @@
 | **Newsletter** | ✅ Live | Email newsletter with Wagtail snippets |
 | **i18n** | ✅ Live | Multi-language with RTL support |
 | **PWA** | ✅ Live | Progressive Web App support |
-| **Payments** | ✅ Live | Stripe + Razorpay integration |
+| **Payments** | ✅ Live | Stripe + PayPal + Paymo (via `useCheckout`) |
 | **Live Chat** | ✅ Live | Customer support chat widget |
 
 ---

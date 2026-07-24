@@ -1,36 +1,57 @@
-# Site Template Overrides
+# Site Template Overrides — LMS Demo
 
-Scope: this site template tree.
+**Path:** `projects/lms/templates/` — Site-specific template overrides
 
 ## Lookup Strategy
-
 Site templates here are resolved before the shared `projects/assets/templates/` layer. Keep files in this tree only when they are intentional site-specific overrides, branded shells, or templates that must shadow shared behavior.
 
+## Resolution Context
+```
+1. Site templates (this directory)                    ← highest priority (you are here)
+2. Plugin templates (projects/lms/plugins/**/templates/)
+3. App templates (projects/lms/www/**/templates/)
+4. Shared templates (projects/assets/templates/)      ← fallback
+```
+
 ## Override Rules
+- Prefer deleting exact duplicates and letting Django load `projects/assets/templates/<relative-path>`
+- Keep thin overrides for branded variations; move reusable markup into shared includes
+- Preserve existing template names, include names, block names, and context variables
+- Use `fragment_name` for fragment identifiers and context keys; do not introduce alternate naming
+- When adding or changing a site override, compare the same relative path in shared templates first
 
-- Prefer deleting exact duplicates and allowing Django to load `projects/assets/templates/<relative-path>`.
-- Keep thin overrides for branded variations; move reusable repeated markup into shared includes under `projects/assets/templates/components/`.
-- Preserve existing template names, include names, block names, and context variables to avoid breaking Wagtail/Django rendering.
-- Use `fragment_name` for fragment identifiers and context keys; do not introduce alternate fragment naming.
-- When adding or changing a site override, compare the same relative path in `projects/assets/templates/` first.
-# Template Root Instructions: Site Templates
+## Quick Reference
 
-## Scope
-This directory is a site-specific template root for `projects/lms/templates`. Follow the shared template rules in `projects/assets/templates/AGENTS.md` first, then apply these local notes.
+### Layout Variants Available
+| Variant | Usage |
+|---------|-------|
+| `layout/apps/skeleton.html` | App-style layout |
+| `layout/landing/skeleton.html` | Marketing/landing layout |
+| `layout/learning/skeleton.html` | LMS/learning layout |
+| `layout/profile/skeleton.html` | User profile layout |
+| `layout/auth/skeleton.html` | Authentication layout |
 
-## Expected Template Structure
-Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
+### Available Components (from shared library)
+| Component | Tag |
+|-----------|-----|
+| Form | `{% comp "form/form" /%}` |
+| Modal | `{% comp "modal/modal" /%}` |
+| Pagination | `{% comp "pagination/numbers" /%}` |
+| Notification | `{% comp "notification" /%}` |
+| Table | `{% comp "table" /%}` |
+| Chat Bubble | `{% comp "chat/bubble" /%}` |
+| Breadcrumbs | `{% comp "breadcrumbs" /%}` |
+| Search | `{% comp "search/search" /%}` |
 
-## Local Override Notes
-- Keep templates here focused on site-only presentation and template overrides.
-- Prefer `projects/assets/templates` for cross-site components and shared behavior.
-- Prefer this template root for presentation or overrides that are specific to this scope.
-- Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
-- Use `fragment_name` for fragment identifiers and context keys.
-- Use `{% include %}` for reusable components. Do not replace dynamic content with static demo text.
-- Use BEM-style CSS classes and do not use IDs for styling.
+## Site-Specific Conventions
+- Use BEM classes: `block__element--modifier`
+- No IDs for styling
+- Prefer `{% comp "path" /%}` over `{% include %}` for auto-registered components
+- Use `{% extends "base_page.html" %}` for Wagtail pages
+- Use `fragment_name` for HTMX fragment responses
 
 ## Customization Tips
-- Search nearby templates first, then shared templates, before adding a new partial.
-- When replacing a component, copy the equivalent data bindings from the old markup to the new include or partial.
-- Check related app, plugin, site, and shared templates with targeted `rg` searches for include paths, block names, context variables, and CSS classes.
+1. Search nearby templates first, then shared templates, before adding a new partial
+2. When replacing a component, preserve context variable names and bindings
+3. Check plugins and shared templates with targeted searches for include paths, block names, and context variables
+4. Use `{% comp_include %}` for component tracking in auth flows

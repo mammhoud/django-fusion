@@ -5,10 +5,13 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { HiAcademicCap, HiEye, HiEyeOff } from 'react-icons/hi';
 import { useLoginMutation } from '@/store/api/endpoints/auth';
+import { useAppDispatch } from '@/store/hooks';
+import { setTokens } from '@/store/session/sessionSlice';
 
 export default function LoginPage() {
   const router = useRouter();
-  const [username, setUsername] = useState('');
+  const dispatch = useAppDispatch();
+  const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [login, { isLoading, error }] = useLoginMutation();
@@ -16,10 +19,14 @@ export default function LoginPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const result = await login({ username, password }).unwrap();
-      localStorage.setItem('lms_token', result.token);
-      const role = result.user.role;
-      router.push(role === 'instructor' ? '/instructor-dashboard' : '/student-dashboard');
+      const result = await login({ email, password }).unwrap();
+      // Persist JWT tokens to Redux store + localStorage
+      dispatch(setTokens({
+        access: result.access,
+        refresh: result.refresh,
+        expires_in: result.expires_in,
+      }));
+      router.push('/student-dashboard');
     } catch {
       // Error handled via the `error` variable from RTK Query
     }
@@ -37,21 +44,21 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="card p-8 space-y-5">
           {error && (
             <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-              {(error as any)?.data?.detail || 'Invalid credentials. Please try again.'}
+              {(error as any)?.data?.error || 'Invalid credentials. Please try again.'}
             </div>
           )}
 
           <div>
-            <label htmlFor="username" className="block text-sm font-medium text-gray-700 mb-1">
-              Username
+            <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-1">
+              Email
             </label>
             <input
-              id="username"
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="input-field"
-              placeholder="Enter your username"
+              placeholder="Enter your email"
               required
               autoFocus
             />

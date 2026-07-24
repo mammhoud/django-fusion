@@ -30,6 +30,7 @@ dist-ssr
 
 # Build artifacts and checksums are generated, don't commit
 src-tauri/target/
+sidecar/.venv/
 sidecar/.venv-build/
 sidecar/__pycache__/
 sidecar/build/
