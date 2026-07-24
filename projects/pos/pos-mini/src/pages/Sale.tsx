@@ -490,7 +490,7 @@ export default function Sale() {
   const filterActive = debouncedSearchQuery.trim() !== '' || selectedCategory !== 'all';
 
   return (        <PageLayout title={t('sale.title')} background="bg-slate-100 dark:bg-slate-900">
-      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6">{/* ── Sidebar Toggle Button (desktop only) ── */}
+      <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-full overflow-x-hidden">{/* ── Sidebar Toggle Button (desktop only) ── */}
         <div          className="hidden lg:flex items-start pt-1 -mr-2 z-20">
           <motion.button
             whileHover={{ scale: 1.08 }}
@@ -507,7 +507,7 @@ export default function Sale() {
         </div>
 
         {/* ── Main Content (products + cart) ── */}
-        <div className="flex-1 min-w-0">{/* Order Type Selector — visible on mobile only */}
+        <div className="flex-1 min-w-0 pb-20 lg:pb-0">{/* Order Type Selector — visible on mobile only */}
           <div className="lg:hidden">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -841,36 +841,91 @@ export default function Sale() {
             </motion.div>
           )}
 
-          {/* Sell Button */}
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            onClick={handleSell}
-            disabled={cart.length === 0 || isSelling || isLoading}
-            className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-semibold
-              transition-all duration-300 shadow-lg hover:shadow-xl ${
-                cart.length === 0 || isSelling || isLoading
-                  ? 'bg-gray-500/50 cursor-not-allowed'
-                  : 'bg-teal-500'
-              }`}
-          >
-            {isSelling ? (
-              <>
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-                />
-                <span>{t('sale.processing')}</span>
-              </>
-            ) : (
-              <>
-                <MdShoppingCart className="text-xl" />
-                {t('sale.completeSale')}
-              </>
-            )}
-          </motion.button>
+          {/* Sell Button — desktop only (mobile uses sticky bar below) */}
+          <div className="hidden lg:block">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              onClick={handleSell}
+              disabled={cart.length === 0 || isSelling || isLoading}
+              className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-semibold
+                transition-all duration-300 shadow-lg hover:shadow-xl ${
+                  cart.length === 0 || isSelling || isLoading
+                    ? 'bg-gray-500/50 cursor-not-allowed'
+                    : 'bg-teal-500'
+                }`}
+            >
+              {isSelling ? (
+                <>
+                  <motion.div
+                    animate={{ rotate: 360 }}
+                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                  />
+                  <span>{t('sale.processing')}</span>
+                </>
+              ) : (
+                <>
+                  <MdShoppingCart className="text-xl" />
+                  {t('sale.completeSale')}
+                </>
+              )}
+            </motion.button>
+          </div>
         </div>{/* end main-content */}
+
+        {/* ── Sticky Mobile Checkout Bar ── */}
+        <motion.div
+          initial={false}
+          animate={cart.length > 0 ? { y: 0 } : { y: 120 }}
+          className="fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none"
+        >
+          <div className="pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl
+            border-t border-slate-200 dark:border-slate-700
+            px-4 py-3 pb-[env(safe-area-inset-bottom,0.75rem)]
+            shadow-2xl shadow-black/10 dark:shadow-black/40">
+            <div className="flex items-center justify-between gap-3">
+              <div className="min-w-0 flex-1">
+                <p className="text-xs text-slate-500 dark:text-gray-400">
+                  {t('sale.itemsSelected', { count: cart.length })}
+                </p>
+                <p className="text-lg font-bold text-teal-600 dark:text-teal-400">
+                  {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
+                </p>
+                {deliveryFee > 0 && (
+                  <p className="text-[10px] text-slate-400 dark:text-gray-500">
+                    {t('sale.deliveryFee')}: {settings.currency} {deliveryFee.toFixed(2)}
+                  </p>
+                )}
+              </div>
+              <motion.button
+                whileTap={{ scale: 0.95 }}
+                onClick={handleSell}
+                disabled={cart.length === 0 || isSelling || isLoading}
+                className="shrink-0 px-5 py-2.5 rounded-xl bg-teal-500 text-white font-semibold
+                  flex items-center gap-2 shadow-lg shadow-teal-500/30 dark:shadow-teal-500/20
+                  transition-all duration-200 active:scale-95
+                  disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
+              >
+                {isSelling ? (
+                  <>
+                    <motion.div
+                      animate={{ rotate: 360 }}
+                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                      className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                    />
+                    <span className="text-sm">{t('sale.processing')}</span>
+                  </>
+                ) : (
+                  <>
+                    <MdShoppingCart className="text-lg" />
+                    <span className="text-sm">{t('sale.completeSale')}</span>
+                  </>
+                )}
+              </motion.button>
+            </div>
+          </div>
+        </motion.div>
 
         {/* ── Desktop Sidebar — Order Details Panel ── */}
         <div
