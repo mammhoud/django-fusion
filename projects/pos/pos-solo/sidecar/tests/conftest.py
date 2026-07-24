@@ -76,8 +76,8 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
     except Exception:
         pass
     try:
-        from models.extra import Ingredient, Role
-        models_to_create.extend([Ingredient, Role])
+        from models.extra import Ingredient, Role, Recipe, ReceiptTemplate, InventoryAdjustment
+        models_to_create.extend([Ingredient, Role, Recipe, ReceiptTemplate, InventoryAdjustment])
     except Exception:
         pass
     try:
@@ -433,5 +433,84 @@ def sync_log_factory(django_bootstrap) -> Callable[..., Any]:
         }
         defaults.update(kwargs)
         return SyncLog.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def recipe_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for Recipe model instances.
+
+    Requires a ``product_factory`` or explicit ``product=`` kwarg.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.extra import Recipe
+        from models.pos import Product
+        if "product" not in kwargs:
+            kwargs["product"] = Product.objects.create(
+                name=f"RecipeProduct-{_counter[0]}", price=5.99,
+            )
+        defaults = {
+            "name": kwargs.pop("name", f"Recipe-{_counter[0]}"),
+            "instructions": "Mix and serve.",
+            "yield_quantity": 1,
+            "is_active": True,
+        }
+        defaults.update(kwargs)
+        return Recipe.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def receipt_template_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for ReceiptTemplate model instances."""
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.extra import ReceiptTemplate
+        defaults = {
+            "name": kwargs.pop("name", f"Template-{_counter[0]}"),
+            "description": "Default receipt layout",
+            "template_html": "<h1>{{restaurant_name}}</h1>",
+            "is_default": False,
+            "is_active": True,
+        }
+        defaults.update(kwargs)
+        return ReceiptTemplate.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def inventory_adjustment_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for InventoryAdjustment model instances.
+
+    Requires an ``ingredient_factory`` or explicit ``ingredient=`` kwarg.
+    The custom ``save()`` method auto-populates ``previous_quantity``
+    from the ingredient and updates ``current_quantity``.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.extra import InventoryAdjustment, Ingredient
+        if "ingredient" not in kwargs:
+            kwargs["ingredient"] = Ingredient.objects.create(
+                name=f"AdjIngredient-{_counter[0]}", unit="kg",
+                current_quantity=50.0,
+            )
+        defaults = {
+            "quantity": kwargs.pop("quantity", 5),
+            "adjustment_type": "addition",
+            "reason": "correction",
+            "notes": "Test adjustment",
+        }
+        defaults.update(kwargs)
+        return InventoryAdjustment.objects.create(**defaults)
 
     return _create
