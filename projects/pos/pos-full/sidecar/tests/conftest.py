@@ -71,8 +71,8 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
     except Exception:
         pass
     try:
-        from models.pos import Category, Product, Customer, Sale, Employee
-        models_to_create.extend([Category, Product, Customer, Sale, Employee])
+        from models.pos import Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee
+        models_to_create.extend([Category, Product, Customer, Sale, SaleItem, InventoryTransaction, Employee])
     except Exception:
         pass
     try:
@@ -358,6 +358,68 @@ def employee_factory(django_bootstrap) -> Callable[..., Any]:
 
 
 @pytest.fixture
+def sale_item_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for SaleItem model instances.
+
+    Requires a ``sale_factory``/``sale=`` and ``product_factory``/``product=`` kwarg.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.pos import SaleItem, Product, Sale, Customer
+        if "sale" not in kwargs:
+            kwargs["sale"] = Sale.objects.create(
+                customer=Customer.objects.create(
+                    first_name=f"SI-Cust-{_counter[0]}", last_name="T",
+                    email=f"sic{_counter[0]}@t.com",
+                ),
+                subtotal=9.99, total=11.99, tax_amount=2.00,
+            )
+        if "product" not in kwargs:
+            kwargs["product"] = Product.objects.create(
+                name=f"SI-Product-{_counter[0]}", price=5.99,
+            )
+        defaults = {
+            "product_name": kwargs.pop("product_name", f"Item-{_counter[0]}"),
+            "quantity": kwargs.pop("quantity", 1),
+            "unit_price": kwargs.pop("unit_price", 5.99),
+            "line_total": kwargs.pop("line_total", 5.99),
+        }
+        defaults.update(kwargs)
+        return SaleItem.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def inventory_transaction_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for InventoryTransaction model instances.
+
+    Requires a ``product_factory`` or explicit ``product=`` kwarg.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.pos import InventoryTransaction, Product
+        if "product" not in kwargs:
+            kwargs["product"] = Product.objects.create(
+                name=f"InvTxnProduct-{_counter[0]}", price=4.99,
+            )
+        defaults = {
+            "transaction_type": kwargs.pop("transaction_type", "in"),
+            "quantity": kwargs.pop("quantity", 10),
+            "notes": "Test transaction",
+            "inventory_id": "main",
+        }
+        defaults.update(kwargs)
+        return InventoryTransaction.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
 def ingredient_factory(django_bootstrap) -> Callable[..., Any]:
     """Factory for Ingredient model instances."""
     _counter = [0]
@@ -402,16 +464,19 @@ def role_factory(django_bootstrap) -> Callable[..., Any]:
 
 @pytest.fixture
 def category_factory(django_bootstrap) -> Callable[..., Any]:
-    """Factory for Category model instances."""
-    _counter = [0]
+    """Factory for Category model instances. Slug is unique=True so each
+    factory call uses a random suffix to avoid cross-test collisions.
+    """
+    import uuid as _uuid
 
     def _create(**kwargs) -> Any:
-        _counter[0] += 1
         from models.pos import Category
+        uid = _uuid.uuid4().hex[:6]
         defaults = {
-            "name": kwargs.pop("name", f"Category-{_counter[0]}"),
-            "slug": f"cat-{_counter[0]}",
+            "name": kwargs.pop("name", f"Category-{uid}"),
+            "slug": kwargs.pop("slug", f"cat-{uid}"),
             "is_active": True,
+            "display_order": 0,
         }
         defaults.update(kwargs)
         return Category.objects.create(**defaults)
