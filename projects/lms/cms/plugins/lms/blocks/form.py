@@ -66,6 +66,7 @@ class SimpleFormFieldBlock(blocks.StructBlock):
     )
 
     class Meta:
+        app_label = "lms"
         icon = "th-list"
         label = _("Form Field")
 
@@ -114,6 +115,7 @@ class MinimalContactFormBlock(blocks.StructBlock):
     )
 
     class Meta:
+        app_label = "lms"
         icon = "paper-plane"
         label = _("Contact Form")
         template = "blocks/minimal_contact_form.html"

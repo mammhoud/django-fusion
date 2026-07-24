@@ -202,6 +202,7 @@ class BlogIndexPage(RoutablePageMixin, Page):
         return self.serve(request)
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Blog Index")
         verbose_name_plural = _("Blog Index Pages")
 

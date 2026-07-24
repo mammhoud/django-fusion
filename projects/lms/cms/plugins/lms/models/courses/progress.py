@@ -144,6 +144,7 @@ class LessonProgress(DefaultBase):
     last_accessed_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = "lms"
         unique_together = ['user', 'lesson']
         ordering = ['-last_accessed_at']
         indexes = [

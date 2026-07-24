@@ -4,6 +4,7 @@ from www.core.base.models.locations import *  # type: ignore
 
 class AddressFilter(django_filters.FilterSet):
     class Meta:
+        app_label = "accounts"
         model = Address
         fields = {
             "city": ["exact"],
@@ -16,12 +17,14 @@ class AddressFilter(django_filters.FilterSet):
 
 class CityFilter(django_filters.FilterSet):
     class Meta:
+        app_label = "accounts"
         model = City
         fields = {"name": ["exact", "icontains"], "country__name": ["exact", "icontains"]}
 
 
 class CountryFilter(django_filters.FilterSet):
     class Meta:
+        app_label = "accounts"
         model = Country
         fields = {"name": ["exact", "icontains"], "region__name": ["exact", "icontains"]}
 

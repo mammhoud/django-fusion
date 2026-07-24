@@ -246,6 +246,7 @@ class LessonResource(Orderable):
     ]
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Lesson Resource")
         verbose_name_plural = _("Lesson Resources")
         # ordering = ["order"]

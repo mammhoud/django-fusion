@@ -24,6 +24,7 @@ class SpecializationFilterSet(RevisionFilterSetMixin, WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "lms"
         model = Specialization
         fields = {}
 

@@ -45,6 +45,7 @@ class Cart(models.Model):
     updated_at = models.DateTimeField(_("updated at"), auto_now=True)
 
     class Meta:
+        app_label = "products"
         verbose_name = _("Cart")
         verbose_name_plural = _("Carts")
         constraints = [
@@ -111,6 +112,7 @@ class CartItem(models.Model):
     added_at = models.DateTimeField(_("added at"), auto_now_add=True)
 
     class Meta:
+        app_label = "products"
         verbose_name = _("Cart Item")
         verbose_name_plural = _("Cart Items")
         ordering = ["added_at"]

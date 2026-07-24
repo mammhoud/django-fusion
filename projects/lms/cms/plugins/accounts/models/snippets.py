@@ -22,6 +22,7 @@ class AuthEmailTemplate(models.Model):
     is_active = models.BooleanField(default=False, verbose_name=_("Active"))
 
     class Meta:
+        app_label = "accounts"
         db_table = "accounts_registration_authemailtemplate"
         verbose_name = _("Auth Email Template")
         verbose_name_plural = _("Auth Email Templates")
