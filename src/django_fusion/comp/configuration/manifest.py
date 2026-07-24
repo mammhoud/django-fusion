@@ -124,7 +124,7 @@ def generate_asset_manifest() -> dict[str, list[str]]:
     Returns:
         dict[str, list[str]]: A dictionary mapping template paths to lists of component names.
     """
-    from django_fusion.comp.loader.templates import gather_block_tag_template_usage
+    from django_fusion.comp.fragment.loader.templates import gather_block_tag_template_usage
 
     template_component_map: dict[str, set[str]] = {}
 

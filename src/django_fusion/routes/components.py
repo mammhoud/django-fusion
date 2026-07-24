@@ -47,6 +47,7 @@ from django.http import HttpRequest
 from django.urls import URLResolver, path
 from django.urls.resolvers import RoutePattern
 
+from django_fusion.comp.configuration.conf import get_settings
 from django_fusion.site.interface._context_mixins import is_htmx_request
 from django_fusion.site.interface.page_handler import ComponentViews
 
@@ -64,7 +65,7 @@ class RoutableComponent(ComponentViews, BaseViewset):
     * ``setup()`` — calls ``has_permission()`` → ``PermissionDenied``.
     * ``has_permission()`` — checks ``permission_required``.
     * ``get_breadcrumbs()`` — traverses the parent viewset hierarchy.
-    * Menu integration: ``menu_label``, ``menu_order``, ``show_in_menu``. or 
+    * Menu integration: ``menu_label``, ``menu_order``, ``show_in_menu``.
 
     Template convention
     -------------------
@@ -108,6 +109,26 @@ class RoutableComponent(ComponentViews, BaseViewset):
 
     # page_title alias — kept for backward compat with PageHandler-style views
     page_title: str | None = None  # type: ignore[assignment]
+
+    # Rendering strategy hint for Bolt/Next.js consumers. When True, the
+    # component signals that the Fusion fragment should be rendered server
+    # side first and the HTML injected into the Next.js page.
+    #
+    # The default value is read from ``COMPONENTS.FUSION_RENDER_FIRST_DEFAULT``
+    # in Django settings; set the attribute on a subclass to override.
+    fusion_render_first: bool | None = None
+
+    @classmethod
+    def get_fusion_render_first(cls) -> bool:
+        """Return the effective ``fusion_render_first`` value.
+
+        If the attribute is explicitly set on the class, that value wins.
+        Otherwise fall back to the global ``COMPONENTS.FUSION_RENDER_FIRST_DEFAULT``
+        setting (default ``False``).
+        """
+        if cls.fusion_render_first is not None:
+            return bool(cls.fusion_render_first)
+        return bool(get_settings().FUSION_RENDER_FIRST_DEFAULT)
 
     # ------------------------------------------------------------------
     # Fragment name — default derived from route_name
@@ -233,6 +254,8 @@ directory
                 "page_title": effective_title,
                 "icon": self.icon,
                 "component": self,
+                "fusion_render_first": self.get_fusion_render_first(),
+                "fragment_name": self.get_fragment_name(),
             }
         )
         return context

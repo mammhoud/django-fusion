@@ -1,0 +1,366 @@
+{% load i18n static %}{# django-fusion components/notification/notification.html
+   ────────────────────────────────────────────────────────────────────────
+   Unified notification system: toasts, alerts, popups, Django messages,
+   and SSE live-update indicator — all in one include.
+
+   Include ONCE in base.html, just before </body>:
+     {% comp "components/notification/notification.html" /%}
+
+   CONTEXT VARIABLES (all optional):
+     hx_connection : SSE endpoint URL; if set, activates live notifications
+                     (defaults to {% url 'plugins:notifications' %})
+
+   ── JavaScript API (after include) ──────────────────────────────────────
+     Drop-in API (auto-bound when component mounts). All calls accept a
+     plain object and dispatch the appropriate DOM/HTMX event:
+
+       showToast(level, message, title, duration)
+         level    : 'success' | 'danger' | 'warning' | 'info'
+         message  : string
+         title    : string (optional, defaults to level label)
+         duration : ms (optional, default 5000)
+
+       showAlert(opts)
+         opts.level, opts.title, opts.message, opts.icon, opts.badge, opts.details
+
+       showErrorAlert(message)  — shorthand for showAlert with level='danger'
+
+       showPopup(opts)
+         opts.title, opts.message, opts.size, opts.showCancel, opts.actions
+
+   ── HTMX OOB shortcut templates ─────────────────────────────────────────
+     Return any of the four concrete <template> fragments from a view to
+     inject a toast via hx-swap-oob="beforeend:#toast-container":
+
+       success  →  <template id="toast-success">
+       danger   →  <template id="toast-error">
+       warning  →  <template id="toast-warning">
+       info     →  <template id="toast-info">
+
+     All four accept:  {{ message }}
+   ────────────────────────────────────────────────────────────────────────
+#}
+
+{# ── Main notification container ────────────────────────────────────────── #}
+<div data-notifications-init
+     id="notification-container"
+     class="notification-system notifications-init notification-system--fixed"
+     {% if request.htmx %}hx-swap-oob="true"{% endif %}>
+
+    {# Django Messages — hidden, processed into toasts by JS on DOMContentLoaded #}
+    {% if messages %}
+    <div id="django-messages"
+         class="notification-system__django-messages django-messages-container"
+         style="display:none;"
+         data-processed="false">
+        {% for message in messages %}
+        <div class="notification-system__message django-message django-message--{{ message.tags|default:'info' }}"
+             data-level="{{ message.tags|default:'info' }}"
+             data-message="{{ message|escape }}"
+             data-tags="{{ message.extra_tags|default:'' }}">
+            <div class="django-message__content">
+                <i class="django-message__icon
+                    {% if message.tags == 'success' %}bi-check-circle-fill
+                    {% elif message.tags == 'error' %}bi-x-circle-fill
+                    {% elif message.tags == 'warning' %}bi-exclamation-triangle-fill
+                    {% else %}bi-info-circle-fill{% endif %} me-2"></i>
+                <span class="django-message__text">{{ message }}</span>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    {# Toast container — top-right, z-index 1055, auto-dismiss #}
+    <div id="toast-container"
+         class="notification-system__toasts toast-container position-fixed p-3"
+         style="z-index:1055;top:20px;right:20px;"
+         aria-live="polite"
+         aria-atomic="true">
+    </div>
+
+    {# Alert container — inline persistent, manual dismissal #}
+    <div id="alert-container"
+         class="notification-system__alerts alert-container mb-3">
+    </div>
+
+    {# Popup container — modal-style, blocks interaction #}
+    <div id="popup-container"
+         class="notification-system__popups"
+         style="z-index:1050;">
+    </div>
+
+    {# SSE live-update indicator #}
+    <div id="sse-indicator"
+         {% if hx_connection %}sse-connect="{{ hx_connection }}"
+         {% else %}sse-connect="{% url 'plugins:notifications' %}"{% endif %}
+         class="notification-system__sse-indicator"
+         style="display:none;"
+         aria-hidden="true">
+        <div class="sse-indicator__dot"></div>
+        <span class="sse-indicator__text">{% trans "Live updates" %}</span>
+    </div>
+
+    {% if request.user.is_authenticated and hx_connection %}
+    <div id="sse-connection" class="notification-system__sse-connection"></div>
+    {% endif %}
+</div>
+
+{# ── Generic <template> elements — cloned by JS ─────────────────────────── #}
+
+{# Generic toast — for showToast() JS calls #}
+<template id="toast-template">
+    <div class="notification-system__toast toast" role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+        <div class="toast__header toast-header d-flex align-items-center bg-{{ level }} text-white">
+            <i class="toast__icon {{ icon }} me-2 fs-5"></i>
+            <div class="toast__content flex-grow-1">
+                <strong class="toast__title me-auto">{{ title }}</strong>
+                <small class="toast__time text-white-50 opacity-75">{{ time }}</small>
+            </div>
+            <button type="button" class="toast__close btn-close btn-close-white ms-2"
+                    data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+        </div>
+        <div class="toast__body toast-body theme-bg-secondary">
+            <div class="toast__message d-flex align-items-center">
+                {% if icon %}<i class="toast__message-icon {{ icon }} me-2 opacity-75"></i>{% endif %}
+                <span class="toast__message-text">{{ message }}</span>
+            </div>
+            {% if actions %}
+            <div class="toast__actions mt-2">{{ actions|safe }}</div>
+            {% endif %}
+        </div>
+    </div>
+</template>
+
+{# Generic alert — for showAlert() JS calls #}
+<template id="alert-template">
+    <div class="notification-system__alert alert alert-{{ level }} alert-dismissible fade show d-flex align-items-center" role="alert">
+        <div class="alert__icon-container me-2">
+            <i class="alert__icon {{ icon }} fs-5"></i>
+        </div>
+        <div class="alert__content flex-grow-1">
+            <div class="alert__header d-flex align-items-center mb-1">
+                <strong class="alert__title me-2">{{ title }}</strong>
+                {% if badge %}
+                <span class="alert__badge badge rounded-pill ms-2">{{ badge }}</span>
+                {% endif %}
+            </div>
+            <div class="alert__body">
+                <span class="alert__message">{{ message }}</span>
+                {% if details %}
+                <details class="alert__details mt-2">
+                    <summary class="alert__details-summary btn btn-sm btn-link p-0">{% trans "Details" %}</summary>
+                    <div class="alert__details-content mt-1 small opacity-75">{{ details|safe }}</div>
+                </details>
+                {% endif %}
+            </div>
+        </div>
+        <button type="button" class="alert__close btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+    </div>
+</template>
+
+{# Error alert shorthand — for showErrorAlert() / inline HTMX error swaps #}
+<template id="error-alert-template">
+    <div class="alert alert-danger d-flex align-items-center gap-3 shadow-sm border-0 my-3" role="alert">
+        <i class="bi bi-exclamation-octagon-fill fs-4 text-danger"></i>
+        <div class="flex-grow-1">
+            <strong class="d-block">{% trans "An error occurred" %}</strong>
+            <span class="small text-muted">{{ message|default:_("Failed to complete your request. Please try again.") }}</span>
+        </div>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+    </div>
+</template>
+
+{# Generic popup — for showPopup() JS calls #}
+<template id="popup-template">
+    <div class="notification-system__popup modal fade" role="dialog" tabindex="-1" data-bs-backdrop="static">
+        <div class="modal-dialog modal-dialog-centered {{ popup_size|default:'modal-md' }}">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">{{ title }}</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+                </div>
+                <div class="modal-body">{{ message|safe }}</div>
+                <div class="modal-footer">
+                    {% if show_cancel %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {% trans "Cancel" %}
+                    </button>
+                    {% endif %}
+                    {% if popup_actions %}{{ popup_actions|safe }}{% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+{# ── Concrete HTMX OOB toast fragments ───────────────────────────────────
+   Return any of these from a Django view to inject a toast via
+   hx-swap-oob="beforeend:#toast-container".
+   All accept: {{ message }}
+#}
+
+{# Success toast #}
+<template id="toast-success">
+    <div id="toast-container" hx-swap-oob="beforeend">
+        <div class="toast show notification-system__toast border-0 shadow-sm mb-2"
+             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header bg-success text-white">
+                <i class="bi bi-check-circle-fill me-2"></i>
+                <strong class="me-auto">{% trans "Success" %}</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="toast-body bg-white text-dark">{{ message }}</div>
+        </div>
+    </div>
+</template>
+
+{# Error toast #}
+<template id="toast-error">
+    <div id="toast-container" hx-swap-oob="beforeend">
+        <div class="toast show notification-system__toast border-0 shadow-sm mb-2"
+             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="7000">
+            <div class="toast-header bg-danger text-white">
+                <i class="bi bi-exclamation-octagon-fill me-2"></i>
+                <strong class="me-auto">{% trans "Error" %}</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="toast-body bg-white text-dark">{{ message }}</div>
+        </div>
+    </div>
+</template>
+
+{# Warning toast #}
+<template id="toast-warning">
+    <div id="toast-container" hx-swap-oob="beforeend">
+        <div class="toast show notification-system__toast border-0 shadow-sm mb-2"
+             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header bg-warning text-dark">
+                <i class="bi bi-exclamation-triangle-fill me-2"></i>
+                <strong class="me-auto">{% trans "Warning" %}</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="toast-body bg-white text-dark">{{ message }}</div>
+        </div>
+    </div>
+</template>
+
+{# Info toast #}
+<template id="toast-info">
+    <div id="toast-container" hx-swap-oob="beforeend">
+        <div class="toast show notification-system__toast border-0 shadow-sm mb-2"
+             role="alert" aria-live="assertive" aria-atomic="true" data-bs-delay="5000">
+            <div class="toast-header bg-info text-white">
+                <i class="bi bi-info-circle-fill me-2"></i>
+                <strong class="me-auto">{% trans "Information" %}</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="toast-body bg-white text-dark">{{ message }}</div>
+        </div>
+    </div>
+</template>
+
+{# ── Toast API bridge ───────────────────────────────────────────────────
+   Bind global JS API once per page. Re-cloning-safe: skips re-init if
+   the data-notifications-init container is already wired.
+#}
+<script>
+(function () {
+    'use strict';
+    var root = document.getElementById('notification-container');
+    if (!root || root.dataset.apiReady === '1') return;
+
+    function cloneTarget(id, ctx) {
+        var tpl = document.getElementById(id);
+        if (!tpl) return '';
+        var frag = tpl.content.cloneNode(true);
+        if (ctx) {
+            Object.keys(ctx).forEach(function (k) {
+                var el = frag.querySelector('[data-bind="' + k + '"]');
+                if (el) el.textContent = ctx[k];
+            });
+        }
+        return frag;
+    }
+
+    function mountToast(level, message, title, duration) {
+        var container = document.getElementById('toast-container');
+        if (!container) return;
+        var tplMap = { success: 'toast-success', danger: 'toast-error',
+                       warning: 'toast-warning', info: 'toast-info' };
+        var tpl = document.getElementById(tplMap[level] || 'toast-info');
+        if (!tpl) return;
+        var frag = tpl.content.cloneNode(true);
+        var msgEl = frag.querySelector('.toast-body');
+        if (msgEl) msgEl.textContent = message || '';
+        var strong = frag.querySelector('.toast-header strong');
+        if (strong && title) strong.textContent = title;
+        var toastEl = frag.querySelector('.toast');
+        if (toastEl && duration) toastEl.setAttribute('data-bs-delay', String(duration));
+        container.appendChild(frag);
+        if (window.bootstrap && window.bootstrap.Toast) {
+            var last = container.lastElementChild && container.lastElementChild.querySelector('.toast');
+            if (last) new bootstrap.Toast(last).show();
+        }
+    }
+
+    function mountAlert(opts) {
+        var container = document.getElementById('alert-container');
+        if (!container) return;
+        var tpl = document.getElementById(opts.error ? 'error-alert-template' : 'alert-template');
+        if (!tpl) return;
+        var frag = tpl.content.cloneNode(true);
+        if (opts.title) {
+            var titleEl = frag.querySelector('.alert__title');
+            if (titleEl) titleEl.textContent = opts.title;
+        }
+        var msgEl = frag.querySelector('.alert__message');
+        if (!msgEl) msgEl = frag.querySelector('.text-muted.small');
+        if (msgEl) msgEl.textContent = opts.message || opts.error || '';
+        container.appendChild(frag);
+    }
+
+    function mountPopup(opts) {
+        var container = document.getElementById('popup-container');
+        if (!container || !opts) return;
+        var tpl = document.getElementById('popup-template');
+        if (!tpl) return;
+        var frag = tpl.content.cloneNode(true);
+        if (opts.title) {
+            var t = frag.querySelector('.modal-title');
+            if (t) t.textContent = opts.title;
+        }
+        var body = frag.querySelector('.modal-body');
+        if (body) body.innerHTML = opts.message || '';
+        container.appendChild(frag);
+        if (window.bootstrap && opts.showCancel !== false) {
+            var last = container.lastElementChild && container.lastElementChild.querySelector('.modal');
+            if (last) new bootstrap.Modal(last).show();
+        }
+    }
+
+    // Process hidden Django messages into toasts on load
+    function pumpDjangoMessages() {
+        var dm = document.getElementById('django-messages');
+        if (!dm || dm.dataset.processed === 'true') return;
+        dm.querySelectorAll('.django-message').forEach(function (msg) {
+            var level = msg.dataset.level || 'info';
+            var message = msg.dataset.message || '';
+            mountToast(level, message);
+        });
+        dm.dataset.processed = 'true';
+    }
+
+    window.showToast = window.showToast || mountToast;
+    window.showAlert = window.showAlert || mountAlert;
+    window.showErrorAlert = function (msg) { return mountAlert({ level: 'danger', message: msg, error: msg }); };
+    window.showPopup = window.showPopup || mountPopup;
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', pumpDjangoMessages);
+    } else {
+        pumpDjangoMessages();
+    }
+    root.dataset.apiReady = '1';
+})();
+</script>

@@ -2,7 +2,7 @@
 
 ## Overview
 
-`django_fusion.comp.contrib` provides a unified, dependency-free framework for
+`django_fusion.contrib` provides a unified, dependency-free framework for
 form handling and table rendering in routable components. It replaces the
 fragmented approach of `comp.routes.forms_tables` with enhanced mixins,
 automatic ORM data conversion, and form tag generation.
@@ -13,20 +13,20 @@ automatic ORM data conversion, and form tag generation.
 
 ```python
 # Tables
-from django_fusion.comp.contrib.tables import TableMixin, RowGenerator
+from django_fusion.contrib.tables import TableMixin, RowGenerator
 
 # Forms
-from django_fusion.comp.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
+from django_fusion.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
 
 # Or all at once
-from django_fusion.comp.contrib import TableMixin, RowGenerator, FormMixin, FormTagGenerator
+from django_fusion.contrib import TableMixin, RowGenerator, FormMixin, FormTagGenerator
 ```
 
 ### Legacy Imports (still work)
 
 ```python
-from django_fusion.comp.routes.forms_tables import TableMixin  # → forwarded to contrib
-from django_fusion.comp.routes import FormMixin                 # → forwarded to contrib
+from django_fusion.routes.forms_tables import TableMixin  # → forwarded to contrib
+from django_fusion.routes import FormMixin                 # → forwarded to contrib
 ```
 
 ## Table Usage
@@ -34,8 +34,8 @@ from django_fusion.comp.routes import FormMixin                 # → forwarded 
 ### Basic — Auto-generated from Model
 
 ```python
-from django_fusion.comp.routes import RoutableComponent
-from django_fusion.comp.contrib.tables import TableMixin
+from django_fusion.routes import RoutableComponent
+from django_fusion.contrib.tables import TableMixin
 
 class ProductList(RoutableComponent, TableMixin):
     route_name = "products"
@@ -82,7 +82,7 @@ class SalesReport(RoutableComponent, TableMixin):
 ### Using RowGenerator Directly
 
 ```python
-from django_fusion.comp.contrib.tables import RowGenerator
+from django_fusion.contrib.tables import RowGenerator
 
 # From QuerySet (auto-detects columns from model)
 gen = RowGenerator(Product.objects.all())
@@ -103,8 +103,8 @@ gen = RowGenerator(
 ### Basic — Auto-ModelForm from Model
 
 ```python
-from django_fusion.comp.routes import RoutableComponent
-from django_fusion.comp.contrib.forms import FormMixin
+from django_fusion.routes import RoutableComponent
+from django_fusion.contrib.forms import FormMixin
 
 class ProductCreate(RoutableComponent, FormMixin):
     route_name = "product_create"
@@ -150,7 +150,7 @@ class ProductCreate(RoutableComponent, FormMixin):
 ### Form + Table Combined
 
 ```python
-from django_fusion.comp.contrib.forms import FormTableMixin
+from django_fusion.contrib.forms import FormTableMixin
 
 class ProductSearch(RoutableComponent, FormTableMixin):
     route_name = "search"
@@ -179,7 +179,7 @@ class ProductSearch(RoutableComponent, FormTableMixin):
 
 **Before:**
 ```python
-from django_fusion.comp.routes.forms_tables import TableMixin, FormMixin
+from django_fusion.routes.forms_tables import TableMixin, FormMixin
 
 class MyReport(RoutableComponent, TableMixin):
     table_name = "report"
@@ -191,7 +191,7 @@ class MyReport(RoutableComponent, TableMixin):
 
 **After:**
 ```python
-from django_fusion.comp.contrib.tables import TableMixin
+from django_fusion.contrib.tables import TableMixin
 
 class MyReport(RoutableComponent, TableMixin):
     table_name = "report"

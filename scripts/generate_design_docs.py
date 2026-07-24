@@ -25,17 +25,73 @@ def _is_abstract(node: ast.ClassDef) -> bool:
     return False
 
 
-def _is_django_model(node: ast.ClassDef) -> bool:
-    if _is_abstract(node):
+def _model_names_in_module(tree: ast.AST) -> set[str]:
+    """Return the names of all concrete Django model classes in the AST."""
+    base_map: dict[str, list[str]] = {}
+    abstract_set: set[str] = set()
+    known_model_bases = {
+        "Model",
+        "BaseModel",
+        "TimeStampedModel",
+        "UUIDModel",
+        "TimestampedModel",
+        "SoftDeleteModel",
+        "UUIDPrimaryKeyModel",
+        "AbstractDataToken",
+    }
+
+    for node in ast.walk(tree):
+        if not isinstance(node, ast.ClassDef):
+            continue
+        bases: list[str] = []
+        for base in node.bases:
+            if isinstance(base, ast.Name):
+                bases.append(base.id)
+            elif isinstance(base, ast.Attribute):
+                if (
+                    isinstance(base.value, ast.Name)
+                    and base.value.id == "models"
+                    and base.attr == "Model"
+                ):
+                    bases.append("Model")
+                elif isinstance(base.value, ast.Name):
+                    bases.append(base.attr)
+                else:
+                    bases.append(base.attr)
+        base_map[node.name] = bases
+
+        for child in node.body:
+            if isinstance(child, ast.ClassDef) and child.name == "Meta":
+                for item in child.body:
+                    if not isinstance(item, ast.Assign):
+                        continue
+                    for target in item.targets:
+                        if isinstance(target, ast.Name) and target.id == "abstract":
+                            if isinstance(item.value, ast.Constant) and item.value.value is True:
+                                abstract_set.add(node.name)
+
+    def is_model(name: str, _seen: set[str] | None = None) -> bool:
+        if name in known_model_bases:
+            return True
+        if name not in base_map:
+            return False
+        if _seen is None:
+            _seen = set()
+        if name in _seen:
+            return False
+        _seen.add(name)
+        for b in base_map.get(name, []):
+            if is_model(b, _seen):
+                return True
         return False
-    for base in node.bases:
-        if isinstance(base, ast.Name):
-            if base.id in {"Model", "BaseModel", "TimeStampedModel", "UUIDModel", "TimestampedModel", "SoftDeleteModel", "UUIDPrimaryKeyModel"}:
-                return True
-        elif isinstance(base, ast.Attribute):
-            if base.attr == "Model" and isinstance(base.value, ast.Name) and base.value.id == "models":
-                return True
-    return False
+
+    result: set[str] = set()
+    for name, bases in base_map.items():
+        if name in abstract_set:
+            continue
+        if is_model(name):
+            result.add(name)
+    return result
 
 
 def _base_name(base: ast.expr) -> str:
@@ -47,45 +103,53 @@ def _base_name(base: ast.expr) -> str:
 
 
 def _field_info(assign: ast.Assign | ast.AnnAssign) -> dict[str, Any] | None:
-    targets = []
+    target: ast.Name | None = None
     if isinstance(assign, ast.Assign):
-        targets = assign.targets
-    elif isinstance(assign, ast.AnnAssign):
-        targets = [assign.target]
+        for t in assign.targets:
+            if isinstance(t, ast.Name):
+                target = t
+                break
+    elif isinstance(assign, ast.AnnAssign) and isinstance(assign.target, ast.Name):
+        target = assign.target
 
-    for target in targets:
-        if isinstance(target, ast.Name):
-            name = target.id
-            break
+    if target is None:
+        return None
+
+    value = assign.value
+    if value is None or not isinstance(value, ast.Call):
+        return None
+
+    func = value.func
+    if isinstance(func, ast.Name):
+        field_type = func.id
+    elif isinstance(func, ast.Attribute):
+        field_type = func.attr
     else:
         return None
 
-    value = assign.value if isinstance(assign, ast.Assign) else assign.value
-    if value is None:
-        return {"name": name, "type": "Any", "relation": None}
+    # Skip managers (e.g. objects = TokenCachedManager())
+    if field_type.endswith("Manager") or target.id == "objects":
+        return None
 
-    if isinstance(value, ast.Call):
-        func = value.func
-        if isinstance(func, ast.Name):
-            field_type = func.id
-            relation = None
-        elif isinstance(func, ast.Attribute):
-            field_type = func.attr
-            relation = None
-            if field_type in {"ForeignKey", "OneToOneField"}:
-                relation = _first_arg_str(value)
-            elif field_type == "ManyToManyField":
-                relation = _first_arg_str(value)
-        else:
-            field_type = "Any"
-            relation = None
-        # Skip choices constants and non-field callables that look like config constants
-        if field_type.endswith("Choices") or name.endswith("_CHOICES"):
-            return None
-        return {"name": name, "type": field_type, "relation": relation}
+    # Skip choice / config constants
+    if field_type.endswith("Choices") or target.id.endswith("_CHOICES"):
+        return None
 
-    # Class-level constants (e.g. TEMPLATE_SOURCE_CHOICES) are not model fields
-    return None
+    # GenericForeignKey is a virtual relation; represent it but don't draw a relation line
+    if field_type == "GenericForeignKey":
+        return {"name": target.id, "type": "GenericForeignKey", "relation": None}
+
+    relation = None
+    if field_type in {"ForeignKey", "OneToOneField", "ManyToManyField"}:
+        relation = _first_arg_str(value)
+
+    return {"name": target.id, "type": field_type, "relation": relation}
+
+
+# Common settings-based model references that are not statically resolvable.
+_SETTINGS_TO_MODEL = {
+    "settings.AUTH_USER_MODEL": "auth.User",
+}
 
 
 def _first_arg_str(call: ast.Call) -> str:
@@ -94,20 +158,32 @@ def _first_arg_str(call: ast.Call) -> str:
             return arg.value
         if isinstance(arg, ast.Name):
             return arg.id
+        if isinstance(arg, ast.Attribute):
+            parts: list[str] = []
+            node: ast.expr = arg
+            while isinstance(node, ast.Attribute):
+                parts.append(node.attr)
+                node = node.value
+            if isinstance(node, ast.Name):
+                parts.append(node.id)
+            dotted = ".".join(reversed(parts))
+            return _SETTINGS_TO_MODEL.get(dotted, dotted)
     return ""
 
 
 def parse_models(tree: ast.AST) -> list[dict[str, Any]]:
-    models = []
+    model_names = _model_names_in_module(tree)
+    models: list[dict[str, Any]] = []
     for node in ast.walk(tree):
-        if isinstance(node, ast.ClassDef) and _is_django_model(node):
-            fields = []
-            for child in node.body:
-                if isinstance(child, (ast.Assign, ast.AnnAssign)):
-                    info = _field_info(child)
-                    if info:
-                        fields.append(info)
-            models.append({"name": node.name, "fields": fields})
+        if not (isinstance(node, ast.ClassDef) and node.name in model_names):
+            continue
+        fields = []
+        for child in node.body:
+            if isinstance(child, (ast.Assign, ast.AnnAssign)):
+                info = _field_info(child)
+                if info:
+                    fields.append(info)
+        models.append({"name": node.name, "fields": fields})
     return models
 
 
@@ -156,19 +232,45 @@ def parse_commands(directory: Path) -> list[dict[str, str]]:
     return commands
 
 
+def _mermaid_id(name: str) -> str:
+    """Return a valid Mermaid entity identifier (quote if needed)."""
+    if not name:
+        return '""'
+    if name.isidentifier():
+        return name
+    return f'"{name}"'
+
+
 def generate_erd(models: list[dict[str, Any]]) -> str:
     if not models:
         return "_No Django models found in this package._"
     lines = ["```mermaid", "erDiagram"]
-    relations = []
+    relations: list[str] = []
     for model in models:
         lines.append(f"    {model['name']} {{")
         for field in model["fields"]:
             type_name = field["type"]
             lines.append(f"        {type_name} {field['name']}")
-            if field["relation"]:
-                rel_model = field["relation"]
-                relations.append(f"    {model['name']} ||--o| {rel_model} : {field['name']}")
+            relation = field.get("relation")
+            if not relation:
+                continue
+            target = _mermaid_id(relation)
+            if relation == "self":
+                target = model["name"]
+                label = f'{field["name"]} (self)'
+            else:
+                label = field["name"]
+
+            if type_name == "OneToOneField":
+                cardinality = "||--||"
+            elif type_name == "ManyToManyField":
+                cardinality = "}o--o{"
+            else:
+                cardinality = "||--o|"
+
+            relations.append(
+                f'    {model["name"]} {cardinality} {target} : "{label}"'
+            )
         lines.append("    }")
     if relations:
         lines.append("")
@@ -212,7 +314,7 @@ def generate_model_example(models: list[dict[str, Any]], package_path: str) -> s
         example_fields = ["name='...'"]
     return (
         f"```python\n"
-        f"from django_fusion.{package_path}.models import {model['name']}\n\n"
+        f"from django_fusion.{package_path} import {model['name']}\n\n"
         f"# Query and create instances\n"
         f"qs = {model['name']}.objects.all()\n"
         f"obj = {model['name']}.objects.create({', '.join(example_fields)})\n"

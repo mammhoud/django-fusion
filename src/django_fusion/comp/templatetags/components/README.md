@@ -4,19 +4,21 @@
 
 ## Contents
 
-- `calender`
-- `card`
+- `breadcrumbs`
+- `calendar`
 - `field`
-- `menu`
+- `form`
 - `modal`
 - `notification`
+- `pagination`
 - `price`
+- `search`
 - `table`
 
 ## Usage
 
 ```python
-from django_fusion.comp.templatetags.components import ...
+from django_fusion.comp.templatetags.components import table, form, search, pagination
 ```
 
 ---

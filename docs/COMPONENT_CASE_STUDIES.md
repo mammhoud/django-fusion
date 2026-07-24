@@ -1310,7 +1310,7 @@ All three follow the same `<template id="...">` pattern.
 ```python
 # services/nav.py
 from django_fusion.web.rendering import TemplateRenderer
-from django_fusion.comp.templatetags.components.navigation import _build_attrs
+from django_fusion.comp.templatetags.navigation import _build_attrs
 
 def render_nav_link(request, item) -> str:
     attrs = _build_attrs(
@@ -1382,7 +1382,7 @@ or sidebar, with per-app sub-menus.
 ```python
 # views.py
 from django_fusion.web.rendering import TemplateRenderer
-from django_fusion.comp.routes import Site
+from django_fusion.routes import Site
 
 def render_main_menu(request) -> str:
     site = Site.get_current(request)
@@ -1483,7 +1483,7 @@ automatically registered under the same component name.
 string:
 
 ```python
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 from django_fusion.web.rendering import TemplateRenderer
 
 class PostPreviewFragment(FragmentComponent):

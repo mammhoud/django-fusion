@@ -1,0 +1,38 @@
+{# django-fusion components/menu/app_menu.html
+   ──────────────────────────────────────────────────────
+   Renders an application's navigation menu items with Unpoly + HTMX support.
+
+   Each menu item uses {% nav_link %} which automatically generates
+   up-follow/up-target (Unpoly) or hx-get/hx-target (HTMX fallback)
+   based on the UNPOLY_ENABLED Django setting.
+
+   Context:
+     app   — Application instance with menu_items()
+     items — list of routable components mapped through AppMenuMixin
+     user  — current user
+     request — current HTTP request
+#}
+{% load i18n navigation routable_components %}
+
+<ul class="app-menu nav flex-column" role="menu" aria-label="{{ app.title }} {% trans 'menu' %}">
+  {% for item in items %}
+    {% if item.is_url_pattern %}
+      {# menu_path() item — dict with title, icon, name #}
+      <li class="app-menu__item nav-item" role="menuitem">
+        <a class="app-menu__link nav-link" href="#">
+          {% if item.icon %}
+            <span class="app-menu__icon material-icons me-2" aria-hidden="true">{{ item.icon }}</span>
+          {% endif %}
+          <span class="app-menu__label">{{ item.title }}</span>
+        </a>
+      </li>
+    {% else %}
+      {# AppMenuMixin viewset — has title, icon, get_route_url #}
+      <li class="app-menu__item nav-item {% active_menu item %}" role="menuitem">
+        {% nav_link url=item.get_route_url|default:"#" label=item.title icon=item.icon target="#fusion-content" %}
+      </li>
+    {% endif %}
+  {% empty %}
+    <li class="app-menu__empty nav-item text-muted px-3 py-2">{% trans "No items." %}</li>
+  {% endfor %}
+</ul>

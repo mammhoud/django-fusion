@@ -2,7 +2,7 @@
 
 Usage::
 
-    {% load ui_tags %}
+    {% load components %}
 
     {% pagination page_obj=page_obj query_string=query_string hx_target="#list-container" %}
 """
@@ -11,12 +11,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from django import template
-
-register = template.Library()
+from django_fusion.comp.templatetags.components import register
 
 
-@register.inclusion_tag("components/pagination.html", takes_context=False)
+@register.inclusion_tag("fusion/components/pagination/pagination.html", takes_context=False)
 def pagination(
     page_obj: Any = None,
     query_string: str = "",
@@ -34,4 +32,22 @@ def pagination(
         "page_obj": page_obj,
         "query_string": query_string,
         "hx_target": hx_target,
+    }
+
+
+@register.inclusion_tag("fusion/components/pagination/pagination.html")
+def fragment_pagination(page_obj: Any, url: str = "") -> dict[str, Any]:
+    """
+    Render Unpoly + HTMX-aware pagination controls.
+
+    Usage::
+
+        {% fragment_pagination page_obj url=request.path %}
+
+    Template: ``fusion/components/pagination/pagination.html``
+    """
+    return {
+        "page_obj": page_obj,
+        "paginator": getattr(page_obj, "paginator", None),
+        "url": url,
     }

@@ -1,0 +1,65 @@
+{% load i18n %}{# django-fusion components/modal/modal_static.html — block-extendable modal skeleton
+   ──────────────────────────────────────────────────────────────────
+   Use when extending or composing modals in parent templates.
+   For an HTMX trigger + skeleton combo, use components/modal.html.
+
+   PARAMETERS:
+     id               : unique HTML id (default 'genericModal')
+     title            : title text
+     body             : static body HTML (may be marked safe)
+     size             : modal size class (modal-sm/modal-lg/modal-xl) (optional)
+     centered         : True / False — vertically center the dialog
+     scrollable       : True / False — long-content scroll mode
+     backdrop         : 'static' or 'true'/false (overrides default)
+     keyboard         : True / False — disables ESC closing
+     show_footer      : render default footer with close button? (default True)
+     close_text       : footer close button label (default: 'Close')
+     primary_action       : True / False — show default primary button? (default False)
+     primary_action_id    : id attribute for primary action button (optional)
+     primary_action_click : JS onclick for primary action (optional)
+     primary_action_text  : primary action button label (default: 'Save changes')
+
+   BLOCKS (override when extending this template):
+     {% block title %}  — modal title content
+     {% block body %}   — modal body content
+     {% block footer %} — modal footer content
+
+   EXAMPLE — extend in a child template:
+     {% extends "components/modal/modal_static.html" %}
+     {% block body %}...custom body...{% endblock %}
+#}
+<div class="modal fade" id="{{ id|default:'genericModal' }}" tabindex="-1" aria-labelledby="{{ id|default:'genericModal' }}Label" aria-hidden="true"
+     {% if backdrop %}data-bs-backdrop="{{ backdrop }}"{% endif %}
+     {% if keyboard %}data-bs-keyboard="{{ keyboard }}"{% endif %}>
+    <div class="modal-dialog {{ size|default:'' }} {{ centered|yesno:'modal-dialog-centered,' }} {{ scrollable|yesno:'modal-dialog-scrollable,' }}">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="{{ id|default:'genericModal' }}Label">
+                    {% block title %}{{ title }}{% endblock %}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            <div class="modal-body">
+                {% block body %}
+                    {{ body|safe }}
+                {% endblock %}
+            </div>
+            {% if show_footer|default:True %}
+            <div class="modal-footer">
+                {% block footer %}
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                        {{ close_text|default:_("Close") }}
+                    </button>
+                    {% if primary_action %}
+                        <button type="button" class="btn btn-primary"
+                                {% if primary_action_id %}id="{{ primary_action_id }}"{% endif %}
+                                {% if primary_action_click %}onclick="{{ primary_action_click }}"{% endif %}>
+                            {{ primary_action_text|default:_("Save changes") }}
+                        </button>
+                    {% endif %}
+                {% endblock %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+</div>

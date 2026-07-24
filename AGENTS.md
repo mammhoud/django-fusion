@@ -12,7 +12,7 @@ All imports use the re-export-free canonical paths below.
 ### Routing (`comp.routes`)
 
 ```python
-from django_fusion.comp.routes import (
+from django_fusion.routes import (
     Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path, IndexViewMixin,
     viewprop,  # Descriptor
     BaseModelViewset, ModelViewset, ReadonlyModelViewset,
@@ -26,7 +26,7 @@ from django_fusion.comp.routes import (
 ### Generic CBVs (`comp.generic`)
 
 ```python
-from django_fusion.comp.generic import (
+from django_fusion.components.generic import (
     Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
     DetailModelView, ListModelView, UpdateModelView,
     BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
@@ -36,11 +36,11 @@ from django_fusion.comp.generic import (
 ### Forms & Tables (`comp.contrib`)
 
 ```python
-from django_fusion.comp.contrib.tables import TableMixin, RowGenerator
-from django_fusion.comp.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
+from django_fusion.contrib.tables import TableMixin, RowGenerator
+from django_fusion.contrib.forms import FormMixin, FormTableMixin, FormTagGenerator
 ```
 
-Legacy imports from ``django_fusion.comp.routes.forms_tables`` still work
+Legacy imports from ``django_fusion.routes.forms_tables`` still work
 but are forwarded to ``comp.contrib`` internally.
 
 ### Other Canonical Paths

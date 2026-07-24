@@ -13,10 +13,10 @@
 > description, internal `_underscore` names are skipped, and only
 > the canonical import paths from `AGENTS.md` are listed.
 
-## Routing — `django_fusion.comp.routes`
+## Routing — `django_fusion.routes`
 
 ```python
-from django_fusion.comp.routes import (
+from django_fusion.routes import (
     Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path,
     IndexViewMixin, viewprop,
     BaseModelViewset, ModelViewset, ReadonlyModelViewset,
@@ -44,10 +44,10 @@ from django_fusion.comp.routes import (
 
 See [DF-005 Routing](./05-routing.md) for the full breakdown.
 
-## Generic CBVs — `django_fusion.comp.generic`
+## Generic CBVs — `django_fusion.components.generic`
 
 ```python
-from django_fusion.comp.generic import (
+from django_fusion.components.generic import (
     Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
     DetailModelView, ListModelView, UpdateModelView,
     BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,
@@ -83,7 +83,7 @@ from django_fusion.core.cache import CacheService         # singleton cache API
 
 ```python
 from django_fusion.web.views import FilterMixin, SearchMixin
-from django_fusion.comp.loaders import component_loader
+from django_fusion.comp.fragment.loader import component_loader
 ```
 
 | Symbol | Role |

@@ -1,4 +1,4 @@
-"""Unit tests for ``django_fusion.comp.analyzer.scanner``.
+"""Unit tests for ``django_fusion.fragments.analyzer.scanner``.
 
 Pure-Python tests (no Django, no database). The bulk of the tests use
 **module-scoped fixtures** so the on-disk template trees are built
@@ -34,7 +34,7 @@ from pathlib import Path
 
 import pytest
 
-from django_fusion.comp.analyzer.scanner import (
+from django_fusion.fragments.analyzer.scanner import (
     MAX_DEPTH,
     _matches_filters,
     scan,
@@ -306,8 +306,8 @@ class TestScanDepthCap:
         by ``views.py`` for backward compat. They MUST stay in sync --
         a future move would silently desync the two enforcement points.
         """
-        from django_fusion.comp.analyzer.scanner import MAX_DEPTH as S
-        from django_fusion.comp.analyzer.views import MAX_DEPTH as V
+        from django_fusion.fragments.analyzer.scanner import MAX_DEPTH as S
+        from django_fusion.fragments.analyzer.views import MAX_DEPTH as V
         assert S == V == 10
 
 

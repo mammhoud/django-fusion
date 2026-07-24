@@ -38,7 +38,7 @@ class Plan(TimeStampedModel):
 
 ```python
 # myapp/views.py
-from django_fusion.comp.routes import ModelViewset
+from django_fusion.routes import ModelViewset
 from .models import Plan
 
 class PlanViewset(ModelViewset):
@@ -128,7 +128,7 @@ class User(TimeStampedModel):
 ### Viewset
 
 ```python
-from django_fusion.comp.routes import ModelViewset, ViewsetMeta
+from django_fusion.routes import ModelViewset, ViewsetMeta
 from django.contrib.auth import get_user_model
 
 class UserViewset(ModelViewset):

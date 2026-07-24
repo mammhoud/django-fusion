@@ -6,7 +6,7 @@ from django.template import TemplateSyntaxError, engines
 from django.template.exceptions import TemplateDoesNotExist
 from django.test import override_settings
 
-from django_fusion.comp.core._init import components
+from django_fusion.comp.fragment._init import components
 
 _test_templates_dir = Path(__file__).resolve().parent / "test_templates"
 

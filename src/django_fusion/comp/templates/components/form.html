@@ -1,8 +1,0 @@
-<form {% if form_id %}id="{{ form_id }}"{% endif %} class="{{ form_class }}" {% if hx_post %}hx-post="{{ hx_post }}"{% endif %} {% if hx_target %}hx-target="{{ hx_target }}"{% endif %} {% if hx_swap %}hx-swap="{{ hx_swap }}"{% endif %} {% if is_multipart %}enctype="multipart/form-data"{% endif %}>
-  {% csrf_token %}
-  {{ form.as_p }}
-  <button type="submit" class="btn btn-primary" {{ submit_attrs }}>{{ submit_label|default:"Submit" }}</button>
-  {% if show_cancel %}
-  <button type="button" class="btn btn-secondary" {% if cancel_hx_get %}hx-get="{{ cancel_hx_get }}"{% endif %} {% if cancel_hx_target %}hx-target="{{ cancel_hx_target }}"{% endif %}>{{ cancel_label|default:"Cancel" }}</button>
-  {% endif %}
-</form>

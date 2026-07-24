@@ -97,11 +97,14 @@ TEST_SETTINGS: dict = {
             "BACKEND": "django.template.backends.django.DjangoTemplates",
             # Django's `APP_DIRS` only scans `<app>/templates/` (top
             # level). django-fusion ships canonical templates under
-            # `django_fusion/comp/templates/` (a sub-package), so we
-            # add that directory explicitly to DIRS so
-            # `get_template()` can resolve paths like
-            # "components/form/form_block.html".
+            # `django_fusion/templates/` (the new `fusion/` component
+            # namespace) and also keeps some backward-compatible stubs
+            # under `django_fusion/comp/templates/`. Add both explicitly
+            # so `get_template()` can resolve paths like
+            # "components/form/form_block.html" and
+            # "fusion/components/form/form_block.html".
             "DIRS": [
+                os.path.join(os.path.dirname(django_fusion.__file__), "templates"),
                 os.path.join(os.path.dirname(django_fusion.__file__), "comp", "templates"),
             ],
             "APP_DIRS": True,
@@ -124,9 +127,6 @@ TEST_SETTINGS: dict = {
                 "builtins": [
                     "django.templatetags.static",
                     "django_fusion.comp.templatetags.components",
-                    # `attrs` (in pyproject.toml dependencies) is the
-                    # runtime dep of ui_tags — must be importable.
-                    "django_fusion.comp.templatetags.ui_tags",
                 ],
             },
         },

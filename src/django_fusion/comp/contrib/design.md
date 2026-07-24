@@ -27,7 +27,7 @@ flowchart LR
 ```python
 # Contrib package for third-party component integrations.
 # Import specific integrations once they are added here, e.g.:
-# from django_fusion.comp.contrib import my_extension
+# from django_fusion.contrib import my_extension
 ```
 
 ## Commands / Entry Points

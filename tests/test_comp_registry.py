@@ -131,7 +131,7 @@ def _boot_django_for_module():
 @pytest.fixture(autouse=True)
 def reset_components():
     from django_fusion.comp.apps import _register_builtin_component_paths
-    from django_fusion.comp.core._init import components  # imports after settings
+    from django_fusion.comp.fragment._init import components  # imports after settings
 
     # Reset and re-populate the component registry so each test in
     # this module starts with the same state Django built at startup.
@@ -157,7 +157,7 @@ def test_comp_path_renders_same_as_include():
 
 def test_comp_path_records_render_history_with_full_path_as_name():
     _render('{% comp "partials/auth_buttons.html" /%}')
-    from django_fusion.comp.core._init import components
+    from django_fusion.comp.fragment._init import components
 
     history = components.get_render_history()
     assert len(history) == 1
@@ -169,14 +169,14 @@ def test_register_include_path_under_root_returns_list():
 
     cached = register_include_paths(["partials/auth_buttons.html"])
     assert cached == ["partials/auth_buttons.html"]
-    from django_fusion.comp.core._init import components
+    from django_fusion.comp.fragment._init import components
 
     assert "partials/auth_buttons.html" in components._components
 
 
 def test_register_include_path_idempotent():
     from django_fusion.comp.registry import register_include_path
-    from django_fusion.comp.core._init import components
+    from django_fusion.comp.fragment._init import components
 
     register_include_path("partials/auth_buttons.html")
     first_id = id(components._components["partials/auth_buttons.html"])

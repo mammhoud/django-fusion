@@ -182,7 +182,7 @@ def _reset_components():
     """Wipe registry state before AND after each test for isolation."""
     # Imports AFTER Django is configured (comp.core touches settings
     # at module-import time).
-    from django_fusion.comp.core._init import components
+    from django_fusion.comp.fragment._init import components
 
     components.reset()
     yield
@@ -225,7 +225,7 @@ def test_register_include_path_renders_identical_via_include_and_both_comp_invoc
        and migration is blocked.
     """
     # Imports AFTER fixtures have run.
-    from django_fusion.comp.core._init import components
+    from django_fusion.comp.fragment._init import components
     from django_fusion.comp.registry import register_include_path
 
     # Step 1 — exercise the existing public API. After this call,

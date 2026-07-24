@@ -6,19 +6,37 @@ by Django's template loader AND by the django-fusion ``{% comp %}``
 tag after the templates were consolidated into the django-fusion
 package.
 """
+from pathlib import Path
+
+import django_fusion
 import pytest
+from django.conf import settings
+from django.template import engines
 from django.template.loader import get_template
-from django_fusion.comp.core._init import components
+from django_fusion.comp.fragment._init import components
 
 
 @pytest.fixture(autouse=True)
 def _ensure_builtin_components_registered():
     """Make sure built-in component paths are registered before each test.
 
-    Other tests may reset the registry, so re-populate it here without
-    re-running ``AppConfig.ready()``.
+    Other tests may reset the registry or mutate ``settings.TEMPLATES``,
+    so re-populate both the component registry and the template engine
+    DIRS here without re-running ``AppConfig.ready()``.
     """
     from django_fusion.comp.apps import _register_builtin_component_paths
+
+    # Ensure the new django_fusion/templates/ directory is in DIRS so
+    # both canonical ``fusion/components/...`` and legacy stub paths
+    # (``components/form/...``) resolve.
+    templates_dir = Path(django_fusion.__file__).parent / "templates"
+    templates = list(settings.TEMPLATES)
+    dirs = list(templates[0].get("DIRS", []))
+    if str(templates_dir) not in dirs:
+        dirs.append(str(templates_dir))
+        templates[0]["DIRS"] = dirs
+        settings.TEMPLATES = templates
+        engines._engines.clear()
 
     if "components/form/form_block.html" not in components._components:
         _register_builtin_component_paths()

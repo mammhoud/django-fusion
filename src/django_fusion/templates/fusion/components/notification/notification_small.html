@@ -1,0 +1,43 @@
+{% load i18n %}{# django-fusion components/notification/notification_small.html — small inline notification
+   ──────────────────────────────────────────────────────────────────
+   Inline minimal notification for status messages that should sit
+   alongside form fields, list items, or page sections. Larger
+   toast/alert/popup flows live in components/notification.html.
+
+   PARAMETERS:
+     level    : 'success' | 'info' | 'warning' | 'danger' (default 'info')
+     message  : notification text (required)
+     icon     : Bootstrap icon class (default depends on level)
+     title    : optional small label rendered above message
+     dismissible : True / False — adds a close button (default False)
+     css_class: extra CSS class(es) on outer wrapper (optional)
+
+   EXAMPLE:
+     {% comp "components/notification/notification_small.html" level="success" message="Profile updated." / %}
+#}
+{% with level|default:'info' as resolved_level %}
+<div class="notification-small notification-small--{{ resolved_level }} {{ css_class|default:'' }}"
+     role="status"
+     aria-live="polite">
+    {% if icon %}
+    <i class="bi {{ icon }} me-2" aria-hidden="true"></i>
+    {% else %}
+    <i class="bi
+        {% if resolved_level == 'success' %}bi-check-circle-fill
+        {% elif resolved_level == 'danger' %}bi-x-circle-fill
+        {% elif resolved_level == 'warning' %}bi-exclamation-triangle-fill
+        {% else %}bi-info-circle-fill{% endif %} me-2"
+       aria-hidden="true"></i>
+    {% endif %}
+    <span class="notification-small__body">
+        {% if title %}<strong class="notification-small__title d-block">{{ title }}</strong>{% endif %}
+        <span class="notification-small__message">{{ message }}</span>
+    </span>
+    {% if dismissible %}
+    <button type="button"
+            class="btn-close ms-auto"
+            data-bs-dismiss="notification"
+            aria-label="{% trans 'Close' %}"></button>
+    {% endif %}
+</div>
+{% endwith %}

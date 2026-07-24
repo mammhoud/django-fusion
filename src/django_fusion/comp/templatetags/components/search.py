@@ -2,7 +2,7 @@
 
 Usage::
 
-    {% load ui_tags %}
+    {% load components %}
 
     {% search search_query=search_query hx_target="#list-container" %}
 """
@@ -11,12 +11,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from django import template
-
-register = template.Library()
+from django_fusion.comp.templatetags.components import register
 
 
-@register.inclusion_tag("components/search.html", takes_context=False)
+@register.inclusion_tag("fusion/components/search.html", takes_context=False)
 def search(
     search_query: str = "",
     search_placeholder: str = "",

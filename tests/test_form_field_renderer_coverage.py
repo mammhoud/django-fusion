@@ -71,7 +71,7 @@ from types import SimpleNamespace
 from django.template import engines
 from django.test import override_settings
 
-from django_fusion.comp.core._init import components
+from django_fusion.comp.fragment._init import components
 
 # -----------------------------------------------------------------
 # Test infrastructure: template-engine setup.

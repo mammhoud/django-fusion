@@ -1,4 +1,4 @@
-"""Tests for ``django_fusion.comp.analyzer.views``.
+"""Tests for ``django_fusion.fragments.analyzer.views``.
 
 Covers two distinct surfaces:
 
@@ -155,7 +155,7 @@ def _ensure_django(tmp_path: Path) -> None:
 class TestCoerceDepth:
     @pytest.fixture(autouse=True)
     def _import(self):
-        from django_fusion.comp.analyzer.views import MAX_DEPTH, _coerce_depth
+        from django_fusion.fragments.analyzer.views import MAX_DEPTH, _coerce_depth
         self._fn = _coerce_depth
         self._max = MAX_DEPTH
 
@@ -186,7 +186,7 @@ class TestCoerceDepth:
 class TestCoerceBool:
     @pytest.fixture(autouse=True)
     def _import(self):
-        from django_fusion.comp.analyzer.views import _coerce_bool
+        from django_fusion.fragments.analyzer.views import _coerce_bool
         self._fn = _coerce_bool
 
     def test_real_bool_preserved(self):
@@ -217,7 +217,7 @@ class TestCoerceBool:
 class TestCoerceFilters:
     @pytest.fixture(autouse=True)
     def _import(self):
-        from django_fusion.comp.analyzer.views import _coerce_filters
+        from django_fusion.fragments.analyzer.views import _coerce_filters
         self._fn = _coerce_filters
 
     def test_non_dict_returns_empty(self):
@@ -244,11 +244,11 @@ class TestCoerceFilters:
 class TestAnalyzeRequestDataclass:
     def test_from_payload_no_longer_exists(self):
         """from_payload was deleted (un-capped int default)."""
-        from django_fusion.comp.analyzer.schemas import AnalyzeRequest
+        from django_fusion.fragments.analyzer.schemas import AnalyzeRequest
         assert not hasattr(AnalyzeRequest, "from_payload")
 
     def test_direct_construction_with_kwargs(self):
-        from django_fusion.comp.analyzer.schemas import AnalyzeRequest
+        from django_fusion.fragments.analyzer.schemas import AnalyzeRequest
         spec = AnalyzeRequest(
             website_slug="x",
             url="https://example.com",
@@ -294,7 +294,7 @@ class TestAnalyzeViewPost:
     def test_empty_body_returns_400(self, tmp_path):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
         req = rf.post("/api/analyzer/analyze/", data=b"", content_type="application/json")
@@ -304,7 +304,7 @@ class TestAnalyzeViewPost:
     def test_malformed_json_returns_400(self, tmp_path):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
         req = rf.post(
@@ -318,7 +318,7 @@ class TestAnalyzeViewPost:
     def test_non_dict_json_returns_400(self, tmp_path):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
         req = rf.post(
@@ -332,7 +332,7 @@ class TestAnalyzeViewPost:
     def test_valid_minimal_payload_returns_200_spec_shape(self, tmp_path):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         (tmp_path / "hello.html").write_text(
             '{% extends "base.html" %}{% block content %}{% endblock %}'
@@ -358,7 +358,7 @@ class TestAnalyzeViewPost:
     def test_garbage_depth_does_not_crash(self, tmp_path):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         (tmp_path / "ok.html").write_text("hi")
         rf = RequestFactory()
@@ -373,7 +373,7 @@ class TestAnalyzeViewPost:
     def test_filter_as_string_falls_back_to_empty(self, tmp_path):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
         req = rf.post(
@@ -422,7 +422,7 @@ class TestAnalyzeViewEndToEnd:
     def test_real_fragment_yields_200_response(self, shared_e2e_dir):
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         rf = RequestFactory()
         req = rf.post(
@@ -448,7 +448,7 @@ class TestAnalyzeViewEndToEnd:
         """
         from django.test import RequestFactory
 
-        from django_fusion.comp.analyzer.views import AnalyzeView
+        from django_fusion.fragments.analyzer.views import AnalyzeView
 
         # Skip if the fragment is unavailable (e.g. installed-wheel).
         if not customizer_fragment or "customizer/card" not in customizer_fragment:

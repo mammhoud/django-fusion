@@ -1,9 +1,7 @@
-from django import template
-
-register = template.Library()
+from django_fusion.comp.templatetags.components import register
 
 
-@register.inclusion_tag("notification.html")
+@register.inclusion_tag("fusion/components/notification/notification.html")
 def generate_notification(message, notification_type="info"):
     """
     Template tag to generate a notification message.

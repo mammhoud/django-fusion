@@ -54,7 +54,7 @@ from typing import Final
 from django.template.loader import select_template
 from django.template.backends.django import Template as DjangoTemplate
 
-from django_fusion.comp.core._init import Component, components
+from django_fusion.comp.fragment._init import Component, components
 from django_fusion.comp.cache import get_component_map_cache
 
 logger = logging.getLogger(__name__)

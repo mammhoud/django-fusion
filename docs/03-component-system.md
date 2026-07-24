@@ -35,7 +35,7 @@ it returns the fragment template only when `HX-Request: true` is set.
 
 ```python
 # myapp/components/pricing_rows.py
-from django_fusion.comp.routes import RoutableComponent
+from django_fusion.routes import RoutableComponent
 
 class PricingRows(RoutableComponent):
     route_name = "pricing_rows"
@@ -81,7 +81,7 @@ If you don't set `fragment_name`, it is derived by
 ## `FragmentComponent` — HTMX fragment scope
 
 ```python
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 
 class PostPreviewFragment(FragmentComponent):
     route_path = "blog/<slug:slug>/preview/"
@@ -103,7 +103,7 @@ For ad-hoc views that need to switch between fragment and full-page
 output without inheriting from `RoutableComponent`:
 
 ```python
-from django_fusion.comp.routes import FragmentDetectionMixin
+from django_fusion.routes import FragmentDetectionMixin
 from django.views.generic import TemplateView
 
 class PricingPage(FragmentDetectionMixin, TemplateView):

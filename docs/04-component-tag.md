@@ -260,7 +260,7 @@ synonyms (`fragment`, `fragment_slug`, `fragment_key`) are rejected with `Templa
 In Python, FragmentComponents use it for URL routing:
 
 ```python
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 
 class PostPreviewFragment(FragmentComponent):
     route_path = "blog/<slug:slug>/preview/"

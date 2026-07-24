@@ -1,4 +1,4 @@
-"""Unit tests for ``django_fusion.comp.analyzer.parser``.
+"""Unit tests for ``django_fusion.fragments.analyzer.parser``.
 
 This module is intentionally structured around **fixtures, not magic
 strings**: the 3 ``{% comp %}`` invocation forms (self_closing,
@@ -31,7 +31,7 @@ from pathlib import Path
 
 import pytest
 
-from django_fusion.comp.analyzer.parser import (
+from django_fusion.fragments.analyzer.parser import (
     CompUsage,
     parse_kwargs,
     parse_template,

@@ -171,7 +171,7 @@ host-page variables can override values computed by the component. If you
 need the component values to win, use distinct keys.
 
 To override the shared templates in your own project, place templates under
-``templates/django_fusion/`` (matching the same relative path as the library
+``templates/fusion/`` (matching the same relative path as the library
 templates).
 
 ## Examples
@@ -186,11 +186,11 @@ class HomeComponent(RoutableComponent):
     route_name = "home"
     route_path = ""
     fragment_name = "myapp.home.hero"
-    template_name = "django_fusion/layouts/landing.html"
+    template_name = "fusion/layouts/landing.html"
 
 class MyApp(Application):
     title = "My App"
-    base_template_name = "django_fusion/layouts/landing.html"
+    base_template_name = "fusion/layouts/landing.html"
 
 class MySite(Site):
     title = "My Site"

@@ -104,23 +104,25 @@ erDiagram
         DateTimeField assigned_at
         ForeignKey assigned_by
     }
-    Role {
-        CharField name
-        CharField role_type
-        TextField description
-        JSONField permissions
-        BooleanField is_default
-        PositiveIntegerField level
-        OneToOneField group
-        DateTimeField created_at
-        DateTimeField updated_at
+    DataToken {
+        CharField token
+        CharField node_id
+        ForeignKey content_type
+        CharField object_id
+        GenericForeignKey content_object
+        ForeignKey parent
+        IntegerField sync_order
+        IntegerField retry_count
+        TextField error_message
+        DateTimeField synced_at
     }
 
-    EmailLog ||--o| auth.User : user
-    UserGroup ||--o| auth.User : users
-    UserRole ||--o| auth.User : user
-    UserRole ||--o| auth.User : assigned_by
-    Role ||--o| Group : group
+    EmailLog ||--o| "auth.User" : "user"
+    UserGroup }o--o{ "auth.User" : "users"
+    UserRole ||--o| "auth.User" : "user"
+    UserRole ||--o| "auth.User" : "assigned_by"
+    DataToken ||--o| ContentType : "content_type"
+    DataToken ||--o| DataToken : "parent (self)"
 ```
 ## Request Flow
 

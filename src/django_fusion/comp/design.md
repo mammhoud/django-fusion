@@ -19,63 +19,39 @@ Path: `django_fusion/comp`
 ```mermaid
 erDiagram
     CompUsage {
-        Any path
-        Any kind
         Field kwargs
     }
     SectionMarker {
-        Any name
-        Any marker_type
-        Any line
     }
     ParsedTemplate {
-        Any extends
-        Any blocks
-        Any comps
         Field sections
     }
     Prop {
-        Any name
     }
     Slot {
-        Any name
     }
     Component {
-        Any name
-        Any path
         Field props
         Field slots
     }
     Block {
-        Any name
     }
     Section {
-        Any name
-        Any id
-        Any marker_type
     }
     Template {
-        Any name
-        Any path
         Field blocks
         Field sections
     }
     PageComponentUsage {
-        Any component_id
         Field props
     }
     Page {
-        Any title
-        Any path
         Field components
     }
     AnalyzeRequest {
         Field filters
     }
     ScannedFile {
-        Any path
-        Any relative_path
-        Any content
         ConfigDict model_config
     }
 ```

@@ -1,0 +1,21 @@
+{% extends "fusion/base.html" %}
+
+{% block body %}
+<div class="df-skeleton" data-skeleton="default">
+    {% block header %}
+        {% include "fusion/includes/headers/default.html" %}
+    {% endblock header %}
+
+    {% block navigator %}
+        {% include "fusion/includes/navigators/side.html" %}
+    {% endblock navigator %}
+
+    <main class="df-main" id="df-main">
+        {% block content %}{% endblock content %}
+    </main>
+
+    {% block footer %}
+        {% include "fusion/includes/footers/default.html" %}
+    {% endblock footer %}
+</div>
+{% endblock body %}

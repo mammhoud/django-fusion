@@ -2,7 +2,7 @@
 
 Usage::
 
-    {% load ui_tags %}
+    {% load components %}
 
     {% form form=my_form hx_post="/api/endpoint/" hx_target="#result" submit_label="Save" %}
 """
@@ -11,12 +11,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from django import template
-
-register = template.Library()
+from django_fusion.comp.templatetags.components import register
 
 
-@register.inclusion_tag("components/form/form.html", takes_context=False)
+@register.inclusion_tag("fusion/components/form/form.html", takes_context=False)
 def form(
     form: Any = None,
     hx_post: str = "",

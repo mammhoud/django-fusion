@@ -76,7 +76,7 @@ flowchart LR
 Per `AGENTS.md`:
 
 ```python
-from django_fusion.comp.routes import (
+from django_fusion.routes import (
     Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path,
     IndexViewMixin, viewprop,
     BaseModelViewset, ModelViewset, ReadonlyModelViewset,
@@ -86,7 +86,7 @@ from django_fusion.comp.routes import (
     RoutableComponent, FragmentComponent,
     FragmentDetector, FragmentDetectionMixin,
 )
-from django_fusion.comp.generic import (
+from django_fusion.components.generic import (
     Action, CreateModelView, DeleteBulkActionView, DeleteModelView,
     DetailModelView, ListModelView, UpdateModelView,
     BaseListModelView, BaseBulkActionView, SearchableViewMixin, TableView,

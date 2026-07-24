@@ -10,14 +10,15 @@ Path: `django_fusion/comp/templatetags`
 
 
 ### Modules
-- `content_type.py`
-- `django_osoul_tags.py`
-- `embed_blocks.py`
-- `fusion_form_field_adapter.py`
-- `fusion_tags.py`
-- `routable_components.py`
-- `ui_tags.py`
-- `user_role.py`
+- `components/` — component inclusion tags (table, pagination, search, form, modal, breadcrumbs, navigation, menu, card, etc.)
+- `tags/` — core component tags (block, slot, prop, var, asset)
+- `menu.py` — site and application menu tags
+- `routable_components.py` — routable component helpers (component_url, active_menu)
+- `format.py` — text, number, and date filters
+- `field_adapter.py` — Wagtail form field adapter
+- `content_type.py` — content type helpers
+- `user_role.py` — role/permission filters
+- `embed_blocks.py` — embed block filters
 
 ## Architecture
 

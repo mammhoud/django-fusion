@@ -10,13 +10,11 @@ Path: `django_fusion/comp/templatetags/components`
 
 
 ### Modules
-- `calender.py`
-- `card.py`
+- `breadcrumbs.py`
+- `calendar.py`
 - `field.py`
 - `form.py`
-- `menu.py`
 - `modal.py`
-- `navigation.py`
 - `notification.py`
 - `pagination.py`
 - `price.py`

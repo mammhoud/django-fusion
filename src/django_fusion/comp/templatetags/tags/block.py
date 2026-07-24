@@ -98,7 +98,7 @@ class BlockNode(template.Node):
 
     @override
     def render(self, context: Context) -> str:
-        from django_fusion.comp.core._init import components
+        from django_fusion.comp.fragment._init import components
 
         component_name = self.get_component_name(context)
         component = components.get_component(component_name)

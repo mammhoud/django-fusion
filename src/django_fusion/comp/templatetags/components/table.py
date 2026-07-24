@@ -2,12 +2,10 @@ from __future__ import annotations
 
 from typing import Any
 
-from django import template
-
-register = template.Library()
+from django_fusion.comp.templatetags.components import register
 
 
-@register.inclusion_tag("components/table.html", takes_context=False)
+@register.inclusion_tag("fusion/components/table.html", takes_context=False)
 def table(
     headers: list[Any] | None = None,
     rows: list[list[Any]] | None = None,
@@ -21,7 +19,7 @@ def table(
 
     Usage::
 
-        {% load ui_tags %}
+        {% load components %}
         {% table headers=headers rows=rows hx_target="#list" %}
     """
     return {
@@ -34,7 +32,7 @@ def table(
     }
 
 
-@register.inclusion_tag("components/table.html")
+@register.inclusion_tag("fusion/components/table.html")
 def generate_table(columns, rows):
     """
     Template tag to generate a table with dynamic columns and rows.
@@ -45,7 +43,7 @@ def generate_table(columns, rows):
     return {"columns": columns, "rows": rows}
 
 
-@register.inclusion_tag("table.html")
+@register.inclusion_tag("fusion/components/table.html")
 def generate_table_rows(fields, qs, *args, **kwargs):
     """
     Template tag to generate table rows based on the provided fields and queryset.

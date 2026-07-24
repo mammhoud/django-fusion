@@ -24,7 +24,7 @@ from django_fusion.site.interface.utils import get_files_from_dirs
 
 hookimpl = _HookimplMarker("django_fusion.comp")
 from django_fusion.comp.apps import CoreExtAppConfig
-from django_fusion.comp.loader.templates import get_component_directories
+from django_fusion.comp.fragment.loader.templates import get_component_directories
 from django_fusion.comp.templatetags.tags.asset import AssetTag
 
 logger = logging.getLogger(__name__)
@@ -253,7 +253,7 @@ class BlockAssetFinder(BaseFinder):
         all assets that should be collected.
         """
 
-        from django_fusion.comp.core import Component
+        from django_fusion.comp.fragment._init import Component
 
         component_dirs = get_component_directories()
 

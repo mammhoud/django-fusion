@@ -10,7 +10,7 @@ tree is mounted there.
 ## 1. Import Mixins
 
 ```python
-from django_fusion.comp.routes import (
+from django_fusion.routes import (
     RoutableComponent,
     FormMixin,
     TableMixin,

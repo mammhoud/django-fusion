@@ -41,7 +41,7 @@ site = Site(
 
 ```python
 # django-fusion
-from django_fusion.comp.routes import Site, Application, menu_path
+from django_fusion.routes import Site, Application, menu_path
 
 html_app = Application(
     title="Components",
@@ -88,11 +88,11 @@ surface with identical semantics.
 | `html:text-fields` | `TemplateView` | `menu_path("text-fields/", TemplateView.as_view(...), ...)` | 1:1 |
 | `api:index` | `TemplateView` | `menu_path("", TemplateView.as_view(...), ...)` | 1:1 |
 | `atlas:index` | `AtlasApp().get_urls()` | `ModelViewset` in an `Application` subclass | See AtlasApp pattern below |
-| `atlas:list` | `ListModelView` (via AtlasApp) | `from django_fusion.comp.generic import ListModelView` | See ModelViewset mapping |
-| `atlas:detail` | `DetailModelView` (via AtlasApp) | `from django_fusion.comp.generic import DetailModelView` | See ModelViewset mapping |
-| `atlas:create` | `CreateModelView` (via AtlasApp) | `from django_fusion.comp.generic import CreateModelView` | See ModelViewset mapping |
-| `atlas:update` | `UpdateModelView` (via AtlasApp) | `from django_fusion.comp.generic import UpdateModelView` | See ModelViewset mapping |
-| `atlas:delete` | `DeleteModelView` (via AtlasApp) | `from django_fusion.comp.generic import DeleteModelView` | See ModelViewset mapping |
+| `atlas:list` | `ListModelView` (via AtlasApp) | `from django_fusion.components.generic import ListModelView` | See ModelViewset mapping |
+| `atlas:detail` | `DetailModelView` (via AtlasApp) | `from django_fusion.components.generic import DetailModelView` | See ModelViewset mapping |
+| `atlas:create` | `CreateModelView` (via AtlasApp) | `from django_fusion.components.generic import CreateModelView` | See ModelViewset mapping |
+| `atlas:update` | `UpdateModelView` (via AtlasApp) | `from django_fusion.components.generic import UpdateModelView` | See ModelViewset mapping |
+| `atlas:delete` | `DeleteModelView` (via AtlasApp) | `from django_fusion.components.generic import DeleteModelView` | See ModelViewset mapping |
 
 ---
 
@@ -124,7 +124,7 @@ class AtlasApp(Application):
 
 ```python
 # django-fusion — ModelViewset provides the same CRUD routes in one class
-from django_fusion.comp.routes import ModelViewset, Application
+from django_fusion.routes import ModelViewset, Application
 
 class AtlasModelViewset(ModelViewset):
     model = MyModel

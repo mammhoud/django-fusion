@@ -27,7 +27,7 @@ adding a new attribute, or debugging a missing context variable.
 ## `FormMixin`
 
 ```python
-from django_fusion.comp.routes.forms_tables import FormMixin
+from django_fusion.routes.forms_tables import FormMixin
 
 class CreateUserComponent(RoutableComponent, FormMixin):
     form_name = "user"
@@ -57,7 +57,7 @@ class CreateUserComponent(RoutableComponent, FormMixin):
 ## `TableMixin`
 
 ```python
-from django_fusion.comp.routes.forms_tables import TableMixin
+from django_fusion.routes.forms_tables import TableMixin
 
 class UserListComponent(RoutableComponent, TableMixin):
     model = User

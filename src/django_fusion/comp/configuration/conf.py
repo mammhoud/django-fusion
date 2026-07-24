@@ -13,7 +13,6 @@ from django_fusion.contrib.utils import unique_ordered
 # ------------------------------------------------------------------
 COMPONENTS_SETTINGS_NAME = "COMPONENTS"
 COMPONENTS_BUILTINS = "django_fusion.comp.templatetags.components"
-COMPONENTS_BUILTINS_UI = "django_fusion.comp.templatetags.ui_tags"
 COMPONENTS_FINDER = "django_fusion.comp.configuration.staticfiles.BlockAssetFinder"
 
 
@@ -64,6 +63,11 @@ class DjangoComponentsSettings:
     IMPORT_STRATEGY: ImportStrategy = ImportStrategy.DJANGO
     ENABLE_LAZY_LOADING: bool = True
     CACHE_IMPORTS: bool = True
+
+    # Fragment rendering
+    # When True, RoutableComponent.fusion_render_first defaults to True unless
+    # explicitly overridden on the component class.
+    FUSION_RENDER_FIRST_DEFAULT: bool = False
 
     def __getattribute__(self, __name: str) -> object:
         user_settings = getattr(settings, COMPONENTS_SETTINGS_NAME, {})

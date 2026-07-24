@@ -165,7 +165,7 @@ or a full page), inherit from `RoutableComponent`:
 
 ```python
 # myapp/components.py
-from django_fusion.comp.routes import RoutableComponent
+from django_fusion.routes import RoutableComponent
 
 class PricingRows(RoutableComponent):
     route_name = "pricing_rows"
@@ -178,7 +178,7 @@ Register via an `Application` and a `Site`:
 
 ```python
 # myapp/urls.py
-from django_fusion.comp.routes import Site, Application
+from django_fusion.routes import Site, Application
 
 pricing_app = Application(
     title="Pricing",

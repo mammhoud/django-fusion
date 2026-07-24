@@ -1,6 +1,6 @@
 """Unit tests for django-fusion component template tags.
 
-Tests the four inclusion tags from ``ui_tags``:
+Tests the four inclusion tags from ``components``:
 ``{% table %}``, ``{% pagination %}``, ``{% search %}``, ``{% form %}``.
 """
 
@@ -71,8 +71,8 @@ def _inject_template_dirs():
             templates[target_idx]["DIRS"].append(d)
 
     options = templates[target_idx].setdefault("OPTIONS", {})
-    options.setdefault("libraries", {})["ui_tags"] = (
-        "django_fusion.comp.templatetags.ui_tags"
+    options.setdefault("libraries", {})["components"] = (
+        "django_fusion.comp.templatetags.components"
     )
     # Register laces alias (provides comp used by form.html delegation chain)
     options["libraries"].setdefault(
@@ -81,9 +81,9 @@ def _inject_template_dirs():
     builtins = options.setdefault("builtins", [])
     if "django_fusion.comp.templatetags.components" not in builtins:
         builtins.append("django_fusion.comp.templatetags.components")
-    # Also register ui_tags as a builtin (table, pagination, search, form)
-    if "django_fusion.comp.templatetags.ui_tags" not in builtins:
-        builtins.append("django_fusion.comp.templatetags.ui_tags")
+    # Also register components as a builtin (table, pagination, search, form)
+    if "django_fusion.comp.templatetags.components" not in builtins:
+        builtins.append("django_fusion.comp.templatetags.components")
 
     templates[target_idx].setdefault("NAME", "django")
     settings.TEMPLATES = templates
@@ -285,34 +285,34 @@ class TestFormTagFunction:
 #  Template file existence tests
 # ══════════════════════════════════════════════════════════════════════════
 
-_OSOUL_TEMPLATES_DIR = (
+_FUSION_TEMPLATES_DIR = (
     Path(__file__).resolve().parent.parent
     / "src"
     / "django_fusion"
-    / "comp"
     / "templates"
+    / "fusion"
 )
 
 
 def test_table_template_exists():
-    assert (_OSOUL_TEMPLATES_DIR / "components" / "table.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "components" / "table.html").is_file()
 
 
 def test_pagination_template_exists():
-    assert (_OSOUL_TEMPLATES_DIR / "components" / "pagination.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "components" / "pagination" / "pagination.html").is_file()
 
 
 def test_search_template_exists():
-    assert (_OSOUL_TEMPLATES_DIR / "components" / "search.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "components" / "search.html").is_file()
 
 
 def test_form_template_exists():
-    assert (_OSOUL_TEMPLATES_DIR / "components" / "form.html").is_file()
+    assert (_FUSION_TEMPLATES_DIR / "components" / "form" / "form.html").is_file()
 
 
 def test_routable_pagination_template_exists():
-    """After osoul→fusion merge, pagination lives at components/pagination.html."""
-    assert (_OSOUL_TEMPLATES_DIR / "components" / "pagination.html").is_file()
+    """Pagination lives at fusion/components/pagination/pagination.html."""
+    assert (_FUSION_TEMPLATES_DIR / "components" / "pagination" / "pagination.html").is_file()
 
 
 
@@ -321,9 +321,9 @@ def test_routable_pagination_template_exists():
 #  Import and registration tests
 # ══════════════════════════════════════════════════════════════════════════
 
-def test_all_tags_importable_from_loader():
-    """All four tag functions are importable from ui_tags."""
-    from django_fusion.comp.templatetags.ui_tags import (
+def test_all_tags_importable_from_components():
+    """All four tag functions are importable from components."""
+    from django_fusion.comp.templatetags.components import (
         form,
         pagination,
         search,
@@ -348,16 +348,21 @@ def test_all_tags_importable_from_submodules():
     assert callable(form)
 
 
-def test_loader_module_has_register():
-    from django_fusion.comp.templatetags import ui_tags
+def test_components_module_has_register():
+    from django_fusion.comp.templatetags import components
     from django.template import Library
-    assert hasattr(ui_tags, "register")
-    assert isinstance(ui_tags.register, Library)
+    assert hasattr(components, "register")
+    assert isinstance(components.register, Library)
 
 
-def test_loader_exports_all_four():
-    from django_fusion.comp.templatetags.ui_tags import __all__
-    assert "table" in __all__
-    assert "pagination" in __all__
-    assert "search" in __all__
-    assert "form" in __all__
+def test_components_exports_all_four():
+    from django_fusion.comp.templatetags.components import (
+        form,
+        pagination,
+        search,
+        table,
+    )
+    assert callable(form)
+    assert callable(pagination)
+    assert callable(search)
+    assert callable(table)

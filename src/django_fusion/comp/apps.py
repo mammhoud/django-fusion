@@ -8,7 +8,7 @@ class CoreExtAppConfig(AppConfig):
     verbose_name = _("Core Extensions")
 
     def ready(self):
-        from .plugins import pm
+        from django_fusion.comp.fragment.plugins import pm
         from .configuration.staticfiles import asset_types
 
         for pre_ready in pm.hook.pre_ready():
@@ -19,7 +19,7 @@ class CoreExtAppConfig(AppConfig):
         # Register django-fusion built-in component templates.
         _register_builtin_component_paths()
 
-        from .plugins.webpack_compat import _patch_webpack_loader
+        from django_fusion.comp.fragment.plugins.webpack_compat import _patch_webpack_loader
 
         _patch_webpack_loader()
 
@@ -45,34 +45,34 @@ def _register_builtin_component_paths():
     # available to {% comp %} without manual registration.
     #
     # All paths are relative to the django-fusion app's templates
-    # directory (`django_fusion/comp/templates/`) and resolve via
-    # Django's standard template loader. Sites that need additional
-    # components can either add their own paths to
-    # ``COMPONENTS_INCLUDE_PATH_ROOTS`` or extend this list in a
-    # subclass AppConfig.ready() that runs after this one.
-    register_include_paths([
-            # ── Single-file components ──
-            "components/breadcrumbs.html",
-            "components/button.html",
-            "components/submit_button.html",
-            "components/form/form.html",
-            "components/form/form_block.html",
-            "components/form/form_field.html",
-            "components/form/form_simple.html",
-            "components/modal.html",
-            "components/modal_trigger.html",
-            "components/modal_static.html",
-            "components/notification.html",
-            "components/notification_small.html",
-            "components/pagination.html",
-            "components/search.html",
-            "components/table.html",
-            # ── Multi-file subdirectories ──
-            "components/pagination/numbers.html",
-            "components/pagination/load_more.html",
-            "components/pagination/infinite.html",
-            "components/chat/bubble.html",
-            "components/cookies/cookie-consent.html",
-            "components/cookies/cookie-policy.html",
-            "components/cookies/privacy-policy.html",
-        ])
+    # directory and resolve via Django's standard template loader.
+    # Sites that need additional components can either add their own
+    # paths to ``COMPONENTS_INCLUDE_PATH_ROOTS`` or extend this list in
+    # a subclass AppConfig.ready() that runs after this one.
+    built_in = [
+        # ── Single-file components ──
+        "fusion/components/breadcrumbs.html",
+        "fusion/components/button.html",
+        "fusion/components/submit_button.html",
+        "fusion/components/modal/modal.html",
+        "fusion/components/modal/modal_trigger.html",
+        "fusion/components/modal/modal_static.html",
+        "fusion/components/notification/notification.html",
+        "fusion/components/notification/notification_small.html",
+        "fusion/components/pagination/pagination.html",
+        "fusion/components/search.html",
+        "fusion/components/table.html",
+        # ── Multi-file subdirectories ──
+        "fusion/components/pagination/numbers.html",
+        "fusion/components/pagination/load_more.html",
+        "fusion/components/pagination/infinite.html",
+        "fusion/components/chat/bubble.html",
+        "fusion/components/cookies/cookie-consent.html",
+        "fusion/components/cookies/cookie-policy.html",
+        "fusion/components/cookies/privacy-policy.html",
+    ]
+    # Form components: canonical fusion/ paths plus legacy aliases.
+    for _name in ("form", "form_block", "form_field", "form_simple"):
+        built_in.append(f"fusion/components/form/{_name}.html")
+        built_in.append(f"components/form/{_name}.html")
+    register_include_paths(built_in)

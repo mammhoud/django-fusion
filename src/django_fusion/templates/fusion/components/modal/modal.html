@@ -1,0 +1,89 @@
+{% load i18n %}{# django-fusion components/modal/modal.html — combined HTMX trigger + modal skeleton
+   ──────────────────────────────────────────────────────────────────
+   This template renders:
+     a) A trigger button that loads content via HTMX and opens the modal.
+     b) The modal skeleton itself (always present on the page).
+
+   PARAMETERS:
+     modal_id          : unique HTML id (required)
+     hx_url            : URL for dynamic content; if empty, static body is used
+     modal_title       : modal title text (optional)
+     modal_icon        : Bootstrap Icon class (e.g. 'bi-person') (optional)
+     modal_size        : modal-sm|modal-md (default)|modal-lg|modal-xl
+     modal_centered    : True (default) / False
+     modal_scrollable  : True / False (default)
+     modal_body_content: static HTML content (ignored if hx_url is set)
+     show_trigger      : render the trigger button? (default True)
+     btn_label         : button text
+     btn_class         : CSS class(es) for trigger button (default 'btn btn-primary')
+     btn_icon          : icon class for button (optional)
+     hx_indicator      : HTMX indicator element id (optional)
+     show_close_button : show default footer close button? (default True)
+
+   USAGE:
+     {% comp "components/modal/modal.html" modal_id="userModal" hx_url="/api/users/42/" modal_title="Edit User" modal_icon="bi-person" / %}
+#}
+
+{# ---------- Trigger Button (optional) ---------- #}
+{% if show_trigger|default_if_none:True %}
+<button type="button"
+        class="{{ btn_class|default:'btn btn-primary' }}"
+        data-bs-toggle="modal"
+        data-bs-target="#{{ modal_id }}"
+        hx-get="{{ hx_url }}"
+        hx-target="#{{ modal_id }}-body"
+        hx-trigger="click"
+        {% if hx_indicator %}hx-indicator="{{ hx_indicator }}"{% endif %}
+        {% if extra_attrs %}{{ extra_attrs|safe }}{% endif %}>
+    {% if btn_icon %}<i class="bi {{ btn_icon }} {% if btn_label %}me-2{% endif %}"></i>{% endif %}
+    {{ btn_label|default:"" }}
+</button>
+{% endif %}
+
+{# ---------- Modal Skeleton ---------- #}
+<div class="modal fade"
+     id="{{ modal_id }}"
+     tabindex="-1"
+     aria-labelledby="{{ modal_id }}Label"
+     aria-hidden="true"
+     data-bs-backdrop="static"
+     data-bs-keyboard="false">
+    <div class="modal-dialog {{ modal_size|default:'modal-md' }}
+                {% if modal_centered|default:True %}modal-dialog-centered{% endif %}
+                {% if modal_scrollable %}modal-dialog-scrollable{% endif %}">
+        <div class="modal-content border-0 shadow-lg">
+
+            {# Header #}
+            <div class="modal-header border-bottom py-3">
+                <h5 class="modal-title d-flex align-items-center gap-2 text-heading"
+                    id="{{ modal_id }}Label">
+                    {% if modal_icon %}
+                    <i class="bi {{ modal_icon }} text-primary fs-5"></i>
+                    {% endif %}
+                    {{ modal_title|default:"" }}
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"
+                        aria-label="{% trans 'Close' %}"></button>
+            </div>
+
+            {# Body – empty by default, filled by HTMX or static content #}
+            <div class="modal-body p-4" id="{{ modal_id }}-body">
+                {% if not hx_url and modal_body_content %}
+                    {{ modal_body_content|safe }}
+                {% endif %}
+            </div>
+
+            {# Footer #}
+            <div class="modal-footer border-top py-3">
+                <div class="ms-auto">
+                    {% if show_close_button|default:True %}
+                    <button type="button" class="btn btn-secondary"
+                            data-bs-dismiss="modal">
+                        {% trans "Close" %}
+                    </button>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

@@ -1,6 +1,4 @@
-from django import template
-
-register = template.Library()
+from django_fusion.comp.templatetags.components import register
 
 
 @register.filter

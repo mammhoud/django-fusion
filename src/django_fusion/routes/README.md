@@ -69,7 +69,7 @@ If neither is set, ``template_name`` defaults to ``"base_page.html
 ### Basic Routing
 
 ```python
-from django_fusion.comp.routes import RoutableComponent
+from django_fusion.routes import RoutableComponent
 
 class DashboardComponent(RoutableComponent):
     route_name = "dashboard"
@@ -94,7 +94,7 @@ class ProfileComponent(RoutableComponent):
 ### Form Component
 
 ```python
-from django_fusion.comp.routes import RoutableComponent, FormMixin
+from django_fusion.routes import RoutableComponent, FormMixin
 
 class UserCreateComponent(RoutableComponent, FormMixin):
     route_name = "user_create"
@@ -109,7 +109,7 @@ class UserCreateComponent(RoutableComponent, FormMixin):
 ### Table Component
 
 ```python
-from django_fusion.comp.routes import RoutableComponent, TableMixin
+from django_fusion.routes import RoutableComponent, TableMixin
 
 class UserListComponent(RoutableComponent, TableMixin):
     route_name = "user_list"
@@ -126,7 +126,7 @@ class UserListComponent(RoutableComponent, TableMixin):
 ### Combined Form & Table
 
 ```python
-from django_fusion.comp.routes import RoutableComponent, FormTableMixin
+from django_fusion.routes import RoutableComponent, FormTableMixin
 
 class UserManagementComponent(RoutableComponent, FormTableMixin):
     route_name = "users_manage"
