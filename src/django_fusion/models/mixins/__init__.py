@@ -30,7 +30,10 @@ import uuid
 from django.db import models
 from django.utils import timezone
 
-from .display_mode import DisplayModeMixin  # noqa: F401
+try:
+    from .display_mode import DisplayModeMixin  # noqa: F401
+except Exception:
+    DisplayModeMixin = None  # type: ignore
 
 
 class TimestampedModel(models.Model):

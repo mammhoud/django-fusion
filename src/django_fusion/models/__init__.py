@@ -15,18 +15,32 @@ from .datatoken import (  # noqa: F401
 )
 from .email import EmailLog, EmailTemplate, UserGroup  # noqa: F401
 from .integrations import Integration
-from .interaction.call import Call
-from .interaction.notification import Notification
+try:
+    from .interaction.call import Call
+    from .interaction.notification import Notification
+except Exception:
+    Call = None  # type: ignore
+    Notification = None  # type: ignore
 from .managers import SoftDeleteManager, SoftDeleteQuerySet  # noqa: F401
-from .mixins import (  # noqa: F401
-    AuditMixin,
-    DisplayModeMixin,
-    SoftDeleteMixin,
-    SoftDeleteModel,
-    StatusMixin,
-    TimestampedModel,
-    UUIDPrimaryKeyModel,
-)
+try:
+    from .mixins import (  # noqa: F401
+        AuditMixin,
+        DisplayModeMixin,
+        SoftDeleteMixin,
+        SoftDeleteModel,
+        StatusMixin,
+        TimestampedModel,
+        UUIDPrimaryKeyModel,
+    )
+except Exception:
+    from .mixins import (  # noqa: F401
+        AuditMixin,
+        SoftDeleteMixin,
+        SoftDeleteModel,
+        StatusMixin,
+        TimestampedModel,
+        UUIDPrimaryKeyModel,
+    )
 
 # Alias for backward compatibility
 DefaultBase = BaseModel
