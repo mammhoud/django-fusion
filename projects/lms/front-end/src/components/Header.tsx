@@ -57,7 +57,7 @@ export default function Header() {
             ) : profile ? (
               <div className="flex items-center gap-3">
                 <Link
-                  href={profile.role === 'instructor' ? '/instructor-dashboard' : '/student-dashboard'}
+                  href="/dashboard"
                   className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
                 >
                   <HiUser className="w-5 h-5" />
@@ -102,7 +102,7 @@ export default function Header() {
             <hr className="my-2 border-white/10" />
             {profile ? (
               <>
-                <Link href={profile.role === 'instructor' ? '/instructor-dashboard' : '/student-dashboard'}
+                <Link href="/dashboard"
                       className="block px-3 py-2 text-white font-medium"
                       onClick={() => setMobileMenuOpen(false)}>
                   Dashboard

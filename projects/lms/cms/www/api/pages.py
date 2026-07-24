@@ -1,8 +1,9 @@
 """Page content API — Wagtail CMS-first with STATIC_PAGES fallback.
 
 The response shape mirrors Wagtail page concepts: SEO metadata plus
-ordered content blocks.  When Wagtail Page objects exist in the database
-they take priority; otherwise the legacy STATIC_PAGES dict is the fallback.
+ordered content blocks.  ``get_page_for_language()`` (in
+``plugins.pages.content``) queries Wagtail ``Page.objects.live()`` first
+and falls back to the hardcoded ``STATIC_PAGES`` dict for demo data.
 
 Run ``manage.py seed_pages_from_static`` to populate Wagtail from the
 static dict and transition fully to CMS-managed content.
@@ -13,11 +14,9 @@ from pathlib import Path
 
 from django.http import HttpResponse
 from django.template import engines
-from wagtail.models import Page
 
 from plugins.pages.content import normalize_slug, get_page_for_language
 from www.api.data_adapter import bolt_view, fusion_response
-from www.content.models.pages import page_to_dict
 from django_fusion.routes import fusion_json_response, FusionCodec
 
 logger = logging.getLogger(__name__)
@@ -26,17 +25,10 @@ logger = logging.getLogger(__name__)
 def _get_cms_page(slug: str, language: str) -> dict | None:
     """Return page data for *slug* from Wagtail CMS or STATIC_PAGES fallback.
 
-    Priority:
-    1. Wagtail Page.objects.live() — CMS-managed content
-    2. get_page_for_language() — STATIC_PAGES fallback (legacy/migration)
+    Delegates to ``get_page_for_language()`` which queries Wagtail
+    ``Page.objects.live()`` first and falls back to the hardcoded
+    ``STATIC_PAGES`` dict when no CMS page exists.
     """
-    normalized = normalize_slug(slug)
-    try:
-        page = Page.objects.live().filter(slug=normalized).first()
-        if page is not None:
-            return page_to_dict(page.specific)
-    except Exception:
-        logger.info("Wagtail page query unavailable for slug=%s — using static fallback", slug)
     return get_page_for_language(slug, language)
 
 
