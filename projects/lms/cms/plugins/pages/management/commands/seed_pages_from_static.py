@@ -37,11 +37,11 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         from plugins.pages.content import STATIC_PAGES, STATIC_PAGE_TRANSLATIONS
         from www.content.models.pages import (
-            HomePage,
-            AboutPage,
-            FaqPage,
-            PrivacyPage,
-            ContactPage,
+            DynamicHomePage,
+            DynamicAboutPage,
+            DynamicFaqPage,
+            DynamicPrivacyPage,
+            DynamicContactPage,
         )
 
         dry_run = options["dry_run"]
@@ -50,11 +50,11 @@ class Command(BaseCommand):
 
         # Map slugs to Page model classes
         PAGE_MODELS = {
-            "home": HomePage,
-            "about-us": AboutPage,
-            "faq": FaqPage,
-            "privacy": PrivacyPage,
-            "contact": ContactPage,
+            "home": DynamicHomePage,
+            "about-us": DynamicAboutPage,
+            "faq": DynamicFaqPage,
+            "privacy": DynamicPrivacyPage,
+            "contact": DynamicContactPage,
         }
 
         root = Page.objects.filter(depth=1).first()

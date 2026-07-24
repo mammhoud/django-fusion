@@ -79,7 +79,7 @@ class SocialLink(models.Model):
 # Footer Link Groups (inline model for SiteSettings)
 # ═══════════════════════════════════════════════════════════════════
 
-class FooterLinkGroup(models.Model):
+class FooterLinkGroup(ClusterableModel):
     """A group of links in the footer (e.g., 'Useful Links', 'Our Company')."""
 
     setting = ParentalKey(

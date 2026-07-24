@@ -1,7 +1,7 @@
 """
 Wagtail hooks — register CMS page models for admin panel management.
 
-All content pages (HomePage, AboutPage, FaqPage, PrivacyPage, ContactPage)
+All content pages (DynamicHomePage, DynamicAboutPage, DynamicFaqPage, DynamicPrivacyPage, DynamicContactPage)
 are registered here so they appear in the Wagtail admin page tree.
 """
 
@@ -9,20 +9,20 @@ from wagtail import hooks
 from wagtail.models import Page
 
 from www.content.models.pages import (
-    HomePage,
-    AboutPage,
-    FaqPage,
-    PrivacyPage,
-    ContactPage,
+    DynamicHomePage,
+    DynamicAboutPage,
+    DynamicFaqPage,
+    DynamicPrivacyPage,
+    DynamicContactPage,
 )
 
 # All page types that can be created under the root Wagtail page
 CMS_PAGE_TYPES = [
-    HomePage,
-    AboutPage,
-    FaqPage,
-    PrivacyPage,
-    ContactPage,
+    DynamicHomePage,
+    DynamicAboutPage,
+    DynamicFaqPage,
+    DynamicPrivacyPage,
+    DynamicContactPage,
 ]
 
 
