@@ -24,6 +24,7 @@ class BlogTagCategory(BaseTagCategory):
     """Category for organizing blog tags"""
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Blog Tag Category")
         verbose_name_plural = _("Blog Tag Categories")
         db_table = "blog_tag_categories"
@@ -68,6 +69,7 @@ class BlogTag(BaseTag):
     )
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Blog Tag")
         verbose_name_plural = _("Blog Tags")
         db_table = "blog_tags"
@@ -117,6 +119,7 @@ class BlogPageTag(Orderable, ItemBase):
     last_clicked = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Blog Page Tag")
         verbose_name_plural = _("Blog Page Tags")
         db_table = "blog_page_tags"

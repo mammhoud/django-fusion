@@ -7,7 +7,7 @@ Uses bolt-style function views via the @bolt_view adapter decorator.
 
 from django.urls import path
 
-from . import auth, courses, students, instructors, blog, shop, events, contact, pages, i18n
+from . import auth, courses, students, instructors, blog, shop, events, contact, pages, i18n, fusion_health
 
 app_name = "api"
 

@@ -31,6 +31,7 @@ class NewsletterFilterSet(WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "accounts"
         model = Newsletter
         fields = {
             "live": ["exact"],

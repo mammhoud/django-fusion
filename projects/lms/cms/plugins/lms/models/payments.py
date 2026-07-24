@@ -192,6 +192,7 @@ class PaymentRefund(models.Model):
     )
     
     class Meta:
+        app_label = "lms"
         ordering = ['-created_at']
         verbose_name = 'Payment Refund'
         verbose_name_plural = 'Payment Refunds'
@@ -264,6 +265,7 @@ class PaymentWebhookLog(models.Model):
     )
     
     class Meta:
+        app_label = "lms"
         ordering = ['-created_at']
         verbose_name = 'Payment Webhook Log'
         verbose_name_plural = 'Payment Webhook Logs'

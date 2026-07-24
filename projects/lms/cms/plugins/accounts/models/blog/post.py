@@ -53,6 +53,7 @@ class BlogAuthor(Orderable):
     )
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Blog Author")
         verbose_name_plural = _("Blog Authors")
         ordering = ['-is_primary_author', 'sort_order']
@@ -176,6 +177,7 @@ class BlogPage(Page, DraftStateMixin):
     )
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Blog Article")
         verbose_name_plural = _("Blog Articles")
         db_table = "blog_pages"
