@@ -16,7 +16,7 @@ from pathlib import Path
 def main() -> None:
     site_dir = Path(__file__).resolve().parent          # websites/ctc-research/
     workspace_dir = site_dir.parent                     # websites/
-    repo_root = site_dir.parents[1]                     # /home/structa.cloud/
+    repo_root = site_dir.parents[2]                     # /home/structa.cloud/
     site_app_dir = site_dir / "www"                     # websites/ctc-research/www/
 
     # Set up Django environment
