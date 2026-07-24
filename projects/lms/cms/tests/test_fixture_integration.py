@@ -113,6 +113,62 @@ def _create_student():
 
 
 # ═════════════════════════════════════════════════════════════════════
+# Seed Pages from STATIC_PAGES
+# ═════════════════════════════════════════════════════════════════════
+
+
+@pytest.mark.django_db
+class TestSeedPagesFromStatic:
+    """Verify seed_pages_from_static populates Wagtail from STATIC_PAGES."""
+
+    def test_command_is_registered_and_importable(self):
+        """The management command module loads and has expected attributes."""
+        from django.core.management import find_commands, load_command_class
+
+        # Verify the command is discoverable
+        commands = list(find_commands("plugins"))
+        assert "seed_pages_from_static" in commands
+
+        cmd = load_command_class("plugins", "seed_pages_from_static")
+        assert cmd.help is not None
+
+    def test_dry_run_discovers_all_pages(self):
+        """--dry-run lists all 5 STATIC_PAGES slugs (when Wagtail root page exists)."""
+        from io import StringIO
+
+        out, err = StringIO(), StringIO()
+        call_command(
+            "seed_pages_from_static", "--dry-run", stdout=out, stderr=err,
+        )
+
+        # If Wagtail root page is missing (no migrations), skip gracefully.
+        if "No root Wagtail page" in err.getvalue():
+            pytest.skip("Wagtail root page not available in this environment")
+
+        output = out.getvalue()
+        assert "home" in output.lower() or "HomePage" in output
+        assert "about-us" in output.lower() or "AboutPage" in output
+        assert "faq" in output.lower() or "FaqPage" in output
+        assert "privacy" in output.lower() or "PrivacyPage" in output
+        assert "contact" in output.lower() or "ContactPage" in output
+
+    def test_dry_run_reports_created_count(self):
+        """--dry-run reports the number of pages that would be created."""
+        from io import StringIO
+
+        out, err = StringIO(), StringIO()
+        call_command(
+            "seed_pages_from_static", "--dry-run", stdout=out, stderr=err,
+        )
+
+        if "No root Wagtail page" in err.getvalue():
+            pytest.skip("Wagtail root page not available in this environment")
+
+        output = out.getvalue()
+        assert "created" in output.lower() or "Done" in output
+
+
+# ═════════════════════════════════════════════════════════════════════
 # Management command test
 # ═════════════════════════════════════════════════════════════════════
 

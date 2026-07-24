@@ -26,6 +26,18 @@ import logging
 
 logger = logging.getLogger(__name__)
 
+# ── Wagtail CMS imports (optional — the module works without Wagtail) ──
+try:
+    from wagtail.models import Page
+    from www.content.models.pages import page_to_dict
+
+    _WAGTAIL_AVAILABLE = True
+except ImportError:
+    _WAGTAIL_AVAILABLE = False
+    Page = None  # type: ignore[assignment]
+    page_to_dict = None  # type: ignore[assignment]
+    logger.warning("Wagtail not available — STATIC_PAGES fallback only")
+
 
 def cta(label, href, variant="primary"):
     return {"label": label, "href": href, "variant": variant}
@@ -526,17 +538,15 @@ def get_page_for_language(slug: str, language_code: str) -> dict | None:
     normalized = normalize_slug(slug)
 
     # 1. Try Wagtail CMS first
-    try:
-        from wagtail.models import Page
-        from www.content.models.pages import page_to_dict
-
-        page = Page.objects.live().filter(slug=normalized).first()
-        # Only match our custom content pages (which have a ``body``
-        # StreamField), not the default Wagtail root/welcome pages.
-        if page is not None and hasattr(page.specific, "body"):
-            return page_to_dict(page.specific)
-    except Exception:
-        logger.debug("Wagtail page query unavailable for slug=%r — using static fallback", slug)
+    if _WAGTAIL_AVAILABLE:
+        try:
+            page = Page.objects.live().filter(slug=normalized).first()
+            # Only match our custom content pages (which have a ``body``
+            # StreamField), not the default Wagtail root/welcome pages.
+            if page is not None and hasattr(page.specific, "body"):
+                return page_to_dict(page.specific)
+        except Exception:
+            logger.debug("Wagtail page query failed for slug=%r — using static fallback", slug)
 
     # 2. Fall back to hardcoded STATIC_PAGES (demo / development data)
     page = STATIC_PAGES.get(normalized)
