@@ -26,15 +26,14 @@ class ContentPageMixin(models.Model):
     """Abstract base for all CMS-backed content pages.
 
     Inherits ``models.Model`` so Django's metaclass registers
-    ``seo_title``, ``seo_description``, and ``last_updated`` as
-    real model fields.  The ``abstract = True`` Meta flag prevents
-    Django from creating a separate DB table.
+    ``seo_description`` and ``last_updated`` as real model fields.
+    ``seo_title`` is intentionally NOT defined here — Wagtail's
+    ``Page`` model already provides it.
+
+    The ``abstract = True`` Meta flag prevents Django from
+    creating a separate DB table.
     """
 
-    seo_title = models.CharField(
-        max_length=255, blank=True, default="",
-        help_text=_("Override the page title for SEO purposes."),
-    )
     seo_description = models.TextField(
         blank=True, default="",
         help_text=_("Meta description for search engines."),
@@ -62,7 +61,7 @@ class ContentPageMixin(models.Model):
 # Home Page
 # ═══════════════════════════════════════════════════════════════════
 
-class HomePage(ContentPageMixin, Page):
+class DynamicHomePage(ContentPageMixin, Page):
     """Site home page — hero, stats, featured sections, CTA."""
 
     body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
@@ -78,6 +77,7 @@ class HomePage(ContentPageMixin, Page):
     subpage_types = []
 
     class Meta:
+        db_table = "content_dynamic_homepage"
         verbose_name = _("home page")
         verbose_name_plural = _("home pages")
         app_label = "content"
@@ -87,7 +87,7 @@ class HomePage(ContentPageMixin, Page):
 # About Page
 # ═══════════════════════════════════════════════════════════════════
 
-class AboutPage(ContentPageMixin, Page):
+class DynamicAboutPage(ContentPageMixin, Page):
     """About us page — hero, stats, mission, team, CTA."""
 
     body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
@@ -103,6 +103,7 @@ class AboutPage(ContentPageMixin, Page):
     subpage_types = []
 
     class Meta:
+        db_table = "content_dynamic_aboutpage"
         verbose_name = _("about page")
         verbose_name_plural = _("about pages")
         app_label = "content"
@@ -112,7 +113,7 @@ class AboutPage(ContentPageMixin, Page):
 # FAQ Page
 # ═══════════════════════════════════════════════════════════════════
 
-class FaqPage(ContentPageMixin, Page):
+class DynamicFaqPage(ContentPageMixin, Page):
     """FAQ page — hero, faq_groups, CTA."""
 
     body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
@@ -128,6 +129,7 @@ class FaqPage(ContentPageMixin, Page):
     subpage_types = []
 
     class Meta:
+        db_table = "content_dynamic_faqpage"
         verbose_name = _("FAQ page")
         verbose_name_plural = _("FAQ pages")
         app_label = "content"
@@ -137,7 +139,7 @@ class FaqPage(ContentPageMixin, Page):
 # Privacy Page
 # ═══════════════════════════════════════════════════════════════════
 
-class PrivacyPage(ContentPageMixin, Page):
+class DynamicPrivacyPage(ContentPageMixin, Page):
     """Privacy policy page — rich text sections."""
 
     body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
@@ -153,6 +155,7 @@ class PrivacyPage(ContentPageMixin, Page):
     subpage_types = []
 
     class Meta:
+        db_table = "content_dynamic_privacypage"
         verbose_name = _("privacy page")
         verbose_name_plural = _("privacy pages")
         app_label = "content"
@@ -162,7 +165,7 @@ class PrivacyPage(ContentPageMixin, Page):
 # Contact Page
 # ═══════════════════════════════════════════════════════════════════
 
-class ContactPage(ContentPageMixin, Page):
+class DynamicContactPage(ContentPageMixin, Page):
     """Contact page — hero, contact_methods, form."""
 
     body = StreamField(PAGE_CONTENT_BLOCKS, use_json_field=True, blank=True)
@@ -178,6 +181,7 @@ class ContactPage(ContentPageMixin, Page):
     subpage_types = []
 
     class Meta:
+        db_table = "content_dynamic_contactpage"
         verbose_name = _("contact page")
         verbose_name_plural = _("contact pages")
         app_label = "content"
