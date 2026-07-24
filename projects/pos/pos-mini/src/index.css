@@ -1,5 +1,6 @@
 @import "tailwindcss";
 @import "./styles/themes.css";
+@import "./styles/theme-overrides.css";
 @import "../../assets/css/base/_variables.css";
 @import "../../assets/css/base/_reset.css";
 @import "../../assets/css/components/_card.css";
@@ -12,6 +13,8 @@
 
 /*
  * Styles are organized using a BEM-inspired architecture.
- * Import order: base → components → utilities, so utilities can
- * override component/base styles when needed.
+ * Import order: base → components → utilities → theme, so theme can
+ * override component and utility styles when a variant is active.
+ * theme-overrides.css redefines Tailwind color tokens per [data-theme]
+ * so that all components immediately reflect the selected variant.
  */

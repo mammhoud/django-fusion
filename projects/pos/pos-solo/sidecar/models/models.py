@@ -17,3 +17,10 @@ from models.menu import MenuItem, Menu, MenuItemAssignment  # noqa: F401
 from models.node import Node, Heartbeat, NodeEvent  # noqa: F401
 from models.config import DeviceConfig, MasterDevice, CloudLink  # noqa: F401
 from models.sync import SyncLog  # noqa: F401
+from models.extra import (  # noqa: F401
+    Ingredient, Recipe, ReceiptTemplate, Role, InventoryAdjustment,
+)
+from models.hr import Payroll, EmployeeSchedule, TaxReport  # noqa: F401
+from models.inventory import Supplier, PurchaseOrder, PurchaseOrderItem  # noqa: F401
+from models.ops import KitchenTicket, SupportTicket  # noqa: F401
+from models.notes import Note  # noqa: F401
