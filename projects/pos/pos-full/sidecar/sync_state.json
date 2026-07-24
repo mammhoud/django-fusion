@@ -5,6 +5,6 @@
   "last_sync": null,
   "status": "error",
   "items_synced": 0,
-  "errors": 8975,
+  "errors": 9055,
   "last_error": "Client error '404 Not Found' for url 'http://127.0.0.1:8082/api/sync/push/heartbeat'\nFor more information check: https://developer.mozilla.org/en-US/docs/Web/HTTP/Status/404"
 }
