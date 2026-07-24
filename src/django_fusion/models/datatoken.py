@@ -35,7 +35,7 @@ to all tagged rows without row-by-row iteration.
 
 Usage (tagging a row)::
 
-    from django_fusion.core.models import DataToken, AbstractDataToken
+    from django_fusion.models.datatoken import DataToken, AbstractDataToken
 
     DataToken.objects.tag_row(
         model_instance=invoice,
@@ -63,7 +63,7 @@ Usage (getting a sync batch)::
 
 Usage (DeviceToken inheriting the abstract base)::
 
-    from django_fusion.core.models import AbstractDataToken
+    from django_fusion.models.datatoken import AbstractDataToken
 
     class DeviceToken(AbstractDataToken):
         device_id = models.CharField(...)
@@ -310,7 +310,7 @@ class BaseDeviceToken(AbstractDataToken):
 
     Usage::
 
-        from django_fusion.core.models import BaseDeviceToken
+        from django_fusion.models.datatoken import BaseDeviceToken
 
         class DeviceToken(BaseDeviceToken):
             # POS Full edition device token
@@ -545,7 +545,7 @@ class BaseDeviceToken(AbstractDataToken):
         # so this works even without django-fusion on the import path.
         if self.node_id_link:
             try:
-                from django_fusion.core.models import DataToken
+                from django_fusion.models.datatoken import DataToken
 
                 DataToken.objects.filter(
                     node_id=self.node_id_link,
@@ -890,7 +890,7 @@ class DataTokenMixin:
 
     Adds convenience properties and methods::
 
-        from django_fusion.core.models import DataTokenMixin
+        from django_fusion.models.datatoken import DataTokenMixin
 
         class Invoice(DataTokenMixin, models.Model):
             customer = models.CharField(max_length=100)
@@ -996,7 +996,7 @@ class DataTokenMixin:
 # This is a PLAIN FUNCTION — NOT decorated with @receiver.
 # Connect it manually to YOUR project's SyncLog model in AppConfig.ready():
 #
-#   from django_fusion.core.models import sync_log_success_handler
+#   from django_fusion.models.datatoken import sync_log_success_handler
 #   from django.db.models.signals import post_save
 #   post_save.connect(sync_log_success_handler, sender=SyncLog)
 #
@@ -1045,7 +1045,7 @@ def sync_log_success_handler(sender, instance, created, **kwargs) -> None:
 
         class MyAppConfig(AppConfig):
             def ready(self):
-                from django_fusion.core.models import sync_log_success_handler
+                from django_fusion.models.datatoken import sync_log_success_handler
                 from django.db.models.signals import post_save
                 from your_app.models import SyncLog
                 post_save.connect(sync_log_success_handler, sender=SyncLog)

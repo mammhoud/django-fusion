@@ -14,7 +14,7 @@ from django.core.cache import cache
 from django.db import models
 from django.db.models import QuerySet
 
-from django_fusion.core.cache import CachedManager
+from django_fusion.site.management.managers.cache import CachedManager
 
 logger = logging.getLogger(__name__)
 
