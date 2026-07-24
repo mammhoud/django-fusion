@@ -17,6 +17,7 @@ class CourseEnrollmentForm(forms.ModelForm):
     )
 
     class Meta:
+        app_label = "lms"
         model = CourseEnrollmentLead
         fields = ['full_name', 'email', 'phone', 'notes']
         widgets = {

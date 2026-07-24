@@ -22,6 +22,7 @@ class PrivacyPolicy(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
+        app_label = "accounts"
         ordering = ["-created_at"]
         verbose_name = "Privacy Policy"
         verbose_name_plural = "Privacy Policies"
@@ -45,6 +46,7 @@ class PrivacyConsent(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
+        app_label = "accounts"
         ordering = ["-consented_at"]
         verbose_name = "Privacy Consent"
         verbose_name_plural = "Privacy Consents"
@@ -100,6 +102,7 @@ class TermsOfService(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
+        app_label = "accounts"
         ordering = ["-created_at"]
         verbose_name = "Terms of Service"
         verbose_name_plural = "Terms of Service"
@@ -123,6 +126,7 @@ class TermsConsent(models.Model):
     is_active = models.BooleanField(default=True)
 
     class Meta:
+        app_label = "accounts"
         ordering = ["-consented_at"]
         verbose_name = "Terms Consent"
         verbose_name_plural = "Terms Consents"

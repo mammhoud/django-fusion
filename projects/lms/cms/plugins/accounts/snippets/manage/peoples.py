@@ -39,6 +39,7 @@ class PersonFilterSet(RevisionFilterSetMixin, WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "accounts"
         model = Person
         fields = {
             "profile_type": ["exact"],
@@ -94,6 +95,7 @@ class WorkspaceFilterSet(RevisionFilterSetMixin, WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "accounts"
         model = Workspace
         fields = {
             "company": ["exact"],
@@ -117,6 +119,7 @@ class CompanyFilterSet(RevisionFilterSetMixin, WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "accounts"
         model = Corporate
         fields = {
             "company_size": ["exact"],
@@ -183,6 +186,7 @@ class TeamFilterSet(RevisionFilterSetMixin, WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "accounts"
         model = Team
         fields = {
             "team_type": ["exact"],
@@ -202,6 +206,7 @@ class ServiceFilterSet(RevisionFilterSetMixin, WagtailFilterSet):
     )
 
     class Meta:
+        app_label = "accounts"
         model = Service
         fields = {
             "category": ["exact"],

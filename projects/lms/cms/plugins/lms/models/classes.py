@@ -570,6 +570,7 @@ class Classes(ContentBase):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Class")
         verbose_name_plural = _("Classes")
         ordering = ["course", "sequence", "created_at"]

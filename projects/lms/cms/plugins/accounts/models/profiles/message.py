@@ -75,6 +75,7 @@ class Message(DefaultBase):
     delivered_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        app_label = "accounts"
         ordering = ["-created_at"]
         indexes = [  # noqa: RUF012
             models.Index(fields=["sender_content_type", "sender_object_id"]),

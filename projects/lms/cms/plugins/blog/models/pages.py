@@ -86,6 +86,7 @@ class BlogIndexPage(RoutablePageMixin, BasePage):
     subpage_types = []  # No Wagtail child pages; posts are Django model instances
 
     class Meta:
+        app_label = "blog"
         verbose_name = _("Blog Index Page")
         verbose_name_plural = _("Blog Index Pages")
 

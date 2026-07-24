@@ -120,6 +120,7 @@ def _get_blog_post_form_class():
 
     class BlogPostForm(forms.ModelForm):
         class Meta:
+            app_label = "blog"
             model = BlogPost
             fields = ["title", "slug", "excerpt", "content", "category", "status"]
             widgets = {

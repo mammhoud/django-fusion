@@ -55,6 +55,7 @@ class Certificate(DefaultBase):
     updated_at = models.DateTimeField(auto_now=True)
 
     class Meta:
+        app_label = "profile"
         ordering = ['-issue_date']
         indexes = [
             models.Index(fields=['content_type', 'object_id']),

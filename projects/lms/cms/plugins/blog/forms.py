@@ -18,6 +18,7 @@ class BlogTagForm(forms.ModelForm):
     """Form for creating and editing blog tags."""
 
     class Meta:
+        app_label = "blog"
         model = BlogTag
         fields = ['name', 'slug']
         widgets = {
@@ -115,6 +116,7 @@ class BlogPostForm(forms.ModelForm):
     )
 
     class Meta:
+        app_label = "blog"
         model = BlogPost
         fields = [
             'title', 'slug', 'excerpt', 'content',
