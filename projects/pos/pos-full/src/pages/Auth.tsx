@@ -7,6 +7,7 @@ import LanguageToggle from '../components/LanguageToggle';
 import ThemeToggle from '../components/ThemeToggle';
 import { isTauri } from '../utils/tauri';
 
+import { FusionPage } from '../components/FusionPage';
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login';
 
 export default function Auth() {

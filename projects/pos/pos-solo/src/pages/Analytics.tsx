@@ -14,6 +14,7 @@ import { useGetSettingsQuery } from '../store/api/endpoints/core';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
 
+import { FusionPage } from '../components/FusionPage';
 const COLORS = ['#0088FE', '#00C49F', '#FFBB28', '#FF8042'];
 
 export default function Analytics() {
