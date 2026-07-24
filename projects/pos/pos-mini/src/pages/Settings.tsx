@@ -319,7 +319,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
-  const { mode, variant, followSystem, setVariant, toggleMode, setFollowSystem } = useTheme();
+  const { mode, variant, followSystem, setVariant, setMode, toggleMode, setFollowSystem } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('general');
   const [settings, setSettings] = useState<SettingsType>({

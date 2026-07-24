@@ -58,3 +58,9 @@ asyncio_mode = "auto"
 
 [tool.uv.sources]
 django-fusion = { path = "../../../../libs/django-fusion", editable = true }
+
+[dependency-groups]
+dev = [
+    "pytest>=9.1.1",
+    "pytest-asyncio>=1.4.0",
+]

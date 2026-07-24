@@ -663,7 +663,13 @@
       "activeLabel": "Active",
       "lightMode": "Light Mode",
       "darkMode": "Dark Mode",
-      "modeDescription": "Toggle between light and dark display"
+      "modeDescription": "Toggle between light and dark display",
+      "systemMode": "وضع النظام",
+      "systemDescription": "اتبع إعداد السمة لجهازك",
+      "fixedDescription": "اختر الوضع الفاتح أو الداكن يدويًا",
+      "lightLabel": "فاتح",
+      "darkLabel": "داكن",
+      "autoLabel": "تلقائي"
     },
     "generalTab": {
       "languageLabel": "اللغة",
