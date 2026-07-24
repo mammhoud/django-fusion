@@ -1,21 +1,40 @@
-# Template Root Instructions: Site Asset Templates
+# Plugin Templates Guide — Shared Plugins
+
+**Path:** `projects/assets/templates/plugins/` — Shared plugin-level templates
 
 ## Scope
-This directory is a site-specific template root for `projects/ctc-research/assets/templates`. Follow the shared template rules in `projects/assets/templates/AGENTS.md` first, then apply these local notes.
+Shared plugin templates used across all Structa Cloud sites. These include email templates, error pages, newsletter forms, privacy policies, MFA flows, and pagination components.
 
-## Expected Template Structure
-Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
+## Resolution Context
+```
+1. Site-specific plugin templates (projects/<site>/plugins/**/templates/) ← highest
+2. Shared plugin templates (this directory)                                  ← you are here
+3. Shared components (projects/assets/templates/components/)
+4. Shared base templates (projects/assets/templates/)                        ← fallback
+```
 
-## Local Override Notes
-- Keep templates here focused on site-only asset-backed presentation and overrides.
-- Prefer `projects/assets/templates` for cross-site components and shared behavior.
-- Prefer this template root for presentation or overrides that are specific to this scope.
-- Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
-- Use `fragment_name` for fragment identifiers and context keys.
-- Use `{% include %}` for reusable components. Do not replace dynamic content with static demo text.
-- Use BEM-style CSS classes and do not use IDs for styling.
+## Available Templates
+
+| Template | Purpose |
+|----------|---------|
+| `plugins/allauth.md` | Allauth template override guidance |
+| `plugins/emails/` | Auth and notification email templates |
+| `plugins/errors/` | Error pages (404, 500) |
+| `plugins/newsletter/` | Newsletter signup components |
+| `plugins/privacy/` | Privacy policy and consent components |
+| `plugins/tables/` | Data table components |
+| `plugins/pagination/` | Pagination components |
+
+## Conventions
+- Use `fragment_name` for HTMX fragment identifiers and context keys
+- Use `{% include %}` for reusable components; pass only required context
+- Use BEM classes: `block__element--modifier`
+- No IDs for styling
+- Preserve Django/Wagtail context variables and block tags
+- Prefer `{% comp "path" /%}` over `{% include %}` when a django-fusion component exists
 
 ## Customization Tips
-- Search nearby templates first, then shared templates, before adding a new partial.
-- When replacing a component, copy the equivalent data bindings from the old markup to the new include or partial.
-- Check related app, plugin, site, and shared templates with targeted `rg` searches for include paths, block names, context variables, and CSS classes.
+1. Search nearby templates first, then shared templates, before adding a new partial
+2. When replacing a component, preserve context variable names and bindings
+3. Site-specific overrides belong in `projects/<site>/templates/`, not here
+4. Use targeted searches for include paths, block names, context variables, and CSS classes

@@ -1,21 +1,43 @@
-# Template Root Instructions: Plugin-specific templates
+# Plugin Template Guide — Accounts Plugin (CTC Research)
+
+**Path:** `projects/ctc-research/plugins/accounts/templates/` — Auth/accounts plugin for CTC Research
 
 ## Scope
-This directory is a plugin-specific template root for `projects/ctc-research/plugins/accounts/templates`. Follow the shared template rules in `projects/assets/templates/AGENTS.md` first, then apply these local notes.
+Plugin-specific templates for authentication in the CTC Research site. Login/signup modals, password flows, email confirmations, and social auth UI.
 
-## Expected Template Structure
-Use the shared folder conventions when adding templates: `base/`, `layout/`, `components/`, `sections/`, `blocks/`, `fragments/`, `modals/`, `email/`, and page-specific folders. Create only the folders that make sense for this local template root.
+## Resolution Context
+```
+1. Site templates (projects/ctc-research/templates/) ← highest priority
+2. Plugin templates (this directory)                   ← you are here
+3. Shared templates (projects/assets/templates/)       ← fallback
+```
 
-## Local Override Notes
-- Keep templates here focused on plugin behavior, plugin UI, and plugin-local overrides.
-- Prefer `projects/assets/templates` for cross-site components and shared behavior.
-- Prefer this template root for presentation or overrides that are specific to this scope.
-- Preserve Django/Wagtail context variables, template tags, inheritance, includes, translations, permissions, and CMS-managed fields.
-- Use `fragment_name` for fragment identifiers and context keys.
-- Use `{% include %}` for reusable components. Do not replace dynamic content with static demo text.
-- Use BEM-style CSS classes and do not use IDs for styling.
+## Quick Reference
+
+### Available Components
+| Component | Tag | Context Needed |
+|-----------|-----|---------------|
+| Form | `{% comp "form/form" /%}` | Django `form` object |
+| Modal | `{% comp "modal/modal" /%}` | `modal_id`, `title` |
+| Notification | `{% comp "notification" /%}` | `message`, `type` |
+
+### Common Patterns
+- **Login modal**: HTMX-triggered with `fragment_name="login_form"`
+- **Signup**: `{% extends "base_auth.html" %}` with allauth overrides
+- **Password reset**: `fragment_name="password_reset_form"`
+- **Email**: Auth email templates as Wagtail snippets via `AuthEmailTemplate`
+- **2FA**: TOTP-based via `two_factor_enabled` / `two_factor_secret` on profile
+
+## Conventions
+- Use `fragment_name` for HTMX fragment identifiers and context keys
+- Use `{% include %}` for reusable components; pass only required context
+- Use BEM classes: `block__element--modifier`
+- No IDs for styling
+- Preserve django-allauth template block names and context variables
 
 ## Customization Tips
-- Search nearby templates first, then shared templates, before adding a new partial.
-- When replacing a component, copy the equivalent data bindings from the old markup to the new include or partial.
-- Check related app, plugin, site, and shared templates with targeted `rg` searches for include paths, block names, context variables, and CSS classes.
+1. Check `plugins/accounts/adapters.py` for HTMX-aware view overrides
+2. Social auth adapter: `AuthHTMXSocialAccountAdapter`
+3. Use `{% comp_include %}` for component tracking in auth flows
+4. Extend allauth's base templates, don't copy them
+5. Auth email templates are CMS-managed — don't hardcode email content
