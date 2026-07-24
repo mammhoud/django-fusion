@@ -102,6 +102,8 @@ class TestSyncLogFactory:
 # ══════════════════════════════════════════════════════════════════════════
 
 class TestMockRequest:
+    """Smoke tests for the MockRequest factory."""
+
     def test_basic_json_body(self, mock_request):
         req = mock_request(method="POST", body='{"key": "val"}')
         assert req.method == "POST"
@@ -121,10 +123,23 @@ class TestMockRequest:
         req = mock_request(query={"page": "1"})
         assert req.query_params["page"] == "1"
 
+    def test_factory_returns_fresh_instance_per_call(self, mock_request):
+        """Each call to the factory creates a new instance."""
+        r1 = mock_request()
+        r2 = mock_request()
+        assert r1 is not r2
+
 
 class TestMockResponse:
+    """Smoke tests for the MockResponse factory.
+
+    ``mock_response`` returns the ``MockResponse`` class, so each test
+    creates its own instance via ``mock_response()``.
+    """
+
     def test_basic_usage(self, mock_response):
-        resp = mock_response
+        """Verify status, headers, and JSON body round-trip."""
+        resp = mock_response()
         resp.set_status(201)
         resp.set_header("X-Custom", "val")
 
@@ -136,4 +151,20 @@ class TestMockResponse:
         assert data == {"id": 1}
 
     def test_default_status(self, mock_response):
-        assert mock_response.status_code == 200
+        """Verify default status is 200."""
+        resp = mock_response()
+        assert resp.status_code == 200
+
+    def test_factory_returns_fresh_instance_per_call(self, mock_response):
+        """Each call to the factory creates a new instance."""
+        r1 = mock_response()
+        r2 = mock_response()
+        assert r1 is not r2
+
+    def test_respond_accepts_bytes(self, mock_response):
+        """respond() handles bytes input and decodes to str."""
+        resp = mock_response()
+        import asyncio
+        asyncio.run(resp.respond(b'{"key": "val"}'))
+        assert resp.body == '{"key": "val"}'
+        assert resp.json() == {"key": "val"}
