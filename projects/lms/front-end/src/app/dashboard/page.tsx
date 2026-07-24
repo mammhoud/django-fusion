@@ -64,12 +64,12 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
   ];
 
   const quickLinks = [
-    { href: '/instructor-dashboard/courses', icon: HiBookOpen, label: 'My Courses' },
-    { href: '/instructor-dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
-    { href: '/instructor-dashboard/review', icon: HiStar, label: 'Reviews' },
-    { href: '/instructor-dashboard/announcement', icon: HiChartBar, label: 'Announcements' },
-    { href: '/instructor-dashboard/enrolled-courses', icon: HiAcademicCap, label: 'Enrollments' },
-    { href: '/instructor-dashboard/history', icon: HiChartBar, label: 'History' },
+    { href: '/dashboard/courses', icon: HiBookOpen, label: 'My Courses' },
+    { href: '/dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
+    { href: '/dashboard/review', icon: HiStar, label: 'Reviews' },
+    { href: '/dashboard/announcement', icon: HiChartBar, label: 'Announcements' },
+    { href: '/dashboard/enrolled-courses', icon: HiAcademicCap, label: 'Enrollments' },
+    { href: '/dashboard/history', icon: HiChartBar, label: 'History' },
   ] as const;
 
   return (
@@ -110,7 +110,7 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
           <HiBookOpen className="w-12 h-12 text-[rgb(var(--ctc-primary))]/40 mx-auto mb-3" />
           <h3 className="font-semibold text-gray-900 mb-1">Getting Started</h3>
           <p className="text-sm text-gray-600 mb-3">Create your first course to start teaching students.</p>
-          <Link href="/instructor-dashboard/courses/new" className="btn-primary inline-flex text-sm">Create Course</Link>
+          <Link href="/dashboard/courses/new" className="btn-primary inline-flex text-sm">Create Course</Link>
         </div>
       )}
 

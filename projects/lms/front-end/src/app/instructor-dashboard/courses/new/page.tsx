@@ -1,1 +1,4 @@
-export { default } from '../[id]/edit/page';
+'use client';
+
+import DashboardRedirect from '@/components/DashboardRedirect';
+export default function Page() { return <DashboardRedirect to="/dashboard/courses/new" />; }

@@ -6,21 +6,19 @@ import { usePathname } from 'next/navigation';
 import { HiHome, HiBookOpen, HiStar, HiChartBar, HiAcademicCap, HiUserGroup } from 'react-icons/hi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
-// NOTE: Sub-pages still live under /instructor-dashboard/* and /student-dashboard/*
-// paths. These links will be updated to /dashboard/* once sub-pages are migrated.
 const instructorLinks = [
   { href: '/dashboard', icon: HiHome, label: 'Overview' },
-  { href: '/instructor-dashboard/courses', icon: HiBookOpen, label: 'Courses' },
-  { href: '/instructor-dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
-  { href: '/instructor-dashboard/review', icon: HiStar, label: 'Reviews' },
-  { href: '/instructor-dashboard/enrolled-courses', icon: HiUserGroup, label: 'Students' },
+  { href: '/dashboard/courses', icon: HiBookOpen, label: 'Courses' },
+  { href: '/dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
+  { href: '/dashboard/review', icon: HiStar, label: 'Reviews' },
+  { href: '/dashboard/enrolled-courses', icon: HiUserGroup, label: 'Students' },
 ];
 
 const studentLinks = [
   { href: '/dashboard', icon: HiHome, label: 'Overview' },
-  { href: '/student-dashboard/enrolled-courses', icon: HiBookOpen, label: 'My Courses' },
-  { href: '/student-dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
-  { href: '/student-dashboard/profile', icon: HiAcademicCap, label: 'Profile' },
+  { href: '/dashboard/enrolled-courses', icon: HiBookOpen, label: 'My Courses' },
+  { href: '/dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
+  { href: '/dashboard/profile', icon: HiAcademicCap, label: 'Profile' },
 ];
 
 export default function DashboardLayout({ children }: { children: React.ReactNode }) {

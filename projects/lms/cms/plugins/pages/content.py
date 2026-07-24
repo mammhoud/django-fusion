@@ -5,6 +5,12 @@ Moved from ``www.api.pages`` to a reusable plugin module so that both the
 API views and the django-fusion fragment components can import the same
 canonical page data without circular imports.
 
+Query priority (Wagtail CMS-first):
+    ``get_page_for_language()`` queries Wagtail ``Page.objects.live()``
+    first, converting results to the frontend contract via
+    ``page_to_dict()``.  When no Wagtail page exists for a slug it falls
+    back to the hardcoded ``STATIC_PAGES`` dict (demo / development data).
+
 Language support:
     ``STATIC_PAGES`` holds the canonical English content.  Per-language
     overrides live in ``STATIC_PAGE_TRANSLATIONS`` — a dict of dicts
@@ -15,6 +21,10 @@ Language support:
     To add a new language, add entries to ``STATIC_PAGE_TRANSLATIONS``
     and ensure the language code appears in ``settings.LANGUAGES``.
 """
+
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def cta(label, href, variant="primary"):
@@ -507,10 +517,28 @@ STATIC_PAGE_TRANSLATIONS: dict = {
 def get_page_for_language(slug: str, language_code: str) -> dict | None:
     """Return the page content for *slug* translated into *language_code*.
 
-    Falls back to English when no translation exists for the requested
-    language.  Returns ``None`` when the slug itself is unknown.
+    Query priority:
+    1. Wagtail ``Page.objects.live()`` — CMS-managed content
+    2. ``STATIC_PAGES`` + ``STATIC_PAGE_TRANSLATIONS`` — demo fallback
+
+    Returns ``None`` when the slug is unknown in both sources.
     """
     normalized = normalize_slug(slug)
+
+    # 1. Try Wagtail CMS first
+    try:
+        from wagtail.models import Page
+        from www.content.models.pages import page_to_dict
+
+        page = Page.objects.live().filter(slug=normalized).first()
+        # Only match our custom content pages (which have a ``body``
+        # StreamField), not the default Wagtail root/welcome pages.
+        if page is not None and hasattr(page.specific, "body"):
+            return page_to_dict(page.specific)
+    except Exception:
+        logger.debug("Wagtail page query unavailable for slug=%r — using static fallback", slug)
+
+    # 2. Fall back to hardcoded STATIC_PAGES (demo / development data)
     page = STATIC_PAGES.get(normalized)
     if page is None:
         return None
@@ -522,13 +550,9 @@ def get_page_for_language(slug: str, language_code: str) -> dict | None:
     lang_overrides = STATIC_PAGE_TRANSLATIONS.get(language_code, {})
     override = lang_overrides.get(normalized)
     if override is None:
-        # No translation available — return English as fallback
         return page
 
-    # Shallow-merge the override on top of the English page.  Lists
-    # (blocks) are taken from the override when present; scalars and
-    # dicts are merged.
+    # Shallow-merge the override on top of the English page
     merged: dict = {**page, **override}
-    # Preserve slug (never changed by translation)
     merged["slug"] = page["slug"]
     return merged
