@@ -23,6 +23,7 @@ import { SkeletonTable, SkeletonList } from '../components/Skeleton';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 
+import { FusionPage } from '../components/FusionPage';
 type TabId = 'timeTotal' | 'productStats' | 'relatedProducts' | 'invoices';
 
 interface ProductStat {

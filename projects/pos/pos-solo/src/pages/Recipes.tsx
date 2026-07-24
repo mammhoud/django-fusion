@@ -15,6 +15,7 @@ import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import StatusToast from '../components/StatusToast';
 
+import { FusionPage } from '../components/FusionPage';
 interface RecipeWithDetails {
   recipe: Recipe;
   productName: string;

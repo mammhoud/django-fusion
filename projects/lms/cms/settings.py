@@ -102,5 +102,13 @@ CORS_ALLOWED_ORIGINS = [
 ]
 CORS_ALLOW_CREDENTIALS = True
 
+# ── Override MIGRATION_MODULES for www_core app ──
+# The shared databases.py sets www_core: None, but this site needs
+# www_core's page model migrations to resolve bases for www.content.
+# www_core + pages both point at the same on-disk directory so
+# internal dependency chains resolve correctly.
+MIGRATION_MODULES["www_core"] = "www.core.content.migrations"
+MIGRATION_MODULES["pages"] = "www.core.content.migrations"
+
 # ── Profile model for ceptor_ai ──
 PROFILE_MODEL = "auth.User"

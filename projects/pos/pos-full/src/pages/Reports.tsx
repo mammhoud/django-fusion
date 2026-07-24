@@ -29,6 +29,7 @@ import {
 } from '../types';
 import jsPDF from 'jspdf';
 import { downloadExcel } from '../utils/export';
+import { FusionPage } from '../components/FusionPage';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
