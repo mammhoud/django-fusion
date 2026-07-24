@@ -101,16 +101,6 @@
       "static/chunks/main-app.js",
       "static/chunks/app/blog-details/page.js"
     ],
-    "/enroll/checkout/[enrollmentId]/page": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/enroll/checkout/[enrollmentId]/page.js"
-    ],
-    "/enroll/checkout/layout": [
-      "static/chunks/webpack.js",
-      "static/chunks/main-app.js",
-      "static/chunks/app/enroll/checkout/layout.js"
-    ],
     "/instructor-dashboard/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
