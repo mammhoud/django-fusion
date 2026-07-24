@@ -1,0 +1,98 @@
+/*
+ * Shared animation usecase.
+ * Applies to every website that imports the shared usecase index and keeps the
+ * animation contract explicit through BEM utilities plus data attributes.
+ */
+:root {
+  --usecase-animation-distance: 1rem;
+  --usecase-animation-duration: 520ms;
+  --usecase-animation-easing: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.usecase-animate,
+[data-animate] {
+  animation-duration: var(--usecase-animation-duration);
+  animation-fill-mode: both;
+  animation-timing-function: var(--usecase-animation-easing);
+}
+
+.usecase-animate:not(.is-animated),
+[data-animate]:not(.is-animated) {
+  opacity: 0;
+}
+
+.usecase-animate.is-animated,
+[data-animate].is-animated,
+[data-usecase-ready] {
+  opacity: 1;
+}
+
+[data-animate='fade-up'].is-animated,
+.usecase-animate--fade-up.is-animated {
+  animation-name: usecase-fade-up;
+}
+
+[data-animate='fade-in'].is-animated,
+.usecase-animate--fade-in.is-animated {
+  animation-name: usecase-fade-in;
+}
+
+[data-animate='scale-in'].is-animated,
+.usecase-animate--scale-in.is-animated {
+  animation-name: usecase-scale-in;
+}
+
+[data-animate='slide-in'].is-animated,
+.usecase-animate--slide-in.is-animated {
+  animation-name: usecase-slide-in;
+}
+
+@keyframes usecase-fade-up {
+  from {
+    opacity: 0;
+    transform: translate3d(0, var(--usecase-animation-distance), 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@keyframes usecase-fade-in {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes usecase-scale-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes usecase-slide-in {
+  from {
+    opacity: 0;
+    transform: translate3d(calc(var(--usecase-animation-distance) * -1), 0, 0);
+  }
+
+  to {
+    opacity: 1;
+    transform: translate3d(0, 0, 0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .usecase-animate,
+  [data-animate] {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+}

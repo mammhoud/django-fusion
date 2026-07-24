@@ -4,7 +4,39 @@ Shared static page content definitions for the LMS.
 Moved from ``www.api.pages`` to a reusable plugin module so that both the
 API views and the django-fusion fragment components can import the same
 canonical page data without circular imports.
+
+Query priority (Wagtail CMS-first):
+    ``get_page_for_language()`` queries Wagtail ``Page.objects.live()``
+    first, converting results to the frontend contract via
+    ``page_to_dict()``.  When no Wagtail page exists for a slug it falls
+    back to the hardcoded ``STATIC_PAGES`` dict (demo / development data).
+
+Language support:
+    ``STATIC_PAGES`` holds the canonical English content.  Per-language
+    overrides live in ``STATIC_PAGE_TRANSLATIONS`` — a dict of dicts
+    keyed first by language code then by page slug.  Any field present
+    in the translation dict replaces the matching field in the
+    English page data (deep merge for blocks).
+
+    To add a new language, add entries to ``STATIC_PAGE_TRANSLATIONS``
+    and ensure the language code appears in ``settings.LANGUAGES``.
 """
+
+import logging
+
+logger = logging.getLogger(__name__)
+
+# ── Wagtail CMS imports (optional — the module works without Wagtail) ──
+try:
+    from wagtail.models import Page
+    from www.content.models.pages import page_to_dict
+
+    _WAGTAIL_AVAILABLE = True
+except ImportError:
+    _WAGTAIL_AVAILABLE = False
+    Page = None  # type: ignore[assignment]
+    page_to_dict = None  # type: ignore[assignment]
+    logger.warning("Wagtail not available — STATIC_PAGES fallback only")
 
 
 def cta(label, href, variant="primary"):
@@ -311,3 +343,226 @@ STATIC_PAGES = {
 def normalize_slug(slug: str) -> str:
     """Normalize a URL slug to the keys used in ``STATIC_PAGES``."""
     return "home" if slug in ("", "home", "index") else slug.strip("/")
+
+
+# ── Per-language overrides ──────────────────────────────────────────
+#
+# Keys: STATIC_PAGE_TRANSLATIONS[language_code][page_slug] = { ... }
+# The overrides are shallow-merged on top of the English page.  Lists
+# (e.g. ``blocks``) are replaced whole when present, so you must
+# provide the complete block list for the translated page.
+
+STATIC_PAGE_TRANSLATIONS: dict = {
+    "fr": {
+        "home": {
+            "title": "Apprendre Sans Limites",
+            "seo": {
+                "title": "Plateforme LMS | Apprendre Sans Limites",
+                "description": "Maîtrisez de nouvelles compétences avec des cours dirigés par des experts.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Apprendre Sans Limites",
+                    "intro": "Maîtrisez de nouvelles compétences avec des cours dirigés par des experts, du contenu interactif et une communauté d'apprenants.",
+                    "ctas": [
+                        cta("Explorer les Cours", "/courses"),
+                        cta("Essai Gratuit", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "section_header",
+                    "key": "featured_courses",
+                    "heading": "Cours en Vedette",
+                    "intro": "Les cours les plus populaires sélectionnés pour vous",
+                    "cta": cta("Voir Tout", "/courses", "link"),
+                },
+                {
+                    "type": "cta",
+                    "heading": "Commencez à Apprendre Aujourd'hui",
+                    "intro": "Rejoignez des milliers d'étudiants qui développent leurs compétences.",
+                    "ctas": [cta("Créer un Compte Gratuit", "/registration")],
+                },
+            ],
+        },
+        "about-us": {
+            "title": "À Propos de la Plateforme LMS",
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "À Propos de la Plateforme LMS",
+                    "intro": "Donner aux apprenants du monde entier les moyens d'accéder à une éducation de qualité.",
+                },
+                {
+                    "type": "rich_section",
+                    "heading": "Notre Mission",
+                    "html": "<p>Nous croyons que l'éducation de qualité doit être accessible à tous.</p>",
+                    "items": [
+                        {"heading": "Contenu de Qualité", "text": "Cours conçus par des experts du secteur"},
+                        {"heading": "Apprentissage Flexible", "text": "Apprenez à votre rythme avec un accès illimité"},
+                        {"heading": "Communauté", "text": "Rejoignez une communauté mondiale d'apprenants"},
+                    ],
+                },
+                {
+                    "type": "cta",
+                    "heading": "Prêt à Commencer ?",
+                    "intro": "Rejoignez notre communauté et commencez à apprendre.",
+                    "ctas": [cta("Créer un Compte Gratuit", "/registration")],
+                },
+            ],
+        },
+        "contact": {
+            "title": "Contactez-Nous",
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Contactez-Nous",
+                    "intro": "Nous serions ravis de vous entendre",
+                },
+            ],
+        },
+    },
+    "es": {
+        "home": {
+            "title": "Aprende Sin Límites",
+            "seo": {
+                "title": "Plataforma LMS | Aprende Sin Límites",
+                "description": "Domina nuevas habilidades con cursos dirigidos por expertos.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Aprende Sin Límites",
+                    "intro": "Domina nuevas habilidades con cursos dirigidos por expertos, contenido interactivo y una comunidad de aprendizaje.",
+                    "ctas": [
+                        cta("Explorar Cursos", "/courses"),
+                        cta("Prueba Gratis", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "section_header",
+                    "key": "featured_courses",
+                    "heading": "Cursos Destacados",
+                    "intro": "Los cursos más populares seleccionados para ti",
+                    "cta": cta("Ver Todos", "/courses", "link"),
+                },
+                {
+                    "type": "cta",
+                    "heading": "Empieza a Aprender Hoy",
+                    "intro": "Únete a miles de estudiantes desarrollando sus habilidades.",
+                    "ctas": [cta("Crear Cuenta Gratis", "/registration")],
+                },
+            ],
+        },
+        "about-us": {
+            "title": "Acerca de la Plataforma LMS",
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Acerca de la Plataforma LMS",
+                    "intro": "Empoderando a estudiantes de todo el mundo con educación de calidad.",
+                },
+                {
+                    "type": "cta",
+                    "heading": "¿Listo para Empezar?",
+                    "intro": "Únete a nuestra comunidad y comienza a aprender.",
+                    "ctas": [cta("Crear Cuenta Gratis", "/registration")],
+                },
+            ],
+        },
+    },
+    "de": {
+        "home": {
+            "title": "Grenzenlos Lernen",
+            "seo": {
+                "title": "LMS-Plattform | Grenzenlos Lernen",
+                "description": "Meistern Sie neue Fähigkeiten mit von Experten geleiteten Kursen.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Grenzenlos Lernen",
+                    "intro": "Meistern Sie neue Fähigkeiten mit von Experten geleiteten Kursen, interaktiven Inhalten und einer Lerngemeinschaft.",
+                    "ctas": [
+                        cta("Kurse Entdecken", "/courses"),
+                        cta("Kostenlos Testen", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "cta",
+                    "heading": "Beginnen Sie Heute zu Lernen",
+                    "intro": "Werden Sie Teil tausender Studenten, die ihre Fähigkeiten ausbauen.",
+                    "ctas": [cta("Kostenloses Konto", "/registration")],
+                },
+            ],
+        },
+    },
+    "ar": {
+        "home": {
+            "title": "تعلم بلا حدود",
+            "seo": {
+                "title": "منصة LMS | تعلم بلا حدود",
+                "description": "أتقن مهارات جديدة مع دورات يقودها خبراء ومحتوى تفاعلي.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "تعلم بلا حدود",
+                    "intro": "أتقن مهارات جديدة مع دورات يقودها خبراء ومحتوى تفاعلي ومجتمع من المتعلمين.",
+                    "ctas": [
+                        cta("استكشف الدورات", "/courses"),
+                        cta("جرب مجاناً", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "cta",
+                    "heading": "ابدأ التعلم اليوم",
+                    "intro": "انضم إلى آلاف الطلاب الذين يطورون مهاراتهم.",
+                    "ctas": [cta("أنشئ حساباً مجانياً", "/registration")],
+                },
+            ],
+        },
+    },
+}
+
+
+def get_page_for_language(slug: str, language_code: str) -> dict | None:
+    """Return the page content for *slug* translated into *language_code*.
+
+    Query priority:
+    1. Wagtail ``Page.objects.live()`` — CMS-managed content
+    2. ``STATIC_PAGES`` + ``STATIC_PAGE_TRANSLATIONS`` — demo fallback
+
+    Returns ``None`` when the slug is unknown in both sources.
+    """
+    normalized = normalize_slug(slug)
+
+    # 1. Try Wagtail CMS first
+    if _WAGTAIL_AVAILABLE:
+        try:
+            page = Page.objects.live().filter(slug=normalized).first()
+            # Only match our custom content pages (which have a ``body``
+            # StreamField), not the default Wagtail root/welcome pages.
+            if page is not None and hasattr(page.specific, "body"):
+                return page_to_dict(page.specific)
+        except Exception:
+            logger.debug("Wagtail page query failed for slug=%r — using static fallback", slug)
+
+    # 2. Fall back to hardcoded STATIC_PAGES (demo / development data)
+    page = STATIC_PAGES.get(normalized)
+    if page is None:
+        return None
+
+    if language_code == "en" or not language_code:
+        return page
+
+    # Check for a translation override
+    lang_overrides = STATIC_PAGE_TRANSLATIONS.get(language_code, {})
+    override = lang_overrides.get(normalized)
+    if override is None:
+        return page
+
+    # Shallow-merge the override on top of the English page
+    merged: dict = {**page, **override}
+    merged["slug"] = page["slug"]
+    return merged
