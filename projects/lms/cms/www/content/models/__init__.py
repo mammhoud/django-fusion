@@ -38,10 +38,10 @@ from www.content.models.blog import (  # noqa: F401
 
 # ── Wagtail CMS Pages (replaces STATIC_PAGES) ──
 from www.content.models.pages import (  # noqa: F401
-    HomePage,
-    AboutPage,
-    FaqPage,
-    PrivacyPage,
-    ContactPage,
+    DynamicHomePage,
+    DynamicAboutPage,
+    DynamicFaqPage,
+    DynamicPrivacyPage,
+    DynamicContactPage,
     page_to_dict,
 )
