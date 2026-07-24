@@ -78,8 +78,8 @@ class TestIngredientFactory:
 
 class TestRoleFactory:
     def test_with_custom_name(self, role_factory):
-        role = role_factory(name="Admin")
-        assert role.name == "Admin"
+        role = role_factory(name="Admin-Custom")
+        assert role.name == "Admin-Custom"
         assert role.permissions.get("can_manage_products") is True
 
 

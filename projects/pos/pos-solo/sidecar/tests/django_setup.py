@@ -61,6 +61,19 @@ try:
                 "django.contrib.contenttypes",
                 "django.contrib.auth",
             ],
+            TEMPLATES=[
+                {
+                    "BACKEND": "django.template.backends.django.DjangoTemplates",
+                    "DIRS": [],
+                    "APP_DIRS": True,
+                    "OPTIONS": {
+                        "context_processors": [
+                            "django.template.context_processors.debug",
+                            "django.template.context_processors.request",
+                        ],
+                    },
+                },
+            ],
             DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
             USE_TZ=True,
             SECRET_KEY=os.environ.get(

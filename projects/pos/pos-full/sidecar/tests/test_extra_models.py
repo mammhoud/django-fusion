@@ -189,11 +189,11 @@ class TestRole:
         assert role.is_active is False
 
     def test_unique_name_enforced(self, role_factory):
-        role_factory(name="Admin-Role")
+        role_factory(name="Admin")
         from django.db import IntegrityError
         from models.extra import Role
         with pytest.raises(IntegrityError):
-            Role.objects.create(name="Admin-Role")
+            Role.objects.create(name="Admin")
 
 
 # ══════════════════════════════════════════════════════════════════════════
