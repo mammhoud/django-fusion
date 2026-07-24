@@ -252,7 +252,7 @@ All re-export shims have been removed. Use these canonical paths directly.
 ### Routing (`comp.routes`)
 
 ```python
-from django_fusion.comp.routes import (
+from django_fusion.routes import (
     # Base routing
     Viewset, BaseViewset, ViewsetMeta, Route, route, menu_path, IndexViewMixin,
     # Descriptor

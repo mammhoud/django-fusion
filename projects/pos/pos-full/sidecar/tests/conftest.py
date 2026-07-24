@@ -180,8 +180,15 @@ class MockResponse:
 
 @pytest.fixture
 def mock_response():
-    """Return a fresh MockResponse for each test."""
-    return MockResponse()
+    """Return a MockResponse factory.
+
+    Usage:
+        resp = mock_response()
+        await handler(req, resp)
+        assert resp.status_code == 200
+        data = resp.json()
+    """
+    return MockResponse
 
 
 class MockRequest:
@@ -266,7 +273,7 @@ def product_factory(django_bootstrap) -> Callable[..., Any]:
             "name": kwargs.pop("name", f"Product-{_counter[0]}"),
             "price": kwargs.pop("price", 9.99),
             "stock_quantity": 100,
-            "sku": f"SKU-{_counter[0]}",
+            "sku": kwargs.pop("sku", None),  # None = model default (blank+null)
             "is_active": True,
             "category": None,
         }
