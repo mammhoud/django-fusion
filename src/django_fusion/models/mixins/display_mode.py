@@ -8,7 +8,7 @@ navigation) or in a **modal** overlay (Unpoly layer / HTMX modal).
 
 Usage in a Wagtail Page model::
 
-    from django_fusion.core.models.mixins.display_mode import DisplayModeMixin
+    from django_fusion.models.mixins.display_mode import DisplayModeMixin
 
     class BlogPage(DisplayModeMixin, BasePage):
         ...
