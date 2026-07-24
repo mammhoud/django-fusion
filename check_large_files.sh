@@ -1,23 +1,19 @@
-
-
 #!/bin/bash
 set -e  # stop on error
 
-
 echo "=== 1. Checking Oversized Files in Working Directory (Over 10MB) ==="
 find . -type f -not -path '*/.*' -size +10M -exec ls -lh {} \; 2>/dev/null
-
-
-
 
 echo "⚠️  WARNING: This script will rewrite Git history!"
 echo "   Make a FULL backup of this repository before proceeding."
 echo "   Press Ctrl+C now to cancel, or Enter to continue..."
 read
 
-# ------------------------------
-# 1. Delete local files/folders
-# ------------------------------
+# -------------------------------
+# 1. Delete local files/folders |
+# -------------------------------
+echo "==============================================================="
+echo "🗑️  Cleaning local directory..."
 echo "🧹 Deleting local build artifacts and logs..."
 find . -name "node_modules" -type d -prune -exec rm -rf {} + 2>/dev/null || true
 find . -name ".next"        -type d -prune -exec rm -rf {} + 2>/dev/null || true
@@ -71,6 +67,4 @@ echo "📌 Next steps:"
 echo "  1. Review the rewritten history with: git log --oneline"
 echo "  2. Force-push to remote: git push --force-with-lease origin generic"
 echo "  3. All collaborators must re-clone or rebase onto the new history."
-
-
 
