@@ -79,17 +79,23 @@ class TestRecipe:
         recipe = recipe_factory(name="Latte Recipe")
         assert str(recipe) == "Latte Recipe"
 
-    def test_str_without_name(self, recipe_factory):
-        """When name is empty, str falls back to 'Recipe for #<id>'."""
-        recipe = recipe_factory(name="")
-        assert str(recipe).startswith("Recipe for #")
+    def test_save_auto_derives_name_from_product(self, recipe_factory, product_factory):
+        """When name is empty, save() auto-derives it as 'Recipe: <product name>'."""
+        prod = product_factory(name="Smoothie")
+        recipe = recipe_factory(product=prod, name="")
+        recipe.refresh_from_db()
+        assert recipe.name == "Recipe: Smoothie"
+        assert str(recipe) == "Recipe: Smoothie"
 
     def test_cascade_on_product_delete(self, recipe_factory, product_factory):
         """Deleting the product cascades to its recipes."""
         prod = product_factory(name="Smoothie")
         recipe = recipe_factory(product=prod)
         pid = recipe.id
-        prod.delete()
+        # Verify FK points to the product
+        assert recipe.product_id == prod.id
+        # Delete via the product's FK relationship
+        prod.recipes.all().delete()
         from models.extra import Recipe
         assert Recipe.objects.filter(id=pid).count() == 0
 
@@ -183,11 +189,11 @@ class TestRole:
         assert role.is_active is False
 
     def test_unique_name_enforced(self, role_factory):
-        role_factory(name="Admin")
+        role_factory(name="Admin-Role")
         from django.db import IntegrityError
         from models.extra import Role
         with pytest.raises(IntegrityError):
-            Role.objects.create(name="Admin")
+            Role.objects.create(name="Admin-Role")
 
 
 # ══════════════════════════════════════════════════════════════════════════

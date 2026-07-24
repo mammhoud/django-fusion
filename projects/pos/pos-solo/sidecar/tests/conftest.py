@@ -380,14 +380,16 @@ def ingredient_factory(django_bootstrap) -> Callable[..., Any]:
 
 @pytest.fixture
 def role_factory(django_bootstrap) -> Callable[..., Any]:
-    """Factory for Role model instances."""
-    _counter = [0]
+    """Factory for Role model instances. Name is unique=True so each
+    factory call uses a random suffix to avoid cross-test collisions.
+    """
+    import uuid as _uuid
 
     def _create(**kwargs) -> Any:
-        _counter[0] += 1
         from models.extra import Role
+        uid = _uuid.uuid4().hex[:6]
         defaults = {
-            "name": kwargs.pop("name", f"Role-{_counter[0]}"),
+            "name": kwargs.pop("name", f"Role-{uid}"),
             "description": "Auto-generated test role",
             "permissions": {"can_manage_products": True},
             "is_active": True,
@@ -467,14 +469,16 @@ def recipe_factory(django_bootstrap) -> Callable[..., Any]:
 
 @pytest.fixture
 def receipt_template_factory(django_bootstrap) -> Callable[..., Any]:
-    """Factory for ReceiptTemplate model instances."""
-    _counter = [0]
+    """Factory for ReceiptTemplate model instances. Name is unique=True
+    so each factory call uses a random suffix.
+    """
+    import uuid as _uuid
 
     def _create(**kwargs) -> Any:
-        _counter[0] += 1
         from models.extra import ReceiptTemplate
+        uid = _uuid.uuid4().hex[:6]
         defaults = {
-            "name": kwargs.pop("name", f"Template-{_counter[0]}"),
+            "name": kwargs.pop("name", f"Template-{uid}"),
             "description": "Default receipt layout",
             "template_html": "<h1>{{restaurant_name}}</h1>",
             "is_default": False,
