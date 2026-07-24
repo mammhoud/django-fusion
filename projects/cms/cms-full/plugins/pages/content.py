@@ -334,3 +334,15 @@ STATIC_PAGES = {
 def normalize_slug(slug: str) -> str:
     """Normalize a URL slug to the keys used in ``STATIC_PAGES``."""
     return "home" if slug in ("", "home", "index") else slug.strip("/")
+
+
+def get_page_for_language(slug: str, language_code: str = "en") -> dict | None:
+    """Stub to match lms/cms API contract for shared fragment imports.
+
+    Returns a **deep copy** of the page from ``STATIC_PAGES`` for the
+    given *slug*.  Language selection is not yet implemented — always
+    returns the default (English) page data.
+    """
+    import copy
+    page = STATIC_PAGES.get(normalize_slug(slug))
+    return copy.deepcopy(page) if page is not None else None
