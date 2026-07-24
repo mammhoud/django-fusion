@@ -35,3 +35,13 @@ from www.content.models.blog import (  # noqa: F401
     Event,
     Testimonial,
 )
+
+# ── Wagtail CMS Pages (replaces STATIC_PAGES) ──
+from www.content.models.pages import (  # noqa: F401
+    HomePage,
+    AboutPage,
+    FaqPage,
+    PrivacyPage,
+    ContactPage,
+    page_to_dict,
+)

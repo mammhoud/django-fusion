@@ -20,8 +20,16 @@ import pytest
 _SITE_DIR = Path(__file__).resolve().parent.parent
 _WORKSPACE_DIR = _SITE_DIR.parent
 _PROJECTS_DIR = _SITE_DIR.parents[1]
+_WORKSPACE_ROOT = _SITE_DIR.parents[3]  # /home/structa.cloud
 
-for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_DIR / "www"), str(_PROJECTS_DIR)):
+for _path in (
+    str(_WORKSPACE_DIR),
+    str(_SITE_DIR),
+    str(_SITE_DIR / "www"),
+    str(_PROJECTS_DIR),
+    str(_WORKSPACE_ROOT / "libs" / "django-fusion" / "src"),
+    str(_WORKSPACE_ROOT / "libs" / "ceptor-ai" / "src"),
+):
     if _path not in sys.path:
         sys.path.insert(0, _path)
 
@@ -74,6 +82,7 @@ if not settings.configured:
             "www.core",
             "www.content",
             "plugins.accounts",
+            "plugins.lms.apps.LmsConfig",
             "django_bolt",
         ]
     else:
@@ -126,8 +135,10 @@ if not settings.configured:
     )
     django.setup()
 
-# Force-reload plugins.pages.content from the correct path
-_ppc_keys = ["plugins", "plugins.pages", "plugins.pages.content"]
+# Force-reload plugins.pages.content from the correct path.
+# Only clear specific sub-modules — NOT the parent 'plugins' package
+# which would remove plugins.lms and other apps registered during setup.
+_ppc_keys = ["plugins.pages", "plugins.pages.content"]
 for _key in _ppc_keys:
     sys.modules.pop(_key, None)
 from plugins.pages.content import STATIC_PAGES  # noqa: E402
@@ -160,15 +171,21 @@ if _FULL_MODE:
             )
             _staff_user.set_password("adminpass123")
             _staff_user.save(update_fields=["password"])
-            from www.content.models.others import Token as TokenModel
-            TokenModel.objects.get_or_create(
-                token_hash=hashlib.sha256(_AUTH_TOKEN_RAW.encode()).hexdigest(),
-                defaults={"user": _test_user, "token_type": "access", "category": ""},
-            )
-            TokenModel.objects.get_or_create(
-                token_hash=hashlib.sha256(_STAFF_TOKEN_RAW.encode()).hexdigest(),
-                defaults={"user": _staff_user, "token_type": "access", "category": ""},
-            )
+            # Token creation may fail if content_token table is missing
+            # (e.g. when running fixture tests without full migrations).
+            # We swallow the error so that tests not requiring tokens can still run.
+            try:
+                from www.content.models.others import Token as TokenModel
+                TokenModel.objects.get_or_create(
+                    token_hash=hashlib.sha256(_AUTH_TOKEN_RAW.encode()).hexdigest(),
+                    defaults={"user": _test_user, "token_type": "access", "category": ""},
+                )
+                TokenModel.objects.get_or_create(
+                    token_hash=hashlib.sha256(_STAFF_TOKEN_RAW.encode()).hexdigest(),
+                    defaults={"user": _staff_user, "token_type": "access", "category": ""},
+                )
+            except Exception:
+                pass
 
     @pytest.fixture()
     def test_user():
