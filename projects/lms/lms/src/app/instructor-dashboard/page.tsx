@@ -15,7 +15,7 @@ export default function InstructorDashboardPage() {
   const stats = [
     { icon: HiBookOpen, label: 'Courses', value: dashboard?.total_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiUserGroup, label: 'Students', value: dashboard?.total_students ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
-    { icon: HiCurrencyDollar, label: 'Revenue', value: dashboard ? `$${dashboard.total_revenue}` : '$0', color: 'text-purple-600', bg: 'bg-purple-100' },
+    { icon: HiCurrencyDollar, label: 'Revenue', value: dashboard ? `$${dashboard.total_revenue}` : '$0', color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
     { icon: HiStar, label: 'Rating', value: dashboard?.average_rating ?? 0, color: 'text-yellow-600', bg: 'bg-yellow-100' },
   ];
 
@@ -62,7 +62,7 @@ export default function InstructorDashboardPage() {
         ] as const).map((link, idx) => (
           <Link key={link.href} href={link.href}
             className="card p-4 flex items-center gap-3 hover:shadow-md transition-shadow group">
-            <link.icon className="w-6 h-6 text-indigo-600 group-hover:text-indigo-700" />
+            <link.icon className="w-6 h-6 text-[rgb(var(--ctc-primary))] group-hover:text-[rgb(var(--ctc-primary-dark))]" />
             <span className="font-medium text-gray-700 group-hover:text-gray-900">{link.label}</span>
           </Link>
         ))}
@@ -70,8 +70,8 @@ export default function InstructorDashboardPage() {
 
       {/* Getting Started */}
       {dashboard?.total_courses === 0 && (
-        <div className="bg-indigo-50 border border-indigo-200 rounded-xl p-6 mb-6 text-center">
-          <HiBookOpen className="w-12 h-12 text-indigo-400 mx-auto mb-3" />
+        <div className="bg-[rgb(var(--ctc-primary))]/5 border border-[rgb(var(--ctc-primary))]/20 rounded-xl p-6 mb-6 text-center">
+          <HiBookOpen className="w-12 h-12 text-[rgb(var(--ctc-primary))]/40 mx-auto mb-3" />
           <h3 className="font-semibold text-gray-900 mb-1">Getting Started</h3>
           <p className="text-sm text-gray-600 mb-3">Create your first course to start teaching students.</p>
           <Link href="/instructor-dashboard/courses/new" className="btn-primary inline-flex text-sm">Create Course</Link>

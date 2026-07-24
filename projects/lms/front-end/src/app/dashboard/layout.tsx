@@ -3,21 +3,30 @@
 import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { HiHome, HiBookOpen, HiStar, HiChartBar, HiAcademicCap, HiUserGroup } from 'react-icons/hi';
+import { HiHome, HiBookOpen, HiStar, HiChartBar, HiAcademicCap, HiUserGroup, HiSpeakerphone, HiClipboardList, HiClock, HiLightningBolt, HiCurrencyDollar } from 'react-icons/hi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
 const instructorLinks = [
   { href: '/dashboard', icon: HiHome, label: 'Overview' },
   { href: '/dashboard/courses', icon: HiBookOpen, label: 'Courses' },
   { href: '/dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
+  { href: '/dashboard/assignment', icon: HiClipboardList, label: 'Assignments' },
+  { href: '/dashboard/announcement', icon: HiSpeakerphone, label: 'Announcements' },
   { href: '/dashboard/review', icon: HiStar, label: 'Reviews' },
   { href: '/dashboard/enrolled-courses', icon: HiUserGroup, label: 'Students' },
+  { href: '/dashboard/student-manage', icon: HiAcademicCap, label: 'Manage' },
+  { href: '/dashboard/attempts', icon: HiLightningBolt, label: 'Attempts' },
+  { href: '/dashboard/history', icon: HiClock, label: 'History' },
+  { href: '/dashboard/withdraw', icon: HiCurrencyDollar, label: 'Withdraw' },
 ];
 
 const studentLinks = [
   { href: '/dashboard', icon: HiHome, label: 'Overview' },
   { href: '/dashboard/enrolled-courses', icon: HiBookOpen, label: 'My Courses' },
   { href: '/dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
+  { href: '/dashboard/announcement', icon: HiSpeakerphone, label: 'Announcements' },
+  { href: '/dashboard/attempts', icon: HiLightningBolt, label: 'My Attempts' },
+  { href: '/dashboard/history', icon: HiClock, label: 'History' },
   { href: '/dashboard/profile', icon: HiAcademicCap, label: 'Profile' },
 ];
 

@@ -25,7 +25,7 @@ export default function InstructorEnrolledCoursesPage() {
                 <td className="px-6 py-4 text-gray-500">{e.course}</td>
                 <td className="px-6 py-4 text-gray-500">{new Date(e.enrolled).toLocaleDateString()}</td>
                 <td className="px-6 py-4">
-                  <div className="flex items-center gap-3"><div className="w-full max-w-xs bg-gray-200 rounded-full h-2"><div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${e.progress}%` }} /></div><span className="text-sm font-medium text-gray-700">{e.progress}%</span></div>
+                  <div className="flex items-center gap-3"><div className="w-full max-w-xs bg-gray-200 rounded-full h-2"><div className="bg-[rgb(var(--ctc-primary))] h-2 rounded-full" style={{ width: `${e.progress}%` }} /></div><span className="text-sm font-medium text-gray-700">{e.progress}%</span></div>
                 </td>
               </motion.tr>
             ))}

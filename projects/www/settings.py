@@ -62,7 +62,7 @@ _WORKSPACE_DIR = _SITE_DIR.parent                    # = projects/
 # per-site directory (here, `projects/www/`) at sys.path[0] so a
 # subsequent `import www.xxx` resolves to THIS directory rather
 # than any sibling `www/` package on the workspace path.
-for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR)):
+for _path in reversed((str(_WORKSPACE_DIR), str(_SITE_DIR))):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)

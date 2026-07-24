@@ -31,7 +31,7 @@ export default function WithdrawPage() {
       <div className="max-w-5xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-indigo-600 mb-1 block transition-colors">
+          <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-1 block transition-colors">
             ← Back to Dashboard
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Withdrawals & Payouts</h1>
@@ -40,10 +40,10 @@ export default function WithdrawPage() {
 
         {/* Balance Cards */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-          <div className="bg-gradient-to-br from-indigo-600 to-indigo-800 rounded-2xl p-6 text-white">
-            <p className="text-indigo-200 text-sm mb-1">Current Balance</p>
+          <div className="bg-gradient-to-br card-gradient rounded-2xl p-6 text-white">
+            <p className="text-[rgb(var(--ctc-primary))]/40 text-sm mb-1">Current Balance</p>
             <div className="text-3xl font-bold">${currentBalance.toLocaleString()}</div>
-            <p className="text-indigo-200 text-xs mt-2">Available for withdrawal</p>
+            <p className="text-[rgb(var(--ctc-primary))]/40 text-xs mt-2">Available for withdrawal</p>
           </div>
           <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <p className="text-gray-500 text-sm mb-1">Pending Payout</p>
@@ -70,7 +70,7 @@ export default function WithdrawPage() {
                   type="number"
                   value={withdrawAmount}
                   onChange={(e) => setWithdrawAmount(e.target.value)}
-                  className="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  className="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                   placeholder="0.00"
                   max={currentBalance}
                   min={50}
@@ -85,7 +85,7 @@ export default function WithdrawPage() {
                 <button
                   onClick={() => setSelectedMethod('PayPal')}
                   className={`p-4 rounded-xl border-2 text-left transition-all ${
-                    selectedMethod === 'PayPal' ? 'border-indigo-600 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'
+                    selectedMethod === 'PayPal' ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="text-lg mb-1">💳</div>
@@ -95,7 +95,7 @@ export default function WithdrawPage() {
                 <button
                   onClick={() => setSelectedMethod('Bank Transfer')}
                   className={`p-4 rounded-xl border-2 text-left transition-all ${
-                    selectedMethod === 'Bank Transfer' ? 'border-indigo-600 bg-indigo-50' : 'border-gray-200 hover:border-gray-300'
+                    selectedMethod === 'Bank Transfer' ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5' : 'border-gray-200 hover:border-gray-300'
                   }`}
                 >
                   <div className="text-lg mb-1">🏦</div>
@@ -119,7 +119,7 @@ export default function WithdrawPage() {
           <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center justify-between mb-4">
               <h2 className="text-lg font-semibold text-gray-900">Payout History</h2>
-              <button className="flex items-center gap-1 text-sm text-indigo-600 hover:text-indigo-700">
+              <button className="flex items-center gap-1 text-sm text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))]">
                 <HiDownload className="w-4 h-4" />
                 Export
               </button>
@@ -160,7 +160,7 @@ export default function WithdrawPage() {
               <input
                 type="email"
                 defaultValue="instructor@example.com"
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
               />
             </div>
             <div>
@@ -168,7 +168,7 @@ export default function WithdrawPage() {
               <textarea
                 rows={3}
                 defaultValue="Bank: Chase Bank\nAccount: ****6789\nRouting: ****1234"
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none resize-none"
               />
             </div>
             <button className="btn-primary">Save Settings</button>

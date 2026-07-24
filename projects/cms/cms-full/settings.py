@@ -11,13 +11,13 @@ _SITE_APP_DIR = _SITE_DIR / "www"
 _LMS_CMS_DIR = _SITE_DIR.parents[1] / "lms" / "cms"
 
 # Priority: lms/cms first (comprehensive API), then self (local plugins+templates)
-for _path in (
+for _path in reversed((
     str(_LMS_CMS_DIR),
     str(_LMS_CMS_DIR / "www"),
     str(_SITE_DIR),
     str(_SITE_APP_DIR),
     str(_WORKSPACE_DIR),
-):
+)):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)
