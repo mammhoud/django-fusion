@@ -7,7 +7,7 @@ from django.db import migrations
 class Migration(migrations.Migration):
 
     dependencies = [
-        ('pages', '0002_rename_content_con_form_id_9f1854_idx_pages_conta_form_id_41afec_idx_and_more'),
+        ('www_core', '0002_rename_content_con_form_id_9f1854_idx_pages_conta_form_id_41afec_idx_and_more'),
     ]
 
     operations = [
