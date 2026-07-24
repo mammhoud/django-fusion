@@ -239,7 +239,7 @@ class BranchSyncScheduler:
 
         # ── Try DataToken-based indexed sync first ──
         try:
-            from django_fusion.models import DataToken
+            from django_fusion.core.models import DataToken
             results = await self._sync_via_datatoken(cloud, _log_sync)
             self._last_sync_at = datetime.now(timezone.utc)
             # ── Run cleanup after successful sync — purge old synced tokens and stale logs
@@ -342,7 +342,7 @@ class BranchSyncScheduler:
         Groups tokens by content_type (exact match) and pushes each
         group as a single batch HTTP request — not one per token.
         """
-        from django_fusion.models import DataToken
+        from django_fusion.core.models import DataToken
 
         results: dict[str, Any] = {"products": 0, "sales": 0, "inventory": 0}
         synced_token_ids: list[int] = []
@@ -471,7 +471,7 @@ class BranchSyncScheduler:
         log_retention = int(os.environ.get("POS_FULL_SYNC_LOG_RETENTION_DAYS", "30"))
 
         try:
-            from django_fusion.models import DataToken
+            from django_fusion.core.models import DataToken
             from datetime import timedelta
 
             cutoff = datetime.now(timezone.utc) - timedelta(days=token_retention)

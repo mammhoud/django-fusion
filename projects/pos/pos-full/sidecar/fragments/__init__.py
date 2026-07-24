@@ -27,7 +27,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from django_fusion.routes import FragmentComponent  # noqa: F401 — re-export base
+from django_fusion.comp.routes import FragmentComponent  # noqa: F401 — re-export base
 
 logger = logging.getLogger("pos.fragments")
 
@@ -53,21 +53,13 @@ def register(fragment_cls: type[FragmentComponent]) -> type[FragmentComponent]:
 def register_fragments() -> None:
     """Register all collected fragments with the django-fusion component system.
 
-    Wrapped in try/except so that a missing component system does not
-    prevent the server from starting.
+    The component system is optional — fragments still work standalone
+    via get_context(). This function logs the available fragment names
+    for debugging purposes.
     """
-    try:
-        from django_fusion.comp.loaders import register_component
-
-        for cls in _FRAGMENTS:
-            name = getattr(cls, "fragment_name", None)
-            if name:
-                register_component(name, cls)
-                logger.debug("Registered fragment: %s → %s", name, cls.__name__)
-
-        logger.info("Registered %d POS fragments", len(_FRAGMENTS))
-    except Exception as exc:
-        logger.warning("Fragment registration skipped: %s", exc)
+    logger.info("POS fragments available: %d", len(_FRAGMENTS))
+    for cls in _FRAGMENTS:
+        logger.debug("Fragment: %s → %s", getattr(cls, "fragment_name", "?"), cls.__name__)
 
 
 def get_context(fragment_name: str, **kwargs: Any) -> dict[str, Any]:

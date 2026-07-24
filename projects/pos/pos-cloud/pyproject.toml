@@ -38,3 +38,7 @@ build-backend = "setuptools.build_meta"
 [tool.setuptools.packages.find]
 where = ["."]
 include = ["core*", "configs*"]
+
+[tool.uv.sources]
+django-fusion = { path = "../../../libs/django-fusion", editable = true }
+django-bolt = { path = "../../../libs/django-bolt", editable = true }

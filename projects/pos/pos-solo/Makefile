@@ -113,10 +113,10 @@ server:               ## Start the Python/Robyn sidecar server on port 8766 (htt
 	@echo '  Starting on http://127.0.0.1:8766'
 	@echo '  API docs: http://127.0.0.1:8766/'
 	@echo '  Health:   http://127.0.0.1:8766/health'
-	cd sidecar && python3 server.py --port 8766 --host 127.0.0.1
+	cd sidecar && uv run python3 server.py --port 8766 --host 127.0.0.1
 
 server-dev:           ## Start sidecar with verbose logging + auto-migrate
-	cd sidecar && python3 server.py --port 8766 --host 127.0.0.1 --verbose --migrate
+	cd sidecar && uv run python3 server.py --port 8766 --host 127.0.0.1 --verbose --migrate
 
 test-api:            ## Run curl-based API test against sidecar (start it if needed)
 	@echo '── Sidecar API Test ──'
@@ -127,7 +127,7 @@ test-api-ci:         ## Run API test against pre-running sidecar (CI mode — fa
 
 server-check:         ## Start sidecar and run curl smoke-test against all endpoints
 	@echo '── Starting sidecar + smoke test ──'
-	@cd sidecar && python3 server.py --port 8766 --host 127.0.0.1 > /tmp/pos-solo-smoke.log 2>&1 & \
+	@cd sidecar && uv run python3 server.py --port 8766 --host 127.0.0.1 > /tmp/pos-solo-smoke.log 2>&1 & \
 	sleep 4 && \
 	echo 'Health:' && curl -sf http://127.0.0.1:8766/health | python3 -m json.tool && \
 	echo 'Products:' && curl -sf 'http://127.0.0.1:8766/products?page=1&per_page=3' | python3 -c "import sys,json; d=json.load(sys.stdin); print(f'  {len(d.get(\"data\",d))} items')" && \
@@ -149,14 +149,14 @@ build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. bu
 admin-bootstrap:      ## Bootstrap admin: migrate + create superuser + start runserver
 	@echo '── Admin Bootstrap ──'
 	@echo '  → Running migrations...'
-	@cd sidecar && python3 manage.py migrate
+	@cd sidecar && uv run python3 manage.py migrate
 	@echo '  → Creating superuser from env vars (or defaults)...'
-	@cd sidecar && python3 manage.py --ensure-superuser
+	@cd sidecar && uv run python3 manage.py --ensure-superuser
 	@echo '  → Starting admin panel at http://localhost:8000/admin/'
-	@cd sidecar && python3 manage.py runserver 0.0.0.0:8000
+	@cd sidecar && uv run python3 manage.py runserver 0.0.0.0:8000
 
 admin-ensure-superuser: ## Create/update superuser from env vars (idempotent)
-	@cd sidecar && python3 manage.py --ensure-superuser
+	@cd sidecar && uv run python3 manage.py --ensure-superuser
 
 admin-screenshots:    ## Capture admin dashboard screenshots via headless Chromium (requires running :8000)
 	@bash scripts/dev/capture-admin-screenshots.sh

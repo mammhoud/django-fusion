@@ -7,7 +7,7 @@ See :class:`django_fusion.core.models.BaseDeviceToken` for full documentation
 from __future__ import annotations
 
 from django.db.models import Index
-from django_fusion.models import BaseDeviceToken
+from django_fusion.core.models import BaseDeviceToken
 
 __all__ = ["DeviceToken"]
 
