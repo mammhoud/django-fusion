@@ -16,7 +16,7 @@ from pathlib import Path
 from django.http import HttpResponse
 from django.template import engines
 
-from plugins.pages.content import STATIC_PAGES, normalize_slug
+from plugins.pages.content import STATIC_PAGES, normalize_slug, get_page_for_language
 from www.api.data_adapter import bolt_view, fusion_response
 from django_fusion.routes import fusion_json_response, FusionCodec
 
@@ -64,12 +64,20 @@ def page_data(request, slug):
       ``{status, message, data}`` envelope.
     * Not specified                  → same as ``false`` (get JSON data).
 
+    Language detection:
+        Uses ``request.LANGUAGE_CODE`` set by Django's ``LocaleMiddleware``
+        (which reads the ``Accept-Language`` header, ``django_language``
+        cookie, or ``?lang=`` query parameter).  Pages are translated via
+        ``get_page_for_language()`` and fall back to English when no
+        translation exists.
+
     This eliminates the two-step fragment-pointer dance: a single
     request that asks for HTML or JSON based on the caller's preference.
     """
     try:
         normalized = normalize_slug(slug)
-        page = STATIC_PAGES.get(normalized)
+        language = getattr(request, 'LANGUAGE_CODE', 'en')
+        page = get_page_for_language(slug, language)
         if page is None:
             return fusion_json_response({"error": "Page not found"}, status=404)
 
@@ -104,6 +112,7 @@ def page_data(request, slug):
                 "slug": normalized,
                 "title": page["title"],
                 "encoded": encoded,
+                "language": language,
             },
             status=200,
         )
@@ -117,7 +126,8 @@ def page_data(request, slug):
 def page_detail(request, slug):
     """GET /apis/pages/<slug>/ — return public page content."""
     normalized = normalize_slug(slug)
-    page = STATIC_PAGES.get(normalized)
+    language = getattr(request, 'LANGUAGE_CODE', 'en')
+    page = get_page_for_language(slug, language)
     if page is None:
         return {"status": "error", "message": "Page not found"}, 404
     return page
@@ -142,12 +152,14 @@ def page_fragment(request, slug):
     """
     try:
         normalized = normalize_slug(slug)
+        language = getattr(request, 'LANGUAGE_CODE', 'en')
         if normalized not in STATIC_PAGES:
             return fusion_json_response(
                 {"error": "Page not found"},
                 status=404,
             )
 
+        page = get_page_for_language(slug, language)
         fragment_name = f"pages.{normalized.replace('-', '_')}"
         pointer = fusion_response(
             fragment_name,
@@ -155,7 +167,7 @@ def page_fragment(request, slug):
             # Omit fusion_render_first so it defaults to the global
             # FUSION_RENDER_FIRST_DEFAULT setting (False = get data first).
             # Per-component overrides are set on the FragmentComponent class.
-            extra={"page_slug": normalized, "title": STATIC_PAGES[normalized]["title"]},
+            extra={"page_slug": normalized, "title": page["title"], "language": language},
         )
         return fusion_json_response(data=pointer, status=200)
     except Exception:

@@ -4,6 +4,16 @@ Shared static page content definitions for the LMS.
 Moved from ``www.api.pages`` to a reusable plugin module so that both the
 API views and the django-fusion fragment components can import the same
 canonical page data without circular imports.
+
+Language support:
+    ``STATIC_PAGES`` holds the canonical English content.  Per-language
+    overrides live in ``STATIC_PAGE_TRANSLATIONS`` — a dict of dicts
+    keyed first by language code then by page slug.  Any field present
+    in the translation dict replaces the matching field in the
+    English page data (deep merge for blocks).
+
+    To add a new language, add entries to ``STATIC_PAGE_TRANSLATIONS``
+    and ensure the language code appears in ``settings.LANGUAGES``.
 """
 
 
@@ -311,3 +321,214 @@ STATIC_PAGES = {
 def normalize_slug(slug: str) -> str:
     """Normalize a URL slug to the keys used in ``STATIC_PAGES``."""
     return "home" if slug in ("", "home", "index") else slug.strip("/")
+
+
+# ── Per-language overrides ──────────────────────────────────────────
+#
+# Keys: STATIC_PAGE_TRANSLATIONS[language_code][page_slug] = { ... }
+# The overrides are shallow-merged on top of the English page.  Lists
+# (e.g. ``blocks``) are replaced whole when present, so you must
+# provide the complete block list for the translated page.
+
+STATIC_PAGE_TRANSLATIONS: dict = {
+    "fr": {
+        "home": {
+            "title": "Apprendre Sans Limites",
+            "seo": {
+                "title": "Plateforme LMS | Apprendre Sans Limites",
+                "description": "Maîtrisez de nouvelles compétences avec des cours dirigés par des experts.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Apprendre Sans Limites",
+                    "intro": "Maîtrisez de nouvelles compétences avec des cours dirigés par des experts, du contenu interactif et une communauté d'apprenants.",
+                    "ctas": [
+                        cta("Explorer les Cours", "/courses"),
+                        cta("Essai Gratuit", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "section_header",
+                    "key": "featured_courses",
+                    "heading": "Cours en Vedette",
+                    "intro": "Les cours les plus populaires sélectionnés pour vous",
+                    "cta": cta("Voir Tout", "/courses", "link"),
+                },
+                {
+                    "type": "cta",
+                    "heading": "Commencez à Apprendre Aujourd'hui",
+                    "intro": "Rejoignez des milliers d'étudiants qui développent leurs compétences.",
+                    "ctas": [cta("Créer un Compte Gratuit", "/registration")],
+                },
+            ],
+        },
+        "about-us": {
+            "title": "À Propos de la Plateforme LMS",
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "À Propos de la Plateforme LMS",
+                    "intro": "Donner aux apprenants du monde entier les moyens d'accéder à une éducation de qualité.",
+                },
+                {
+                    "type": "rich_section",
+                    "heading": "Notre Mission",
+                    "html": "<p>Nous croyons que l'éducation de qualité doit être accessible à tous.</p>",
+                    "items": [
+                        {"heading": "Contenu de Qualité", "text": "Cours conçus par des experts du secteur"},
+                        {"heading": "Apprentissage Flexible", "text": "Apprenez à votre rythme avec un accès illimité"},
+                        {"heading": "Communauté", "text": "Rejoignez une communauté mondiale d'apprenants"},
+                    ],
+                },
+                {
+                    "type": "cta",
+                    "heading": "Prêt à Commencer ?",
+                    "intro": "Rejoignez notre communauté et commencez à apprendre.",
+                    "ctas": [cta("Créer un Compte Gratuit", "/registration")],
+                },
+            ],
+        },
+        "contact": {
+            "title": "Contactez-Nous",
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Contactez-Nous",
+                    "intro": "Nous serions ravis de vous entendre",
+                },
+            ],
+        },
+    },
+    "es": {
+        "home": {
+            "title": "Aprende Sin Límites",
+            "seo": {
+                "title": "Plataforma LMS | Aprende Sin Límites",
+                "description": "Domina nuevas habilidades con cursos dirigidos por expertos.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Aprende Sin Límites",
+                    "intro": "Domina nuevas habilidades con cursos dirigidos por expertos, contenido interactivo y una comunidad de aprendizaje.",
+                    "ctas": [
+                        cta("Explorar Cursos", "/courses"),
+                        cta("Prueba Gratis", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "section_header",
+                    "key": "featured_courses",
+                    "heading": "Cursos Destacados",
+                    "intro": "Los cursos más populares seleccionados para ti",
+                    "cta": cta("Ver Todos", "/courses", "link"),
+                },
+                {
+                    "type": "cta",
+                    "heading": "Empieza a Aprender Hoy",
+                    "intro": "Únete a miles de estudiantes desarrollando sus habilidades.",
+                    "ctas": [cta("Crear Cuenta Gratis", "/registration")],
+                },
+            ],
+        },
+        "about-us": {
+            "title": "Acerca de la Plataforma LMS",
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Acerca de la Plataforma LMS",
+                    "intro": "Empoderando a estudiantes de todo el mundo con educación de calidad.",
+                },
+                {
+                    "type": "cta",
+                    "heading": "¿Listo para Empezar?",
+                    "intro": "Únete a nuestra comunidad y comienza a aprender.",
+                    "ctas": [cta("Crear Cuenta Gratis", "/registration")],
+                },
+            ],
+        },
+    },
+    "de": {
+        "home": {
+            "title": "Grenzenlos Lernen",
+            "seo": {
+                "title": "LMS-Plattform | Grenzenlos Lernen",
+                "description": "Meistern Sie neue Fähigkeiten mit von Experten geleiteten Kursen.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "Grenzenlos Lernen",
+                    "intro": "Meistern Sie neue Fähigkeiten mit von Experten geleiteten Kursen, interaktiven Inhalten und einer Lerngemeinschaft.",
+                    "ctas": [
+                        cta("Kurse Entdecken", "/courses"),
+                        cta("Kostenlos Testen", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "cta",
+                    "heading": "Beginnen Sie Heute zu Lernen",
+                    "intro": "Werden Sie Teil tausender Studenten, die ihre Fähigkeiten ausbauen.",
+                    "ctas": [cta("Kostenloses Konto", "/registration")],
+                },
+            ],
+        },
+    },
+    "ar": {
+        "home": {
+            "title": "تعلم بلا حدود",
+            "seo": {
+                "title": "منصة LMS | تعلم بلا حدود",
+                "description": "أتقن مهارات جديدة مع دورات يقودها خبراء ومحتوى تفاعلي.",
+            },
+            "blocks": [
+                {
+                    "type": "hero",
+                    "heading": "تعلم بلا حدود",
+                    "intro": "أتقن مهارات جديدة مع دورات يقودها خبراء ومحتوى تفاعلي ومجتمع من المتعلمين.",
+                    "ctas": [
+                        cta("استكشف الدورات", "/courses"),
+                        cta("جرب مجاناً", "/registration", "secondary"),
+                    ],
+                },
+                {
+                    "type": "cta",
+                    "heading": "ابدأ التعلم اليوم",
+                    "intro": "انضم إلى آلاف الطلاب الذين يطورون مهاراتهم.",
+                    "ctas": [cta("أنشئ حساباً مجانياً", "/registration")],
+                },
+            ],
+        },
+    },
+}
+
+
+def get_page_for_language(slug: str, language_code: str) -> dict | None:
+    """Return the page content for *slug* translated into *language_code*.
+
+    Falls back to English when no translation exists for the requested
+    language.  Returns ``None`` when the slug itself is unknown.
+    """
+    normalized = normalize_slug(slug)
+    page = STATIC_PAGES.get(normalized)
+    if page is None:
+        return None
+
+    if language_code == "en" or not language_code:
+        return page
+
+    # Check for a translation override
+    lang_overrides = STATIC_PAGE_TRANSLATIONS.get(language_code, {})
+    override = lang_overrides.get(normalized)
+    if override is None:
+        # No translation available — return English as fallback
+        return page
+
+    # Shallow-merge the override on top of the English page.  Lists
+    # (blocks) are taken from the override when present; scalars and
+    # dicts are merged.
+    merged: dict = {**page, **override}
+    # Preserve slug (never changed by translation)
+    merged["slug"] = page["slug"]
+    return merged
