@@ -1,0 +1,48 @@
+{# ── django-fusion Language Switcher ────────────────────────────
+   Renders a language dropdown/button for switching the active locale.
+
+   Context variables (provided by template context or i18n context processor):
+     - LANGUAGES: list of (code, name) tuples — from settings or Wagtail
+     - LANGUAGE_CODE: currently active language code
+     - csrf_token: required for POST-based setlang
+
+   Usage:
+       {% include "fusion/components/language_switcher.html" %}
+
+   For Wagtail i18n projects, the template automatically uses
+   ``wagtail.models.Locale`` when the ``WAGTAIL_I18N_ENABLED`` setting
+   is True; otherwise it falls back to ``settings.LANGUAGES``.
+
+   The form posts to Django's ``set_language`` view which requires
+   ``django.views.i18n.set_language`` to be included in URL patterns.
+   The redirect-after-post pattern uses the hidden ``next`` field so the
+   user stays on the same page after switching.
+#}
+{% load i18n %}
+
+{% if LANGUAGES|length > 1 %}
+  <div class="df-lang-switcher" aria-label="{% trans "Language selector" %}">
+    {# Prefer Django's built-in set_language view; fall back to /i18n/setlang/ if not configured. #}
+    <form
+      action="{% firstof set_language_url|default:'' '/apis/i18n/setlang/' %}"
+      method="post"
+      class="df-lang-switcher__form"
+    >
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ request.get_full_path }}">
+
+      {% for lang_code, lang_name in LANGUAGES %}
+        <button
+          type="submit"
+          name="language"
+          value="{{ lang_code }}"
+          class="df-lang-switcher__btn{% if lang_code == LANGUAGE_CODE %} df-lang-switcher__btn--active{% endif %}"
+          aria-label="{{ lang_name }}"
+          {% if lang_code == LANGUAGE_CODE %}aria-current="true"{% endif %}
+        >
+          {% if lang_code == "ar" %}ع{% elif lang_code == "de" %}DE{% elif lang_code == "es" %}ES{% elif lang_code == "fr" %}FR{% else %}EN{% endif %}
+        </button>
+      {% endfor %}
+    </form>
+  </div>
+{% endif %}
