@@ -8,5 +8,29 @@ node_modules/
 **/*.rs.bk
 cargo-lock.toml
 
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.pytest_cache/
+
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+
+# Logs
+logs/
+*.log
+
+# Backups & temp
+backups/
+applications/tmp/
+applications/proxy/backups/
+
+# Test database
+tests/test_db.sqlite3
+
 # macOS system files
 .DS_Store
