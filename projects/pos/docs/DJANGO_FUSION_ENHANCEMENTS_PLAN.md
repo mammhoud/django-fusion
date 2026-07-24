@@ -1,7 +1,7 @@
 # POS × django-fusion — Enhancements Plan
 
-> **Version:** 1.0.0  
-> **Last Updated:** 2026-07-24  
+> **Version:** 1.1.0  
+> **Last Updated:** 2026-07-24 (audit revision)  
 > **Scope:** POS Mini / Solo / Full / Cloud + django-fusion package  
 > **Goal:** Increase django-fusion impact across POS apps, harden sync logic, and make both the package and the projects that use it more minimal.
 
@@ -26,24 +26,26 @@ This plan lays out how to:
 
 ## 2. Current State Assessment
 
-### 2.1 POS Editions
+### 2.1 POS Editions *(audited 2026-07-24)*
 
 | Edition | Server | Django-Fusion Usage Today | Gaps / Opportunities |
 |---------|--------|---------------------------|------------------------|
-| **pos-mini** | Rust/Tauri, Diesel, no sidecar | None | Could use a tiny django-fusion data contract if it ever adds a Python sidecar. Out of scope for now. |
-| **pos-solo** | Robyn + Django ORM, port `8765` | `DataToken` tagging in `handlers.py`; `BaseDeviceToken` for auth | No viewsets, fragments, or admin UI; hand-written CRUD in `routes/state.py`. |
-| **pos-full** | Robyn + Django ORM + Django Unfold, port `8766` | `DataToken` tagging; `BaseDeviceToken` | Unfold admin is separate from django-fusion; pages are React, not using fragments. |
-| **pos-cloud** | Django + django-bolt + django-fusion, port `8082` | `ModelViewset`, `FragmentComponent`, `SearchableViewMixin` for CRM/reports/sync viewsets | Sync receive endpoints are still plain Django views; could be unified with django-fusion sync primitives. |
+| **pos-mini** | Rust/Tauri, Diesel, no sidecar | None | Out of scope. |
+| **pos-solo** | Robyn + Django ORM, port `8765` | `DataToken` tagging; `BaseDeviceToken`; **8 `FragmentComponent` classes**; Fusion health endpoint; `routes/fusion_fragments.py` | Hand-written CRUD in `routes/state.py`; no `ModelViewset` or `RobynAdapter`. |
+| **pos-full** | Robyn + Django ORM + Django Unfold, port `8766` | `DataToken` tagging; `BaseDeviceToken`; **8 `FragmentComponent` classes**; Fusion health endpoint; `routes/fusion_fragments.py` | Hand-written CRUD in `routes/state.py`; no `ModelViewset` or `RobynAdapter`. |
+| **pos-cloud** | Django + django-bolt + django-fusion, port `8082` | `ModelViewset`, `FragmentComponent`, `SearchableViewMixin` for CRM/reports/sync viewsets | Sync receive endpoints are still plain Django views. |
 
-### 2.2 django-fusion Usage Matrix
+### 2.2 django-fusion Usage Matrix *(audited 2026-07-24)*
 
 | Feature | Used in POS Cloud | Used in Sidecars | Notes |
 |---------|-------------------|------------------|-------|
-| `ModelViewset` / `ReadonlyModelViewset` | ✅ Yes | ❌ No | Sidecars write hand-written CRUD. |
-| `FragmentComponent` / `RoutableComponent` | ✅ Yes | ❌ No | Sidecars return JSON only. |
+| `ModelViewset` / `ReadonlyModelViewset` | ✅ Yes | ❌ No | Sidecars use hand-written `_register_crud`. |
+| `FragmentComponent` / `RoutableComponent` | ✅ Yes | 🟡 **Partial** (8 fragments) | Sidecars have 8 `FragmentComponent` subclasses (Dashboard, Suppliers, About, Customers, Inventory, Employees, ProductList, ProductDetail). Not yet routable via django-fusion URL system — served through custom `routes/fusion_fragments.py`. |
 | `DataToken` / `BaseDeviceToken` | ⚠️ Partial (models exist) | ✅ Yes | Sidecars tag every CRUD change. |
+| Fusion health endpoint (`/fusion/health`) | ❌ No | ✅ Yes | Both sidecars expose `GET /fusion/health` returning `{fusion_render_first, health}`. |
+| Fusion frontend bridge (`FusionPage`, `FusionProxy`, `FusionMiddleware`) | ❌ No | ✅ Yes (React side) | pos-full: 13/24 pages wired; pos-solo: 11/24 pages wired. Full fusion lib stack: `fusion-types.ts`, `fusion-decoder.ts`, `fusion-store.ts`. |
 | `SearchableViewMixin` | ✅ Yes | ❌ No | Could replace search helpers. |
-| `Application` / `Site` routing | ️ Partial | ❌ No | Sidecars mount routes manually. |
+| `Application` / `Site` routing | ️ Partial | ❌ No | Sidecars mount routes manually via Robyn decorators. |
 
 ### 2.3 Sync Logic Today
 
@@ -148,6 +150,14 @@ The mixin hooks `post_save`/`post_delete` and calls `DataToken.objects.tag_row(.
 ---
 
 ## 5. Phase 2 — POS Full Pages as django-fusion Components
+
+> **Partial progress (unplanned Phase 0):** 8 `FragmentComponent` subclasses already exist
+> in both sidecar `fragments/` packages (Dashboard, Suppliers, About, Customers, Inventory,
+> Employees, ProductList, ProductDetail), and 13/24 pos-full + 11/24 pos-solo React pages
+> are wired with `FusionPage`. See Section 10 roadmap for status of items 0.1–0.5.
+>
+> The remaining Phase 2 work (Unfold dashboard splitting, routable report components) is
+> not yet started.
 
 ### 5.1 Admin Dashboard as Fragments
 
@@ -403,21 +413,31 @@ without pulling Unfold, DRF, or Wagtail.
 
 ---
 
-## 10. Roadmap
+## 10. Roadmap *(audited 2026-07-24)*
 
-| Phase | Deliverable | Effort | Depends On |
-|-------|-------------|--------|------------|
-| **1.1** | `django_fusion.comp.robyn` adapter + `RobynRequest` | Medium | django-fusion routing internals |
-| **1.2** | Port sidecar CRUD to `ModelViewset` + `SyncTagMixin` | High | 1.1 |
-| **2.1** | Split Unfold dashboard into fragments | Medium | django-fusion fragment templates |
-| **2.2** | Add routable report components to POS Full | Medium | 2.1 |
-| **3.1** | Rewrite POS Cloud sync receivers as viewsets | Low | — |
-| **3.2** | Use `DataToken` for branch sync in POS Cloud | Medium | 3.1 |
-| **4.1** | Extract generic `SyncEngine` into django-fusion | High | POS sync logic audit |
-| **4.2** | Add conflict resolvers + retry/idempotency | High | 4.1 |
-| **5.1** | Split django-fusion into optional sub-apps | High | Package refactor |
-| **5.2** | Make Wagtail/Unfold optional | Medium | 5.1 |
-| **6.0** | Update docs, tests, migration guides | Medium | All above |
+> **Note:** Items 0.1–0.5 were **not in the original v1.0.0 plan**. They were implemented as
+> necessary prerequisites for fragment-rendering support and are now tracked here for completeness.
+
+**Legend:** ✅ Complete &nbsp; 🟡 In Progress &nbsp; ⬜ Not Started &nbsp; 🔴 Blocked
+
+| Phase | Deliverable | Status | Effort | Depends On |
+|-------|-------------|--------|--------|------------|
+| **0.1** | Sidecar `FragmentComponent` classes (8 per edition) | ✅ Done | — | — |
+| **0.2** | Fusion health endpoint (`/fusion/health`) on sidecars | ✅ Done | — | — |
+| **0.3** | React fusion bridge (`FusionPage`, `FusionProxy`, `FusionMiddleware`) | ✅ Done | — | — |
+| **0.4** | E2E fusion tests (decoder, store, proxy, page, middleware) | ✅ Done | — | — |
+| **0.5** | Wire `FusionPage` into POS pages | 🟡 13/24 pos-full, 11/24 pos-solo | Low | — |
+| **1.1** | `django_fusion.comp.robyn` adapter + `RobynRequest` | ⬜ | Medium | django-fusion routing internals |
+| **1.2** | Port sidecar CRUD to `ModelViewset` + `SyncTagMixin` | ⬜ | High | 1.1 |
+| **2.1** | Split Unfold dashboard into fragments | ⬜ | Medium | django-fusion fragment templates |
+| **2.2** | Add routable report components to POS Full | ⬜ | Medium | 2.1 |
+| **3.1** | Rewrite POS Cloud sync receivers as viewsets | ⬜ | Low | — |
+| **3.2** | Use `DataToken` for branch sync in POS Cloud | ⬜ | Medium | 3.1 |
+| **4.1** | Extract generic `SyncEngine` into django-fusion | ⬜ | High | POS sync logic audit |
+| **4.2** | Add conflict resolvers + retry/idempotency | ⬜ | High | 4.1 |
+| **5.1** | Split django-fusion into optional sub-apps | ⬜ | High | Package refactor |
+| **5.2** | Make Wagtail/Unfold optional | ⬜ | Medium | 5.1 |
+| **6.0** | Update docs, tests, migration guides | 🟡 This audit | Medium | All above |
 
 ---
 
@@ -433,27 +453,79 @@ without pulling Unfold, DRF, or Wagtail.
 
 ---
 
-## 12. Immediate Next Steps (Suggested)
+## 12. Immediate Next Steps *(revised after 2026-07-24 audit)*
 
-1. **Create the `django_fusion.comp.robyn` adapter skeleton** so sidecars can mount viewsets without a full Django server.
-2. **Pick one sidecar entity (e.g., `Product`) and migrate it to `ModelViewset` with `SyncTagMixin`** as a proof-of-concept.
-3. **Audit Wagtail/Unfold imports in django-fusion core** and move them to optional sub-packages to unblock the minimal-install goal.
+### ✅ Completed (Unplanned Work)
+
+These items were completed ahead of the original Phase 1–5 plan:
+
+1. **8 `FragmentComponent` classes** in both sidecars (`fragments/` package): Dashboard, Suppliers, About, Customers, Inventory, Employees, ProductList, ProductDetail.
+2. **Fusion health endpoint** (`GET /fusion/health`) on both sidecars, registered via `middleware/fusion.py` → `register_fusion_health_routes()`.
+3. **React fusion bridge** in both frontends: `FusionMiddleware` (mode context), `FusionPage` (data/fragment switch), `FusionProxy` (HTML fetch & render).
+4. **Fusion utility libraries**: `fusion-types.ts`, `fusion-decoder.ts`, `fusion-store.ts`.
+5. **E2E fusion tests**: `fusion-e2e.test.tsx`, `FusionDecoder.test.ts`, `FusionMiddleware.test.tsx`, `FusionPage.test.tsx`, `FusionProxy.test.tsx`, `fusion-store.test.ts`.
+6. **FusionPage wiring**: 13/24 pos-full pages, 11/24 pos-solo pages.
+7. **Sidecar fusion tests**: `test_fragments.py`, `test_fusion.py`, `test_fusion_integration.py`.
+
+### ⚠️ Known Issues
+
+- **Backend tests broken**: `test_webhook_e2e.py` has collection errors (3 errors in pos-full, 3 in pos-solo). Test suites collect 75/74 tests but fail on import (`RuntimeError: Model...`, `AssertionError`).
+- **10–12 pages not yet wired** with FusionPage (Analytics, Auth, InvoicePage, ProductManager, Recipes, Reports, Sale, Settings, SupportChat, Transactions; plus Employees and Inventory in pos-solo).
+
+### 🎯 Recommended Next Steps
+
+1. **Fix backend test collection errors** (`test_webhook_e2e.py`) so all 75+ tests pass in both editions.  
+2. **Wire remaining 10–12 pages** with `FusionPage` for complete fragment coverage.  
+3. **Create the `django_fusion.comp.robyn` adapter skeleton** so sidecars can mount viewsets without a full Django server (original Phase 1.1).  
+4. **Pick one sidecar entity (e.g., `Product`) and migrate it to `ModelViewset`** as a proof-of-concept (original Phase 1.2).
 
 ---
 
-## 13. Files Referenced
+## 13. Files Referenced *(updated audit)*
 
+### Sidecar (Backend)
 - `projects/pos/pos-full/sidecar/server.py`
 - `projects/pos/pos-full/sidecar/handlers.py`
 - `projects/pos/pos-full/sidecar/services/scheduler.py`
 - `projects/pos/pos-full/sidecar/services/sync.py`
+- `projects/pos/pos-full/sidecar/middleware/fusion.py` — `RobynFusionChecker`, `register_fusion_health_routes`
+- `projects/pos/pos-full/sidecar/fragments/__init__.py` — `FragmentComponent` registry
+- `projects/pos/pos-full/sidecar/fragments/dashboard.py`
+- `projects/pos/pos-full/sidecar/fragments/products.py`
+- `projects/pos/pos-full/sidecar/fragments/customers.py`
+- `projects/pos/pos-full/sidecar/fragments/inventory.py`
+- `projects/pos/pos-full/sidecar/fragments/employees.py`
+- `projects/pos/pos-full/sidecar/fragments/suppliers.py`
+- `projects/pos/pos-full/sidecar/fragments/about.py`
+- `projects/pos/pos-full/sidecar/routes/fusion_fragments.py`
+- `projects/pos/pos-solo/sidecar/` (mirrors above)
+
+### POS Cloud
 - `projects/pos/pos-cloud/core/views.py`
 - `projects/pos/pos-cloud/core/sync_api.py`
 - `projects/pos/pos-cloud/configs/__init__.py`
-- `projects/pos/pos-full/configs/dashboard.py`
+- `projects/pos/pos-cloud/core/fragments/layouts.py`
+- `projects/pos/pos-cloud/core/fragments/reports.py`
+- `projects/pos/pos-cloud/core/fragments/tables.py`
+
+### Frontend (React/Tauri)
+- `projects/pos/pos-full/src/components/FusionMiddleware.tsx`
+- `projects/pos/pos-full/src/components/FusionPage.tsx`
+- `projects/pos/pos-full/src/components/FusionProxy.tsx`
+- `projects/pos/pos-full/src/lib/fusion-types.ts`
+- `projects/pos/pos-full/src/lib/fusion-decoder.ts`
+- `projects/pos/pos-full/src/lib/fusion-store.ts`
+- `projects/pos/pos-full/src/test/fusion-e2e.test.tsx`
+- `projects/pos/pos-full/src/test/FusionDecoder.test.ts`
+- `projects/pos/pos-full/src/pages/` — 24 pages, 13 wired with `FusionPage`
+- `projects/pos/pos-solo/src/` (mirrors above, 11/24 wired)
+
+### django-fusion
 - `libs/django-fusion/src/django_fusion/models/datatoken.py`
 - `libs/django-fusion/src/django_fusion/routes/components.py`
 - `libs/django-fusion/src/django_fusion/routes/fragments.py`
+- `libs/django-fusion/src/django_fusion/core/managers.py`
+- `libs/django-fusion/src/django_fusion/core/cache.py`
 
 ---
 
