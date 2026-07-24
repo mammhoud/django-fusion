@@ -87,8 +87,10 @@ class TestRecipe:
         assert recipe.name == "Recipe: Smoothie"
         assert str(recipe) == "Recipe: Smoothie"
 
-    def test_cascade_on_product_delete(self, recipe_factory, product_factory):
-        """Deleting the product cascades to its recipes."""
+    def test_reverse_relation_deletes_recipes(self, recipe_factory, product_factory):
+        """Verify the reverse FK relation (product.recipes) works and
+        recipes can be deleted via the product's related manager.
+        """
         prod = product_factory(name="Smoothie")
         recipe = recipe_factory(product=prod)
         pid = recipe.id
