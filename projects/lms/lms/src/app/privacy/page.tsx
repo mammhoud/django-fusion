@@ -38,7 +38,7 @@ function PrivacyContent({ page, isLoading, error }: {
             </section>
           ))}
         </div>
-        <div className="mt-8 text-center"><Link href="/" className="text-indigo-600 hover:text-indigo-700 font-medium">Back to Home</Link></div>
+        <div className="mt-8 text-center"><Link href="/" className="text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] font-medium">Back to Home</Link></div>
       </div>
     </div>
   );

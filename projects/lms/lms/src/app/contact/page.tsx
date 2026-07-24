@@ -61,12 +61,12 @@ function ContactPageContent({ page }: { page: CmsPage | undefined }) {
               animate={{ opacity: 1, x: 0 }}
               className="card p-5"
             >
-              <info.icon className="w-6 h-6 text-indigo-600 mb-3" />
+              <info.icon className="w-6 h-6 text-[rgb(var(--ctc-primary))] mb-3" />
               <h3 className="font-medium text-gray-900">{info.label}</h3>
               {info.href ? (
                 <a
                   href={info.href}
-                  className="text-sm text-gray-500 hover:text-indigo-600 transition-colors"
+                  className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] transition-colors"
                 >
                   {info.value}
                 </a>

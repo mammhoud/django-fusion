@@ -26,7 +26,7 @@ export default function RegistrationPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4 py-10">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <HiAcademicCap className="w-12 h-12 text-indigo-600 mx-auto mb-4" />
+          <HiAcademicCap className="w-12 h-12 text-[rgb(var(--ctc-primary))] mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900">Create Account</h1>
           <p className="text-gray-500 mt-2">Join our learning community</p>
         </div>
@@ -90,11 +90,11 @@ export default function RegistrationPage() {
             <div className="grid grid-cols-2 gap-3">
               <button type="button" onClick={() => setForm({...form, role: 'student'})}
                 className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                  form.role === 'student' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  form.role === 'student' ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))]' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                 }`}>Learn as Student</button>
               <button type="button" onClick={() => setForm({...form, role: 'instructor'})}
                 className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                  form.role === 'instructor' ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  form.role === 'instructor' ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))]' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                 }`}>Teach as Instructor</button>
             </div>
           </div>
@@ -107,7 +107,7 @@ export default function RegistrationPage() {
           </button>
 
           <p className="text-center text-sm text-gray-500">
-            Already have an account? <Link href="/login" className="text-indigo-600 hover:text-indigo-700 font-medium">Sign in</Link>
+            Already have an account? <Link href="/login" className="text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] font-medium">Sign in</Link>
           </p>
         </form>
       </div>
