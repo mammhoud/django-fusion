@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { MdInventory, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { FaBoxes, FaHistory, FaExclamationTriangle, FaPlus, FaSave } from 'react-icons/fa';
+import { FusionPage } from '../components/FusionPage';
 import {
   useGetIngredientsQuery,
   useAddIngredientMutation,
@@ -211,11 +212,10 @@ export default function Inventory() {
     try {
       await addInventoryTransaction({
         ingredient_id: newTransaction.ingredient_id,
-        transaction_type: newTransaction.transaction_type,
-        quantity: newTransaction.quantity_change,
+        transaction_type: newTransaction.transaction_type as any,
+        quantity_change: newTransaction.quantity_change,
         shipping_fee: newTransaction.shipping_fee ?? 0,
-        notes: adjustmentReason || undefined,
-        created_by: createdBy || undefined,
+        note: adjustmentReason || null,
       } as any).unwrap();
       setShowAddTransaction(false);
       setNewTransaction({ ingredient_id: 0, transaction_type: 'purchase', quantity_change: 0, shipping_fee: 0 });
@@ -389,19 +389,25 @@ export default function Inventory() {
               </div>
             </div>
 
-            {/* Ingredient list */}
-            {ingredients.length > 0 && filteredIngredients.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
-                <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
-                <button
-                  onClick={() => setStockSearch('')}
-                  className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
-                >
-                  {t('common.clear')}
-                </button>
-              </div>
-            ) : (
+            {/* Ingredient list — wrapped with FusionPage for fragment-rendering support */}
+            <FusionPage standalone data={ingredients} skeletonVariant="card">
+              {(data, fallback) => {
+                const ingList = (data ?? []) as Ingredient[];
+                if (ingList.length > 0 && filteredIngredients.length === 0) {
+                  return (
+                    <div className="flex flex-col items-center justify-center text-center py-12">
+                      <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                      <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
+                      <button
+                        onClick={() => setStockSearch('')}
+                        className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
+                      >
+                        {t('common.clear')}
+                      </button>
+                    </div>
+                  );
+                }
+                return (
               <div className="card--glass rounded-xl overflow-hidden">
                 {/* Header */}
                 <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-slate-300 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm">
@@ -468,13 +474,14 @@ export default function Inventory() {
                         )}
                       </div>
                     </motion.div>
-                  );
-                })}
-                {ingredients.length === 0 && (
+                  );                    })}
+                {ingList.length === 0 && (
                   <div className="p-8 text-center text-slate-600 dark:text-white/60">{t('inventory.noIngredients')}</div>
                 )}
               </div>
-            )}
+                );
+              }}
+            </FusionPage>
           </div>
         )}
 
@@ -721,7 +728,8 @@ export default function Inventory() {
             {ingredients.filter(i => i.is_active).map(ing => (
               <option key={ing.id} value={ing.id}>{ing.name} ({ing.current_quantity} {ing.unit})</option>
             ))}
-          </select></div>          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+          </select></div>
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.type')} *</label>
             <select value={newTransaction.transaction_type} onChange={e => setNewTransaction(p => ({ ...p, transaction_type: e.target.value }))}
               className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white">

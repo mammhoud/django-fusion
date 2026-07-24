@@ -15,6 +15,7 @@ import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme, THEME_VARIANTS } from '../contexts/ThemeContext';
 
+import { FusionPage } from '../components/FusionPage';
 interface FormErrors {
   restaurant_name?: string;
   email?: string;

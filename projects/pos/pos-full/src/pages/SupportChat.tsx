@@ -15,6 +15,7 @@ import ChatSupport from '../components/ChatSupport';
 import { sidecar, tickets } from '../api';
 import type { SupportTicket } from '../api';
 
+import { FusionPage } from '../components/FusionPage';
 const STATUS_COLOURS: Record<string, string> = {
   open:        'bg-amber-100 text-amber-700',
   in_progress: 'bg-blue-100 text-blue-700',
