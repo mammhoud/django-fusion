@@ -1,1 +1,1 @@
-import DashboardRedirect from '@/components/DashboardRedirect'; export default function Page() { return <DashboardRedirect to="/dashboard/courses/[id]/edit" />; }
+import DashboardRedirect from "@/components/DashboardRedirect"; export default function Page() { return <DashboardRedirect to="/dashboard/courses" />; }
