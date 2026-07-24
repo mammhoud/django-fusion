@@ -29,6 +29,13 @@ backups/
 applications/tmp/
 applications/proxy/backups/
 
+# Pre-restructure artifacts (stale build snapshots)
+docs/dev/pre-restructure/
+site/dev/pre-restructure/
+
+# Transient sync state (constantly updated by running process)
+**/sync_state.json
+
 # Test database
 tests/test_db.sqlite3
 
