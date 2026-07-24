@@ -21,7 +21,7 @@ export default function ShopPage() {
           <h1 className="text-3xl font-bold text-gray-900">Merch Shop</h1>
           <p className="text-gray-500 mt-2">Branded merchandise and learning resources</p>
         </div>
-        <Link href="/cart" className="flex items-center gap-2 bg-indigo-600 text-white px-4 py-2 rounded-lg hover:bg-indigo-700 transition-colors">
+        <Link href="/cart" className="flex items-center gap-2 bg-[rgb(var(--ctc-primary))] text-white px-4 py-2 rounded-lg hover:bg-[rgb(var(--ctc-primary-dark))] transition-colors">
           <HiShoppingCart className="w-5 h-5" />
           <span className="font-medium">Cart</span>
         </Link>
@@ -52,14 +52,14 @@ export default function ShopPage() {
             {data?.results.map((product, idx) => (
               <motion.div key={product.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }}
                 className="card overflow-hidden group">
-                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 h-32 flex items-center justify-center">
+                <div className="bg-gradient-to-br card-gradient h-32 flex items-center justify-center">
                   <HiShoppingCart className="w-12 h-12 text-white/60" />
                 </div>
                 <div className="p-4">
-                  <h3 className="font-semibold text-gray-900 group-hover:text-indigo-600 transition-colors line-clamp-1">{product.name}</h3>
+                  <h3 className="font-semibold text-gray-900 group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1">{product.name}</h3>
                   <p className="text-sm text-gray-500 line-clamp-1 mt-1">{product.description}</p>
                   <div className="flex items-center justify-between mt-3">
-                    <span className="font-bold text-indigo-600 text-lg">
+                    <span className="font-bold text-[rgb(var(--ctc-primary))] text-lg">
                       {product.discounted_price ? (
                         <><span className="line-through text-gray-400 text-sm mr-1">${product.price}</span>${product.discounted_price}</>
                       ) : `$${product.price}`}
@@ -71,7 +71,7 @@ export default function ShopPage() {
                     )}
                   </div>
                   <Link href={`/shop-details/${product.id}`}
-                    className="mt-3 w-full text-center text-sm text-indigo-600 font-medium block hover:text-indigo-700 border border-indigo-600 rounded-lg py-2 hover:bg-indigo-50 transition-colors">
+                    className="mt-3 w-full text-center text-sm text-[rgb(var(--ctc-primary))] font-medium block hover:text-[rgb(var(--ctc-primary-dark))] border border-[rgb(var(--ctc-primary))] rounded-lg py-2 hover:bg-[rgb(var(--ctc-primary))]/5 transition-colors">
                     View Details
                   </Link>
                 </div>
@@ -83,7 +83,7 @@ export default function ShopPage() {
             <div className="flex justify-center gap-2 mt-10">
               {Array.from({ length: Math.ceil(data.count / 12) }, (_, i) => i + 1).map(p => (
                 <button key={p} onClick={() => setPage(p)}
-                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
+                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
               ))}
             </div>
           )}

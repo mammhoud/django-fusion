@@ -39,10 +39,10 @@ function FaqPageContent({ page }: { page: CmsPage | undefined }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <section className="bg-gradient-to-br from-indigo-600 via-indigo-700 to-purple-800 text-white py-20">
+      <section className="section-hero text-white py-20">
         <div className="max-w-3xl mx-auto px-4 text-center">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">{hero?.heading || page?.title || 'FAQ'}</h1>
-          <p className="text-lg text-indigo-200 mb-8">{hero?.intro}</p>
+          <p className="text-lg text-white/70 mb-8">{hero?.intro}</p>
           <div className="relative max-w-xl mx-auto">
             <HiSearch className="absolute left-4 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
             <input
@@ -50,7 +50,7 @@ function FaqPageContent({ page }: { page: CmsPage | undefined }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search FAQs..."
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 bg-white shadow-lg focus:ring-2 focus:ring-indigo-300 outline-none"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 bg-white shadow-lg focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/30 outline-none"
             />
           </div>
         </div>
@@ -92,7 +92,7 @@ function FaqPageContent({ page }: { page: CmsPage | undefined }) {
         </div>
 
         {cta && (
-          <div className="mt-12 text-center bg-indigo-50 rounded-2xl p-8">
+          <div className="mt-12 text-center bg-[rgb(var(--ctc-primary))]/5 rounded-2xl p-8">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">{cta.heading}</h3>
             <p className="text-gray-600 mb-6">{cta.intro}</p>
             <a href={cta.ctas?.[0]?.href || '/contact'} className="btn-primary inline-flex">
