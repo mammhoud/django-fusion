@@ -146,7 +146,7 @@ async def _create(model, data: dict, tag_for_sync: bool = False, node_id: str = 
         # ── Auto-tag with DataToken for cloud sync tracking ──
         if tag_for_sync and node_id:
             try:
-                from django_fusion.core.models import DataToken
+                from django_fusion.models import DataToken
                 token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}"
                 DataToken.objects.tag_row(
                     model_instance=obj,
@@ -183,7 +183,7 @@ async def _update(model, pk: int, data: dict, tag_for_sync: bool = False, node_i
             # ── Tag updated row for sync tracking ──
             if tag_for_sync and node_id:
                 try:
-                    from django_fusion.core.models import DataToken
+                    from django_fusion.models import DataToken
                     token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}"
                     DataToken.objects.tag_row(
                         model_instance=obj,
@@ -215,7 +215,7 @@ async def _delete(model, pk: int, tag_for_sync: bool = False, node_id: str = "",
             # ── Tag deletion for sync before removing the row ──
             if tag_for_sync and node_id:
                 try:
-                    from django_fusion.core.models import DataToken
+                    from django_fusion.models import DataToken
                     token = f"{token_prefix}_{model.__name__.lower()}_{obj.pk}_{node_id}_deleted"
                     # Use tag_row with the still-available instance, then record deletion
                     DataToken.objects.tag_row(

@@ -8,7 +8,7 @@ Usage:
     {% comp "core.skeletons.report_skeleton" / %}
 """
 
-from django_fusion.comp.routes import FragmentComponent
+from django_fusion.routes import FragmentComponent
 
 
 class TableSkeleton(FragmentComponent):

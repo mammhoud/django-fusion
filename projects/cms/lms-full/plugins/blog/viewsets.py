@@ -14,7 +14,7 @@ Usage::
 
 from __future__ import annotations
 
-from django_fusion.comp.routes import ModelViewset
+from django_fusion.routes import ModelViewset
 
 
 class BlogPostViewset(ModelViewset):

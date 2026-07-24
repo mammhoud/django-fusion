@@ -258,7 +258,7 @@ for _mod_path in [
     "ceptor_ai.pipelines.models.tags",
     "ceptor_ai.pipelines.models.users.role",
     # Missing generic.search module
-    "django_fusion.comp.generic.search",
+    "django_fusion.components.generic.search",
     # www.core.content.models — stub to avoid pulling in ceptor_ai models
     "www.core.content",
     "www.core.content.models",

@@ -19,7 +19,7 @@ Generated URL prefix: /osoul/
 
 from __future__ import annotations
 
-from django_fusion.comp.routes import Application, Site, viewprop
+from django_fusion.routes import Application, Site, viewprop
 
 # ---------------------------------------------------------------------------
 # LMS Application
@@ -35,13 +35,25 @@ class LMSApp(Application):
     @viewprop
     def viewsets(self):
         # Lazy import to avoid circular dependencies during module load
-        from plugins.lms.components import CourseListFragment, DashboardComponent
+        from plugins.lms.components import (
+            CourseListFragment,
+            DashboardComponent,
+            PrivacyPageFragment,
+            StaticPageFragment,
+        )
         from plugins.lms.viewsets import CourseViewset, EnrollmentViewset
         return [
             DashboardComponent(),
             CourseViewset(),
             EnrollmentViewset(),
             CourseListFragment(),
+            PrivacyPageFragment(),
+            # Generic static pages — each serves an HTML fragment at
+            # /fragments/pages.<slug>/ using the generic page.html template.
+            StaticPageFragment("home"),
+            StaticPageFragment("about-us"),
+            StaticPageFragment("faq"),
+            StaticPageFragment("contact"),
         ]
 
     def has_view_permission(self, user, obj=None):

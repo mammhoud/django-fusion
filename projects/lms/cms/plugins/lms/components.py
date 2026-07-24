@@ -14,7 +14,7 @@ Usage::
 from __future__ import annotations
 
 from django.db.models import Q
-from django_fusion.comp.routes import FragmentComponent, RoutableComponent
+from django_fusion.routes import FragmentComponent, RoutableComponent
 
 
 class DashboardComponent(RoutableComponent):
@@ -110,3 +110,58 @@ class CourseListFragment(FragmentComponent):
         context["search_query"] = self.request.GET.get("q", "")
         context["selected_category"] = self.request.GET.get("category", "")
         return context
+
+
+class StaticPageFragment(FragmentComponent):
+    """
+    Generic fragment for any ``STATIC_PAGES`` entry.
+
+    Accept a ``slug`` parameter at construction time so a single class can
+    serve ``home``, ``about-us``, ``faq``, ``contact``, etc.
+
+    Fragment URL: /fragments/pages.<slug>/
+    Template: pages/page.html (generic, renders all STATIC_PAGES block types)
+
+    Usage (in routes.py)::
+
+        StaticPageFragment("home"),
+        StaticPageFragment("about-us"),
+        StaticPageFragment("faq"),
+        StaticPageFragment("contact"),
+    """
+
+    htmx_only = False
+    show_in_menu = False
+    template_name = "pages/page.html"
+
+    def __init__(self, slug: str, **kwargs):
+        self._slug = slug
+        # Unique route per page to avoid route-name clashes
+        sanitized = slug.replace("-", "_").replace("/", "_")
+        self.route_name = f"static-{sanitized}-fragment"
+        self.route_path = f"pages/{slug}/"
+        self.fragment_name = f"pages.{sanitized}"
+        super().__init__(**kwargs)
+
+    def has_permission(self, user):
+        return True
+
+    def get_fragment_context(self, **kwargs):
+        context = super().get_fragment_context(**kwargs)
+        from plugins.pages.content import STATIC_PAGES
+        context["page"] = STATIC_PAGES.get(self._slug, {})
+        return context
+
+
+class PrivacyPageFragment(StaticPageFragment):
+    """
+    Privacy policy rendered as a server-side fragment.
+
+    Uses the ``pages/privacy.html`` template (custom privacy layout).
+    All other static pages use the generic ``pages/page.html`` template.
+    """
+
+    template_name = "pages/privacy.html"
+
+    def __init__(self, **kwargs):
+        super().__init__("privacy", **kwargs)

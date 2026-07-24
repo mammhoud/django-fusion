@@ -8,7 +8,7 @@ from django.db import models
 from django.conf import settings
 from django.utils.translation import gettext_lazy as _
 
-from django_fusion.core.models import BaseDeviceToken
+from django_fusion.models import BaseDeviceToken
 
 
 # ══════════════════════════════════════════════════════════════════════

@@ -38,7 +38,7 @@ class TestRoutableComponent(TestCase):
     """Tests for RoutableComponent base class."""
 
     def setUp(self):
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class PublicComponent(RoutableComponent):
             route_name = "public"
@@ -116,7 +116,7 @@ class TestRoutableComponent(TestCase):
         self.assertTrue(comp.show_in_menu)
 
     def test_get_route_url_raises_without_route_name(self):
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class NoNameComp(RoutableComponent):
             route_name = None
@@ -132,7 +132,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_returns_explicit_value(self):
         """When fragment_name is set, get_fragment_name() returns it as-is."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class ExplicitComp(RoutableComponent):
             route_name = "my-route"
@@ -145,7 +145,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_derives_from_route_name(self):
         """When fragment_name is not set, get_fragment_name() derives from route_name."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class DerivedComp(RoutableComponent):
             route_name = "dashboard"
@@ -158,7 +158,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_returns_none_without_route_name(self):
         """When neither fragment_name nor route_name is set, returns None."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class NoNameNoFragment(RoutableComponent):
             route_name = None
@@ -171,7 +171,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_template_path_conversion(self):
         """The derived fragment_name maps to the components/ template dir."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class MyComp(RoutableComponent):
             route_name = "settings"
@@ -185,7 +185,7 @@ class TestRoutableComponent(TestCase):
 
     def test_get_fragment_name_explicit_overrides_default(self):
         """Explicit fragment_name takes priority over route_name derivation."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class OverrideComp(RoutableComponent):
             route_name = "dashboard"
@@ -207,7 +207,7 @@ class TestFragmentComponent(TestCase):
     """Tests for FragmentComponent."""
 
     def setUp(self):
-        from django_fusion.comp.routes import FragmentComponent
+        from django_fusion.routes import FragmentComponent
 
         class SimpleFragment(FragmentComponent):
             route_name = "simple-fragment"
@@ -236,12 +236,12 @@ class TestFragmentComponent(TestCase):
         self.factory = RequestFactory()
 
     def test_is_htmx_request_true(self):
-        from django_fusion.site._context_mixins import is_htmx_request
+        from django_fusion.site.interface._context_mixins import is_htmx_request
         request = make_htmx_request(self.factory)
         self.assertTrue(is_htmx_request(request))
 
     def test_is_htmx_request_false(self):
-        from django_fusion.site._context_mixins import is_htmx_request
+        from django_fusion.site.interface._context_mixins import is_htmx_request
         request = make_regular_request(self.factory)
         self.assertFalse(is_htmx_request(request))
 
@@ -312,7 +312,7 @@ class TestFragmentComponent(TestCase):
 
     def test_fragment_component_inherits_default_fragment_name(self):
         """FragmentComponent inherits get_fragment_name() default from RoutableComponent."""
-        from django_fusion.comp.routes import FragmentComponent
+        from django_fusion.routes import FragmentComponent
 
         class NoFragmentName(FragmentComponent):
             route_name = "my-frag"
@@ -324,7 +324,7 @@ class TestFragmentComponent(TestCase):
 
     def test_fragment_component_explicit_fragment_name_overrides_default(self):
         """Explicit fragment_name on FragmentComponent takes priority over route_name."""
-        from django_fusion.comp.routes import FragmentComponent
+        from django_fusion.routes import FragmentComponent
 
         class ExplicitFrag(FragmentComponent):
             route_name = "my-frag"
@@ -345,7 +345,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_explicit_fragment_name_returned_as_is(self):
         """Explicit fragment_name takes priority over items_template derivation."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class ExplicitPaginated(PaginatedComponentView):
             fragment_name = "my.custom_fragment"
@@ -355,7 +355,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_derives_from_items_template(self):
         """When fragment_name is not set, derives from items_template."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class DefaultPaginated(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -366,7 +366,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_custom_items_template_derives_correctly(self):
         """A custom items_template produces the right dotted name."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class CustomItems(PaginatedComponentView):
             items_template = "blog/fragments/post_list.html"
@@ -376,7 +376,7 @@ class TestPaginatedComponentViewFragmentName(TestCase):
 
     def test_template_path_conversion(self):
         """The derived fragment_name maps to the correct template path."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class MyPaginated(PaginatedComponentView):
             items_template = "components/items/table.html"
@@ -392,7 +392,7 @@ class TestPaginatedListViewFragmentName(TestCase):
 
     def test_explicit_fragment_name_returned_as_is(self):
         """Explicit fragment_name takes priority over model derivation."""
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class ExplicitListView(PaginatedListView):
             fragment_name = "my.custom_list"
@@ -404,7 +404,7 @@ class TestPaginatedListViewFragmentName(TestCase):
     def test_derives_from_model_meta(self):
         """When fragment_name is not set, derives from model._meta."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class PaginatedArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -422,7 +422,7 @@ class TestPaginatedListViewFragmentName(TestCase):
     def test_model_derived_template_path_conversion(self):
         """The model-derived fragment_name maps to the correct template path."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class PaginatedProduct(models.Model):
             name = models.CharField(max_length=100)
@@ -441,7 +441,7 @@ class TestPaginatedListViewFragmentName(TestCase):
 
     def test_falls_back_to_items_template_when_no_model(self):
         """When neither fragment_name nor model is set, falls back to items_template."""
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class NoModelListView(PaginatedListView):
             model = None
@@ -454,7 +454,7 @@ class TestPaginatedListViewFragmentName(TestCase):
     def test_explicit_overrides_model_derivation(self):
         """Explicit fragment_name takes priority over both model and items_template."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class PaginatedItem(models.Model):
             name = models.CharField(max_length=50)
@@ -480,7 +480,7 @@ class TestLegacyPaginatorsFragmentName(TestCase):
 
     def test_legacy_paginated_component_view_derives_from_items_template(self):
         """Legacy PaginatedComponentView derives fragment_name from items_template."""
-        from django_fusion.site.paginators import PaginatedComponentView as LegacyPCV
+        from django_fusion.site.interface.paginators import PaginatedComponentView as LegacyPCV
 
         class MyLegacyPCV(LegacyPCV):
             items_template = "components/items/list.html"
@@ -491,7 +491,7 @@ class TestLegacyPaginatorsFragmentName(TestCase):
 
     def test_legacy_paginated_component_view_explicit_override(self):
         """Explicit fragment_name on legacy PaginatedComponentView takes priority."""
-        from django_fusion.site.paginators import PaginatedComponentView as LegacyPCV
+        from django_fusion.site.interface.paginators import PaginatedComponentView as LegacyPCV
 
         class ExplicitLegacyPCV(LegacyPCV):
             fragment_name = "my.explicit_fragment"
@@ -502,7 +502,7 @@ class TestLegacyPaginatorsFragmentName(TestCase):
     def test_legacy_paginated_list_view_derives_from_model(self):
         """Legacy PaginatedListView derives fragment_name from model._meta."""
         from django.db import models
-        from django_fusion.site.paginators import PaginatedListView as LegacyPLV
+        from django_fusion.site.interface.paginators import PaginatedListView as LegacyPLV
 
         class PaginatedCategory(models.Model):
             name = models.CharField(max_length=50)
@@ -519,7 +519,7 @@ class TestLegacyPaginatorsFragmentName(TestCase):
 
     def test_legacy_paginated_list_view_explicit_override(self):
         """Explicit fragment_name on legacy PaginatedListView takes priority."""
-        from django_fusion.site.paginators import PaginatedListView as LegacyPLV
+        from django_fusion.site.interface.paginators import PaginatedListView as LegacyPLV
 
         class ExplicitLegacyPLV(LegacyPLV):
             fragment_name = "my.explicit_list"
@@ -548,7 +548,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_fragment_strategy_with_items_template(self):
         """resolve_template_name() returns the items_template-derived path
         when strategy is 'fragment' and fragment_name is not set."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class MyPaginated(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -562,7 +562,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_document_strategy_uses_template_name(self):
         """resolve_template_name() falls back to template_name when strategy
         is 'document', even if items_template is set."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class MyPaginated(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -575,7 +575,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_fragment_with_custom_items_template(self):
         """resolve_template_name() correctly converts a deeply nested
         items_template path to the fragment template path."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class CustomItems(PaginatedComponentView):
             items_template = "blog/fragments/post_list.html"
@@ -588,7 +588,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_explicit_fragment_overrides_items_template(self):
         """Explicit fragment_name takes priority over items_template in
         resolve_template_name()."""
-        from django_fusion.site.page_handler import PaginatedComponentView
+        from django_fusion.site.interface.page_handler import PaginatedComponentView
 
         class ExplicitFragment(PaginatedComponentView):
             items_template = "components/items/list.html"
@@ -607,7 +607,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """resolve_template_name() returns the model-derived path when
         strategy is 'fragment', fragment_name is not set, and model is set."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class IntegrationArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -628,7 +628,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """resolve_template_name() falls back to template_name when strategy
         is 'document', even if model is set."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class IntegrationProduct(models.Model):
             name = models.CharField(max_length=100)
@@ -648,7 +648,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_fragment_falls_back_to_items_template_without_model(self):
         """resolve_template_name() uses items_template-derived path when
         strategy is 'fragment', no model, and no explicit fragment_name."""
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class NoModelListView(PaginatedListView):
             model = None
@@ -664,7 +664,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """Explicit fragment_name takes priority over model._meta in
         resolve_template_name()."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class IntegrationTag(models.Model):
             name = models.CharField(max_length=50)
@@ -685,7 +685,7 @@ class TestResolveTemplateNameIntegration(TestCase):
         """When both model and items_template are set (no explicit fragment_name),
         model._meta derivation takes priority over items_template."""
         from django.db import models
-        from django_fusion.site.page_handler import PaginatedListView
+        from django_fusion.site.interface.page_handler import PaginatedListView
 
         class IntegrationOrder(models.Model):
             total = models.DecimalField(max_digits=10, decimal_places=2)
@@ -714,7 +714,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_routable_component_with_route_name(self):
         """resolve_template_name() returns the route_name-derived path when
         strategy is 'fragment' and fragment_name is not set."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class DashboardComponent(RoutableComponent):
             route_name = "dashboard"
@@ -729,7 +729,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_routable_component_explicit_override(self):
         """Explicit fragment_name on RoutableComponent takes priority over
         route_name derivation in resolve_template_name()."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class ProfileComponent(RoutableComponent):
             route_name = "profile"
@@ -744,7 +744,7 @@ class TestResolveTemplateNameIntegration(TestCase):
     def test_resolve_template_name_routable_component_no_fragment_no_route_name(self):
         """resolve_template_name() falls back to template_name when neither
         fragment_name nor route_name is set, even in fragment strategy."""
-        from django_fusion.comp.routes import RoutableComponent
+        from django_fusion.routes import RoutableComponent
 
         class BareComponent(RoutableComponent):
             route_name = None
@@ -766,7 +766,7 @@ class TestFragmentDetector(TestCase):
     """Tests for FragmentDetector strategy detection."""
 
     def setUp(self):
-        from django_fusion.comp.routes import FragmentDetector
+        from django_fusion.routes import FragmentDetector
         self.detector = FragmentDetector()
         self.factory = RequestFactory()
 
@@ -807,7 +807,7 @@ class TestApplicationMenuOrdering(TestCase):
     """Tests for Application.menu_items() ordering by menu_order."""
 
     def test_menu_items_sorted_by_menu_order(self):
-        from django_fusion.comp.routes import Application, AppMenuMixin, RoutableComponent
+        from django_fusion.routes import Application, AppMenuMixin, RoutableComponent
 
         class CompA(AppMenuMixin, RoutableComponent):
             route_name = "a"
@@ -841,7 +841,7 @@ class TestApplicationMenuOrdering(TestCase):
         self.assertEqual(titles, ["B", "C", "A"])
 
     def test_show_in_menu_false_hides_item(self):
-        from django_fusion.comp.routes import Application, AppMenuMixin, RoutableComponent
+        from django_fusion.routes import Application, AppMenuMixin, RoutableComponent
 
         class HiddenComp(AppMenuMixin, RoutableComponent):
             route_name = "hidden"
@@ -877,7 +877,7 @@ class TestSite(TestCase):
     """Tests for Site class."""
 
     def setUp(self):
-        from django_fusion.comp.routes import Application, RoutableComponent, Site
+        from django_fusion.routes import Application, RoutableComponent, Site
 
         class DashboardComponent(RoutableComponent):
             route_name = "dashboard"
@@ -926,7 +926,7 @@ class TestSite(TestCase):
         self.assertTrue(any(isinstance(v, self.TestApp) for v in site.viewsets))
 
     def test_site_title_defaults_to_class_name(self):
-        from django_fusion.comp.routes import Site
+        from django_fusion.routes import Site
 
         class MySite(Site):
             pass
@@ -936,7 +936,7 @@ class TestSite(TestCase):
         self.assertIsNotNone(site.title)
 
     def test_site_has_view_permission_with_permission(self):
-        from django_fusion.comp.routes import Site
+        from django_fusion.routes import Site
 
         class RestrictedSite(Site):
             permission = "auth.view_user"
@@ -973,7 +973,7 @@ class TestBaseViewset(TestCase):
     """Tests for BaseViewset base class."""
 
     def test_viewset_parents_empty(self):
-        from django_fusion.comp.routes import Viewset
+        from django_fusion.routes import Viewset
 
         class EmptyViewset(Viewset):
             pass
@@ -982,7 +982,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(vs.parents(), [])
 
     def test_viewset_parents_hierarchy(self):
-        from django_fusion.comp.routes import Viewset
+        from django_fusion.routes import Viewset
 
         class ParentViewset(Viewset):
             pass
@@ -997,7 +997,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(child.parents(), [parent])
 
     def test_viewset_parents_multi_level(self):
-        from django_fusion.comp.routes import Viewset
+        from django_fusion.routes import Viewset
 
         class GrandparentViewset(Viewset):
             pass
@@ -1019,7 +1019,7 @@ class TestBaseViewset(TestCase):
         self.assertEqual(child.parents(), [grandparent, parent])
 
     def test_viewset_has_view_permission_default(self):
-        from django_fusion.comp.routes import Viewset
+        from django_fusion.routes import Viewset
 
         class TestViewset(Viewset):
             pass
@@ -1030,7 +1030,7 @@ class TestBaseViewset(TestCase):
         self.assertTrue(vs.has_view_permission(user))
 
     def test_viewset_reverse_raises_without_parent(self):
-        from django_fusion.comp.routes import Viewset
+        from django_fusion.routes import Viewset
 
         class TestViewset(Viewset):
             pass
@@ -1053,7 +1053,7 @@ class TestModelViewset(TestCase):
 
         # Create a simple test model
         from django.db import models
-        from django_fusion.comp.routes import ModelViewset
+        from django_fusion.routes import ModelViewset
 
         class TestArticle(models.Model):
             title = models.CharField(max_length=100)
@@ -1117,7 +1117,7 @@ class TestReadonlyModelViewset(TestCase):
 
     def setUp(self):
         from django.db import models
-        from django_fusion.comp.routes import ReadonlyModelViewset
+        from django_fusion.routes import ReadonlyModelViewset
 
         class TestItem(models.Model):
             name = models.CharField(max_length=50)
@@ -1147,7 +1147,7 @@ class TestFragmentDetectorAdditional(TestCase):
     """Additional tests for FragmentDetector."""
 
     def setUp(self):
-        from django_fusion.comp.routes import FragmentDetector
+        from django_fusion.routes import FragmentDetector
         self.detector = FragmentDetector()
         self.factory = RequestFactory()
 
@@ -1202,7 +1202,7 @@ class TestApplicationHasViewPermission(TestCase):
     """Tests for Application.has_view_permission."""
 
     def test_application_has_view_permission_with_permission(self):
-        from django_fusion.comp.routes import Application
+        from django_fusion.routes import Application
 
         class RestrictedApp(Application):
             permission = "auth.add_user"
@@ -1228,7 +1228,7 @@ class TestApplicationHasViewPermission(TestCase):
         self.assertTrue(app.has_view_permission(user))
 
     def test_application_has_view_permission_callable(self):
-        from django_fusion.comp.routes import Application
+        from django_fusion.routes import Application
 
         class CustomPermApp(Application):
             title = "Custom Perm App"
@@ -1244,7 +1244,7 @@ class TestApplicationHasViewPermission(TestCase):
         self.assertTrue(app.has_view_permission(admin_user))
 
     def test_application_has_view_permission_no_permission(self):
-        from django_fusion.comp.routes import Application
+        from django_fusion.routes import Application
 
         class OpenApp(Application):
             title = "Open App"
@@ -1266,7 +1266,7 @@ class TestAppMenuMixin(TestCase):
     """Tests for AppMenuMixin."""
 
     def test_title_defaults_to_class_name(self):
-        from django_fusion.comp.routes import AppMenuMixin
+        from django_fusion.routes import AppMenuMixin
 
         class MyAdmin(AppMenuMixin):
             pass
@@ -1276,7 +1276,7 @@ class TestAppMenuMixin(TestCase):
         self.assertIsNotNone(mixin.title)
 
     def test_has_view_permission_delegates_to_parent(self):
-        from django_fusion.comp.routes import AppMenuMixin
+        from django_fusion.routes import AppMenuMixin
 
         class TestMenuItem(AppMenuMixin):
             pass

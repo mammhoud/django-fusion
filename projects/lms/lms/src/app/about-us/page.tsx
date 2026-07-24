@@ -6,12 +6,18 @@ import Link from 'next/link';
 import type { Route } from 'next';
 import { useGetInstructorsQuery } from '@/store/api/endpoints/instructors';
 import { useGetCoursesQuery } from '@/store/api/endpoints/courses';
-import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
-import ErrorState from '@/components/ui/ErrorState';
-import { useGetPageQuery } from '@/store/api/endpoints/pages';
+import { FusionPage } from '@/components/FusionPage';
+import type { CmsPage } from '@/store/api/endpoints/pages';
 
 export default function AboutPage() {
-  const { data: page, isLoading: pageLoading, error: pageError } = useGetPageQuery('about-us');
+  return (
+    <FusionPage slug="about-us">
+      {(page, _fallback) => <AboutPageContent page={page} />}
+    </FusionPage>
+  );
+}
+
+function AboutPageContent({ page }: { page: CmsPage | undefined }) {
   const { data: instructorsData, isLoading: instrLoading } = useGetInstructorsQuery({ page: 1 });
   const { data: coursesData, isLoading: coursesLoading } = useGetCoursesQuery({ page: 1 });
 
@@ -22,19 +28,9 @@ export default function AboutPage() {
     { icon: HiGlobe, label: 'Countries', value: '50+', desc: 'Global reach' },
   ];
 
-  if (coursesLoading || instrLoading || pageLoading) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-10">
-        <LoadingSkeleton variant="detail" />
-      </div>
-    );
-  }
-
-  if (pageError || !page) return <ErrorState message="Unable to load about page content." />;
-
-  const hero = page.blocks.find((block) => block.type === 'hero');
-  const mission = page.blocks.find((block) => block.type === 'rich_section');
-  const cta = page.blocks.find((block) => block.type === 'cta');
+  const hero = page?.blocks.find((block) => block.type === 'hero');
+  const mission = page?.blocks.find((block) => block.type === 'rich_section');
+  const cta = page?.blocks.find((block) => block.type === 'cta');
 
   return (
     <div>
@@ -43,7 +39,7 @@ export default function AboutPage() {
         <div className="max-w-4xl mx-auto px-4 text-center">
           <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
             className="text-4xl md:text-5xl font-bold mb-6">
-            {hero?.heading || page.title}
+            {hero?.heading || page?.title || 'About Us'}
           </motion.h1>
           <motion.p initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
             className="text-xl text-indigo-200 leading-relaxed">

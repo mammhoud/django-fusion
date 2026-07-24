@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdAttachMoney, MdAdd, MdDelete } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetPayrollRecordsQuery, useAddPayrollMutation, useDeletePayrollMutation } from '../store/api/endpoints/payroll';
 import { useGetEmployeesQuery } from '../store/api/endpoints/core';
@@ -68,36 +69,49 @@ export default function Payroll() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
-        ) : payrolls.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">{t('payroll.noPayrolls')}</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {payrolls.map(payroll => (
-              <motion.div key={payroll.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                      <MdAttachMoney className="w-5 h-5" />
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={payrolls}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as typeof payrolls;
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">{t('payroll.noPayrolls')}</div>
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(payroll => (
+                  <motion.div key={payroll.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-emerald-100 dark:bg-emerald-900/30 flex items-center justify-center text-emerald-600 dark:text-emerald-400">
+                          <MdAttachMoney className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{getEmployeeName(payroll.employee_id)}</h3>
+                          <p className="text-sm text-slate-500 capitalize">{payroll.status}</p>
+                        </div>
+                      </div>
+                      <button onClick={() => handleDelete(payroll.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{getEmployeeName(payroll.employee_id)}</h3>
-                      <p className="text-sm text-slate-500 capitalize">{payroll.status}</p>
+                    <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
+                      <p>{payroll.period_start} - {payroll.period_end}</p>
+                      <p>{t('payroll.regularHours')}: {payroll.regular_hours}</p>
+                      <p>{t('payroll.overtimeHours')}: {payroll.overtime_hours}</p>
+                      <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {(payroll.total_pay ?? 0).toFixed(2)}</p>
                     </div>
-                  </div>
-                  <button onClick={() => handleDelete(payroll.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
-                </div>
-                <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
-                  <p>{payroll.period_start} - {payroll.period_end}</p>
-                  <p>{t('payroll.regularHours')}: {payroll.regular_hours}</p>
-                  <p>{t('payroll.overtimeHours')}: {payroll.overtime_hours}</p>
-                  <p className="font-semibold text-emerald-600">{t('payroll.totalPay')}: {(payroll.total_pay ?? 0).toFixed(2)}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
     </PageLayout>
   );

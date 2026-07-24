@@ -28,7 +28,7 @@ _BASES_CACHE: dict = {}
 def _profile_bases():
     """Return (PageHandler, ProfileContextMixin, ProfileOperationsMixin) lazily."""
     if not _BASES_CACHE:
-        from django_fusion.site import PageHandler
+        from django_fusion.site.interface.page_handler import PageHandler
         from ceptor_ai.site.mixins import ProfileContextMixin, ProfileOperationsMixin
         _BASES_CACHE["PageHandler"] = PageHandler
         _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin

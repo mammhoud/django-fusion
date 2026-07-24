@@ -3,7 +3,7 @@ Management command for managing blog tags.
 """
 
 from django.core.management.base import BaseCommand
-from django_fusion.management.commands.base import BaseCommand
+from django_fusion.site.management.commands.base import BaseCommand
 
 from plugins.blog.models import BlogTag
 from plugins.blog.services import TagService

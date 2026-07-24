@@ -3,7 +3,7 @@
 import datetime
 import django.core.validators
 import django.db.models.deletion
-import django_fusion.site._context_mixins
+import django_fusion.site.interface._context_mixins
 import ceptor_ai.models.cache
 import ceptor_ai.models.default
 import embed_video.fields
@@ -170,7 +170,7 @@ class Migration(migrations.Migration):
                 'verbose_name': 'Courses Page',
                 'verbose_name_plural': 'Courses Pages',
             },
-            bases=(django_fusion.site._context_mixins.WagtailPageMixin, 'wagtailcore.page'),
+            bases=(django_fusion.site.interface._context_mixins.WagtailPageMixin, 'wagtailcore.page'),
         ),
         migrations.CreateModel(
             name='Enrollment',

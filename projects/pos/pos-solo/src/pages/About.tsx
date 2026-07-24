@@ -6,6 +6,7 @@ import { isTauri } from '../utils/tauri';
 import packageJson from '../../package.json';
 import BackButton from '../components/BackButton';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 
 interface SupportMessage {

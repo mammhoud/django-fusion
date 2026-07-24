@@ -27,6 +27,16 @@ TEMPLATES_DIRS = [
     BASE_DIR.parent / "assets" / "templates",
     BASE_DIR.parent / "assets" / "templates" / "layout",  # workspace-level layout templates
 ]
+# django-fusion ships templates under its own package, including the
+# new ``fusion/`` component namespace and legacy stubs. Resolve the
+# directory without importing django_fusion submodules to avoid
+# circular imports during settings construction.
+_django_fusion_spec = importlib.util.find_spec("django_fusion")
+if _django_fusion_spec is not None:
+    if _django_fusion_spec.origin:
+        TEMPLATES_DIRS.append(Path(_django_fusion_spec.origin).parent / "templates")
+    elif _django_fusion_spec.submodule_search_locations:
+        TEMPLATES_DIRS.append(Path(_django_fusion_spec.submodule_search_locations[0]) / "templates")
 
 COMPONENTS = {
     "COMPONENT_DIRS": [
@@ -62,9 +72,8 @@ if importlib.util.find_spec("heroicons") is not None:
 # settings module before INSTALLED_APPS is defined. The constants below are
 # the canonical builtin module paths exported by django-fusion.
 if importlib.util.find_spec("django_fusion") is not None:
+    # Component tags (table, pagination, search, form, modal, etc.)
     _TEMPLATE_BUILTINS.append("django_fusion.comp.templatetags.components")
-    # Register ui_tags (table, pagination, search, form) as builtins
-    _TEMPLATE_BUILTINS.append("django_fusion.templatetags.ui_tags")
 
 TEMPLATES = [
     {
@@ -77,7 +86,6 @@ TEMPLATES = [
                 # Register component tags for {% load components %} compatibility.
                 # It's also registered as a builtin, but {% load %} needs the library entry.
                 "components": "django_fusion.comp.templatetags.components",
-                "ui_tags": "django_fusion.templatetags.ui_tags",
             },
             "builtins": _TEMPLATE_BUILTINS,
         },

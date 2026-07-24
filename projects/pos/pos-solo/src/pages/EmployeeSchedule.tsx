@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdSchedule, MdAdd, MdDelete } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetEmployeeSchedulesQuery, useAddEmployeeScheduleMutation, useDeleteEmployeeScheduleMutation } from '../store/api/endpoints/payroll';
 import { useGetEmployeesQuery } from '../store/api/endpoints/core';
@@ -66,34 +67,47 @@ export default function EmployeeSchedule() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
-        ) : schedules.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">{t('schedule.noShifts')}</div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {schedules.map(schedule => (
-              <motion.div key={schedule.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                      <MdSchedule className="w-5 h-5" />
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={schedules}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as typeof schedules;
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">{t('schedule.noShifts')}</div>
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(schedule => (
+                  <motion.div key={schedule.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
+                          <MdSchedule className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{getEmployeeName(schedule.employee_id)}</h3>
+                          <p className="text-sm text-slate-500 capitalize">{schedule.status}</p>
+                        </div>
+                      </div>
+                      <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
                     </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{getEmployeeName(schedule.employee_id)}</h3>
-                      <p className="text-sm text-slate-500 capitalize">{schedule.status}</p>
+                    <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
+                      <p>{new Date(schedule.shift_start || schedule.start_time).toLocaleString()} - {new Date(schedule.shift_end || schedule.end_time).toLocaleTimeString()}</p>
+                      {schedule.notes && <p>{schedule.notes}</p>}
                     </div>
-                  </div>
-                  <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
-                </div>
-                <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
-                  <p>{new Date(schedule.shift_start || schedule.start_time).toLocaleString()} - {new Date(schedule.shift_end || schedule.end_time).toLocaleTimeString()}</p>
-                  {schedule.notes && <p>{schedule.notes}</p>}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
     </PageLayout>
   );

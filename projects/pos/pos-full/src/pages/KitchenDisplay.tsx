@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdRestaurant, MdCheckCircle, MdAccessTime, MdSearch, MdClose } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetKitchenTicketsQuery, useUpdateKitchenTicketMutation } from '../store/api/endpoints/kitchen';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
@@ -20,7 +21,7 @@ export default function KitchenDisplay() {
     isPending: isFiltering,
   } = useDebouncedSearch();
 
-  const { data: tickets = [], isLoading } = useGetKitchenTicketsQuery(
+  const { data: tickets = [], isLoading, error } = useGetKitchenTicketsQuery(
     { status: filter === 'all' ? undefined : filter },
     { pollingInterval: 10000 }
   );
@@ -107,50 +108,63 @@ export default function KitchenDisplay() {
           </div>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
-        ) : filteredTickets.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            {debouncedSearch
-              ? (t('common.noDataFound') || 'No ticket matches the search.')
-              : (t('kitchen.noTickets'))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-            {filteredTickets.map(ticket => (
-              <motion.div
-                key={ticket.id}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className={`rounded-xl border-2 p-4 ${statusColors[ticket.status] || 'border-slate-200 bg-white dark:bg-slate-800'}`}
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <div className="flex items-center gap-2">
-                    <MdRestaurant className="text-slate-600 dark:text-slate-300" />
-                    <span className="font-bold text-slate-900 dark:text-white">{t('kitchen.ticket')} #{ticket.sale_id}</span>
-                  </div>
-                  <span className="text-xs font-medium uppercase tracking-wider text-slate-500">{ticket.status}</span>
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={filteredTickets}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as typeof filteredTickets;
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">
+                  {debouncedSearch
+                    ? (t('common.noDataFound') || 'No ticket matches the search.')
+                    : (t('kitchen.noTickets'))}
                 </div>
-                <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400 mb-4">
-                  <MdAccessTime />
-                  <span>{new Date(ticket.created_at).toLocaleTimeString()}</span>
-                </div>
-                {ticket.notes && <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{ticket.notes}</p>}
-                <div className="flex gap-2">
-                  {ticket.status === 'pending' && (
-                    <button onClick={() => updateStatus(ticket.id, 'preparing')} className="flex-1 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">{t('kitchen.startPreparing')}</button>
-                  )}
-                  {ticket.status === 'preparing' && (
-                    <button onClick={() => updateStatus(ticket.id, 'ready')} className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">{t('kitchen.markReady')}</button>
-                  )}
-                  {ticket.status === 'ready' && (
-                    <button onClick={() => updateStatus(ticket.id, 'delivered')} className="flex-1 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 text-sm flex items-center justify-center gap-1"><MdCheckCircle /> {t('kitchen.deliver')}</button>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                {items.map(ticket => (
+                  <motion.div
+                    key={ticket.id}
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    className={`rounded-xl border-2 p-4 ${statusColors[ticket.status] || 'border-slate-200 bg-white dark:bg-slate-800'}`}
+                  >
+                    <div className="flex items-center justify-between mb-3">
+                      <div className="flex items-center gap-2">
+                        <MdRestaurant className="text-slate-600 dark:text-slate-300" />
+                        <span className="font-bold text-slate-900 dark:text-white">{t('kitchen.ticket')} #{ticket.sale_id}</span>
+                      </div>
+                      <span className="text-xs font-medium uppercase tracking-wider text-slate-500">{ticket.status}</span>
+                    </div>
+                    <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400 mb-4">
+                      <MdAccessTime />
+                      <span>{new Date(ticket.created_at).toLocaleTimeString()}</span>
+                    </div>
+                    {ticket.notes && <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{ticket.notes}</p>}
+                    <div className="flex gap-2">
+                      {ticket.status === 'pending' && (
+                        <button onClick={() => updateStatus(ticket.id, 'preparing')} className="flex-1 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">{t('kitchen.startPreparing')}</button>
+                      )}
+                      {ticket.status === 'preparing' && (
+                        <button onClick={() => updateStatus(ticket.id, 'ready')} className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">{t('kitchen.markReady')}</button>
+                      )}
+                      {ticket.status === 'ready' && (
+                        <button onClick={() => updateStatus(ticket.id, 'delivered')} className="flex-1 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 text-sm flex items-center justify-center gap-1"><MdCheckCircle /> {t('kitchen.deliver')}</button>
+                      )}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
     </PageLayout>
   );

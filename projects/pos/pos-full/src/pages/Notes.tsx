@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { MdNoteAdd, MdEdit, MdDelete, MdDrafts, MdSave, MdRestore, MdArchive, MdClose, MdSearch } from 'react-icons/md';
 import { FaStickyNote, FaSave, FaPlus, FaTrash, FaUndo } from 'react-icons/fa';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import {
   useGetNotesQuery,
@@ -54,7 +55,7 @@ export default function Notes() {
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
 
   // ── RTK Query ──
-  const { data: allNotes, isLoading } = useGetNotesQuery({});
+  const { data: allNotes, isLoading, error } = useGetNotesQuery({});
   const [addNote] = useAddNoteMutation();
   const [updateNote] = useUpdateNoteMutation();
   const [deleteNote] = useDeleteNoteMutation();
@@ -218,129 +219,132 @@ export default function Notes() {
         </div>
       </div>
 
-      {/* ── Note Grid ── */}
-      {isLoading ? (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          {[1, 2, 3].map((i) => (
-            <div key={i} className="card--glass rounded-xl p-5 animate-pulse">
-              <div className="h-5 bg-slate-200 dark:bg-white/10 rounded w-2/3 mb-3" />
-              <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-full mb-2" />
-              <div className="h-4 bg-slate-200 dark:bg-white/10 rounded w-4/5 mb-4" />
-              <div className="h-3 bg-slate-200 dark:bg-white/10 rounded w-1/3" />
-            </div>
-          ))}
-        </div>
-      ) : filteredNotes.length === 0 ? (
-        <div className="text-center py-16">
-          <FaStickyNote className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
-          <p className="text-lg text-slate-500 dark:text-white/50 mb-1">
-            {showDrafts ? 'No drafts yet' : 'No saved notes yet'}
-          </p>
-          <p className="text-sm text-slate-400 dark:text-white/30 mb-4">
-            {showDrafts
-              ? 'Create a new note — it starts as a draft'
-              : 'Save drafts to store them permanently'}
-          </p>
-          <motion.button
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-            onClick={openNew}
-            className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-xl font-semibold text-sm"
-          >
-            <MdNoteAdd className="w-5 h-5" /> Write your first note
-          </motion.button>
-        </div>
-      ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-          <AnimatePresence>
-            {filteredNotes.map((note) => (
-              <motion.div
-                key={note.id}
-                layout
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                className={`card--glass rounded-xl p-5 border-l-4 transition-all hover:shadow-md ${
-                  note.status === 'draft'
-                    ? 'border-l-amber-400'
-                    : note.status === 'archived'
-                    ? 'border-l-slate-400 opacity-70'
-                    : 'border-l-green-400'
-                }`}
-              >
-                {/* Header */}
-                <div className="flex items-start justify-between mb-2">
-                  <div className="flex-1 min-w-0">
-                    <h3 className="font-semibold text-slate-900 dark:text-white truncate">
-                      {note.title || 'Untitled'}
-                    </h3>
-                    <div className="flex items-center gap-2 mt-1">
-                      <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium border ${STATUS_COLORS[note.status as NoteStatus] || STATUS_COLORS.saved}`}>
-                        {note.status}
-                      </span>
-                      {note.reference_type && (
-                        <span className="text-[10px] text-slate-400 dark:text-slate-500">
-                          {REF_TYPE_ICONS[note.reference_type as RefType] || '📝'} {note.reference_type}
-                          {note.reference_id ? ` #${note.reference_id}` : ''}
-                        </span>
+      {/* ── Note Grid — wrapped with FusionPage for fragment-rendering support ── */}
+      <FusionPage
+        standalone
+        data={filteredNotes}
+        isLoading={isLoading}
+        error={error}
+        skeletonVariant="card"
+      >
+        {(data, fallback) => {
+          const items = (data ?? []) as Note[];
+          if (items.length === 0) {
+            return (
+              <div className="text-center py-16">
+                <FaStickyNote className="w-16 h-16 text-slate-300 dark:text-slate-600 mx-auto mb-4" />
+                <p className="text-lg text-slate-500 dark:text-white/50 mb-1">
+                  {showDrafts ? 'No drafts yet' : 'No saved notes yet'}
+                </p>
+                <p className="text-sm text-slate-400 dark:text-white/30 mb-4">
+                  {showDrafts
+                    ? 'Create a new note — it starts as a draft'
+                    : 'Save drafts to store them permanently'}
+                </p>
+                <motion.button
+                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+                  onClick={openNew}
+                  className="inline-flex items-center gap-2 px-5 py-2.5 bg-amber-500 text-white rounded-xl font-semibold text-sm"
+                >
+                  <MdNoteAdd className="w-5 h-5" /> Write your first note
+                </motion.button>
+              </div>
+            );
+          }
+          return (
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <AnimatePresence>
+                {items.map((note) => (
+                  <motion.div
+                    key={note.id}
+                    layout
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.95 }}
+                    className={`card--glass rounded-xl p-5 border-l-4 transition-all hover:shadow-md ${
+                      note.status === 'draft'
+                        ? 'border-l-amber-400'
+                        : note.status === 'archived'
+                        ? 'border-l-slate-400 opacity-70'
+                        : 'border-l-green-400'
+                    }`}
+                  >
+                    {/* Header */}
+                    <div className="flex items-start justify-between mb-2">
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-semibold text-slate-900 dark:text-white truncate">
+                          {note.title || 'Untitled'}
+                        </h3>
+                        <div className="flex items-center gap-2 mt-1">
+                          <span className={`text-[10px] px-2 py-0.5 rounded-full font-medium border ${STATUS_COLORS[note.status as NoteStatus] || STATUS_COLORS.saved}`}>
+                            {note.status}
+                          </span>
+                          {note.reference_type && (
+                            <span className="text-[10px] text-slate-400 dark:text-slate-500">
+                              {REF_TYPE_ICONS[note.reference_type as RefType] || '📝'} {note.reference_type}
+                              {note.reference_id ? ` #${note.reference_id}` : ''}
+                            </span>
+                          )}
+                        </div>
+                      </div>
+                      <div className="flex gap-1 ml-2 shrink-0">
+                        {note.status === 'draft' && (
+                          <button
+                            onClick={() => handleSaveDraft(note)}
+                            className="text-green-500 hover:text-green-400 p-1.5 rounded-lg hover:bg-green-500/10"
+                            title="Save draft"
+                          >
+                            <FaSave className="w-3.5 h-3.5" />
+                          </button>
+                        )}
+                        <button
+                          onClick={() => openEdit(note)}
+                          className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10"
+                          title="Edit"
+                        >
+                          <MdEdit className="w-3.5 h-3.5" />
+                        </button>
+                        <button
+                          onClick={() => handleArchive(note)}
+                          className="text-slate-500 hover:text-slate-400 p-1.5 rounded-lg hover:bg-slate-500/10"
+                          title={note.status === 'archived' ? 'Restore' : 'Archive'}
+                        >
+                          {note.status === 'archived' ? <FaUndo className="w-3.5 h-3.5" /> : <MdArchive className="w-3.5 h-3.5" />}
+                        </button>
+                        <button
+                          onClick={() => setDeleteTarget(note)}
+                          className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10"
+                          title="Delete"
+                        >
+                          <FaTrash className="w-3.5 h-3.5" />
+                        </button>
+                      </div>
+                    </div>
+
+                    {/* Content preview */}
+                    <p className="text-sm text-slate-600 dark:text-gray-400 whitespace-pre-wrap line-clamp-4 mb-3">
+                      {note.content || '…'}
+                    </p>
+
+                    {/* Footer — date + restore button for drafts */}
+                    <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
+                      <span>{new Date(note.updated_at).toLocaleDateString()}</span>
+                      {note.status === 'draft' && (
+                        <button
+                          onClick={() => restoreDraft(note)}
+                          className="flex items-center gap-1 text-amber-500 hover:text-amber-400 font-medium"
+                        >
+                          <MdRestore className="w-3 h-3" /> Restore
+                        </button>
                       )}
                     </div>
-                  </div>
-                  <div className="flex gap-1 ml-2 shrink-0">
-                    {note.status === 'draft' && (
-                      <button
-                        onClick={() => handleSaveDraft(note)}
-                        className="text-green-500 hover:text-green-400 p-1.5 rounded-lg hover:bg-green-500/10"
-                        title="Save draft"
-                      >
-                        <FaSave className="w-3.5 h-3.5" />
-                      </button>
-                    )}
-                    <button
-                      onClick={() => openEdit(note)}
-                      className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10"
-                      title="Edit"
-                    >
-                      <MdEdit className="w-3.5 h-3.5" />
-                    </button>
-                    <button
-                      onClick={() => handleArchive(note)}
-                      className="text-slate-500 hover:text-slate-400 p-1.5 rounded-lg hover:bg-slate-500/10"
-                      title={note.status === 'archived' ? 'Restore' : 'Archive'}
-                    >
-                      {note.status === 'archived' ? <FaUndo className="w-3.5 h-3.5" /> : <MdArchive className="w-3.5 h-3.5" />}
-                    </button>
-                    <button
-                      onClick={() => setDeleteTarget(note)}
-                      className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10"
-                      title="Delete"
-                    >
-                      <FaTrash className="w-3.5 h-3.5" />
-                    </button>
-                  </div>
-                </div>
-
-                {/* Content preview */}
-                <p className="text-sm text-slate-600 dark:text-gray-400 whitespace-pre-wrap line-clamp-4 mb-3">
-                  {note.content || '…'}
-                </p>
-
-                {/* Footer — date + restore button for drafts */}
-                <div className="flex items-center justify-between text-[10px] text-slate-400 dark:text-slate-500">
-                  <span>{new Date(note.updated_at).toLocaleDateString()}</span>
-                  {note.status === 'draft' && (
-                    <button
-                      onClick={() => restoreDraft(note)}
-                      className="flex items-center gap-1 text-amber-500 hover:text-amber-400 font-medium"
-                    >
-                      <MdRestore className="w-3 h-3" /> Restore
-                    </button>
-                  )}
-                </div>
-              </motion.div>
-            ))}
-          </AnimatePresence>
-        </div>
-      )}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          );
+        }}
+      </FusionPage>
 
       {/* ── Editor Modal ── */}
       <Modal

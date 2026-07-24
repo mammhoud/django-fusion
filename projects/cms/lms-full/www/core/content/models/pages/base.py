@@ -9,7 +9,7 @@ from django.template.loader import render_to_string
 from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
-from django_fusion.site._context_mixins import WagtailPageMixin
+from django_fusion.site.interface._context_mixins import WagtailPageMixin
 from plugins.accounts.models.manage.service import Service
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
