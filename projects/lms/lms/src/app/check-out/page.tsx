@@ -33,7 +33,7 @@ export default function CheckoutPage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <Link href="/cart" className="inline-flex items-center gap-2 text-gray-500 hover:text-indigo-600 mb-8 transition-colors">
+      <Link href="/cart" className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-8 transition-colors">
         <HiArrowLeft className="w-4 h-4" /> Back to Cart
       </Link>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
@@ -54,7 +54,7 @@ export default function CheckoutPage() {
             ].map((method) => (
               <button key={method.value} type="button" onClick={() => setForm({...form, payment_method: method.value})}
                 className={`px-4 py-3 rounded-lg border-2 text-sm font-medium transition-all ${
-                  form.payment_method === method.value ? 'border-indigo-600 bg-indigo-50 text-indigo-700' : 'border-gray-200 text-gray-600 hover:border-gray-300'
+                  form.payment_method === method.value ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))]' : 'border-gray-200 text-gray-600 hover:border-gray-300'
                 }`}>{method.label}</button>
             ))}
           </div>
