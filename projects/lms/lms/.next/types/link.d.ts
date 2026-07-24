@@ -29,15 +29,17 @@ declare namespace __next_route_internal_types__ {
     S extends `${string}${SearchOrHash}` ? never : S
 
   type StaticRoutes = 
+    | `/`
     | `/about-us`
-    | `/blog-details`
     | `/blog`
+    | `/blog-details`
     | `/cart`
     | `/check-out`
     | `/contact`
     | `/courses`
     | `/events`
     | `/faq`
+    | `/instructor-dashboard`
     | `/instructor-dashboard/announcement`
     | `/instructor-dashboard/assignment`
     | `/instructor-dashboard/attempts`
@@ -45,7 +47,6 @@ declare namespace __next_route_internal_types__ {
     | `/instructor-dashboard/courses/new`
     | `/instructor-dashboard/enrolled-courses`
     | `/instructor-dashboard/history`
-    | `/instructor-dashboard`
     | `/instructor-dashboard/profile`
     | `/instructor-dashboard/quiz`
     | `/instructor-dashboard/review`
@@ -54,19 +55,19 @@ declare namespace __next_route_internal_types__ {
     | `/instructors`
     | `/lesson`
     | `/login`
-    | `/`
     | `/privacy`
     | `/registration`
     | `/shop`
+    | `/student-dashboard`
     | `/student-dashboard/attempts`
     | `/student-dashboard/enrolled-courses`
     | `/student-dashboard/history`
-    | `/student-dashboard`
     | `/student-dashboard/profile`
     | `/student-dashboard/quiz`
   type DynamicRoutes<T extends string = string> = 
     | `/course-details/${CatchAllSlug<T>}`
     | `/events/${SafeSlug<T>}`
+    | `/instructor-dashboard/courses/${SafeSlug<T>}/edit`
     | `/instructor-details/${CatchAllSlug<T>}`
     | `/shop-details/${CatchAllSlug<T>}`
 
