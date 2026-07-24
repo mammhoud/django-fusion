@@ -28,12 +28,12 @@ export default function EventsPage() {
             {data?.results.map((event, idx) => (
               <motion.div key={event.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.03 }}
                 className="card overflow-hidden">
-                <div className="bg-gradient-to-br from-indigo-500 to-purple-600 h-32 flex items-center justify-center">
+                <div className="card-gradient h-32 flex items-center justify-center">
                   <HiCalendar className="w-12 h-12 text-white/60" />
                 </div>
                 <div className="p-5">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className={`badge text-xs ${event.is_free ? 'bg-green-100 text-green-700' : 'bg-indigo-100 text-indigo-700'}`}>
+                    <span className={`badge text-xs ${event.is_free ? 'bg-green-100 text-green-700' : 'bg-[rgb(var(--ctc-primary))]/10 text-[rgb(var(--ctc-primary-dark))]'}`}>
                       {event.is_free ? 'Free' : `$${event.price}`}
                     </span>
                     <span className="badge bg-gray-100 text-gray-600 text-xs">{event.status}</span>
@@ -45,7 +45,7 @@ export default function EventsPage() {
                     <p className="flex items-center gap-1"><HiLocationMarker className="w-3 h-3" /> {event.is_online ? 'Online' : event.location}</p>
                     <p className="flex items-center gap-1"><HiUserGroup className="w-3 h-3" /> {event.registered_count}/{event.capacity} registered</p>
                   </div>
-                  <Link href={`/events/${event.id}`} className="mt-4 text-indigo-600 text-sm font-medium flex items-center gap-1 hover:text-indigo-700">
+                  <Link href={`/events/${event.id}`} className="mt-4 text-[rgb(var(--ctc-primary))] text-sm font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
                     View Details <HiArrowRight className="w-3 h-3" />
                   </Link>
                 </div>
@@ -57,7 +57,7 @@ export default function EventsPage() {
             <div className="flex justify-center gap-2 mt-10">
               {Array.from({ length: Math.ceil(data.count / 10) }, (_, i) => i + 1).map(p => (
                 <button key={p} onClick={() => setPage(p)}
-                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
+                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
               ))}
             </div>
           )}

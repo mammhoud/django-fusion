@@ -1,5 +1,4 @@
-"""
-Instructors API — list, detail, dashboard, courses, reviews (bolt-pattern adapter).
+"""Instructors API — list, detail, dashboard, courses, reviews (bolt-pattern adapter).
 
 Matches the RTK Query slice at: store/api/endpoints/instructors.ts
 """
@@ -63,10 +62,9 @@ def _serialize_instructor(user: User) -> dict:
 
 # ── Instructor List ──
 
-
 @bolt_view
 def instructor_list(request):
-    """GET /api/instructors/ — List all instructors."""
+    """GET /apis/instructors/ — List all instructors."""
     instructors = User.objects.filter(
         groups__name="Instructors",
         is_active=True,
@@ -82,10 +80,9 @@ def instructor_list(request):
 
 # ── Instructor Detail ──
 
-
 @bolt_view
 def instructor_detail(request, pk):
-    """GET /api/instructors/<pk>/ — Get instructor profile details."""
+    """GET /apis/instructors/<pk>/ — Get instructor profile details."""
     user = get_object_or_404(User, pk=pk, is_active=True)
     data = _serialize_instructor(user)
 
@@ -94,7 +91,6 @@ def instructor_detail(request, pk):
 
     try:
         from plugins.lms.models import Specialization
-
         specializations = (
             Specialization.objects.filter(courses__instructor=user, is_active=True)
             .distinct()
@@ -109,17 +105,10 @@ def instructor_detail(request, pk):
     return {"status": "success", "data": data}
 
 
-# ── Instructor Dashboard ──
+# ── Instructor Dashboard (shared builder) ──
 
-
-@bolt_view
-@login_required
-def instructor_dashboard(request, pk):
-    """GET /api/instructors/<pk>/dashboard/ — Get instructor analytics."""
-    if str(pk) != str(request.user.id) and not request.user.is_staff:
-        return {"status": "error", "message": "Permission denied"}, 403
-
-    user = get_object_or_404(User, pk=pk)
+def _build_instructor_dashboard(user: User) -> dict:
+    """Shared dashboard data builder for an instructor user."""
     courses = Course.objects.filter(instructor=user)
     published_courses = courses.filter(is_published=True)
     enrollments = Enrollment.objects.filter(course__instructor=user)
@@ -176,13 +165,39 @@ def instructor_dashboard(request, pk):
     }
 
 
-# ── Instructor Courses ──
+# ── Instructor Dashboard (me — auto-detects current user) ──
 
+@bolt_view
+@login_required
+def instructor_dashboard_me(request):
+    """GET /apis/instructors/me/dashboard/ — Get dashboard for current instructor.
+
+    Auto-detects the instructor from ``request.user`` — no pk required.
+    """
+    if not request.user.groups.filter(name="Instructors").exists():
+        return {"status": "error", "message": "User is not an instructor"}, 403
+    return _build_instructor_dashboard(request.user)
+
+
+# ── Instructor Dashboard (by pk) ──
+
+@bolt_view
+@login_required
+def instructor_dashboard(request, pk):
+    """GET /apis/instructors/<pk>/dashboard/ — Get instructor analytics."""
+    if str(pk) != str(request.user.id) and not request.user.is_staff:
+        return {"status": "error", "message": "Permission denied"}, 403
+
+    user = get_object_or_404(User, pk=pk)
+    return _build_instructor_dashboard(user)
+
+
+# ── Instructor Courses ──
 
 @bolt_view
 @login_required
 def instructor_courses(request, pk):
-    """GET /api/instructors/<pk>/courses/ — List courses by instructor."""
+    """GET /apis/instructors/<pk>/courses/ — List courses by instructor."""
     instructor = get_object_or_404(User, pk=pk)
     courses = Course.objects.filter(instructor=instructor).order_by("-created_at")
     return {
@@ -195,15 +210,12 @@ def instructor_courses(request, pk):
 
 # ── Instructor Reviews ──
 
-
 @bolt_view
 @login_required
 def instructor_reviews(request, pk):
-    """GET /api/instructors/<pk>/reviews/ — List reviews for instructor's courses."""
+    """GET /apis/instructors/<pk>/reviews/ — List reviews for instructor's courses."""
     instructor = get_object_or_404(User, pk=pk)
-    reviews = Review.objects.filter(course__instructor=instructor).order_by(
-        "-created_at"
-    )
+    reviews = Review.objects.filter(course__instructor=instructor).order_by("-created_at")
     items, pagination = paginate_queryset(reviews, request)
 
     return {
@@ -228,11 +240,10 @@ def instructor_reviews(request, pk):
 
 # ── Update Instructor Profile ──
 
-
 @bolt_view
 @login_required
 def instructor_profile_update(request, pk):
-    """PATCH /api/instructors/<pk>/ — Update instructor profile."""
+    """PATCH /apis/instructors/<pk>/ — Update instructor profile."""
     if str(pk) != str(request.user.id) and not request.user.is_staff:
         return {"status": "error", "message": "Permission denied"}, 403
 
@@ -252,11 +263,10 @@ def instructor_profile_update(request, pk):
 
 # ── Delete Course ──
 
-
 @bolt_view
 @login_required
 def instructor_delete_course(request, pk):
-    """DELETE /api/instructors/courses/<pk>/ — Delete a course (instructor only)."""
+    """DELETE /apis/instructors/courses/<pk>/ — Delete a course (instructor only)."""
     course = get_object_or_404(Course, pk=pk, instructor=request.user)
     course.delete()
     return {"status": "success", "message": "Course deleted"}

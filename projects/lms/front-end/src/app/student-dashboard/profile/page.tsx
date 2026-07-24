@@ -63,7 +63,7 @@ export default function StudentProfilePage() {
   if (isLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+        <div className="w-12 h-12 border-4 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
@@ -74,7 +74,7 @@ export default function StudentProfilePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/student-dashboard" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 mb-2 transition-colors">
+            <Link href="/student-dashboard" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-2 transition-colors">
               <HiArrowLeft className="w-4 h-4" />
               Back to Dashboard
             </Link>
@@ -93,18 +93,18 @@ export default function StudentProfilePage() {
           <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
             <div className="flex items-center gap-6">
               <div className="relative group">
-                <div className="w-24 h-24 bg-indigo-100 rounded-full flex items-center justify-center">
+                <div className="w-24 h-24 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center">
                   {profile?.avatar ? (
                     <img src={profile.avatar} alt="" className="w-full h-full rounded-full object-cover" />
                   ) : (
-                    <span className="text-3xl font-bold text-indigo-500">
+                    <span className="text-3xl font-bold text-[rgb(var(--ctc-primary))]">
                       {(form.first_name?.[0] || form.username?.[0] || '?').toUpperCase()}
                     </span>
                   )}
                 </div>
                 <button
                   type="button"
-                  className="absolute bottom-0 right-0 w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center hover:bg-indigo-700 transition-colors shadow-lg"
+                  className="absolute bottom-0 right-0 w-8 h-8 bg-[rgb(var(--ctc-primary))] text-white rounded-full flex items-center justify-center hover:bg-[rgb(var(--ctc-primary-dark))] transition-colors shadow-lg"
                 >
                   <HiCamera className="w-4 h-4" />
                 </button>
@@ -123,44 +123,44 @@ export default function StudentProfilePage() {
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">First Name</label>
                 <input type="text" value={form.first_name} onChange={(e) => setForm({ ...form, first_name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Last Name</label>
                 <input type="text" value={form.last_name} onChange={(e) => setForm({ ...form, last_name: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Username</label>
                 <input type="text" value={form.username} onChange={(e) => setForm({ ...form, username: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
                 <input type="email" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
                 <input type="tel" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Location</label>
                 <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none" />
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none" />
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Education</label>
                 <input type="text" value={form.education} onChange={(e) => setForm({ ...form, education: e.target.value })}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                   placeholder="e.g., B.Sc. Computer Science" />
               </div>
               <div className="md:col-span-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">Bio</label>
                 <textarea value={form.bio} onChange={(e) => setForm({ ...form, bio: e.target.value })}
                   rows={3}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none resize-none"
                   placeholder="Tell us about yourself..." />
               </div>
             </div>

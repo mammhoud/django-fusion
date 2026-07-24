@@ -91,7 +91,7 @@ export default function EditCoursePage() {
         {/* Header */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <Link href="/instructor-dashboard/courses" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-indigo-600 mb-2 transition-colors">
+            <Link href="/instructor-dashboard/courses" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-2 transition-colors">
               <HiArrowLeft className="w-4 h-4" />
               Back to Courses
             </Link>
@@ -118,7 +118,7 @@ export default function EditCoursePage() {
                   type="text"
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                   placeholder="e.g., Advanced React Development"
                 />
               </div>
@@ -127,7 +127,7 @@ export default function EditCoursePage() {
                 <select
                   value={category}
                   onChange={(e) => setCategory(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                 >
                   <option value="">Select category</option>
                   <option value="Development">Development</option>
@@ -141,7 +141,7 @@ export default function EditCoursePage() {
                 <select
                   value={level}
                   onChange={(e) => setLevel(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                 >
                   <option value="">Select level</option>
                   <option value="Beginner">Beginner</option>
@@ -155,7 +155,7 @@ export default function EditCoursePage() {
                   type="number"
                   value={price}
                   onChange={(e) => setPrice(e.target.value)}
-                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                  className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                   placeholder="0.00"
                   min="0"
                   step="0.01"
@@ -168,7 +168,7 @@ export default function EditCoursePage() {
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
                 rows={4}
-                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none resize-none"
+                className="w-full px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none resize-none"
                 placeholder="Describe your course..."
               />
             </div>
@@ -214,12 +214,12 @@ export default function EditCoursePage() {
                         updated[modIdx] = { ...updated[modIdx], title: e.target.value };
                         setModules(updated);
                       }}
-                      className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                      className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                       placeholder="Module title"
                     />
                     <button
                       onClick={() => addLesson(mod.id)}
-                      className="text-xs text-indigo-600 hover:text-indigo-700 font-medium"
+                      className="text-xs text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] font-medium"
                     >
                       + Add Lesson
                     </button>
@@ -247,7 +247,7 @@ export default function EditCoursePage() {
                           };
                           setModules(updated);
                         }}
-                        className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                        className="flex-1 px-3 py-1.5 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                         placeholder="Lesson title"
                       />
                       <input
@@ -263,10 +263,10 @@ export default function EditCoursePage() {
                           };
                           setModules(updated);
                         }}
-                        className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+                        className="w-20 px-2 py-1.5 border border-gray-200 rounded-lg text-sm text-center focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
                         placeholder="0:00"
                       />
-                      <button className="p-1 text-gray-400 hover:text-indigo-600 transition-colors">
+                      <button className="p-1 text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors">
                         <HiPhotograph className="w-4 h-4" />
                       </button>
                       <button

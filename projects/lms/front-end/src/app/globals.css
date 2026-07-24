@@ -159,10 +159,10 @@
     @apply card p-6 text-center;
   }
 
-  .team-avatar {
-    @apply w-24 h-24 rounded-full mx-auto mb-4 object-cover
+  .avatar-sm {
+    @apply w-20 h-20 rounded-full mx-auto mb-4
            bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))]
-           flex items-center justify-center text-white text-2xl font-bold;
+           flex items-center justify-center text-white text-xl font-bold;
   }
 
   /* ── Contact Methods ── */
@@ -183,6 +183,35 @@
   /* ── Gradient Sections ── */
   .gradient-cta {
     background: linear-gradient(135deg, rgb(var(--ctc-primary)), rgb(var(--ctc-accent)));
+  }
+
+  .section-gradient {
+    @apply card-gradient rounded-2xl p-6;
+  }
+
+  /* ── Gradient Cards (course/blog/event thumbnails) ── */
+  .card-gradient {
+    @apply bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-primary-dark))]
+           flex items-center justify-center text-white;
+  }
+
+  /* ── Progress Bars ── */
+  .progress-track {
+    @apply w-full bg-gray-200 rounded-full h-2;
+  }
+
+  .progress-fill {
+    @apply bg-[rgb(var(--ctc-primary))] h-2 rounded-full transition-all duration-500;
+  }
+
+  /* ── Course Thumbnail (standard 40px tall) ── */
+  .course-thumb {
+    @apply card-gradient h-40 rounded-t-lg;
+  }
+
+  /* ── Stat Icon ── */
+  .icon-stat {
+    @apply w-12 h-12 rounded-lg flex items-center justify-center mb-3;
   }
 
   /* ── Timeline (for About page) ── */

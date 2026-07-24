@@ -25,8 +25,8 @@ export default function InstructorAnnouncementPage() {
           <motion.div key={a.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
             className="card p-5">
             <div className="flex items-start gap-4">
-              <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center flex-shrink-0">
-                <HiSpeakerphone className="w-5 h-5 text-indigo-600" />
+              <div className="w-10 h-10 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                <HiSpeakerphone className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
               </div>
               <div className="flex-1">
                 <div className="flex items-center justify-between">

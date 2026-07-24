@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import type { Route } from 'next';
 import { motion } from 'framer-motion';
-import { HiBeaker, HiUserGroup, HiClipboardCheck, HiGlobe, HiChevronRight } from 'react-icons/hi2';
+import { HiBeaker, HiUserGroup, HiClipboard, HiGlobeAlt, HiChevronRight, HiBookOpen, HiStar } from 'react-icons/hi2';
 import { useGetFeaturedCoursesQuery, useGetCoursesQuery } from '@/store/api/endpoints/courses';
 import { useGetInstructorsQuery } from '@/store/api/endpoints/instructors';
 import { FusionPage } from '@/components/FusionPage';
@@ -29,9 +29,9 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
   const cta = page?.blocks.find((block) => block.type === 'cta');
 
   const stats = [
-    { icon: HiClipboardCheck, label: 'Clinical Trials', value: pageStats[0]?.value || '200+' },
+    { icon: HiClipboard, label: 'Clinical Trials', value: pageStats[0]?.value || '200+' },
     { icon: HiUserGroup, label: 'Patients Enrolled', value: pageStats[1]?.value || '15K+' },
-    { icon: HiGlobe, label: 'Research Sites', value: pageStats[2]?.value || '50+' },
+    { icon: HiGlobeAlt, label: 'Research Sites', value: pageStats[2]?.value || '50+' },
     { icon: HiBeaker, label: 'Years Experience', value: pageStats[3]?.value || '25+' },
   ];
 
@@ -93,7 +93,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
               <h2 className="text-3xl font-bold text-gray-900">{featuredHeader?.heading || 'Featured Courses'}</h2>
               <p className="text-gray-500 mt-2">{featuredHeader?.intro || 'Most popular courses picked for you'}</p>
             </div>
-            <Link href="/services" className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
+            <Link href="/courses"  className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
               View All <HiChevronRight className="w-4 h-4" />
             </Link>
           </div>
@@ -121,7 +121,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
                   transition={{ duration: 0.4, delay: idx * 0.05 }}
                 >
                   <Link href={`/course-details/${course.id}`} className="card block overflow-hidden group">
-                    <div className="bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-primary-dark))] h-40 flex items-center justify-center">
+                    <div className="card-gradient h-40 flex items-center justify-center">
                       <HiBookOpen className="w-12 h-12 text-white/60" />
                     </div>
                     <div className="p-5">
@@ -189,7 +189,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
               <h2 className="text-3xl font-bold text-gray-900">Research Team</h2>
               <p className="text-gray-500 mt-2">Meet our clinical research professionals</p>
             </div>
-            <Link href="/team" className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
+            <Link href={"/instructors" as any} className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
               View All <HiChevronRight className="w-4 h-4" />
             </Link>
           </div>

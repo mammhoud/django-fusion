@@ -32,7 +32,7 @@ export default function StudentManagePage() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-8">
         {/* Header */}
         <div className="mb-8">
-          <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-indigo-600 mb-1 block transition-colors">
+          <Link href="/instructor-dashboard" className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-1 block transition-colors">
             ← Back to Dashboard
           </Link>
           <h1 className="text-2xl font-bold text-gray-900">Student Management</h1>
@@ -42,7 +42,7 @@ export default function StudentManagePage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <HiUserGroup className="w-5 h-5 text-indigo-500 mb-1" />
+            <HiUserGroup className="w-5 h-5 text-[rgb(var(--ctc-primary))] mb-1" />
             <div className="text-2xl font-bold text-gray-900">{mockStudents.length}</div>
             <div className="text-xs text-gray-500">Total Students</div>
           </div>
@@ -67,7 +67,7 @@ export default function StudentManagePage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search students by name, email, or course..."
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none text-sm"
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none text-sm"
             />
           </div>
           {['all', 'Active', 'At Risk', 'Completed'].map((s) => (
@@ -75,7 +75,7 @@ export default function StudentManagePage() {
               key={s}
               onClick={() => setStatusFilter(s as any)}
               className={`px-4 py-2 text-sm rounded-lg transition-all font-medium whitespace-nowrap ${
-                statusFilter === s ? 'bg-indigo-600 text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
+                statusFilter === s ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
               {s === 'all' ? 'All' : s}
@@ -113,7 +113,7 @@ export default function StudentManagePage() {
                     <td className="px-6 py-4">
                       <div className="flex items-center gap-3">
                         <div className="w-24 bg-gray-100 rounded-full h-2">
-                          <div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${student.progress}%` }} />
+                          <div className="progress-fill" style={{ width: `${student.progress}%` }} />
                         </div>
                         <span className="text-sm text-gray-600">{student.progress}%</span>
                       </div>
@@ -128,7 +128,7 @@ export default function StudentManagePage() {
                     <td className="px-6 py-4 text-sm text-gray-500">{student.lastActive}</td>
                     <td className="px-6 py-4">
                       <div className="flex items-center justify-end gap-1">
-                        <button className="p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-lg transition-colors">
+                        <button className="p-1.5 text-gray-400 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors">
                           <HiMail className="w-4 h-4" />
                         </button>
                         <button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors">

@@ -83,8 +83,8 @@ export default function QuizPage() {
       {quizState === 'not_started' && (
         <div className="max-w-2xl mx-auto px-4 py-16">
           <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
-            <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <HiClock className="w-8 h-8 text-indigo-600" />
+            <div className="w-16 h-16 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+              <HiClock className="w-8 h-8 text-[rgb(var(--ctc-primary))]" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900 mb-2">{mockQuiz.title}</h1>
             <p className="text-gray-500 mb-2">Course: {mockQuiz.course}</p>
@@ -148,7 +148,7 @@ export default function QuizPage() {
                       onClick={() => setCurrentQuestion(i)}
                       className={`w-9 h-9 rounded-lg text-xs font-medium transition-all ${
                         i === currentQuestion
-                          ? 'bg-indigo-600 text-white'
+                          ? 'bg-[rgb(var(--ctc-primary))] text-white'
                           : answers[i] !== undefined
                           ? 'bg-green-100 text-green-700'
                           : flaggedQuestions.includes(i)
@@ -184,7 +184,7 @@ export default function QuizPage() {
                       onClick={() => handleAnswer(idx)}
                       className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                         answers[currentQuestion] === idx
-                          ? 'border-indigo-600 bg-indigo-50 text-indigo-700'
+                          ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))]'
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700'
                       }`}
                     >

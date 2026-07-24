@@ -70,7 +70,7 @@ export default function CoursesPage() {
                 transition={{ duration: 0.3, delay: idx * 0.03 }}
               >
                 <Link href={`/course-details/${course.id}`} className="card block overflow-hidden group h-full">
-                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 h-40 flex items-center justify-center">
+                  <div className="card-gradient h-40 flex items-center justify-center">
                     <HiBookOpen className="w-12 h-12 text-white/60" />
                   </div>
                   <div className="p-5">
@@ -78,13 +78,13 @@ export default function CoursesPage() {
                       <span className="badge-primary text-xs">{course.category_name}</span>
                       <span className="badge bg-gray-100 text-gray-600 text-xs">{course.level}</span>
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-indigo-600 transition-colors line-clamp-2">
+                    <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-2">
                       {course.title}
                     </h3>
                     <p className="text-sm text-gray-500 mb-3 line-clamp-2">{course.short_description}</p>
                     <div className="flex items-center justify-between text-sm">
                       <span className="text-gray-500">{course.instructor_name}</span>
-                      <span className="font-bold text-indigo-600">${course.discounted_price || course.price}</span>
+                      <span className="font-bold text-[rgb(var(--ctc-primary))]">${course.discounted_price || course.price}</span>
                     </div>
                     <div className="flex items-center gap-3 mt-3 text-sm text-gray-500">
                       <span>{course.duration}</span>
@@ -108,7 +108,7 @@ export default function CoursesPage() {
                   key={p}
                   onClick={() => setPage(p)}
                   className={`w-10 h-10 rounded-lg font-medium transition-colors ${
-                    p === page ? 'bg-indigo-600 text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
+                    p === page ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
                   }`}
                 >
                   {p}

@@ -18,19 +18,19 @@ export default function StudentEnrolledCoursesPage() {
         {courses.map((c, idx) => (
           <motion.div key={c.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
             className="card p-5 flex items-center gap-5">
-            <div className="w-16 h-16 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0">
+            <div className="w-16 h-16 card-gradient rounded-xl flex items-center justify-center flex-shrink-0">
               <HiBookOpen className="w-8 h-8 text-white/60" />
             </div>
             <div className="flex-1 min-w-0">
-              <Link href={`/course-details/${c.id}`} className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors">{c.title}</Link>
+              <Link href={`/course-details/${c.id}`} className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors">{c.title}</Link>
               <p className="text-sm text-gray-500">{c.instructor}</p>
               <div className="mt-2">
                 <div className="flex items-center justify-between text-sm mb-1">
                   <span className="text-gray-500">{c.completed}/{c.lessons} lessons</span>
                   <span className="font-medium text-gray-700">{c.progress}%</span>
                 </div>
-                <div className="w-full bg-gray-200 rounded-full h-2">
-                  <div className="bg-indigo-600 h-2 rounded-full transition-all" style={{ width: `${c.progress}%` }} />
+                <div className="progress-track">
+                  <div className="progress-fill" style={{ width: `${c.progress}%` }} />
                 </div>
               </div>
             </div>
