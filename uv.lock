@@ -980,9 +980,12 @@ version = "0.2.0"
 source = { editable = "libs/django-fusion" }
 dependencies = [
     { name = "attrs" },
+    { name = "colorama" },
     { name = "django", version = "5.2.16", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
     { name = "django", version = "6.0.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
     { name = "pluggy" },
+    { name = "pydantic" },
+    { name = "structlog" },
     { name = "wagtail" },
 ]
 
@@ -990,16 +993,19 @@ dependencies = [
 requires-dist = [
     { name = "attrs", specifier = ">=26.1.0" },
     { name = "build", marker = "extra == 'dev'" },
+    { name = "colorama", specifier = ">=0.4.6" },
     { name = "django", specifier = ">=4.2" },
     { name = "hypothesis", marker = "extra == 'dev'" },
     { name = "hypothesis", marker = "extra == 'test'" },
     { name = "pluggy", specifier = ">=1.6.0" },
+    { name = "pydantic", specifier = ">=2.0" },
     { name = "pytest", marker = "extra == 'dev'" },
     { name = "pytest", marker = "extra == 'test'" },
     { name = "pytest-cov", marker = "extra == 'dev'" },
     { name = "pytest-cov", marker = "extra == 'test'" },
     { name = "pytest-django", marker = "extra == 'dev'" },
     { name = "pytest-django", marker = "extra == 'test'" },
+    { name = "structlog", specifier = ">=24.1.0" },
     { name = "twine", marker = "extra == 'dev'" },
     { name = "wagtail" },
 ]

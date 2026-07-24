@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { MdInventory, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { FaBoxes, FaHistory, FaExclamationTriangle, FaPlus, FaSave } from 'react-icons/fa';
+import { FusionPage } from '../components/FusionPage';
 import {
   useGetIngredientsQuery,
   useAddIngredientMutation,
@@ -388,19 +389,25 @@ export default function Inventory() {
               </div>
             </div>
 
-            {/* Ingredient list */}
-            {ingredients.length > 0 && filteredIngredients.length === 0 ? (
-              <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
-                <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
-                <button
-                  onClick={() => setStockSearch('')}
-                  className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
-                >
-                  {t('common.clear')}
-                </button>
-              </div>
-            ) : (
+            {/* Ingredient list — wrapped with FusionPage for fragment-rendering support */}
+            <FusionPage standalone data={ingredients} skeletonVariant="card">
+              {(data, fallback) => {
+                const ingList = (data ?? []) as Ingredient[];
+                if (ingList.length > 0 && filteredIngredients.length === 0) {
+                  return (
+                    <div className="flex flex-col items-center justify-center text-center py-12">
+                      <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                      <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
+                      <button
+                        onClick={() => setStockSearch('')}
+                        className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
+                      >
+                        {t('common.clear')}
+                      </button>
+                    </div>
+                  );
+                }
+                return (
               <div className="card--glass rounded-xl overflow-hidden">
                 {/* Header */}
                 <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-slate-300 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm">
@@ -467,13 +474,14 @@ export default function Inventory() {
                         )}
                       </div>
                     </motion.div>
-                  );
-                })}
-                {ingredients.length === 0 && (
+                  );                    })}
+                {ingList.length === 0 && (
                   <div className="p-8 text-center text-slate-600 dark:text-white/60">{t('inventory.noIngredients')}</div>
                 )}
               </div>
-            )}
+                );
+              }}
+            </FusionPage>
           </div>
         )}
 

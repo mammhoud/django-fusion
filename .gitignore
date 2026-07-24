@@ -72,3 +72,4 @@ ctc-research
 
 # Node modules (websites/)
 websites/next-lms/node_modules/
+.next

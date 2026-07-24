@@ -7,7 +7,7 @@ See :class:`django_fusion.core.models.BaseDeviceToken` for full documentation
 from __future__ import annotations
 
 from django.db.models import Index
-from django_fusion.core.models import BaseDeviceToken
+from django_fusion.models import BaseDeviceToken
 
 __all__ = ["DeviceToken"]
 
@@ -15,8 +15,8 @@ __all__ = ["DeviceToken"]
 class DeviceToken(BaseDeviceToken):
     """POS Full edition device token — inherits all behaviour from BaseDeviceToken.
 
-    Only defines ``Meta`` (app_label, db_table, indexes).  Everything
-    else — fields, auth methods, sync cascade — comes from the base.
+    Keeps only sidecar-specific indexes.  ``token_hash`` is already
+    ``unique=True`` on the base model, so no extra index is needed.
     """
 
     class Meta(BaseDeviceToken.Meta):
@@ -24,9 +24,8 @@ class DeviceToken(BaseDeviceToken):
         app_label = "pos_full"
         db_table = "cloud_device_tokens"
         indexes = [
-            Index(fields=["token_hash"]),
             Index(fields=["device_id", "is_active"]),
-            Index(fields=["role"]),
+            Index(fields=["node_id_link", "is_active"]),
             Index(fields=["expires_at"]),
             Index(fields=["sync_status"]),
             Index(fields=["app_type", "sync_status"]),

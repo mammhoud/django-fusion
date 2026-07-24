@@ -9,15 +9,47 @@ Object.defineProperty(window, 'matchMedia', {
     matches: false,
     media: query,
     onchange: null,
-    addListener: vi.fn(), // deprecated
-    removeListener: vi.fn(), // deprecated
+    addListener: vi.fn(),
+    removeListener: vi.fn(),
     addEventListener: vi.fn(),
     removeEventListener: vi.fn(),
     dispatchEvent: vi.fn(),
   })),
 });
 
+// ── Mock sessionStorage (needed by Fusion components) ─────────────
+const store: Record<string, string> = {};
 
+Object.defineProperty(globalThis, 'sessionStorage', {
+  value: {
+    getItem: vi.fn((key: string) => store[key] ?? null),
+    setItem: vi.fn((key: string, value: string) => {
+      store[key] = value;
+    }),
+    removeItem: vi.fn((key: string) => {
+      delete store[key];
+    }),
+    clear: vi.fn(() => {
+      Object.keys(store).forEach((k) => delete store[k]);
+    }),
+    get length() {
+      return Object.keys(store).length;
+    },
+    key: vi.fn((index: number) => Object.keys(store)[index] ?? null),
+  } as Storage,
+  writable: true,
+  configurable: true,
+});
+
+// ── Mock fetch (global) — needed by FusionProxy ──────────────────
+globalThis.fetch = vi.fn() as unknown as typeof fetch;
+
+// ── Cleanup between tests ────────────────────────────────────────
+beforeEach(() => {
+  vi.clearAllMocks();
+  Object.keys(store).forEach((k) => delete store[k]);
+  _pluginStoreData.clear();
+});
 
 // Mock the Tauri `invoke` function so all tests can call it.
 // The mock implementation delegates to the configurable mock from mocks/tauri.ts
@@ -26,4 +58,18 @@ vi.mock('@tauri-apps/api/core', () => ({
     const handler = getMockInvokeHandler(cmd);
     return handler(cmd, args);
   }),
+}));
+
+// Mock @tauri-apps/plugin-store (optional dependency in fusion-store)
+// Uses a real Map so get() returns previously set values.
+const _pluginStoreData = new Map<string, unknown>();
+vi.mock('@tauri-apps/plugin-store', () => ({
+  Store: {
+    load: vi.fn().mockResolvedValue({
+      get: async (key: string) => _pluginStoreData.get(key) ?? null,
+      set: async (key: string, value: unknown) => { _pluginStoreData.set(key, value); },
+      save: async () => {},
+      delete: async (key: string) => { _pluginStoreData.delete(key); },
+    }),
+  },
 }));

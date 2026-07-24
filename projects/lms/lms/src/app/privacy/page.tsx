@@ -1,15 +1,27 @@
 'use client';
 
 import Link from 'next/link';
-import { useGetPageQuery } from '@/store/api/endpoints/pages';
+import { FusionPage } from '@/components/FusionPage';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
+import type { CmsPage } from '@/store/api/endpoints/pages';
 
-export default function PrivacyPage() {
-  const { data: page, isLoading, error } = useGetPageQuery('privacy');
+function PrivacyContent({ page, isLoading, error }: {
+  page?: CmsPage;
+  isLoading: boolean;
+  error?: any;
+}) {
+  if (isLoading) {
+    return (
+      <div className="max-w-3xl mx-auto px-4 py-16">
+        <LoadingSkeleton variant="detail" />
+      </div>
+    );
+  }
 
-  if (isLoading) return <div className="max-w-3xl mx-auto px-4 py-16"><LoadingSkeleton variant="detail" /></div>;
-  if (error || !page) return <ErrorState message="Unable to load privacy content." />;
+  if (error || !page) {
+    return <ErrorState message="Unable to load privacy content." />;
+  }
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -29,5 +41,15 @@ export default function PrivacyPage() {
         <div className="mt-8 text-center"><Link href="/" className="text-indigo-600 hover:text-indigo-700 font-medium">Back to Home</Link></div>
       </div>
     </div>
+  );
+}
+
+export default function PrivacyPage() {
+  return (
+    <FusionPage slug="privacy">
+      {(page, { isLoading, error }) => (
+        <PrivacyContent page={page} isLoading={isLoading} error={error} />
+      )}
+    </FusionPage>
   );
 }
