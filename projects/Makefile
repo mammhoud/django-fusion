@@ -27,6 +27,14 @@ else ifeq ($(WEBSITE),ctc-research.com)
   SITE := ctc-research
   TEST_WEBSITE := ctc
   COMPOSE_FILE ?= docker-compose.yml
+else ifeq ($(WEBSITE),cms-full)
+  SITE := cms-full
+  TEST_WEBSITE := cms-full
+  COMPOSE_FILE ?= docker-compose.yml
+else ifeq ($(WEBSITE),cmsfull)
+  SITE := cms-full
+  TEST_WEBSITE := cms-full
+  COMPOSE_FILE ?= docker-compose.yml
 else ifeq ($(WEBSITE),structa)
   SITE := lms
   TEST_WEBSITE := structa
