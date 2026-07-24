@@ -1,13 +1,11 @@
-"""Static public page content API for the LMS Next.js frontend.
+"""Page content API — Wagtail CMS-first with STATIC_PAGES fallback.
 
-The response shape intentionally mirrors Wagtail page concepts: top-level SEO
-metadata plus ordered content blocks that can represent headings, rich text,
-CTAs, media, FAQ groups, stats, and contact methods. When matching Wagtail page
-models are introduced, this module can swap `STATIC_PAGES` for model-backed
-serializers without changing the frontend contract.
+The response shape mirrors Wagtail page concepts: SEO metadata plus
+ordered content blocks.  When Wagtail Page objects exist in the database
+they take priority; otherwise the legacy STATIC_PAGES dict is the fallback.
 
-Page data lives in ``plugins.pages.content`` — import from there rather than
-redefining ``STATIC_PAGES`` here.
+Run ``manage.py seed_pages_from_static`` to populate Wagtail from the
+static dict and transition fully to CMS-managed content.
 """
 
 import logging
@@ -15,81 +13,67 @@ from pathlib import Path
 
 from django.http import HttpResponse
 from django.template import engines
+from wagtail.models import Page
 
-from plugins.pages.content import STATIC_PAGES, normalize_slug, get_page_for_language
+from plugins.pages.content import normalize_slug, get_page_for_language
 from www.api.data_adapter import bolt_view, fusion_response
+from www.content.models.pages import page_to_dict
 from django_fusion.routes import fusion_json_response, FusionCodec
 
 logger = logging.getLogger(__name__)
+
+
+def _get_cms_page(slug: str, language: str) -> dict | None:
+    """Return page data for *slug* from Wagtail CMS or STATIC_PAGES fallback.
+
+    Priority:
+    1. Wagtail Page.objects.live() — CMS-managed content
+    2. get_page_for_language() — STATIC_PAGES fallback (legacy/migration)
+    """
+    normalized = normalize_slug(slug)
+    try:
+        page = Page.objects.live().filter(slug=normalized).first()
+        if page is not None:
+            return page_to_dict(page.specific)
+    except Exception:
+        logger.info("Wagtail page query unavailable for slug=%s — using static fallback", slug)
+    return get_page_for_language(slug, language)
 
 
 # ── Helper: extract fusion_render_first from request ────────────────
 
 
 def _get_fusion_render_first_from_request(request) -> bool | None:
-    """Check the request for a ``fusion_render_first`` directive.
-
-    Priority:
-    1. ``X-Fusion-Render-First`` HTTP header (string "true" / "false").
-    2. ``fusion_render_first`` query parameter (string "true" / "false").
-    3. ``None`` — not specified; caller should use its own default.
-    """
-    # Header check
+    """Check the request for a ``fusion_render_first`` directive."""
     header_val = request.headers.get("X-Fusion-Render-First")
     if header_val is not None:
         return header_val.strip().lower() == "true"
-
-    # Query param check
     query_val = request.GET.get("fusion_render_first")
     if query_val is not None:
         return query_val.strip().lower() == "true"
-
     return None
 
 
 # ── Unified page endpoint (render-first aware) ──────────────────────
 
+
 def page_data(request, slug):
-    """GET /apis/pages/<slug>/data/ — unified page endpoint.
-
-    Checks the request for a ``fusion_render_first`` directive (via
-    ``X-Fusion-Render-First`` header or ``?fusion_render_first=true``
-    query parameter) and responds accordingly:
-
-    * ``fusion_render_first=true``  → renders the page as HTML using the
-      django-fusion ``FragmentRequestRenderer`` with page data as
-      template context, and returns an ``HttpResponse``.
-    * ``fusion_render_first=false`` → encodes the page data with
-      ``FusionCodec.encode()`` and returns it inside the standard
-      ``{status, message, data}`` envelope.
-    * Not specified                  → same as ``false`` (get JSON data).
-
-    Language detection:
-        Uses ``request.LANGUAGE_CODE`` set by Django's ``LocaleMiddleware``
-        (which reads the ``Accept-Language`` header, ``django_language``
-        cookie, or ``?lang=`` query parameter).  Pages are translated via
-        ``get_page_for_language()`` and fall back to English when no
-        translation exists.
-
-    This eliminates the two-step fragment-pointer dance: a single
-    request that asks for HTML or JSON based on the caller's preference.
-    """
+    """GET /apis/pages/<slug>/data/ — unified page endpoint."""
     try:
         normalized = normalize_slug(slug)
-        language = getattr(request, 'LANGUAGE_CODE', 'en')
-        page = get_page_for_language(slug, language)
+        language = getattr(request, "LANGUAGE_CODE", "en")
+        page = _get_cms_page(slug, language)
         if page is None:
             return fusion_json_response({"error": "Page not found"}, status=404)
 
         render_first = _get_fusion_render_first_from_request(request)
 
         if render_first is True:
-            # ── Render HTML ──────────────────────────────────────────
-            # Load generic page.html from the filesystem next to this
-            # module so it works without Django template-loader config.
             try:
-                _template_path = Path(__file__).resolve().parent.parent.parent \
+                _template_path = (
+                    Path(__file__).resolve().parent.parent.parent
                     / "templates" / "pages" / "page.html"
+                )
                 with open(_template_path) as f:
                     template_source = f.read()
                 django_engine = engines["django"]
@@ -97,15 +81,11 @@ def page_data(request, slug):
                 html = template.render({"page": page}, request)
                 return HttpResponse(html)
             except Exception:
-                logger.exception(
-                    "page_data HTML render failed for slug=%s", slug
-                )
+                logger.exception("page_data HTML render failed for slug=%s", slug)
                 return fusion_json_response(
-                    {"error": "Fragment rendering failed"},
-                    status=500,
+                    {"error": "Fragment rendering failed"}, status=500
                 )
 
-        # ── Return JSON data with FusionCodec encoding ───────────────
         encoded = FusionCodec.encode(page)
         return fusion_json_response(
             data={
@@ -116,7 +96,6 @@ def page_data(request, slug):
             },
             status=200,
         )
-
     except Exception:
         logger.exception("page_data error for slug=%s", slug)
         return fusion_json_response({"error": "Internal server error"}, status=500)
@@ -125,49 +104,31 @@ def page_data(request, slug):
 @bolt_view
 def page_detail(request, slug):
     """GET /apis/pages/<slug>/ — return public page content."""
-    normalized = normalize_slug(slug)
-    language = getattr(request, 'LANGUAGE_CODE', 'en')
-    page = get_page_for_language(slug, language)
+    language = getattr(request, "LANGUAGE_CODE", "en")
+    page = _get_cms_page(slug, language)
     if page is None:
         return {"status": "error", "message": "Page not found"}, 404
     return page
 
 
 def page_fragment(request, slug):
-    """GET /apis/pages/<slug>/fragment/ — return a fragment pointer.
-
-    Returns the enhanced ``{status, message, data: {...}}`` response envelope
-    via ``fusion_json_response`` so every API consumer gets a consistent
-    top-level contract.
-
-    The frontend can use ``data.fragment_url`` to fetch the server-rendered
-    HTML for this page from the django-fusion fragment renderer, falling back
-    to the JSON blocks from ``page_detail`` if rendering fails.
-
-    Note:
-        The returned ``fragment_name`` follows the convention ``pages.<slug>``.
-        For this demo the names are string pointers; registering matching
-        ``RoutableComponent`` / ``FragmentComponent`` classes will make them
-        renderable through the django-fusion fragment URL.
-    """
+    """GET /apis/pages/<slug>/fragment/ — return a fragment pointer."""
     try:
         normalized = normalize_slug(slug)
-        language = getattr(request, 'LANGUAGE_CODE', 'en')
-        if normalized not in STATIC_PAGES:
-            return fusion_json_response(
-                {"error": "Page not found"},
-                status=404,
-            )
+        language = getattr(request, "LANGUAGE_CODE", "en")
+        page = _get_cms_page(slug, language)
+        if page is None:
+            return fusion_json_response({"error": "Page not found"}, status=404)
 
-        page = get_page_for_language(slug, language)
         fragment_name = f"pages.{normalized.replace('-', '_')}"
         pointer = fusion_response(
             fragment_name,
             request,
-            # Omit fusion_render_first so it defaults to the global
-            # FUSION_RENDER_FIRST_DEFAULT setting (False = get data first).
-            # Per-component overrides are set on the FragmentComponent class.
-            extra={"page_slug": normalized, "title": page["title"], "language": language},
+            extra={
+                "page_slug": normalized,
+                "title": page["title"],
+                "language": language,
+            },
         )
         return fusion_json_response(data=pointer, status=200)
     except Exception:
