@@ -1,0 +1,17 @@
+---
+# yaml-language-server: $schema=schemas/image.schema.json
+Object type:
+    - Image
+Backlinks:
+    - Kick-Start
+Added date: "2026-07-12T07:54:04Z"
+Creation date: "2026-07-12T07:54:04Z"
+Created by:
+    - mammhoud
+Image:
+    - files/arcade-pc-office.jpg
+id: bafyreiavhv4agkbjbi5qne5folnzgmlc2dofhfdq757isde3tsiqzhwchm
+---
+# arcade pc office   
+![arcade pc office](files/arcade-pc-office.jpg)    
+**File Information**   
