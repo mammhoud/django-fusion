@@ -1,0 +1,30 @@
+{% extends "base_auth.html" %}
+{% load i18n static %}
+
+{% block auth_content %}
+<section class="fragment--form">
+  <section class="auth__card card card--form">
+    <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Phone Numbers" %}</h2></header>
+    {% comp "account/snippets/messages.html" / %}
+    {% if phone_numbers %}
+      <div class="mb-4"><h3>{% trans "Your phone numbers" %}</h3>
+        {% for phone in phone_numbers %}
+          <div class="border p-2 mb-2 d-flex justify-content-between">
+            <span>{{ phone.number }} {% if phone.primary %}(Primary){% endif %} {% if phone.verified %}(Verified){% endif %}</span>
+            <div class="btn-group">{% if not phone.primary %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="phone" value="{{ phone.id }}"><input type="hidden" name="action_primary" value=""><button class="btn btn-sm btn-outline-primary">Make Primary</button></form>{% endif %}{% if not phone.verified %}<form method="post" style="display:inline">{% csrf_token %}<input type="hidden" name="phone" value="{{ phone.id }}"><input type="hidden" name="action_send" value=""><button class="btn btn-sm btn-outline-secondary">Verify</button></form>{% endif %}{% if not phone.primary %}<form method="post" style="display:inline" onsubmit="return confirm('Remove?')">{% csrf_token %}<input type="hidden" name="phone" value="{{ phone.id }}"><input type="hidden" name="action_remove" value=""><button class="btn btn-sm btn-danger"><i class="fas fa-trash"></i></button></form>{% endif %}</div>
+          </div>
+        {% endfor %}
+      </div>
+    {% else %}
+      <div class="alert alert-info">{% trans "No phone numbers associated." %}</div>
+    {% endif %}
+    <div><h3>{% trans "Add phone number" %}</h3>
+      <form method="post" action="{% url 'account_phone_change' %}" hx-post="{% url 'account_phone_change' %}" hx-target=".fragment--form" hx-swap="innerHTML">
+        {% csrf_token %}<input type="hidden" name="action_add" value="">
+        <div class="mb-3"><label for="id_number">{% trans "Phone number" %}</label><input id="id_number" name="number" type="tel" class="form-control" required></div>
+        <button class="btn btn-gradient w-100" type="submit">{% trans "Add Phone" %}</button>
+      </form>
+    </div>
+  </section>
+</section>
+{% endblock auth_content %}
