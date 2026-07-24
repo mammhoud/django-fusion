@@ -123,6 +123,7 @@ class Specialization(DefaultBase):
     ]
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Specialization")
         verbose_name_plural = _("Specializations")
         ordering = ["order", "title"]
@@ -178,6 +179,7 @@ class CourseCategory(DefaultBase):
     ]
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Course Category")
         verbose_name_plural = _("Course Categories")
         ordering = ["order", "title"]

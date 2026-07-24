@@ -22,12 +22,13 @@ from www.content.models.blocks import PAGE_CONTENT_BLOCKS
 # Page mixin — shared fields for SEO and content blocks
 # ═══════════════════════════════════════════════════════════════════
 
-class ContentPageMixin:
-    """Shared fields for all CMS-backed content pages.
+class ContentPageMixin(models.Model):
+    """Abstract base for all CMS-backed content pages.
 
-    Not a Django model — Page already provides the DB table.  The
-    ``abstract = True`` on Meta keeps Django from creating a
-    separate table while still inheriting the field definitions.
+    Inherits ``models.Model`` so Django's metaclass registers
+    ``seo_title``, ``seo_description``, and ``last_updated`` as
+    real model fields.  The ``abstract = True`` Meta flag prevents
+    Django from creating a separate DB table.
     """
 
     seo_title = models.CharField(

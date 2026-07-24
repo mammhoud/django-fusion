@@ -191,6 +191,7 @@ class QuizChoice(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Quiz Choice")
         verbose_name_plural = _("Quiz Choices")
         ordering = ["order"]
