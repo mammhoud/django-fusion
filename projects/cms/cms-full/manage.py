@@ -11,7 +11,7 @@ SITE = "cms-full"
 
 
 def main() -> None:
-    workspace = Path(__file__).resolve().parents[1]
+    workspace = Path(__file__).resolve().parents[2]
     os.environ.setdefault("DJANGO_SITE", SITE)
     os.environ.setdefault("DJANGO_WEBSITE", SITE)
     os.environ.setdefault("WEBSITE", SITE)
