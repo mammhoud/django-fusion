@@ -23,6 +23,7 @@ import { SkeletonTable, SkeletonList } from '../components/Skeleton';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 
+import { FusionPage } from '../components/FusionPage';
 type TabId = 'timeTotal' | 'productStats' | 'relatedProducts' | 'invoices';
 
 interface ProductStat {
@@ -65,14 +66,14 @@ export default function Transactions() {
   const [deleteTransactionMutation] = useDeleteTransactionMutation();
 
   const settings: Settings = {
-    id: settingsData?.id ?? 0,
+    id: settingsData?.id ?? 1,
     restaurant_name: settingsData?.restaurant_name || 'POS',
     address: settingsData?.address || '',
     phone: settingsData?.phone || '',
     email: settingsData?.email || '',
     currency: settingsData?.currency || 'USD',
     receipt_footer: settingsData?.receipt_footer || 'Thank you for your business!',
-    logo: settingsData?.logo ?? null,
+    logo: settingsData?.logo,
     tax_rate: settingsData?.tax_rate || '',
   };
 
@@ -165,17 +166,6 @@ export default function Transactions() {
   const totalAllTime = transactions.reduce((sum, t) => sum + t.total_amount, 0);
   const totalFiltered = filteredTransactions.reduce((sum, t) => sum + t.total_amount, 0);
 
-  useEffect(() => {
-    if (!error) return;
-    const message =
-      error instanceof Error
-        ? error.message
-        : typeof error === 'object' && error !== null && 'message' in error
-          ? String((error as { message?: unknown }).message)
-          : String(error);
-    showError(message);
-  }, [error, showError]);
-
   const handleDeleteTransaction = async (id: number) => {
     if (!confirm(t('transactions.deleteConfirm'))) return;
 
@@ -265,7 +255,7 @@ export default function Transactions() {
         yPos += 5;
       }
       if (settings.phone) {
-        pdf.text(`Tel: ${settings.phone!}`, pageWidth / 2, yPos, { align: 'center' });
+        pdf.text(`Tel: ${settings.phone}`, pageWidth / 2, yPos, { align: 'center' });
         yPos += 5;
       }
 
@@ -653,7 +643,7 @@ export default function Transactions() {
             <StatusToast /> JSX in the main return below wouldn't render until
             the failure had already auto-dismissed. */}
         <StatusToast
-          type={(status?.type || 'success') as 'success' | 'error'}
+          type={status?.type ?? 'success'}
           message={status?.message ?? ''}
           visible={!!status}
           onDismiss={dismiss}
@@ -1547,7 +1537,7 @@ export default function Transactions() {
                 totalAmount={showReceiptDialog.total_amount}
                 date={showReceiptDialog.date}
                 time={showReceiptDialog.time}
-                settings={settings as unknown as import('../types').Settings}
+                settings={settings as any}
                 receiptNumber={showReceiptDialog.id.toString()}
               />
             </div>

@@ -36,6 +36,7 @@ import { Customer, Settings, InvoiceType as AppInvoiceType, INVOICE_TYPE_LABELS,
 import { sidecar, data } from '../api';
 import type { InvoiceType, InvoiceDesign } from '../api';
 
+import { FusionPage } from '../components/FusionPage';
 // ---- Constants -------------------------------------------------------------
 
 const INVOICE_TYPES: AppInvoiceType[] = ['tax', 'commercial', 'proforma', 'credit', 'receipt', 'selling', 'goods_transfer'];

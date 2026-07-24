@@ -29,6 +29,7 @@ import {
 } from '../types';
 import jsPDF from 'jspdf';
 import { downloadExcel } from '../utils/export';
+import { FusionPage } from '../components/FusionPage';
 import {
   LineChart, Line, BarChart, Bar, PieChart, Pie, Cell,
   XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, Legend
@@ -112,9 +113,9 @@ export default function Reports() {
       setRecipes(Array.isArray(recipesData) ? recipesData : []);
       const p = productsData as any;
       setProducts(Array.isArray(p?.data) ? p.data : Array.isArray(p) ? p : []);
-      setEmployees((Array.isArray(employeesData) ? employeesData : []) as Employee[]);
+      setEmployees(Array.isArray(employeesData) ? employeesData : []);
       setTransactions(Array.isArray(transactionsData) ? transactionsData : []);
-      setDeliveryTypes((Array.isArray(deliveryTypesData) ? deliveryTypesData : []) as DeliveryType[]);
+      setDeliveryTypes(Array.isArray(deliveryTypesData) ? deliveryTypesData : []);
       setLoading(false);
     }
   }, [

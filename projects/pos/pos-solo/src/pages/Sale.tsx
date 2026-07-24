@@ -18,6 +18,7 @@ import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
 
+import { FusionPage } from '../components/FusionPage';
 type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 
 const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = [

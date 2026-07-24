@@ -11,6 +11,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 
+import { FusionPage } from '../components/FusionPage';
 interface FormErrors {
   name?: string;
   price?: string;

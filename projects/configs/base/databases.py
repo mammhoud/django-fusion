@@ -60,6 +60,5 @@ DATABASE_ROUTERS = []
 
 MIGRATION_MODULES = {
     "sites": "www.migrations",
-    "www_core": "www.core.content.migrations",
-    "pages": "www.core.content.migrations",
+    "www_core": None,
 }
