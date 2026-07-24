@@ -49,6 +49,7 @@ class Note(DefaultBase):
     archived_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        app_label = "profile"
         ordering = ["-created_at"]
         indexes = [
             models.Index(fields=["content_type", "object_id"]),
@@ -123,6 +124,7 @@ class SharedNote(DefaultBase):
     expires_at = models.DateTimeField(null=True, blank=True)
 
     class Meta:
+        app_label = "profile"
         unique_together = ["note", "user"]
         ordering = ["-shared_at"]
         verbose_name = _("Shared Note")

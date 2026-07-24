@@ -106,6 +106,7 @@ class Event(DefaultBase):
     ]
 
     class Meta:
+        app_label = "accounts"
         verbose_name = _("Event")
         verbose_name_plural = _("Events")
         ordering = ["-start_date", "title"]

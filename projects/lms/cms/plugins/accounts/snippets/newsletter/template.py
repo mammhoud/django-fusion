@@ -21,6 +21,7 @@ class EmailTemplateFilterSet(WagtailFilterSet):
     is_default = BooleanFilter(field_name="is_default", label=_("Is Default"))
 
     class Meta:
+        app_label = "accounts"
         model = EmailTemplate
         fields = ["is_default", "is_active"]
 

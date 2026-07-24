@@ -151,6 +151,7 @@ class QuizQuestion(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Quiz Question")
         verbose_name_plural = _("Quiz Questions")
         ordering = ["order"]
@@ -278,6 +279,7 @@ class QuizAttempt(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Quiz Attempt")
         verbose_name_plural = _("Quiz Attempts")
         ordering = ["-started_at"]
@@ -363,6 +365,7 @@ class QuizAnswer(models.Model):
     )
 
     class Meta:
+        app_label = "lms"
         verbose_name = _("Quiz Answer")
         verbose_name_plural = _("Quiz Answers")
         unique_together = [["attempt", "question"]]

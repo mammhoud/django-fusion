@@ -11,5 +11,6 @@ class OrganizationChooserBlock(SnippetChooserBlock):
         super().__init__(Organization, **kwargs)
 
     class Meta:
+        app_label = "accounts"
         icon = "group"
         label = _("Organization")
