@@ -44,3 +44,6 @@ def register_all(app):
 
     from routes import data as _data
     _data.register_data_routes(app)
+
+    from routes import fusion_fragments as _fusion_fragments
+    _fusion_fragments.register_fusion_fragment_routes(app)

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdPerson, MdPhone, MdEmail, MdStars, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { Customer } from '../types';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
@@ -34,7 +35,7 @@ export default function Customers() {
 
   // RTK Query — paginated fetch with auto-caching
   const [page] = useState(1);
-  const { data, isLoading } = useGetCustomersQuery({ page, per_page: 200 });
+  const { data, isLoading, error } = useGetCustomersQuery({ page, per_page: 200 });
   const [addCustomer] = useAddCustomerMutation();
   const [updateCustomer] = useUpdateCustomerMutation();
   const [deleteCustomer] = useDeleteCustomerMutation();
@@ -198,60 +199,66 @@ export default function Customers() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="card--glass rounded-xl p-8 text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
-            />
-            <p className="text-slate-500 dark:text-gray-400 text-sm">{t('common.loading')}</p>
-          </div>
-        ) : filteredCustomers.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            {debouncedSearch
-              ? (t('common.noDataFound') || 'No matches found.')
-              : (t('customers.noCustomers'))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCustomers.map(customer => (
-              <motion.div
-                key={customer.id}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                className="card--glass rounded-xl p-4"
-              >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
-                      <MdPerson className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
-                      <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400">
-                        <MdStars className="text-amber-500" />
-                        <span>{customer.loyalty_points.toFixed(0)} {t('customers.points')}</span>
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={filteredCustomers}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as Customer[];
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">
+                  {debouncedSearch
+                    ? (t('common.noDataFound') || 'No matches found.')
+                    : (t('customers.noCustomers'))}
+                </div>
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(customer => (
+                  <motion.div
+                    key={customer.id}
+                    initial={{ opacity: 0 }}
+                    animate={{ opacity: 1 }}
+                    className="card--glass rounded-xl p-4"
+                  >
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                          <MdPerson className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
+                          <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400">
+                            <MdStars className="text-amber-500" />
+                            <span>{customer.loyalty_points.toFixed(0)} {t('customers.points')}</span>
+                          </div>
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-teal-600">
+                          <MdEdit />
+                        </button>
+                        <button onClick={() => handleDelete(customer.id)} className="p-2 text-slate-600 hover:text-red-600">
+                          <MdDelete />
+                        </button>
                       </div>
                     </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-teal-600">
-                      <MdEdit />
-                    </button>
-                    <button onClick={() => handleDelete(customer.id)} className="p-2 text-slate-600 hover:text-red-600">
-                      <MdDelete />
-                    </button>
-                  </div>
-                </div>
-                <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
-                  {customer.phone && <div className="flex items-center gap-1"><MdPhone /> {customer.phone}</div>}
-                  {customer.email && <div className="flex items-center gap-1"><MdEmail /> {customer.email}</div>}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+                    <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
+                      {customer.phone && <div className="flex items-center gap-1"><MdPhone /> {customer.phone}</div>}
+                      {customer.email && <div className="flex items-center gap-1"><MdEmail /> {customer.email}</div>}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
 
       <StatusToast

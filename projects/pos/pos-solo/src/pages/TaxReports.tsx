@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdAccountBalance, MdAdd, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetTaxReportsQuery, useAddTaxReportMutation, useDeleteTaxReportMutation } from '../store/api/endpoints/payroll';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
@@ -152,38 +153,51 @@ export default function TaxReports() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
-        ) : filteredReports.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            {debouncedSearch
-              ? (t('common.noDataFound') || 'No matches found.')
-              : (t('taxReports.noReports'))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredReports.map(report => (
-              <motion.div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                      <MdAccountBalance className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{report.period_start} - {report.period_end}</h3>
-                      <p className="text-sm text-slate-500">{report.transaction_count} {t('taxReports.transactions')}</p>
-                    </div>
-                  </div>
-                  <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={filteredReports}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as typeof filteredReports;
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">
+                  {debouncedSearch
+                    ? (t('common.noDataFound') || 'No matches found.')
+                    : (t('taxReports.noReports'))}
                 </div>
-                <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
-                  <p>{t('taxReports.totalSales')}: {(report.total_sales ?? 0).toFixed(2)}</p>
-                  <p>{t('taxReports.totalTax')}: {report.total_tax.toFixed(2)}</p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(report => (
+                  <motion.div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
+                          <MdAccountBalance className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{report.period_start} - {report.period_end}</h3>
+                          <p className="text-sm text-slate-500">{report.transaction_count} {t('taxReports.transactions')}</p>
+                        </div>
+                      </div>
+                      <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                    </div>
+                    <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
+                      <p>{t('taxReports.totalSales')}: {(report.total_sales ?? 0).toFixed(2)}</p>
+                      <p>{t('taxReports.totalTax')}: {report.total_tax.toFixed(2)}</p>
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
     </PageLayout>
   );

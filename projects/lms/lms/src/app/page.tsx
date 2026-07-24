@@ -6,13 +6,19 @@ import { motion } from 'framer-motion';
 import { HiAcademicCap, HiUserGroup, HiBookOpen, HiStar, HiChevronRight } from 'react-icons/hi';
 import { useGetFeaturedCoursesQuery, useGetCoursesQuery } from '@/store/api/endpoints/courses';
 import { useGetInstructorsQuery } from '@/store/api/endpoints/instructors';
-import { useGetPageQuery } from '@/store/api/endpoints/pages';
-import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
-import ErrorState from '@/components/ui/ErrorState';
+import { FusionPage } from '@/components/FusionPage';
 import EmptyState from '@/components/ui/EmptyState';
+import type { CmsPage } from '@/store/api/endpoints/pages';
 
 export default function HomePage() {
-  const { data: page } = useGetPageQuery('home');
+  return (
+    <FusionPage slug="home">
+      {(page, _fallback) => <HomePageContent page={page} />}
+    </FusionPage>
+  );
+}
+
+function HomePageContent({ page }: { page: CmsPage | undefined }) {
   const { data: featuredCourses, isLoading: coursesLoading } = useGetFeaturedCoursesQuery();
   const { data: coursesData } = useGetCoursesQuery({ page: 1 });
   const { data: instructorsData } = useGetInstructorsQuery({ page: 1 });
@@ -93,7 +99,18 @@ export default function HomePage() {
           </div>
 
           {coursesLoading ? (
-            <LoadingSkeleton variant="card" count={3} />
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+              {Array.from({ length: 3 }).map((_, i) => (
+                <div key={i} className="card animate-pulse">
+                  <div className="bg-gray-200 h-40 rounded-t-lg" />
+                  <div className="p-5 space-y-3">
+                    <div className="h-4 bg-gray-200 rounded w-1/3" />
+                    <div className="h-5 bg-gray-200 rounded w-3/4" />
+                    <div className="h-4 bg-gray-200 rounded w-full" />
+                  </div>
+                </div>
+              ))}
+            </div>
           ) : featuredCourses && featuredCourses.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
               {featuredCourses.slice(0, 6).map((course, idx) => (

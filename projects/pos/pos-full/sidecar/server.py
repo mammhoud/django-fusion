@@ -231,7 +231,7 @@ def _ensure_tables(use_migrations: bool) -> None:
         # ── Ensure ci_datatoken table (needed by DataToken.objects.create / tag_row) ──
         if "ci_datatoken" not in table_names:
             try:
-                from django_fusion.core.models import DataToken
+                from django_fusion.models import DataToken
                 with connection.schema_editor() as schema_editor:
                     schema_editor.create_model(DataToken)
                 logger.info("Created ci_datatoken table for DataToken sync tracking")
@@ -361,6 +361,9 @@ from signals import (
 from models.token import DeviceToken
 from middleware.auth import create_auth_middleware, register_auth_routes, get_token_info
 
+# ── Fusion Health Check ──
+from middleware.fusion import register_fusion_health_routes
+
 # ── Signal Handlers (logging, webhooks, audit) ──
 import signal_handlers  # noqa: F401 - registers @receiver handlers
 import sync_signals  # noqa: F401 - registers sync tracking receivers
@@ -452,7 +455,7 @@ def add_cors(response: Response):
 app.before_request()(create_auth_middleware(
     token_model=DeviceToken,
     api_key=API_KEY,
-    public_paths={"/", "/health", "/auth/token", "/auth/verify", "/docs", "/openapi.json"},
+    public_paths={"/", "/health", "/auth/token", "/auth/verify", "/docs", "/openapi.json", "/fusion/health", "/fusion/render/dashboard", "/fusion/render/suppliers", "/fusion/render/about"},
 ))
 
 
@@ -560,6 +563,17 @@ async def entity_stream(websocket):
 
 from routes import register_all
 register_all(app)
+
+
+# ===========================================================================
+# Fusion health-check endpoint
+# ===========================================================================
+
+register_fusion_health_routes(app)
+
+# ── Fragment component registration ──
+from fragments import register_fragments
+register_fragments()
 
 
 # ===========================================================================

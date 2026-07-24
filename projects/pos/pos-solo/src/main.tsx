@@ -8,6 +8,16 @@ import { store } from "./store";
 import { ThemeProvider } from "./contexts/ThemeContext";
 import { LanguageProvider } from "./contexts/LanguageContext";
 import { AuthProvider } from "./contexts/AuthContext";
+import { FusionMiddleware } from "./components/FusionMiddleware";
+import { fusionStore } from "./lib/fusion-store";
+import { SIDECAR_BASE } from "./config/sidecar";
+
+// ── Fusion health check on startup (non-blocking) ────────────────
+// Fetches /fusion/health from the sidecar and caches the rendering
+// preference.  Falls back to data mode if the sidecar is unavailable.
+fusionStore.initFromHealthCheck(SIDECAR_BASE).catch(() => {
+  // Sidecar not reachable — default data mode will be used
+});
 
 // Set initial dir/lang from saved language
 const savedLang = localStorage.getItem('language');
@@ -28,7 +38,9 @@ ReactDOM.createRoot(document.getElementById("root") as HTMLElement).render(
       <ThemeProvider>
         <LanguageProvider>
           <AuthProvider>
-            <App />
+            <FusionMiddleware>
+              <App />
+            </FusionMiddleware>
           </AuthProvider>
         </LanguageProvider>
       </ThemeProvider>

@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdBusiness, MdPhone, MdEmail, MdLocationOn, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetSuppliersQuery, useAddSupplierMutation, useUpdateSupplierMutation, useDeleteSupplierMutation } from '../store/api/endpoints/suppliers';
 import type { Supplier } from '../store/api/endpoints/suppliers';
@@ -187,49 +188,55 @@ export default function Suppliers() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="card--glass rounded-xl p-8 text-center">
-            <motion.div
-              animate={{ rotate: 360 }}
-              transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-              className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
-            />
-            <p className="text-slate-500 dark:text-gray-400 text-sm">{t('common.loading')}</p>
-          </div>
-        ) : sorted.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            {debouncedSearch
-              ? (t('common.noDataFound') || 'No matches found.')
-              : (t('suppliers.noSuppliers'))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {sorted.map(supplier => (
-              <motion.div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                      <MdBusiness className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{supplier.name}</h3>
-                      {supplier.contact_name && <p className="text-sm text-slate-500">{supplier.contact_name}</p>}
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
-                    <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
-                  </div>
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={sorted}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as Supplier[];
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">
+                  {debouncedSearch
+                    ? (t('common.noDataFound') || 'No matches found.')
+                    : (t('suppliers.noSuppliers'))}
                 </div>
-                <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
-                  {supplier.phone && <div className="flex items-center gap-1"><MdPhone /> {supplier.phone}</div>}
-                  {supplier.email && <div className="flex items-center gap-1"><MdEmail /> {supplier.email}</div>}
-                  {supplier.address && <div className="flex items-center gap-1"><MdLocationOn /> {supplier.address}</div>}
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(supplier => (
+                  <motion.div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
+                          <MdBusiness className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{supplier.name}</h3>
+                          {supplier.contact_name && <p className="text-sm text-slate-500">{supplier.contact_name}</p>}
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
+                        <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                      </div>
+                    </div>
+                    <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
+                      {supplier.phone && <div className="flex items-center gap-1"><MdPhone /> {supplier.phone}</div>}
+                      {supplier.email && <div className="flex items-center gap-1"><MdEmail /> {supplier.email}</div>}
+                      {supplier.address && <div className="flex items-center gap-1"><MdLocationOn /> {supplier.address}</div>}
+                    </div>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
 
       <StatusToast

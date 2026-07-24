@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdSecurity, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetRolesQuery, useAddRoleMutation, useUpdateRoleMutation, useDeleteRoleMutation } from '../store/api/endpoints/roles';
 import type { Role } from '../store/api/endpoints/roles';
@@ -151,38 +152,51 @@ export default function Roles() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
-        ) : filteredRoles.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            {debouncedSearch
-              ? (t('common.noDataFound') || 'No matches found.')
-              : (t('roles.noRoles'))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredRoles.map(role => (
-              <motion.div key={role.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                      <MdSecurity className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{role.name}</h3>
-                      <p className="text-xs text-slate-500">{role.is_active ? t('common.active') : t('common.inactive')}</p>
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(role)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
-                    <button onClick={() => handleDelete(role.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
-                  </div>
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={filteredRoles}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as typeof filteredRoles;
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">
+                  {debouncedSearch
+                    ? (t('common.noDataFound') || 'No matches found.')
+                    : (t('roles.noRoles'))}
                 </div>
-                <pre className="mt-3 text-xs text-slate-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{role.permissions}</pre>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(role => (
+                  <motion.div key={role.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
+                          <MdSecurity className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{role.name}</h3>
+                          <p className="text-xs text-slate-500">{role.is_active ? t('common.active') : t('common.inactive')}</p>
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEdit(role)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
+                        <button onClick={() => handleDelete(role.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                      </div>
+                    </div>
+                    <pre className="mt-3 text-xs text-slate-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{role.permissions}</pre>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
     </PageLayout>
   );

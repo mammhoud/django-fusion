@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect } from 'react';
 import { MdPeople, MdEdit, MdDelete, MdWork } from 'react-icons/md';
 import { FaUsers, FaUserTag, FaMoneyBillWave, FaPlus, FaSave, FaSearch, FaPhone, FaEnvelope, FaCalendarAlt } from 'react-icons/fa';
+import { FusionPage } from '../components/FusionPage';
 import { useGetEmployeesQuery } from '../store/api/endpoints/core';
 import {
   useAddEmployeeMutation,
@@ -321,9 +322,13 @@ export default function Employees() {
               </motion.button>
             </div>
 
-            {/* Employee Grid */}
+            {/* Employee Grid — wrapped with FusionPage for fragment-rendering support */}
+            <FusionPage standalone data={filteredEmployees} skeletonVariant="card">
+              {(data, fallback) => {
+                const empList = (data ?? []) as Employee[];
+                return (
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {filteredEmployees.map(emp => (
+              {empList.map(emp => (
                 <motion.div
                   key={emp.id}
                   initial={{ opacity: 0, scale: 0.95 }}
@@ -388,12 +393,15 @@ export default function Employees() {
                   )}
                 </motion.div>
               ))}
-              {filteredEmployees.length === 0 && (
+              {empList.length === 0 && (
                 <div className="col-span-full card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
                   {t('employees.noEmployees')}
                 </div>
               )}
             </div>
+                );
+              }}
+            </FusionPage>
           </motion.div>
         )}
 

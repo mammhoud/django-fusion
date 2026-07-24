@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import { MdReceipt, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import { FusionPage } from '../components/FusionPage';
 import { useTranslation } from 'react-i18next';
 import { useGetReceiptTemplatesQuery, useAddReceiptTemplateMutation, useUpdateReceiptTemplateMutation, useDeleteReceiptTemplateMutation } from '../store/api/endpoints/receipts';
 import type { ReceiptTemplate } from '../store/api/endpoints/receipts';
@@ -157,38 +158,51 @@ export default function ReceiptTemplates() {
           </motion.form>
         )}
 
-        {isLoading ? (
-          <div className="text-center py-12 text-slate-500">{t('common.loading')}</div>
-        ) : filteredTemplates.length === 0 ? (
-          <div className="text-center py-12 text-slate-500">
-            {debouncedSearch
-              ? (t('common.noDataFound') || 'No matches found.')
-              : (t('receiptTemplates.noTemplates'))}
-          </div>
-        ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredTemplates.map(template => (
-              <motion.div key={template.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
-                      <MdReceipt className="w-5 h-5" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{template.name}</h3>
-                      {template.is_default && <span className="text-xs text-teal-600 dark:text-teal-400">{t('receiptTemplates.default')}</span>}
-                    </div>
-                  </div>
-                  <div className="flex gap-1">
-                    <button onClick={() => handleEdit(template)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
-                    <button onClick={() => handleDelete(template.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
-                  </div>
+        {/* Data rendering wrapped with FusionPage for fragment-rendering support */}
+        <FusionPage
+          standalone
+          data={filteredTemplates}
+          isLoading={isLoading}
+          error={error}
+          skeletonVariant="card"
+        >
+          {(data, fallback) => {
+            const items = (data ?? []) as typeof filteredTemplates;
+            if (items.length === 0) {
+              return (
+                <div className="text-center py-12 text-slate-500">
+                  {debouncedSearch
+                    ? (t('common.noDataFound') || 'No matches found.')
+                    : (t('receiptTemplates.noTemplates'))}
                 </div>
-                <pre className="mt-3 text-xs text-slate-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{template.template_body}</pre>
-              </motion.div>
-            ))}
-          </div>
-        )}
+              );
+            }
+            return (
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                {items.map(template => (
+                  <motion.div key={template.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+                    <div className="flex items-start justify-between">
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
+                          <MdReceipt className="w-5 h-5" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-slate-900 dark:text-white">{template.name}</h3>
+                          {template.is_default && <span className="text-xs text-teal-600 dark:text-teal-400">{t('receiptTemplates.default')}</span>}
+                        </div>
+                      </div>
+                      <div className="flex gap-1">
+                        <button onClick={() => handleEdit(template)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
+                        <button onClick={() => handleDelete(template.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                      </div>
+                    </div>
+                    <pre className="mt-3 text-xs text-slate-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{template.template_body}</pre>
+                  </motion.div>
+                ))}
+              </div>
+            );
+          }}
+        </FusionPage>
       </div>
     </PageLayout>
   );
