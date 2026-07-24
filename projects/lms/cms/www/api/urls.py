@@ -7,7 +7,7 @@ Uses bolt-style function views via the @bolt_view adapter decorator.
 
 from django.urls import path
 
-from . import auth, courses, students, instructors, blog, shop, events, contact, pages
+from . import auth, courses, students, instructors, blog, shop, events, contact, pages, i18n
 
 app_name = "api"
 
@@ -94,6 +94,9 @@ urlpatterns = [
         pages.page_data,
         name="page_data",
     ),
+    # ── i18n ──
+    path("i18n/setlang/", i18n.set_language_view, name="i18n_setlang"),
+    path("i18n/languages/", i18n.language_list, name="i18n_language_list"),
     # ── Contact ──
     path("contact/", contact.contact_submit, name="contact_submit"),
 ]
