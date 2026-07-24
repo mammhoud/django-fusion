@@ -1,5 +1,5 @@
 """
-Pytest configuration for pos-full tests.
+Pytest configuration for pos-solo tests.
 
 Provides shared fixtures, factory fixtures for Django models, mock
 request/response helpers for Robyn handler testing, and custom markers.
@@ -76,8 +76,8 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
     except Exception:
         pass
     try:
-        from models.extra import Ingredient, Role
-        models_to_create.extend([Ingredient, Role])
+        from models.extra import Ingredient, Role, Recipe, ReceiptTemplate, InventoryAdjustment
+        models_to_create.extend([Ingredient, Role, Recipe, ReceiptTemplate, InventoryAdjustment])
     except Exception:
         pass
     try:
@@ -244,7 +244,7 @@ def node_factory(django_bootstrap) -> Callable[..., Any]:
         defaults = {
             "node_id": kwargs.pop("node_id", f"test-node-{_counter[0]}"),
             "hostname": f"host-{_counter[0]}",
-            "node_type": "pos-full",
+            "node_type": "pos-solo",
             "version": "1.0.0",
             "status": "online",
             "product_count": 0,
@@ -380,14 +380,16 @@ def ingredient_factory(django_bootstrap) -> Callable[..., Any]:
 
 @pytest.fixture
 def role_factory(django_bootstrap) -> Callable[..., Any]:
-    """Factory for Role model instances."""
-    _counter = [0]
+    """Factory for Role model instances. Name is unique=True so each
+    factory call uses a random suffix to avoid cross-test collisions.
+    """
+    import uuid as _uuid
 
     def _create(**kwargs) -> Any:
-        _counter[0] += 1
         from models.extra import Role
+        uid = _uuid.uuid4().hex[:6]
         defaults = {
-            "name": kwargs.pop("name", f"Role-{_counter[0]}"),
+            "name": kwargs.pop("name", f"Role-{uid}"),
             "description": "Auto-generated test role",
             "permissions": {"can_manage_products": True},
             "is_active": True,
@@ -433,5 +435,86 @@ def sync_log_factory(django_bootstrap) -> Callable[..., Any]:
         }
         defaults.update(kwargs)
         return SyncLog.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def recipe_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for Recipe model instances.
+
+    Requires a ``product_factory`` or explicit ``product=`` kwarg.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.extra import Recipe
+        from models.pos import Product
+        if "product" not in kwargs:
+            kwargs["product"] = Product.objects.create(
+                name=f"RecipeProduct-{_counter[0]}", price=5.99,
+            )
+        defaults = {
+            "name": kwargs.pop("name", f"Recipe-{_counter[0]}"),
+            "instructions": "Mix and serve.",
+            "yield_quantity": 1,
+            "is_active": True,
+        }
+        defaults.update(kwargs)
+        return Recipe.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def receipt_template_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for ReceiptTemplate model instances. Name is unique=True
+    so each factory call uses a random suffix.
+    """
+    import uuid as _uuid
+
+    def _create(**kwargs) -> Any:
+        from models.extra import ReceiptTemplate
+        uid = _uuid.uuid4().hex[:6]
+        defaults = {
+            "name": kwargs.pop("name", f"Template-{uid}"),
+            "description": "Default receipt layout",
+            "template_html": "<h1>{{restaurant_name}}</h1>",
+            "is_default": False,
+            "is_active": True,
+        }
+        defaults.update(kwargs)
+        return ReceiptTemplate.objects.create(**defaults)
+
+    return _create
+
+
+@pytest.fixture
+def inventory_adjustment_factory(django_bootstrap) -> Callable[..., Any]:
+    """Factory for InventoryAdjustment model instances.
+
+    Requires an ``ingredient_factory`` or explicit ``ingredient=`` kwarg.
+    The custom ``save()`` method auto-populates ``previous_quantity``
+    from the ingredient and updates ``current_quantity``.
+    """
+    _counter = [0]
+
+    def _create(**kwargs) -> Any:
+        _counter[0] += 1
+        from models.extra import InventoryAdjustment, Ingredient
+        if "ingredient" not in kwargs:
+            kwargs["ingredient"] = Ingredient.objects.create(
+                name=f"AdjIngredient-{_counter[0]}", unit="kg",
+                current_quantity=50.0,
+            )
+        defaults = {
+            "quantity": kwargs.pop("quantity", 5),
+            "adjustment_type": "addition",
+            "reason": "correction",
+            "notes": "Test adjustment",
+        }
+        defaults.update(kwargs)
+        return InventoryAdjustment.objects.create(**defaults)
 
     return _create
