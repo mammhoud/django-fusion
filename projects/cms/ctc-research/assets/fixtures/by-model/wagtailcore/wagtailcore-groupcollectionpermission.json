@@ -1,0 +1,110 @@
+[
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 1,
+    "fields": {
+      "group": 1,
+      "collection": 1,
+      "permission": 1
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 2,
+    "fields": {
+      "group": 2,
+      "collection": 1,
+      "permission": 1
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 3,
+    "fields": {
+      "group": 1,
+      "collection": 1,
+      "permission": 2
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 4,
+    "fields": {
+      "group": 2,
+      "collection": 1,
+      "permission": 2
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 5,
+    "fields": {
+      "group": 1,
+      "collection": 1,
+      "permission": 5
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 6,
+    "fields": {
+      "group": 2,
+      "collection": 1,
+      "permission": 5
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 7,
+    "fields": {
+      "group": 1,
+      "collection": 1,
+      "permission": 110
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 8,
+    "fields": {
+      "group": 2,
+      "collection": 1,
+      "permission": 110
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 9,
+    "fields": {
+      "group": 1,
+      "collection": 1,
+      "permission": 111
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 10,
+    "fields": {
+      "group": 2,
+      "collection": 1,
+      "permission": 111
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 11,
+    "fields": {
+      "group": 1,
+      "collection": 1,
+      "permission": 113
+    }
+  },
+  {
+    "model": "wagtailcore.groupcollectionpermission",
+    "pk": 12,
+    "fields": {
+      "group": 2,
+      "collection": 1,
+      "permission": 113
+    }
+  }
+]

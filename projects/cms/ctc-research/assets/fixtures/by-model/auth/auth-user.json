@@ -1,0 +1,57 @@
+[
+  {
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$PJI61tmJC2vfje18J2cpDL$V9Lr4tN/OAD0B5IvtV4H8JS/CJX/siGUKYs2IGoJEfs=",
+      "last_login": "2026-02-21T21:17:44.294Z",
+      "is_superuser": true,
+      "username": "admin",
+      "first_name": "Mahmoud",
+      "last_name": "Ezzat",
+      "email": "m.xxai@outlook.com",
+      "is_staff": true,
+      "date_joined": "2026-02-11T20:57:00.711Z",
+      "groups": [
+        1,
+        2,
+        3
+      ],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 2,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$DCCVLVQfFzSkuHVA7S8E2n$/WrRvyWEFYIHGKYEfUclHo69bpeFuLPzEDIOQoR5Bf4=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "E.babiker55@gmail.com",
+      "first_name": "",
+      "last_name": "",
+      "email": "e.babiker55@gmail.com",
+      "is_staff": false,
+      "date_joined": "2026-02-20T15:40:38.029Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  },
+  {
+    "model": "auth.user",
+    "pk": 3,
+    "fields": {
+      "password": "pbkdf2_sha256$1000000$z8QPTwbMMFfMxVmTkcQxNF$4poPh5aIYHR0bKHqw3AzD8mnxKKIUuJnKMLlt26r7eA=",
+      "last_login": null,
+      "is_superuser": false,
+      "username": "superadmin",
+      "first_name": "",
+      "last_name": "",
+      "email": "m.xxai@outlook.com",
+      "is_staff": false,
+      "date_joined": "2026-02-21T04:22:49.129Z",
+      "groups": [],
+      "user_permissions": []
+    }
+  }
+]
