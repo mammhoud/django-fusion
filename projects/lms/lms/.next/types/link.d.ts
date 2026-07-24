@@ -55,8 +55,6 @@ declare namespace __next_route_internal_types__ {
     | `/instructors`
     | `/lesson`
     | `/login`
-    | `/payment/cancel`
-    | `/payment/success`
     | `/privacy`
     | `/registration`
     | `/shop`
@@ -68,13 +66,15 @@ declare namespace __next_route_internal_types__ {
     | `/student-dashboard/quiz`
     | `/student-dashboard/reviews`
     | `/student-dashboard/wishlist`
+    | `/payment/cancel`
+    | `/payment/success`
   type DynamicRoutes<T extends string = string> = 
     | `/course-details/${CatchAllSlug<T>}`
-    | `/enroll/checkout/${SafeSlug<T>}`
     | `/events/${SafeSlug<T>}`
     | `/instructor-dashboard/courses/${SafeSlug<T>}/edit`
     | `/instructor-details/${CatchAllSlug<T>}`
     | `/shop-details/${CatchAllSlug<T>}`
+    | `/enroll/checkout/${SafeSlug<T>}`
 
   type RouteImpl<T> = 
     | StaticRoutes
