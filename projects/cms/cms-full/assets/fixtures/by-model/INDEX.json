@@ -1,0 +1,167 @@
+{
+  "organized": true,
+  "structure": "by-model",
+  "description": "Fixtures separated by model type",
+  "models": {
+    "modules": [
+      {
+        "file": "modules-activitytype.json",
+        "items": 15,
+        "size": 3597
+      },
+      {
+        "file": "modules-derivedstatus.json",
+        "items": 9,
+        "size": 2157
+      },
+      {
+        "file": "modules-statuschoice.json",
+        "items": 7,
+        "size": 1527
+      }
+    ],
+    "auth": [
+      {
+        "file": "auth-group.json",
+        "items": 3,
+        "size": 770
+      },
+      {
+        "file": "auth-permission.json",
+        "items": 499,
+        "size": 90263
+      },
+      {
+        "file": "auth-user.json",
+        "items": 3,
+        "size": 1519
+      }
+    ],
+    "wagtailimages": [
+      {
+        "file": "wagtailimages-image.json",
+        "items": 22,
+        "size": 10964
+      },
+      {
+        "file": "wagtailimages-rendition.json",
+        "items": 54,
+        "size": 14650
+      }
+    ],
+    "handlers": [
+      {
+        "file": "handlers-organization.json",
+        "items": 1,
+        "size": 1105
+      }
+    ],
+    "wagtailcore": [
+      {
+        "file": "lms-coursespage.json",
+        "items": 5,
+        "size": 3476
+      },
+      {
+        "file": "pages-aboutpage.json",
+        "items": 6,
+        "size": 13401
+      },
+      {
+        "file": "pages-contactpage.json",
+        "items": 6,
+        "size": 17075
+      },
+      {
+        "file": "pages-homepage.json",
+        "items": 6,
+        "size": 37015
+      },
+      {
+        "file": "pages-teampage.json",
+        "items": 6,
+        "size": 53389
+      },
+      {
+        "file": "wagtailcore-collection.json",
+        "items": 3,
+        "size": 526
+      },
+      {
+        "file": "wagtailcore-groupapprovaltask.json",
+        "items": 1,
+        "size": 128
+      },
+      {
+        "file": "wagtailcore-groupcollectionpermission.json",
+        "items": 12,
+        "size": 1949
+      },
+      {
+        "file": "wagtailcore-grouppagepermission.json",
+        "items": 7,
+        "size": 1052
+      },
+      {
+        "file": "wagtailcore-locale.json",
+        "items": 6,
+        "size": 647
+      },
+      {
+        "file": "wagtailcore-modellogentry.json",
+        "items": 211,
+        "size": 93805
+      },
+      {
+        "file": "wagtailcore-page.json",
+        "items": 43,
+        "size": 62146
+      },
+      {
+        "file": "wagtailcore-pagelogentry.json",
+        "items": 289,
+        "size": 129658
+      },
+      {
+        "file": "wagtailcore-pagesubscription.json",
+        "items": 10,
+        "size": 1601
+      },
+      {
+        "file": "wagtailcore-referenceindex.json",
+        "items": 132,
+        "size": 55570
+      },
+      {
+        "file": "wagtailcore-revision.json",
+        "items": 152,
+        "size": 720876
+      },
+      {
+        "file": "wagtailcore-site.json",
+        "items": 1,
+        "size": 203
+      },
+      {
+        "file": "wagtailcore-task.json",
+        "items": 1,
+        "size": 162
+      },
+      {
+        "file": "wagtailcore-workflow.json",
+        "items": 1,
+        "size": 141
+      },
+      {
+        "file": "wagtailcore-workflowpage.json",
+        "items": 1,
+        "size": 107
+      },
+      {
+        "file": "wagtailcore-workflowtask.json",
+        "items": 1,
+        "size": 147
+      }
+    ]
+  }
+}

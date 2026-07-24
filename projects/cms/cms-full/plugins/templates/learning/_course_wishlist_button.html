@@ -1,0 +1,10 @@
+{% comment %}
+Wishlist Button - HTMX Fragment
+{% endcomment %}
+
+<button class="rbt-course-card__wishlist {% if is_wishlisted %}rbt-course-card__wishlist--active{% endif %}" 
+        title="{% if is_wishlisted %}Remove from wishlist{% else %}Add to wishlist{% endif %}"
+        hx-post="{% url 'courses:course_wishlist_toggle' course.id %}"
+        hx-swap="outerHTML">
+  <i class="feather-heart"></i>
+</button>

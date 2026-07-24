@@ -1,0 +1,23 @@
+{% extends "base_auth.html" %}
+{% load i18n static %}
+
+{% block auth_content %}
+<section class="fragment--form">
+  <section class="auth__card card card--form text-center">
+    <header class="auth__form-header">
+      <div class="auth__logo mb-4"><a href="/"><img src="{% static 'images/logo.png' %}" style="max-height:60px" alt="Logo"></a></div>
+      <h2 class="auth__form-title">{% trans "Sign Out" %}</h2>
+      <p class="auth__form-subtitle mb-4">{% trans "Are you sure you want to sign out?" %}</p>
+    </header>
+
+    <form method="post" action="{% url 'account_logout' %}" hx-post="{% url 'account_logout' %}" hx-target=".fragment--form" hx-swap="innerHTML">
+      {% csrf_token %}
+      {% if redirect_field_value %}<input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}">{% endif %}
+      <div class="d-grid gap-2">
+        <button class="btn btn-danger btn-lg" type="submit">{% trans "Sign Out" %}</button>
+        <a href="{% url 'account_login' %}" class="btn btn-secondary" hx-get="{% url 'account_login' %}" hx-target=".fragment--form" hx-swap="innerHTML">{% trans "Cancel" %}</a>
+      </div>
+    </form>
+  </section>
+</section>
+{% endblock auth_content %}

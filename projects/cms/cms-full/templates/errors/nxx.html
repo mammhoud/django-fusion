@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block title %}{{ status_code }} - {{ error_title }}{% endblock %}
+
+{% block bodyclass %}error-page{% endblock %}
+
+{% block body %}
+<div class="container d-flex align-items-center justify-content-center min-vh-100 text-center py-5">
+    <div class="error-container">
+        <h1 class="display-1 fw-bold text-primary">{{ status_code }}</h1>
+        <h2 class="display-6 mb-3">{{ error_title }}</h2>
+        <p class="lead mb-4">{{ error_message }}</p>
+
+        {% if exception and debug %}
+            <div class="alert alert-danger mb-4 text-start">
+                <pre class="mb-0"><code>{{ exception }}</code></pre>
+            </div>
+        {% endif %}
+
+        <a href="/" class="btn btn-primary px-4 py-2">
+            {% trans "Return to Homepage" %}
+        </a>
+    </div>
+</div>
+{% endblock %}
