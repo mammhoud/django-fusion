@@ -208,6 +208,87 @@ class FormBlock(blocks.StructBlock):
 
 
 # ═══════════════════════════════════════════════════════════════════
+# Dashboard Content Blocks
+# ═══════════════════════════════════════════════════════════════════
+
+class DashboardWelcomeBlock(blocks.StructBlock):
+    """Welcome greeting block for the dashboard header."""
+
+    heading = blocks.CharBlock(max_length=200, default="Welcome back!")
+    intro = blocks.TextBlock(required=False, default="")
+    icon_class = blocks.CharBlock(max_length=100, required=False, default="")
+
+    class Meta:
+        icon = "user"
+        label = _("Dashboard Welcome")
+
+
+class DashboardQuickLinkBlock(blocks.StructBlock):
+    """A single quick-link item for the dashboard."""
+
+    label = blocks.CharBlock(max_length=100, default="My Courses")
+    href = blocks.CharBlock(max_length=300, default="/dashboard/courses")
+    icon_class = blocks.CharBlock(max_length=100, required=False, default="")
+    sort_order = blocks.IntegerBlock(default=0)
+
+
+class DashboardQuickLinksBlock(blocks.StructBlock):
+    """Quick-link section for the dashboard sidebar or homepage."""
+
+    heading = blocks.CharBlock(max_length=200, required=False, default="Quick Links")
+    links = blocks.ListBlock(DashboardQuickLinkBlock(), default=list)
+
+    class Meta:
+        icon = "link"
+        label = _("Dashboard Quick Links")
+
+
+class DashboardTipBlock(blocks.StructBlock):
+    """A tip / helpful hint displayed on the dashboard."""
+
+    heading = blocks.CharBlock(max_length=200, default="Tip")
+    content = blocks.TextBlock(default="")
+    icon_class = blocks.CharBlock(max_length=100, required=False, default="")
+
+    class Meta:
+        icon = "pick"
+        label = _("Dashboard Tip")
+
+
+class DashboardAnnouncementBlock(blocks.StructBlock):
+    """A CMS-managed inline announcement block for the dashboard."""
+
+    heading = blocks.CharBlock(max_length=200, default="Announcement")
+    content = blocks.TextBlock(default="")
+    link = blocks.CharBlock(max_length=300, required=False, default="")
+    link_label = blocks.CharBlock(max_length=100, required=False, default="Learn More")
+    variant = blocks.ChoiceBlock(
+        choices=[
+            ("info", "Info"),
+            ("warning", "Warning"),
+            ("success", "Success"),
+        ],
+        default="info",
+    )
+
+    class Meta:
+        icon = "warning"
+        label = _("Dashboard Announcement")
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Dashboard Page Block Registry
+# ═══════════════════════════════════════════════════════════════════
+
+DASHBOARD_CONTENT_BLOCKS = [
+    ("dashboard_welcome", DashboardWelcomeBlock()),
+    ("dashboard_quick_links", DashboardQuickLinksBlock()),
+    ("dashboard_tip", DashboardTipBlock()),
+    ("dashboard_announcement", DashboardAnnouncementBlock()),
+]
+
+
+# ═══════════════════════════════════════════════════════════════════
 # Global StreamBlock (used by all page types)
 # ═══════════════════════════════════════════════════════════════════
 

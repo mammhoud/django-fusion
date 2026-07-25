@@ -14,6 +14,7 @@ class ImportExportModelAdmin(BaseImportExportModelAdmin, ModelAdmin):
 
 from ..models import Certificate, Classes, Enrollment, Quiz, Schedule, Wishlist
 from ..models.courses import Course, Module
+from ..models.video import Video, VideoCaption
 from ..models.quiz import QuizChoice, QuizQuestion
 from ..models.review import Review
 
@@ -439,6 +440,67 @@ class QuizAdmin(ModelAdmin):
                 "passing_score", "time_limit", "max_attempts",
                 "shuffle_questions", "show_correct_answers",
             )
+        }),
+        (_("Timestamps"), {
+            "fields": ("created_at", "updated_at"),
+            "classes": ("collapse",)
+        }),
+    )
+
+
+# ─────────────────────────────────────────────
+# VIDEO ADMIN
+# ─────────────────────────────────────────────
+
+class VideoCaptionInline(TabularInline):
+    model = VideoCaption
+    extra = 1
+    fields = ("language", "label", "file", "is_default")
+    verbose_name = _("Caption Track")
+    verbose_name_plural = _("Caption Tracks")
+
+
+@admin.register(Video)
+class VideoAdmin(ModelAdmin):
+    compressed_fields = True
+    warn_unsaved_changes = True
+    list_display = (
+        "title", "lesson", "duration_display",
+        "video_format", "processing_status", "is_preview",
+    )
+    list_filter = ("processing_status", "video_format", "is_preview", "is_active")
+    search_fields = ("title", "lesson__title", "description")
+    readonly_fields = (
+        "duration_seconds", "width", "height", "file_size",
+        "bitrate", "processing_status", "processing_error",
+        "processing_started_at", "processed_at",
+        "created_at", "updated_at",
+    )
+    inlines = [VideoCaptionInline]
+
+    fieldsets = (
+        (_("Video Information"), {
+            "fields": ("lesson", "title", "description", "sort_order")
+        }),
+        (_("File"), {
+            "fields": ("file", "thumbnail", "captions")
+        }),
+        (_("Metadata"), {
+            "fields": (
+                "duration_seconds", "width", "height",
+                "file_size", "video_format", "bitrate",
+            ),
+            "classes": ("collapse",)
+        }),
+        (_("Processing"), {
+            "fields": (
+                "processing_status", "processing_error",
+                "processing_started_at", "processed_at",
+            ),
+            "classes": ("collapse",)
+        }),
+        (_("Access"), {
+            "fields": ("is_preview", "is_active")
         }),
         (_("Timestamps"), {
             "fields": ("created_at", "updated_at"),

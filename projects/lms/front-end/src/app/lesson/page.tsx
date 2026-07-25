@@ -1,12 +1,12 @@
 'use client';
 
-import { useState, Suspense } from 'react';
+import { useState, Suspense, useRef, useCallback } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
 import {
   HiPlay, HiCheck, HiLockClosed, HiMenu, HiX,
   HiChevronLeft, HiChevronRight, HiBookOpen, HiClock,
-  HiDocumentText, HiChat, HiStar,
+  HiDocumentText, HiChat, HiStar, HiVolumeUp, HiFilm,
 } from 'react-icons/hi';
 
 interface Lesson {
@@ -15,6 +15,10 @@ interface Lesson {
   duration: string;
   completed: boolean;
   locked: boolean;
+  video_id?: number | null;
+  video_file_url?: string;
+  video_url?: string;
+  has_video?: boolean;
 }
 
 interface Module {
@@ -28,29 +32,29 @@ const mockModules: Module[] = [
     id: 'm1',
     title: 'Getting Started',
     lessons: [
-      { id: 'l1', title: 'Course Introduction', duration: '4:30', completed: true, locked: false },
-      { id: 'l2', title: 'Setting Up Your Environment', duration: '12:15', completed: true, locked: false },
-      { id: 'l3', title: 'Core Concepts Overview', duration: '8:45', completed: false, locked: false },
+      { id: 'l1', title: 'Course Introduction', duration: '4:30', completed: true, locked: false, has_video: true, video_file_url: '' },
+      { id: 'l2', title: 'Setting Up Your Environment', duration: '12:15', completed: true, locked: false, has_video: true },
+      { id: 'l3', title: 'Core Concepts Overview', duration: '8:45', completed: false, locked: false, has_video: true },
     ],
   },
   {
     id: 'm2',
     title: 'Foundation Topics',
     lessons: [
-      { id: 'l4', title: 'Understanding the Basics', duration: '15:20', completed: false, locked: false },
-      { id: 'l5', title: 'Advanced Techniques', duration: '22:10', completed: false, locked: false },
-      { id: 'l6', title: 'Practical Applications', duration: '18:30', completed: false, locked: true },
+      { id: 'l4', title: 'Understanding the Basics', duration: '15:20', completed: false, locked: false, has_video: true },
+      { id: 'l5', title: 'Advanced Techniques', duration: '22:10', completed: false, locked: false, has_video: true },
+      { id: 'l6', title: 'Practical Applications', duration: '18:30', completed: false, locked: true, has_video: false },
     ],
   },
   {
     id: 'm3',
     title: 'Advanced Module',
     lessons: [
-      { id: 'l7', title: 'Expert Patterns', duration: '25:00', completed: false, locked: true },
-      { id: 'l8', title: 'Real-World Project', duration: '45:00', completed: false, locked: true },
+      { id: 'l7', title: 'Expert Patterns', duration: '25:00', completed: false, locked: true, has_video: true },
+      { id: 'l8', title: 'Real-World Project', duration: '45:00', completed: false, locked: true, has_video: true },
     ],
-  },]
-;
+  },
+];
 
 function LessonContent() {
   const searchParams = useSearchParams();
@@ -169,21 +173,14 @@ function LessonContent() {
           </div>
         </div>
 
-        {/* Video Player */}
-        <div className="bg-black aspect-video flex items-center justify-center relative group">
-          <div className="absolute inset-0 flex items-center justify-center">
-            <div className="text-center">
-              <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center mx-auto mb-4
-                group-hover:bg-white/30 transition-colors cursor-pointer">
-                <HiPlay className="w-8 h-8 text-white ml-0.5" />
-              </div>
-              <p className="text-white/60 text-sm">{currentLesson?.duration || '0:00'}</p>
-            </div>
-          </div>
-          <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800">
-            <div className="h-full bg-[rgb(var(--ctc-primary))] w-1/3 transition-all" />
-          </div>
-        </div>
+        {/* Video Player — Real HTML5 player */}
+        <VideoPlayer
+          lesson={currentLesson}
+          onProgress={(pct) => {
+            // In production, send progress to the server
+            console.log(`Video progress: ${pct}%`);
+          }}
+        />
 
         {/* Lesson Content */}
         <div className="max-w-4xl mx-auto px-4 py-6">
@@ -315,6 +312,237 @@ function LessonContent() {
     </div>
   );
 }
+
+// ══════════════════════════════════════════════════════════════════════
+// VideoPlayer component — real HTML5 video with range-request support
+// ══════════════════════════════════════════════════════════════════════
+
+interface VideoPlayerProps {
+  lesson: Lesson | undefined;
+  onProgress?: (progressPercent: number) => void;
+}
+
+function VideoPlayer({ lesson, onProgress }: VideoPlayerProps) {
+  const videoRef = useRef<HTMLVideoElement>(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+  const [currentTime, setCurrentTime] = useState(0);
+  const [duration, setDuration] = useState(0);
+  const [volume, setVolume] = useState(1);
+  const [isMuted, setIsMuted] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef<HTMLDivElement>(null);
+
+  // Determine the video source
+  const hasVideo = lesson?.has_video && (lesson?.video_file_url || lesson?.video_url);
+  const videoSource = lesson?.video_file_url || lesson?.video_url || '';
+  const isExternalVideo = !lesson?.video_file_url && !!lesson?.video_url;
+
+  const handleTimeUpdate = useCallback(() => {
+    if (videoRef.current) {
+      const ct = videoRef.current.currentTime;
+      setCurrentTime(ct);
+      if (duration > 0) {
+        const pct = Math.round((ct / duration) * 100);
+        onProgress?.(pct);
+      }
+    }
+  }, [duration, onProgress]);
+
+  const handleLoadedMetadata = useCallback(() => {
+    if (videoRef.current) {
+      setDuration(videoRef.current.duration);
+    }
+  }, []);
+
+  const togglePlay = useCallback(() => {
+    if (!videoRef.current) return;
+    if (isPlaying) {
+      videoRef.current.pause();
+    } else {
+      videoRef.current.play().catch(() => {});
+    }
+    setIsPlaying(!isPlaying);
+  }, [isPlaying]);
+
+  const handleVolumeChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    const v = parseFloat(e.target.value);
+    setVolume(v);
+    setIsMuted(v === 0);
+    if (videoRef.current) {
+      videoRef.current.volume = v;
+    }
+  }, []);
+
+  const toggleMute = useCallback(() => {
+    if (!videoRef.current) return;
+    const newMuted = !isMuted;
+    videoRef.current.muted = newMuted;
+    setIsMuted(newMuted);
+  }, [isMuted]);
+
+  const toggleFullscreen = useCallback(() => {
+    if (!containerRef.current) return;
+    if (!document.fullscreenElement) {
+      containerRef.current.requestFullscreen().catch(() => {});
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen().catch(() => {});
+      setIsFullscreen(false);
+    }
+  }, []);
+
+  const formatTime = (seconds: number): string => {
+    const h = Math.floor(seconds / 3600);
+    const m = Math.floor((seconds % 3600) / 60);
+    const s = Math.floor(seconds % 60);
+    if (h > 0) return `${h}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+    return `${m}:${s.toString().padStart(2, '0')}`;
+  };
+
+  const progressPercent = duration > 0 ? (currentTime / duration) * 100 : 0;
+
+  const seekTo = useCallback((e: React.MouseEvent<HTMLDivElement>) => {
+    if (!videoRef.current) return;
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const pct = x / rect.width;
+    videoRef.current.currentTime = pct * duration;
+  }, [duration]);
+
+  if (!hasVideo) {
+    return (
+      <div className="bg-gradient-to-br from-gray-900 to-gray-800 aspect-video flex items-center justify-center">
+        <div className="text-center">
+          <HiFilm className="w-12 h-12 text-white/30 mx-auto mb-3" />
+          <p className="text-white/50 text-sm">No video available for this lesson</p>
+          <p className="text-white/30 text-xs mt-1">{lesson?.duration || ''} reading content</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (isExternalVideo) {
+    return (
+      <div className="bg-black aspect-video flex items-center justify-center">
+        <iframe
+          src={videoSource.replace('watch?v=', 'embed/').replace('youtu.be/', 'youtube.com/embed/')}
+          className="w-full h-full"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowFullScreen
+          title={lesson?.title || 'Lesson video'}
+        />
+      </div>
+    );
+  }
+
+  // Self-hosted video with HTML5 player
+  return (
+    <div ref={containerRef} className="bg-black relative group">
+      <video
+        ref={videoRef}
+        className="w-full aspect-video object-contain cursor-pointer"
+        onTimeUpdate={handleTimeUpdate}
+        onLoadedMetadata={handleLoadedMetadata}
+        onPlay={() => setIsPlaying(true)}
+        onPause={() => setIsPlaying(false)}
+        onEnded={() => setIsPlaying(false)}
+        onClick={togglePlay}
+        preload="metadata"
+        playsInline
+      >
+        <source src={videoSource} type='video/mp4' />
+        Your browser does not support the video tag.
+      </video>
+
+      {/* Play/Pause overlay (shown when paused) */}
+      {!isPlaying && (
+        <div
+          className="absolute inset-0 flex items-center justify-center bg-black/20 cursor-pointer"
+          onClick={togglePlay}
+        >
+          <div className="w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full flex items-center justify-center
+            hover:bg-white/30 transition-all hover:scale-110">
+            <HiPlay className="w-8 h-8 text-white ml-0.5" />
+          </div>
+        </div>
+      )}
+
+      {/* Controls bar */}
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 via-black/40 to-transparent px-4 pt-8 pb-3
+        opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        {/* Progress bar */}
+        <div
+          className="w-full h-1 bg-white/30 rounded-full mb-3 cursor-pointer group/progress"
+          onClick={seekTo}
+        >
+          <div
+            className="h-full bg-[rgb(var(--ctc-primary))] rounded-full relative transition-all duration-100"
+            style={{ width: `${progressPercent}%` }}
+          >
+            <div className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 bg-white rounded-full
+              opacity-0 group-hover/progress:opacity-100 transition-opacity shadow" />
+          </div>
+        </div>
+
+        {/* Controls */}
+        <div className="flex items-center justify-between text-white">
+          <div className="flex items-center gap-3">
+            {/* Play/Pause */}
+            <button onClick={togglePlay} className="p-1 hover:text-[rgb(var(--ctc-primary))] transition-colors">
+              {isPlaying ? (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M6 4h4v16H6V4zm8 0h4v16h-4V4z"/></svg>
+              ) : (
+                <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+              )}
+            </button>
+
+            {/* Time */}
+            <span className="text-xs text-white/70 font-mono">
+              {formatTime(currentTime)} / {formatTime(duration)}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-3">
+            {/* Volume */}
+            <div className="flex items-center gap-1.5 group/vol">
+              <button onClick={toggleMute} className="p-1 hover:text-[rgb(var(--ctc-primary))] transition-colors">
+                {isMuted || volume === 0 ? (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M16.5 12c0-1.77-1.02-3.29-2.5-4.03v2.21l2.45 2.45c.03-.2.05-.41.05-.63zm2.5 0c0 .94-.2 1.82-.54 2.64l1.51 1.51A8.796 8.796 0 0021 12c0-4.28-2.99-7.86-7-8.77v2.06c2.89.86 5 3.54 5 6.71zM4.27 3L3 4.27 7.73 9H3v6h4l5 5v-6.73l4.25 4.25c-.67.52-1.42.93-2.25 1.18v2.06a8.99 8.99 0 003.69-1.81L19.73 21 21 19.73l-9-9L4.27 3zM12 4L9.91 6.09 12 8.18V4z"/></svg>
+                ) : (
+                  <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24"><path d="M3 9v6h4l5 5V4L7 9H3zm13.5 3c0-1.77-1.02-3.29-2.5-4.03v8.05c1.48-.73 2.5-2.25 2.5-4.02zM14 3.23v2.06c2.89.86 5 3.54 5 6.71s-2.11 5.85-5 6.71v2.06c4.01-.91 7-4.49 7-8.77s-2.99-7.86-7-8.77z"/></svg>
+                )}
+              </button>
+              <input
+                type="range"
+                min="0"
+                max="1"
+                step="0.05"
+                value={isMuted ? 0 : volume}
+                onChange={handleVolumeChange}
+                className="w-0 group-hover/vol:w-20 transition-all duration-300 accent-[rgb(var(--ctc-primary))]"
+              />
+            </div>
+
+            {/* Fullscreen */}
+            <button onClick={toggleFullscreen} className="p-1 hover:text-[rgb(var(--ctc-primary))] transition-colors">
+              <svg className="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+                {isFullscreen ? (
+                  <path d="M5 16h3v3h2v-5H5v2zm3-8H5v2h5V5H8v3zm6 11h2v-3h3v-2h-5v5zm2-11V5h-2v5h5V8h-3z"/>
+                ) : (
+                  <path d="M7 14H5v5h5v-2H7v-3zm-2-4h2V7h3V5H5v5zm12 7h-3v2h5v-5h-2v3zM14 5v2h3v3h2V5h-5z"/>
+                )}
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ══════════════════════════════════════════════════════════════════════
+// Page export
+// ══════════════════════════════════════════════════════════════════════
 
 export default function LessonPage() {
   return (

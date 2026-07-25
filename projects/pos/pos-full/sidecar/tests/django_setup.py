@@ -46,7 +46,12 @@ try:
     from django.conf import settings
 
     # Shared database with Rust backend (pos-full/restaurant.db)
+    # Fall back to :memory: if the Rust backend DB doesn't exist.
     DB_PATH = _SIDECAR.parent / "restaurant.db"
+    if not DB_PATH.exists():
+        DB_PATH_STR = ":memory:"
+    else:
+        DB_PATH_STR = str(DB_PATH)
 
     if not settings.configured:
         settings.configure(
@@ -54,12 +59,25 @@ try:
             DATABASES={
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
-                    "NAME": str(DB_PATH),
+                    "NAME": DB_PATH_STR,
                 }
             },
             INSTALLED_APPS=[
                 "django.contrib.contenttypes",
                 "django.contrib.auth",
+            ],
+            TEMPLATES=[
+                {
+                    "BACKEND": "django.template.backends.django.DjangoTemplates",
+                    "DIRS": [],
+                    "APP_DIRS": True,
+                    "OPTIONS": {
+                        "context_processors": [
+                            "django.template.context_processors.request",
+                            "django.contrib.auth.context_processors.auth",
+                        ],
+                    },
+                },
             ],
             DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
             USE_TZ=True,
@@ -70,6 +88,30 @@ try:
     django.setup()
 
     from django.db import connection
+
+    # ── Self-healing schema — add columns that Rust up.sql may have missed ──
+    _SCHEMA_FIXES: dict[str, list[tuple[str, str]]] = {
+        "full_products": [
+            ("border_color", "varchar(7) NOT NULL DEFAULT ''"),
+        ],
+        "full_inventory": [
+            ("shipping_fee", "decimal NOT NULL DEFAULT 0"),
+        ],
+    }
+    try:
+        cursor = connection.cursor()
+        for table, columns in _SCHEMA_FIXES.items():
+            try:
+                cursor.execute(f'PRAGMA table_info("{table}")')
+                existing = {row[1] for row in cursor.fetchall()}
+                for col_name, col_def in columns:
+                    if col_name not in existing:
+                        cursor.execute(f'ALTER TABLE "{table}" ADD COLUMN "{col_name}" {col_def}')
+                        logger.info("Schema fix: added %s.%s", table, col_name)
+            except Exception:
+                pass
+    except Exception:
+        pass
 
     # ── Import all local models used by webhook tests ──
     from models.audit import SignalEvent
@@ -121,7 +163,7 @@ try:
     )
 
     _DJANGO_READY = True
-    logger.info("Django ORM ready (db: %s)", DB_PATH)
+    logger.info("Django ORM ready (db: %s)", DB_PATH_STR)
 
 except Exception as exc:
     logger.critical("Django bootstrap failed: %s", exc)

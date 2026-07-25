@@ -27,7 +27,12 @@ export interface InstructorDashboard {
   recent_enrollments: number;
   pending_reviews: number;
   monthly_earnings: { month: string; amount: number }[];
-  popular_courses: { id: number; title: string; students: number; revenue: number }[];
+  enrollment_trends: { month: string; count: number }[];
+  total_enrollments: number;
+  completed_enrollments: number;
+  active_enrollments: number;
+  completion_rate: number;
+  popular_courses: { id: number; title: string; student_count: number; course_revenue: number; course_completed: number }[];
 }
 
 export const instructorsApi = api.injectEndpoints({

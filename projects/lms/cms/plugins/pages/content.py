@@ -337,6 +337,35 @@ STATIC_PAGES = {
             {"type": "form", "heading": "Send us a message"},
         ],
     },
+    "dashboard": {
+        "slug": "dashboard",
+        "title": "Dashboard",
+        "seo": {
+            "title": "Dashboard",
+            "description": "Your learning dashboard",
+        },
+        "blocks": [
+            {
+                "type": "dashboard_welcome",
+                "heading": "Welcome back!",
+                "intro": "Here's your learning progress at a glance.",
+            },
+            {
+                "type": "dashboard_quick_links",
+                "heading": "Quick Links",
+                "links": [
+                    {"label": "My Courses", "href": "/dashboard/courses", "icon_class": "HiBookOpen"},
+                    {"label": "Quizzes", "href": "/dashboard/quiz", "icon_class": "HiChartBar"},
+                    {"label": "Announcements", "href": "/dashboard/announcement", "icon_class": "HiSpeakerphone"},
+                ],
+            },
+            {
+                "type": "dashboard_tip",
+                "heading": "Pro Tip",
+                "content": "Complete your profile to get personalized course recommendations.",
+            },
+        ],
+    },
 }
 
 

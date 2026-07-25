@@ -1,6 +1,7 @@
 """POS Cloud — API URL routing via django-fusion viewset auto-registration."""
 
 from django.urls import path, include
+from . import sync_dashboard
 from .views import (
     OrganizationViewSet,
     BranchViewSet,
@@ -53,4 +54,28 @@ urlpatterns = [
     path("sync/push/sales", sync_receive_sales, name="sync_receive_sales"),
     path("sync/push/inventory", sync_receive_inventory, name="sync_receive_inventory"),
     path("sync/push/heartbeat", sync_receive_heartbeat, name="sync_receive_heartbeat"),
+
+    # ═════════════════════════════════════════════════════════
+    # Sync Dashboard (health, queue, conflicts)
+    # ═════════════════════════════════════════════════════════
+
+    # Health
+    path("dashboard/branches/health", sync_dashboard.all_branches_health, name="dashboard_all_branches_health"),
+    path("dashboard/branches/<str:branch_code>/health", sync_dashboard.branch_health, name="dashboard_branch_health"),
+
+    # Queue
+    path("dashboard/queue/summary", sync_dashboard.queue_summary, name="dashboard_queue_summary"),
+    path("dashboard/queue/by-branch", sync_dashboard.queue_by_branch, name="dashboard_queue_by_branch"),
+    path("dashboard/queue/list/<str:status>", sync_dashboard.queue_list, name="dashboard_queue_list"),
+    path("dashboard/queue/retry/<int:item_id>", sync_dashboard.queue_retry, name="dashboard_queue_retry"),
+    path("dashboard/queue/cancel/<int:item_id>", sync_dashboard.queue_cancel, name="dashboard_queue_cancel"),
+
+    # Conflicts
+    path("dashboard/conflicts", sync_dashboard.conflict_list, name="dashboard_conflict_list"),
+    path("dashboard/conflicts/stats", sync_dashboard.conflict_stats, name="dashboard_conflict_stats"),
+    path("dashboard/conflicts/<int:conflict_id>/resolve", sync_dashboard.conflict_resolve, name="dashboard_conflict_resolve"),
+    path("dashboard/conflicts/<int:conflict_id>/dismiss", sync_dashboard.conflict_dismiss, name="dashboard_conflict_dismiss"),
+
+    # Activity
+    path("dashboard/activity", sync_dashboard.recent_activity, name="dashboard_recent_activity"),
 ]

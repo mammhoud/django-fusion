@@ -15,7 +15,7 @@ from wagtail.fields import StreamField
 from wagtail.models import Page
 from wagtail.rich_text import RichText
 
-from www.content.models.blocks import PAGE_CONTENT_BLOCKS
+from www.content.models.blocks import PAGE_CONTENT_BLOCKS, DASHBOARD_CONTENT_BLOCKS
 
 
 # ═══════════════════════════════════════════════════════════════════
@@ -184,6 +184,32 @@ class DynamicContactPage(ContentPageMixin, Page):
         db_table = "content_dynamic_contactpage"
         verbose_name = _("contact page")
         verbose_name_plural = _("contact pages")
+        app_label = "content"
+
+
+# ═══════════════════════════════════════════════════════════════════
+# Dashboard Page
+# ═══════════════════════════════════════════════════════════════════
+
+class DynamicDashboardPage(ContentPageMixin, Page):
+    """Dashboard page — welcome message, tips, quick links, announcements."""
+
+    body = StreamField(DASHBOARD_CONTENT_BLOCKS, use_json_field=True, blank=True)
+
+    content_panels = Page.content_panels + [
+        MultiFieldPanel(
+            [FieldPanel("seo_title"), FieldPanel("seo_description")],
+            heading=_("SEO"),
+        ),
+        FieldPanel("body"),
+    ]
+
+    subpage_types = []
+
+    class Meta:
+        db_table = "content_dynamic_dashboard"
+        verbose_name = _("dashboard page")
+        verbose_name_plural = _("dashboard pages")
         app_label = "content"
 
 

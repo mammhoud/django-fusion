@@ -21,6 +21,14 @@ from .views.enrollment import (
     enrollment_export_csv,
     enrollment_import_csv,
 )
+from .views.video import (
+    video_stream,
+    video_upload,
+    video_detail,
+    video_list,
+    video_delete,
+    video_processing_callback,
+)
 from .views.payments import (
     initialize_payment,
     verify_payment,
@@ -69,6 +77,15 @@ app_name = "lms"
 # =========================================================================
 
 urlpatterns = [
+    # ===================================================================
+    # Video Streaming & Management
+    # ===================================================================
+    path("video/stream/<int:video_id>/", video_stream, name="video-stream"),
+    path("video/upload/", video_upload, name="video-upload"),
+    path("video/<int:video_id>/", video_detail, name="video-detail"),
+    path("video/lesson/<int:lesson_id>/", video_list, name="video-list"),
+    path("video/<int:video_id>/delete/", video_delete, name="video-delete"),
+    path("video/<int:video_id>/processing-callback/", video_processing_callback, name="video-processing-callback"),
     # ===================================================================
     # Course Detail & Learning
     # ===================================================================

@@ -90,16 +90,27 @@ def _serialize_category(category: CourseCategory) -> dict:
 
 def _build_curriculum(course) -> list[dict]:
     """Build curriculum structure: modules with their lessons."""
+    from plugins.lms.models import Video
+
     modules = []
     for mod in course.modules.all().order_by("order"):
         lessons = []
         for lesson in mod.lessons.all().order_by("order"):
+            # Get the first ready video for this lesson
+            primary_video = Video.objects.filter(
+                lesson=lesson, is_active=True,
+                processing_status=Video.ProcessingStatus.READY,
+            ).order_by("sort_order", "created_at").first()
+
             lessons.append(
                 {
                     "id": lesson.id,
                     "title": lesson.title,
                     "duration": lesson.duration,
                     "video_url": lesson.video_url or "",
+                    "video_file_url": primary_video.streaming_url if primary_video else "",
+                    "video_id": primary_video.pk if primary_video else None,
+                    "has_video": primary_video is not None or bool(lesson.video_url),
                     "is_preview": lesson.is_preview,
                 }
             )

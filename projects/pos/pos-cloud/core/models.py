@@ -551,3 +551,161 @@ class DeviceToken(BaseDeviceToken):
             models.Index(fields=["app_type", "sync_status"]),
             models.Index(fields=["branch", "is_active"]),
         ]
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Sync Conflict — persisted conflicts requiring manual resolution
+# ══════════════════════════════════════════════════════════════════════
+
+
+class SyncConflict(models.Model):
+    """
+    Records a sync conflict between two branch versions of the same entity.
+
+    When the conflict resolution engine detects a conflict that cannot be
+    auto-merged, it creates a ``SyncConflict`` record.  Admins review and
+    resolve these via the approval dashboard or API.
+    """
+
+    class ResolutionStatus(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        RESOLVED_USE_LOCAL = "resolved_use_local", _("Resolved — Use Local")
+        RESOLVED_USE_REMOTE = "resolved_use_remote", _("Resolved — Use Remote")
+        RESOLVED_MERGE = "resolved_merge", _("Resolved — Merged")
+        DISMISSED = "dismissed", _("Dismissed")
+
+    branch = models.ForeignKey(
+        Branch, on_delete=models.CASCADE, related_name="sync_conflicts",
+    )
+    node_id = models.CharField(max_length=100, db_index=True)
+    entity_type = models.CharField(
+        max_length=50,
+        help_text="Entity type discriminator (products, inventory, prices, …)",
+    )
+    entity_id = models.CharField(
+        max_length=100,
+        help_text="The local (cloud-side) entity ID that conflicted",
+    )
+
+    # The two conflicting snapshots
+    local_data = models.JSONField(default=dict, help_text="Cloud-side version of the data")
+    remote_data = models.JSONField(default=dict, help_text="Incoming branch version of the data")
+
+    # Conflict metadata from the resolver
+    conflict_fields = models.JSONField(
+        default=list, blank=True,
+        help_text="List of field-level conflicts [{field, local_value, remote_value}, …]",
+    )
+    resolver_used = models.CharField(
+        max_length=50, default="auto",
+        help_text="Which resolver detected this conflict",
+    )
+    reason = models.TextField(blank=True, default="")
+
+    # Resolution tracking
+    status = models.CharField(
+        max_length=30,
+        choices=ResolutionStatus.choices,
+        default=ResolutionStatus.PENDING,
+        db_index=True,
+    )
+    resolved_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="resolved_conflicts",
+    )
+    resolved_at = models.DateTimeField(null=True, blank=True)
+    resolution_notes = models.TextField(blank=True, default="")
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        verbose_name = _("sync conflict")
+        verbose_name_plural = _("sync conflicts")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["branch", "entity_type"]),
+            models.Index(fields=["status", "created_at"]),
+            models.Index(fields=["node_id"]),
+        ]
+
+    def __str__(self):
+        return f"Conflict[{self.pk}] {self.entity_type}#{self.entity_id} ({self.status})"
+
+
+# ══════════════════════════════════════════════════════════════════════
+# Sync Queue — durable queue of pending sync operations
+# ══════════════════════════════════════════════════════════════════════
+
+
+class SyncQueueItem(models.Model):
+    """
+    Durable queue entry for a sync operation pending delivery to a branch.
+
+    The sync queue ensures at-least-once delivery with retry/backoff.
+    Items are created when the cloud wants to push data to a branch
+    (e.g., product catalog refresh, config update, approval resolution).
+    """
+
+    class QueueStatus(models.TextChoices):
+        PENDING = "pending", _("Pending")
+        DELIVERING = "delivering", _("Delivering")
+        DELIVERED = "delivered", _("Delivered")
+        FAILED = "failed", _("Failed")
+        CANCELLED = "cancelled", _("Cancelled")
+
+    branch = models.ForeignKey(
+        Branch, on_delete=models.CASCADE, related_name="sync_queue_items",
+    )
+    node_id = models.CharField(max_length=100, db_index=True)
+    entity_type = models.CharField(max_length=50)
+    operation = models.CharField(
+        max_length=20, default="update",
+        choices=[
+            ("create", "Create"),
+            ("update", "Update"),
+            ("delete", "Delete"),
+            ("sync_request", "Sync Request"),
+            ("config_update", "Config Update"),
+            ("approval", "Approval Notification"),
+        ],
+    )
+    payload = models.JSONField(default=dict, help_text="Data to sync to the branch")
+
+    # Delivery tracking
+    status = models.CharField(
+        max_length=20, choices=QueueStatus.choices, default=QueueStatus.PENDING, db_index=True,
+    )
+    attempt_count = models.IntegerField(default=0)
+    max_attempts = models.IntegerField(default=5)
+    last_error = models.TextField(blank=True, default="")
+
+    # Idempotency key — branch uses this to deduplicate
+    idempotency_key = models.CharField(
+        max_length=100, unique=True, null=True, blank=True,
+        help_text="Unique key for idempotent processing on the branch side",
+    )
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    next_retry_at = models.DateTimeField(null=True, blank=True, db_index=True)
+    delivered_at = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = _("sync queue item")
+        verbose_name_plural = _("sync queue items")
+        ordering = ["-created_at"]
+        indexes = [
+            models.Index(fields=["status", "next_retry_at"]),
+            models.Index(fields=["branch", "status"]),
+        ]
+
+    def __str__(self):
+        return f"Queue[{self.pk}] {self.operation} {self.entity_type} → {self.node_id} ({self.status})"
+
+    @property
+    def is_expired(self) -> bool:
+        """Check if this item has exceeded its max retries."""
+        return self.attempt_count >= self.max_attempts

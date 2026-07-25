@@ -7,9 +7,13 @@ from .courses.progress import LessonProgress, ModuleProgress
 from .courses.specification import Lesson, LessonResource
 from .courses.tag import CourseTag
 from .enrollment import *
+from .announcement import Announcement
+from .assignment import Assignment, AssignmentSubmission
+from .notification import Notification, NotificationPreference
 from .payments import PaymentTransaction, PaymentRefund, PaymentWebhookLog
 from .quiz import Quiz, QuizAnswer, QuizAttempt, QuizChoice, QuizQuestion
 from .review import *
+from .video import Video, VideoCaption
 from .wishlist import Wishlist
 
 __all__ = [
@@ -34,12 +38,20 @@ __all__ = [
     "PaymentTransaction",
     "PaymentRefund",
     "PaymentWebhookLog",
+    # Assignments
+    "Assignment",
+    "AssignmentSubmission",
+    # Announcements
+    "Announcement",
     # Quiz
     "Quiz",
     "QuizQuestion",
     "QuizChoice",
     "QuizAttempt",
     "QuizAnswer",
+    # Video
+    "Video",
+    "VideoCaption",
     # Misc
     "Certificate",
     "Wishlist",

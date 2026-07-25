@@ -180,6 +180,243 @@ CREATE TABLE IF NOT EXISTS inventory_adjustments (
     uploaded BOOLEAN NOT NULL DEFAULT 0
 );
 
+-- ================================================================
+-- Django-compatible tables (full_* prefix)
+-- These mirror Django model tables so the ORM can read/write data
+-- side-by-side with the Rust backend.  CREATE TABLE IF NOT EXISTS
+-- makes this safe to run alongside Django's schema_editor.create_model().
+-- ================================================================
+
+CREATE TABLE IF NOT EXISTS full_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    slug varchar(200) NOT NULL UNIQUE,
+    description text NOT NULL DEFAULT '',
+    display_order integer NOT NULL DEFAULT 0,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    sku varchar(50) UNIQUE,
+    category_id bigint REFERENCES full_categories(id) ON DELETE SET NULL,
+    price decimal NOT NULL,
+    cost_price decimal NOT NULL DEFAULT 0,
+    tax_rate varchar(20) NOT NULL DEFAULT 'standard',
+    barcode varchar(100) NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    stock_quantity integer NOT NULL DEFAULT 0,
+    low_stock_threshold integer NOT NULL DEFAULT 10,
+    description text NOT NULL DEFAULT '',
+    image_url varchar(200) NOT NULL DEFAULT '',
+    border_color varchar(7) NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name varchar(100) NOT NULL,
+    last_name varchar(100) NOT NULL DEFAULT '',
+    email varchar(254),
+    phone varchar(20) NOT NULL DEFAULT '',
+    loyalty_points integer NOT NULL DEFAULT 0,
+    total_spent decimal NOT NULL DEFAULT 0,
+    notes text NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_sales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id bigint REFERENCES full_customers(id) ON DELETE SET NULL,
+    sale_date datetime NOT NULL,
+    subtotal decimal NOT NULL,
+    tax_amount decimal NOT NULL DEFAULT 0,
+    discount_amount decimal NOT NULL DEFAULT 0,
+    cashback_amount decimal NOT NULL DEFAULT 0,
+    total decimal NOT NULL,
+    payment_method varchar(20) NOT NULL DEFAULT 'cash',
+    status varchar(20) NOT NULL DEFAULT 'completed',
+    notes text NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_sale_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sale_id bigint NOT NULL REFERENCES full_sales(id) ON DELETE CASCADE,
+    product_id bigint REFERENCES full_products(id) ON DELETE SET NULL,
+    product_name varchar(200) NOT NULL,
+    quantity integer NOT NULL,
+    unit_price decimal NOT NULL,
+    line_total decimal NOT NULL,
+    notes varchar(255) NOT NULL DEFAULT '',
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name varchar(100) NOT NULL,
+    last_name varchar(100) NOT NULL,
+    email varchar(254),
+    phone varchar(20) NOT NULL DEFAULT '',
+    role varchar(20) NOT NULL DEFAULT 'cashier',
+    pin_code varchar(6) NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    hourly_rate decimal NOT NULL DEFAULT 0,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_inventory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id bigint NOT NULL REFERENCES full_products(id) ON DELETE CASCADE,
+    transaction_type varchar(20) NOT NULL,
+    quantity integer NOT NULL,
+    reference varchar(100) NOT NULL DEFAULT '',
+    notes text NOT NULL DEFAULT '',
+    created_by varchar(100) NOT NULL DEFAULT '',
+    shipping_fee decimal NOT NULL DEFAULT 0,
+    inventory_id varchar(50) NOT NULL DEFAULT 'main',
+    transfer_to_inventory varchar(50) NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_ingredients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    unit varchar(50) NOT NULL,
+    current_quantity decimal NOT NULL DEFAULT 0,
+    reorder_level decimal NOT NULL DEFAULT 0,
+    reorder_quantity decimal NOT NULL DEFAULT 0,
+    cost_per_unit decimal NOT NULL DEFAULT 0,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_recipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id bigint NOT NULL REFERENCES full_products(id) ON DELETE CASCADE,
+    name varchar(200) NOT NULL DEFAULT '',
+    instructions text NOT NULL DEFAULT '',
+    yield_quantity decimal NOT NULL DEFAULT 1,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_suppliers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    contact_name varchar(200) NOT NULL DEFAULT '',
+    email varchar(254) NOT NULL DEFAULT '',
+    phone varchar(50) NOT NULL DEFAULT '',
+    address text NOT NULL DEFAULT '',
+    tax_id varchar(50) NOT NULL DEFAULT '',
+    payment_terms varchar(200) NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS full_purchase_orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    supplier_id bigint NOT NULL REFERENCES full_suppliers(id) ON DELETE CASCADE,
+    reference_number varchar(100) NOT NULL DEFAULT '',
+    status varchar(20) NOT NULL DEFAULT 'draft',
+    total_amount decimal NOT NULL DEFAULT 0,
+    expected_date date,
+    notes text NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS full_purchase_order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    purchase_order_id bigint NOT NULL REFERENCES full_purchase_orders(id) ON DELETE CASCADE,
+    product_id bigint REFERENCES full_products(id) ON DELETE SET NULL,
+    product_name varchar(200) NOT NULL,
+    quantity integer NOT NULL DEFAULT 1,
+    cost_per_unit decimal NOT NULL,
+    received_quantity integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS full_roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(100) NOT NULL UNIQUE,
+    description text NOT NULL DEFAULT '',
+    permissions text NOT NULL DEFAULT '{}',
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_receipt_templates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL UNIQUE,
+    description text NOT NULL DEFAULT '',
+    template_html text NOT NULL DEFAULT '',
+    template_css text NOT NULL DEFAULT '',
+    is_default bool NOT NULL DEFAULT 0,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_inventory_adjustments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ingredient_id bigint NOT NULL REFERENCES full_ingredients(id) ON DELETE CASCADE,
+    quantity decimal NOT NULL DEFAULT 0,
+    adjustment_type varchar(20) NOT NULL DEFAULT 'adjustment',
+    previous_quantity decimal,
+    new_quantity decimal,
+    reason varchar(20) NOT NULL DEFAULT 'correction',
+    notes text NOT NULL DEFAULT '',
+    created_by varchar(100) NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
 -- Triggers to auto-update `updated_at`
 CREATE TRIGGER IF NOT EXISTS update_products_updated_at AFTER UPDATE ON products
 BEGIN UPDATE products SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END;
@@ -1303,6 +1540,243 @@ CREATE TABLE IF NOT EXISTS inventory_adjustments (
     created_by TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     uploaded BOOLEAN NOT NULL DEFAULT 0
+);
+
+-- ================================================================
+-- Django-compatible tables (full_* prefix)
+-- These mirror Django model tables so the ORM can read/write data
+-- side-by-side with the Rust backend.  CREATE TABLE IF NOT EXISTS
+-- makes this safe to run alongside Django's schema_editor.create_model().
+-- ================================================================
+
+CREATE TABLE IF NOT EXISTS full_categories (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    slug varchar(200) NOT NULL UNIQUE,
+    description text NOT NULL DEFAULT '',
+    display_order integer NOT NULL DEFAULT 0,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_products (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    sku varchar(50) UNIQUE,
+    category_id bigint REFERENCES full_categories(id) ON DELETE SET NULL,
+    price decimal NOT NULL,
+    cost_price decimal NOT NULL DEFAULT 0,
+    tax_rate varchar(20) NOT NULL DEFAULT 'standard',
+    barcode varchar(100) NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    stock_quantity integer NOT NULL DEFAULT 0,
+    low_stock_threshold integer NOT NULL DEFAULT 10,
+    description text NOT NULL DEFAULT '',
+    image_url varchar(200) NOT NULL DEFAULT '',
+    border_color varchar(7) NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_customers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name varchar(100) NOT NULL,
+    last_name varchar(100) NOT NULL DEFAULT '',
+    email varchar(254),
+    phone varchar(20) NOT NULL DEFAULT '',
+    loyalty_points integer NOT NULL DEFAULT 0,
+    total_spent decimal NOT NULL DEFAULT 0,
+    notes text NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_sales (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    customer_id bigint REFERENCES full_customers(id) ON DELETE SET NULL,
+    sale_date datetime NOT NULL,
+    subtotal decimal NOT NULL,
+    tax_amount decimal NOT NULL DEFAULT 0,
+    discount_amount decimal NOT NULL DEFAULT 0,
+    cashback_amount decimal NOT NULL DEFAULT 0,
+    total decimal NOT NULL,
+    payment_method varchar(20) NOT NULL DEFAULT 'cash',
+    status varchar(20) NOT NULL DEFAULT 'completed',
+    notes text NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_sale_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    sale_id bigint NOT NULL REFERENCES full_sales(id) ON DELETE CASCADE,
+    product_id bigint REFERENCES full_products(id) ON DELETE SET NULL,
+    product_name varchar(200) NOT NULL,
+    quantity integer NOT NULL,
+    unit_price decimal NOT NULL,
+    line_total decimal NOT NULL,
+    notes varchar(255) NOT NULL DEFAULT '',
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_employees (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    first_name varchar(100) NOT NULL,
+    last_name varchar(100) NOT NULL,
+    email varchar(254),
+    phone varchar(20) NOT NULL DEFAULT '',
+    role varchar(20) NOT NULL DEFAULT 'cashier',
+    pin_code varchar(6) NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    hourly_rate decimal NOT NULL DEFAULT 0,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_inventory (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id bigint NOT NULL REFERENCES full_products(id) ON DELETE CASCADE,
+    transaction_type varchar(20) NOT NULL,
+    quantity integer NOT NULL,
+    reference varchar(100) NOT NULL DEFAULT '',
+    notes text NOT NULL DEFAULT '',
+    created_by varchar(100) NOT NULL DEFAULT '',
+    shipping_fee decimal NOT NULL DEFAULT 0,
+    inventory_id varchar(50) NOT NULL DEFAULT 'main',
+    transfer_to_inventory varchar(50) NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_ingredients (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    unit varchar(50) NOT NULL,
+    current_quantity decimal NOT NULL DEFAULT 0,
+    reorder_level decimal NOT NULL DEFAULT 0,
+    reorder_quantity decimal NOT NULL DEFAULT 0,
+    cost_per_unit decimal NOT NULL DEFAULT 0,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_recipes (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    product_id bigint NOT NULL REFERENCES full_products(id) ON DELETE CASCADE,
+    name varchar(200) NOT NULL DEFAULT '',
+    instructions text NOT NULL DEFAULT '',
+    yield_quantity decimal NOT NULL DEFAULT 1,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_suppliers (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL,
+    contact_name varchar(200) NOT NULL DEFAULT '',
+    email varchar(254) NOT NULL DEFAULT '',
+    phone varchar(50) NOT NULL DEFAULT '',
+    address text NOT NULL DEFAULT '',
+    tax_id varchar(50) NOT NULL DEFAULT '',
+    payment_terms varchar(200) NOT NULL DEFAULT '',
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS full_purchase_orders (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    supplier_id bigint NOT NULL REFERENCES full_suppliers(id) ON DELETE CASCADE,
+    reference_number varchar(100) NOT NULL DEFAULT '',
+    status varchar(20) NOT NULL DEFAULT 'draft',
+    total_amount decimal NOT NULL DEFAULT 0,
+    expected_date date,
+    notes text NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL
+);
+
+CREATE TABLE IF NOT EXISTS full_purchase_order_items (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    purchase_order_id bigint NOT NULL REFERENCES full_purchase_orders(id) ON DELETE CASCADE,
+    product_id bigint REFERENCES full_products(id) ON DELETE SET NULL,
+    product_name varchar(200) NOT NULL,
+    quantity integer NOT NULL DEFAULT 1,
+    cost_per_unit decimal NOT NULL,
+    received_quantity integer NOT NULL DEFAULT 0
+);
+
+CREATE TABLE IF NOT EXISTS full_roles (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(100) NOT NULL UNIQUE,
+    description text NOT NULL DEFAULT '',
+    permissions text NOT NULL DEFAULT '{}',
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_receipt_templates (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    name varchar(200) NOT NULL UNIQUE,
+    description text NOT NULL DEFAULT '',
+    template_html text NOT NULL DEFAULT '',
+    template_css text NOT NULL DEFAULT '',
+    is_default bool NOT NULL DEFAULT 0,
+    is_active bool NOT NULL DEFAULT 1,
+    created_at datetime NOT NULL,
+    updated_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
+);
+
+CREATE TABLE IF NOT EXISTS full_inventory_adjustments (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    ingredient_id bigint NOT NULL REFERENCES full_ingredients(id) ON DELETE CASCADE,
+    quantity decimal NOT NULL DEFAULT 0,
+    adjustment_type varchar(20) NOT NULL DEFAULT 'adjustment',
+    previous_quantity decimal,
+    new_quantity decimal,
+    reason varchar(20) NOT NULL DEFAULT 'correction',
+    notes text NOT NULL DEFAULT '',
+    created_by varchar(100) NOT NULL DEFAULT '',
+    created_at datetime NOT NULL,
+    is_synced bool NOT NULL DEFAULT 0,
+    synced_at datetime,
+    sync_status varchar(20) NOT NULL DEFAULT 'pending'
 );
 
 -- Triggers to auto-update `updated_at`

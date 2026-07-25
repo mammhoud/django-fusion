@@ -24,6 +24,7 @@ const studentLinks = [
   { href: '/dashboard', icon: HiHome, label: 'Overview' },
   { href: '/dashboard/enrolled-courses', icon: HiBookOpen, label: 'My Courses' },
   { href: '/dashboard/quiz', icon: HiChartBar, label: 'Quizzes' },
+  { href: '/dashboard/my-assignments', icon: HiClipboardList, label: 'My Assignments' },
   { href: '/dashboard/announcement', icon: HiSpeakerphone, label: 'Announcements' },
   { href: '/dashboard/attempts', icon: HiLightningBolt, label: 'My Attempts' },
   { href: '/dashboard/history', icon: HiClock, label: 'History' },

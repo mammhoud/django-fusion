@@ -2,23 +2,34 @@
 
 import { useState } from 'react';
 import { HiChevronDown, HiSearch } from 'react-icons/hi';
-import { useGetPageQuery } from '@/store/api/endpoints/pages';
-import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
-import ErrorState from '@/components/ui/ErrorState';
+import { FusionPage } from '@/components/FusionPage';
+import type { CmsPage } from '@/store/api/endpoints/pages';
 
 export default function FaqPage() {
-  const { data: page, isLoading, error } = useGetPageQuery('faq');
+  return (
+    <FusionPage slug="faq">
+      {(page, _fallback) => <FaqPageContent page={page} />}
+    </FusionPage>
+  );
+}
+
+function FaqPageContent({ page }: { page: CmsPage | undefined }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [openItems, setOpenItems] = useState<Record<string, boolean>>({});
 
-  if (isLoading) return <LoadingSkeleton variant="detail" />;
-  if (error || !page) return <ErrorState message="Unable to load FAQ content." />;
+  const hero = page?.blocks.find((block) => block.type === 'hero');
+  const faqGroups = page?.blocks.find((block) => block.type === 'faq_groups')?.groups || [];
+  const cta = page?.blocks.find((block) => block.type === 'cta');
 
-  const hero = page.blocks.find((block) => block.type === 'hero');
-  const faqGroups = page.blocks.find((block) => block.type === 'faq_groups')?.groups || [];
-  const cta = page.blocks.find((block) => block.type === 'cta');
   const filteredCategories = faqGroups
-    .map((cat) => ({ ...cat, items: cat.items.filter((item) => item.question.toLowerCase().includes(searchQuery.toLowerCase()) || item.answer.toLowerCase().includes(searchQuery.toLowerCase())) }))
+    .map((cat) => ({
+      ...cat,
+      items: cat.items.filter(
+        (item) =>
+          item.question.toLowerCase().includes(searchQuery.toLowerCase()) ||
+          item.answer.toLowerCase().includes(searchQuery.toLowerCase())
+      ),
+    }))
     .filter((cat) => cat.items.length > 0);
 
   const toggleItem = (categoryIdx: number, itemIdx: number) => {
@@ -81,7 +92,7 @@ export default function FaqPage() {
         </div>
 
         {cta && (
-          <div className="mt-12 text-center bg-[rgb(var(--ctc-primary))]/5 rounded-2xl p-8">
+          <div className="mt-12 text-center bg-[rgb(var(--ctc-primary))]/5 rounded-2xl p-8 border border-[rgb(var(--ctc-primary))]/10">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">{cta.heading}</h3>
             <p className="text-gray-600 mb-6">{cta.intro}</p>
             <a href={cta.ctas?.[0]?.href || '/contact'} className="btn-primary inline-flex">
