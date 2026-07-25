@@ -1,23 +1,32 @@
-# Diagrams 📊
+# Diagrams — Visual Architecture & Flows
 
-**Object Type:** Diagram
-**Directory:** `diagrams/`
-**Status:** 📝 Planned
+> **Type:** Diagram 📊
+> **Description:** ASCII and Mermaid diagrams for visual understanding of system architecture, data flow, sequences, and data models.
 
 ---
 
-## Purpose
+## Diagram Types
 
-This directory contains standalone ASCII, Mermaid, or other diagrams for visual understanding. Diagrams can also be embedded within other document types.
+| Type | Description | Best For |
+|------|-------------|----------|
+| **Flow** | Process and workflow diagrams | User journeys, data flow |
+| **Architecture** | System component diagrams | High-level architecture |
+| **Sequence** | Interaction sequence diagrams | API calls, auth flows |
+| **Data Model** | Entity-relationship diagrams | Database schemas |
+| **Timeline** | Chronological progression | Roadmaps, releases |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Type | Select | Flow | Architecture | Sequence | Data Model | Timeline |
+## Convention
 
-## Planned Files
+- Use **ASCII box-drawing** characters for simple diagrams (max 80 chars wide)
+- Use **Mermaid** for complex diagrams (rendered by mkdocs)
+- Store standalone diagrams here, embed inline diagrams within their source doc
 
-- `sync-flow.md` — Sync architecture flow diagram
-- `deployment-architecture.md` — Deployment architecture diagram
-- `data-model.md` — Core data model diagram
+---
+
+## Related
+
+- → `../objects/_object-types.md` — Diagram type definition
+- → `../architecture/_index.md` — Architecture diagrams context
+- → `../README.md` — Master index

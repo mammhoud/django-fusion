@@ -1,29 +1,26 @@
-# Blog / Posts 📝
+# Blog — Posts & Announcements
 
-**Object Type:** Blog/Post
-**Directory:** `blog/`
-**Status:** 📝 Planned
+> **Type:** Blog/Post 📝
+> **Description:** Published articles, announcements, tutorials, case studies, and technical updates about Structa Cloud development.
 
 ---
 
-## Purpose
+## Content Categories
 
-This directory contains blog posts, articles, announcements, and changelog entries for Structa Cloud. Each post links to related features, guides, and goals.
+| Category | Description | Frequency |
+|----------|-------------|-----------|
+| **Announcement** | New releases, features, milestones | Monthly |
+| **Tutorial** | Step-by-step guides and how-tos | Bi-weekly |
+| **Case Study** | Real-world usage and success stories | Quarterly |
+| **Update** | Development progress and changelog highlights | Weekly |
+| **Technical** | Deep dives into architecture and decisions | Monthly |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Status | Select | Draft | Published | Scheduled | Archived |
-| Author | Relation | → Person |
-| Published Date | Date | — |
-| Category | Select | Announcement | Tutorial | Case Study | Update | Technical |
+## Related
 
-## Naming Convention
-
-`YYYY-MM-DD-post-slug.md`
-
-## Planned Files
-
-- `2024-12-01-welcome-to-structa-cloud.md` — Launch announcement
-- `2024-12-15-pos-mini-release.md` — POS Mini release notes
+- → `../objects/blog-post.md` — Blog/Post object type
+- → `../changelogs/_index.md` — Version history
+- → `../releases/_index.md` — Release announcements
+- → `../people/_index.md` — Authors
+- → `../README.md` — Master index

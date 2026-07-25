@@ -1,28 +1,52 @@
-# Plans 📋
+# Plans — Business & Project Strategy
 
-**Object Type:** Plan
-**Directory:** `plans/`
-**Status:** 📝 Planned
+> Business model, operational plans, market research, risk management, and strategic documentation.
 
 ---
 
-## Purpose
+## Contents
 
-This directory contains development plans, roadmaps, sprint plans, and release plans. Each plan links to goals, milestones, tasks, and editions.
+| Document | Description |
+|----------|-------------|
+| `business-model.md` | Business Model Canvas — key partners, activities, resources, value proposition |
+| `operational-plan.md` | Operations, development workflow, deployment, customer service, disaster recovery |
+| `marketing-strategy.md` | Marketing & sales strategy, channels, campaigns |
+| `market-research.md` | Industry trends, competitor analysis, target audiences, USP |
+| `resources.md` | Resource allocation — manpower, technology, finances, partnerships |
+| `risk-management.md` | Financial, operational, reputational, strategic risks & mitigation |
+| `project-guide.md` | How to navigate the Structa Cloud monorepo |
+| `product-development.md` | Product development lifecycle from idea to maintenance |
+| `startup-planner.md` | Startup planning and strategy |
+| `start-up.md` | Start-up checklist and readiness |
+| `monitoring.md` | Monitoring, evaluation, and metrics |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Status | Select | Draft | Active | Completed | Cancelled |
-| Type | Select | Roadmap | Sprint | Release | Milestone | Quarterly | Annual |
-| Start Date | Date | — |
-| End Date | Date | — |
-| Owner | Relation | → Person |
-| Progress | Number | Percentage 0-100 |
+## Strategic Framework
 
-## Planned Files
+```
+                Goals 🎯
+                   │
+        ┌──────────┼──────────┐
+        ▼          ▼          ▼
+   Market Research  Business  Operations
+   & Analysis       Model     & Delivery
+        │          │          │
+        └──────────┼──────────┘
+                   ▼
+              Execution
+                   │
+        ┌──────────┼──────────┐
+        ▼          ▼          ▼
+    Products    Features   Resources
+    (Arch)      (Features)  (Plans)
+```
 
-- `2025-roadmap.md` — 2025 product roadmap
-- `q4-2024-sprint-plan.md` — Q4 2024 sprint plan
-- `v2-release-plan.md` — V2 release plan
+---
+
+## Related
+
+- → `../tasks/tasks-and-backlog.md` — Implementation tasks
+- → `../architecture/overview.md` — Technical architecture
+- → `../objects/goal.md` — Goal object type
+- → `../README.md` — Master index

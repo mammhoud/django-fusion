@@ -1,14 +1,19 @@
-# Reference — Database Schema
-
-**Type:** Reference 📚
-**Tags:** `#pos-mini` `#pos-solo` `#pos-full` `#database`
-**Status:** Published
-**Category:** Database
-
 ---
-
-## pos-mini (SQLite — Rust)
-
+# yaml-language-server: $schema=schemas/page.schema.json
+Object type:
+    - Page
+Creation date: "2026-07-24T19:54:39Z"
+Created by:
+    - mammhoud
+id: bafyreiaewdjtnj2qvhz5c6f7prln5j5lo5rvxphcluk72raxpdmcqzgloe
+---
+# Reference — Database Schema   
+**Type:** Reference 📚
+T**ags: **#`pos-mini `#`pos-solo `#`pos-full `#`database
+`S**tatus: **Published
+C**ategory: **Database   
+ --- 
+## pos-mini (SQLite — Rust)   
 ```
 products(id, name, price, unit, category_id, is_active, created_at)
 categories(id, name)
@@ -23,11 +28,10 @@ recipes(id, product_id, type, yield_quantity)
 recipe_ingredients(id, recipe_id, ingredient_id, quantity, unit)
 roles(id, name, permissions, is_active, created_at)
 user_roles(user_id, role_id)
+
 ```
-
-## pos-solo / pos-full (Sidecar — Django + SQLite)
-
-```python
+## pos-solo / pos-full (Sidecar — Django + SQLite)   
+```
 # pos.py — Core POS models
 class Product(models.Model):
     name, price, unit, category, image, border_color, is_active, created_at
@@ -60,12 +64,10 @@ class Node(models.Model):
 class Payroll(models.Model):
     employee(FK), period_start, period_end, regular_hours, overtime_hours
     total_pay, status, created_at
+
 ```
-
----
-
-## Key Relationships
-
+ --- 
+## Key Relationships   
 ```
 Category ──→ Product ←── SaleItem ←── Sale
                │
@@ -74,12 +76,12 @@ Category ──→ Product ←── SaleItem ←── Sale
 Employee ←── Sale
 Role ──→ Employee
 Node ──→ SyncQueue
+
 ```
-
----
-
-## Related Docs
-- → `architecture/editions-overview.md` — Edition comparison
-- → `features/pos-mini.md` — Rust models
-- → `features/pos-solo.md` — Django models
-- → `references/tauri-commands.md` — Commands that access these tables
+ --- 
+## Related Docs   
+- → `architecture/editions-overview.md` — Edition comparison   
+- → `features/pos-mini.md` — Rust models   
+- → `features/pos-solo.md` — Django models   
+- → `references/tauri-commands.md` — Commands that access these tables   
+[Reference — Database Schema](reference-database-schema.md)    

@@ -1,4 +1,4 @@
-import { test, expect } from '../../fixtures/auth';
+import { test, expect } from '../fixtures/auth';
 
 /**
  * Theme Visual Regression Tests

@@ -1,5 +1,5 @@
-import { test, expect } from '../../fixtures/auth';
-import type { Page } from '@playwright/test';
+import { test, expect, type Page } from '@playwright/test';
+import { mockAuthProfile, STUDENT_PROFILE, INSTRUCTOR_PROFILE, ADMIN_PROFILE } from '../fixtures/auth';
 
 /**
  * Fixed version of dashboard-ctc-theme.spec.ts
@@ -27,6 +27,8 @@ function captureConsoleErrors(page: Page) {
 }
 
 // ── Test config ──────────────────────────────────────────────────────
+
+const FORBIDDEN_CLASSES = ['indigo-', 'purple-'];
 
 interface DashboardPage {
   path: string;
@@ -137,19 +139,23 @@ const DASHBOARD_PAGES: DashboardPage[] = [
   },
 ];
 
-// ── Tests ────────────────────────────────────────────────────────────
+// ── Dashboard Tests ────────────────────────────────────────────────────
 
-for (const pageConfig of DASHBOARD_PAGES) {
-  const fixtureName =
-    pageConfig.role === 'admin' ? 'adminPage' :
-    pageConfig.role === 'instructor' ? 'instructorPage' :
-    'studentPage';
+function getProfileForRole(role: 'student' | 'instructor' | 'admin') {
+  switch (role) {
+    case 'admin': return ADMIN_PROFILE;
+    case 'instructor': return INSTRUCTOR_PROFILE;
+    case 'student': return STUDENT_PROFILE;
+  }
+}
 
-  test.describe(`${pageConfig.name} (${pageConfig.path}) — CTC Teal Theme`, () => {
-    test(`renders with CTC teal theme (role: ${pageConfig.role})`, async ({
-      [fixtureName]: page,
-    }: Record<string, Page>) => {
+test.describe('Dashboard Pages — CTC Teal Theme', () => {
+  for (const pageConfig of DASHBOARD_PAGES) {
+    test(`${pageConfig.name} (${pageConfig.path}) renders with CTC teal theme (role: ${pageConfig.role})`, async ({ page }) => {
       const getErrors = captureConsoleErrors(page);
+
+      // Mock auth for the required role
+      await mockAuthProfile(page, getProfileForRole(pageConfig.role));
 
       // Navigate with auth mocked
       const response = await page.goto(pageConfig.path, {
@@ -194,19 +200,20 @@ for (const pageConfig of DASHBOARD_PAGES) {
       // Assertion 6: No console errors
       expect(getErrors(), `${pageConfig.name} should have no console errors`).toHaveLength(0);
     });
-  });
-}
+  }
+});
 
 // ── Cross-page consistency ──────────────────────────────────────────
 
 test.describe('Cross-page CTC Theme Consistency', () => {
-  test('CTC primary CSS variables are defined', async ({ studentPage }) => {
-    await studentPage.goto('/dashboard', { waitUntil: 'networkidle' });
+  test('CTC primary CSS variables are defined', async ({ page }) => {
+    await mockAuthProfile(page, STUDENT_PROFILE);
+    await page.goto('/dashboard', { waitUntil: 'networkidle' });
 
-    const ctcPrimary = await studentPage.evaluate(() =>
+    const ctcPrimary = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--ctc-primary').trim()
     );
-    const ctcPrimaryDark = await studentPage.evaluate(() =>
+    const ctcPrimaryDark = await page.evaluate(() =>
       getComputedStyle(document.documentElement).getPropertyValue('--ctc-primary-dark').trim()
     );
 
@@ -214,10 +221,11 @@ test.describe('Cross-page CTC Theme Consistency', () => {
     expect(ctcPrimaryDark).toBe('0 122 136');
   });
 
-  test('btn-primary renders with CTC teal background', async ({ studentPage }) => {
-    await studentPage.goto('/dashboard', { waitUntil: 'networkidle' });
+  test('btn-primary renders with CTC teal background', async ({ page }) => {
+    await mockAuthProfile(page, STUDENT_PROFILE);
+    await page.goto('/dashboard', { waitUntil: 'networkidle' });
 
-    const btn = studentPage.locator('.btn-primary').first();
+    const btn = page.locator('.btn-primary').first();
     if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
       const bgColor = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
       expect(bgColor).toBe('rgb(0, 161, 179)');
@@ -234,10 +242,6 @@ interface PublicPage {
   name: string;
   expectedClasses: string[];
 }
-
-const FORBIDDEN_CLASSES = ['indigo-', 'purple-'];
-
-
 
 const PUBLIC_PAGES: PublicPage[] = [
   { path: '/', name: 'Homepage', expectedClasses: ['btn-primary', 'card'] },
