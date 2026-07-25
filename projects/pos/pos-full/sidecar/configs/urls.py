@@ -13,6 +13,9 @@ Usage:
 from django.contrib import admin
 from django.urls import path
 
+from bolt_api import bolt
+
 urlpatterns = [
     path("admin/", admin.site.urls),
+    path("bolt/", bolt.urls),
 ]

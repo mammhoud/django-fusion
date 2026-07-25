@@ -3,7 +3,7 @@ name = "pos-full-sidecar"
 dynamic = ["version"]
 description = "POS Full Edition — Robyn + Django ORM Cloud Master sidecar"
 readme = "README.md"
-requires-python = ">=3.11"
+requires-python = ">=3.12"
 license = { text = "AGPL-3.0" }
 authors = [
     { name = "Structa Cloud", email = "dev@structa.cloud" },
@@ -12,6 +12,7 @@ authors = [
 dependencies = [
     "robyn>=0.50,<1.0",
     "django>=4.2,<5.1",
+    "django-bolt[pydantic]",
     "django-fusion",
     "django-unfold>=0.50,<0.60",
     "asgiref>=3.8",
@@ -58,6 +59,7 @@ asyncio_mode = "auto"
 
 [tool.uv.sources]
 django-fusion = { path = "../../../../libs/django-fusion", editable = true }
+django-bolt = { path = "../../../../libs/django-bolt", editable = true }
 
 [dependency-groups]
 dev = [

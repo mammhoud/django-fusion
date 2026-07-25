@@ -29,6 +29,8 @@ DATABASES = {
 
 # ── Installed Apps ──
 INSTALLED_APPS = [
+    # django-bolt high-performance API framework
+    "django_bolt",
     # Unfold — modern admin theme (must come before django.contrib.admin)
     "unfold",
     "unfold.contrib.filters",
