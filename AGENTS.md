@@ -304,6 +304,52 @@ from django_fusion.comp.generic import (
 
 ---
 
+## AnyType Documentation System
+
+The `docs/Anytype/` directory contains the project's planning and documentation knowledge graph, organized for AnyType import.
+
+### Directory Structure
+
+```
+docs/Anytype/
+├── README.md                 # Master index with navigation map
+├── _prompts.md               # AI agent prompts for docs work
+├── objects/                  # AnyType object type & entity definitions
+│   ├── _object-types.md      # All custom type definitions
+│   ├── _relations.md         # Relation/linking guide
+│   ├── _tags.md              # Multi-select tag definitions
+│   └── [type].md             # Individual type definitions
+├── architecture/             # System architecture docs
+├── features/                 # Product feature descriptions
+├── guides/                   # Step-by-step guides
+│   └── install/              # Platform-specific install guides
+├── references/               # API & config references
+├── plans/                    # Business & project plans
+├── changelogs/               # Version history
+├── tasks/                    # Implementation tasks
+├── schemas/                  # JSON schema definitions
+└── files/                    # Images & assets
+```
+
+### Key Conventions
+
+- **Object types**: Architecture 🏗️, Feature ✨, Guide 📘, Reference 📚, Changelog 📋, Task ✅, Blog/Post 📝, Goal 🎯, Edition 📦, Configuration ⚙️
+- **Frontmatter**: Always include `Object type`, `Tags`, `Status` in YAML frontmatter
+- **Cross-references**: Use `→` arrows with relative paths at the end of each doc
+- **Linking**: Every doc should end with a `## Related` section linking back to the master index and related objects
+- **Style**: Minimal code, compact tables, ASCII diagrams, consistent emoji usage
+- **Install guides**: Platform-specific guides at `guides/install/[platform].md` with troubleshooting tables
+
+### When Working with AnyType Docs
+
+1. Read `docs/Anytype/README.md` for navigation
+2. Read `docs/Anytype/objects/_object-types.md` for type definitions
+3. Follow `docs/Anytype/_prompts.md` for structured prompts
+4. Keep documents organized by subdirectory — not flat at root
+5. Delete duplicate content with suffixed names (`_c`, `_h`, `_r`, etc.)
+
+---
+
 ## Development Commands Reference
 
 ### Quick Start (All Sites)

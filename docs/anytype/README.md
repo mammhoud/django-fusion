@@ -1,182 +1,137 @@
-# AnyType Documentation System
+# AnyType Documentation — Structa Cloud
 
-**Type:** Guide 📘
-**Tags:** `#documentation` `#pos-mini` `#pos-solo` `#pos-full` `#pos-cloud`
-**Status:** Published
-
----
-
-## Overview
-
-This directory contains the Structured Documentation System for Structa Cloud — a comprehensive AnyType knowledge base covering product architecture, features, guides, development plans, goals, blog content, and more. The system uses 14 custom object types with interlinked relations for full graph-based navigation.
+> **Canonical entry point** for the Anytype documentation system.
+> 22 object types powering the knowledge graph across dedicated content directories.
 
 ---
 
 ## Directory Structure
 
 ```
-anytype/
-├── README.md                  # This file — navigation and overview
-├── _object-types.md           # All 14 custom type definitions
-├── _relations.md              # Object relation/linking guide (15 relations)
-├── _tags.md                   # Multi-select tag definitions (9 categories)
-├── _templates.md              # Template generation guide for new docs
-├── _status.md                 # Status tracker — what's done vs needs work
+Anytype/
+├── README.md                     ← You are here
+├── _prompts.md                   ← AI agent prompts for these docs
 │
-├── architecture/              # System architecture 🏗️
-│   ├── architecture-overview.md
-│   ├── editions-overview.md
-│   ├── role-system.md
-│   ├── sync-architecture.md
-│   └── theme-system.md
+├── objects/                      ← AnyType object type & entity definitions
+│   ├── _index.md                 ← Object types overview
+│   ├── _object-types.md          ← All 22 custom type definitions
+│   ├── _relations.md             ← 25+ relation definitions
+│   ├── _tags.md                  ← 80+ multi-select tag definitions
+│   ├── page.md, workspace.md, feature.md, milestone.md
+│   ├── task.md, bookmark.md, note.md, people.md
+│   ├── blog-post.md, goal.md, edition.md, configuration.md
+│   └── component.md, api.md, release.md, decision.md
+│       pipeline.md, style.md, sprint.md, integration.md
 │
-├── features/                  # Feature descriptions ✨
-│   ├── comparison-matrix.md
-│   ├── pos-mini.md
-│   ├── pos-solo.md
-│   └── pos-full.md
+├── architecture/                 ← System architecture & design docs
+├── features/                     ← Product feature descriptions
+├── guides/                       ← Step-by-step guides (with install/)
 │
-├── guides/                    # Step-by-step guides 📘
-│   ├── setup.md
-│   ├── development.md
-│   └── theming.md
+├── components/                   ← UI & business component docs (NEW)
+├── api/                          ← API endpoint definitions (NEW)
+├── releases/                     ← Version release tracking (NEW)
+├── decisions/                    ← ADRs (Architectural Decision Records) (NEW)
+├── pipelines/                    ← CI/CD pipeline definitions (NEW)
+├── style/                        ← Design tokens & theme docs (NEW)
+├── sprints/                      ← Sprint cycle tracking (NEW)
+├── integrations/                 ← Third-party connector docs (NEW)
 │
-├── references/                # API & config references 📚
-│   ├── database-schema.md
-│   ├── i18n-keys.md
-│   ├── sidecar-api.md
-│   └── tauri-commands.md
+├── references/                   ← API & config references
+├── plans/                        ← Business & project plans
+├── changelogs/                   ← Version history
+├── tasks/                        ← Implementation tasks
+├── goals/                        ← Strategic goals & OKRs
+├── milestones/                   ← Key milestones & checkpoints
+├── editions/                     ← Product edition definitions
+├── projects/                     ← High-level project tracking
+├── blog/                         ← Blog posts & announcements
+├── people/                       ← Team members & authors
 │
-├── changelogs/                # Version history 📋
-│   └── pos.md
+├── schemas/                      ← JSON schema definitions
+│   ├── page.schema.json
+│   ├── bookmark.schema.json
+│   ├── milestone.schema.json
+│   ├── note.schema.json
+│   ├── people.schema.json
+│   └── task.schema.json
 │
-├── goals/                     # ⭐ NEW — Strategic goals and OKRs 🎯
-│   └── (coming soon)
-│
-├── editions/                  # ⭐ NEW — Edition definitions 📦
-│   └── (coming soon)
-│
-├── blog/                      # ⭐ NEW — Blog posts and announcements 📝
-│   └── (coming soon)
-│
-├── plans/                     # ⭐ NEW — Roadmaps and development plans 📋
-│   └── (coming soon)
-│
-├── milestones/                # ⭐ NEW — Key milestones and checkpoints 🏁
-│   └── (coming soon)
-│
-├── people/                    # ⭐ NEW — Team member profiles 👤
-│   └── (coming soon)
-│
-├── projects/                  # ⭐ NEW — High-level project definitions 📁
-│   └── (coming soon)
-│
-├── diagrams/                  # ASCII / Mermaid diagrams 📊
-│   └── (future)
-│
-├── tasks/                     # Implementation tasks ✅
-│   └── (various .md files)
-│
-└── schemas/                   # JSON Schema definitions
-    ├── task.schema.json
-    ├── feature.schema.json
-    ├── milestone.schema.json
-    └── ...
+├── diagrams/                     ← ASCII/Mermaid diagrams
+└── files/                        ← Images & assets
 ```
 
 ---
 
-## Object Type System (14 Types)
+## Object Type Reference
 
-| # | Type | Icon | Directory | Status |
-|---|------|------|-----------|--------|
-| 1 | Architecture | 🏗️ | `architecture/` | ✅ |
-| 2 | Feature | ✨ | `features/` | ✅ |
-| 3 | Guide | 📘 | `guides/` | ✅ |
-| 4 | Reference | 📚 | `references/` | ✅ |
-| 5 | Changelog | 📋 | `changelogs/` | ✅ |
-| 6 | Diagram | 📊 | `diagrams/` | ✅ |
-| 7 | Task | ✅ | `tasks/` | ✅ |
-| 8 | **Goal** | 🎯 | `goals/` | 📝 |
-| 9 | **Edition** | 📦 | `editions/` | 📝 |
-| 10 | **Blog/Post** | 📝 | `blog/` | 📝 |
-| 11 | **Plan** | 📋 | `plans/` | 📝 |
-| 12 | **Milestone** | 🏁 | `milestones/` | 📝 |
-| 13 | **Person** | 👤 | `people/` | 📝 |
-| 14 | **Project** | 📁 | `projects/` | 📝 |
-
-> **7 new types added** — see `_object-types.md` for full definitions.
-
----
-
-## Object Type Graph
-
-```
-                    Project 📁
-                   /    |     \
-                  ▼     ▼      ▼
-              Plan 📋  Goal 🎯  Edition 📦
-               |       /    \      |
-               ▼      ▼      ▼     ▼
-           Milestone🏁  Tasks ✅  Feature ✨
-                                     |
-                           ┌─────────┼─────────┐
-                           ▼         ▼         ▼
-                       Guide 📘  Blog/Post📝  Reference📚
-
-              Architecture 🏗️ ← supports everything
-              Changelog 📋 ← tracks releases
-              Diagram 📊 ← visual context
-              Person 👤 ← links to tasks & posts
-```
+| Type | Emoji | Directory | Description |
+|------|-------|-----------|-------------|
+| Architecture | 🏗️ | `architecture/` | System design, data flow, tech stack |
+| Feature | ✨ | `features/` | Product capabilities by edition |
+| Guide | 📘 | `guides/` | Setup, dev, deploy, customize |
+| Reference | 📚 | `references/` | APIs, commands, configs |
+| Changelog | 📋 | `changelogs/` | Version history & release notes |
+| Diagram | 📊 | `diagrams/` | Visual architecture & flow diagrams |
+| Task | ✅ | `tasks/` | Implementation backlog & TODOs |
+| Goal | 🎯 | `goals/` | Strategic objectives & OKRs |
+| Edition | 📦 | `editions/` | Product edition definitions |
+| Blog/Post | 📝 | `blog/` | Articles & announcements |
+| Plan | 📋 | `plans/` | Roadmaps & project plans |
+| Milestone | 🏁 | `milestones/` | Release markers & checkpoints |
+| Person | 👤 | `people/` | Team members & contributors |
+| Project | 📁 | `projects/` | High-level project tracking |
+| Component | 🔧 | `components/` | Reusable UI & business logic |
+| API | 📡 | `api/` | Endpoint definitions |
+| Release | 🚀 | `releases/` | Version releases |
+| Decision | ⚡ | `decisions/` | ADRs & design rationale |
+| Pipeline | 🔄 | `pipelines/` | CI/CD workflow definitions |
+| Style | 🎨 | `style/` | Design tokens & brand |
+| Sprint | 🏃 | `sprints/` | Sprint cycles & retrospectives |
+| Integration | 🔗 | `integrations/` | Third-party connectors |
 
 ---
 
-## Quick Start
+## Object Type Organization
 
-### 1. Import Schema Files
-Start by creating the object types, tags, and relations in AnyType:
+The types are organized in layers:
 
-1. Open AnyType → Settings → Content Model → Add Type
-2. Create the 14 types from `_object-types.md`
-3. Create the Tags Multi-select property from `_tags.md`
-4. Create the Relations from `_relations.md`
-
-### 2. Generate New Documents
-Use `_templates.md` for quick document creation:
-
-```markdown
-# Copy the template for your type, fill in the fields
-# Examples:
-# - Goal template → `goals/q1-2025-release.md`
-# - Edition template → `editions/pos-solo-v2.md`
-# - Blog template → `blog/2024-12-01-new-feature.md`
 ```
-
-### 3. Import Markdown
-Use AnyType's Markdown import feature for each file.
-Assign the correct Type to each document after import.
-
-### 4. Link Objects
-For the `Related Docs` sections, create Object Relations:
-- Open the target document
-- Add the relation property
-- Link back to the source
-
-### 5. Explore Graph View
-Open Graph View to see all connections.
-Use filters by Type, Tags, or Edition to focus.
+Strategic Layer:     Project 📁 → Plan 📋 → Goal 🎯 → Milestone 🏁
+Delivery Layer:      Sprint 🏃 → Task ✅ → Feature ✨ → Release 🚀
+Implementation Layer: Guide 📘 → Component 🔧 → API 📡 → Integration 🔗
+Foundation Layer:    Architecture 🏗️ → Decision ⚡ → Style 🎨 → Reference 📚
+Tracking Layer:      Changelog 📋 → Pipeline 🔄 → Diagram 📊
+People Layer:        Person 👤 → Blog/Post 📝
+Product Layer:       Edition 📦 → features/*.md
+```
 
 ---
 
-## Status Tracking
+## Navigation
 
-See `_status.md` for the full status tracker including:
-- ✅ What's complete
-- 🔄 What needs revision
-- 📝 What's planned
-- 🗑️ What's deprecated
-- Enhancement roadmap (Phases 1-4)
+| Section | Files | Start Here |
+|---------|-------|-----------|
+| **Objects** | 22 type definitions | `objects/_object-types.md` |
+| **Architecture** | System design | `architecture/_index.md` |
+| **Features** | Product capabilities | `features/_index.md` |
+| **Guides** | How-to & workflows | `guides/_index.md` |
+| **Components** | UI library | `components/_index.md` |
+| **API** | Endpoints | `api/_index.md` |
+| **References** | Schemas & commands | `references/_index.md` |
+| **Plans** | Strategy & operations | `plans/_index.md` |
+| **Tasks** | Implementation backlog | `tasks/_index.md` |
+| **Changelogs** | Version history | `changelogs/_index.md` |
+
+---
+
+## AnyType Import Workflow
+
+1. **Define** — Create object types from `objects/_object-types.md`
+2. **Tag** — Create multi-select Tags from `objects/_tags.md`
+3. **Relate** — Create relations from `objects/_relations.md`
+4. **Import** — Import markdown files using AnyType's Markdown import
+5. **Assign** — Assign each file to its object type
+6. **Link** — Connect objects using relations
+7. **Graph** — Explore the complete knowledge graph
 
 ---
 
@@ -184,17 +139,17 @@ See `_status.md` for the full status tracker including:
 
 - **Minimal code** — Show method signatures + `→` return types, not full implementations
 - **ASCII diagrams** — Use box-drawing characters for flow diagrams
-- **Tables** — Compact comparison tables
-- **Related links** — Always end with `→` cross-references
-- **Frontmatter** — Type, Tags, Status, Edition at top
-- **Object mapping** — Use `_templates.md` for consistent document structure
+- **Frontmatter** — `Object type`, `Tags`, `Status` at top of every file
+- **Cross-references** — Use `→` arrows for related links at end of each doc
+- **Color tokens** — Reference project colors with hex codes in context
 
 ---
 
 ## Related Docs
-- → `_object-types.md` — All 14 type definitions
-- → `_relations.md` — Object linking guide
-- → `_tags.md` — Tag definitions
-- → `_templates.md` — Template generation guide
-- → `_status.md` — Status tracker
-- → `architecture/architecture-overview.md` — System architecture
+
+- → `../ai/prompts.md` — AI agent prompts
+- → `../../AGENTS.md` — Project-wide AI agent instructions
+- → `../../libs/ceptor-ai/AGENTS.md` — Ceptor AI agent instructions
+- → `object/_object-types.md` — All 22 object type definitions
+- → `objects/_relations.md` — Relation linking guide
+- → `objects/_tags.md` — Tag definitions

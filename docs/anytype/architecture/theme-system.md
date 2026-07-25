@@ -1,14 +1,19 @@
-# Theme System
-
-**Type:** Architecture 🏗️
-**Tags:** `#frontend` `#theme-default` `#theme-corporate` `#theme-luxury` `#theme-pastel` `#theme-cyberpunk`
-**Status:** Published
-**Edition:** Mini, Solo, Full
-
 ---
-
-## Architecture
-
+# yaml-language-server: $schema=schemas/page.schema.json
+Object type:
+    - Page
+Creation date: "2026-07-24T19:54:39Z"
+Created by:
+    - mammhoud
+id: bafyreifygksb6dfq4qovq7gpaxwcvmj2tl3khj3gqptbel4psixpch7fqa
+---
+# Theme System   
+**Type:** Architecture 🏗️
+T**ags: **#`frontend `#`theme-default `#`theme-corporate `#`theme-luxury `#`theme-pastel `#`theme-cyberpunk
+`S**tatus: **Published
+E**dition: **Mini, Solo, Full   
+ --- 
+## Architecture   
 ```
 ThemeContext (React)
     │
@@ -29,26 +34,21 @@ ThemeContext (React)
                      ▼
               Tailwind Utility Classes
               (bg-teal-500, text-slate-900, etc.)
+
 ```
+ --- 
+## Theme Variants   
+|       Variant   <br> |                    Primary (teal)   <br> |            Surface (slate)   <br> |            Feel   <br> |
+|:---------------------|:-----------------------------------------|:----------------------------------|:-----------------------|
+|   **Default**   <br> |   Indigo/Teal `#6366f1`→`#14b8a6`   <br> |   Gray `#0f172a`→`#f8fafc`   <br> |   Clean, modern   <br> |
+| **Corporate**   <br> |                    Blue `#3b82f6`   <br> |            Slate (neutral)   <br> |    Professional   <br> |
+|    **Luxury**   <br> |                    Gold `#eab308`   <br> |                 Warm stone   <br> |         Premium   <br> |
+|    **Pastel**   <br> |                    Pink `#ec4899`   <br> |               Light purple   <br> |         Playful   <br> |
+| **Cyberpunk**   <br> |                 Magenta `#cc00cc`   <br> |            Dark/Light gray   <br> | Neon futuristic   <br> |
 
----
-
-## Theme Variants
-
-| Variant | Primary (teal) | Surface (slate) | Feel |
-|---------|---------------|-----------------|------|
-| **Default** | Indigo/Teal `#6366f1`→`#14b8a6` | Gray `#0f172a`→`#f8fafc` | Clean, modern |
-| **Corporate** | Blue `#3b82f6` | Slate (neutral) | Professional |
-| **Luxury** | Gold `#eab308` | Warm stone | Premium |
-| **Pastel** | Pink `#ec4899` | Light purple | Playful |
-| **Cyberpunk** | Magenta `#cc00cc` | Dark/Light gray | Neon futuristic |
-
----
-
-## Light / Dark Inversion
-
-Each variant supports both light and dark modes:
-
+ --- 
+## Light / Dark Inversion   
+Each variant supports both light and dark modes:   
 ```
 .dark[data-theme="corporate"] {
   --color-slate-50:  #0f172a;  /* inverted */
@@ -56,24 +56,20 @@ Each variant supports both light and dark modes:
   ...
   --color-slate-900: #f8fafc;
 }
+
 ```
+ --- 
+## Key Files   
+|                             File   <br> |                            Purpose   <br> |
+|:----------------------------------------|:------------------------------------------|
+|  `src/contexts/ThemeContext.tsx`   <br> |           React context + provider   <br> |
+| `src/styles/theme-overrides.css`   <br> | CSS variable overrides per variant   <br> |
+|          `src/styles/themes.css`   <br> |     Additional theme CSS variables   <br> |
+|         `src/pages/Settings.tsx`   <br> |                  Appearance tab UI   <br> |
 
----
-
-## Key Files
-
-| File | Purpose |
-|------|---------|
-| `src/contexts/ThemeContext.tsx` | React context + provider |
-| `src/styles/theme-overrides.css` | CSS variable overrides per variant |
-| `src/styles/themes.css` | Additional theme CSS variables |
-| `src/pages/Settings.tsx` | Appearance tab UI |
-
----
-
-## Usage: Adding a New Theme Variant
-
-```css
+ --- 
+## Usage: Adding a New Theme Variant   
+```
 /* 1. Add CSS variable overrides in theme-overrides.css */
 [data-theme="ocean"] {
   --color-teal-50:  #ecfeff;
@@ -89,11 +85,11 @@ Each variant supports both light and dark modes:
 { id: 'ocean', label: 'Ocean', icon: '🌊', description: 'Deep blue waters' }
 
 /* 4. Add to Settings.tsx appearance tab */
+
 ```
-
----
-
-## Related Docs
-- → `guides/theming.md` — Theme customization guide
-- → `features/comparison-matrix.md` — Which editions support theming
-- → `references/i18n-keys.md` — Appearance tab i18n keys
+ --- 
+## Related Docs   
+- → `guides/theming.md` — Theme customization guide   
+- → `features/comparison-matrix.md` — Which editions support theming   
+- → `references/i18n-keys.md` — Appearance tab i18n keys   
+[Theme System](theme-system.md)    

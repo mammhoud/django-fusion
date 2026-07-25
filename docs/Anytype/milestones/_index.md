@@ -1,25 +1,25 @@
-# Milestones 🏁
+# Milestones — Key Checkpoints & Releases
 
-**Object Type:** Milestone
-**Directory:** `milestones/`
-**Status:** 📝 Planned
+> **Type:** Milestone 🏁
+> **Description:** Key milestones, release markers, and project checkpoints tracking progress toward strategic goals.
 
 ---
 
-## Purpose
+## Current Milestones
 
-This directory tracks key milestones, checkpoints, and release markers for Structa Cloud development. Each milestone links to plans, goals, and tasks.
+| Milestone | Target | Status |
+|-----------|--------|--------|
+| POS Mini Release | Q2 2026 | ✅ Reached |
+| POS Solo Beta | Q3 2026 | 🚧 In Progress |
+| POS Full MVP | Q1 2027 | 📋 Planned |
+| Cloud SaaS Launch | Q3 2027 | 📋 Planned |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Status | Select | Planned | In Progress | Reached | Delayed | Cancelled |
-| Due Date | Date | — |
-| Completed Date | Date | — |
+## Related
 
-## Planned Files
-
-- `alpha-release.md` — Alpha release milestone
-- `beta-release.md` — Beta release milestone
-- `v1-launch.md` — V1 production launch milestone
+- → `../objects/milestone.md` — Milestone object type
+- → `../releases/_index.md` — Related releases
+- → `../goals/_index.md` — Related goals
+- → `../tasks/_index.md` — Implementation tasks
+- → `../README.md` — Master index
