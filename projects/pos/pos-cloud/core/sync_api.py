@@ -18,6 +18,7 @@ from .models import (
     InventoryReport, BranchReport,
     BranchSyncLog, BranchProduct, BranchSale, BranchInventory,
 )
+from .sync_broker import BrokerMessage, broker
 
 logger = logging.getLogger("pos.sync_api")
 
@@ -74,6 +75,10 @@ def sync_receive_products(request):
         "node_id": node_id,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
+    _broadcast_to_branch(
+        branch, "entity_event",
+        {"entity_type": "products", "action": "sync", "count": synced, "origin_node_id": node_id, "data": {"count": synced}},
+    )
 
     return JsonResponse({"status": "received", "synced": synced, "branch": branch.name})
 
@@ -123,6 +128,10 @@ def sync_receive_sales(request):
         "node_id": node_id,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
+    _broadcast_to_branch(
+        branch, "entity_event",
+        {"entity_type": "sales", "action": "sync", "count": synced, "origin_node_id": node_id, "data": {"count": synced}},
+    )
 
     return JsonResponse({"status": "received", "synced": synced, "branch": branch.name})
 
@@ -171,6 +180,10 @@ def sync_receive_inventory(request):
         "node_id": node_id,
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
+    _broadcast_to_branch(
+        branch, "entity_event",
+        {"entity_type": "inventory", "action": "sync", "count": synced, "origin_node_id": node_id, "data": {"count": synced}},
+    )
 
     return JsonResponse({"status": "received", "synced": synced, "branch": branch.name})
 
@@ -203,13 +216,31 @@ def sync_receive_heartbeat(request):
         "status": data.get("status", "online"),
         "timestamp": datetime.now(timezone.utc).isoformat(),
     })
+    _broadcast_to_branch(
+        branch, "heartbeat",
+        {"status": data.get("status", "online"), "origin_node_id": node_id, "data": {"status": data.get("status", "online")}},
+    )
 
     return JsonResponse({"status": "received", "branch": branch.name})
 
 
 # ══════════════════════════════════════════════════════════════════════
-# WebSocket broadcast helper
+# WebSocket broadcast helpers
 # ══════════════════════════════════════════════════════════════════════
+
+
+def _broadcast_to_branch(branch: Branch, subtype: str, payload: dict) -> None:
+    """Push a broker message to all connected terminals of a branch.
+
+    Uses the sync broker so every terminal in the branch's channel group
+    receives the event in real time.
+    """
+    if not branch or not branch.code:
+        return
+    broker.push_to_branch(
+        branch.code,
+        BrokerMessage(type=subtype, payload=payload),
+    )
 
 
 def _broadcast_sync_event(entity_type: str, data: dict) -> None:

@@ -208,5 +208,5 @@ Cloud CRM Dashboard (React/Vue)
 |-------|------|
 | Cloud sync plan | [`sync-plan.md`](sync-plan.md) |
 | Sidecar overview | [`../sidecar/README.md`](../sidecar/README.md) |
-| Django Ninja plan | [`../sidecar/django-ninja-plan.md`](../sidecar/django-ninja-plan.md) |
+| django-bolt integration | [`../sidecar/django-bolt-integration.md`](../sidecar/django-bolt-integration.md) |
 | POS infrastructure | [`../infrastructure.md`](../infrastructure.md) |

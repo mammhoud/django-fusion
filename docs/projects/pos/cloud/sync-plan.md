@@ -13,19 +13,19 @@
 | Sync proxy (accept pushes) | ✅ Implemented | Full |
 | Webhook receiver | ✅ Implemented | Full |
 | Webhook sender | ✅ Implemented | Solo |
-| Real-time WebSocket sync | ❌ Planned | Full |
+| Real-time WebSocket sync | ✅ Implemented | Full |
 | Conflict resolution | ❌ Planned | Full |
-| Offline queue | ❌ Planned | All |
+| Offline queue | 🟡 In-memory queue implemented; durable queue planned | All |
 | Multi-store dashboard | ❌ Planned | Cloud |
-| REST API for all entities | 🟡 Partial | Solo/Full |
+| REST API for all entities | ✅ Implemented (django-bolt) | Solo/Full |
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Complete REST API (Q3 2026)
+### Phase 1: Complete REST API ✅
 
-Add REST endpoints for ALL 29 tables currently only accessible via Rust invoke:
+REST endpoints for all 29 tables currently only accessible via Rust invoke are now exposed through the high-performance django-bolt API:
 
 ```python
 # New API endpoints to add
@@ -42,10 +42,10 @@ Add REST endpoints for ALL 29 tables currently only accessible via Rust invoke:
 /reports/employees           # Employee performance reports
 ```
 
-### Phase 2: Real-time Sync (Q4 2026)
+### Phase 2: Real-time Sync (Q4 2026) ✅
 
 ```
-┌──────────────┐                    ┌──────────────┐
+┌──────────────┐                    ┌──────────────
 │  Terminal A  │ ←─── WebSocket ──→ │  Cloud CRM   │
 │  (pos-solo)   │                    │  (pos-full)   │
 └──────────────┘                    └──────┬───────┘
@@ -56,6 +56,12 @@ Add REST endpoints for ALL 29 tables currently only accessible via Rust invoke:
 └──────────────┘                    └──────────────┘
 ```
 
+**Implementation:**
+- `pos-solo/sidecar/ws_client.py` — persistent asyncio WebSocket client with exponential-backoff reconnection and offline queue.
+- `pos-solo/sidecar/ws_sync_signals.py` — Django `post_save`/`post_delete` receivers that push local entity CRUD events to the cloud.
+- `pos-cloud/core/sync_api.py` — targeted branch broadcasts via `SyncBroker` so terminals receive echo/confirmation events in real time.
+- Messages use the existing `identify`/`sync_push`/`broker_message` protocol consumed by `SyncEventConsumer`.
+
 ### Phase 3: django-bolt + Robyn APIs (Q4 2026)
 
 **Full Edition:** Replace Django views with django-bolt for all API endpoints:
@@ -65,9 +71,9 @@ Add REST endpoints for ALL 29 tables currently only accessible via Rust invoke:
 - Pydantic validation via `django_bolt.pydantic`
 - Native WebSocket for real-time sync
 
-**Solo Extended:** Optional Robyn sidecar replacing Sanic:
-- Rust-powered async runtime (Robyn)
-- Auto-generated OpenAPI at `/docs`
+**Solo Extended:** Optional django-bolt sidecar API alongside the Robyn runtime:
+- Rust-powered async runtime (django-bolt / Robyn)
+- Auto-generated OpenAPI at `/bolt/docs`
 - Pydantic validation integration
 - SSE streaming support
 
@@ -87,63 +93,63 @@ Web dashboard accessible at `https://cloud.structa.cloud`:
 
 ---
 
-## API Plan (Django Ninja Extra)
+## API Plan (django-bolt)
 
 ### Auth Endpoints
 
 ```python
-POST   /api/auth/login          # JWT login
-POST   /api/auth/refresh        # Refresh token
-POST   /api/auth/logout         # Invalidate token
+POST   /bolt/auth/login          # JWT login
+POST   /bolt/auth/refresh        # Refresh token
+POST   /bolt/auth/logout         # Invalidate token
 ```
 
 ### Product Endpoints
 
 ```python
-GET    /api/products             # List (with filtering, pagination)
-POST   /api/products             # Create
-GET    /api/products/{id}        # Detail
-PUT    /api/products/{id}        # Update
-DELETE /api/products/{id}        # Soft delete
+GET    /bolt/products             # List (with filtering, pagination)
+POST   /bolt/products             # Create
+GET    /bolt/products/{id}       # Detail
+PUT    /bolt/products/{id}        # Update
+DELETE /bolt/products/{id}       # Soft delete
 ```
 
 ### Order Endpoints
 
 ```python
-GET    /api/orders               # List (filter by date, status)
-POST   /api/orders               # Create (with items)
-GET    /api/orders/{id}          # Detail with items
-PUT    /api/orders/{id}/status   # Update status
-GET    /api/orders/{id}/invoice  # Generate PDF invoice
+GET    /bolt/orders              # List (filter by date, status)
+POST   /bolt/orders              # Create (with items)
+GET    /bolt/orders/{id}         # Detail with items
+PUT    /bolt/orders/{id}/status  # Update status
+GET    /bolt/orders/{id}/invoice # Generate PDF invoice
 ```
 
 ### Sync Endpoints
 
 ```python
-GET    /api/sync/status          # Sync health
-POST   /api/sync/trigger         # Force full sync
-POST   /api/sync/push            # Push entities (Solo → Cloud)
-GET    /api/sync/log             # Sync history
+GET    /bolt/sync/status         # Sync health
+POST   /bolt/sync/trigger        # Force full sync
+POST   /bolt/sync/push           # Push entities (Solo → Cloud)
+GET    /bolt/sync/log            # Sync history
 ```
 
 ### CRM Endpoints (Cloud Only)
 
 ```python
-GET    /api/crm/contacts         # List contacts
-POST   /api/crm/contacts         # Create contact
-GET    /api/crm/companies        # List companies
-GET    /api/crm/deals            # List deals
-POST   /api/crm/deals            # Create deal
-GET    /api/crm/dashboard        # CRM statistics
+GET    /bolt/crm/contacts        # List contacts
+POST   /bolt/crm/contacts        # Create contact
+GET    /bolt/crm/companies       # List companies
+GET    /bolt/crm/deals           # List deals
+POST   /bolt/crm/deals           # Create deal
+GET    /bolt/crm/dashboard       # CRM statistics
 ```
 
 ### Report Endpoints
 
 ```python
-GET    /api/reports/sales        # Sales report (by date range)
-GET    /api/reports/inventory    # Inventory report
-GET    /api/reports/employees    # Employee performance
-GET    /api/reports/taxes        # Tax summary
+GET    /bolt/reports/sales       # Sales report (by date range)
+GET    /bolt/reports/inventory   # Inventory report
+GET    /bolt/reports/employees   # Employee performance
+GET    /bolt/reports/taxes       # Tax summary
 ```
 
 ---
@@ -191,6 +197,6 @@ def resolve_conflict(cloud_entity, terminal_entity):
 | Topic | Path |
 |-------|------|
 | Cloud CRM overview | [`README.md`](README.md) |
-| Django Ninja plan | [`../sidecar/django-ninja-plan.md`](../sidecar/django-ninja-plan.md) |
+| django-bolt integration | [`../sidecar/django-bolt-integration.md`](../sidecar/django-bolt-integration.md) |
 | Sidecar overview | [`../sidecar/README.md`](../sidecar/README.md) |
 | POS infrastructure | [`../infrastructure.md`](../infrastructure.md) |
