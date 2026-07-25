@@ -11,9 +11,9 @@
 | Runtime | Python (WSGI/ASGI) | Rust-powered (Actix Web + PyO3) |
 | Throughput | ~2k RPS | 60k+ RPS |
 | Async | `async_to_sync` / `sync_to_async` | Native async |
-| OpenAPI | Django Ninja | Built-in (Swagger, ReDoc, Scalar) |
-| Serialization | DRF / Django Ninja | msgspec (10x faster than json) |
-| Validation | Django Forms / DRF | msgspec + Pydantic adapter |
+| OpenAPI | Legacy (Django Ninja / DRF) | Built-in (Swagger, ReDoc, Scalar) |
+| Serialization | Legacy (DRF / Django Ninja) | msgspec (10x faster than json) |
+| Validation | Legacy (Django Forms / DRF) | msgspec + Pydantic adapter |
 | WebSocket | Channels / Daphne | Native WebSocket |
 | Django ORM | ✅ | ✅ (via `aget`/`afilter`) |
 | Auth | Session / JWT | Built-in JWT + guard system |
@@ -34,12 +34,12 @@ graph TB
     end
 
     subgraph "POS Full — Sidecar (port 8765)"
-        SANIC[Sanic Sidecar]
+        ROBRN[Robyn Sidecar\n(current)]
     end
 
     BROWSER[Browser / Dashboard] -->|Admin UI| ADMIN
     BROWSER -->|REST API| BOLT
-    FRONTEND[POS Frontend] -->|REST + WS| SANIC
+    FRONTEND[POS Frontend] -->|REST + WS| ROBRN
     FRONTEND -->|bolt API| BOLT
     BOLT --> ORM
     ADMIN --> ORM
@@ -165,12 +165,12 @@ async def create_product(body: ProductCreate) -> ProductCreate:
 
 ## Migration Phases
 
-### Phase 1: Parallel Coexistence (1 day)
+### Phase 1: Parallel Coexistence ✅
 
-- Add `django-bolt[pydantic]` to sidecar `requirements.txt`
-- Create `bolt_api.py` with core CRUD endpoints
-- Mount bolt API in Django URL config
-- Run alongside existing Django views
+- [x] Add `django-bolt[pydantic]` to sidecar `requirements.txt`
+- [x] Create `bolt_api.py` with core CRUD endpoints
+- [x] Mount bolt API in Django URL config
+- [x] Run alongside existing Django views
 
 ### Phase 2: Feature Parity (3 days)
 

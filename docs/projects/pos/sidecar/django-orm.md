@@ -120,7 +120,7 @@ The Django portal (`manage.py runserver`) uses django-fusion viewsets defined in
 | Topic | Path |
 |-------|------|
 | Sidecar overview | [`README.md`](README.md) |
-| Django Ninja plan | [`django-ninja-plan.md`](django-ninja-plan.md) |
+| django-bolt integration | [`django-bolt-integration.md`](django-bolt-integration.md) |
 | Sidecar API | [`sidecar-api.md`](sidecar-api.md) |
 | POS database schema | [`../backend/rust-database.md`](../backend/rust-database.md) |
 | Cloud data sync | [`../cloud/README.md`](../cloud/README.md) |

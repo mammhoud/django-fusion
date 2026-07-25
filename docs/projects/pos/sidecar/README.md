@@ -251,5 +251,5 @@ Both sidecars serve **REST JSON + WebSocket only**. No HTML templates are render
 | Sidecar API reference | [`sidecar-api.md`](sidecar-api.md) |
 | WebSocket | [`sidecar-websocket.md`](sidecar-websocket.md) |
 | Django ORM guide | [`django-orm.md`](django-orm.md) |
-| Django Ninja plan | [`django-ninja-plan.md`](django-ninja-plan.md) |
+| django-bolt integration | [`django-bolt-integration.md`](django-bolt-integration.md) |
 | Network architecture | [`network-architecture.md`](network-architecture.md) |
