@@ -45,8 +45,13 @@ try:
     import django
     from django.conf import settings
 
-    # Shared database with Rust backend (pos-full/restaurant.db)
+    # Shared database with Rust backend (pos-solo/restaurant.db)
+    # Fall back to :memory: if the Rust backend DB doesn't exist.
     DB_PATH = _SIDECAR.parent / "restaurant.db"
+    if not DB_PATH.exists():
+        DB_PATH_STR = ":memory:"
+    else:
+        DB_PATH_STR = str(DB_PATH)
 
     if not settings.configured:
         settings.configure(
@@ -54,7 +59,7 @@ try:
             DATABASES={
                 "default": {
                     "ENGINE": "django.db.backends.sqlite3",
-                    "NAME": str(DB_PATH),
+                    "NAME": DB_PATH_STR,
                 }
             },
             INSTALLED_APPS=[
@@ -134,7 +139,7 @@ try:
     )
 
     _DJANGO_READY = True
-    logger.info("Django ORM ready (db: %s)", DB_PATH)
+    logger.info("Django ORM ready (db: %s)", DB_PATH_STR)
 
 except Exception as exc:
     logger.critical("Django bootstrap failed: %s", exc)

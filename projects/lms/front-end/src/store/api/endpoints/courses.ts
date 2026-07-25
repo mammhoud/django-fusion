@@ -30,6 +30,9 @@ export interface Lesson {
   title: string;
   description: string;
   video_url: string;
+  video_file_url: string;
+  video_id: number | null;
+  has_video: boolean;
   duration: string;
   order: number;
   is_free: boolean;

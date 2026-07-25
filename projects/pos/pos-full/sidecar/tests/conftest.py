@@ -55,6 +55,19 @@ def django_bootstrap(request: pytest.FixtureRequest) -> None:
                 "django.contrib.contenttypes",
                 "django.contrib.auth",
             ],
+            TEMPLATES=[
+                {
+                    "BACKEND": "django.template.backends.django.DjangoTemplates",
+                    "DIRS": [],
+                    "APP_DIRS": True,
+                    "OPTIONS": {
+                        "context_processors": [
+                            "django.template.context_processors.request",
+                            "django.contrib.auth.context_processors.auth",
+                        ],
+                    },
+                },
+            ],
             DEFAULT_AUTO_FIELD="django.db.models.BigAutoField",
             USE_TZ=True,
             SECRET_KEY="test-key-conftest",

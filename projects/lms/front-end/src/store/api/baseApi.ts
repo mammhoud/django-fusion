@@ -45,6 +45,8 @@ export const api = createApi({
     'Wishlist',
     'Page',
     'Dashboard',
+    'Notification',
+    'NotificationPrefs',
     'User', 'Auth',
   ],
   endpoints: () => ({}),

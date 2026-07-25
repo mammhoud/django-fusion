@@ -16,6 +16,8 @@ from .models import (
     BranchSale,
     BranchInventory,
     DeviceToken,
+    SyncConflict,
+    SyncQueueItem,
 )
 
 
@@ -103,6 +105,32 @@ class BranchSaleAdmin(ModelAdmin):
 class BranchInventoryAdmin(ModelAdmin):
     list_display = ["source_id", "branch", "product_name", "transaction_type", "quantity", "transaction_date"]
     list_filter = ["branch", "transaction_type"]
+
+
+@admin.register(SyncConflict)
+class SyncConflictAdmin(ModelAdmin):
+    list_display = ["entity_type", "entity_id", "branch", "status", "resolver_used", "created_at"]
+    list_filter = ["status", "entity_type", "branch"]
+    search_fields = ["entity_id", "node_id"]
+    readonly_fields = ["created_at", "updated_at"]
+    fieldsets = (
+        ("Conflict", {"fields": ("branch", "node_id", "entity_type", "entity_id")}),
+        ("Data", {"fields": ("local_data", "remote_data", "conflict_fields")}),
+        ("Resolution", {"fields": ("status", "resolver_used", "reason", "resolved_by", "resolved_at", "resolution_notes")}),
+    )
+
+
+@admin.register(SyncQueueItem)
+class SyncQueueItemAdmin(ModelAdmin):
+    list_display = ["entity_type", "operation", "branch", "status", "attempt_count", "created_at"]
+    list_filter = ["status", "entity_type", "operation", "branch"]
+    search_fields = ["node_id", "idempotency_key"]
+    readonly_fields = ["created_at", "delivered_at"]
+    fieldsets = (
+        ("Queue Item", {"fields": ("branch", "node_id", "entity_type", "operation")}),
+        ("Payload", {"fields": ("payload", "idempotency_key")}),
+        ("Delivery", {"fields": ("status", "attempt_count", "max_attempts", "last_error", "next_retry_at", "delivered_at")}),
+    )
 
 
 @admin.register(DeviceToken)

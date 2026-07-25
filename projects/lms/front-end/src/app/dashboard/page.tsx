@@ -1,17 +1,23 @@
 'use client';
 
+import { useMemo } from 'react';
 import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import { useGetInstructorDashboardQuery } from '@/store/api/endpoints/instructors';
 import { useGetDashboardQuery, useGetStudentEnrollmentsQuery } from '@/store/api/endpoints/students';
+import { useGetDashboardContentQuery } from '@/store/api/endpoints/dashboard';
+import { fusionDecoder } from '@/lib/fusion-decoder';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import {
   HiAcademicCap, HiUserGroup, HiStar, HiChartBar, HiBookOpen, HiCurrencyDollar,
-  HiClock, HiCheckCircle,
+  HiClock, HiCheckCircle, HiTrendingUp, HiLightBulb, HiSpeakerphone, HiLink, HiInformationCircle,
 } from 'react-icons/hi';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 import ErrorState from '@/components/ui/ErrorState';
 import EmptyState from '@/components/ui/EmptyState';
+import RevenueChart from '@/components/dashboard/RevenueChart';
+import EnrollmentTrendChart from '@/components/dashboard/EnrollmentTrendChart';
+import CompletionRateChart from '@/components/dashboard/CompletionRateChart';
 
 export default function DashboardPage() {
   const { data: profile, isLoading: profileLoading } = useGetProfileQuery();
@@ -59,8 +65,8 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
   const stats = [
     { icon: HiBookOpen, label: 'Courses', value: dashboard?.total_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiUserGroup, label: 'Students', value: dashboard?.total_students ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
-    { icon: HiCurrencyDollar, label: 'Revenue', value: dashboard ? `$${dashboard.total_revenue}` : '$0', color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
-    { icon: HiStar, label: 'Rating', value: dashboard?.average_rating ?? 0, color: 'text-yellow-600', bg: 'bg-yellow-100' },
+    { icon: HiCurrencyDollar, label: 'Revenue', value: dashboard ? `$${dashboard.total_revenue.toLocaleString()}` : '$0', color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
+    { icon: HiTrendingUp, label: 'Completion', value: dashboard ? `${dashboard.completion_rate}%` : '0%', color: 'text-emerald-600', bg: 'bg-emerald-100' },
   ];
 
   const quickLinks = [
@@ -74,6 +80,9 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* CMS-backed welcome + tips */}
+      <CmsDashboardContentBlocks profileName={profile.first_name || profile.username} />
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">Instructor Dashboard</h1>
         <p className="text-gray-500 mt-1">Welcome back, {profile.first_name || profile.username}</p>
@@ -115,6 +124,53 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
       )}
 
       {/* Popular Courses Table */}
+      {/* Analytics Charts */}
+      {(dashboard?.monthly_earnings?.length || dashboard?.enrollment_trends?.length) && (
+        <div className="mb-10">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <HiTrendingUp className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+            Analytics
+          </h2>
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+            {/* Revenue Chart */}
+            {dashboard?.monthly_earnings && dashboard.monthly_earnings.length > 0 && (
+              <div className="card p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900 text-sm">Monthly Revenue</h3>
+                  <span className="text-xs text-gray-400">Last 12 months</span>
+                </div>
+                <RevenueChart data={dashboard.monthly_earnings} />
+              </div>
+            )}
+            {/* Enrollment Trends */}
+            {dashboard?.enrollment_trends && dashboard.enrollment_trends.length > 0 && (
+              <div className="card p-5">
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-semibold text-gray-900 text-sm">Enrollment Trends</h3>
+                  <span className="text-xs text-gray-400">Last 12 months</span>
+                </div>
+                <EnrollmentTrendChart data={dashboard.enrollment_trends} />
+              </div>
+            )}
+          </div>
+          {/* Completion Rate */}
+          {dashboard && dashboard.total_enrollments > 0 && (
+            <div className="card p-5 max-w-md mx-auto lg:mx-0">
+              <h3 className="font-semibold text-gray-900 text-sm mb-2 text-center">
+                Course Completion Rate
+              </h3>
+              <CompletionRateChart
+                completionRate={dashboard.completion_rate}
+                completedEnrollments={dashboard.completed_enrollments}
+                activeEnrollments={dashboard.active_enrollments}
+                totalEnrollments={dashboard.total_enrollments}
+              />
+            </div>
+          )}
+        </div>
+      )}
+
+      {/* Popular Courses Table */}
       {dashboard?.popular_courses && dashboard.popular_courses.length > 0 && (
         <div>
           <h2 className="text-xl font-bold text-gray-900 mb-4">Popular Courses</h2>
@@ -125,14 +181,20 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
                   <th className="text-left px-6 py-3 font-medium text-gray-500">Course</th>
                   <th className="text-right px-6 py-3 font-medium text-gray-500">Students</th>
                   <th className="text-right px-6 py-3 font-medium text-gray-500">Revenue</th>
+                  <th className="text-right px-6 py-3 font-medium text-gray-500">Completed</th>
                 </tr>
               </thead>
               <tbody className="divide-y">
-                {dashboard.popular_courses.map((course: { id: number; title: string; students: number; revenue: number }) => (
+                {dashboard.popular_courses.map((course: any) => (
                   <tr key={course.id} className="hover:bg-gray-50">
                     <td className="px-6 py-4 font-medium text-gray-900">{course.title}</td>
-                    <td className="px-6 py-4 text-right text-gray-500">{course.students}</td>
-                    <td className="px-6 py-4 text-right font-medium text-gray-900">${course.revenue}</td>
+                    <td className="px-6 py-4 text-right text-gray-500">{course.student_count}</td>
+                    <td className="px-6 py-4 text-right font-medium text-gray-900">${course.course_revenue?.toLocaleString() || '0'}</td>
+                    <td className="px-6 py-4 text-right">
+                      <span className="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-50 px-2 py-0.5 rounded-full">
+                        {course.course_completed || 0}
+                      </span>
+                    </td>
                   </tr>
                 ))}
               </tbody>
@@ -161,6 +223,9 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      {/* CMS-backed welcome + tips */}
+      <CmsDashboardContentBlocks profileName={profile.first_name || profile.username} />
+
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-gray-900">
           Welcome back, {profile.first_name || profile.username}!
@@ -239,6 +304,141 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
           </div>
         )}
       </div>
+    </div>
+  );
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// CMS Dashboard Content Blocks
+// ═══════════════════════════════════════════════════════════════════
+
+/** Renders CMS-managed dashboard content blocks (welcome, tips, quick links). */
+function CmsDashboardContentBlocks({ profileName }: { profileName: string }) {
+  const { data: contentData, isLoading } = useGetDashboardContentQuery();
+
+  const blocks = useMemo(() => {
+    if (!contentData?.encoded) return [];
+    try {
+      const page = fusionDecoder.decodeAs<{ blocks: any[] }>(contentData.encoded);
+      return page?.blocks ?? [];
+    } catch {
+      return [];
+    }
+  }, [contentData]);
+
+  if (isLoading || blocks.length === 0) return null;
+
+  return (
+    <div className="space-y-4 mb-6">
+      {blocks.map((block, idx) => {
+        switch (block.type) {
+          case 'dashboard_welcome':
+            return (
+              <motion.div
+                key="welcome"
+                initial={{ opacity: 0, y: -10 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-gradient-to-r from-[rgb(var(--ctc-primary))]/5 to-transparent rounded-xl p-5"
+              >
+                <h2 className="text-xl font-bold text-gray-900">
+                  {block.heading?.replace('{name}', profileName) || `Welcome back, ${profileName}!`}
+                </h2>
+                {block.intro && (
+                  <p className="text-sm text-gray-500 mt-1">{block.intro}</p>
+                )}
+              </motion.div>
+            );
+
+          case 'dashboard_tip':
+            return (
+              <motion.div
+                key={`tip-${idx}`}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.1 }}
+                className="flex items-start gap-3 bg-amber-50 border border-amber-200 rounded-xl p-4"
+              >
+                <HiLightBulb className="w-5 h-5 text-amber-500 mt-0.5 flex-shrink-0" />
+                <div>
+                  <p className="text-sm font-medium text-amber-800">
+                    {block.heading || 'Tip'}
+                  </p>
+                  <p className="text-sm text-amber-700 mt-0.5">{block.content}</p>
+                </div>
+              </motion.div>
+            );
+
+          case 'dashboard_quick_links':
+            return (
+              <motion.div
+                key={`links-${idx}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.15 }}
+              >
+                {block.heading && (
+                  <h3 className="text-sm font-semibold text-gray-600 mb-2 uppercase tracking-wider">
+                    {block.heading}
+                  </h3>
+                )}
+                <div className="flex flex-wrap gap-2">
+                  {(block.links || []).map((link: any, li: number) => (
+                    <Link
+                      key={li}
+                      href={link.href}
+                      className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-[rgb(var(--ctc-primary))]/30 hover:text-[rgb(var(--ctc-primary))] transition-colors"
+                    >
+                      <HiLink className="w-3.5 h-3.5" />
+                      {link.label}
+                    </Link>
+                  ))}
+                </div>
+              </motion.div>
+            );
+
+          case 'dashboard_announcement':
+            return (
+              <motion.div
+                key={`ann-${idx}`}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className={`flex items-start gap-3 rounded-xl p-4 ${
+                  block.variant === 'warning'
+                    ? 'bg-red-50 border border-red-200'
+                    : block.variant === 'success'
+                    ? 'bg-green-50 border border-green-200'
+                    : 'bg-blue-50 border border-blue-200'
+                }`}
+              >
+                <HiInformationCircle className={`w-5 h-5 mt-0.5 flex-shrink-0 ${
+                  block.variant === 'warning'
+                    ? 'text-red-500'
+                    : block.variant === 'success'
+                    ? 'text-green-500'
+                    : 'text-blue-500'
+                }`} />
+                <div className="flex-1">
+                  <p className="text-sm font-medium text-gray-900">
+                    {block.heading || 'Announcement'}
+                  </p>
+                  <p className="text-sm text-gray-600 mt-0.5">{block.content}</p>
+                  {block.link && (
+                    <a
+                      href={block.link}
+                      className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[rgb(var(--ctc-primary))] hover:underline"
+                    >
+                      {block.link_label || 'Learn More'}
+                    </a>
+                  )}
+                </div>
+              </motion.div>
+            );
+
+          default:
+            return null;
+        }
+      })}
     </div>
   );
 }

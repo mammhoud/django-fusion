@@ -8,7 +8,7 @@ import logging
 from datetime import timedelta
 
 from django.contrib.auth.models import User
-from django.db.models import Avg, Count, Sum
+from django.db.models import Avg, Count, Q, Sum
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
 
@@ -108,7 +108,14 @@ def instructor_detail(request, pk):
 # ── Instructor Dashboard (shared builder) ──
 
 def _build_instructor_dashboard(user: User) -> dict:
-    """Shared dashboard data builder for an instructor user."""
+    """Shared dashboard data builder for an instructor user.
+
+    Returns analytics including:
+    - Stats: courses, students, revenue, rating
+    - Monthly earnings & enrollment trends
+    - Popular courses with per-course analytics
+    - Completion rates (overall and per-course)
+    """
     courses = Course.objects.filter(instructor=user)
     published_courses = courses.filter(is_published=True)
     enrollments = Enrollment.objects.filter(course__instructor=user)
@@ -120,6 +127,7 @@ def _build_instructor_dashboard(user: User) -> dict:
         or 0
     )
 
+    # ── Monthly earnings trend ──
     monthly_earnings = list(
         enrollments.filter(payment_status="completed")
         .extra(select={"month": "strftime('%%Y-%%m', enrolled_at)"})
@@ -128,13 +136,33 @@ def _build_instructor_dashboard(user: User) -> dict:
         .order_by("month")[:12]
     )
 
+    # ── Monthly enrollment trend ──
+    enrollment_trends = list(
+        enrollments
+        .extra(select={"month": "strftime('%%Y-%%m', enrolled_at)"})
+        .values("month")
+        .annotate(count=Count("id"))
+        .order_by("month")[:12]
+    )
+
+    # ── Overall completion stats ──
+    total_enrollments = enrollments.count()
+    completed_enrollments = enrollments.filter(status="completed").count()
+    active_enrollments = enrollments.filter(status="active").count()
+    completion_rate = round(
+        (completed_enrollments / total_enrollments * 100) if total_enrollments > 0 else 0,
+        1
+    )
+
+    # ── Popular courses with per-course analytics ──
     popular_courses = list(
         published_courses.annotate(
             student_count=Count("enrollments"),
             course_revenue=Sum("enrollments__amount_paid"),
+            course_completed=Count("enrollments", filter=Q(enrollments__status="completed")),
         )
         .order_by("-student_count")[:5]
-        .values("id", "title", "student_count", "course_revenue")
+        .values("id", "title", "student_count", "course_revenue", "course_completed")
     )
 
     avg_rating = (
@@ -159,7 +187,15 @@ def _build_instructor_dashboard(user: User) -> dict:
             "pending_reviews": Review.objects.filter(
                 course__in=published_courses, is_displayed=False
             ).count(),
+            # Trends
             "monthly_earnings": monthly_earnings,
+            "enrollment_trends": enrollment_trends,
+            # Completion analytics
+            "total_enrollments": total_enrollments,
+            "completed_enrollments": completed_enrollments,
+            "active_enrollments": active_enrollments,
+            "completion_rate": completion_rate,
+            # Per-course
             "popular_courses": popular_courses,
         },
     }

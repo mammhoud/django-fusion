@@ -5,6 +5,7 @@ import { useState } from 'react';
 import { HiMenu, HiX, HiUser, HiLogout } from 'react-icons/hi';
 import { HiBeaker } from 'react-icons/hi2';
 import { useGetProfileQuery, useLogoutMutation } from '@/store/api/endpoints/auth';
+import NotificationBell from '@/components/NotificationBell';
 
 const navLinks = [
   { href: '/', label: 'Home' },
@@ -55,15 +56,16 @@ export default function Header() {
             {isLoading ? (
               <div className="w-8 h-8 border-2 border-white border-t-transparent rounded-full animate-spin" />
             ) : profile ? (
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-2">
+                <NotificationBell />
                 <Link
                   href="/dashboard"
-                  className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+                  className="flex items-center gap-2 text-white/80 hover:text-white transition-colors px-2 py-1 rounded-lg hover:bg-white/10"
                 >
                   <HiUser className="w-5 h-5" />
-                  <span className="font-medium">{profile.first_name || profile.username}</span>
+                  <span className="font-medium text-sm hidden sm:inline">{profile.first_name || profile.username}</span>
                 </Link>
-                <button onClick={handleLogout} className="text-white/60 hover:text-red-300 transition-colors">
+                <button onClick={handleLogout} className="text-white/60 hover:text-red-300 transition-colors p-1.5 rounded-lg hover:bg-white/10">
                   <HiLogout className="w-5 h-5" />
                 </button>
               </div>
