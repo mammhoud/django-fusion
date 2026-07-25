@@ -1,14 +1,19 @@
-# Reference — Tauri Commands
-
-**Type:** Reference 📚
-**Tags:** `#pos-mini` `#pos-solo` `#pos-full` `#tauri` `#backend`
-**Status:** Published
-**Category:** CLI
-
 ---
-
-## Command Categories
-
+# yaml-language-server: $schema=schemas/page.schema.json
+Object type:
+    - Page
+Creation date: "2026-07-24T19:54:39Z"
+Created by:
+    - mammhoud
+id: bafyreieogldmfz2mwu5aqplkgs4k4dxfw2w455emywcrzaaqqenh23g5uu
+---
+# Reference — Tauri Commands   
+**Type:** Reference 📚
+T**ags: **#`pos-mini `#`pos-solo `#`pos-full `#`tauri `#`backend
+`S**tatus: **Published
+C**ategory: **CLI   
+ --- 
+## Command Categories   
 ```
 ┌──────────────────────────────────────────────────┐
 │                 Tauri Commands                    │
@@ -21,58 +26,52 @@
 │ delete    │          │           │ import_db     │
 │ categories│          │           │ change_pwd    │
 └───────────┴──────────┴───────────┴───────────────┘
+
 ```
+ --- 
+## Products   
+|           Command   <br> |      Returns   <br> |                                 Params   <br> |
+|:-------------------------|:--------------------|:----------------------------------------------|
+|   `get\_products`   <br> |  `Product[]`   <br> |                                      —   <br> |
+|    `add\_product`   <br> | `id: number`   <br> | `{ name, price, unit, category\_id? }`   <br> |
+| `update\_product`   <br> |       `void`   <br> |                    `{ id, ...fields }`   <br> |
+| `delete\_product`   <br> |       `void`   <br> |                               `{ id }`   <br> |
+| `get\_categories`   <br> | `Category[]`   <br> |                                      —   <br> |
 
----
+## Sales   
+|                  Command   <br> |         Returns   <br> |                                            Params   <br> |
+|:--------------------------------|:-----------------------|:---------------------------------------------------------|
+|              `add\_sale`   <br> |       `Receipt`   <br> | `{ sale: NewSaleData, items: NewSaleItemData[] }`   <br> |
+|          `get\_receipts`   <br> |     `Receipt[]`   <br> |                             `{ limit?, offset? }`   <br> |
+| `download\_invoice\_pdf`   <br> | `string` (path)   <br> |                 `{ invoice\_type, items[], ... }`   <br> |
 
-## Products
+## Employees   
+|                Command   <br> |      Returns   <br> |                                     Params   <br> |
+|:------------------------------|:--------------------|:--------------------------------------------------|
+|       `get\_employees`   <br> | `Employee[]`   <br> |                   `{ include\_inactive? }`   <br> |
+|        `add\_employee`   <br> |         `id`   <br> | `{ name, phone, email, type\_id, salary }`   <br> |
+|     `update\_employee`   <br> |       `void`   <br> |                        `{ id, ...fields }`   <br> |
+| `deactivate\_employee`   <br> |       `void`   <br> |                                   `{ id }`   <br> |
 
-| Command | Returns | Params |
-|---------|---------|--------|
-| `get_products` | `Product[]` | — |
-| `add_product` | `id: number` | `{ name, price, unit, category_id? }` |
-| `update_product` | `void` | `{ id, ...fields }` |
-| `delete_product` | `void` | `{ id }` |
-| `get_categories` | `Category[]` | — |
+## Inventory   
+|               Command   <br> |        Returns   <br> |                                        Params   <br> |
+|:-----------------------------|:----------------------|:-----------------------------------------------------|
+|    `get\_ingredients`   <br> | `Ingredient[]`   <br> |                                             —   <br> |
+|     `add\_ingredient`   <br> |           `id`   <br> | `{ name, unit, stock, reorder\_level, cost }`   <br> |
+| `record\_transaction`   <br> |           `id`   <br> |  `{ ingredient\_id, quantity\_change, note }`   <br> |
 
-## Sales
+## System   
+|                 Command   <br> |           Returns   <br> |                                    Params   <br> |
+|:-------------------------------|:-------------------------|:-------------------------------------------------|
+|         `get\_settings`   <br> |        `Settings`   <br> |                                         —   <br> |
+|        `save\_settings`   <br> |            `void`   <br> |                         `{ ...settings }`   <br> |
+| `export\_database\_cmd`   <br> | `string` (base64)   <br> |                                         —   <br> |
+| `import\_database\_cmd`   <br> |            `void`   <br> |                        `{ data: base64 }`   <br> |
+| `change\_password\_cmd`   <br> |            `void`   <br> | `{ email, old\_password, new\_password }`   <br> |
 
-| Command | Returns | Params |
-|---------|---------|--------|
-| `add_sale` | `Receipt` | `{ sale: NewSaleData, items: NewSaleItemData[] }` |
-| `get_receipts` | `Receipt[]` | `{ limit?, offset? }` |
-| `download_invoice_pdf` | `string` (path) | `{ invoice_type, items[], ... }` |
-
-## Employees
-
-| Command | Returns | Params |
-|---------|---------|--------|
-| `get_employees` | `Employee[]` | `{ include_inactive? }` |
-| `add_employee` | `id` | `{ name, phone, email, type_id, salary }` |
-| `update_employee` | `void` | `{ id, ...fields }` |
-| `deactivate_employee` | `void` | `{ id }` |
-
-## Inventory
-
-| Command | Returns | Params |
-|---------|---------|--------|
-| `get_ingredients` | `Ingredient[]` | — |
-| `add_ingredient` | `id` | `{ name, unit, stock, reorder_level, cost }` |
-| `record_transaction` | `id` | `{ ingredient_id, quantity_change, note }` |
-
-## System
-
-| Command | Returns | Params |
-|---------|---------|--------|
-| `get_settings` | `Settings` | — |
-| `save_settings` | `void` | `{ ...settings }` |
-| `export_database_cmd` | `string` (base64) | — |
-| `import_database_cmd` | `void` | `{ data: base64 }` |
-| `change_password_cmd` | `void` | `{ email, old_password, new_password }` |
-
----
-
-## Related Docs
-- → `features/pos-mini.md` — pos-mini feature details
-- → `guides/setup.md` — Running the app
-- → `references/database-schema.md` — Underlying DB schema
+ --- 
+## Related Docs   
+- → `features/pos-mini.md` — pos-mini feature details   
+- → `guides/setup.md` — Running the app   
+- → `references/database-schema.md` — Underlying DB schema   
+[Reference — Tauri Commands](reference-tauri-commands.md)    

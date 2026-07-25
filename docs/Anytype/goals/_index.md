@@ -1,31 +1,34 @@
-# Goals 🎯
+# Goals — Strategic Objectives & OKRs
 
-**Object Type:** Goal
-**Directory:** `goals/`
-**Status:** 📝 Planned
+> **Type:** Goal 🎯
+> **Description:** Strategic goals, objectives, and key results driving product development, business growth, and technical excellence.
 
 ---
 
-## Purpose
+## Goal Categories
 
-This directory contains strategic goals, objectives, and key results for Structa Cloud product development. Each goal document links to related features, tasks, milestones, and plans.
+| Category | Focus Area | Example |
+|----------|------------|---------|
+| **Product** | Feature development, UX | Launch POS Solo Beta |
+| **Business** | Revenue, growth, market | Reach 100 active installations |
+| **Technical** | Architecture, performance | Migrate to PostgreSQL |
+| **Design** | UI/UX, accessibility | WCAG 2.1 AA compliance |
+| **Growth** | Adoption, community | 50 GitHub stars |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Status | Select | Active | Achieved | At Risk | Deprioritized |
-| Category | Select | Product | Business | Technical | Design | Growth |
-| Priority | Select | Low | Medium | High | Critical |
-| Target Date | Date | — |
-| Key Results | Text | Multi-line measurable outcomes |
+## Goal Lifecycle
 
-## Template
+```
+Set → Active → On Track (or At Risk) → Achieved (or Deprioritized)
+```
 
-See `_templates.md` for the Goal template.
+---
 
-## Planned Files
+## Related
 
-- `q1-2025-product-launch.md` — Q1 2025 product launch goals
-- `v2-migration.md` — V2 migration goals
-- `performance-targets.md` — Performance improvement goals
+- → `../objects/goal.md` — Goal object type
+- → `../tasks/_index.md` — Implementation tasks
+- → `../milestones/_index.md` — Related milestones
+- → `../plans/_index.md` — Strategic plans
+- → `../README.md` — Master index

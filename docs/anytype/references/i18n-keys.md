@@ -1,43 +1,46 @@
-# Reference — i18n Translation Keys
-
+---
+# yaml-language-server: $schema=schemas/page.schema.json
+Object type:
+    - Page
+Creation date: "2026-07-24T19:54:39Z"
+Created by:
+    - mammhoud
+id: bafyreie6dnvm7ga67dhhgvub22mgimpqnai35od5pgdimsoeuc6xoweaia
+---
+# Reference — i18n Translation Keys   
 **Type:** Reference 📚
-**Tags:** `#i18n` `#pos-mini` `#pos-solo` `#pos-full`
-**Status:** Published
-**Category:** i18n
+T**ags: **#`i18n `#`pos-mini `#`pos-solo `#`pos-full
+`S**tatus: **Published
+C**ategory: **i18n   
+ --- 
+## Namespaces   
+|        Namespace   <br> |             Purpose   <br> | Key Count   <br> |
+|:------------------------|:---------------------------|:-----------------|
+|         `common`   <br> |    Shared UI labels   <br> |       ~20   <br> |
+|            `nav`   <br> |     Navigation menu   <br> |       ~30   <br> |
+|           `home`   <br> |           Dashboard   <br> |        ~3   <br> |
+|           `sale`   <br> |       Checkout page   <br> |       ~30   <br> |
+| `productManager`   <br> |        Product CRUD   <br> |       ~30   <br> |
+|      `analytics`   <br> |    Dashboard charts   <br> |       ~15   <br> |
+|   `transactions`   <br> | Transaction history   <br> |       ~50   <br> |
+|      `inventory`   <br> |    Stock management   <br> |       ~30   <br> |
+|      `employees`   <br> |    Staff management   <br> |       ~35   <br> |
+|        `recipes`   <br> |   Recipe management   <br> |       ~25   <br> |
+|        `reports`   <br> |           Reporting   <br> |       ~80   <br> |
+|       `settings`   <br> |       Settings page   <br> |       ~40   <br> |
+|          `about`   <br> |          About page   <br> |       ~15   <br> |
+|    `supportChat`   <br> |                Chat   <br> |       ~10   <br> |
+|        `invoice`   <br> |           Invoicing   <br> |       ~25   <br> |
+|      `customers`   <br> |                 CRM   <br> |       ~10   <br> |
+|      `suppliers`   <br> | Supplier management   <br> |       ~15   <br> |
+|        `kitchen`   <br> |                 KDS   <br> |       ~15   <br> |
+|       `schedule`   <br> |   Employee schedule   <br> |        ~5   <br> |
+|        `payroll`   <br> |             Payroll   <br> |        ~7   <br> |
+|          `roles`   <br> |     Role management   <br> |        ~7   <br> |
+|           `auth`   <br> |      Authentication   <br> |       ~20   <br> |
 
----
-
-## Namespaces
-
-| Namespace | Purpose | Key Count |
-|-----------|---------|-----------|
-| `common` | Shared UI labels | ~20 |
-| `nav` | Navigation menu | ~30 |
-| `home` | Dashboard | ~3 |
-| `sale` | Checkout page | ~30 |
-| `productManager` | Product CRUD | ~30 |
-| `analytics` | Dashboard charts | ~15 |
-| `transactions` | Transaction history | ~50 |
-| `inventory` | Stock management | ~30 |
-| `employees` | Staff management | ~35 |
-| `recipes` | Recipe management | ~25 |
-| `reports` | Reporting | ~80 |
-| `settings` | Settings page | ~40 |
-| `about` | About page | ~15 |
-| `supportChat` | Chat | ~10 |
-| `invoice` | Invoicing | ~25 |
-| `customers` | CRM | ~10 |
-| `suppliers` | Supplier management | ~15 |
-| `kitchen` | KDS | ~15 |
-| `schedule` | Employee schedule | ~5 |
-| `payroll` | Payroll | ~7 |
-| `roles` | Role management | ~7 |
-| `auth` | Authentication | ~20 |
-
----
-
-## Settings Appearance Tab Keys
-
+ --- 
+## Settings Appearance Tab Keys   
 ```
 settings.appearanceTab.title              → "Theme Customization"
 settings.appearanceTab.description        → "Choose a color theme variant..."
@@ -62,21 +65,20 @@ settings.appearanceTab.fixedDescription   → "Manually choose light or dark"
 settings.appearanceTab.lightLabel         → "Light"
 settings.appearanceTab.darkLabel          → "Dark"
 settings.appearanceTab.autoLabel          → "Auto"
+
 ```
+## Languages   
+| Code   <br> |           Name   <br> | RTL   <br> |
+|:------------|:----------------------|:-----------|
+| `en`   <br> |        English   <br> |  No   <br> |
+| `ar`   <br> |        العربية   <br> | Yes   <br> |
+| `fr`   <br> |       Français   <br> |  No   <br> |
+| `de`   <br> |        Deutsch   <br> |  No   <br> |
+| `es`   <br> |        Español   <br> |  No   <br> |
 
-## Languages
-
-| Code | Name | RTL |
-|------|------|-----|
-| `en` | English | No |
-| `ar` | العربية | Yes |
-| `fr` | Français | No |
-| `de` | Deutsch | No |
-| `es` | Español | No |
-
----
-
-## Related Docs
-- → `architecture/theme-system.md` — Theme system
-- → `guides/development.md` — i18n workflow
-- → `guides/theming.md` — Adding theme keys
+ --- 
+## Related Docs   
+- → `architecture/theme-system.md` — Theme system   
+- → `guides/development.md` — i18n workflow   
+- → `guides/theming.md` — Adding theme keys   
+[Reference — i18n Translation Keys](reference-i18n-translation-keys.md)    
