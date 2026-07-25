@@ -13,7 +13,7 @@
 #   make build        — build full desktop app (release)
 
 .PHONY: help
-.PHONY: dev dev-desktop tauri-dev preview
+.PHONY: dev dev-desktop desktop-dev tauri-dev preview
 .PHONY: build build-frontend build-desktop build-android build-ios build-all clean-build
 .PHONY: screenshots
 .PHONY: check typecheck cargo-check cargo-test cargo-clippy
@@ -37,6 +37,7 @@ help:                 ## Show this help menu
 	@echo '── Development ──────────────────────────────────────────────'
 	@echo '  make dev              Start Vite dev server (localhost:1420, browser only)'
 	@echo '  make dev-desktop      Start full Tauri desktop app (hot-reload, with Rust backend)'
+	@echo '  make desktop-dev      Alias for dev-desktop'
 	@echo '  make tauri-dev        Alias for dev-desktop'
 	@echo '  make preview          Preview production build locally'
 	@echo ''
@@ -80,6 +81,8 @@ dev: port-kill        ## Start Vite frontend dev server (http://localhost:1420, 
 
 dev-desktop: port-kill  ## Start full Tauri desktop app (hot-reload, includes Rust backend for invoke support)
 	pnpm dev:desktop
+
+desktop-dev: dev-desktop  ## Alias for desktop-dev → dev-desktop
 
 tauri-dev:            ## Alias for dev-desktop (start Tauri desktop app with hot-reload)
 	pnpm dev:desktop

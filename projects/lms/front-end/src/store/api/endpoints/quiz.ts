@@ -51,6 +51,8 @@ export interface QuizAttemptAnswer {
   question_type: string;
   selected_choice_ids: number[];
   text_answer: string;
+  file_url: string;
+  file_name: string;
   is_correct: boolean | null;
   points_awarded: number;
   points_possible: number;
@@ -124,6 +126,17 @@ export const quizApi = api.injectEndpoints({
       query: (id) => ({ url: `/apis/quizzes/questions/${id}/delete/`, method: 'DELETE' }),
       invalidatesTags: ['Quiz'],
     }),
+    reorderQuestions: builder.mutation<
+      { status: string; data: { questions: { id: number; order: number }[] } },
+      { quiz_id: number; questions: { id: number; order: number }[] }
+    >({
+      query: ({ quiz_id, questions }) => ({
+        url: `/apis/quizzes/${quiz_id}/questions/reorder/`,
+        method: 'POST',
+        body: { questions },
+      }),
+      invalidatesTags: (result, error, { quiz_id }) => [{ type: 'Quiz', id: quiz_id }],
+    }),
 
     // ── Attempts ──
     startAttempt: builder.mutation<{ status: string; data: QuizAttempt }, number>({
@@ -133,9 +146,19 @@ export const quizApi = api.injectEndpoints({
       }),
       invalidatesTags: ['Attempt'],
     }),
+    uploadQuizFile: builder.mutation<
+      { status: string; data: { file_url: string; file_name: string } },
+      FormData
+    >({
+      query: (formData) => ({
+        url: '/apis/quizzes/upload/',
+        method: 'POST',
+        body: formData,
+      }),
+    }),
     submitAttempt: builder.mutation<
       { status: string; data: QuizAttempt },
-      { attempt_id: number; answers: { question_id: number; selected_choice_id?: number; selected_choice_ids?: number[]; text_answer?: string }[] }
+      { attempt_id: number; answers: { question_id: number; selected_choice_id?: number; selected_choice_ids?: number[]; text_answer?: string; file_url?: string; file_name?: string }[] }
     >({
       query: ({ attempt_id, answers }) => ({
         url: `/apis/attempts/${attempt_id}/submit/`,
@@ -179,8 +202,10 @@ export const {
   useCreateQuestionMutation,
   useUpdateQuestionMutation,
   useDeleteQuestionMutation,
+  useReorderQuestionsMutation,
   useStartAttemptMutation,
   useSubmitAttemptMutation,
+  useUploadQuizFileMutation,
   useGetAttemptsQuery,
   useGetAttemptQuery,
   useGetQuizAttemptsQuery,

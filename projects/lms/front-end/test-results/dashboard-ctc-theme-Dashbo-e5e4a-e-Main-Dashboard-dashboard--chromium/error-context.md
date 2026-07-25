@@ -104,6 +104,7 @@ Received: false
   - button "Select language" [ref=e72] [cursor=pointer]:
     - img [ref=e73]
     - generic [ref=e75]: EN
+  - alert [ref=e76]
 ```
 
 # Test source

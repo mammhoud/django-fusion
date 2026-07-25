@@ -3,11 +3,12 @@
 import { useState, useEffect, useRef } from 'react';
 import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
-import { HiClock, HiCheck, HiX, HiFlag, HiArrowLeft } from 'react-icons/hi';
+import { HiClock, HiCheck, HiX, HiFlag, HiArrowLeft, HiUpload, HiDocument, HiTrash, HiExclamation } from 'react-icons/hi';
 import {
   useGetQuizQuery,
   useStartAttemptMutation,
   useSubmitAttemptMutation,
+  useUploadQuizFileMutation,
   type QuizQuestion,
 } from '@/store/api/endpoints/quiz';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
@@ -30,6 +31,11 @@ export default function StudentQuizPage() {
   const [attemptId, setAttemptId] = useState<number | null>(null);
   const [result, setResult] = useState<{ score: number; passed: boolean; points: number; total: number } | null>(null);
   const [submitting, setSubmitting] = useState(false);
+  const [uploadQuizFile] = useUploadQuizFileMutation();
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadErrors, setUploadErrors] = useState<Record<number, string>>({});
+  const fileInputRefs = useRef<Record<number, HTMLInputElement | null>>({});
+  const [uploadedFiles, setUploadedFiles] = useState<Record<number, { url: string; name: string }>>({});
 
   const quiz = quizData?.data;
   const questions = quiz?.questions ?? [];
@@ -56,10 +62,16 @@ export default function StudentQuizPage() {
 
         // Short answer / essay question
         if (question.question_type === 'short_answer') {
-          return {
+          const ans: any = {
             question_id: question.id,
             text_answer: (value as string) || '',
           };
+          const file = uploadedFiles[Number(qIdx)];
+          if (file) {
+            ans.file_url = file.url;
+            ans.file_name = file.name;
+          }
+          return ans;
         }
 
         // MCQ / true-false: send selected choice ID
@@ -248,7 +260,7 @@ export default function StudentQuizPage() {
                 </div>
               )}
 
-              {/* Short answer / Essay: text input */}
+              {/* Short answer / Essay: text input + file upload */}
               {questions[currentQuestion]?.choices.length === 0 && (
                 <div>
                   <textarea
@@ -261,8 +273,111 @@ export default function StudentQuizPage() {
                     placeholder="Type your answer here..."
                   />
                   <p className="text-xs text-gray-400 mt-1">
-                    Short answer question — type your response above
+                    Type your response above or upload a file below
                   </p>
+
+                  {/* File Upload */}
+                  <div className="mt-4">
+                    {uploadedFiles[currentQuestion] ? (
+                      <div className="flex items-center justify-between p-3 bg-green-50 border border-green-200 rounded-xl">
+                        <div className="flex items-center gap-2 min-w-0">
+                          <HiDocument className="w-5 h-5 text-green-600 flex-shrink-0" />
+                          <span className="text-sm text-green-800 truncate">
+                            {uploadedFiles[currentQuestion].name}
+                          </span>
+                          <span className="text-xs text-green-600">Uploaded</span>
+                        </div>
+                        <button
+                          onClick={() => {
+                            setUploadedFiles((prev) => {
+                              const next = { ...prev };
+                              delete next[currentQuestion];
+                              return next;
+                            });
+                            setUploadErrors((prev) => {
+                              const next = { ...prev };
+                              delete next[currentQuestion];
+                              return next;
+                            });
+                          }}
+                          className="p-1.5 text-red-500 hover:bg-red-50 rounded-lg transition-colors"
+                          title="Remove file"
+                        >
+                          <HiTrash className="w-4 h-4" />
+                        </button>
+                      </div>
+                    ) : (
+                      <div>
+                        <label
+                          className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
+                            uploadingFile
+                              ? 'border-gray-200 bg-gray-50'
+                              : 'border-gray-300 hover:border-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5'
+                          }`}
+                        >
+                          <input
+                            ref={(el) => {
+                              fileInputRefs.current[currentQuestion] = el;
+                            }}
+                            type="file"
+                            className="hidden"
+                            disabled={uploadingFile}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+
+                              setUploadingFile(true);
+                              setUploadErrors((prev) => {
+                                const next = { ...prev };
+                                delete next[currentQuestion];
+                                return next;
+                              });
+
+                              try {
+                                const formData = new FormData();
+                                formData.append('file', file);
+                                const resp = await uploadQuizFile(formData).unwrap();
+                                setUploadedFiles((prev) => ({
+                                  ...prev,
+                                  [currentQuestion]: {
+                                    url: resp.data.file_url,
+                                    name: resp.data.file_name,
+                                  },
+                                }));
+                              } catch (err: any) {
+                                setUploadErrors((prev) => ({
+                                  ...prev,
+                                  [currentQuestion]: err?.data?.message || 'Failed to upload file',
+                                }));
+                              }
+
+                              setUploadingFile(false);
+                              // Reset file input so same file can be re-selected
+                              if (fileInputRefs.current[currentQuestion]) {
+                                fileInputRefs.current[currentQuestion]!.value = '';
+                              }
+                            }}
+                          />
+                          {uploadingFile ? (
+                            <HiClock className="w-5 h-5 text-gray-400 animate-spin" />
+                          ) : (
+                            <HiUpload className="w-5 h-5 text-gray-400" />
+                          )}
+                          <span className="text-sm text-gray-500">
+                            {uploadingFile ? 'Uploading...' : 'Upload a file (PDF, DOC, image, etc.)'}
+                          </span>
+                        </label>
+                      </div>
+                    )}
+
+                    {/* Upload Error */}
+                    {uploadErrors[currentQuestion] && (
+                      <div className="mt-2 flex items-start gap-2 p-2 bg-red-50 border border-red-200 rounded-lg">
+                        <HiExclamation className="w-4 h-4 text-red-500 mt-0.5 flex-shrink-0" />
+                        <p className="text-xs text-red-600">{uploadErrors[currentQuestion]}</p>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
               <div className="flex justify-between mt-8">

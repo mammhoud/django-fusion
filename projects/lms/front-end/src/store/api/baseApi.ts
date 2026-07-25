@@ -47,6 +47,7 @@ export const api = createApi({
     'Dashboard',
     'Notification',
     'NotificationPrefs',
+    'Withdrawal',
     'User', 'Auth',
   ],
   endpoints: () => ({}),

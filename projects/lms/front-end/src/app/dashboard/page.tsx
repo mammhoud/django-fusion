@@ -5,6 +5,7 @@ import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import { useGetInstructorDashboardQuery } from '@/store/api/endpoints/instructors';
 import { useGetDashboardQuery, useGetStudentEnrollmentsQuery } from '@/store/api/endpoints/students';
 import { useGetDashboardContentQuery } from '@/store/api/endpoints/dashboard';
+import { useGetWithdrawalsQuery } from '@/store/api/endpoints/withdrawals';
 import { fusionDecoder } from '@/lib/fusion-decoder';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
@@ -43,7 +44,45 @@ export default function DashboardPage() {
     return <InstructorDashboard profile={profile} />;
   }
 
+  if (profile.role === 'admin') {
+    return <AdminDashboard profile={profile} />;
+  }
+
   return <StudentDashboard profile={profile} />;
+}
+
+// ═══════════════════════════════════════════════════════════════════
+// Admin Dashboard
+// ═══════════════════════════════════════════════════════════════════
+
+function AdminDashboard({ profile }: { profile: { id: number; first_name?: string; username: string } }) {
+  const { data: withdrawals, isLoading } = useGetWithdrawalsQuery({ status: 'pending', page: 1 });
+
+  return (
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <div className="mb-8">
+        <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
+        <p className="text-gray-500 mt-1">Welcome, {profile.first_name || profile.username}</p>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
+        <Link href="/dashboard/admin/withdrawals"
+          className="card p-5 flex items-center gap-4 hover:shadow-md transition-shadow group">
+          <div className="bg-[rgb(var(--ctc-primary))]/10 w-12 h-12 rounded-lg flex items-center justify-center">
+            <HiCurrencyDollar className="w-6 h-6 text-[rgb(var(--ctc-primary))]" />
+          </div>
+          <div>
+            <div className="font-semibold text-gray-900 group-hover:text-[rgb(var(--ctc-primary))]">
+              Pending Withdrawals
+            </div>
+            <div className="text-sm text-gray-500">
+              {isLoading ? '...' : withdrawals?.count ?? 0} pending
+            </div>
+          </div>
+        </Link>
+      </div>
+    </div>
+  );
 }
 
 // ═══════════════════════════════════════════════════════════════════

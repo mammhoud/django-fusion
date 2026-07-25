@@ -213,6 +213,162 @@ def question_delete(request, pk):
 
 
 # ═══════════════════════════════════════════════════════════════════════
+# File Upload (for short answer/essay submissions)
+# ═══════════════════════════════════════════════════════════════════════
+
+ALLOWED_QUIZ_EXTENSIONS = {
+    '.pdf', '.doc', '.docx', '.txt', '.rtf',
+    '.png', '.jpg', '.jpeg', '.gif', '.webp',
+    '.py', '.js', '.ts', '.tsx', '.jsx', '.html', '.css', '.scss',
+    '.json', '.xml', '.yaml', '.yml', '.md', '.rst',
+    '.zip', '.rar', '.7z',
+}
+
+MAX_QUIZ_UPLOAD_SIZE = 25 * 1024 * 1024  # 25 MB
+
+import uuid
+from pathlib import Path
+
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
+def _generate_quiz_filename(original: str) -> str:
+    """Generate a unique filename for quiz uploads."""
+    ext = Path(original).suffix
+    stem = Path(original).stem[:50]
+    unique = uuid.uuid4().hex[:12]
+    safe_stem = "".join(c for c in stem if c.isalnum() or c in " _-.").strip()[:50]
+    return f"quiz_{safe_stem}_{unique}{ext}" if safe_stem else f"quiz_file_{unique}{ext}"
+
+
+@csrf_exempt
+@bolt_view
+def quiz_upload(request):
+    """
+    POST /apis/quizzes/upload/ — Upload a file for a quiz answer (short answer/essay).
+
+    Accepts multipart/form-data with a single 'file' field.
+    Returns the file URL and file name on success.
+
+    Example:
+        curl -X POST http://localhost:5071/apis/quizzes/upload/ \
+          -H "Authorization: Bearer ..." \
+          -F "file=@my_essay.pdf"
+    """
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "error", "message": "Authentication required"}, status=401)
+
+    if 'file' not in request.FILES:
+        return JsonResponse({"status": "error", "message": "No file provided. Use form field 'file'."}, status=400)
+
+    uploaded_file = request.FILES['file']
+    original_name = uploaded_file.name
+
+    # Validate extension
+    ext = Path(original_name).suffix.lower()
+    if ext not in ALLOWED_QUIZ_EXTENSIONS:
+        return JsonResponse({
+            "status": "error",
+            "message": f"File type '{ext}' is not allowed.",
+        }, status=400)
+
+    # Validate size
+    if uploaded_file.size > MAX_QUIZ_UPLOAD_SIZE:
+        max_mb = MAX_QUIZ_UPLOAD_SIZE // (1024 * 1024)
+        return JsonResponse({
+            "status": "error",
+            "message": f"File too large. Maximum size is {max_mb} MB.",
+        }, status=400)
+
+    # Generate unique filename
+    unique_name = _generate_quiz_filename(original_name)
+    relative_path = f"quiz_uploads/{unique_name}"
+
+    # Ensure media subdirectory exists
+    media_root = Path(settings.MEDIA_ROOT)
+    upload_dir = media_root / "quiz_uploads"
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    # Save file
+    saved_path = default_storage.save(relative_path, uploaded_file)
+    file_url = f"{settings.MEDIA_URL}{saved_path}"
+
+    logger.info(f"Quiz file uploaded: {original_name} -> {file_url} by user {request.user.id}")
+
+    return JsonResponse({
+        "status": "success",
+        "data": {
+            "file_url": file_url,
+            "file_name": original_name,
+        }
+    })
+
+
+# ═══════════════════════════════════════════════════════════════════════
+# Question Reordering
+# ═══════════════════════════════════════════════════════════════════════
+
+
+@bolt_view
+@login_required
+def quiz_questions_reorder(request, quiz_pk):
+    """
+    POST /apis/quizzes/<quiz_pk>/questions/reorder/
+
+    Batch-update question order for drag-to-reorder in the editor.
+
+    Request body:
+        {
+            "questions": [
+                {"id": 1, "order": 1},
+                {"id": 2, "order": 2},
+                {"id": 3, "order": 3},
+            ]
+        }
+
+    All questions must belong to the specified quiz.
+    """
+    from plugins.lms.models import Quiz, QuizQuestion
+
+    quiz = get_object_or_404(Quiz, pk=quiz_pk)
+    body = parse_body(request)
+    if not body:
+        return {"status": "error", "message": "Invalid request body"}, 400
+
+    questions_data = body.get("questions", [])
+    if not questions_data:
+        return {"status": "error", "message": "No questions provided"}, 400
+
+    # Validate all IDs belong to this quiz
+    q_ids = [q["id"] for q in questions_data]
+    existing = set(
+        QuizQuestion.objects.filter(quiz=quiz, id__in=q_ids).values_list("id", flat=True)
+    )
+
+    for q_data in questions_data:
+        qid = q_data.get("id")
+        if qid not in existing:
+            return {
+                "status": "error",
+                "message": f"Question {qid} does not belong to this quiz",
+            }, 400
+
+    # Update all question orders
+    updated = []
+    for q_data in questions_data:
+        QuizQuestion.objects.filter(id=q_data["id"]).update(order=q_data["order"])
+        updated.append({"id": q_data["id"], "order": q_data["order"]})
+
+    return {"status": "success", "data": {"questions": updated}}
+
+
+# ═══════════════════════════════════════════════════════════════════════
 # Attempts
 # ═══════════════════════════════════════════════════════════════════════
 
@@ -292,6 +448,8 @@ def attempt_submit(request, pk):
 
             else:  # short_answer
                 answer.text_answer = ans_data.get("text_answer", "")
+                answer.file_url = ans_data.get("file_url", "")
+                answer.file_name = ans_data.get("file_name", "")
                 answer.save()
                 # Short answers need manual grading
 
@@ -507,6 +665,8 @@ def _serialize_attempt(attempt, include_questions=False, include_answers=False) 
                 "question_type": a.question.question_type if a.question else "",
                 "selected_choice_ids": list(a.selected_choices.values_list("id", flat=True)),
                 "text_answer": a.text_answer,
+                "file_url": a.file_url or "",
+                "file_name": a.file_name or "",
                 "is_correct": a.is_correct,
                 "points_awarded": a.points_awarded,
                 "points_possible": a.question.points if a.question else 0,

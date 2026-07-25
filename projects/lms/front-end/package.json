@@ -9,7 +9,13 @@
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest",
-    "test:contract": "node tests/frontend-contract.test.mjs"
+    "test:contract": "node tests/frontend-contract.test.mjs",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:e2e:report": "playwright show-report",
+    "test:e2e:visual": "playwright test tests/e2e/theme-visual-regression.spec.ts",
+    "test:e2e:visual-update": "playwright test tests/e2e/theme-visual-regression.spec.ts --update-snapshots",
+    "test:all": "npm run test && npm run test:e2e"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",

@@ -348,6 +348,20 @@ class QuizAnswer(models.Model):
         help_text=_("For short answer questions"),
     )
 
+    file_url = models.URLField(
+        blank=True,
+        default="",
+        verbose_name=_("File URL"),
+        help_text=_("Uploaded file URL (for essay/short answer submissions)"),
+    )
+
+    file_name = models.CharField(
+        max_length=500,
+        blank=True,
+        default="",
+        verbose_name=_("File Name"),
+    )
+
     is_correct = models.BooleanField(
         null=True,
         blank=True,

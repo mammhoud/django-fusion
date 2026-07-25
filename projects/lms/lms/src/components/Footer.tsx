@@ -29,7 +29,7 @@ export default function Footer() {
           {/* Brand */}
           <div>
             <Link href="/" className="flex items-center gap-2 text-white font-bold text-lg mb-4">
-              <HiAcademicCap className="w-7 h-7 text-indigo-400" />
+              <HiAcademicCap className="w-7 h-7 text-[rgb(var(--ctc-primary))]" />
               <span>LMS</span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">

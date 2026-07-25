@@ -51,84 +51,59 @@ Received: false
             - /url: /login
           - link "Sign Up" [ref=e21] [cursor=pointer]:
             - /url: /registration
-    - main [ref=e22]:
-      - generic [ref=e24]:
-        - complementary [ref=e25]:
-          - navigation [ref=e26]:
-            - link "Overview" [ref=e27] [cursor=pointer]:
-              - /url: /dashboard
-              - img [ref=e28]
-              - text: Overview
-            - link "My Courses" [ref=e30] [cursor=pointer]:
-              - /url: /dashboard/enrolled-courses
-              - img [ref=e31]
-              - text: My Courses
-            - link "Quizzes" [ref=e33] [cursor=pointer]:
-              - /url: /dashboard/quiz
-              - img [ref=e34]
-              - text: Quizzes
-            - link "Profile" [ref=e36] [cursor=pointer]:
-              - /url: /dashboard/profile
-              - img [ref=e37]
-              - text: Profile
-        - main [ref=e39]:
-          - generic [ref=e41]:
-            - img [ref=e43]
-            - heading "Oops! An error occurred" [level=3] [ref=e45]
-            - paragraph [ref=e46]: This page is only available for instructors.
-    - contentinfo [ref=e47]:
-      - generic [ref=e48]:
-        - generic [ref=e49]:
-          - generic [ref=e50]:
-            - link "CTC Research" [ref=e51] [cursor=pointer]:
+    - main [ref=e22]
+    - contentinfo [ref=e30]:
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - generic [ref=e33]:
+            - link "CTC Research" [ref=e34] [cursor=pointer]:
               - /url: /
-              - img [ref=e52]
-              - generic [ref=e54]: CTC Research
-            - paragraph [ref=e55]: Advancing clinical trials through innovation. Dedicated to accelerating the development of new therapies.
-          - generic [ref=e56]:
-            - heading "Research" [level=3] [ref=e57]
-            - list [ref=e58]:
-              - listitem [ref=e59]:
-                - link "Our Services" [ref=e60] [cursor=pointer]:
+              - img [ref=e35]
+              - generic [ref=e37]: CTC Research
+            - paragraph [ref=e38]: Advancing clinical trials through innovation. Dedicated to accelerating the development of new therapies.
+          - generic [ref=e39]:
+            - heading "Research" [level=3] [ref=e40]
+            - list [ref=e41]:
+              - listitem [ref=e42]:
+                - link "Our Services" [ref=e43] [cursor=pointer]:
                   - /url: /services
-              - listitem [ref=e61]:
-                - link "Our Team" [ref=e62] [cursor=pointer]:
+              - listitem [ref=e44]:
+                - link "Our Team" [ref=e45] [cursor=pointer]:
                   - /url: /team
-              - listitem [ref=e63]:
-                - link "Training Courses" [ref=e64] [cursor=pointer]:
+              - listitem [ref=e46]:
+                - link "Training Courses" [ref=e47] [cursor=pointer]:
                   - /url: /courses
-              - listitem [ref=e65]:
-                - link "Research Blog" [ref=e66] [cursor=pointer]:
+              - listitem [ref=e48]:
+                - link "Research Blog" [ref=e49] [cursor=pointer]:
                   - /url: /blog
-          - generic [ref=e67]:
-            - heading "Support" [level=3] [ref=e68]
-            - list [ref=e69]:
-              - listitem [ref=e70]:
-                - link "Contact Us" [ref=e71] [cursor=pointer]:
+          - generic [ref=e50]:
+            - heading "Support" [level=3] [ref=e51]
+            - list [ref=e52]:
+              - listitem [ref=e53]:
+                - link "Contact Us" [ref=e54] [cursor=pointer]:
                   - /url: /contact
-              - listitem [ref=e72]:
-                - link "About CTC" [ref=e73] [cursor=pointer]:
+              - listitem [ref=e55]:
+                - link "About CTC" [ref=e56] [cursor=pointer]:
                   - /url: /about-us
-              - listitem [ref=e74]:
-                - link "FAQ" [ref=e75] [cursor=pointer]:
+              - listitem [ref=e57]:
+                - link "FAQ" [ref=e58] [cursor=pointer]:
                   - /url: /faq
-              - listitem [ref=e76]:
-                - link "Privacy Policy" [ref=e77] [cursor=pointer]:
+              - listitem [ref=e59]:
+                - link "Privacy Policy" [ref=e60] [cursor=pointer]:
                   - /url: /privacy
-          - generic [ref=e78]:
-            - heading "Get Involved" [level=3] [ref=e79]
-            - list [ref=e80]:
-              - listitem [ref=e81]:
-                - link "Join a Trial" [ref=e82] [cursor=pointer]:
+          - generic [ref=e61]:
+            - heading "Get Involved" [level=3] [ref=e62]
+            - list [ref=e63]:
+              - listitem [ref=e64]:
+                - link "Join a Trial" [ref=e65] [cursor=pointer]:
                   - /url: /registration
-              - listitem [ref=e83]:
-                - link "Partner With Us" [ref=e84] [cursor=pointer]:
+              - listitem [ref=e66]:
+                - link "Partner With Us" [ref=e67] [cursor=pointer]:
                   - /url: /contact
-        - paragraph [ref=e86]: © 2026 CTC Research. All rights reserved.
-  - button "Select language" [ref=e89] [cursor=pointer]:
-    - img [ref=e90]
-    - generic [ref=e92]: EN
-  - alert [ref=e93]
+        - paragraph [ref=e69]: © 2026 CTC Research. All rights reserved.
+  - button "Select language" [ref=e72] [cursor=pointer]:
+    - img [ref=e73]
+    - generic [ref=e75]: EN
 ```
 
 # Test source

@@ -69,7 +69,7 @@ function ReviewCard({ enrollment, index }: { enrollment: any; index: number }) {
     >
       <div className="flex items-start gap-4">
         {/* Course Thumbnail */}
-        <div className="w-20 h-20 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+        <div className="w-20 h-20 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
           {enrollment.course_thumbnail ? (
             <img src={enrollment.course_thumbnail} alt="" className="w-full h-full object-cover" />
           ) : (
@@ -80,7 +80,7 @@ function ReviewCard({ enrollment, index }: { enrollment: any; index: number }) {
         <div className="flex-1 min-w-0">
           <Link
             href={`/course-details/${enrollment.course}`}
-            className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors"
+            className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors"
           >
             {enrollment.course_title}
           </Link>
@@ -134,7 +134,7 @@ function ReviewCard({ enrollment, index }: { enrollment: any; index: number }) {
                 placeholder="Share your experience with this course..."
                 rows={3}
                 className="w-full px-4 py-3 border border-gray-200 rounded-xl text-sm resize-none
-                           focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none
+                           focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none
                            placeholder:text-gray-400"
               />
 
@@ -145,7 +145,7 @@ function ReviewCard({ enrollment, index }: { enrollment: any; index: number }) {
                   disabled={rating === 0}
                   className={`px-5 py-2 rounded-lg text-sm font-medium transition-all ${
                     rating > 0
-                      ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                      ? 'bg-[rgb(var(--ctc-primary))] text-white hover:bg-[rgb(var(--ctc-primary-dark))]'
                       : 'bg-gray-100 text-gray-400 cursor-not-allowed'
                   }`}
                 >

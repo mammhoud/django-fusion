@@ -51,59 +51,100 @@ Received: false
             - /url: /login
           - link "Sign Up" [ref=e21] [cursor=pointer]:
             - /url: /registration
-    - main [ref=e22]
-    - contentinfo [ref=e30]:
-      - generic [ref=e31]:
-        - generic [ref=e32]:
-          - generic [ref=e33]:
-            - link "CTC Research" [ref=e34] [cursor=pointer]:
+    - main [ref=e22]:
+      - generic [ref=e24]:
+        - complementary [ref=e25]:
+          - navigation [ref=e26]:
+            - link "Overview" [ref=e27] [cursor=pointer]:
+              - /url: /dashboard
+              - img [ref=e28]
+              - text: Overview
+            - link "My Courses" [ref=e30] [cursor=pointer]:
+              - /url: /dashboard/enrolled-courses
+              - img [ref=e31]
+              - text: My Courses
+            - link "Quizzes" [ref=e33] [cursor=pointer]:
+              - /url: /dashboard/quiz
+              - img [ref=e34]
+              - text: Quizzes
+            - link "My Assignments" [ref=e36] [cursor=pointer]:
+              - /url: /dashboard/my-assignments
+              - img [ref=e37]
+              - text: My Assignments
+            - link "Announcements" [ref=e40] [cursor=pointer]:
+              - /url: /dashboard/announcement
+              - img [ref=e41]
+              - text: Announcements
+            - link "My Attempts" [ref=e43] [cursor=pointer]:
+              - /url: /dashboard/attempts
+              - img [ref=e44]
+              - text: My Attempts
+            - link "History" [ref=e46] [cursor=pointer]:
+              - /url: /dashboard/history
+              - img [ref=e47]
+              - text: History
+            - link "Profile" [ref=e49] [cursor=pointer]:
+              - /url: /dashboard/profile
+              - img [ref=e50]
+              - text: Profile
+        - main [ref=e52]:
+          - generic [ref=e54]:
+            - img [ref=e56]
+            - heading "Oops! An error occurred" [level=3] [ref=e58]
+            - paragraph [ref=e59]: This page is only available for instructors.
+    - contentinfo [ref=e60]:
+      - generic [ref=e61]:
+        - generic [ref=e62]:
+          - generic [ref=e63]:
+            - link "CTC Research" [ref=e64] [cursor=pointer]:
               - /url: /
-              - img [ref=e35]
-              - generic [ref=e37]: CTC Research
-            - paragraph [ref=e38]: Advancing clinical trials through innovation. Dedicated to accelerating the development of new therapies.
-          - generic [ref=e39]:
-            - heading "Research" [level=3] [ref=e40]
-            - list [ref=e41]:
-              - listitem [ref=e42]:
-                - link "Our Services" [ref=e43] [cursor=pointer]:
+              - img [ref=e65]
+              - generic [ref=e67]: CTC Research
+            - paragraph [ref=e68]: Advancing clinical trials through innovation. Dedicated to accelerating the development of new therapies.
+          - generic [ref=e69]:
+            - heading "Research" [level=3] [ref=e70]
+            - list [ref=e71]:
+              - listitem [ref=e72]:
+                - link "Our Services" [ref=e73] [cursor=pointer]:
                   - /url: /services
-              - listitem [ref=e44]:
-                - link "Our Team" [ref=e45] [cursor=pointer]:
+              - listitem [ref=e74]:
+                - link "Our Team" [ref=e75] [cursor=pointer]:
                   - /url: /team
-              - listitem [ref=e46]:
-                - link "Training Courses" [ref=e47] [cursor=pointer]:
+              - listitem [ref=e76]:
+                - link "Training Courses" [ref=e77] [cursor=pointer]:
                   - /url: /courses
-              - listitem [ref=e48]:
-                - link "Research Blog" [ref=e49] [cursor=pointer]:
+              - listitem [ref=e78]:
+                - link "Research Blog" [ref=e79] [cursor=pointer]:
                   - /url: /blog
-          - generic [ref=e50]:
-            - heading "Support" [level=3] [ref=e51]
-            - list [ref=e52]:
-              - listitem [ref=e53]:
-                - link "Contact Us" [ref=e54] [cursor=pointer]:
+          - generic [ref=e80]:
+            - heading "Support" [level=3] [ref=e81]
+            - list [ref=e82]:
+              - listitem [ref=e83]:
+                - link "Contact Us" [ref=e84] [cursor=pointer]:
                   - /url: /contact
-              - listitem [ref=e55]:
-                - link "About CTC" [ref=e56] [cursor=pointer]:
+              - listitem [ref=e85]:
+                - link "About CTC" [ref=e86] [cursor=pointer]:
                   - /url: /about-us
-              - listitem [ref=e57]:
-                - link "FAQ" [ref=e58] [cursor=pointer]:
+              - listitem [ref=e87]:
+                - link "FAQ" [ref=e88] [cursor=pointer]:
                   - /url: /faq
-              - listitem [ref=e59]:
-                - link "Privacy Policy" [ref=e60] [cursor=pointer]:
+              - listitem [ref=e89]:
+                - link "Privacy Policy" [ref=e90] [cursor=pointer]:
                   - /url: /privacy
-          - generic [ref=e61]:
-            - heading "Get Involved" [level=3] [ref=e62]
-            - list [ref=e63]:
-              - listitem [ref=e64]:
-                - link "Join a Trial" [ref=e65] [cursor=pointer]:
+          - generic [ref=e91]:
+            - heading "Get Involved" [level=3] [ref=e92]
+            - list [ref=e93]:
+              - listitem [ref=e94]:
+                - link "Join a Trial" [ref=e95] [cursor=pointer]:
                   - /url: /registration
-              - listitem [ref=e66]:
-                - link "Partner With Us" [ref=e67] [cursor=pointer]:
+              - listitem [ref=e96]:
+                - link "Partner With Us" [ref=e97] [cursor=pointer]:
                   - /url: /contact
-        - paragraph [ref=e69]: © 2026 CTC Research. All rights reserved.
-  - button "Select language" [ref=e72] [cursor=pointer]:
-    - img [ref=e73]
-    - generic [ref=e75]: EN
+        - paragraph [ref=e99]: © 2026 CTC Research. All rights reserved.
+  - button "Select language" [ref=e102] [cursor=pointer]:
+    - img [ref=e103]
+    - generic [ref=e105]: EN
+  - alert [ref=e106]
 ```
 
 # Test source
