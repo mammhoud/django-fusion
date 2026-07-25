@@ -172,11 +172,20 @@ async def create_product(body: ProductCreate) -> ProductCreate:
 - [x] Mount bolt API in Django URL config
 - [x] Run alongside existing Django views
 
-### Phase 2: Feature Parity (3 days)
+### Phase 2: Feature Parity ✅
 
-- Port all 35+ REST endpoints from Django viewsets to bolt
-- Migrate WebSocket chat to bolt native WebSocket
-- Add auth guards (JWT + API key)
+- [x] Port core REST endpoints from the Robyn sidecar to django-bolt
+  - `GET/POST/PATCH/DELETE /bolt/categories`
+  - `GET/POST/PATCH/DELETE /bolt/products`
+  - `GET/POST/PATCH/DELETE /bolt/customers`
+  - `GET/POST/PATCH/DELETE /bolt/sales`
+  - `GET/POST/PATCH/DELETE /bolt/inventory`
+  - `GET/POST/PATCH/DELETE /bolt/employees`
+- [x] Add JWT + API-key authentication via `django_bolt.auth`
+- [x] Mount bolt API in `configs/urls.py`
+- [x] Add `tests/test_bolt_api.py` covering auth and CRUD
+
+_Note: WebSocket migration remains in Phase 3/4 scope; Phase 2 focused on REST + auth._
 
 ### Phase 3: Performance Tuning (1 day)
 
