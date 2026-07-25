@@ -1,26 +1,35 @@
-# Projects 📁
+# Projects — High-Level Project Tracking
 
-**Object Type:** Project
-**Directory:** `projects/`
-**Status:** 📝 Planned
+> **Type:** Project 📁
+> **Description:** High-level projects that group multiple plans, goals, milestones, and features into coherent initiatives.
 
 ---
 
-## Purpose
+## Active Projects
 
-This directory defines high-level projects that group multiple plans, goals, and features. Each project links to related plans, milestones, and features.
+| Project | Status | Lead | Timeline |
+|---------|--------|------|----------|
+| **POS Desktop Suite** | 🚧 Active | — | Q2-Q4 2026 |
+| **Cloud Sync Engine** | 📋 Planned | — | Q1 2027 |
+| **CRM Integration** | 📋 Planned | — | Q2 2027 |
+| **E-commerce Platform** | 📋 Planned | — | Q3 2027 |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Status | Select | Active | On Hold | Completed | Cancelled |
-| Start Date | Date | — |
-| End Date | Date | — |
-| Owner | Relation | → Person |
+## Project Lifecycle
 
-## Planned Files
+```
+Proposal → Active → On Hold → Completed → Maintenance
+                                    ↓
+                                Archived
+```
 
-- `pos-system.md` — POS system project
-- `lms-platform.md` — LMS platform project
-- `cypercloud.md` — Cypercloud AI platform project
+---
+
+## Related
+
+- → `../objects/_object-types.md` — Project type definition
+- → `../plans/_index.md` — Related plans
+- → `../goals/_index.md` — Strategic alignment
+- → `../milestones/_index.md` — Project milestones
+- → `../README.md` — Master index

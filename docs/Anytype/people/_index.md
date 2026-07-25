@@ -1,26 +1,26 @@
-# People 👤
+# People — Team Members & Contributors
 
-**Object Type:** Person
-**Directory:** `people/`
-**Status:** 📝 Planned
+> **Type:** Person 👤
+> **Description:** Team members, contributors, stakeholders, and authors — linked to tasks, blog posts, decisions, and owned plans.
 
 ---
 
-## Purpose
+## Roles
 
-This directory contains team member profiles, contributors, and stakeholders. Each person links to their assigned tasks, authored blog posts, and owned plans.
+| Role | Description |
+|------|-------------|
+| **Developer** | Code contributions, reviews, architecture |
+| **Designer** | UI/UX design, design system, accessibility |
+| **Manager** | Project management, sprint planning |
+| **Contributor** | Community contributions, documentation |
+| **Stakeholder** | Business stakeholders, advisors |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Role | Select | Developer | Designer | Manager | Contributor | Stakeholder |
-| Email | Email | — |
-| Assigned Tasks | Relation | → Task |
-| Authored Posts | Relation | → Blog/Post |
-| Owned Plans | Relation | → Plan |
+## Related
 
-## Planned Files
-
-- `mammhoud.md` — Project lead profile
-- `contributors.md` — Contributor list
+- → `../objects/people.md` — Person object type
+- → `../tasks/_index.md` — Assigned tasks
+- → `../blog/_index.md` — Authored posts
+- → `../sprints/_index.md` — Sprint teams
+- → `../README.md` — Master index

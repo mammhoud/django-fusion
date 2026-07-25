@@ -1,9 +1,30 @@
+---
+# yaml-language-server: $schema=schemas/page.schema.json
+Object type: Guide
+Tags: pos-mini, pos-solo, pos-full, frontend, backend
+Status: Published
+Category: Development
+---
+
 # Guide — Development Workflow
 
-**Type:** Guide 📘
-**Tags:** `#pos-mini` `#pos-solo` `#pos-full` `#frontend` `#backend`
-**Status:** Published
-**Category:** Development
+> **Type:** Guide 📘
+> **Development workflow for all POS editions with project color annotations.**
+
+---
+
+## Project Color Annotations
+
+Colors used throughout development:
+
+| Context | Color | Hex | When You'll See It |
+|---------|-------|-----|-------------------|
+| **Rust / Tauri** | Rust Red | `#f7524a` | Cargo build output, Rust errors |
+| **Python / Sidecar** | Python Blue | `#306998` | Django admin, uv output |
+| **TypeScript / React** | TypeScript Blue | `#3178c6` | Vite dev server, tsc output |
+| **Database (SQLite)** | Slate | `#64748b` | Database migrations, schema files |
+| **Sync / Network** | Teal | `#14b8a6` | Sync status, API endpoints |
+| **Frontend UI (Default)** | Indigo/Teal | `#6366f1`/`#14b8a6` | POS app theme (customizable) |
 
 ---
 
@@ -38,7 +59,8 @@ projects/pos/
 
 ## Common Tasks
 
-### Add a new page
+### Add a New Page
+
 ```typescript
 // 1. Create page component
 // src/pages/MyNewPage.tsx
@@ -46,39 +68,26 @@ export default function MyNewPage() {
   return <PageLayout title="My Page">...</PageLayout>
 }
 
-// 2. Add route
-// src/App.tsx
-<Route path="/my-new-page" element={<MyNewPage />} />
-
-// 3. Add to navigation
-// src/navigation.ts
-{ path: '/my-new-page', label: 'My Page', icon: FaStar }
-
-// 4. Add translations
-// src/i18n/en.json — Add "myNewPage": { ... }
+// 2. Add route in src/App.tsx
+// 3. Add to navigation in src/navigation.ts
+// 4. Add translations in src/i18n/en.json
 ```
 
-### Add a Tauri command (pos-mini)
+### Add a Tauri Command (pos-mini)
+
 ```rust
 // src-tauri/src/lib.rs
 #[tauri::command]
 fn my_new_command() -> Result<String, String> {
-    // Business logic
     Ok("done".to_string())
-}
-
-fn main() {
-    tauri::Builder::default()
-        .invoke_handler(tauri::generate_handler![my_new_command])
-        .run(tauri::generate_context!())
 }
 ```
 
-### Add a sidecar API endpoint (pos-solo/full)
+### Add a Sidecar API Endpoint (pos-solo/full)
+
 ```python
 # sidecar/routes/my_route.py
 from robyn import Router
-
 router = Router()
 
 @router.get("/api/my-endpoint")
@@ -90,30 +99,22 @@ async def my_endpoint(request):
 
 ## Theme Development
 
-```
-src/styles/theme-overrides.css ←─ Add variant overrides
-src/contexts/ThemeContext.tsx   ←─ Register variant
-src/pages/Settings.tsx          ←─ Add to Appearance tab
+```bash
+src/styles/theme-overrides.css   # Add variant CSS overrides
+src/contexts/ThemeContext.tsx     # Register the new variant
+src/pages/Settings.tsx            # Add to Appearance tab
 ```
 
-See → `guides/theming.md` for details.
+The theme system supports 5 built-in color variants (Default, Corporate, Luxury, Pastel, Cyberpunk) — see `theming.md` for the full color palette reference.
 
 ---
 
 ## i18n Workflow
 
 ```bash
-# 1. Add keys to English
-# src/i18n/en.json
-"MySection": { "myKey": "My Translation" }
-
-# 2. Translate to all locales
-# src/i18n/{ar,de,es,fr}.json
-
-# 3. Use in components
-import { useTranslation } from 'react-i18next';
-const { t } = useTranslation();
-t('MySection.myKey')
+# 1. Add keys to English in src/i18n/en.json
+# 2. Translate to all locales ({ar,de,es,fr}.json)
+# 3. Use in components with useTranslation() hook
 ```
 
 ---
@@ -122,11 +123,9 @@ t('MySection.myKey')
 
 ```bash
 # Frontend (vitest)
-cd projects/pos/pos-mini
 npx vitest run
 
 # Sidecar (pytest)
-cd projects/pos/pos-solo/sidecar
 uv run pytest -v
 
 # TypeScript
@@ -136,6 +135,9 @@ npx tsc --noEmit
 ---
 
 ## Related Docs
-- → `guides/setup.md` — Environment setup
-- → `guides/theming.md` — Theme customization
-- → `references/i18n-keys.md` — Translation keys reference
+
+- → `setup.md` — Environment setup with color guide
+- → `theming.md` — Theme customization & color palettes
+- → `../architecture/theme-system.md` — Theme architecture
+- → `../references/i18n-keys.md` — Translation keys reference
+- → `../README.md` — Master index

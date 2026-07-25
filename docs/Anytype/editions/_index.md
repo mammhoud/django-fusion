@@ -1,28 +1,24 @@
-# Editions 📦
+# Editions — Product Edition Definitions
 
-**Object Type:** Edition
-**Directory:** `editions/`
-**Status:** 📝 Planned
+> **Type:** Edition 📦
+> **Description:** Product edition definitions — scope, features, pricing, target audience, and lifecycle for each POS edition.
 
 ---
 
-## Purpose
+## Current Editions
 
-This directory defines product editions and versions (mini, solo, full, cloud) with their scope, features, and constraints.
+| Edition | Status | Stack | Database | Sync |
+|---------|--------|-------|----------|------|
+| **pos-mini** | ✅ Stable | Rust + Tauri | SQLite | Air-gapped |
+| **pos-solo** | 🚧 Beta | Python + Django + Robyn | SQLite | LAN |
+| **pos-full** | 📋 Planned | Python + Django + Cloud | PostgreSQL | Cloud |
+| **pos-cloud** | 📋 Planned | Web + PostgreSQL | PostgreSQL | Cloud |
 
-## Type Properties (from `_object-types.md`)
+---
 
-| Property | Type | Values |
-|----------|------|--------|
-| Status | Select | Active | Deprecated | Planned |
-| Version | Text | — |
-| Release Date | Date | — |
-| Target Audience | Select | Individual | Small Business | Enterprise |
-| Pricing Tier | Select | Free | Starter | Professional | Enterprise |
+## Related
 
-## Planned Files
-
-- `pos-mini.md` — POS Mini edition definition
-- `pos-solo.md` — POS Solo edition definition
-- `pos-full.md` — POS Full edition definition
-- `pos-cloud.md` — POS Cloud edition definition
+- → `../objects/edition.md` — Edition object type
+- → `../architecture/editions.md` — Edition comparison
+- → `../features/comparison-matrix.md` — Feature grid
+- → `../README.md` — Master index

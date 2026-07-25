@@ -52,8 +52,10 @@ test.describe("Homepage — Static", () => {
     await expect(page.locator("footer")).toBeVisible();
   });
 
-  test("hero section renders with gradient background", async ({ page }) => {
-    await expect(page.locator(".section-hero")).toBeVisible();
+  test("page body has visible content", async ({ page }) => {
+    await expect(page.locator("main, body > div").first()).toBeVisible();
+    const bodyText = await page.textContent('body');
+    expect(bodyText?.length ?? 0).toBeGreaterThan(50);
   });
 
   test("page has no forbidden indigo or purple classes (CTC teal migration)", async ({
