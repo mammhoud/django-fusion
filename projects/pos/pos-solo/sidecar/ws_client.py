@@ -86,7 +86,7 @@ class CloudSyncClient:
     # duplicate events; the parent model (Sale) already covers them.
     SYNCED_ENTITIES = {
         "product": "products",
-        "category": "products",
+        "category": "categories",
         "customer": "customers",
         "sale": "sales",
         "inventorytransaction": "inventory",
@@ -303,10 +303,18 @@ class CloudSyncClient:
 
     def _is_own_echo(self, message: dict) -> bool:
         """Return True if this message originated from this terminal."""
+        if not isinstance(message, dict):
+            return False
         if message.get("origin_node_id") == self.node_id:
             return True
-        payload = message.get("payload")
-        if isinstance(payload, dict) and payload.get("origin_node_id") == self.node_id:
+
+        def _origin_in(payload) -> bool:
+            return isinstance(payload, dict) and payload.get("origin_node_id") == self.node_id
+
+        if _origin_in(message.get("payload")):
+            return True
+        # Broker messages wrap the payload under message.payload
+        if _origin_in(message.get("message", {}).get("payload")):
             return True
         return False
 
@@ -316,6 +324,10 @@ class CloudSyncClient:
             message = json.loads(raw)
         except (json.JSONDecodeError, TypeError, ValueError) as exc:
             logger.warning("Invalid message from cloud: %s", exc)
+            return
+
+        if not isinstance(message, dict):
+            logger.warning("Ignoring non-object WebSocket message: %r", raw[:200])
             return
 
         if self._is_own_echo(message):
