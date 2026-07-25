@@ -199,18 +199,22 @@ async def test_reconnect_backoff():
 async def test_offline_queue_bound():
     """The offline queue drops oldest messages once it exceeds its max size."""
     client = CloudSyncClient(url="ws://localhost/ws/", branch_code="BR", node_id="N")
-    client.MAX_OFFLINE_QUEUE_SIZE = 2
-    _bind_client(client)
+    original_max = CloudSyncClient.MAX_OFFLINE_QUEUE_SIZE
+    try:
+        CloudSyncClient.MAX_OFFLINE_QUEUE_SIZE = 2
+        _bind_client(client)
 
-    client.publish_entity_event("products", "create", {"id": 1})
-    client.publish_entity_event("products", "create", {"id": 2})
-    client.publish_entity_event("products", "create", {"id": 3})
-    await asyncio.sleep(0)  # process thread-safe enqueues
+        client.publish_entity_event("products", "create", {"id": 1})
+        client.publish_entity_event("products", "create", {"id": 2})
+        client.publish_entity_event("products", "create", {"id": 3})
+        await asyncio.sleep(0)  # process thread-safe enqueues
 
-    assert client._async_queue.qsize() == 2
-    ids = [client._async_queue.get_nowait()["payload"]["data"]["id"] for _ in range(2)]
-    # Oldest message (id=1) was dropped when id=3 was enqueued.
-    assert ids == [2, 3]
+        assert client._async_queue.qsize() == 2
+        ids = [client._async_queue.get_nowait()["payload"]["data"]["id"] for _ in range(2)]
+        # Oldest message (id=1) was dropped when id=3 was enqueued.
+        assert ids == [2, 3]
+    finally:
+        CloudSyncClient.MAX_OFFLINE_QUEUE_SIZE = original_max
 
 
 @pytest.mark.asyncio
