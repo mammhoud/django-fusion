@@ -1,0 +1,174 @@
+# js-test: Runs unit tests (vitest) and Playwright E2E tests across all
+# JavaScript/TypeScript front-end projects on pull requests.
+#
+# Projects covered:
+#   - projects/lms/front-end  → Next.js app (primary LMS)
+#   - projects/lms/lms        → Next.js app (secondary LMS)
+#   - projects/pos/pos-e2e    → POS E2E suite (all editions)
+#
+# Each project gets its own job so failures are isolated and results
+# are easy to triage in the GitHub Checks UI.
+
+name: JS Tests (vitest + Playwright E2E)
+
+on:
+  pull_request:
+    paths:
+      - 'projects/lms/front-end/**'
+      - 'projects/lms/lms/**'
+      - 'projects/pos/pos-e2e/**'
+      - 'projects/pos/pos-full/**'
+      - 'projects/pos/pos-solo/**'
+      - 'projects/pos/pos-mini/**'
+      - '.github/workflows/js-test.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'projects/lms/front-end/**'
+      - 'projects/lms/lms/**'
+      - 'projects/pos/pos-e2e/**'
+      - 'projects/pos/pos-full/**'
+      - 'projects/pos/pos-solo/**'
+      - 'projects/pos/pos-mini/**'
+      - '.github/workflows/js-test.yml'
+  workflow_dispatch:
+
+# Prevent duplicate runs on PRs that are from the same repo
+concurrency:
+  group: js-test-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── LMS Front-End (primary) ──────────────────────────────────────
+
+  lms-frontend-test:
+    name: LMS Front-End — Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/lms/front-end
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/lms/front-end/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+
+  lms-frontend-e2e:
+    name: LMS Front-End — Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/lms/front-end
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/lms/front-end/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run E2E tests
+        run: npm run test:e2e
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lms-frontend-playwright-report
+          path: projects/lms/front-end/playwright-report/
+          retention-days: 7
+      - name: Upload test results (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lms-frontend-test-results
+          path: projects/lms/front-end/test-results/
+          retention-days: 7
+
+  # ── LMS (secondary Next.js app) ──────────────────────────────────
+
+  lms-test:
+    name: LMS — Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/lms/lms
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/lms/lms/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run unit tests
+        run: npm run test
+
+  # NOTE: playwright.config.ts exists but no test files yet for lms/lms.
+  # This job will pass silently (playwright test finds nothing) until
+  # test files are added to tests/e2e/.
+
+  lms-e2e:
+    name: LMS — Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/lms/lms
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/lms/lms/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+      - name: Run E2E tests
+        run: npm run test:e2e
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lms-playwright-report
+          path: projects/lms/lms/playwright-report/
+          retention-days: 7
+
+  # ── POS E2E Suite ────────────────────────────────────────────────
+  #
+  # Runs API-level E2E tests only (bolt pattern — no browser/webServer
+  # needed). Page E2E tests require Tauri + Vite, which doesn't run in
+  # a headless CI environment without system deps.
+
+  pos-e2e:
+    name: POS — API E2E Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/pos/pos-e2e
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/pos/pos-e2e/package-lock.json
+      - name: Install dependencies
+        run: npm ci
+      - name: Run API E2E tests (bolt pattern — no browser)
+        run: npx playwright test tests/api/ --project=pos-full

@@ -29,8 +29,8 @@ export default function ErrorState({
       {onRetry && (
         <button
           onClick={onRetry}
-          className="inline-flex items-center gap-2 px-5 py-2.5 bg-indigo-600 text-white rounded-lg
-                     hover:bg-indigo-700 transition-colors text-sm font-medium"
+          className="inline-flex items-center gap-2 px-5 py-2.5 bg-[rgb(var(--ctc-primary))] text-white rounded-lg
+                     hover:bg-[rgb(var(--ctc-primary-dark))] transition-colors text-sm font-medium"
         >
           <HiRefresh className="w-4 h-4" />
           Try Again

@@ -1,17 +1,20 @@
 'use client';
 
+import { useState } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { HiUser, HiCheckCircle, HiXCircle } from 'react-icons/hi';
+import { HiUser, HiCheckCircle, HiXCircle, HiStar } from 'react-icons/hi';
 import {
   useGetAttemptsQuery,
   useGetQuizAttemptsQuery,
 } from '@/store/api/endpoints/quiz';
+import QuizGradingModal from '@/components/quiz/QuizGradingModal';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
 export default function InstructorAttempts() {
   const searchParams = useSearchParams();
   const quizId = searchParams.get('quiz_id');
+  const [gradingAttemptId, setGradingAttemptId] = useState<number | null>(null);
 
   const { data: allAttemptsData, isLoading: allLoading } = useGetAttemptsQuery(undefined, {
     skip: !!quizId,
@@ -46,7 +49,7 @@ export default function InstructorAttempts() {
         </div>
       ) : (
         <div className="card overflow-x-auto">
-          <table className="w-full text-sm min-w-[500px]">
+          <table className="w-full text-sm min-w-[650px]">
             <thead className="bg-gray-50 border-b">
               <tr>
                 <th className="text-left px-6 py-3 font-medium text-gray-500">Student</th>
@@ -54,6 +57,7 @@ export default function InstructorAttempts() {
                 <th className="text-center px-6 py-3 font-medium text-gray-500">Score</th>
                 <th className="text-center px-6 py-3 font-medium text-gray-500">Date</th>
                 <th className="text-center px-6 py-3 font-medium text-gray-500">Result</th>
+                <th className="text-center px-6 py-3 font-medium text-gray-500">Actions</th>
               </tr>
             </thead>
             <tbody className="divide-y">
@@ -87,11 +91,27 @@ export default function InstructorAttempts() {
                       <span className="text-xs text-gray-400">Pending</span>
                     )}
                   </td>
+                  <td className="px-6 py-4 text-center">
+                    <button
+                      onClick={() => setGradingAttemptId(a.id)}
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 px-3 py-1.5 rounded-lg transition-colors"
+                    >
+                      <HiStar className="w-3.5 h-3.5" /> Grade
+                    </button>
+                  </td>
                 </motion.tr>
               ))}
             </tbody>
           </table>
         </div>
+      )}
+
+      {/* Grading Modal */}
+      {gradingAttemptId && (
+        <QuizGradingModal
+          attemptId={gradingAttemptId}
+          onClose={() => setGradingAttemptId(null)}
+        />
       )}
     </div>
   );

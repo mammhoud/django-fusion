@@ -1,7 +1,7 @@
 'use client';
 
 import { useGetProfileQuery } from '@/store/api/endpoints/auth';
-import { useGetInstructorCoursesQuery, useDeleteCourseMutation } from '@/store/api/endpoints/instructors';
+import { useGetInstructorCoursesQuery, useDeleteInstructorCourseMutation } from '@/store/api/endpoints/instructors';
 import Link from 'next/link';
 import { motion } from 'framer-motion';
 import { HiPlus, HiPencil, HiTrash, HiBookOpen, HiEye } from 'react-icons/hi';
@@ -12,7 +12,7 @@ import EmptyState from '@/components/ui/EmptyState';
 export default function DashboardCoursesPage() {
   const { data: profile } = useGetProfileQuery();
   const { data: courses, isLoading } = useGetInstructorCoursesQuery(profile?.id ?? 0, { skip: !profile?.id });
-  const [deleteCourse] = useDeleteCourseMutation();
+  const [deleteCourse] = useDeleteInstructorCourseMutation();
 
   if (profile?.role !== 'instructor') {
     return <ErrorState fullPage message="This page is only available for instructors." />;

@@ -12,6 +12,7 @@ from .snippets import (
     PaymentWebhookLogViewSet,
     ReviewViewSet,
     ScheduleSnippet,
+    WithdrawalViewSet,
 )
 
 """
@@ -68,6 +69,9 @@ class EnrollmentSnippetGroup(SnippetViewSetGroup):
 # =============================================================================
 # REGISTRATION
 # =============================================================================
+
+# Individual snippet registrations (not grouped)
+register_snippet(WithdrawalViewSet)
 
 register_snippet(ClassesSnippetViewSetGroup)
 register_snippet(TracksSnippetViewSetGroup)

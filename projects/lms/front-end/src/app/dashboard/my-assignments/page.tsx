@@ -3,13 +3,14 @@
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 import {
-  HiClipboardList, HiCheckCircle, HiClock, HiUpload, HiDocumentText, HiStar, HiX,
+  HiClipboardList, HiCheckCircle, HiClock, HiUpload, HiDocumentText, HiStar, HiX, HiPaperClip,
 } from 'react-icons/hi';
 import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import {
   useGetAssignmentsQuery,
   useGetMySubmissionsQuery,
   useSubmitAssignmentMutation,
+  useUploadAssignmentFileMutation,
   type Assignment,
   type AssignmentSubmission,
 } from '@/store/api/endpoints/assignments';
@@ -31,9 +32,12 @@ export default function MyAssignmentsPage() {
   } = useGetMySubmissionsQuery();
   const [submitAssignment, { isLoading: isSubmitting }] = useSubmitAssignmentMutation();
 
+  const [uploadFile, { isLoading: isUploading }] = useUploadAssignmentFileMutation();
+
   const [selectedAssignment, setSelectedAssignment] = useState<Assignment | null>(null);
   const [textSubmission, setTextSubmission] = useState('');
   const [submitError, setSubmitError] = useState('');
+  const [uploadedFile, setUploadedFile] = useState<{ url: string; name: string } | null>(null);
 
   const assignments = assignmentsData?.results ?? [];
   const submissions = submissionsData?.results ?? [];
@@ -51,9 +55,14 @@ export default function MyAssignmentsPage() {
     try {
       await submitAssignment({
         assignmentId: selectedAssignment.id,
-        data: { text_submission: textSubmission.trim() },
+        data: {
+          text_submission: textSubmission.trim(),
+          file_url: uploadedFile?.url || '',
+          file_name: uploadedFile?.name || '',
+        },
       }).unwrap();
       setTextSubmission('');
+      setUploadedFile(null);
       setSelectedAssignment(null);
       setSubmitError('');
       refetchSubs();
@@ -169,14 +178,14 @@ export default function MyAssignmentsPage() {
                         )}
                         {/* Submit button */}
                         {!sub && !isPastDue && (
-                          <button onClick={() => { setSelectedAssignment(a); setTextSubmission(''); setSubmitError(''); }}
+                          <button onClick={() => { setSelectedAssignment(a); setTextSubmission(''); setSubmitError(''); setUploadedFile(null); }}
                             className="text-xs text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1">
                             <HiUpload className="w-3.5 h-3.5" /> Submit
                           </button>
                         )}
                         {/* Re-submit */}
                         {sub && sub.status !== 'graded' && (
-                          <button onClick={() => { setSelectedAssignment(a); setTextSubmission(sub.text_submission); setSubmitError(''); }}
+                          <button onClick={() => { setSelectedAssignment(a); setTextSubmission(sub.text_submission); setSubmitError(''); setUploadedFile(null); }}
                             className="text-xs text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1">
                             <HiUpload className="w-3.5 h-3.5" /> Re-submit
                           </button>
@@ -254,6 +263,14 @@ export default function MyAssignmentsPage() {
                           </div>
                         </div>
                       )}
+                      {sub.file_url && (
+                        <div className="mt-2">
+                          <a href={sub.file_url} target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1.5 text-sm text-[rgb(var(--ctc-primary))] hover:underline bg-white rounded-lg px-3 py-2 border border-gray-200">
+                            📎 {sub.file_name || 'Download Attachment'}
+                          </a>
+                        </div>
+                      )}
                     </div>
                   );
                 }
@@ -275,6 +292,52 @@ export default function MyAssignmentsPage() {
                       placeholder="Write or paste your assignment submission here..." />
                   </div>
 
+                  {/* File Upload */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <HiPaperClip className="w-4 h-4 inline mr-1" />
+                      Attach a File
+                      <span className="text-xs text-gray-400 ml-2">(optional — PDF, DOC, ZIP, images, code)</span>
+                    </label>
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-[rgb(var(--ctc-primary))]/50 transition-colors">
+                      {uploadedFile ? (
+                        <div className="flex items-center justify-between">
+                          <div className="flex items-center gap-2 text-sm">
+                            <HiPaperClip className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+                            <span className="text-gray-700 truncate max-w-[200px]">{uploadedFile.name}</span>
+                            <span className="text-xs text-green-600 font-medium">Uploaded ✓</span>
+                          </div>
+                          <button onClick={() => setUploadedFile(null)}
+                            className="text-xs text-red-500 hover:text-red-700 hover:underline">Remove</button>
+                        </div>
+                      ) : (
+                        <label className="flex items-center gap-2 cursor-pointer">
+                          <HiUpload className="w-5 h-5 text-gray-400" />
+                          <span className="text-sm text-gray-500">
+                            {isUploading ? 'Uploading...' : 'Click to upload a file'}
+                          </span>
+                          <input
+                            type="file"
+                            className="hidden"
+                            disabled={isUploading}
+                            onChange={async (e) => {
+                              const file = e.target.files?.[0];
+                              if (!file) return;
+                              try {
+                                const result = await uploadFile(file).unwrap();
+                                setUploadedFile({ url: result.file_url, name: result.file_name });
+                              } catch (err: any) {
+                                setSubmitError(err?.data?.message || 'Upload failed.');
+                              }
+                              // Reset the input so the same file can be re-selected
+                              e.target.value = '';
+                            }}
+                          />
+                        </label>
+                      )}
+                    </div>
+                  </div>
+
                   {submitError && (
                     <div className="bg-red-50 border border-red-200 text-red-700 text-sm rounded-lg px-3 py-2">
                       {submitError}
@@ -286,7 +349,7 @@ export default function MyAssignmentsPage() {
                       className="px-4 py-2 text-sm text-gray-600 hover:text-gray-900 border border-gray-300 rounded-lg">
                       Cancel
                     </button>
-                    <button onClick={handleSubmit} disabled={isSubmitting || !textSubmission.trim()}
+                    <button onClick={handleSubmit} disabled={isSubmitting || (!textSubmission.trim() && !uploadedFile)}
                       className="btn-primary flex items-center gap-2 text-sm">
                       {isSubmitting ? 'Submitting...' : 'Submit Assignment'}
                     </button>

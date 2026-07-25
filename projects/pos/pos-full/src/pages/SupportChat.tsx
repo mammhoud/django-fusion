@@ -102,54 +102,61 @@ export default function SupportChat() {
             </motion.button>
           </div>
 
-          {sidecarOk === false ? (
-            <div className="card--glass rounded-xl p-6 text-center text-slate-400 text-sm">
-              <MdSupportAgent className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p className="font-medium mb-1">Sidecar not running</p>
-              <p className="text-xs">Start the sidecar to view ticket history.</p>
-            </div>
-          ) : ticketList.length === 0 ? (
-            <div className="card--glass rounded-xl p-6 text-center text-slate-400 text-sm">
-              <MdInbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
-              <p>{loadingTickets ? 'Loading tickets…' : 'No support tickets yet.'}</p>
-            </div>
-          ) : (
-            <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
-              {ticketList.map(ticket => (
-                <motion.div
-                  key={ticket.id}
-                  whileHover={{ scale: 1.01 }}
-                  onClick={() => setSelected(s => s?.id === ticket.id ? null : ticket)}
-                  className="card--glass rounded-xl p-4 cursor-pointer border border-transparent hover:border-teal-300 transition-all"
-                >
-                  <div className="flex items-start justify-between gap-3">
-                    <div className="min-w-0">
-                      <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">
-                        {ticket.subject}
-                      </p>
-                      <p className="text-xs text-slate-500 mt-0.5">{ticket.name} &bull; {ticket.email}</p>
-                    </div>
-                    <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 uppercase tracking-wider ${STATUS_COLOURS[ticket.status] ?? 'bg-slate-100 text-slate-500'}`}>
-                      {ticket.status.replace('_', ' ')}
-                    </span>
-                  </div>
-
-                  {selectedTicket?.id === ticket.id && (
+          <FusionPage standalone data={ticketList} isLoading={loadingTickets} skeletonVariant="card">
+            {(data) => {
+              const tickets = (data as SupportTicket[]) ?? [];
+              if (sidecarOk === false) return (
+                <div className="card--glass rounded-xl p-6 text-center text-slate-400 text-sm">
+                  <MdSupportAgent className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p className="font-medium mb-1">Sidecar not running</p>
+                  <p className="text-xs">Start the sidecar to view ticket history.</p>
+                </div>
+              );
+              if (tickets.length === 0) return (
+                <div className="card--glass rounded-xl p-6 text-center text-slate-400 text-sm">
+                  <MdInbox className="w-10 h-10 mx-auto mb-3 opacity-30" />
+                  <p>                  {'No support tickets yet.'}</p>
+                </div>
+              );
+              return (
+                <div className="space-y-2 max-h-[520px] overflow-y-auto pr-1">
+                  {tickets.map((ticket: SupportTicket) => (
                     <motion.div
-                      initial={{ opacity: 0, height: 0 }}
-                      animate={{ opacity: 1, height: 'auto' }}
-                      className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700"
+                      key={ticket.id}
+                      whileHover={{ scale: 1.01 }}
+                      onClick={() => setSelected(s => s?.id === ticket.id ? null : ticket)}
+                      className="card--glass rounded-xl p-4 cursor-pointer border border-transparent hover:border-teal-300 transition-all"
                     >
-                      <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line">{ticket.message}</p>
-                      <p className="text-[11px] text-slate-400 mt-2">
-                        Submitted: {new Date(ticket.created_at).toLocaleString()}
-                      </p>
+                      <div className="flex items-start justify-between gap-3">
+                        <div className="min-w-0">
+                          <p className="font-semibold text-slate-800 dark:text-slate-100 text-sm truncate">
+                            {ticket.subject}
+                          </p>
+                          <p className="text-xs text-slate-500 mt-0.5">{ticket.name} &bull; {ticket.email}</p>
+                        </div>
+                        <span className={`text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0 uppercase tracking-wider ${STATUS_COLOURS[ticket.status] ?? 'bg-slate-100 text-slate-500'}`}>
+                          {ticket.status.replace('_', ' ')}
+                        </span>
+                      </div>
+
+                      {selectedTicket?.id === ticket.id && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: 'auto' }}
+                          className="mt-3 pt-3 border-t border-slate-200 dark:border-slate-700"
+                        >
+                          <p className="text-sm text-slate-600 dark:text-slate-300 whitespace-pre-line">{ticket.message}</p>
+                          <p className="text-[11px] text-slate-400 mt-2">
+                            Submitted: {new Date(ticket.created_at).toLocaleString()}
+                          </p>
+                        </motion.div>
+                      )}
                     </motion.div>
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          )}
+                  ))}
+                </div>
+              );
+            }}
+          </FusionPage>
         </div>
       </div>
     </PageLayout>

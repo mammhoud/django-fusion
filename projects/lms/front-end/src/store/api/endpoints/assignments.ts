@@ -53,6 +53,11 @@ export interface AssignmentSubmitPayload {
   file_name?: string;
 }
 
+export interface UploadResponse {
+  file_url: string;
+  file_name: string;
+}
+
 export interface GradePayload {
   score: number;
   feedback?: string;
@@ -109,6 +114,19 @@ export const assignmentsApi = api.injectEndpoints({
         method: 'DELETE',
       }),
       invalidatesTags: [{ type: 'Assignment', id: 'LIST' }],
+    }),
+
+    // ── File Upload ──
+    uploadAssignmentFile: builder.mutation<UploadResponse, File>({
+      query: (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        return {
+          url: '/apis/assignments/upload/',
+          method: 'POST',
+          body: formData,
+        };
+      },
     }),
 
     // ── Submissions ──
@@ -174,4 +192,5 @@ export const {
   useGetAssignmentSubmissionsQuery,
   useGetMySubmissionsQuery,
   useGradeSubmissionMutation,
+  useUploadAssignmentFileMutation,
 } = assignmentsApi;

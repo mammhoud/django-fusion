@@ -71,6 +71,9 @@ export default function Analytics() {
       title={t('analytics.title')}
       background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
     >
+      <FusionPage standalone data={data} isLoading={loading} error={error} skeletonVariant="detail">
+        {() => (
+          <>
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
@@ -324,6 +327,9 @@ export default function Analytics() {
         visible={!!status}
         onDismiss={dismiss}
       />
+          </>
+        )}
+      </FusionPage>
     </PageLayout>
   );
 }

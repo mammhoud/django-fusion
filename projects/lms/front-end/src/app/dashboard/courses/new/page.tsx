@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { useCreateCourseMutation } from '@/store/api/endpoints/instructors';
+import { useCreateCourseMutation } from '@/store/api/endpoints/courses';
 import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import Link from 'next/link';
 import { HiArrowLeft } from 'react-icons/hi';

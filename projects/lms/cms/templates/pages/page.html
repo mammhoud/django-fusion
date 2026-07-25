@@ -15,7 +15,7 @@
 
     {% for block in page.blocks %}
       {% if block.type == "hero" %}
-        <section class="fusion-hero bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-8 my-6">
+        <section class="fusion-hero bg-gradient-to-r from-[rgb(var(--ctc-primary))]/10 to-[rgb(var(--ctc-accent))]/10 rounded-xl p-8 my-6">
           {% if block.heading %}
             <h2 class="text-3xl font-bold mb-4">{{ block.heading }}</h2>
           {% endif %}
@@ -28,11 +28,11 @@
                 <a href="{{ cta.href }}"
                    class="inline-block px-6 py-3 rounded-lg font-medium
                           {% if cta.variant == 'primary' or not cta.variant %}
-                            bg-blue-600 text-white hover:bg-blue-700
+                            bg-[rgb(var(--ctc-primary))] text-white hover:bg-[rgb(var(--ctc-primary-dark))]
                           {% elif cta.variant == 'secondary' %}
-                            bg-white text-blue-600 border border-blue-600 hover:bg-blue-50
+                            bg-white text-[rgb(var(--ctc-primary))] border border-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5
                           {% else %}
-                            text-blue-600 hover:underline
+                            text-[rgb(var(--ctc-primary))] hover:underline
                           {% endif %}">
                   {{ cta.label }}
                 </a>
@@ -45,7 +45,7 @@
         <section class="fusion-stats grid grid-cols-2 md:grid-cols-4 gap-4 my-6">
           {% for item in block.items %}
             <div class="stat-card bg-white rounded-lg shadow-sm p-4 text-center">
-              <div class="text-2xl font-bold text-blue-600">{{ item.value }}</div>
+              <div class="text-2xl font-bold text-[rgb(var(--ctc-primary))]">{{ item.value }}</div>
               <div class="text-sm text-gray-500">{{ item.label }}</div>
               {% if item.description %}
                 <div class="text-xs text-gray-400 mt-1">{{ item.description }}</div>
@@ -63,7 +63,7 @@
             <p class="text-gray-600 mt-2">{{ block.intro }}</p>
           {% endif %}
           {% if block.cta %}
-            <a href="{{ block.cta.href }}" class="text-blue-600 hover:underline text-sm mt-2 inline-block">
+            <a href="{{ block.cta.href }}" class="text-[rgb(var(--ctc-primary))] hover:underline text-sm mt-2 inline-block">
               {{ block.cta.label }} →
             </a>
           {% endif %}
@@ -118,7 +118,7 @@
             <div class="contact-card bg-white rounded-lg shadow-sm p-4">
               <div class="text-sm text-gray-500 mb-1">{{ item.label }}</div>
               {% if item.href %}
-                <a href="{{ item.href }}" class="text-blue-600 font-medium">{{ item.value }}</a>
+                <a href="{{ item.href }}" class="text-[rgb(var(--ctc-primary))] font-medium">{{ item.value }}</a>
               {% else %}
                 <div class="font-medium">{{ item.value }}</div>
               {% endif %}
@@ -133,24 +133,24 @@
           {% endif %}
           <div class="space-y-4">
             <input type="text" placeholder="Your Name"
-                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]" />
             <input type="email" placeholder="Your Email"
-                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500" />
+                   class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]" />
             <textarea placeholder="Message" rows="4"
-                      class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500"></textarea>
-            <button class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                      class="w-full px-4 py-2 border rounded-lg focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]"></textarea>
+            <button class="px-6 py-3 bg-[rgb(var(--ctc-primary))] text-white rounded-lg hover:bg-[rgb(var(--ctc-primary-dark))]">
               Send Message
             </button>
           </div>
         </section>
 
       {% elif block.type == "cta" %}
-        <section class="fusion-cta bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-8 my-6 text-center">
+        <section class="fusion-cta bg-gradient-to-r from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-primary-dark))] text-white rounded-xl p-8 my-6 text-center">
           {% if block.heading %}
             <h2 class="text-3xl font-bold mb-4">{{ block.heading }}</h2>
           {% endif %}
           {% if block.intro %}
-            <p class="text-lg text-blue-100 mb-6">{{ block.intro }}</p>
+            <p class="text-lg text-white/70 mb-6">{{ block.intro }}</p>
           {% endif %}
           {% if block.ctas %}
             <div class="flex flex-wrap justify-center gap-4">
@@ -158,7 +158,7 @@
                 <a href="{{ cta.href }}"
                    class="inline-block px-6 py-3 rounded-lg font-medium
                           {% if cta.variant == 'primary' or not cta.variant %}
-                            bg-white text-blue-600 hover:bg-blue-50
+                            bg-white text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5
                           {% else %}
                             bg-transparent text-white border border-white hover:bg-white/10
                           {% endif %}">

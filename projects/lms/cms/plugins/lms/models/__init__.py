@@ -14,6 +14,7 @@ from .payments import PaymentTransaction, PaymentRefund, PaymentWebhookLog
 from .quiz import Quiz, QuizAnswer, QuizAttempt, QuizChoice, QuizQuestion
 from .review import *
 from .video import Video, VideoCaption
+from .withdrawal import Withdrawal
 from .wishlist import Wishlist
 
 __all__ = [
@@ -52,6 +53,8 @@ __all__ = [
     # Video
     "Video",
     "VideoCaption",
+    # Withdrawals
+    "Withdrawal",
     # Misc
     "Certificate",
     "Wishlist",

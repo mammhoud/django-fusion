@@ -32,8 +32,8 @@ export default function StudentDashboard() {
   const statsCards = [
     { icon: HiAcademicCap, label: 'Enrolled Courses', value: dashboard?.enrolled_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiCheckCircle, label: 'Completed', value: dashboard?.completed_courses ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
-    { icon: HiClock, label: 'Total Hours', value: dashboard?.total_hours ?? 0, color: 'text-purple-600', bg: 'bg-purple-100' },
-    { icon: HiChartBar, label: 'Progress', value: enrollments?.length ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length) : 0, suffix: '%', color: 'text-indigo-600', bg: 'bg-indigo-100' },
+    { icon: HiClock, label: 'Total Hours', value: dashboard?.total_hours ?? 0, color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
+    { icon: HiChartBar, label: 'Progress', value: enrollments?.length ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length) : 0, suffix: '%', color: 'text-[rgb(var(--ctc-primary))]', bg: 'bg-[rgb(var(--ctc-primary))]/10' },
   ];
 
   return (
@@ -68,8 +68,8 @@ export default function StudentDashboard() {
       {/* Quick Navigation */}
       <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3 mb-10">
         {[
-          { href: '/student-dashboard/enrolled-courses', label: 'My Courses', icon: HiAcademicCap, color: 'text-indigo-600', bg: 'bg-indigo-100' },
-          { href: '/student-dashboard/history', label: 'History', icon: HiClock, color: 'text-purple-600', bg: 'bg-purple-100' },
+          { href: '/student-dashboard/enrolled-courses', label: 'My Courses', icon: HiAcademicCap, color: 'text-[rgb(var(--ctc-primary))]', bg: 'bg-[rgb(var(--ctc-primary))]/10' },
+          { href: '/student-dashboard/history', label: 'History', icon: HiClock, color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
           { href: '/student-dashboard/quiz', label: 'Quizzes', icon: HiChartBar, color: 'text-yellow-600', bg: 'bg-yellow-100' },
           { href: '/student-dashboard/reviews', label: 'Reviews', icon: HiStar, color: 'text-green-600', bg: 'bg-green-100' },
           { href: '/student-dashboard/wishlist', label: 'Wishlist', icon: HiHeart, color: 'text-red-600', bg: 'bg-red-100' },
@@ -100,7 +100,7 @@ export default function StudentDashboard() {
       <div className="mb-8">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-bold text-gray-900">My Courses</h2>
-          <Link href="/student-dashboard/enrolled-courses" className="text-indigo-600 text-sm font-medium hover:text-indigo-700">
+          <Link href="/student-dashboard/enrolled-courses" className="text-[rgb(var(--ctc-primary))] text-sm font-medium hover:text-[rgb(var(--ctc-primary-dark))]">
             View All
           </Link>
         </div>
@@ -117,7 +117,7 @@ export default function StudentDashboard() {
                 transition={{ duration: 0.3, delay: idx * 0.05 }}
                 className="card p-5 flex items-center gap-5"
               >
-                <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
+                <div className="w-24 h-24 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] rounded-lg flex items-center justify-center flex-shrink-0 overflow-hidden">
                   {enrollment.course_thumbnail ? (
                     <img src={enrollment.course_thumbnail} alt="" className="w-full h-full object-cover" />
                   ) : (
@@ -126,7 +126,7 @@ export default function StudentDashboard() {
                 </div>
                 <div className="flex-1 min-w-0">
                   <Link href={`/course-details/${enrollment.course}`}
-                        className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-1">
+                        className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1">
                     {enrollment.course_title}
                   </Link>
                   <p className="text-sm text-gray-500 mt-1">
@@ -139,7 +139,7 @@ export default function StudentDashboard() {
                     </div>
                     <div className="w-full bg-gray-200 rounded-full h-2">
                       <div
-                        className="bg-indigo-600 h-2 rounded-full transition-all duration-500"
+                        className="bg-[rgb(var(--ctc-primary))] h-2 rounded-full transition-all duration-500"
                         style={{ width: `${enrollment.progress}%` }}
                       />
                     </div>
@@ -149,7 +149,7 @@ export default function StudentDashboard() {
                   <HiCheckCircle className="w-8 h-8 text-green-500 flex-shrink-0" />
                 ) : (
                   <Link href={`/course-details/${enrollment.course}`}
-                        className="flex-shrink-0 text-indigo-600 text-sm font-medium hover:text-indigo-700">
+                        className="flex-shrink-0 text-[rgb(var(--ctc-primary))] text-sm font-medium hover:text-[rgb(var(--ctc-primary-dark))]">
                     Continue <HiArrowRight className="w-4 h-4 inline" />
                   </Link>
                 )}

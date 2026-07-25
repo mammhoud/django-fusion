@@ -1,5 +1,7 @@
 'use client';
 
+import { useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import type { Route } from 'next';
 import { motion } from 'framer-motion';
@@ -10,7 +12,44 @@ import { FusionPage } from '@/components/FusionPage';
 import EmptyState from '@/components/ui/EmptyState';
 import type { CmsPage } from '@/store/api/endpoints/pages';
 
+/**
+ * HomePage — CTC Research public landing page.
+ *
+ * Phase 1 (Conditional Homepage):
+ *   If the user already has an LMS auth token (i.e. they are signed in),
+ *   redirect them to the dashboard. Unauthenticated visitors see the
+ *   full public landing page.
+ *
+ *   The check is synchronous (localStorage read) so no API call is needed.
+ *   If the token turns out to be expired, the dashboard's AuthGuard will
+ *   handle the redirect back to /login.
+ */
 export default function HomePage() {
+  const router = useRouter();
+  const [checking, setChecking] = useState(true);
+
+  useEffect(() => {
+    const hasToken = typeof window !== 'undefined' && Boolean(localStorage.getItem('lms_token'));
+    if (hasToken) {
+      router.replace('/dashboard' as never);
+    } else {
+      setChecking(false);
+    }
+  }, [router]);
+
+  // Brief loading state while checking auth — avoids flash of public page
+  // before redirect takes effect.
+  if (checking) {
+    return (
+      <div className="min-h-[80vh] flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-10 h-10 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
+          <p className="text-gray-400 text-sm">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <FusionPage slug="home">
       {(page, _fallback) => <HomePageContent page={page} />}

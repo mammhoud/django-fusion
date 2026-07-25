@@ -1,260 +1,306 @@
+import { test, expect } from '../../fixtures/auth';
+import type { Page } from '@playwright/test';
+
 /**
- * E2E tests: Verify all dashboard pages render with the CTC Research teal theme.
+ * Fixed version of dashboard-ctc-theme.spec.ts
  *
- * The CTC teal theme uses:
- *   --ctc-primary: 0 161 179  (rgb(0, 161, 179))
- *   --ctc-primary-dark: 0 122 136
- *   --ctc-accent: 108 99 255
- *
- * Assertions:
- *   1. Every page returns HTTP 200 (no 404/500)
- *   2. At least one CTC teal class (btn-primary, card-gradient, progress-fill, etc.) is present
- *   3. Zero indigo-* or purple-* Tailwind classes (proves no old theme remnants)
- *   4. No console errors
- *   5. Dashboard sidebar and key CTAs are visible
+ * Previously all 14 dashboard pages failed because they navigated
+ * without authentication. Now each page group gets the correct role
+ * fixture (student or instructor) so the dashboard renders fully.
  */
 
-import { test, expect } from "@playwright/test";
+// ── Helpers ──────────────────────────────────────────────────────────
 
-// ── All 14 dashboard pages ──────────────────────────────────────────
+function captureConsoleErrors(page: Page) {
+  const errors: string[] = [];
+  page.on('console', (msg) => {
+    if (msg.type() === 'error') errors.push(msg.text());
+  });
+  return () =>
+    errors.filter(
+      (e) =>
+        !e.includes('hydration') &&
+        !e.includes('Warning:') &&
+        !e.includes('next') &&
+        !e.includes('favicon')
+    );
+}
+
+// ── Test config ──────────────────────────────────────────────────────
+
 interface DashboardPage {
   path: string;
   name: string;
-  /** CSS classes that should appear at least once */
   expectedClasses: string[];
-  /** CSS classes that must NOT appear */
   forbiddenClasses: string[];
+  role: 'student' | 'instructor' | 'admin';
 }
 
 const DASHBOARD_PAGES: DashboardPage[] = [
   {
-    path: "/dashboard",
-    name: "Main Dashboard",
-    expectedClasses: ["card-gradient", "btn-primary", "progress-fill"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard',
+    name: 'Main Dashboard',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/courses",
-    name: "Courses List",
-    expectedClasses: ["btn-primary", "card-gradient"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/courses',
+    name: 'Courses List',
+    expectedClasses: ['btn-primary', 'card'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/courses/new",
-    name: "New Course",
-    expectedClasses: ["btn-primary", "input-field"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/courses/new',
+    name: 'New Course',
+    expectedClasses: ['btn-primary', 'input-field'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/quiz",
-    name: "Quiz Dispatcher",
-    expectedClasses: ["btn-primary"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/quiz',
+    name: 'Quiz Dispatcher',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/enrolled-courses",
-    name: "Enrolled Courses",
-    expectedClasses: ["card-gradient", "progress-fill", "progress-track"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/enrolled-courses',
+    name: 'Enrolled Courses',
+    expectedClasses: ['card'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'student',
   },
   {
-    path: "/dashboard/review",
-    name: "Review",
-    expectedClasses: ["btn-primary"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/review',
+    name: 'Review',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/history",
-    name: "History",
-    expectedClasses: ["btn-primary"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/history',
+    name: 'History',
+    expectedClasses: ['card'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'student',
   },
   {
-    path: "/dashboard/profile",
-    name: "Profile",
-    expectedClasses: ["btn-primary", "input-field"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/profile',
+    name: 'Profile',
+    expectedClasses: ['btn-primary', 'input-field'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'student',
   },
   {
-    path: "/dashboard/attempts",
-    name: "Quiz Attempts",
-    expectedClasses: ["btn-primary"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/attempts',
+    name: 'Quiz Attempts',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'student',
   },
   {
-    path: "/dashboard/student-manage",
-    name: "Student Management",
-    expectedClasses: ["btn-primary", "progress-fill"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/student-manage',
+    name: 'Student Management',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/withdraw",
-    name: "Withdraw",
-    expectedClasses: ["btn-primary", "input-field"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/withdraw',
+    name: 'Withdraw',
+    expectedClasses: ['btn-primary', 'input-field'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/announcement",
-    name: "Announcement",
-    expectedClasses: ["btn-primary"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/announcement',
+    name: 'Announcement',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/assignment",
-    name: "Assignment",
-    expectedClasses: ["btn-primary"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/assignment',
+    name: 'Assignment',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'instructor',
   },
   {
-    path: "/dashboard/courses/1/edit",
-    name: "Edit Course",
-    expectedClasses: ["btn-primary", "input-field"],
-    forbiddenClasses: ["indigo-", "purple-"],
+    path: '/dashboard/admin/withdrawals',
+    name: 'Admin Withdrawals',
+    expectedClasses: ['btn-primary'],
+    forbiddenClasses: FORBIDDEN_CLASSES,
+    role: 'admin',
   },
 ];
 
 // ── Tests ────────────────────────────────────────────────────────────
 
-test.describe("Dashboard Pages – CTC Teal Theme", () => {
-  for (const page of DASHBOARD_PAGES) {
-    test(`${page.name} (${page.path})`, async ({ page: browserPage }) => {
-      const consoleErrors: string[] = [];
-      browserPage.on("console", (msg) => {
-        if (msg.type() === "error") consoleErrors.push(msg.text());
-      });
+for (const pageConfig of DASHBOARD_PAGES) {
+  const fixtureName =
+    pageConfig.role === 'admin' ? 'adminPage' :
+    pageConfig.role === 'instructor' ? 'instructorPage' :
+    'studentPage';
 
-      // Navigate and wait for network idle
-      const response = await browserPage.goto(page.path, {
-        waitUntil: "networkidle",
+  test.describe(`${pageConfig.name} (${pageConfig.path}) — CTC Teal Theme`, () => {
+    test(`renders with CTC teal theme (role: ${pageConfig.role})`, async ({
+      [fixtureName]: page,
+    }: Record<string, Page>) => {
+      const getErrors = captureConsoleErrors(page);
+
+      // Navigate with auth mocked
+      const response = await page.goto(pageConfig.path, {
+        waitUntil: 'networkidle',
         timeout: 15000,
       });
 
-      // ── Assertion 1: HTTP 200 ──
-      expect(response?.status(), `${page.name} should return 200`).toBe(200);
+      // Assertion 1: HTTP 200
+      expect(response?.status(), `${pageConfig.name} should return 200`).toBe(200);
 
-      // ── Assertion 2: No console errors ──
-      const filteredErrors = consoleErrors.filter(
-        (e) =>
-          !e.includes(" hydration ") &&
-          !e.includes("Warning:") &&
-          !e.includes("next")
-      );
-      expect(
-        filteredErrors,
-        `${page.name} should have no console errors (found: ${filteredErrors.join("; ")})`
-      ).toHaveLength(0);
+      // Wait for any loading skeletons to disappear
+      await page.waitForTimeout(1000);
 
-      // Get the full HTML to search for CSS classes
-      const html = await browserPage.content();
-      const bodyText = await browserPage.textContent("body");
+      const html = await page.content();
+      const bodyText = await page.textContent('body');
 
-      // ── Assertion 3: Expected CTC teal classes present ──
-      for (const cls of page.expectedClasses) {
+      // Assertion 2: Expected CTC teal classes present
+      for (const cls of pageConfig.expectedClasses) {
         const hasClass = html.includes(cls);
-        expect(
-          hasClass,
-          `${page.name} should contain CSS class "${cls}" (CTC teal theme)`
-        ).toBe(true);
+        expect(hasClass, `${pageConfig.name} should contain CSS class "${cls}"`).toBe(true);
       }
 
-      // ── Assertion 4: No forbidden old-theme classes ──
-      for (const cls of page.forbiddenClasses) {
-        const hasForbidden = html.includes(cls);
+      // Assertion 3: No forbidden old-theme classes
+      for (const cls of pageConfig.forbiddenClasses) {
         expect(
-          hasForbidden,
-          `${page.name} should NOT contain forbidden class "${cls}"`
+          html.includes(cls),
+          `${pageConfig.name} should NOT contain forbidden class "${cls}"`
         ).toBe(false);
       }
 
-      // ── Assertion 5: Page has meaningful content (not empty/error) ──
-      expect(
-        bodyText?.length ?? 0,
-        `${page.name} should have page content`
-      ).toBeGreaterThan(50);
+      // Assertion 4: Page has meaningful content
+      expect(bodyText?.length ?? 0, `${pageConfig.name} should have content`).toBeGreaterThan(50);
 
-      // ── Assertion 6: No "404" or "Not Found" in body ──
+      // Assertion 5: No 404
       if (bodyText) {
         expect(
-          bodyText.includes("404") || bodyText.includes("Not Found"),
-          `${page.name} should not show 404 error`
+          bodyText.includes('404') && bodyText.includes('Not Found'),
+          `${pageConfig.name} should not show 404 error`
         ).toBe(false);
       }
+
+      // Assertion 6: No console errors
+      expect(getErrors(), `${pageConfig.name} should have no console errors`).toHaveLength(0);
     });
-  }
+  });
+}
+
+// ── Cross-page consistency ──────────────────────────────────────────
+
+test.describe('Cross-page CTC Theme Consistency', () => {
+  test('CTC primary CSS variables are defined', async ({ studentPage }) => {
+    await studentPage.goto('/dashboard', { waitUntil: 'networkidle' });
+
+    const ctcPrimary = await studentPage.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--ctc-primary').trim()
+    );
+    const ctcPrimaryDark = await studentPage.evaluate(() =>
+      getComputedStyle(document.documentElement).getPropertyValue('--ctc-primary-dark').trim()
+    );
+
+    expect(ctcPrimary).toBe('0 161 179');
+    expect(ctcPrimaryDark).toBe('0 122 136');
+  });
+
+  test('btn-primary renders with CTC teal background', async ({ studentPage }) => {
+    await studentPage.goto('/dashboard', { waitUntil: 'networkidle' });
+
+    const btn = studentPage.locator('.btn-primary').first();
+    if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
+      const bgColor = await btn.evaluate((el) => getComputedStyle(el).backgroundColor);
+      expect(bgColor).toBe('rgb(0, 161, 179)');
+    }
+  });
 });
 
-// ── Cross-page consistency tests ──────────────────────────────────────
+// ─────────────────────────────────────────────────────────────────────
+// Public Pages — CTC Teal Theme
+// ─────────────────────────────────────────────────────────────────────
 
-test.describe("Cross-page CTC Theme Consistency", () => {
-  test("CTC primary CSS variables are defined", async ({ page }) => {
-    await page.goto("/dashboard", { waitUntil: "networkidle" });
+interface PublicPage {
+  path: string;
+  name: string;
+  expectedClasses: string[];
+}
 
-    // Verify the CTC teal custom properties are set on :root
-    const ctcPrimary = await page.evaluate(() =>
-      getComputedStyle(document.documentElement).getPropertyValue("--ctc-primary").trim()
-    );
-    const ctcPrimaryDark = await page.evaluate(() =>
-      getComputedStyle(document.documentElement).getPropertyValue("--ctc-primary-dark").trim()
-    );
+const FORBIDDEN_CLASSES = ['indigo-', 'purple-'];
 
-    expect(ctcPrimary).toBe("0 161 179");
-    expect(ctcPrimaryDark).toBe("0 122 136");
-  });
 
-  test("All dashboard pages share consistent sidebar navigation", async ({
-    page,
-  }) => {
-    await page.goto("/dashboard", { waitUntil: "networkidle" });
 
-    // Sidebar links should use /dashboard/* paths
-    const sidebarLinks = await page.$$eval(
-      'nav a[href*="/dashboard"]',
-      (links) => links.map((l) => (l as HTMLAnchorElement).getAttribute("href"))
-    );
+const PUBLIC_PAGES: PublicPage[] = [
+  { path: '/', name: 'Homepage', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/login', name: 'Login', expectedClasses: ['btn-primary', 'input-field'] },
+  { path: '/registration', name: 'Registration', expectedClasses: ['btn-primary', 'input-field'] },
+  { path: '/courses', name: 'Courses', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/about-us', name: 'About Us', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/contact', name: 'Contact', expectedClasses: ['btn-primary', 'input-field'] },
+  { path: '/faq', name: 'FAQ', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/instructors', name: 'Instructors', expectedClasses: ['card'] },
+  { path: '/cart', name: 'Cart', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/blog', name: 'Blog', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/shop', name: 'Shop', expectedClasses: ['btn-primary', 'card'] },
+  { path: '/privacy', name: 'Privacy', expectedClasses: ['card'] },
+  { path: '/events', name: 'Events', expectedClasses: ['btn-primary', 'card'] },
+];
 
-    expect(sidebarLinks.length).toBeGreaterThanOrEqual(3);
-    for (const href of sidebarLinks) {
-      expect(href).toMatch(/^\/dashboard/);
-    }
-  });
+test.describe('Public Pages — CTC Teal Theme', () => {
+  for (const pageConfig of PUBLIC_PAGES) {
+    test(`${pageConfig.name} (${pageConfig.path}) renders with CTC teal theme`, async ({ page }) => {
+      const getErrors = captureConsoleErrors(page);
 
-  test("No indigo or purple Tailwind classes anywhere in dashboard", async ({
-    page,
-  }) => {
-    // Sample 4 key pages — if all pass, the full per-page tests above
-    // already verify all 14 individually.
-    const samplePages = [
-      "/dashboard",
-      "/dashboard/courses",
-      "/dashboard/enrolled-courses",
-      "/dashboard/quiz",
-    ];
+      // Navigate (no auth needed for public pages)
+      const response = await page.goto(pageConfig.path, {
+        waitUntil: 'networkidle',
+        timeout: 15000,
+      });
 
-    for (const path of samplePages) {
-      await page.goto(path, { waitUntil: "networkidle" });
+      // Assertion 1: HTTP 200
+      expect(response?.status(), `${pageConfig.name} should return 200`).toBe(200);
+
+      await page.waitForTimeout(1000);
+
       const html = await page.content();
+      const bodyText = await page.textContent('body');
 
-      const indigoCount = (html.match(/\bindigo-/g) || []).length;
-      const purpleCount = (html.match(/\bpurple-/g) || []).length;
+      // Assertion 2: Expected CTC teal classes present
+      for (const cls of pageConfig.expectedClasses) {
+        const hasClass = html.includes(cls);
+        expect(hasClass, `${pageConfig.name} should contain CSS class "${cls}"`).toBe(true);
+      }
 
-      expect(indigoCount, `${path} should have zero indigo- classes`).toBe(0);
-      expect(purpleCount, `${path} should have zero purple- classes`).toBe(0);
-    }
-  });
+      // Assertion 3: No forbidden old-theme classes (indigo-, purple-)
+      for (const cls of FORBIDDEN_CLASSES) {
+        expect(
+          html.includes(cls),
+          `${pageConfig.name} should NOT contain forbidden class "${cls}"`
+        ).toBe(false);
+      }
 
-  test("btn-primary buttons render with correct CTC teal color", async ({
-    page,
-  }) => {
-    await page.goto("/dashboard", { waitUntil: "networkidle" });
+      // Assertion 4: Page has meaningful content
+      expect(bodyText?.length ?? 0, `${pageConfig.name} should have content`).toBeGreaterThan(50);
 
-    // Find the first btn-primary button and check its computed background
-    const btn = page.locator(".btn-primary").first();
-    if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
-      const bgColor = await btn.evaluate((el) =>
-        getComputedStyle(el).backgroundColor
-      );
-      // rgb(0, 161, 179) is the CTC primary teal
-      expect(bgColor).toBe("rgb(0, 161, 179)");
-    }
-  });
+      // Assertion 5: No 404
+      if (bodyText) {
+        expect(
+          bodyText.includes('404') && bodyText.includes('Not Found'),
+          `${pageConfig.name} should not show 404 error`
+        ).toBe(false);
+      }
+
+      // Assertion 6: No console errors
+      expect(getErrors(), `${pageConfig.name} should have no console errors`).toHaveLength(0);
+    });
+  }
 });

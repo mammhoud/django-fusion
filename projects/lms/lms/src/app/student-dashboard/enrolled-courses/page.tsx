@@ -68,7 +68,7 @@ export default function StudentEnrolledCoursesPage() {
       {/* Stats Bar */}
       <div className="grid grid-cols-3 gap-4 mb-6">
         {[
-          { label: 'Total Enrolled', value: stats.total, color: 'text-indigo-600', bg: 'bg-indigo-100' },
+          { label: 'Total Enrolled', value: stats.total, color: 'text-[rgb(var(--ctc-primary))]', bg: 'bg-[rgb(var(--ctc-primary))]/10' },
           { label: 'In Progress', value: stats.active, color: 'text-blue-600', bg: 'bg-blue-100' },
           { label: 'Completed', value: stats.completed, color: 'text-green-600', bg: 'bg-green-100' },
         ].map((stat) => (
@@ -88,7 +88,7 @@ export default function StudentEnrolledCoursesPage() {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 rounded-lg text-sm font-medium transition-all capitalize ${
                 filter === f
-                  ? 'bg-indigo-600 text-white shadow-sm'
+                  ? 'bg-[rgb(var(--ctc-primary))] text-white shadow-sm'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               }`}
             >
@@ -103,7 +103,7 @@ export default function StudentEnrolledCoursesPage() {
             value={search}
             onChange={(e) => setSearch(e.target.value)}
             placeholder="Search courses..."
-            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-indigo-500 focus:border-transparent outline-none"
+            className="w-full pl-9 pr-4 py-2 border border-gray-200 rounded-lg text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
           />
         </div>
       </div>
@@ -134,7 +134,7 @@ export default function StudentEnrolledCoursesPage() {
               className="card p-5 flex items-center gap-5 hover:shadow-md transition-shadow"
             >
               {/* Thumbnail */}
-              <div className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
+              <div className="w-24 h-24 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] rounded-xl flex items-center justify-center flex-shrink-0 overflow-hidden">
                 {enrollment.course_thumbnail ? (
                   <img src={enrollment.course_thumbnail} alt="" className="w-full h-full object-cover" />
                 ) : (
@@ -148,7 +148,7 @@ export default function StudentEnrolledCoursesPage() {
                   <div>
                     <Link
                       href={`/course-details/${enrollment.course}`}
-                      className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-1"
+                      className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1"
                     >
                       {enrollment.course_title}
                     </Link>
@@ -182,7 +182,7 @@ export default function StudentEnrolledCoursesPage() {
                       animate={{ width: `${enrollment.progress}%` }}
                       transition={{ duration: 0.8, ease: 'easeOut' }}
                       className={`h-full rounded-full ${
-                        enrollment.is_completed ? 'bg-green-500' : 'bg-indigo-600'
+                        enrollment.is_completed ? 'bg-green-500' : 'bg-[rgb(var(--ctc-primary))]'
                       }`}
                     />
                   </div>
@@ -198,10 +198,10 @@ export default function StudentEnrolledCoursesPage() {
               ) : (                  <Link
                   href={`/course-details/${enrollment.course}`}
                   className="flex flex-col items-center gap-1 flex-shrink-0 group">
-                  <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center group-hover:bg-indigo-200 transition-colors">
-                    <HiArrowRight className="w-5 h-5 text-indigo-600" />
+                  <div className="w-10 h-10 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center group-hover:bg-[rgb(var(--ctc-primary))]/20 transition-colors">
+                    <HiArrowRight className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
                   </div>
-                  <span className="text-xs text-indigo-600 font-medium">Continue</span>
+                  <span className="text-xs text-[rgb(var(--ctc-primary))] font-medium">Continue</span>
                 </Link>
               )}
             </motion.div>

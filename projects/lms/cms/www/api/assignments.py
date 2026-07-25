@@ -9,6 +9,9 @@ Endpoints:
         PATCH  /apis/assignments/<pk>/update/    — Update assignment (instructor only)
         DELETE /apis/assignments/<pk>/delete/    — Delete assignment (instructor only)
 
+    File Upload:
+        POST   /apis/assignments/upload/         — Upload a file for an assignment submission
+
     Student Submission:
         POST   /apis/assignments/<pk>/submit/    — Submit assignment (student)
         GET    /apis/assignments/<pk>/submissions/ — List all submissions for grading (instructor)
@@ -21,9 +24,17 @@ Endpoints:
 """
 
 import logging
+import mimetypes
+import os
+import uuid
+from pathlib import Path
 
+from django.conf import settings
+from django.core.files.storage import default_storage
+from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
+from django.views.decorators.csrf import csrf_exempt
 
 from plugins.lms.models import Assignment, AssignmentSubmission, Course
 from www.api.data_adapter import (
@@ -33,6 +44,114 @@ from www.api.data_adapter import (
     parse_body,
     paginated_response,
 )
+
+# ── File Upload ──
+
+ALLOWED_EXTENSIONS = {
+    '.pdf', '.doc', '.docx', '.xls', '.xlsx', '.ppt', '.pptx',
+    '.txt', '.csv', '.zip', '.rar', '.7z',
+    '.png', '.jpg', '.jpeg', '.gif', '.svg', '.webp',
+    '.py', '.js', '.ts', '.tsx', '.jsx', '.html', '.css', '.scss',
+    '.json', '.xml', '.yaml', '.yml', '.md', '.rst',
+}
+
+MAX_UPLOAD_SIZE = 50 * 1024 * 1024  # 50 MB
+
+
+def _get_media_subdir() -> str:
+    """Get the subdirectory for assignment uploads under MEDIA_ROOT."""
+    return "assignments"
+
+
+def _validate_file_extension(filename: str) -> bool:
+    """Check if the file extension is allowed."""
+    ext = Path(filename).suffix.lower()
+    return ext in ALLOWED_EXTENSIONS
+
+
+def _generate_unique_filename(original: str) -> str:
+    """Generate a unique filename preserving the extension."""
+    ext = Path(original).suffix
+    stem = Path(original).stem[:50]  # Truncate original stem
+    unique = uuid.uuid4().hex[:12]
+    safe_stem = "".join(c for c in stem if c.isalnum() or c in " _-.").strip()[:50]
+    return f"{safe_stem}_{unique}{ext}" if safe_stem else f"file_{unique}{ext}"
+
+
+@csrf_exempt
+@login_required
+def assignment_upload(request):
+    """
+    POST /apis/assignments/upload/ — Upload a file for an assignment submission.
+
+    Accepts multipart/form-data with a single 'file' field.
+    Returns the file URL and file name on success.
+
+    Example:
+        curl -X POST http://localhost:5071/apis/assignments/upload/ \
+          -H "Authorization: Token ..." \
+          -F "file=@my_homework.pdf"
+
+    Returns:
+        {
+            "status": "success",
+            "data": {
+                "file_url": "/media/assignments/my_homework_abc123.pdf",
+                "file_name": "my_homework.pdf"
+            }
+        }
+    """
+    if request.method != "POST":
+        return JsonResponse({"status": "error", "message": "Only POST allowed"}, status=405)
+
+    if not request.user.is_authenticated:
+        return JsonResponse({"status": "error", "message": "Authentication required"}, status=401)
+
+    if 'file' not in request.FILES:
+        return JsonResponse({"status": "error", "message": "No file provided. Use form field 'file'."}, status=400)
+
+    uploaded_file = request.FILES['file']
+    original_name = uploaded_file.name
+
+    # Validate extension
+    if not _validate_file_extension(original_name):
+        ext = Path(original_name).suffix
+        return JsonResponse({
+            "status": "error",
+            "message": f"File type '{ext}' is not allowed. Allowed: {', '.join(sorted(ALLOWED_EXTENSIONS))}",
+        }, status=400)
+
+    # Validate size
+    if uploaded_file.size > MAX_UPLOAD_SIZE:
+        max_mb = MAX_UPLOAD_SIZE // (1024 * 1024)
+        return JsonResponse({
+            "status": "error",
+            "message": f"File too large. Maximum size is {max_mb} MB.",
+        }, status=400)
+
+    # Generate unique filename
+    unique_name = _generate_unique_filename(original_name)
+    subdir = _get_media_subdir()
+    relative_path = f"{subdir}/{unique_name}"
+
+    # Ensure media subdirectory exists
+    media_root = Path(settings.MEDIA_ROOT)
+    upload_dir = media_root / subdir
+    upload_dir.mkdir(parents=True, exist_ok=True)
+
+    # Save file
+    saved_path = default_storage.save(relative_path, uploaded_file)
+    file_url = f"{settings.MEDIA_URL}{saved_path}"
+
+    logger.info(f"File uploaded: {original_name} → {file_url} by user {request.user.id}")
+
+    return JsonResponse({
+        "status": "success",
+        "data": {
+            "file_url": file_url,
+            "file_name": original_name,
+        }
+    })
 
 logger = logging.getLogger(__name__)
 

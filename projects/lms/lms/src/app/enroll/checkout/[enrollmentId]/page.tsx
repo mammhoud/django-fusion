@@ -122,7 +122,7 @@ export default function EnrollmentCheckoutPage() {
   return (
     <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
       <Link href={`/course-details/${enrollment.course}`}
-            className="inline-flex items-center gap-2 text-gray-500 hover:text-indigo-600 mb-8 transition-colors">
+            className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-8 transition-colors">
         <HiArrowLeft className="w-4 h-4" /> Back to Course
       </Link>
 
@@ -146,13 +146,13 @@ export default function EnrollmentCheckoutPage() {
                     }}
                     className={`w-full p-4 rounded-xl border-2 text-left transition-all ${
                       selectedProvider === p.id
-                        ? 'border-indigo-600 bg-indigo-50'
+                        ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5'
                         : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                     }`}
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${
-                        selectedProvider === p.id ? 'bg-indigo-600 text-white' : 'bg-gray-100 text-gray-600'
+                        selectedProvider === p.id ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-gray-100 text-gray-600'
                       }`}>
                         {p.icon}
                       </div>
@@ -161,7 +161,7 @@ export default function EnrollmentCheckoutPage() {
                         <div className="text-sm text-gray-500">{p.description}</div>
                       </div>
                       {selectedProvider === p.id && (
-                        <HiCheckCircle className="w-5 h-5 text-indigo-600" />
+                        <HiCheckCircle className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
                       )}
                     </div>
                   </button>
@@ -197,8 +197,8 @@ export default function EnrollmentCheckoutPage() {
             {/* Processing */}
             {step === 'processing_payment' && (
               <div className="card p-8 text-center">
-                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <div className="w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+                <div className="w-16 h-16 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <div className="w-8 h-8 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Processing Payment</h3>
                 <p className="text-sm text-gray-500">Please wait while we process your payment...</p>
@@ -220,8 +220,8 @@ export default function EnrollmentCheckoutPage() {
             {/* Redirecting */}
             {step === 'redirecting' && (
               <div className="card p-8 text-center">
-                <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <HiShieldCheck className="w-8 h-8 text-indigo-600" />
+                <div className="w-16 h-16 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                  <HiShieldCheck className="w-8 h-8 text-[rgb(var(--ctc-primary))]" />
                 </div>
                 <h3 className="text-lg font-semibold text-gray-900 mb-2">Redirecting to {selectedProvider === 'paypal' ? 'PayPal' : 'Payment Page'}</h3>
                 <p className="text-sm text-gray-500">You&apos;ll be redirected to complete your payment securely.</p>
@@ -236,7 +236,7 @@ export default function EnrollmentCheckoutPage() {
             <h3 className="font-semibold text-gray-900 mb-4">Order Summary</h3>
 
             <div className="flex items-start gap-3 pb-4 border-b border-gray-100 mb-4">
-              <div className="w-14 h-14 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-lg flex items-center justify-center flex-shrink-0">
+              <div className="w-14 h-14 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] rounded-lg flex items-center justify-center flex-shrink-0">
                 <HiAcademicCap className="w-7 h-7 text-white/60" />
               </div>
               <div className="flex-1 min-w-0">

@@ -11,7 +11,9 @@ from . import auth, courses, students, instructors, blog, shop, events, contact,
 from . import notifications
 from . import announcements
 from . import assignments
+from . import dashboard_content
 from . import quiz as quiz_views
+from . import withdrawals
 from plugins.lms.views import video as video_views
 
 app_name = "api"
@@ -128,16 +130,6 @@ urlpatterns = [
         name="notification_mark_all_read",
     ),
     path(
-        "notifications/<pk>/read/",
-        notifications.notification_mark_read,
-        name="notification_mark_read",
-    ),
-    path(
-        "notifications/<pk>/",
-        notifications.notification_dismiss,
-        name="notification_dismiss",
-    ),
-    path(
         "notifications/preferences/",
         notifications.notification_preferences_get,
         name="notification_preferences_get",
@@ -147,7 +139,18 @@ urlpatterns = [
         notifications.notification_preferences_update,
         name="notification_preferences_update",
     ),
+    path(
+        "notifications/<pk>/read/",
+        notifications.notification_mark_read,
+        name="notification_mark_read",
+    ),
+    path(
+        "notifications/<pk>/",
+        notifications.notification_dismiss,
+        name="notification_dismiss",
+    ),
     # ── Quiz ──
+    path("quizzes/upload/", quiz_views.quiz_upload, name="quiz_upload"),
     path("quizzes/", quiz_views.quiz_list, name="quiz_list"),
     path("quizzes/create/", quiz_views.quiz_create, name="quiz_create"),
     path("quizzes/<pk>/", quiz_views.quiz_detail, name="quiz_detail"),
@@ -162,11 +165,14 @@ urlpatterns = [
         "quizzes/questions/<pk>/update/",
         quiz_views.question_update,
         name="question_update",
-    ),
-    path(
-        "quizzes/questions/<pk>/delete/",
+    ),    path("quizzes/questions/<pk>/delete/",
         quiz_views.question_delete,
         name="question_delete",
+    ),
+    path(
+        "quizzes/<quiz_pk>/questions/reorder/",
+        quiz_views.quiz_questions_reorder,
+        name="quiz_questions_reorder",
     ),
     path(
         "quizzes/<quiz_pk>/attempts/start/",
@@ -192,6 +198,7 @@ urlpatterns = [
     ),
     # ── Assignments ──
     path("assignments/", assignments.assignment_list, name="assignment_list"),
+    path("assignments/upload/", assignments.assignment_upload, name="assignment_upload"),
     path("assignments/create/", assignments.assignment_create, name="assignment_create"),
     path("assignments/<pk>/", assignments.assignment_detail, name="assignment_detail"),
     path("assignments/<pk>/update/", assignments.assignment_update, name="assignment_update"),
@@ -208,4 +215,13 @@ urlpatterns = [
     path("announcements/<pk>/delete/", announcements.announcement_delete, name="announcement_delete"),
     # ── Contact ──
     path("contact/", contact.contact_submit, name="contact_submit"),
+    # ── Withdrawals ──
+    # Summary must come BEFORE <pk> routes to avoid matching "summary" as a pk
+    path("withdrawals/summary/", withdrawals.withdrawal_summary, name="withdrawal_summary"),
+    path("withdrawals/create/", withdrawals.withdrawal_create, name="withdrawal_create"),
+    path("withdrawals/", withdrawals.withdrawal_list, name="withdrawal_list"),
+    path("withdrawals/<pk>/cancel/", withdrawals.withdrawal_cancel, name="withdrawal_cancel"),
+    path("withdrawals/<pk>/approve/", withdrawals.withdrawal_approve, name="withdrawal_approve"),
+    path("withdrawals/<pk>/reject/", withdrawals.withdrawal_reject, name="withdrawal_reject"),
+    path("withdrawals/<pk>/", withdrawals.withdrawal_detail, name="withdrawal_detail"),
 ]

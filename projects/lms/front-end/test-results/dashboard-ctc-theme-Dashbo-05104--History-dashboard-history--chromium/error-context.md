@@ -12,12 +12,10 @@
 # Error details
 
 ```
-Error: History should contain CSS class "btn-primary" (CTC teal theme)
+TimeoutError: page.goto: Timeout 15000ms exceeded.
+Call log:
+  - navigating to "http://localhost:3457/dashboard/history", waiting until "networkidle"
 
-expect(received).toBe(expected) // Object.is equality
-
-Expected: true
-Received: false
 ```
 
 # Page snapshot
@@ -109,6 +107,36 @@ Received: false
 # Test source
 
 ```ts
+  27  | }
+  28  | 
+  29  | const DASHBOARD_PAGES: DashboardPage[] = [
+  30  |   {
+  31  |     path: "/dashboard",
+  32  |     name: "Main Dashboard",
+  33  |     expectedClasses: ["card-gradient", "btn-primary", "progress-fill"],
+  34  |     forbiddenClasses: ["indigo-", "purple-"],
+  35  |   },
+  36  |   {
+  37  |     path: "/dashboard/courses",
+  38  |     name: "Courses List",
+  39  |     expectedClasses: ["btn-primary", "card-gradient"],
+  40  |     forbiddenClasses: ["indigo-", "purple-"],
+  41  |   },
+  42  |   {
+  43  |     path: "/dashboard/courses/new",
+  44  |     name: "New Course",
+  45  |     expectedClasses: ["btn-primary", "input-field"],
+  46  |     forbiddenClasses: ["indigo-", "purple-"],
+  47  |   },
+  48  |   {
+  49  |     path: "/dashboard/quiz",
+  50  |     name: "Quiz Dispatcher",
+  51  |     expectedClasses: ["btn-primary"],
+  52  |     forbiddenClasses: ["indigo-", "purple-"],
+  53  |   },
+  54  |   {
+  55  |     path: "/dashboard/enrolled-courses",
+  56  |     name: "Enrolled Courses",
   57  |     expectedClasses: ["card-gradient", "progress-fill", "progress-track"],
   58  |     forbiddenClasses: ["indigo-", "purple-"],
   59  |   },
@@ -179,7 +207,8 @@ Received: false
   124 |       });
   125 | 
   126 |       // Navigate and wait for network idle
-  127 |       const response = await browserPage.goto(page.path, {
+> 127 |       const response = await browserPage.goto(page.path, {
+      |                                          ^ TimeoutError: page.goto: Timeout 15000ms exceeded.
   128 |         waitUntil: "networkidle",
   129 |         timeout: 15000,
   130 |       });
@@ -209,8 +238,7 @@ Received: false
   154 |         expect(
   155 |           hasClass,
   156 |           `${page.name} should contain CSS class "${cls}" (CTC teal theme)`
-> 157 |         ).toBe(true);
-      |           ^ Error: History should contain CSS class "btn-primary" (CTC teal theme)
+  157 |         ).toBe(true);
   158 |       }
   159 | 
   160 |       // ── Assertion 4: No forbidden old-theme classes ──
@@ -281,34 +309,4 @@ Received: false
   225 |     // already verify all 14 individually.
   226 |     const samplePages = [
   227 |       "/dashboard",
-  228 |       "/dashboard/courses",
-  229 |       "/dashboard/enrolled-courses",
-  230 |       "/dashboard/quiz",
-  231 |     ];
-  232 | 
-  233 |     for (const path of samplePages) {
-  234 |       await page.goto(path, { waitUntil: "networkidle" });
-  235 |       const html = await page.content();
-  236 | 
-  237 |       const indigoCount = (html.match(/\bindigo-/g) || []).length;
-  238 |       const purpleCount = (html.match(/\bpurple-/g) || []).length;
-  239 | 
-  240 |       expect(indigoCount, `${path} should have zero indigo- classes`).toBe(0);
-  241 |       expect(purpleCount, `${path} should have zero purple- classes`).toBe(0);
-  242 |     }
-  243 |   });
-  244 | 
-  245 |   test("btn-primary buttons render with correct CTC teal color", async ({
-  246 |     page,
-  247 |   }) => {
-  248 |     await page.goto("/dashboard", { waitUntil: "networkidle" });
-  249 | 
-  250 |     // Find the first btn-primary button and check its computed background
-  251 |     const btn = page.locator(".btn-primary").first();
-  252 |     if (await btn.isVisible({ timeout: 3000 }).catch(() => false)) {
-  253 |       const bgColor = await btn.evaluate((el) =>
-  254 |         getComputedStyle(el).backgroundColor
-  255 |       );
-  256 |       // rgb(0, 161, 179) is the CTC primary teal
-  257 |       expect(bgColor).toBe("rgb(0, 161, 179)");
 ```

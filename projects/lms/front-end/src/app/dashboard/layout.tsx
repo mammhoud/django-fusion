@@ -20,6 +20,15 @@ const instructorLinks = [
   { href: '/dashboard/withdraw', icon: HiCurrencyDollar, label: 'Withdraw' },
 ];
 
+const adminLinks = [
+  { href: '/dashboard', icon: HiHome, label: 'Overview' },
+  { href: '/dashboard/admin/withdrawals', icon: HiCurrencyDollar, label: 'Withdrawals' },
+  { href: '/dashboard/courses', icon: HiBookOpen, label: 'Courses' },
+  { href: '/dashboard/enrolled-courses', icon: HiUserGroup, label: 'Students' },
+  { href: '/dashboard/review', icon: HiStar, label: 'Reviews' },
+  { href: '/dashboard/history', icon: HiClock, label: 'History' },
+];
+
 const studentLinks = [
   { href: '/dashboard', icon: HiHome, label: 'Overview' },
   { href: '/dashboard/enrolled-courses', icon: HiBookOpen, label: 'My Courses' },
@@ -43,7 +52,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
     );
   }
 
-  const links = profile?.role === 'instructor' ? instructorLinks : studentLinks;
+  const links = profile?.role === 'admin' ? adminLinks : profile?.role === 'instructor' ? instructorLinks : studentLinks;
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

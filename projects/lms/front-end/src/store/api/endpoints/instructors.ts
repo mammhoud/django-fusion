@@ -58,7 +58,7 @@ export const instructorsApi = api.injectEndpoints({
       query: (id) => `/apis/instructors/${id}/reviews/`,
       providesTags: [{ type: 'Review', id: 'LIST' }],
     }),
-    deleteCourse: builder.mutation<void, number>({
+    deleteInstructorCourse: builder.mutation<void, number>({
       query: (id) => ({ url: `/apis/instructors/courses/${id}/`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Course', id: 'LIST' }],
     }),
@@ -75,6 +75,6 @@ export const {
   useGetInstructorDashboardQuery,
   useGetInstructorCoursesQuery,
   useGetInstructorReviewsQuery,
-  useDeleteCourseMutation,
+  useDeleteInstructorCourseMutation,
   useUpdateInstructorProfileMutation,
 } = instructorsApi;

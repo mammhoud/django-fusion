@@ -73,8 +73,8 @@ export default function CourseDetailsPage() {
         );
       case 'enrolled_paid':
         return (
-          <div className="flex items-center gap-2 text-indigo-600 bg-indigo-50 px-4 py-3 rounded-xl text-sm font-medium">
-            <div className="w-5 h-5 border-2 border-indigo-600 border-t-transparent rounded-full animate-spin" />
+          <div className="flex items-center gap-2 text-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 px-4 py-3 rounded-xl text-sm font-medium">
+            <div className="w-5 h-5 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" />
             Redirecting to checkout...
           </div>
         );
@@ -105,7 +105,7 @@ export default function CourseDetailsPage() {
           </div>
           <div className="mt-6">
             <span className="text-3xl font-bold">${price}</span>
-            {course.discounted_price && <span className="text-lg line-through text-indigo-300 ml-2">${course.price}</span>}
+            {course.discounted_price && <span className="text-lg line-through text-[rgb(var(--ctc-primary))]/70 ml-2">${course.price}</span>}
           </div>
         </div>
 
