@@ -81,6 +81,7 @@ export default defineConfig({
         ...devices['Desktop Chrome'],
         baseURL: 'http://localhost:1422',
       },
+      timeout: 60000,
       webServer: {
         command: 'cd ../pos-mini && npx vite --port 1422 --strictPort',
         port: 1422,

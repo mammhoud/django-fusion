@@ -77,6 +77,19 @@ export default function Transactions() {
     tax_rate: settingsData?.tax_rate || '',
   };
 
+  // Surface RTK Query load errors via the status toast so they're not
+  // silently swallowed by the empty-data branches.
+  useEffect(() => {
+    if (error) {
+      const msg =
+        typeof error === 'string'
+          ? error
+          : (error as Record<string, unknown>)?.error as string ||
+            t('common.error');
+      showError(msg);
+    }
+  }, [error]);
+
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
       if (!startDate && !endDate) return true;
@@ -657,6 +670,14 @@ export default function Transactions() {
       title={t('transactions.title')}
       background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
     >
+      {/* Surface RTK Query load errors via the status toast */}
+      <StatusToast
+        type={status?.type ?? 'success'}
+        message={status?.message ?? ''}
+        visible={!!status}
+        onDismiss={dismiss}
+      />
+
       {/* Filters Button */}
       <div className="flex justify-end mb-4">
         <motion.button

@@ -161,7 +161,14 @@ vi.mock('recharts', async () => {
 });
 
 // ---------------------------------------------------------------------------
-// Custom render that wraps in MemoryRouter + ThemeProvider
+// Redux store — required by RTK Query pages (Customers, Recipes, Inventory,
+// Reports, Roles, Suppliers, Transactions, etc.)
+// ---------------------------------------------------------------------------
+import { Provider } from 'react-redux';
+import { store } from '../store';
+
+// ---------------------------------------------------------------------------
+// Custom render that wraps in MemoryRouter + ThemeProvider + Redux Provider
 // ---------------------------------------------------------------------------
 interface CustomRenderOptions extends Omit<RenderOptions, 'wrapper'> {
   initialEntries?: string[];
@@ -174,13 +181,15 @@ export function renderWithRouter(
   const { initialEntries = ['/'], ...renderOptions } = options ?? {};
   function Wrapper({ children }: { children: ReactNode }) {
     return (
-      <MemoryRouter initialEntries={initialEntries}>
-        <ThemeProvider>
-          <LanguageProvider>
-            <AuthProvider>{children}</AuthProvider>
-          </LanguageProvider>
-        </ThemeProvider>
-      </MemoryRouter>
+      <Provider store={store}>
+        <MemoryRouter initialEntries={initialEntries}>
+          <ThemeProvider>
+            <LanguageProvider>
+              <AuthProvider>{children}</AuthProvider>
+            </LanguageProvider>
+          </ThemeProvider>
+        </MemoryRouter>
+      </Provider>
     );
   }
   return render(ui, { wrapper: Wrapper, ...renderOptions });

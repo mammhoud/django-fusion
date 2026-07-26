@@ -4,8 +4,25 @@ import {
   screen,
   waitFor,
 } from '../test-utils';
-import { mockInvokeSuccess, mockInvokeError, resetInvokeMocks } from '../mocks/tauri';
 import Transactions from '../../pages/Transactions';
+
+const mocks = vi.hoisted(() => ({
+  getTransactions: vi.fn(),
+  getSettings: vi.fn(),
+  deleteTransaction: vi.fn(),
+}));
+
+vi.mock('../../store/api/endpoints/legacy', () => ({
+  useGetTransactionsQuery: mocks.getTransactions,
+}));
+
+vi.mock('../../store/api/endpoints/core', () => ({
+  useGetSettingsQuery: mocks.getSettings,
+}));
+
+vi.mock('../../store/api/endpoints/kitchen', () => ({
+  useDeleteTransactionMutation: () => [mocks.deleteTransaction],
+}));
 
 const mockTransactions = [
   {
@@ -35,22 +52,23 @@ const mockSettings = {
 };
 
 beforeEach(() => {
-  resetInvokeMocks();
   vi.clearAllMocks();
-  mockInvokeSuccess('get_transactions', mockTransactions);
-  mockInvokeSuccess('get_settings', mockSettings);
-  mockInvokeSuccess('check_auth_required', false);
+  mocks.getTransactions.mockReturnValue({ data: mockTransactions, isLoading: false, error: undefined });
+  mocks.getSettings.mockReturnValue({ data: mockSettings });
+  mocks.deleteTransaction.mockResolvedValue({ data: undefined });
 });
 
 describe('Transactions page', () => {
   it('surfaces load errors via the status toast (covers the silent-failure path)', async () => {
-    resetInvokeMocks();
-    mockInvokeError('get_transactions', 'Network unreachable');
-    mockInvokeSuccess('get_settings', mockSettings);
+    // RTK Query network errors have the shape { error: 'message' }, not { message: '...' }
+    mocks.getTransactions.mockReturnValue({ data: [], isLoading: false, error: { error: 'Network unreachable' } });
+
     renderWithRouter(<Transactions />);
 
+    // React Strict Mode double-fires effects in dev, which may produce
+    // duplicate toast entries — use getAllByText to handle both cases.
     await waitFor(() => {
-      expect(screen.getByText(/Network unreachable/i)).toBeInTheDocument();
+      expect(screen.getAllByText(/Network unreachable/i).length).toBeGreaterThan(0);
     });
   });
 
