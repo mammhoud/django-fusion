@@ -1,0 +1,72 @@
+{% extends "wagtailadmin/pages/index.html" %}
+{% load wagtailadmin_tags i18n %}
+
+{% block content %}
+    <div class="container-fluid">
+        <div class="row mb-4">
+            <div class="col">
+                <h1>{{ page_title }}</h1>
+            </div>
+            <div class="col-auto">
+                {% if can_add %}
+                    <a href="{% url 'wagtailadmin_pages:add_subpage' parent_page.id %}" class="btn btn-primary">
+                        {% trans "Add child page" %}
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>{% trans "Title" %}</th>
+                                        <th>{% trans "Status" %}</th>
+                                        <th>{% trans "Updated" %}</th>
+                                        <th>{% trans "Type" %}</th>
+                                        <th></th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for page in pages %}
+                                        <tr>
+                                            <td>
+                                                <a href="{% url 'wagtailadmin_pages:edit' page.id %}">{{ page.title }}</a>
+                                            </td>
+                                            <td>
+                                                {% if page.live %}
+                                                    <span class="badge bg-success">{% trans "Live" %}</span>
+                                                {% else %}
+                                                    <span class="badge bg-secondary">{% trans "Draft" %}</span>
+                                                {% endif %}
+                                            </td>
+                                            <td>{{ page.latest_revision_created_at }}</td>
+                                            <td>{{ page.content_type.model }}</td>
+                                            <td>
+                                                <div class="dropdown">
+                                                    <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                                        {% trans "Actions" %}
+                                                    </button>
+                                                    <ul class="dropdown-menu">
+                                                        <li><a class="dropdown-item" href="{% url 'wagtailadmin_pages:edit' page.id %}">{% trans "Edit" %}</a></li>
+                                                        <li><a class="dropdown-item" href="{% url 'wagtailadmin_pages:delete' page.id %}">{% trans "Delete" %}</a></li>
+                                                        <li><hr class="dropdown-divider"></li>
+                                                        <li><a class="dropdown-item" href="{{ page.url }}" target="_blank">{% trans "View live" %}</a></li>
+                                                    </ul>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

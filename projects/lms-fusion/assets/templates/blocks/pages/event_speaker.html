@@ -1,0 +1,79 @@
+{% load i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Event Speaker Block Template - Wagtail Bakery Style #}
+
+<div class="event-speaker {% if self.featured_speaker %}event-speaker--featured{% endif %}">
+    <div class="event-speaker__card d-flex flex-column flex-md-row gap-4 p-4 bg-white rounded-3 shadow-sm">
+
+        {# Photo #}
+        {% if self.photo %}
+        <div class="event-speaker__photo flex-shrink-0">
+            {% image self.photo fill-200x200 class="rounded-circle" %}
+            {% if self.featured_speaker %}
+            <span class="badge bg-warning position-absolute top-0 start-100 translate-middle">
+                <i class="bi bi-star-fill"></i> {% trans "Keynote" %}
+            </span>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# Info #}
+        <div class="event-speaker__info flex-grow-1">
+            <h4 class="event-speaker__name h5 mb-1">{{ self.name }}</h4>
+            <p class="event-speaker__title text-primary mb-3">{{ self.title }}</p>
+
+            {% if self.bio %}
+            <div class="event-speaker__bio text-muted mb-3">
+                {{ self.bio|richtext }}
+            </div>
+            {% endif %}
+
+            {# Session Info #}
+            {% if self.session_title %}
+            <div class="event-speaker__session mt-3 p-3 bg-light rounded">
+                <h5 class="session-title h6 mb-2">
+                    <i class="bi bi-mic me-2"></i>{{ self.session_title }}
+                </h5>
+                {% if self.session_time %}
+                <p class="session-time text-muted small mb-1">
+                    <i class="bi bi-clock me-1"></i>{{ self.session_time }}
+                </p>
+                {% endif %}
+                {% if self.session_location %}
+                <p class="session-location text-muted small mb-0">
+                    <i class="bi bi-geo-alt me-1"></i>{{ self.session_location }}
+                </p>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# Social Links #}
+            {% if self.social_links %}
+            <div class="event-speaker__social mt-3 d-flex gap-2">
+                {% for link in self.social_links %}
+                <a href="{{ link.value.url }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-sm btn-outline-secondary"
+                   title="{{ link.value.platform }}">
+                    {% if link.value.platform == 'linkedin' %}
+                    <i class="bi bi-linkedin"></i>
+                    {% elif link.value.platform == 'twitter' %}
+                    <i class="bi bi-twitter-x"></i>
+                    {% elif link.value.platform == 'website' %}
+                    <i class="bi bi-globe"></i>
+                    {% elif link.value.platform == 'github' %}
+                    <i class="bi bi-github"></i>
+                    {% elif link.value.platform == 'book' %}
+                    <i class="bi bi-book"></i>
+                    {% else %}
+                    <i class="bi bi-link"></i>
+                    {% endif %}
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>

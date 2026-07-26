@@ -1,8 +1,0 @@
-import django_filters
-from base.shared.auth.models.user import User as Account
-
-
-class AccountFilter(django_filters.FilterSet):
-    class Meta:
-        model = Account
-        fields = ("id", "email", "is_admin")

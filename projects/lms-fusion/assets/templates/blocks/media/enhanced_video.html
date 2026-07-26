@@ -1,0 +1,25 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Enhanced Video Block Template #}
+{% firstof value self as vid %}
+{% if vid and vid.embed_url %}
+<div class="video-block video-block--enhanced mb-4">
+    {% if vid.video_title %}
+        <h4 class="video-block__title mb-3">{{ vid.video_title }}</h4>
+    {% endif %}
+
+    <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+        <iframe
+            src="{{ vid.embed_url }}"
+            allowfullscreen
+            title="{{ vid.video_title|default:_('Video') }}"
+            loading="lazy"
+        ></iframe>
+    </div>
+
+    {% if vid.video_description %}
+        <div class="video-block__description mt-3 text-muted">
+            {{ vid.video_description|richtext }}
+        </div>
+    {% endif %}
+</div>
+{% endif %}

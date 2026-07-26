@@ -1,0 +1,14 @@
+.spa-shell,
+[data-usecase~='spa'] {
+  min-height: 100dvh;
+
+  .spa-shell__view,
+  [data-spa-view] {
+    min-width: 0;
+  }
+
+  .spa-shell__loading,
+  [data-spa-loading] {
+    pointer-events: none;
+  }
+}

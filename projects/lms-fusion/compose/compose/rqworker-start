@@ -1,0 +1,14 @@
+#!/bin/bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+echo "🐕 Starting RQ worker..."
+exec python manage.py rqworker default email newsletter
+#!/bin/bash
+set -o errexit
+set -o pipefail
+set -o nounset
+
+echo "🐕 Starting RQ worker..."
+exec python manage.py rqworker default email newsletter

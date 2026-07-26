@@ -1,0 +1,70 @@
+{% extends layout_path|default:'auth/skeleton.html' %}
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+
+{% block content %}
+<div class="auth auth--split-layout">
+  <div class="auth__container--split">
+
+    <!-- Welcome Section -->
+    <div class="auth__welcome--split">
+      <div class="auth__welcome-inner">
+
+        <!-- Logo wrapped in auth-specific container -->
+        <div class="auth__logo">
+          {% comp "partials/logo.html" /%}
+        </div>
+
+        <div class="auth__welcome-content">
+          <h1 class="auth__welcome-title">{% trans "Welcome 🚀" %}</h1>
+          <p class="auth__welcome-text">
+            {% trans "Sign in to access curated tech tracks for medical research, publish and peer-review articles, and collaborate with colleagues through virtual courses. Let's advance science together." %}
+          </p>
+        </div>
+
+        <div class="auth__decoration">
+          <img src="{% static 'images/element/02.svg' %}"
+               class="auth__decoration-image"
+               alt=""
+               loading="lazy">
+        </div>
+
+        <div class="auth__social-proof">
+          <p class="auth__social-proof-text">
+            {% trans "1k+ Students joined us, now it's your turn." %}
+          </p>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Form Section -->
+    <div class="auth__form-section--split">
+      <div class="auth__form-container">
+        {% if messages %}
+        <div class="auth__messages">
+          {% for message in messages %}
+          <div class="alert alert-{{ message.tags|default:'info' }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+          {% endfor %}
+        </div>
+        {% endif %}
+        <div class="auth__component">
+          {% block auth_content %}
+            {% if fragment_name %}
+              {% comp fragment_name /%}
+            {% endif %}
+          {% endblock auth_content %}
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+{% endblock content %}
+
+{% block extra_assets %}
+<script>
+</script>
+{% endblock extra_assets %}

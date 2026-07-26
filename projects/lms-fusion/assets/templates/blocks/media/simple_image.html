@@ -1,0 +1,6 @@
+{% load wagtailimages_tags %}
+{# Simple Image Block Template #}
+{% firstof value self as img %}
+{% if img and img.image %}
+    {% image img.image width-800 class="img-fluid" alt=img.alternative_text loading=img.lazy_loading|yesno:"lazy,eager" %}
+{% endif %}

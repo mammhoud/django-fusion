@@ -1,0 +1,94 @@
+{% load i18n %}
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+
+{% if request.user.is_authenticated %}
+<div class="d-flex align-items-center gap-3">
+    {# Cart Button #}
+    <div class="position-relative">
+        <button class="btn btn-link text-dark p-0 position-relative cart-toggle"
+                type="button"
+                data-bs-toggle="modal"
+                data-bs-target="#cartModal"
+                title="{% trans 'Shopping Cart' %}">
+            <i class="bi bi-cart3 fs-4"></i>
+            <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger cart-badge"
+                  id="cartItemCount"
+                  hx-get="{% url 'accounts:cart-count' %}"
+                  hx-trigger="load, cartUpdated from:body"
+                  hx-swap="innerHTML">
+                0
+            </span>
+        </button>
+    </div>
+
+    {# User Dropdown #}
+    <div class="header-dropdown dropdown">
+        <a class="nav-link dropdown-toggle align-items-center user-dropdown-toggle-compact" href="#" id="userMenu" data-bs-toggle="dropdown" aria-expanded="false">
+            <div class="user-avatar-compact me-2">
+                {% if request.user.profile.avatar %}
+                <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.get_full_name }}" class="avatar-img-compact">
+                {% else %}
+                <i class="bi bi-person-circle"></i>
+                {% endif %}
+            </div>
+            <span class="user-name-compact">
+                {{ request.user.get_full_name|default:request.user.username }}
+            </span>
+        </a>
+
+        <ul class="dropdown-menu shadow-sm user-menu-dropdown-compact animate__animated animate__fadeIn" aria-labelledby="userMenu">
+
+            {# User Info #}
+            <li class="dropdown-header user-info-compact">
+                <div class="d-flex align-items-center">
+                    <div class="user-avatar-compact me-2">
+                        {% if request.user.profile.avatar %}
+                        <img src="{{ request.user.profile.avatar.url }}" alt="{{ request.user.get_full_name }}" class="avatar-img-compact">
+                        {% else %}
+                        <i class="bi bi-person-circle"></i>
+                        {% endif %}
+                    </div>
+                    <div class="flex-grow-1">
+                        <h6 class="mb-0 text-dark small">
+                            {{ request.user.get_full_name|default:request.user.username }}
+                        </h6>
+                        <small class="text-muted">{{ request.user.email|truncatechars:20 }}</small>
+                    </div>
+                </div>
+            </li>
+
+            <li><hr class="dropdown-divider my-2"></li>
+
+            <li class="nav-dropdown-item">
+                <a class="nav-dropdown-link-compact" href="{% url 'accounts:profile' %}">
+                    <i class="bi bi-person me-2 text-success"></i>
+                    <span class="nav-header-select-item">{% trans "Profile" %}</span>
+                </a>
+            </li>
+
+            <li><hr class="dropdown-divider my-2"></li>
+
+            {# Logout #}
+            <li class="nav-dropdown-item">
+                <a class="nav-dropdown-link-compact text-danger" href="{% url 'plugins:logout' %}">
+                    <i class="bi bi-box-arrow-right me-2"></i>
+                    <span class="nav-header-select-item">{% trans "Logout" %}</span>
+                </a>
+            </li>
+
+        </ul>
+    </div>
+</div>
+
+{% else %}
+<div class="buttons-compact">
+    <a class="btn-login-compact me-2" href="{% url 'plugins:login' %}">
+        <i class="bi bi-person-circle me-1"></i>
+        <span class="nav-header-select-item">{% trans "Login" %}</span>
+    </a>
+    <a class="btn-register-compact" href="{% url 'plugins:register' %}">
+        <i class="bi bi-person-plus me-1"></i>
+        <span class="nav-header-select-item">{% trans "Register" %}</span>
+    </a>
+</div>
+{% endif %}

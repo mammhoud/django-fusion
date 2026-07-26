@@ -1,0 +1,183 @@
+{% extends layout_path|default:'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Too Many Requests (429 Error)" %} | {{ site_name|default:'Website' }}{% endblock %}
+
+{% block meta %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, follow">
+    <meta name="description" content="{% trans 'You have sent too many requests in a given amount of time.' %}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% trans 'Too Many Requests (429)' %} | {{ site_name|default:'Website' }}">
+    <meta property="og:description" content="{% trans 'Rate limit exceeded. Please slow down.' %}">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% trans 'Too Many Requests (429)' %} | {{ site_name|default:'Website' }}">
+    <meta name="twitter:description" content="{% trans 'Rate limit exceeded.' %}">
+
+    <link rel="canonical" href="{{ site_url|default:'/' }}">
+
+    <!-- Rate limit headers (will be set by server) -->
+    <meta http-equiv="Retry-After" content="{{ retry_after|default:'60' }}">
+{% endblock %}
+
+{% block styles %}
+    {% load webpack_loader %}
+    {% render_bundle 'static' 'css' %}
+{% endblock styles %}
+
+{% block body_class %}template-429{% endblock %}
+
+{% block body %}
+<div class="error-page error-429">
+    <!-- Speedometer background -->
+    <div class="speedometer-bg">
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+        <div class="speed-line"></div>
+    </div>
+
+    <div class="error-container">
+        <div class="error-card">
+            <!-- Speedometer gauge -->
+            <div class="gauge-container">
+                <div class="gauge">
+                    <div class="gauge-fill"></div>
+                    <div class="gauge-overlay"></div>
+                    <div class="gauge-center">
+                        <span class="gauge-number">429</span>
+                    </div>
+                </div>
+                <div class="gauge-needle"></div>
+            </div>
+
+            <!-- Error message -->
+            <div class="error-message">
+                <h2>{% trans "Slow Down!" %}</h2>
+                <p>{% trans "You've made too many requests. Please wait before trying again." %}</p>
+            </div>
+
+            <!-- Rate limit info -->
+            <div class="rate-info">
+                <div class="rate-item">
+                    <i class="fas fa-tachometer-alt"></i>
+                    <div class="rate-details">
+                        <span class="label">{% trans "Current rate:" %}</span>
+                        <span class="value">{{ current_rate|default:"Maximum" }}</span>
+                    </div>
+                </div>
+                <div class="rate-item">
+                    <i class="fas fa-hourglass-half"></i>
+                    <div class="rate-details">
+                        <span class="label">{% trans "Retry after:" %}</span>
+                        <span class="value" id="retryCountdown">{{ retry_after|default:"60" }}s</span>
+                    </div>
+                </div>
+                <div class="rate-item">
+                    <i class="fas fa-chart-line"></i>
+                    <div class="rate-details">
+                        <span class="label">{% trans "Limit:" %}</span>
+                        <span class="value">{{ rate_limit|default:"100" }}/{{ rate_period|default:"hour" }}</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="cooldown-progress">
+                <div class="progress-label">
+                    <span>{% trans "Cooldown period" %}</span>
+                    <span id="progressPercentage">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- Tips -->
+            <div class="tips">
+                <h3>{% trans "Tips to avoid rate limiting:" %}</h3>
+                <ul>
+                    <li><i class="fas fa-check-circle"></i> {% trans "Reduce request frequency" %}</li>
+                    <li><i class="fas fa-check-circle"></i> {% trans "Implement caching" %}</li>
+                    <li><i class="fas fa-check-circle"></i> {% trans "Use batch endpoints if available" %}</li>
+                    <li><i class="fas fa-check-circle"></i> {% trans "Check API documentation" %}</li>
+                </ul>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="error-actions">
+                <a href="javascript:history.back()" class="btn btn-primary">
+                    <i class="fas fa-arrow-left"></i>
+                    <span>{% trans "Go Back" %}</span>
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    <span>{% trans "Home" %}</span>
+                </a>
+                <a href="/contact/" class="btn btn-outline">
+                    <i class="fas fa-headset"></i>
+                    <span>{% trans "Contact Support" %}</span>
+                </a>
+            </div>
+
+            <!-- Reference -->
+            <div class="reference">
+                <p>{% trans "Reference:" %} RATE-{{ "now"|date:"YmdHis" }}</p>
+                <p>{% trans "Your IP:" %} {{ request.META.REMOTE_ADDR|default:"Unknown" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const retryAfter = {{ retry_after|default:60 }};
+        const startTime = Date.now();
+        const endTime = startTime + (retryAfter * 1000);
+
+        function updateCountdown() {
+            const now = Date.now();
+            const remaining = Math.max(0, Math.ceil((endTime - now) / 1000));
+            const progress = ((retryAfter - remaining) / retryAfter) * 100;
+
+            const countdownEl = document.getElementById('retryCountdown');
+            const progressFill = document.getElementById('progressFill');
+            const progressPercent = document.getElementById('progressPercentage');
+
+            if (countdownEl) {
+                countdownEl.textContent = remaining + 's';
+            }
+
+            if (progressFill) {
+                progressFill.style.width = progress + '%';
+            }
+
+            if (progressPercent) {
+                progressPercent.textContent = Math.round(progress) + '%';
+            }
+
+            if (remaining > 0) {
+                requestAnimationFrame(updateCountdown);
+            } else {
+                // Auto-refresh or enable buttons when cooldown ends
+                document.querySelectorAll('.btn').forEach(btn => {
+                    btn.style.pointerEvents = 'auto';
+                    btn.style.opacity = '1';
+                });
+            }
+        }
+
+        requestAnimationFrame(updateCountdown);
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,70 @@
+{% load i18n %}
+{% load static wagtailcore_tags wagtailimages_tags %}
+
+{# Events showcase — BEM converted from theme #}
+<section class="rbt-event-showcase">
+    <div class="rbt-event-showcase__container container">
+        <div class="rbt-event-showcase__grid row g-4">
+            {% for event in events %}
+            <div class="rbt-event-showcase__item col-xl-6">
+                <article class="rbt-event-showcase__event-card">
+                    <div class="rbt-event-showcase__thumb">
+                        <img src="{% if event.image %}{% image event.image fill-800x500 as img %}{{ img.url }}{% else %}{% static 'images/default-event.jpg' %}{% endif %}"
+                             alt="{{ event.title }}"
+                             loading="lazy">
+                    </div>
+                    <div class="rbt-event-showcase__content">
+                        <div class="rbt-event-showcase__content-inner d-sm-flex">
+                            {% if event.start_date %}
+                            <div class="rbt-event-showcase__date-wrapper">
+                                <div class="rbt-event-showcase__date">
+                                    <div class="rbt-event-showcase__date-day">{{ event.start_date|date:"d" }}</div>
+                                    <div class="rbt-event-showcase__date-month">{{ event.start_date|date:"M" }}</div>
+                                </div>
+                            </div>
+                            {% endif %}
+                            <div class="rbt-event-showcase__details">
+                                <div class="rbt-event-showcase__meta">
+                                    {% if event.start_date %}
+                                    <span class="rbt-event-showcase__meta-item">
+                                        <i class="fal fa-clock"></i>
+                                        {{ event.start_date|date:"g:i A" }}
+                                    </span>
+                                    {% endif %}
+                                    {% if event.location %}
+                                    <span class="rbt-event-showcase__meta-item">
+                                        <i class="fas fa-map-marker-alt"></i>
+                                        {{ event.location }}
+                                    </span>
+                                    {% endif %}
+                                </div>
+                                <h3 class="rbt-event-showcase__event-title">
+                                    <a href="{% url 'plugins:event-detail' event.pk %}">{{ event.title }}</a>
+                                </h3>
+                                {% if event.description %}
+                                <p class="rbt-event-showcase__event-desc">
+                                    {{ event.description|truncatechars:120 }}
+                                </p>
+                                {% endif %}
+                                <a href="{% url 'plugins:event-detail' event.pk %}"
+                                   class="rbt-event-showcase__read-more">
+                                    {% trans "Read details" %}
+                                    <i class="fas fa-arrow-right"></i>
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </article>
+            </div>
+            {% empty %}
+            <div class="col-12">
+                <div class="rbt-event-showcase__empty text-center py-5">
+                    <i class="fas fa-calendar-times fa-3x text-muted mb-3"></i>
+                    <h3>{% trans "No events available" %}</h3>
+                    <p class="text-muted">{% trans "Check back soon for upcoming events and offers." %}</p>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

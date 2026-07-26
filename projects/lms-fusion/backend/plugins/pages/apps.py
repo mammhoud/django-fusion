@@ -1,22 +1,15 @@
-"""
-Pages app configuration — registers FusionPage models for auto-discovery.
-
-When this app is ready, it creates migrations for any new page models and
-wires them into Wagtail's page tree.
-"""
+"""Pages app configuration for CMS Fusion."""
 
 from django.apps import AppConfig
+from django.utils.translation import gettext_lazy as _
 
 
 class PagesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "plugins.pages"
-    verbose_name = "Fusion Pages"
+    verbose_name = _("Fusion CMS Pages")
     label = "fusion_pages"
 
     def ready(self):
-        # Import models to register with Wagtail
         from plugins.pages import models  # noqa: F401
-
-        # Register Wagtail hooks
         from plugins.pages import wagtail_hooks  # noqa: F401

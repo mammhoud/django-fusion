@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Customer Detail</title>
+</head>
+<body>
+    <h1>{{ customer.name }}</h1>
+    <p>Email: {{ customer.email }}</p>
+    <p>Phone: {{ customer.phone }}</p>
+    <a href="{% url 'customer_update' customer.id %}">Edit</a>
+    <form action="{% url 'customer_delete' customer.id %}" method="post">
+        {% csrf_token %}
+        <button type="submit">Delete</button>
+    </form>
+    <a href="{% url 'customer_list' %}">Back to List</a>
+</body>
+</html>

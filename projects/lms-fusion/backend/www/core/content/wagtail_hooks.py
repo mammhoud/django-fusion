@@ -17,6 +17,16 @@ def ready():
     from www.core.content.models.pages.services import ServicesPage  # noqa: F401
     from www.core.content.models.pages.team import TeamPage  # noqa: F401
 
+    # ── Dynamic CMS pages (from merged cms www.content.models) ──
+    from www.core.content.models.pages.dynamic import (  # noqa: F401
+        DynamicHomePage,
+        DynamicAboutPage,
+        DynamicFaqPage,
+        DynamicPrivacyPage,
+        DynamicContactPage,
+        DynamicDashboardPage,
+    )
+
 
 # Call ready() when the app is ready
 ready()

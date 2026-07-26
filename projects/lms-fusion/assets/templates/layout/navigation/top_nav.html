@@ -1,0 +1,31 @@
+{% load i18n static %}
+{# Top navigation bar component #}
+<div class="top-nav__container d-flex align-items-center justify-content-between">
+    <div class="top-nav__left d-flex align-items-center gap-3">
+        <button class="btn btn-sm btn-ghost side-nav-toggle"
+                aria-label="{% trans 'Toggle sidebar' %}"
+                aria-expanded="true"
+                aria-controls="side-nav">
+            <i class="bi bi-list fs-5" aria-hidden="true"></i>
+        </button>
+    </div>
+
+    <div class="top-nav__right d-flex align-items-center gap-3">
+        {% if request.user.is_authenticated %}
+        <div class="dropdown">
+            <button class="btn btn-sm btn-ghost dropdown-toggle d-flex align-items-center gap-2"
+                    type="button"
+                    data-bs-toggle="dropdown"
+                    aria-expanded="false">
+                <span class="visually-hidden">{% trans "User menu" %}</span>
+                {{ request.user.get_full_name|default:request.user.username }}
+            </button>
+            <ul class="dropdown-menu dropdown-menu-end">
+                <li><a class="dropdown-item" href="{% url 'profile:settings' %}">{% trans "Settings" %}</a></li>
+                <li><hr class="dropdown-divider"></li>
+                <li><a class="dropdown-item" href="{% url 'account_logout' %}">{% trans "Sign out" %}</a></li>
+            </ul>
+        </div>
+        {% endif %}
+    </div>
+</div>

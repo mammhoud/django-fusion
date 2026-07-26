@@ -1,0 +1,245 @@
+/* ============================================================
+ * SHARED COLOR SYSTEM — websites/assets/static/styles/colors/_shared.scss
+ *
+ * This file contains ALL semantic/component CSS variables that
+ * are identical across both websites. It is imported AFTER each
+ * site's own _palette.scss which defines the --theme-* tokens.
+ *
+ * Site-specific palettes live at:
+ *   websites/ctc-research.com/assets/static/styles/colors/_palette.scss
+ *   websites/structa.cloud/assets/static/styles/colors/_palette.scss
+ * ============================================================ */
+
+/* ── Global base tokens (neutral, not theme-specific) ─────── */
+:root {
+  --black: #000000;
+  --white: #ffffff;
+  --gray-50:  #f9fafb;
+  --gray-100: #f3f4f6;
+  --gray-200: #e5e7eb;
+  --gray-300: #d1d5db;
+  --gray-400: #9ca3af;
+  --gray-500: #6b7280;
+  --gray-600: #4b5563;
+  --gray-700: #374151;
+  --gray-800: #1f2937;
+  --gray-900: #111827;
+}
+
+/* ── Shared semantic variables (all themes) ──────────────────
+ * These selectors must match the data-theme values used in
+ * each site's _palette.scss so the cascade works correctly.
+ * ─────────────────────────────────────────────────────────── */
+[data-theme="theme1"],
+[data-theme="dark"],
+.dark-theme,
+[data-theme="theme2"],
+[data-theme="theme2-dark"],
+.theme2-dark {
+
+  /* ── Feedback & status ─────────────────────────────────── */
+  --color-success:        #2b7a4b;
+  --color-success-light:  #4c9b6b;
+  --color-success-dark:   #1d5a38;
+  --color-success-lighter:#e0f2e9;
+  --color-success-darker: #0f3d24;
+
+  --color-warning:        #c97d0e;
+  --color-warning-light:  #e09a2e;
+  --color-warning-dark:   #a25f0a;
+  --color-warning-lighter:#fef1df;
+  --color-warning-darker: #78440a;
+
+  --color-error:          #c23030;
+  --color-error-light:    #d95555;
+  --color-error-dark:     #9e2626;
+  --color-error-lighter:  #fceaea;
+  --color-error-darker:   #6e1a1a;
+
+  --color-info:           #2c7a9e;
+  --color-info-light:     #4c9ec9;
+  --color-info-dark:      #1e5a77;
+  --color-info-lighter:   #e3f0f5;
+  --color-info-darker:    #123e52;
+
+  --color-status-online:  #2b7a4b;
+  --color-status-away:    #c97d0e;
+  --color-status-offline: #6b7280;
+  --color-status-busy:    #c23030;
+  --color-status-dnd:     #7a5c9e;
+
+  /* RGB helpers */
+  --color-success-rgb: 43, 122, 75;
+  --color-warning-rgb: 201, 125, 14;
+  --color-error-rgb:   194, 48, 48;
+  --color-info-rgb:    44, 122, 158;
+
+  /* ── Alert tokens ──────────────────────────────────────── */
+  --color-alert-success-bg:     var(--color-success-lighter);
+  --color-alert-success-text:   var(--color-success-darker);
+  --color-alert-success-border: var(--color-success);
+  --color-alert-success-icon:   var(--color-success-dark);
+
+  --color-alert-warning-bg:     var(--color-warning-lighter);
+  --color-alert-warning-text:   var(--color-warning-darker);
+  --color-alert-warning-border: var(--color-warning);
+  --color-alert-warning-icon:   var(--color-warning-dark);
+
+  --color-alert-error-bg:       var(--color-error-lighter);
+  --color-alert-error-text:     var(--color-error-darker);
+  --color-alert-error-border:   var(--color-error);
+  --color-alert-error-icon:     var(--color-error-dark);
+
+  --color-alert-info-bg:        var(--color-info-lighter);
+  --color-alert-info-text:      var(--color-info-darker);
+  --color-alert-info-border:    var(--color-info);
+  --color-alert-info-icon:      var(--color-info-dark);
+
+  /* ── Text on brand backgrounds ─────────────────────────── */
+  --color-text-on-primary:   var(--theme-text-inverse);
+  --color-text-on-secondary: var(--theme-text-inverse);
+  --color-text-on-accent:    var(--theme-text-inverse);
+  --color-text-on-accent-alt:var(--theme-text-inverse);
+  --color-text-on-dark:      rgba(255, 255, 255, 0.98);
+  --color-text-on-light:     var(--theme-text-primary);
+
+  /* ── Buttons ───────────────────────────────────────────── */
+  --color-button-primary-bg:      var(--theme-primary);
+  --color-button-primary-text:    var(--color-text-on-primary);
+  --color-button-primary-hover:   var(--theme-primary-dark);
+  --color-button-primary-active:  var(--theme-primary-darker);
+  --color-button-primary-border:  var(--theme-primary);
+
+  --color-button-secondary-bg:     var(--theme-bg-secondary);
+  --color-button-secondary-text:   var(--theme-text-primary);
+  --color-button-secondary-hover:  var(--theme-bg-tertiary);
+  --color-button-secondary-active: var(--theme-border-primary);
+  --color-button-secondary-border: var(--theme-border-primary);
+
+  --color-button-accent-bg:     var(--theme-accent);
+  --color-button-accent-text:   var(--color-text-on-accent);
+  --color-button-accent-hover:  var(--theme-accent-dark);
+  --color-button-accent-active: var(--theme-accent-light);
+  --color-button-accent-border: var(--theme-accent);
+
+  /* ── Cards & containers ────────────────────────────────── */
+  --color-card-bg:        var(--theme-surface);
+  --color-card-border:    var(--theme-border-primary);
+  --color-card-shadow:    var(--theme-shadow);
+  --color-card-hover:     var(--theme-bg-secondary);
+  --color-container-bg:   var(--theme-bg-secondary);
+  --color-container-border:var(--theme-border-primary);
+
+  /* ── Forms ─────────────────────────────────────────────── */
+  --color-input-bg:              var(--theme-surface);
+  --color-input-border:          var(--theme-border-primary);
+  --color-input-border-focus:    var(--theme-border-accent);
+  --color-input-placeholder:     var(--theme-text-muted);
+  --color-input-text:            var(--theme-text-primary);
+  --color-input-disabled-bg:     var(--theme-bg-tertiary);
+  --color-input-disabled-text:   var(--theme-text-disabled);
+  --color-input-valid-border:    var(--color-success);
+  --color-input-invalid-border:  var(--color-error);
+  --color-checkbox-bg:           var(--theme-surface);
+  --color-checkbox-border:       var(--theme-border-primary);
+  --color-checkbox-checked-bg:   var(--theme-primary);
+  --color-checkbox-checked-border:var(--theme-primary);
+
+  /* ── Tables ────────────────────────────────────────────── */
+  --color-table-bg:            var(--theme-surface);
+  --color-table-border:        var(--theme-border-primary);
+  --color-table-header-bg:     var(--theme-bg-secondary);
+  --color-table-header-text:   var(--theme-text-primary);
+  --color-table-row-bg-hover:  var(--theme-bg-tertiary);
+  --color-table-row-bg-striped:var(--theme-bg-tertiary);
+  --color-table-row-text:      var(--theme-text-primary);
+
+  /* ── Modals, dropdowns, tooltips ───────────────────────── */
+  --color-modal-bg:              var(--theme-surface-elevated);
+  --color-modal-backdrop:        rgba(0, 0, 0, 0.6);
+  --color-modal-border:          var(--theme-border-primary);
+  --color-modal-header-bg:       var(--theme-bg-secondary);
+  --color-dropdown-bg:           var(--theme-surface-elevated);
+  --color-dropdown-border:       var(--theme-border-primary);
+  --color-dropdown-item-bg-hover:var(--theme-bg-tertiary);
+  --color-tooltip-bg:            var(--gray-800);
+  --color-tooltip-text:          var(--white);
+
+  /* ── Pagination ────────────────────────────────────────── */
+  --color-pagination-bg:          transparent;
+  --color-pagination-bg-hover:    var(--theme-bg-tertiary);
+  --color-pagination-bg-active:   var(--theme-primary);
+  --color-pagination-text-active: var(--color-text-on-primary);
+  --color-pagination-border-active:var(--theme-primary);
+
+  /* ── Tabs & navigation ─────────────────────────────────── */
+  --color-tab-bg-active:    var(--theme-bg-tertiary);
+  --color-tab-border-active:var(--theme-primary);
+  --color-tab-active:       var(--theme-primary);
+  --color-nav-active:       var(--theme-primary);
+  --color-nav-hover:        var(--theme-primary-light);
+
+  /* ── Progress & accordion ──────────────────────────────── */
+  --color-progress-bg:          var(--theme-bg-tertiary);
+  --color-progress-fill:        var(--theme-primary);
+  --color-accordion-bg:         var(--theme-surface);
+  --color-accordion-border:     var(--theme-border-primary);
+  --color-accordion-icon-active:var(--theme-primary);
+
+  /* ── Avatar & profile ──────────────────────────────────── */
+  --color-avatar-border: var(--theme-surface);
+  --color-avatar-bg:     var(--theme-bg-tertiary);
+  --color-avatar-text:   var(--theme-text-primary);
+
+  /* ── Opacity helpers ───────────────────────────────────── */
+  --color-opacity-10: rgba(0, 0, 0, 0.1);
+  --color-opacity-20: rgba(0, 0, 0, 0.2);
+  --color-opacity-30: rgba(0, 0, 0, 0.3);
+  --color-opacity-40: rgba(0, 0, 0, 0.4);
+  --color-opacity-50: rgba(0, 0, 0, 0.5);
+  --color-white-opacity-10: rgba(255, 255, 255, 0.1);
+  --color-white-opacity-20: rgba(255, 255, 255, 0.2);
+  --color-white-opacity-30: rgba(255, 255, 255, 0.3);
+  --color-white-opacity-40: rgba(255, 255, 255, 0.4);
+  --color-white-opacity-50: rgba(255, 255, 255, 0.5);
+  --color-white-opacity-90: rgba(255, 255, 255, 0.9);
+
+  /* ── Named / social colors (universal) ────────────────── */
+  --color-named-black: black;
+  --color-named-white: white;
+  --color-social-facebook:  #1877F2;
+  --color-social-twitter:   #1DA1F2;
+  --color-social-linkedin:  #0A66C2;
+  --color-social-instagram: #E4405F;
+  --color-social-youtube:   #FF0000;
+  --color-social-github:    #181717;
+  --color-social-whatsapp:  #25D366;
+  --color-social-telegram:  #26A5E4;
+  --color-social-discord:   #5865F2;
+}
+
+/* ── Dark theme overrides for text-on-brand ──────────────────
+ * In dark themes brand colors are light, so text must be dark.
+ * ─────────────────────────────────────────────────────────── */
+.dark-theme,
+[data-theme="dark"],
+[data-theme="theme2-dark"],
+.theme2-dark {
+  --color-text-on-primary:    var(--theme-text-primary);
+  --color-text-on-secondary:  var(--theme-text-primary);
+  --color-text-on-accent:     var(--theme-text-primary);
+  --color-text-on-accent-alt: var(--theme-text-primary);
+  --color-input-bg:           var(--theme-bg-secondary);
+  --color-input-border:       var(--theme-border-secondary);
+  --color-checkbox-bg:        var(--theme-bg-tertiary);
+
+  /* Inverted alerts for dark backgrounds */
+  --color-alert-success-bg:   var(--color-success-darker);
+  --color-alert-success-text: var(--color-success-lighter);
+  --color-alert-warning-bg:   var(--color-warning-darker);
+  --color-alert-warning-text: var(--color-warning-lighter);
+  --color-alert-error-bg:     var(--color-error-darker);
+  --color-alert-error-text:   var(--color-error-lighter);
+  --color-alert-info-bg:      var(--color-info-darker);
+  --color-alert-info-text:    var(--color-info-lighter);
+}
