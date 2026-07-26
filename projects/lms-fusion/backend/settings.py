@@ -70,6 +70,7 @@ WAGTAIL_SITE_NAME = "Fusion LMS"
 LOCAL_APPS = [
     "www.core",
     "www.core.content.apps.ContentConfig",
+    "plugins.pages.apps.PagesConfig",
     "www.core.handlers.apps.AccountsConfig",
     "plugins.accounts.apps.AccountsConfig",
     "plugins.lms.apps.LmsConfig",
@@ -109,3 +110,31 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.E340",  # legacy duplicated many-to-many intermediary tables
 ]
 WAGTAIL_WORKFLOW_ENABLED = False
+
+# ============================================================
+# django-bolt / Fusion Bolt API Settings
+# ============================================================
+# Per-project bolt configuration. Override via environment variables
+# or directly in this module before running `python manage.py runbolt`.
+FUSION_BOLT = {
+    "enabled": True,
+    "prefix": "/api",
+    "openapi_title": "Fusion LMS API",
+    "openapi_version": "1.0.0",
+    "auth_backends": ["jwt"],
+    "serializer_format": "dict",
+    "cors_origins": [
+        "http://localhost:3001",
+        "http://127.0.0.1:3001",
+    ],
+    "component_auto_register": True,
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Branding (override defaults)
+# ═══════════════════════════════════════════════════════════════════
+FUSION_SITE_NAME = os.environ.get("FUSION_SITE_NAME", "Fusion LMS")
+FUSION_COMPANY_NAME = os.environ.get("FUSION_COMPANY_NAME", "Fusion Inc.")
+FUSION_CREATOR_NAME = os.environ.get("FUSION_CREATOR_NAME", "Fusion Team")
+FUSION_PRIMARY_COLOR = os.environ.get("FUSION_PRIMARY_COLOR", "#00a1b3")
+FUSION_SECONDARY_COLOR = os.environ.get("FUSION_SECONDARY_COLOR", "#008080")

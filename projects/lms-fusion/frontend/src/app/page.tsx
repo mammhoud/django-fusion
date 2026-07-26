@@ -1,3 +1,11 @@
+'use client';
+
+import FusionProxy from '@/components/FusionProxy';
+
 export default function HomePage() {
-  return <main><h1>Fusion LMS</h1></main>;
+  return (
+    <div className="min-h-screen">
+      <FusionProxy slug="home" />
+    </div>
+  );
 }

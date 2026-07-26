@@ -1,8 +1,6 @@
 # LMS Fusion — Migration & django-fusion Integration Plan
 
-> **Site:** `lms-fusion`  
-> **Path:** `projects/lms-fusion/`  
-> **Last updated:** 2026-07-26
+> **Site:** `lms-fusion` | **Path:** `projects/lms-fusion/` | **Last updated:** 2026-07-26
 
 ---
 
@@ -10,65 +8,93 @@
 
 | App / Area | Status | Notes |
 |------------|:------:|-------|
-| `plugins.branding` | ⬜ | Needs migration `0001_initial.py` already scaffolded |
-| `plugins.accounts` | ⬜ | Copied from ctc-research; verify compatibility |
-| `plugins.lms` | ⬜ | Copied from ctc-research; verify models |
-| `plugins.blog` |  | Copied from ctc-research |
-| `plugins.profile` |  | Copied from ctc-research |
-| `www.core` |  | Copied from ctc-research |
-| `django_fusion` |  | Verify `INSTALLED_APPS` and context processors |
+| `plugins.branding` | ✅ | Migration + models + context processor |
+| `plugins.accounts` | ✅ | Copied from ctc-research; verified |
+| `plugins.lms` | ✅ | LMS models verified |
+| `plugins.blog` | ✅ | Copied from ctc-research |
+| `plugins.profile` | ✅ | Copied from ctc-research |
+| `www.core` | ✅ | Copied from ctc-research |
+| `django_fusion` | ✅ | INSTALLED_APPS + FusionCodec + FusionSessionChecker |
 
 ---
 
 ## 2. Migration Steps
 
-| # | Task | Command / Action | Status |
-|---|------|------------------|:------:|
-| 1 | Create branding migration | `cd backend && python3 manage.py makemigrations plugins.branding` | ⬜ |
-| 2 | Create remaining migrations | `cd backend && python3 manage.py makemigrations` | ⬜ |
-| 3 | Apply migrations | `cd backend && make migrate` | ⬜ |
-| 4 | Run Django checks | `cd backend && make check` | ⬜ |
-| 5 | Create superuser | `cd backend && python3 manage.py createsuperuser` | ⬜ |
-| 6 | Seed initial branding | `python3 manage.py shell < scripts/seed_branding.py` | ⬜ |
+| # | Task | Status |
+|---|------|:------:|
+| 1 | Branding migration | ✅ |
+| 2 | Remaining migrations | ✅ |
+| 3 | Apply migrations | ✅ |
+| 4 | Django checks | ⬜ |
+| 5 | Create superuser | ⬜ |
+| 6 | Seed branding | ⬜ |
 
 ---
 
-## 3. django-fusion Integration Checklist
+## 3. django-fusion Integration
 
-- [ ] `django_fusion` is listed in `backend/settings.py` `INSTALLED_APPS`.
-- [ ] Base template `templates/base.html` loads `{% load fusion_tags %}`.
-- [ ] Base template emits `data-fusion-render-first="{% fusion_render_first_flag %}"`.
-- [ ] `fusion_branding_context` is registered in `TEMPLATES[0]["OPTIONS"]["context_processors"]`.
-- [ ] At least one Wagtail page inherits from `RoutableComponent`.
-- [ ] Fragment partials inherit from `FragmentComponent`.
-- [ ] Templates use `{% comp "name" /%}` instead of bare `{% include %}` where possible.
+- [x] `django_fusion` in `INSTALLED_APPS`
+- [x] Base template loads `{% load fusion_layout %}` with `{% fusion_render_first_flag %}`
+- [x] `fusion_branding_context` registered in context processors
+- [x] `{% fusion_layout "default" %}` used in `base.html`
+- [x] `{% fusion_branding %}` for CSS custom properties
+- [x] `{% render_fusion_scripts %}` for frontend bridge
+- [x] `{% fusion_body_data %}` on `<body>` element
+- [ ] Wagtail pages inherit from `RoutableComponent`
 
 ---
 
-## 4. Verification Tests
+## 4. django-bolt API Integration
+
+| # | Item | Status |
+|---|------|:------:|
+| 1 | `bolt_apis.py` with real `BoltAPI` endpoints | ✅ |
+| 2 | Health, pages, fragment, fusion health, branding, courses, blog | ✅ |
+| 3 | Graceful fallback when `django_bolt` not installed | ✅ |
+| 4 | `django_fusion.bolt.FusionBoltAPI` module created | ✅ |
+| 5 | `@fusion_endpoint` decorator | ✅ |
+| 6 | `component_serializer` helper | ✅ |
+| 7 | `FusionBoltAuthBackend` for session→bolt bridge | ✅ |
+
+---
+
+## 5. Fusion Layout System
+
+| # | Item | Status |
+|---|------|:------:|
+| 1 | `{% fusion_layout %}` template tag | ✅ |
+| 2 | `{% fusion_render_first_flag %}` `<meta>` tag | ✅ |
+| 3 | `{% render_fusion_scripts %}` frontend bridge | ✅ |
+| 4 | `{% fusion_branding %}` CSS custom property injection | ✅ |
+| 5 | `{% fusion_body_data %}` body data attributes | ✅ |
+| 6 | Layout templates: `default`, `full_width`, `sidebar`, `blank` | ✅ |
+| 7 | FusionLayout.tsx Next.js component | ✅ |
+| 8 | Layouts fetch endpoint (`/api/fusion/layouts`) | ✅ |
+| 9 | Per-project layout override in `base.html` | ✅ |
+
+---
+
+## 6. Frontend (Next.js)
+
+| # | Item | Status |
+|---|------|:------:|
+| 1 | Full Next.js 14 + React 18 + Tailwind setup | ✅ |
+| 2 | `fusion-types.ts`, `fusion-decoder.ts`, `fusion-store.ts` | ✅ |
+| 3 | `api-client.ts` with health, fragment, page, branding, layout APIs | ✅ |
+| 4 | `FusionProxy.tsx` with fallback chain (bolt→fragment→error) | ✅ |
+| 5 | `FusionLayout.tsx` consuming `/api/fusion/layouts` | ✅ |
+| 6 | `Header.tsx`, `Footer.tsx`, `Providers.tsx`, `ErrorBoundary.tsx` | ✅ |
+| 7 | Dynamic routing (`[slug]/page.tsx`) | ✅ |
+| 8 | `globals.css` with fusion theme + CSS custom properties | ✅ |
+| 9 | `api-schema.d.ts` TypeScript API types | ✅ |
+
+---
+
+## 7. Verification
 
 ```bash
 cd projects/lms-fusion/backend
-make check
-make test
-python3 manage.py showmigrations
+make check && make test && python3 manage.py showmigrations
 ```
 
-Expected outcomes:
-
-- `make check` passes with no `ImproperlyConfigured` errors.
-- `make test` passes (or runs with only expected failures from unimplemented features).
-- `showmigrations` shows all migrations applied.
-- Page source of the homepage contains `data-fusion-render-first`.
-
----
-
-## 5. Optional Cleanup
-
-Once `lms-fusion` is fully operational, the following legacy directories may be removed or archived:
-
-- `projects/lms/cms/`
-- `projects/cms/lms-full/`
-- `projects/lms/front-end/` (if replaced by `lms-fusion/frontend/`)
-
-See [`projects/docs/LEGACY_CLEANUP_PLAN.md`](../docs/LEGACY_CLEANUP_PLAN.md) for the audit and removal procedure.
+See [`projects/docs/DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../docs/DJANGO_BOLT_FUSION_CASE_STUDY.md) for full analysis.
