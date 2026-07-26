@@ -42,7 +42,39 @@ backend documentation or template comments.
 
 ## 1. Hardcoded References to Clean Up
 
-### 1.1 Per-File Cleanup Checklist
+### 1.1 Repo-Wide Docs Scan Results
+
+A scan of `.github/`, `docs/`, and the root `AGENTS.md` found additional
+references to `projects/assets/` that may need updating once the shared layer is
+relocated.
+
+**Files with `projects/assets/` references:**
+
+- `AGENTS.md`
+- `docs/ASSETS_MIGRATION_INVENTORY.md` (this document)
+- `docs/Anytype/brand/logos-icons.md`
+- `docs/Anytype/decisions/001-monorepo-django-wagtail.md`
+- `docs/Anytype/features/intro-pages-cms.md`
+- `docs/Anytype/plans/product-development.md`
+- `docs/Anytype/plans/project-guide.md`
+- `docs/ai/README.md`
+- `docs/ai/agents.md`
+- `docs/changelogs/README.md`
+- `docs/customization/customization-methods.md`
+- `docs/design/README.md`
+- `docs/plans.md`
+- `docs/projects/libs/django-tags.md`
+- `docs/projects/libs/python-readme.md`
+- `docs/projects/libs/templates-architecture.md`
+- `docs/projects/lms/clone-guide.md`
+- `docs/recent-changes.md`
+- `docs/repo-overview.md`
+
+**Action:** During Phase 1, review each file and update references so they
+describe the new project-local + `libs/django-fusion` resolution order, or keep
+them as historical references if they describe the legacy monorepo shared layer.
+
+### 1.2 Per-File Cleanup Checklist
 
 These files mention `projects/assets/templates/AGENTS.md` or the shared template
 layer. They should be rewritten once the shared layer is relocated.
@@ -254,9 +286,29 @@ anything:
 
 ## 7. Next Steps
 
-- [ ] Run repo-wide docs scan (`rg "projects/assets/" .github/ docs/ AGENTS.md`) and add findings to section 1.
+- [x] Run repo-wide docs scan and add findings to section 1.1.
+- [x] Move app-specific templates from `cms-fusion/backend/templates/` and
+  `lms-fusion/backend/templates/` into the appropriate
+  `plugins/<app>/templates/` directories. (completed — see `docs/plans.md`
+  for the old-path → new-path report)
 - [ ] Run runtime disconnect for `cms-fusion` and append the dependency list to this file.
 - [ ] Run runtime disconnect for `lms-fusion` and append the dependency list to this file.
-- [ ] Update the 18 AGENTS.md files and 2 event template comments.
+- [x] Update the 18 AGENTS.md files and 2 event template comments.
+  - Replaced `projects/assets/templates/AGENTS.md` references with `libs/django-fusion/AGENTS.md`.
+  - Replaced `projects/assets/templates` cross-site references with the django-fusion framework templates path.
+  - Rewrote `projects/ctc-research/` scope lines to refer to this fusion project.
+  - Rewrote the `event_page.html` comments to remove `projects/assets/templates/` references.
+  - Note: the project-level `backend/AGENTS.md` still lists `projects/assets/` as a legacy fallback for non-fusion sites; those entries will be removed during Phase 1–3 execution.
 - [ ] Produce a diff matrix: `cms-fusion/backend` vs `cms/cms-full/` and `lms-fusion/backend` vs `cms/lms-full/`, `lms/cms/`, `lms/lms/`.
 - [ ] Verify `scripts/`, `locale/`, and `fixtures/` usage before moving them.
+
+## 8. Template Reorganization Completion Note
+
+The app-specific template move for both fusion projects is complete.
+`backend/templates/` now contains only site-root entry templates
+(`base.html`, `index.html`, etc.), error pages, event pages, and Wagtail
+admin overrides. All app templates are under `plugins/<app>/templates/` and
+resolve through Django's app-directories loader (`APP_DIRS=True`).
+
+See `docs/plans.md` (Phase 2) for the old-path → new-path report and the
+validation note on the remaining workspace entry-point blockers.

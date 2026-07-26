@@ -91,6 +91,8 @@ dependencies = [
     "pytest-django",
     "virtualenv",
     # Internal libs (local workspace sources — see [tool.uv.sources])
+    "django-fusion",
+    "ceptor-ai",
     "ollama>=0.6.2",
     "httpx>=0.25.0",
     "markdown>=3.5",
@@ -113,6 +115,7 @@ packages = ["configs", "tasks"]
 
 [tool.uv.sources]
 django-fusion = { path = "../libs/django-fusion", editable = true }
+ceptor-ai = { path = "../libs/ceptor-ai", editable = true }
 
 
 [tool.pytest.ini_options]        

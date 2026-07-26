@@ -1,0 +1,23 @@
+{% extends "blog/base.html" %}
+{% load i18n %}
+
+{% block title %}{{ page_title|default:"Tag Form" }}{% endblock %}
+
+{% block content %}
+<div class="tag-form">
+    <h1>{{ page_title|default:"Tag Form" }}</h1>
+
+    <form method="post">
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-primary">
+                {% if action == 'create' %}{% trans "Create" %}{% else %}{% trans "Update" %}{% endif %}
+            </button>
+            <a href="{% url 'blog:tag_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

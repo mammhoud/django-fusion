@@ -1,23 +1,37 @@
 #!/usr/bin/env python3
-"""Project-local wrapper for the unified workspace manage.py."""
+"""Project-local management entry point for lms-fusion."""
 from __future__ import annotations
 
 import os
-import runpy
 import sys
 from pathlib import Path
 
-SITE = "ctc-research"
-
 
 def main() -> None:
-    workspace = Path(__file__).resolve().parents[1]
-    os.environ.setdefault("DJANGO_SITE", SITE)
-    os.environ.setdefault("DJANGO_WEBSITE", SITE)
-    os.environ.setdefault("WEBSITE", SITE)
-    if not any(arg == "--site" or arg.startswith("--site=") for arg in sys.argv[1:]):
-        sys.argv.insert(1, f"--site={SITE}")
-    runpy.run_path(str(workspace / "manage.py"), run_name="__main__")
+    site_dir = Path(__file__).resolve().parent
+    project_dir = site_dir.parent
+
+    os.environ.setdefault("DJANGO_SITE", "lms-fusion")
+    os.environ.setdefault("DJANGO_WEBSITE", "lms-fusion")
+    os.environ.setdefault("WEBSITE", "lms-fusion")
+    os.environ.setdefault("WEBSITE_NAME", "lms-fusion")
+    os.environ.setdefault("PROJECT_PATH", "lms-fusion")
+    os.environ.setdefault("MODULE", "FUSION")
+    os.environ.setdefault("DJANGO_SETTINGS_MODULE", "settings")
+
+    # Ensure project and workspace roots are importable.
+    if str(project_dir) not in sys.path:
+        sys.path.insert(0, str(project_dir))
+    workspace_root = project_dir.parent
+    if str(workspace_root) not in sys.path:
+        sys.path.insert(0, str(workspace_root))
+    www_dir = site_dir / "www"
+    if str(www_dir) not in sys.path:
+        sys.path.insert(0, str(www_dir))
+
+    from django.core.management import execute_from_command_line
+
+    execute_from_command_line(sys.argv)
 
 
 if __name__ == "__main__":

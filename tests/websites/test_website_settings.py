@@ -245,7 +245,7 @@ class SiteConfigTests(SimpleTestCase):
                 assert "../assets:/app/assets:z" in compose
 
     def test_populate_script_uses_site_specific_fixture_directories(self):
-        script = (REPO_ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
+        script = (REPO_ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
         assert 'for base in [site_dir / "assets" / "fixtures", root / "assets" / "fixtures"]:' in script
 
     def test_postgres_bootstrap_sql_includes_all_site_databases(self):
@@ -257,15 +257,15 @@ class SiteConfigTests(SimpleTestCase):
                 assert database in compose
 
     def test_populate_script_supports_all_sites_and_vresume_images(self):
-        script = (REPO_ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
+        script = (REPO_ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
         assert 'if value == "all" or value.lower() == "all"' in script
         assert 'def selected_sites(site: str) -> list[str]:' in script
         assert 'if args.images or selected == "vresume"' in script
 
     def test_entrypoint_uses_safe_fixture_and_runtime_defaults(self):
         entrypoint = (CORE_COMPOSE_ROOT / "entrypoint").read_text()
-        loader = (REPO_ROOT / "tests" / "scripts" / "utilities" / "load_dumped_data.py").read_text()
-        populator = (REPO_ROOT / "tests" / "scripts" / "utilities" / "populate_site_data.py").read_text()
+        loader = (REPO_ROOT / "tests" / "scripts" / "load_dumped_data.py").read_text()
+        populator = (REPO_ROOT / "tests" / "scripts" / "populate_site_data.py").read_text()
         assert 'LOAD_DUMP_ARGS+=("--force" "--include-dumps")' in entrypoint
         assert 'help setup_wagtail_home' in entrypoint
         assert 'setup_wagtail_home command is not installed' in entrypoint

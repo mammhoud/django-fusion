@@ -83,6 +83,20 @@ else ifeq ($(WEBSITE),inventory)
   TEST_WEBSITE := crm
   COMPOSE_FILE ?= docker-compose.yml
 
+else ifeq ($(WEBSITE),cms-fusion)
+  SITE := cms-fusion
+  TEST_WEBSITE := cms-fusion
+  COMPOSE_FILE ?= docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/__main__.py
+  PYTHON := uv run python
+
+else ifeq ($(WEBSITE),lms-fusion)
+  SITE := lms-fusion
+  TEST_WEBSITE := lms-fusion
+  COMPOSE_FILE ?= docker-compose.yml
+  MANAGE := uv run python $(SITE)/backend/__main__.py
+  PYTHON := uv run python
+
 else
   SITE := $(WEBSITE)
   TEST_WEBSITE := all

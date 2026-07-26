@@ -1,6 +1,7 @@
 # LMS Fusion — Migration & django-fusion Integration Plan
 
-> **Site:** `lms-fusion` | **Path:** `projects/lms-fusion/` | **Last updated:** 2026-07-26
+> **Site:** `lms-fusion` | **Path:** `projects/lms-fusion/` | **Last updated:** 2026-07-26  
+> **Status:** ✅ Complete — core integration done. Remaining cleanup work is tracked in [`docs/plans.md`](../../../docs/plans.md).
 
 ---
 
@@ -96,5 +97,9 @@
 cd projects/lms-fusion/backend
 make check && make test && python3 manage.py showmigrations
 ```
+
+> **Note:** Core integration is complete. Remaining verification (Django checks,
+> site tests, frontend builds, template-resolution audit, and smoke tests) is
+> tracked in [`docs/plans.md`](../../../docs/plans.md) under Phases 1–5 and 8.
 
 See [`projects/docs/DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../docs/DJANGO_BOLT_FUSION_CASE_STUDY.md) for full analysis.

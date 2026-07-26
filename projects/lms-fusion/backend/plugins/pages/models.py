@@ -160,7 +160,7 @@ class FusionHomePage(FusionPage):
 
     # Only allowed at root
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ["pages.FusionContentPage"]
+    subpage_types = ["fusion_pages.FusionContentPage"]
 
     class Meta:
         verbose_name = _("Fusion Home Page")
@@ -206,8 +206,8 @@ class FusionContentPage(FusionPage):
     ]
 
     # Can be child of HomePage or another ContentPage
-    parent_page_types = ["pages.FusionHomePage", "pages.FusionContentPage"]
-    subpage_types = ["pages.FusionContentPage"]
+    parent_page_types = ["fusion_pages.FusionHomePage", "fusion_pages.FusionContentPage"]
+    subpage_types = ["fusion_pages.FusionContentPage"]
 
     class Meta:
         verbose_name = _("Fusion Content Page")

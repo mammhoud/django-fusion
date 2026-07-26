@@ -1,0 +1,259 @@
+# fusion-ci: Runs Django checks + tests, Next.js builds + unit tests, and
+# Playwright E2E tests for the fusion projects (cms-fusion and lms-fusion).
+# Each project gets separate backend, frontend, and E2E jobs so failures
+# are isolated.
+#
+# Triggered on changes to fusion project files, lib submodules, or this
+# workflow file.
+
+name: Fusion CI (cms-fusion + lms-fusion)
+
+on:
+  pull_request:
+    paths:
+      - 'projects/cms-fusion/**'
+      - 'projects/lms-fusion/**'
+      - 'libs/django-fusion/**'
+      - 'libs/ceptor-ai/**'
+      - 'libs/django-bolt/**'
+      - '.github/workflows/fusion-ci.yml'
+  push:
+    branches: ['**']
+    paths:
+      - 'projects/cms-fusion/**'
+      - 'projects/lms-fusion/**'
+      - 'libs/django-fusion/**'
+      - 'libs/ceptor-ai/**'
+      - 'libs/django-bolt/**'
+      - '.github/workflows/fusion-ci.yml'
+  workflow_dispatch:
+
+# Prevent duplicate runs on the same PR/branch
+concurrency:
+  group: fusion-ci-${{ github.head_ref || github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  # ── CMS-Fusion Backend (Python/Django) ────────────────────────────────
+
+  cms-fusion-backend:
+    name: CMS-Fusion — Django Checks + Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: 'latest'
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Run Django system checks
+        run: make check WEBSITE=cms-fusion
+
+      - name: Run tests
+        run: make test WEBSITE=cms-fusion
+
+  # ── CMS-Fusion Frontend (Next.js) ────────────────────────────────────
+
+  cms-fusion-frontend:
+    name: CMS-Fusion — Build & Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/cms-fusion/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/cms-fusion/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build theme SCSS
+        run: npm run build:theme
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+  # ── CMS-Fusion E2E (Playwright) ────────────────────────────────────
+
+  cms-fusion-e2e:
+    name: CMS-Fusion — Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/cms-fusion/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/cms-fusion/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Build theme SCSS
+        run: npm run build:theme
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-fusion-playwright-report
+          path: projects/cms-fusion/frontend/playwright-report/
+          retention-days: 7
+
+      - name: Upload test results (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: cms-fusion-test-results
+          path: projects/cms-fusion/frontend/test-results/
+          retention-days: 7
+
+  # ── LMS-Fusion Backend (Python/Django) ───────────────────────────────
+
+  lms-fusion-backend:
+    name: LMS-Fusion — Django Checks + Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          submodules: recursive
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Set up uv
+        uses: astral-sh/setup-uv@v2
+        with:
+          version: 'latest'
+          enable-cache: true
+
+      - name: Sync dependencies
+        run: uv sync
+
+      - name: Run Django system checks
+        run: make check WEBSITE=lms-fusion
+
+      - name: Run tests
+        run: make test WEBSITE=lms-fusion
+
+  # ── LMS-Fusion Frontend (Next.js) ────────────────────────────────────
+
+  lms-fusion-frontend:
+    name: LMS-Fusion — Build & Unit Tests
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    defaults:
+      run:
+        working-directory: projects/lms-fusion/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build theme SCSS
+        run: npm run build:theme
+
+      - name: Build Next.js
+        run: npm run build
+
+      - name: Run unit tests
+        run: npm test
+
+  # ── LMS-Fusion E2E (Playwright) ────────────────────────────────────
+
+  lms-fusion-e2e:
+    name: LMS-Fusion — Playwright E2E
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: projects/lms-fusion/frontend
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: npm
+          cache-dependency-path: projects/lms-fusion/frontend/package-lock.json
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Playwright browsers
+        run: npx playwright install chromium --with-deps
+
+      - name: Build theme SCSS
+        run: npm run build:theme
+
+      - name: Run E2E tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lms-fusion-playwright-report
+          path: projects/lms-fusion/frontend/playwright-report/
+          retention-days: 7
+
+      - name: Upload test results (on failure)
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: lms-fusion-test-results
+          path: projects/lms-fusion/frontend/test-results/
+          retention-days: 7

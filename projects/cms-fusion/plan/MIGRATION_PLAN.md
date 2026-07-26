@@ -1,6 +1,8 @@
 # Fusion CMS — Migration & Integration Plan
 
-## Status: ✅ Core Integration Complete
+## Status: ✅ Complete
+
+The CMS Fusion core integration is complete. Remaining cleanup work (assets, templates, legacy directories) is tracked in [`docs/plans.md`](../../../docs/plans.md).
 
 The CMS Fusion project is a complete, full-featured content management system built on django-fusion + django-bolt + Wagtail with a Next.js frontend. It absorbs all features from the legacy ctc-research project (now backed up at `projects/cms/ctc-research.bak`).
 

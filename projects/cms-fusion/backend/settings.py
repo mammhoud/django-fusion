@@ -83,6 +83,13 @@ LOCAL_APPS = [
 ]
 INSTALLED_APPS += LOCAL_APPS
 
+# The shared `www.worker` app is registered globally in `configs.base.apps`,
+# but the fusion projects have their own site-local `www` package that shadows
+# the workspace one, so `www.worker` cannot be imported here. Remove it from
+# the fusion app registry; the fusion sites run their own task/worker stack
+# through django-fusion / ceptor-ai and do not need the legacy shared worker.
+INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
+
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "plugins.branding.context_processors.fusion_branding_context"
@@ -108,6 +115,7 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.E304",  # legacy duplicated profile reverse accessors
     "fields.E305",  # legacy duplicated profile reverse query names
     "fields.E340",  # legacy duplicated many-to-many intermediary tables
+    "treebeard.E001",  # Wagtail's Page/Collection managers don't subclass MP_NodeManager; harmless until Treebeard 6
 ]
 WAGTAIL_WORKFLOW_ENABLED = False
 

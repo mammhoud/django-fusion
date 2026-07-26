@@ -83,6 +83,13 @@ LOCAL_APPS = [
 ]
 INSTALLED_APPS += LOCAL_APPS
 
+# The shared `www.worker` app is registered globally in `configs.base.apps`,
+# but the fusion projects have their own site-local `www` package that shadows
+# the workspace one, so `www.worker` cannot be imported here. Remove it from
+# the fusion app registry; the fusion sites run their own task/worker stack
+# through django-fusion / ceptor-ai and do not need the legacy shared worker.
+INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
+
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "plugins.branding.context_processors.fusion_branding_context"
@@ -108,6 +115,7 @@ SILENCED_SYSTEM_CHECKS = [
     "fields.E304",  # legacy duplicated profile reverse accessors
     "fields.E305",  # legacy duplicated profile reverse query names
     "fields.E340",  # legacy duplicated many-to-many intermediary tables
+    "treebeard.E001",  # Wagtail's Page/Collection managers don't subclass MP_NodeManager; harmless until Treebeard 6
 ]
 WAGTAIL_WORKFLOW_ENABLED = False
 
@@ -138,3 +146,33 @@ FUSION_COMPANY_NAME = os.environ.get("FUSION_COMPANY_NAME", "Fusion Inc.")
 FUSION_CREATOR_NAME = os.environ.get("FUSION_CREATOR_NAME", "Fusion Team")
 FUSION_PRIMARY_COLOR = os.environ.get("FUSION_PRIMARY_COLOR", "#00a1b3")
 FUSION_SECONDARY_COLOR = os.environ.get("FUSION_SECONDARY_COLOR", "#008080")
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Layouts
+# ═══════════════════════════════════════════════════════════════════
+FUSION_LAYOUTS = {
+    "default": "fusion/layouts/default.html",
+    "full_width": "fusion/layouts/full_width.html",
+    "sidebar": "fusion/layouts/sidebar.html",
+    "blank": "fusion/layouts/blank.html",
+}
+FUSION_DEFAULT_LAYOUT = "default"
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Features (toggle individual LMS features)
+# ═══════════════════════════════════════════════════════════════════
+FUSION_FEATURES = {
+    "blog": True,
+    "courses": True,
+    "products": True,
+    "pages": True,
+    "auth": True,
+    "profile": True,
+    "branding": True,
+    "search": True,
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Render-First
+# ═══════════════════════════════════════════════════════════════════
+FUSION_RENDER_FIRST_DEFAULT = False

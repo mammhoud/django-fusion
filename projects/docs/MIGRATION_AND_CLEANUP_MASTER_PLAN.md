@@ -3,6 +3,13 @@
 > **Last updated:** 2026-07-26 | **Branch:** `generic`  
 > **Scope:** Complete migrations for all Django sites, optional cleanup of old/duplicate directories, and full integration with django-fusion + django-bolt.
 
+## Current Snapshot
+
+- ✅ `lms-fusion` core migration — complete
+- ✅ `cms-fusion` core migration — complete
+- ✅ `DJANGO_BOLT_FUSION_CASE_STUDY.md` — complete
+- ⬜ `LEGACY_CLEANUP_PLAN.md` — not started
+
 > **Case Study:** [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](./DJANGO_BOLT_FUSION_CASE_STUDY.md) — comprehensive analysis of django-bolt patterns across projects and integration recommendations.
 
 ---
@@ -11,8 +18,8 @@
 
 | # | Plan | Scope | Status | Progress |
 |---|------|-------|:------:|:--------:|
-| 1 | [`../lms-fusion/plan/MIGRATION_PLAN.md`](../lms-fusion/plan/MIGRATION_PLAN.md) | LMS Fusion — django-fusion + django-bolt + Next.js frontend | 🟡 In Progress | 75% |
-| 2 | [`../cms-fusion/plan/MIGRATION_PLAN.md`](../cms-fusion/plan/MIGRATION_PLAN.md) | CMS Fusion — django-fusion + django-bolt + Next.js frontend + fallbacks | 🟡 In Progress | 75% |
+| 1 | [`../lms-fusion/plan/MIGRATION_PLAN.md`](../lms-fusion/plan/MIGRATION_PLAN.md) | LMS Fusion — django-fusion + django-bolt + Next.js frontend | ✅ Complete | 100% |
+| 2 | [`../cms-fusion/plan/MIGRATION_PLAN.md`](../cms-fusion/plan/MIGRATION_PLAN.md) | CMS Fusion — django-fusion + django-bolt + Next.js frontend + fallbacks | ✅ Complete | 100% |
 | 3 | [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](./DJANGO_BOLT_FUSION_CASE_STUDY.md) | django-bolt usage analysis + fusion integration recommendations | ✅ Complete | 100% |
 | 4 | [`LEGACY_CLEANUP_PLAN.md`](./LEGACY_CLEANUP_PLAN.md) | Audit, archive, and remove old/duplicate project directories | ⬜ Not Started | 0% |
 
