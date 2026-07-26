@@ -7,13 +7,28 @@ import {
   mockInvokeFatalError,
   safeInvoke,
 } from './mocks/tauri';
+import { getInvokeHistory, clearInvokeHistory } from './setup';
 
-const mockedInvoke = vi.mocked(invoke);
+/**
+ * Helper: assert the most recent invoke call.
+ * The invoke mock is intentionally a plain function (not vi.fn()) so that
+ * vi.clearAllMocks() in component test files doesn't reset it.  We track
+ * calls manually via setup.ts's getInvokeHistory().
+ */
+function expectLastCall(cmd: string, args?: unknown) {
+  const history = getInvokeHistory();
+  expect(history.length).toBeGreaterThan(0);
+  const last = history[history.length - 1];
+  expect(last.cmd).toBe(cmd);
+  if (args !== undefined) {
+    expect(last.args).toEqual(args);
+  }
+}
 
-// Global beforeEach: reset mock handlers AND clear vi.fn() call history
+// Global beforeEach: reset mock handlers AND clear invoke history
 beforeEach(() => {
   resetInvokeMocks();
-  mockedInvoke.mockClear();
+  clearInvokeHistory();
 });
 
 // All known Tauri commands used in the frontend
@@ -65,24 +80,24 @@ describe('Tauri Invoke Mock Infrastructure', () => {
       expect(r2.error).toBe('Tauri backend unavailable');
     });
 
-    it('asserts invoke call history via vi.mocked', async () => {
+    it('asserts invoke call history via call tracking', async () => {
       mockInvokeSuccess('get_products', []);
       await invoke('get_products');
-      expect(mockedInvoke).toHaveBeenCalledWith('get_products');
+      expectLastCall('get_products');
     });
 
-    it('asserts invoke call count via vi.mocked', async () => {
+    it('asserts invoke call count via call tracking', async () => {
       mockInvokeSuccess('get_products', []);
       await invoke('get_products');
       await invoke('get_products');
-      expect(mockedInvoke).toHaveBeenCalledTimes(2);
+      expect(getInvokeHistory()).toHaveLength(2);
     });
 
-    it('asserts invoke arguments via vi.mocked', async () => {
+    it('asserts invoke arguments via call tracking', async () => {
       mockInvokeSuccess('add_product', { id: 1 });
       const payload = { product: { name: 'Burger', price: 10, unit: 'piece' } };
       await invoke('add_product', payload);
-      expect(mockedInvoke).toHaveBeenCalledWith('add_product', payload);
+      expectLastCall('add_product', payload);
     });
   });
 });
@@ -193,20 +208,20 @@ describe('Page-Level Invoke Patterns', () => {
     it('calls get_products on load', async () => {
       mockInvokeSuccess('get_products', []);
       await invoke('get_products');
-      expect(mockedInvoke).toHaveBeenCalledWith('get_products');
+      expectLastCall('get_products');
     });
 
     it('calls add_product with product payload', async () => {
       const newProduct = { name: 'Fries', price: 5, unit: 'plate' };
       mockInvokeSuccess('add_product', { id: 2, ...newProduct });
       await invoke('add_product', { product: newProduct });
-      expect(mockedInvoke).toHaveBeenCalledWith('add_product', { product: newProduct });
+      expectLastCall('add_product', { product: newProduct });
     });
 
     it('calls delete_product with id', async () => {
       mockInvokeSuccess('delete_product', {});
       await invoke('delete_product', { id: 1 });
-      expect(mockedInvoke).toHaveBeenCalledWith('delete_product', { id: 1 });
+      expectLastCall('delete_product', { id: 1 });
     });
 
     it('handles add_product failure gracefully', async () => {
@@ -234,7 +249,7 @@ describe('Page-Level Invoke Patterns', () => {
       };
       mockInvokeSuccess('save_settings', settings);
       await invoke('save_settings', { settings });
-      expect(mockedInvoke).toHaveBeenCalledWith('save_settings', { settings });
+      expectLastCall('save_settings', { settings });
     });
 
     it('handles save_settings validation errors', async () => {
@@ -246,7 +261,7 @@ describe('Page-Level Invoke Patterns', () => {
     it('calls import_database_cmd with base64 data', async () => {
       mockInvokeSuccess('import_database_cmd', {});
       await invoke('import_database_cmd', { data: 'base64encodedstring' });
-      expect(mockedInvoke).toHaveBeenCalledWith('import_database_cmd', { data: 'base64encodedstring' });
+      expectLastCall('import_database_cmd', { data: 'base64encodedstring' });
     });
 
     it('calls export_database_cmd and returns base64 string', async () => {
@@ -261,20 +276,20 @@ describe('Page-Level Invoke Patterns', () => {
       const employee = { name: 'John', salary: 1000, phone: null, email: null, employee_type_id: 1 };
       mockInvokeSuccess('add_employee', { id: 1, ...employee, is_active: true });
       await invoke('add_employee', { employee });
-      expect(mockedInvoke).toHaveBeenCalledWith('add_employee', { employee });
+      expectLastCall('add_employee', { employee });
     });
 
     it('calls soft_delete_employee with id', async () => {
       mockInvokeSuccess('soft_delete_employee', {});
       await invoke('soft_delete_employee', { id: 1 });
-      expect(mockedInvoke).toHaveBeenCalledWith('soft_delete_employee', { id: 1 });
+      expectLastCall('soft_delete_employee', { id: 1 });
     });
 
     it('calls add_employee_type with type payload', async () => {
       const employeeType = { name: 'Chef', description: 'Head chef' };
       mockInvokeSuccess('add_employee_type', { id: 1, ...employeeType, is_active: true });
       await invoke('add_employee_type', { employeeType });
-      expect(mockedInvoke).toHaveBeenCalledWith('add_employee_type', { employeeType });
+      expectLastCall('add_employee_type', { employeeType });
     });
   });
 
@@ -284,14 +299,14 @@ describe('Page-Level Invoke Patterns', () => {
       const ingredientsData = [{ ingredient_id: 1, quantity: 2 }];
       mockInvokeSuccess('create_recipe', { id: 1, ...recipeData, is_active: true });
       await invoke('create_recipe', { recipe: recipeData, ingredients: ingredientsData });
-      expect(mockedInvoke).toHaveBeenCalledWith('create_recipe', { recipe: recipeData, ingredients: ingredientsData });
+      expectLastCall('create_recipe', { recipe: recipeData, ingredients: ingredientsData });
     });
 
     it('calls add_recipe_ingredient with ingredient payload', async () => {
       const ingredient = { recipe_id: 1, ingredient_id: 2, quantity: 3 };
       mockInvokeSuccess('add_recipe_ingredient', { id: 1, ...ingredient });
       await invoke('add_recipe_ingredient', ingredient);
-      expect(mockedInvoke).toHaveBeenCalledWith('add_recipe_ingredient', ingredient);
+      expectLastCall('add_recipe_ingredient', ingredient);
     });
   });
 
@@ -303,14 +318,14 @@ describe('Page-Level Invoke Patterns', () => {
       };
       mockInvokeSuccess('add_ingredient', { id: 1, ...ingredient, is_active: true });
       await invoke('add_ingredient', { ingredient });
-      expect(mockedInvoke).toHaveBeenCalledWith('add_ingredient', { ingredient });
+      expectLastCall('add_ingredient', { ingredient });
     });
 
     it('calls add_inventory_transaction with transaction payload', async () => {
       const transaction = { ingredient_id: 1, transaction_type: 'purchase', quantity_change: 50 };
       mockInvokeSuccess('add_inventory_transaction', { id: 1, ...transaction, created_at: new Date().toISOString() });
       await invoke('add_inventory_transaction', { transaction, adjustmentReason: null, createdBy: null });
-      expect(mockedInvoke).toHaveBeenCalledWith('add_inventory_transaction', { transaction, adjustmentReason: null, createdBy: null });
+      expectLastCall('add_inventory_transaction', { transaction, adjustmentReason: null, createdBy: null });
     });
   });
 
@@ -323,7 +338,7 @@ describe('Page-Level Invoke Patterns', () => {
       const itemsData = [{ product_name: 'Burger', price: 10, quantity: 2, unit: 'piece' }];
       mockInvokeSuccess('add_sale', { id: 1, ...saleData, date: '2026-01-01', time: '12:00' });
       await invoke('add_sale', { sale: saleData, items: itemsData });
-      expect(mockedInvoke).toHaveBeenCalledWith('add_sale', { sale: saleData, items: itemsData });
+      expectLastCall('add_sale', { sale: saleData, items: itemsData });
     });
   });
 
@@ -332,7 +347,7 @@ describe('Page-Level Invoke Patterns', () => {
       const payload = { name: 'John', email: 'john@test.com', subject: 'Help', message: 'Need assistance' };
       mockInvokeSuccess('send_support_email', { success: true });
       await invoke('send_support_email', payload);
-      expect(mockedInvoke).toHaveBeenCalledWith('send_support_email', payload);
+      expectLastCall('send_support_email', payload);
     });
   });
 
@@ -340,7 +355,7 @@ describe('Page-Level Invoke Patterns', () => {
     it('calls delete_transaction with id', async () => {
       mockInvokeSuccess('delete_transaction', {});
       await invoke('delete_transaction', { id: 5 });
-      expect(mockedInvoke).toHaveBeenCalledWith('delete_transaction', { id: 5 });
+      expectLastCall('delete_transaction', { id: 5 });
     });
   });
 });

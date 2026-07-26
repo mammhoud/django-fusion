@@ -74,7 +74,8 @@ beforeEach(() => {
 
 describe('Transactions page', () => {
   it('surfaces load errors via the status toast (covers the silent-failure path)', async () => {
-    mocks.getTransactions.mockReturnValue({ data: [], isLoading: false, error: { message: 'Network unreachable' } });
+    // RTK Query network errors have the shape { error: 'message' }, not { message: '...' }
+    mocks.getTransactions.mockReturnValue({ data: [], isLoading: false, error: { error: 'Network unreachable' } });
 
     renderWithRouter(<Transactions />);
 

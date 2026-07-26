@@ -51,17 +51,26 @@ beforeEach(() => {
   _pluginStoreData.clear();
 });
 
+// ── Invoke call history (for assertion in invoke.test.ts) ────────
+const _invokeHistory: Array<{ cmd: string; args?: Record<string, unknown> }> = [];
+export function getInvokeHistory() { return _invokeHistory; }
+export function clearInvokeHistory() { _invokeHistory.length = 0; }
+
 // Mock the Tauri `invoke` function so all tests can call it.
 // The mock implementation delegates to the configurable mock from mocks/tauri.ts
+// IMPORTANT: Use a plain function, NOT vi.fn(). vi.clearAllMocks() in
+// test files resets vi.fn() implementations, breaking ALL data loading.
 vi.mock('@tauri-apps/api/core', () => ({
-  invoke: vi.fn((cmd: string, args?: Record<string, unknown>) => {
+  invoke: (cmd: string, args?: Record<string, unknown>) => {
+    _invokeHistory.push({ cmd, args });
     const handler = getMockInvokeHandler(cmd);
     return handler(cmd, args);
-  }),
+  },
 }));
 
-// Mock @tauri-apps/plugin-store (optional dependency in fusion-store)
-// Uses a real Map so get() returns previously set values.
+// @tauri-apps/plugin-store is already aliased in vitest.config.ts,
+// so the vi.mock below is only a fallback. Remove once alias is
+// confirmed working in all environments.
 const _pluginStoreData = new Map<string, unknown>();
 vi.mock('@tauri-apps/plugin-store', () => ({
   Store: {

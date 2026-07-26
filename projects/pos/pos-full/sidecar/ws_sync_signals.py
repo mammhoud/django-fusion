@@ -1,5 +1,5 @@
 """
-POS Terminal — WebSocket sync signal handlers.
+POS Full — WebSocket sync signal handlers.
 
 Sends local entity CRUD events to the connected Cloud CRM in real time.
 Receivers are registered when this module is imported.
@@ -17,8 +17,7 @@ from ws_client import cloud_ws_client
 
 logger = logging.getLogger("pos.ws_sync_signals")
 
-# Model names that should trigger real-time cloud sync.
-# The app label shared by all POS sidecar models. If it changes, keep this in sync.
+# The app label shared by all POS sidecar models.
 POS_APP_LABEL = "pos_full"
 
 SYNCED_ENTITIES = cloud_ws_client.SYNCED_ENTITIES

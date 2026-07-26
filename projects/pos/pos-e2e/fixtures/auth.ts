@@ -119,8 +119,8 @@ export async function mockAuthApi(page: Page, user: MockUser = DEFAULT_USER): Pr
  */
 export async function setupAuth(page: Page, user: MockUser = DEFAULT_USER): Promise<void> {
   if (!page || typeof page.route !== 'function') return;
-  await mockSidecarHealth(page).catch(() => {});
-  await mockAuthApi(page, user).catch(() => {});
+  await mockSidecarHealth(page);
+  await mockAuthApi(page, user);
 }
 
 // ── Custom fixtures ─────────────────────────────────────────────
