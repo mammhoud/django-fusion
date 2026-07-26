@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/note.schema.json
 Object type: Note
-Tags: note, quick-note
+Tags: note
 Status: Published
 ---
 

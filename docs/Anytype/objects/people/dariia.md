@@ -7,3 +7,7 @@ Created by:
     - mammhoud
 id: bafyreidggva7qq4nj2wc3fhd2jz57m3p3wwohof424h7xw2szpzdds2mmm
 ---
+
+## Related Docs
+- → `../decisions/` — ADRs and architectural decisions
+- → `../../blog/_index.md` — Authored posts

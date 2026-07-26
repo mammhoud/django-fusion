@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: startup, planning, objectives, milestones
+Tags: planning, objectives
 Status: Published
 Type: Roadmap
 Related Plans: product-development, market-research, business-model

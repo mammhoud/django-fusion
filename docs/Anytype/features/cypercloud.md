@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=schemas/feature.schema.json
 Object type:
     - Feature
-Tags:
-    - cypercloud
-    - ai
-    - cloud
+Tags: ai, cloud
 Status: Planned
 Edition: Cloud
 ---

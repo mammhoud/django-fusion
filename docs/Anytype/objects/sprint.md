@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Sprint
-Tags: sprint, agile, cycle
+Tags: sprint
 Status: Published
 ---
 
@@ -44,7 +44,7 @@ Sprint 🏃 ── contains ──→ Task ✅ ── achieves ──→ Goal �
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../sprints/_index.md` — Sprints directory
+- → `../sprints/` — Sprints directory
 - → `task.md` — Task entity
 - → `goal.md` — Goal entity
 - → `milestone.md` — Milestone entity

@@ -1,7 +1,7 @@
 # AnyType Documentation — Structa Cloud
 
 > **Canonical entry point** for the Anytype documentation system.
-> 22 object types powering the knowledge graph across dedicated content directories.
+> 27 object types powering the knowledge graph across dedicated content directories.
 
 ---
 
@@ -10,54 +10,36 @@
 ```
 Anytype/
 ├── README.md                     ← You are here
-├── _prompts.md                   ← AI agent prompts for these docs
 │
-├── objects/                      ← AnyType object type & entity definitions
-│   ├── _index.md                 ← Object types overview
-│   ├── _object-types.md          ← All 22 custom type definitions
-│   ├── _relations.md             ← 25+ relation definitions
+├── objects/                      ← Core type definitions & entity files
+│   ├── _object-types.md          ← All 27 type definitions with properties
+│   ├── _relations.md             ← 36 relation definitions
 │   ├── _tags.md                  ← 80+ multi-select tag definitions
-│   ├── page.md, workspace.md, feature.md, milestone.md
-│   ├── task.md, bookmark.md, note.md, people.md
-│   ├── blog-post.md, goal.md, edition.md, configuration.md
-│   └── component.md, api.md, release.md, decision.md
-│       pipeline.md, style.md, sprint.md, integration.md
+│   ├── _templates.md             ← Template generation guide
+│   ├── _index.md                 ← Object types overview
+│   └── *.md                      ← Individual entity files (feature, task, goal, etc.)
 │
 ├── architecture/                 ← System architecture & design docs
 ├── features/                     ← Product feature descriptions
-├── guides/                       ← Step-by-step guides (with install/)
-│
-├── components/                   ← UI & business component docs (NEW)
-├── api/                          ← API endpoint definitions (NEW)
-├── releases/                     ← Version release tracking (NEW)
-├── decisions/                    ← ADRs (Architectural Decision Records) (NEW)
-├── pipelines/                    ← CI/CD pipeline definitions (NEW)
-├── style/                        ← Design tokens & theme docs (NEW)
-├── sprints/                      ← Sprint cycle tracking (NEW)
-├── integrations/                 ← Third-party connector docs (NEW)
-│
+├── guides/                       ← Step-by-step guides
 ├── references/                   ← API & config references
 ├── plans/                        ← Business & project plans
-├── changelogs/                   ← Version history
-├── tasks/                        ← Implementation tasks
+├── tasks/                        ← Implementation backlog
 ├── goals/                        ← Strategic goals & OKRs
 ├── milestones/                   ← Key milestones & checkpoints
+├── changelogs/                   ← Version history
+├── blog/                         ← Blog posts & announcements
 ├── editions/                     ← Product edition definitions
 ├── projects/                     ← High-level project tracking
-├── blog/                         ← Blog posts & announcements
 ├── people/                       ← Team members & authors
 │
+├── brand/                        ← Brand assets, logos, icons
 ├── schemas/                      ← JSON schema definitions
-│   ├── page.schema.json
-│   ├── bookmark.schema.json
-│   ├── milestone.schema.json
-│   ├── note.schema.json
-│   ├── people.schema.json
-│   └── task.schema.json
-│
 ├── diagrams/                     ← ASCII/Mermaid diagrams
 └── files/                        ← Images & assets
 ```
+
+Content directories (`architecture/`, `features/`, `guides/`, `references/`, `plans/`, `tasks/`) contain actual documentation files. Directories without dedicated documentation files (`api/`, `components/`, `integrations/`, `pipelines/`, `releases/`, `sprints/`, `style/`) are available for expansion but currently show only in the object type definitions.
 
 ---
 
@@ -79,20 +61,23 @@ Anytype/
 | Milestone | 🏁 | `milestones/` | Release markers & checkpoints |
 | Person | 👤 | `people/` | Team members & contributors |
 | Project | 📁 | `projects/` | High-level project tracking |
-| Component | 🔧 | `components/` | Reusable UI & business logic |
-| API | 📡 | `api/` | Endpoint definitions |
-| Release | 🚀 | `releases/` | Version releases |
-| Decision | ⚡ | `decisions/` | ADRs & design rationale |
-| Pipeline | 🔄 | `pipelines/` | CI/CD workflow definitions |
-| Style | 🎨 | `style/` | Design tokens & brand |
-| Sprint | 🏃 | `sprints/` | Sprint cycles & retrospectives |
-| Integration | 🔗 | `integrations/` | Third-party connectors |
+| Component | 🔧 | `—` | Reusable UI & business logic |
+| API | 📡 | `—` | Endpoint definitions |
+| Release | 🚀 | `—` | Version releases |
+| Decision | ⚡ | `—` | ADRs & design rationale |
+| Pipeline | 🔄 | `—` | CI/CD workflow definitions |
+| Style | 🎨 | `—` | Design tokens & brand |
+| Sprint | 🏃 | `—` | Sprint cycles & retrospectives |
+| Integration | 🔗 | `—` | Third-party connectors |
+| Page | 📄 | `—` | General knowledge content |
+| Note | 📝 | `—` | Quick notes & meeting minutes |
+| Bookmark | 🔖 | `—` | External resource links |
+| Workspace | 🏢 | `—` | Hub pages grouping content |
+| Configuration | ⚙️ | `—` | System config & environment |
 
 ---
 
-## Object Type Organization
-
-The types are organized in layers:
+## Organization Layers
 
 ```
 Strategic Layer:     Project 📁 → Plan 📋 → Goal 🎯 → Milestone 🏁
@@ -102,24 +87,8 @@ Foundation Layer:    Architecture 🏗️ → Decision ⚡ → Style 🎨 → Re
 Tracking Layer:      Changelog 📋 → Pipeline 🔄 → Diagram 📊
 People Layer:        Person 👤 → Blog/Post 📝
 Product Layer:       Edition 📦 → features/*.md
+Cross-cutting:       Page 📄, Note 📝, Bookmark 🔖, Workspace 🏢, Configuration ⚙️
 ```
-
----
-
-## Navigation
-
-| Section | Files | Start Here |
-|---------|-------|-----------|
-| **Objects** | 22 type definitions | `objects/_object-types.md` |
-| **Architecture** | System design | `architecture/_index.md` |
-| **Features** | Product capabilities | `features/_index.md` |
-| **Guides** | How-to & workflows | `guides/_index.md` |
-| **Components** | UI library | `components/_index.md` |
-| **API** | Endpoints | `api/_index.md` |
-| **References** | Schemas & commands | `references/_index.md` |
-| **Plans** | Strategy & operations | `plans/_index.md` |
-| **Tasks** | Implementation backlog | `tasks/_index.md` |
-| **Changelogs** | Version history | `changelogs/_index.md` |
 
 ---
 
@@ -147,9 +116,10 @@ Product Layer:       Edition 📦 → features/*.md
 
 ## Related Docs
 
-- → `../ai/prompts.md` — AI agent prompts
-- → `../../AGENTS.md` — Project-wide AI agent instructions
-- → `../../libs/ceptor-ai/AGENTS.md` — Ceptor AI agent instructions
-- → `object/_object-types.md` — All 22 object type definitions
+- → `objects/_object-types.md` — All 27 object type definitions
 - → `objects/_relations.md` — Relation linking guide
 - → `objects/_tags.md` — Tag definitions
+- → `objects/_templates.md` — Template generation guide
+- → `brand/logos-icons.md` — Logo & icon reference
+- → `../../AGENTS.md` — Project-wide AI agent instructions
+- → `../../libs/ceptor-ai/AGENTS.md` — Ceptor AI agent instructions

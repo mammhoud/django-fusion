@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Feature
-Tags: feature, product, capability
+Tags: feature, product
 Status: Published
 ---
 

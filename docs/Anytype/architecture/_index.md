@@ -1,3 +1,7 @@
+---
+Object type: Workspace
+Tags: architecture---
+
 # Architecture — System Design & Data Flow
 
 > High-level architecture, technology stack, and design decisions for Structa Cloud and POS editions.

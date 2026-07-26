@@ -4,10 +4,7 @@ Object type:
     - Workspace
 Backlinks:
     - product-development.md
-Tags:
-    - learning
-    - research
-    - reference
+Tags: learning, reference
 Status: Published
 ---
 

@@ -2,11 +2,7 @@
 # yaml-language-server: $schema=schemas/workspace.schema.json
 Object type:
     - Workspace
-Tags:
-    - business
-    - model
-    - strategy
-    - pricing
+Tags: business, strategy
 Status: Published
 ---
 

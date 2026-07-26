@@ -25,3 +25,5 @@ As a startup, it is important to optimize your resource allocation in order to m
 - Capital, funding, and financial resources needed to launch, operate, and grow your startup.   
    
 ### Budget   
+
+## Related Docs — (intentionally omitted: legacy startup template — see [`startup-planner.md`](startup-planner.md) or [`resources.md`](resources.md).)

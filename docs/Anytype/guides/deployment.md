@@ -94,3 +94,9 @@ For a full reset (destroys data):
 make clean
 
 ```
+
+## Related Docs
+- → `../architecture/overview.md` — Architecture context
+- → `../references/database-schema.md` — Database schemas
+- → `../../applications/proxy/README.md` — Proxy configuration
+- → `../tasks/tasks-and-backlog.md` — Deployment tasks

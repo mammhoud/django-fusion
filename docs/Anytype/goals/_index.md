@@ -1,3 +1,8 @@
+---
+Object type: Workspace
+Tags: goals, objectives
+---
+
 # Goals — Strategic Objectives & OKRs
 
 > **Type:** Goal 🎯

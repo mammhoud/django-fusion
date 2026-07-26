@@ -1,3 +1,7 @@
+---
+Object type: Workspace
+Tags: adr, architecture, decisions---
+
 # Decisions — Architectural Decision Records
 
 > **Type:** Decision ⚡
@@ -38,6 +42,5 @@ Deprecated
 ## Related
 
 - → `../objects/decision.md` — Decision object type
-- → `../architecture/_index.md` — Related architecture docs
-- → `../people/_index.md` — Decision makers
+- → `../architecture/` — Related architecture docs
 - → `../README.md` — Master index

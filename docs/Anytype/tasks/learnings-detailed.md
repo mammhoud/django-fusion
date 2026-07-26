@@ -23,3 +23,5 @@ Stay updated on industry trends, best practices, and emerging technologies.
 new-note
 New note](new-note-new-note-new-note-new-note.md)    
 [Learnings](learnings_k.md)    
+
+## Related Docs — (intentionally omitted: legacy detailed variant — see [`learnings.md`](learnings.md).)

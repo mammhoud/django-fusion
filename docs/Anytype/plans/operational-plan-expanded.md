@@ -261,3 +261,5 @@ make -C core compile-translations WEBSITE=<site> # Compile translations
 - [Risk Management](/Users/mammhoud/Documents/Projects/structa.cloud/docs/anytype/.md) – for backup and recovery procedures.   
 - [Website Applications](/Users/mammhoud/Documents/Projects/structa.cloud/docs/anytype/.md) – for details on the components being deployed.   
 [Operational Plan](operational-plan-expanded.md)    
+
+## Related Docs — (intentionally omitted: legacy expanded variant — see [`operational-plan.md`](operational-plan.md).)

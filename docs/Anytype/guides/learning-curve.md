@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=schemas/feature.schema.json
 Object type:
     - Feature
-Tags:
-    - lms
-    - learning
-    - education
+Tags: lms, education, learning
 Status: Published
 Links:
     - LMS

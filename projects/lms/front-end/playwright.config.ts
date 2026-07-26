@@ -19,11 +19,13 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: "npx next dev -p 3457",
-    cwd: __dirname,
-    url: "http://localhost:3457",
-    reuseExistingServer: true,
-    timeout: 60000,
-  },
+  webServer: process.env.CI
+    ? {
+        command: "npx next dev -p 3457",
+        cwd: __dirname,
+        url: "http://localhost:3457",
+        reuseExistingServer: false,
+        timeout: 120000,
+      }
+    : undefined,
 });

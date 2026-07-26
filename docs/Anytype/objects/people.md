@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/people.schema.json
 Object type: People
-Tags: people, person, team
+Tags: people
 Status: Published
 ---
 
@@ -43,4 +43,4 @@ Person 👤
 
 - → `_object-types.md` — All type definitions
 - → `_relations.md` — Relations guide
-- → `../people/_index.md` — People directory
+- → `../people/` — People directory

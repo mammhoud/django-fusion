@@ -88,4 +88,10 @@ make -C core migrate WEBSITE=ctc-research
 make deploy
 
 ```
+
+## Related Docs
+- → `../architecture/overview.md` — Architecture context
+- → `../guides/setup.md` — Quick start guide
+- → `../tasks/tasks-and-backlog.md` — Implementation tasks
+- → `../plans/product-development.md` — Development lifecycle
    

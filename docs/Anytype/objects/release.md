@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Release
-Tags: release, version, deployment
+Tags: release
 Status: Published
 ---
 
@@ -43,7 +43,7 @@ Pipeline 🔄 ── deploys ──→ Release 🚀 ── tracks ──→ Chan
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../releases/_index.md` — Releases directory
+- → `../releases/` — Releases directory
 - → `milestone.md` — Milestone entity
 - → `pipeline.md` — Pipeline entity
 - → `../changelogs/_index.md` — Changelogs

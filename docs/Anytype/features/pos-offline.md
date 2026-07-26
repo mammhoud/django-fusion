@@ -7,11 +7,7 @@ Backlinks:
     - POS
     - pre-installed
     - offline
-Tags:
-- pre-installed
-    - offline
-    - pos-mini
-    - pos-solo
+Tags: pos-mini, pos-solo
 Status: Complete
 Edition: Mini, Solo, Full
 ---

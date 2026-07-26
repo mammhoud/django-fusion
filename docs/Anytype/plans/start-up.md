@@ -18,4 +18,9 @@ id: bafyreiduy3djazvakpbxfdo2utvkwg4jp2cfchg2autwo3vr5iv2j2k5aq
 [Note](note.md)    
 [Milestone](milestone.md)    
 [Task](task.md)    
+
+## Related Docs
+- → `../plans/startup-planner.md` — Full startup planning
+- → `../plans/business-model.md` — Business model canvas
+- → `../plans/market-research.md` — Market analysis    
    

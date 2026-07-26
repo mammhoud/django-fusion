@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: marketing, sales, strategy, growth
+Tags: marketing, sales, strategy
 Status: Published
 Type: Annual
 Related Plans: market-research, business-model

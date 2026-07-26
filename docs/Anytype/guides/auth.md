@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=schemas/workspace.schema.json
 Object type:
     - Workspace
-Tags:
-    - auth
-    - authentication
-    - security
+Tags: auth, security
 Status: Published
 ---
 

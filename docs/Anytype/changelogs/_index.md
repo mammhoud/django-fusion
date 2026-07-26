@@ -1,3 +1,7 @@
+---
+Object type: Workspace
+Tags: changelogs---
+
 # Changelogs — Version History
 
 > Version history, migration notes, and breaking changes for all POS editions.

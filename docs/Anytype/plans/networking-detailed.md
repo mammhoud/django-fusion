@@ -11,3 +11,5 @@ id: bafyreiau67i5x7sitq6hnq64ksrk2kjbjrm6pz5hdbkjuvhekwq5qcnsmm
 # Networking   
 Cultivate relationships with mentors, advisors, investors, and other stakeholders who can support your startup journey.   
 [Networking](networking-detailed.md)    
+
+## Related Docs — (intentionally omitted: legacy detailed variant — see [`networking.md`](networking.md).)

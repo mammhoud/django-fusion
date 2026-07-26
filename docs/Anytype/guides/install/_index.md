@@ -1,3 +1,7 @@
+---
+Object type: Workspace
+Tags: install, setup---
+
 # Install — Platform Setup Guides
 
 > Platform-specific installation guides for every operating system and deployment method.

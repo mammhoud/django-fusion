@@ -1,42 +1,38 @@
-# Objects — AnyType Type Definitions
+# Object Types — Core Definitions
 
 > Define the object types that power the Structa Cloud knowledge graph.
+> 27 types across 6 organizational layers.
 
 ---
 
-## Core Object Types
+## Quick Reference
 
-| Type | Description | Layout | Schema File |
-|------|-------------|--------|-------------|
-| **Page** | General-purpose knowledge page | Page | `page.schema.json` |
-| **Workspace** | High-level workspace/meta page | Page | — |
-| **Bookmark** | External link or reference | Bookmark | `bookmark.schema.json` |
-| **Feature** | Product feature or capability | Page | — |
-| **Milestone** | Key milestone or phase | Milestone | `milestone.schema.json` |
-| **Task** | Implementation task or TODO | Task | `task.schema.json` |
-| **Goal** | Strategic objective or target | Page | — |
-| **Edition** | Product edition variant | Page | — |
-| **Configuration** | System/environment config | Page | — |
-| **Blog/Post** | Published content or article | Page | — |
-| **People** | Team member or stakeholder | Page | `people.schema.json` |
-| **Note** | Quick note or learning | Note | `note.schema.json` |
+| Layer | Types |
+|-------|-------|
+| **Strategic** | Project 📁 → Plan 📋 → Goal 🎯 → Milestone 🏁 |
+| **Delivery** | Sprint 🏃 → Task ✅ → Feature ✨ → Release 🚀 |
+| **Implementation** | Guide 📘 → Component 🔧 → API 📡 → Integration 🔗 |
+| **Foundation** | Architecture 🏗️ → Decision ⚡ → Style 🎨 → Reference 📚 |
+| **Tracking** | Changelog 📋 → Pipeline 🔄 → Diagram 📊 |
+| **Product/People** | Edition 📦 → Blog/Post 📝 → Person 👤 |
+| **Cross-cutting** | Page 📄, Note 📝, Bookmark 🔖, Workspace 🏢, Configuration ⚙️ |
 
 ---
 
 ## Import Workflow
 
 1. Open AnyType → **Settings → Content Model → Add Type**
-2. Create each type with its properties
-3. Create shared **Tags** Multi-select property from `_tags.md`
+2. Create each type with its properties from `_object-types.md`
+3. Create shared **Tags** Multi-select from `_tags.md`
 4. Create **Relations** from `_relations.md`
-5. Import markdown files → assign correct type
-6. Link related objects in Graph View
+5. Import markdown files → assign correct type → link in Graph View
 
 ---
 
 ## Related
 
-- → `_object-types.md` — Full type definitions with all properties
-- → `_relations.md` — Relation/linking guide
-- → `_tags.md` — Tag definitions
+- → `_object-types.md` — Full type definitions with all 27 types
+- → `_relations.md` — 36 relations with cardinality
+- → `_tags.md` — 80+ tag definitions
+- → `_templates.md` — Template generation guide
 - → `../README.md` — Back to master index

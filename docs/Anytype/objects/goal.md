@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Goal
-Tags: goal, objective, strategy
+Tags: goal, strategy
 Status: Published
 ---
 

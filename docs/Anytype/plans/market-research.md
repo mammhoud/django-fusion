@@ -1,12 +1,10 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: market-research, analysis, strategy, competitors
 Status: Published
 Type: Quarterly
 Related Plans: product-development
-Related Goals: growth-goal
----
+Related Goals: growth-goal---
 
 # Market Research & Analysis
 

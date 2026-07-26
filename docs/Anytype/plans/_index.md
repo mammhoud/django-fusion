@@ -1,3 +1,8 @@
+---
+Object type: Workspace
+Tags: plans, strategy, business
+---
+
 # Plans — Business & Project Strategy
 
 > Business model, operational plans, market research, risk management, and strategic documentation.

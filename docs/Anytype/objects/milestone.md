@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/milestone.schema.json
 Object type: Milestone
-Tags: milestone, checkpoint, release
+Tags: milestone, release
 Status: Published
 ---
 

@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: monitoring, metrics, analytics, evaluation
+Tags: analytics
 Status: Published
 Type: Annual
 Related Plans: operational-plan, risk-management

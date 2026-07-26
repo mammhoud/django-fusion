@@ -179,3 +179,5 @@
 - [ ] Create script to generate _templates.md from schema
 - [ ] Create script to check for dead links
 - [ ] Set up CI to validate docs structure
+
+## Related Docs — (intentionally omitted: system reference file that tracks documentation status; not a documentation content object.)

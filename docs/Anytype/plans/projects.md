@@ -7,15 +7,7 @@ Object type:
     - Publishing
     - Staging
     - Done
-Tags:
-- Development
-- Documentation
-- Publishing
-- Staging
-- Done
-    - projects
-    - reference
-    - index
+Tags: projects, reference
 Status: Published
 ---
 

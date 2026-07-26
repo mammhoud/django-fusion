@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Component
-Tags: component, ui, design-system
+Tags: component, ui
 Status: Published
 ---
 
@@ -55,7 +55,7 @@ Feature ✨ ── uses ──→ Component 🔧 ── styled by ──→ Styl
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../components/_index.md` — Components directory
+- → `../components/` — Components directory
 - → `api.md` — API entity
 - → `style.md` — Style entity
 - → `feature.md` — Feature entity

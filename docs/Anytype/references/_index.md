@@ -1,3 +1,7 @@
+---
+Object type: Workspace
+Tags: api, configuration---
+
 # References — API & Configuration
 
 > API endpoints, command references, database schemas, and internationalization keys.

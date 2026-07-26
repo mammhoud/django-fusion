@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=schemas/feature.schema.json
 Object type:
     - Feature
-Tags:
-    - forms
-    - crm
-    - customization
+Tags: forms, crm
 Status: Planned
 Links:
     - CRM

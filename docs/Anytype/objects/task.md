@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/task.schema.json
 Object type: Task
-Tags: task, todo, implementation
+Tags: task
 Status: Published
 ---
 
