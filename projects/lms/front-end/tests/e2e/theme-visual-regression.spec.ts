@@ -39,7 +39,7 @@ test.describe('Theme Showcase — Visual Regression', () => {
     await page.goto('/dev/theme', { waitUntil: 'networkidle', timeout: 15000 });
     await page.waitForTimeout(500);
 
-    const swatches = page.getByTestId('swatch-ctc-primary');
+    const swatches = page.getByTestId('swatch-primary');
     await swatches.scrollIntoViewIfNeeded();
 
     // Capture just the swatches area

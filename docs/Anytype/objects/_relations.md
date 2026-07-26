@@ -120,6 +120,12 @@ In AnyType, convert these → links to Object Relations by:
 
 ---
 
+## Usage in Practice
+
+For a step-by-step walkthrough of creating AnyType relations and linking objects, see the [`object-linking.md`](../guides/object-linking.md) guide.
+
+---
+
 ## Quick Reference Template
 
 Copy this into any document's Related Docs section:

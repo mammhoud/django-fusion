@@ -33,7 +33,8 @@ function captureErrors(page: Page) {
 test.describe('Auth Flows', () => {
   test('login form validates empty fields', async ({ page }) => {
     const getErrors = captureErrors(page);
-    await page.goto('/login', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.goto('/login', { waitUntil: 'load', timeout: 15000 });
+    await page.waitForTimeout(2000);
 
     // Submit empty form
     await page.locator('button[type="submit"]').click();
@@ -63,25 +64,28 @@ test.describe('Auth Flows', () => {
   });
 
   test('login page navigates to registration', async ({ page }) => {
-    await page.goto('/login', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.goto('/login', { waitUntil: 'load', timeout: 15000 });
+    await page.waitForTimeout(2000);
 
     await page.locator('a[href="/registration"]').first().click();
-    await page.waitForURL('**/registration');
+    await page.waitForURL('**/registration', { timeout: 15000 });
 
     await expect(page.locator('h1')).toContainText(/create|register|sign up/i);
   });
 
   test('registration page navigates to login', async ({ page }) => {
-    await page.goto('/registration', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.goto('/registration', { waitUntil: 'load', timeout: 15000 });
+    await page.waitForTimeout(2000);
 
     await page.locator('a[href="/login"]').first().click();
-    await page.waitForURL('**/login');
+    await page.waitForURL('**/login', { timeout: 15000 });
 
     await expect(page.locator('h1')).toContainText(/welcome|sign in|login/i);
   });
 
   test('password toggle reveals and hides password', async ({ page }) => {
-    await page.goto('/login', { waitUntil: 'networkidle', timeout: 15000 });
+    await page.goto('/login', { waitUntil: 'load', timeout: 15000 });
+    await page.waitForTimeout(2000);
 
     const passwordInput = page.locator('input[type="password"]');
     if (await passwordInput.isVisible()) {

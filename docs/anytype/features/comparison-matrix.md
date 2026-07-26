@@ -74,4 +74,7 @@ pos-cloud ─→ Multi-tenant, subscription, web-first
 - → `features/pos-mini.md` — pos-mini feature details   
 - → `features/pos-solo.md` — pos-solo feature details   
 - → `features/pos-full.md` — pos-full feature details   
-[Feature Comparison Matrix](feature-comparison-matrix.md)    
+- → `features/pos-offline.md` — Offline capabilities per edition   
+- → `features/cypercloud.md` — CyperCloud AI Chat Customizer   
+- → `features/intro-pages-cms.md` — LMS CMS pages   
+- → `features/pos-documentation.md` — POS documentation system    
