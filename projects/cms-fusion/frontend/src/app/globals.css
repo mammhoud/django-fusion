@@ -30,6 +30,25 @@ body {
   @apply animate-pulse bg-gray-200 rounded;
 }
 
+/* Shimmer skeleton — smooth loading animation for cards and images.
+   Apply alongside .fusion-skeleton for a polished shimmer effect:
+   <div className="fusion-skeleton fusion-skeleton-shimmer h-48 w-full" /> */
+.fusion-skeleton-shimmer {
+  background: linear-gradient(90deg, #e5e7eb 25%, #f3f4f6 50%, #e5e7eb 75%);
+  background-size: 200% 100%;
+  animation: fusion-shimmer 1.5s ease-in-out infinite;
+}
+
+@keyframes fusion-shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* Skeleton image placeholder — use for featured-image-height loading blocks */
+.fusion-skeleton-image {
+  @apply animate-pulse bg-gray-200 rounded-xl;
+}
+
 .fusion-error {
   @apply p-8 text-center;
 }

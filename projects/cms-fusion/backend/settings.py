@@ -138,3 +138,33 @@ FUSION_COMPANY_NAME = os.environ.get("FUSION_COMPANY_NAME", "Fusion Inc.")
 FUSION_CREATOR_NAME = os.environ.get("FUSION_CREATOR_NAME", "Fusion Team")
 FUSION_PRIMARY_COLOR = os.environ.get("FUSION_PRIMARY_COLOR", "#7c3aed")
 FUSION_SECONDARY_COLOR = os.environ.get("FUSION_SECONDARY_COLOR", "#5b21b6")
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Layouts
+# ═══════════════════════════════════════════════════════════════════
+FUSION_LAYOUTS = {
+    "default": "fusion/layouts/default.html",
+    "full_width": "fusion/layouts/full_width.html",
+    "sidebar": "fusion/layouts/sidebar.html",
+    "blank": "fusion/layouts/blank.html",
+}
+FUSION_DEFAULT_LAYOUT = "default"
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Features (toggle individual CMS features)
+# ═══════════════════════════════════════════════════════════════════
+FUSION_FEATURES = {
+    "blog": True,
+    "courses": True,
+    "products": True,
+    "pages": True,
+    "auth": True,
+    "profile": True,
+    "branding": True,
+    "search": True,
+}
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Render-First
+# ═══════════════════════════════════════════════════════════════════
+FUSION_RENDER_FIRST_DEFAULT = False
