@@ -1,0 +1,92 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Team Section Block Template #}
+{% firstof value self as section %}
+{% if section %}
+<section class="team-section py-5">
+    <div class="container">
+        {% if section.title %}
+        <div class="row mb-4">
+            <div class="col-12 text-center">
+                <h2 class="team-section__title">{{ section.title }}</h2>
+                {% if section.subtitle %}
+                <p class="team-section__subtitle text-muted">{{ section.subtitle }}</p>
+                {% endif %}
+            </div>
+        </div>
+        {% endif %}
+
+        {% if section.team_members %}
+        <div class="row g-4">
+            {% for member in section.team_members %}
+            <div class="col-md-4 col-sm-6">
+                <div class="team-member card h-100 border-0 shadow-sm text-center">
+                    {% if member.photo %}
+                    <div class="team-member__photo mx-auto mt-4 rounded-circle overflow-hidden" style="width: 150px; height: 150px;">
+                        {% image member.photo fill-150x150 class="img-fluid" alt=member.name %}
+                    </div>
+                    {% endif %}
+
+                    <div class="card-body">
+                        <h5 class="team-member__name mb-1">{{ member.name }}</h5>
+                        <p class="team-member__position text-primary mb-3">{{ member.position }}</p>
+
+                        {% if member.bio %}
+                        <div class="team-member__bio small text-muted">{{ member.bio }}</div>
+                        {% endif %}
+
+                        {% if member.skills %}
+                        <div class="team-member__skills mb-3">
+                            {% for skill in member.skills %}
+                            <div class="skill-item text-start mb-2">
+                                <div class="d-flex justify-content-between small mb-1">
+                                    <span>{{ skill.name }}</span>
+                                    <span>{{ skill.percentage }}%</span>
+                                </div>
+                                <div class="progress" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar"
+                                         style="width: {{ skill.percentage }}%;"
+                                         aria-valuenow="{{ skill.percentage }}"
+                                         aria-valuemin="0" aria-valuemax="100">
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                        {% endif %}
+
+                        <div class="team-member__social d-flex justify-content-center gap-2 mt-3">
+                            {% if member.facebook %}
+                            <a href="{{ member.facebook }}" target="_blank" rel="noopener"
+                               class="btn btn-sm btn-outline-primary rounded-circle"
+                               title="Facebook"><i class="bi bi-facebook"></i></a>
+                            {% endif %}
+                            {% if member.twitter %}
+                            <a href="{{ member.twitter }}" target="_blank" rel="noopener"
+                               class="btn btn-sm btn-outline-primary rounded-circle"
+                               title="Twitter"><i class="bi bi-twitter-x"></i></a>
+                            {% endif %}
+                            {% if member.linkedin %}
+                            <a href="{{ member.linkedin }}" target="_blank" rel="noopener"
+                               class="btn btn-sm btn-outline-primary rounded-circle"
+                               title="LinkedIn"><i class="bi bi-linkedin"></i></a>
+                            {% endif %}
+                            {% if member.email %}
+                            <a href="mailto:{{ member.email }}"
+                               class="btn btn-sm btn-outline-secondary rounded-circle"
+                               title="{{ member.email }}"><i class="bi bi-envelope"></i></a>
+                            {% endif %}
+                            {% if member.phone %}
+                            <a href="tel:{{ member.phone }}"
+                               class="btn btn-sm btn-outline-secondary rounded-circle"
+                               title="{{ member.phone }}"><i class="bi bi-telephone"></i></a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+    </div>
+</section>
+{% endif %}

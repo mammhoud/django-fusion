@@ -1,8 +1,0 @@
-# Python
-__pycache__/
-*.pyc
-*.pyo
-
-# Ignore CTC Research docs - separate project
-docs/ctc-research/
-ctc-research

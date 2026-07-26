@@ -1,8 +1,0 @@
-{% load i18n static wagtailimages_tags %}
-
-<li class="clients__item">
-  <a href="#" class="clients__link">
-    {% image self.logo width-120 as c_logo %}
-    <img src="{{ c_logo.url }}" alt="{{ self.name }}" class="clients__logo">
-  </a>
-</li>

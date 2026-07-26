@@ -1,0 +1,8 @@
+.modal-shell,
+[data-usecase~='modal'] {
+  .modal-shell__dialog,
+  .modal-dialog,
+  [data-modal-dialog] {
+    max-width: min(100% - 2rem, var(--modal-max-width, 48rem));
+  }
+}

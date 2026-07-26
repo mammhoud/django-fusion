@@ -1,0 +1,185 @@
+{% extends layout_path|default:'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Service Unavailable (503 Error)" %} | {{ site_name|default:'Website' }}{% endblock %}
+
+{% block meta %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, follow">
+    <meta name="description" content="{% trans 'The service is temporarily unavailable. Please try again later.' %}">
+
+    <!-- Open Graph -->
+    <meta property="og:title" content="{% trans 'Service Unavailable (503)' %} | {{ site_name|default:'Website' }}">
+    <meta property="og:description" content="{% trans 'Temporary service interruption.' %}">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% trans 'Service Unavailable (503)' %} | {{ site_name|default:'Website' }}">
+    <meta name="twitter:description" content="{% trans 'Service temporarily unavailable.' %}">
+
+    <link rel="canonical" href="{{ site_url|default:'/' }}">
+
+    <!-- Service status -->
+    <meta http-equiv="Retry-After" content="{{ retry_after|default:'3600' }}">
+{% endblock %}
+
+{% block styles %}
+    {% load webpack_loader %}
+    {% render_bundle 'static' 'css' %}
+{% endblock styles %}
+
+{% block body_class %}template-503{% endblock %}
+
+{% block body %}
+<div class="error-page error-503">
+    <!-- Maintenance background -->
+    <div class="maintenance-bg">
+        <div class="cog cog-1"><i class="fas fa-cog"></i></div>
+        <div class="cog cog-2"><i class="fas fa-cog"></i></div>
+        <div class="cog cog-3"><i class="fas fa-cog"></i></div>
+        <div class="cog cog-4"><i class="fas fa-cog"></i></div>
+    </div>
+
+    <div class="error-container">
+        <div class="error-card">
+            <!-- Maintenance icon -->
+            <div class="maintenance-icon">
+                <div class="toolbox">
+                    <i class="fas fa-tools"></i>
+                    <div class="tool wrench"><i class="fas fa-wrench"></i></div>
+                    <div class="tool hammer"><i class="fas fa-hammer"></i></div>
+                </div>
+            </div>
+
+            <!-- Status code -->
+            <h1 class="error-code">503</h1>
+
+            <!-- Error message -->
+            <div class="error-message">
+                <h2>{% trans "Under Maintenance" %}</h2>
+                <p>{% trans "We're currently performing scheduled maintenance to improve your experience." %}</p>
+            </div>
+
+            <!-- Maintenance info -->
+            <div class="maintenance-info">
+                <div class="info-card">
+                    <i class="fas fa-clock"></i>
+                    <div class="info-content">
+                        <h4>{% trans "Estimated downtime:" %}</h4>
+                        <p>{{ estimated_downtime|default:"30 minutes" }}</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-calendar-alt"></i>
+                    <div class="info-content">
+                        <h4>{% trans "Started:" %}</h4>
+                        <p>{{ maintenance_start|default:"Just now" }}</p>
+                    </div>
+                </div>
+                <div class="info-card">
+                    <i class="fas fa-hourglass-half"></i>
+                    <div class="info-content">
+                        <h4>{% trans "Expected completion:" %}</h4>
+                        <p id="completionTime">{{ completion_time|default:"Calculating..." }}</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Progress bar -->
+            <div class="maintenance-progress">
+                <div class="progress-label">
+                    <span>{% trans "Maintenance progress" %}</span>
+                    <span id="progressPercent">0%</span>
+                </div>
+                <div class="progress-bar">
+                    <div class="progress-fill" id="progressFill"></div>
+                </div>
+            </div>
+
+            <!-- What's new (optional) -->
+            <div class="whats-new">
+                <h3>{% trans "What's new?" %}</h3>
+                <ul>
+                    <li><i class="fas fa-star"></i> {% trans "Performance improvements" %}</li>
+                    <li><i class="fas fa-star"></i> {% trans "Security updates" %}</li>
+                    <li><i class="fas fa-star"></i> {% trans "New features coming soon" %}</li>
+                </ul>
+            </div>
+
+            <!-- Action buttons -->
+            <div class="error-actions">
+                <a href="javascript:location.reload()" class="btn btn-primary">
+                    <i class="fas fa-sync-alt"></i>
+                    <span>{% trans "Check Status" %}</span>
+                </a>
+                <a href="/" class="btn btn-secondary">
+                    <i class="fas fa-home"></i>
+                    <span>{% trans "Try Homepage" %}</span>
+                </a>
+                <a href="/status/" class="btn btn-outline">
+                    <i class="fas fa-bell"></i>
+                    <span>{% trans "Get Updates" %}</span>
+                </a>
+            </div>
+
+            <!-- Notification signup -->
+            <div class="notification-signup">
+                <p>{% trans "Get notified when we're back:" %}</p>
+                <form class="notify-form" method="post" action="/notify-me/">
+                    {% csrf_token %}
+                    <div class="input-group">
+                        <input type="email" name="email" placeholder="{% trans 'Your email address' %}" required>
+                        <button type="submit" class="btn-notify">{% trans "Notify Me" %}</button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Reference -->
+            <div class="reference">
+                <p>{% trans "Reference:" %} MAINT-{{ "now"|date:"YmdHis" }}</p>
+                <p>{% trans "For urgent issues:" %} <a href="mailto:admin@example.com">admin@example.com</a></p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+{% endblock %}
+
+{% block extra_scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Simulate maintenance progress
+        let progress = 0;
+        const progressFill = document.getElementById('progressFill');
+        const progressPercent = document.getElementById('progressPercent');
+
+        const interval = setInterval(function() {
+            progress += Math.random() * 5;
+            if (progress >= 100) {
+                progress = 100;
+                clearInterval(interval);
+            }
+
+            if (progressFill) {
+                progressFill.style.width = progress + '%';
+            }
+
+            if (progressPercent) {
+                progressPercent.textContent = Math.round(progress) + '%';
+            }
+        }, 2000);
+
+        // Calculate completion time
+        const completionEl = document.getElementById('completionTime');
+        if (completionEl) {
+            const now = new Date();
+            now.setHours(now.getHours() + 1); // Assume 1 hour maintenance
+            completionEl.textContent = now.toLocaleTimeString();
+        }
+    });
+</script>
+{% endblock %}

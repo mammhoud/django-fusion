@@ -1,0 +1,8 @@
+{% load socialaccount %}
+{% for provider in socialaccount_providers %}
+  <div class="col-12 col-md-6 d-grid">
+    <a href="{% provider_login_url provider.id %}" class="btn btn-outline-{{ provider.id }}">
+      <i class="fab fa-{{ provider.id }} me-2"></i> {{ provider.name }}
+    </a>
+  </div>
+{% endfor %}

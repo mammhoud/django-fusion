@@ -1,0 +1,32 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Simplified Image Gallery Template #}
+
+<div class="image-gallery">
+    {% if self.gallery_title or self.gallery_description %}
+    <div class="image-gallery__header mb-4">
+        {% if self.gallery_title %}
+        <h3 class="image-gallery__title h4">{{ self.gallery_title }}</h3>
+        {% endif %}
+        {% if self.gallery_description %}
+        <div class="image-gallery__description text-muted small">
+            {{ self.gallery_description|richtext }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="image-gallery__grid row g-3 row-cols-1 row-cols-md-2 row-cols-lg-{{ self.columns_desktop|default:'3' }}">
+        {% for img_block in self.images %}
+        <div class="col">
+            <div class="image-gallery__item rounded overflow-hidden shadow-sm ratio ratio-1x1">
+                {% if img_block.value.image %}
+                    {% image img_block.value.image fill-400x400 class="img-fluid w-100 h-100 object-fit-cover" %}
+                {% endif %}
+            </div>
+            {% if img_block.value.caption %}
+                <div class="small text-muted mt-2 text-center">{{ img_block.value.caption|striptags }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>

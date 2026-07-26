@@ -1,0 +1,8 @@
+{# Backward-compatible shim — delegates to django-fusion fusion/components/pagination/pagination.html
+   This file did not exist before (referenced by CRM but missing).
+   Kept for existing callers. New code should use:
+     {% comp_include "fusion/components/pagination/pagination.html" ... %}
+   or
+     {% load components %}{% pagination ... %}
+#}
+{% comp "fusion/components/pagination/pagination.html" page_obj=page_obj query_string=query_string hx_target=hx_target / %}

@@ -1,0 +1,32 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+<!-- Menu -->
+<div class="header-menu">
+    <button class="sidebar-close d-lg-none" aria-label="Close menu">
+        <i class="fa-solid fa-times"></i>
+    </button>
+
+    <div class="menu-container">
+        <ul class="nav">
+            {% get_site_root as site_root %}
+            {% top_menu parent=site_root calling_page=self %}
+
+            {# Mobile only: Auth & Language #}
+            <li class="nav-item d-xl-only mt-4 border-top pt-4">
+                <div class="mobile-actions">
+                    {% comp "partials/auth_buttons.html" /%}
+                </div>
+            </li>
+            <li class="nav-item d-xl-only mt-3">
+                <div class="mobile-actions">
+                    {% comp "partials/language_selector.html" /%}
+                </div>
+            </li>
+        </ul>
+
+        <!-- Desktop only: User actions -->
+        <div class="desktop-actions d-none d-xl-flex">
+            {% comp "partials/auth_buttons.html" /%}
+            {% comp "partials/language_selector.html" /%}
+        </div>
+    </div>
+</div>

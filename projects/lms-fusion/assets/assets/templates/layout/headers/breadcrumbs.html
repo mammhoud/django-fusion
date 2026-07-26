@@ -1,0 +1,18 @@
+{% load i18n %}
+{# Breadcrumbs component #}
+{% if breadcrumbs %}
+<nav aria-label="{% trans 'Breadcrumb' %}">
+    <ol class="breadcrumb mb-0">
+        {% for crumb in breadcrumbs %}
+        <li class="breadcrumb-item {% if forloop.last %}active{% endif %}"
+            {% if forloop.last %}aria-current="page"{% endif %}>
+            {% if not forloop.last and crumb.url %}
+            <a href="{{ crumb.url }}">{{ crumb.label }}</a>
+            {% else %}
+            {{ crumb.label }}
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ol>
+</nav>
+{% endif %}

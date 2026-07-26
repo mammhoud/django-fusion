@@ -1,0 +1,57 @@
+{% extends layout_path|default:"profile/skeleton.html" %}
+{% load i18n static %}
+
+{% block content %}
+<div class="section">
+    <div class="container">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-8 col-lg-6">
+                <div class="card shadow-sm border-0">
+                    <div class="card-body p-5">
+                        <h2 class="text-center mb-4">{% trans "Enroll in" %} {{ course.title }}</h2>
+                        <div class="course-summary mb-4">
+                            <ul class="list-unstyled">
+                                <li class="d-flex justify-content-between mb-2">
+                                    <span>{% trans "Course Price" %}:</span>
+                                    <span class="fw-bold">${{ course.price }}</span>
+                                </li>
+                                <li class="d-flex justify-content-between mb-2">
+                                    <span>{% trans "Tax" %}:</span>
+                                    <span>${{ tax_amount|floatformat:2 }}</span>
+                                </li>
+                                <hr>
+                                <li class="d-flex justify-content-between">
+                                    <span class="h5">{% trans "Total" %}:</span>
+                                    <span class="h5 text-primary">${{ total_amount|floatformat:2 }}</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <form method="post" action="{% url 'lms:enroll_course' course.slug %}">
+                            {% csrf_token %}
+                            <div class="mb-4">
+                                <label class="form-label">{% trans "Payment Method" %}</label>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="payment_stripe" value="stripe" checked>
+                                    <label class="form-check-label" for="payment_stripe">
+                                        Stripe
+                                    </label>
+                                </div>
+                                <div class="form-check mb-2">
+                                    <input class="form-check-input" type="radio" name="payment_method" id="payment_paypal" value="paypal">
+                                    <label class="form-check-label" for="payment_paypal">
+                                        PayPal
+                                    </label>
+                                </div>
+                            </div>
+                            <button type="submit" class="button button-lg button-radius button-primary w-100">
+                                {% trans "Confirm Enrollment" %}
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

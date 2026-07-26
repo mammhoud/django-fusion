@@ -1,0 +1,41 @@
+{# Cookie Consent Preferences Popup — rendered into bootbox.dialog() via cookie-consent.js #}
+{# This <template> is cloned and passed as the bootbox message content #}
+{% load i18n %}
+
+<template id="cookie-consent-template">
+    <p class="mb-3">{% trans "We use cookies to enhance your experience, analyse site traffic, and serve personalised content." %}</p>
+
+    <div class="mb-3">
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="ck-essential" checked disabled>
+            <label class="form-check-label fw-semibold" for="ck-essential">
+                {% trans "Essential" %} <small class="text-muted fw-normal">({% trans "required" %})</small>
+            </label>
+            <div class="form-text">{% trans "Required for basic site functionality." %}</div>
+        </div>
+
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="ck-analytics">
+            <label class="form-check-label" for="ck-analytics">{% trans "Analytics" %}</label>
+            <div class="form-text">{% trans "Help us understand how you use our site." %}</div>
+        </div>
+
+        <div class="form-check mb-2">
+            <input class="form-check-input" type="checkbox" id="ck-marketing">
+            <label class="form-check-label" for="ck-marketing">{% trans "Marketing" %}</label>
+            <div class="form-text">{% trans "Used to show you relevant content." %}</div>
+        </div>
+
+        <div class="form-check">
+            <input class="form-check-input" type="checkbox" id="ck-preferences" checked>
+            <label class="form-check-label" for="ck-preferences">{% trans "Preferences" %}</label>
+            <div class="form-text">{% trans "Remember your choices and settings." %}</div>
+        </div>
+    </div>
+
+    <p class="small text-muted mb-0">
+        <a href="#" class="cookie-policy-link">{% trans "Privacy Policy" %}</a>
+        &nbsp;&middot;&nbsp;
+        <a href="#" class="cookie-policy-link">{% trans "Cookie Policy" %}</a>
+    </p>
+</template>

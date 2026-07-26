@@ -1,24 +1,30 @@
 """
-Local DefaultBase stub for environments where ceptor_ai is not installed.
-Provides the same abstract fields as ceptor_ai.content.models.default.DefaultBase.
+Local DefaultBase — wraps django_fusion.models.base.BaseModel with
+additional audit and publish fields not provided by the library.
+
+django-fusion BaseModel provides:
+  - id (UUIDField, pk)
+  - created_at (DateTimeField, auto_now_add, db_index)
+  - updated_at (DateTimeField, auto_now)
+
+This local stub adds:
+  - created_by / updated_by (FK to AUTH_USER_MODEL)
+  - is_active
+  - live / first_published_at / last_published_at (Wagtail publish compat)
 """
-import uuid
 
 from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+from django_fusion.models.base import BaseModel as FusionBaseModel
 
 
-class DefaultBase(models.Model):
+class DefaultBase(FusionBaseModel):
     """
-    Abstract base model providing UUID pk, timestamps, audit fields,
-    and a live flag – mirrors ceptor_ai.content.models.default.DefaultBase.
+    Abstract base model extending django_fusion's BaseModel with
+    audit fields (created_by, updated_by), is_active flag, and
+    Wagtail publish-compatible fields (live, first/last_published_at).
     """
-
-    id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-
-    created_at = models.DateTimeField(auto_now_add=True, verbose_name=_("Created At"))
-    updated_at = models.DateTimeField(auto_now=True, verbose_name=_("Updated At"))
 
     created_by = models.ForeignKey(
         settings.AUTH_USER_MODEL,

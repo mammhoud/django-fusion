@@ -1,18 +1,16 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
-// Single source of truth for design tokens (shared with Django)
-import '../styles/theme/fusion-theme.scss';
 import './globals.css';
-import Providers from '../components/Providers';
-import ErrorBoundary from '../components/ErrorBoundary';
-import Header from '../components/Header';
-import Footer from '../components/Footer';
+import { Providers } from '@/components/Providers';
+import ErrorBoundary from '@/components/ErrorBoundary';
+import Header from '@/components/Header';
+import Footer from '@/components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
 export const metadata: Metadata = {
-  title: 'Fusion CMS — Content Management System',
-  description: 'Modern content management platform powered by django-fusion and django-bolt.',
+  title: 'LMS - Learning Management System',
+  description: 'Modern learning management platform with courses, instructors, and interactive content',
 };
 
 export default function RootLayout({
@@ -27,7 +25,9 @@ export default function RootLayout({
           <ErrorBoundary>
             <div className="flex flex-col min-h-screen">
               <Header />
-              <main className="flex-1">{children}</main>
+              <main className="flex-1">
+                {children}
+              </main>
               <Footer />
             </div>
           </ErrorBoundary>

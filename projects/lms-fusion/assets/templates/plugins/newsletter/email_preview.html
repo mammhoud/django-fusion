@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Email Preview: {{ newsletter.title }}</title>
+</head>
+<body style="font-family: Arial, sans-serif; line-height: 1.6; color: #333; max-width: 600px; margin: 0 auto;">
+    <!-- Email header -->
+    <div style="background: #f8f9fa; padding: 20px; text-align: center;">
+        {% if newsletter.header_image %}
+            <img src="{{ newsletter.header_image.url }}" alt="{{ newsletter.title }}" style="max-width: 100%; height: auto; max-height: 150px;">
+        {% endif %}
+    </div>
+    
+    <!-- Email content -->
+    <div style="padding: 20px;">
+        <h1 style="color: #2c3e50; margin-bottom: 10px;">{{ newsletter.title }}</h1>
+        
+        {% if newsletter.preview_text %}
+            <p style="color: #7f8c8d; font-style: italic; margin-bottom: 20px;">{{ newsletter.preview_text }}</p>
+        {% endif %}
+        
+        <div class="content">
+            {{ newsletter.body }}
+        </div>
+        
+        {% if newsletter.include_unsubscribe %}
+            <div style="margin-top: 30px; padding-top: 20px; border-top: 1px solid #ecf0f1; font-size: 12px; color: #95a5a6;">
+                <p>
+                    You received this email because you're subscribed to our newsletter.
+                    <a href="#" style="color: #3498db;">Unsubscribe</a>
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</body>
+</html>
