@@ -1,7 +1,9 @@
 # Migration, Cleanup, and django-fusion Integration — Master Plan
 
 > **Last updated:** 2026-07-26 | **Branch:** `generic`  
-> **Scope:** Complete migrations for all Django sites, optional cleanup of old/duplicate directories, and full integration with django-fusion.
+> **Scope:** Complete migrations for all Django sites, optional cleanup of old/duplicate directories, and full integration with django-fusion + django-bolt.
+
+> **Case Study:** [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](./DJANGO_BOLT_FUSION_CASE_STUDY.md) — comprehensive analysis of django-bolt patterns across projects and integration recommendations.
 
 ---
 
@@ -9,9 +11,10 @@
 
 | # | Plan | Scope | Status | Progress |
 |---|------|-------|:------:|:--------:|
-| 1 | [`../lms-fusion/plan/MIGRATION_PLAN.md`](../lms-fusion/plan/MIGRATION_PLAN.md) | LMS Fusion — initial setup, branding migration, django-fusion wiring | ⬜ Not Started | 0% |
-| 2 | [`../cms-fusion/plan/MIGRATION_PLAN.md`](../cms-fusion/plan/MIGRATION_PLAN.md) | CMS Fusion — initial setup, branding migration, django-fusion wiring | ⬜ Not Started | 0% |
-| 3 | [`LEGACY_CLEANUP_PLAN.md`](./LEGACY_CLEANUP_PLAN.md) | Audit, archive, and remove old/duplicate project directories |  Not Started | 0% |
+| 1 | [`../lms-fusion/plan/MIGRATION_PLAN.md`](../lms-fusion/plan/MIGRATION_PLAN.md) | LMS Fusion — django-fusion + django-bolt + Next.js frontend | 🟡 In Progress | 75% |
+| 2 | [`../cms-fusion/plan/MIGRATION_PLAN.md`](../cms-fusion/plan/MIGRATION_PLAN.md) | CMS Fusion — django-fusion + django-bolt + Next.js frontend + fallbacks | 🟡 In Progress | 75% |
+| 3 | [`DJANGO_BOLT_FUSION_CASE_STUDY.md`](./DJANGO_BOLT_FUSION_CASE_STUDY.md) | django-bolt usage analysis + fusion integration recommendations | ✅ Complete | 100% |
+| 4 | [`LEGACY_CLEANUP_PLAN.md`](./LEGACY_CLEANUP_PLAN.md) | Audit, archive, and remove old/duplicate project directories | ⬜ Not Started | 0% |
 
 ---
 
@@ -29,8 +32,10 @@ Run migrations in this order to respect shared-library and site dependencies:
    - `projects/cms/portfolio/`
    - `projects/cypercloud/`
 3. **New Fusion sites**
-   - `projects/lms-fusion/backend/`
-   - `projects/cms-fusion/backend/`
+   - `projects/lms-fusion/backend/` — django-fusion + django-bolt (bolt_apis.py) ✅
+   - `projects/cms-fusion/backend/` — django-fusion + django-bolt (bolt_apis.py) ✅
+   - `projects/lms-fusion/frontend/` — Next.js 14 + fusion types/decoder/store/client ✅
+   - `projects/cms-fusion/frontend/` — Next.js 14 + fusion types/decoder/store/client + fallbacks ✅
 
 ---
 

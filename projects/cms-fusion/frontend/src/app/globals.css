@@ -1,0 +1,47 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  --fu-primary: #7c3aed;
+  --fu-secondary: #5b21b6;
+  --fu-accent: #4c1d95;
+  --fu-bg: #fafafa;
+  --fu-text: #18181b;
+  --fu-radius: 0.5rem;
+}
+
+html { scroll-behavior: smooth; }
+
+body {
+  @apply bg-fu-bg text-fu-text antialiased;
+}
+
+.fusion-page {
+  animation: fusion-fade-in 0.3s ease-out;
+}
+
+@keyframes fusion-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.fusion-skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+.fusion-error {
+  @apply p-8 text-center;
+}
+
+.fusion-error h2 {
+  @apply text-xl font-semibold text-red-600 mb-2;
+}
+
+.fusion-error p {
+  @apply text-gray-500 mb-4;
+}
+
+.fusion-error button {
+  @apply px-4 py-2 bg-fu-primary text-white rounded-lg hover:opacity-90 transition-opacity;
+}
