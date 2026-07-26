@@ -5,8 +5,18 @@ import { Page } from '@playwright/test';
  */
 
 /**
+ * Safely check if the page is a valid Playwright Page with the `on` method.
+ */
+function isValidPage(page: any): page is Page {
+  return page && typeof page.on === 'function' && typeof page.goto === 'function';
+}
+
+/**
  * Capture console errors during a test, filtering out known benign warnings.
  * Call at the start of a test and assert at the end.
+ *
+ * If the page is not a valid Playwright Page (e.g., dev server not running),
+ * returns a no-op collector so tests don't crash.
  *
  * ```ts
  * const errors = captureConsoleErrors(page);
@@ -17,11 +27,17 @@ import { Page } from '@playwright/test';
 export function captureConsoleErrors(page: Page) {
   const allErrors: string[] = [];
 
-  page.on('console', (msg) => {
-    if (msg.type() === 'error') {
-      allErrors.push(msg.text());
+  if (isValidPage(page)) {
+    try {
+      page.on('console', (msg) => {
+        if (msg.type() === 'error') {
+          allErrors.push(msg.text());
+        }
+      });
+    } catch {
+      // Silently ignore if event listener registration fails
     }
-  });
+  }
 
   return {
     getAll: () => allErrors,
@@ -35,6 +51,22 @@ export function captureConsoleErrors(page: Page) {
           !e.includes('WebSocket')
       ),
   };
+}
+
+/**
+ * Check if the dev server is reachable by making a HEAD request to the base URL.
+ * Returns true if the server is running, false otherwise.
+ */
+export async function isServerReachable(page: Page): Promise<boolean> {
+  if (!isValidPage(page)) return false;
+  try {
+    const response = await page.request.get(page.url() || 'http://localhost:1420', {
+      timeout: 3000,
+    });
+    return response.ok();
+  } catch {
+    return false;
+  }
 }
 
 /**

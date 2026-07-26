@@ -66,5 +66,6 @@ Intro Pages form the welcoming face of the LMS Demo site. They include:
 - → `../../architecture/website-descriptions.md` — LMS site details
 - → `../../references/database-schema.md` — Content models schema
 - → `../tasks/quizes.md` — LMS quiz features
+- → `../guides/learning-curve.md` — Learning progression design
 - → `../guides/setup.md` — Quick start
 - → `../README.md` — Master index

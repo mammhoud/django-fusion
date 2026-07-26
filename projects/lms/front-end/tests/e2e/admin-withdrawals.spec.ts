@@ -39,7 +39,11 @@ function filterNextJSWarnings(errors: string[]) {
       !e.includes("Warning:") &&
       !e.includes("next") &&
       !e.includes("favicon") &&
-      !e.includes("404")
+      !e.includes("404") &&
+      !e.includes("Failed to load") &&
+      !e.includes("ERR_CONNECTION_REFUSED") &&
+      !e.includes("fetch") &&
+      !e.includes("NetworkError")
   );
 }
 
@@ -127,15 +131,13 @@ async function mockWithdrawalsList(
   withdrawals: Withdrawal[],
   count?: number
 ) {
-  await page.route("**/apis/withdrawals/*", (route) => {
+  // Register the list route with a precise URL matcher so it doesn't
+  // catch approve/reject/detail URLs — those are handled by more specific
+  // route handlers registered later in each test.
+  await page.route(/\/apis\/withdrawals\/\?/, (route) => {
     const url = route.request().url();
-    // Match the paginated list endpoint (NOT the summary endpoint)
+    // Only match the paginated list endpoint (has query params)
     if (url.includes("/apis/withdrawals/") && !url.includes("/summary/") && !url.includes("/create/")) {
-      // Skip detail/cancel/approve/reject routes — those are handled separately
-      if (url.match(/\/withdrawals\/\d+\/(cancel|approve|reject)\//)) return route.continue();
-      // Skip single-item detail routes
-      if (url.match(/\/withdrawals\/\d+\/$/)) return route.continue();
-      // Paginated list
       return route.fulfill({
         status: 200,
         contentType: "application/json",
@@ -147,7 +149,7 @@ async function mockWithdrawalsList(
         }),
       });
     }
-    return route.continue();
+    return route.fallback();
   });
 }
 

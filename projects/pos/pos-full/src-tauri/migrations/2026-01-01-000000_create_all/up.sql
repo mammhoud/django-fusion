@@ -1362,7 +1362,7 @@ INSERT OR IGNORE INTO tax_reports (id, period_start, period_end, total_sales, to
 (3, '2026-07-01', '2026-07-14', 388500.00, 50505.00, 90);
 -- Add product_type column to products table
 -- Supports: 'product' (default), 'rent', 'creation', 'service', 'digital'
-ALTER TABLE products ADD COLUMN product_type TEXT NOT NULL DEFAULT 'product';
+
 ---SEED---
 -- Settings (singleton)
 CREATE TABLE IF NOT EXISTS settings (
@@ -2741,7 +2741,7 @@ UPDATE settings SET logo = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3
 -- Done
 ---ENTERPRISE_SEED---
 -- Seed default roles
-INSERT INTO roles (name, permissions, is_active) VALUES
+INSERT OR IGNORE INTO roles (name, permissions, is_active) VALUES
 ('Admin', '["*"]', 1),
 ('Manager', '["view_sales","view_inventory","view_employees","view_reports","manage_products","manage_customers"]', 1),
 ('Cashier', '["view_sales","create_sale","view_customers"]', 1),
