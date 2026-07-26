@@ -12,6 +12,7 @@
 | `js-test.yml` | JS Tests (vitest + Playwright E2E) | PR, push, manual | 5 | ✅ Active |
 | `pytest-core.yml` | pytest-core | PR, push, manual | 1 | ✅ Active |
 | `check-extras.yml` | check-extras | PR, push, manual | 1 | ✅ Active |
+| `fusion-ci.yml` | Fusion CI (cms-fusion + lms-fusion) | PR, push, manual | 4 | ✅ Active |
 | `deploy-ci.yml` | deploy-ci (preflight + docs validation) | PR, push, manual | 2 | ✅ Active |
 
 ---

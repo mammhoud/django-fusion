@@ -12,7 +12,7 @@ class PagesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "plugins.pages"
     verbose_name = "Fusion Pages"
-    label = "pages"
+    label = "fusion_pages"
 
     def ready(self):
         # Import models to register with Wagtail

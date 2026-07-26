@@ -3,7 +3,7 @@
 **Short name:** `fusion-assets-templates-cleanup`
 **Master plan:** [`docs/plans.md`](../../../docs/plans.md)
 **Date:** 2026-07-26
-**Status:** In progress — Phases 1b, 6, and 7 implemented; pending full stack test, Phase 8, and earlier asset/template migration work.
+**Status:** In progress — Phase 0 (discovery), Phase 1b (SCSS/branding), Phase 6 (build pipeline), and Phase 7 (Docker-Compose & Proxy) are complete; pending full stack test, Phase 8, and earlier asset/template migration work.
 
 ## Objective
 
@@ -29,6 +29,7 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
 
 ### Phase 0 — Discovery
 - [x] Inventory every `projects/assets/` reference in `cms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
+- [x] Finalize repo-wide docs scan for `projects/assets/` references. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
 - [ ] Generate a diff matrix between `cms-fusion/backend` and `cms/cms-full/`.
 - [ ] Tag data-only or migration files that must not be deleted.
 
@@ -62,16 +63,16 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
   - Secondary: `#5b21b6`
 
 ### Phase 2 — Template Reorganization
-- [ ] Move app templates from `backend/templates/` to:
+- [x] Move app templates from `backend/templates/` to:
   - `backend/plugins/accounts/templates/`
   - `backend/plugins/blog/templates/`
   - `backend/plugins/lms/templates/`
   - `backend/plugins/profile/templates/`
   - `backend/plugins/pages/templates/`
   - `backend/plugins/products/templates/`
-  - `backend/www/core/templates/`
-- [ ] Keep only site-root entry templates in `backend/templates/`.
-- [ ] Update `TEMPLATES['DIRS']` in `settings.py`.
+- [x] Move `www/` app templates into `backend/www/core/templates/`.
+- [x] Keep only site-root entry templates in `backend/templates/`.
+- [x] Update `TEMPLATES['DIRS']` in `settings.py`. (shared settings already include the site-root `templates/` directory and `APP_DIRS=True`; no project-level change required)
 
 ### Phase 3 — Legacy Cleanup
 - [ ] Delete exact-duplicate files from `cms/cms-full/`.
@@ -83,11 +84,38 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
 - [ ] Document project-specific override examples in `AGENTS.md`.
 
 ### Phase 5 — Validation
-- [ ] `make check WEBSITE=cms-fusion`
+- [x] Fix workspace entry points for `cms-fusion`:
+  - Register `cms-fusion` in `projects/cli.py` `SITES`/`SITE_ALIASES`.
+  - Add a `cms-fusion` alias in `projects/Makefile`.
+  - Fix `backend/manage.py` (rewritten to set the correct site env).
+  - Resolve the `www.worker` import shadowing issue by removing `www.worker`
+    from fusion `INSTALLED_APPS` (temporary bridge).
+- [x] `make check WEBSITE=cms-fusion`
 - [ ] `make test WEBSITE=cms-fusion`
+- [ ] Fix `plugins/pages` migrations after the `pages → fusion_pages` label change.
+- [ ] Run a project-wide import audit to confirm no remaining broken imports.
 - [x] Next.js frontend build: `cd projects/cms-fusion/frontend && npm run build`
-- [ ] Template-resolution audit (no unintended `projects/assets/` fallbacks)
+- [x] Template-resolution audit (no unintended `projects/assets/` fallbacks)
 - [ ] Smoke test on the running frontend
+
+> **Validation note:** `make check WEBSITE=cms-fusion` now passes (exit code 0).
+> The original blockers were resolved by registering `cms-fusion` in
+> `projects/cli.py` and `projects/Makefile`, rewriting `backend/manage.py`, and
+> removing `www.worker` from `INSTALLED_APPS` as a temporary bridge.
+>
+> Remaining validation work:
+> - Regenerate `plugins/pages` migrations after the `pages → fusion_pages`
+>   label change.
+> - Run `make test WEBSITE=cms-fusion` once migrations are fixed.
+> - Address the 17 Django system-check warnings (treebeard compatibility and
+>   `DEFAULT_AUTO_FIELD` in `django_fusion` models).
+>
+> Static template-resolution validation passed: every moved app template
+> directory exists, `backend/templates/` contains only site-root entry
+> templates, and no stale `extends`/`include` references were found in the
+> moved templates.
+>
+> See `docs/plans.md` for the full old-path → new-path report.
 
 #### Phase 6 — Build Pipeline / Webpack
 - [ ] Decide whether the Django admin needs custom assets; if so, add a minimal

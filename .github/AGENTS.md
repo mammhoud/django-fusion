@@ -30,6 +30,7 @@ Structa Cloud is a Django monorepo with multiple sites, shared assets, local lib
 |----------|------|---------|---------|
 | `pytest-core` | `workflows/pytest-core.yml` | Python tests via `uv run pytest` | `tests/**`, `projects/**` |
 | `js-test` | `workflows/js-test.yml` | Vitest + Playwright E2E for LMS and POS | `projects/lms/**`, `projects/pos/**` |
+| `fusion-ci` | `workflows/fusion-ci.yml` | Django checks, tests, and Next.js builds for fusion projects | `projects/cms-fusion/**`, `projects/lms-fusion/**`, `libs/django-fusion/**`, `libs/ceptor-ai/**`, `libs/django-bolt/**` |
 | `check-extras` | `workflows/check-extras.yml` | Docs/extras validation | `libs/**/*.md`, `**/pyproject.toml` |
 | `deploy-ci` | `workflows/deploy-ci.yml` | Deploy preflight + markdown link check | `Makefile`, compose files, `libs/**/*.md` |
 

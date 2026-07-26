@@ -54,6 +54,20 @@ SITES = {
         "port": 5074,
         "db_name": "db_crm",
     },
+    "cms-fusion": {
+        "path": "cms-fusion",
+        "project_path": "cms-fusion",
+        "service": "cms-fusion-website",
+        "port": 5075,
+        "db_name": "db_cms_fusion",
+    },
+    "lms-fusion": {
+        "path": "lms-fusion",
+        "project_path": "lms-fusion",
+        "service": "lms-fusion-website",
+        "port": 5076,
+        "db_name": "db_lms_fusion",
+    },
     "shared": {
         "path": "www",
         "project_path": "www",
@@ -95,6 +109,12 @@ SITE_ALIASES = {
     "shared-scheduler": "shared",
     "tasks": "shared",
     "www": "shared",
+    "cms-fusion": "cms-fusion",
+    "cmsfusion": "cms-fusion",
+    "cms_fusion": "cms-fusion",
+    "lms-fusion": "lms-fusion",
+    "lmsfusion": "lms-fusion",
+    "lms_fusion": "lms-fusion",
 }
 
 LIBS = {

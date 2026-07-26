@@ -1,0 +1,49 @@
+
+{% load i18n wagtailcore_tags %}
+
+    {# ----------------------------- HEAD BLOCKS ----------------------------- #}
+    {% for block in page.head %}
+        {% if block.block_type == 'slider' %}
+            {% comp "home/sections/slider.html" /%}
+        {% elif block.block_type == 'features' %}
+            {% comp "home/sections/features.html" /%}
+        {% elif block.block_type == 'about' %}
+            {% comp "home/sections/about.html" /%}
+        {% endif %}
+    {% endfor %}
+
+    {# --------------------------- SUMMARY BLOCKS --------------------------- #}
+    {% for block in page.summary %}
+        {% if block.block_type == 'about' %}
+            {% comp "home/sections/about.html" /%}
+        {% endif %}
+
+        {% comment %} {% if block.block_type == 'team_section' %}
+            {% comp "home/sections/team.html" / %} {% endcomment %}
+        {% comment %} {% elif block.block_type == 'services_section' %}
+            {% comp "home/sections/services.html" / %}
+        {% endif %} {% endcomment %}
+    {% endfor %}
+
+    {# ----------------------------- LISTING COURSES ----------------------------- #}            {% comp "home/sections/listing.html" /%}
+
+    {# ----------------------------- CTA BLOCKS ----------------------------- #}
+
+    {% for block in page.CTA %}
+        {% if block.block_type == 'clients' %}
+            {% comp "home/sections/clients.html" /%}
+        {% elif block.block_type == 'why_choose_section' %}
+            {% comp "home/sections/why_choose.html" /%}
+        {% elif block.block_type == 'contact_section' %}
+            {% comp "contact.sections.card" block=block / %}
+        {% endif %}
+    {% endfor %}
+
+    {# --------------------------- CONTACT FORM ----------------------------- #}
+    <div class="contact-suite-wrapper my-5">
+        {% for form_block in page.contact_form %}
+            {% if form_block.block_type == 'contact_form' %}
+                {% comp "contact.sections.form" block=form_block / %}
+            {% endif %}
+        {% endfor %}
+    </div>

@@ -99,7 +99,7 @@ class FusionHomePage(FusionPage):
     ]
 
     parent_page_types = ["wagtailcore.Page"]
-    subpage_types = ["pages.FusionContentPage"]
+    subpage_types = ["fusion_pages.FusionContentPage"]
 
     class Meta:
         verbose_name = _("Fusion CMS Home Page")
@@ -128,8 +128,8 @@ class FusionContentPage(FusionPage):
         FieldPanel("body"), FieldPanel("featured_image"),
     ]
 
-    parent_page_types = ["pages.FusionHomePage", "pages.FusionContentPage"]
-    subpage_types = ["pages.FusionContentPage"]
+    parent_page_types = ["fusion_pages.FusionHomePage", "fusion_pages.FusionContentPage"]
+    subpage_types = ["fusion_pages.FusionContentPage"]
 
     class Meta:
         verbose_name = _("Fusion CMS Content Page")

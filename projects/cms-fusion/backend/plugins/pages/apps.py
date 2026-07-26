@@ -7,7 +7,7 @@ class PagesConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "plugins.pages"
     verbose_name = "Fusion CMS Pages"
-    label = "pages"
+    label = "fusion_pages"
 
     def ready(self):
         from plugins.pages import models  # noqa: F401

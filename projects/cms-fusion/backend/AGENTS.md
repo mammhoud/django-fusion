@@ -17,7 +17,7 @@ Django resolves templates in this order (highest priority first):
 3. `cms-fusion/backend/www/<app>/templates/` — www app templates
 4. `cms-fusion/backend/assets/templates/` — project asset templates
 5. `libs/django-fusion/src/django_fusion/templates/` — django-fusion framework templates
-6. `projects/assets/templates/` — monorepo shared templates (kept for non-fusion sites)
+6. `projects/assets/templates/` — legacy monorepo shared templates (for non-fusion sites only; do not add new fusion templates here)
 
 ## Asset / Static Resolution Order
 
@@ -26,7 +26,7 @@ Django static and media files resolve in this order (highest priority first):
 1. `cms-fusion/backend/assets/static/` — project-specific compiled static files
 2. `cms-fusion/backend/assets/media/` — project-specific uploaded media
 3. `libs/django-fusion/src/django_fusion/static/` — django-fusion framework static
-4. `projects/assets/static/` — monorepo shared static (for non-fusion sites)
+4. `projects/assets/static/` — legacy monorepo shared static (for non-fusion sites only; do not add new fusion static here)
 
 Source design assets (SCSS, logos, fonts, images) live in the project root
 `cms-fusion/assets/` and are compiled/copied into the locations above for
@@ -39,37 +39,46 @@ cms-fusion/backend/templates/
 ├── base.html               # Project base layout (extends django-fusion base)
 ├── base_page.html          # Page layout wrapper
 ├── index.html              # Home / entry point template
-├── auth/                   # Auth-related entry templates
-├── blog/                   # (target: move to plugins/blog/templates/)
-├── lms/                    # (target: move to plugins/lms/templates/)
-├── pages/                  # (target: move to plugins/pages/templates/)
-├── products/               # (target: move to plugins/products/templates/)
-├── registration/           # Account registration templates
-├── services/               # Service page templates
+├── errors/                 # Site-wide error pages
+├── events/                 # Event page templates (site-root)
+├── wagtailadmin/           # Wagtail admin overrides (site-root)
+├── AGENTS.md               # This file
 └── ...
 ```
 
-> **Migration in progress:** app-specific templates currently under
-> `backend/templates/` are being moved to `plugins/<app>/templates/`. Keep new
-> app-specific templates in the app directory; only site-root entry templates
-> and project-wide overrides belong in `backend/templates/`.
+> **App-specific templates** previously under `backend/templates/<app>/` have
+> been moved to `plugins/<app>/templates/<app>/`. Only site-root entry
+> templates, error pages, event pages, Wagtail admin overrides, and
+> project-wide overrides belong in `backend/templates/`.
 
-## Target Template Organization
+## Template Organization
 
 ```
 cms-fusion/backend/
 ├── templates/                       # Site-root entry + project-wide overrides
 │   ├── base.html
 │   ├── base_page.html
-│   └── index.html
+│   ├── index.html
+│   ├── errors/
+│   ├── events/
+│   └── wagtailadmin/
 ├── plugins/<app>/templates/         # App-owned templates
-│   ├── accounts/
+│   ├── accounts/auth/
+│   ├── accounts/account/
+│   ├── accounts/registration/
 │   ├── blog/
 │   ├── lms/
+│   ├── lms/learning/
+│   ├── lms/courses/
+│   ├── lms/certification/
 │   ├── pages/
-│   ├── products/
-│   └── profile/
-└── www/core/templates/            # www/core app templates
+│   ├── pages/about/
+│   ├── pages/contact/
+│   ├── pages/home/
+│   ├── pages/services/
+│   ├── pages/team/
+│   └── products/
+└── www/core/templates/             # www/core app templates
 ```
 
 ## Asset Tree
@@ -224,4 +233,3 @@ class MyPage(RoutableComponent):
 - [`docs/plans.md`](../../../docs/plans.md) — master enhancement plan
 - [`projects/cms-fusion/plan/ASSETS_TEMPLATES_CLEANUP.md`](../plan/ASSETS_TEMPLATES_CLEANUP.md) — localized cleanup plan
 - [`libs/django-fusion/AGENTS.md`](../../../libs/django-fusion/AGENTS.md) — django-fusion conventions
-- [`projects/assets/templates/AGENTS.md`](../../../projects/assets/templates/AGENTS.md) — shared template rules

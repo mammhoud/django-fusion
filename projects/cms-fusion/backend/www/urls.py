@@ -110,11 +110,6 @@ if apps.is_installed("django.contrib.admin"):
     from django.contrib import admin
     urlpatterns.append(path("django-admin/", admin.site.urls))
 
-try:
-    urlpatterns += [path("health_admin/", include("django_fusion.health.urls"))]
-except Exception:
-    pass
-
 # ── Common URLs (sitemaps, robots, i18n switching) ───────────────────────────
 urlpatterns = configure_common_urls(urlpatterns)
 
