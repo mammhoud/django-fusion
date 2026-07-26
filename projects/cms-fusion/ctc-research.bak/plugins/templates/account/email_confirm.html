@@ -1,0 +1,21 @@
+{% extends "base_auth.html" %}
+{% load i18n static %}
+
+{% block auth_content %}
+<section class="fragment--form">
+  <section class="auth__card card card--form text-center">
+    <div class="auth__logo mb-4"><a href="/"><img src="{% static 'images/logo.png' %}" style="max-height:60px" alt="Logo"></a></div>
+    <h2 class="auth__form-title">{% trans "Confirm Email Address" %}</h2>
+    {% if confirmation %}
+      <p>{% blocktrans with email=confirmation.email_address.email %}Please confirm that <strong>{{ email }}</strong> is your email address.{% endblocktrans %}</p>
+      <form method="post" action="{% url 'account_confirm_email' confirmation.key %}" hx-post="{% url 'account_confirm_email' confirmation.key %}" hx-target=".fragment--form" hx-swap="innerHTML">
+        {% csrf_token %}
+        <button class="btn btn-gradient radius-round w-100" type="submit">{% trans "Confirm" %}</button>
+      </form>
+    {% else %}
+      <div class="alert alert-danger">{% trans "This confirmation link is invalid or has expired." %}</div>
+      <a href="{% url 'account_email' %}" class="btn btn-primary" hx-get="{% url 'account_email' %}" hx-target=".fragment--form" hx-swap="innerHTML">{% trans "Request new confirmation email" %}</a>
+    {% endif %}
+  </section>
+</section>
+{% endblock auth_content %}

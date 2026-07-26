@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { fusionApi } from '@/lib/api-client';
 import type { FusionBranding } from '@/lib/fusion-types';
+import LanguageSwitcher from './LanguageSwitcher';
 
 const NAV_LINKS = [
   { href: '/', label: 'Home' },
@@ -24,10 +25,22 @@ export default function Header() {
     primary_color: '#7c3aed',
   });
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [language, setLanguage] = React.useState('en');
 
   React.useEffect(() => {
     fusionApi.fetchBranding().then(setBranding).catch(() => {});
   }, []);
+
+  const handleLanguageChange = (code: string) => {
+    setLanguage(code);
+    try {
+      fetch('/apis/i18n/setlang/', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `language=${code}`,
+      }).then(() => { window.location.reload(); }).catch(() => {});
+    } catch { /* ignore */ }
+  };
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur border-b border-gray-200">
@@ -57,6 +70,10 @@ export default function Header() {
                 {link.label}
               </Link>
             ))}
+            <LanguageSwitcher
+              currentLanguage={language}
+              onLanguageChange={handleLanguageChange}
+            />
           </nav>
 
           {/* Mobile hamburger */}

@@ -63,6 +63,28 @@ def _qp_int(request, key: str, default: int = 1) -> int:
 
 if _has_bolt and bolt is not None:
 
+    # ═══════════════════════════════════════════════════════════════════
+    # Fusion Layouts
+    # ═══════════════════════════════════════════════════════════════════
+
+    @bolt.get("/fusion/layouts")
+    def fusion_layouts(request):
+        """GET /api/fusion/layouts — Available layout options."""
+        from django.conf import settings
+        layouts = getattr(settings, "FUSION_LAYOUTS", {
+            "default": "default",
+            "full_width": "full_width",
+            "sidebar": "sidebar",
+            "blank": "blank",
+        })
+        return {
+            "layouts": [
+                {"id": k, "name": k.replace("_", " ").title()}
+                for k in layouts.keys()
+            ],
+            "default": getattr(settings, "FUSION_DEFAULT_LAYOUT", "default"),
+        }
+
     # ── Health ──────────────────────────────────────────────────────────
 
     @bolt.get("/health")

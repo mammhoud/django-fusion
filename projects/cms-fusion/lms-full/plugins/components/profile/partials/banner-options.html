@@ -1,0 +1,17 @@
+{% load i18n %}
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+<div class="profile__actions d-flex flex-wrap gap-2 justify-content-center justify-content-md-start">
+    <div class="dropdown">
+        <button class="profile__action btn btn-light dropdown-toggle" type="button" data-bs-toggle="dropdown"
+            aria-expanded="false">
+            <i class="bi bi-three-dots"></i>
+        </button>
+        <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+                <a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#shareModal">
+                    <i class="bi bi-share me-2"></i>{% trans "Share Profile" %}
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>
