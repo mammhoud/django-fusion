@@ -1,0 +1,141 @@
+{% load i18n %}
+<div class="settings-section">
+    <div class="settings-section__header">
+        <h5 class="settings-section__title">{% trans "Account Information" %}</h5>
+        <p class="settings-section__description">
+            {% trans "Update your personal information and account settings" %}
+        </p>
+    </div>
+    
+    <div class="settings-section__content">
+        <form id="accountForm" class="settings-form"
+              hx-post="{% url 'profile:update_settings' section='account' %}"
+              hx-target="#accountResult"
+              hx-swap="innerHTML">
+            {% csrf_token %}
+            
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-user me-2"></i>{% trans "Basic Information" %}
+                </h6>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "First Name" %}</label>
+                        <input type="text" class="form-control form-control--settings" 
+                               name="first_name"
+                               value="{{ person.user.first_name|default:'' }}"
+                               placeholder="{% trans 'Enter your first name' %}">
+                    </div>
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Last Name" %}</label>
+                        <input type="text" class="form-control form-control--settings" 
+                               name="last_name"
+                               value="{{ person.user.last_name|default:'' }}"
+                               placeholder="{% trans 'Enter your last name' %}">
+                    </div>
+                </div>
+                
+                <div class="row g-3 mt-3">
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Email Address" %}</label>
+                        <input type="email" class="form-control form-control--settings" 
+                               name="email"
+                               value="{{ person.user.email|default:'' }}"
+                               placeholder="{% trans 'you@example.com' %}">
+                        <div class="settings-form__description">
+                            {% trans "Your primary email for notifications" %}
+                            {% if not person.email_verified %}
+                            <span class="badge bg-warning ms-2">{% trans "Unverified" %}</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Username" %}</label>
+                        <input type="text" class="form-control form-control--settings" 
+                               value="{{ person.user.username }}"
+                               readonly disabled>
+                        <div class="settings-form__description">
+                            {% trans "Username cannot be changed" %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-address-card me-2"></i>{% trans "Contact Information" %}
+                </h6>
+                
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Phone Number" %}</label>
+                        <input type="tel" class="form-control form-control--settings" 
+                               name="phone"
+                               value="{{ person.phone|default:'' }}"
+                               placeholder="{% trans '+1 (555) 123-4567' %}">
+                        {% if person.phone and not person.phone_verified %}
+                        <div class="settings-form__description">
+                            <span class="badge bg-warning">{% trans "Unverified" %}</span>
+                            {% trans "Click to verify your phone number" %}
+                        </div>
+                        {% endif %}
+                    </div>
+                    <div class="col-md-6">
+                        <label class="settings-form__label">{% trans "Location" %}</label>
+                        <input type="text" class="form-control form-control--settings" 
+                               name="location"
+                               value="{{ person.location|default:'' }}"
+                               placeholder="{% trans 'City, Country' %}">
+                    </div>
+                </div>
+                
+                <div class="mt-3">
+                    <label class="settings-form__label">{% trans "Bio" %}</label>
+                    <textarea class="form-control form-control--settings" 
+                              name="bio"
+                              rows="3"
+                              placeholder="{% trans 'Tell us about yourself...' %}">{{ person.bio|default:'' }}</textarea>
+                </div>
+            </div>
+            
+            <div class="settings-form__section">
+                <h6 class="settings-form__section-title">
+                    <i class="fas fa-globe me-2"></i>{% trans "Profile Visibility" %}
+                </h6>
+                
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" 
+                           name="public_profile"
+                           id="publicProfile"
+                           {% if person.public_profile %}checked{% endif %}>
+                    <label class="form-check-label" for="publicProfile">
+                        {% trans "Make profile public" %}
+                    </label>
+                    <div class="settings-form__description">
+                        {% trans "When enabled, your profile will be visible to other users" %}
+                    </div>
+                </div>
+            </div>
+            
+            <div id="accountResult" class="mt-4"></div>
+            
+            <div class="settings-form__actions mt-4">
+                <button type="submit" class="btn btn-primary btn--settings">
+                    <span class="htmx-indicator">
+                        <span class="spinner-border spinner-border-sm" 
+                              role="status" aria-hidden="true"></span>
+                        {% trans "Saving..." %}
+                    </span>
+                    <span class="htmx-request-hidden">
+                        <i class="fas fa-save me-2"></i>{% trans "Save Changes" %}
+                    </span>
+                </button>
+                <button type="button" class="btn btn-outline-secondary btn--settings"
+                        onclick="document.getElementById('accountForm').reset()">
+                    <i class="fas fa-undo me-2"></i>{% trans "Reset" %}
+                </button>
+            </div>
+        </form>
+    </div>
+</div>

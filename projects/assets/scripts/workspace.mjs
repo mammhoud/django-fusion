@@ -28,15 +28,21 @@ const siteAliases = {
   crm: 'crm',
   'crm.structa.cloud': 'crm',
   inventory: 'crm',
+  'lms-fusion': 'lms-fusion',
+  fusionlms: 'lms-fusion',
+  fusioncms: 'cms-fusion',
+  'cms-fusion': 'cms-fusion',
 };
 
-const sites = ['ctc-research', 'lms', 'vresume', 'cypercloud', 'crm'];
+const sites = ['ctc-research', 'lms', 'vresume', 'cypercloud', 'crm', 'lms-fusion', 'cms-fusion'];
 const siteDirs = {
   'ctc-research': 'ctc-research',
   'lms': 'lms',
   vresume: 'VResume',
   cypercloud: 'cypercloud',
   crm: 'crm',
+  'lms-fusion': 'lms-fusion',
+  'cms-fusion': 'cms-fusion',
 };
 const cleanDirs = {
   'ctc-research': ['ctc-research/assets/bundles/ctc-research'],
@@ -44,11 +50,13 @@ const cleanDirs = {
   vresume: ['VResume/assets/bundles/vresume'],
   cypercloud: ['cypercloud/assets/bundles/customizer'],
   crm: ['crm/assets/bundles/crm'],
+  'lms-fusion': ['lms-fusion/backend/assets/bundles/lms-fusion'],
+  'cms-fusion': ['cms-fusion/backend/assets/bundles/cms-fusion'],
   shared: ['assets/bundles/shared'],
 };
 
 function usage() {
-  console.log(`Workspace asset CLI\n\nUsage:\n  npm --prefix assets run <script> -- [--site ctc|structa|vresume|customizer|all]\n  node assets/scripts/workspace.mjs <command> [--site SITE] [-- <extra args>]\n\nSites:\n  ctc, ctc-research       CTC Research website\n  structa, lms       Structa LMS Demo\n  vresume                 VResume resume builder\n  cypercloud, customizer, cust  Structa template cypercloud (standalone webpack)\n\nCommands:\n  build            Production webpack build for one site (default ctc-research)\n  build-dev        Development webpack build for one site\n  watch            Webpack watch for one site\n  dev              Webpack dev server for one site\n  analyze          Emit webpack stats for one site (not supported for customizer)\n  clean            Remove generated bundles for one site or all sites\n  collectstatic    Run Django collectstatic for one site or all sites\n  build-collect    Build assets then collect static for one site or all sites\n  load-dumps       Load JSON dump fixtures for one site or all sites\n  populate         Run fixture loading and site-specific Python content/image population\n  manage           Run workspace manage.py for one site; pass Django args after --\n  sites            Print supported site names\n`);
+  console.log(`Workspace asset CLI\n\nUsage:\n  npm --prefix assets run <script> -- [--site ctc|structa|vresume|customizer|all]\n  node assets/scripts/workspace.mjs <command> [--site SITE] [-- <extra args>]\n\nSites:\n  ctc, ctc-research       CTC Research website\n  structa, lms       Structa LMS Demo\n  vresume                 VResume resume builder\n  cypercloud, customizer, cust  Structa template cypercloud (standalone webpack)\n  lms-fusion, fusionlms          Fusion LMS (isolated)\n  cms-fusion, fusioncms          Fusion CMS (isolated)\n\nCommands:\n  build            Production webpack build for one site (default ctc-research)\n  build-dev        Development webpack build for one site\n  watch            Webpack watch for one site\n  dev              Webpack dev server for one site\n  analyze          Emit webpack stats for one site (not supported for customizer)\n  clean            Remove generated bundles for one site or all sites\n  collectstatic    Run Django collectstatic for one site or all sites\n  build-collect    Build assets then collect static for one site or all sites\n  load-dumps       Load JSON dump fixtures for one site or all sites\n  populate         Run fixture loading and site-specific Python content/image population\n  manage           Run workspace manage.py for one site; pass Django args after --\n  sites            Print supported site names\n`);
 }
 
 function parse(argv) {

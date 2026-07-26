@@ -1,0 +1,77 @@
+{% load i18n %}<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% trans "Payment Confirmation" %}</title>
+    <style>
+        body { font-family: Arial, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; padding: 20px; }
+        .header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 20px; border-radius: 4px 4px 0 0; }
+        .content { background: #f9f9f9; padding: 20px; border: 1px solid #ddd; border-radius: 0 0 4px 4px; }
+        .success-badge { background: #4CAF50; color: white; padding: 10px 20px; border-radius: 4px; display: inline-block; margin-bottom: 20px; }
+        .details-table { width: 100%; margin: 20px 0; border-collapse: collapse; }
+        .details-table th, .details-table td { padding: 12px; text-align: left; border-bottom: 1px solid #ddd; }
+        .details-table th { background: #f0f0f0; font-weight: bold; }
+        .footer { margin-top: 30px; padding-top: 20px; border-top: 1px solid #ddd; font-size: 12px; color: #666; }
+        .button { background: #667eea; color: white; padding: 12px 30px; text-decoration: none; border-radius: 4px; display: inline-block; margin: 20px 0; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>{% trans "Payment Confirmed!" %}</h1>
+            <p>{% trans "Your enrollment payment has been successfully processed." %}</p>
+        </div>
+        
+        <div class="content">
+            <div class="success-badge">✓ {% trans "Payment Received" %}</div>
+            
+            <p>{% trans "Dear" %} {{ enrollment.name }},</p>
+            
+            <p>{% trans "Thank you for enrolling in" %} <strong>{{ course.name }}</strong>. {% trans "Your payment has been confirmed and you now have access to the course." %}</p>
+            
+            <h3>{% trans "Payment Details" %}</h3>
+            <table class="details-table">
+                <tr>
+                    <th>{% trans "Course" %}</th>
+                    <td>{{ course.name }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Amount" %}</th>
+                    <td>${{ payment.amount }} {{ payment.currency }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Payment Method" %}</th>
+                    <td>{{ payment.get_provider_display }}</td>
+                </tr>
+                <tr>
+                    <th>{% trans "Transaction ID" %}</th>
+                    <td><code>{{ payment.transaction_id }}</code></td>
+                </tr>
+                <tr>
+                    <th>{% trans "Date" %}</th>
+                    <td>{{ payment.completed_at|date:"M d, Y g:i A" }}</td>
+                </tr>
+            </table>
+            
+            <h3>{% trans "What's Next?" %}</h3>
+            <ol>
+                <li>{% trans "Log in to your account" %}</li>
+                <li>{% trans "Go to your course dashboard" %}</li>
+                <li>{% trans "Start learning!" %}</li>
+            </ol>
+            
+            <a href="{{ site_url }}/learning/dashboard/" class="button">{% trans "Go to Course" %}</a>
+            
+            <h3>{% trans "Need Help?" %}</h3>
+            <p>{% trans "If you have any questions about your enrollment or course access, please contact our support team." %}</p>
+            
+            <div class="footer">
+                <p>{% trans "This is an automated email. Please do not reply to this email." %}</p>
+                <p>© {% now "Y" %} Fusion Research. {% trans "All rights reserved." %}</p>
+            </div>
+        </div>
+    </div>
+</body>
+</html>

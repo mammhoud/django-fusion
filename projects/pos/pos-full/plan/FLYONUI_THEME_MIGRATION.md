@@ -226,7 +226,7 @@ test('POS Full — CTC Teal Theme', async ({ page }) => {
 | A | JS loader in main.tsx + App.tsx | ⬜ | 0.5h |
 | A | TypeScript types | ⬜ | 0.25h |
 | A | Migrate components to FlyonUI | ⬜ | 4h |
-| B | Audit pages | ⬜ | 0.5h |
+| B | Audit pages | 🟡 | 0.5h |
 | B | Migrate indigo→teal (10 pages) | ⬜ | 6h |
 | B | Verification | ⬜ | 0.5h |
 | B | E2E theme regression test | ⬜ | 1h |

@@ -204,9 +204,9 @@ test('Complete sale flow', async ({ page }) => {
 
 | Phase | Tests Planned | Status | Effort |
 |-------|:------------:|:------:|:------:|
-| 1 — API Tests | 56 | ⬜ | 4h |
+| 1 — API Tests | 56 | 🟡 | 4h |
 | 2 — Flow Tests | 25 | ⬜ | 6h |
 | 3 — Visual Regression | 20 | ⬜ | 2h |
-| 4 — CI Integration | 1 job | 🟡 (API only) | 1h |
+| 4 — CI Integration | 1 job | ✅ | 1h |
 
 **Total:** ~90 tests, ~13 hours

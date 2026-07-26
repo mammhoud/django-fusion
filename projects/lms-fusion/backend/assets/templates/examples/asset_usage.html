@@ -1,0 +1,126 @@
+{% extends "base.html" %}
+{% load static webpack_loader %}
+
+{#
+  Fusion Research — Asset Usage Reference Template
+  ---------------------------------------------
+  This template demonstrates the canonical way to load webpack bundles,
+  static files, and media files on fu-research.com.
+
+  It extends the shared base template (projects/assets/templates/base.html)
+  which already emits:
+      {% render_bundle 'static' 'css' %}
+      {% render_bundle 'main' 'js' %}
+      {% render_bundle 'app' 'js' %}
+
+  Use this file as a copy/paste reference for new Fusion pages.
+#}
+
+{% block html_class %}example-asset-page{% endblock %}
+
+{% block styles %}
+    {#
+      Override or extend the shared CSS bundle.
+      In most pages you do NOT need to repeat this because base.html already
+      loads the 'static' CSS bundle in the {% block css %} section.
+    #}
+    {{ block.super }}
+{% endblock styles %}
+
+{% block body %}
+    <main class="container py-5">
+        <h1 class="mb-4">Fusion Research Asset Usage Examples</h1>
+
+        {# ── Static files ─────────────────────────────────────────────────── #}
+        <section class="mb-5">
+            <h2>1. Static Files</h2>
+            <p>Use <code>{% static %}</code> for images, fonts, and other files that live in the static tree.</p>
+
+            <div class="card p-3 mb-3">
+                <img src="{% static 'site/fu-research/images/logo.png' %}"
+                     alt="Fusion Research Logo"
+                     class="img-fluid mb-2"
+                     width="120">
+                <pre><code>{% verbatim %}{% static 'site/fu-research/images/logo.png' %}{% endverbatim %}</code></pre>
+            </div>
+
+            <div class="card p-3">
+                <p>
+                    <a href="{% static 'documents/sample.pdf' %}" download>
+                        Download sample PDF
+                    </a>
+                </p>
+                <pre><code>{% verbatim %}{% static 'documents/sample.pdf' %}{% endverbatim %}</code></pre>
+            </div>
+        </section>
+
+        {# ── Media files ──────────────────────────────────────────────────── #}
+        <section class="mb-5">
+            <h2>2. Media Files</h2>
+            <p>Use the model field's <code>.url</code> attribute for user-uploaded media.</p>
+
+            <div class="card p-3 mb-3">
+                {% if profile and profile.avatar %}
+                    <img src="{{ profile.avatar.url }}"
+                         alt="{{ profile.user.get_full_name|default:'User avatar' }}"
+                         class="rounded-circle mb-2"
+                         width="120">
+                    <pre><code>{{ profile.avatar.url }}</code></pre>
+                {% else %}
+                    <p class="text-muted">No avatar uploaded.</p>
+                {% endif %}
+            </div>
+
+            <div class="card p-3">
+                {% if course and course.thumbnail %}
+                    <img src="{{ course.thumbnail.url }}"
+                         alt="{{ course.title }}"
+                         class="img-fluid mb-2">
+                    <pre><code>{{ course.thumbnail.url }}</code></pre>
+                {% else %}
+                    <p class="text-muted">No course thumbnail uploaded.</p>
+                {% endif %}
+            </div>
+        </section>
+
+        {# ── Webpack bundles ──────────────────────────────────────────────── #}
+        <section class="mb-5">
+            <h2>3. Webpack Bundles</h2>
+            <p>
+                The base template already loads <code>static</code>, <code>main</code>, and <code>app</code>.
+                Only add extra bundles here if you have created additional webpack entry points.
+            </p>
+
+            <div class="card p-3">
+                <p class="text-muted">Check the page source to see the injected tags.</p>
+                <pre><code>{% verbatim %}{% render_bundle 'static' 'css' %}
+{% render_bundle 'main' 'js' %}
+{% render_bundle 'app' 'js' %}{% endverbatim %}</code></pre>
+            </div>
+        </section>
+
+        {# ── Lazy-loaded modules ──────────────────────────────────────────── #}
+        <section class="mb-5">
+            <h2>4. Lazy-Loaded Modules</h2>
+            <p>
+                For heavy components, use dynamic imports in JS and keep the template minimal.
+                The module below is initialised by the shared <code>main.js</code> entry.
+            </p>
+            <div class="card p-3">
+                <button type="button"
+                        class="btn btn-primary"
+                        data-lazy-module="analytics-chart">
+                    Load Analytics Chart
+                </button>
+            </div>
+        </section>
+    </main>
+{% endblock body %}
+
+{% block scripts %}
+    {#
+      The base template already loads main + app JS.
+      Add page-specific scripts here if needed.
+    #}
+    {{ block.super }}
+{% endblock scripts %}

@@ -1,0 +1,54 @@
+{% comment %}
+Pagination Component - HTMX enabled
+{% endcomment %}
+
+<nav class="rbt-course-pagination" aria-label="Course pagination">
+  {# Previous #}
+  {% if page_obj.has_previous %}
+    <button class="rbt-course-pagination__button"
+            hx-get="?page={{ page_obj.previous_page_number }}"
+            hx-target="#course-results"
+            type="button">
+      <i class="feather-chevron-left"></i>
+      Previous
+    </button>
+  {% else %}
+    <button class="rbt-course-pagination__button" disabled>
+      <i class="feather-chevron-left"></i>
+      Previous
+    </button>
+  {% endif %}
+
+  {# Page Numbers #}
+  {% for num in page_obj.paginator.page_range %}
+    {% if page_obj.number == num %}
+      <button class="rbt-course-pagination__button rbt-course-pagination__button--active" 
+              disabled>
+        {{ num }}
+      </button>
+    {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+      <button class="rbt-course-pagination__button"
+              hx-get="?page={{ num }}"
+              hx-target="#course-results"
+              type="button">
+        {{ num }}
+      </button>
+    {% endif %}
+  {% endfor %}
+
+  {# Next #}
+  {% if page_obj.has_next %}
+    <button class="rbt-course-pagination__button"
+            hx-get="?page={{ page_obj.next_page_number }}"
+            hx-target="#course-results"
+            type="button">
+      Next
+      <i class="feather-chevron-right"></i>
+    </button>
+  {% else %}
+    <button class="rbt-course-pagination__button" disabled>
+      Next
+      <i class="feather-chevron-right"></i>
+    </button>
+  {% endif %}
+</nav>

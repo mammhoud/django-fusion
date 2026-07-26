@@ -1,0 +1,54 @@
+{% load i18n %}
+<h4 class="mb-3">{% trans "Lesson Resources" %}</h4>
+
+{% if lesson.resources.exists %}
+{% for resource in lesson.resources.all %}
+<div class="card download-resources mb-3">
+    <div class="card-body">
+        <h5>
+            {% if resource.resource_type == 'slides' %}
+            <i class="bi bi-file-text me-2"></i>
+            {% elif resource.resource_type == 'code' %}
+            <i class="bi bi-code-slash me-2"></i>
+            {% else %}
+            <i class="bi bi-file-earmark me-2"></i>
+            {% endif %}
+            {{ resource.title }}
+        </h5>
+        <p class="text-muted">{{ resource.description }}</p>
+        <a href="{{ resource.file.url }}" class="button button-sm button-radius button-primary" download>
+            <i class="bi bi-download me-2"></i>Download ({{ resource.file.size|filesizeformat }})
+        </a>
+    </div>
+</div>
+{% endfor %}
+{% else %}
+<div class="text-center py-4">
+    <i class="bi bi-folder-x display-4 text-muted mb-3"></i>
+    <p class="text-muted">{% trans "No resources available for this lesson." %}</p>
+</div>
+{% endif %}
+
+<!-- Useful Links -->
+<div class="card download-resources">
+    <div class="card-body">
+        <h5><i class="bi bi-link-45deg me-2"></i>Useful Links</h5>
+        <ul class="list-unstyled">
+            <li class="mb-2">
+                <a href="https://developer.mozilla.org/en-US/docs/Web/HTML" class="text-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>MDN Web Docs - HTML Reference
+                </a>
+            </li>
+            <li class="mb-2">
+                <a href="https://validator.w3.org/" class="text-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>HTML5 Validator
+                </a>
+            </li>
+            <li>
+                <a href="https://www.w3.org/WAI/standards-guidelines/wcag/" class="text-primary" target="_blank">
+                    <i class="bi bi-box-arrow-up-right me-1"></i>Accessibility Guidelines
+                </a>
+            </li>
+        </ul>
+    </div>
+</div>

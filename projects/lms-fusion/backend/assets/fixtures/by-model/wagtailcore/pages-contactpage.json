@@ -1,0 +1,140 @@
+[
+  {
+    "model": "pages.contactpage",
+    "pk": 5,
+    "fields": {
+      "show_page_at_footer": true,
+      "form_background_color": "#ffffff",
+      "form_text_color": "#000000",
+      "form_button_color": "#0d6efd",
+      "form_button_text_color": "#ffffff",
+      "contact_form": "[{\"id\": \"7efd1c0f-fa6d-4340-8d55-af1f90a010a3\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"id\": \"78a623fe-646f-4854-a328-1efcd2973c4b\", \"type\": \"item\", \"value\": {\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}}, {\"id\": \"16214083-f845-4bda-a560-08bdf230919d\", \"type\": \"item\", \"value\": {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}}, {\"id\": \"8e227147-c0eb-442d-a2f1-6bf6d864c6d1\", \"type\": \"item\", \"value\": {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}}], \"form_id\": \"contact-form\"}}]",
+      "form_title": "",
+      "form_intro": "",
+      "button_text": "Send Message",
+      "success_message": "<p data-block-key=\"9d7eh\">\u2728 <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
+      "error_message": "<p data-block-key=\"muyjm\">\ud83d\udd04 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
+      "contact_details": "[]",
+      "map": "[]",
+      "faq": "[]",
+      "live": true
+    }
+  },
+  {
+    "model": "pages.contactpage",
+    "pk": 10,
+    "fields": {
+      "show_page_at_footer": true,
+      "form_background_color": "#ffffff",
+      "form_text_color": "#000000",
+      "form_button_color": "#0d6efd",
+      "form_button_text_color": "#ffffff",
+      "contact_form": "[{\"id\": \"7efd1c0f-fa6d-4340-8d55-af1f90a010a3\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"id\": \"78a623fe-646f-4854-a328-1efcd2973c4b\", \"type\": \"item\", \"value\": {\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}}, {\"id\": \"16214083-f845-4bda-a560-08bdf230919d\", \"type\": \"item\", \"value\": {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}}, {\"id\": \"8e227147-c0eb-442d-a2f1-6bf6d864c6d1\", \"type\": \"item\", \"value\": {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}}], \"form_id\": \"contact-form\"}}]",
+      "form_title": "",
+      "form_intro": "",
+      "button_text": "Send Message",
+      "success_message": "<p data-block-key=\"9d7eh\">\u2728 <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
+      "error_message": "<p data-block-key=\"muyjm\">\ud83d\udd04 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"\\u0627\\u062a\\u0635\\u0644 \\u0628\\u0646\\u0627\", \"breadcrumb_home_text\": \"\\u0627\\u0644\\u0631\\u0626\\u064a\\u0633\\u064a\\u0629\", \"page_title_background\": 7}}]",
+      "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"\\u062d\\u064a\\u062b \\u062a\\u062c\\u062f \\u0627\\u0644\\u0623\\u0633\\u0626\\u0644\\u0629 \\u0625\\u062c\\u0627\\u0628\\u0627\\u062a\\u0647\\u0627\\u060c \\u0648\\u062a\\u0628\\u062f\\u0623 \\u0627\\u0644\\u0645\\u062d\\u0627\\u062f\\u062b\\u0627\\u062a\", \"subtitle\": \"\\u062a\\u0648\\u0627\\u0635\\u0644 \\u0645\\u0639\\u0646\\u0627\", \"description\": \"\\u0643\\u0644\\u0645\\u0627\\u062a\\u0643\\u0645\\u060c \\u0628\\u0648\\u0635\\u0644\\u062a\\u0646\\u0627 - \\u062a\\u0631\\u0634\\u062f\\u0646\\u0627 \\u0644\\u062e\\u062f\\u0645\\u062a\\u0643\\u0645 \\u0628\\u0634\\u0643\\u0644 \\u0623\\u0641\\u0636\\u0644.\\r\\n\\u0645\\u0639\\u064b\\u0627 \\u0646\\u0635\\u0648\\u063a \\u062d\\u0644\\u0648\\u0644\\u0627\\u064b \\u062d\\u064a\\u062b \\u062a\\u0644\\u062a\\u0642\\u064a \\u0627\\u0644\\u0631\\u0624\\u064a\\u0629 \\u0628\\u0627\\u0644\\u062a\\u0641\\u0627\\u0646\\u064a.\"}}]",
+      "contact_details": "[]",
+      "map": "[]",
+      "faq": "[]",
+      "live": true
+    }
+  },
+  {
+    "model": "pages.contactpage",
+    "pk": 15,
+    "fields": {
+      "show_page_at_footer": true,
+      "form_background_color": "#ffffff",
+      "form_text_color": "#000000",
+      "form_button_color": "#0d6efd",
+      "form_button_text_color": "#ffffff",
+      "contact_form": "[{\"id\": \"7efd1c0f-fa6d-4340-8d55-af1f90a010a3\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"id\": \"78a623fe-646f-4854-a328-1efcd2973c4b\", \"type\": \"item\", \"value\": {\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}}, {\"id\": \"16214083-f845-4bda-a560-08bdf230919d\", \"type\": \"item\", \"value\": {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}}, {\"id\": \"8e227147-c0eb-442d-a2f1-6bf6d864c6d1\", \"type\": \"item\", \"value\": {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}}], \"form_id\": \"contact-form\"}}]",
+      "form_title": "",
+      "form_intro": "",
+      "button_text": "Send Message",
+      "success_message": "<p data-block-key=\"9d7eh\">\u2728 <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
+      "error_message": "<p data-block-key=\"muyjm\">\ud83d\udd04 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
+      "contact_details": "[]",
+      "map": "[]",
+      "faq": "[]",
+      "live": true
+    }
+  },
+  {
+    "model": "pages.contactpage",
+    "pk": 20,
+    "fields": {
+      "show_page_at_footer": true,
+      "form_background_color": "#ffffff",
+      "form_text_color": "#000000",
+      "form_button_color": "#0d6efd",
+      "form_button_text_color": "#ffffff",
+      "contact_form": "[{\"id\": \"7efd1c0f-fa6d-4340-8d55-af1f90a010a3\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"id\": \"78a623fe-646f-4854-a328-1efcd2973c4b\", \"type\": \"item\", \"value\": {\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}}, {\"id\": \"16214083-f845-4bda-a560-08bdf230919d\", \"type\": \"item\", \"value\": {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}}, {\"id\": \"8e227147-c0eb-442d-a2f1-6bf6d864c6d1\", \"type\": \"item\", \"value\": {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}}], \"form_id\": \"contact-form\"}}]",
+      "form_title": "",
+      "form_intro": "",
+      "button_text": "Send Message",
+      "success_message": "<p data-block-key=\"9d7eh\">\u2728 <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
+      "error_message": "<p data-block-key=\"muyjm\">\ud83d\udd04 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
+      "contact_details": "[]",
+      "map": "[]",
+      "faq": "[]",
+      "live": true
+    }
+  },
+  {
+    "model": "pages.contactpage",
+    "pk": 25,
+    "fields": {
+      "show_page_at_footer": true,
+      "form_background_color": "#ffffff",
+      "form_text_color": "#000000",
+      "form_button_color": "#0d6efd",
+      "form_button_text_color": "#ffffff",
+      "contact_form": "[{\"id\": \"7efd1c0f-fa6d-4340-8d55-af1f90a010a3\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"id\": \"78a623fe-646f-4854-a328-1efcd2973c4b\", \"type\": \"item\", \"value\": {\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}}, {\"id\": \"16214083-f845-4bda-a560-08bdf230919d\", \"type\": \"item\", \"value\": {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}}, {\"id\": \"8e227147-c0eb-442d-a2f1-6bf6d864c6d1\", \"type\": \"item\", \"value\": {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}}], \"form_id\": \"contact-form\"}}]",
+      "form_title": "",
+      "form_intro": "",
+      "button_text": "Send Message",
+      "success_message": "<p data-block-key=\"9d7eh\">\u2728 <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
+      "error_message": "<p data-block-key=\"muyjm\">\ud83d\udd04 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
+      "contact_details": "[]",
+      "map": "[]",
+      "faq": "[]",
+      "live": true
+    }
+  },
+  {
+    "model": "pages.contactpage",
+    "pk": 30,
+    "fields": {
+      "show_page_at_footer": true,
+      "form_background_color": "#ffffff",
+      "form_text_color": "#000000",
+      "form_button_color": "#0d6efd",
+      "form_button_text_color": "#ffffff",
+      "contact_form": "[{\"id\": \"7efd1c0f-fa6d-4340-8d55-af1f90a010a3\", \"type\": \"contact_form\", \"value\": {\"fields\": [{\"id\": \"78a623fe-646f-4854-a328-1efcd2973c4b\", \"type\": \"item\", \"value\": {\"name\": \"name\", \"label\": \"Full Name\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"text\", \"placeholder\": \"Enter your full name\"}}, {\"id\": \"16214083-f845-4bda-a560-08bdf230919d\", \"type\": \"item\", \"value\": {\"name\": \"email\", \"label\": \"Email Address\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"email\", \"placeholder\": \"Enter your email address\"}}, {\"id\": \"8e227147-c0eb-442d-a2f1-6bf6d864c6d1\", \"type\": \"item\", \"value\": {\"name\": \"message\", \"label\": \"Message\", \"choices\": [], \"required\": true, \"help_text\": \"undefined\", \"field_type\": \"textarea\", \"placeholder\": \"How can we help you?\"}}], \"form_id\": \"contact-form\"}}]",
+      "form_title": "",
+      "form_intro": "",
+      "button_text": "Send Message",
+      "success_message": "<p data-block-key=\"9d7eh\">\u2728 <b>Your message has wings!</b></p><p data-block-key=\"thf7s\">Thank you for reaching out. Like a carefully sealed envelope,<br/>your words are now in our hands. We'll respond within 24 hours,<br/>bringing thoughtful answers to your thoughtful questions.</p>",
+      "error_message": "<p data-block-key=\"muyjm\">\ud83d\udd04 <b>A temporary detour...</b></p><p data-block-key=\"1ejf8\">Sometimes even the best-laid plans need a second try.<br/>Your message couldn't be sent, but don't let this pause stop you.<br/>Please try again, or reach us directly through the contact details below.</p>",
+      "head": "[{\"id\": \"82f99bee-61f5-4a1d-937b-8ecd5a2ed1ec\", \"type\": \"page_title\", \"value\": {\"page_title\": \"Contact Us\", \"breadcrumb_home_text\": \"Home\", \"page_title_background\": 7}}]",
+      "contact_info": "[{\"id\": \"5c92bc6e-44cf-44cd-909c-45ff78576f7d\", \"type\": \"contact_info\", \"value\": {\"title\": \"Where Questions Find Answers, And Conversations Begin\", \"subtitle\": \"Reach Out to Us\", \"description\": \"In every message sent,\\r\\nA bridge is built between us.\\r\\nYour words, our compass\\u2014\\r\\nGuiding us to serve you better.\\r\\nTogether we craft solutions,\\r\\nWhere vision meets dedication.\"}}]",
+      "contact_details": "[]",
+      "map": "[]",
+      "faq": "[]",
+      "live": true
+    }
+  }
+]

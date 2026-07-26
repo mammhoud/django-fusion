@@ -86,13 +86,13 @@ make build-release
 Same indigo→teal migration as POS Full, but fewer pages to migrate (no
 Employees, no Payroll, no Roles, no EmployeeSchedule).
 
-| Page | Indigo/Purple | Priority |
+| Page | Has indigo/purple | Priority |
 |------|:------------:|:--------:|
-| Analytics | ✅ via-purple | P0 |
-| Recipes | ✅ | P1 |
-| Inventory | ✅ | P1 |
-| Reports | ✅ | P1 |
-| About | ✅ | P2 |
+| Analytics | Yes | P0 |
+| Recipes | Yes | P1 |
+| Inventory | Yes | P1 |
+| Reports | Yes | P1 |
+| About | Yes | P2 |
 
 ---
 
@@ -127,6 +127,6 @@ PORT = 8765 if EDITION == 'full' else 8766
 | Plan | Status | Effort |
 |------|:------:|:------:|
 | 1 — Component Reorganization | ⬜ | 6h |
-| 2 — Desktop Dev Workflow | 🟡 (alias done) | 2h |
+| 2 — Desktop Dev Workflow | 🟡 | 2h |
 | 3 — CTC Teal Theme Migration | ⬜ | 3h |
 | 4 — Sidecar Port Unification | ⬜ | 2h |

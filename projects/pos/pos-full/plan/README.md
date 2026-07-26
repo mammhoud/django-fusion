@@ -9,8 +9,8 @@
 
 | # | Plan | Status | Progress |
 |---|------|:------:|:--------:|
-| 1 | [Component Reorganization](./COMPONENT_REORGANIZATION.md) — migrate to ui/ + layout/ + pages/ subdirs (11.5h) | ⬜ Not Started | 0% |
-| 2 | [FlyonUI Integration & Theme Migration](./FLYONUI_THEME_MIGRATION.md) — install FlyonUI + replace indigo/purple with CTC teal (14h) | ⬜ Not Started | 0% |
+| 1 | [Component Reorganization](./COMPONENT_REORGANIZATION.md) — migrate to ui/ + layout/ + pages/ subdirs (11.5h) | 🟡 In Progress | 17% |
+| 2 | [FlyonUI Integration & Theme Migration](./FLYONUI_THEME_MIGRATION.md) — install FlyonUI + replace indigo/purple with CTC teal (14h) | 🟡 In Progress | 5% |
 | 3 | Responsive layout for POS Full (mobile/tablet/desktop) | ⬜ Not Started | 0% |
 
 ---

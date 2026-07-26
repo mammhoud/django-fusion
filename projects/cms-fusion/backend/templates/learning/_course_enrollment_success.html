@@ -1,0 +1,17 @@
+{% comment %}
+Enrollment Success Message - HTMX Fragment
+{% endcomment %}
+
+{% if created %}
+  <div class="alert alert-success alert-dismissible fade show" role="alert">
+    <i class="feather-check-circle"></i>
+    <strong>Success!</strong> Your enrollment has been submitted. We'll contact you soon.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+{% else %}
+  <div class="alert alert-info alert-dismissible fade show" role="alert">
+    <i class="feather-info"></i>
+    <strong>Updated!</strong> Your enrollment information has been updated.
+    <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+  </div>
+{% endif %}

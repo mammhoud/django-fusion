@@ -47,11 +47,11 @@ src/pages/
 
 Same indigo→teal migration. Mini has fewer pages:
 
-| Page | Indigo/Purple | Priority |
+| Page | Has indigo/purple | Priority |
 |------|:------------:|:--------:|
-| Analytics | Likely ✅ | P0 |
-| Reports | Likely ✅ | P1 |
-| About | Likely ✅ | P2 |
+| Analytics | Yes | P0 |
+| Reports | Yes | P1 |
+| About | Yes | P2 |
 
 ---
 

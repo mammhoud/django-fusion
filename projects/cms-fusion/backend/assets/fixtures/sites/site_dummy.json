@@ -1,0 +1,10 @@
+[
+  {
+    "model": "sites.site",
+    "pk": 101,
+    "fields": {
+      "domain": "ctc-research.com",
+      "name": "ctc-research.com dummy site"
+    }
+  }
+]
