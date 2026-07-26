@@ -8,7 +8,13 @@ outer element. Blocks:
   - fragment_content: the actual fragment content
 {% endcomment %}
 {% block fragment_outer %}
-<div{% if fragment_id %} id="{{ fragment_id }}"{% endif %} class="df-fragment {{ fragment_class|default:"" }}">
+<div{% if fragment_id %} id="{{ fragment_id }}"{% endif %} class="df-fragment {{ fragment_class|default:"" }}" data-fusion-fragment="{{ fragment_name|default:"" }}">
     {% block fragment_content %}{% endblock fragment_content %}
 </div>
 {% endblock fragment_outer %}
+
+{% block fusion_bridge %}
+{% if fusion_render_first %}
+<script>window.__FUSION__ = window.__FUSION__ || {}; window.__FUSION__.renderFirst = true;</script>
+{% endif %}
+{% endblock fusion_bridge %}

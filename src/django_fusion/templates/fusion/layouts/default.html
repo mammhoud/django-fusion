@@ -1,0 +1,55 @@
+{% comment %}
+Fusion Layout — Default (header + content + footer)
+
+Blocks:
+  - header: Site header / navigation
+  - content: Main page content
+  - footer: Site footer
+  - sidebar: Optional sidebar (hidden by default)
+{% endcomment %}
+<div class="fusion-layout fusion-layout--default">
+  {% block header %}
+    <header class="fusion-header" data-fusion-region="header">
+      <div class="fusion-header__inner">
+        <a href="/" class="fusion-header__logo">
+          <span class="fusion-header__logo-text">
+            {{ fusion_branding.site_name|default:"Fusion" }}
+          </span>
+        </a>
+        <nav class="fusion-header__nav">
+          {% block nav %}
+            <a href="/" class="fusion-header__link">Home</a>
+            <a href="/about" class="fusion-header__link">About</a>
+            <a href="/services" class="fusion-header__link">Services</a>
+            <a href="/contact" class="fusion-header__link">Contact</a>
+          {% endblock nav %}
+        </nav>
+      </div>
+    </header>
+  {% endblock header %}
+
+  <div class="fusion-layout__body">
+    {% block sidebar %}{% endblock sidebar %}
+
+    <main class="fusion-layout__main" data-fusion-fragment="{{ fragment_name|default:"" }}">
+      {% block content %}
+        {% if fragment_name %}
+          {% comp fragment_name / %}
+        {% else %}
+          <p>No fragment content available.</p>
+        {% endif %}
+      {% endblock content %}
+    </main>
+  </div>
+
+  {% block footer %}
+    <footer class="fusion-footer" data-fusion-region="footer">
+      <div class="fusion-footer__inner">
+        <p class="fusion-footer__text">
+          &copy; {% now "Y" %} {{ fusion_branding.company_name|default:"Fusion Inc." }}
+          &mdash; Powered by django-fusion + django-bolt
+        </p>
+      </div>
+    </footer>
+  {% endblock footer %}
+</div>

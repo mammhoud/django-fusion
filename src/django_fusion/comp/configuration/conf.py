@@ -69,6 +69,14 @@ class DjangoComponentsSettings:
     # explicitly overridden on the component class.
     FUSION_RENDER_FIRST_DEFAULT: bool = False
 
+    # Fusion layout system
+    # Available layout templates (mapped to fusion/layouts/*.html)
+    LAYOUTS: list[str] = field(default_factory=lambda: ["default", "full_width", "sidebar", "blank"])
+    # Default layout to use when none specified
+    DEFAULT_LAYOUT: str = "default"
+    # Enable fusion layout feature
+    ENABLE_FUSION_LAYOUTS: bool = True
+
     def __getattribute__(self, __name: str) -> object:
         user_settings = getattr(settings, COMPONENTS_SETTINGS_NAME, {})
         return user_settings.get(__name, super().__getattribute__(__name))

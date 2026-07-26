@@ -1,0 +1,46 @@
+{% comment %}
+Fusion Layout — Sidebar (main content + sidebar)
+
+Blocks:
+  - header: Site header
+  - content: Main page content
+  - sidebar: Sidebar content (navigation, filters, etc.)
+  - footer: Site footer
+{% endcomment %}
+<div class="fusion-layout fusion-layout--sidebar">
+  {% block header %}
+    <header class="fusion-header">
+      <a href="/" class="fusion-header__logo">{{ fusion_branding.site_name|default:"Fusion" }}</a>
+    </header>
+  {% endblock header %}
+
+  <div class="fusion-layout__body fusion-layout__body--with-sidebar">
+    <main class="fusion-layout__main" data-fusion-fragment="{{ fragment_name|default:"" }}">
+      {% block content %}
+        {% if fragment_name %}
+          {% comp fragment_name / %}
+        {% endif %}
+      {% endblock content %}
+    </main>
+
+    <aside class="fusion-layout__sidebar" data-fusion-region="sidebar">
+      {% block sidebar %}
+        <nav class="fusion-sidebar-nav">
+          <h3>Navigation</h3>
+          <ul>
+            <li><a href="/">Home</a></li>
+            <li><a href="/about">About</a></li>
+            <li><a href="/services">Services</a></li>
+            <li><a href="/contact">Contact</a></li>
+          </ul>
+        </nav>
+      {% endblock sidebar %}
+    </aside>
+  </div>
+
+  {% block footer %}
+    <footer class="fusion-footer">
+      <p>&copy; {% now "Y" %} {{ fusion_branding.company_name|default:"Fusion" }}</p>
+    </footer>
+  {% endblock footer %}
+</div>

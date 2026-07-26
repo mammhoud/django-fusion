@@ -1,0 +1,15 @@
+{% comment %}
+Fusion Layout — Blank (no header, no footer, just content)
+
+Blocks:
+  - content: Page content
+{% endcomment %}
+<div class="fusion-layout fusion-layout--blank">
+  <main class="fusion-layout__main" data-fusion-fragment="{{ fragment_name|default:"" }}">
+    {% block content %}
+      {% if fragment_name %}
+        {% comp fragment_name / %}
+      {% endif %}
+    {% endblock content %}
+  </main>
+</div>

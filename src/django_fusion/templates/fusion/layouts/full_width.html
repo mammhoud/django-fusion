@@ -1,0 +1,26 @@
+{% comment %}
+Fusion Layout — Full Width (edge-to-edge content, no sidebar)
+
+Blocks:
+  - content: Full-width page content
+  - footer: Optional footer
+{% endcomment %}
+<div class="fusion-layout fusion-layout--full-width">
+  <main class="fusion-layout__main fusion-layout__main--full" data-fusion-fragment="{{ fragment_name|default:"" }}">
+    {% block content %}
+      {% if fragment_name %}
+        {% comp fragment_name / %}
+      {% else %}
+        <div class="fusion-empty">
+          <p>No fragment content available.</p>
+        </div>
+      {% endif %}
+    {% endblock content %}
+  </main>
+
+  {% block footer %}
+    <footer class="fusion-footer fusion-footer--minimal">
+      <p>&copy; {% now "Y" %} {{ fusion_branding.company_name|default:"Fusion" }}</p>
+    </footer>
+  {% endblock footer %}
+</div>
