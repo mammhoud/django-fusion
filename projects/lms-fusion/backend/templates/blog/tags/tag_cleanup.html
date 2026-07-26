@@ -1,0 +1,23 @@
+{% extends "blog/base.html" %}
+{% load i18n %}
+
+{% block title %}{% trans "Cleanup Unused Tags" %}{% endblock %}
+
+{% block content %}
+<div class="tag-cleanup">
+    <h1>{% trans "Cleanup Unused Tags" %}</h1>
+
+    <p>{% trans "This will remove all tags that are not associated with any posts." %}</p>
+
+    <p>{% blocktrans with count=unused_count %}{{ count }} tags will be deleted.{% endblocktrans %}</p>
+
+    <form method="post">
+        {% csrf_token %}
+
+        <div class="form-actions">
+            <button type="submit" class="btn btn-danger">{% trans "Delete Unused Tags" %}</button>
+            <a href="{% url 'blog:tag_list' %}" class="btn btn-secondary">{% trans "Cancel" %}</a>
+        </div>
+    </form>
+</div>
+{% endblock %}

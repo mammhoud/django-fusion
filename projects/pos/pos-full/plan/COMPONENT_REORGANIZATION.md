@@ -215,7 +215,7 @@ After reorganization, update these docs:
 | 2 — Move components | ⬜ | 2h |
 | 3 — Move pages | ⬜ | 1.5h |
 | 4 — Update imports | ⬜ | 2h |
-| 5 — Split RTK Query API | ⬜ | 2h |
+| 5 — Split RTK Query API | ✅ | 2h |
 | 6 — Update routes | ⬜ | 1h |
 | 7 — Update tests | ⬜ | 1h |
 | 8 — Verify | ⬜ | 1h |

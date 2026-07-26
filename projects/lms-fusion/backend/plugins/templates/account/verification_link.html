@@ -1,0 +1,352 @@
+{% load i18n static wagtailcore_tags wagtailimages_tags %}
+{% image BrandSettings.logo original as logo %}
+
+{# Context fields: confirmation, request, user #}
+{# Placeholders: none #}
+
+<section class="fragment--form">
+<!-- Verify Email Card -->
+<section class="auth__card card card--form">
+    <header class="auth__form-header">
+        <div class="auth__logo mb-4 text-center">
+            <a href="{% url 'index' %}" class="auth__logo-link">
+                <img src="{{ logo.url }}"
+                     alt="{% trans 'Logo' %}"
+                     class="auth__logo-image">
+            </a>
+        </div>
+
+        <div class="auth__icon-wrapper mb-3">
+            <div class="auth__icon bg-primary bg-opacity-10 p-3 rounded-circle d-inline-flex">
+                <i class="fas fa-envelope text-primary fa-2x"></i>
+            </div>
+        </div>
+
+        <h1 class="auth__form-title">{% trans "Verify Your Email" %} ✉️</h1>
+
+        {% if request.user.is_authenticated %}
+            <p class="auth__form-subtitle mb-3">
+                {% blocktrans with email=request.user.email %}
+                Verification link will be sent to:
+                <span class="auth__email fw-semibold text-primary">{{ email }}</span>
+                {% endblocktrans %}
+            </p>
+        {% else %}
+            <p class="auth__form-subtitle mb-3">
+                {% trans "A verification link has been sent to your email address." %}
+            </p>
+        {% endif %}
+    </header>
+
+    <div class="auth__content">
+        <!-- Messages -->
+        {% if messages %}
+        <div class="auth__messages mb-4">
+            {% for message in messages %}
+            <div class="auth__message alert alert-dismissible fade show d-flex align-items-center
+                        {% if message.tags == 'success' %}alert-success
+                        {% elif message.tags == 'error' %}alert-danger
+                        {% else %}alert-warning{% endif %}"
+                 role="alert">
+                <i class="fas
+                    {% if message.tags == 'success' %}fa-check-circle
+                    {% elif message.tags == 'error' %}fa-exclamation-triangle
+                    {% else %}fa-info-circle{% endif %}
+                    me-2"></i>
+                <div class="auth__message-text flex-grow-1">{{ message }}</div>
+                <button type="button" class="auth__message-close btn-close"
+                        data-bs-dismiss="alert" aria-label="{% trans 'Close' %}"></button>
+            </div>
+            {% endfor %}
+        </div>
+        {% endif %}
+
+        <!-- Instructions -->
+        <div class="auth__instructions card border-0 bg-light mb-4">
+            <div class="card-body p-3">
+                <h6 class="auth__instructions-title fw-semibold mb-2">
+                    <i class="fas fa-info-circle me-2 text-primary"></i>
+                    {% trans "What to do next:" %}
+                </h6>
+                <ol class="auth__instructions-list list-unstyled mb-0">
+                    <li class="auth__instruction-item d-flex align-items-start mb-2">
+                        <span class="auth__instruction-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                              style="width: 24px; height: 24px; font-size: 0.8rem;">1</span>
+                        <span>{% trans "Check your email inbox" %}</span>
+                    </li>
+                    <li class="auth__instruction-item d-flex align-items-start mb-2">
+                        <span class="auth__instruction-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                              style="width: 24px; height: 24px; font-size: 0.8rem;">2</span>
+                        <span>{% trans "Click the verification link in the email" %}</span>
+                    </li>
+                    <li class="auth__instruction-item d-flex align-items-start">
+                        <span class="auth__instruction-number bg-primary text-white rounded-circle d-flex align-items-center justify-content-center me-2"
+                              style="width: 24px; height: 24px; font-size: 0.8rem;">3</span>
+                        <span>{% trans "Your email will be verified automatically" %}</span>
+                    </li>
+                </ol>
+            </div>
+        </div>
+
+        <!-- Benefits -->
+        <div class="auth__benefits alert alert-primary border-0 bg-primary bg-opacity-10 mb-4">
+            <div class="d-flex align-items-start">
+                <div class="auth__benefits-icon flex-shrink-0 me-3">
+                    <i class="fas fa-shield-alt text-primary"></i>
+                </div>
+                <div class="auth__benefits-content">
+                    <h6 class="auth__benefits-title fw-semibold text-primary mb-1">
+                        {% trans "Why verify your email?" %}
+                    </h6>
+                    <ul class="auth__benefits-list list-unstyled small mb-0">
+                        <li class="auth__benefit-item mb-1">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            {% trans "Secure your account from unauthorized access" %}
+                        </li>
+                        <li class="auth__benefit-item mb-1">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            {% trans "Receive important account notifications" %}
+                        </li>
+                        <li class="auth__benefit-item">
+                            <i class="fas fa-check-circle text-success me-1"></i>
+                            {% trans "Reset your password if you forget it" %}
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions for Authenticated Users -->
+        {% if request.user.is_authenticated %}
+            <div class="auth__actions">
+                <!-- Verify Button -->
+                <div class="auth__action mb-3">
+                    <a href="{% url 'account_email_verification_sent' %}"
+                       class="auth__btn auth__btn--primary btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center"
+                       id="verifyBtn">
+                        <i class="fas fa-paper-plane me-2"></i>
+                        <span class="auth__btn-text">{% trans "Send Verification Email" %}</span>
+                        <span class="auth__btn-loader spinner-border spinner-border-sm d-none ms-2"></span>
+                    </a>
+                </div>
+
+                <!-- Back Button -->
+                <div class="auth__action">
+                    <a href="{% url 'index' %}"
+                       class="auth__btn auth__btn--secondary btn btn-outline-primary w-100 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-arrow-left me-2"></i>
+                        <span class="auth__btn-text">{% trans "Back to Dashboard" %}</span>
+                    </a>
+                </div>
+            </div>
+
+        <!-- Actions for Unauthenticated Users -->
+        {% else %}
+            <div class="auth__actions">
+                <!-- Login Button -->
+                <div class="auth__action mb-3">
+                    <a href="{% url 'plugins:login' %}"
+                       class="auth__btn auth__btn--primary btn btn-primary btn-lg w-100 d-flex align-items-center justify-content-center">
+                        <i class="fas fa-sign-in-alt me-2"></i>
+                        <span class="auth__btn-text">{% trans "Skip for now & Login" %}</span>
+                    </a>
+                </div>
+
+                <!-- Resend Section -->
+                <div class="auth__resend-section text-center mb-4">
+                    <p class="auth__resend-text text-secondary mb-3">
+                        <i class="fas fa-clock me-1"></i>
+                        {% trans "Didn't receive the email?" %}
+                    </p>
+
+                    <a href="{% url 'account_email_verification_sent' %}"
+                       class="auth__btn auth__btn--secondary btn btn-outline-secondary w-100 d-flex align-items-center justify-content-center"
+                       id="resendBtn">
+                        <i class="fas fa-redo me-2"></i>
+                        <span class="auth__btn-text">{% trans "Resend Verification Email" %}</span>
+                        <span class="auth__btn-timer badge bg-light text-dark ms-2 d-none" id="resendTimer">60</span>
+                    </a>
+
+                    <p class="auth__resend-help text-secondary small mt-2">
+                        <i class="fas fa-lightbulb me-1"></i>
+                        {% trans "Check your spam folder if you don't see it in your inbox" %}
+                    </p>
+                </div>
+            </div>
+        {% endif %}
+
+        <!-- Support -->
+        <div class="auth__support text-center mt-4 pt-4 border-top">
+            <p class="auth__support-text text-secondary small mb-2">
+                {% trans "Need assistance with verification?" %}
+            </p>
+            <a href="" class="auth__support-link btn btn-link text-decoration-none">
+                <i class="fas fa-headset me-1"></i>
+                {% trans "Contact Support" %}
+            </a>
+        </div>
+    </div>
+</section>
+</section>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Verify Button Loading State
+    const verifyBtn = document.getElementById('verifyBtn');
+    if (verifyBtn) {
+        verifyBtn.addEventListener('click', function(e) {
+            const btnText = this.querySelector('.auth__btn-text');
+            const btnLoader = this.querySelector('.auth__btn-loader');
+            const originalText = btnText.textContent;
+
+            // Show loading state
+            btnText.textContent = '{% trans "Sending..." %}';
+            btnLoader.classList.remove('d-none');
+            this.disabled = true;
+
+            // Simulate API call delay
+            setTimeout(() => {
+                // Restore button state (in real scenario, this would be after API response)
+                btnText.textContent = originalText;
+                btnLoader.classList.add('d-none');
+                this.disabled = false;
+
+                // Show success message
+                showToast('{% trans "Verification email sent successfully!" %}', 'success');
+            }, 1500);
+        });
+    }
+
+    // Resend Timer Functionality
+    const resendBtn = document.getElementById('resendBtn');
+    const resendTimer = document.getElementById('resendTimer');
+
+    if (resendBtn && resendTimer) {
+        let timerInterval;
+        let timeLeft = 60;
+
+        // Load saved timer state from localStorage
+        const savedTime = localStorage.getItem('resendTimerEnd');
+        if (savedTime) {
+            const timeDiff = Math.floor((new Date(savedTime) - new Date()) / 1000);
+            if (timeDiff > 0) {
+                timeLeft = timeDiff;
+                startTimer();
+            }
+        }
+
+        function startTimer() {
+            resendBtn.disabled = true;
+            resendBtn.classList.add('disabled');
+            resendTimer.classList.remove('d-none');
+
+            timerInterval = setInterval(() => {
+                timeLeft--;
+                resendTimer.textContent = timeLeft;
+
+                if (timeLeft <= 0) {
+                    clearInterval(timerInterval);
+                    resendBtn.disabled = false;
+                    resendBtn.classList.remove('disabled');
+                    resendTimer.classList.add('d-none');
+                    localStorage.removeItem('resendTimerEnd');
+                    timeLeft = 60;
+                }
+            }, 1000);
+        }
+
+        resendBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+
+            // Show sending state
+            const btnText = this.querySelector('.auth__btn-text');
+            const originalText = btnText.textContent;
+            btnText.textContent = '{% trans "Sending..." %}';
+
+            // Simulate API call
+            setTimeout(() => {
+                // Restore button text
+                btnText.textContent = originalText;
+
+                // Start timer
+                timeLeft = 60;
+                startTimer();
+
+                // Save timer end time to localStorage
+                const timerEnd = new Date();
+                timerEnd.setSeconds(timerEnd.getSeconds() + 60);
+                localStorage.setItem('resendTimerEnd', timerEnd.toISOString());
+
+                // Show success message
+                showToast('{% trans "Verification email resent successfully!" %}', 'success');
+            }, 1000);
+        });
+    }
+
+    // Toast Notification Function
+    function showToast(message, type = 'info') {
+        const toastContainer = document.getElementById('toast-container') || createToastContainer();
+        const toastId = 'toast-' + Date.now();
+
+        const toast = document.createElement('div');
+        toast.id = toastId;
+        toast.className = `toast align-items-center border-0 bg-${type} bg-opacity-10`;
+        toast.setAttribute('role', 'alert');
+        toast.setAttribute('aria-live', 'assertive');
+        toast.setAttribute('aria-atomic', 'true');
+
+        const iconClass = type === 'success' ? 'fa-check-circle' :
+                         type === 'error' ? 'fa-exclamation-triangle' :
+                         'fa-info-circle';
+
+        toast.innerHTML = `
+            <div class="d-flex">
+                <div class="toast-body d-flex align-items-center gap-2">
+                    <i class="fas ${iconClass} text-${type}"></i>
+                    ${message}
+                </div>
+                <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+            </div>
+        `;
+
+        toastContainer.appendChild(toast);
+
+        const bsToast = new bootstrap.Toast(toast, {
+            animation: true,
+            autohide: true,
+            delay: 5000
+        });
+
+        bsToast.show();
+
+        // Remove toast after hiding
+        toast.addEventListener('hidden.bs.toast', function() {
+            this.remove();
+        });
+    }
+
+    function createToastContainer() {
+        const container = document.createElement('div');
+        container.id = 'toast-container';
+        container.className = 'toast-container position-fixed top-0 end-0 p-3';
+        container.style.zIndex = '9999';
+        document.body.appendChild(container);
+        return container;
+    }
+
+    // Add card animation on load
+    setTimeout(() => {
+        const card = document.querySelector('.auth__form');
+        if (card) {
+            card.style.opacity = '0';
+            card.style.transform = 'translateY(20px)';
+
+            setTimeout(() => {
+                card.style.transition = 'all 0.4s ease';
+                card.style.opacity = '1';
+                card.style.transform = 'translateY(0)';
+            }, 10);
+        }
+    }, 100);
+});
+</script>

@@ -1,0 +1,163 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Welcome! — Fusion Research</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #0f0c29, #302b63, #24243e);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+        }
+        .card {
+            max-width: 520px;
+            width: 100%;
+            background: #fff;
+            border-radius: 20px;
+            padding: 48px 40px;
+            text-align: center;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            animation: slideUp 0.6s ease-out;
+        }
+        @keyframes slideUp {
+            from { opacity: 0; transform: translateY(30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .success-icon {
+            width: 88px;
+            height: 88px;
+            background: linear-gradient(135deg, #10b981, #34d399);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 24px;
+            font-size: 40px;
+            box-shadow: 0 8px 24px rgba(16, 185, 129, 0.3);
+            animation: bounceIn 0.8s ease-out 0.3s both;
+        }
+        @keyframes bounceIn {
+            0% { transform: scale(0.3); opacity: 0; }
+            50% { transform: scale(1.05); }
+            70% { transform: scale(0.9); }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .confetti {
+            font-size: 28px;
+            margin-bottom: 16px;
+            animation: float 2s ease-in-out infinite;
+        }
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-8px); }
+        }
+        h1 {
+            font-size: 28px;
+            font-weight: 800;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+        .subtitle {
+            font-size: 15px;
+            color: #6b7280;
+            line-height: 1.7;
+            margin-bottom: 32px;
+        }
+        .user-name {
+            font-weight: 700;
+            color: #6C63FF;
+        }
+        .next-steps {
+            background: #f8f9ff;
+            border-radius: 12px;
+            padding: 24px;
+            margin-bottom: 28px;
+            text-align: left;
+        }
+        .next-steps h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1a1a2e;
+            margin-bottom: 12px;
+        }
+        .step {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 8px 0;
+            font-size: 14px;
+            color: #444;
+        }
+        .step-num {
+            width: 28px;
+            height: 28px;
+            background: linear-gradient(135deg, #6C63FF, #4ECDC4);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 12px;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .action-btn {
+            display: inline-block;
+            padding: 14px 40px;
+            background: linear-gradient(135deg, #6C63FF, #5a52e0);
+            color: #fff;
+            border-radius: 50px;
+            text-decoration: none;
+            font-weight: 700;
+            font-size: 16px;
+            transition: all 0.3s;
+            box-shadow: 0 4px 16px rgba(108,99,255,0.3);
+        }
+        .action-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(108,99,255,0.4);
+        }
+    </style>
+</head>
+<body>
+    <div class="card">
+        <div class="confetti">🎊</div>
+        <div class="success-icon">🎉</div>
+
+        <h1>{% trans "Account Activated!" %}</h1>
+        <p class="subtitle">
+            {% if user %}
+            Congratulations <span class="user-name">{{ user.get_full_name }}</span>!
+            {% endif %}
+            Your account is now active and ready to use.
+            Welcome to Fusion Research!
+        </p>
+
+        <div class="next-steps">
+            <h3>{% trans "🚀 What's Next?" %}</h3>
+            <div class="step">
+                <span class="step-num">1</span>
+                <span>{% trans "Complete your profile with your details" %}</span>
+            </div>
+            <div class="step">
+                <span class="step-num">2</span>
+                <span>{% trans "Browse available courses and learning tracks" %}</span>
+            </div>
+            <div class="step">
+                <span class="step-num">3</span>
+                <span>{% trans "Join your first course and start learning" %}</span>
+            </div>
+        </div>
+
+        <a href="{% url 'handlers:dashboard' %}" class="action-btn">{% trans "Go to Dashboard →" %}</a>
+    </div>
+</body>
+</html>

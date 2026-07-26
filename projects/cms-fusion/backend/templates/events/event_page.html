@@ -1,0 +1,11 @@
+
+{% extends "base_page.html" %}
+
+{# Fusion-only Wagtail EventPage template (option-a pattern).
+   Neutralises the cross-site leak by living in the site-specific
+   `projects/fu-research/templates/` tree rather than the shared
+   `projects/assets/templates/` tree. Resolved via Django's APP_DIRS
+   chain — the lookup key `events/event_page.html` resolves here first. #}
+{% block content %}
+    {% comp "events/main.html" /%}
+{% endblock %}

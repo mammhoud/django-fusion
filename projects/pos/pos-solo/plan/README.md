@@ -9,7 +9,7 @@
 
 | # | Plan | Status | Progress |
 |---|------|:------:|:--------:|
-| 1 | [Enhancement Plan](./ENHANCEMENT_PLAN.md) — 4 sub-plans: reorganization (6h), dev workflow (2h), CTC theme (3h), port unification (2h) | 🟡 In Progress | 5% |
+| 1 | [Enhancement Plan](./ENHANCEMENT_PLAN.md) — 4 sub-plans: reorganization (6h), dev workflow (2h), CTC theme (3h), port unification (2h) | 🟡 In Progress | 10% |
 
 ---
 

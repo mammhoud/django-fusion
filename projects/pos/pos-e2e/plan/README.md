@@ -9,7 +9,7 @@
 
 | # | Plan | Status | Progress |
 |---|------|:------:|:--------:|
-| 1 | [Test Coverage Expansion](./TEST_COVERAGE_EXPANSION.md) — 4 phases: 56 API tests (4h), 25 flow tests (6h), 20 visual tests (2h), CI (1h) | ⬜ Not Started | 0% |
+| 1 | [Test Coverage Expansion](./TEST_COVERAGE_EXPANSION.md) — 4 phases: 56 API tests (4h), 25 flow tests (6h), 20 visual tests (2h), CI (1h) | 🟡 In Progress | 25% |
 
 ---
 
