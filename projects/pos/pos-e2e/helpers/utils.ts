@@ -54,22 +54,6 @@ export function captureConsoleErrors(page: Page) {
 }
 
 /**
- * Check if the dev server is reachable by making a HEAD request to the base URL.
- * Returns true if the server is running, false otherwise.
- */
-export async function isServerReachable(page: Page): Promise<boolean> {
-  if (!isValidPage(page)) return false;
-  try {
-    const response = await page.request.get(page.url() || 'http://localhost:1420', {
-      timeout: 3000,
-    });
-    return response.ok();
-  } catch {
-    return false;
-  }
-}
-
-/**
  * Wait for a FusionPage fragment to finish loading.
  * After the initial page load, FusionPage may fetch a fragment
  * from the sidecar. This waits for that to complete.

@@ -71,7 +71,9 @@ describe('Sale Page', () => {
     });
     const fries = screen.getAllByText('French Fries');
     expect(fries.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/sale\.totalAmount|Total Amount/)).toBeInTheDocument();
+    // totalAmount appears in both mobile summary + sidebar — use getAllByText
+    const totalAmounts = screen.getAllByText(/sale\.totalAmount|Total Amount/);
+    expect(totalAmounts.length).toBeGreaterThanOrEqual(1);
   });
 
   it('renders order type selector with three options', async () => {
@@ -81,8 +83,11 @@ describe('Sale Page', () => {
       const dineIn = screen.getAllByText(/sale\.dineIn|Dine-in/);
       expect(dineIn.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/sale\.takeaway|Takeaway/)).toBeInTheDocument();
-    expect(screen.getByText(/sale\.delivery|Delivery/)).toBeInTheDocument();
+    // takeaway and delivery appear in both mobile + desktop — use getAllByText
+    const takeawayEls = screen.getAllByText(/sale\.takeaway|Takeaway/);
+    expect(takeawayEls.length).toBeGreaterThanOrEqual(1);
+    const deliveryEls = screen.getAllByText(/sale\.delivery|Delivery/);
+    expect(deliveryEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows table selector when Dine-in is selected by default', async () => {
@@ -92,7 +97,9 @@ describe('Sale Page', () => {
       const tables = screen.getAllByText(/tableOption|Table/);
       expect(tables.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByDisplayValue(/sale\.tableOption|Table 1/)).toBeInTheDocument();
+    // tableOption appears in both mobile + desktop selects — use getAllByDisplayValue
+    const tableOptions = screen.getAllByDisplayValue(/sale\.tableOption|Table 1/);
+    expect(tableOptions.length).toBeGreaterThanOrEqual(1);
   });
 
   it('switches to delivery and shows delivery fields', async () => {
@@ -103,12 +110,17 @@ describe('Sale Page', () => {
       expect(dineIn.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/sale\.delivery|Delivery/));
+    // delivery appears in both mobile + desktop — click the mobile one (first)
+    const deliveryEls = screen.getAllByText(/sale\.delivery|Delivery/);
+    await userEvent.click(deliveryEls[0]);
 
+    // deliveryType and deliveryAddress only appear when delivery is selected
     await waitFor(() => {
-      expect(screen.getByText(/sale\.deliveryType|Delivery Type/)).toBeInTheDocument();
+      const deliveryTypes = screen.getAllByText(/sale\.deliveryType|Delivery Type/);
+      expect(deliveryTypes.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByPlaceholderText(/sale\.deliveryAddress|Delivery address/)).toBeInTheDocument();
+    const deliveryAddresses = screen.getAllByPlaceholderText(/sale\.deliveryAddress|Delivery address/);
+    expect(deliveryAddresses.length).toBeGreaterThanOrEqual(1);
     // Delivery fee of 50.00 should appear somewhere
     const feeTexts = screen.getAllByText(/50.00/);
     expect(feeTexts.length).toBeGreaterThan(0);
@@ -117,12 +129,18 @@ describe('Sale Page', () => {
   it('renders employee assignment dropdown', async () => {
     renderWithRouter(<Sale />);
 
+    // assignTo appears in both mobile + desktop — use getAllByText
     await waitFor(() => {
-      expect(screen.getByText(/sale\.assignTo|Assign to/)).toBeInTheDocument();
+      const assignTos = screen.getAllByText(/sale\.assignTo|Assign to/);
+      expect(assignTos.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText('Ali')).toBeInTheDocument();
-    expect(screen.getByText('Bilal')).toBeInTheDocument();
-    expect(screen.getByText(/sale\.noAssignment|— No assignment —/)).toBeInTheDocument();
+    // Ali and Bilal appear in both mobile + desktop selects — use getAllByText
+    const aliEls = screen.getAllByText('Ali');
+    expect(aliEls.length).toBeGreaterThanOrEqual(1);
+    const bilalEls = screen.getAllByText('Bilal');
+    expect(bilalEls.length).toBeGreaterThanOrEqual(1);
+    const noAssignmentEls = screen.getAllByText(/sale\.noAssignment|— No assignment —/);
+    expect(noAssignmentEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('adds a product to cart when + button is clicked', async () => {
@@ -135,8 +153,10 @@ describe('Sale Page', () => {
 
     await clickAddToCart('Chicken Burger');
 
+    // cartSummary appears in both main content and sidebar — use getAllByText
     await waitFor(() => {
-      expect(screen.getByText(/sale\.cartSummary|Cart Summary/)).toBeInTheDocument();
+      const summaries = screen.getAllByText(/sale\.cartSummary|Cart Summary/);
+      expect(summaries.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -151,18 +171,24 @@ describe('Sale Page', () => {
 
     await clickAddToCart('Chicken Burger');
 
+    // cartSummary appears in both main content and sidebar — use getAllByText
     await waitFor(() => {
-      expect(screen.getByText(/sale\.cartSummary|Cart Summary/)).toBeInTheDocument();
+      const summaries = screen.getAllByText(/sale\.cartSummary|Cart Summary/);
+      expect(summaries.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/sale\.completeSale|Complete Sale/));
+    // completeSale appears in desktop button + mobile sticky bar — click the first one
+    const completeButtons = screen.getAllByText(/sale\.completeSale|Complete Sale/);
+    await userEvent.click(completeButtons[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/sale\.saleComplete|Sale Complete/)).toBeInTheDocument();
+      const saleCompletes = screen.getAllByText(/sale\.saleComplete|Sale Complete/);
+      expect(saleCompletes.length).toBeGreaterThanOrEqual(1);
     });
     const dineInTexts = screen.getAllByText(/sale\.dineIn|Dine-in/);
     expect(dineInTexts.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/sale\.startNewSale|Start New Sale/)).toBeInTheDocument();
+    const startNewSaleBtns = screen.getAllByText(/sale\.startNewSale|Start New Sale/);
+    expect(startNewSaleBtns.length).toBeGreaterThanOrEqual(1);
   });
 
   it('resets form after starting a new sale', async () => {
@@ -176,21 +202,29 @@ describe('Sale Page', () => {
 
     await clickAddToCart('Chicken Burger');
 
+    // cartSummary appears in both main content and sidebar — use getAllByText
     await waitFor(() => {
-      expect(screen.getByText(/sale\.cartSummary|Cart Summary/)).toBeInTheDocument();
+      const summaries = screen.getAllByText(/sale\.cartSummary|Cart Summary/);
+      expect(summaries.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/sale\.completeSale|Complete Sale/));
+    // completeSale appears in desktop button + mobile sticky bar — click the first one
+    const completeButtons = screen.getAllByText(/sale\.completeSale|Complete Sale/);
+    await userEvent.click(completeButtons[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/sale\.saleComplete|Sale Complete/)).toBeInTheDocument();
+      const saleCompletes = screen.getAllByText(/sale\.saleComplete|Sale Complete/);
+      expect(saleCompletes.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/sale\.startNewSale|Start New Sale/));
+    // startNewSale appears only in the success dialog — single element
+    const startNewSaleBtns = screen.getAllByText(/sale\.startNewSale|Start New Sale/);
+    await userEvent.click(startNewSaleBtns[0]);
 
     await waitFor(() => {
       expect(screen.queryByText(/sale\.saleComplete|Sale Complete/)).not.toBeInTheDocument();
-      expect(screen.queryByText(/sale\.cartSummary|Cart Summary/)).not.toBeInTheDocument();
+      const summaries = screen.queryAllByText(/sale\.cartSummary|Cart Summary/);
+      expect(summaries.length).toBe(0);
     });
   });
 
@@ -202,7 +236,9 @@ describe('Sale Page', () => {
       expect(burgers.length).toBeGreaterThanOrEqual(1);
     });
 
-    const completeBtn = screen.getByText(/sale\.completeSale|Complete Sale/).closest('button');
+    // completeSale appears in desktop button + mobile sticky bar — pick the first one
+    const completeButtons = screen.getAllByText(/sale\.completeSale|Complete Sale/);
+    const completeBtn = completeButtons[0].closest('button');
     expect(completeBtn).toBeDisabled();
   });
 

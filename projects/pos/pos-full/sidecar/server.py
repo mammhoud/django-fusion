@@ -367,6 +367,10 @@ from middleware.fusion import register_fusion_health_routes
 # ── Signal Handlers (logging, webhooks, audit) ──
 import signal_handlers  # noqa: F401 - registers @receiver handlers
 import sync_signals  # noqa: F401 - registers sync tracking receivers
+import ws_sync_signals  # noqa: F401 - registers real-time cloud sync receivers
+
+# ── Cloud WebSocket sync client ──
+from ws_client import start_client as _start_cloud_ws_client
 
 # ── Signal Models (audit trail) ──
 from models.audit import SignalEvent
@@ -658,6 +662,12 @@ def main():
         # Make scheduler stats available to route handlers
         from routes import state as _routes_state
         _routes_state.sync_scheduler = sync_scheduler
+
+    # ── Start cloud WebSocket real-time sync client ──
+    try:
+        _start_cloud_ws_client()
+    except Exception as _ws_exc:
+        logger.warning("Cloud WebSocket sync client failed to start: %s", _ws_exc)
 
     logger.info(
         "Auto-sync: enabled=%s interval=%ds node_id=%s",
