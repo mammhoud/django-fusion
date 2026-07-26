@@ -48,14 +48,18 @@ describe('Recipes Page', () => {
     renderWithRouter(<Recipes />);
 
     await waitFor(() => {
-      expect(screen.getByText(/recipes\.totalRecipes|Total Recipes/)).toBeInTheDocument();
+      const totalRecipesEls = screen.getAllByText(/recipes\.totalRecipes|Total Recipes/);
+      expect(totalRecipesEls.length).toBeGreaterThanOrEqual(1);
     });
     // "2" active recipes — use getAllByText since it appears in multiple summary cards
     const twos = screen.getAllByText('2', { exact: true });
     expect(twos.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/recipes\.productsUsed|Products Used/)).toBeInTheDocument();
-    expect(screen.getByText(/recipes\.avgCostPerRecipe|Avg Cost\/Recipe/)).toBeInTheDocument();
-    expect(screen.getByText(/recipes\.avgProfitMargin|Avg Profit Margin/)).toBeInTheDocument();
+    const productsUsedEls = screen.getAllByText(/recipes\.productsUsed|Products Used/);
+    expect(productsUsedEls.length).toBeGreaterThanOrEqual(1);
+    const avgCostEls = screen.getAllByText(/recipes\.avgCostPerRecipe|Avg Cost\/Recipe/);
+    expect(avgCostEls.length).toBeGreaterThanOrEqual(1);
+    const avgProfitEls = screen.getAllByText(/recipes\.avgProfitMargin|Avg Profit Margin/);
+    expect(avgProfitEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows recipe cards with product names', async () => {
@@ -65,8 +69,10 @@ describe('Recipes Page', () => {
       const burgers = screen.getAllByText('Chicken Burger');
       expect(burgers.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText('Biryani')).toBeInTheDocument();
-    expect(screen.getByText('Pizza')).toBeInTheDocument();
+    const biryaniEls = screen.getAllByText('Biryani');
+    expect(biryaniEls.length).toBeGreaterThanOrEqual(1);
+    const pizzaEls = screen.getAllByText('Pizza');
+    expect(pizzaEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows cost analysis on recipe cards', async () => {
@@ -85,7 +91,8 @@ describe('Recipes Page', () => {
     renderWithRouter(<Recipes />);
 
     await waitFor(() => {
-      expect(screen.getByPlaceholderText(/recipes\.searchPlaceholder|Search by product name/)).toBeInTheDocument();
+      const searchInputs = screen.getAllByPlaceholderText(/recipes\.searchPlaceholder|Search by product name/);
+      expect(searchInputs.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -93,7 +100,8 @@ describe('Recipes Page', () => {
     renderWithRouter(<Recipes />);
 
     await waitFor(() => {
-      expect(screen.getByText(/recipes\.addRecipe|Add Recipe/)).toBeInTheDocument();
+      const addRecipeEls = screen.getAllByText(/recipes\.addRecipe|Add Recipe/);
+      expect(addRecipeEls.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -102,10 +110,11 @@ describe('Recipes Page', () => {
     renderWithRouter(<Recipes />);
 
     await waitFor(() => {
-      expect(screen.getByText(/recipes\.addRecipe|Add Recipe/)).toBeInTheDocument();
+      const addRecipeEls = screen.getAllByText(/recipes\.addRecipe|Add Recipe/);
+      expect(addRecipeEls.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/recipes\.addRecipe|Add Recipe/));
+    await userEvent.click(screen.getAllByText(/recipes\.addRecipe|Add Recipe/)[0]);
 
     await waitFor(() => {
       const modalTitles = screen.getAllByText(/recipes\.createRecipeTitle|Create New Recipe/);
@@ -123,9 +132,9 @@ describe('Recipes Page', () => {
       expect(burgers.length).toBeGreaterThanOrEqual(1);
     });
 
-    const searchInput = screen.getByPlaceholderText(/recipes\.searchPlaceholder|Search by product name/);
-    await userEvent.type(searchInput, 'Biryani');
-    expect(searchInput).toHaveValue('Biryani');
+    const searchInputs = screen.getAllByPlaceholderText(/recipes\.searchPlaceholder|Search by product name/);
+    await userEvent.type(searchInputs[0], 'Biryani');
+    expect(searchInputs[0]).toHaveValue('Biryani');
   });
 
   it('handles empty recipes gracefully', async () => {
@@ -137,11 +146,13 @@ describe('Recipes Page', () => {
     renderWithRouter(<Recipes />);
 
     await waitFor(() => {
-      expect(screen.getByText(/recipes\.totalRecipes|Total Recipes/)).toBeInTheDocument();
+      const totalRecipesEls = screen.getAllByText(/recipes\.totalRecipes|Total Recipes/);
+      expect(totalRecipesEls.length).toBeGreaterThanOrEqual(1);
     });
     const zeros = screen.getAllByText('0', { exact: true });
     expect(zeros.length).toBeGreaterThanOrEqual(1);
-    expect(screen.getByText(/recipes\.noRecipes|No recipes yet/)).toBeInTheDocument();
+    const noRecipesEls = screen.getAllByText(/recipes\.noRecipes|No recipes yet/);
+    expect(noRecipesEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('handles API failure gracefully', async () => {
@@ -153,7 +164,8 @@ describe('Recipes Page', () => {
     renderWithRouter(<Recipes />);
 
     await waitFor(() => {
-      expect(screen.getByText(/recipes\.totalRecipes|Total Recipes/)).toBeInTheDocument();
+      const totalRecipesEls = screen.getAllByText(/recipes\.totalRecipes|Total Recipes/);
+      expect(totalRecipesEls.length).toBeGreaterThanOrEqual(1);
     });
     const zeros = screen.getAllByText('0', { exact: true });
     expect(zeros.length).toBeGreaterThanOrEqual(1);

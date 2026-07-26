@@ -2,7 +2,7 @@
 # POS — Root Makefile (v2.1)
 # ============================================================================
 # Orchestrates 4 POS editions + Cloud CRM server + Django Portals:
-#   - pos-mini    : Minimal Tauri + Rust/Diesel — local CRUD, no sidecar
+#   - forge-pos   : Forge POS — lightweight Tauri + Rust/Diesel edition
 #   - pos-solo    : Core + sidecar + Portal (node + server + cloud sync)
 #   - pos-full    : Core + sidecar + Portal (server + cloud CRM master)
 #   - pos-client  : Vue 3 + Tauri desktop app (separate client)
@@ -31,7 +31,7 @@
 
 # ── Edition directories ────────────────────────────────────────────────────
 # Used for delegation targets below.
-POS_MINI  := pos-mini
+FORGE_POS := forge-pos
 POS_SOLO  := pos-solo
 POS_FULL  := pos-full
 POS_CLIENT := pos-client
@@ -103,7 +103,7 @@ help:                 ## Show this help menu
 	@echo '  make publish           Prepare publish bundle'
 	@echo ''
 	@echo '── Direct edition access ───────────────────────────────────'
-	@echo '  Delegated: make -C pos-mini <target>  (or pos-solo, pos-full, pos-client)'
+	@echo '  Delegated: make -C forge-pos <target>  (or pos-solo, pos-full, pos-client)'
 	@echo '  See per-edition Makefile for full target list.'
 	@echo ''
 
@@ -140,19 +140,19 @@ clean:                ## Delete generated editions + build artifacts
 	@echo '  (pos-full/ preserved as canonical source)'
 
 # ── POS Mini Edition ───────────────────────────────────────────────────
-# Delegates to pos-mini/Makefile for all targets.
+# Delegates to forge-pos/Makefile for all targets.
 
 setup-mini:           ## Install mini edition dependencies
-	$(MAKE) -C $(POS_MINI) install
+	$(MAKE) -C $(FORGE_POS) install
 
 dev-mini:             ## Start mini Vite dev server (port 1420)
-	$(MAKE) -C $(POS_MINI) dev
+	$(MAKE) -C $(FORGE_POS) dev
 
 build-mini:           ## Build mini desktop app
-	$(MAKE) -C $(POS_MINI) build
+	$(MAKE) -C $(FORGE_POS) build
 
 check-mini:           ## Full check (mini)
-	$(MAKE) -C $(POS_MINI) check
+	$(MAKE) -C $(FORGE_POS) check
 
 # ── Solo Edition ──────────────────────────────────────────────────────────
 # Delegates to pos-solo/Makefile for frontend/Rust targets.
