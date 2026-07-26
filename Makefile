@@ -325,7 +325,7 @@ help:
 	@echo "  make vresume           - Delegate to projects/Makefile with WEBSITE=vresume"
 	@echo "  make cypercloud        - Delegate to projects/cypercloud/Makefile (AI chat customizer)"
 	@echo '  make pos               - Show POS targets from projects/pos/Makefile'
-	@echo '  make pos-mini          - Delegate to projects/pos/pos-mini/Makefile (minimal edition)'
+	@echo '  make forge-pos         - Delegate to projects/pos/forge-pos/Makefile (forge POS edition)'
 	@echo '  make pos-solo          - Delegate to projects/pos/pos-solo/Makefile (branch device)'
 	@echo '  make pos-full          - Delegate to projects/pos/pos-full/Makefile (master manager)'
 	@echo '  make pos-client        - Delegate to projects/pos/pos-client/Makefile (Vue 3 client)'
@@ -1211,8 +1211,8 @@ pos:
 	@echo "📋 POS targets:"
 	@$(MAKE) -C $(POS_DIR) help
 
-pos-mini:
-	@$(MAKE) -C $(POS_DIR)/pos-mini $(filter-out $@,$(MAKECMDGOALS))
+forge-pos:
+	@$(MAKE) -C $(POS_DIR)/forge-pos $(filter-out $@,$(MAKECMDGOALS))
 
 pos-solo:
 	@$(MAKE) -C $(POS_DIR)/pos-solo $(filter-out $@,$(MAKECMDGOALS))

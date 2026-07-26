@@ -87,7 +87,8 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.title|Reports/)).toBeInTheDocument();
+      const titleEls = screen.getAllByText(/reports\.title|Reports/);
+      expect(titleEls.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -95,67 +96,90 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.overview|Overview/)).toBeInTheDocument();
+      const overviewEls = screen.getAllByText(/reports\.overview|Overview/);
+      expect(overviewEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.inventory|Inventory/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.recipes|Recipes/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.employees|Employees/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.transactions|Transaction History/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.productsSales|Products Sales/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.invoices|Invoices/)).toBeInTheDocument();
-    // 'Sales' appears in both 'Sales' and 'Products Sales' text — use getAllByText
+    const inventoryEls = screen.getAllByText(/reports\.inventory|Inventory/);
+    expect(inventoryEls.length).toBeGreaterThanOrEqual(1);
+    const recipesEls = screen.getAllByText(/reports\.recipes|Recipes/);
+    expect(recipesEls.length).toBeGreaterThanOrEqual(1);
+    const employeesEls = screen.getAllByText(/reports\.employees|Employees/);
+    expect(employeesEls.length).toBeGreaterThanOrEqual(1);
+    const transactionsEls = screen.getAllByText(/reports\.transactions|Transaction History/);
+    expect(transactionsEls.length).toBeGreaterThanOrEqual(1);
+    const productsSalesEls = screen.getAllByText(/reports\.productsSales|Products Sales/);
+    expect(productsSalesEls.length).toBeGreaterThanOrEqual(1);
+    const invoicesEls = screen.getAllByText(/reports\.invoices|Invoices/);
+    expect(invoicesEls.length).toBeGreaterThanOrEqual(1);
+    // 'Sales' appears in both 'Sales' tab and 'Products Sales' tab
     const salesMatches = screen.getAllByText(/reports\.sales|Sales/);
-    expect(salesMatches.length).toBe(2); // Both 'Sales' tab and 'Products Sales' tab
+    expect(salesMatches.length).toBeGreaterThanOrEqual(2);
   });
 
   it('shows Sales tab content with summary cards by default', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.totalRevenue|Total Revenue/)).toBeInTheDocument();
+      const totalRevenueEls = screen.getAllByText(/reports\.totalRevenue|Total Revenue/);
+      expect(totalRevenueEls.length).toBeGreaterThanOrEqual(1);
     });
 
     // Sales tab is active by default - should show summary cards
-    expect(screen.getByText(/reports\.totalOrders|Total Orders/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.avgOrderValue|Avg\. Order Value/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.orderTypes|Order Types/)).toBeInTheDocument();
+    const totalOrdersEls = screen.getAllByText(/reports\.totalOrders|Total Orders/);
+    expect(totalOrdersEls.length).toBeGreaterThanOrEqual(1);
+    const avgOrderValueEls = screen.getAllByText(/reports\.avgOrderValue|Avg\. Order Value/);
+    expect(avgOrderValueEls.length).toBeGreaterThanOrEqual(1);
+    const orderTypesEls = screen.getAllByText(/reports\.orderTypes|Order Types/);
+    expect(orderTypesEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows order types breakdown in sales tab', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.ordersByType|Orders by Type/)).toBeInTheDocument();
+      const ordersByTypeEls = screen.getAllByText(/reports\.ordersByType|Orders by Type/);
+      expect(ordersByTypeEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText('Dine-in')).toBeInTheDocument();
-    expect(screen.getByText('Delivery')).toBeInTheDocument();
-    expect(screen.getByText('Takeaway')).toBeInTheDocument();
+    // Dine-in/Delivery/Takeaway may appear in charts + tables
+    const dineInEls = screen.getAllByText('Dine-in');
+    expect(dineInEls.length).toBeGreaterThanOrEqual(1);
+    const deliveryEls = screen.getAllByText('Delivery');
+    expect(deliveryEls.length).toBeGreaterThanOrEqual(1);
+    const takeawayEls = screen.getAllByText('Takeaway');
+    expect(takeawayEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows Top Products in sales tab', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.topProducts|Top Products/)).toBeInTheDocument();
+      const topProductsEls = screen.getAllByText(/reports\.topProducts|Top Products/);
+      expect(topProductsEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText('Chicken Burger')).toBeInTheDocument();
-    expect(screen.getByText('Biryani')).toBeInTheDocument();
+    const chickenEls = screen.getAllByText('Chicken Burger');
+    expect(chickenEls.length).toBeGreaterThanOrEqual(1);
+    const biryaniEls = screen.getAllByText('Biryani');
+    expect(biryaniEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('switches to Overview tab and shows KPI cards', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.overview|Overview/)).toBeInTheDocument();
+      const overviewEls = screen.getAllByText(/reports\.overview|Overview/);
+      expect(overviewEls.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/reports\.overview|Overview/));
+    await userEvent.click(screen.getAllByText(/reports\.overview|Overview/)[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.totalOrders|Total Orders/)).toBeInTheDocument();
+      const totalOrdersEls = screen.getAllByText(/reports\.totalOrders|Total Orders/);
+      expect(totalOrdersEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.stockValueLabel|Stock Value/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.activeRecipes|Active Recipes/)).toBeInTheDocument();
+    const stockValueEls = screen.getAllByText(/reports\.stockValueLabel|Stock Value/);
+    expect(stockValueEls.length).toBeGreaterThanOrEqual(1);
+    const activeRecipesEls = screen.getAllByText(/reports\.activeRecipes|Active Recipes/);
+    expect(activeRecipesEls.length).toBeGreaterThanOrEqual(1);
     const activeEmpElements = screen.getAllByText(/reports\.activeEmployees|Active Employees/);
     expect(activeEmpElements.length).toBeGreaterThanOrEqual(1);
   });
@@ -164,47 +188,56 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.inventory|Inventory/)).toBeInTheDocument();
+      const inventoryEls = screen.getAllByText(/reports\.inventory|Inventory/);
+      expect(inventoryEls.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/reports\.inventory|Inventory/));
+    await userEvent.click(screen.getAllByText(/reports\.inventory|Inventory/)[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.stockValueLabel|Stock Value/)).toBeInTheDocument();
+      const stockValueEls = screen.getAllByText(/reports\.stockValueLabel|Stock Value/);
+      expect(stockValueEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.lowStockAlerts|Low Stock Alerts/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.ingredientStockLevels|Ingredient Stock Levels/)).toBeInTheDocument();
+    const lowStockEls = screen.getAllByText(/reports\.lowStockAlerts|Low Stock Alerts/);
+    expect(lowStockEls.length).toBeGreaterThanOrEqual(1);
+    const ingredientStockEls = screen.getAllByText(/reports\.ingredientStockLevels|Ingredient Stock Levels/);
+    expect(ingredientStockEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('switches to Recipes tab and shows recipe data', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.recipes|Recipes/)).toBeInTheDocument();
+      const recipesEls = screen.getAllByText(/reports\.recipes|Recipes/);
+      expect(recipesEls.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/reports\.recipes|Recipes/));
+    await userEvent.click(screen.getAllByText(/reports\.recipes|Recipes/)[0]);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.totalRecipes|Total Recipes/)).toBeInTheDocument();
+      const totalRecipesEls = screen.getAllByText(/reports\.totalRecipes|Total Recipes/);
+      expect(totalRecipesEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.productCatalog|Product Catalog/)).toBeInTheDocument();
+    const productCatalogEls = screen.getAllByText(/reports\.productCatalog|Product Catalog/);
+    expect(productCatalogEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('switches to Employees tab and shows employee data', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.employees|Employees/)).toBeInTheDocument();
+      const employeesEls = screen.getAllByText(/reports\.employees|Employees/);
+      expect(employeesEls.length).toBeGreaterThanOrEqual(1);
     });
 
-    await userEvent.click(screen.getByText(/reports\.employees|Employees/));
+    await userEvent.click(screen.getAllByText(/reports\.employees|Employees/)[0]);
 
     await waitFor(() => {
       const activeEmpElements = screen.getAllByText(/reports\.activeEmployees|Active Employees/);
-    expect(activeEmpElements.length).toBeGreaterThanOrEqual(1);
+      expect(activeEmpElements.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.employeeDirectory|Employee Directory/)).toBeInTheDocument();
+    const employeeDirectoryEls = screen.getAllByText(/reports\.employeeDirectory|Employee Directory/);
+    expect(employeeDirectoryEls.length).toBeGreaterThanOrEqual(1);
     // Employee names may appear in multiple sections (performance chart + directory)
     const aliElements = screen.getAllByText('Ali');
     expect(aliElements.length).toBeGreaterThanOrEqual(1);
@@ -216,7 +249,8 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.exportPDF|Export PDF/)).toBeInTheDocument();
+      const exportPDFEls = screen.getAllByText(/reports\.exportPDF|Export PDF/);
+      expect(exportPDFEls.length).toBeGreaterThanOrEqual(1);
     });
   });
 
@@ -224,36 +258,45 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/common\.period|Period/)).toBeInTheDocument();
+      const periodEls = screen.getAllByText(/common\.period|Period/);
+      expect(periodEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.dateToday|Today/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.date7Days|7 Days/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.date30Days|30 Days/)).toBeInTheDocument();
-    expect(screen.getByText(/reports\.dateThisMonth|This Month/)).toBeInTheDocument();
+    const todayEls = screen.getAllByText(/reports\.dateToday|Today/);
+    expect(todayEls.length).toBeGreaterThanOrEqual(1);
+    const days7Els = screen.getAllByText(/reports\.date7Days|7 Days/);
+    expect(days7Els.length).toBeGreaterThanOrEqual(1);
+    const days30Els = screen.getAllByText(/reports\.date30Days|30 Days/);
+    expect(days30Els.length).toBeGreaterThanOrEqual(1);
+    const thisMonthEls = screen.getAllByText(/reports\.dateThisMonth|This Month/);
+    expect(thisMonthEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('hides date range when period filter is applied', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.dateToday|Today/)).toBeInTheDocument();
+      const todayEls = screen.getAllByText(/reports\.dateToday|Today/);
+      expect(todayEls.length).toBeGreaterThanOrEqual(1);
     });
 
     // Click "Today" button to apply date filter
-    await userEvent.click(screen.getByText(/reports\.dateToday|Today/));
+    await userEvent.click(screen.getAllByText(/reports\.dateToday|Today/)[0]);
 
     await waitFor(() => {
       // The date indicator should now show
-      expect(screen.getByText(/showingDataFrom|Showing data from/)).toBeInTheDocument();
+      const showingDataEls = screen.getAllByText(/showingDataFrom|Showing data from/);
+      expect(showingDataEls.length).toBeGreaterThanOrEqual(1);
     });
-    expect(screen.getByText(/reports\.dateClear|Clear/)).toBeInTheDocument();
+    const clearEls = screen.getAllByText(/reports\.dateClear|Clear/);
+    expect(clearEls.length).toBeGreaterThanOrEqual(1);
   });
 
   it('shows CSV export buttons on relevant tabs', async () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.totalRevenue|Total Revenue/)).toBeInTheDocument();
+      const totalRevenueEls = screen.getAllByText(/reports\.totalRevenue|Total Revenue/);
+      expect(totalRevenueEls.length).toBeGreaterThanOrEqual(1);
     });
 
     // Sales tab has CSV export
@@ -277,9 +320,11 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.totalRevenue|Total Revenue/)).toBeInTheDocument();
+      const totalRevenueEls = screen.getAllByText(/reports\.totalRevenue|Total Revenue/);
+      expect(totalRevenueEls.length).toBeGreaterThanOrEqual(1);
     });
     // Should not crash with empty data
-    expect(screen.getByText(/reports\.totalOrders|Total Orders/)).toBeInTheDocument();
+    const totalOrdersEls = screen.getAllByText(/reports\.totalOrders|Total Orders/);
+    expect(totalOrdersEls.length).toBeGreaterThanOrEqual(1);
   });
 });

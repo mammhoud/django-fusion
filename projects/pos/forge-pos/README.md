@@ -1,8 +1,8 @@
-# POS Mini
+# Forge POS
 
 > Minimal desktop POS — Tauri + React + Rust/Diesel ORM (embedded SQLite). No sidecar.
 
-This is the **mini edition** of POS. It includes the full React frontend with
+This is the **forge-pos edition** of POS (formerly pos-mini). It includes the full React frontend with
 the **Rust/Diesel ORM** backend running directly inside the Tauri process — no
 external Python sidecar needed. All data operations use `invoke()` to call
 Tauri commands backed by Diesel.
@@ -45,6 +45,18 @@ Tauri commands backed by Diesel.
 - Cloud CRM sync
 
 > Need a sidecar API + cloud sync? Use [`pos-solo`](../pos-solo/) or [`pos-full`](../pos-full/).
+
+## Documentation
+
+| Document | Description |
+|----------|-------------|
+| [Commands](docs/commands.md) | Complete CLI reference for dev, build, test, seed |
+| [Project Tree](docs/project-tree.md) | Full directory structure with descriptions |
+| [Rust Backend](docs/rust-code.md) | Diesel ORM schema, 27 operation modules, hardware integration |
+| [Calculations](docs/calculations.md) | All formulas: sales, tax, delivery, payroll, loyalty |
+| [Roles & Permissions](docs/roles-permissions.md) | Permission flags, default roles, UI hiding rules |
+| [Customization](docs/customization.md) | Theme variants, product colors, receipts, i18n, presets |
+| [Shared Architecture](../../docs/POS_ARCHITECTURE.md) | Cross-edition architecture & API documentation |
 
 ## Quick Start
 
@@ -110,8 +122,8 @@ pnpm build:desktop     # Production desktop app (Tauri bundle)
 
 ## Editions Comparison
 
-| Feature | pos-mini | pos-solo | pos-full |
-|---------|----------|----------|----------|
+| Feature | forge-pos | pos-solo | pos-full |
+|---------|:---------:|:--------:|:--------:|
 | Rust/Diesel ORM | ✅ | ❌ (removed) | ❌ (removed) |
 | Robyn sidecar | ❌ | ✅ | ✅ |
 | Cloud CRM sync | ❌ | ✅ | ✅ |
@@ -119,4 +131,5 @@ pnpm build:desktop     # Production desktop app (Tauri bundle)
 | Django ORM models | ❌ | ✅ | ✅ |
 | Node registry | ❌ | ✅ | ✅ |
 | invoke() data ops | ✅ | ❌ (Zustand) | ❌ (Zustand) |
+| Hardware printer | ✅ Direct ESC/POS | ❌ | ❌ |
 | Database | SQLite (Diesel) | SQLite (Django) | SQLite (Django) |
