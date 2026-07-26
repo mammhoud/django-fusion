@@ -14,7 +14,7 @@ localized copies under individual project `plan/` directories.
 **Short name:** `fusion-assets-templates-cleanup`
 **Original spec:** `fusion-assets-templates-cleanup-spec.md` (deleted after adoption)
 **Date:** 2026-07-26
-**Status:** Planned — ready for implementation
+**Status:** In progress — Phase 0 (discovery) complete. Phases 6 (SCSS/build pipeline) and 7 (Docker-Compose & Proxy) implemented for both projects; stale backend compose files removed. Pending full stack test, Phase 8 (shared media), and earlier asset/template migration work.
 
 ### 1. Objective
 
@@ -147,7 +147,7 @@ after verifying the fusion projects no longer need it. Verify that
 ### 4. Implementation Steps
 
 #### Phase 0 — Preparation
-- [ ] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`.
+- [x] Inventory `projects/assets/` references inside `cms-fusion/backend` and `lms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
 - [ ] Generate a file matrix: `cms-fusion/backend` vs `cms/cms-full`, `lms-fusion/backend` vs `cms/lms-full` and `lms/cms`.
 - [ ] Identify exact duplicates, near-duplicates, and diverged files.
 - [ ] Back up or tag any data-only files before deletion.
@@ -211,23 +211,28 @@ after verifying the fusion projects no longer need it. Verify that
 #### Phase 6 — Build Pipeline / Webpack
 - [ ] Decide whether Django needs custom admin assets; if so, add a minimal
   webpack config under `<project>/backend/webpack.config.js`.
-- [ ] Import `<project>/assets/styles/fusion-theme.scss` from the Next.js root
-  layout.
-- [ ] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
-- [ ] Add a Makefile or CI step to compile SCSS to
+- [x] Import `<project>/assets/styles/fusion-theme.scss` from the Next.js root
+  layout (cms-fusion and lms-fusion).
+- [x] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
+- [x] Add a Makefile or CI step to compile SCSS to
   `backend/assets/static/css/fusion.css`.
-- [ ] Verify Django templates reference the compiled CSS via
+- [x] Verify Django templates reference the compiled CSS via
   `{% static 'css/fusion.css' %}`.
 
+  *Notes:* Next.js imports the shared SCSS from `frontend/src/styles/theme/`
+  (symlinked to `../assets/styles`). `npm run build:theme` compiles the same
+  file to `backend/assets/static/css/fusion.css` for Django. Both frontends
+  build successfully.
+
 #### Phase 7 — Docker-Compose & Proxy
-- [ ] Rewrite `cms-fusion/docker-compose.yml` and `lms-fusion/docker-compose.yml`
+- [x] Rewrite `cms-fusion/docker-compose.yml` and `lms-fusion/docker-compose.yml`
   with `backend`, `frontend`, and optional `worker` services.
-- [ ] Remove or archive stale `backend/docker-compose.yml` files that still
+- [x] Remove or archive stale `backend/docker-compose.yml` files that still
   reference `ctc-research`.
-- [ ] Add per-project Traefik dynamic configs under
+- [x] Add per-project Traefik dynamic configs under
   `applications/proxy/traefik/dynamic/`.
-- [ ] Define unique backend/frontend ports and Traefik service names per project.
-- [ ] Configure health checks and ensure the file provider picks up the new
+- [x] Define unique backend/frontend ports and Traefik service names per project.
+- [x] Configure health checks and ensure the file provider picks up the new
   configs.
 - [ ] Test the full stack locally with `docker compose up`.
 

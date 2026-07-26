@@ -3,7 +3,7 @@
 **Short name:** `fusion-assets-templates-cleanup`
 **Master plan:** [`docs/plans.md`](../../../docs/plans.md)
 **Date:** 2026-07-26
-**Status:** Planned
+**Status:** In progress — Phases 1b, 6, and 7 implemented; pending full stack test, Phase 8, and earlier asset/template migration work.
 
 ## Objective
 
@@ -29,7 +29,7 @@ trees, and verify that `django-fusion` customization hooks work for this project
 ## Phases
 
 ### Phase 0 — Discovery
-- [ ] Inventory every `projects/assets/` reference in `lms-fusion/backend`.
+- [x] Inventory every `projects/assets/` reference in `lms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
 - [ ] Generate diff matrices between `lms-fusion/backend` and:
   - `cms/lms-full/`
   - `lms/cms/`
@@ -54,12 +54,12 @@ trees, and verify that `django-fusion` customization hooks work for this project
   `backend/assets/static/branding/`.
 
 ### Phase 1b — SCSS / Branding Pipeline
-- [ ] Install `sass` in `frontend/package.json`.
-- [ ] Import `lms-fusion/assets/styles/fusion-theme.scss` from
+- [x] Install `sass` in `frontend/package.json`.
+- [x] Import `lms-fusion/assets/styles/fusion-theme.scss` from
   `frontend/src/app/layout.tsx`.
-- [ ] Configure the build to compile SCSS to
+- [x] Configure the build to compile SCSS to
   `backend/assets/static/css/fusion.css` for Django.
-- [ ] Add Tailwind custom colors in `frontend/tailwind.config.js` that reference
+- [x] Add Tailwind custom colors in `frontend/tailwind.config.js` that reference
   the same CSS variables emitted by `fusion-theme.scss`.
 - [ ] Place lms-fusion brand assets under `assets/branding/`:
   - Primary: `#00a1b3`
@@ -89,31 +89,31 @@ trees, and verify that `django-fusion` customization hooks work for this project
 ### Phase 5 — Validation
 - [ ] `make check WEBSITE=lms-fusion`
 - [ ] `make test WEBSITE=lms-fusion`
-- [ ] Next.js frontend build: `cd projects/lms-fusion/frontend && npm run build`
+- [x] Next.js frontend build: `cd projects/lms-fusion/frontend && npm run build`
 - [ ] Template-resolution audit (no unintended `projects/assets/` fallbacks)
 - [ ] Smoke test on the running frontend
 
 #### Phase 6 — Build Pipeline / Webpack
 - [ ] Decide whether the Django admin needs custom assets; if so, add a minimal
   webpack config under `backend/webpack.config.js`.
-- [ ] Import `lms-fusion/assets/styles/fusion-theme.scss` from the Next.js root
+- [x] Import `lms-fusion/assets/styles/fusion-theme.scss` from the Next.js root
   layout.
-- [ ] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
-- [ ] Add a Makefile or CI step to compile SCSS to
+- [x] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
+- [x] Add a Makefile or CI step to compile SCSS to
   `backend/assets/static/css/fusion.css`.
-- [ ] Verify Django templates reference the compiled CSS via
+- [x] Verify Django templates reference the compiled CSS via
   `{% static 'css/fusion.css' %}`.
 
 #### Phase 7 — Docker-Compose & Proxy
-- [ ] Create a top-level `lms-fusion/docker-compose.yml` with `backend`,
+- [x] Create a top-level `lms-fusion/docker-compose.yml` with `backend`,
   `frontend`, and optional `worker` services.
-- [ ] Remove or archive the stale `backend/docker-compose.yml` that references
+- [x] Remove or archive the stale `backend/docker-compose.yml` that references
   `ctc-research`.
-- [ ] Add `applications/proxy/traefik/dynamic/lms-fusion.yml` with routers for
+- [x] Add `applications/proxy/traefik/dynamic/lms-fusion.yml` with routers for
   the lms-fusion backend and frontend.
-- [ ] Use a unique backend port (e.g., `5090`) and expose the Next.js frontend
-  on a distinct port (e.g., `3001`) for local development.
-- [ ] Configure health checks and ensure Traefik picks up the new router file.
+- [x] Use a unique backend port (`5074`) and expose the Next.js frontend
+  on a distinct port (`3001`) for local development.
+- [x] Configure health checks and ensure Traefik picks up the new router file.
 - [ ] Test the full stack locally with `docker compose up`.
 
 #### Phase 8 — Shared Media / Static Serving

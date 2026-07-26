@@ -1,6 +1,12 @@
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google';
+// Single source of truth for design tokens (shared with Django)
+import '../styles/theme/fusion-theme.scss';
 import './globals.css';
+import Providers from '../components/Providers';
+import ErrorBoundary from '../components/ErrorBoundary';
+import Header from '../components/Header';
+import Footer from '../components/Footer';
 
 const inter = Inter({ subsets: ['latin'] });
 
