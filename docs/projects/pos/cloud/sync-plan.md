@@ -6,26 +6,39 @@
 
 ## Current State
 
-| Component | Status | Edition |
-|-----------|--------|---------|
-| Solo → Cloud sync client | ✅ Implemented | Solo |
-| Cloud CRM server | ✅ Implemented | Full |
-| Sync proxy (accept pushes) | ✅ Implemented | Full |
-| Webhook receiver | ✅ Implemented | Full |
-| Webhook sender | ✅ Implemented | Solo |
-| Real-time WebSocket sync | ✅ Implemented | Full |
-| Conflict resolution | ❌ Planned | Full |
-| Offline queue | 🟡 In-memory queue implemented; durable queue planned | All |
-| Multi-store dashboard | ❌ Planned | Cloud |
-| REST API for all entities | ✅ Implemented (django-bolt) | Solo/Full |
+| Component | Status | Phase | Edition |
+|-----------|--------|-------|---------|
+| REST API for all entities | ✅ Implemented (django-bolt) | Phase 1 | Solo/Full |
+| Cloud CRM server | ✅ Implemented | Phase 1 | Full |
+| Solo → Cloud sync client | ✅ Implemented | Phase 2 | Solo |
+| Sync proxy (accept pushes) | ✅ Implemented | Phase 2 | Full |
+| Webhook receiver | ✅ Implemented | Phase 2 | Full |
+| Webhook sender | ✅ Implemented | Phase 2 | Solo |
+| Real-time WebSocket sync | ✅ Implemented | Phase 2 | Full |
+| Conflict resolution | ❌ Planned | Phase 2 | Full |
+| Offline queue | 🟡 In-memory queue implemented; durable queue planned | Phase 2 | All |
+| Multi-store dashboard | 🟡 In progress | Phase 3 | Cloud |
 
 ---
 
 ## Implementation Phases
 
-### Phase 1: Complete REST API ✅
+### Phase 1: django-bolt REST API & Sidecar Runtimes ✅
 
-REST endpoints for all 29 tables currently only accessible via Rust invoke are now exposed through the high-performance django-bolt API:
+REST endpoints for all 29 tables previously only accessible via Rust invoke are now exposed through the high-performance django-bolt API.
+
+**Full Edition (django-bolt):**
+- Rust-powered async handlers (60k+ RPS)
+- Auto-generated OpenAPI docs at `/bolt/docs`
+- Built-in JWT + API key authentication
+- Pydantic validation via `django_bolt.pydantic`
+- Native WebSocket for real-time sync
+
+**Solo Extended (Robyn sidecar):**
+- Rust-powered async runtime alongside the existing Robyn runtime
+- Auto-generated OpenAPI at `/bolt/docs`
+- Pydantic validation integration
+- SSE streaming support
 
 ```python
 # New API endpoints to add
@@ -42,7 +55,11 @@ REST endpoints for all 29 tables currently only accessible via Rust invoke are n
 /reports/employees           # Employee performance reports
 ```
 
-### Phase 2: Real-time Sync (Q4 2026) ✅
+See also:
+- [django-bolt integration plan](../sidecar/django-bolt-integration.md)
+- [Robyn migration plan](../sidecar/robyn-migration.md)
+
+### Phase 2: Real-time Sync (Q4 2026) 🟡
 
 ```
 ┌──────────────┐                    ┌──────────────
@@ -62,28 +79,12 @@ REST endpoints for all 29 tables currently only accessible via Rust invoke are n
 - `pos-cloud/core/sync_api.py` — targeted branch broadcasts via `SyncBroker` so terminals receive echo/confirmation events in real time.
 - Messages use the existing `identify`/`sync_push`/`broker_message` protocol consumed by `SyncEventConsumer`.
 
-### Phase 3: django-bolt + Robyn APIs (Q4 2026)
+### Phase 3: Multi-Store Dashboard (Q1 2027) 🟡
 
-**Full Edition:** Replace Django views with django-bolt for all API endpoints:
-- Rust-powered async handlers (60k+ RPS)
-- Auto-generated OpenAPI docs at `/bolt/docs`
-- Built-in JWT + API key authentication
-- Pydantic validation via `django_bolt.pydantic`
-- Native WebSocket for real-time sync
-
-**Solo Extended:** Optional django-bolt sidecar API alongside the Robyn runtime:
-- Rust-powered async runtime (django-bolt / Robyn)
-- Auto-generated OpenAPI at `/bolt/docs`
-- Pydantic validation integration
-- SSE streaming support
-
-See also:
-- [django-bolt integration plan](../sidecar/django-bolt-integration.md)
-- [Robyn migration plan](../sidecar/robyn-migration.md)
-
-### Phase 4: Multi-Store Dashboard (Q1 2027)
-
-Web dashboard accessible at `https://cloud.structa.cloud`:
+Work has started on the cloud dashboard infrastructure in `pos-cloud`: the Unfold
+admin dashboard, the `/apis/` analytics dashboard, and the branch sync dashboard
+(`core/sync_dashboard.py`). The public multi-store dashboard will be accessible
+at `https://cloud.structa.cloud`.
 
 - All stores overview
 - Per-store drill-down
@@ -93,64 +94,10 @@ Web dashboard accessible at `https://cloud.structa.cloud`:
 
 ---
 
-## API Plan (django-bolt)
+## API Plan
 
-### Auth Endpoints
-
-```python
-POST   /bolt/auth/login          # JWT login
-POST   /bolt/auth/refresh        # Refresh token
-POST   /bolt/auth/logout         # Invalidate token
-```
-
-### Product Endpoints
-
-```python
-GET    /bolt/products             # List (with filtering, pagination)
-POST   /bolt/products             # Create
-GET    /bolt/products/{id}       # Detail
-PUT    /bolt/products/{id}        # Update
-DELETE /bolt/products/{id}       # Soft delete
-```
-
-### Order Endpoints
-
-```python
-GET    /bolt/orders              # List (filter by date, status)
-POST   /bolt/orders              # Create (with items)
-GET    /bolt/orders/{id}         # Detail with items
-PUT    /bolt/orders/{id}/status  # Update status
-GET    /bolt/orders/{id}/invoice # Generate PDF invoice
-```
-
-### Sync Endpoints
-
-```python
-GET    /bolt/sync/status         # Sync health
-POST   /bolt/sync/trigger        # Force full sync
-POST   /bolt/sync/push           # Push entities (Solo → Cloud)
-GET    /bolt/sync/log            # Sync history
-```
-
-### CRM Endpoints (Cloud Only)
-
-```python
-GET    /bolt/crm/contacts        # List contacts
-POST   /bolt/crm/contacts        # Create contact
-GET    /bolt/crm/companies       # List companies
-GET    /bolt/crm/deals           # List deals
-POST   /bolt/crm/deals           # Create deal
-GET    /bolt/crm/dashboard       # CRM statistics
-```
-
-### Report Endpoints
-
-```python
-GET    /bolt/reports/sales       # Sales report (by date range)
-GET    /bolt/reports/inventory   # Inventory report
-GET    /bolt/reports/employees   # Employee performance
-GET    /bolt/reports/taxes       # Tax summary
-```
+The detailed django-bolt endpoint reference is maintained separately in
+[api-plan.md](api-plan.md).
 
 ---
 
@@ -196,6 +143,7 @@ def resolve_conflict(cloud_entity, terminal_entity):
 
 | Topic | Path |
 |-------|------|
+| API plan | [`api-plan.md`](api-plan.md) |
 | Cloud CRM overview | [`README.md`](README.md) |
 | django-bolt integration | [`../sidecar/django-bolt-integration.md`](../sidecar/django-bolt-integration.md) |
 | Sidecar overview | [`../sidecar/README.md`](../sidecar/README.md) |

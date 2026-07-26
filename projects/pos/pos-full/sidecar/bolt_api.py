@@ -16,9 +16,11 @@ django-bolt's Rust-backed request handling.
 from __future__ import annotations
 
 import os
+import time
 from datetime import datetime
 from decimal import Decimal
 
+import jwt
 import msgspec
 from django.conf import settings
 from django.utils.text import slugify
@@ -32,7 +34,7 @@ from django_bolt.auth import (
 )
 from django_bolt.exceptions import BadRequest, NotFound
 from django_bolt.openapi import OpenAPIConfig
-from django_bolt.pydantic import PydanticModel
+from msgspec.structs import asdict
 
 from models.pos import (
     Category,
@@ -63,7 +65,7 @@ _api_key_auth = APIKeyAuthentication(
 
 _jwt_auth = JWTAuthentication(secret=settings.SECRET_KEY)
 
-_auth_backends = [backend for backend in [_api_key_auth, _jwt_auth] if backend is not None]
+_AUTH_BACKENDS = [backend for backend in [_api_key_auth, _jwt_auth] if backend is not None]
 
 # ---------------------------------------------------------------------------
 # Bolt API instance
@@ -72,7 +74,6 @@ _auth_backends = [backend for backend in [_api_key_auth, _jwt_auth] if backend i
 bolt = BoltAPI(
     prefix="/bolt",
     namespace="pos-bolt",
-    auth=_auth_backends,
     openapi_config=OpenAPIConfig(
         title="POS Full Edition API",
         version="1.0.0",
@@ -85,7 +86,7 @@ bolt = BoltAPI(
 # ---------------------------------------------------------------------------
 
 
-class CategoryCreate(PydanticModel):
+class CategoryCreate(msgspec.Struct, kw_only=True):
     name: str
     slug: str | None = None
     description: str = ""
@@ -93,7 +94,7 @@ class CategoryCreate(PydanticModel):
     is_active: bool = True
 
 
-class CategoryUpdate(PydanticModel):
+class CategoryUpdate(msgspec.Struct, kw_only=True):
     name: str | None = None
     slug: str | None = None
     description: str | None = None
@@ -101,7 +102,7 @@ class CategoryUpdate(PydanticModel):
     is_active: bool | None = None
 
 
-class ProductCreate(PydanticModel):
+class ProductCreate(msgspec.Struct, kw_only=True):
     name: str
     price: float
     category_id: int | None = None
@@ -110,7 +111,7 @@ class ProductCreate(PydanticModel):
     is_active: bool = True
 
 
-class ProductUpdate(PydanticModel):
+class ProductUpdate(msgspec.Struct, kw_only=True):
     name: str | None = None
     price: float | None = None
     category_id: int | None = None
@@ -119,7 +120,7 @@ class ProductUpdate(PydanticModel):
     is_active: bool | None = None
 
 
-class CustomerCreate(PydanticModel):
+class CustomerCreate(msgspec.Struct, kw_only=True):
     first_name: str
     last_name: str = ""
     email: str | None = None
@@ -128,7 +129,7 @@ class CustomerCreate(PydanticModel):
     is_active: bool = True
 
 
-class CustomerUpdate(PydanticModel):
+class CustomerUpdate(msgspec.Struct, kw_only=True):
     first_name: str | None = None
     last_name: str | None = None
     email: str | None = None
@@ -137,7 +138,7 @@ class CustomerUpdate(PydanticModel):
     is_active: bool | None = None
 
 
-class SaleCreate(PydanticModel):
+class SaleCreate(msgspec.Struct, kw_only=True):
     customer_id: int | None = None
     subtotal: float
     tax_amount: float = 0.0
@@ -148,7 +149,7 @@ class SaleCreate(PydanticModel):
     notes: str = ""
 
 
-class SaleUpdate(PydanticModel):
+class SaleUpdate(msgspec.Struct, kw_only=True):
     customer_id: int | None = None
     subtotal: float | None = None
     tax_amount: float | None = None
@@ -159,7 +160,7 @@ class SaleUpdate(PydanticModel):
     notes: str | None = None
 
 
-class InventoryCreate(PydanticModel):
+class InventoryCreate(msgspec.Struct, kw_only=True):
     product_id: int
     transaction_type: str
     quantity: int
@@ -168,7 +169,7 @@ class InventoryCreate(PydanticModel):
     inventory_id: str = "main"
 
 
-class InventoryUpdate(PydanticModel):
+class InventoryUpdate(msgspec.Struct, kw_only=True):
     product_id: int | None = None
     transaction_type: str | None = None
     quantity: int | None = None
@@ -177,7 +178,7 @@ class InventoryUpdate(PydanticModel):
     inventory_id: str | None = None
 
 
-class EmployeeCreate(PydanticModel):
+class EmployeeCreate(msgspec.Struct, kw_only=True):
     first_name: str
     last_name: str
     email: str | None = None
@@ -188,7 +189,7 @@ class EmployeeCreate(PydanticModel):
     hourly_rate: float = 0.0
 
 
-class EmployeeUpdate(PydanticModel):
+class EmployeeUpdate(msgspec.Struct, kw_only=True):
     first_name: str | None = None
     last_name: str | None = None
     email: str | None = None
@@ -204,7 +205,7 @@ class EmployeeUpdate(PydanticModel):
 # ---------------------------------------------------------------------------
 
 
-class CategoryResponse(msgspec.Struct):
+class CategoryResponse(msgspec.Struct, kw_only=True):
     id: int
     name: str
     slug: str
@@ -215,7 +216,7 @@ class CategoryResponse(msgspec.Struct):
     updated_at: str
 
 
-class ProductResponse(msgspec.Struct):
+class ProductResponse(msgspec.Struct, kw_only=True):
     id: int
     name: str
     sku: str | None
@@ -227,7 +228,7 @@ class ProductResponse(msgspec.Struct):
     updated_at: str
 
 
-class CustomerResponse(msgspec.Struct):
+class CustomerResponse(msgspec.Struct, kw_only=True):
     id: int
     first_name: str
     last_name: str
@@ -240,7 +241,7 @@ class CustomerResponse(msgspec.Struct):
     updated_at: str
 
 
-class SaleResponse(msgspec.Struct):
+class SaleResponse(msgspec.Struct, kw_only=True):
     id: int
     customer_id: int | None
     sale_date: str
@@ -255,7 +256,7 @@ class SaleResponse(msgspec.Struct):
     updated_at: str
 
 
-class InventoryResponse(msgspec.Struct):
+class InventoryResponse(msgspec.Struct, kw_only=True):
     id: int
     product_id: int
     transaction_type: str
@@ -266,7 +267,7 @@ class InventoryResponse(msgspec.Struct):
     created_at: str
 
 
-class EmployeeResponse(msgspec.Struct):
+class EmployeeResponse(msgspec.Struct, kw_only=True):
     id: int
     first_name: str
     last_name: str
@@ -290,7 +291,14 @@ def _format_dt(value: datetime | None) -> str:
 
 
 def _to_str(value: Decimal | float | None) -> str:
-    return str(value) if value is not None else ""
+    if value is None:
+        return ""
+    return f"{value:.2f}"
+
+
+def _struct_updates(body: msgspec.Struct) -> dict[str, Any]:
+    """Convert a request struct to a dict, skipping unset (None) values."""
+    return {k: v for k, v in asdict(body).items() if v is not None}
 
 
 async def _resolve_category(category_id: int | None) -> Category | None:
@@ -322,17 +330,40 @@ async def _resolve_product(product_id: int) -> Product:
 # Public health endpoint
 # ---------------------------------------------------------------------------
 
-@bolt.get("/health", guards=[AllowAny()])
+@bolt.get("/health", guards=[AllowAny()], auth=[])
 async def health(request: Request) -> dict:
     """Public health check."""
     return {"status": "ok", "service": "pos-full-bolt"}
+
+
+class TokenCreate(msgspec.Struct, kw_only=True):
+    device_id: str
+    role: str = "viewer"
+    ttl: int = 3600
+
+
+@bolt.post("/auth/token", guards=[AllowAny()], auth=[])
+async def create_token(request: Request, body: TokenCreate) -> dict:
+    """Issue a JWT for use with bolt endpoints."""
+    now = int(time.time())
+    token = jwt.encode(
+        {
+            "sub": body.device_id,
+            "role": body.role,
+            "iat": now,
+            "exp": now + body.ttl,
+        },
+        settings.SECRET_KEY,
+        algorithm="HS256",
+    )
+    return {"token": token, "role": body.role, "expires_in": body.ttl}
 
 
 # ---------------------------------------------------------------------------
 # Categories
 # ---------------------------------------------------------------------------
 
-@bolt.get("/categories", response_model=list[CategoryResponse], guards=[IsAuthenticated()])
+@bolt.get("/categories", response_model=list[CategoryResponse], guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def list_categories(request: Request) -> list[CategoryResponse]:
     return [
         _category_response(category)
@@ -340,7 +371,7 @@ async def list_categories(request: Request) -> list[CategoryResponse]:
     ]
 
 
-@bolt.get("/categories/{category_id}", response_model=CategoryResponse, guards=[IsAuthenticated()])
+@bolt.get("/categories/{category_id}", response_model=CategoryResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def get_category(request: Request, category_id: int) -> CategoryResponse:
     try:
         category = await Category.objects.aget(id=category_id)
@@ -349,7 +380,7 @@ async def get_category(request: Request, category_id: int) -> CategoryResponse:
     return _category_response(category)
 
 
-@bolt.post("/categories", response_model=CategoryResponse, guards=[IsAuthenticated()])
+@bolt.post("/categories", response_model=CategoryResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def create_category(request: Request, body: CategoryCreate) -> CategoryResponse:
     slug = body.slug or slugify(body.name)
     category = await Category.objects.acreate(
@@ -362,13 +393,13 @@ async def create_category(request: Request, body: CategoryCreate) -> CategoryRes
     return _category_response(category)
 
 
-@bolt.patch("/categories/{category_id}", response_model=CategoryResponse, guards=[IsAuthenticated()])
+@bolt.patch("/categories/{category_id}", response_model=CategoryResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def update_category(request: Request, category_id: int, body: CategoryUpdate) -> CategoryResponse:
     try:
         category = await Category.objects.aget(id=category_id)
     except Category.DoesNotExist:
         raise NotFound(f"Category {category_id} not found")
-    updates = body.model_dump(exclude_unset=True)
+    updates = _struct_updates(body)
     updates.pop("id", None)
     if "slug" in updates and not updates["slug"]:
         updates["slug"] = slugify(updates.get("name", category.name))
@@ -379,7 +410,7 @@ async def update_category(request: Request, category_id: int, body: CategoryUpda
     return _category_response(category)
 
 
-@bolt.delete("/categories/{category_id}", status_code=204, guards=[IsAuthenticated()])
+@bolt.delete("/categories/{category_id}", status_code=204, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def delete_category(request: Request, category_id: int) -> None:
     try:
         category = await Category.objects.aget(id=category_id)
@@ -392,7 +423,7 @@ async def delete_category(request: Request, category_id: int) -> None:
 # Products
 # ---------------------------------------------------------------------------
 
-@bolt.get("/products", response_model=list[ProductResponse], guards=[IsAuthenticated()])
+@bolt.get("/products", response_model=list[ProductResponse], guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def list_products(request: Request) -> list[ProductResponse]:
     return [
         _product_response(product)
@@ -400,7 +431,7 @@ async def list_products(request: Request) -> list[ProductResponse]:
     ]
 
 
-@bolt.get("/products/{product_id}", response_model=ProductResponse, guards=[IsAuthenticated()])
+@bolt.get("/products/{product_id}", response_model=ProductResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def get_product(request: Request, product_id: int) -> ProductResponse:
     try:
         product = await Product.objects.aget(id=product_id)
@@ -409,7 +440,7 @@ async def get_product(request: Request, product_id: int) -> ProductResponse:
     return _product_response(product)
 
 
-@bolt.post("/products", response_model=ProductResponse, guards=[IsAuthenticated()])
+@bolt.post("/products", response_model=ProductResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def create_product(request: Request, body: ProductCreate) -> ProductResponse:
     category = await _resolve_category(body.category_id)
     product = await Product.objects.acreate(
@@ -423,13 +454,13 @@ async def create_product(request: Request, body: ProductCreate) -> ProductRespon
     return _product_response(product)
 
 
-@bolt.patch("/products/{product_id}", response_model=ProductResponse, guards=[IsAuthenticated()])
+@bolt.patch("/products/{product_id}", response_model=ProductResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def update_product(request: Request, product_id: int, body: ProductUpdate) -> ProductResponse:
     try:
         product = await Product.objects.aget(id=product_id)
     except Product.DoesNotExist:
         raise NotFound(f"Product {product_id} not found")
-    updates = body.model_dump(exclude_unset=True)
+    updates = _struct_updates(body)
     updates.pop("id", None)
     if "category_id" in updates:
         category_id = updates.pop("category_id")
@@ -441,7 +472,7 @@ async def update_product(request: Request, product_id: int, body: ProductUpdate)
     return _product_response(product)
 
 
-@bolt.delete("/products/{product_id}", status_code=204, guards=[IsAuthenticated()])
+@bolt.delete("/products/{product_id}", status_code=204, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def delete_product(request: Request, product_id: int) -> None:
     try:
         product = await Product.objects.aget(id=product_id)
@@ -454,7 +485,7 @@ async def delete_product(request: Request, product_id: int) -> None:
 # Customers
 # ---------------------------------------------------------------------------
 
-@bolt.get("/customers", response_model=list[CustomerResponse], guards=[IsAuthenticated()])
+@bolt.get("/customers", response_model=list[CustomerResponse], guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def list_customers(request: Request) -> list[CustomerResponse]:
     return [
         _customer_response(customer)
@@ -462,7 +493,7 @@ async def list_customers(request: Request) -> list[CustomerResponse]:
     ]
 
 
-@bolt.get("/customers/{customer_id}", response_model=CustomerResponse, guards=[IsAuthenticated()])
+@bolt.get("/customers/{customer_id}", response_model=CustomerResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def get_customer(request: Request, customer_id: int) -> CustomerResponse:
     try:
         customer = await Customer.objects.aget(id=customer_id)
@@ -471,26 +502,26 @@ async def get_customer(request: Request, customer_id: int) -> CustomerResponse:
     return _customer_response(customer)
 
 
-@bolt.post("/customers", response_model=CustomerResponse, guards=[IsAuthenticated()])
+@bolt.post("/customers", response_model=CustomerResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def create_customer(request: Request, body: CustomerCreate) -> CustomerResponse:
     customer = await Customer.objects.acreate(
         first_name=body.first_name,
         last_name=body.last_name,
         email=body.email,
-        phone=body.phone,
+        phone=body.phone or "",
         loyalty_points=body.loyalty_points,
         is_active=body.is_active,
     )
     return _customer_response(customer)
 
 
-@bolt.patch("/customers/{customer_id}", response_model=CustomerResponse, guards=[IsAuthenticated()])
+@bolt.patch("/customers/{customer_id}", response_model=CustomerResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def update_customer(request: Request, customer_id: int, body: CustomerUpdate) -> CustomerResponse:
     try:
         customer = await Customer.objects.aget(id=customer_id)
     except Customer.DoesNotExist:
         raise NotFound(f"Customer {customer_id} not found")
-    updates = body.model_dump(exclude_unset=True)
+    updates = _struct_updates(body)
     updates.pop("id", None)
     for key, value in updates.items():
         if value is not None:
@@ -499,7 +530,7 @@ async def update_customer(request: Request, customer_id: int, body: CustomerUpda
     return _customer_response(customer)
 
 
-@bolt.delete("/customers/{customer_id}", status_code=204, guards=[IsAuthenticated()])
+@bolt.delete("/customers/{customer_id}", status_code=204, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def delete_customer(request: Request, customer_id: int) -> None:
     try:
         customer = await Customer.objects.aget(id=customer_id)
@@ -512,7 +543,7 @@ async def delete_customer(request: Request, customer_id: int) -> None:
 # Sales
 # ---------------------------------------------------------------------------
 
-@bolt.get("/sales", response_model=list[SaleResponse], guards=[IsAuthenticated()])
+@bolt.get("/sales", response_model=list[SaleResponse], guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def list_sales(request: Request) -> list[SaleResponse]:
     return [
         _sale_response(sale)
@@ -520,7 +551,7 @@ async def list_sales(request: Request) -> list[SaleResponse]:
     ]
 
 
-@bolt.get("/sales/{sale_id}", response_model=SaleResponse, guards=[IsAuthenticated()])
+@bolt.get("/sales/{sale_id}", response_model=SaleResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def get_sale(request: Request, sale_id: int) -> SaleResponse:
     try:
         sale = await Sale.objects.aget(id=sale_id)
@@ -529,7 +560,7 @@ async def get_sale(request: Request, sale_id: int) -> SaleResponse:
     return _sale_response(sale)
 
 
-@bolt.post("/sales", response_model=SaleResponse, guards=[IsAuthenticated()])
+@bolt.post("/sales", response_model=SaleResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def create_sale(request: Request, body: SaleCreate) -> SaleResponse:
     customer = await _resolve_customer(body.customer_id)
     sale = await Sale.objects.acreate(
@@ -545,13 +576,13 @@ async def create_sale(request: Request, body: SaleCreate) -> SaleResponse:
     return _sale_response(sale)
 
 
-@bolt.patch("/sales/{sale_id}", response_model=SaleResponse, guards=[IsAuthenticated()])
+@bolt.patch("/sales/{sale_id}", response_model=SaleResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def update_sale(request: Request, sale_id: int, body: SaleUpdate) -> SaleResponse:
     try:
         sale = await Sale.objects.aget(id=sale_id)
     except Sale.DoesNotExist:
         raise NotFound(f"Sale {sale_id} not found")
-    updates = body.model_dump(exclude_unset=True)
+    updates = _struct_updates(body)
     updates.pop("id", None)
     if "customer_id" in updates:
         customer_id = updates.pop("customer_id")
@@ -563,7 +594,7 @@ async def update_sale(request: Request, sale_id: int, body: SaleUpdate) -> SaleR
     return _sale_response(sale)
 
 
-@bolt.delete("/sales/{sale_id}", status_code=204, guards=[IsAuthenticated()])
+@bolt.delete("/sales/{sale_id}", status_code=204, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def delete_sale(request: Request, sale_id: int) -> None:
     try:
         sale = await Sale.objects.aget(id=sale_id)
@@ -576,7 +607,7 @@ async def delete_sale(request: Request, sale_id: int) -> None:
 # Inventory
 # ---------------------------------------------------------------------------
 
-@bolt.get("/inventory", response_model=list[InventoryResponse], guards=[IsAuthenticated()])
+@bolt.get("/inventory", response_model=list[InventoryResponse], guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def list_inventory(request: Request) -> list[InventoryResponse]:
     return [
         _inventory_response(tx)
@@ -584,7 +615,7 @@ async def list_inventory(request: Request) -> list[InventoryResponse]:
     ]
 
 
-@bolt.get("/inventory/{transaction_id}", response_model=InventoryResponse, guards=[IsAuthenticated()])
+@bolt.get("/inventory/{transaction_id}", response_model=InventoryResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def get_inventory_transaction(request: Request, transaction_id: int) -> InventoryResponse:
     try:
         tx = await InventoryTransaction.objects.aget(id=transaction_id)
@@ -593,7 +624,7 @@ async def get_inventory_transaction(request: Request, transaction_id: int) -> In
     return _inventory_response(tx)
 
 
-@bolt.post("/inventory", response_model=InventoryResponse, guards=[IsAuthenticated()])
+@bolt.post("/inventory", response_model=InventoryResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def create_inventory_transaction(request: Request, body: InventoryCreate) -> InventoryResponse:
     product = await _resolve_product(body.product_id)
     tx = await InventoryTransaction.objects.acreate(
@@ -607,13 +638,13 @@ async def create_inventory_transaction(request: Request, body: InventoryCreate) 
     return _inventory_response(tx)
 
 
-@bolt.patch("/inventory/{transaction_id}", response_model=InventoryResponse, guards=[IsAuthenticated()])
+@bolt.patch("/inventory/{transaction_id}", response_model=InventoryResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def update_inventory_transaction(request: Request, transaction_id: int, body: InventoryUpdate) -> InventoryResponse:
     try:
         tx = await InventoryTransaction.objects.aget(id=transaction_id)
     except InventoryTransaction.DoesNotExist:
         raise NotFound(f"Inventory transaction {transaction_id} not found")
-    updates = body.model_dump(exclude_unset=True)
+    updates = _struct_updates(body)
     updates.pop("id", None)
     if "product_id" in updates:
         product_id = updates.pop("product_id")
@@ -625,7 +656,7 @@ async def update_inventory_transaction(request: Request, transaction_id: int, bo
     return _inventory_response(tx)
 
 
-@bolt.delete("/inventory/{transaction_id}", status_code=204, guards=[IsAuthenticated()])
+@bolt.delete("/inventory/{transaction_id}", status_code=204, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def delete_inventory_transaction(request: Request, transaction_id: int) -> None:
     try:
         tx = await InventoryTransaction.objects.aget(id=transaction_id)
@@ -638,7 +669,7 @@ async def delete_inventory_transaction(request: Request, transaction_id: int) ->
 # Employees
 # ---------------------------------------------------------------------------
 
-@bolt.get("/employees", response_model=list[EmployeeResponse], guards=[IsAuthenticated()])
+@bolt.get("/employees", response_model=list[EmployeeResponse], guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def list_employees(request: Request) -> list[EmployeeResponse]:
     return [
         _employee_response(employee)
@@ -646,7 +677,7 @@ async def list_employees(request: Request) -> list[EmployeeResponse]:
     ]
 
 
-@bolt.get("/employees/{employee_id}", response_model=EmployeeResponse, guards=[IsAuthenticated()])
+@bolt.get("/employees/{employee_id}", response_model=EmployeeResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def get_employee(request: Request, employee_id: int) -> EmployeeResponse:
     try:
         employee = await Employee.objects.aget(id=employee_id)
@@ -655,28 +686,28 @@ async def get_employee(request: Request, employee_id: int) -> EmployeeResponse:
     return _employee_response(employee)
 
 
-@bolt.post("/employees", response_model=EmployeeResponse, guards=[IsAuthenticated()])
+@bolt.post("/employees", response_model=EmployeeResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def create_employee(request: Request, body: EmployeeCreate) -> EmployeeResponse:
     employee = await Employee.objects.acreate(
         first_name=body.first_name,
         last_name=body.last_name,
         email=body.email,
-        phone=body.phone,
+        phone=body.phone or "",
         role=body.role,
-        pin_code=body.pin_code,
+        pin_code=body.pin_code or "",
         is_active=body.is_active,
         hourly_rate=body.hourly_rate,
     )
     return _employee_response(employee)
 
 
-@bolt.patch("/employees/{employee_id}", response_model=EmployeeResponse, guards=[IsAuthenticated()])
+@bolt.patch("/employees/{employee_id}", response_model=EmployeeResponse, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def update_employee(request: Request, employee_id: int, body: EmployeeUpdate) -> EmployeeResponse:
     try:
         employee = await Employee.objects.aget(id=employee_id)
     except Employee.DoesNotExist:
         raise NotFound(f"Employee {employee_id} not found")
-    updates = body.model_dump(exclude_unset=True)
+    updates = _struct_updates(body)
     updates.pop("id", None)
     for key, value in updates.items():
         if value is not None:
@@ -685,7 +716,7 @@ async def update_employee(request: Request, employee_id: int, body: EmployeeUpda
     return _employee_response(employee)
 
 
-@bolt.delete("/employees/{employee_id}", status_code=204, guards=[IsAuthenticated()])
+@bolt.delete("/employees/{employee_id}", status_code=204, guards=[IsAuthenticated()], auth=_AUTH_BACKENDS)
 async def delete_employee(request: Request, employee_id: int) -> None:
     try:
         employee = await Employee.objects.aget(id=employee_id)
