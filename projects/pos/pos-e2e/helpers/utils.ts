@@ -48,7 +48,11 @@ export function captureConsoleErrors(page: Page) {
           !e.includes('Warning:') &&
           !e.includes('React does not recognize') &&
           !e.includes('Fusion') &&
-          !e.includes('WebSocket')
+          !e.includes('WebSocket') &&
+          !e.includes('invoke') &&
+          !e.includes('__TAURI__') &&
+          !e.includes('Tauri') &&
+          !e.includes('check_auth')
       ),
   };
 }

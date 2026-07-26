@@ -77,6 +77,19 @@ export default function Transactions() {
     tax_rate: settingsData?.tax_rate || '',
   };
 
+  // Surface RTK Query load errors via the status toast so they're not
+  // silently swallowed by the empty-data branches.
+  useEffect(() => {
+    if (error) {
+      const msg =
+        typeof error === 'string'
+          ? error
+          : (error as Record<string, unknown>)?.error as string ||
+            t('common.error');
+      showError(msg);
+    }
+  }, [error]);
+
   const filteredTransactions = useMemo(() => {
     return transactions.filter(t => {
       if (!startDate && !endDate) return true;

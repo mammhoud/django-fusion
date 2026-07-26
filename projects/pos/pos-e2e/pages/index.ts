@@ -4,7 +4,8 @@
 // Usage in tests:
 //   import { SalePage, CustomersPage, EmployeesPage } from '../pages';
 
-export { SalePage } from './sale-page';
+export { HomePage } from './HomePage';
+export { SalePage } from './SalePage';
 export { ProductManagerPage } from './product-manager-page';
 export { CustomersPage } from './customers-page';
 export { EmployeesPage } from './employees-page';
