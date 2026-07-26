@@ -3,8 +3,12 @@ const path = require('path');
 const crypto = require('crypto');
 
 /**
- * Generate SHA256 checksums for all build artifacts
+ * Generate SHA256 checksums for all build artifacts.
+ *
+ * Supports PROJECT_ROOT env var for edition-agnostic path resolution.
  */
+
+const projectRoot = process.env.PROJECT_ROOT || path.resolve(__dirname, '../..');
 
 function generateChecksum(filePath) {
   return new Promise((resolve, reject) => {
@@ -34,14 +38,12 @@ async function findBuildArtifacts(bundleDir) {
       if (entry.isDirectory()) {
         scanDirectory(fullPath);
       } else if (entry.isFile()) {
-        // Include all build artifacts except checksums
-        const ext = path.extname(entry.name).toLowerCase();
         const isArtifact = [
-          '.exe', '.msi', '.nsis.zip',  // Windows
-          '.dmg', '.app', '.pkg',        // macOS
-          '.appimage', '.deb', '.rpm',   // Linux
-          '.apk', '.aab',                // Android
-          '.ipa',                        // iOS
+          '.exe', '.msi', '.nsis.zip',
+          '.dmg', '.app', '.pkg',
+          '.appimage', '.deb', '.rpm',
+          '.apk', '.aab',
+          '.ipa',
         ].some(ending => entry.name.toLowerCase().endsWith(ending));
         
         if (isArtifact && !entry.name.endsWith('.sha256')) {
@@ -58,7 +60,7 @@ async function findBuildArtifacts(bundleDir) {
 async function generateAllChecksums() {
   console.log('🔐 Generating SHA256 checksums for build artifacts...\n');
   
-  const bundleDir = path.join(__dirname, '../..', 'src-tauri', 'target', 'release', 'bundle');
+  const bundleDir = path.join(projectRoot, 'src-tauri', 'target', 'release', 'bundle');
   const artifacts = await findBuildArtifacts(bundleDir);
   
   if (artifacts.length === 0) {
@@ -75,7 +77,6 @@ async function generateAllChecksums() {
       const checksumFile = artifact + '.sha256';
       const checksumContent = `${checksum}  ${path.basename(artifact)}`;
       
-      // Write checksum file
       fs.writeFileSync(checksumFile, checksumContent + '\n');
       
       checksums.push({
@@ -92,11 +93,10 @@ async function generateAllChecksums() {
     }
   }
   
-  // Generate checksums manifest
   const manifestPath = path.join(bundleDir, 'CHECKSUMS.txt');
   let manifestContent = `# SHA256 Checksums\n`;
   manifestContent += `# Generated: ${new Date().toISOString()}\n`;
-  manifestContent += `# POS v${require('../package.json').version}\n\n`;
+  manifestContent += `# POS v${require(path.join(projectRoot, 'package.json')).version}\n\n`;
   
   for (const item of checksums) {
     manifestContent += `${item.checksum}  ${item.file}\n`;
@@ -108,10 +108,8 @@ async function generateAllChecksums() {
   console.log(`\n✅ Generated ${checksums.length} checksum(s) successfully!`);
 }
 
-// Run if called directly
 if (require.main === module) {
   generateAllChecksums().catch(console.error);
 }
 
 module.exports = { generateChecksum, generateAllChecksums };
-

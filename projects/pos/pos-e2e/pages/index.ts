@@ -9,7 +9,7 @@ export { SalePage } from './SalePage';
 export { ProductManagerPage } from './product-manager-page';
 export { CustomersPage } from './customers-page';
 export { EmployeesPage } from './employees-page';
-export { InventoryPage } from './inventory-page';
+export { InventoryPage } from './InventoryPage';
 export { TransactionsPage } from './transactions-page';
 export { ReportsPage } from './reports-page';
 export { AnalyticsPage } from './analytics-page';

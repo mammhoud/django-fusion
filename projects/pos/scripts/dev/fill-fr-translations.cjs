@@ -24,7 +24,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '../..');
+const ROOT = process.env.PROJECT_ROOT || process.cwd();
 const FR_PATH = path.join(ROOT, 'src', 'i18n', 'fr.json');
 
 /** Flat keypath → French value map. Keys are dot-paths into fr.json. */
