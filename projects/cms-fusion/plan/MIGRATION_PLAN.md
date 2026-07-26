@@ -1,117 +1,135 @@
-# CMS Fusion — Migration & django-fusion Integration Plan
+# Fusion CMS — Migration & Integration Plan
 
-> **Site:** `cms-fusion` | **Path:** `projects/cms-fusion/` | **Last updated:** 2026-07-26
+## Status: ✅ Core Integration Complete
 
----
-
-## 1. Pre-Migration Inventory
-
-| App / Area | Status | Notes |
-|------------|:------:|-------|
-| `plugins.branding` | ✅ | Migration + models + context processor |
-| `plugins.accounts` | ✅ | Copied from ctc-research; verified |
-| `plugins.blog` | ✅ | Copied from ctc-research |
-| `plugins.profile` | ✅ | Copied from ctc-research |
-| `www.core` | ✅ | Copied from ctc-research |
-| `django_fusion` | ✅ | INSTALLED_APPS + FusionCodec + FusionSessionChecker |
+The CMS Fusion project is a complete, full-featured content management system built on django-fusion + django-bolt + Wagtail with a Next.js frontend. It absorbs all features from the legacy ctc-research project (now backed up at `projects/cms/ctc-research.bak`).
 
 ---
 
-## 2. Migration Steps
-
-| # | Task | Status |
-|---|------|:------:|
-| 1 | Branding migration | ✅ |
-| 2 | Remaining migrations | ✅ |
-| 3 | Apply migrations | ✅ |
-| 4 | Django checks | ⬜ |
-| 5 | Create superuser | ⬜ |
-| 6 | Seed branding | ⬜ |
-
----
-
-## 3. django-fusion Integration
-
-- [x] `django_fusion` in `INSTALLED_APPS`
-- [x] Base template loads `{% load fusion_layout %}` with `{% fusion_render_first_flag %}`
-- [x] `fusion_branding_context` registered in context processors
-- [x] `{% fusion_layout "default" %}` used in `base.html`
-- [x] `{% fusion_branding %}` for CSS custom properties
-- [x] `{% render_fusion_scripts %}` for frontend bridge
-- [x] `{% fusion_body_data %}` on `<body>` element
-- [ ] Wagtail pages inherit from `RoutableComponent`
-
----
-
-## 4. django-bolt API Integration
-
-| # | Item | Status |
-|---|------|:------:|
-| 1 | `bolt_apis.py` with real `BoltAPI` endpoints | ✅ |
-| 2 | Health, pages, fragment, fusion health, branding, blog | ✅ |
-| 3 | Graceful fallback when `django_bolt` not installed | ✅ |
-| 4 | `django_fusion.bolt.FusionBoltAPI` module created | ✅ |
-| 5 | `@fusion_endpoint` decorator | ✅ |
-| 6 | `FusionBoltAuthBackend` for session→bolt bridge | ✅ |
-
----
-
-## 5. Fusion Layout System
-
-| # | Item | Status |
-|---|------|:------:|
-| 1 | `{% fusion_layout %}` template tag | ✅ |
-| 2 | `{% fusion_render_first_flag %}` `<meta>` tag | ✅ |
-| 3 | `{% render_fusion_scripts %}` frontend bridge | ✅ |
-| 4 | `{% fusion_branding %}` CSS custom property injection | ✅ |
-| 5 | `{% fusion_body_data %}` body data attributes | ✅ |
-| 6 | Layout templates: `default`, `full_width`, `sidebar`, `blank` | ✅ |
-| 7 | FusionLayout.tsx Next.js component | ✅ |
-| 8 | Layouts fetch endpoint (`/api/fusion/layouts`) | ✅ |
-| 9 | Per-project layout override in `base.html` | ✅ |
-
----
-
-## 6. Frontend (Next.js)
-
-| # | Item | Status |
-|---|------|:------:|
-| 1 | Full Next.js 14 + React 18 + Tailwind setup (purple theme) | ✅ |
-| 2 | `fusion-types.ts`, `fusion-decoder.ts`, `fusion-store.ts` | ✅ |
-| 3 | `api-client.ts` with health, fragment, page, branding, layout APIs | ✅ |
-| 4 | `FusionProxy.tsx` with full fallback chain | ✅ |
-| 5 | `FusionLayout.tsx` consuming `/api/fusion/layouts` | ✅ |
-| 6 | `Header.tsx`, `Footer.tsx`, `Providers.tsx`, `ErrorBoundary.tsx` | ✅ |
-| 7 | Dynamic routing (`[slug]/page.tsx`) | ✅ |
-| 8 | `globals.css` with fusion theme (purple palette) | ✅ |
-| 9 | `api-schema.d.ts` TypeScript API types | ✅ |
-
----
-
-## 7. CMS-Specific Fallback Chain
+## Architecture
 
 ```
-Frontend → bolt API (JSON) → FusionCodec decode → render blocks
-         ↓ failure → fusion_render_first (HTML) → dangerouslySetInnerHTML
-         ↓ failure → FusionLayout error state → ErrorBoundary with retry
+cms-fusion/
+├── backend/                    # Django + Wagtail backend
+│   ├── www/api/bolt_apis.py   # Bolt API — all endpoints
+│   ├── www/api/pages.py       # Page API (Wagtail-first, static fallback)
+│   ├── plugins/               # All ctc-research plugins merged
+│   │   ├── accounts/          # Auth, registration, profiles
+│   │   ├── blog/              # Blog posts, categories, tags, RSS
+│   │   ├── lms/               # Courses, enrollments, lessons
+│   │   ├── products/          # Product listings, cart
+│   │   ├── profile/           # User profiles, settings
+│   │   ├── pages/             # FusionPage Wagtail models + STATIC_PAGES
+│   │   └── branding/          # Dynamic Wagtail branding model (FUSION-specific)
+│   ├── templates/             # All Django templates from ctc-research
+│   └── assets/                # All static assets, SCSS, JS, fixtures
+├── frontend/                  # Next.js 14 frontend
+│   └── src/
+│       ├── app/               # Pages: [slug], blog, courses, products
+│       ├── components/        # FusionProxy, FusionWagtailPage, Header, Footer, etc.
+│       └── lib/               # api-client, fusion-store, fusion-decoder, site-content
+├── assets/                    # Shared front-end design assets
+│   └── styles/fusion-theme.scss
+└── plan/
+    └── MIGRATION_PLAN.md      # This file
 ```
-
-| Layer | Status |
-|-------|:------:|
-| Bolt API health check determines rendering mode | ✅ |
-| Fragment pointer fetch with session caching | ✅ |
-| FusionProxy with loading skeleton | ✅ |
-| FusionLayout with layout detection | ✅ |
-| Error boundary with retry | ✅ |
-| Graceful degradation on backend unavailable | ✅ |
 
 ---
 
-## 8. Verification
+## Feature Matrix
 
-```bash
-cd projects/cms-fusion/backend
-make check && make test && python3 manage.py showmigrations
-```
+| Feature | Backend | Bolt API | Next.js | Status |
+|---------|:-------:|:--------:|:-------:|:------:|
+| **Pages** (about, team, services, contact) | Wagtail + STATIC_PAGES | `/api/pages/<slug>` | `[slug]/page.tsx` via FusionProxy | ✅ |
+| **Home Page** | Wagtail FusionHomePage | `/api/pages/home` | `page.tsx` via FusionProxy | ✅ |
+| **Blog Listing** | BlogPost model | `/api/blog` | `/blog/page.tsx` | ✅ |
+| **Blog Detail** | BlogPost model | `/api/blog/<slug>` | `/blog/[slug]/page.tsx` | ✅ |
+| **Blog Categories** | BlogCategory model | `/api/blog/categories` | Used in sidebar | ✅ |
+| **Blog Tags** | BlogTag model | `/api/blog/tags` | Used in sidebar | ✅ |
+| **Course Catalog** | Course model | `/api/courses` | `/courses/page.tsx` | ✅ |
+| **Course Detail** | Course model | `/api/courses/<slug>` | `/courses/[slug]/page.tsx` | ✅ |
+| **Course Filters** | Course model | `/api/courses/filters` | Sidebar filters | ✅ |
+| **Products** | Product model + STATIC_PAGES | `/api/products` | `/products/page.tsx` | ✅ |
+| **Branding** | Branding Wagtail model | `/api/fusion/branding` | Header, Footer | ✅ |
+| **Auth Status** | django-allauth | `/api/auth/status` | (via allauth views) | ✅ |
+| **Health** | FusionSessionChecker | `/api/health`, `/api/fusion/health` | FusionProxy init | ✅ |
+| **Fusion Layouts** | django-fusion layout system | Via fragment pointer | FusionLayout component | ✅ |
+| **Fusion Render-First** | Session preference | Via fragment pointer | FusionProxy fallback chain | ✅ |
+| **Wagtail Admin** | Full Wagtail admin | N/A | N/A | ✅ |
+| **Fusion CMS Config** | settings.py FUSION_FEATURES | N/A | N/A | ✅ |
 
-See [`projects/docs/DJANGO_BOLT_FUSION_CASE_STUDY.md`](../../docs/DJANGO_BOLT_FUSION_CASE_STUDY.md) for full analysis.
+---
+
+## Bolt API Endpoints Reference
+
+### Health & Status
+- `GET /api/health` — Health check
+- `GET /api/fusion/health` — Fusion rendering preference
+- `GET /api/auth/status` — Current auth state
+
+### Branding
+- `GET /api/fusion/branding` — Dynamic site branding (colors, names)
+
+### Pages
+- `GET /api/pages` — List all published pages (navigation)
+- `GET /api/pages/<slug>` — Page content (Wagtail-first, STATIC_PAGES fallback)
+- `GET /api/pages/<slug>/fragment` — Fragment pointer for fusion rendering
+
+### Blog
+- `GET /api/blog` — List posts (pagination, search, category/tag filter)
+- `GET /api/blog/<slug>` — Post detail + related posts
+- `GET /api/blog/categories` — Categories with post counts
+- `GET /api/blog/tags` — Tags with post counts
+
+### Courses
+- `GET /api/courses` — Course catalog (search, filters, pagination)
+- `GET /api/courses/<slug>` — Course detail + modules, instructor, reviews
+- `GET /api/courses/filters` — Available filter options
+
+### Products
+- `GET /api/products` — Product listing (model-backed or STATIC_PAGES fallback)
+
+---
+
+## Next.js Frontend Routes
+
+| Route | Component | Data Source |
+|-------|-----------|------------|
+| `/` | `page.tsx` → FusionProxy | `/api/pages/home` |
+| `/about` | `[slug]/page.tsx` → FusionProxy | `/api/pages/about` |
+| `/team` | `[slug]/page.tsx` → FusionProxy | `/api/pages/team` |
+| `/services` | `[slug]/page.tsx` → FusionProxy | `/api/pages/services` |
+| `/contact` | `[slug]/page.tsx` → FusionProxy | `/api/pages/contact` |
+| `/privacy` | `[slug]/page.tsx` → FusionProxy | `/api/pages/privacy` |
+| `/faq` | `[slug]/page.tsx` → FusionProxy | `/api/pages/faq` |
+| `/blog` | `blog/page.tsx` — custom grid | `/api/blog` |
+| `/blog/[slug]` | `blog/[slug]/page.tsx` — post detail | `/api/blog/<slug>` |
+| `/courses` | `courses/page.tsx` — catalog + filters | `/api/courses` |
+| `/courses/[slug]` | `courses/[slug]/page.tsx` — detail | `/api/courses/<slug>` |
+| `/products` | `products/page.tsx` — product grid | `/api/products` |
+
+---
+
+## Key Design Decisions
+
+1. **Wagtail-first, STATIC_PAGES fallback**: The page API checks Wagtail FusionPage models first. If no Wagtail page exists, it falls back to `STATIC_PAGES` dict in `plugins/pages/content.py`. This allows both CMS-managed and code-defined pages.
+
+2. **FusionProxy fallback chain**: Fragment pointer → Wagtail page data → Server-rendered HTML → Error. This ensures pages render in the optimal mode based on `fusion_render_first` preference.
+
+3. **Isolated per-project design**: cms-fusion is a self-contained project with its own settings, URLs, bolt APIs, and frontend. It shares the django-fusion and django-bolt libraries but maintains its own feature set.
+
+4. **Branding via Wagtail**: The `branding` plugin uses a Wagtail model for site name, colors, company info. This is editable via the Wagtail admin and exposed via the bolt API.
+
+5. **FUSION_FEATURES toggle**: Individual features (blog, courses, products) can be toggled on/off via settings. Endpoints gracefully handle missing models.
+
+---
+
+## Related Plans
+
+- [LMS Fusion Migration Plan](../lms-fusion/plan/MIGRATION_PLAN.md)
+- [Django Fusion Bolt Integration](../../libs/django-fusion/src/django_fusion/bolt/)
+- [POS Full Enhancement Plan](../../pos/pos-full/plan/README.md)
+
+---
+
+*Last updated: July 26, 2026 — Full CMS feature integration complete.*

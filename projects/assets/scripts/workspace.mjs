@@ -10,9 +10,6 @@ const workspaceRoot = path.resolve(assetsRoot, '..');
 const webpackBin = path.join(assetsRoot, 'node_modules', '.bin', process.platform === 'win32' ? 'webpack.cmd' : 'webpack');
 
 const siteAliases = {
-  ctc: 'ctc-research',
-  'ctc-research': 'ctc-research',
-  'ctc-research.com': 'ctc-research',
   structa: 'lms',
   core: 'lms',
   lms: 'lms',
@@ -34,9 +31,8 @@ const siteAliases = {
   'cms-fusion': 'cms-fusion',
 };
 
-const sites = ['ctc-research', 'lms', 'vresume', 'cypercloud', 'crm', 'lms-fusion', 'cms-fusion'];
+const sites = ['lms', 'vresume', 'cypercloud', 'crm', 'lms-fusion', 'cms-fusion'];
 const siteDirs = {
-  'ctc-research': 'ctc-research',
   'lms': 'lms',
   vresume: 'VResume',
   cypercloud: 'cypercloud',
@@ -45,7 +41,6 @@ const siteDirs = {
   'cms-fusion': 'cms-fusion',
 };
 const cleanDirs = {
-  'ctc-research': ['ctc-research/assets/bundles/ctc-research'],
   'lms': ['lms/assets/bundles/lms'],
   vresume: ['VResume/assets/bundles/vresume'],
   cypercloud: ['cypercloud/assets/bundles/customizer'],
@@ -56,13 +51,13 @@ const cleanDirs = {
 };
 
 function usage() {
-  console.log(`Workspace asset CLI\n\nUsage:\n  npm --prefix assets run <script> -- [--site ctc|structa|vresume|customizer|all]\n  node assets/scripts/workspace.mjs <command> [--site SITE] [-- <extra args>]\n\nSites:\n  ctc, ctc-research       CTC Research website\n  structa, lms       Structa LMS Demo\n  vresume                 VResume resume builder\n  cypercloud, customizer, cust  Structa template cypercloud (standalone webpack)\n  lms-fusion, fusionlms          Fusion LMS (isolated)\n  cms-fusion, fusioncms          Fusion CMS (isolated)\n\nCommands:\n  build            Production webpack build for one site (default ctc-research)\n  build-dev        Development webpack build for one site\n  watch            Webpack watch for one site\n  dev              Webpack dev server for one site\n  analyze          Emit webpack stats for one site (not supported for customizer)\n  clean            Remove generated bundles for one site or all sites\n  collectstatic    Run Django collectstatic for one site or all sites\n  build-collect    Build assets then collect static for one site or all sites\n  load-dumps       Load JSON dump fixtures for one site or all sites\n  populate         Run fixture loading and site-specific Python content/image population\n  manage           Run workspace manage.py for one site; pass Django args after --\n  sites            Print supported site names\n`);
+  console.log(`Workspace asset CLI\n\nUsage:\n  npm --prefix assets run <script> -- [--site structa|vresume|customizer|all]\n  node assets/scripts/workspace.mjs <command> [--site SITE] [-- <extra args>]\n\nSites:\n  structa, lms       Structa LMS Demo\n  vresume                 VResume resume builder\n  cypercloud, customizer, cust  Structa template cypercloud (standalone webpack)\n  lms-fusion, fusionlms          Fusion LMS (isolated)\n  cms-fusion, fusioncms          Fusion CMS (isolated)\n\nCommands:\n  build            Production webpack build for one site (default cms-fusion)\n  build-dev        Development webpack build for one site\n  watch            Webpack watch for one site\n  dev              Webpack dev server for one site\n  analyze          Emit webpack stats for one site (not supported for customizer)\n  clean            Remove generated bundles for one site or all sites\n  collectstatic    Run Django collectstatic for one site or all sites\n  build-collect    Build assets then collect static for one site or all sites\n  load-dumps       Load JSON dump fixtures for one site or all sites\n  populate         Run fixture loading and site-specific Python content/image population\n  manage           Run workspace manage.py for one site; pass Django args after --\n  sites            Print supported site names\n`);
 }
 
 function parse(argv) {
   const args = [...argv];
   const command = args.shift() || 'help';
-  let site = process.env.PROJECT_PATH || process.env.DJANGO_SITE || process.env.WEBSITE || 'ctc-research';
+  let site = process.env.PROJECT_PATH || process.env.DJANGO_SITE || process.env.WEBSITE || 'cms-fusion';
   const extra = [];
   for (let i = 0; i < args.length; i += 1) {
     const arg = args[i];
