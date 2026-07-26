@@ -69,3 +69,7 @@ Dynaconf Config:   from django_fusion.config.dynaconf_loader import DynaconfSett
 """
 
 __version__ = "0.1.0"
+
+# Default app config for Django < 3.2 compatibility and for projects that
+# include "django_fusion" as a plain string in INSTALLED_APPS.
+default_app_config = "django_fusion.apps.DjangoFusionConfig"
