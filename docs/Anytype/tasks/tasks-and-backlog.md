@@ -56,3 +56,10 @@ This page tracks current tasks, upcoming work, and completed milestones for Stru
 2. It is broken down into repo issues or Makefile targets.   
 3. Code is written in the matching `core/<site>/` or shared location.   
 4. Changes are validated with `make deploy-preflight` and tests.   
+
+## Related Docs
+- → `../plans/product-development.md` — Development lifecycle
+- → `../plans/project-guide.md` — Project navigation guide
+- → `../architecture/overview.md` — Architecture context
+- → `../guides/development-workflow.md` — Workflow reference
+- → `../README.md` — Master index

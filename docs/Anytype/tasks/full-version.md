@@ -3,11 +3,7 @@
 Object type:
     - Workspace
     - Development
-Tags:
-- Development
-    - version
-    - full
-    - enterprise
+Tags: enterprise, version, full
 Status: In Development
 Backlinks:
     - CRM

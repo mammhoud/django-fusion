@@ -17,3 +17,5 @@ Develop a timeline or roadmap outlining the major milestones and deadlines for y
 ![Timeline dev](files/timeline-dev.png)    
 $$   
 $$   
+
+## Related Docs — (intentionally omitted: legacy detailed variant — see [`timeline.md`](timeline.md).)

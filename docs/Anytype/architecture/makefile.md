@@ -2,12 +2,7 @@
 # yaml-language-server: $schema=schemas/workspace.schema.json
 Object type:
     - Workspace
-Tags:
-    - makefile
-    - build
-    - automation
-Status: Published
----
+Status: Published---
 
 # Makefile — Build & Automation System
 

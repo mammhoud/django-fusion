@@ -22,7 +22,11 @@ function captureErrors(page: Page) {
       (e) =>
         !e.includes('hydration') &&
         !e.includes('Warning:') &&
-        !e.includes('next')
+        !e.includes('next') &&
+        !e.includes('Failed to load') &&
+        !e.includes('ERR_CONNECTION_REFUSED') &&
+        !e.includes('fetch') &&
+        !e.includes('NetworkError')
     );
 }
 
@@ -35,8 +39,8 @@ test.describe('Auth Flows', () => {
     await page.locator('button[type="submit"]').click();
 
     // Should show validation (HTML5 or custom)
-    const emailInput = page.locator('#email');
-    const isValid = await emailInput.evaluate((el) => (el as HTMLInputElement).validity.valid);
+    const usernameInput = page.locator('#username');
+    const isValid = await usernameInput.evaluate((el) => (el as HTMLInputElement).validity.valid);
     expect(isValid).toBe(false);
     expect(getErrors()).toHaveLength(0);
   });

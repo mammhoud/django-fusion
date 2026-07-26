@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/bookmark.schema.json
 Object type: Bookmark
-Tags: bookmark, link, reference
+Tags: bookmark, reference
 Status: Published
 ---
 

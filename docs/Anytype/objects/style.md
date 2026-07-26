@@ -38,7 +38,7 @@ Component 🔧 ── uses ──→ Style 🎨 ── defined by ──→ Them
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../style/_index.md` — Style directory
+- → `../style/` — Style directory
 - → `component.md` — Component entity
 - → `../architecture/theme-system.md` — Theme architecture
 - → `../guides/theming.md` — Theme guide

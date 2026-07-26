@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Pipeline
-Tags: pipeline, ci, cd, deployment
+Tags: pipeline, ci, cd
 Status: Published
 ---
 
@@ -40,6 +40,6 @@ Release 🚀 ── deployed by ──→ Pipeline 🔄
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../pipelines/_index.md` — Pipelines directory
+- → `../pipelines/` — Pipelines directory
 - → `release.md` — Release entity
 - → `reference.md` — Reference entity

@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Configuration
-Tags: configuration, setup, environment
+Tags: configuration, setup
 Status: Published
 ---
 

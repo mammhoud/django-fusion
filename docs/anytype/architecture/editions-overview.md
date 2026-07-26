@@ -1,9 +1,11 @@
-# POS Editions Overview
+---
+Object type: Architecture
+Tags: pos-mini, pos-solo, pos-full, pos-cloud
+Status: Published
+Edition: Mini, Solo, Full, Cloud
+---
 
-**Type:** Architecture 🏗️
-**Tags:** `#pos-mini` `#pos-solo` `#pos-full` `#pos-cloud`
-**Status:** Published
-**Edition:** Mini, Solo, Full, Cloud
+# POS Editions Overview
 
 ---
 

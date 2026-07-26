@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Blog/Post
-Tags: blog, content, publishing
+Tags: blog
 Status: Published
 ---
 

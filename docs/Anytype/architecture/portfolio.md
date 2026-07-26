@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=schemas/feature.schema.json
 Object type:
     - Feature
-Tags:
-    - portfolio
-    - vresume
-    - frontend
+Tags: portfolio, frontend
 Status: Complete
 Edition: Web
 ---

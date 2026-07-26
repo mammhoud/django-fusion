@@ -128,6 +128,7 @@ Person responsible for monitoring
 [Date]   
 \`\`\`   
 \*\*Key Risk Indicators\*\*   
+
 \| Category \| Indicator \| Threshold \| Alert \|   
 \|----------\|-----------\|-----------\|-------\|   
 \| \*\*Financial\*\* \| Monthly recurring revenue (MRR) \| <10% growth \| Quarterly \|   
@@ -160,3 +161,5 @@ Person responsible for monitoring
 - [Market Research](#market-research-analysis) – for market‑related risks.   
    
 \`\`\`   
+
+## Related Docs — (intentionally omitted: legacy detailed variant — see [`risk-management.md`](risk-management.md).)

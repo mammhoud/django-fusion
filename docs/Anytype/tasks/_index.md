@@ -1,3 +1,8 @@
+---
+Object type: Workspace
+Tags: tasks
+---
+
 # Tasks — Implementation & Planning
 
 > Implementation tasks, project timeline, version planning, and knowledge checks.

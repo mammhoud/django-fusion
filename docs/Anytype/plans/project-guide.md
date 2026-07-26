@@ -1,13 +1,11 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Guide
-Tags: navigation, repository, onboarding
 Status: Published
 Category: Setup
 Target Audience: Developer
 Related Plans: product-development, startup-planner
-Related Architecture: architecture-overview
----
+Related Architecture: architecture-overview---
 
 # Project Guide — Repository Navigation
 

@@ -3,11 +3,7 @@
 Object type:
     - Workspace
     - Staging
-Tags:
-- Staging
-    - version
-    - solo
-    - pos
+Tags: pos, solo, version
 Status: In Development
 Backlinks:
     - POS

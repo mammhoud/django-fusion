@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Integration
-Tags: integration, connector, third-party
+Tags: integration
 Status: Published
 ---
 
@@ -42,7 +42,7 @@ Feature ✨ ── needs ──→ Integration 🔗 ── connects ──→ Ex
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../integrations/_index.md` — Integrations directory
+- → `../integrations/` — Integrations directory
 - → `api.md` — API entity
 - → `feature.md` — Feature entity
 - → `pipeline.md` — Pipeline entity

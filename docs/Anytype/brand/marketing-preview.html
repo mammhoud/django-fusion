@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Structa Cloud — Multi-Site Django Platform + POS Desktop Suite</title>
+    <meta name="description" content="Full-stack Django monorepo with 4 POS editions, multi-site CMS, AI chat platform, and reusable libraries. Built with Django, Wagtail, Tauri, React, and Rust.">
+    <style>
+        :root {
+            --teal: #0d9488;
+            --teal-light: #14b8a6;
+            --indigo: #6366f1;
+            --cyan: #06b6d4;
+            --emerald: #10b981;
+            --gold: #d98c00;
+            --rust: #f7524a;
+            --slate: #0f172a;
+            --slate-light: #334155;
+            --gray: #94a3b8;
+            --white: #ffffff;
+            --bg: #f8fafc;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: var(--bg);
+            color: var(--slate);
+            line-height: 1.6;
+        }
+
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(135deg, var(--slate) 0%, #1e293b 50%, var(--slate-light) 100%);
+            color: var(--white);
+            padding: 80px 40px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle at 30% 50%, rgba(14,148,136,0.15) 0%, transparent 50%),
+                        radial-gradient(circle at 70% 50%, rgba(99,102,241,0.1) 0%, transparent 50%);
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        .hero-content { position: relative; z-index: 1; max-width: 900px; margin: 0 auto; }
+
+        .hero h1 {
+            font-size: 3rem;
+            font-weight: 800;
+            letter-spacing: -0.02em;
+            margin-bottom: 16px;
+        }
+
+        .hero h1 .gradient {
+            background: linear-gradient(135deg, var(--teal-light), var(--cyan));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .hero p { font-size: 1.2rem; color: var(--gray); margin-bottom: 32px; max-width: 600px; margin-left: auto; margin-right: auto; }
+
+        .hero-badges { display: flex; gap: 12px; justify-content: center; flex-wrap: wrap; margin-bottom: 32px; }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 6px 14px;
+            border-radius: 9999px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            background: rgba(255,255,255,0.08);
+            border: 1px solid rgba(255,255,255,0.1);
+            color: var(--gray);
+        }
+
+        .badge .dot { width: 8px; height: 8px; border-radius: 50%; }
+
+        /* Product Grid */
+        .section { padding: 80px 40px; max-width: 1200px; margin: 0 auto; }
+
+        .section-title {
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 12px;
+        }
+
+        .section-subtitle {
+            text-align: center;
+            color: var(--gray);
+            margin-bottom: 48px;
+            font-size: 1.05rem;
+        }
+
+        .product-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 24px;
+        }
+
+        .product-card {
+            background: var(--white);
+            border-radius: 16px;
+            padding: 32px;
+            border: 1px solid #e2e8f0;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .product-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.08);
+            border-color: transparent;
+        }
+
+        .product-card .icon {
+            width: 48px;
+            height: 48px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            margin-bottom: 16px;
+        }
+
+        .product-card h3 { font-size: 1.15rem; font-weight: 700; margin-bottom: 8px; }
+        .product-card p { color: var(--slate-light); font-size: 0.9rem; margin-bottom: 16px; }
+
+        .product-card .tags { display: flex; gap: 6px; flex-wrap: wrap; }
+
+        .product-card .tag {
+            font-size: 0.7rem;
+            padding: 3px 8px;
+            border-radius: 4px;
+            font-weight: 500;
+            background: #f1f5f9;
+            color: var(--slate-light);
+        }
+
+        /* Color Accent Bars */
+        .product-card::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+        }
+
+        .product-card.ctc::after { background: var(--cyan); }
+        .product-card.lms::after { background: var(--emerald); }
+        .product-card.vresume::after { background: var(--gold); }
+        .product-card.cypercloud::after { background: var(--teal-light); }
+        .product-card.pos::after { background: var(--indigo); }
+        .product-card.fusion::after { background: var(--teal); }
+        .product-card.bolt::after { background: var(--rust); }
+
+        /* Features Row */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 24px;
+            margin-top: 48px;
+        }
+
+        .feature {
+            text-align: center;
+            padding: 24px;
+        }
+
+        .feature .num {
+            font-size: 2.5rem;
+            font-weight: 800;
+            background: linear-gradient(135deg, var(--teal), var(--indigo));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .feature .label { font-size: 0.9rem; color: var(--gray); margin-top: 4px; }
+
+        /* Tech Stack */
+        .tech-stack {
+            display: flex;
+            gap: 16px;
+            justify-content: center;
+            flex-wrap: wrap;
+            margin-top: 32px;
+        }
+
+        .tech-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 20px;
+            border-radius: 12px;
+            background: var(--white);
+            border: 1px solid #e2e8f0;
+            font-size: 0.85rem;
+            font-weight: 500;
+            transition: all 0.2s ease;
+        }
+
+        .tech-pill:hover { border-color: var(--teal); color: var(--teal); }
+
+        .tech-pill .emoji { font-size: 1.1rem; }
+
+        /* POS Editions */
+        .editions-table {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
+            background: var(--white);
+            border-radius: 16px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+            margin-top: 32px;
+        }
+
+        .editions-table th {
+            background: var(--slate);
+            color: var(--white);
+            padding: 14px 20px;
+            text-align: left;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .editions-table td {
+            padding: 14px 20px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 0.9rem;
+        }
+
+        .editions-table tr:last-child td { border-bottom: none; }
+
+        .editions-table tr:hover td { background: #f8fafc; }
+
+        .check { color: var(--emerald); font-weight: 700; }
+        .cross { color: var(--gray); }
+
+        /* CTA */
+        .cta {
+            text-align: center;
+            padding: 80px 40px;
+            background: linear-gradient(135deg, var(--slate) 0%, #1e293b 100%);
+            color: var(--white);
+        }
+
+        .cta h2 { font-size: 2rem; font-weight: 700; margin-bottom: 12px; }
+
+        .cta p { color: var(--gray); margin-bottom: 32px; font-size: 1.05rem; }
+
+        .cta-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 32px;
+            border-radius: 12px;
+            background: linear-gradient(135deg, var(--teal), var(--teal-light));
+            color: var(--white);
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .cta-btn:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(14,148,136,0.3); }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 32px;
+            color: var(--gray);
+            font-size: 0.85rem;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        @media (max-width: 768px) {
+            .hero { padding: 48px 20px; }
+            .hero h1 { font-size: 2rem; }
+            .section { padding: 48px 20px; }
+            .features { grid-template-columns: repeat(2, 1fr); }
+            .product-grid { grid-template-columns: 1fr; }
+        }
+    </style>
+</head>
+<body>
+
+<!-- Hero -->
+<section class="hero">
+    <div class="hero-content">
+        <div class="hero-badges">
+            <span class="badge"><span class="dot" style="background:var(--emerald)"></span> 4 POS Editions</span>
+            <span class="badge"><span class="dot" style="background:var(--cyan)"></span> AI-Powered</span>
+            <span class="badge"><span class="dot" style="background:var(--gold)"></span> Multi-Site CMS</span>
+            <span class="badge"><span class="dot" style="background:var(--rust)"></span> Rust + Django</span>
+        </div>
+        <h1><span class="gradient">Structa Cloud</span></h1>
+        <p>Full-stack Django monorepo with 4 POS editions, multi-site CMS, AI chat platform, and reusable libraries — all in one repository.</p>
+        <div class="tech-stack">
+            <span class="tech-pill"><span class="emoji">🐍</span> Django + Wagtail</span>
+            <span class="tech-pill"><span class="emoji">🦀</span> Rust + Tauri</span>
+            <span class="tech-pill"><span class="emoji">⚛️</span> React + TypeScript</span>
+            <span class="tech-pill"><span class="emoji">🐳</span> Docker + Traefik</span>
+            <span class="tech-pill"><span class="emoji">🗄️</span> PostgreSQL + SQLite</span>
+            <span class="tech-pill"><span class="emoji">🤖</span> CeptorAI</span>
+        </div>
+    </div>
+</section>
+
+<!-- Stats -->
+<section class="section" style="padding-top:0; padding-bottom:0;">
+    <div class="features">
+        <div class="feature"><div class="num">27</div><div class="label">Object Types</div></div>
+        <div class="feature"><div class="num">6</div><div class="label">Web Sites</div></div>
+        <div class="feature"><div class="num">4</div><div class="label">POS Editions</div></div>
+        <div class="feature"><div class="num">2</div><div class="label">Reusable Libraries</div></div>
+    </div>
+</section>
+
+<!-- Products -->
+<section class="section">
+    <h2 class="section-title">Product Portfolio</h2>
+    <p class="section-subtitle">Every product, every site, every edition — one monorepo.</p>
+
+    <div class="product-grid">
+        <div class="product-card ctc">
+            <div class="icon" style="background:#e0f2fe; color:#0ea5e9;">🔬</div>
+            <h3>CTC Research</h3>
+            <p>Research platform and academic portal at ctc-research.com. Wagtail CMS-powered with teal theme and multi-language support.</p>
+            <div class="tags"><span class="tag">Wagtail CMS</span><span class="tag">Django</span><span class="tag">Teal Theme</span></div>
+        </div>
+
+        <div class="product-card lms">
+            <div class="icon" style="background:#d1fae5; color:#10b981;">📚</div>
+            <h3>LMS Demo</h3>
+            <p>Learning management system at structa.cloud. Course delivery, student tracking, and content management.</p>
+            <div class="tags"><span class="tag">Wagtail CMS</span><span class="tag">Emerald</span><span class="tag">HTMX</span></div>
+        </div>
+
+        <div class="product-card vresume">
+            <div class="icon" style="background:#fef3c7; color:#d98c00;">💼</div>
+            <h3>VResume</h3>
+            <p>Portfolio and resume platform at vresume.structa.cloud. Gold-themed career showcase with dark mode.</p>
+            <div class="tags"><span class="tag">Portfolio</span><span class="tag">Gold Theme</span><span class="tag">Responsive</span></div>
+        </div>
+
+        <div class="product-card cypercloud">
+            <div class="icon" style="background:#cffafe; color:#06b6d4;">🤖</div>
+            <h3>CyperCloud</h3>
+            <p>AI chat customizer platform. CeptorAI-powered with MCP integration, custom prompts, and agent generation.</p>
+            <div class="tags"><span class="tag">CeptorAI</span><span class="tag">Cyan</span><span class="tag">MCP</span></div>
+        </div>
+
+        <div class="product-card pos">
+            <div class="icon" style="background:#ede9fe; color:#6366f1;">🖥️</div>
+            <h3>POS Suite</h3>
+            <p>Desktop POS app in 4 editions: Minimal (Rust), Solo (LAN sync), Full (cloud), and Cloud (SaaS).</p>
+            <div class="tags"><span class="tag">Tauri v2</span><span class="tag">Rust</span><span class="tag">React</span><span class="tag">SQLite</span></div>
+        </div>
+
+        <div class="product-card fusion">
+            <div class="icon" style="background:#e0f2fe; color:#0d9488;">🧩</div>
+            <h3>django-fusion</h3>
+            <p>Reusable Django component system — routing, forms, tables, auth mixins, and Wagtail blocks.</p>
+            <div class="tags"><span class="tag">Django</span><span class="tag">Components</span><span class="tag">Library</span></div>
+        </div>
+
+        <div class="product-card bolt">
+            <div class="icon" style="background:#fee2e2; color:#f7524a;">⚡</div>
+            <h3>django-bolt</h3>
+            <p>High-performance Django utilities — Rust-accelerated query optimization and async task runners.</p>
+            <div class="tags"><span class="tag">Rust</span><span class="tag">Performance</span><span class="tag">Library</span></div>
+        </div>
+    </div>
+</section>
+
+<!-- POS Editions -->
+<section class="section" style="background: #f1f5f9;">
+    <h2 class="section-title">POS Desktop Editions</h2>
+    <p class="section-subtitle">Four editions from food truck to enterprise — same React frontend, different backends.</p>
+
+    <table class="editions-table">
+        <thead>
+            <tr>
+                <th>Edition</th>
+                <th>Backend</th>
+                <th>Database</th>
+                <th>Sync</th>
+                <th>Desktop</th>
+                <th>Target</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><strong>Minimal</strong></td>
+                <td>Rust (Tauri)</td>
+                <td>SQLite</td>
+                <td><span class="cross">Air-gapped</span></td>
+                <td><span class="check">✓</span></td>
+                <td>Food truck / kiosk</td>
+            </tr>
+            <tr>
+                <td><strong>Solo</strong></td>
+                <td>Django + Robyn</td>
+                <td>SQLite</td>
+                <td><span class="check">✓ LAN</span></td>
+                <td><span class="check">✓</span></td>
+                <td>Single restaurant</td>
+            </tr>
+            <tr>
+                <td><strong>Full</strong></td>
+                <td>Django + Robyn</td>
+                <td>SQLite / PG</td>
+                <td><span class="check">✓ Cloud + LAN</span></td>
+                <td><span class="check">✓</span></td>
+                <td>Restaurant chain</td>
+            </tr>
+            <tr>
+                <td><strong>Cloud</strong></td>
+                <td>Django + DRF</td>
+                <td>PostgreSQL</td>
+                <td><span class="check">✓ Cloud</span></td>
+                <td><span class="cross">Web only</span></td>
+                <td>Enterprise SaaS</td>
+            </tr>
+        </tbody>
+    </table>
+</section>
+
+<!-- CTA -->
+<section class="cta">
+    <h2>Ready to Build?</h2>
+    <p>Open-source, production-ready, and built for real businesses.</p>
+    <a href="https://structa.cloud" class="cta-btn">Explore Documentation →</a>
+</section>
+
+<!-- Footer -->
+<div class="footer">
+    <p>Structa Cloud © 2026 · Built with Django, Wagtail, Tauri, React, and Rust</p>
+</div>
+
+</body>
+</html>

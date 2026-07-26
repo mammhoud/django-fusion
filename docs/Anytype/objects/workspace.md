@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Workspace
-Tags: workspace, hub
+Tags: workspace
 Status: Published
 ---
 

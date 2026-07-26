@@ -3,13 +3,7 @@
 Object type:
     - Workspace
     - Done
-Tags:
-- Done
-    - version
-    - free
-    - scope
-Status: Complete
----
+Status: Complete---
 
 # Free Version — Community Edition
 

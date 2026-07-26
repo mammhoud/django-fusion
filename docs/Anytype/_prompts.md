@@ -60,9 +60,8 @@ Review the AnyType documentation at `docs/Anytype/` for consistency:
 
 1. Check that every document has correct frontmatter (Object type, Tags)
 2. Verify that all cross-references (→ links) point to existing files
-3. Ensure each directory has a valid `_index.md`
-4. Check for orphaned files (no backlinks from other docs)
-5. Report any duplicate or deprecated content
+3. Check for orphaned files (no backlinks from other docs)
+4. Report any duplicate or deprecated content
 ```
 
 ### Updating Relations
@@ -71,46 +70,9 @@ Review the AnyType documentation at `docs/Anytype/` for consistency:
 Update the relations in `docs/Anytype/objects/_relations.md` to include
 the new [TYPE NAME] entity.
 
-1. Add the relation entry to the "Extended Relations" table
+1. Add the relation entry to the relations table
 2. Update the Graph View Connections ASCII diagram
 3. Add any new relation properties to affected object types
-```
-
----
-
-## Restructuring
-
-### Moving Files to New Structure
-
-```
-Move existing files from `docs/Anytype/root/` into the organized subdirectory structure:
-
-- Architecture files → `docs/Anytype/architecture/`
-- Feature files → `docs/Anytype/features/`
-- Guide files → `docs/Anytype/guides/`
-- Reference files → `docs/Anytype/references/`
-- Plan files → `docs/Anytype/plans/`
-- Task files → `docs/Anytype/tasks/`
-- Changelog files → `docs/Anytype/changelogs/`
-
-For each file:
-1. Read the existing content
-2. Write to the new location with updated frontmatter if needed
-3. Delete the old file
-4. Update any cross-references
-```
-
-### Cleaning Up Duplicates
-
-```
-Identify and clean up duplicate files in `docs/Anytype/`.
-
-For each pair of duplicate files (e.g., `auth.md` and `auth_9.md`):
-1. Read both files and compare content
-2. Determine which is canonical (prefer Page type over Workspace, newer date)
-3. Merge unique content from deprecated version into the canonical version
-4. Delete the deprecated version
-5. Update any references to the deprecated version
 ```
 
 ---
@@ -135,4 +97,3 @@ When reviewing AnyType documentation:
 - → `README.md` — Master index
 - → `objects/_object-types.md` — Object type definitions
 - → `../../AGENTS.md` — Project-wide AI agent instructions
-- → `../ai/prompts.md` — AI agent prompts

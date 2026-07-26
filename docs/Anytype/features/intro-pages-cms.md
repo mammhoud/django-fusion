@@ -4,10 +4,7 @@ Object type:
     - Workspace
 Backlinks:
     - LMS
-Tags:
-    - cms
-    - lms
-    - pages
+Tags: cms, lms
 Status: Published
 ---
 

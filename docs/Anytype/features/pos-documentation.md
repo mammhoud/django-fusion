@@ -49,4 +49,7 @@ id: bafyreid4m6jco6cyqmcd5rmwi6vw6kijlepvhciy4rj5jnyovwzyhhpbum
 - `#in-progress` — Partially implemented   
 - `#planned` — Design complete, not yet built   
 - `#needs-review` — Requires verification   
-[POS Documentation](pos-documentation.md)    
+## Related Docs
+- → `../architecture/editions.md` — POS editions overview
+- → `../features/comparison-matrix.md` — Feature comparison across editions
+- → `../objects/_tags.md` — Full tag definitions

@@ -2,10 +2,7 @@
 # yaml-language-server: $schema=schemas/page.schema.json
 Object type:
     - Page
-Tags:
-    - projects
-    - sites
-    - reference
+Tags: projects, reference
 Status: Published
 ---
 

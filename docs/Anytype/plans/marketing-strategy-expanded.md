@@ -16,3 +16,5 @@ id: bafyreihvhavnemn3lojax44rt32bkpkwxjlt7er6nrl5wl3dyphhj23pqe
 Develop a comprehensive marketing plan, including strategies for branding, customer acquisition, and retention.   
   Identify sales channels and tactics to reach your target market.   
 ![Marketing Strategy](files/marketing-strategy.png)    
+
+## Related Docs — (intentionally omitted: legacy expanded variant — see [`marketing-strategy.md`](marketing-strategy.md).)

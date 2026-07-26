@@ -49,4 +49,4 @@ Edition 📦 ─── FeaturesIncluded ──→ Feature ✨
 - → `_object-types.md` — All type definitions
 - → `../architecture/editions.md` — Edition architecture overview
 - → `../features/comparison-matrix.md` — Feature grid
-- → `../editions/_index.md` — Editions directory
+- → `../editions/` — Editions directory

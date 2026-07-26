@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: API
-Tags: api, endpoint, reference
+Tags: api, reference
 Status: Published
 ---
 
@@ -44,7 +44,7 @@ Component 🔧 ── calls ──→ API 📡 ── integrates ──→ Integ
 ## Related
 
 - → `_object-types.md` — All type definitions
-- → `../api/_index.md` — API directory
+- → `../api/` — API directory
 - → `component.md` — Component entity
 - → `integration.md` — Integration entity
 - → `feature.md` — Feature entity

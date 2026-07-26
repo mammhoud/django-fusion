@@ -1,12 +1,10 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: product-development, lifecycle, roadmap
 Status: Published
 Type: Roadmap
 Related Plans: operational-plan, market-research
-Related Goals: product-goal, technical-goal
----
+Related Goals: product-goal, technical-goal---
 
 # Product Development Lifecycle
 

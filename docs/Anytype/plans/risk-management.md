@@ -1,12 +1,10 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: risk-management, mitigation, strategy
 Status: Published
 Type: Quarterly
 Related Plans: operational-plan, business-model
-Related Goals: business-goal
----
+Related Goals: business-goal---
 
 # Risk Management — Assessment & Mitigation
 

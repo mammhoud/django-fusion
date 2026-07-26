@@ -1,7 +1,7 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: legal, compliance, privacy, gdpr
+Tags: legal, compliance, privacy
 Status: Published
 Type: Annual
 Related Plans: operational-plan, risk-management

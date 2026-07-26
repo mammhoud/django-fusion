@@ -78,7 +78,7 @@ export default function MyNewPage() {
 ```rust
 // src-tauri/src/lib.rs
 #[tauri::command]
-fn my_new_command() -> Result<String, String> {
+fn my_new_command() → Result<String, String> {
     Ok("done".to_string())
 }
 ```

@@ -37,10 +37,14 @@ export async function createApiContext(baseURL: string = API_URL): Promise<APIRe
  * Health check — GET /fusion/health or /api/health
  */
 export async function apiHealthCheck(ctx: APIRequestContext, path: string = '/fusion/health'): Promise<boolean> {
-  const res = await ctx.get(path);
-  if (!res.ok()) return false;
-  const body = await res.json();
-  return body?.status === 'ok';
+  try {
+    const res = await ctx.get(path, { timeout: 5000 });
+    if (!res.ok()) return false;
+    const body = await res.json();
+    return body?.status === 'ok';
+  } catch {
+    return false;
+  }
 }
 
 /**

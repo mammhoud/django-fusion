@@ -5,11 +5,7 @@ Object type:
 Backlinks:
     - Task
     - POS
-Tags:
-    - sync
-    - data
-    - pos-solo
-    - pos-full
+Tags: sync, pos-solo, pos-full
 Status: Complete
 Edition: Solo, Full
 Links:

@@ -1,3 +1,8 @@
+---
+Object type: Workspace
+Tags: milestones
+---
+
 # Milestones — Key Checkpoints & Releases
 
 > **Type:** Milestone 🏁
@@ -19,7 +24,6 @@
 ## Related
 
 - → `../objects/milestone.md` — Milestone object type
-- → `../releases/_index.md` — Related releases
 - → `../goals/_index.md` — Related goals
 - → `../tasks/_index.md` — Implementation tasks
 - → `../README.md` — Master index

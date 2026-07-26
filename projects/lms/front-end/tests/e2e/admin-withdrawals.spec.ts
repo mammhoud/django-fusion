@@ -214,7 +214,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
       await expect(page.locator("text=$150")).toBeVisible();
 
       // Instructor names
-      await expect(page.locator("text=Jane Doe")).toBeVisible();
+      // Use .first() because "Jane Doe" may match sidebar AND table
+      await expect(page.locator("text=Jane Doe").first()).toBeVisible();
       await expect(page.locator("text=Alice Johnson")).toBeVisible();
     });
 
@@ -283,8 +284,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Click Approve
-      const approveBtn = page.locator("button", { hasText: "Approve" });
+      // Click Approve — use .first() because there may be pending badges too
+      const approveBtn = page.locator("button", { hasText: "Approve" }).first();
       await expect(approveBtn).toBeVisible();
       await approveBtn.click();
 
@@ -312,7 +313,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      await page.locator("button", { hasText: "Approve" }).click();
+      // Use .first() to avoid strict mode with multiple buttons
+      await page.locator("button", { hasText: "Approve" }).first().click();
 
       await expect(
         page.locator("text=Withdrawal has already been processed.")
@@ -346,8 +348,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Click Reject to reveal the reason input
-      await page.locator("button", { hasText: "Reject" }).click();
+      // Click Reject — .first() because there may be multiple pending rows
+      await page.locator("button", { hasText: "Reject" }).first().click();
 
       // Fill in rejection reason
       const reasonInput = page.locator('input[placeholder="Reason (optional)"]');
@@ -370,8 +372,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
 
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      // Click Reject to open the inline form
-      await page.locator("button", { hasText: "Reject" }).click();
+      // Click Reject — .first() because there may be multiple pending rows
+      await page.locator("button", { hasText: "Reject" }).first().click();
 
       const reasonInput = page.locator('input[placeholder="Reason (optional)"]');
       await expect(reasonInput).toBeVisible();
@@ -393,7 +395,8 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
       await mockWithdrawalsList(page, [makePendingWithdrawal()]);
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
 
-      const backLink = page.locator('a[href="/dashboard"]');
+      // Use .first() because there are multiple dashboard links in the sidebar
+      const backLink = page.locator('a[href="/dashboard"]').first();
       await expect(backLink).toBeVisible();
       await expect(backLink).toContainText("Back to Dashboard");
     });

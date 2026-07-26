@@ -76,3 +76,5 @@ Per-site code lives in `core/<site>/` and can override shared templates and styl
 - Shared components reduce duplication.   
 - Background tasks are centralized in shared workers.   
 - Multi-domain or single-domain deployment is supported.   
+
+## Related Docs — (intentionally omitted: AnyType export with native backlink navigation; cross-references are maintained through the AnyType graph.)

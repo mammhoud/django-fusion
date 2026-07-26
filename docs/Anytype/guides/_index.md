@@ -1,3 +1,8 @@
+---
+Object type: Workspace
+Tags: guides
+---
+
 # Guides — How-To & Workflows
 
 > Step-by-step guides for setup, development, deployment, customization, and installation across all platforms and operating systems.

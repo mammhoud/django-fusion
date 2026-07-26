@@ -1,12 +1,10 @@
 ---
 # yaml-language-server: $schema=../schemas/page.schema.json
 Object type: Plan
-Tags: operations, delivery, production, logistics
 Status: Published
 Type: Roadmap
 Related Plans: product-development, market-research
-Related Goals: business-goal
----
+Related Goals: business-goal---
 
 # Operational Plan — Delivery & Operations
 

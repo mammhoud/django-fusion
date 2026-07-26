@@ -1,3 +1,8 @@
+---
+Object type: Workspace
+Tags: features
+---
+
 # Features — Product Capabilities
 
 > Feature descriptions, capabilities, and edition-specific implementations across all POS editions.
