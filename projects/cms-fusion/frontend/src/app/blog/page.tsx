@@ -26,7 +26,7 @@ export default function BlogPage() {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5075/api'}/blog?page=${page}&per_page=9`);
       if (!res.ok) throw new Error(`API error ${res.status}`);
       const json = await res.json();
-      const data = fusionDecoder.unwrap(json.data ? json : { status: 200, message: 'OK', data: json });
+      const data = fusionDecoder.unwrap<{ data: BlogPost[]; pagination: { page: number; total: number; total_pages: number } }>(json.data ? json : { status: 200, message: 'OK', data: json });
       setPosts(data.data || []);
       setPagination(data.pagination || { page: 1, total: 0, total_pages: 0 });
     } catch (err) {

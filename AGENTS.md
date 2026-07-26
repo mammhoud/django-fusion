@@ -85,16 +85,23 @@ When adding shared styles, scripts, images, or templates, place them in `project
 
 ---
 
-## Local Libraries
+## Local Libraries & Submodules
 
-Local reusable libraries live under `libs/`:
+Local reusable libraries live under `libs/` as git submodules. Treat these as first-class local packages. Make reusable framework-level changes in the appropriate library instead of copying logic into site projects.
 
-| Library | Description | Key Docs |
-|---------|-------------|----------|
-| `libs/django-fusion/` | Component system, routing, forms/tables, auth, Wagtail blocks | [`django-fusion/AGENTS.md`](libs/django-fusion/AGENTS.md) |
-| `libs/ceptor-ai/` | AI chat client, MCP server, BEM converter, agent generation | [`ceptor-ai/AGENTS.md`](libs/ceptor-ai/AGENTS.md) |
+| Library | Submodule | Description | Key Docs |
+|---------|-----------|-------------|----------|
+| `libs/django-fusion/` | [`django-fusion`](https://github.com/mammhoud/django-fusion) | Component system, routing, forms/tables, auth, Wagtail blocks | [`django-fusion/AGENTS.md`](libs/django-fusion/AGENTS.md) |
+| `libs/ceptor-ai/` | [`ceptor-ai`](https://github.com/mammhoud/ceptor-ai) | AI chat client, MCP server, BEM converter, agent generation | [`ceptor-ai/AGENTS.md`](libs/ceptor-ai/AGENTS.md) |
+| `libs/django-bolt/` | [`django-bolt`](https://github.com/dj-bolt/django-bolt) | High-performance Rust-backed API framework (BoltAPI) | [`django-bolt/README.md`](libs/django-bolt/README.md) |
 
-Treat these as first-class local packages. Make reusable framework-level changes in the appropriate library instead of copying logic into site projects.
+### Key submodule facts for agents
+
+- **Branch mapping** is in `.gitmodules` — `django-fusion` and `ceptor-ai` track `generic`; `django-bolt` tracks `main`.
+- **Recursive checkout** is required; CI uses `actions/checkout@v4` which fetches submodules by default.
+- **Make framework changes in the submodule**, run its own tests, then run tests in affected sites.
+- **Never commit submodule code from the parent repo** without also pushing the submodule repository; use `make push-lib LIB=<name>`.
+- **Canonical import paths matter** — each submodule has canonical paths; never introduce re-export shims.
 
 ---
 
@@ -573,6 +580,19 @@ Response → Nginx (static/media) or direct HTTP response
 
 ---
 
+## CI & GitHub Actions
+
+- CI workflows live in `.github/workflows/`. See [`.github/AGENTS.md`](.github/AGENTS.md) for workflow-specific agent instructions.
+- The monorepo uses `pytest-core.yml` (Python), `js-test.yml` (Vitest/Playwright), `check-extras.yml`, and `deploy-ci.yml`.
+- Reusable composite action: `.github/actions/deploy-preflight/action.yml` runs `make deploy-ci`.
+- When adding a workflow or composite action, document it in `.github/README.md` and add `workflow_dispatch:` and `timeout-minutes:`.
+- Validate YAML after editing:
+  ```bash
+  python3 -c "import yaml; yaml.safe_load(open('.github/workflows/<name>.yml'))"
+  ```
+
+---
+
 ## AI Agent Workflow
 
 When an AI agent starts working on this monorepo:
@@ -580,11 +600,12 @@ When an AI agent starts working on this monorepo:
 1. **Read this file** — Get monorepo-wide conventions
 2. **Read site AGENTS.md** — Get site-specific instructions
 3. **Read lib AGENTS.md** — Get library conventions (if applicable)
-4. **Search codebase** — Find existing patterns before generating new code
-5. **Follow import paths** — Use canonical paths listed above
-6. **Use Makefile delegation** — Prefer `projects/Makefile` for site commands
-7. **Run the narrowest tests first** — Site tests before workspace tests
-8. **Verify tests pass** — Run tests after making changes
+4. **Read `.github/AGENTS.md`** — Get CI/GitHub-specific instructions (if touching workflows)
+5. **Search codebase** — Find existing patterns before generating new code
+6. **Follow import paths** — Use canonical paths listed above
+7. **Use Makefile delegation** — Prefer `projects/Makefile` for site commands
+8. **Run the narrowest tests first** — Site tests before workspace tests
+9. **Verify tests pass** — Run tests after making changes
 
 ### Recommended Workflow for AI Agents
 
