@@ -1,0 +1,64 @@
+# =============================================================================
+# lms-fusion — Traefik router config
+# =============================================================================
+# Local development host: lms-fusion.localhost
+# Adjust host rules for production domains.
+# =============================================================================
+
+http:
+  routers:
+    lms-fusion-site-http:
+      rule: 'Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: lms-fusion-frontend-service
+      priority: 10
+
+    lms-fusion-site-https:
+      rule: 'Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: lms-fusion-frontend-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 10
+
+    lms-fusion-api:
+      rule: '(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && PathPrefix(`/api`)'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: lms-fusion-backend-service
+      tls:
+        certResolver: letsencrypt-http
+      priority: 100
+
+    lms-fusion-media:
+      rule: '(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`) || Host(`www.lms-fusion.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`))'
+      entryPoints: [web, web-secure]
+      middlewares: [compress, security-headers]
+      service: lms-fusion-media-service
+      priority: 110
+
+  services:
+    lms-fusion-frontend-service:
+      loadBalancer:
+        servers:
+          - url: 'http://lms-fusion-frontend:3001'
+        healthCheck:
+          path: /
+          interval: 30s
+          timeout: 10s
+
+    lms-fusion-backend-service:
+      loadBalancer:
+        servers:
+          - url: 'http://lms-fusion-backend:5074'
+        healthCheck:
+          path: /health/
+          interval: 30s
+          timeout: 10s
+
+    lms-fusion-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-media:80'

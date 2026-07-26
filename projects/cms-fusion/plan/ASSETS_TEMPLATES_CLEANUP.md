@@ -3,7 +3,7 @@
 **Short name:** `fusion-assets-templates-cleanup`
 **Master plan:** [`docs/plans.md`](../../../docs/plans.md)
 **Date:** 2026-07-26
-**Status:** Planned
+**Status:** In progress — Phases 1b, 6, and 7 implemented; pending full stack test, Phase 8, and earlier asset/template migration work.
 
 ## Objective
 
@@ -28,7 +28,7 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
 ## Phases
 
 ### Phase 0 — Discovery
-- [ ] Inventory every `projects/assets/` reference in `cms-fusion/backend`.
+- [x] Inventory every `projects/assets/` reference in `cms-fusion/backend`. (see `docs/ASSETS_MIGRATION_INVENTORY.md`)
 - [ ] Generate a diff matrix between `cms-fusion/backend` and `cms/cms-full/`.
 - [ ] Tag data-only or migration files that must not be deleted.
 
@@ -50,12 +50,12 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
   `backend/assets/static/branding/`.
 
 ### Phase 1b — SCSS / Branding Pipeline
-- [ ] Install `sass` in `frontend/package.json`.
-- [ ] Import `cms-fusion/assets/styles/fusion-theme.scss` from
+- [x] Install `sass` in `frontend/package.json`.
+- [x] Import `cms-fusion/assets/styles/fusion-theme.scss` from
   `frontend/src/app/layout.tsx`.
-- [ ] Configure the build to compile SCSS to
+- [x] Configure the build to compile SCSS to
   `backend/assets/static/css/fusion.css` for Django.
-- [ ] Add Tailwind custom colors in `frontend/tailwind.config.js` that reference
+- [x] Add Tailwind custom colors in `frontend/tailwind.config.js` that reference
   the same CSS variables emitted by `fusion-theme.scss`.
 - [ ] Place cms-fusion brand assets under `assets/branding/`:
   - Primary: `#7c3aed`
@@ -85,31 +85,31 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
 ### Phase 5 — Validation
 - [ ] `make check WEBSITE=cms-fusion`
 - [ ] `make test WEBSITE=cms-fusion`
-- [ ] Next.js frontend build: `cd projects/cms-fusion/frontend && npm run build`
+- [x] Next.js frontend build: `cd projects/cms-fusion/frontend && npm run build`
 - [ ] Template-resolution audit (no unintended `projects/assets/` fallbacks)
 - [ ] Smoke test on the running frontend
 
 #### Phase 6 — Build Pipeline / Webpack
 - [ ] Decide whether the Django admin needs custom assets; if so, add a minimal
   webpack config under `backend/webpack.config.js`.
-- [ ] Import `cms-fusion/assets/styles/fusion-theme.scss` from the Next.js root
+- [x] Import `cms-fusion/assets/styles/fusion-theme.scss` from the Next.js root
   layout.
-- [ ] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
-- [ ] Add a Makefile or CI step to compile SCSS to
+- [x] Add an npm script to copy/symlink `assets/` into `frontend/public/`.
+- [x] Add a Makefile or CI step to compile SCSS to
   `backend/assets/static/css/fusion.css`.
-- [ ] Verify Django templates reference the compiled CSS via
+- [x] Verify Django templates reference the compiled CSS via
   `{% static 'css/fusion.css' %}`.
 
 #### Phase 7 — Docker-Compose & Proxy
-- [ ] Create a top-level `cms-fusion/docker-compose.yml` with `backend`,
+- [x] Create a top-level `cms-fusion/docker-compose.yml` with `backend`,
   `frontend`, and optional `worker` services.
-- [ ] Remove or archive the stale `backend/docker-compose.yml` that references
+- [x] Remove or archive the stale `backend/docker-compose.yml` that references
   `ctc-research`.
-- [ ] Add `applications/proxy/traefik/dynamic/cms-fusion.yml` with routers for
+- [x] Add `applications/proxy/traefik/dynamic/cms-fusion.yml` with routers for
   the cms-fusion backend and frontend.
-- [ ] Use a unique backend port (e.g., `5080`) and expose the Next.js frontend
-  on a distinct port (e.g., `3000`) for local development.
-- [ ] Configure health checks and ensure Traefik picks up the new router file.
+- [x] Use a unique backend port (`5075`) and expose the Next.js frontend
+  on a distinct port (`3002`) for local development.
+- [x] Configure health checks and ensure Traefik picks up the new router file.
 - [ ] Test the full stack locally with `docker compose up`.
 
 #### Phase 8 — Shared Media / Static Serving

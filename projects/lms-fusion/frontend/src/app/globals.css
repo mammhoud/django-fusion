@@ -2,14 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --fu-primary: #00a1b3;
-  --fu-secondary: #008080;
-  --fu-accent: #005f73;
-  --fu-bg: #f8fafc;
-  --fu-text: #1e293b;
-  --fu-radius: 0.5rem;
-}
+/* Design tokens are defined in the single source of truth:
+   projects/lms-fusion/assets/styles/fusion-theme.scss
+   They are imported by the root layout before this file. */
 
 /* Fusion branding overrides — loaded from backend via CSS custom properties */
 .fu-themed {
