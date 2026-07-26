@@ -2,20 +2,19 @@
 /**
  * Build the POS Python/Sanic sidecar binary via PyInstaller.
  *
+ * Supports PROJECT_ROOT env var for edition-agnostic path resolution.
+ *
  * Usage:
  *   node scripts/publish/build-sidecar.cjs
  *   node scripts/publish/build-sidecar.cjs --target x86_64-unknown-linux-gnu
- *
- * The script installs PyInstaller into a temporary venv if it is not already
- * available, then runs sidecar/build.py. The resulting binary is placed at
- * src-tauri/binaries/pos-sidecar-<target-triple>.
  */
 
 const { execSync, spawnSync } = require('child_process');
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.resolve(__dirname, '../..');
+const projectRoot = process.env.PROJECT_ROOT || path.resolve(__dirname, '../..');
+const ROOT = projectRoot;
 const SIDECAR_DIR = path.join(ROOT, 'sidecar');
 const BINARIES_DIR = path.join(ROOT, 'src-tauri', 'binaries');
 
@@ -56,7 +55,6 @@ function main() {
 
   const pyinstaller = ensurePyinstaller();
 
-  // Build via sidecar/build.py, which handles PyInstaller invocation and renaming.
   const env = { ...process.env, PYINSTALLER_BIN: pyinstaller };
   run(process.platform === 'win32' ? 'python' : 'python3', ['sidecar/build.py'], ROOT, env);
 

@@ -7,13 +7,16 @@
  * it auto-runs `pnpm db:seed` to seed it.
  *
  * This prevents "relation not found" errors on first run after a clean clone.
+ *
+ * Uses PROJECT_ROOT env var to locate the edition directory, falling back
+ * to the script's parent directory.
  */
 
 const fs = require('fs');
 const path = require('path');
 const { execSync } = require('child_process');
 
-const PROJECT_ROOT = path.join(__dirname, '../..');
+const PROJECT_ROOT = process.env.PROJECT_ROOT || process.cwd();
 
 // ── 1. Resolve the database path ────────────────────────────────────────
 let dbUrl = 'restaurant.db'; // default for local dev
@@ -26,10 +29,21 @@ try {
     if (match) {
       dbUrl = match[1].trim();
     }
+  } else {
+    // No .env file — write a minimal one so subsequent cargo runs also see DATABASE_URL
+    try {
+      fs.writeFileSync(envPath, `DATABASE_URL=${dbUrl}\n`, 'utf8');
+      console.log(`📝 Created .env with DATABASE_URL=${dbUrl}`);
+    } catch {
+      // silently ignore — will export via execSync below
+    }
   }
 } catch {
   // silently ignore — use default
 }
+
+// Ensure it's set in the current process so cargo (pnpm db:seed) sees it
+process.env.DATABASE_URL = dbUrl;
 
 const dbPath = path.isAbsolute(dbUrl)
   ? dbUrl
@@ -46,7 +60,11 @@ console.log(`🆕 Database not found at ${dbPath}`);
 console.log('🌱 Running database seed...');
 
 try {
-  execSync('pnpm db:seed', { stdio: 'inherit', cwd: PROJECT_ROOT });
+  execSync('pnpm db:seed', {
+    stdio: 'inherit',
+    cwd: PROJECT_ROOT,
+    env: { ...process.env, DATABASE_URL: dbUrl },
+  });
   console.log('✅ Database seeded successfully!');
 } catch (error) {
   console.warn('⚠️  Database seed failed:', error.message);

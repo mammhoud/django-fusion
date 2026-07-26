@@ -103,10 +103,10 @@ build-all:            ## Build all platforms sequentially
 # ── Sidecar ───────────────────────────────────────────────────────────────
 
 build-sidecar:        ## Build the Python/Sanic sidecar binary for the current platform
-	node scripts/publish/build-sidecar.cjs
+	PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs
 
 build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. build-sidecar-x86_64-unknown-linux-gnu)
-	node scripts/publish/build-sidecar.cjs --target $*
+	PROJECT_ROOT=. node ../scripts/publish/build-sidecar.cjs --target $*
 
 # ── Screenshots ─────────────────────────────────────────────────────────────
 
@@ -122,7 +122,7 @@ build-sidecar-%:      ## Build the sidecar for a specific target triple (e.g. bu
 # 03_point_of_sale,04_inventory,05_reports,06_settings}.jpg — the canonical
 # filenames referenced by docs/PUBLISH.md#visual-preview.
 screenshots: port-kill  ## Capture 6 polished JPG screenshots into docs/screenshots/
-	@bash scripts/dev/capture-screenshots.sh
+	@bash ../scripts/dev/capture-screenshots.sh
 
 # ── Clean Build ────────────────────────────────────────────────────────────
 
@@ -164,14 +164,14 @@ test-watch:           ## Run Vitest in watch mode
 
 i18n-audit:           ## Regenerate docs/i18n-gaps.md from src/i18n/*.json
 	@echo '── i18n audit ──'
-	node scripts/dev/check-i18n.cjs
+	node ../scripts/dev/check-i18n.cjs
 
 i18n-check:           ## CI-friendly i18n audit (exits 1 if any locale has missing keys)
-	node scripts/dev/check-i18n.cjs --check
+	node ../scripts/dev/check-i18n.cjs --check
 
 i18n-fix:             ## Apply scripts/i18n-merge-ar.cjs (idempotent) + regenerate docs/i18n-gaps.md
 	@echo '── i18n fix ──'
-	node scripts/dev/i18n-merge-ar.cjs
+	node ../scripts/dev/i18n-merge-ar.cjs
 	@$(MAKE) i18n-audit
 
 i18n-fix-check:       ## `make i18n-fix` + `make i18n-check` (full pipeline; exits non-zero on remaining gaps)
@@ -181,7 +181,7 @@ i18n-fix-check:       ## `make i18n-fix` + `make i18n-check` (full pipeline; exi
 # ── Maintenance ────────────────────────────────────────────────────────────
 
 port-kill:            ## Kill any process on port 1420 (prevent port conflict)
-	@node scripts/dev/kill-port.cjs
+	@node ../scripts/dev/kill-port.cjs
 
 install:              ## Install all dependencies (pnpm + cargo)
 	@echo '── Installing frontend dependencies ──'

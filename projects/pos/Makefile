@@ -22,6 +22,7 @@
 .PHONY: clean editions
 .PHONY: setup-mini setup-solo setup-full setup-client
 .PHONY: dev-mini dev-solo dev-full dev-all
+.PHONY: dev-desktop-mini dev-desktop-solo dev-desktop-full
 .PHONY: build-mini build-solo build-full build-client
 .PHONY: check-mini check-solo check-full
 .PHONY: server-install server-run server-dev server-check server-test server-clean
@@ -51,18 +52,21 @@ help:                 ## Show this help menu
 	@echo '── POS Mini (Minimal Tauri + Rust/Diesel) ──────────────────'
 	@echo '  make setup-mini        Install dependencies (pnpm + cargo)'
 	@echo '  make dev-mini          Start Vite dev server (port 1420)'
+	@echo '  make dev-desktop-mini  Start full Tauri desktop app (hot-reload, with Rust backend)'
 	@echo '  make build-mini        Build desktop app (production)'
 	@echo '  make check-mini        TypeScript + Rust compilation check'
 	@echo ''
 	@echo '── POS Solo (Branch device + sidecar + cloud sync) ─────────'
 	@echo '  make setup-solo        Install dependencies'
 	@echo '  make dev-solo          Start Vite + sidecar dev'
+	@echo '  make dev-desktop-solo  Start full Tauri desktop app (hot-reload, with Rust backend)'
 	@echo '  make build-solo        Build desktop app + sidecar'
 	@echo '  make check-solo        Full type check'
 	@echo ''
 	@echo '── POS Full (Master manager + sidecar + Django admin) ──────'
 	@echo '  make setup-full        Install dependencies'
 	@echo '  make dev-full          Start full stack'
+	@echo '  make dev-desktop-full  Start full Tauri desktop app (hot-reload, with Rust backend)'
 	@echo '  make build-full        Build everything'
 	@echo '  make check-full        Full validation'
 	@echo ''
@@ -148,6 +152,9 @@ setup-mini:           ## Install mini edition dependencies
 dev-mini:             ## Start mini Vite dev server (port 1420)
 	$(MAKE) -C $(FORGE_POS) dev
 
+dev-desktop-mini:     ## Start mini Tauri desktop app (hot-reload)
+	$(MAKE) -C $(FORGE_POS) dev-desktop
+
 build-mini:           ## Build mini desktop app
 	$(MAKE) -C $(FORGE_POS) build
 
@@ -164,6 +171,9 @@ setup-solo:           ## Install solo edition dependencies
 
 dev-solo:             ## Start solo dev (Vite + sidecar)
 	cd $(POS_SOLO) && python3 sidecar/server.py & $(MAKE) -C $(POS_SOLO) dev
+
+dev-desktop-solo:     ## Start solo Tauri desktop app (hot-reload)
+	$(MAKE) -C $(POS_SOLO) dev-desktop
 
 build-solo:           ## Build solo desktop app + sidecar
 	$(MAKE) -C $(POS_SOLO) build
@@ -185,6 +195,9 @@ setup-full:           ## Install full edition dependencies
 
 dev-full:             ## Start full stack (Vite + sidecar)
 	cd $(POS_FULL) && python3 sidecar/server.py & $(MAKE) -C $(POS_FULL) dev
+
+dev-desktop-full:     ## Start full Tauri desktop app (hot-reload)
+	$(MAKE) -C $(POS_FULL) dev-desktop
 
 build-full:           ## Build full edition (everything)
 	$(MAKE) -C $(POS_FULL) build

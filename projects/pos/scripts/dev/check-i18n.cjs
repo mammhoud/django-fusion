@@ -18,7 +18,7 @@
 const fs = require('fs');
 const path = require('path');
 
-const ROOT = path.join(__dirname, '../..');
+const ROOT = process.env.PROJECT_ROOT || process.cwd();
 const LOCALES_DIR = path.join(ROOT, 'src', 'i18n');
 const REPORT_PATH = path.join(ROOT, 'docs', 'i18n-gaps.md');
 const LOCALES = ['en', 'fr', 'ar'];
