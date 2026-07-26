@@ -1,0 +1,9 @@
+[
+  {
+    "model": "wagtailcore.workflowpage",
+    "pk": 1,
+    "fields": {
+      "workflow": 1
+    }
+  }
+]

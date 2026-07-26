@@ -1,0 +1,16 @@
+from django.utils.translation import gettext_lazy as _
+from ceptor_ai.handlers.models.manage_company import Organization
+from wagtail.snippets.blocks import SnippetChooserBlock
+
+
+class OrganizationChooserBlock(SnippetChooserBlock):
+    """
+    🔗 Chooser block for selecting Organization snippets in StreamFields.
+    """
+    def __init__(self, **kwargs):
+        super().__init__(Organization, **kwargs)
+
+    class Meta:
+        app_label = "accounts"
+        icon = "group"
+        label = _("Organization")

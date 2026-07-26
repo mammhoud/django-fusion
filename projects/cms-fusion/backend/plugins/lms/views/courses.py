@@ -12,7 +12,7 @@ from django_fusion.site.interface.page_handler import PageHandler
 from django_fusion.web.views import FilterMixin, SearchMixin
 from ceptor_ai.models import CachingStorage
 
-from ..models import Course, CourseEnrollmentLead, CourseTag
+from ..models import Course, CourseEnrollmentLead, CourseTag, Wishlist
 
 logger = logging.getLogger(__name__)
 
@@ -572,12 +572,21 @@ def course_wishlist_toggle(request: HttpRequest, course_id: int) -> HttpResponse
     """Toggle course in user wishlist (AJAX response)."""
     course = get_object_or_404(Course, id=course_id, is_active=True)
 
-    # TODO: Implement wishlist functionality with custom user model
-    # For now, placeholder response
+    is_wishlisted = Wishlist.is_in_wishlist(request.user, course)
+
+    if is_wishlisted:
+        Wishlist.remove_from_wishlist(request.user, course)
+        is_wishlisted = False
+        logger.info(f"User {request.user.id} removed course {course_id} from wishlist")
+    else:
+        Wishlist.add_to_wishlist(request.user, course)
+        is_wishlisted = True
+        logger.info(f"User {request.user.id} added course {course_id} to wishlist")
 
     context = {
         "course": course,
-        "is_wishlisted": False,
+        "is_wishlisted": is_wishlisted,
+        "wishlist_count": Wishlist.objects.filter(course=course).count(),
     }
 
     return render(request, "learning/_course_wishlist_button.html", context)

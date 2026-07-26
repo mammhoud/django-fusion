@@ -4,9 +4,11 @@
 # =============================================================================
 FROM node:24-slim AS builder
 WORKDIR /app/frontend
+# Copy frontend and assets (build:theme needs ../assets/styles/)
 COPY frontend/package*.json ./
 RUN npm ci --legacy-peer-deps
 COPY frontend/. .
+COPY assets/ ../assets/
 RUN npm run build
 
 FROM node:24-slim AS runner
