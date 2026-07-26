@@ -1,0 +1,117 @@
+# ============================================================
+# cms-fusion — Full project stack (backend + frontend + worker)
+# ============================================================
+
+services:
+  backend:
+    build:
+      context: ../../
+      dockerfile: projects/compose/Dockerfile
+      args:
+        PROJECT_PATH: cms-fusion
+    image: cms-fusion-backend:latest
+    container_name: cms-fusion-backend
+    restart: unless-stopped
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: cms-fusion
+      DJANGO_SITE: cms-fusion
+      PROJECT_PATH: cms-fusion
+      PORT: "5075"
+      HOST: "0.0.0.0"
+      SERVER_TYPE: gunicorn
+      WORKERS: "4"
+      LOG_LEVEL: info
+      DEBUG: "false"
+      RUN_SETUP: "true"
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CMS_FUSION:-db_cms_fusion}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_URL: redis://default-redis:6379/0
+      CELERY_BROKER_URL: redis://default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      ALLOWED_HOSTS: localhost,127.0.0.1,cms-fusion.localhost
+      CSRF_TRUSTED_ORIGINS: http://localhost:5075,http://cms-fusion.localhost
+      CELERY_TASK_DEFAULT_QUEUE: cms-fusion
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5075/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - "5075:5075"
+    volumes:
+      - ./backend:/app/cms-fusion:rw
+      - ../../logs:/app/logs:z
+      - cms-fusion-static:/app/cms-fusion/static:rw
+      - cms-fusion-media:/app/cms-fusion/media:rw
+    networks:
+      - common
+      - traefik-net
+
+  worker:
+    build:
+      context: ../../
+      dockerfile: projects/compose/Dockerfile
+      args:
+        PROJECT_PATH: cms-fusion
+    image: cms-fusion-backend:latest
+    container_name: cms-fusion-worker
+    restart: unless-stopped
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      DJANGO_SETTINGS_MODULE: settings
+      WEBSITE: cms-fusion
+      DJANGO_SITE: cms-fusion
+      PROJECT_PATH: cms-fusion
+      CELERY_TASK_DEFAULT_QUEUE: cms-fusion
+      CELERY_BROKER_URL: redis://default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+    command: celery -A www.worker.celery:app worker --loglevel=info --queues=cms-fusion
+    volumes:
+      - ./backend:/app/cms-fusion:rw
+      - ../../logs:/app/logs:z
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  frontend:
+    build:
+      context: .
+      dockerfile: compose/frontend/Dockerfile
+    image: cms-fusion-frontend:latest
+    container_name: cms-fusion-frontend
+    restart: unless-stopped
+    environment:
+      PORT: "3002"
+      NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://cms-fusion.localhost/api}
+    ports:
+      - "3002:3002"
+    networks:
+      - common
+      - traefik-net
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  cms-fusion-static:
+    name: cms-fusion-static
+  cms-fusion-media:
+    name: cms-fusion-media
