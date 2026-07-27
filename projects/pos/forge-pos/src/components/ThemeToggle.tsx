@@ -27,12 +27,12 @@ export default function ThemeToggle() {
       {/* Subtle inner glow overlay */}
       <span className="absolute inset-0 rounded-full bg-white/5 pointer-events-none" />
 
-      {/* Background icon hint */}
+      {/* Background icon hint — logical properties for RTL support */}
       <span
         className="absolute text-[10px] pointer-events-none select-none flex items-center z-10"
         style={{
-          left: isDark ? 'auto' : '10px',
-          right: isDark ? '10px' : 'auto',
+          insetInlineStart: isDark ? 'auto' : '10px',
+          insetInlineEnd: isDark ? '10px' : 'auto',
           color: isDark ? 'rgba(148,163,184,0.7)' : 'rgba(255,255,255,0.9)',
         }}
       >

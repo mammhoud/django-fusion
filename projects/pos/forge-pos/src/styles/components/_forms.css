@@ -1,0 +1,243 @@
+/*
+ * FlyonUI-Inspired Form Controls
+ * ============================================================================
+ * Enhanced styling for selects, dropdowns, inputs, buttons, and form layouts.
+ * These styles layer on top of Tailwind's utility classes to provide a
+ * polished, cohesive look inspired by the FlyonUI design system.
+ *
+ * Usage: Import in index.css. All styles are scoped to the POS app's
+ * class naming conventions so they don't leak into other projects.
+ * ============================================================================
+ */
+
+/* ── Select / Dropdown ────────────────────────────────────────────── */
+/* Clean, modern select with custom chevron, better padding and hover.   */
+
+select, 
+input[type="text"],
+input[type="number"],
+input[type="email"],
+input[type="password"],
+input[type="search"],
+input[type="url"],
+input[type="tel"],
+input[type="date"],
+input[type="time"],
+textarea {
+  transition: border-color 0.2s ease, box-shadow 0.2s ease, background-color 0.2s ease;
+}
+
+select:focus,
+input:focus,
+textarea:focus {
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.12);
+}
+
+/* Dark mode focus ring */
+.dark select:focus,
+.dark input:focus,
+.dark textarea:focus {
+  box-shadow: 0 0 0 3px rgba(20, 184, 166, 0.18);
+}
+
+/* ── Buttons ──────────────────────────────────────────────────────── */
+/* Consistent button sizing, hover states, and active feedback.          */
+
+button {
+  cursor: pointer;
+  user-select: none;
+  -webkit-user-select: none;
+}
+
+button:active:not(:disabled) {
+  transform: scale(0.97);
+}
+
+/* Primary action buttons — solid background */
+.btn--primary {
+  @apply bg-teal-500 text-white hover:bg-teal-400 
+    active:bg-teal-600 disabled:bg-slate-300 dark:disabled:bg-slate-700
+    disabled:cursor-not-allowed disabled:transform-none
+    transition-all duration-200 rounded-xl font-semibold;
+}
+
+/* Secondary action buttons — outlined / ghost style */
+.btn--secondary {
+  @apply bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white 
+    hover:bg-slate-300 dark:hover:bg-slate-600
+    active:bg-slate-400 dark:active:bg-slate-500
+    transition-all duration-200 rounded-xl font-medium;
+}
+
+/* Danger action buttons */
+.btn--danger {
+  @apply bg-red-500 text-white hover:bg-red-400 
+    active:bg-red-600 disabled:bg-red-300 disabled:cursor-not-allowed disabled:transform-none
+    transition-all duration-200 rounded-xl font-semibold;
+}
+
+/* Ghost / transparent buttons */
+.btn--ghost {
+  @apply bg-transparent text-slate-600 dark:text-slate-300 
+    hover:bg-slate-100 dark:hover:bg-white/10
+    active:bg-slate-200 dark:active:bg-white/5
+    transition-all duration-200 rounded-xl;
+}
+
+/* ── Form Groups & Layout ─────────────────────────────────────────── */
+/* Consistent spacing for form rows, labels, and help text.              */
+
+.form-group {
+  @apply space-y-1.5;
+}
+
+.form-label {
+  @apply block text-sm font-medium text-slate-700 dark:text-slate-300 
+    transition-colors duration-200;
+}
+
+.form-hint {
+  @apply text-xs text-slate-400 dark:text-slate-500 mt-1;
+}
+
+.form-error {
+  @apply text-xs text-red-500 dark:text-red-400 mt-1 font-medium;
+}
+
+.form-row {
+  @apply grid grid-cols-1 sm:grid-cols-2 gap-4;
+}
+
+/* ── Input Group (icon + input side by side) ──────────────────────── */
+
+.input-group {
+  @apply relative;
+}
+
+.input-group .input-icon {
+  @apply absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400 pointer-events-none;
+}
+
+.input-group input,
+.input-group select {
+  @apply pl-9;
+}
+
+/* ── Toggle / Checkbox / Radio ────────────────────────────────────── */
+
+/* Custom checkbox styling */
+input[type="checkbox"] {
+  @apply w-4 h-4 rounded border-slate-300 dark:border-slate-600 
+    text-teal-500 focus:ring-teal-400 focus:ring-offset-1
+    accent-teal-500 cursor-pointer transition-colors;
+}
+
+input[type="radio"] {
+  @apply w-4 h-4 border-slate-300 dark:border-slate-600 
+    text-teal-500 focus:ring-teal-400 focus:ring-offset-1
+    accent-teal-500 cursor-pointer transition-colors;
+}
+
+/* ── Badge / Tag / Chip ───────────────────────────────────────────── */
+
+.badge {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full 
+    text-xs font-medium transition-colors duration-200;
+}
+
+.badge--success {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full 
+    text-xs font-medium transition-colors duration-200
+    bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-300;
+}
+
+.badge--warning {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full 
+    text-xs font-medium transition-colors duration-200
+    bg-amber-100 dark:bg-amber-900/30 text-amber-700 dark:text-amber-300;
+}
+
+.badge--danger {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full 
+    text-xs font-medium transition-colors duration-200
+    bg-red-100 dark:bg-red-900/30 text-red-700 dark:text-red-300;
+}
+
+.badge--info {
+  @apply inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full 
+    text-xs font-medium transition-colors duration-200
+    bg-sky-100 dark:bg-sky-900/30 text-sky-700 dark:text-sky-300;
+}
+
+/* ── Card Enhancements ────────────────────────────────────────────── */
+
+.card--glass {
+  @apply bg-white/70 dark:bg-white/5 backdrop-blur-sm 
+    border border-white/20 dark:border-white/8
+    transition-all duration-300;
+}
+
+.card--glass:hover {
+  @apply shadow-md;
+}
+
+/* ── Responsive Container Enhancements ──────────────────────────────── */
+/* Better container widths for large desktop screens.                    */
+
+@media (min-width: 1536px) {
+  .container--wide {
+    max-width: 90rem; /* 1440px */
+  }
+  
+  .container--max {
+    max-width: 100rem; /* 1600px */
+  }
+}
+
+/* ── Utility: List item index pill ──────────────────────────────────── */
+
+.index-pill {
+  @apply absolute top-2 left-2 w-6 h-6 rounded-full 
+    bg-white/80 dark:bg-slate-800/80 backdrop-blur-sm
+    flex items-center justify-center text-[10px] font-bold
+    text-slate-400 dark:text-slate-500
+    border border-slate-200 dark:border-slate-700
+    shadow-sm pointer-events-none select-none;
+}
+
+/* ── Table Enhancements ──────────────────────────────────────────────── */
+
+.table-row-hover tr:hover {
+  @apply bg-slate-50 dark:bg-white/5 transition-colors duration-150;
+}
+
+/* ── Responsive Breakpoint Adjustment ──────────────────────────────── */
+
+/* Ensure cards don't get too wide on ultra-wide screens */
+@media (min-width: 1920px) {
+  .grid-ultra-wide {
+    grid-template-columns: repeat(8, 1fr);
+  }
+}
+
+/* Better spacing on tablet+ */
+@media (min-width: 768px) {
+  .md\:p-responsive {
+    padding: 1.5rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .lg\:p-responsive {
+    padding: 2rem;
+  }
+}
+
+/* ── Responsive desktop layout helper ──────────────────────────────────── */
+
+/* Wider containers for desktop screens */
+@media (min-width: 1280px) {
+  .xl\:container-wide {
+    max-width: 80rem;
+  }
+}

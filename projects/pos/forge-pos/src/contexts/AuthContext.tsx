@@ -24,6 +24,7 @@ interface AuthContextType {
   isLoading: boolean;
   login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
   logout: () => void;
+  skipAuth: () => void;
   setupAccount: (email: string, code: string, password: string, name: string, rememberMe?: boolean) => Promise<void>;
   sendConfirmationCode: (email: string) => Promise<void>;
   checkAuthStatus: () => Promise<void>;
@@ -112,23 +113,45 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const checkAuthStatus = useCallback(async () => {
     try {
       const required = await invoke<boolean>('check_auth_required');
-      setIsAuthRequired(required);
-      
-      // If auth is not required, auto-authenticate
-      if (!required) {
+      let hasUsers = false;
+      try {
+        hasUsers = await invoke<boolean>('has_users');
+      } catch {
+        // has_users not available — treat as no users
+      }
+
+      // Show Auth page when:
+      // 1. Auth is explicitly required (env vars configured), OR
+      // 2. There are existing users in the database (accounts were created)
+      const showAuth = required || hasUsers;
+      setIsAuthRequired(showAuth);
+
+      if (!showAuth) {
+        // No auth config AND no users — auto-authenticate for first run
         setIsAuthenticated(true);
         setUser(null);
         clearAuthStorage();
-      } else {
-        // If auth is required but we have a stored session, verify the specific user still exists
+      } else if (required) {
+        // Auth is required by config — check stored session
         const stored = loadUserFromStorage();
         if (stored) {
           try {
-            // Verify this exact user still exists in the database
             await invoke('verify_user', { email: stored.email });
             // User verified — stay authenticated
           } catch {
-            // User was deleted or password changed — clear session
+            clearAuthStorage();
+            setIsAuthenticated(false);
+            setUser(null);
+          }
+        }
+      } else {
+        // hasUsers is true but auth is not 'required' by config
+        // Don't auto-authenticate — let the user choose login or skip
+        const stored = loadUserFromStorage();
+        if (stored) {
+          try {
+            await invoke('verify_user', { email: stored.email });
+          } catch {
             clearAuthStorage();
             setIsAuthenticated(false);
             setUser(null);
@@ -137,7 +160,6 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       }
     } catch (error) {
       console.error('Error checking auth status:', error);
-      // If we can't check, default to no auth required for resilience
       setIsAuthRequired(false);
       setIsAuthenticated(true);
     }
@@ -171,6 +193,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     clearAuthStorage();
     setUser(null);
     setIsAuthenticated(false);
+  }, []);
+
+  const skipAuth = useCallback(() => {
+    setIsAuthenticated(true);
+    setIsAuthRequired(false);
+    setUser(null);
+    clearAuthStorage();
   }, []);
 
   // Track user activity — only active when logged in and timeout is configured
@@ -263,6 +292,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         isLoading,
         login,
         logout,
+        skipAuth,
         setupAccount,
         sendConfirmationCode,
         checkAuthStatus,

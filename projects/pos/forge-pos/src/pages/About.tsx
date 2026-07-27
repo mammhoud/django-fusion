@@ -91,7 +91,7 @@ export default function About() {
     } catch (error) {
       console.error('Error sending message:', error);
       setSubmitStatus('error');
-      setErrorMessage(error as string || 'Failed to send message. Please try again.');
+      setErrorMessage(error instanceof Error ? error.message : String(error));
       setTimeout(() => setSubmitStatus('idle'), 5000);
     } finally {
       setIsSubmitting(false);

@@ -25,6 +25,8 @@ import SupportChat from './pages/SupportChat';
 import InvoicePage from './pages/InvoicePage';
 import ChatSupport from './components/ChatSupport';
 import { useAuth } from './contexts/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { useTheme } from './contexts/ThemeContext';
 
 // Route ordering for direction-aware transitions
 const routeOrder: Record<string, number> = {
@@ -89,9 +91,11 @@ function PageWrapper({ children, direction, isFirstRender }: { children: React.R
 
 function AnimatedRoutes() {
   const location = useLocation();
+  const navigate = useNavigate();
   const [direction, setDirection] = useState(1);
   const prevPathRef = useRef(location.pathname);
   const { isAuthenticated, isAuthRequired } = useAuth();
+  const { toggleMode } = useTheme();
   const isFirstRender = useRef(true);
 
   useEffect(() => {
@@ -109,6 +113,43 @@ function AnimatedRoutes() {
       prevPathRef.current = curr;
     }
   }, [location.pathname]);
+
+  // Global keyboard shortcuts — navigate between pages with single keys
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Ignore if user is typing in an input/textarea
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement || e.target instanceof HTMLSelectElement) return;
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+
+      switch (e.key.toLowerCase()) {
+        case 'g':
+          e.preventDefault();
+          navigate('/');
+          break;
+        case 's':
+          if (!e.shiftKey) {
+            e.preventDefault();
+            navigate('/sale');
+          }
+          break;
+        case 't':
+          if (!e.shiftKey) {
+            e.preventDefault();
+            toggleMode();
+          }
+          break;
+        case '?':
+          e.preventDefault();
+          // Dispatch a custom event that the SideNav's shortcut modal listens for,
+          // or just navigate to the current page (the individual page handlers
+          // for '?' are already in place).
+          // Nothing to do globally — each page handles '?' via its own listener.
+          break;
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [navigate, toggleMode]);
 
   // If auth is still being checked, show a loading screen
   if (isAuthRequired === null) {

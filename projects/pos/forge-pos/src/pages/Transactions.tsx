@@ -54,7 +54,7 @@ export default function Transactions() {
   const [isInvoiceDownloading, setIsInvoiceDownloading] = useState(false);
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [settings, setSettings] = useState<Settings>({
-    restaurant_name: 'POS',
+    restaurant_name: 'Forge POS',
     address: '',
     phone: '',
     currency: 'USD',
@@ -82,7 +82,7 @@ export default function Transactions() {
       setTransactions(transactionsRes);
       if (settingsRes) {
         setSettings({
-          restaurant_name: settingsRes.restaurant_name || 'POS',
+          restaurant_name: settingsRes.restaurant_name || 'Forge POS',
           address: settingsRes.address || '',
           phone: settingsRes.phone || '',
           currency: settingsRes.currency || 'USD',
@@ -222,7 +222,7 @@ export default function Transactions() {
         invoiceNumber: `INV-${showReceiptDialog.id}`,
         date: showReceiptDialog.date,
         from: {
-          name: settings.restaurant_name || 'POS',
+          name: settings.restaurant_name || 'Forge POS',
           address: settings.address,
           phone: settings.phone,
           email: settings.email,
@@ -269,7 +269,7 @@ export default function Transactions() {
 
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      const restaurantName = settings.restaurant_name || 'POS';
+      const restaurantName = settings.restaurant_name || 'Forge POS';
       pdf.text(restaurantName, pageWidth / 2, yPos, { align: 'center' });
       yPos += 7;
 
@@ -1028,7 +1028,7 @@ export default function Transactions() {
                     </span>
                   )}
                 </h2>
-                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
                   {paginatedProductStats.map((stat) => (
                     <div 
                       key={stat.name}

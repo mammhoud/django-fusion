@@ -159,8 +159,17 @@ test:                 ## Run Vitest unit tests (frontend)
 	@echo '── Vitest ──'
 	pnpm vitest run
 
+test-e2e:             ## Run Playwright e2e / visual regression tests
+	@echo '── Playwright e2e ──'
+	pnpm playwright test
+
 test-watch:           ## Run Vitest in watch mode
 	pnpm vitest
+
+test-e2e-ui:          ## Run Playwright e2e with the Playwright UI mode
+	pnpm playwright test --ui
+
+test-all: test test-e2e  ## Run all tests (vitest + playwright e2e)
 
 i18n-audit:           ## Regenerate docs/i18n-gaps.md from src/i18n/*.json
 	@echo '── i18n audit ──'

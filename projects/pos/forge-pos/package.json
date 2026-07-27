@@ -65,6 +65,9 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
+    "test:e2e": "playwright test",
+    "test:e2e:ui": "playwright test --ui",
+    "test:all": "vitest run && playwright test",
     "checksums": "PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",
     "verify": "node ../scripts/publish/verify-checksum.cjs",
     "db:seed": "cargo run --manifest-path src-tauri/Cargo.toml --bin seed",
@@ -90,6 +93,7 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@tauri-apps/cli": "^2",
     "@testing-library/jest-dom": "^6.9.1",

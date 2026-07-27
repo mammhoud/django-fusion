@@ -45,7 +45,7 @@ export default function Sale() {
   } | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
   const [settings, setSettings] = useState<Settings>({
-    restaurant_name: 'POS',
+    restaurant_name: 'Forge POS',
     address: '',
     phone: '',
     currency: 'USD',
@@ -144,7 +144,7 @@ export default function Sale() {
       setProducts(productsRes);
       if (settingsRes) {
         setSettings({
-          restaurant_name: settingsRes.restaurant_name || 'POS',
+          restaurant_name: settingsRes.restaurant_name || 'Forge POS',
           address: settingsRes.address || '',
           phone: settingsRes.phone || '',
           currency: settingsRes.currency || 'USD',
@@ -305,7 +305,7 @@ export default function Sale() {
         invoiceNumber: `INV-${receiptData.receiptNumber}`,
         date: receiptData.date,
         from: {
-          name: settings.restaurant_name || 'POS',
+          name: settings.restaurant_name || 'Forge POS',
           address: settings.address,
           phone: settings.phone,
           email: settings.email,
@@ -355,7 +355,7 @@ export default function Sale() {
       // Header
       pdf.setFontSize(14);
       pdf.setFont('helvetica', 'bold');
-      const restaurantName = settings.restaurant_name || 'POS';
+      const restaurantName = settings.restaurant_name || 'Forge POS';
       pdf.text(restaurantName, pageWidth / 2, yPos, { align: 'center' });
       yPos += 7;
 
@@ -708,7 +708,7 @@ export default function Sale() {
           </motion.div>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-3 sm:gap-4 mb-6 sm:mb-8">
             {isLoading ? (
               Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
                 <ProductCardSkeleton key={i} />

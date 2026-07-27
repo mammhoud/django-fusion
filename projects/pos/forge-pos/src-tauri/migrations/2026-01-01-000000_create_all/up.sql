@@ -213,7 +213,7 @@ BEGIN UPDATE employees SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END
 
 -- Insert default settings
 INSERT OR IGNORE INTO settings (id, restaurant_name, currency, receipt_footer)
-VALUES (1, 'POS KO', 'PKR', 'Thank you for your business!');
+VALUES (1, 'Forge POS', 'PKR', 'Thank you for your business!');
 
 -- Insert default delivery types
 INSERT OR IGNORE INTO delivery_types (id, name, description, fee_multiplier) VALUES
@@ -1338,7 +1338,7 @@ BEGIN UPDATE employees SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END
 
 -- Insert default settings
 INSERT OR IGNORE INTO settings (id, restaurant_name, currency, receipt_footer)
-VALUES (1, 'POS KO', 'PKR', 'Thank you for your business!');
+VALUES (1, 'Forge POS', 'PKR', 'Thank you for your business!');
 
 -- Insert default delivery types
 INSERT OR IGNORE INTO delivery_types (id, name, description, fee_multiplier) VALUES

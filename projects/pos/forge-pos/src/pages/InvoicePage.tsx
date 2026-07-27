@@ -25,7 +25,7 @@ import { invoke } from '@tauri-apps/api/core';
 import {
   MdDownload, MdPrint, MdAdd, MdDelete,
   MdOpenInNew, MdRefresh, MdArrowDropDown,
-  MdSearch, MdClose,
+  MdSearch,
 } from 'react-icons/md';
 import { FaFileInvoiceDollar } from 'react-icons/fa';
 import jsPDF from 'jspdf';
@@ -113,13 +113,15 @@ export default function InvoicePage() {
     return () => document.removeEventListener('mousedown', handler);
   }, []);
 
-  // Filtrate types for combo
-  const filteredTypes = useMemo(() => {
+  // Filtrate types for combo — use field as string to allow custom type entry
+  const filteredTypes = useMemo((): (AppInvoiceType | '__custom__')[] => {
     const q = comboSearch.toLowerCase();
-    const matches = INVOICE_TYPES.filter(t => INVOICE_TYPE_LABELS[t].toLowerCase().includes(q) || t.toLowerCase().includes(q));
+    const matches: (AppInvoiceType | '__custom__')[] = INVOICE_TYPES.filter(t =>
+      INVOICE_TYPE_LABELS[t as AppInvoiceType].toLowerCase().includes(q) || t.toLowerCase().includes(q)
+    );
     // If search doesn't match any existing type, show "create new" option
     if (q && !INVOICE_TYPES.some(t => t.toLowerCase() === q.toLowerCase())) {
-      matches.push('__custom__' as any);
+      matches.push('__custom__');
     }
     return matches;
   }, [comboSearch]);
@@ -376,7 +378,7 @@ export default function InvoicePage() {
                             if (t === '__custom__') {
                               setInvoiceType(comboSearch as AppInvoiceType);
                             } else {
-                              setInvoiceType(t);
+                              setInvoiceType(t as AppInvoiceType);
                             }
                             setComboOpen(false);
                             setComboSearch('');
@@ -385,9 +387,9 @@ export default function InvoicePage() {
                             invoiceType === t
                               ? 'bg-teal-600 text-white'
                               : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                          } ${t === '__custom__' ? 'border-t border-slate-100 dark:border-slate-700 font-medium text-teal-600 dark:text-teal-400' : ''}`}
+                          }                          ${t === '__custom__' ? 'border-t border-slate-100 dark:border-slate-700 font-medium text-teal-600 dark:text-teal-400' : ''}`}
                         >
-                          {t === '__custom__' ? `+ Create "${comboSearch}"` : INVOICE_TYPE_LABELS[t]}
+                          {t === '__custom__' ? `+ Create "${comboSearch}"` : INVOICE_TYPE_LABELS[t as AppInvoiceType]}
                         </button>
                       ))}
                     </div>
@@ -577,7 +579,7 @@ export default function InvoicePage() {
               date={date}
               dueDate={dueDate || undefined}
               from={{
-                name: settings?.restaurant_name ?? 'POS',
+                name: settings?.restaurant_name ?? 'Forge POS',
                 address: settings?.address ?? '',
                 phone: settings?.phone ?? '',
                 email: settings?.email ?? '',

@@ -379,8 +379,7 @@ export default function ProductManager() {
       background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
     >
 
-      {/* Stats Cards Row */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6 sm:mb-8">
+      {/* Stats Cards Row */}          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mb-6 sm:mb-8">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -482,8 +481,7 @@ export default function ProductManager() {
         {isLoading ? (
           <motion.div
             key="skeleton"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-3 sm:gap-4"
           >
             {Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
               <ProductCardSkeleton key={i} />
@@ -493,7 +491,7 @@ export default function ProductManager() {
           <motion.div
             key="grid"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-3 sm:gap-4"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-3 sm:gap-4"
           >
             {filteredProducts.map((product, index) => {
               const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
@@ -505,6 +503,10 @@ export default function ProductManager() {
                   currency={currencySymbol}
                   index={index}
                 >
+                  {/* Column index badge — shows the product's position in the filtered grid */}
+                  <span className="index-pill group-hover:scale-110 transition-transform duration-200">
+                    {index + 1}
+                  </span>
                   <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -626,9 +628,12 @@ export default function ProductManager() {
                 </div>
               </div>
 
-              {/* Border Color Picker */}
+              {/* Border Color Picker — enhanced with live preview */}
               <div>
-                <label className="block text-slate-900 dark:text-white mb-2">{t('productManager.borderColor') || 'Border Color'}</label>
+                <label className="block text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                  <span className="w-4 h-4 rounded-full border" style={{ backgroundColor: borderColor }} />
+                  {t('productManager.borderColor') || 'Border Color'}
+                </label>
                 <div className="flex items-center gap-3">
                   <input
                     type="color"
@@ -648,8 +653,8 @@ export default function ProductManager() {
                     placeholder="#6366f1"
                     pattern="^#[0-9a-fA-F]{6}$"
                   />
-                  <div className="flex gap-1">
-                    {['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#ef4444', '#22c55e'].map(c => (
+                  <div className="flex flex-wrap gap-1 max-w-[180px]">
+                    {['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#ef4444', '#22c55e', '#8b5cf6', '#f97316', '#06b6d4', '#84cc16'].map(c => (
                       <button
                         key={c}
                         type="button"
@@ -661,6 +666,26 @@ export default function ProductManager() {
                         title={c}
                       />
                     ))}
+                  </div>
+                </div>
+                {/* Live preview card */}
+                <div
+                  className="mt-3 rounded-xl p-3 border-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm flex items-center gap-3"
+                  style={{ borderColor, backgroundColor: `${borderColor}10` }}
+                >
+                  <div
+                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm"
+                    style={{ backgroundColor: borderColor }}
+                  >
+                    P
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                      {newProduct.name || 'Product Name'}
+                    </p>
+                    <p className="text-xs text-slate-500 dark:text-gray-400">
+                      {currencySymbol} {(Number(newProduct.price) || 0).toFixed(2)} / {newProduct.unit || 'item'}
+                    </p>
                   </div>
                 </div>
               </div>

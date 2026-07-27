@@ -19,6 +19,11 @@ type MockImpl = (cmd: string, args?: Record<string, unknown>) => Promise<unknown
 const handlers = new Map<string, MockImpl>();
 
 function defaultMock(cmd: string): Promise<unknown> {
+  // AuthContext calls these on mount — provide sane defaults so pages wrapped
+  // in AuthProvider don't error out unless a test explicitly mocks them.
+  if (cmd === 'check_auth_required' || cmd === 'has_users') {
+    return Promise.resolve(false);
+  }
   return Promise.reject(new Error(`No mock configured for command: ${cmd}`));
 }
 

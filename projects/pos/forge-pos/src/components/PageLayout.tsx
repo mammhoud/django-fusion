@@ -114,8 +114,8 @@ export default function PageLayout({
   showNav = true,
   title,
   background = 'bg-slate-100 dark:bg-slate-900',
-  containerWidth = 'max-w-6xl',
-  padding = 'py-6 md:py-10',
+  containerWidth = 'max-w-7xl xl:max-w-[90rem] 3xl:max-w-[110rem] 4xl:max-w-[130rem]',
+  padding = 'py-4 md:py-6 lg:py-10',
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -183,7 +183,11 @@ export default function PageLayout({
 
   return (
     <div className={`min-h-screen transition-colors duration-300 ${background}`}>
+      {/* Overlay SideNav (mobile/tablet) */}
       <SideNav isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} currentRoute={location.pathname} />
+
+      {/* Persistent hover-expand sidebar (ultra-wide screens) */}
+      <SideNav persistent currentRoute={location.pathname} />
 
       {/* Inactivity warning toast */}
       <AnimatePresence>
@@ -208,7 +212,7 @@ export default function PageLayout({
         )}
       </AnimatePresence>
 
-      <div className={`${containerWidth} mx-auto px-4 sm:px-6 ${padding}`}>
+      <div className={`4xl:ml-16 rtl:4xl:mr-16 rtl:4xl:ml-0 ${containerWidth} mx-auto px-4 sm:px-6 ${padding}`}>
         {showNav ? (
           /* Full TopBar: [Menu] [Back] [Logo + Title] [Profile] */
           <div className="flex items-center justify-between mb-6 gap-3">
