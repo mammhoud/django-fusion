@@ -1,70 +1,104 @@
 'use client';
 
-import React, { useEffect, useRef, useState } from 'react';
-import { fusionApi } from '@/lib/api-client';
-import { fusionStore } from '@/lib/fusion-store';
-import { fusionDecoder } from '@/lib/fusion-decoder';
-import FusionWagtailPage from './FusionWagtailPage';
-import type { FragmentPointer, FusionWagtailPage as WagtailPage } from '@/lib/fusion-types';
+import { useEffect, useRef, useState } from 'react';
+import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
-interface FusionProxyProps { slug: string; fallback?: React.ReactNode; }
+interface FusionProxyProps {
+  /** URL that returns the server-rendered HTML fragment. */
+  fragmentUrl: string;
+  /** Called when fetching or rendering the fragment fails. */
+  onError?: () => void;
+  /** When true, inline ``<script>`` tags in the fragment are re-evaluated. */
+  enableScripts?: boolean;
+  /** Optional content to show on error. */
+  errorFallback?: React.ReactNode;
+}
 
-export default function FusionProxy({ slug, fallback }: FusionProxyProps) {
-  const [pointer, setPointer] = useState<FragmentPointer | null>(null);
-  const [wagtailPage, setWagtailPage] = useState<WagtailPage | null>(null);
+/**
+ * Fetch a django-fusion server-rendered HTML fragment and inject it into the
+ * React tree. The component handles loading, error, and optionally re-injects
+ * inline ``<script>`` tags so that widgets / HTMX inside the fragment keep
+ * working after the initial render.
+ */
+export function FusionProxy({
+  fragmentUrl,
+  onError,
+  enableScripts = false,
+  errorFallback,
+}: FusionProxyProps) {
+  const ref = useRef<HTMLDivElement>(null);
   const [html, setHtml] = useState<string | null>(null);
-  const [mode, setMode] = useState<'loading'|'fragment'|'data'|'wagtail'|'error'>('loading');
-  const [error, setError] = useState<string | null>(null);
-  const healthChecked = useRef(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [hasError, setHasError] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    (async () => {
-      try {
-        const ptr = await fusionApi.fetchFragment(slug);
-        if (cancelled) return;
-        setPointer(ptr); fusionStore.setRenderFirst(ptr.fusion_render_first);
-        if (fusionDecoder.shouldRenderFragmentFirst(ptr)) {
-          const h = await fusionApi.fetchPageHtml(slug);
-          if (cancelled) return;
-          setHtml(h); setMode('fragment');
-        } else {
-          try {
-            const wp = await fusionApi.fetchWagtailPage(slug);
-            if (cancelled) return;
-            setWagtailPage(wp); setMode('wagtail');
-          } catch { if (cancelled) return; setMode('data'); }
-        }
-      } catch {
-        try {
-          const wp = await fusionApi.fetchWagtailPage(slug);
-          if (cancelled) return;
-          setWagtailPage(wp); setMode('wagtail');
-        } catch {
-          try {
-            const h = await fusionApi.fetchPageHtml(slug);
-            if (cancelled) return;
-            setHtml(h); setMode('fragment');
-          } catch (err) {
-            if (cancelled) return;
-            setError(err instanceof Error ? err.message : 'Failed to load'); setMode('error');
-          }
-        }
-      }
-    })();
-    return () => { cancelled = true; };
-  }, [slug]);
 
+    fetch(fragmentUrl, { headers: { Accept: 'text/html' } })
+      .then((res) => {
+        if (!res.ok) {
+          throw new Error(`Fragment returned ${res.status}`);
+        }
+        return res.text();
+      })
+      .then((text) => {
+        if (!cancelled) {
+          setHtml(text);
+          setIsLoading(false);
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
+          setHasError(true);
+          setIsLoading(false);
+          onError?.();
+        }
+      });
+
+    return () => {
+      cancelled = true;
+    };
+  }, [fragmentUrl, onError]);
+
+  // Re-evaluate inline <script> tags on demand so that HTMX / widgets work.
   useEffect(() => {
-    if (healthChecked.current) return;
-    healthChecked.current = true;
-    fusionApi.checkHealth().then(h=>fusionStore.initFromHealth(h.fusion_render_first)).catch(()=>fusionStore.setMode('data'));
-  }, []);
+    if (!enableScripts || !html || !ref.current) return;
 
-  if (mode === 'loading') return (<div className="fusion-page p-8 space-y-4"><div className="fusion-skeleton h-8 w-2/3"/><div className="fusion-skeleton h-4 w-full"/></div>);
-  if (mode === 'error') return (<div className="fusion-error">{fallback||<><h2>Error</h2><p>{error}</p><button onClick={()=>window.location.reload()}>Retry</button></>}</div>);
-  if (mode === 'fragment' && html) return (<div className="fusion-page" dangerouslySetInnerHTML={{__html:html}}/>);
-  if (mode === 'wagtail' && wagtailPage) return <FusionWagtailPage slug={slug} direct={false} page={wagtailPage}/>;
-  if (mode === 'data' && pointer) return (<div className="fusion-page"><h1 className="text-3xl font-bold mb-6">{pointer.title||slug}</h1><p className="text-gray-500">{pointer.component}</p></div>);
-  return null;
+    const scripts = ref.current.querySelectorAll<HTMLScriptElement>('script');
+    scripts.forEach((oldScript) => {
+      const newScript = document.createElement('script');
+      Array.from(oldScript.attributes).forEach((attr) => {
+        newScript.setAttribute(attr.name, attr.value);
+      });
+      // Only copy inline script text; external scripts rely on the copied
+      // ``src`` attribute and do not need a text node.
+      if (!oldScript.src && oldScript.innerHTML) {
+        newScript.appendChild(document.createTextNode(oldScript.innerHTML));
+      }
+      oldScript.parentNode?.replaceChild(newScript, oldScript);
+    });
+  }, [html, enableScripts]);
+
+  if (isLoading) return <LoadingSkeleton />;
+  if (hasError || html === null) {
+    return (
+      <>
+        {errorFallback !== undefined ? (
+          errorFallback
+        ) : (
+          <div className="p-4 text-sm text-red-600 bg-red-50 rounded-lg">
+            Unable to render this section. Please try refreshing the page.
+          </div>
+        )}
+      </>
+    );
+  }
+
+  return (
+    <div
+      ref={ref}
+      // eslint-disable-next-line react/no-danger
+      dangerouslySetInnerHTML={{ __html: html }}
+    />
+  );
 }

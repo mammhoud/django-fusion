@@ -1,0 +1,26 @@
+{% load static wagtailimages_tags %}
+
+{# Simple logo logic #}
+{% if brand_settings and brand_settings.logo %}
+{% image brand_settings.logo max-165x120 as logo %}
+{% endif %}
+
+<div class="header-logo">
+    <a href="/">
+        {% if logo %}
+        {# Logo image #}
+        <img src="{{ logo.url }}" alt="{{ brand_settings.site_name|default:'Logo' }}" class="logo-img">
+        {% else %}
+        {# Text fallback with uppercase and letter spacing #}
+        <h3 class="uppercase letter-spacing-1">
+            {% if logo %}
+
+            {{ brand_settings.site_name|default:'WEBSITE' }}
+            {% else %}
+            <img src="{% static 'images/brand/crm-isometric.svg' %}" alt="logo" class="logo-img">
+
+            {% endif %}
+        </h3>
+        {% endif %}
+    </a>
+</div>

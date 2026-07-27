@@ -1,0 +1,41 @@
+{% load i18n static humanize %}
+
+<section class="fragment--form">
+  <section class="auth__card card card--form">
+    <header class="auth__form-header">
+      <h2 class="auth__form-title">{% trans "Active Sessions" %}</h2>
+      <p>{% trans "Manage devices that are logged into your account." %}</p>
+    </header>
+
+    {% comp "account/snippets/messages.html" /%}
+
+    {% if sessions %}
+      <div class="list-group mb-4">
+        {% for session in sessions %}
+          <div class="list-group-item d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ session.user_agent|default:"Unknown device" }}</strong><br>
+              <small class="text-muted">{% trans "Last active:" %} {{ session.last_activity|naturaltime }}</small>
+              {% if session.is_current %}<span class="badge bg-primary ms-2">{% trans "Current session" %}</span>{% endif %}
+            </div>
+            {% if not session.is_current %}
+              <form method="post" action="{% url 'usersessions_list' %}" onsubmit="return confirm('{% trans "End this session?" %}')">
+                {% csrf_token %}
+                <input type="hidden" name="session_key" value="{{ session.session_key }}">
+                <button type="submit" name="action_remove" class="btn btn-sm btn-danger">{% trans "End Session" %}</button>
+              </form>
+            {% endif %}
+          </div>
+        {% endfor %}
+      </div>
+      <form method="post" action="{% url 'usersessions_list' %}" onsubmit="return confirm('{% trans "End all other sessions?" %}')">
+        {% csrf_token %}
+        <button type="submit" name="action_remove_others" class="btn btn-outline-danger w-100">{% trans "End All Other Sessions" %}</button>
+      </form>
+    {% else %}
+      <div class="alert alert-info">{% trans "No active sessions found." %}</div>
+    {% endif %}
+
+    <footer class="auth__footer mt-3"><a href="{% url 'account_login' %}" hx-get="{% url 'account_login' %}" hx-target=".fragment--form" hx-swap="innerHTML">{% trans "Back" %}</a></footer>
+  </section>
+</section>

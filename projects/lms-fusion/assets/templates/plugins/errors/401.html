@@ -1,0 +1,107 @@
+{% extends layout_path|default:'base.html' %}
+{% load i18n %}
+
+{% block title %}{% trans "Unauthorized (401 Error)" %} | {{ site_name|default:'Website' }}{% endblock %}
+
+{% block meta %}
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="robots" content="noindex, follow">
+    <meta name="description" content="{% trans 'Authentication is required to access this resource.' %}">
+
+    <!-- Open Graph / Social -->
+    <meta property="og:title" content="{% trans 'Unauthorized (401)' %} | {{ site_name|default:'Website' }}">
+    <meta property="og:description" content="{% trans 'Authentication required to access this resource.' %}">
+    <meta property="og:type" content="website">
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{% trans 'Unauthorized (401)' %} | {{ site_name|default:'Website' }}">
+    <meta name="twitter:description" content="{% trans 'Authentication required.' %}">
+
+    <link rel="canonical" href="{{ site_url|default:'/' }}">
+
+    <!-- Authentication required header -->
+    <meta http-equiv="WWW-Authenticate" content="Basic realm='{{ site_name|default:'Website' }}'">
+{% endblock %}
+
+{% block styles %}
+    {% load webpack_loader %}
+    {% render_bundle 'static' 'css' %}
+{% endblock styles %}
+
+{% block body_class %}template-401{% endblock %}
+
+{% block body %}
+<div class="error-page error-401">
+    <!-- Lock pattern background -->
+    <div class="lock-pattern">
+        <div class="lock-grid"></div>
+    </div>
+
+    <div class="error-container">
+        <div class="error-card">
+            <!-- Padlock animation -->
+            <div class="lock-container">
+                <div class="lock">
+                    <div class="lock-body">
+                        <div class="lock-handle"></div>
+                    </div>
+                    <div class="lock-shackle"></div>
+                </div>
+                <div class="lock-shadows"></div>
+            </div>
+
+            <!-- Status code -->
+            <h1 class="error-code">401</h1>
+
+            <!-- Error message -->
+            <div class="error-message">
+                <h2>{% trans "Access Denied" %}</h2>
+                <p>{% trans "You need to authenticate yourself to access this resource." %}</p>
+            </div>
+
+            <!-- Authentication options -->
+            <div class="auth-options">
+                <div class="auth-card login-card">
+                    <i class="fas fa-sign-in-alt"></i>
+                    <h3>{% trans "Already have an account?" %}</h3>
+                    <a href="{% url 'login' %}" class="btn btn-primary">
+                        <i class="fas fa-lock-open"></i>
+                        <span>{% trans "Log In" %}</span>
+                    </a>
+                </div>
+
+                <div class="auth-card register-card">
+                    <i class="fas fa-user-plus"></i>
+                    <h3>{% trans "New here?" %}</h3>
+                    <a href="{% url 'register' %}" class="btn btn-secondary">
+                        <i class="fas fa-user"></i>
+                        <span>{% trans "Create Account" %}</span>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Alternative actions -->
+            <div class="alternative-actions">
+                <p>{% trans "Or try:" %}</p>
+                <div class="action-links">
+                    <a href="/"><i class="fas fa-home"></i> {% trans "Go to Homepage" %}</a>
+                    <a href="javascript:history.back()"><i class="fas fa-arrow-left"></i> {% trans "Go Back" %}</a>
+                    <a href="/contact/"><i class="fas fa-headset"></i> {% trans "Contact Support" %}</a>
+                </div>
+            </div>
+
+            <!-- Access details -->
+            <div class="access-details">
+                <p><i class="fas fa-globe"></i> {% trans "Requested URL:" %} <code>{{ request.path }}</code></p>
+                <p><i class="fas fa-clock"></i> {% trans "Time:" %} {% now "Y-m-d H:i:s" %}</p>
+                <p><i class="fas fa-id-card"></i> {% trans "Reference:" %} AUTH-{{ "now"|date:"YmdHis" }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_styles %}
+{% endblock %}

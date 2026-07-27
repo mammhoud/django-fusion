@@ -1,0 +1,130 @@
+{% load i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Enhanced Team Member Block Template - Wagtail Bakery Style #}
+{# When used as include: pass value=, When used as Wagtail block: self is available #}
+
+{% firstof value self as member %}
+{% if member %}
+<div class="team-member team-member--{{ member.layout_style|default:'card' }} {% if member.featured %}team-member--featured{% endif %} col-md-4">
+    <div class="team-member__card h-100 {% if member.layout_style == 'hover' %}team-member__card--hover{% endif %}">
+
+        {# Photo #}
+        {% if member.photo %}
+        <div class="team-member__photo position-relative overflow-hidden">
+            {% image member.photo fill-400x400 class="img-fluid w-100" %}
+
+            {# Social Links Overlay (for hover style) #}
+            {% if member.show_social_links and member.social_links %}
+            <div class="team-member__social-overlay">
+                <div class="d-flex gap-2 justify-content-center">
+                    {% for link in member.social_links %}
+                    <a href="{{ link.value.url }}"
+                       target="_blank"
+                       rel="noopener noreferrer"
+                       class="btn btn-sm btn-light rounded-circle"
+                       title="{{ link.value.platform }}">
+                        <i class="{{ link.value.icon_class|default:'bi bi-link' }}"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# Info #}
+        <div class="team-member__info p-4">
+            <h4 class="team-member__name h5 mb-1">
+                {{ member.name }}
+                {% if member.featured %}
+                <i class="bi bi-star-fill text-warning ms-2" title="{% trans 'Featured' %}"></i>
+                {% endif %}
+            </h4>
+
+            <p class="team-member__position text-primary mb-2">{{ member.position }}</p>
+
+            {% if member.department %}
+            <p class="team-member__department text-muted small mb-2">
+                <i class="bi bi-building me-1"></i>{{ member.department }}
+            </p>
+            {% endif %}
+
+            {% if member.location %}
+            <p class="team-member__location text-muted small mb-2">
+                <i class="bi bi-geo-alt me-1"></i>{{ member.location }}
+            </p>
+            {% endif %}
+
+            {# Bio #}
+            {% if member.bio %}
+            <div class="team-member__bio mt-3">
+                {{ member.bio|richtext }}
+            </div>
+            {% endif %}
+
+            {# Expertise #}
+            {% if member.expertise %}
+            <div class="team-member__expertise mt-3">
+                <div class="d-flex flex-wrap gap-1">
+                    {% for skill in member.expertise %}
+                    <span class="badge bg-light text-dark">{{ skill }}</span>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+
+            {# Languages #}
+            {% if member.languages %}
+            <div class="team-member__languages mt-2">
+                <small class="text-muted">
+                    <i class="bi bi-translate me-1"></i>
+                    {% for lang in member.languages %}{{ lang }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </small>
+            </div>
+            {% endif %}
+
+            {# Contact Info #}
+            {% if member.show_contact_info %}
+            <div class="team-member__contact mt-3">
+                {% if member.email %}
+                <a href="mailto:{{ member.email }}" class="d-block text-decoration-none mb-1">
+                    <i class="bi bi-envelope me-2"></i>{{ member.email }}
+                </a>
+                {% endif %}
+                {% if member.phone %}
+                <a href="tel:{{ member.phone }}" class="d-block text-decoration-none">
+                    <i class="bi bi-telephone me-2"></i>{{ member.phone }}
+                </a>
+                {% endif %}
+            </div>
+            {% endif %}
+
+            {# Social Links (non-overlay style) #}
+            {% if member.show_social_links and member.social_links and member.layout_style != 'hover' %}
+            <div class="team-member__social mt-3 d-flex gap-2">
+                {% for link in member.social_links %}
+                <a href="{{ link.value.url }}"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="btn btn-sm btn-outline-secondary rounded-circle"
+                   title="{{ link.value.display_text|default:link.value.platform }}">
+                    <i class="{{ link.value.icon_class|default:'bi bi-link' }}"></i>
+                </a>
+                {% endfor %}
+            </div>
+            {% endif %}
+
+            {# Join Date #}
+            {% if member.join_date %}
+            <div class="team-member__joined mt-3">
+                <small class="text-muted">
+                    <i class="bi bi-calendar me-1"></i>
+                    {% trans "Joined" %} {{ member.join_date|date:"F Y" }}
+                </small>
+            </div>
+            {% endif %}
+        </div>
+
+    </div>
+</div>
+{% endif %}

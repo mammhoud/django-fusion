@@ -1,0 +1,33 @@
+{% load wagtailcore_tags wagtailimages_tags i18n %}
+{# Media Gallery Item Template #}
+{% firstof value self as item %}
+{% if item %}
+<div class="media-item rounded overflow-hidden shadow-sm bg-light{% if item.featured %} media-item--featured{% endif %}">
+    <div class="media-item__wrapper position-relative ratio ratio-1x1">
+        {% if item.media_type == 'image' and item.image and item.image.image %}
+            {% include_block item.image %}
+        {% elif item.media_type == 'video' and item.video and item.video.embed_url %}
+            <div class="video-placeholder bg-dark d-flex align-items-center justify-content-center">
+                <i class="bi bi-play-circle text-white display-4"></i>
+            </div>
+        {% else %}
+            <div class="placeholder bg-secondary d-flex align-items-center justify-content-center">
+                <i class="bi bi-image text-white display-4"></i>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if item.caption or item.category %}
+    <div class="media-item__info p-3">
+        {% if item.category %}
+            <span class="badge bg-primary mb-2">{{ item.category }}</span>
+        {% endif %}
+        {% if item.caption %}
+            <div class="small text-muted mb-0">
+                {{ item.caption|richtext }}
+            </div>
+        {% endif %}
+    </div>
+    {% endif %}
+</div>
+{% endif %}

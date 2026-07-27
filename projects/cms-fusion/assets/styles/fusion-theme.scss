@@ -1,11 +1,4 @@
-/* Fusion CMS theme — single source of truth for design tokens.
-   Imported by Next.js and compiled to backend/assets/static/css/fusion.css
-   for Django. */
-:root {
-  --fu-primary: #7c3aed;
-  --fu-secondary: #5b21b6;
-  --fu-accent: #4c1d95;
-  --fu-bg: #fafafa;
-  --fu-text: #18181b;
-  --fu-radius: 0.5rem;
-}
+// Fusion theme entry point — compiled by build:theme into assets/static/css/fusion.css
+// This file imports the shared theme layer with vendor overrides.
+
+@import 'index';

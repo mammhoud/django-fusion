@@ -10,7 +10,7 @@ from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST
 from django_fusion.routes import ModelViewset
-from django_fusion.components.generic import SearchableViewMixin
+from django_fusion.fragments.generic import SearchableViewMixin
 from django_filters import rest_framework as filters
 
 from .models import (

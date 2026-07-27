@@ -1,11 +1,2 @@
-/* Fusion LMS theme — single source of truth for design tokens.
-   Imported by Next.js and compiled to backend/assets/static/css/fusion.css
-   for Django. */
-:root {
-  --fu-primary: #00a1b3;
-  --fu-secondary: #008080;
-  --fu-accent: #005f73;
-  --fu-bg: #f8fafc;
-  --fu-text: #1e293b;
-  --fu-radius: 0.5rem;
-}
+// Fusion theme entry point
+@import 'index';

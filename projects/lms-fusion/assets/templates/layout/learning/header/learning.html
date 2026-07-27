@@ -1,0 +1,19 @@
+{% load static i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% image brand_settings.logo max-165x120 as logo %}
+<!-- Header -->
+<div class="header center right transparent-light header-color-dark sticky-autohide">
+    <div class="container">
+        <!-- Logo -->
+        {% comp "partials/logo.html" /%}
+
+        
+        {% comp "partials/header_links.html" /%}
+        {% comp "partials/header_extra.html" /%}
+
+        <!-- Menu Toggle -->
+        <button class="header-toggle">
+            <span></span>
+        </button>
+    </div><!-- end container -->
+</div>
+<!-- end Header -->

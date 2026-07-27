@@ -94,7 +94,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
-.PHONY: ctc-research structa vresume proxy services databases
+.PHONY: ctc-research structa vresume proxy services databases lms-fusion cms-fusion domain-drift
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 .PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
@@ -329,6 +329,13 @@ help:
 	@echo '  make pos-solo          - Delegate to projects/pos/pos-solo/Makefile (branch device)'
 	@echo '  make pos-full          - Delegate to projects/pos/pos-full/Makefile (master manager)'
 	@echo '  make pos-client        - Delegate to projects/pos/pos-client/Makefile (Vue 3 client)'
+	@echo "  make lms-fusion        - Delegate to projects/Makefile with WEBSITE=lms-fusion"
+	@echo "  make lms-fusion check  - Django system checks for Fusion LMS"
+	@echo "  make lms-fusion migrate - Run migrations for Fusion LMS"
+	@echo "  make cms-fusion        - Delegate to projects/Makefile with WEBSITE=cms-fusion"
+	@echo "  make cms-fusion check  - Django system checks for Fusion CMS"
+	@echo "  make cms-fusion migrate - Run migrations for Fusion CMS"
+	@echo "  make test-fusion      - Run cms-fusion + lms-fusion tests sequentially"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -1144,6 +1151,8 @@ help-all:
 	@echo "Individual Component Help:"
 	@echo "  make -C $(CORE_DIR) help    - Application service commands"
 	@echo "  make pos            - POS desktop app (projects/pos/Makefile)"
+	@echo "  make lms-fusion     - Fusion LMS site (projects/Makefile)"
+	@echo "  make cms-fusion     - Fusion CMS site (projects/Makefile)"
 	@echo "  make pos-{mini,solo,full,client}"
 	@echo "                      - Individual POS edition Makefiles"
 	@echo "  make -C $(PROXY_DIR) help           - Proxy management commands"
@@ -1210,6 +1219,19 @@ cypercloud:
 pos:
 	@echo "📋 POS targets:"
 	@$(MAKE) -C $(POS_DIR) help
+
+lms-fusion:
+	@$(MAKE) -C $(CORE_DIR) WEBSITE=lms-fusion
+
+cms-fusion:
+	@$(MAKE) -C $(CORE_DIR) WEBSITE=cms-fusion
+
+# Domain drift check — verifies cms-fusion and lms-fusion domain code is in sync
+domain-drift:
+	@bash applications/scripts/dev/check_domain_drift.sh
+
+test-fusion:
+	@$(MAKE) -C $(CORE_DIR) test-fusion
 
 forge-pos:
 	@$(MAKE) -C $(POS_DIR)/forge-pos $(filter-out $@,$(MAKECMDGOALS))

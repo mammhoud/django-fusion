@@ -1,0 +1,51 @@
+{% load i18n %}
+<div class="checkout-container">
+  <h1>{% trans "Checkout" %}</h1>
+
+  {% if cart_items %}
+    <div class="checkout-summary">
+      <h2>{% trans "Order Summary" %}</h2>
+      <table class="checkout-table">
+        <thead>
+          <tr>
+            <th>{% trans "Product" %}</th>
+            <th>{% trans "Quantity" %}</th>
+            <th>{% trans "Price" %}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in cart_items %}
+          <tr>
+            <td>{{ item.product.name }}</td>
+            <td>{{ item.quantity }}</td>
+            <td>${{ item.total_price|floatformat:2 }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+        <tfoot>
+          <tr>
+            <td colspan="2"><strong>{% trans "Subtotal" %}</strong></td>
+            <td><strong>${{ subtotal|floatformat:2 }}</strong></td>
+          </tr>
+          <tr class="checkout-total">
+            <td colspan="2"><strong>{% trans "Total" %}</strong></td>
+            <td><strong>${{ total|floatformat:2 }}</strong></td>
+          </tr>
+        </tfoot>
+      </table>
+    </div>
+
+    <div class="checkout-actions">
+      <form method="post" action="{% url 'cart:checkout' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn-place-order">{% trans "Place Order" %}</button>
+      </form>
+      <a href="{% url 'cart:cart-items' %}" class="btn-back-cart">{% trans "Back to Cart" %}</a>
+    </div>
+  {% else %}
+    <div class="checkout-empty">
+      <p>{% trans "Your cart is empty. Nothing to checkout." %}</p>
+      <a href="/" class="btn-back-shop">{% trans "Continue Shopping" %}</a>
+    </div>
+  {% endif %}
+</div>

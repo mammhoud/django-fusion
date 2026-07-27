@@ -1,11 +1,24 @@
 'use client';
 
+import { HiAcademicCap } from 'react-icons/hi';
+
 interface LoadingSkeletonProps {
   variant?: 'card' | 'list' | 'table' | 'detail' | 'profile' | 'text';
   count?: number;
   className?: string;
 }
 
+/**
+ * Reusable loading skeleton for consistent loading states across all pages.
+ *
+ * Variants:
+ *  - card:    Card grid skeleton (image + title + description)
+ *  - list:    List item skeleton (icon/avatar + text)
+ *  - table:   Table row skeleton
+ *  - detail:  Detail page skeleton (title + content)
+ *  - profile: Profile/avatar skeleton
+ *  - text:    Simple text block skeleton
+ */
 export default function LoadingSkeleton({
   variant = 'card',
   count = 1,
@@ -17,7 +30,7 @@ export default function LoadingSkeleton({
     switch (variant) {
       case 'card':
         return (
-          <div key={key} className={`bg-white rounded-xl shadow-sm p-6 animate-pulse ${className}`}>
+          <div key={key} className={`card p-6 animate-pulse ${className}`}>
             <div className="bg-gray-200 h-40 rounded-lg mb-4" />
             <div className="bg-gray-200 h-4 w-3/4 rounded mb-2" />
             <div className="bg-gray-200 h-4 w-1/2 rounded mb-1" />
@@ -28,7 +41,7 @@ export default function LoadingSkeleton({
 
       case 'list':
         return (
-          <div key={key} className={`bg-white rounded-xl shadow-sm p-5 animate-pulse flex items-center gap-4 ${className}`}>
+          <div key={key} className={`card p-5 animate-pulse flex items-center gap-4 ${className}`}>
             <div className="w-12 h-12 bg-gray-200 rounded-lg flex-shrink-0" />
             <div className="flex-1 space-y-2">
               <div className="bg-gray-200 h-4 w-3/4 rounded" />
