@@ -65,6 +65,14 @@ jobs:
       - name: Run Django system checks
         run: make check WEBSITE=cms-fusion
 
+      - name: Verify root Makefile convenience target
+        working-directory: ${{ github.workspace }}
+        run: make cms-fusion check
+
+      - name: Run migrations
+        working-directory: ${{ github.workspace }}
+        run: make cms-fusion migrate
+
       - name: Run tests
         run: make test WEBSITE=cms-fusion
 
@@ -176,6 +184,14 @@ jobs:
 
       - name: Run Django system checks
         run: make check WEBSITE=lms-fusion
+
+      - name: Verify root Makefile convenience target
+        working-directory: ${{ github.workspace }}
+        run: make lms-fusion check
+
+      - name: Run migrations
+        working-directory: ${{ github.workspace }}
+        run: make lms-fusion migrate
 
       - name: Run tests
         run: make test WEBSITE=lms-fusion

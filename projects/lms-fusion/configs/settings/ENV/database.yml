@@ -5,7 +5,7 @@ default: &db_default
   DATABASES:
     default:
       ENGINE: "django.db.backends.sqlite3"
-      NAME: "@jinja {{ env.get('DATABASE_NAME', 'projects/dev_db.sqlite3') }}"
+      NAME: "@jinja {{ env.get('DATABASE_NAME', 'dev_db.sqlite3') }}"
       ATOMIC_REQUESTS: false
 
   DATABASE_ROUTERS: []
@@ -21,7 +21,7 @@ development:
   DATABASES:
     default:
       ENGINE: "@jinja {{ 'django.db.backends.postgresql' if env.get('DB_TYPE') == 'postgres' else 'django.db.backends.sqlite3' }}"
-      NAME: "@jinja {{ env.get('DB_NAME', 'projects/dev_db.sqlite3') }}"
+      NAME: "@jinja {{ env.get('DB_NAME', 'dev_db.sqlite3') }}"
       USER: "@env DB_USER"
       PASSWORD: "@env DB_PASSWORD"
       HOST: "@env DB_HOST localhost"

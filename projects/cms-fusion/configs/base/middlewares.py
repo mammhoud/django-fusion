@@ -25,7 +25,7 @@ MIDDLEWARE = [
     "core.middleware.ThemeMiddleware",
     "core.middleware.MediaRequestLoggingMiddleware",
     # "django.contrib.auth.middleware.LoginRequiredMiddleware",
-    "django_fusion.infrastructure.middlewares.language.DefaultLanguageMiddleware",
+    "django_fusion.core.middlewares.language.DefaultLanguageMiddleware",
 ]
 
 

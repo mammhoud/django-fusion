@@ -96,18 +96,13 @@ function FusionPageMiddleware({
   enableScripts,
   errorFallback,
 }: FusionPageProps) {
-  const { mode, fallbackToData } = useFusionMode();
+  const { mode } = useFusionMode();
 
   if (mode === 'loading') return <LoadingSkeleton />;
 
   if (mode === 'fragment') {
     return (
-      <FusionProxy
-        fragmentUrl={`/apis/pages/${slug}/data/?fusion_render_first=true`}
-        onError={fallbackToData}
-        enableScripts={enableScripts}
-        errorFallback={errorFallback}
-      />
+      <FusionProxy slug={slug} fallback={errorFallback} />
     );
   }
 
@@ -136,17 +131,8 @@ function FusionPageStandalone({
   const renderHtml = sessionPref === true;
 
   if (renderHtml) {
-    const handleHtmlError = () => {
-      fusionDecoder.clearSession();
-    };
-
     return (
-      <FusionProxy
-        fragmentUrl={`/apis/pages/${slug}/data/?fusion_render_first=true`}
-        onError={handleHtmlError}
-        enableScripts={enableScripts}
-        errorFallback={errorFallback}
-      />
+      <FusionProxy slug={slug} fallback={errorFallback} />
     );
   }
 
