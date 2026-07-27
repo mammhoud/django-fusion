@@ -94,7 +94,7 @@ PREFLIGHT_COMPOSE_FILES := \
 .PHONY: cert cert-generate cert-backup cert-restore cert-validate cert-check
 .PHONY: build build-app build-media build-docs
 .PHONY: validate verify-release help-all compose-up compose-down compose-merged-up compose-merged-down
-.PHONY: ctc-research structa vresume proxy services databases lms-fusion cms-fusion
+.PHONY: ctc-research structa vresume proxy services databases lms-fusion cms-fusion domain-drift
 .PHONY: bump-action-patch bump-action-minor bump-action-major
 .PHONY: bump-app-patch bump-app-minor bump-app-major
 .PHONY: venv-setup venv-sync venv-lock venv-clean venv-info
@@ -335,6 +335,7 @@ help:
 	@echo "  make cms-fusion        - Delegate to projects/Makefile with WEBSITE=cms-fusion"
 	@echo "  make cms-fusion check  - Django system checks for Fusion CMS"
 	@echo "  make cms-fusion migrate - Run migrations for Fusion CMS"
+	@echo "  make test-fusion      - Run cms-fusion + lms-fusion tests sequentially"
 	@echo "  make proxy             - Run proxy's Makefile"
 	@echo "  make services          - Run services' Makefile"
 	@echo "  make databases         - Run databases' Makefile"
@@ -1224,6 +1225,13 @@ lms-fusion:
 
 cms-fusion:
 	@$(MAKE) -C $(CORE_DIR) WEBSITE=cms-fusion
+
+# Domain drift check — verifies cms-fusion and lms-fusion domain code is in sync
+domain-drift:
+	@bash applications/scripts/dev/check_domain_drift.sh
+
+test-fusion:
+	@$(MAKE) -C $(CORE_DIR) test-fusion
 
 forge-pos:
 	@$(MAKE) -C $(POS_DIR)/forge-pos $(filter-out $@,$(MAKECMDGOALS))

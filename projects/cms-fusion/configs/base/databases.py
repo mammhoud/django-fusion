@@ -106,6 +106,5 @@ if db_conf:
 DATABASE_ROUTERS = []
 
 MIGRATION_MODULES = {
-    "sites": "www.migrations",
-    "www_core": None,
+    "sites": "apps.migrations",
 }

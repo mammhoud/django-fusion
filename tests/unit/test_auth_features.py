@@ -53,6 +53,14 @@ class TestAuthSettings:
         mfa_installed = "allauth.mfa" in settings.INSTALLED_APPS
         if mfa_installed:
             assert hasattr(settings, "MFA_SUPPORTED_TYPES")
+            assert hasattr(settings, "MFA_PASSKEY_LOGIN_ENABLED")
+
+    def test_passkey_mfa_enabled(self, settings) -> None:
+        """Passkey/WebAuthn MFA should be enabled."""
+        mfa_installed = "allauth.mfa" in settings.INSTALLED_APPS
+        if mfa_installed:
+            assert settings.MFA_PASSKEY_LOGIN_ENABLED is True
+            assert "webauthn" in settings.MFA_SUPPORTED_TYPES
 
 
 class TestAuthAdapters:

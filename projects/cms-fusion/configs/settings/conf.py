@@ -40,7 +40,7 @@ try:
 except Exception:  # pragma: no cover
     Dynaconf = None  # type: ignore[assignment]
 try:
-    from pydantic import Field, validator
+    from pydantic import Field, field_validator
     from pydantic_settings import BaseSettings, SettingsConfigDict
 except Exception:  # pragma: no cover
     Field = validator = BaseSettings = SettingsConfigDict = None  # type: ignore
@@ -254,14 +254,15 @@ class MainSettings(BaseSettings):
             return
 
         # Update all fields from Dynaconf
-        for field_name in self.model_fields:
+        for field_name in type(self).model_fields:
             value = self.dynaconf_settings.get(field_name)
             if value is not None:
                 setattr(self, field_name, value)
 
     # ==================== VALIDATORS ====================
 
-    @validator("DEBUG", pre=True)
+    @field_validator("DEBUG", mode="before")
+    @classmethod
     def validate_bool(cls, v):
         """Convert string boolean values."""
         if isinstance(v, str):
@@ -272,7 +273,8 @@ class MainSettings(BaseSettings):
                 return False
         return v
 
-    @validator("SERVER_ENV", pre=True)
+    @field_validator("SERVER_ENV", mode="before")
+    @classmethod
     def validate_server_env(cls, v):
         """Validate server environment."""
         if isinstance(v, str):
@@ -291,7 +293,8 @@ class MainSettings(BaseSettings):
             return mapping.get(v_lower, Environment.DEVELOPMENT)
         return v
 
-    @validator("RUNNING_ENV", pre=True)
+    @field_validator("RUNNING_ENV", mode="before")
+    @classmethod
     def validate_runtime_env(cls, v):
         """Validate runtime environment."""
         if isinstance(v, str):
@@ -310,7 +313,8 @@ class MainSettings(BaseSettings):
             return mapping.get(v_lower, Runtime.LOCAL)
         return v
 
-    @validator("MODULE", pre=True)
+    @field_validator("MODULE", mode="before")
+    @classmethod
     def validate_module(cls, v):
         """Validate module."""
         if isinstance(v, str):
@@ -324,7 +328,8 @@ class MainSettings(BaseSettings):
             return mapping.get(v_upper, Module.CMS)
         return v
 
-    @validator("PORT", pre=True)
+    @field_validator("PORT", mode="before")
+    @classmethod
     def validate_port(cls, v):
         """Validate port numbers."""
         if isinstance(v, str):
@@ -447,7 +452,7 @@ class MainSettings(BaseSettings):
             value = self._get_nested_value(self.section(block_name), nested_key, _MISSING)
         if value is _MISSING:
             value = self._get_dynamic_value(key, _MISSING)
-        if value is _MISSING and key in self.model_fields:
+        if value is _MISSING and key in type(self).model_fields:
             value = getattr(self, key, _MISSING)
         if value is _MISSING:
             value = default
@@ -814,7 +819,7 @@ class MainSettings(BaseSettings):
         data = {}
 
         # Add defined fields
-        for field in self.model_fields:
+        for field in type(self).model_fields:
             data[field] = getattr(self, field)
 
         # Add Dynaconf settings

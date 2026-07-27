@@ -26,6 +26,8 @@ MIDDLEWARE = [
     "core.middleware.MediaRequestLoggingMiddleware",
     # "django.contrib.auth.middleware.LoginRequiredMiddleware",
     "django_fusion.core.middlewares.language.DefaultLanguageMiddleware",
+    # Role-Based Access Middleware (enforces group-level permissions)
+    "django_fusion.core.middlewares.access.RoleBasedAccessMiddleware",
 ]
 
 

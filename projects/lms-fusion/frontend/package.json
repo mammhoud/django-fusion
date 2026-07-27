@@ -16,7 +16,7 @@
     "test:e2e:visual-update": "playwright test tests/e2e/theme-visual-regression.spec.ts --update-snapshots",
     "test:all": "npm run test && npm run test:e2e",
     "test:contract": "node tests/frontend-contract.test.mjs",
-    "build:theme": "sass ../assets/styles/fusion-theme.scss ../backend/assets/static/css/fusion.css --style=compressed --no-source-map"
+    "build:theme": "sass ../assets/styles/fusion-theme.scss ../assets/static/css/fusion.css --style=compressed --no-source-map"
   },
   "dependencies": {
     "@reduxjs/toolkit": "^2.12.0",

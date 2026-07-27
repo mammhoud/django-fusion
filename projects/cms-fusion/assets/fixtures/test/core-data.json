@@ -1510,7 +1510,7 @@
       "first_name": "",
       "last_name": "",
       "email": "mahmoud.ezzat.moustafa@gmail.com",
-      "is_staff": false,
+      "is_staff": true,
       "date_joined": "2026-02-21T04:22:49.129Z",
       "groups": [],
       "user_permissions": []
@@ -10907,7 +10907,7 @@
       "first_name": "",
       "last_name": "",
       "email": "mahmoud.ezzat.moustafa@gmail.com",
-      "is_staff": false,
+      "is_staff": true,
       "date_joined": "2026-02-21T04:22:49.129Z",
       "groups": [],
       "user_permissions": []

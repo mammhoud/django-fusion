@@ -106,7 +106,7 @@ ACCOUNT_EMAIL_VERIFICATION = settings.get("ACCOUNT_EMAIL_VERIFICATION", "optiona
 ACCOUNT_UNIQUE_EMAIL = True
 ACCOUNT_USER_MODEL_USERNAME_FIELD = "username"
 ACCOUNT_LOGOUT_ON_GET = False
-ACCOUNT_ADAPTER = settings.get("ACCOUNT_ADAPTER", "plugins.accounts.adapters.RegistrationAdapter")
+ACCOUNT_ADAPTER = settings.get("ACCOUNT_ADAPTER", "apps.pages.accounts.adapters.RegistrationAdapter")
 ACCOUNT_FORMS = settings.get("ACCOUNT_FORMS", {})
 
 # =============================================================================
@@ -125,7 +125,7 @@ ACCOUNT_REAUTHENTICATION_TIMEOUT = settings.get("ACCOUNT_REAUTHENTICATION_TIMEOU
 # 🔗 SOCIAL AUTH OPTIONS
 # =============================================================================
 SOCIALACCOUNT_ADAPTER = settings.get(
-    "SOCIALACCOUNT_ADAPTER", "plugins.accounts.adapters.AuthHTMXSocialAccountAdapter"
+    "SOCIALACCOUNT_ADAPTER", "apps.pages.accounts.adapters.AuthHTMXSocialAccountAdapter"
 )
 SOCIALACCOUNT_AUTO_SIGNUP = settings.get("SOCIALACCOUNT_AUTO_SIGNUP", True)
 SOCIALACCOUNT_EMAIL_VERIFICATION = settings.get("SOCIALACCOUNT_EMAIL_VERIFICATION", "optional")
@@ -136,9 +136,13 @@ SOCIALACCOUNT_PROVIDERS = settings.get("SOCIALACCOUNT_PROVIDERS", {})
 # =============================================================================
 # 🛡️ MFA / 2FA OPTIONS (requires allauth.mfa in INSTALLED_APPS)
 # =============================================================================
-MFA_PASSKEY_LOGIN_ENABLED = settings.get("MFA_PASSKEY_LOGIN_ENABLED", False)
+MFA_PASSKEY_LOGIN_ENABLED = settings.get("MFA_PASSKEY_LOGIN_ENABLED", True)
+# Passkey signup requires ACCOUNT_EMAIL_VERIFICATION='mandatory' and
+# ACCOUNT_EMAIL_VERIFICATION_BY_CODE_ENABLED=True — keep False for password-first flow.
 MFA_PASSKEY_SIGNUP_ENABLED = settings.get("MFA_PASSKEY_SIGNUP_ENABLED", False)
-MFA_SUPPORTED_TYPES = settings.get("MFA_SUPPORTED_TYPES", ["totp", "recovery_codes"])
+MFA_SUPPORTED_TYPES = settings.get(
+    "MFA_SUPPORTED_TYPES", ["totp", "webauthn", "recovery_codes"]
+)
 
 # =============================================================================
 # 📧 EMAIL OPTIONS

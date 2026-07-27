@@ -20,6 +20,22 @@ __pycache__/
 .env.*
 !.env.example
 
+# Django media (uploaded by users at runtime)
+# Project asset media (Wagtail uploads)
+projects/cms-fusion/assets/media/images/
+projects/cms-fusion/assets/media/avatar_images/
+projects/cms-fusion/assets/media/documents/
+projects/lms-fusion/assets/media/images/
+projects/lms-fusion/assets/media/avatar_images/
+projects/lms-fusion/assets/media/documents/
+# Legacy backend media directories
+projects/cms-fusion/backend/media/
+projects/lms-fusion/backend/media/
+projects/lms/assets/media/
+# Legacy website-specific media
+projects/cms-fusion/websites/lms/assets/media/
+projects/lms-fusion/websites/lms/assets/media/
+
 # Logs
 logs/
 *.log
