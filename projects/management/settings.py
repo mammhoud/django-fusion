@@ -1,9 +1,11 @@
-"""Settings entrypoint for the merged `www` sentinel site.
+"""Settings entrypoint for the shared sentinel site.
 
-The `www` site (created from the merge of `projects/shared/` and
-`projects/www/`) provides the shared/core Django application code
-used across all websites. It serves as the sentinel site for the
-shared-task worker stack (shared-worker + shared-scheduler).
+The `tools` package (renamed from `projects/www/`) provides the shared
+worker and CI infrastructure used across all websites. It serves as the
+sentinel site for the shared-task worker stack (shared-worker +
+shared-scheduler). The sentinel site is named `www` in the CLI config
+and the Docker image path for the baked worker is `/app/www/` regardless
+of the source directory name.
 
 Mirrors the per-site settings.py pattern (see `projects/ctc-research/settings.py`)
 but with two differences:
@@ -23,9 +25,9 @@ but with two differences:
 
 Once this module is importable from runtime `sys.path`, it loads as
 `settings` when `DJANGO_SETTINGS_MODULE=settings` is the default
-(resolves to /app/www/settings.py under the `PROJECT_PATH=www` bake)
-and as `www.settings` when both `PROJECT_PATH=www` (which COPY-bakes
-`/app/www/__init__.py`) and `DJANGO_SETTINGS_MODULE=www.settings` are
+(resolves to /app/www/settings.py under the `PROJECT_PATH=tools` bake
+which copies into /app/www/) and as `www.settings` when both
+`PROJECT_PATH=tools` and `DJANGO_SETTINGS_MODULE=www.settings` are
 set. With either path resolvable, celery-beat and shared-worker's
 `python manage.py rundramatiq` calls resolve cleanly without the
 historical `Unknown site 'shared'` rejection.
@@ -33,19 +35,19 @@ historical `Unknown site 'shared'` rejection.
 DEV-TIME ONLY:
 Production workers run with PROJECT_PATH=ctc-research baked at build time
 in `projects/compose/Dockerfile` (override-able via the
-`TASKS_PROJECT_PATH=www` build arg passed from
+`TASKS_PROJECT_PATH=tools` build arg passed from
 `applications/compose/docker-compose.tasks.yml`). Under the default
 PROJECT_PATH=ctc-research, `python manage.py rundramatiq` is invoked with
 DJANGO_SETTINGS_MODULE=settings resolving to
 `projects/ctc-research/settings.py` (bind-mounted at runtime) — NOT this module.
 
-Setting TASKS_PROJECT_PATH=www IS the runtime wiring: the
-Dockerfile's `COPY projects/${PROJECT_PATH}` step bakes www/ contents
+Setting TASKS_PROJECT_PATH=tools IS the runtime wiring: the
+Dockerfile's `COPY projects/${PROJECT_PATH}` step bakes tools/ contents
 into /app/www/, which the runtime loads as the default `settings`
 module (DJANGO_SETTINGS_MODULE=settings resolves to
 /app/www/settings.py when /app/www/ is on sys.path). Under the
 default bake, this file is loaded by:
-  - ad-hoc dev invocations: `python projects/www/__main__.py check`
+  - ad-hoc dev invocations: `python projects/tools/__main__.py check`
   - unit tests under `tests/unit/` that patch `www.settings` (or
     `DJANGO_SETTINGS_MODULE=www.settings`)
   - any future tooling that explicitly sets DJANGO_SETTINGS_MODULE=www.settings
@@ -55,11 +57,11 @@ import sys
 from pathlib import Path
 
 # ── Site dir layout ──────────────────────────────────────────────────────
-_SITE_DIR = Path(__file__).resolve().parent          # = projects/www/
+_SITE_DIR = Path(__file__).resolve().parent          # = projects/tools/
 _WORKSPACE_DIR = _SITE_DIR.parent                    # = projects/
 
 # Same REVERSED iteration pattern as per-site settings.py: put the
-# per-site directory (here, `projects/www/`) at sys.path[0] so a
+# per-site directory (here, `projects/tools/`) at sys.path[0] so a
 # subsequent `import www.xxx` resolves to THIS directory rather
 # than any sibling `www/` package on the workspace path.
 for _path in reversed((str(_WORKSPACE_DIR), str(_SITE_DIR))):

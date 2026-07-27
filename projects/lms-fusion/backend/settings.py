@@ -132,8 +132,8 @@ FUSION_BOLT = {
     "auth_backends": ["jwt"],
     "serializer_format": "dict",
     "cors_origins": [
-        "http://localhost:3001",
-        "http://127.0.0.1:3001",
+        "http://localhost:3002",
+        "http://127.0.0.1:3002",
     ],
     "component_auto_register": True,
 }
