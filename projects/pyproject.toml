@@ -92,7 +92,6 @@ dependencies = [
     "virtualenv",
     # Internal libs (local workspace sources — see [tool.uv.sources])
     "django-fusion",
-    "ceptor-ai",
     "ollama>=0.6.2",
     "httpx>=0.25.0",
     "markdown>=3.5",
@@ -111,11 +110,9 @@ build-backend = "hatchling.build"
 packages = ["configs", "tasks"]
 
 # Local sources for internal libs used by all websites.
-# django-grep was merged into libs/django-fusion; django-ceptor was merged into libs/ceptor-ai.
 
 [tool.uv.sources]
 django-fusion = { path = "../libs/django-fusion", editable = true }
-ceptor-ai = { path = "../libs/ceptor-ai", editable = true }
 
 
 [tool.pytest.ini_options]        

@@ -1,10 +1,8 @@
 """
-URL configuration for ctc-research.
+URL configuration for lms-fusion.
 
-Plugin patterns use string-based include so Django defers the import of
-plugins.urls until after django.setup() completes — preventing the
-`Conflicting 'role' models` RuntimeError that occurs when
-django_fusion.site is imported during URL-pattern construction.
+App patterns use string-based include so Django defers the import of
+apps.pages.urls until after django.setup() completes.
 """
 import os
 import sys
@@ -19,9 +17,9 @@ from django.views.generic.base import RedirectView
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from django_fusion.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
+from django_fusion.core.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_fusion.site.interface.utils import get_root_redirect_pattern
-from www.core.routes import site
+from apps.core.routes import site
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
@@ -128,21 +126,27 @@ urlpatterns += [
     ),
 ]
 
-# ── Plugin routing ────────────────────────────────────────────────────────────
-# Use the string form "plugins.urls" so Django imports the module lazily
-# at first URL resolution — after django.setup() has fully settled the
-# app registry and model registration.  The app_name="plugins" declared
-# inside plugins/urls.py registers the application namespace; the explicit
-# namespace= kwarg here registers the instance namespace so that both
-# {% url 'plugins:login' %} and reverse('plugins:login') work.
+# ── App routing ────────────────────────────────────────────────────────────
 urlpatterns += i18n_patterns(
-    path("", include("plugins.urls")),
+    path("", include("apps.pages.urls", namespace="plugins")),
+    prefix_default_language=False,
+)
+
+# ── Cart & Checkout ──────────────────────────────────────────────────────
+urlpatterns += i18n_patterns(
+    path("cart/", include("apps.core.urls", namespace="cart")),
+    prefix_default_language=False,
+)
+
+# ── Privacy & Terms ──────────────────────────────────────────────────────
+urlpatterns += i18n_patterns(
+    path("legal/", include("apps.core.handlers.urls", namespace="legal")),
     prefix_default_language=False,
 )
 
 # ── REST API ────────────────────────────────────────────────────────
 urlpatterns += [
-    path("api/", include("www.api.urls")),
+    path("api/", include("apps.core.api.urls")),
 ]
 
 # ── Routable component site ─────────────────────────────────────────────

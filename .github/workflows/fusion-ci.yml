@@ -16,6 +16,7 @@ on:
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
+      - 'applications/scripts/dev/check_domain_drift.sh'
       - '.github/workflows/fusion-ci.yml'
   push:
     branches: ['**']
@@ -25,6 +26,7 @@ on:
       - 'libs/django-fusion/**'
       - 'libs/ceptor-ai/**'
       - 'libs/django-bolt/**'
+      - 'applications/scripts/dev/check_domain_drift.sh'
       - '.github/workflows/fusion-ci.yml'
   workflow_dispatch:
 
@@ -274,6 +276,18 @@ jobs:
           path: projects/lms-fusion/frontend/test-results/
           retention-days: 7
 
+  # ── Domain Drift Check ─────────────────────────────────────────────
+
+  domain-drift-check:
+    name: Domain Drift — cms-fusion ↔ lms-fusion
+    runs-on: ubuntu-latest
+    timeout-minutes: 2
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Check domain code for drift
+        run: bash applications/scripts/dev/check_domain_drift.sh
+
   # ── Deploy to Staging (manual only, requires all checks to pass) ────
 
   deploy-staging:
@@ -288,6 +302,7 @@ jobs:
       - lms-fusion-backend
       - lms-fusion-frontend
       - lms-fusion-e2e
+      - domain-drift-check
     steps:
       - uses: actions/checkout@v4
         with:

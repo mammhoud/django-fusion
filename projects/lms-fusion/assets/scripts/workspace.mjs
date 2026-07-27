@@ -45,8 +45,8 @@ const cleanDirs = {
   vresume: ['VResume/assets/bundles/vresume'],
   cypercloud: ['cypercloud/assets/bundles/customizer'],
   crm: ['crm/assets/bundles/crm'],
-  'lms-fusion': ['lms-fusion/backend/assets/bundles/lms-fusion'],
-  'cms-fusion': ['cms-fusion/backend/assets/bundles/cms-fusion'],
+  'lms-fusion': ['lms-fusion/assets/bundles/lms-fusion'],
+  'cms-fusion': ['cms-fusion/assets/bundles/cms-fusion'],
   shared: ['assets/bundles/shared'],
 };
 

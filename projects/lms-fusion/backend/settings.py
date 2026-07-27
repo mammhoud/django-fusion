@@ -9,19 +9,14 @@ from pathlib import Path
 _SITE_DIR = Path(__file__).resolve().parent
 _WORKSPACE_DIR = _SITE_DIR.parent
 _SITE_APP_DIR = _SITE_DIR / "www"
+_APPS_DIR = _SITE_DIR / "apps"
 
 # Ensure correct import paths.
-# Iteration order is REVERSED so `sys.path.insert(0, …)` puts the per-site
-# `www/` (which carries `www.core`, `www.worker`, etc.) at the front of
-# sys.path[0], ahead of the workspace `/app` whose `/app/www` only contains
-# the shared `ci/` and `worker/` subpackages — without `projects/`. Doing this
-# in the apparent “natural” order leaves `/app` at sys.path[0] and
-# `import www.core` then fails with ModuleNotFoundError because the workspace
-# `www` shadows the site `www`.
-for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR)):
+for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR), str(_APPS_DIR)):
     if _path in sys.path:
         sys.path.remove(_path)
     sys.path.insert(0, _path)
+
 
 # ============================================================
 # Site Configuration
@@ -33,7 +28,7 @@ configure_site_environment("lms-fusion", module="FUSION", default_port=5070)
 # ============================================================
 # Internal Dependency Handling
 # ============================================================
-# django_fusion and ceptor_ai are real workspace dependencies. Do not install
+# django_fusion is the real workspace framework. Do not install
 # fake sys.modules shims here; dependency failures should surface during checks.
 
 # ============================================================
@@ -49,7 +44,7 @@ ROOT_URLCONF = "www.urls"
 # ASGI/WSGI applications live in the site-local server.py.
 # The start script places this site directory on PYTHONPATH and launches
 # server:application, so Django can keep the same import path.
-ASGI_APPLICATION = "server.application"
+ASGI_APPLICATION = "server.asgi_application"
 WSGI_APPLICATION = "server.application"
 
 # ============================================================
@@ -68,18 +63,18 @@ WAGTAIL_SITE_NAME = "Fusion LMS"
 # here would register the same app label twice and Django would raise
 # `ImproperlyConfigured: Application labels aren't unique`.
 LOCAL_APPS = [
-    "www.core",
-    "www.core.content.apps.ContentConfig",
-    "plugins.pages.apps.PagesConfig",
-    "www.core.handlers.apps.AccountsConfig",
-    "plugins.accounts.apps.AccountsConfig",
-    "plugins.lms.apps.LmsConfig",
-    "plugins.blog.apps.BlogConfig",
-    "plugins.products.apps.ProductsConfig",
-    "plugins.profile.apps.ProfileConfig",
-    "ceptor_ai",
+    "apps.core.domain",
+    "apps.core",
+    "apps.core.content.apps.ContentConfig",
+    "apps.pages.pages.apps.PagesConfig",
+    "apps.core.handlers.apps.AccountsConfig",
+    "apps.pages.accounts.apps.AccountsConfig",
+    "apps.pages.lms.apps.LmsConfig",
+    "apps.pages.blog.apps.BlogConfig",
+    "apps.pages.products.apps.ProductsConfig",
+    "apps.pages.profile.apps.ProfileConfig",
     "django_fusion.fragments.analyzer.apps.AnalyzerAppConfig",
-    "plugins.branding.apps.BrandingConfig",
+    "apps.pages.branding.apps.BrandingConfig",
 ]
 INSTALLED_APPS += LOCAL_APPS
 
@@ -92,13 +87,13 @@ INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
 
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
-    "plugins.branding.context_processors.fusion_branding_context"
+    "apps.pages.branding.context_processors.fusion_branding_context"
 )
 
 # ============================================================
-# ceptor_ai required settings
+# Domain model settings
 # ============================================================
-# PROFILE_MODEL is a required ForeignKey target in ceptor_ai models.
+# PROFILE_MODEL is a required ForeignKey target in domain models.
 # Point it to Django's built-in User model since this project
 # does not have a separate profile model.
 PROFILE_MODEL = "auth.User"
@@ -107,16 +102,8 @@ PROFILE_MODEL = "auth.User"
 # Silenced system checks
 # ============================================================
 # Keep only legacy duplicated app/model checks silenced; the previous
-# TeamMembership ordering check is fixed in ceptor_ai.
-SILENCED_SYSTEM_CHECKS = [
-    "models.E028",  # legacy accounts/handlers shared service table during migration
-    "models.E030",  # legacy accounts/handlers shared indexes during migration
-    "models.E032",  # legacy accounts/handlers shared constraints during migration
-    "fields.E304",  # legacy duplicated profile reverse accessors
-    "fields.E305",  # legacy duplicated profile reverse query names
-    "fields.E340",  # legacy duplicated many-to-many intermediary tables
-    "treebeard.E001",  # Wagtail's Page/Collection managers don't subclass MP_NodeManager; harmless until Treebeard 6
-]
+# TeamMembership ordering check is fixed in domain models.
+SILENCED_SYSTEM_CHECKS = ["treebeard.E001"]
 WAGTAIL_WORKFLOW_ENABLED = False
 
 # ============================================================
