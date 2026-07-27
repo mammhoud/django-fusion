@@ -152,7 +152,7 @@ class BaseTemplateContextMixin:
         if request is not None:
             context["strategy"] = self.resolve_strategy(request)
         if self.strategy == "document":
-            context.update(SETTINGS(request))
+            context["SETTINGS"] = SETTINGS(request)
         return context
 
     # ------------------------------------------------------------------

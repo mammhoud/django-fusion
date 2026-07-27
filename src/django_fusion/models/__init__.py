@@ -16,6 +16,29 @@ from .datatoken import (  # noqa: F401
 from .email import EmailLog, EmailTemplate, UserGroup  # noqa: F401
 from .integrations import Integration
 try:
+    from .default import ContentBase  # noqa: F401
+except ImportError:
+    ContentBase = None  # type: ignore
+try:
+    from .model_cache import ModelCacheMixin  # noqa: F401
+except ImportError:
+    ModelCacheMixin = None  # type: ignore
+try:
+    from .cache_storage import CachingStorage  # noqa: F401
+except ImportError:
+    CachingStorage = None  # type: ignore
+try:
+    from .tags import BaseTag, BaseTagCategory, PersonTag, Tag  # noqa: F401
+except ImportError:
+    BaseTag = None  # type: ignore
+    BaseTagCategory = None  # type: ignore
+    PersonTag = None  # type: ignore
+    Tag = None  # type: ignore
+try:
+    from .tasks import BackgroundTaskLog  # noqa: F401
+except ImportError:
+    BackgroundTaskLog = None  # type: ignore
+try:
     from .interaction.call import Call
     from .interaction.notification import Notification
 except Exception:
@@ -78,4 +101,13 @@ __all__ = [
     "DataTokenQuerySet",
     "sync_log_success_handler",
     "untag_by_entity",
+    # Migrated from shared/models/ (framework-level)
+    "ContentBase",
+    "ModelCacheMixin",
+    "CachingStorage",
+    "BaseTag",
+    "BaseTagCategory",
+    "PersonTag",
+    "Tag",
+    "BackgroundTaskLog",
 ]
