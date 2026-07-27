@@ -24,8 +24,8 @@ from django_fusion.site.interface.utils import get_files_from_dirs
 
 hookimpl = _HookimplMarker("django_fusion.comp")
 from django_fusion.comp.apps import CoreExtAppConfig
+from django_fusion.comp.configuration.asset_tag import AssetTag
 from django_fusion.comp.fragment.loader.templates import get_component_directories
-from django_fusion.comp.templatetags.tags.asset import AssetTag
 
 logger = logging.getLogger(__name__)
 

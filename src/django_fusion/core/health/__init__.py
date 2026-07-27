@@ -6,8 +6,13 @@ Docker HEALTHCHECK, Kubernetes liveness probes, and CI smoke tests.
 
 Usage — add to root URLs::
 
-    from django_fusion.health import urls as health_urls
+    from django_fusion.core.health import urls as health_urls
     urlpatterns += [path("health/", include(health_urls))]
 """
 
-from .views import AssetsHealthView, DatabaseHealthView, HealthCheckView  # noqa: F401
+from .views import (  # noqa: F401
+    AssetsHealthView,
+    DatabaseHealthView,
+    HealthCheckView,
+    health_check,
+)

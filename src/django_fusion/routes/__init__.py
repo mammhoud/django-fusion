@@ -29,14 +29,19 @@ from .base import (
     viewprop,
 )
 from .components import RoutableComponent  # noqa: F401
+from .pages import (  # noqa: F401
+    FusionContentPageView,
+    FusionHomePageView,
+    FusionPageView,
+)
 from .detection import (  # noqa: F401
     FragmentDetectionMixin,
     FragmentDetector,
     add_fragment_detection_to_request,
     detect_fragment_strategy,
 )
-from django_fusion.components.forms import FormMixin, FormTableMixin  # noqa: F401
-from django_fusion.components.tables import TableMixin  # noqa: F401
+from django_fusion.fragments.forms.mixins import FormMixin, FormTableMixin  # noqa: F401
+from django_fusion.fragments.tables.mixins import TableMixin  # noqa: F401
 from .fragments import FragmentComponent  # noqa: F401
 from .template_resolver import TemplateResolverMixin  # noqa: F401
 from .model import BaseModelViewset  # noqa: F401
@@ -93,6 +98,9 @@ __all__ = [
     # Routable components
     "RoutableComponent",
     "FragmentComponent",
+    "FusionPageView",
+    "FusionHomePageView",
+    "FusionContentPageView",
     # Fragment detection
     "FragmentDetector",
     "FragmentDetectionMixin",

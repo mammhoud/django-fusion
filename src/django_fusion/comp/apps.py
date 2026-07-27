@@ -8,7 +8,7 @@ class CoreExtAppConfig(AppConfig):
     verbose_name = _("Core Extensions")
 
     def ready(self):
-        from django_fusion.comp.fragment.plugins import pm
+        from django_fusion.plugins import pm
         from .configuration.staticfiles import asset_types
 
         for pre_ready in pm.hook.pre_ready():
@@ -19,7 +19,7 @@ class CoreExtAppConfig(AppConfig):
         # Register django-fusion built-in component templates.
         _register_builtin_component_paths()
 
-        from django_fusion.comp.fragment.plugins.webpack_compat import _patch_webpack_loader
+        from django_fusion.plugins.webpack_compat import _patch_webpack_loader
 
         _patch_webpack_loader()
 

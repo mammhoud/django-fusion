@@ -1,13 +1,7 @@
-"""
-Scripts module for django_fusion.
+"""Scripts module for django_fusion.
 
-This module provides utility scripts for common administrative tasks
-such as superuser creation and database seeding.
+Management commands and scripts live under ``django_fusion.site.management``:
 
-Modules:
-    superuser: Script for creating superuser accounts programmatically.
-
-Usage::
-
-    from django_fusion.infrastructure.scripts import superuser
+    from django_fusion.site.management.commands.base import BaseCommand
+    from django_fusion.site.management.scripts.superuser import create_superuser
 """

@@ -1,11 +1,11 @@
 """
 Backward-compatible re-export of HTMX/SSE helpers.
 
-The implementation now lives in ``django_fusion.comp.fragment.plugins.htmx``.
+The implementation now lives in ``django_fusion.plugins.htmx``.
 New code should import from there.
 """
 
-from django_fusion.comp.fragment.plugins.htmx import (
+from django_fusion.plugins.htmx import (
     HtmxDetails,
     ServerSentEvent,
     SSEMixin,

@@ -7,6 +7,7 @@ that every Django application needs.
 
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
@@ -103,6 +104,54 @@ class UUIDModel(BaseModel):
         class Subscription(UUIDModel):
             plan = models.CharField(max_length=50)
     """
+
+    class Meta:
+        abstract = True
+
+
+class AuditableBaseModel(BaseModel):
+    """Abstract base model with audit fields, is_active flag, and
+    Wagtail publish-compatible fields.
+
+    Extends ``BaseModel`` (UUID pk + timestamps) with:
+
+    * ``created_by`` / ``updated_by`` — FK to ``AUTH_USER_MODEL``
+    * ``is_active`` — soft-delete flag
+    * ``live`` / ``first_published_at`` / ``last_published_at`` — Wagtail
+      publish compatibility (safe to ignore for non-Wagtail projects)
+
+    Example::
+
+        class Article(AuditableBaseModel):
+            title = models.CharField(max_length=255)
+    """
+
+    created_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="%(class)s_created",
+        verbose_name=_("Created By"),
+    )
+    updated_by = models.ForeignKey(
+        settings.AUTH_USER_MODEL,
+        on_delete=models.SET_NULL,
+        null=True,
+        blank=True,
+        related_name="%(class)s_updated",
+        verbose_name=_("Updated By"),
+    )
+
+    is_active = models.BooleanField(default=True, verbose_name=_("Is Active"))
+
+    live = models.BooleanField(default=True, verbose_name=_("Live"))
+    first_published_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_("First Published At")
+    )
+    last_published_at = models.DateTimeField(
+        null=True, blank=True, verbose_name=_("Last Published At")
+    )
 
     class Meta:
         abstract = True

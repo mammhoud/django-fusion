@@ -3,7 +3,7 @@ from django.urls import path
 from django_fusion.contrib import DEFAULT, has_object_perm
 from django_fusion.contrib import ViewProp as viewprop
 from .base import Viewset
-from django_fusion.components.generic.list import ListModelView
+from django_fusion.fragments.generic.list import ListModelView
 
 
 class BaseModelViewset(Viewset):

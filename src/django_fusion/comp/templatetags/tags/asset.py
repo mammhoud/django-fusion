@@ -1,7 +1,6 @@
 # pyright: reportAny=false
 from __future__ import annotations
 
-from enum import Enum
 from typing import final
 
 from django import template
@@ -9,12 +8,8 @@ from django.conf import settings
 from django.template.base import Parser, Token
 from django.template.context import Context
 
+from django_fusion.comp.configuration.asset_tag import AssetTag
 from django_fusion.comp.configuration.manifest import load_asset_manifest, normalize_path
-
-
-class AssetTag(Enum):
-    CSS = "block:css"
-    JS = "block:js"
 
 
 def do_asset(_parser: Parser, token: Token) -> AssetNode:

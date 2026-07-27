@@ -1,41 +1,32 @@
 """
-models/communication.py
------------------------
+models/interaction/call.py
+----------------------------
 
-Enhanced Communication & Notification System integrated with Twilio (and extendable to others).
+Self-contained Call model for Twilio integration (extendable to other providers).
 
-Supports:
-- Customer management
-- Call and conference logs
-- Unified Notification model (SMS, Email, Voice)
-- Linkage to Integration model for external API configuration
+No external library dependencies beyond Django settings.
 """
 
 from django.conf import settings
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from twilio.rest import Client
 
 
-
-# ---------------------------------------------------------------------
-# CALL MODEL
-# ---------------------------------------------------------------------
 class Call(models.Model):
-    """
-    Represents a call made to a customer via Twilio or other integrated systems.
-    """
+    """Represents a call made to a customer via a voice provider."""
 
-    customer = models.ForeignKey(getattr(settings, 'PROFILE_MODEL', 'auth.User'), on_delete=models.CASCADE, related_name="calls")
-    integration = models.ForeignKey(
-        "CI.Integration",
-        on_delete=models.SET_NULL,
-        null=True,
-        blank=True,
+    provider = models.CharField(
+        _("Provider"),
+        max_length=20,
+        default="twilio",
+        choices=[("twilio", _("Twilio"))],
+        help_text=_("Voice provider (configured via Django settings)."),
+    )
+    customer = models.ForeignKey(
+        getattr(settings, "PROFILE_MODEL", "auth.User"),
+        on_delete=models.CASCADE,
         related_name="calls",
-        verbose_name=_("Integration"),
-        help_text=_("Reference to the integration used (e.g., Twilio Voice API)."),
     )
     call_sid = models.CharField(_("Call SID"), max_length=255, unique=True)
     started_at = models.DateTimeField(default=timezone.now)
@@ -44,41 +35,53 @@ class Call(models.Model):
         _("Status"),
         max_length=50,
         default="initiated",
-        help_text=_("Call status such as initiated, in-progress, or completed."),
+        help_text=_("Call status: initiated, in-progress, completed, failed."),
     )
 
     class Meta:
-        app_label = "CI"
         verbose_name = _("Call")
         verbose_name_plural = _("Calls")
         ordering = ["-started_at"]
 
     def __str__(self):
-        return f"Call with {self.customer.name} ({self.call_sid})"
+        return f"Call with {self.customer} ({self.call_sid})"
 
-    # -------------------------------------------------------
-    # CALL CONTROL METHODS
-    # -------------------------------------------------------
     def make_call(self):
-        """
-        Make an outbound call using the linked integration (Twilio).
-        """
-        if not self.integration or self.integration.integration_type != "twilio":
-            return "Integration not configured for Twilio calls."
+        """Make an outbound call using the configured provider."""
+        if self.provider == "twilio":
+            return self._make_twilio_call()
+        return f"Provider '{self.provider}' not supported."
 
-        client = Client(settings.TWILIO_ACCOUNT_SID, settings.TWILIO_AUTH_TOKEN)
+    def _make_twilio_call(self):
+        """Place a call via Twilio API."""
+        try:
+            from twilio.rest import Client
+        except ImportError:
+            return "Twilio library not installed."
+
+        sid = getattr(settings, "TWILIO_ACCOUNT_SID", None)
+        token = getattr(settings, "TWILIO_AUTH_TOKEN", None)
+        from_number = getattr(settings, "TWILIO_PHONE_NUMBER", None)
+        if not all([sid, token, from_number]):
+            return "Twilio settings not configured."
+
+        client = Client(sid, token)
+        to_number = getattr(self.customer, "phone", None)
+        if not to_number:
+            return "Customer has no phone number."
+
         call = client.calls.create(
-            from_=settings.TWILIO_PHONE_NUMBER,
-            to=self.customer.phone,
+            from_=from_number,
+            to=to_number,
             url="http://example.com/twiml",
         )
         self.call_sid = call.sid
         self.status = "in-progress"
-        self.save()
+        self.save(update_fields=["call_sid", "status"])
         return call.sid
 
     def end_call(self):
         """Mark the call as ended."""
         self.ended_at = timezone.now()
         self.status = "completed"
-        self.save()
+        self.save(update_fields=["ended_at", "status"])

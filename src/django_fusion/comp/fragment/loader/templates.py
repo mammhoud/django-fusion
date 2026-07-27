@@ -90,7 +90,7 @@ def get_app_template_directories() -> list[Path]:
 
 
 def get_template_directories() -> Generator[Path, Any, None]:
-    from django_fusion.comp.fragment.plugins import pm
+    from django_fusion.plugins import pm
 
     for hook_result in pm.hook.get_template_directories():
         yield from hook_result

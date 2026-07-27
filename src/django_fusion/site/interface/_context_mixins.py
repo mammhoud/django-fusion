@@ -38,11 +38,11 @@ logger = logging.getLogger(__name__)
 # ---------------------------------------------------------------------------
 
 
-from django_fusion.comp.fragment.plugins.htmx import is_htmx_request
+from django_fusion.plugins.htmx import is_htmx_request
 
 # ``is_htmx_request`` is the single canonical HTMX check used throughout
 # django-fusion.  The implementation lives in
-# ``django_fusion.comp.fragment.plugins.htmx``; this module re-exports it for
+# ``django_fusion.plugins.htmx``; this module re-exports it for
 # backward compatibility.
 
 

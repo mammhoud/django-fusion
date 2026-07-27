@@ -2,11 +2,11 @@
 
 
 def test_middleware_imports():
-    """ErrorTrackerMiddleware is importable from infrastructure middlewares."""
-    from django_fusion.infrastructure.middlewares.error_tracker import (
+    """ErrorTrackerMiddleware is importable from core middlewares."""
+    from django_fusion.core.middlewares.error_tracker import (
         ErrorTrackerMiddleware,
     )
-    from django_fusion.infrastructure.middlewares import (
+    from django_fusion.core.middlewares import (
         ErrorTrackerMiddleware as Middleware,
     )
 

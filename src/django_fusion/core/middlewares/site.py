@@ -10,8 +10,8 @@ from django.http import HttpRequest, HttpResponse
 from django.http.response import HttpResponseBase
 from django.template.response import SimpleTemplateResponse
 
-from django_fusion.comp.fragment.plugins.htmx import HtmxDetails
-from django_fusion.comp.fragment.plugins.unpoly import DjangoAdapter, Unpoly
+from django_fusion.plugins.htmx import HtmxDetails
+from django_fusion.plugins.unpoly import DjangoAdapter, Unpoly
 import logging
 
 logger = logging.getLogger(__name__)

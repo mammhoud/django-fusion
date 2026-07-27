@@ -17,8 +17,11 @@ from django.template.loader import select_template
 
 from django_fusion.comp.configuration.conf import _settings
 from django_fusion.comp.configuration.params import Param, Params, Value
-from django_fusion.comp.fragment.plugins.manager import pm
-from django_fusion.comp.configuration.staticfiles import Asset, AssetType
+from django_fusion.plugins.manager import pm
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from django_fusion.comp.configuration.staticfiles import Asset, AssetType
 from django_fusion.comp.fragment.loader.templates import (
     find_components_in_template,
     get_component_directories,

@@ -4,7 +4,7 @@ The implementation now lives in ``django_fusion.comp.fragment.plugins.unpoly``.
 New code should import from there.
 """
 
-from django_fusion.comp.fragment.plugins.unpoly import (  # noqa: F401
+from django_fusion.plugins.unpoly import (  # noqa: F401
     Cache,
     Layer,
     Unpoly,

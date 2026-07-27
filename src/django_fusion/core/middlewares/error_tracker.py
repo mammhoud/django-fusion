@@ -3,7 +3,7 @@ ErrorTrackerMiddleware
 ======================
 Logs every 4xx / 5xx response with request details.
 
-Canonical import: from django_fusion.middlewares.error_tracker import ErrorTrackerMiddleware
+Canonical import: from django_fusion.core.middlewares.error_tracker import ErrorTrackerMiddleware
 
 No website-specific configuration required.
 

@@ -1,12 +1,12 @@
 from django.urls import path
 from django.utils.translation import gettext_lazy as _
 
-from django_fusion.components.generic.actions import DeleteBulkActionView
-from django_fusion.components.generic.base import Action
-from django_fusion.components.generic.create import CreateModelView
-from django_fusion.components.generic.delete import DeleteModelView
-from django_fusion.components.generic.detail import DetailModelView
-from django_fusion.components.generic.update import UpdateModelView
+from django_fusion.fragments.generic.actions import DeleteBulkActionView
+from django_fusion.fragments.generic.base import Action
+from django_fusion.fragments.generic.create import CreateModelView
+from django_fusion.fragments.generic.delete import DeleteModelView
+from django_fusion.fragments.generic.detail import DetailModelView
+from django_fusion.fragments.generic.update import UpdateModelView
 from django_fusion.contrib import DEFAULT, first_not_default, has_object_perm
 from django_fusion.contrib import ViewProp as viewprop
 

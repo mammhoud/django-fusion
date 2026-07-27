@@ -1,14 +1,24 @@
-"""Public web view mixins for django-fusion sites.
+"""Re-exports from django_fusion.core.views.mixins.
 
-This module re-exports the canonical ``FilterMixin`` and ``SearchMixin``
-implementations so consumers can use the documented import path:
-
-    from django_fusion.web.views import FilterMixin, SearchMixin
+Provides FilterMixin, SearchMixin, and other view-level mixins.
 """
 
-from django_fusion.core.views.mixins import FilterMixin, SearchMixin
+from django_fusion.core.views.mixins import (  # noqa: F401
+    AjaxResponseMixin,
+    BaseCartMixin,
+    BaseDashboardMixin,
+    FilterMixin,
+    JSONResponseMixin,
+    MessageMixin,
+    SearchMixin,
+)
 
 __all__ = [
+    "AjaxResponseMixin",
+    "BaseCartMixin",
+    "BaseDashboardMixin",
     "FilterMixin",
+    "JSONResponseMixin",
+    "MessageMixin",
     "SearchMixin",
 ]
