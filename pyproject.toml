@@ -6,7 +6,6 @@
 # All dependencies, build config, and scripts live in:
 #   projects/pyproject.toml   — main package + dependency source-of-truth
 #   libs/django-fusion/       — local lib (editable, via [tool.uv.sources])
-#   libs/ceptor-ai/           — local lib (editable, via [tool.uv.sources])
 #
 # Single `.venv` at the repo root serves ALL local development.
 # Docker builds use their own isolated env; never mount .venv.
@@ -35,7 +34,6 @@ members = [
 # projects/ resolve to the same lib paths.
 [tool.uv.sources]
 django-fusion = { path = "libs/django-fusion", editable = true }
-ceptor-ai = { path = "libs/ceptor-ai", editable = true }
 
 # ── pytest configuration ───────────────────────────────────────────────────
 

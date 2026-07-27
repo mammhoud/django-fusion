@@ -16,11 +16,11 @@ os.environ.setdefault("WEBSITE", "cms-fusion")
 # Choose server mode: "asgi" (default) or "wsgi"
 SERVER_TYPE = os.environ.get("DJANGO_SERVER_TYPE", "asgi").lower()
 
-if SERVER_TYPE == "wsgi":
-    # --- WSGI application (synchronous, no websocket support) ---
-    application = get_wsgi_application()
+# --- WSGI application (synchronous, no websocket support) ---
+# Always exported as `application` so `runserver` and WSGI servers work.
+application = get_wsgi_application()
 
-else:
+if SERVER_TYPE == "asgi":
     # --- ASGI application (HTTP + WebSocket) ---
     django_asgi_app = get_asgi_application()
 
@@ -39,7 +39,7 @@ else:
                 if event.get("text") == "ping":
                     await send({"type": "websocket.send", "text": "pong!"})
 
-    async def application(scope, receive, send):
+    async def asgi_application(scope, receive, send):
         """
         ASGI dispatcher:
         - HTTP → Django
@@ -51,3 +51,8 @@ else:
             await websocket_application(scope, receive, send)
         else:
             raise NotImplementedError(f"Unknown scope type: {scope['type']}")
+
+else:
+    # WSGI-only mode — fallback asgi_application for settings compatibility
+    from django.core.asgi import get_asgi_application as _get_asgi
+    asgi_application = _get_asgi()

@@ -1,1 +1,0 @@
-# cms-full plugins package

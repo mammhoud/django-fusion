@@ -1,0 +1,48 @@
+{% extends "emails/base_email.html" %}
+
+{% block title %}New Form Submission — {{ site_name|default:"CTC Research" }}{% endblock %}
+
+{% block header %}📩 New Submission{% endblock %}
+
+{% block content %}
+<h2 style="color: #333; margin-bottom: 16px;">New Form Submission: {{ page_title }}</h2>
+
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+    <tr style="background-color: #f8f9fa;">
+        <td style="padding: 10px 14px; font-weight: bold; border: 1px solid #dee2e6; width: 35%;">Form</td>
+        <td style="padding: 10px 14px; border: 1px solid #dee2e6;">{{ form_id|default:"contact-form" }}</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 14px; font-weight: bold; border: 1px solid #dee2e6;">Page</td>
+        <td style="padding: 10px 14px; border: 1px solid #dee2e6;">
+            <a href="{{ page_url }}" style="color: #3A7CA5;">{{ page_title }}</a>
+        </td>
+    </tr>
+    <tr style="background-color: #f8f9fa;">
+        <td style="padding: 10px 14px; font-weight: bold; border: 1px solid #dee2e6;">Date</td>
+        <td style="padding: 10px 14px; border: 1px solid #dee2e6;">{{ submission_date|date:"F j, Y g:i A" }}</td>
+    </tr>
+    <tr>
+        <td style="padding: 10px 14px; font-weight: bold; border: 1px solid #dee2e6;">IP Address</td>
+        <td style="padding: 10px 14px; border: 1px solid #dee2e6;">{{ ip_address|default:"Unknown" }}</td>
+    </tr>
+</table>
+
+<h3 style="color: #3A7CA5; margin-bottom: 12px;">Submitted Data</h3>
+<table style="width: 100%; border-collapse: collapse; margin-bottom: 24px;">
+    {% for key, value in form_data.items %}
+    <tr{% if forloop.counter|divisibleby:2 %} style="background-color: #f8f9fa;"{% endif %}>
+        <td style="padding: 10px 14px; font-weight: bold; border: 1px solid #dee2e6; width: 35%; text-transform: capitalize;">
+            {{ key|cut:"_" }}
+        </td>
+        <td style="padding: 10px 14px; border: 1px solid #dee2e6;">{{ value }}</td>
+    </tr>
+    {% empty %}
+    <tr>
+        <td colspan="2" style="padding: 10px 14px; border: 1px solid #dee2e6; text-align: center; color: #999;">
+            No data submitted
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

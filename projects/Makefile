@@ -123,7 +123,7 @@ export DJANGO_SITE := $(SITE)
 export WEBSITE := $(SITE)
 export SERVER_TYPE
 
-.PHONY: help check check-all validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
+.PHONY: help check check-all domain-drift validate-config build-assets build-assets-all test compose assets scripts script website-ctc website-structa website-vresume projects tests tests-website run-dev migrations migrate server server-gunicorn server-uvicorn rqworker docker-build docker-build-server docker-build-ctc docker-build-lms docker-build-vresume docker-build-shared-media docker-build-all docker-rebuild rebuild docker-redeploy docker-redeploy-with-worker validate-worker-target docker-deploy deploy redeploy docker-up docker-down up docker-logs docker-prune-containers docker-prune-data ctc-research-up structa-up vresume-up docker-load-data populate-data-site populate-data-all build-assets-site collectstatic-site migrate-site load-dumps-site verify-runtime-site full-site-check tests-unit tests-integration tests-websites clean-site-logs clean-logs docker-clean docker-clean-all docker-deploy-warehouse docker-deploy-traefik docker-deploy-websites docker-deploy-full docker-status docker-logs-all docker-logs-service docker-health-check probe-health docker-restart-all docker-stop-all docker-start-all lint format typecheck lint-all docs clean show-targets show-vars show-config list health containers production production-simple domains vresume-pages docker-rebuild-prod docker-rebuild-custom docker-up-prod docker-up-custom run-local runserver-local test-local tests-local check-local run-all docker-traefik-generate-certs docker-traefik-backup-certs docker-traefik-restore-certs
 
 help:
 	@printf '%s\n' \
@@ -163,6 +163,7 @@ help:
 		'  run-dev        - Run Django dev server for selected website' \
 		'  run-local      - Alias for run-dev for local machine use' \
 		'  check-all      - Run Django checks for ctc, structa, and vresume' \
+		'  test-fusion    - Run cms-fusion + lms-fusion tests sequentially' \
 		'  test-local     - Run local pytest via uv' \
 		'  server         - Start the ASGI server (container default)' \
 		'  migrations     - Create Django migrations for selected website' \
@@ -213,6 +214,10 @@ check-all:
 		$(MAKE) check WEBSITE=$$website; \
 	done
 
+# Domain drift check — verifies cms-fusion and lms-fusion domain code is in sync
+domain-drift:
+	@bash ../applications/scripts/dev/check_domain_drift.sh
+
 validate-config:
 	@docker compose -f $(COMPOSE_FILE) config -q && echo "Compose config valid" || echo "Compose config invalid"
 	@if $(MANAGE) help | rg -q "validate_config"; then $(MANAGE) validate_config; else echo "validate_config command not found"; fi
@@ -238,6 +243,15 @@ test:
 
 test-local tests-local:
 	uv run pytest
+
+test-fusion:
+	@echo '🚀 Running cms-fusion tests...'
+	@uv run python -m pytest cms-fusion/backend/tests/ -q --tb=short
+	@echo ''
+	@echo '🚀 Running lms-fusion tests...'
+	@uv run python -m pytest lms-fusion/backend/tests/ -q --tb=short
+	@echo ''
+	@echo '✅ All fusion tests complete'
 
 run-dev:
 	$(MANAGE) runserver

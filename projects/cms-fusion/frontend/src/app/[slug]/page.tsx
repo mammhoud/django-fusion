@@ -1,7 +1,7 @@
 'use client';
 
 import { useParams } from 'next/navigation';
-import FusionProxy from '@/components/FusionProxy';
+import { FusionProxy } from '@/components/FusionProxy';
 
 export default function DynamicPage() {
   const params = useParams();
@@ -9,7 +9,7 @@ export default function DynamicPage() {
 
   return (
     <div className="min-h-screen">
-      <FusionProxy slug={slug} />
+      <FusionProxy fragmentUrl={`/api/fragments/pages/${slug}`} />
     </div>
   );
 }
