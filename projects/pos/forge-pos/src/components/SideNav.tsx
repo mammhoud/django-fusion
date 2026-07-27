@@ -1,7 +1,7 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { MdClose, MdPointOfSale, MdLogout, MdHelpOutline, MdPeople, MdLocalShipping, MdKitchen, MdEvent, MdReceiptLong, MdAccountBalance, MdSecurity } from 'react-icons/md';
+import { MdClose, MdPointOfSale, MdLogout, MdHelpOutline, MdPeople, MdLocalShipping, MdKitchen, MdEvent, MdReceiptLong, MdAccountBalance, MdSecurity, MdPushPin } from 'react-icons/md';
 import {
   FaClipboardList, FaChartBar, FaHistory, FaBoxes, FaUsers,
   FaMortarPestle, FaFileAlt, FaCog, FaHeart, FaHome, FaMoneyBillWave,
@@ -11,6 +11,7 @@ import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
 import { useAuth } from '../contexts/AuthContext';
+import { useLanguage } from '../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
 
 interface NavItem {
@@ -45,15 +46,186 @@ const navItems: NavItem[] = [
 ];
 
 interface SideNavProps {
-  isOpen: boolean;
-  onClose: () => void;
+  isOpen?: boolean;
+  onClose?: () => void;
   currentRoute: string;
+  persistent?: boolean;
 }
 
-export default function SideNav({ isOpen, onClose, currentRoute }: SideNavProps) {
+// ── Persistent (hover-expand) sidebar for ultra-wide screens ──
+
+function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
   const navigate = useNavigate();
   const { isAuthRequired, logout } = useAuth();
+  const { language } = useLanguage();
   const { t } = useTranslation();
+  const isRtl = language === 'ar';
+  const [isHovered, setIsHovered] = useState(false);
+  const [isPinned, setIsPinned] = useState(false);
+  const [showShortcuts, setShowShortcuts] = useState(false);
+
+  const expanded = isHovered || isPinned;
+
+  const handleNavigate = (route: string) => {
+    navigate(route);
+  };
+
+  const handleLogout = () => {
+    logout();
+  };
+
+  return (
+    <>
+      <motion.aside
+        className="fixed left-0 top-0 h-full z-30
+          bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl
+          border-r border-slate-200 dark:border-white/10
+          shadow-xl flex flex-col overflow-hidden
+          hidden 4xl:flex
+          rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l"
+        animate={{ width: expanded ? 280 : 64 }}
+        transition={{ type: 'spring', stiffness: 300, damping: 28 }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => { if (!isPinned) setIsHovered(false); }}
+      >
+        {/* Header — navigation label (only when expanded) + pin toggle */}
+        <div className="flex items-center justify-end p-3 border-b border-slate-200 dark:border-white/10 min-h-[52px]">
+          {expanded && (
+            <span className="text-xs font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider flex-1 truncate pl-0.5">
+              {t('nav.navigation')}
+            </span>
+          )}
+          <motion.button
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+            onClick={() => setIsPinned(!isPinned)}
+            className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 dark:hover:text-white
+              hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
+            title={isPinned ? 'Unpin sidebar' : 'Pin sidebar'}
+          >
+            <MdPushPin className={`w-4 h-4 transition-transform duration-200 ${isPinned ? 'rotate-45 text-teal-500' : ''}`} />
+          </motion.button>
+        </div>
+
+        {/* Nav items */}
+        <nav className="p-2 space-y-0.5 flex-1 overflow-y-auto overflow-x-hidden">
+          {navItems.map((item) => {
+            const isActive = currentRoute === item.route;
+            const Icon = item.icon;
+
+            return (
+              <motion.button
+                key={item.route}
+                whileHover={{ x: expanded ? (isRtl ? -4 : 4) : 0 }}
+                whileTap={{ scale: 0.98 }}
+                onClick={() => handleNavigate(item.route)}
+                className={`w-full flex items-center gap-3 px-2.5 py-2.5 rounded-xl text-sm
+                  transition-all duration-200 group whitespace-nowrap ${
+                  isActive
+                    ? 'bg-slate-100 dark:bg-white/10 text-slate-900 dark:text-white font-semibold shadow-sm'
+                    : 'text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-white/5 font-medium'
+                }`}
+                title={!expanded ? t(item.label) : undefined}
+              >
+                <div className={`w-8 h-8 min-w-[2rem] rounded-lg flex items-center justify-center text-white text-sm
+                  bg-linear-to-br ${item.gradient} shadow-sm
+                  ${isActive ? 'scale-110' : 'group-hover:scale-105'} transition-transform shrink-0`}
+                >
+                  <Icon className="w-4 h-4" />
+                </div>
+                <motion.span
+                  animate={{ opacity: expanded ? 1 : 0 }}
+                  transition={{ duration: 0.12 }}
+                  className="overflow-hidden truncate text-left"
+                >
+                  {t(item.label)}
+                </motion.span>
+                {isActive && expanded && (
+                  <motion.div
+                    layoutId="sidenav-persistent-active"
+                    className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-teal-500 shrink-0"
+                    transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+                  />
+                )}
+              </motion.button>
+            );
+          })}
+        </nav>
+
+        {/* Footer */}
+        <div className="p-3 border-t border-slate-200 dark:border-white/10 mt-auto">
+          {/* Logout */}
+          {isAuthRequired && (
+            <motion.button
+              onClick={handleLogout}
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              className="w-full flex items-center justify-center gap-2 px-2 py-2 mb-2
+                bg-red-500/10 hover:bg-red-500/20 text-red-600 dark:text-red-400
+                rounded-xl text-sm font-medium transition-colors"
+              title={!expanded ? t('auth.signOut') : undefined}
+            >
+              <MdLogout className="w-4 h-4 shrink-0" />
+              <motion.span
+                animate={{ opacity: expanded ? 1 : 0 }}
+                transition={{ duration: 0.12 }}
+                className="overflow-hidden truncate"
+              >
+                {expanded && t('auth.signOut')}
+              </motion.span>
+            </motion.button>
+          )}
+
+          {/* Keyboard Shortcuts */}
+          <motion.button
+            onClick={() => setShowShortcuts(true)}
+            whileHover={{ scale: 1.02 }}
+            whileTap={{ scale: 0.97 }}
+            className="w-full flex items-center justify-center gap-2 px-2 py-2 mb-2
+              bg-slate-100 dark:bg-white/5 hover:bg-slate-200 dark:hover:bg-white/10
+              text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium transition-colors"
+            title={!expanded ? t('transactions.shortcutHelp') : undefined}
+          >
+            <MdHelpOutline className="w-4 h-4 shrink-0" />
+            <motion.span
+              animate={{ opacity: expanded ? 1 : 0 }}
+              transition={{ duration: 0.12 }}
+              className="overflow-hidden truncate flex items-center gap-1"
+            >
+              {expanded && <>{t('transactions.shortcutHelp')} <kbd className="px-1 py-0.5 text-[10px] font-mono rounded bg-slate-200 dark:bg-white/10">?</kbd></>}
+            </motion.span>
+          </motion.button>
+
+          {/* Toggles */}
+          <div className="flex items-center justify-center gap-3 mb-1">
+            <LanguageToggle />
+          </div>
+          <div className="flex items-center justify-center mb-1">
+            <ThemeToggle />
+          </div>
+
+          {expanded && (
+            <p className="text-[10px] text-slate-400 dark:text-white/30 text-center mt-2">
+              {t('nav.footer')}
+            </p>
+          )}
+        </div>
+      </motion.aside>
+
+      <KeyboardShortcutsModal isOpen={showShortcuts} onClose={() => setShowShortcuts(false)} />
+    </>
+  );
+}
+
+export default function SideNav({ isOpen = false, onClose = () => {}, currentRoute, persistent = false }: SideNavProps) {
+  if (persistent) {
+    return <PersistentSidebar currentRoute={currentRoute} />;
+  }
+  const navigate = useNavigate();
+  const { isAuthRequired, logout } = useAuth();
+  const { language } = useLanguage();
+  const { t } = useTranslation();
+  const isRtl = language === 'ar';
   const [showShortcuts, setShowShortcuts] = useState(false);
 
   const handleNavigate = (route: string) => {
@@ -84,14 +256,15 @@ export default function SideNav({ isOpen, onClose, currentRoute }: SideNavProps)
           {/* Panel */}
           <motion.aside
             key="sidenav-panel"
-            initial={{ x: '-100%' }}
+            initial={{ x: isRtl ? '100%' : '-100%' }}
             animate={{ x: 0 }}
-            exit={{ x: '-100%' }}
+            exit={{ x: isRtl ? '100%' : '-100%' }}
             transition={{ type: 'spring', stiffness: 300, damping: 30 }}
             className="fixed top-0 left-0 h-full w-72 max-w-[85vw] z-50
               bg-white/90 dark:bg-slate-900/90 backdrop-blur-xl
               border-r border-slate-200 dark:border-white/10
-              shadow-2xl flex flex-col"
+              shadow-2xl flex flex-col
+              rtl:left-auto rtl:right-0 rtl:border-r-0 rtl:border-l"
           >
             {/* Header */}
             <div className="flex items-center justify-between p-4 border-b border-slate-200 dark:border-white/10">
@@ -121,7 +294,7 @@ export default function SideNav({ isOpen, onClose, currentRoute }: SideNavProps)
                     initial={{ opacity: 0, x: -20 }}
                     animate={{ opacity: 1, x: 0 }}
                     transition={{ delay: index * 0.03 }}
-                    whileHover={{ x: 4 }}
+                    whileHover={{ x: isRtl ? -4 : 4 }}
                     whileTap={{ scale: 0.98 }}
                     onClick={() => handleNavigate(item.route)}
                     className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm
@@ -141,7 +314,7 @@ export default function SideNav({ isOpen, onClose, currentRoute }: SideNavProps)
                     {isActive && (
                       <motion.div
                         layoutId="sidenav-active"
-                        className="ml-auto w-1.5 h-1.5 rounded-full bg-teal-500"
+                        className="ml-auto rtl:mr-auto rtl:ml-0 w-1.5 h-1.5 rounded-full bg-teal-500"
                         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
                       />
                     )}

@@ -7,6 +7,8 @@ import { useTranslation } from 'react-i18next';
 const langOptions = [
   { value: 'en' as const, label: 'English', flag: '🇬🇧' },
   { value: 'fr' as const, label: 'Français', flag: '🇫🇷' },
+  { value: 'de' as const, label: 'Deutsch', flag: '🇩🇪' },
+  { value: 'es' as const, label: 'Español', flag: '🇪🇸' },
   { value: 'ar' as const, label: 'العربية', flag: '🇸🇦' },
 ];
 

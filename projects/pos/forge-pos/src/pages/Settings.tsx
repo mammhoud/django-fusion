@@ -1,8 +1,8 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';import { FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
+import { motion, AnimatePresence } from 'framer-motion';
+import { FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
   FaExclamationTriangle, FaGlobe, FaBriefcase, FaUtensils, FaTruck,
-  FaUsers, FaDatabase, FaLock, FaClock, FaPaintBrush
-} from 'react-icons/fa';
+  FaUsers, FaDatabase, FaLock, FaClock, FaPaintBrush } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
@@ -319,11 +319,11 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
 
 export default function Settings() {
   const { t, i18n } = useTranslation();
-  const { mode, variant, followSystem, setVariant, setMode, toggleMode, setFollowSystem } = useTheme();
+  const { mode, variant, followSystem, setVariant, setMode, setFollowSystem } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('general');
   const [settings, setSettings] = useState<SettingsType>({
-    restaurant_name: 'POS',
+    restaurant_name: 'Forge POS',
     address: '',
     phone: '',
     email: '',
@@ -682,7 +682,7 @@ export default function Settings() {
         <label className={labelClass}>{t('settings.generalTab.languageLabel')}</label>
         <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600">
           <span className="text-sm text-slate-900 dark:text-white flex-1">
-            {i18n.language === 'ar' ? t('settings.generalTab.languageValueAr') : i18n.language === 'fr' ? t('settings.generalTab.languageValueFr') : t('settings.generalTab.languageValueEn')}
+            {i18n.language === 'ar' ? t('settings.generalTab.languageValueAr') : i18n.language === 'fr' ? t('settings.generalTab.languageValueFr') : i18n.language === 'de' ? t('settings.generalTab.languageValueDe') : i18n.language === 'es' ? t('settings.generalTab.languageValueEs') : t('settings.generalTab.languageValueEn')}
           </span>
           <LanguageToggle />
         </div>

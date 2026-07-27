@@ -32,7 +32,7 @@ const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
               />
             )}
             <h2 className="text-xl font-bold mb-1">
-              {settings.restaurant_name || 'POS'}
+              {settings.restaurant_name || 'Forge POS'}
             </h2>
             {settings.address && (
               <p className="text-xs text-gray-600">{settings.address}</p>

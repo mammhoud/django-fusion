@@ -87,7 +87,8 @@ describe('Reports Page', () => {
     renderWithRouter(<Reports />);
 
     await waitFor(() => {
-      expect(screen.getByText(/reports\.title|Reports/)).toBeInTheDocument();
+      const titleElements = screen.getAllByText(/reports\.title|Reports/);
+      expect(titleElements.length).toBeGreaterThanOrEqual(1);
     });
   });
 

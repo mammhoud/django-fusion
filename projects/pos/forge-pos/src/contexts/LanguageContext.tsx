@@ -1,7 +1,7 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
 import i18n from '../i18n';
 
-type Language = 'en' | 'ar' | 'fr';
+type Language = 'en' | 'ar' | 'fr' | 'de' | 'es';
 
 interface LanguageContextType {
   language: Language;
@@ -14,7 +14,7 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
     const saved = localStorage.getItem('language');
-    if (saved === 'en' || saved === 'ar' || saved === 'fr') {
+    if (saved === 'en' || saved === 'ar' || saved === 'fr' || saved === 'de' || saved === 'es') {
       return saved;
     }
     return 'en';
@@ -35,7 +35,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     syncLanguage(language);
 
     const handleLanguageChanged = (lng: string) => {
-      if (lng === 'en' || lng === 'ar' || lng === 'fr') {
+      if (lng === 'en' || lng === 'ar' || lng === 'fr' || lng === 'de' || lng === 'es') {
         setLanguageState(lng);
         syncLanguage(lng as Language);
       }
@@ -49,7 +49,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const toggleLanguage = () => {
-    const langCycle: Language[] = ['en', 'ar', 'fr'];
+    const langCycle: Language[] = ['en', 'ar', 'fr', 'de', 'es'];
     const currentIdx = langCycle.indexOf(language);
     const newLang: Language = langCycle[(currentIdx + 1) % langCycle.length];
     syncLanguage(newLang);

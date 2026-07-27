@@ -2,7 +2,11 @@ import '@testing-library/jest-dom';
 import { vi } from 'vitest';
 import { getMockInvokeHandler } from './mocks/tauri';
 
-// Polyfill window.matchMedia (not available in jsdom)
+// AuthContext mocks are handled in mocks/tauri.ts defaultMock fallback.
+
+// Polyfill window.matchMedia and Element.scrollIntoView (not available in jsdom)
+Element.prototype.scrollIntoView = vi.fn();
+
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: vi.fn().mockImplementation((query: string) => ({
@@ -23,6 +27,20 @@ Object.defineProperty(window, 'matchMedia', {
 const _invokeHistory: Array<{ cmd: string; args?: Record<string, unknown> }> = [];
 export function getInvokeHistory() { return _invokeHistory; }
 export function clearInvokeHistory() { _invokeHistory.length = 0; }
+
+// Mock SVG/assets imports — Vite resolves these to URLs in dev, but jsdom has no Vite server
+vi.mock('../assets/pos-crest.svg', () => ({ default: 'mock-logo-url' }));
+
+// Mock Tauri plugins that some pages import directly (e.g. Settings, InvoicePage)
+vi.mock('@tauri-apps/plugin-dialog', () => ({
+  open: vi.fn().mockResolvedValue(null),
+  save: vi.fn().mockResolvedValue('/tmp/test-file.pdf'),
+}));
+
+vi.mock('@tauri-apps/plugin-fs', () => ({
+  readFile: vi.fn().mockResolvedValue(new Uint8Array()),
+  writeFile: vi.fn().mockResolvedValue(undefined),
+}));
 
 // Mock the Tauri `invoke` function so all tests can call it.
 // The mock implementation delegates to the configurable mock from mocks/tauri.ts

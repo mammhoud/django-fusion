@@ -318,7 +318,7 @@ export default function Employees() {
             </div>
 
             {/* Employee Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
               {filteredEmployees.map(emp => (
                 <motion.div
                   key={emp.id}
@@ -407,7 +407,7 @@ export default function Employees() {
               </motion.button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
               {employeeTypes.map(et => {
                 const count = employees.filter(e => e.employee_type_id === et.id).length;
                 return (

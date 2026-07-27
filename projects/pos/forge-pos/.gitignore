@@ -42,3 +42,8 @@ src-tauri/binaries/build/
 *.jks
 *.keystore
 src-tauri/gen/android/keystore/
+
+# Playwright e2e / visual regression artifacts
+e2e/screenshots/
+playwright-report/
+test-results/

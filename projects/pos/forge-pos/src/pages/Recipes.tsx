@@ -307,7 +307,7 @@ export default function Recipes() {
           </motion.button>
         </div>
 
-        {/* Recipe Cards */}          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+        {/* Recipe Cards */}          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-4">
           {filteredRecipes.map(rd => (
             <motion.div
               key={rd.recipe.id}

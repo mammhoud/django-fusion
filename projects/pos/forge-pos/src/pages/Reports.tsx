@@ -56,7 +56,7 @@ export default function Reports() {
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<Tab>('sales');
   const [currency, setCurrency] = useState('USD');
-  const [restaurantName, setRestaurantName] = useState('POS');
+  const [restaurantName, setRestaurantName] = useState('Forge POS');
   const [loading, setLoading] = useState(true);
   const [exporting, setExporting] = useState(false);
   // Date range filter for sales
@@ -101,7 +101,7 @@ export default function Reports() {
         ]);
 
         setCurrency(settingsRes?.currency || 'USD');
-        setRestaurantName(settingsRes?.restaurant_name || 'POS');
+        setRestaurantName(settingsRes?.restaurant_name || 'Forge POS');
         setAnalytics(analyticsRes);
         setSales(Array.isArray(salesRes) ? salesRes : []);
         setIngredients(Array.isArray(ingredientsRes) ? ingredientsRes : []);
@@ -1022,7 +1022,7 @@ export default function Reports() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Cross-section KPI Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.totalOrders')}
                   value={filteredSales.length.toString()}
@@ -1076,7 +1076,7 @@ export default function Reports() {
               )}
 
               {/* Quick Stats Grid */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 {/* Low Stock Alert */}
                 <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-red-500">
                   <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.lowStockItems')}</p>
@@ -1108,7 +1108,7 @@ export default function Reports() {
           {activeTab === 'sales' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
@@ -1272,7 +1272,7 @@ export default function Reports() {
           {activeTab === 'productsSales' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.totalProductsSold')}
                   value={analytics?.summary?.total_orders?.toString() || '0'}
@@ -1388,7 +1388,7 @@ export default function Reports() {
           {activeTab === 'invoices' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.totalInvoices')}
                   value={filteredSales.length.toString()}
@@ -1484,7 +1484,7 @@ export default function Reports() {
           {activeTab === 'dailyComparison' && (
             <div className="space-y-6">
               {/* Today's Overview Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.todayRevenue')}
                   value={`${currency} ${todayStats.revenue.toFixed(2)}`}
@@ -1708,7 +1708,7 @@ export default function Reports() {
               </div>
 
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.currentPeriodRevenue')}
                   value={`${currency} ${currentStats.revenue.toFixed(2)}`}
@@ -1827,7 +1827,7 @@ export default function Reports() {
           {activeTab === 'deliveryTracking' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.deliveryOrders')}
                   value={deliveryStats.totalOrders.toString()}
@@ -1920,7 +1920,7 @@ export default function Reports() {
           {activeTab === 'inventory' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
@@ -2094,7 +2094,7 @@ export default function Reports() {
           {activeTab === 'recipes' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.totalRecipes')}
                   value={recipePerformance.length.toString()}
@@ -2222,7 +2222,7 @@ export default function Reports() {
           {activeTab === 'transactions' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${transactions.reduce((s, t) => s + t.total_amount, 0).toFixed(2)}`}
@@ -2305,7 +2305,7 @@ export default function Reports() {
           {activeTab === 'employees' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 <SummaryCard
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}

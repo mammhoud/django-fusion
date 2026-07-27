@@ -49,6 +49,18 @@ vi.mock('framer-motion', async () => {
         const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
         return <h3 {...rest}>{children}</h3>;
       },
+      form: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
+        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
+        return <form {...rest}>{children}</form>;
+      },
+      aside: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
+        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
+        return <aside {...rest}>{children}</aside>;
+      },
+      section: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
+        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
+        return <section {...rest}>{children}</section>;
+      },
       img: (props: Record<string, unknown>) => <img {...props} />,
       svg: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
         const { initial, animate, exit, whileHover, whileTap, variants, transition, layout, layoutId, ...rest } = props as Record<string, unknown>;
@@ -87,6 +99,7 @@ vi.mock('../i18n', () => ({
 }));
 
 vi.mock('react-i18next', () => ({
+  initReactI18next: { type: '3rdParty', init: () => {} },
   useTranslation: () => ({
     t: (key: string) => key,
     i18n: {
@@ -111,19 +124,6 @@ vi.mock('react-router-dom', async () => {
 });
 
 export { mockNavigate };
-
-// ---------------------------------------------------------------------------
-// Tauri plugins – stub dialog & fs so components don't crash
-// ---------------------------------------------------------------------------
-vi.mock('@tauri-apps/plugin-dialog', () => ({
-  open: vi.fn().mockResolvedValue(null),
-  save: vi.fn().mockResolvedValue('/tmp/test-file.pdf'),
-}));
-
-vi.mock('@tauri-apps/plugin-fs', () => ({
-  readFile: vi.fn().mockResolvedValue(new Uint8Array()),
-  writeFile: vi.fn().mockResolvedValue(undefined),
-}));
 
 // ---------------------------------------------------------------------------
 // jspdf – stub save so PDF generation doesn't throw

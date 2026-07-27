@@ -88,7 +88,7 @@ export default function Home() {
 
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [restaurantName, setRestaurantName] = useState('POS');
+  const [restaurantName, setRestaurantName] = useState('Forge POS');
   const [logo, setLogo] = useState<string | null>(null);
   const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
 
@@ -177,7 +177,7 @@ export default function Home() {
 
             {/* Category Items */}
             <motion.div
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-3 md:gap-4"
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 gap-3 md:gap-4"
               variants={container}
               initial="hidden"
               animate="show"
