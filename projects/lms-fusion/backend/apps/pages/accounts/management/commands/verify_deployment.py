@@ -7,7 +7,7 @@ services, and container health check.
 
 Usage:
     uv run python manage.py verify_deployment
-    uv run python manage.py verify_deployment --container ctc-research-core
+    uv run python manage.py verify_deployment --container fusion-cms-core
 """
 
 import os
@@ -47,12 +47,12 @@ def _warn(msg: str) -> str:
 
 _CONTAINER_MAP: dict[str, str] = {
     "docker": "core",
-    "demo": "ctc-research-core",
-    "production": "ctc-research-core",
+    "demo": "fusion-cms-core",
+    "production": "fusion-cms-core",
     "local": "core",
 }
 
-_DEFAULT_CONTAINER = "ctc-research-core"
+_DEFAULT_CONTAINER = "fusion-cms-core"
 
 
 def _detect_container() -> str:
@@ -213,14 +213,14 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
     """Check 6 — Traefik routing config file."""
     # Try common locations relative to the repo root
     candidates = [
-        Path("/root/site/compose/traefik/dynamic/ctc-research.yml"),
-        Path("/root/site/compose/traefik/dynamic/ctc-research-core.yml"),
-        Path("/root/site/compose/traefik/dynamic/ctc-research-main.yml"),
+        Path("/root/site/compose/traefik/dynamic/fusion-cms.yml"),
+        Path("/root/site/compose/traefik/dynamic/fusion-cms-core.yml"),
+        Path("/root/site/compose/traefik/dynamic/fusion-cms-main.yml"),
     ]
 
     # Also search relative to this file's repo root
     repo_root = Path(__file__).resolve().parents[6]  # workspace root
-    for name in ("ctc-research.yml", "ctc-research-core.yml", "ctc-research-main.yml"):
+    for name in ("fusion-cms.yml", "fusion-cms-core.yml", "fusion-cms-main.yml"):
         candidates.append(repo_root / "compose" / "traefik" / "dynamic" / name)
 
     traefik_file: Path | None = None
@@ -236,11 +236,11 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
 
     content = traefik_file.read_text(encoding="utf-8")
 
-    # Check for a ctc-research.com domain
-    if "ctc-research.com" in content:
-        results.append((True, "Domain configured: ctc-research.com"))
+    # Check for a fusion-cms.com domain
+    if "fusion-cms.com" in content:
+        results.append((True, "Domain configured: fusion-cms.com"))
     else:
-        results.append((None, "ctc-research.com domain not found in Traefik config"))
+        results.append((None, "fusion-cms.com domain not found in Traefik config"))
 
     return results
 
@@ -309,7 +309,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("CTC Research Deployment Verification")
+        self.stdout.write("Fusion CMS Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )
@@ -327,7 +327,7 @@ class Command(BaseCommand):
         # 1. Docker Compose config
         # ------------------------------------------------------------------
         self.stdout.write("1. Checking Docker Compose Configuration...")
-        project_root = Path(__file__).resolve().parents[4]  # ctc-research.com/
+        project_root = Path(__file__).resolve().parents[4]  # fusion-cms.com/
         ok, msg = _check_compose_config(project_root)
         if ok:
             self.stdout.write(_pass(msg))
@@ -443,8 +443,8 @@ class Command(BaseCommand):
             "======================================================\n"
         )
         self.stdout.write(f"Container : {container}")
-        self.stdout.write("Project   : ctc-research.com/core")
-        self.stdout.write("Domain    : https://ctc-research.com\n")
+        self.stdout.write("Project   : fusion-cms.com/core")
+        self.stdout.write("Domain    : https://fusion-cms.com\n")
 
         if any_failure:
             self.stderr.write(

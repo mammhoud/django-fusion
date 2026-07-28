@@ -4,7 +4,7 @@ Path: `projects/assets/templates/components/`
 
 ## Purpose
 
-Shared, reusable Django/Wagtail template components used across all Structa Cloud sites (LMS, Portfolio, Cypercloud, CTC Research). Components are loaded via `{% comp "path" /%}` (django-fusion) or `{% include "path" %}`.
+Shared, reusable Django/Wagtail template components used across all Structa Cloud sites (LMS, Portfolio, Cypercloud, Fusion CMS). Components are loaded via `{% comp "path" /%}` (django-fusion) or `{% include "path" %}`.
 
 ---
 

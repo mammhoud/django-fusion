@@ -93,13 +93,13 @@ export default function EventDetailsPage() {
                 {event.agenda.map((item, i) => (
                   <div key={i} className="flex gap-4 pb-4 last:pb-0 relative">
                     <div className="flex flex-col items-center">
-                      <div className="w-3 h-3 rounded-full bg-[rgb(var(--ctc-primary))] mt-1.5" />
+                      <div className="w-3 h-3 rounded-full bg-[rgb(var(--fu-primary))] mt-1.5" />
                       {i < event.agenda.length - 1 && (
-                        <div className="w-0.5 flex-1 bg-[rgb(var(--ctc-primary))]/20 mt-1" />
+                        <div className="w-0.5 flex-1 bg-[rgb(var(--fu-primary))]/20 mt-1" />
                       )}
                     </div>
                     <div>
-                      <span className="text-xs font-medium text-[rgb(var(--ctc-primary))]">{item.time}</span>
+                      <span className="text-xs font-medium text-[rgb(var(--fu-primary))]">{item.time}</span>
                       <h4 className="font-medium text-gray-900 mt-0.5">{item.title}</h4>
                       <p className="text-sm text-gray-500 mt-0.5">{item.description}</p>
                     </div>
@@ -131,7 +131,7 @@ export default function EventDetailsPage() {
                 </p>
                 <div className="mt-3 w-full bg-gray-200 rounded-full h-2">
                   <div
-                    className="bg-[rgb(var(--ctc-primary))] h-2 rounded-full transition-all"
+                    className="bg-[rgb(var(--fu-primary))] h-2 rounded-full transition-all"
                     style={{ width: `${((event.totalSpots - event.spots) / event.totalSpots) * 100}%` }}
                   />
                 </div>
@@ -160,7 +160,7 @@ export default function EventDetailsPage() {
 
               <hr className="my-4" />
 
-              <button className="w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors">
+              <button className="w-full flex items-center justify-center gap-2 py-2 text-sm text-gray-600 hover:text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 rounded-lg transition-colors">
                 <HiShare className="w-4 h-4" />
                 Share Event
               </button>

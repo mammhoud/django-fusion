@@ -98,7 +98,7 @@ export default function InstructorQuizPage() {
               onClick={() => setFilter(f.key as any)}
               className={`px-4 py-2 text-sm rounded-lg transition-all font-medium ${
                 filter === f.key
-                  ? 'bg-[rgb(var(--ctc-primary))] text-white'
+                  ? 'bg-[rgb(var(--fu-primary))] text-white'
                   : 'bg-white text-gray-600 hover:bg-gray-50 border border-gray-200'
               }`}
             >
@@ -125,7 +125,7 @@ export default function InstructorQuizPage() {
                     <div className="flex items-center gap-3 mb-1">
                       <Link
                         href={`/dashboard/quiz/${quiz.id}` as any}
-                        className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors"
+                        className="font-semibold text-gray-900 hover:text-[rgb(var(--fu-primary))] transition-colors"
                       >
                         {quiz.title}
                       </Link>
@@ -157,7 +157,7 @@ export default function InstructorQuizPage() {
                   <div className="flex items-center gap-2">
                     <Link
                       href={`/dashboard/quiz/${quiz.id}/edit` as any}
-                      className="p-2 text-gray-400 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors"
+                      className="p-2 text-gray-400 hover:text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 rounded-lg transition-colors"
                     >
                       <HiPencil className="w-4 h-4" />
                     </Link>

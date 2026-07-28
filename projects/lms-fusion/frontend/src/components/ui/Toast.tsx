@@ -162,8 +162,8 @@ export function ToastProvider({ children }: { children: ReactNode }) {
                         toast.action!.onClick();
                         removeToast(toast.id);
                       }}
-                      className="mt-2 text-xs font-medium text-[rgb(var(--ctc-primary))] 
-                        hover:text-[rgb(var(--ctc-primary-dark))] underline underline-offset-2"
+                      className="mt-2 text-xs font-medium text-[rgb(var(--fu-primary))] 
+                        hover:text-[rgb(var(--fu-primary-dark))] underline underline-offset-2"
                     >
                       {toast.action.label}
                     </button>

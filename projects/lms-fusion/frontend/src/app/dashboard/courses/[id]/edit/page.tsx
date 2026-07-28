@@ -57,7 +57,7 @@ export default function DashboardEditCoursePage() {
 
   return (
     <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <Link href="/dashboard/courses" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-2 transition-colors">
+      <Link href="/dashboard/courses" className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[rgb(var(--fu-primary))] mb-2 transition-colors">
         <HiArrowLeft className="w-4 h-4" /> Back to Courses
       </Link>
       <h1 className="text-3xl font-bold text-gray-900 mb-8">Edit Course</h1>

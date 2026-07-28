@@ -56,7 +56,7 @@ by-model/
 **Load Order**: Before other data that references users
 
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/auth/auth-group.json \
   assets/fixtures/by-model/auth/auth-user.json
 ```
@@ -81,7 +81,7 @@ docker exec web-ctc-research python manage.py loaddata \
 **Load Order**: After auth, before images
 
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-locale.json \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-site.json \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-page.json
@@ -99,7 +99,7 @@ docker exec web-ctc-research python manage.py loaddata \
 **Load Order**: After wagtailcore collections
 
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailimages/wagtailimages-image.json \
   assets/fixtures/by-model/wagtailimages/wagtailimages-rendition.json
 ```
@@ -117,7 +117,7 @@ docker exec web-ctc-research python manage.py loaddata \
 **Load Order**: Any time (independent)
 
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/modules/modules-*.json
 ```
 
@@ -137,38 +137,38 @@ docker exec web-ctc-research python manage.py loaddata \
 
 ### Step 1: Locales (Required)
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-locale.json
 ```
 
 ### Step 2: Sites (Required)
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-site.json
 ```
 
 ### Step 3: Collections (Optional)
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-collection.json
 ```
 
 ### Step 4: Auth (Optional)
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/auth/auth-group.json \
   assets/fixtures/by-model/auth/auth-user.json
 ```
 
 ### Step 5: Pages (Optional)
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-page.json
 ```
 
 ### Step 6: Images (Optional)
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailimages/wagtailimages-image.json \
   assets/fixtures/by-model/wagtailimages/wagtailimages-rendition.json
 ```
@@ -259,28 +259,28 @@ python tests/scripts/organize_fixtures_by_model.py
 
 ### Case 1: Load Only Locales
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/wagtailcore-locale.json
 ```
 ✅ Safe for initial setup
 
 ### Case 2: Load All Auth Data
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/auth/*.json
 ```
 ✅ Loads users, groups, permissions
 
 ### Case 3: Load All Wagtail Core
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/wagtailprojects/*.json
 ```
 ⚠️ May have FK constraints - use in order
 
 ### Case 4: Load Everything
 ```bash
-docker exec web-ctc-research python manage.py loaddata \
+docker exec web-fusion-cms python manage.py loaddata \
   assets/fixtures/by-model/auth/*.json \
   assets/fixtures/by-model/wagtailprojects/*.json \
   assets/fixtures/by-model/wagtailimages/*.json \

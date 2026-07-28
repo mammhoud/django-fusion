@@ -1,5 +1,5 @@
 """
-LMS signals for ctc-research.com.
+LMS signals for fusion-cms.com.
 
 Handles automatic setup when a new User is created:
 - Creates Instructor or Student profile based on user role

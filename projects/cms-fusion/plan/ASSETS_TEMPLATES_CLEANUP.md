@@ -132,7 +132,7 @@ duplicate content from the legacy `cms/cms-full/` tree, and verify that
 - [x] Create a top-level `cms-fusion/docker-compose.yml` with `backend`,
   `frontend`, and optional `worker` services.
 - [x] Remove or archive the stale `backend/docker-compose.yml` that references
-  `ctc-research`.
+  `fusion-cms`.
 - [x] Add `applications/proxy/traefik/dynamic/cms-fusion.yml` with routers for
   the cms-fusion backend and frontend.
 - [x] Use a unique backend port (`5075`) and expose the Next.js frontend

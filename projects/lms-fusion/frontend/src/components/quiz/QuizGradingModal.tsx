@@ -222,7 +222,7 @@ export default function QuizGradingModal({ attemptId, onClose }: QuizGradingModa
           {shortAnswerAnswers.length > 0 && (
             <div>
               <h3 className="text-sm font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <HiDocumentText className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+                <HiDocumentText className="w-4 h-4 text-[rgb(var(--fu-primary))]" />
                 Short Answer / Essay Questions
                 {!needsGrading && (
                   <span className="text-xs text-green-600 bg-green-50 px-2 py-0.5 rounded-full font-medium">All graded</span>
@@ -361,7 +361,7 @@ function AnswerCard({
           href={answer.file_url}
           target="_blank"
           rel="noopener noreferrer"
-          className="inline-flex items-center gap-2 text-xs text-[rgb(var(--ctc-primary))] hover:underline mb-3"
+          className="inline-flex items-center gap-2 text-xs text-[rgb(var(--fu-primary))] hover:underline mb-3"
         >
           <HiExternalLink className="w-3.5 h-3.5" />
           {answer.file_name || 'View Attachment'}
@@ -387,7 +387,7 @@ function AnswerCard({
                     answer.points_possible,
                     Math.max(0, Number(e.target.value))
                   ))}
-                  className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                  className="w-20 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                 />
                 <span className="text-xs text-gray-400">/ {answer.points_possible}</span>
               </div>

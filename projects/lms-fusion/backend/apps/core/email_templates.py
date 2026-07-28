@@ -1,5 +1,5 @@
 """
-Email template utilities for ctc-research.com.
+Email template utilities for fusion-cms.com.
 
 Delegates to django_fusion.handlers.core
 """

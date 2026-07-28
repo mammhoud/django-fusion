@@ -231,7 +231,7 @@ describe('NotificationDropdown - Notification List', () => {
     renderDropdown();
 
     // Unread notifications should have the blue dot
-    const dots = document.querySelectorAll('span.bg-\\[rgb\\(var\\(--ctc-primary\\)\\)\\]');
+    const dots = document.querySelectorAll('span.bg-\\[rgb\\(var\\(--fu-primary\\)\\)\\]');
     // 3 unread notifications should have 3 dots
     expect(dots.length).toBe(3);
   });

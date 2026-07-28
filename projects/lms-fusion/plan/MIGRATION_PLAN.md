@@ -10,11 +10,11 @@
 | App / Area | Status | Notes |
 |------------|:------:|-------|
 | `plugins.branding` | ✅ | Migration + models + context processor |
-| `plugins.accounts` | ✅ | Copied from ctc-research; verified |
+| `plugins.accounts` | ✅ | Copied from fusion-cms; verified |
 | `plugins.lms` | ✅ | LMS models verified |
-| `plugins.blog` | ✅ | Copied from ctc-research |
-| `plugins.profile` | ✅ | Copied from ctc-research |
-| `www.core` | ✅ | Copied from ctc-research |
+| `plugins.blog` | ✅ | Copied from fusion-cms |
+| `plugins.profile` | ✅ | Copied from fusion-cms |
+| `www.core` | ✅ | Copied from fusion-cms |
 | `django_fusion` | ✅ | INSTALLED_APPS + FusionCodec + FusionSessionChecker |
 
 ---

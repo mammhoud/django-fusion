@@ -23,7 +23,7 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 
 # ── Recipients ────────────────────────────────────────────────────────────────
-DEV_TEAM_EMAIL = "ctc-research@gmail.com"
+DEV_TEAM_EMAIL = "fusion-cms@gmail.com"
 
 
 class Command(BaseCommand):
@@ -240,7 +240,7 @@ class Command(BaseCommand):
     # ── Sender ─────────────────────────────────────────────────────────────────
 
     def _send(self, subject, html_body, text_body, recipient):
-        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@ctc-research.com")
+        from_email = getattr(settings, "DEFAULT_FROM_EMAIL", "noreply@fusion-cms.com")
         msg = EmailMultiAlternatives(subject, text_body, from_email, [recipient])
         msg.attach_alternative(html_body, "text/html")
         try:

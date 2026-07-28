@@ -36,7 +36,7 @@ def _configure_default_site() -> None:
     1. ``DJANGO_SITE`` env var
     2. ``DJANGO_WEBSITE`` env var
     3. ``WEBSITE`` env var
-    4. Fallback to ``"ctc-research.com"``
+    4. Fallback to ``"fusion-cms.com"``
 
     If ``configs.site`` is not importable (e.g. during testing),
     falls back to setting ``DJANGO_SETTINGS_MODULE=settings`` and
@@ -46,7 +46,7 @@ def _configure_default_site() -> None:
         os.getenv("DJANGO_SITE")
         or os.getenv("DJANGO_WEBSITE")
         or os.getenv("WEBSITE")
-        or "ctc-research.com"
+        or "fusion-cms.com"
     )
     try:
         site_module = importlib.import_module("configs.site")

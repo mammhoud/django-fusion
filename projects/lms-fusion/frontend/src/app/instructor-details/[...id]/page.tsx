@@ -97,7 +97,7 @@ export default function InstructorDetailsPage() {
               <h2 className="text-xl font-semibold text-gray-900 mb-4">Expertise</h2>
               <div className="flex flex-wrap gap-2">
                 {(display.skills || mockInstructor.skills).map((skill: string) => (
-                  <span key={skill} className="px-3 py-1.5 bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))] rounded-lg text-sm font-medium">
+                  <span key={skill} className="px-3 py-1.5 bg-[rgb(var(--fu-primary))]/5 text-[rgb(var(--fu-primary-dark))] rounded-lg text-sm font-medium">
                     {skill}
                   </span>
                 ))}
@@ -107,7 +107,7 @@ export default function InstructorDetailsPage() {
             {/* Courses */}
             <section className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
               <h2 className="text-xl font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <HiBookOpen className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                <HiBookOpen className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                 Courses ({display.coursesCount || mockInstructor.coursesCount})
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -118,7 +118,7 @@ export default function InstructorDetailsPage() {
                         <img src={course.image} alt={course.title} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300" />
                       </div>
                       <div className="p-4">
-                        <h3 className="font-semibold text-gray-900 group-hover:text-[rgb(var(--ctc-primary))] transition-colors">{course.title}</h3>
+                        <h3 className="font-semibold text-gray-900 group-hover:text-[rgb(var(--fu-primary))] transition-colors">{course.title}</h3>
                         <div className="flex items-center justify-between mt-2 text-sm">
                           <div className="flex items-center gap-2 text-gray-500">
                             <HiUserGroup className="w-4 h-4" />
@@ -166,7 +166,7 @@ export default function InstructorDetailsPage() {
           <div className="space-y-6">
             <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100 lg:sticky lg:top-24">
               <div className="grid grid-cols-2 gap-4">
-                <div className="text-center p-4 bg-[rgb(var(--ctc-primary))]/5 rounded-xl">
+                <div className="text-center p-4 bg-[rgb(var(--fu-primary))]/5 rounded-xl">
                   <HiStar className="w-6 h-6 text-yellow-500 mx-auto mb-1" />
                   <div className="text-2xl font-bold text-gray-900">{display.rating || mockInstructor.rating}</div>
                   <div className="text-xs text-gray-500">Rating</div>
@@ -176,8 +176,8 @@ export default function InstructorDetailsPage() {
                   <div className="text-2xl font-bold text-gray-900">{(display.studentsCount || mockInstructor.studentsCount) >= 1000 ? `${(display.studentsCount / 1000).toFixed(1)}k` : display.studentsCount}</div>
                   <div className="text-xs text-gray-500">Students</div>
                 </div>
-                <div className="text-center p-4 bg-[rgb(var(--ctc-accent))]/5 rounded-xl">
-                  <HiPlay className="w-6 h-6 text-[rgb(var(--ctc-accent))] mx-auto mb-1" />
+                <div className="text-center p-4 bg-[rgb(var(--fu-accent))]/5 rounded-xl">
+                  <HiPlay className="w-6 h-6 text-[rgb(var(--fu-accent))] mx-auto mb-1" />
                   <div className="text-2xl font-bold text-gray-900">{display.coursesCount || mockInstructor.coursesCount}</div>
                   <div className="text-xs text-gray-500">Courses</div>
                 </div>
@@ -199,14 +199,14 @@ export default function InstructorDetailsPage() {
                     <>
                       {website && (
                         <a href={website} target="_blank" rel="noopener noreferrer"
-                           className="flex items-center gap-2 text-sm text-gray-600 hover:text-[rgb(var(--ctc-primary))] transition-colors">
+                           className="flex items-center gap-2 text-sm text-gray-600 hover:text-[rgb(var(--fu-primary))] transition-colors">
                           <HiGlobe className="w-4 h-4" />
                           Website
                         </a>
                       )}
                       {twitter && (
                         <a href={`https://twitter.com/${twitter.replace('@', '')}`} target="_blank" rel="noopener noreferrer"
-                           className="flex items-center gap-2 text-sm text-gray-600 hover:text-[rgb(var(--ctc-primary))] transition-colors">
+                           className="flex items-center gap-2 text-sm text-gray-600 hover:text-[rgb(var(--fu-primary))] transition-colors">
                           <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24"><path d="M18.244 2.25h3.308l-7.227 8.26 8.502 11.24H16.17l-5.214-6.817L4.99 21.75H1.68l7.73-8.835L1.254 2.25H8.08l4.713 6.231zm-1.161 17.52h1.833L7.084 4.126H5.117z"/></svg>
                           {twitter}
                         </a>

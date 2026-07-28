@@ -72,7 +72,7 @@ export default function StudentWishlistPage() {
               className="card overflow-hidden group hover:shadow-lg transition-all duration-300"
             >
               {/* Image */}
-              <div className="relative h-40 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] flex items-center justify-center overflow-hidden">
+              <div className="relative h-40 bg-gradient-to-br from-[rgb(var(--fu-primary))] to-[rgb(var(--fu-accent))] flex items-center justify-center overflow-hidden">
                 <HiBookOpen className="w-12 h-12 text-white/40" />
                 <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-colors" />
                 <button
@@ -93,7 +93,7 @@ export default function StudentWishlistPage() {
 
               {/* Content */}
               <div className="p-5">
-                <Link href={`/course-details/${item.id}`} className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-2">
+                <Link href={`/course-details/${item.id}`} className="font-semibold text-gray-900 hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-2">
                   {item.title}
                 </Link>
                 <p className="text-sm text-gray-500 mt-1">{item.instructor}</p>
@@ -117,8 +117,8 @@ export default function StudentWishlistPage() {
                   <span className="text-lg font-bold text-gray-900">{item.price}</span>
                   <Link
                     href={`/course-details/${item.id}`}
-                    className="inline-flex items-center gap-2 px-4 py-2 bg-[rgb(var(--ctc-primary))] text-white rounded-lg
-                               text-sm font-medium hover:bg-[rgb(var(--ctc-primary-dark))] transition-colors"
+                    className="inline-flex items-center gap-2 px-4 py-2 bg-[rgb(var(--fu-primary))] text-white rounded-lg
+                               text-sm font-medium hover:bg-[rgb(var(--fu-primary-dark))] transition-colors"
                   >
                     <HiShoppingCart className="w-4 h-4" />
                     View Course

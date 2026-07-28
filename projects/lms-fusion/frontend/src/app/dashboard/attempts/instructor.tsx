@@ -94,7 +94,7 @@ export default function InstructorAttempts() {
                   <td className="px-6 py-4 text-center">
                     <button
                       onClick={() => setGradingAttemptId(a.id)}
-                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 px-3 py-1.5 rounded-lg transition-colors"
+                      className="inline-flex items-center gap-1.5 text-xs font-medium text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 px-3 py-1.5 rounded-lg transition-colors"
                     >
                       <HiStar className="w-3.5 h-3.5" /> Grade
                     </button>

@@ -136,7 +136,7 @@ trees, and verify that `django-fusion` customization hooks work for this project
 - [x] Create a top-level `lms-fusion/docker-compose.yml` with `backend`,
   `frontend`, and optional `worker` services.
 - [x] Remove or archive the stale `backend/docker-compose.yml` that references
-  `ctc-research`.
+  `fusion-cms`.
 - [x] Add `applications/proxy/traefik/dynamic/lms-fusion.yml` with routers for
   the lms-fusion backend and frontend.
 - [x] Use a unique backend port (`5074`) and expose the Next.js frontend

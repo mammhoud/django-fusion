@@ -28,4 +28,4 @@ Workspace asset CLI scripts used for building frontend bundles, running collects
 | **lms-fusion** | ✅ Yes | `npm --prefix assets run build --site lms-fusion` |
 | **portfolio** | ✅ Yes | `npm --prefix assets run build:vresume` |
 | **cypercloud** | ✅ Yes | `npm --prefix assets run build:cypercloud` |
-| **ctc-research** | ✅ Yes | `npm --prefix assets run build:ctc` |
+| **fusion-cms** | ✅ Yes | `npm --prefix assets run build:ctc` |

@@ -15,7 +15,7 @@ from .snippets import (
 )
 
 """
-WAGTAIL HOOKS — CTC Research LMS
+WAGTAIL HOOKS — Fusion CMS LMS
 =================================
 
 Menu groups:

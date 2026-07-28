@@ -36,7 +36,7 @@ export default function LoginPage() {
     <div className="min-h-[80vh] flex items-center justify-center px-4">
       <div className="max-w-md w-full">
         <div className="text-center mb-8">
-          <HiAcademicCap className="w-12 h-12 text-[rgb(var(--ctc-primary))] mx-auto mb-4" />
+          <HiAcademicCap className="w-12 h-12 text-[rgb(var(--fu-primary))] mx-auto mb-4" />
           <h1 className="text-3xl font-bold text-gray-900">Welcome Back</h1>
           <p className="text-gray-500 mt-2">Sign in to your account</p>
         </div>
@@ -90,10 +90,10 @@ export default function LoginPage() {
 
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2 text-gray-600">
-              <input type="checkbox" className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]" />
+              <input type="checkbox" className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]" />
               Remember me
             </label>
-            <a href="#" className="text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] font-medium">
+            <a href="#" className="text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))] font-medium">
               Forgot password?
             </a>
           </div>
@@ -115,7 +115,7 @@ export default function LoginPage() {
 
           <p className="text-center text-sm text-gray-500 mt-4">
             Don&apos;t have an account?{' '}
-            <Link href="/registration" className="text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] font-medium">
+            <Link href="/registration" className="text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))] font-medium">
               Sign up
             </Link>
           </p>

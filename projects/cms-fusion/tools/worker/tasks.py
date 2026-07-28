@@ -30,7 +30,7 @@ Heartbeat routing
 -----------------
 Celery beat (in ``shared-scheduler``) sends this task to the broker
 keyed on the ``queue`` field of the PeriodicTask row in the
-``django_celery_beat`` table (currently ``ctc-research``).
+``django_celery_beat`` table (currently ``fusion-cms``).
 
 - ``shared-worker`` is Dramatiq-only and ignores Celery tasks.
 - Per-site Celery workers (``ctc-worker``, ``lms-worker``,
@@ -57,7 +57,7 @@ HEARTBEAT_MARKER = "/app/logs/celery_beat_heartbeat.txt"
     # Matches the queue field on the PeriodicTask row so this is
     # consistent on inspection. Beat will route by the row's queue
     # anyway, but this decorator default is documentation-as-code.
-    queue="ctc-research",
+    queue="fusion-cms",
     bind=True,
     max_retries=0,
     acks_late=False,
@@ -72,7 +72,7 @@ def heartbeat(self):  # noqa: D401 — Celery ``bind=True`` signature
     1. An ``INFO`` log line with the current UTC timestamp.
     2. A marker file at ``HEARTBEAT_MARKER`` appended per fire.
 
-    The heartbeat runs on the ``ctc-research`` queue and is consumed
+    The heartbeat runs on the ``fusion-cms`` queue and is consumed
     by the per-site Celery workers. The ``shared-worker`` Dramatiq
     container ignores this task entirely.
 

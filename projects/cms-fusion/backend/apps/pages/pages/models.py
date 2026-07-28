@@ -56,6 +56,7 @@ class FusionPage(Page):
     class Meta:
         abstract = True
         verbose_name = _("Fusion Page")
+        verbose_name_plural = _("Fusion Pages")
 
     @property
     def effective_fragment_name(self) -> str:
@@ -103,6 +104,7 @@ class FusionHomePage(FusionPage):
 
     class Meta:
         verbose_name = _("Fusion CMS Home Page")
+        verbose_name_plural = _("Fusion CMS Home Pages")
 
     def get_context(self) -> dict:
         ctx = super().get_context()
@@ -133,6 +135,7 @@ class FusionContentPage(FusionPage):
 
     class Meta:
         verbose_name = _("Fusion CMS Content Page")
+        verbose_name_plural = _("Fusion CMS Content Pages")
 
     def get_context(self) -> dict:
         ctx = super().get_context()

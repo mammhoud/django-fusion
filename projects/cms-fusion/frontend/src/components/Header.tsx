@@ -31,7 +31,7 @@ export default function Header() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between h-16">
           {/* Logo */}
-          <Link href="/" className="flex items-center gap-2 text-[rgb(var(--ctc-primary))] font-bold text-xl">
+          <Link href="/" className="flex items-center gap-2 text-[rgb(var(--fu-primary))] font-bold text-xl">
             <HiAcademicCap className="w-8 h-8" />
             <span>LMS</span>
           </Link>
@@ -41,7 +41,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href as any}
-                className="text-gray-600 hover:text-[rgb(var(--ctc-primary))] font-medium transition-colors duration-200"
+                className="text-gray-600 hover:text-[rgb(var(--fu-primary))] font-medium transition-colors duration-200"
               >
                 {link.label}
               </Link>
@@ -51,12 +51,12 @@ export default function Header() {
           {/* Auth Section */}
           <div className="hidden md:flex items-center gap-4">
             {isLoading ? (
-              <div className="w-8 h-8 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" />
+              <div className="w-8 h-8 border-2 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin" />
             ) : profile ? (
               <div className="flex items-center gap-3">
                 <Link
                   href={profile.role === 'instructor' ? '/instructor-dashboard' : '/student-dashboard'}
-                  className="flex items-center gap-2 text-gray-700 hover:text-[rgb(var(--ctc-primary))]"
+                  className="flex items-center gap-2 text-gray-700 hover:text-[rgb(var(--fu-primary))]"
                 >
                   <HiUser className="w-5 h-5" />
                   <span className="font-medium">{profile.first_name || profile.username}</span>
@@ -67,7 +67,7 @@ export default function Header() {
               </div>
             ) : (
               <div className="flex items-center gap-3">
-                <Link href="/login" className="text-gray-600 hover:text-[rgb(var(--ctc-primary))] font-medium">Log In</Link>
+                <Link href="/login" className="text-gray-600 hover:text-[rgb(var(--fu-primary))] font-medium">Log In</Link>
                 <Link href="/registration" className="btn-primary text-sm !px-4 !py-2">Sign Up</Link>
               </div>
             )}
@@ -76,7 +76,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <button
             onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-            className="md:hidden text-gray-600 hover:text-[rgb(var(--ctc-primary))]"
+            className="md:hidden text-gray-600 hover:text-[rgb(var(--fu-primary))]"
           >
             {mobileMenuOpen ? <HiX className="w-6 h-6" /> : <HiMenu className="w-6 h-6" />}
           </button>
@@ -91,7 +91,7 @@ export default function Header() {
               <Link
                 key={link.href}
                 href={link.href as any}
-                className="block px-3 py-2 text-gray-600 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors"
+                className="block px-3 py-2 text-gray-600 hover:text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 rounded-lg transition-colors"
                 onClick={() => setMobileMenuOpen(false)}
               >
                 {link.label}
@@ -101,7 +101,7 @@ export default function Header() {
             {profile ? (
               <>
                 <Link href={profile.role === 'instructor' ? '/instructor-dashboard' : '/student-dashboard'}
-                      className="block px-3 py-2 text-[rgb(var(--ctc-primary))] font-medium"
+                      className="block px-3 py-2 text-[rgb(var(--fu-primary))] font-medium"
                       onClick={() => setMobileMenuOpen(false)}>
                   Dashboard
                 </Link>
@@ -111,8 +111,8 @@ export default function Header() {
               </>
             ) : (
               <>
-                <Link href="/login" className="block px-3 py-2 text-[rgb(var(--ctc-primary))] font-medium" onClick={() => setMobileMenuOpen(false)}>Log In</Link>
-                <Link href="/registration" className="block px-3 py-2 text-white bg-[rgb(var(--ctc-primary))] rounded-lg text-center font-medium" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
+                <Link href="/login" className="block px-3 py-2 text-[rgb(var(--fu-primary))] font-medium" onClick={() => setMobileMenuOpen(false)}>Log In</Link>
+                <Link href="/registration" className="block px-3 py-2 text-white bg-[rgb(var(--fu-primary))] rounded-lg text-center font-medium" onClick={() => setMobileMenuOpen(false)}>Sign Up</Link>
               </>
             )}
           </div>

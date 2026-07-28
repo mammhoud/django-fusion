@@ -1,5 +1,5 @@
 """
-Payment Models for CTC Research LMS
+Payment Models for Fusion CMS LMS
 
 Tracks payment provider integrations, transactions, and status
 for course enrollment and purchases.

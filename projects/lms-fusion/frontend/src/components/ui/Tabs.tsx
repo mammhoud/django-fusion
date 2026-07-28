@@ -45,8 +45,8 @@ interface TabsProps {
 
 // ── Variants ──
 
-const underlineActiveClass = "text-[rgb(var(--ctc-primary))] border-b-2 border-[rgb(var(--ctc-primary))]";
-const pillsActiveClass = "bg-[rgb(var(--ctc-primary))] text-white shadow-sm";
+const underlineActiveClass = "text-[rgb(var(--fu-primary))] border-b-2 border-[rgb(var(--fu-primary))]";
+const pillsActiveClass = "bg-[rgb(var(--fu-primary))] text-white shadow-sm";
 const buttonsActiveClass = "bg-gray-100 text-gray-900";
 
 const contentVariants = {
@@ -148,7 +148,7 @@ export default function Tabs({
                   <span
                     className={`text-[10px] px-1.5 py-0.5 rounded-full font-semibold ${
                       isActive && variant === 'underline'
-                        ? 'bg-[rgb(var(--ctc-primary))] text-white'
+                        ? 'bg-[rgb(var(--fu-primary))] text-white'
                         : 'bg-gray-200 text-gray-600'
                     }`}
                   >

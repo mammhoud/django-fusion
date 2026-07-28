@@ -2,7 +2,7 @@
 
 ## What's Here
 
-Shared Django settings and environment configuration used across all sites (ctc-research, lms, VResume).
+Shared Django settings and environment configuration used across all sites (fusion-cms, lms, VResume).
 
 ```
 configs/

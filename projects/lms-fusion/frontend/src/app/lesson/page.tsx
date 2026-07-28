@@ -88,7 +88,7 @@ function LessonContent() {
           <p className="text-sm text-gray-500 mt-1">{allLessons.filter((l) => l.completed).length} of {allLessons.length} completed</p>
           <div className="mt-2 w-full bg-gray-200 rounded-full h-1.5">
             <div
-              className="bg-[rgb(var(--ctc-primary))] h-1.5 rounded-full transition-all duration-500"
+              className="bg-[rgb(var(--fu-primary))] h-1.5 rounded-full transition-all duration-500"
               style={{ width: `${(allLessons.filter((l) => l.completed).length / allLessons.length) * 100}%` }}
             />
           </div>
@@ -106,7 +106,7 @@ function LessonContent() {
                   href={`/lesson?course=${courseId}&lesson=${lesson.id}`}
                   className={`flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm transition-colors
                     ${lesson.id === lessonId
-                      ? 'bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))] font-medium'
+                      ? 'bg-[rgb(var(--fu-primary))]/5 text-[rgb(var(--fu-primary-dark))] font-medium'
                       : lesson.locked
                       ? 'text-gray-400 cursor-not-allowed'
                       : 'text-gray-700 hover:bg-gray-50'}`}
@@ -117,7 +117,7 @@ function LessonContent() {
                     ) : lesson.locked ? (
                       <HiLockClosed className="w-3.5 h-3.5 text-gray-300" />
                     ) : (
-                      <HiPlay className="w-4 h-4 text-[rgb(var(--ctc-primary-dark))]" />
+                      <HiPlay className="w-4 h-4 text-[rgb(var(--fu-primary-dark))]" />
                     )}
                   </span>
                   <span className="flex-1 truncate">{lesson.title}</span>
@@ -140,7 +140,7 @@ function LessonContent() {
             <HiMenu className="w-5 h-5" />
           </button>
 
-          <Link href={`/course-details/${courseId}`} className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] transition-colors">
+          <Link href={`/course-details/${courseId}`} className="text-sm text-gray-500 hover:text-[rgb(var(--fu-primary))] transition-colors">
             <HiChevronLeft className="w-4 h-4 inline mr-1" />
             Back to Course
           </Link>
@@ -151,7 +151,7 @@ function LessonContent() {
             {prevLesson && (
               <Link
                 href={`/lesson?course=${courseId}&lesson=${prevLesson.id}`}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[rgb(var(--ctc-primary))] hover:bg-gray-50 rounded-lg transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm text-gray-600 hover:text-[rgb(var(--fu-primary))] hover:bg-gray-50 rounded-lg transition-colors"
               >
                 <HiChevronLeft className="w-4 h-4" />
                 Previous
@@ -160,7 +160,7 @@ function LessonContent() {
             {nextLesson && (
               <Link
                 href={`/lesson?course=${courseId}&lesson=${nextLesson.id}`}
-                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[rgb(var(--ctc-primary))] text-white hover:bg-[rgb(var(--ctc-primary-dark))] rounded-lg transition-colors"
+                className="flex items-center gap-1 px-3 py-1.5 text-sm bg-[rgb(var(--fu-primary))] text-white hover:bg-[rgb(var(--fu-primary-dark))] rounded-lg transition-colors"
               >
                 Next
                 <HiChevronRight className="w-4 h-4" />
@@ -181,7 +181,7 @@ function LessonContent() {
             </div>
           </div>
           <div className="absolute bottom-0 left-0 right-0 h-1 bg-gray-800">
-            <div className="h-full bg-[rgb(var(--ctc-primary))]/50 w-1/3 transition-all" />
+            <div className="h-full bg-[rgb(var(--fu-primary))]/50 w-1/3 transition-all" />
           </div>
         </div>
 
@@ -199,7 +199,7 @@ function LessonContent() {
                 onClick={() => setActiveTab(tab.id)}
                 className={`flex items-center gap-2 px-4 py-3 text-sm font-medium border-b-2 -mb-px transition-colors
                   ${activeTab === tab.id
-                    ? 'border-[rgb(var(--ctc-primary))] text-[rgb(var(--ctc-primary))]'
+                    ? 'border-[rgb(var(--fu-primary))] text-[rgb(var(--fu-primary))]'
                     : 'border-transparent text-gray-500 hover:text-gray-700'}`}
               >
                 <tab.icon className="w-4 h-4" />
@@ -245,16 +245,16 @@ function LessonContent() {
               </div>
 
               {/* Resources */}
-              <div className="bg-[rgb(var(--ctc-primary))]/5 rounded-xl p-6">
+              <div className="bg-[rgb(var(--fu-primary))]/5 rounded-xl p-6">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <HiDocumentText className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                  <HiDocumentText className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                   Resources & Materials
                 </h3>
                 <div className="space-y-2">
                   {['Lesson Notes PDF', 'Exercise Files', 'Cheat Sheet'].map((resource) => (
                     <div key={resource} className="flex items-center gap-3 p-3 bg-white rounded-lg hover:shadow-sm transition-shadow cursor-pointer">
-                      <div className="w-8 h-8 bg-[rgb(var(--ctc-primary))]/10 rounded-lg flex items-center justify-center">
-                        <HiDocumentText className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+                      <div className="w-8 h-8 bg-[rgb(var(--fu-primary))]/10 rounded-lg flex items-center justify-center">
+                        <HiDocumentText className="w-4 h-4 text-[rgb(var(--fu-primary))]" />
                       </div>
                       <span className="text-sm font-medium text-gray-700">{resource}</span>
                     </div>
@@ -267,7 +267,7 @@ function LessonContent() {
           {activeTab === 'notes' && (
             <div>
               <textarea
-                className="w-full h-64 p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none text-sm"
+                className="w-full h-64 p-4 border border-gray-200 rounded-xl resize-none focus:ring-2 focus:ring-[rgb(var(--fu-primary))] focus:border-transparent outline-none text-sm"
                 placeholder="Write your notes here... Markdown is supported.
 
 # Heading
@@ -286,7 +286,7 @@ function LessonContent() {
                 <input
                   type="text"
                   placeholder="Ask a question about this lesson..."
-                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none text-sm"
+                  className="flex-1 px-4 py-2.5 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--fu-primary))] focus:border-transparent outline-none text-sm"
                 />
                 <button className="btn-primary text-sm !px-6">Ask</button>
               </div>
@@ -318,7 +318,7 @@ function LessonContent() {
 
 export default function LessonPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" /></div>}>
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center"><div className="w-12 h-12 border-4 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin" /></div>}>
       <LessonContent />
     </Suspense>
   );

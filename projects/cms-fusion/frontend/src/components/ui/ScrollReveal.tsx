@@ -268,7 +268,7 @@ export function AnimatedProgress({
         <div className="flex items-center justify-between mb-1.5">
           {label && <span className="text-sm font-medium text-gray-700">{label}</span>}
           {showPercentage && (
-            <span className="text-sm font-medium text-[rgb(var(--ctc-primary))]">
+            <span className="text-sm font-medium text-[rgb(var(--fu-primary))]">
               {Math.round(percentage)}%
             </span>
           )}
@@ -279,7 +279,7 @@ export function AnimatedProgress({
         style={{ height }}
       >
         <motion.div
-          className="h-full rounded-full bg-[rgb(var(--ctc-primary))]"
+          className="h-full rounded-full bg-[rgb(var(--fu-primary))]"
           style={color ? { backgroundColor: color } : undefined}
           initial={{ width: 0 }}
           animate={{ width: isInView ? `${percentage}%` : 0 }}

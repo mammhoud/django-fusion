@@ -346,7 +346,7 @@ export default function ResponsiveTable({ columns, data }: ResponsiveTableProps)
 ```tsx
 <Image
   src="/hero-bg.jpg"
-  alt="CTC Research"
+  alt="Fusion CMS"
   width={1920}
   height={600}
   sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"

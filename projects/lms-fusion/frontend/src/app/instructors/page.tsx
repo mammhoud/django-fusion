@@ -25,7 +25,7 @@ export default function InstructorsPage() {
           {data?.results.map((instructor, idx) => (
             <motion.div key={instructor.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: idx * 0.05 }}
               className="card p-6 text-center hover:shadow-lg transition-shadow">
-              <div className="w-20 h-20 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+              <div className="w-20 h-20 bg-gradient-to-br from-[rgb(var(--fu-primary))] to-[rgb(var(--fu-accent))] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                 {instructor.first_name?.[0]}{instructor.last_name?.[0]}
               </div>
               <h3 className="font-semibold text-gray-900">{instructor.first_name} {instructor.last_name}</h3>
@@ -36,7 +36,7 @@ export default function InstructorsPage() {
                 <span className="flex items-center gap-1"><HiUserGroup className="w-4 h-4" /> {instructor.students_count}</span>
                 <span className="flex items-center gap-1"><HiStar className="w-4 h-4 text-yellow-400" /> {instructor.average_rating}</span>
               </div>
-              <Link href={`/instructor-details/${instructor.id}` as any} className="mt-4 text-sm text-[rgb(var(--ctc-primary))] font-medium hover:text-[rgb(var(--ctc-primary-dark))] inline-block">
+              <Link href={`/instructor-details/${instructor.id}` as any} className="mt-4 text-sm text-[rgb(var(--fu-primary))] font-medium hover:text-[rgb(var(--fu-primary-dark))] inline-block">
                 View Profile
               </Link>
             </motion.div>

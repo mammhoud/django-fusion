@@ -216,13 +216,13 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
     # Try common locations relative to the repo root
     candidates = [
         Path("/root/site/compose/traefik/dynamic/ctc-demo.yml"),
-        Path("/root/site/compose/traefik/dynamic/ctc-research.yml"),
+        Path("/root/site/compose/traefik/dynamic/fusion-cms.yml"),
         Path("/root/site/compose/traefik/dynamic/ctc-main.yml"),
     ]
 
     # Also search relative to this file's repo root
     repo_root = Path(__file__).resolve().parents[5]  # workspace root
-    for name in ("ctc-demo.yml", "ctc-research.yml", "ctc-main.yml"):
+    for name in ("ctc-demo.yml", "fusion-cms.yml", "ctc-main.yml"):
         candidates.append(repo_root / "compose" / "traefik" / "dynamic" / name)
 
     traefik_file: Path | None = None
@@ -238,11 +238,11 @@ def _check_traefik_config() -> list[tuple[bool | None, str]]:
 
     content = traefik_file.read_text(encoding="utf-8")
 
-    # Check for a ctc-research domain
-    if "ctc-research.com" in content:
-        results.append((True, "Domain configured: ctc-research.com"))
+    # Check for a fusion-cms domain
+    if "fusion-cms.com" in content:
+        results.append((True, "Domain configured: fusion-cms.com"))
     else:
-        results.append((None, "ctc-research.com domain not found in Traefik config"))
+        results.append((None, "fusion-cms.com domain not found in Traefik config"))
 
     return results
 
@@ -380,7 +380,7 @@ class Command(BaseCommand):
         self.stdout.write(
             "\n======================================================"
         )
-        self.stdout.write("CTC Research Deployment Verification")
+        self.stdout.write("Fusion CMS Deployment Verification")
         self.stdout.write(
             "======================================================\n"
         )
@@ -398,7 +398,7 @@ class Command(BaseCommand):
         # 1. Docker Compose config
         # ------------------------------------------------------------------
         self.stdout.write("1. Checking Docker Compose Configuration...")
-        project_root = Path(__file__).resolve().parents[4]  # ctc-research/
+        project_root = Path(__file__).resolve().parents[4]  # fusion-cms/
         ok, msg = _check_compose_config(project_root)
         if ok:
             self.stdout.write(_pass(msg))
@@ -534,8 +534,8 @@ class Command(BaseCommand):
             "======================================================\n"
         )
         self.stdout.write(f"Container : {container}")
-        self.stdout.write("Project   : ctc-research")
-        self.stdout.write("Domain    : https://ctc-research.com\n")
+        self.stdout.write("Project   : fusion-cms")
+        self.stdout.write("Domain    : https://fusion-cms.com\n")
 
         if any_failure:
             self.stderr.write(

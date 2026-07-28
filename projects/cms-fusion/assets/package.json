@@ -2,7 +2,7 @@
   "name": "websites-workspace",
   "version": "1.0.3",
   "private": true,
-  "description": "Shared frontend build, collectstatic, and population CLI for ctc-research, lms, and VResume",
+  "description": "Shared frontend build, collectstatic, and population CLI for fusion-cms, lms, and VResume",
   "scripts": {
     "workspace": "node scripts/workspace.mjs",
     "sites": "node scripts/workspace.mjs sites",

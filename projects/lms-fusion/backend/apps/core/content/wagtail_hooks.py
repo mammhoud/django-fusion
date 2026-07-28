@@ -1,5 +1,5 @@
 """
-Wagtail Hooks for CTC Research Project
+Wagtail Hooks for Fusion CMS Project
 
 This file registers page models with Wagtail so they can be edited
 in the Wagtail admin and rendered with their custom templates.

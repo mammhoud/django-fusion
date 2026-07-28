@@ -4,10 +4,10 @@
 
 @layer base {
   :root {
-    --ctc-primary: 0 161 179;
-    --ctc-primary-dark: 0 130 148;
-    --ctc-accent: 245 158 11;
-    --ctc-accent-dark: 217 119 6;
+    --fu-primary: 0 161 179;
+    --fu-primary-dark: 0 130 148;
+    --fu-accent: 245 158 11;
+    --fu-accent-dark: 217 119 6;
     --secondary: 251 191 36;
   }
 
@@ -16,10 +16,48 @@
   }
 }
 
+/* Fusion branding overrides — loaded from backend via CSS custom properties */
+.fu-themed {
+  --fu-primary: var(--fusion-primary-color, #7c3aed);
+  --fu-secondary: var(--fusion-secondary-color, #5b21b6);
+}
+
+/* Fusion page fade-in */
+.fusion-page {
+  animation: fusion-fade-in 0.3s ease-out;
+}
+
+@keyframes fusion-fade-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* Loading skeleton */
+.fusion-skeleton {
+  @apply animate-pulse bg-gray-200 rounded;
+}
+
+/* Error boundary */
+.fusion-error {
+  @apply p-8 text-center;
+}
+
+.fusion-error h2 {
+  @apply text-xl font-semibold text-red-600 mb-2;
+}
+
+.fusion-error p {
+  @apply text-gray-500 mb-4;
+}
+
+.fusion-error button {
+  @apply px-4 py-2 bg-fu-primary text-white rounded-lg hover:opacity-90 transition-opacity;
+}
+
 @layer components {
   .btn-primary {
-    @apply bg-[rgb(var(--ctc-primary))] text-white px-6 py-2.5 rounded-lg font-medium
-           hover:bg-[rgb(var(--ctc-primary-dark))] active:opacity-90
+    @apply bg-[rgb(var(--fu-primary))] text-white px-6 py-2.5 rounded-lg font-medium
+           hover:bg-[rgb(var(--fu-primary-dark))] active:opacity-90
            transition-all duration-200 ease-in-out
            disabled:opacity-50 disabled:cursor-not-allowed;
   }
@@ -32,8 +70,8 @@
   }
 
   .btn-outline {
-    @apply border-2 border-[rgb(var(--ctc-primary))] text-[rgb(var(--ctc-primary))] px-6 py-2.5 rounded-lg font-medium
-           hover:bg-[rgb(var(--ctc-primary))]/5 active:bg-[rgb(var(--ctc-primary))]/10
+    @apply border-2 border-[rgb(var(--fu-primary))] text-[rgb(var(--fu-primary))] px-6 py-2.5 rounded-lg font-medium
+           hover:bg-[rgb(var(--fu-primary))]/5 active:bg-[rgb(var(--fu-primary))]/10
            transition-all duration-200 ease-in-out;
   }
 
@@ -43,11 +81,11 @@
   }
 
   .card-gradient {
-    @apply bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-primary-dark))];
+    @apply bg-gradient-to-br from-[rgb(var(--fu-primary))] to-[rgb(var(--fu-primary-dark))];
   }
 
   .section-hero {
-    @apply bg-gradient-to-br from-[rgb(var(--ctc-primary))] via-[rgb(var(--ctc-primary-dark))] to-[rgb(var(--ctc-accent-dark))] text-white;
+    @apply bg-gradient-to-br from-[rgb(var(--fu-primary))] via-[rgb(var(--fu-primary-dark))] to-[rgb(var(--fu-accent-dark))] text-white;
   }
 
   .progress-track {
@@ -55,12 +93,12 @@
   }
 
   .progress-fill {
-    @apply bg-[rgb(var(--ctc-primary))] h-2 rounded-full transition-all duration-500;
+    @apply bg-[rgb(var(--fu-primary))] h-2 rounded-full transition-all duration-500;
   }
 
   .input-field {
     @apply w-full px-4 py-2.5 border border-gray-300 rounded-lg
-           focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-[rgb(var(--ctc-primary))]
+           focus:ring-2 focus:ring-[rgb(var(--fu-primary))] focus:border-[rgb(var(--fu-primary))]
            outline-none transition-all duration-200
            placeholder:text-gray-400;
   }
@@ -70,7 +108,7 @@
   }
 
   .badge-primary {
-    @apply badge bg-[rgb(var(--ctc-primary))]/10 text-[rgb(var(--ctc-primary-dark))];
+    @apply badge bg-[rgb(var(--fu-primary))]/10 text-[rgb(var(--fu-primary-dark))];
   }
 
   .badge-success {

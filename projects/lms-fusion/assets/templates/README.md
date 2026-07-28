@@ -42,7 +42,7 @@ templates/
 Copy the template to your site's `templates/` directory with the same relative path:
 
 ```
-projects/ctc-research/templates/base.html  ← overrides projects/assets/templates/base.html
+projects/fusion-cms/templates/base.html  ← overrides projects/assets/templates/base.html
 ```
 
 ## Reference

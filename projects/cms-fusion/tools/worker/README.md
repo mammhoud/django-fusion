@@ -1,6 +1,6 @@
 # www/worker — Background Task Processing (Celery + Dramatiq)
 
-The `worker/` package provides all background task processing for the Structa Cloud monorepo, running across all tenant websites (ctc-research, lms, VResume) through the shared-task stack.
+The `worker/` package provides all background task processing for the Structa Cloud monorepo, running across all tenant websites (fusion-cms, lms, VResume) through the shared-task stack.
 
 ---
 

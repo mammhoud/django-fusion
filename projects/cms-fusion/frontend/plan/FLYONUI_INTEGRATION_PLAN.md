@@ -60,7 +60,7 @@ node -e "console.log(require('flyonui/package.json').version)"
 /* ── FlyonUI JS source scanning ── */
 /* (Tailwind v3 uses content: in tailwind.config.js for this) */
 
-/* ── CTC Research custom theme (KEPT — all existing layers) ── */
+/* ── Fusion CMS custom theme (KEPT — all existing layers) ── */
 @layer base {
   :root {
     --ctc-primary: 0 161 179;

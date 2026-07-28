@@ -3,7 +3,7 @@
 
 Lets `python projects/www/__main__.py <command>` route through the
 existing `cli.py:SiteCLI` infrastructure exactly the way per-site
-`__main__.py` does for ctc-research / lms / VResume.
+`__main__.py` does for fusion-cms / lms / VResume.
 
 The `www` site (created from the merge of `projects/shared/` and
 `projects/www/`) provides the shared/core Django application code

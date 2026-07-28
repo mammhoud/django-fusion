@@ -1,5 +1,5 @@
 """
-Blog Viewsets for ctc-research.com
+Blog Viewsets for fusion-cms.com
 =====================================
 
 Routable ModelViewsets for the Blog application.

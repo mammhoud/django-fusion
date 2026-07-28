@@ -1,7 +1,7 @@
 """
 Custom allauth adapter for HTMX fragment rendering.
 
-Module: plugins.accounts.adapters (ctc-research.com)
+Module: plugins.accounts.adapters (fusion-cms.com)
 
 This adapter:
 - Maps allauth template names to auth/ fragment templates

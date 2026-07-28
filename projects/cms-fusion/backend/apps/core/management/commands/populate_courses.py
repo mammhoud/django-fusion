@@ -3,8 +3,8 @@ Django management command to populate Courses and Events pages with sample conte
 
 Run on the remote server::
 
-    docker exec ctc-research-website python manage.py populate_courses
-    docker exec ctc-research-website python manage.py populate_courses --dry-run
+    docker exec fusion-cms-website python manage.py populate_courses
+    docker exec fusion-cms-website python manage.py populate_courses --dry-run
 
 Options:
     --courses-only    Only populate course data (skip events)
@@ -91,7 +91,7 @@ class Command(BaseCommand):
 
             self.stdout.write(self.style.SUCCESS(
                 "\n✅ CoursesPage populated and published!\n"
-                "   View at: https://ctc-research.com/home/all-courses/\n"
+                "   View at: https://fusion-cms.com/home/all-courses/\n"
             ))
         else:
             self.stdout.write(self.style.SUCCESS(
@@ -227,7 +227,7 @@ class Command(BaseCommand):
                 revision.publish()
             self.stdout.write(self.style.SUCCESS(
                 "\n✅ EventPage populated and published!\n"
-                "   View at: https://ctc-research.com/events/\n"
+                "   View at: https://fusion-cms.com/events/\n"
             ))
 
     def _get_or_create_event_page(self, options):

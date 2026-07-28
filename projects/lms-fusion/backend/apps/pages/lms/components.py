@@ -1,5 +1,5 @@
 """
-LMS Fragment Components for ctc-research.com
+LMS Fragment Components for fusion-cms.com
 =============================================
 
 HTMX fragment components for the Learning Management System.

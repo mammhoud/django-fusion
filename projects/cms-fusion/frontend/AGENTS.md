@@ -8,7 +8,7 @@
 
 ## Project Overview
 
-The LMS front-end is a Next.js 14 application serving the CTC Research
+The LMS front-end is a Next.js 14 application serving the Fusion CMS
 learning management system. It provides:
 - **Public pages:** Homepage, courses, about, contact, FAQ, blog, shop
 - **Auth pages:** Login, registration

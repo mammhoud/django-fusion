@@ -75,12 +75,12 @@ export default function DashboardReviewPage() {
           <div className="relative flex-1">
             <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search reviews..."
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none text-sm" />
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--fu-primary))] focus:border-transparent outline-none text-sm" />
           </div>
           <div className="flex gap-1">
             {[null, 5, 4, 3, 2, 1].map((r) => (
               <button key={r === null ? 'all' : r} onClick={() => setRatingFilter(r)}
-                className={`px-3 py-2 text-sm rounded-lg transition-all ${ratingFilter === r ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+                className={`px-3 py-2 text-sm rounded-lg transition-all ${ratingFilter === r ? 'bg-[rgb(var(--fu-primary))] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
                 {r === null ? 'All' : r + '★'}
               </button>
             ))}
@@ -109,9 +109,9 @@ export default function DashboardReviewPage() {
                   </div>
                   <p className="text-sm text-gray-600 leading-relaxed">{review.text}</p>
                   <div className="flex items-center gap-4 mt-3">
-                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors"><HiThumbUp className="w-3.5 h-3.5" /> Helpful ({review.helpful})</button>
-                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors"><HiFlag className="w-3.5 h-3.5" /> Report</button>
-                    <button className={`flex items-center gap-1 text-xs transition-colors ${review.replied ? 'text-green-600' : 'text-gray-400 hover:text-[rgb(var(--ctc-primary))]'}`}>
+                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[rgb(var(--fu-primary))] transition-colors"><HiThumbUp className="w-3.5 h-3.5" /> Helpful ({review.helpful})</button>
+                    <button className="flex items-center gap-1 text-xs text-gray-400 hover:text-[rgb(var(--fu-primary))] transition-colors"><HiFlag className="w-3.5 h-3.5" /> Report</button>
+                    <button className={`flex items-center gap-1 text-xs transition-colors ${review.replied ? 'text-green-600' : 'text-gray-400 hover:text-[rgb(var(--fu-primary))]'}`}>
                       <HiChat className="w-3.5 h-3.5" /> {review.replied ? 'Replied' : 'Reply'}
                     </button>
                   </div>

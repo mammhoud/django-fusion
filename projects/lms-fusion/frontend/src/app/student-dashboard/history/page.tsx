@@ -13,9 +13,9 @@ import EmptyState from '@/components/ui/EmptyState';
 const activityIcons: Record<string, { icon: IconType; color: string; bg: string }> = {
   completed: { icon: HiCheckCircle, color: 'text-green-600', bg: 'bg-green-100' },
   enrolled: { icon: HiAcademicCap, color: 'text-blue-600', bg: 'bg-blue-100' },
-  started: { icon: HiPlay, color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
+  started: { icon: HiPlay, color: 'text-[rgb(var(--fu-accent))]', bg: 'bg-[rgb(var(--fu-accent))]/10' },
   quiz: { icon: HiStar, color: 'text-yellow-600', bg: 'bg-yellow-100' },
-  review: { icon: HiBookOpen, color: 'text-[rgb(var(--ctc-primary))]', bg: 'bg-[rgb(var(--ctc-primary))]/10' },
+  review: { icon: HiBookOpen, color: 'text-[rgb(var(--fu-primary))]', bg: 'bg-[rgb(var(--fu-primary))]/10' },
 };
 
 function getActivityMeta(action: string) {
@@ -67,7 +67,7 @@ export default function StudentHistoryPage() {
           <select
             value={filter}
             onChange={(e) => setFilter(e.target.value)}
-            className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] outline-none"
+            className="text-sm border border-gray-200 rounded-lg px-3 py-2 focus:ring-2 focus:ring-[rgb(var(--fu-primary))] outline-none"
           >
             <option value="all">All Activity</option>
             <option value="complete">Completed</option>
@@ -82,7 +82,7 @@ export default function StudentHistoryPage() {
         {[
           { label: 'Courses Enrolled', value: dashboard?.enrolled_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
           { label: 'Completed', value: dashboard?.completed_courses ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
-          { label: 'Hours Learned', value: dashboard?.total_hours ?? 0, color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10', suffix: 'h' },
+          { label: 'Hours Learned', value: dashboard?.total_hours ?? 0, color: 'text-[rgb(var(--fu-accent))]', bg: 'bg-[rgb(var(--fu-accent))]/10', suffix: 'h' },
         ].map((stat) => (
           <div key={stat.label} className="card p-4 text-center">
             <div className={`text-2xl font-bold ${stat.color}`}>{stat.value}{stat.suffix || ''}</div>
@@ -143,7 +143,7 @@ export default function StudentHistoryPage() {
                             <div className="flex items-center gap-2">
                               <div className="w-20 bg-gray-200 rounded-full h-1.5">
                                 <div
-                                  className="bg-[rgb(var(--ctc-primary))]/50 h-1.5 rounded-full"
+                                  className="bg-[rgb(var(--fu-primary))]/50 h-1.5 rounded-full"
                                   style={{ width: `${activity.percentage}%` }}
                                 />
                               </div>

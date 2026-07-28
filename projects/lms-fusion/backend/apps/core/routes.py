@@ -1,5 +1,5 @@
 """
-CTC Research — Routable Components Site Configuration
+Fusion CMS — Routable Components Site Configuration
 ======================================================
 
 Defines the Application and Site hierarchy for the routable-components
@@ -91,7 +91,7 @@ class BlogApp(Application):
 # ---------------------------------------------------------------------------
 
 site = Site(
-    title="CTC Research",
+    title="Fusion CMS",
     viewsets=[
         LMSApp(),
         BlogApp(),
@@ -112,7 +112,7 @@ def get_site():
     global _site
     if _site is None:
         _site = Site(
-            title="CTC Research",
+            title="Fusion CMS",
             viewsets=[
                 LMSApp(),
                 BlogApp(),
@@ -136,7 +136,7 @@ def get_site():
     global _site
     if _site is None:
         _site = Site(
-            title="CTC Research",
+            title="Fusion CMS",
             viewsets=[
                 LMSApp(),
                 BlogApp(),

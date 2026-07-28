@@ -50,7 +50,7 @@ function FaqPageContent({ page }: { page: CmsPage | undefined }) {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               placeholder="Search FAQs..."
-              className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 bg-white shadow-lg focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/30 outline-none"
+              className="w-full pl-12 pr-4 py-3.5 rounded-xl text-gray-900 bg-white shadow-lg focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/30 outline-none"
             />
           </div>
         </div>
@@ -92,7 +92,7 @@ function FaqPageContent({ page }: { page: CmsPage | undefined }) {
         </div>
 
         {cta && (
-          <div className="mt-12 text-center bg-[rgb(var(--ctc-primary))]/5 rounded-2xl p-8 border border-[rgb(var(--ctc-primary))]/10">
+          <div className="mt-12 text-center bg-[rgb(var(--fu-primary))]/5 rounded-2xl p-8 border border-[rgb(var(--fu-primary))]/10">
             <h3 className="text-lg font-semibold text-gray-900 mb-2">{cta.heading}</h3>
             <p className="text-gray-600 mb-6">{cta.intro}</p>
             <a href={cta.ctas?.[0]?.href || '/contact'} className="btn-primary inline-flex">

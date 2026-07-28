@@ -1,7 +1,7 @@
-"""CTC Research — API Schema app configuration (Pydantic).
+"""Fusion CMS — API Schema app configuration (Pydantic).
 
 Single source of truth for API contracts between
-ctc-research (django-bolt) and next-LMS (Next.js).
+fusion-cms (django-bolt) and next-LMS (Next.js).
 """
 
 from django.apps import AppConfig
@@ -10,5 +10,5 @@ from django.apps import AppConfig
 class SchemaConfig(AppConfig):
     name = "apps.core.schemas"
     label = "schemas"
-    verbose_name = "CTC Research API Schemas"
+    verbose_name = "Fusion CMS API Schemas"
     default_auto_field = "django.db.models.BigAutoField"

@@ -1,5 +1,5 @@
 """
-Pages plugin — shared static page content definitions for CTC Research.
+Pages plugin — shared static page content definitions for Fusion CMS.
 
 Provides ``STATIC_PAGES``, a dict of all static public page content that is
 consumed by both the Django API views and the django-fusion fragment

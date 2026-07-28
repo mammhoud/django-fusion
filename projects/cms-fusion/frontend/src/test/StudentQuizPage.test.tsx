@@ -285,7 +285,7 @@ describe('StudentQuizPage - In Progress', () => {
 
     // The choice should now show as selected (active style)
     const choiceBtn = screen.getByText(/A JavaScript library/).closest('button');
-    expect(choiceBtn?.className).toContain('border-[rgb(var(--ctc-primary))]');
+    expect(choiceBtn?.className).toContain('border-[rgb(var(--fu-primary))]');
   });
 
   it('shows textarea for short_answer questions', async () => {

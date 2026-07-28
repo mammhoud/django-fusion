@@ -82,8 +82,8 @@ export default function PaymentSuccessPage() {
     return (
       <div className="min-h-[70vh] flex items-center justify-center px-4">
         <div className="text-center">
-          <div className="w-20 h-20 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-6">
-            <div className="w-10 h-10 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" />
+          <div className="w-20 h-20 bg-[rgb(var(--fu-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-6">
+            <div className="w-10 h-10 border-2 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Verifying Payment</h2>
           <p className="text-gray-500">Confirming your payment with the provider...</p>
@@ -165,8 +165,8 @@ export default function PaymentSuccessPage() {
         {/* Enrollment Details */}
         <div className="card p-6 mb-8 text-left space-y-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 bg-[rgb(var(--ctc-primary))]/10 rounded-lg flex items-center justify-center">
-              <HiAcademicCap className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+            <div className="w-10 h-10 bg-[rgb(var(--fu-primary))]/10 rounded-lg flex items-center justify-center">
+              <HiAcademicCap className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
             </div>
             <div>
               <p className="text-sm text-gray-500">Course</p>

@@ -1,4 +1,4 @@
-"""Events views for ctc-research — public event listing and detail."""
+"""Events views for fusion-cms — public event listing and detail."""
 
 from django.views.generic import DetailView, ListView
 

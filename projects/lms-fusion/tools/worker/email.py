@@ -1,7 +1,7 @@
 """Shared email background actors for all websites.
 
 Provides Dramatiq actors for sending templated, bulk, and raw emails
-across all tenant websites (ctc-research, lms, VResume). Each actor
+across all tenant websites (fusion-cms, lms, VResume). Each actor
 accepts an optional ``website`` parameter to configure Django for the
 correct site before sending.
 
@@ -53,7 +53,7 @@ def send_email_task(
         subject: Email subject line.
         template: Django template name to render for the email body.
         context: Template context variables.
-        website: Optional website slug (e.g. ``"ctc-research"``).
+        website: Optional website slug (e.g. ``"fusion-cms"``).
             Uses the active website when ``None``.
 
     Returns:

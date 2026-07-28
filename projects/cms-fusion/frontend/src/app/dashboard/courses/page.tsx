@@ -67,8 +67,8 @@ export default function DashboardCoursesPage() {
                   </td>
                   <td className="px-6 py-4 text-right">
                     <div className="flex items-center justify-end gap-2">
-                      <Link href={`/course-details/${course.id}` as any} className="p-2 text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors"><HiEye className="w-4 h-4" /></Link>
-                      <Link href={`/dashboard/courses/${course.id}/edit` as any} className="p-2 text-gray-400 hover:text-[rgb(var(--ctc-primary))] transition-colors"><HiPencil className="w-4 h-4" /></Link>
+                      <Link href={`/course-details/${course.id}` as any} className="p-2 text-gray-400 hover:text-[rgb(var(--fu-primary))] transition-colors"><HiEye className="w-4 h-4" /></Link>
+                      <Link href={`/dashboard/courses/${course.id}/edit` as any} className="p-2 text-gray-400 hover:text-[rgb(var(--fu-primary))] transition-colors"><HiPencil className="w-4 h-4" /></Link>
                       <button onClick={() => deleteCourse(course.id)} className="p-2 text-gray-400 hover:text-red-600 transition-colors"><HiTrash className="w-4 h-4" /></button>
                     </div>
                   </td>

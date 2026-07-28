@@ -1,5 +1,5 @@
 """
-API Schemas — Single source of truth for ctc-research ↔ next-LMS API contracts (Pydantic).
+API Schemas — Single source of truth for fusion-cms ↔ next-LMS API contracts (Pydantic).
 
 Import pattern:
     from apps.core.schemas import (

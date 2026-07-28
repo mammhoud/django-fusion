@@ -46,7 +46,7 @@ vi.mock('@/store/api/endpoints/contact', () => ({
 const CONTACT_PAGE_DATA = {
   slug: 'contact',
   title: 'Contact Us',
-  seo: { title: 'Contact | CTC Research', description: 'Get in touch' },
+  seo: { title: 'Contact | Fusion CMS', description: 'Get in touch' },
   blocks: [
     {
       type: 'hero',
@@ -56,7 +56,7 @@ const CONTACT_PAGE_DATA = {
     {
       type: 'contact_methods',
       items: [
-        { type: 'email', label: 'Email', value: 'hello@ctc-research.com', href: 'mailto:hello@ctc-research.com' },
+        { type: 'email', label: 'Email', value: 'hello@fusion-cms.com', href: 'mailto:hello@fusion-cms.com' },
         { type: 'phone', label: 'Phone', value: '+1 (555) 123-4567' },
         { type: 'address', label: 'Office', value: '123 Research Drive, Boston, MA' },
         { type: 'hours', label: 'Hours', value: 'Mon-Fri, 9AM-6PM EST' },
@@ -200,7 +200,7 @@ describe('Contact Page', () => {
 
     await vi.waitFor(() => {
       expect(
-        screen.getByText('hello@ctc-research.com'),
+        screen.getByText('hello@fusion-cms.com'),
       ).toBeInTheDocument();
       expect(
         screen.getByText('+1 (555) 123-4567'),
@@ -212,10 +212,10 @@ describe('Contact Page', () => {
     renderContactPage(ENCODED_FULL);
 
     await vi.waitFor(() => {
-      const emailLink = screen.getByText('hello@ctc-research.com');
+      const emailLink = screen.getByText('hello@fusion-cms.com');
       expect(emailLink.closest('a')).toHaveAttribute(
         'href',
-        'mailto:hello@ctc-research.com',
+        'mailto:hello@fusion-cms.com',
       );
     });
   });

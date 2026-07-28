@@ -2,7 +2,7 @@
 
 Registers Dramatiq actor modules (email, content) with the broker when
 Django finishes loading, ensuring background tasks are discoverable at
-runtime across all tenant websites (ctc-research, lms, VResume).
+runtime across all tenant websites (fusion-cms, lms, VResume).
 
 The worker app is registered globally via
 ``projects/configs/base/apps.py:INSTALLED_APPS`` so it activates for

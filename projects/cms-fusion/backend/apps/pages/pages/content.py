@@ -1,5 +1,5 @@
 """
-Shared static page content definitions for CTC Research.
+Shared static page content definitions for Fusion CMS.
 
 Moved from ``www.api.pages`` to a reusable plugin module so that both the
 API views and the django-fusion fragment components can import the same
@@ -14,16 +14,16 @@ def cta(label, href, variant="primary"):
 STATIC_PAGES = {
     "home": {
         "slug": "home",
-        "title": "CTC Research — Advancing Clinical Trials",
+        "title": "Fusion CMS — Advancing Clinical Trials",
         "seo": {
-            "title": "CTC Research | Advancing Clinical Trials Through Innovation",
+            "title": "Fusion CMS | Advancing Clinical Trials Through Innovation",
             "description": "Leading clinical trial research organization dedicated to advancing medical science through innovative research methodologies and patient-centered approaches.",
         },
         "blocks": [
             {
                 "type": "hero",
                 "heading": "Advancing Clinical Trials Through Innovation",
-                "intro": "CTC Research is a premier clinical research organization dedicated to accelerating the development of new therapies through rigorous scientific methods and patient-centered approaches.",
+                "intro": "Fusion CMS is a premier clinical research organization dedicated to accelerating the development of new therapies through rigorous scientific methods and patient-centered approaches.",
                 "ctas": [
                     cta("Explore Our Services", "/services"),
                     cta("Contact Us", "/contact", "secondary"),
@@ -55,16 +55,16 @@ STATIC_PAGES = {
     },
     "about": {
         "slug": "about",
-        "title": "About CTC Research",
+        "title": "About Fusion CMS",
         "seo": {
-            "title": "About CTC Research | Our Mission & Values",
-            "description": "Learn about CTC Research's mission to advance clinical trials through innovation, integrity, and patient-centered research.",
+            "title": "About Fusion CMS | Our Mission & Values",
+            "description": "Learn about Fusion CMS's mission to advance clinical trials through innovation, integrity, and patient-centered research.",
         },
         "blocks": [
             {
                 "type": "hero",
-                "heading": "About CTC Research",
-                "intro": "For over 25 years, CTC Research has been at the forefront of clinical trial innovation, helping bring life-changing therapies to patients worldwide.",
+                "heading": "About Fusion CMS",
+                "intro": "For over 25 years, Fusion CMS has been at the forefront of clinical trial innovation, helping bring life-changing therapies to patients worldwide.",
             },
             {
                 "type": "stats",
@@ -89,7 +89,7 @@ STATIC_PAGES = {
             {
                 "type": "rich_section",
                 "heading": "Our Mission",
-                "html": "<p>CTC Research is dedicated to accelerating the development of safe and effective therapies. We partner with pharmaceutical companies, biotech firms, and academic institutions to design and execute clinical trials that meet the highest standards of scientific rigor and ethical conduct.</p>",
+                "html": "<p>Fusion CMS is dedicated to accelerating the development of safe and effective therapies. We partner with pharmaceutical companies, biotech firms, and academic institutions to design and execute clinical trials that meet the highest standards of scientific rigor and ethical conduct.</p>",
                 "items": [
                     {
                         "heading": "Scientific Excellence",
@@ -117,14 +117,14 @@ STATIC_PAGES = {
         "slug": "team",
         "title": "Our Team",
         "seo": {
-            "title": "CTC Research Team | Clinical Research Experts",
-            "description": "Meet the experienced team of clinical researchers, scientists, and support staff at CTC Research.",
+            "title": "Fusion CMS Team | Clinical Research Experts",
+            "description": "Meet the experienced team of clinical researchers, scientists, and support staff at Fusion CMS.",
         },
         "blocks": [
             {
                 "type": "hero",
                 "heading": "Our Team",
-                "intro": "Meet the dedicated professionals driving clinical research excellence at CTC Research.",
+                "intro": "Meet the dedicated professionals driving clinical research excellence at Fusion CMS.",
             },
             {
                 "type": "rich_section",
@@ -134,7 +134,7 @@ STATIC_PAGES = {
             {
                 "type": "cta",
                 "heading": "Join Our Team",
-                "intro": "Explore career opportunities at CTC Research.",
+                "intro": "Explore career opportunities at Fusion CMS.",
                 "ctas": [cta("View Open Positions", "/contact")],
             },
         ],
@@ -143,7 +143,7 @@ STATIC_PAGES = {
         "slug": "services",
         "title": "Our Services",
         "seo": {
-            "title": "Clinical Trial Services | CTC Research",
+            "title": "Clinical Trial Services | Fusion CMS",
             "description": "Comprehensive clinical trial management services including protocol design, site management, data management, and regulatory affairs.",
         },
         "blocks": [
@@ -155,7 +155,7 @@ STATIC_PAGES = {
             {
                 "type": "rich_section",
                 "heading": "What We Offer",
-                "html": "<p>From initial protocol design through final study report, CTC Research provides comprehensive support across the entire clinical trial lifecycle. Our services are tailored to meet the unique requirements of each study while maintaining the highest standards of quality and compliance.</p>",
+                "html": "<p>From initial protocol design through final study report, Fusion CMS provides comprehensive support across the entire clinical trial lifecycle. Our services are tailored to meet the unique requirements of each study while maintaining the highest standards of quality and compliance.</p>",
                 "items": [
                     {
                         "heading": "Protocol Design",
@@ -187,15 +187,15 @@ STATIC_PAGES = {
         "slug": "privacy",
         "title": "Privacy Policy",
         "seo": {
-            "title": "Privacy Policy | CTC Research",
-            "description": "How CTC Research collects, uses, discloses, and safeguards personal information.",
+            "title": "Privacy Policy | Fusion CMS",
+            "description": "How Fusion CMS collects, uses, discloses, and safeguards personal information.",
         },
         "last_updated": "January 1, 2026",
         "blocks": [
             {
                 "type": "rich_section",
                 "heading": "1. Introduction",
-                "html": "<p>Welcome to CTC Research. We respect your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, disclose, and safeguard your information when you visit our platform.</p>",
+                "html": "<p>Welcome to Fusion CMS. We respect your privacy and are committed to protecting your personal data. This privacy policy explains how we collect, use, disclose, and safeguard your information when you visit our platform.</p>",
             },
             {
                 "type": "rich_section",
@@ -225,7 +225,7 @@ STATIC_PAGES = {
             {
                 "type": "rich_section",
                 "heading": "7. Contact Us",
-                "html": "<p>If you have questions about this policy, contact privacy@ctc-research.com.</p>",
+                "html": "<p>If you have questions about this policy, contact privacy@fusion-cms.com.</p>",
             },
         ],
     },
@@ -233,8 +233,8 @@ STATIC_PAGES = {
         "slug": "faq",
         "title": "Frequently Asked Questions",
         "seo": {
-            "title": "FAQ | CTC Research",
-            "description": "Answers to common questions about CTC Research clinical trials and services.",
+            "title": "FAQ | Fusion CMS",
+            "description": "Answers to common questions about Fusion CMS clinical trials and services.",
         },
         "blocks": [
             {
@@ -266,7 +266,7 @@ STATIC_PAGES = {
                         "title": "For Sponsors",
                         "items": [
                             {
-                                "question": "How do I start a trial with CTC Research?",
+                                "question": "How do I start a trial with Fusion CMS?",
                                 "answer": "Contact our business development team through our contact form. We'll schedule a consultation to discuss your study requirements and timeline.",
                             },
                             {
@@ -289,8 +289,8 @@ STATIC_PAGES = {
         "slug": "contact",
         "title": "Contact Us",
         "seo": {
-            "title": "Contact Us | CTC Research",
-            "description": "Contact CTC Research for clinical trial inquiries, partnership opportunities, and general information.",
+            "title": "Contact Us | Fusion CMS",
+            "description": "Contact Fusion CMS for clinical trial inquiries, partnership opportunities, and general information.",
         },
         "blocks": [
             {
@@ -304,8 +304,8 @@ STATIC_PAGES = {
                     {
                         "type": "email",
                         "label": "Email",
-                        "value": "info@ctc-research.com",
-                        "href": "mailto:info@ctc-research.com",
+                        "value": "info@fusion-cms.com",
+                        "href": "mailto:info@fusion-cms.com",
                     },
                     {
                         "type": "phone",

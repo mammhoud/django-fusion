@@ -22,7 +22,7 @@ export default function StudentEnrolledCourses() {
               <HiBookOpen className="w-8 h-8 text-white/60" />
             </div>
             <div className="flex-1 min-w-0">
-              <Link href={`/course-details/${c.id}`} className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors">{c.title}</Link>
+              <Link href={`/course-details/${c.id}`} className="font-semibold text-gray-900 hover:text-[rgb(var(--fu-primary))] transition-colors">{c.title}</Link>
               <p className="text-sm text-gray-500">{c.instructor}</p>
               <div className="mt-2">
                 <div className="flex items-center justify-between text-sm mb-1">

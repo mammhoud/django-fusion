@@ -76,7 +76,7 @@ export default function NotificationsPage() {
       {/* Channel preferences */}
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <HiBell className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+          <HiBell className="w-4 h-4 text-[rgb(var(--fu-primary))]" />
           Channels
         </h2>
         <div className="space-y-3">
@@ -96,7 +96,7 @@ export default function NotificationsPage() {
                   onChange={() => togglePref(key)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-gray-200 peer-checked:bg-[rgb(var(--ctc-primary))] rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
+                <div className="w-9 h-5 bg-gray-200 peer-checked:bg-[rgb(var(--fu-primary))] rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
               </div>
             </label>
           ))}
@@ -106,7 +106,7 @@ export default function NotificationsPage() {
       {/* Type preferences */}
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <HiClock className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+          <HiClock className="w-4 h-4 text-[rgb(var(--fu-primary))]" />
           Notification Types
         </h2>
         <div className="space-y-2">
@@ -123,7 +123,7 @@ export default function NotificationsPage() {
                   onChange={() => togglePref(key)}
                   className="sr-only peer"
                 />
-                <div className="w-9 h-5 bg-gray-200 peer-checked:bg-[rgb(var(--ctc-primary))] rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
+                <div className="w-9 h-5 bg-gray-200 peer-checked:bg-[rgb(var(--fu-primary))] rounded-full peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all" />
               </div>
             </label>
           ))}
@@ -133,7 +133,7 @@ export default function NotificationsPage() {
       {/* Frequency */}
       <section className="mb-8">
         <h2 className="text-sm font-semibold text-gray-900 uppercase tracking-wider mb-4 flex items-center gap-2">
-          <HiClock className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+          <HiClock className="w-4 h-4 text-[rgb(var(--fu-primary))]" />
           Digest Frequency
         </h2>
         <div className="card p-4">

@@ -159,7 +159,7 @@ export default function DashboardAnnouncementPage() {
                 type="text"
                 value={form.title}
                 onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                 placeholder="e.g., New Course Coming Soon"
               />
             </div>
@@ -170,7 +170,7 @@ export default function DashboardAnnouncementPage() {
                 value={form.content}
                 onChange={(e) => setForm((f) => ({ ...f, content: e.target.value }))}
                 rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none resize-none"
                 placeholder="Write your announcement..."
               />
             </div>
@@ -181,7 +181,7 @@ export default function DashboardAnnouncementPage() {
                 <select
                   value={form.audience}
                   onChange={(e) => setForm((f) => ({ ...f, audience: e.target.value as any }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                 >
                   <option value="all">All Users</option>
                   <option value="instructor">Instructors Only</option>
@@ -194,7 +194,7 @@ export default function DashboardAnnouncementPage() {
                   type="url"
                   value={form.link}
                   onChange={(e) => setForm((f) => ({ ...f, link: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                   placeholder="https://..."
                 />
               </div>
@@ -207,7 +207,7 @@ export default function DashboardAnnouncementPage() {
                   type="text"
                   value={form.link_label}
                   onChange={(e) => setForm((f) => ({ ...f, link_label: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                   placeholder="Learn More"
                 />
               </div>
@@ -217,7 +217,7 @@ export default function DashboardAnnouncementPage() {
                     type="checkbox"
                     checked={form.publish_now}
                     onChange={(e) => setForm((f) => ({ ...f, publish_now: e.target.checked }))}
-                    className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]"
+                    className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]"
                   />
                   <span className="text-sm text-gray-700">Publish immediately</span>
                 </label>
@@ -291,8 +291,8 @@ export default function DashboardAnnouncementPage() {
                 className="card p-5"
               >
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <HiSpeakerphone className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                  <div className="w-10 h-10 bg-[rgb(var(--fu-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <HiSpeakerphone className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -327,7 +327,7 @@ export default function DashboardAnnouncementPage() {
                             href={a.link}
                             target="_blank"
                             rel="noopener noreferrer"
-                            className="text-xs text-[rgb(var(--ctc-primary))] hover:underline"
+                            className="text-xs text-[rgb(var(--fu-primary))] hover:underline"
                           >
                             {a.link_label || 'Learn More'}
                           </a>

@@ -95,7 +95,7 @@ LOCAL_LIBRARY_APPS = [
 # Each website defines its own LOCAL_APPS in its site-level settings.py
 # because each site ships a different set of plugins, page apps, and
 # www sub-packages.  See:
-#   projects/ctc-research/settings.py
+#   projects/fusion-cms/settings.py
 #   projects/lms/settings.py
 #   projects/portfolio/settings.py
 

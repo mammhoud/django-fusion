@@ -14,7 +14,7 @@ The webpack configuration lives in `webpack/main.config.js` and is driven by `we
 site's entry points and output directories are used.
 
 Site aliases are resolved in `workspace.mjs`:
-- `ctc` / `ctc-research` / `ctc-research.com` → `ctc-research`
+- `ctc` / `fusion-cms` / `fusion-cms.com` → `fusion-cms`
 - `structa` / `lms` / `lms` / `structa.cloud` → `lms`
 - `vresume` / `VResume` / `resume` → `vresume`
 - `customizer` / `cust` → `customizer` (standalone webpack)
@@ -27,7 +27,7 @@ All commands run from the workspace root using `npm --prefix assets`:
 
 ```bash
 # Build a single site (production)
-npm --prefix assets run build:ctc       # ctc-research
+npm --prefix assets run build:ctc       # fusion-cms
 npm --prefix assets run build:structa   # lms
 npm --prefix assets run build:vresume   # VResume
 
@@ -172,11 +172,11 @@ The following libraries are available in the shared `node_modules` and can be im
 
 Each site has its own static source files and compiled output:
 
-### ctc-research
-- Source JS: `ctc-research/assets/static/js/`
-- Source SCSS: `ctc-research/assets/static/styles/`
-- Compiled bundles: `ctc-research/assets/bundles/ctc-research/`
-- Collectstatic output: `ctc-research/assets/staticfiles/`
+### fusion-cms
+- Source JS: `fusion-cms/assets/static/js/`
+- Source SCSS: `fusion-cms/assets/static/styles/`
+- Compiled bundles: `fusion-cms/assets/bundles/fusion-cms/`
+- Collectstatic output: `fusion-cms/assets/staticfiles/`
 
 ### lms
 - Source JS: `lms/assets/static/js/`
@@ -206,7 +206,7 @@ default upload location.
 
 | Site | Media directory | Django setting |
 |------|----------------|----------------|
-| ctc-research | `ctc-research/assets/media/` | `MEDIA_ROOT` |
+| fusion-cms | `fusion-cms/assets/media/` | `MEDIA_ROOT` |
 | lms | `lms/assets/media/` | `MEDIA_ROOT` |
 | VResume | `VResume/assets/media/` | `MEDIA_ROOT` |
 
@@ -218,7 +218,7 @@ In Docker, mount each site's media directory to that site's application assets
 path, for example:
 ```yaml
 volumes:
-  - ../ctc-research/assets/media:/app/ctc-research/assets/media:z
+  - ../fusion-cms/assets/media:/app/fusion-cms/assets/media:z
   - ../lms/assets/media:/app/lms/assets/media:z
   - ../VResume/assets/media:/app/VResume/assets/media:z
 ```
@@ -237,7 +237,7 @@ site's configured media directory.
    npm --prefix assets install <package-name> --save
    ```
 
-2. **Import it in the site's entry file**, e.g. `ctc-research/assets/static/js/app.js`:
+2. **Import it in the site's entry file**, e.g. `fusion-cms/assets/static/js/app.js`:
    ```js
    import MyLibrary from 'my-library';
    // initialise...

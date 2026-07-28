@@ -68,7 +68,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                   href={link.href as any}
                   className={`flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors
                     ${isActive
-                      ? 'bg-[rgb(var(--ctc-primary))]/10 text-[rgb(var(--ctc-primary))]'
+                      ? 'bg-[rgb(var(--fu-primary))]/10 text-[rgb(var(--fu-primary))]'
                       : 'text-gray-600 hover:text-gray-900 hover:bg-gray-50'
                     }`}
                 >

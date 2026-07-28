@@ -1,4 +1,4 @@
-"""Shared services package for ctc-research."""
+"""Shared services package for fusion-cms."""
 
 from .certificates import *
 from .form_submission import FormSubmissionService as FormSubmissionService

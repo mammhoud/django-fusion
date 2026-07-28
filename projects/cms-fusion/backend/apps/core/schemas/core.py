@@ -23,7 +23,7 @@ class HealthResponse(BaseModel):
     """GET /apis/health"""
 
     status: str = "ok"
-    service: str = "ctc-research-bolt"
+    service: str = "fusion-cms-bolt"
     version: str = "1.0.0"
     layer: str = "bolt-exclusive"
 

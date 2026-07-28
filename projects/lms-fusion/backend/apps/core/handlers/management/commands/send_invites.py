@@ -75,7 +75,7 @@ class Command(BaseCommand):
                 token = get_random_string(32)
 
                 # Prepare email
-                subject = "You're invited to ctc-research.com"
+                subject = "You're invited to fusion-cms.com"
                 invite_url = f"http://localhost:8270/invite/{token}/"
 
                 # Try to render email template
@@ -91,7 +91,7 @@ class Command(BaseCommand):
                 except:
                     # Fallback to plain text
                     html_message = f"""
-                    <h1>You're invited to ctc-research.com</h1>
+                    <h1>You're invited to fusion-cms.com</h1>
                     <p>Click the link below to accept your invitation:</p>
                     <p><a href="{invite_url}">{invite_url}</a></p>
                     <p>Or use this code: {token}</p>
@@ -106,7 +106,7 @@ class Command(BaseCommand):
                     send_mail(
                         subject,
                         f"Visit {invite_url} to accept your invitation",
-                        "noreply@ctc-research.com",
+                        "noreply@fusion-cms.com",
                         [email],
                         html_message=html_message,
                         fail_silently=False,

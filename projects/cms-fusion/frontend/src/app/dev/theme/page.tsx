@@ -38,12 +38,12 @@ interface Swatch {
 }
 
 const CTC_SWATCHES: Swatch[] = [
-  { name: 'Primary', variable: '--ctc-primary', rgb: '0 161 179', hex: '#00a1b3' },
-  { name: 'Primary Dark', variable: '--ctc-primary-dark', rgb: '0 122 136', hex: '#007a88' },
-  { name: 'Primary Light', variable: '--ctc-primary-light', rgb: '26 127 212', hex: '#1a7fd4' },
+  { name: 'Primary', variable: '--fu-primary', rgb: '0 161 179', hex: '#00a1b3' },
+  { name: 'Primary Dark', variable: '--fu-primary-dark', rgb: '0 122 136', hex: '#007a88' },
+  { name: 'Primary Light', variable: '--fu-primary-light', rgb: '26 127 212', hex: '#1a7fd4' },
   { name: 'Secondary', variable: '--ctc-secondary', rgb: '0 128 128', hex: '#008080' },
-  { name: 'Accent', variable: '--ctc-accent', rgb: '108 99 255', hex: '#6c63ff' },
-  { name: 'Accent Alt', variable: '--ctc-accent-alt', rgb: '255 107 139', hex: '#ff6b8b' },
+  { name: 'Accent', variable: '--fu-accent', rgb: '108 99 255', hex: '#6c63ff' },
+  { name: 'Accent Alt', variable: '--fu-accent-alt', rgb: '255 107 139', hex: '#ff6b8b' },
 ];
 
 // ── Component ──────────────────────────────────────────────────
