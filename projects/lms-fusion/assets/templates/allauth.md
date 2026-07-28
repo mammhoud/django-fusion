@@ -1,6 +1,6 @@
 # django-allauth Template Map
 
-This guide replaces the raw allauth template inventory with the project-specific override map for the Fusion CMS application. It also records the auth layout conventions shared with `lms` and the current `VResume` account plugin baseline.
+This guide replaces the raw allauth template inventory with the project-specific override map for the Fusion CMS application. It also records the auth layout conventions shared with `lms` and the current `CMS` account plugin baseline.
 
 ## Template lookup convention
 
@@ -51,7 +51,7 @@ When adding or changing allauth templates:
 
 - `fusion-cms` now follows the same visual contract used by `lms` auth templates: `.fragment--form` > `.auth__card.card.card--form` > `.auth__form-header` / `.auth__form` / `.auth__footer`.
 - `lms` keeps additional plugin-level templates under `projects/lms/templates/auth/` and `projects/lms/plugins/accounts/templates/auth/`; use those as copy references for auth SCSS class names and HTMX targets.
-- `VResume` currently carries the account plugin code and profile templates but does not include project-level `account/`, `socialaccount/`, or `auth/` template overrides. Treat Fusion CMS and LMS Demo as the active auth-template references before adding VResume overrides.
+- `CMS` currently carries the account plugin code and profile templates but does not include project-level `account/`, `socialaccount/`, or `auth/` template overrides. Treat Fusion CMS and LMS Demo as the active auth-template references before adding CMS overrides.
 - Non-allauth registration templates such as `projects/fusion-cms/plugins/accounts/templates/auth/*.html` are still fragment-oriented and should remain aligned with the same `.auth__*` and `.form__*` class vocabulary.
 
 ## Allauth template map
