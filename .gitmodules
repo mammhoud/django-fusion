@@ -2,7 +2,3 @@
 	path = libs/django-fusion
 	url = https://github.com/mammhoud/django-fusion.git
 	branch = generic
-
-[submodule "libs/django-bolt"]
-	path = libs/django-bolt
-	url = https://github.com/dj-bolt/django-bolt.git

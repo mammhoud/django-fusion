@@ -1,9 +1,13 @@
 """
-@author Mahmoud Ezzat
+@author Mahmoud Ezzat (mammhoud)
 @requires Python 3.12.5 or later
 
-Copyright (c) 2024
+Copyright (c) 2026 mammhoud
 All rights reserved.
+
+GitHub:  https://github.com/mammhoud
+Portfolio: https://mammhoud.github.io
+Facebook: https://facebook.com/mammhoud
 """
 from structlog import getLogger
 

@@ -17,11 +17,11 @@ webpack can bundle behavior and styles through the same naming contract.
 | `_spa.scss` | `spa/index.js` | `.spa-shell`, `.spa-shell__view`, `.spa-shell__loading` | SPA/fragment layout and loading surfaces. |
 
 The root `assets/static/styles/main.scss` imports this index for shared/base
-sites. `fusion`, `lms`, and `VResume` also import these layers, so the
+sites. `fusion`, `lms`, and `CMS` also import these layers, so the
 same hooks are available across all three websites.
 
 ## Webpack and website overrides
 
 The webpack `static` entry runs the website app file before the shared static
-entry, allowing `fusion`, `lms`, and `VResume` to set per-site
+entry, allowing `fusion`, `lms`, and `CMS` to set per-site
 `STRUCTA_USECASE_CONFIG` values before this shared usecase layer initializes.

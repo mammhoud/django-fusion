@@ -13,7 +13,7 @@ This directory contains **shared Django/Wagtail templates** used across all Stru
 - **[components/AGENTS.md](components/AGENTS.md)** — Shared component inventory (chat, cookies, forms, modals, pagination, tables, search, breadcrumbs, navigation) with templates, context variables, and usage
 - **[plugins/AGENTS.md](plugins/AGENTS.md)** — Plugin template guidance (emails, errors, newsletter, privacy, MFA)
 - **[../lms/AGENTS.md](../../cms/lms-full/AGENTS.md)** — LMS Demo site template path tree and plugin structure
-- **[../portfolio/AGENTS.md](../../cms/portfolio/AGENTS.md)** — Portfolio/VResume site template path tree and page models
+- **[../portfolio/AGENTS.md](../../cms/portfolio/AGENTS.md)** — Portfolio/CMS site template path tree and page models
 - **[../../docs/guides/07-best-practices.md](../../docs/guides/07-best-practices.md)** — Best practices for templates and code style
 
 ---
