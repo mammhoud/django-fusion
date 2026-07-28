@@ -41,7 +41,7 @@ source of truth for what has been integrated where, and what remains.
 | **POS Solo** (pos/pos-solo) | Tauri desktop app + Robyn sidecar | Robyn + Django ORM + Tauri | ``DeviceToken``, ``DataToken`` sync, ``RobynFusionChecker``, `FusionDecoder` (TS vendored) | ✅ Partial |
 | **ceptor-ai** (libs/ceptor-ai) | Local reusable library | Django | ``Viewset``, ``PageHandler``, ``BaseService``, ``BaseStyledForm``, ``EmailTemplateRegistry`` | ✅ Inherited |
 | **Portfolio** (projects/portfolio) | Portfolio site | Django + Wagtail | django-fusion via monorepo dependency | 🔄 Not audited |
-| **CTC Research** (projects/ctc-research) | Research site | Django + Wagtail | django-fusion via monorepo dependency | 🔄 Not audited |
+| **Fusion CMS** (projects/fusion-cms) | Research site | Django + Wagtail | django-fusion via monorepo dependency | 🔄 Not audited |
 | **Test suite** (tests/) | Unit/integration tests | pytest + Django | ``BaseTestCase``, ``AssertEmailMixin``, ``AssertHTMLMixin``, routable components | ✅ Active |
 
 ### 1.2 Feature Distribution Matrix
@@ -87,7 +87,7 @@ django-fusion (libs/django-fusion/)
   │
   ├── Portfolio (projects/portfolio/)  ← not audited for fragment features
   │
-  └── CTC Research (ctc-research/)     ← not audited for fragment features
+  └── Fusion CMS (fusion-cms/)     ← not audited for fragment features
 ```
 
 ### 1.4 Detailed Gap Analysis Findings
@@ -132,7 +132,7 @@ against the latest django-fusion fragment-rendering features.
 | Project | Issue | Impact |
 |---------|-------|--------|
 | Portfolio | Not audited; django-fusion version unknown | May be pinned to an older version without fragment features |
-| CTC Research | Not audited; django-fusion version unknown | Same risk as Portfolio |
+| Fusion CMS | Not audited; django-fusion version unknown | Same risk as Portfolio |
 
 **Status: 🔄 Not started — both sites need dependency check and feature audit.**
 
@@ -733,7 +733,7 @@ and dependencies are explicitly noted.
 | **P1** | LMS frontend middleware | LMS | 2-3 days |
 | **P2** | Backend fragment registration & POS health checks | LMS, POS Full, POS Solo | 1-2 days |
 | **P3** | POS frontend integration | POS Full, POS Solo | 3-4 days |
-| **P4** | Portfolio & CTC Research audit | Portfolio, CTC Research | 1-2 days |
+| **P4** | Portfolio & Fusion CMS audit | Portfolio, Fusion CMS | 1-2 days |
 | **P5** | Testing & hardening | All | 2-3 days |
 
 ---
@@ -819,7 +819,7 @@ Tauri-compatible state management for the session preference.
 
 ---
 
-### 11.5 Phase 4: Portfolio & CTC Research Audit
+### 11.5 Phase 4: Portfolio & Fusion CMS Audit
 
 **Goal:** Audit remaining Django sites for django-fusion usage and identify
 where fragment-rendering features can benefit them.
@@ -828,8 +828,8 @@ where fragment-rendering features can benefit them.
 |------|---------|--------|
 | Audit ``pyproject.toml`` for django-fusion version | Portfolio | 0.5 day |
 | Audit existing views/components for fragment candidates | Portfolio | 0.5 day |
-| Audit ``pyproject.toml`` for django-fusion version | CTC Research | 0.5 day |
-| Audit existing views/components for fragment candidates | CTC Research | 0.5 day |
+| Audit ``pyproject.toml`` for django-fusion version | Fusion CMS | 0.5 day |
+| Audit existing views/components for fragment candidates | Fusion CMS | 0.5 day |
 | Add ``robots.txt`` / ``sitemap.xml`` considerations | Both | 0.5 day |
 
 **Note:** These sites may not need fragment rendering at all — the audit
@@ -873,7 +873,7 @@ frontend middleware, frontend proxy, integration).
 | POS frontend ``FusionStore`` not wired into app startup | P3 | ``App.tsx`` or ``main.rs`` not updated yet |
 | POS sidecar has no component routing | P2 | ``FragmentComponent`` requires django-fusion routing |
 | Tauri ``@tauri-apps/plugin-store`` dependency optional | P3 | ``FusionStore`` handles gracefully with fallback |
-| Portfolio & CTC Research django-fusion version unknown | P4 | May be on older version without fragment features |
+| Portfolio & Fusion CMS django-fusion version unknown | P4 | May be on older version without fragment features |
 | No frontend test framework configured | P5 | Need to decide on Jest vs. Vitest |
 
 ---

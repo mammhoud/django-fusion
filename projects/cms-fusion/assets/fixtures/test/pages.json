@@ -60,9 +60,9 @@
       "content_type": 31,
       "url_path": "/home/",
       "owner": 1,
-      "seo_title": "CTC Research | AI-Powered Medical Writing & Research",
+      "seo_title": "Fusion CMS | AI-Powered Medical Writing & Research",
       "show_in_menus": false,
-      "search_description": "CTC Research empowers medical professionals to harness AI and data science for rigorous scientific writing. Transform clinical data into high-impact publications. Join us today.",
+      "search_description": "Fusion CMS empowers medical professionals to harness AI and data science for rigorous scientific writing. Transform clinical data into high-impact publications. Join us today.",
       "latest_revision_created_at": "2026-02-23T06:28:49.112Z",
       "alias_of": null
     }
@@ -88,15 +88,15 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "About CTC Research",
-      "draft_title": "About CTC Research",
+      "title": "About Fusion CMS",
+      "draft_title": "About Fusion CMS",
       "slug": "about",
       "content_type": 29,
       "url_path": "/home/about/",
       "owner": 1,
-      "seo_title": "About CTC Research | AI-Mediated Scientific Discovery",
+      "seo_title": "About Fusion CMS | AI-Mediated Scientific Discovery",
       "show_in_menus": true,
-      "search_description": "Learn about CTC Research, a global center of excellence for AI-mediated scientific discovery. Discover our mission to advance medicine through authentic, data-driven research and writing.",
+      "search_description": "Learn about Fusion CMS, a global center of excellence for AI-mediated scientific discovery. Discover our mission to advance medicine through authentic, data-driven research and writing.",
       "latest_revision_created_at": "2026-02-23T06:28:52.831Z",
       "alias_of": null
     }
@@ -128,9 +128,9 @@
       "content_type": 30,
       "url_path": "/home/contact/",
       "owner": 1,
-      "seo_title": "Contact CTC Research | Get in Touch for AI Medical Writing Support",
+      "seo_title": "Contact Fusion CMS | Get in Touch for AI Medical Writing Support",
       "show_in_menus": false,
-      "search_description": "Have questions about our AI-powered scientific writing programs? Contact the CTC Research team today. We're here to guide your research journey from data to publication.",
+      "search_description": "Have questions about our AI-powered scientific writing programs? Contact the Fusion CMS team today. We're here to guide your research journey from data to publication.",
       "latest_revision_created_at": "2026-02-23T06:28:54.634Z",
       "alias_of": null
     }
@@ -162,9 +162,9 @@
       "content_type": 32,
       "url_path": "/home/team/",
       "owner": 1,
-      "seo_title": "Our Team | CTC Research Experts in AI & Medical Writing",
+      "seo_title": "Our Team | Fusion CMS Experts in AI & Medical Writing",
       "show_in_menus": true,
-      "search_description": "Meet the expert team behind CTC Research: data scientists, medical writers, and researchers dedicated to advancing medicine through AI-powered scientific writing and mentorship.",
+      "search_description": "Meet the expert team behind Fusion CMS: data scientists, medical writers, and researchers dedicated to advancing medicine through AI-powered scientific writing and mentorship.",
       "latest_revision_created_at": "2026-02-23T06:28:56.391Z",
       "alias_of": null
     }
@@ -196,9 +196,9 @@
       "content_type": 95,
       "url_path": "/home/all-courses/",
       "owner": 1,
-      "seo_title": "AI for Scientific & Medical Writing Courses | CTC Research",
+      "seo_title": "AI for Scientific & Medical Writing Courses | Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Explore CTC Research courses in AI for medical writing and data science. Master tools to analyze clinical data, write impactful papers, and navigate peer review. Enroll now.",
+      "search_description": "Explore Fusion CMS courses in AI for medical writing and data science. Master tools to analyze clinical data, write impactful papers, and navigate peer review. Enroll now.",
       "latest_revision_created_at": "2026-02-23T06:29:02.601Z",
       "alias_of": null
     }
@@ -232,7 +232,7 @@
       "owner": 1,
       "seo_title": "\u0633\u064a \u062a\u064a \u0633\u064a \u0644\u0644\u0628\u062d\u062b \u0627\u0644\u0639\u0644\u0645\u064a | \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629 \u0648\u0627\u0644\u0628\u062d\u062b \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0627\u0646 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a",
       "show_in_menus": false,
-      "search_description": "\u062a\u0645\u0643\u0651\u0646 CTC Research \u0627\u0644\u0623\u0637\u0628\u0627\u0621 \u0648\u0627\u0644\u0628\u0627\u062d\u062b\u064a\u0646 \u0645\u0646 \u062a\u0633\u062e\u064a\u0631 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0648\u0639\u0644\u0648\u0645 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u062f\u0642\u064a\u0642\u0629. \u062d\u0648\u0644 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629 \u0625\u0644\u0649 \u0645\u0646\u0634\u0648\u0631\u0627\u062a \u0639\u0627\u0644\u064a\u0629 \u0627\u0644\u062a\u0623\u062b\u064a\u0631. \u0627\u0646\u0636\u0645 \u0625\u0644\u064a\u0646\u0627 \u0627\u0644\u064a\u0648\u0645.",
+      "search_description": "\u062a\u0645\u0643\u0651\u0646 Fusion CMS \u0627\u0644\u0623\u0637\u0628\u0627\u0621 \u0648\u0627\u0644\u0628\u0627\u062d\u062b\u064a\u0646 \u0645\u0646 \u062a\u0633\u062e\u064a\u0631 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0648\u0639\u0644\u0648\u0645 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u062f\u0642\u064a\u0642\u0629. \u062d\u0648\u0644 \u0628\u064a\u0627\u0646\u0627\u062a\u0643 \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629 \u0625\u0644\u0649 \u0645\u0646\u0634\u0648\u0631\u0627\u062a \u0639\u0627\u0644\u064a\u0629 \u0627\u0644\u062a\u0623\u062b\u064a\u0631. \u0627\u0646\u0636\u0645 \u0625\u0644\u064a\u0646\u0627 \u0627\u0644\u064a\u0648\u0645.",
       "latest_revision_created_at": "2026-02-23T06:28:49.583Z",
       "alias_of": null
     }
@@ -266,7 +266,7 @@
       "owner": 1,
       "seo_title": "\u0639\u0646 \u0633\u064a \u062a\u064a \u0633\u064a \u0644\u0644\u0628\u062d\u062b \u0627\u0644\u0639\u0644\u0645\u064a | \u0627\u0644\u0627\u0643\u062a\u0634\u0627\u0641 \u0627\u0644\u0639\u0644\u0645\u064a \u0628\u0648\u0633\u0627\u0637\u0629 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a",
       "show_in_menus": true,
-      "search_description": "\u062a\u0639\u0631\u0641 \u0639\u0644\u0649 CTC Research\u060c \u0645\u0631\u0643\u0632 \u0627\u0644\u062a\u0645\u064a\u0632 \u0627\u0644\u0639\u0627\u0644\u0645\u064a \u0644\u0644\u0627\u0643\u062a\u0634\u0627\u0641 \u0627\u0644\u0639\u0644\u0645\u064a \u0628\u0648\u0633\u0627\u0637\u0629 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a. \u0627\u0643\u062a\u0634\u0641 \u0645\u0647\u0645\u062a\u0646\u0627 \u0641\u064a \u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0637\u0628 \u0645\u0646 \u062e\u0644\u0627\u0644 \u0628\u062d\u062b \u0648\u0643\u062a\u0627\u0628\u0629 \u0623\u0635\u064a\u0644\u0629 \u0642\u0627\u0626\u0645\u0629 \u0639\u0644\u0649 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a.",
+      "search_description": "\u062a\u0639\u0631\u0641 \u0639\u0644\u0649 Fusion CMS\u060c \u0645\u0631\u0643\u0632 \u0627\u0644\u062a\u0645\u064a\u0632 \u0627\u0644\u0639\u0627\u0644\u0645\u064a \u0644\u0644\u0627\u0643\u062a\u0634\u0627\u0641 \u0627\u0644\u0639\u0644\u0645\u064a \u0628\u0648\u0633\u0627\u0637\u0629 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a. \u0627\u0643\u062a\u0634\u0641 \u0645\u0647\u0645\u062a\u0646\u0627 \u0641\u064a \u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0637\u0628 \u0645\u0646 \u062e\u0644\u0627\u0644 \u0628\u062d\u062b \u0648\u0643\u062a\u0627\u0628\u0629 \u0623\u0635\u064a\u0644\u0629 \u0642\u0627\u0626\u0645\u0629 \u0639\u0644\u0649 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a.",
       "latest_revision_created_at": "2026-02-23T06:28:52.947Z",
       "alias_of": null
     }
@@ -298,9 +298,9 @@
       "content_type": 30,
       "url_path": "/home-ar/contact/",
       "owner": 1,
-      "seo_title": "\u0627\u062a\u0635\u0644 \u0628 CTC Research | \u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0644\u062f\u0639\u0645 \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a",
+      "seo_title": "\u0627\u062a\u0635\u0644 \u0628 Fusion CMS | \u062a\u0648\u0627\u0635\u0644 \u0645\u0639\u0646\u0627 \u0644\u062f\u0639\u0645 \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a",
       "show_in_menus": false,
-      "search_description": "\u0647\u0644 \u0644\u062f\u064a\u0643 \u0623\u0633\u0626\u0644\u0629 \u062d\u0648\u0644 \u0628\u0631\u0627\u0645\u062c\u0646\u0627 \u0641\u064a \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a\u061f \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0641\u0631\u064a\u0642 CTC Research \u0627\u0644\u064a\u0648\u0645. \u0646\u062d\u0646 \u0647\u0646\u0627 \u0644\u0625\u0631\u0634\u0627\u062f\u0643 \u0641\u064a \u0631\u062d\u0644\u062a\u0643 \u0627\u0644\u0628\u062d\u062b\u064a\u0629 \u0645\u0646 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0625\u0644\u0649 \u0627\u0644\u0646\u0634\u0631.",
+      "search_description": "\u0647\u0644 \u0644\u062f\u064a\u0643 \u0623\u0633\u0626\u0644\u0629 \u062d\u0648\u0644 \u0628\u0631\u0627\u0645\u062c\u0646\u0627 \u0641\u064a \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a\u061f \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0641\u0631\u064a\u0642 Fusion CMS \u0627\u0644\u064a\u0648\u0645. \u0646\u062d\u0646 \u0647\u0646\u0627 \u0644\u0625\u0631\u0634\u0627\u062f\u0643 \u0641\u064a \u0631\u062d\u0644\u062a\u0643 \u0627\u0644\u0628\u062d\u062b\u064a\u0629 \u0645\u0646 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0625\u0644\u0649 \u0627\u0644\u0646\u0634\u0631.",
       "latest_revision_created_at": "2026-02-23T06:28:54.730Z",
       "alias_of": null
     }
@@ -334,7 +334,7 @@
       "owner": 1,
       "seo_title": "\u0641\u0631\u064a\u0642\u0646\u0627 | \u062e\u0628\u0631\u0627\u0621 \u0633\u064a \u062a\u064a \u0633\u064a \u0644\u0644\u0628\u062d\u062b \u0627\u0644\u0639\u0644\u0645\u064a \u0641\u064a \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0648\u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629",
       "show_in_menus": true,
-      "search_description": "\u062a\u0639\u0631\u0641 \u0639\u0644\u0649 \u0641\u0631\u064a\u0642 \u0627\u0644\u062e\u0628\u0631\u0627\u0621 \u0641\u064a CTC Research: \u0639\u0644\u0645\u0627\u0621 \u0628\u064a\u0627\u0646\u0627\u062a \u0648\u0643\u062a\u0627\u0628 \u0637\u0628\u064a\u0648\u0646 \u0648\u0628\u0627\u062d\u062b\u0648\u0646 \u0645\u0643\u0631\u0633\u0648\u0646 \u0644\u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0637\u0628 \u0645\u0646 \u062e\u0644\u0627\u0644 \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0648\u0627\u0644\u0625\u0631\u0634\u0627\u062f.",
+      "search_description": "\u062a\u0639\u0631\u0641 \u0639\u0644\u0649 \u0641\u0631\u064a\u0642 \u0627\u0644\u062e\u0628\u0631\u0627\u0621 \u0641\u064a Fusion CMS: \u0639\u0644\u0645\u0627\u0621 \u0628\u064a\u0627\u0646\u0627\u062a \u0648\u0643\u062a\u0627\u0628 \u0637\u0628\u064a\u0648\u0646 \u0648\u0628\u0627\u062d\u062b\u0648\u0646 \u0645\u0643\u0631\u0633\u0648\u0646 \u0644\u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0637\u0628 \u0645\u0646 \u062e\u0644\u0627\u0644 \u0627\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0648\u0627\u0644\u0625\u0631\u0634\u0627\u062f.",
       "latest_revision_created_at": "2026-02-23T06:28:59.156Z",
       "alias_of": null
     }
@@ -368,7 +368,7 @@
       "owner": 1,
       "seo_title": "\u062f\u0648\u0631\u0627\u062a \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0648\u0627\u0644\u0637\u0628\u064a\u0629 | \u0633\u064a \u062a\u064a \u0633\u064a \u0644\u0644\u0628\u062d\u062b \u0627\u0644\u0639\u0644\u0645\u064a",
       "show_in_menus": false,
-      "search_description": "\u0627\u0633\u062a\u0643\u0634\u0641 \u062f\u0648\u0631\u0627\u062a CTC Research \u0641\u064a \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629 \u0648\u0639\u0644\u0648\u0645 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a. \u0623\u062a\u0642\u0646 \u0623\u062f\u0648\u0627\u062a \u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629 \u0648\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u0645\u0624\u062b\u0631\u0629 \u0648\u0627\u0644\u062a\u0646\u0642\u0644 \u0641\u064a \u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0623\u0642\u0631\u0627\u0646. \u0633\u062c\u0644 \u0627\u0644\u0622\u0646.",
+      "search_description": "\u0627\u0633\u062a\u0643\u0634\u0641 \u062f\u0648\u0631\u0627\u062a Fusion CMS \u0641\u064a \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629 \u0648\u0639\u0644\u0648\u0645 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a. \u0623\u062a\u0642\u0646 \u0623\u062f\u0648\u0627\u062a \u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629 \u0648\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0623\u0648\u0631\u0627\u0642 \u0627\u0644\u0639\u0644\u0645\u064a\u0629 \u0627\u0644\u0645\u0624\u062b\u0631\u0629 \u0648\u0627\u0644\u062a\u0646\u0642\u0644 \u0641\u064a \u0645\u0631\u0627\u062c\u0639\u0629 \u0627\u0644\u0623\u0642\u0631\u0627\u0646. \u0633\u062c\u0644 \u0627\u0644\u0622\u0646.",
       "latest_revision_created_at": "2026-02-23T06:29:02.756Z",
       "alias_of": null
     }
@@ -400,9 +400,9 @@
       "content_type": 31,
       "url_path": "/home-de/",
       "owner": 1,
-      "seo_title": "CTC Research | KI-gest\u00fctztes medizinisches Schreiben & Forschung",
+      "seo_title": "Fusion CMS | KI-gest\u00fctztes medizinisches Schreiben & Forschung",
       "show_in_menus": false,
-      "search_description": "CTC Research bef\u00e4higt medizinisches Fachpersonal, KI und Datenwissenschaft f\u00fcr rigoroses wissenschaftliches Schreiben zu nutzen. Verwandeln Sie klinische Daten in wirkungsvolle Publikationen. Werden Sie noch heute Teil unserer Community.",
+      "search_description": "Fusion CMS bef\u00e4higt medizinisches Fachpersonal, KI und Datenwissenschaft f\u00fcr rigoroses wissenschaftliches Schreiben zu nutzen. Verwandeln Sie klinische Daten in wirkungsvolle Publikationen. Werden Sie noch heute Teil unserer Community.",
       "latest_revision_created_at": "2026-02-23T06:28:49.799Z",
       "alias_of": null
     }
@@ -428,15 +428,15 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "\u00dcber CTC Research",
-      "draft_title": "\u00dcber CTC Research",
+      "title": "\u00dcber Fusion CMS",
+      "draft_title": "\u00dcber Fusion CMS",
       "slug": "about",
       "content_type": 29,
       "url_path": "/home-de/about/",
       "owner": 1,
-      "seo_title": "\u00dcber CTC Research | KI-vermittelte wissenschaftliche Entdeckungen",
+      "seo_title": "\u00dcber Fusion CMS | KI-vermittelte wissenschaftliche Entdeckungen",
       "show_in_menus": true,
-      "search_description": "Erfahren Sie mehr \u00fcber CTC Research, ein globales Exzellenzzentrum f\u00fcr KI-vermittelte wissenschaftliche Entdeckungen. Entdecken Sie unsere Mission, die Medizin durch authentische, datengesteuerte Forschung und Schreiben voranzubringen.",
+      "search_description": "Erfahren Sie mehr \u00fcber Fusion CMS, ein globales Exzellenzzentrum f\u00fcr KI-vermittelte wissenschaftliche Entdeckungen. Entdecken Sie unsere Mission, die Medizin durch authentische, datengesteuerte Forschung und Schreiben voranzubringen.",
       "latest_revision_created_at": "2026-02-23T06:28:53.058Z",
       "alias_of": null
     }
@@ -468,9 +468,9 @@
       "content_type": 30,
       "url_path": "/home-de/contact/",
       "owner": 1,
-      "seo_title": "Kontaktieren Sie CTC Research | Nehmen Sie Kontakt auf f\u00fcr KI-gest\u00fctzte medizinische Schreibunterst\u00fctzung",
+      "seo_title": "Kontaktieren Sie Fusion CMS | Nehmen Sie Kontakt auf f\u00fcr KI-gest\u00fctzte medizinische Schreibunterst\u00fctzung",
       "show_in_menus": false,
-      "search_description": "Haben Sie Fragen zu unseren KI-gest\u00fctzten Programmen f\u00fcr wissenschaftliches Schreiben? Kontaktieren Sie noch heute das CTC Research Team. Wir begleiten Sie auf Ihrer Forschungsreise von Daten zur Publikation.",
+      "search_description": "Haben Sie Fragen zu unseren KI-gest\u00fctzten Programmen f\u00fcr wissenschaftliches Schreiben? Kontaktieren Sie noch heute das Fusion CMS Team. Wir begleiten Sie auf Ihrer Forschungsreise von Daten zur Publikation.",
       "latest_revision_created_at": "2026-02-23T06:28:55.222Z",
       "alias_of": null
     }
@@ -502,9 +502,9 @@
       "content_type": 32,
       "url_path": "/home-de/team/",
       "owner": 1,
-      "seo_title": "Unser Team | CTC Research Experten f\u00fcr KI und medizinisches Schreiben",
+      "seo_title": "Unser Team | Fusion CMS Experten f\u00fcr KI und medizinisches Schreiben",
       "show_in_menus": true,
-      "search_description": "Lernen Sie das Expertenteam hinter CTC Research kennen: Datenwissenschaftler, medizinische Autoren und Forscher, die sich der F\u00f6rderung der Medizin durch KI-gest\u00fctztes wissenschaftliches Schreiben widmen.",
+      "search_description": "Lernen Sie das Expertenteam hinter Fusion CMS kennen: Datenwissenschaftler, medizinische Autoren und Forscher, die sich der F\u00f6rderung der Medizin durch KI-gest\u00fctztes wissenschaftliches Schreiben widmen.",
       "latest_revision_created_at": "2026-02-23T06:28:59.741Z",
       "alias_of": null
     }
@@ -536,9 +536,9 @@
       "content_type": 95,
       "url_path": "/home-de/all-courses/",
       "owner": 1,
-      "seo_title": "Kurse zu KI f\u00fcr wissenschaftliches und medizinisches Schreiben | CTC Research",
+      "seo_title": "Kurse zu KI f\u00fcr wissenschaftliches und medizinisches Schreiben | Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Entdecken Sie CTC Research Kurse zu KI f\u00fcr medizinisches Schreiben und Datenwissenschaft. Meistern Sie Werkzeuge zur Analyse klinischer Daten, zum Verfassen wirkungsvoller Arbeiten und zur Navigation im Peer-Review. Jetzt anmelden.",
+      "search_description": "Entdecken Sie Fusion CMS Kurse zu KI f\u00fcr medizinisches Schreiben und Datenwissenschaft. Meistern Sie Werkzeuge zur Analyse klinischer Daten, zum Verfassen wirkungsvoller Arbeiten und zur Navigation im Peer-Review. Jetzt anmelden.",
       "latest_revision_created_at": "2026-02-23T06:29:03.085Z",
       "alias_of": null
     }
@@ -570,9 +570,9 @@
       "content_type": 31,
       "url_path": "/home-es/",
       "owner": 1,
-      "seo_title": "CTC Research | Redacci\u00f3n M\u00e9dica e Investigaci\u00f3n con IA",
+      "seo_title": "Fusion CMS | Redacci\u00f3n M\u00e9dica e Investigaci\u00f3n con IA",
       "show_in_menus": false,
-      "search_description": "CTC Research capacita a profesionales de la salud para utilizar IA y ciencia de datos en la redacci\u00f3n cient\u00edfica rigurosa. Transforma datos cl\u00ednicos en publicaciones de alto impacto. \u00danete a nosotros hoy.",
+      "search_description": "Fusion CMS capacita a profesionales de la salud para utilizar IA y ciencia de datos en la redacci\u00f3n cient\u00edfica rigurosa. Transforma datos cl\u00ednicos en publicaciones de alto impacto. \u00danete a nosotros hoy.",
       "latest_revision_created_at": "2026-02-23T06:28:52.120Z",
       "alias_of": null
     }
@@ -598,15 +598,15 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Sobre CTC Research",
-      "draft_title": "Sobre CTC Research",
+      "title": "Sobre Fusion CMS",
+      "draft_title": "Sobre Fusion CMS",
       "slug": "about",
       "content_type": 29,
       "url_path": "/home-es/about/",
       "owner": 1,
-      "seo_title": "Sobre CTC Research | Descubrimiento Cient\u00edfico Mediado por IA",
+      "seo_title": "Sobre Fusion CMS | Descubrimiento Cient\u00edfico Mediado por IA",
       "show_in_menus": true,
-      "search_description": "Conozca CTC Research, un centro de excelencia global para el descubrimiento cient\u00edfico mediado por IA. Descubra nuestra misi\u00f3n de avanzar la medicina a trav\u00e9s de la investigaci\u00f3n y redacci\u00f3n aut\u00e9nticas basadas en datos.",
+      "search_description": "Conozca Fusion CMS, un centro de excelencia global para el descubrimiento cient\u00edfico mediado por IA. Descubra nuestra misi\u00f3n de avanzar la medicina a trav\u00e9s de la investigaci\u00f3n y redacci\u00f3n aut\u00e9nticas basadas en datos.",
       "latest_revision_created_at": "2026-02-23T06:28:53.690Z",
       "alias_of": null
     }
@@ -638,9 +638,9 @@
       "content_type": 30,
       "url_path": "/home-es/contact/",
       "owner": 1,
-      "seo_title": "Contacte a CTC Research | Ponte en contacto para obtener ayuda con redacci\u00f3n m\u00e9dica con IA",
+      "seo_title": "Contacte a Fusion CMS | Ponte en contacto para obtener ayuda con redacci\u00f3n m\u00e9dica con IA",
       "show_in_menus": false,
-      "search_description": "\u00bfTienes preguntas sobre nuestros programas de redacci\u00f3n cient\u00edfica con IA? Ponte en contacto con el equipo de CTC Research hoy mismo. Estamos aqu\u00ed para guiar tu viaje de investigaci\u00f3n, de los datos a la publicaci\u00f3n.",
+      "search_description": "\u00bfTienes preguntas sobre nuestros programas de redacci\u00f3n cient\u00edfica con IA? Ponte en contacto con el equipo de Fusion CMS hoy mismo. Estamos aqu\u00ed para guiar tu viaje de investigaci\u00f3n, de los datos a la publicaci\u00f3n.",
       "latest_revision_created_at": "2026-02-23T06:28:56.043Z",
       "alias_of": null
     }
@@ -672,9 +672,9 @@
       "content_type": 32,
       "url_path": "/home-es/team/",
       "owner": 1,
-      "seo_title": "Nuestro Equipo | Expertos de CTC Research en IA y Redacci\u00f3n M\u00e9dica",
+      "seo_title": "Nuestro Equipo | Expertos de Fusion CMS en IA y Redacci\u00f3n M\u00e9dica",
       "show_in_menus": true,
-      "search_description": "Conozca al equipo de expertos detr\u00e1s de CTC Research: cient\u00edficos de datos, redactores m\u00e9dicos e investigadores dedicados a avanzar la medicina a trav\u00e9s de la redacci\u00f3n cient\u00edfica y la tutor\u00eda con IA.",
+      "search_description": "Conozca al equipo de expertos detr\u00e1s de Fusion CMS: cient\u00edficos de datos, redactores m\u00e9dicos e investigadores dedicados a avanzar la medicina a trav\u00e9s de la redacci\u00f3n cient\u00edfica y la tutor\u00eda con IA.",
       "latest_revision_created_at": "2026-02-23T06:29:00.558Z",
       "alias_of": null
     }
@@ -706,9 +706,9 @@
       "content_type": 95,
       "url_path": "/home-es/all-courses/",
       "owner": 1,
-      "seo_title": "Cursos de IA para Redacci\u00f3n Cient\u00edfica y M\u00e9dica | CTC Research",
+      "seo_title": "Cursos de IA para Redacci\u00f3n Cient\u00edfica y M\u00e9dica | Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Explora los cursos de CTC Research en IA para redacci\u00f3n m\u00e9dica y ciencia de datos. Domina las herramientas para analizar datos cl\u00ednicos, redactar art\u00edculos impactantes y navegar por la revisi\u00f3n por pares. Inscr\u00edbete ahora.",
+      "search_description": "Explora los cursos de Fusion CMS en IA para redacci\u00f3n m\u00e9dica y ciencia de datos. Domina las herramientas para analizar datos cl\u00ednicos, redactar art\u00edculos impactantes y navegar por la revisi\u00f3n por pares. Inscr\u00edbete ahora.",
       "latest_revision_created_at": "2026-02-23T06:29:03.610Z",
       "alias_of": null
     }
@@ -740,9 +740,9 @@
       "content_type": 31,
       "url_path": "/home-fr/",
       "owner": 1,
-      "seo_title": "CTC Research | R\u00e9daction m\u00e9dicale et recherche assist\u00e9es par l'IA",
+      "seo_title": "Fusion CMS | R\u00e9daction m\u00e9dicale et recherche assist\u00e9es par l'IA",
       "show_in_menus": false,
-      "search_description": "CTC Research donne aux professionnels de sant\u00e9 les moyens d'utiliser l'IA et la science des donn\u00e9es pour une r\u00e9daction scientifique rigoureuse. Transformez vos donn\u00e9es cliniques en publications \u00e0 fort impact. Rejoignez-nous d\u00e8s aujourd'hui.",
+      "search_description": "Fusion CMS donne aux professionnels de sant\u00e9 les moyens d'utiliser l'IA et la science des donn\u00e9es pour une r\u00e9daction scientifique rigoureuse. Transformez vos donn\u00e9es cliniques en publications \u00e0 fort impact. Rejoignez-nous d\u00e8s aujourd'hui.",
       "latest_revision_created_at": "2026-02-23T06:28:50.860Z",
       "alias_of": null
     }
@@ -768,15 +768,15 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "\u00c0 propos de CTC Research",
-      "draft_title": "\u00c0 propos de CTC Research",
+      "title": "\u00c0 propos de Fusion CMS",
+      "draft_title": "\u00c0 propos de Fusion CMS",
       "slug": "about",
       "content_type": 29,
       "url_path": "/home-fr/about/",
       "owner": 1,
-      "seo_title": "\u00c0 propos de CTC Research | D\u00e9couverte scientifique assist\u00e9e par l'IA",
+      "seo_title": "\u00c0 propos de Fusion CMS | D\u00e9couverte scientifique assist\u00e9e par l'IA",
       "show_in_menus": true,
-      "search_description": "D\u00e9couvrez CTC Research, un centre d'excellence mondial pour la d\u00e9couverte scientifique assist\u00e9e par l'IA. Apprenez-en plus sur notre mission de faire progresser la m\u00e9decine gr\u00e2ce \u00e0 une recherche et une r\u00e9daction authentiques et ax\u00e9es sur les donn\u00e9es.",
+      "search_description": "D\u00e9couvrez Fusion CMS, un centre d'excellence mondial pour la d\u00e9couverte scientifique assist\u00e9e par l'IA. Apprenez-en plus sur notre mission de faire progresser la m\u00e9decine gr\u00e2ce \u00e0 une recherche et une r\u00e9daction authentiques et ax\u00e9es sur les donn\u00e9es.",
       "latest_revision_created_at": "2026-02-23T06:28:53.547Z",
       "alias_of": null
     }
@@ -808,9 +808,9 @@
       "content_type": 30,
       "url_path": "/home-fr/contact/",
       "owner": 1,
-      "seo_title": "Contactez CTC Research | Prenez contact pour une aide \u00e0 la r\u00e9daction m\u00e9dicale par IA",
+      "seo_title": "Contactez Fusion CMS | Prenez contact pour une aide \u00e0 la r\u00e9daction m\u00e9dicale par IA",
       "show_in_menus": false,
-      "search_description": "Des questions sur nos programmes de r\u00e9daction scientifique bas\u00e9s sur l'IA ? Contactez l'\u00e9quipe de CTC Research d\u00e8s aujourd'hui. Nous sommes l\u00e0 pour vous guider dans votre parcours de recherche, des donn\u00e9es \u00e0 la publication.",
+      "search_description": "Des questions sur nos programmes de r\u00e9daction scientifique bas\u00e9s sur l'IA ? Contactez l'\u00e9quipe de Fusion CMS d\u00e8s aujourd'hui. Nous sommes l\u00e0 pour vous guider dans votre parcours de recherche, des donn\u00e9es \u00e0 la publication.",
       "latest_revision_created_at": "2026-02-23T06:28:55.337Z",
       "alias_of": null
     }
@@ -842,9 +842,9 @@
       "content_type": 32,
       "url_path": "/home-fr/team/",
       "owner": 1,
-      "seo_title": "Notre \u00e9quipe | Experts de CTC Research en IA et r\u00e9daction m\u00e9dicale",
+      "seo_title": "Notre \u00e9quipe | Experts de Fusion CMS en IA et r\u00e9daction m\u00e9dicale",
       "show_in_menus": true,
-      "search_description": "Rencontrez l'\u00e9quipe d'experts derri\u00e8re CTC Research : data scientists, r\u00e9dacteurs m\u00e9dicaux et chercheurs d\u00e9di\u00e9s \u00e0 faire progresser la m\u00e9decine gr\u00e2ce \u00e0 la r\u00e9daction scientifique et au mentorat bas\u00e9s sur l'IA.",
+      "search_description": "Rencontrez l'\u00e9quipe d'experts derri\u00e8re Fusion CMS : data scientists, r\u00e9dacteurs m\u00e9dicaux et chercheurs d\u00e9di\u00e9s \u00e0 faire progresser la m\u00e9decine gr\u00e2ce \u00e0 la r\u00e9daction scientifique et au mentorat bas\u00e9s sur l'IA.",
       "latest_revision_created_at": "2026-02-23T06:29:00.264Z",
       "alias_of": null
     }
@@ -876,9 +876,9 @@
       "content_type": 95,
       "url_path": "/home-fr/all-courses/",
       "owner": 1,
-      "seo_title": "Cours d'IA pour la r\u00e9daction scientifique et m\u00e9dicale | CTC Research",
+      "seo_title": "Cours d'IA pour la r\u00e9daction scientifique et m\u00e9dicale | Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Explorez les cours de CTC Research en IA pour la r\u00e9daction m\u00e9dicale et la science des donn\u00e9es. Ma\u00eetrisez les outils pour analyser les donn\u00e9es cliniques, r\u00e9diger des articles percutants et naviguer dans l'\u00e9valuation par les pairs. Inscrivez-vous maintenant.",
+      "search_description": "Explorez les cours de Fusion CMS en IA pour la r\u00e9daction m\u00e9dicale et la science des donn\u00e9es. Ma\u00eetrisez les outils pour analyser les donn\u00e9es cliniques, r\u00e9diger des articles percutants et naviguer dans l'\u00e9valuation par les pairs. Inscrivez-vous maintenant.",
       "latest_revision_created_at": "2026-02-23T06:29:03.220Z",
       "alias_of": null
     }
@@ -910,9 +910,9 @@
       "content_type": 31,
       "url_path": "/home-pt-br/",
       "owner": 1,
-      "seo_title": "CTC Research | Reda\u00e7\u00e3o M\u00e9dica e Pesquisa com IA",
+      "seo_title": "Fusion CMS | Reda\u00e7\u00e3o M\u00e9dica e Pesquisa com IA",
       "show_in_menus": false,
-      "search_description": "A CTC Research capacita profissionais de sa\u00fade a utilizar IA e ci\u00eancia de dados para uma reda\u00e7\u00e3o cient\u00edfica rigorosa. Transforme dados cl\u00ednicos em publica\u00e7\u00f5es de alto impacto. Junte-se a n\u00f3s hoje.",
+      "search_description": "A Fusion CMS capacita profissionais de sa\u00fade a utilizar IA e ci\u00eancia de dados para uma reda\u00e7\u00e3o cient\u00edfica rigorosa. Transforme dados cl\u00ednicos em publica\u00e7\u00f5es de alto impacto. Junte-se a n\u00f3s hoje.",
       "latest_revision_created_at": "2026-02-23T06:28:52.269Z",
       "alias_of": null
     }
@@ -938,15 +938,15 @@
       "locked": false,
       "locked_at": null,
       "locked_by": null,
-      "title": "Sobre a CTC Research",
-      "draft_title": "Sobre a CTC Research",
+      "title": "Sobre a Fusion CMS",
+      "draft_title": "Sobre a Fusion CMS",
       "slug": "about",
       "content_type": 29,
       "url_path": "/home-pt-br/about/",
       "owner": 1,
-      "seo_title": "Sobre a CTC Research | Descoberta Cient\u00edfica Mediada por IA",
+      "seo_title": "Sobre a Fusion CMS | Descoberta Cient\u00edfica Mediada por IA",
       "show_in_menus": true,
-      "search_description": "Conhe\u00e7a a CTC Research, um centro de excel\u00eancia global para descoberta cient\u00edfica mediada por IA. Descubra nossa miss\u00e3o de avan\u00e7ar a medicina por meio de pesquisa e reda\u00e7\u00e3o aut\u00eanticas e baseadas em dados.",
+      "search_description": "Conhe\u00e7a a Fusion CMS, um centro de excel\u00eancia global para descoberta cient\u00edfica mediada por IA. Descubra nossa miss\u00e3o de avan\u00e7ar a medicina por meio de pesquisa e reda\u00e7\u00e3o aut\u00eanticas e baseadas em dados.",
       "latest_revision_created_at": "2026-02-23T06:28:54.472Z",
       "alias_of": null
     }
@@ -978,9 +978,9 @@
       "content_type": 30,
       "url_path": "/home-pt-br/contact/",
       "owner": 1,
-      "seo_title": "Contate a CTC Research | Entre em contato para suporte em reda\u00e7\u00e3o m\u00e9dica com IA",
+      "seo_title": "Contate a Fusion CMS | Entre em contato para suporte em reda\u00e7\u00e3o m\u00e9dica com IA",
       "show_in_menus": false,
-      "search_description": "Tem perguntas sobre nossos programas de reda\u00e7\u00e3o cient\u00edfica com IA? Entre em contato com a equipe da CTC Research hoje. Estamos aqui para orientar sua jornada de pesquisa, dos dados \u00e0 publica\u00e7\u00e3o.",
+      "search_description": "Tem perguntas sobre nossos programas de reda\u00e7\u00e3o cient\u00edfica com IA? Entre em contato com a equipe da Fusion CMS hoje. Estamos aqui para orientar sua jornada de pesquisa, dos dados \u00e0 publica\u00e7\u00e3o.",
       "latest_revision_created_at": "2026-02-23T06:28:56.250Z",
       "alias_of": null
     }
@@ -1012,9 +1012,9 @@
       "content_type": 32,
       "url_path": "/home-pt-br/team/",
       "owner": 1,
-      "seo_title": "Nossa Equipe | Especialistas da CTC Research em IA e Reda\u00e7\u00e3o M\u00e9dica",
+      "seo_title": "Nossa Equipe | Especialistas da Fusion CMS em IA e Reda\u00e7\u00e3o M\u00e9dica",
       "show_in_menus": true,
-      "search_description": "Conhe\u00e7a a equipe de especialistas por tr\u00e1s da CTC Research: cientistas de dados, redatores m\u00e9dicos e pesquisadores dedicados a avan\u00e7ar a medicina por meio da reda\u00e7\u00e3o cient\u00edfica e mentoria com IA.",
+      "search_description": "Conhe\u00e7a a equipe de especialistas por tr\u00e1s da Fusion CMS: cientistas de dados, redatores m\u00e9dicos e pesquisadores dedicados a avan\u00e7ar a medicina por meio da reda\u00e7\u00e3o cient\u00edfica e mentoria com IA.",
       "latest_revision_created_at": "2026-02-23T06:29:01.244Z",
       "alias_of": null
     }
@@ -1046,9 +1046,9 @@
       "content_type": 95,
       "url_path": "/home-pt-br/all-courses/",
       "owner": 1,
-      "seo_title": "Cursos de IA para Reda\u00e7\u00e3o Cient\u00edfica e M\u00e9dica | CTC Research",
+      "seo_title": "Cursos de IA para Reda\u00e7\u00e3o Cient\u00edfica e M\u00e9dica | Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Explore os cursos da CTC Research em IA para reda\u00e7\u00e3o m\u00e9dica e ci\u00eancia de dados. Domine ferramentas para analisar dados cl\u00ednicos, escrever artigos impactantes e navegar pela revis\u00e3o por pares. Inscreva-se agora.",
+      "search_description": "Explore os cursos da Fusion CMS em IA para reda\u00e7\u00e3o m\u00e9dica e ci\u00eancia de dados. Domine ferramentas para analisar dados cl\u00ednicos, escrever artigos impactantes e navegar pela revis\u00e3o por pares. Inscreva-se agora.",
       "latest_revision_created_at": "2026-02-23T06:29:03.722Z",
       "alias_of": null
     }
@@ -1080,9 +1080,9 @@
       "content_type": 123,
       "url_path": "/home/events/",
       "owner": null,
-      "seo_title": "Upcoming Events | CTC Research Workshops & Symposia",
+      "seo_title": "Upcoming Events | Fusion CMS Workshops & Symposia",
       "show_in_menus": false,
-      "search_description": "Join CTC Research workshops and symposia on AI for medical writing. Connect with experts, enhance your research skills, and learn to publish with impact. See upcoming events.",
+      "search_description": "Join Fusion CMS workshops and symposia on AI for medical writing. Connect with experts, enhance your research skills, and learn to publish with impact. See upcoming events.",
       "latest_revision_created_at": "2026-02-23T06:29:03.867Z",
       "alias_of": null
     }
@@ -1116,7 +1116,7 @@
       "owner": null,
       "seo_title": "\u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a \u0627\u0644\u0642\u0627\u062f\u0645\u0629 | \u0648\u0631\u0634 \u0639\u0645\u0644 \u0648\u0646\u062f\u0648\u0627\u062a \u0633\u064a \u062a\u064a \u0633\u064a \u0644\u0644\u0628\u062d\u062b \u0627\u0644\u0639\u0644\u0645\u064a",
       "show_in_menus": false,
-      "search_description": "\u0627\u0646\u0636\u0645 \u0625\u0644\u0649 \u0648\u0631\u0634 \u0639\u0645\u0644 \u0648\u0646\u062f\u0648\u0627\u062a CTC Research \u062d\u0648\u0644 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629. \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u062e\u0628\u0631\u0627\u0621\u060c \u0648\u0639\u0632\u0632 \u0645\u0647\u0627\u0631\u0627\u062a\u0643 \u0627\u0644\u0628\u062d\u062b\u064a\u0629\u060c \u0648\u062a\u0639\u0644\u0645 \u0627\u0644\u0646\u0634\u0631 \u0628\u062a\u0623\u062b\u064a\u0631. \u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a \u0627\u0644\u0642\u0627\u062f\u0645\u0629.",
+      "search_description": "\u0627\u0646\u0636\u0645 \u0625\u0644\u0649 \u0648\u0631\u0634 \u0639\u0645\u0644 \u0648\u0646\u062f\u0648\u0627\u062a Fusion CMS \u062d\u0648\u0644 \u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u0644\u0643\u062a\u0627\u0628\u0629 \u0627\u0644\u0637\u0628\u064a\u0629. \u062a\u0648\u0627\u0635\u0644 \u0645\u0639 \u0627\u0644\u062e\u0628\u0631\u0627\u0621\u060c \u0648\u0639\u0632\u0632 \u0645\u0647\u0627\u0631\u0627\u062a\u0643 \u0627\u0644\u0628\u062d\u062b\u064a\u0629\u060c \u0648\u062a\u0639\u0644\u0645 \u0627\u0644\u0646\u0634\u0631 \u0628\u062a\u0623\u062b\u064a\u0631. \u0627\u0643\u062a\u0634\u0641 \u0627\u0644\u0641\u0639\u0627\u0644\u064a\u0627\u062a \u0627\u0644\u0642\u0627\u062f\u0645\u0629.",
       "latest_revision_created_at": "2026-02-23T06:29:04.350Z",
       "alias_of": null
     }
@@ -1148,9 +1148,9 @@
       "content_type": 123,
       "url_path": "/home-de/events/",
       "owner": null,
-      "seo_title": "Kommende Veranstaltungen | CTC Research Workshops & Symposien",
+      "seo_title": "Kommende Veranstaltungen | Fusion CMS Workshops & Symposien",
       "show_in_menus": false,
-      "search_description": "Nehmen Sie an CTC Research Workshops und Symposien zu KI f\u00fcr medizinisches Schreiben teil. Vernetzen Sie sich mit Experten, verbessern Sie Ihre Forschungskompetenzen und lernen Sie, wirkungsvoll zu publizieren. Entdecken Sie kommende Veranstaltungen.",
+      "search_description": "Nehmen Sie an Fusion CMS Workshops und Symposien zu KI f\u00fcr medizinisches Schreiben teil. Vernetzen Sie sich mit Experten, verbessern Sie Ihre Forschungskompetenzen und lernen Sie, wirkungsvoll zu publizieren. Entdecken Sie kommende Veranstaltungen.",
       "latest_revision_created_at": "2026-02-23T06:29:04.524Z",
       "alias_of": null
     }
@@ -1182,9 +1182,9 @@
       "content_type": 123,
       "url_path": "/home-fr/events/",
       "owner": null,
-      "seo_title": "\u00c9v\u00e9nements \u00e0 venir | Ateliers et symposiums CTC Research",
+      "seo_title": "\u00c9v\u00e9nements \u00e0 venir | Ateliers et symposiums Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Participez aux ateliers et symposiums de CTC Research sur l'IA pour la r\u00e9daction m\u00e9dicale. Connectez-vous avec des experts, am\u00e9liorez vos comp\u00e9tences en recherche et apprenez \u00e0 publier avec impact. D\u00e9couvrez les \u00e9v\u00e9nements \u00e0 venir.",
+      "search_description": "Participez aux ateliers et symposiums de Fusion CMS sur l'IA pour la r\u00e9daction m\u00e9dicale. Connectez-vous avec des experts, am\u00e9liorez vos comp\u00e9tences en recherche et apprenez \u00e0 publier avec impact. D\u00e9couvrez les \u00e9v\u00e9nements \u00e0 venir.",
       "latest_revision_created_at": "2026-02-23T06:29:04.633Z",
       "alias_of": null
     }
@@ -1216,9 +1216,9 @@
       "content_type": 123,
       "url_path": "/home-es/events/",
       "owner": null,
-      "seo_title": "Pr\u00f3ximos Eventos | Talleres y Simposios de CTC Research",
+      "seo_title": "Pr\u00f3ximos Eventos | Talleres y Simposios de Fusion CMS",
       "show_in_menus": false,
-      "search_description": "\u00danase a los talleres y simposios de CTC Research sobre IA para redacci\u00f3n m\u00e9dica. Con\u00e9ctese con expertos, mejore sus habilidades de investigaci\u00f3n y aprenda a publicar con impacto. Vea los pr\u00f3ximos eventos.",
+      "search_description": "\u00danase a los talleres y simposios de Fusion CMS sobre IA para redacci\u00f3n m\u00e9dica. Con\u00e9ctese con expertos, mejore sus habilidades de investigaci\u00f3n y aprenda a publicar con impacto. Vea los pr\u00f3ximos eventos.",
       "latest_revision_created_at": "2026-02-23T06:29:04.726Z",
       "alias_of": null
     }
@@ -1250,9 +1250,9 @@
       "content_type": 123,
       "url_path": "/home-pt-br/events/",
       "owner": null,
-      "seo_title": "Pr\u00f3ximos Eventos | Workshops e Simp\u00f3sios da CTC Research",
+      "seo_title": "Pr\u00f3ximos Eventos | Workshops e Simp\u00f3sios da Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Participe dos workshops e simp\u00f3sios da CTC Research sobre IA para reda\u00e7\u00e3o m\u00e9dica. Conecte-se com especialistas, aprimore suas habilidades de pesquisa e aprenda a publicar com impacto. Veja os pr\u00f3ximos eventos.",
+      "search_description": "Participe dos workshops e simp\u00f3sios da Fusion CMS sobre IA para reda\u00e7\u00e3o m\u00e9dica. Conecte-se com especialistas, aprimore suas habilidades de pesquisa e aprenda a publicar com impacto. Veja os pr\u00f3ximos eventos.",
       "latest_revision_created_at": "2026-02-23T06:29:05.279Z",
       "alias_of": null
     }
@@ -1284,9 +1284,9 @@
       "content_type": 122,
       "url_path": "/home/services/",
       "owner": null,
-      "seo_title": "AI-Powered Research Services | CTC Research Capabilities",
+      "seo_title": "AI-Powered Research Services | Fusion CMS Capabilities",
       "show_in_menus": false,
-      "search_description": "Leverage CTC Research's AI-powered services for clinical data analysis, literature synthesis, and manuscript development. Ensure your research meets the highest standards. Learn more.",
+      "search_description": "Leverage Fusion CMS's AI-powered services for clinical data analysis, literature synthesis, and manuscript development. Ensure your research meets the highest standards. Learn more.",
       "latest_revision_created_at": "2026-02-23T06:29:05.596Z",
       "alias_of": null
     }
@@ -1320,7 +1320,7 @@
       "owner": null,
       "seo_title": "\u062e\u062f\u0645\u0627\u062a \u0628\u062d\u062b\u064a\u0629 \u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a | \u0642\u062f\u0631\u0627\u062a \u0633\u064a \u062a\u064a \u0633\u064a \u0644\u0644\u0628\u062d\u062b \u0627\u0644\u0639\u0644\u0645\u064a",
       "show_in_menus": false,
-      "search_description": "\u0627\u0633\u062a\u0641\u062f \u0645\u0646 \u062e\u062f\u0645\u0627\u062a CTC Research \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629\u060c \u0648\u062a\u0648\u0644\u064a\u0641 \u0627\u0644\u0623\u062f\u0628\u064a\u0627\u062a\u060c \u0648\u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0645\u062e\u0637\u0648\u0637\u0627\u062a. \u062a\u0623\u0643\u062f \u0645\u0646 \u0623\u0646 \u0628\u062d\u062b\u0643 \u064a\u0644\u0628\u064a \u0623\u0639\u0644\u0649 \u0627\u0644\u0645\u0639\u0627\u064a\u064a\u0631. \u062a\u0639\u0631\u0641 \u0623\u0643\u062b\u0631.",
+      "search_description": "\u0627\u0633\u062a\u0641\u062f \u0645\u0646 \u062e\u062f\u0645\u0627\u062a Fusion CMS \u0627\u0644\u0645\u062f\u0639\u0648\u0645\u0629 \u0628\u0627\u0644\u0630\u0643\u0627\u0621 \u0627\u0644\u0627\u0635\u0637\u0646\u0627\u0639\u064a \u0644\u062a\u062d\u0644\u064a\u0644 \u0627\u0644\u0628\u064a\u0627\u0646\u0627\u062a \u0627\u0644\u0633\u0631\u064a\u0631\u064a\u0629\u060c \u0648\u062a\u0648\u0644\u064a\u0641 \u0627\u0644\u0623\u062f\u0628\u064a\u0627\u062a\u060c \u0648\u062a\u0637\u0648\u064a\u0631 \u0627\u0644\u0645\u062e\u0637\u0648\u0637\u0627\u062a. \u062a\u0623\u0643\u062f \u0645\u0646 \u0623\u0646 \u0628\u062d\u062b\u0643 \u064a\u0644\u0628\u064a \u0623\u0639\u0644\u0649 \u0627\u0644\u0645\u0639\u0627\u064a\u064a\u0631. \u062a\u0639\u0631\u0641 \u0623\u0643\u062b\u0631.",
       "latest_revision_created_at": "2026-02-23T06:29:06.265Z",
       "alias_of": null
     }
@@ -1352,9 +1352,9 @@
       "content_type": 122,
       "url_path": "/home-de/services/",
       "owner": null,
-      "seo_title": "KI-gest\u00fctzte Forschungsdienstleistungen | CTC Research F\u00e4higkeiten",
+      "seo_title": "KI-gest\u00fctzte Forschungsdienstleistungen | Fusion CMS F\u00e4higkeiten",
       "show_in_menus": false,
-      "search_description": "Nutzen Sie die KI-gest\u00fctzten Dienstleistungen von CTC Research f\u00fcr klinische Datenanalyse, Literatursynthese und Manuskripterstellung. Stellen Sie sicher, dass Ihre Forschung den h\u00f6chsten Standards entspricht. Erfahren Sie mehr.",
+      "search_description": "Nutzen Sie die KI-gest\u00fctzten Dienstleistungen von Fusion CMS f\u00fcr klinische Datenanalyse, Literatursynthese und Manuskripterstellung. Stellen Sie sicher, dass Ihre Forschung den h\u00f6chsten Standards entspricht. Erfahren Sie mehr.",
       "latest_revision_created_at": "2026-02-23T06:29:06.606Z",
       "alias_of": null
     }
@@ -1386,9 +1386,9 @@
       "content_type": 122,
       "url_path": "/home-fr/services/",
       "owner": null,
-      "seo_title": "Services de recherche bas\u00e9s sur l'IA | Capacit\u00e9s de CTC Research",
+      "seo_title": "Services de recherche bas\u00e9s sur l'IA | Capacit\u00e9s de Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Tirez parti des services bas\u00e9s sur l'IA de CTC Research pour l'analyse de donn\u00e9es cliniques, la synth\u00e8se de litt\u00e9rature et le d\u00e9veloppement de manuscrits. Assurez-vous que votre recherche r\u00e9pond aux normes les plus \u00e9lev\u00e9es. Apprenez-en plus.",
+      "search_description": "Tirez parti des services bas\u00e9s sur l'IA de Fusion CMS pour l'analyse de donn\u00e9es cliniques, la synth\u00e8se de litt\u00e9rature et le d\u00e9veloppement de manuscrits. Assurez-vous que votre recherche r\u00e9pond aux normes les plus \u00e9lev\u00e9es. Apprenez-en plus.",
       "latest_revision_created_at": "2026-02-23T06:29:06.863Z",
       "alias_of": null
     }
@@ -1420,9 +1420,9 @@
       "content_type": 122,
       "url_path": "/home-es/services/",
       "owner": null,
-      "seo_title": "Servicios de Investigaci\u00f3n Impulsados por IA | Capacidades de CTC Research",
+      "seo_title": "Servicios de Investigaci\u00f3n Impulsados por IA | Capacidades de Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Aproveche los servicios impulsados por IA de CTC Research para an\u00e1lisis de datos cl\u00ednicos, s\u00edntesis de literatura y desarrollo de manuscritos. Aseg\u00farese de que su investigaci\u00f3n cumpla con los m\u00e1s altos est\u00e1ndares. Aprende m\u00e1s.",
+      "search_description": "Aproveche los servicios impulsados por IA de Fusion CMS para an\u00e1lisis de datos cl\u00ednicos, s\u00edntesis de literatura y desarrollo de manuscritos. Aseg\u00farese de que su investigaci\u00f3n cumpla con los m\u00e1s altos est\u00e1ndares. Aprende m\u00e1s.",
       "latest_revision_created_at": "2026-02-23T06:29:07.799Z",
       "alias_of": null
     }
@@ -1454,9 +1454,9 @@
       "content_type": 122,
       "url_path": "/home-pt-br/services/",
       "owner": null,
-      "seo_title": "Servi\u00e7os de Pesquisa com IA | Capacidades da CTC Research",
+      "seo_title": "Servi\u00e7os de Pesquisa com IA | Capacidades da Fusion CMS",
       "show_in_menus": false,
-      "search_description": "Aproveite os servi\u00e7os com IA da CTC Research para an\u00e1lise de dados cl\u00ednicos, s\u00edntese de literatura e desenvolvimento de manuscritos. Garanta que sua pesquisa atenda aos mais altos padr\u00f5es. Saiba mais.",
+      "search_description": "Aproveite os servi\u00e7os com IA da Fusion CMS para an\u00e1lise de dados cl\u00ednicos, s\u00edntese de literatura e desenvolvimento de manuscritos. Garanta que sua pesquisa atenda aos mais altos padr\u00f5es. Saiba mais.",
       "latest_revision_created_at": "2026-02-23T06:29:07.903Z",
       "alias_of": null
     }

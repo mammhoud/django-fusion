@@ -62,7 +62,7 @@ function DotsSpinner({ size, label }: { size: string; label?: string }) {
         {[0, 1, 2].map((i) => (
           <motion.div
             key={i}
-            className={`${dotSize} rounded-full bg-[rgb(var(--ctc-primary))]`}
+            className={`${dotSize} rounded-full bg-[rgb(var(--fu-primary))]`}
             animate={{
               y: ['0%', '-50%', '0%'],
               opacity: [0.4, 1, 0.4],
@@ -89,12 +89,12 @@ function PulseSpinner({ size }: { size: string }) {
   return (
     <div className="relative flex items-center justify-center" role="status" aria-label="Loading">
       <motion.div
-        className={`${dim} rounded-full bg-[rgb(var(--ctc-primary))]/20`}
+        className={`${dim} rounded-full bg-[rgb(var(--fu-primary))]/20`}
         animate={{ scale: [1, 1.5, 1], opacity: [0.3, 0.1, 0.3] }}
         transition={{ duration: 1.5, repeat: Infinity, ease: 'easeInOut' }}
       />
       <div
-        className={`absolute ${sizeMap[size]} rounded-full bg-[rgb(var(--ctc-primary))]`}
+        className={`absolute ${sizeMap[size]} rounded-full bg-[rgb(var(--fu-primary))]`}
       />
     </div>
   );
@@ -109,7 +109,7 @@ function ProgressBar({ progress, label }: { progress: number; label?: string }) 
     <div className="flex flex-col items-center gap-3 w-full max-w-xs">
       <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
         <motion.div
-          className="h-full bg-[rgb(var(--ctc-primary))] rounded-full"
+          className="h-full bg-[rgb(var(--fu-primary))] rounded-full"
           initial={{ width: 0 }}
           animate={{ width: `${pct}%` }}
           transition={{ duration: 0.3, ease: 'easeOut' }}
@@ -117,7 +117,7 @@ function ProgressBar({ progress, label }: { progress: number; label?: string }) 
       </div>
       <div className="flex items-center justify-between w-full">
         {label && <p className="text-sm text-gray-500">{label}</p>}
-        <p className="text-sm font-medium text-[rgb(var(--ctc-primary))]">{pct}%</p>
+        <p className="text-sm font-medium text-[rgb(var(--fu-primary))]">{pct}%</p>
       </div>
     </div>
   );
@@ -143,7 +143,7 @@ function FullscreenPreloader({ children }: { children: React.ReactNode }) {
 export default function LoadingSpinner({
   variant = 'circular',
   size = 'md',
-  color = 'rgb(var(--ctc-primary))',
+  color = 'rgb(var(--fu-primary))',
   label,
   progress = 0,
   fullscreen = false,

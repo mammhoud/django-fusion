@@ -15,7 +15,7 @@
 | 25 dashboard page files | ✅ | 12 routes + dispatcher pages with role-specific sub-pages |
 | DashboardRedirect component | ✅ | Client-side redirect with loading state |
 | Old-path redirect pages | ✅ | 39 redirect pages covering all old routes |
-| CTC Research teal theme | ✅ | 56 CTC refs, 0 indigo/purple |
+| Fusion CMS teal theme | ✅ | 56 CTC refs, 0 indigo/purple |
 | API endpoints (RTK Query) | ✅ | instructors, students, courses, auth, pages, blog, events, shop, contact |
 | Frontend tests | ✅ | 92/92 pass (vitest) |
 
@@ -23,7 +23,7 @@
 
 | Feature | Status | Details |
 |---------|--------|---------|
-| CTC Research teal theme (dashboards) | ✅ | 22 dashboard files converted, 0 indigo/purple |
+| Fusion CMS teal theme (dashboards) | ✅ | 22 dashboard files converted, 0 indigo/purple |
 | CTS/globals.css update | ✅ | Teal CSS vars + `card-gradient`, `section-hero`, `progress-fill/track` |
 | DashboardRedirect component | ✅ | `src/components/DashboardRedirect.tsx` |
 | Dashboard redirect pages | ✅ | 20 pages (13 instructor + 5 student + 2 root) |

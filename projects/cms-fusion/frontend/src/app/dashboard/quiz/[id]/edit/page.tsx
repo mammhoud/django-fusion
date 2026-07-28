@@ -415,7 +415,7 @@ export default function QuizEditorPage() {
                       type="checkbox"
                       checked={quizSettings.shuffle_questions ?? false}
                       onChange={(e) => { setQuizSettings((p) => ({ ...p, shuffle_questions: e.target.checked })); setSettingsDirty(true); }}
-                      className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]"
+                      className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]"
                     />
                     <span className="text-sm text-gray-700">Shuffle questions</span>
                   </label>
@@ -424,7 +424,7 @@ export default function QuizEditorPage() {
                       type="checkbox"
                       checked={quizSettings.show_correct_answers ?? true}
                       onChange={(e) => { setQuizSettings((p) => ({ ...p, show_correct_answers: e.target.checked })); setSettingsDirty(true); }}
-                      className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]"
+                      className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]"
                     />
                     <span className="text-sm text-gray-700">Show correct answers</span>
                   </label>
@@ -433,7 +433,7 @@ export default function QuizEditorPage() {
                       type="checkbox"
                       checked={quizSettings.is_active ?? true}
                       onChange={(e) => { setQuizSettings((p) => ({ ...p, is_active: e.target.checked })); setSettingsDirty(true); }}
-                      className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]"
+                      className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]"
                     />
                     <span className="text-sm text-gray-700">Active (visible to students)</span>
                   </label>
@@ -545,7 +545,7 @@ export default function QuizEditorPage() {
                                   name={`choice-correct-${idx}`}
                                   checked={choice.is_correct}
                                   onChange={(e) => updateChoice(idx, 'is_correct', e.target.checked)}
-                                  className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]"
+                                  className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]"
                                 />
                                 <input
                                   type="text"
@@ -567,7 +567,7 @@ export default function QuizEditorPage() {
                           </div>
                           <button
                             onClick={addChoice}
-                            className="mt-2 text-sm text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1"
+                            className="mt-2 text-sm text-[rgb(var(--fu-primary))] hover:underline flex items-center gap-1"
                           >
                             <HiPlus className="w-3 h-3" /> Add choice
                           </button>
@@ -680,7 +680,7 @@ export default function QuizEditorPage() {
                         opacity: isDragging ? 0.5 : 1,
                         y: 0,
                         scale: isDragging ? 1.02 : 1,
-                        borderColor: isDragOver ? 'rgb(var(--ctc-primary))' : undefined,
+                        borderColor: isDragOver ? 'rgb(var(--fu-primary))' : undefined,
                       }}
                       transition={{ delay: dragIndex !== null ? 0 : idx * 0.03, duration: 0.2 }}
                       className={`bg-white rounded-xl shadow-sm border ${
@@ -712,7 +712,7 @@ export default function QuizEditorPage() {
                           </span>
 
                           {/* Number Badge */}
-                          <span className="w-8 h-8 rounded-lg bg-[rgb(var(--ctc-primary))]/10 text-[rgb(var(--ctc-primary))] flex items-center justify-center text-sm font-bold flex-shrink-0">
+                          <span className="w-8 h-8 rounded-lg bg-[rgb(var(--fu-primary))]/10 text-[rgb(var(--fu-primary))] flex items-center justify-center text-sm font-bold flex-shrink-0">
                             {idx + 1}
                           </span>
                           <div className="min-w-0">
@@ -744,7 +744,7 @@ export default function QuizEditorPage() {
                           {/* Edit */}
                           <button
                             onClick={() => handleEditQuestion(q)}
-                            className="p-1.5 text-gray-400 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors"
+                            className="p-1.5 text-gray-400 hover:text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 rounded-lg transition-colors"
                             title="Edit question"
                           >
                             <HiPencil className="w-4 h-4" />

@@ -1,1 +1,1 @@
-# Template tags package for ctc-research plugins
+# Template tags package for fusion-cms plugins

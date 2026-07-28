@@ -167,14 +167,14 @@ export default function DashboardAssignmentPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
                 <input type="text" value={form.title}
                   onChange={(e) => setForm((f) => ({ ...f, title: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                   placeholder="e.g., Week 3 Homework" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Course</label>
                 <select value={form.course_id}
                   onChange={(e) => setForm((f) => ({ ...f, course_id: Number(e.target.value) }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none">
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none">
                   {COURSES_LIST.map((c) => (
                     <option key={c.id} value={c.id}>{c.title}</option>
                   ))}
@@ -186,7 +186,7 @@ export default function DashboardAssignmentPage() {
               <textarea value={form.description}
                 onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
                 rows={2}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none resize-none"
                 placeholder="Brief description..." />
             </div>
             <div>
@@ -194,7 +194,7 @@ export default function DashboardAssignmentPage() {
               <textarea value={form.instructions}
                 onChange={(e) => setForm((f) => ({ ...f, instructions: e.target.value }))}
                 rows={3}
-                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none resize-none"
+                className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none resize-none"
                 placeholder="Detailed instructions for students..." />
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
@@ -202,20 +202,20 @@ export default function DashboardAssignmentPage() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Due Date</label>
                 <input type="datetime-local" value={form.due_date}
                   onChange={(e) => setForm((f) => ({ ...f, due_date: e.target.value }))}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none" />
               </div>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Max Score</label>
                 <input type="number" value={form.max_score}
                   onChange={(e) => setForm((f) => ({ ...f, max_score: Number(e.target.value) }))}
                   min={0} max={1000}
-                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none" />
+                  className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none" />
               </div>
               <div className="flex items-end">
                 <label className="flex items-center gap-2 cursor-pointer">
                   <input type="checkbox" checked={form.is_published}
                     onChange={(e) => setForm((f) => ({ ...f, is_published: e.target.checked }))}
-                    className="rounded border-gray-300 text-[rgb(var(--ctc-primary))] focus:ring-[rgb(var(--ctc-primary))]" />
+                    className="rounded border-gray-300 text-[rgb(var(--fu-primary))] focus:ring-[rgb(var(--fu-primary))]" />
                   <span className="text-sm text-gray-700">Published</span>
                 </label>
               </div>
@@ -255,8 +255,8 @@ export default function DashboardAssignmentPage() {
               <motion.div key={a.id} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: idx * 0.05 }} className="card p-5">
                 <div className="flex items-start gap-4">
-                  <div className="w-10 h-10 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                    <HiClipboardList className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                  <div className="w-10 h-10 bg-[rgb(var(--fu-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                    <HiClipboardList className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between gap-2">
@@ -291,7 +291,7 @@ export default function DashboardAssignmentPage() {
                       </div>
                       <div className="flex items-center gap-2">
                         <button onClick={() => setGradingAssignmentId(a.id)}
-                          className="text-xs text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1">
+                          className="text-xs text-[rgb(var(--fu-primary))] hover:underline flex items-center gap-1">
                           <HiStar className="w-3.5 h-3.5" /> Grade
                         </button>
                         <button onClick={() => openEdit(a)} className="text-gray-400 hover:text-gray-600" title="Edit">
@@ -417,7 +417,7 @@ function GradingModal({
                     )}
                     {sub.file_url && (
                       <a href={sub.file_url} target="_blank" rel="noopener noreferrer"
-                        className="text-xs text-[rgb(var(--ctc-primary))] hover:underline">
+                        className="text-xs text-[rgb(var(--fu-primary))] hover:underline">
                         📎 {sub.file_name || 'View Attachment'}
                       </a>
                     )}
@@ -441,7 +441,7 @@ function GradingModal({
                                 ...prev,
                                 [sub.id]: { ...prev[sub.id] || { feedback: '' }, score: e.target.value },
                               }))}
-                              className="w-24 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none"
+                              className="w-24 border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none"
                               placeholder="Score" />
                           </div>
                           <button onClick={() => handleGrade(sub.id, sub.max_score)}
@@ -458,7 +458,7 @@ function GradingModal({
                               [sub.id]: { ...prev[sub.id] || { score: '' }, feedback: e.target.value },
                             }))}
                             rows={2}
-                            className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none resize-none"
+                            className="w-full border border-gray-300 rounded-lg px-2 py-1.5 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none resize-none"
                             placeholder="Write feedback..." />
                         </div>
                       </div>

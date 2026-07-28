@@ -1,6 +1,6 @@
 # CTC-Research Fixtures Organization
 
-**Location**: `/ctc-research/assets/fixtures/`  
+**Location**: `/fusion-cms/assets/fixtures/`  
 **Purpose**: Manage fixture data for database initialization and testing  
 **Status**: ✅ Organized and categorized
 
@@ -14,7 +14,7 @@ fixtures/
 ├── dump-data.json                 # Main fixture dump (source)
 ├── original/                      # Archive/original fixtures
 │   ├── wagtail_pages_dump.json
-│   └── ctc-research-data.json
+│   └── fusion-cms-data.json
 ├── cleaned/                       # Cleaned/filtered versions
 │   ├── filtered-dump-data.json
 │   └── essential-data.json
@@ -49,10 +49,10 @@ fixtures/
 **Loading**:
 ```bash
 # Recommended: Load just locales first
-docker exec web-ctc-research python manage.py loaddata production/just-locales.json
+docker exec web-fusion-cms python manage.py loaddata production/just-locales.json
 
 # Or use the management command
-docker exec web-ctc-research python manage.py load_initial_fixtures
+docker exec web-fusion-cms python manage.py load_initial_fixtures
 ```
 
 ### 🟡 Cleaned (Processed)
@@ -90,7 +90,7 @@ docker exec web-ctc-research python manage.py load_initial_fixtures
 | Fixture | Size | Models | Notes |
 |---------|------|--------|-------|
 | `wagtail_pages_dump.json` | 1.3MB | Page records | Original Wagtail dump |
-| `ctc-research-data.json` | 63KB | Mixed | Original CTC data |
+| `fusion-cms-data.json` | 63KB | Mixed | Original CTC data |
 
 **Use When**: Reference, recovery, historical analysis
 
@@ -112,7 +112,7 @@ docker exec web-ctc-research python manage.py load_initial_fixtures
 ### Step 1: Locales Only ✅
 ```bash
 # Load 6 language records
-docker exec web-ctc-research python manage.py loaddata assets/fixtures/production/just-locales.json
+docker exec web-fusion-cms python manage.py loaddata assets/fixtures/production/just-locales.json
 ```
 
 **Why First**: Other fixtures may reference locales
@@ -120,7 +120,7 @@ docker exec web-ctc-research python manage.py loaddata assets/fixtures/productio
 ### Step 2: Users (Optional)
 ```bash
 # Load test/demo users
-docker exec web-ctc-research python manage.py loaddata assets/fixtures/test/users.json
+docker exec web-fusion-cms python manage.py loaddata assets/fixtures/test/users.json
 ```
 
 **Why Optional**: Create admin user separately with `createsuperuser`
@@ -128,7 +128,7 @@ docker exec web-ctc-research python manage.py loaddata assets/fixtures/test/user
 ### Step 3: Pages (Optional)
 ```bash
 # Load page structure
-docker exec web-ctc-research python manage.py loaddata assets/fixtures/test/pages.json
+docker exec web-fusion-cms python manage.py loaddata assets/fixtures/test/pages.json
 ```
 
 **Why Optional**: Create pages via `populate_content` command instead
@@ -145,24 +145,24 @@ python manage.py load_initial_fixtures --list
 ### Load Recommended Sequence
 ```bash
 # Load all fixtures in order
-docker exec web-ctc-research python manage.py load_initial_fixtures
+docker exec web-fusion-cms python manage.py load_initial_fixtures
 
 # Dry run - show what would load
-docker exec web-ctc-research python manage.py load_initial_fixtures --dry-run
+docker exec web-fusion-cms python manage.py load_initial_fixtures --dry-run
 ```
 
 ### Load Specific Step
 ```bash
 # Load step 1 (locales)
-docker exec web-ctc-research python manage.py load_initial_fixtures --step 1
+docker exec web-fusion-cms python manage.py load_initial_fixtures --step 1
 
 # Load step 2 (users)
-docker exec web-ctc-research python manage.py load_initial_fixtures --step 2
+docker exec web-fusion-cms python manage.py load_initial_fixtures --step 2
 ```
 
 ### Load Single Fixture
 ```bash
-docker exec web-ctc-research python manage.py load_initial_fixtures --fixture just-locales.json
+docker exec web-fusion-cms python manage.py load_initial_fixtures --fixture just-locales.json
 ```
 
 ---
@@ -295,18 +295,18 @@ python tests/scripts/manage_fixtures.py --recommended
 
 ### Export All Data
 ```bash
-docker exec web-ctc-research python manage.py dumpdata > fixtures/backup.json
+docker exec web-fusion-cms python manage.py dumpdata > fixtures/backup.json
 ```
 
 ### Export Specific Models
 ```bash
-docker exec web-ctc-research python manage.py dumpdata wagtailcore.page > fixtures/pages.json
-docker exec web-ctc-research python manage.py dumpdata wagtail_localize.locale > fixtures/locales.json
+docker exec web-fusion-cms python manage.py dumpdata wagtailcore.page > fixtures/pages.json
+docker exec web-fusion-cms python manage.py dumpdata wagtail_localize.locale > fixtures/locales.json
 ```
 
 ### Export with Pretty Printing
 ```bash
-docker exec web-ctc-research python manage.py dumpdata --indent 2 > fixtures/backup.json
+docker exec web-fusion-cms python manage.py dumpdata --indent 2 > fixtures/backup.json
 ```
 
 ---
@@ -330,7 +330,7 @@ docker exec web-ctc-research python manage.py dumpdata --indent 2 > fixtures/bac
 
 ## 📞 Support
 
-**Questions**: See `/root/site/websites/ctc-research/www/apps/management/commands/load_initial_fixtures.py`  
+**Questions**: See `/root/site/websites/fusion-cms/www/apps/management/commands/load_initial_fixtures.py`  
 **Issues**: Check fixture model compatibility (see Fixture Analysis section)  
 **Management**: Use `manage_fixtures.py` script in `tests/scripts/`
 

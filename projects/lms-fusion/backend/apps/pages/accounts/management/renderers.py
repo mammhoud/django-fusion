@@ -1,5 +1,5 @@
 """
-Renderer utilities for ctc-research.com.
+Renderer utilities for fusion-cms.com.
 
 Delegates to django_fusion.handlers.core.DynamicComponentRenderer
 """

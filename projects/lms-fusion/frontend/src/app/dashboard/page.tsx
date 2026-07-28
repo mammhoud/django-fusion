@@ -87,11 +87,11 @@ function AdminDashboard({ profile }: { profile: { id: number; first_name?: strin
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-10">
             <Link href="/dashboard/admin/withdrawals"
               className="card p-5 flex items-center gap-4 hover:shadow-md transition-shadow group">
-              <div className="bg-[rgb(var(--ctc-primary))]/10 w-12 h-12 rounded-lg flex items-center justify-center">
-                <HiCurrencyDollar className="w-6 h-6 text-[rgb(var(--ctc-primary))]" />
+              <div className="bg-[rgb(var(--fu-primary))]/10 w-12 h-12 rounded-lg flex items-center justify-center">
+                <HiCurrencyDollar className="w-6 h-6 text-[rgb(var(--fu-primary))]" />
               </div>
               <div>
-                <div className="font-semibold text-gray-900 group-hover:text-[rgb(var(--ctc-primary))]">
+                <div className="font-semibold text-gray-900 group-hover:text-[rgb(var(--fu-primary))]">
                   Pending Withdrawals
                 </div>
                 <div className="text-sm text-gray-500">
@@ -139,7 +139,7 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
   const stats = [
     { icon: HiBookOpen, label: 'Courses', value: dashboard?.total_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiUserGroup, label: 'Students', value: dashboard?.total_students ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
-    { icon: HiCurrencyDollar, label: 'Revenue', value: dashboard ? `$${dashboard.total_revenue.toLocaleString()}` : '$0', color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
+    { icon: HiCurrencyDollar, label: 'Revenue', value: dashboard ? `$${dashboard.total_revenue.toLocaleString()}` : '$0', color: 'text-[rgb(var(--fu-accent))]', bg: 'bg-[rgb(var(--fu-accent))]/10' },
     { icon: HiTrendingUp, label: 'Completion', value: dashboard ? `${dashboard.completion_rate}%` : '0%', color: 'text-emerald-600', bg: 'bg-emerald-100' },
   ];
 
@@ -215,7 +215,7 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
             {quickLinks.map((link) => (
               <Link key={link.href} href={link.href}
                 className="card p-4 flex items-center gap-3 hover:shadow-md transition-shadow group">
-                <link.icon className="w-6 h-6 text-[rgb(var(--ctc-primary))] group-hover:text-[rgb(var(--ctc-primary-dark))]" />
+                <link.icon className="w-6 h-6 text-[rgb(var(--fu-primary))] group-hover:text-[rgb(var(--fu-primary-dark))]" />
                 <span className="font-medium text-gray-700 group-hover:text-gray-900">{link.label}</span>
               </Link>
             ))}
@@ -225,8 +225,8 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
         {/* Getting Started CTA */}
         {dashboard?.total_courses === 0 && (
           <ScrollReveal animation="fadeUp" delay={0.2} duration={0.4}>
-            <div className="bg-[rgb(var(--ctc-primary))]/5 border border-[rgb(var(--ctc-primary))]/20 rounded-xl p-6 mb-6 text-center">
-              <HiBookOpen className="w-12 h-12 text-[rgb(var(--ctc-primary))]/40 mx-auto mb-3" />
+            <div className="bg-[rgb(var(--fu-primary))]/5 border border-[rgb(var(--fu-primary))]/20 rounded-xl p-6 mb-6 text-center">
+              <HiBookOpen className="w-12 h-12 text-[rgb(var(--fu-primary))]/40 mx-auto mb-3" />
               <h3 className="font-semibold text-gray-900 mb-1">Getting Started</h3>
               <p className="text-sm text-gray-600 mb-3">Create your first course to start teaching students.</p>
               <Link href="/dashboard/courses/new" className="btn-primary inline-flex text-sm">Create Course</Link>
@@ -239,7 +239,7 @@ function InstructorDashboard({ profile }: { profile: { id: number; first_name?: 
           <ScrollReveal animation="fadeUp" delay={0.2} duration={0.4}>
             <div className="mb-10">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <HiTrendingUp className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                <HiTrendingUp className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                 Analytics
               </h2>
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
@@ -344,8 +344,8 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
   const statsCards = [
     { icon: HiAcademicCap, label: 'Enrolled Courses', value: dashboard?.enrolled_courses ?? 0, color: 'text-blue-600', bg: 'bg-blue-100' },
     { icon: HiCheckCircle, label: 'Completed', value: dashboard?.completed_courses ?? 0, color: 'text-green-600', bg: 'bg-green-100' },
-    { icon: HiClock, label: 'Total Hours', value: dashboard?.total_hours ?? 0, color: 'text-[rgb(var(--ctc-accent))]', bg: 'bg-[rgb(var(--ctc-accent))]/10' },
-    { icon: HiChartBar, label: 'Progress', value: enrollments?.length ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length) : 0, suffix: '%', color: 'text-[rgb(var(--ctc-primary))]', bg: 'bg-[rgb(var(--ctc-primary))]/10' },
+    { icon: HiClock, label: 'Total Hours', value: dashboard?.total_hours ?? 0, color: 'text-[rgb(var(--fu-accent))]', bg: 'bg-[rgb(var(--fu-accent))]/10' },
+    { icon: HiChartBar, label: 'Progress', value: enrollments?.length ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length) : 0, suffix: '%', color: 'text-[rgb(var(--fu-primary))]', bg: 'bg-[rgb(var(--fu-primary))]/10' },
   ];
 
   // Build carousel slides from stats
@@ -412,7 +412,7 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
           <div className="mb-8">
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold text-gray-900">My Courses</h2>
-              <Link href="/courses" className="text-[rgb(var(--ctc-primary))] text-sm font-medium hover:text-[rgb(var(--ctc-primary-dark))]">
+              <Link href="/courses" className="text-[rgb(var(--fu-primary))] text-sm font-medium hover:text-[rgb(var(--fu-primary-dark))]">
                 Browse More Courses
               </Link>
             </div>
@@ -433,7 +433,7 @@ function StudentDashboard({ profile }: { profile: { id: number; first_name?: str
                     </div>
                     <div className="flex-1 min-w-0">
                       <Link href={`/course-details/${enrollment.course}`}
-                        className="font-semibold text-gray-900 hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1">
+                        className="font-semibold text-gray-900 hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-1">
                         {enrollment.course_title}
                       </Link>
                       <p className="text-sm text-gray-500 mt-1">
@@ -522,7 +522,7 @@ function CmsDashboardContentBlocks({ profileName }: { profileName: string }) {
           <Link
             key={li}
             href={link.href}
-            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-[rgb(var(--ctc-primary))]/30 hover:text-[rgb(var(--ctc-primary))] transition-colors"
+            className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-white border border-gray-200 rounded-lg text-sm text-gray-700 hover:border-[rgb(var(--fu-primary))]/30 hover:text-[rgb(var(--fu-primary))] transition-colors"
           >
             <HiLink className="w-3.5 h-3.5" />
             {link.label}
@@ -546,7 +546,7 @@ function CmsDashboardContentBlocks({ profileName }: { profileName: string }) {
               {ann.link && (
                 <a
                   href={ann.link}
-                  className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[rgb(var(--ctc-primary))] hover:underline"
+                  className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[rgb(var(--fu-primary))] hover:underline"
                 >
                   {ann.link_label || 'Learn More'}
                 </a>
@@ -596,7 +596,7 @@ function CmsDashboardContentBlocks({ profileName }: { profileName: string }) {
           {announcements[0].link && (
             <a
               href={announcements[0].link}
-              className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[rgb(var(--ctc-primary))] hover:underline"
+              className="inline-flex items-center gap-1 mt-2 text-sm font-medium text-[rgb(var(--fu-primary))] hover:underline"
             >
               {announcements[0].link_label || 'Learn More'}
             </a>
@@ -631,7 +631,7 @@ function CmsDashboardContentBlocks({ profileName }: { profileName: string }) {
       {/* Welcome — always prominent */}
       {welcome && (
         <ScrollReveal animation="fadeUp" duration={0.4}>
-          <div className="bg-gradient-to-r from-[rgb(var(--ctc-primary))]/5 to-transparent rounded-xl p-5">
+          <div className="bg-gradient-to-r from-[rgb(var(--fu-primary))]/5 to-transparent rounded-xl p-5">
             <h2 className="text-xl font-bold text-gray-900">
               {welcome.heading?.replace('{name}', profileName) || `Welcome back, ${profileName}!`}
             </h2>

@@ -73,8 +73,8 @@ export default function CourseDetailsPage() {
         );
       case 'enrolled_paid':
         return (
-          <div className="flex items-center gap-2 text-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 px-4 py-3 rounded-xl text-sm font-medium">
-            <div className="w-5 h-5 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin" />
+          <div className="flex items-center gap-2 text-[rgb(var(--fu-primary))] bg-[rgb(var(--fu-primary))]/5 px-4 py-3 rounded-xl text-sm font-medium">
+            <div className="w-5 h-5 border-2 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin" />
             Redirecting to checkout...
           </div>
         );
@@ -85,12 +85,12 @@ export default function CourseDetailsPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <Link href="/courses" className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-6 transition-colors">
+      <Link href="/courses" className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--fu-primary))] mb-6 transition-colors">
         <HiArrowLeft className="w-4 h-4" /> Back to Courses
       </Link>
 
       <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
-        <div className="bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-primary-dark))] rounded-xl p-8 text-white mb-8">
+        <div className="bg-gradient-to-br from-[rgb(var(--fu-primary))] to-[rgb(var(--fu-primary-dark))] rounded-xl p-8 text-white mb-8">
           <div className="flex items-center gap-2 mb-3">
             <span className="badge bg-white/20 text-white">{course.category_name}</span>
             <span className="badge bg-white/20 text-white">{course.level}</span>
@@ -105,7 +105,7 @@ export default function CourseDetailsPage() {
           </div>
           <div className="mt-6">
             <span className="text-3xl font-bold">${price}</span>
-            {course.discounted_price && <span className="text-lg line-through text-[rgb(var(--ctc-primary))]/70 ml-2">${course.price}</span>}
+            {course.discounted_price && <span className="text-lg line-through text-[rgb(var(--fu-primary))]/70 ml-2">${course.price}</span>}
           </div>
         </div>
 
@@ -121,8 +121,8 @@ export default function CourseDetailsPage() {
               <div className="space-y-2">
                 {course.curriculum?.map((lesson, idx) => (
                   <div key={lesson.id} className="card p-4 flex items-center gap-3">
-                    <div className="w-10 h-10 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
-                      {lesson.is_free ? <HiPlay className="w-5 h-5 text-[rgb(var(--ctc-primary))]" /> : <HiCheckCircle className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />}
+                    <div className="w-10 h-10 bg-[rgb(var(--fu-primary))]/10 rounded-full flex items-center justify-center flex-shrink-0">
+                      {lesson.is_free ? <HiPlay className="w-5 h-5 text-[rgb(var(--fu-primary))]" /> : <HiCheckCircle className="w-5 h-5 text-[rgb(var(--fu-primary))]" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <p className="font-medium text-gray-900">{idx + 1}. {lesson.title}</p>

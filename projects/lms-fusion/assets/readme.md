@@ -1,6 +1,6 @@
 # Assets Directory
 
-This directory contains all static and media files for the CTC Research website.
+This directory contains all static and media files for the Fusion CMS website.
 
 ## Directory Structure
 

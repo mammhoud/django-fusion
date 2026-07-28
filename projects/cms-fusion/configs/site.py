@@ -75,7 +75,7 @@ def site_configs() -> dict[str, dict[str, Any]]:
 
 
 def known_websites() -> tuple[str, ...]:
-    return tuple(site_configs().keys()) or ("structa.cloud", "ctc-research.com")
+    return tuple(site_configs().keys()) or ("structa.cloud", "fusion-cms.com")
 
 
 KNOWN_WEBSITES = known_websites()

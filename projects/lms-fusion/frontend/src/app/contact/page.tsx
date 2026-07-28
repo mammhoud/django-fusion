@@ -62,12 +62,12 @@ function ContactPageContent({ page }: { page: CmsPage | undefined }) {
               transition={{ delay: i * 0.1 }}
               className="card p-5"
             >
-              <info.icon className="w-6 h-6 text-[rgb(var(--ctc-primary))] mb-3" />
+              <info.icon className="w-6 h-6 text-[rgb(var(--fu-primary))] mb-3" />
               <h3 className="font-medium text-gray-900">{info.label}</h3>
               {info.href ? (
                 <a
                   href={info.href}
-                  className="text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] transition-colors"
+                  className="text-sm text-gray-500 hover:text-[rgb(var(--fu-primary))] transition-colors"
                 >
                   {info.value}
                 </a>

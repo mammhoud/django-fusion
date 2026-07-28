@@ -138,8 +138,8 @@ export default function StudentQuizPage() {
     return (
       <div className="max-w-2xl mx-auto px-4 py-16">
         <div className="bg-white rounded-2xl p-8 shadow-sm border border-gray-100 text-center">
-          <div className="w-16 h-16 bg-[rgb(var(--ctc-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-4">
-            <HiClock className="w-8 h-8 text-[rgb(var(--ctc-primary))]" />
+          <div className="w-16 h-16 bg-[rgb(var(--fu-primary))]/10 rounded-full flex items-center justify-center mx-auto mb-4">
+            <HiClock className="w-8 h-8 text-[rgb(var(--fu-primary))]" />
           </div>
           <h1 className="text-2xl font-bold text-gray-900 mb-2">{quiz.title}</h1>
           {quiz.course_title && <p className="text-gray-500 mb-2">Course: {quiz.course_title}</p>}
@@ -219,7 +219,7 @@ export default function StudentQuizPage() {
                     onClick={() => setCurrentQuestion(i)}
                     className={`w-9 h-9 rounded-lg text-xs font-medium transition-all ${
                       i === currentQuestion
-                        ? 'bg-[rgb(var(--ctc-primary))] text-white'
+                        ? 'bg-[rgb(var(--fu-primary))] text-white'
                         : answers[i] !== undefined
                         ? 'bg-green-100 text-green-700'
                         : flaggedQuestions.includes(i)
@@ -249,7 +249,7 @@ export default function StudentQuizPage() {
                       onClick={() => setAnswers({ ...answers, [currentQuestion]: idx })}
                       className={`w-full text-left p-4 rounded-xl border-2 transition-all ${
                         answers[currentQuestion] === idx
-                          ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary-dark))]'
+                          ? 'border-[rgb(var(--fu-primary))] bg-[rgb(var(--fu-primary))]/5 text-[rgb(var(--fu-primary-dark))]'
                           : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50 text-gray-700'
                       }`}
                     >
@@ -312,7 +312,7 @@ export default function StudentQuizPage() {
                           className={`flex items-center justify-center gap-2 p-4 border-2 border-dashed rounded-xl cursor-pointer transition-all ${
                             uploadingFile
                               ? 'border-gray-200 bg-gray-50'
-                              : 'border-gray-300 hover:border-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5'
+                              : 'border-gray-300 hover:border-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5'
                           }`}
                         >
                           <input

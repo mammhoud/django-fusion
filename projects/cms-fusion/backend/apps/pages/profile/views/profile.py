@@ -1,5 +1,5 @@
 """
-Profile views for ctc-research.
+Profile views for fusion-cms.
 
 All heavy imports (django_fusion.site) are deferred to
 dispatch-time to avoid the `RuntimeError: Conflicting 'role' models` that

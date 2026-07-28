@@ -47,7 +47,7 @@ export default function NotificationBell() {
           <HiOutlineBell className="w-5 h-5" />
         )}
         {hasUnread && (
-          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full ring-2 ring-[rgb(var(--ctc-primary-dark))]">
+          <span className="absolute -top-0.5 -right-0.5 flex items-center justify-center min-w-[18px] h-[18px] px-1 text-[10px] font-bold text-white bg-red-500 rounded-full ring-2 ring-[rgb(var(--fu-primary-dark))]">
             {unreadCount > 99 ? '99+' : unreadCount}
           </span>
         )}

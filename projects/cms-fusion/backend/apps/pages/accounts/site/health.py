@@ -1,4 +1,4 @@
-"""Health check endpoint for ctc-research.com."""
+"""Health check endpoint for fusion-cms.com."""
 from django.http import JsonResponse
 
 

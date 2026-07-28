@@ -166,4 +166,4 @@ FUSION_FEATURES = {
 # ═══════════════════════════════════════════════════════════════════
 # Fusion Render-First
 # ═══════════════════════════════════════════════════════════════════
-FUSION_RENDER_FIRST_DEFAULT = False
+FUSION_RENDER_FIRST_DEFAULT = True

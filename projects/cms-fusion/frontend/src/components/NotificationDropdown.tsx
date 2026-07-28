@@ -51,7 +51,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
         {hasUnread && (
           <button
             onClick={handleMarkAllRead}
-            className="text-xs font-medium text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] flex items-center gap-1 transition-colors"
+            className="text-xs font-medium text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))] flex items-center gap-1 transition-colors"
           >
             <HiCheckCircle className="w-3.5 h-3.5" />
             Mark all read
@@ -63,7 +63,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
       <div className="max-h-[360px] overflow-y-auto">
         {isLoading ? (
           <div className="p-6 text-center text-sm text-gray-400">
-            <div className="w-6 h-6 border-2 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
+            <div className="w-6 h-6 border-2 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin mx-auto mb-2" />
             Loading...
           </div>
         ) : notifications.length === 0 ? (
@@ -79,7 +79,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
                 key={notification.id}
                 onClick={() => handleItemClick(notification)}
                 className={`w-full text-left px-4 py-3 hover:bg-gray-50 transition-colors ${
-                  !notification.is_read ? 'bg-[rgb(var(--ctc-primary))]/[0.03]' : ''
+                  !notification.is_read ? 'bg-[rgb(var(--fu-primary))]/[0.03]' : ''
                 }`}
               >
                 <div className="flex items-start gap-3">
@@ -98,7 +98,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
                         {notification.title}
                       </p>
                       {!notification.is_read && (
-                        <span className="w-2 h-2 bg-[rgb(var(--ctc-primary))] rounded-full flex-shrink-0" />
+                        <span className="w-2 h-2 bg-[rgb(var(--fu-primary))] rounded-full flex-shrink-0" />
                       )}
                     </div>
                     {notification.message && (
@@ -121,7 +121,7 @@ export default function NotificationDropdown({ onClose }: NotificationDropdownPr
       <Link
         href={"/dashboard/notifications" as any}
         onClick={onClose}
-        className="block px-4 py-3 text-center text-sm font-medium text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] hover:bg-gray-50 border-t border-gray-100 transition-colors"
+        className="block px-4 py-3 text-center text-sm font-medium text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))] hover:bg-gray-50 border-t border-gray-100 transition-colors"
       >
         View all notifications
       </Link>

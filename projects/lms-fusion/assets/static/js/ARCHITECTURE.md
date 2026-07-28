@@ -100,7 +100,7 @@ assets/static/js/
 ## Site-Specific Entry Points
 
 ```
-ctc-research/assets/static/js/
+fusion-cms/assets/static/js/
 ├── ctc-app.js                     # CTC-Research app initialization
 └── usecase-config.js              # CTC-Research usecase configuration
 
@@ -303,7 +303,7 @@ Enable debug mode in `init.config.js`:
 ```javascript
 export const CONFIG = {
   debug: true,  // Enables console logs
-  site: 'ctc-research',
+  site: 'fusion-cms',
   version: '1.0.0'
 };
 ```

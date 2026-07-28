@@ -40,9 +40,9 @@ export default function CoursesPage() {
         </div>
         <div className="p-4">
           <span className="badge-primary text-xs mb-2 inline-block">{course.category_name}</span>
-          <h3 className="font-semibold text-gray-900 text-sm group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1">{course.title}</h3>
+          <h3 className="font-semibold text-gray-900 text-sm group-hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-1">{course.title}</h3>
           <div className="flex items-center justify-between mt-3">
-            <span className="font-bold text-sm text-[rgb(var(--ctc-primary))]">${course.discounted_price || course.price}</span>
+            <span className="font-bold text-sm text-[rgb(var(--fu-primary))]">${course.discounted_price || course.price}</span>
             <span className="flex items-center gap-1 text-xs">
               <HiStar className="w-3 h-3 text-yellow-400" />
               <span className="text-gray-500">{course.rating}</span>
@@ -98,7 +98,7 @@ export default function CoursesPage() {
           <ScrollReveal animation="fadeUp" delay={0.1} duration={0.4}>
             <section className="mb-10">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <HiStar className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                <HiStar className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                 Top Courses
               </h2>
               <Carousel
@@ -141,13 +141,13 @@ export default function CoursesPage() {
                           <span className="badge-primary text-xs">{course.category_name}</span>
                           <span className="badge bg-gray-100 text-gray-600 text-xs">{course.level}</span>
                         </div>
-                        <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-2">
+                        <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-2">
                           {course.title}
                         </h3>
                         <p className="text-sm text-gray-500 mb-3 line-clamp-2">{course.short_description}</p>
                         <div className="flex items-center justify-between text-sm">
                           <span className="text-gray-500">{course.instructor_name}</span>
-                          <span className="font-bold text-[rgb(var(--ctc-primary))]">${course.discounted_price || course.price}</span>
+                          <span className="font-bold text-[rgb(var(--fu-primary))]">${course.discounted_price || course.price}</span>
                         </div>
                         <div className="flex items-center gap-3 mt-3 text-sm text-gray-500">
                           <span>{course.duration}</span>
@@ -171,7 +171,7 @@ export default function CoursesPage() {
                       key={p}
                       onClick={() => setPage(p)}
                       className={`w-10 h-10 rounded-lg font-medium transition-colors ${
-                        p === page ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
+                        p === page ? 'bg-[rgb(var(--fu-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'
                       }`}
                     >
                       {p}

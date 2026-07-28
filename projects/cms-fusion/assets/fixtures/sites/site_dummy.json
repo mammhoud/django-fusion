@@ -3,8 +3,8 @@
     "model": "sites.site",
     "pk": 101,
     "fields": {
-      "domain": "ctc-research.com",
-      "name": "ctc-research.com dummy site"
+      "domain": "fusion-cms.com",
+      "name": "fusion-cms.com dummy site"
     }
   }
 ]

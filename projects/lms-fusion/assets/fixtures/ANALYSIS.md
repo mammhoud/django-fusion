@@ -52,7 +52,7 @@ fixtures/
 │   ├── essential-data.json
 │   └── filtered-dump-data.json
 ├── original/                           # Original unmodified fixture dumps
-│   ├── ctc-research-data.json
+│   ├── fusion-cms-data.json
 │   └── wagtail_pages_dump.json
 ├── production/                         # Production-ready fixtures
 │   ├── cleaned-dump-data.json
@@ -80,4 +80,4 @@ fixtures/
 | **lms-fusion** | ✅ Yes | Tests and seed data loading |
 | **portfolio** | ✅ Yes | Via `FIXTURE_DIRS` |
 | **cypercloud** | ✅ Yes | Via `FIXTURE_DIRS` |
-| **ctc-research** | ✅ Yes | Via `FIXTURE_DIRS` |
+| **fusion-cms** | ✅ Yes | Via `FIXTURE_DIRS` |

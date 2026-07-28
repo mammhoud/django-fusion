@@ -5,7 +5,7 @@ The `www` site (created from the merge of `projects/shared/` and
 used across all websites. It serves as the sentinel site for the
 shared-task worker stack (shared-worker + shared-scheduler).
 
-Mirrors the per-site settings.py pattern (see `projects/ctc-research/settings.py`)
+Mirrors the per-site settings.py pattern (see `projects/fusion-cms/settings.py`)
 but with two differences:
 
 1. No `_SITE_APP_DIR = _SITE_DIR / "www"`. The shared stack runs the
@@ -31,13 +31,13 @@ set. With either path resolvable, celery-beat and shared-worker's
 historical `Unknown site 'shared'` rejection.
 
 DEV-TIME ONLY:
-Production workers run with PROJECT_PATH=ctc-research baked at build time
+Production workers run with PROJECT_PATH=fusion-cms baked at build time
 in `projects/compose/Dockerfile` (override-able via the
 `TASKS_PROJECT_PATH=www` build arg passed from
 `applications/compose/docker-compose.tasks.yml`). Under the default
-PROJECT_PATH=ctc-research, `python manage.py rundramatiq` is invoked with
+PROJECT_PATH=fusion-cms, `python manage.py rundramatiq` is invoked with
 DJANGO_SETTINGS_MODULE=settings resolving to
-`projects/ctc-research/settings.py` (bind-mounted at runtime) — NOT this module.
+`projects/fusion-cms/settings.py` (bind-mounted at runtime) — NOT this module.
 
 Setting TASKS_PROJECT_PATH=www IS the runtime wiring: the
 Dockerfile's `COPY projects/${PROJECT_PATH}` step bakes www/ contents

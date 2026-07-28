@@ -13,7 +13,7 @@ Three frontend implementations exist under `projects/cms-fusion/`:
 |-----------|:-----------:|------------|-----------------|
 | `frontend/` | **36** | Next.js 14 + React 18 + Redux + Tailwind | **Fusion CMS** — Modern fusion-integrated frontend |
 | `lms/` | **112** | Next.js 14 + React 18 + Redux + Stripe | **LMS** — Full learning management frontend |
-| `front-end/` | **1,114** | Next.js 14 + React 18 + Redux + SCSS | **CTC Research** — Most comprehensive, includes dashboards + charts |
+| `front-end/` | **1,114** | Next.js 14 + React 18 + Redux + SCSS | **Fusion CMS** — Most comprehensive, includes dashboards + charts |
 
 ---
 

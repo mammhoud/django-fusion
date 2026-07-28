@@ -21,7 +21,7 @@ export default function CartPage() {
           <h1 className="text-3xl font-bold text-gray-900">Shopping Cart</h1>
           <p className="text-gray-500 mt-1">{cart?.length ?? 0} items in your cart</p>
         </div>
-        <Link href="/shop" className="flex items-center gap-2 text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))] font-medium">
+        <Link href="/shop" className="flex items-center gap-2 text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))] font-medium">
           <HiArrowLeft className="w-4 h-4" /> Continue Shopping
         </Link>
       </div>

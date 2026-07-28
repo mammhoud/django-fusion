@@ -1,5 +1,5 @@
 """
-CTC Research — Publication model (Wagtail snippet).
+Fusion CMS — Publication model (Wagtail snippet).
 
 Serves: GET /apis/research/publications
 """

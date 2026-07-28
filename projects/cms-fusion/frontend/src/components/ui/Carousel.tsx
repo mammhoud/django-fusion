@@ -301,7 +301,7 @@ export default function Carousel({
                 i === activeIndex
                   ? hero
                     ? 'bg-white w-6'
-                    : 'bg-[rgb(var(--ctc-primary))] w-6'
+                    : 'bg-[rgb(var(--fu-primary))] w-6'
                   : hero
                     ? 'bg-white/50 hover:bg-white/80'
                     : 'bg-gray-300 hover:bg-gray-400'

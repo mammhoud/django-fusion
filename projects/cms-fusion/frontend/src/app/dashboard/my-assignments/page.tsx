@@ -172,21 +172,21 @@ export default function MyAssignmentsPage() {
                         {/* Grade & Feedback */}
                         {sub?.status === 'graded' && (
                           <button onClick={() => setSelectedAssignment(a)}
-                            className="text-xs text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1">
+                            className="text-xs text-[rgb(var(--fu-primary))] hover:underline flex items-center gap-1">
                             <HiStar className="w-3.5 h-3.5" /> View Feedback
                           </button>
                         )}
                         {/* Submit button */}
                         {!sub && !isPastDue && (
                           <button onClick={() => { setSelectedAssignment(a); setTextSubmission(''); setSubmitError(''); setUploadedFile(null); }}
-                            className="text-xs text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1">
+                            className="text-xs text-[rgb(var(--fu-primary))] hover:underline flex items-center gap-1">
                             <HiUpload className="w-3.5 h-3.5" /> Submit
                           </button>
                         )}
                         {/* Re-submit */}
                         {sub && sub.status !== 'graded' && (
                           <button onClick={() => { setSelectedAssignment(a); setTextSubmission(sub.text_submission); setSubmitError(''); setUploadedFile(null); }}
-                            className="text-xs text-[rgb(var(--ctc-primary))] hover:underline flex items-center gap-1">
+                            className="text-xs text-[rgb(var(--fu-primary))] hover:underline flex items-center gap-1">
                             <HiUpload className="w-3.5 h-3.5" /> Re-submit
                           </button>
                         )}
@@ -266,7 +266,7 @@ export default function MyAssignmentsPage() {
                       {sub.file_url && (
                         <div className="mt-2">
                           <a href={sub.file_url} target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1.5 text-sm text-[rgb(var(--ctc-primary))] hover:underline bg-white rounded-lg px-3 py-2 border border-gray-200">
+                            className="inline-flex items-center gap-1.5 text-sm text-[rgb(var(--fu-primary))] hover:underline bg-white rounded-lg px-3 py-2 border border-gray-200">
                             📎 {sub.file_name || 'Download Attachment'}
                           </a>
                         </div>
@@ -288,7 +288,7 @@ export default function MyAssignmentsPage() {
                     <textarea value={textSubmission}
                       onChange={(e) => setTextSubmission(e.target.value)}
                       rows={6}
-                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--ctc-primary))]/20 focus:border-[rgb(var(--ctc-primary))] outline-none resize-none"
+                      className="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[rgb(var(--fu-primary))]/20 focus:border-[rgb(var(--fu-primary))] outline-none resize-none"
                       placeholder="Write or paste your assignment submission here..." />
                   </div>
 
@@ -299,11 +299,11 @@ export default function MyAssignmentsPage() {
                       Attach a File
                       <span className="text-xs text-gray-400 ml-2">(optional — PDF, DOC, ZIP, images, code)</span>
                     </label>
-                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-[rgb(var(--ctc-primary))]/50 transition-colors">
+                    <div className="border-2 border-dashed border-gray-300 rounded-lg p-4 hover:border-[rgb(var(--fu-primary))]/50 transition-colors">
                       {uploadedFile ? (
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2 text-sm">
-                            <HiPaperClip className="w-4 h-4 text-[rgb(var(--ctc-primary))]" />
+                            <HiPaperClip className="w-4 h-4 text-[rgb(var(--fu-primary))]" />
                             <span className="text-gray-700 truncate max-w-[200px]">{uploadedFile.name}</span>
                             <span className="text-xs text-green-600 font-medium">Uploaded ✓</span>
                           </div>

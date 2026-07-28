@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Entry point for lms-fusion website.
 
-Allows execution via: python -m ctc_research or uv run -m ctc_research
+Allows execution via: python -m fusion_cms or uv run -m fusion_cms
 """
 import os
 import sys

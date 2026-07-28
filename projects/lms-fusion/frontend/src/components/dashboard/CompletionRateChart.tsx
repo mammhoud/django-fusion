@@ -95,7 +95,7 @@ export default function CompletionRateChart({
           <div>Completed</div>
         </div>
         <div>
-          <div className="font-semibold" style={{ color: 'rgb(var(--ctc-primary))' }}>{activeEnrollments}</div>
+          <div className="font-semibold" style={{ color: 'rgb(var(--fu-primary))' }}>{activeEnrollments}</div>
           <div>In Progress</div>
         </div>
         <div>

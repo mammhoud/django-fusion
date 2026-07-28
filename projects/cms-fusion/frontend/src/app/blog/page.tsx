@@ -54,11 +54,11 @@ export default function BlogPage() {
                       <span className="badge-primary">{post.category_name}</span>
                       <span className="flex items-center gap-1"><HiCalendar className="w-3 h-3" />{new Date(post.created_at).toLocaleDateString()}</span>
                     </div>
-                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-2">{post.title}</h3>
+                    <h3 className="font-semibold text-gray-900 mb-2 group-hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-2">{post.title}</h3>
                     <p className="text-sm text-gray-500 line-clamp-2 mb-3">{post.excerpt}</p>
                     <div className="flex items-center justify-between text-sm">
                       <span className="flex items-center gap-1 text-gray-500"><HiUser className="w-3 h-3" />{post.author_name}</span>
-                      <span className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1">Read More <HiArrowRight className="w-3 h-3" /></span>
+                      <span className="text-[rgb(var(--fu-primary))] font-medium flex items-center gap-1">Read More <HiArrowRight className="w-3 h-3" /></span>
                     </div>
                   </div>
                 </Link>
@@ -70,7 +70,7 @@ export default function BlogPage() {
             <div className="flex justify-center gap-2 mt-10">
               {Array.from({ length: Math.ceil(data.count / 10) }, (_, i) => i + 1).map(p => (
                 <button key={p} onClick={() => setPage(p)}
-                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
+                  className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-[rgb(var(--fu-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
               ))}
             </div>
           )}

@@ -53,7 +53,7 @@ DATA_UPLOAD_MAX_NUMBER_FIELDS     = settings.get("DATA_UPLOAD_MAX_NUMBER_FIELDS"
 STATIC_URL  = settings.get("STATIC_URL", "/static/")
 
 # collectstatic must always have a filesystem destination. Keep generated
-# files under the active website so both ctc-research and lms can be
+# files under the active website so both fusion-cms and lms can be
 # collected independently while sharing the same workspace image.
 STATIC_ROOT = str(settings.get("STATIC_ROOT", ASSETS_DIR / "staticfiles"))
 

@@ -220,7 +220,7 @@ export default function QuizDetailPage() {
               <div className="space-y-2">
                 <Link
                   href={`/dashboard/quiz/${quiz.id}/edit` as any}
-                  className="block w-full text-left px-4 py-2.5 rounded-xl bg-[rgb(var(--ctc-primary))]/5 text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/10 transition-colors font-medium text-sm"
+                  className="block w-full text-left px-4 py-2.5 rounded-xl bg-[rgb(var(--fu-primary))]/5 text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/10 transition-colors font-medium text-sm"
                 >
                   ✏️ Edit questions & settings
                 </Link>

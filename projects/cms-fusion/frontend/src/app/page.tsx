@@ -64,13 +64,13 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
           <span className="badge-primary mb-2 inline-block text-xs">
             {course.category_name || 'General'}
           </span>
-          <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1">
+          <h3 className="font-semibold text-gray-900 text-sm mb-1 group-hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-1">
             {course.title}
           </h3>
           <p className="text-xs text-gray-500 mb-2 line-clamp-2">{course.short_description}</p>
           <div className="flex items-center justify-between mt-auto">
             <span className="text-xs text-gray-500">{course.instructor_name}</span>
-            <span className="font-bold text-sm text-[rgb(var(--ctc-primary))]">
+            <span className="font-bold text-sm text-[rgb(var(--fu-primary))]">
               {course.discounted_price ? (
                 <>
                   <span className="line-through text-gray-400 text-xs mr-1">${course.price}</span>
@@ -113,7 +113,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
                 {hero?.intro || 'Master new skills with expert-led courses, interactive content, and a community of learners.'}
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center">
-                <Link href={(hero?.ctas?.[0]?.href || '/courses') as Route} className="bg-white text-[rgb(var(--ctc-primary-dark))] px-8 py-3 rounded-lg font-semibold hover:bg-[rgb(var(--ctc-primary))]/5 transition-colors">
+                <Link href={(hero?.ctas?.[0]?.href || '/courses') as Route} className="bg-white text-[rgb(var(--fu-primary-dark))] px-8 py-3 rounded-lg font-semibold hover:bg-[rgb(var(--fu-primary))]/5 transition-colors">
                   {hero?.ctas?.[0]?.label || 'Explore Courses'}
                 </Link>
                 <Link href={(hero?.ctas?.[1]?.href || '/registration') as Route} className="border-2 border-white text-white px-8 py-3 rounded-lg font-semibold hover:bg-white/10 transition-colors">
@@ -138,7 +138,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
                   transition={{ duration: 0.4, delay: idx * 0.1 }}
                   className="text-center"
                 >
-                  <stat.icon className="w-8 h-8 text-[rgb(var(--ctc-primary))] mx-auto mb-3" />
+                  <stat.icon className="w-8 h-8 text-[rgb(var(--fu-primary))] mx-auto mb-3" />
                   <div className="text-3xl font-bold text-gray-900">{stat.value}</div>
                   <div className="text-sm text-gray-500 mt-1">{stat.label}</div>
                 </motion.div>
@@ -157,7 +157,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
                 <h2 className="text-3xl font-bold text-gray-900">{featuredHeader?.heading || 'Featured Courses'}</h2>
                 <p className="text-gray-500 mt-2">{featuredHeader?.intro || 'Most popular courses picked for you'}</p>
               </div>
-              <Link href="/courses" className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))] whitespace-nowrap">
+              <Link href="/courses" className="text-[rgb(var(--fu-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--fu-primary-dark))] whitespace-nowrap">
                 View All <HiChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -196,7 +196,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
 
       {/* ── CTA Section ── */}
       <ScrollReveal animation="zoomIn" duration={0.7}>
-        <section className="py-20 bg-gradient-to-r from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-primary-dark))]">
+        <section className="py-20 bg-gradient-to-r from-[rgb(var(--fu-primary))] to-[rgb(var(--fu-primary-dark))]">
           <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
             <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
               {cta?.heading || 'Start Learning Today'}
@@ -206,8 +206,8 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
             </p>
             <Link
               href={(cta?.ctas?.[0]?.href || '/registration') as Route}
-              className="inline-block bg-white text-[rgb(var(--ctc-primary-dark))] px-10 py-4 rounded-lg font-bold text-lg
-                         hover:bg-[rgb(var(--ctc-primary))]/5 transition-colors shadow-lg"
+              className="inline-block bg-white text-[rgb(var(--fu-primary-dark))] px-10 py-4 rounded-lg font-bold text-lg
+                         hover:bg-[rgb(var(--fu-primary))]/5 transition-colors shadow-lg"
             >
               {cta?.ctas?.[0]?.label || 'Create Free Account'}
             </Link>
@@ -224,7 +224,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
                 <h2 className="text-3xl font-bold text-gray-900">Expert Instructors</h2>
                 <p className="text-gray-500 mt-2">Learn from industry professionals</p>
               </div>
-              <Link href="/instructors" className="text-[rgb(var(--ctc-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
+              <Link href="/instructors" className="text-[rgb(var(--fu-primary))] font-medium flex items-center gap-1 hover:text-[rgb(var(--fu-primary-dark))]">
                 View All <HiChevronRight className="w-4 h-4" />
               </Link>
             </div>
@@ -237,7 +237,7 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
                   transition={{ duration: 0.4, delay: idx * 0.1 }}
                   className="card p-6 text-center"
                 >
-                  <div className="w-20 h-20 bg-gradient-to-br from-[rgb(var(--ctc-primary))] to-[rgb(var(--ctc-accent))] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
+                  <div className="w-20 h-20 bg-gradient-to-br from-[rgb(var(--fu-primary))] to-[rgb(var(--fu-accent))] rounded-full mx-auto mb-4 flex items-center justify-center text-white text-2xl font-bold">
                     {instructor.first_name?.[0]}{instructor.last_name?.[0]}
                   </div>
                   <h3 className="font-semibold text-gray-900">{instructor.first_name} {instructor.last_name}</h3>

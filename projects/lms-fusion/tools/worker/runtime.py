@@ -45,9 +45,9 @@ def configure_django_for_website(website: str | None = None) -> str:
     same website are idempotent.
 
     Args:
-        website: Optional website slug (e.g. ``"ctc-research"``).
+        website: Optional website slug (e.g. ``"fusion-cms"``).
             Falls back to ``DJANGO_SITE``, ``DJANGO_WEBSITE``,
-            ``WEBSITE`` env vars, or ``"ctc-research.com"``.
+            ``WEBSITE`` env vars, or ``"fusion-cms.com"``.
 
     Returns:
         The canonical website name that was configured (may differ
@@ -59,7 +59,7 @@ def configure_django_for_website(website: str | None = None) -> str:
         or os.getenv("DJANGO_SITE")
         or os.getenv("DJANGO_WEBSITE")
         or os.getenv("WEBSITE")
-        or "ctc-research.com"
+        or "fusion-cms.com"
     )
     site_module.configure_site_environment(selected)
     for path in (site_module.site_dir_for(selected), site_module.WORKSPACE_DIR):

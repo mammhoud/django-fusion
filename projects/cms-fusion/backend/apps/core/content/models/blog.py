@@ -1,4 +1,4 @@
-"""CTC Research — Blog, Event, Testimonial model stubs for bolt API."""
+"""Fusion CMS — Blog, Event, Testimonial model stubs for bolt API."""
 
 from django.db import models
 from django.utils import timezone

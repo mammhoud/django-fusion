@@ -1,4 +1,4 @@
-"""LMS app for ctc-research.com."""
+"""LMS app for fusion-cms.com."""
 
 # Ensure models are imported after Django is initialized
 # This prevents "Model class doesn't declare an explicit app_label" errors

@@ -1,5 +1,5 @@
 """
-CTC Research — TeamMember, CourseCategory, Token, DataToken models.
+Fusion CMS — TeamMember, CourseCategory, Token, DataToken models.
 
 Note: ContactSubmission has been intentionally excluded from this file
 because backend/www/core/content/models/contact.py already provides

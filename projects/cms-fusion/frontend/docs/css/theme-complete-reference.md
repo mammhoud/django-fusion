@@ -1,7 +1,7 @@
 # LMS Front-End — Complete Theme Reference
 
 > **Directory:** `docs/css/`
-> **Theme:** CTC Research Teal
+> **Theme:** Fusion CMS Teal
 > **Framework:** Tailwind CSS 3
 
 ---

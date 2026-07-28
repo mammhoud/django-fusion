@@ -1,4 +1,4 @@
-"""Media health check endpoint for ctc-research.com."""
+"""Media health check endpoint for fusion-cms.com."""
 from pathlib import Path
 
 from django.conf import settings

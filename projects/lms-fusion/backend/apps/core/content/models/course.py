@@ -1,5 +1,5 @@
 """
-CTC Research — Course model (Wagtail snippet).
+Fusion CMS — Course model (Wagtail snippet).
 
 Serves: GET /apis/courses
 """

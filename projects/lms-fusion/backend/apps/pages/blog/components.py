@@ -1,5 +1,5 @@
 """
-Blog Fragment Components for ctc-research.com
+Blog Fragment Components for fusion-cms.com
 ==============================================
 
 Template convention: ``fragment_name`` uses dotted notation.

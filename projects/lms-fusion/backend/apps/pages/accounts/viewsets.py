@@ -1,5 +1,5 @@
 """
-Events Viewset for ctc-research.com
+Events Viewset for fusion-cms.com
 =====================================
 
 Routable ModelViewset for Events management using django_fusion.

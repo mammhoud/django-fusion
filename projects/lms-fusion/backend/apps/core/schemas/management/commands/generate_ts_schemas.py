@@ -17,7 +17,7 @@ from typing import Any
 from django.core.management.base import BaseCommand
 from django_fusion.site.management.commands.base import BaseCommand
 
-# __file__ = .../ctc-research/www/schemas/management/commands/generate_ts_schemas.py
+# __file__ = .../fusion-cms/www/schemas/management/commands/generate_ts_schemas.py
 # parents[5] = websites/
 DEFAULT_OUTPUT = Path(__file__).resolve().parents[5] / "next-lms" / "src" / "types" / "api-schema.d.ts"
 

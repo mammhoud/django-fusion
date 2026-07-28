@@ -1,16 +1,16 @@
-# CTC Research — Website
+# Fusion CMS — Website
 
-> **Domain:** ctc-research.com | **Port:** 5070 | **Stack:** Django + Wagtail
+> **Domain:** fusion-cms.com | **Port:** 5070 | **Stack:** Django + Wagtail
 
 <p align="center">
-  <a href="../../docs/sites/ctc-research.md"><img src="https://img.shields.io/badge/docs-site-green" alt="Documentation"/></a>
+  <a href="../../docs/sites/fusion-cms.md"><img src="https://img.shields.io/badge/docs-site-green" alt="Documentation"/></a>
   <a href="../../CHANGELOG.md"><img src="https://img.shields.io/badge/changelog-root-blue" alt="Changelog"/></a>
-  <a href="https://ctc-research.com"><img src="https://img.shields.io/badge/demo-live-purple" alt="Demo"/></a>
+  <a href="https://fusion-cms.com"><img src="https://img.shields.io/badge/demo-live-purple" alt="Demo"/></a>
 </p>
 
 ## Overview
 
-CTC Research is a full-featured Wagtail CMS website for professional training, consulting, and research services. Built on the Structa Cloud Django monorepo with shared authentication, component system (django-fusion), and asset pipeline.
+Fusion CMS is a full-featured Wagtail CMS website for professional training, consulting, and research services. Built on the Structa Cloud Django monorepo with shared authentication, component system (django-fusion), and asset pipeline.
 
 ## Tech Stack
 
@@ -27,10 +27,10 @@ CTC Research is a full-featured Wagtail CMS website for professional training, c
 
 ```bash
 # From projects/ directory
-make docker-up WEBSITE=ctc-research
+make docker-up WEBSITE=fusion-cms
 
 # Or locally
-cd projects/ctc-research
+cd projects/fusion-cms
 make dev                    # Django dev server on :5070
 make migrate                # Run migrations
 make collectstatic          # Collect static files
@@ -53,7 +53,7 @@ make frontend-production    # Build webpack bundles
 ## Project Structure
 
 ```
-ctc-research/
+fusion-cms/
 ├── assets/                 # Site-specific frontend assets
 │   ├── static/             # Static files (CSS, JS, images)
 │   ├── templates/          # Django/Wagtail templates
@@ -86,7 +86,7 @@ Required env vars (set in `.env` at repo root):
 
 ```bash
 DB_NAME_CTC=db_ctc
-CTC_RESEARCH_HOST=ctc-research.com
+CTC_RESEARCH_HOST=fusion-cms.com
 ```
 
 ## Shared Core (`projects/www/`)
@@ -104,8 +104,8 @@ This site shares background task processing with other sites via the
 |----------|------|
 | Shared Core Docs | [`projects/www/README.md`](../www/README.md) |
 | Main Docs | [`docs/`](../../docs/) |
-| CTC Research Site Docs | [`docs/sites/ctc-research.md`](../../docs/sites/ctc-research.md) |
+| Fusion CMS Site Docs | [`docs/sites/fusion-cms.md`](../../docs/sites/fusion-cms.md) |
 | Deployment Guide | [`docs/guides/04-deploy.md`](../../docs/guides/04-deploy.md) |
 | Changelog | [`CHANGELOG.md`](../../CHANGELOG.md) |
 
-<!-- @tested CTC Research - Django checks, migrations, webpack, test suite -->
+<!-- @tested Fusion CMS - Django checks, migrations, webpack, test suite -->

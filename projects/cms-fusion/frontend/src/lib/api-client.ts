@@ -59,12 +59,23 @@ class FusionApiClient {
     return decoder.decodeAs<FusionWagtailPage>(data.encoded);
   }
 
+  /** Decode page blocks from a FusionCodec encoded page data response. */
+  async fetchPageBlocks(slug: string): Promise<Record<string, unknown>> {
+    const data = await this.fetchPageData(slug);
+    return decoder.decodeAs<Record<string, unknown>>(data.encoded);
+  }
+
   async fetchBranding(): Promise<FusionBranding> {
     try {
       const envelope = await this.fetchJson<FusionBranding>('/fusion/branding');
       return decoder.unwrap(envelope);
     } catch {
-      return { site_name: 'Fusion CMS', company_name: 'Fusion Inc.', creator_name: 'Fusion Team', primary_color: '#7c3aed' };
+      return {
+        site_name: process.env.NEXT_PUBLIC_FUSION_SITE_NAME || 'Fusion CMS',
+        company_name: 'Fusion Inc.',
+        creator_name: 'Fusion Team',
+        primary_color: '#7c3aed',
+      };
     }
   }
 }

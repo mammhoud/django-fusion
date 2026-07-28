@@ -1,5 +1,5 @@
 """
-Accounts signals for ctc-research.com.
+Accounts signals for fusion-cms.com.
 
 Handles email template file uploads and registration lifecycle events.
 """

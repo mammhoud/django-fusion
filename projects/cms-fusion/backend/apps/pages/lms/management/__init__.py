@@ -1,2 +1,2 @@
-"""LMS app for ctc-research.com."""
+"""LMS app for fusion-cms.com."""
 from .services import *

@@ -17,6 +17,13 @@ export class FusionDecodeError extends Error {
   }
 }
 
+export class FusionSessionError extends Error {
+  constructor(message: string) {
+    super(`FusionSessionError: ${message}`);
+    this.name = 'FusionSessionError';
+  }
+}
+
 const SESSION_KEY = 'fusion_render_first';
 const CODEC_PREFIX_RE = /^fusion_v(\d+):(.+)$/;
 

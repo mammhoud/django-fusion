@@ -302,7 +302,7 @@ class BaseFormPage(BasePage):
         """
         site_name = getattr(settings, 'SITE_NAME', 'Alliance')
         subject = f"{getattr(settings, 'EMAIL_SUBJECT_PREFIX', '[Alliance] ')} New Submission: {submission.page_title}"
-        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@ctc-research.com')
+        from_email = getattr(settings, 'DEFAULT_FROM_EMAIL', 'noreply@fusion-cms.com')
         recipient_list = [getattr(settings, 'CONTACT_FORM_RECIPIENT', from_email)]
 
         context = {

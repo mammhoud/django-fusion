@@ -90,7 +90,7 @@ export default function AdminWithdrawalsPage() {
       <div className="mb-6">
         <Link
           href="/dashboard"
-          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-3 transition-colors"
+          className="inline-flex items-center gap-1 text-sm text-gray-500 hover:text-[rgb(var(--fu-primary))] mb-3 transition-colors"
         >
           <HiChevronLeft className="w-4 h-4" />
           Back to Dashboard
@@ -125,7 +125,7 @@ export default function AdminWithdrawalsPage() {
               onClick={() => { setStatusFilter(s); setPage(1); }}
               className={`px-3 py-1.5 text-sm rounded-lg transition-all font-medium capitalize ${
                 statusFilter === s
-                  ? 'bg-[rgb(var(--ctc-primary))] text-white'
+                  ? 'bg-[rgb(var(--fu-primary))] text-white'
                   : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
               }`}
             >
@@ -135,7 +135,7 @@ export default function AdminWithdrawalsPage() {
         </div>
         <button
           onClick={() => refetch()}
-          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors"
+          className="flex items-center gap-1.5 px-3 py-1.5 text-sm text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 rounded-lg transition-colors"
         >
           <HiRefresh className="w-4 h-4" />
           Refresh
@@ -262,7 +262,7 @@ export default function AdminWithdrawalsPage() {
                   onClick={() => setPage(p)}
                   className={`w-9 h-9 rounded-lg text-sm font-medium transition-colors ${
                     p === page
-                      ? 'bg-[rgb(var(--ctc-primary))] text-white'
+                      ? 'bg-[rgb(var(--fu-primary))] text-white'
                       : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'
                   }`}
                 >

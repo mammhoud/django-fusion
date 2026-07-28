@@ -1,5 +1,5 @@
 """
-CTC Research REST API — bolt-pattern adapter helpers.
+Fusion CMS REST API — bolt-pattern adapter helpers.
 
 Provides a ``@bolt_view`` decorator that converts a data-style handler
 (returning (data_dict, status_code)) into a full Django ``HttpResponse``,

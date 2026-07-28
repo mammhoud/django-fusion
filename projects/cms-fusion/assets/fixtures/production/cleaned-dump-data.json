@@ -2621,7 +2621,7 @@
     "pk": 146,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research Settings (German) \u2713",
+      "label": "Fusion CMS Settings (German) \u2713",
       "action": "wagtail.edit",
       "data": {},
       "timestamp": "2026-02-20T21:31:31.155Z",
@@ -2638,7 +2638,7 @@
     "pk": 147,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research H Settings (German) \u2713",
+      "label": "Fusion CMS H Settings (German) \u2713",
       "action": "wagtail.edit",
       "data": {},
       "timestamp": "2026-02-20T21:31:31.693Z",
@@ -2655,7 +2655,7 @@
     "pk": 148,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research HUB Settings (German) \u2713",
+      "label": "Fusion CMS HUB Settings (German) \u2713",
       "action": "wagtail.edit",
       "data": {},
       "timestamp": "2026-02-20T21:31:33.318Z",
@@ -2672,7 +2672,7 @@
     "pk": 149,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research HUB Settings (German) \u2713",
+      "label": "Fusion CMS HUB Settings (German) \u2713",
       "action": "wagtail.edit",
       "data": {},
       "timestamp": "2026-02-20T21:32:00.284Z",
@@ -2689,7 +2689,7 @@
     "pk": 150,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research HUB Settings (German) \u2713",
+      "label": "Fusion CMS HUB Settings (German) \u2713",
       "action": "wagtail.edit",
       "data": {},
       "timestamp": "2026-02-20T21:34:58.799Z",
@@ -2706,7 +2706,7 @@
     "pk": 151,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research HUB Settings (German) \u2713",
+      "label": "Fusion CMS HUB Settings (German) \u2713",
       "action": "wagtail.edit",
       "data": {},
       "timestamp": "2026-02-20T21:35:01.197Z",
@@ -2723,7 +2723,7 @@
     "pk": 152,
     "fields": {
       "content_type": 121,
-      "label": "CTC Research HUB Settings (German) \u2713",
+      "label": "Fusion CMS HUB Settings (German) \u2713",
       "action": "wagtail.publish",
       "data": {},
       "timestamp": "2026-02-20T21:35:01.236Z",

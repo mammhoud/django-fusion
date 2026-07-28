@@ -12,7 +12,7 @@ function BlogDetailsContent() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
-      <Link href="/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--ctc-primary))] mb-8 transition-colors">
+      <Link href="/blog" className="inline-flex items-center gap-2 text-gray-500 hover:text-[rgb(var(--fu-primary))] mb-8 transition-colors">
         <HiArrowLeft className="w-4 h-4" /> Back to Blog
       </Link>
 
@@ -40,7 +40,7 @@ function BlogDetailsContent() {
 
 export default function BlogDetailsPage() {
   return (
-    <Suspense fallback={<div className="max-w-4xl mx-auto px-4 py-10"><div className="w-12 h-12 border-4 border-[rgb(var(--ctc-primary))] border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
+    <Suspense fallback={<div className="max-w-4xl mx-auto px-4 py-10"><div className="w-12 h-12 border-4 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin mx-auto" /></div>}>
       <BlogDetailsContent />
     </Suspense>
   );

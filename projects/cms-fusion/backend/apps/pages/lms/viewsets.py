@@ -1,5 +1,5 @@
 """
-LMS Viewsets for ctc-research.com
+LMS Viewsets for fusion-cms.com
 ===================================
 
 Routable ModelViewsets for the Learning Management System.

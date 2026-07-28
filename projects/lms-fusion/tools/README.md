@@ -78,7 +78,7 @@ The `www/settings.py` is loaded as the Django settings module, which configures 
 
 **Runtime resolution:**
 - Dev: `python projects/www/__main__.py check` → loads `www/settings.py`
-- Docker (default): `PROJECT_PATH=ctc-research` → loads `ctc-research/settings.py`
+- Docker (default): `PROJECT_PATH=fusion-cms` → loads `fusion-cms/settings.py`
 - Docker (tasks override): `TASKS_PROJECT_PATH=www` → loads `www/settings.py`
 
 ### `__main__.py` — CLI Entry Point

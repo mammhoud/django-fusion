@@ -42,3 +42,73 @@ export interface CodedPayload {
 
 /** Rendering mode, used by FusionMiddleware. */
 export type FusionMode = 'fragment' | 'data' | 'loading';
+
+// ─── Page data response types ─────────────────────────────────────
+
+/** Response from /api/pages/<slug>/data/ */
+export interface PageDataResponse {
+  slug: string;
+  title: string;
+  encoded: string;
+}
+
+/** Response from /api/fusion/health */
+export interface HealthResponse {
+  fusion_render_first: boolean;
+  reason: string;
+  session_cached: boolean;
+}
+
+/** Branding response from /api/fusion/branding */
+export interface FusionBranding {
+  site_name: string;
+  company_name: string;
+  creator_name: string;
+  primary_color: string;
+}
+
+// ─── Wagtail FusionPage types ──────────────────────────────────────
+
+/** A Wagtail FusionPage as returned by the API. */
+export interface FusionWagtailPage {
+  id: number;
+  slug: string;
+  title: string;
+  type: 'FusionHomePage' | 'FusionContentPage';
+  layout: 'default' | 'full_width' | 'sidebar' | 'blank';
+  fusion_render_first: boolean;
+  fragment_name: string;
+  show_in_nav: boolean;
+  seo_title: string;
+  search_description: string;
+  hero_heading?: string;
+  hero_subheading?: string;
+  body?: string;
+  featured_image_url?: string;
+  custom_css?: string;
+  children?: FusionPageChild[];
+}
+
+/** Child page reference in navigation. */
+export interface FusionPageChild {
+  id: number;
+  slug: string;
+  title: string;
+}
+
+/** Response from GET /api/pages/ */
+export interface PageListResponse {
+  pages: FusionWagtailPage[];
+  total: number;
+}
+
+/** A CMS page block (dashboard content, etc.). */
+export interface PageBlock {
+  type: string;
+  heading?: string;
+  intro?: string;
+  html?: string;
+  items?: unknown[];
+  ctas?: unknown[];
+  [key: string]: unknown;
+}

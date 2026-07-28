@@ -12,7 +12,7 @@ from django_fusion.core.managers import RoleHierarchyManager as _BaseRoleHierarc
 
 class RoleHierarchyManager(_BaseRoleHierarchyManager):
     """
-    Site-specific role hierarchy manager for ctc-research.com.
+    Site-specific role hierarchy manager for fusion-cms.com.
 
     Defines the role hierarchy and permissions for the three standard roles:
     admin > supervisor > user

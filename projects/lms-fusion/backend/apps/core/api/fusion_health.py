@@ -1,5 +1,5 @@
 """
-CTC Research — Fusion health-check endpoint.
+Fusion CMS — Fusion health-check endpoint.
 
 Provides a ``/api/fusion/health`` endpoint that the frontend ``FusionMiddleware``
 can call on app startup to seed the ``sessionStorage`` preference instead of

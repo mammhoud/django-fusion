@@ -1,7 +1,7 @@
 """Shared content/account utility actors.
 
 Provides Dramatiq actors for content management and account-related
-background tasks across all tenant websites (ctc-research, lms, VResume).
+background tasks across all tenant websites (fusion-cms, lms, VResume).
 
 Actors:
 - ``get_users_count``: Query the user count for a specific website.
@@ -34,7 +34,7 @@ def get_users_count(website: str | None = None) -> int:
     number of ``User`` model instances.
 
     Args:
-        website: Optional website slug (e.g. ``"ctc-research"``).
+        website: Optional website slug (e.g. ``"fusion-cms"``).
             Uses the active website when ``None``.
 
     Returns:

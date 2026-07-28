@@ -4,7 +4,7 @@ Path: `projects/assets/templates/`
 
 ## Scope
 
-This directory contains **shared Django/Wagtail templates** used across all Structa Cloud sites (LMS, Portfolio, Cypercloud, CTC Research). Templates here are cross-site; site-specific overrides live in each site's own `templates/` directory.
+This directory contains **shared Django/Wagtail templates** used across all Structa Cloud sites (LMS, Portfolio, Cypercloud, Fusion CMS). Templates here are cross-site; site-specific overrides live in each site's own `templates/` directory.
 
 ---
 

@@ -4,7 +4,7 @@
 
 The CMS Fusion core integration is complete. Remaining cleanup work (assets, templates, legacy directories) is tracked in [`docs/plans.md`](../../../docs/plans.md).
 
-The CMS Fusion project is a complete, full-featured content management system built on django-fusion + django-bolt + Wagtail with a Next.js frontend. It absorbs all features from the legacy ctc-research project (now backed up at `projects/cms/ctc-research.bak`).
+The CMS Fusion project is a complete, full-featured content management system built on django-fusion + django-bolt + Wagtail with a Next.js frontend. It absorbs all features from the legacy fusion-cms project (now backed up at `projects/cms/fusion-cms.bak`).
 
 ---
 
@@ -15,7 +15,7 @@ cms-fusion/
 ├── backend/                    # Django + Wagtail backend
 │   ├── www/api/bolt_apis.py   # Bolt API — all endpoints
 │   ├── www/api/pages.py       # Page API (Wagtail-first, static fallback)
-│   ├── plugins/               # All ctc-research plugins merged
+│   ├── plugins/               # All fusion-cms plugins merged
 │   │   ├── accounts/          # Auth, registration, profiles
 │   │   ├── blog/              # Blog posts, categories, tags, RSS
 │   │   ├── lms/               # Courses, enrollments, lessons
@@ -23,7 +23,7 @@ cms-fusion/
 │   │   ├── profile/           # User profiles, settings
 │   │   ├── pages/             # FusionPage Wagtail models + STATIC_PAGES
 │   │   └── branding/          # Dynamic Wagtail branding model (FUSION-specific)
-│   ├── templates/             # All Django templates from ctc-research
+│   ├── templates/             # All Django templates from fusion-cms
 │   └── assets/                # All static assets, SCSS, JS, fixtures
 ├── frontend/                  # Next.js 14 frontend
 │   └── src/

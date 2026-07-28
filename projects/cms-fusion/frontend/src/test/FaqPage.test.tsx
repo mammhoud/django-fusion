@@ -36,7 +36,7 @@ vi.mock('@/store/api/endpoints/pages', () => ({
 const FAQ_PAGE_DATA = {
   slug: 'faq',
   title: 'FAQ',
-  seo: { title: 'FAQ | CTC Research', description: 'Frequently Asked Questions' },
+  seo: { title: 'FAQ | Fusion CMS', description: 'Frequently Asked Questions' },
   blocks: [
     {
       type: 'hero',

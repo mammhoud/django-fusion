@@ -35,11 +35,11 @@ export default function EventsPage() {
         </div>
         <div className="p-4">
           <div className="flex items-center gap-2 mb-1">
-            <span className={`badge text-xs ${event.is_free ? 'bg-green-100 text-green-700' : 'bg-[rgb(var(--ctc-primary))]/10 text-[rgb(var(--ctc-primary-dark))]'}`}>
+            <span className={`badge text-xs ${event.is_free ? 'bg-green-100 text-green-700' : 'bg-[rgb(var(--fu-primary))]/10 text-[rgb(var(--fu-primary-dark))]'}`}>
               {event.is_free ? 'Free' : `$${event.price}`}
             </span>
           </div>
-          <h3 className="font-semibold text-gray-900 text-sm group-hover:text-[rgb(var(--ctc-primary))] transition-colors line-clamp-1">{event.title}</h3>
+          <h3 className="font-semibold text-gray-900 text-sm group-hover:text-[rgb(var(--fu-primary))] transition-colors line-clamp-1">{event.title}</h3>
           <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
             <HiCalendar className="w-3 h-3" />
             <span>{new Date(event.start_date).toLocaleDateString()}</span>
@@ -62,7 +62,7 @@ export default function EventsPage() {
           <ScrollReveal animation="fadeUp" duration={0.4}>
             <section className="mb-10">
               <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-                <HiStar className="w-5 h-5 text-[rgb(var(--ctc-primary))]" />
+                <HiStar className="w-5 h-5 text-[rgb(var(--fu-primary))]" />
                 Upcoming Events
               </h2>
               <Carousel
@@ -95,7 +95,7 @@ export default function EventsPage() {
                     </div>
                     <div className="p-5">
                       <div className="flex items-center gap-2 mb-2">
-                        <span className={`badge text-xs ${event.is_free ? 'bg-green-100 text-green-700' : 'bg-[rgb(var(--ctc-primary))]/10 text-[rgb(var(--ctc-primary-dark))]'}`}>
+                        <span className={`badge text-xs ${event.is_free ? 'bg-green-100 text-green-700' : 'bg-[rgb(var(--fu-primary))]/10 text-[rgb(var(--fu-primary-dark))]'}`}>
                           {event.is_free ? 'Free' : `$${event.price}`}
                         </span>
                         <span className="badge bg-gray-100 text-gray-600 text-xs">{event.status}</span>
@@ -107,7 +107,7 @@ export default function EventsPage() {
                         <p className="flex items-center gap-1"><HiLocationMarker className="w-3 h-3" /> {event.is_online ? 'Online' : event.location}</p>
                         <p className="flex items-center gap-1"><HiUserGroup className="w-3 h-3" /> {event.registered_count}/{event.capacity} registered</p>
                       </div>
-                      <Link href={`/events/${event.id}`} className="mt-4 text-[rgb(var(--ctc-primary))] text-sm font-medium flex items-center gap-1 hover:text-[rgb(var(--ctc-primary-dark))]">
+                      <Link href={`/events/${event.id}`} className="mt-4 text-[rgb(var(--fu-primary))] text-sm font-medium flex items-center gap-1 hover:text-[rgb(var(--fu-primary-dark))]">
                         View Details <HiArrowRight className="w-3 h-3" />
                       </Link>
                     </div>
@@ -119,7 +119,7 @@ export default function EventsPage() {
                 <div className="flex justify-center gap-2 mt-10">
                   {Array.from({ length: Math.ceil(data.count / 10) }, (_, i) => i + 1).map(p => (
                     <button key={p} onClick={() => setPage(p)}
-                      className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
+                      className={`w-10 h-10 rounded-lg font-medium transition-colors ${p === page ? 'bg-[rgb(var(--fu-primary))] text-white' : 'bg-white text-gray-600 border border-gray-300 hover:bg-gray-50'}`}>{p}</button>
                   ))}
                 </div>
               )}

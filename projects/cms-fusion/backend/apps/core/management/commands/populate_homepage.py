@@ -3,7 +3,7 @@ Django management command to populate HomePage with sample demo content.
 
 Run on the remote server::
 
-    docker exec ctc-research-website python manage.py populate_homepage
+    docker exec fusion-cms-website python manage.py populate_homepage
 
 Options:
     --reset     Delete existing content and repopulate (default: skip if populated)
@@ -116,8 +116,8 @@ class Command(BaseCommand):
             self.style.SUCCESS("\n✅ HomePage populated and published!\n")
         )
         self.stdout.write(
-            f"   View at: https://ctc-research.com/\n"
-            f"   Admin:   https://ctc-research.com/admin/pages/{homepage.id}/edit/\n"
+            f"   View at: https://fusion-cms.com/\n"
+            f"   Admin:   https://fusion-cms.com/admin/pages/{homepage.id}/edit/\n"
         )
 
     # ── head: slider + features ───────────────────────────────────────────
@@ -210,10 +210,10 @@ class Command(BaseCommand):
                 {
                     "background_image": None,
                     "years_experience": 20,
-                    "welcome_text": "Welcome to CTC Research",
+                    "welcome_text": "Welcome to Fusion CMS",
                     "main_title": "Your Partner in Professional Development & Research",
                     "description": (
-                        "<p>At CTC Research, we are dedicated to advancing professional "
+                        "<p>At Fusion CMS, we are dedicated to advancing professional "
                         "knowledge through cutting-edge training programs and research "
                         "initiatives. With over two decades of experience, our team of "
                         "experts delivers practical, results-driven solutions tailored to "
@@ -260,7 +260,7 @@ class Command(BaseCommand):
             (
                 "why_choose_section",
                 {
-                    "subtitle": "Why CTC Research",
+                    "subtitle": "Why Fusion CMS",
                     "title": "What Sets Us Apart",
                     "description": (
                         "We combine academic rigor with practical industry experience "

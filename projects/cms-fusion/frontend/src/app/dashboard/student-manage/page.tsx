@@ -44,7 +44,7 @@ export default function DashboardStudentManagePage() {
         {/* Stats */}
         <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-100">
-            <HiUserGroup className="w-5 h-5 text-[rgb(var(--ctc-primary))] mb-1" />
+            <HiUserGroup className="w-5 h-5 text-[rgb(var(--fu-primary))] mb-1" />
             <div className="text-2xl font-bold text-gray-900">{mockStudents.length}</div>
             <div className="text-xs text-gray-500">Total Students</div>
           </div>
@@ -65,11 +65,11 @@ export default function DashboardStudentManagePage() {
           <div className="relative flex-1">
             <HiSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
             <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} placeholder="Search students by name, email, or course..."
-              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none text-sm" />
+              className="w-full pl-9 pr-4 py-2.5 bg-white border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--fu-primary))] focus:border-transparent outline-none text-sm" />
           </div>
           {['all', 'Active', 'At Risk', 'Completed'].map((s) => (
             <button key={s} onClick={() => setStatusFilter(s as any)}
-              className={`px-4 py-2 text-sm rounded-lg transition-all font-medium whitespace-nowrap ${statusFilter === s ? 'bg-[rgb(var(--ctc-primary))] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
+              className={`px-4 py-2 text-sm rounded-lg transition-all font-medium whitespace-nowrap ${statusFilter === s ? 'bg-[rgb(var(--fu-primary))] text-white' : 'bg-white border border-gray-200 text-gray-600 hover:bg-gray-50'}`}>
               {s === 'all' ? 'All' : s}
             </button>
           ))}
@@ -105,7 +105,7 @@ export default function DashboardStudentManagePage() {
                     <td className="px-6 py-4"><div className="flex items-center gap-3"><div className="w-24 bg-gray-100 rounded-full h-2"><div className="progress-fill" style={{ width: `${student.progress}%` }} /></div><span className="text-sm text-gray-600">{student.progress}%</span></div></td>
                     <td className="px-6 py-4"><span className={`text-xs px-2 py-1 rounded-full font-medium ${student.status === 'Active' ? 'bg-green-100 text-green-700' : student.status === 'At Risk' ? 'bg-red-100 text-red-700' : 'bg-blue-100 text-blue-700'}`}>{student.status}</span></td>
                     <td className="px-6 py-4 text-sm text-gray-500">{student.lastActive}</td>
-                    <td className="px-6 py-4"><div className="flex items-center justify-end gap-1"><button className="p-1.5 text-gray-400 hover:text-[rgb(var(--ctc-primary))] hover:bg-[rgb(var(--ctc-primary))]/5 rounded-lg transition-colors"><HiMail className="w-4 h-4" /></button><button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"><HiDotsVertical className="w-4 h-4" /></button></div></td>
+                    <td className="px-6 py-4"><div className="flex items-center justify-end gap-1"><button className="p-1.5 text-gray-400 hover:text-[rgb(var(--fu-primary))] hover:bg-[rgb(var(--fu-primary))]/5 rounded-lg transition-colors"><HiMail className="w-4 h-4" /></button><button className="p-1.5 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors"><HiDotsVertical className="w-4 h-4" /></button></div></td>
                   </tr>
                 ))}
               </tbody>

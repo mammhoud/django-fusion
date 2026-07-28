@@ -1,4 +1,4 @@
-"""Views for CTC Research application."""
+"""Views for Fusion CMS application."""
 from .courses import (
     course_catalog,
     course_detail,

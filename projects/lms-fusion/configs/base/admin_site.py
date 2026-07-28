@@ -42,7 +42,7 @@ MIGRATION_MODULES = settings.get("MIGRATION_MODULES", {})
 # sidebar navigation, and site-specific items in its own settings.py
 # (after ``from configs.settings import *``).  See:
 #   projects/portfolio/settings.py  — full VResume sidebar with page-model links
-#   projects/ctc-research/settings.py
+#   projects/fusion-cms/settings.py
 #   projects/lms/settings.py
 UNFOLD = {
     # ── Branding ──────────────────────────────────────────────────────────

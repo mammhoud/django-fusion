@@ -346,7 +346,7 @@ describe('Withdraw Page', () => {
     renderPage();
 
     const paypalBtn = screen.getByText('PayPal').closest('button');
-    expect(paypalBtn).toHaveClass('border-[rgb(var(--ctc-primary))]');
+    expect(paypalBtn).toHaveClass('border-[rgb(var(--fu-primary))]');
   });
 
   it('switches payment method when Bank Transfer is clicked', () => {
@@ -356,10 +356,10 @@ describe('Withdraw Page', () => {
     const bankBtn = screen.getByText('Bank Transfer').closest('button');
     fireEvent.click(bankBtn!);
 
-    expect(bankBtn).toHaveClass('border-[rgb(var(--ctc-primary))]');
+    expect(bankBtn).toHaveClass('border-[rgb(var(--fu-primary))]');
 
     const paypalBtn = screen.getByText('PayPal').closest('button');
-    expect(paypalBtn).not.toHaveClass('border-[rgb(var(--ctc-primary))]');
+    expect(paypalBtn).not.toHaveClass('border-[rgb(var(--fu-primary))]');
   });
 
   it('disables submit button when amount is empty', () => {

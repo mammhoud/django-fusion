@@ -167,7 +167,7 @@ export default function DashboardWithdrawPage() {
                   type="number"
                   value={withdrawAmount}
                   onChange={(e) => { setWithdrawAmount(e.target.value); setErrorMsg(''); }}
-                  className="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--ctc-primary))] focus:border-transparent outline-none"
+                  className="w-full pl-7 pr-4 py-3 border border-gray-200 rounded-xl focus:ring-2 focus:ring-[rgb(var(--fu-primary))] focus:border-transparent outline-none"
                   placeholder="0.00"
                   max={currentBalance || undefined}
                   min={50}
@@ -180,7 +180,7 @@ export default function DashboardWithdrawPage() {
               <div className="grid grid-cols-2 gap-3">
                 <button
                   onClick={() => setSelectedMethod('paypal')}
-                  className={`p-4 rounded-xl border-2 text-left transition-all ${selectedMethod === 'paypal' ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5' : 'border-gray-200 hover:border-gray-300'}`}
+                  className={`p-4 rounded-xl border-2 text-left transition-all ${selectedMethod === 'paypal' ? 'border-[rgb(var(--fu-primary))] bg-[rgb(var(--fu-primary))]/5' : 'border-gray-200 hover:border-gray-300'}`}
                 >
                   <div className="text-lg mb-1">💳</div>
                   <div className="font-medium text-sm text-gray-900">PayPal</div>
@@ -188,7 +188,7 @@ export default function DashboardWithdrawPage() {
                 </button>
                 <button
                   onClick={() => setSelectedMethod('bank_transfer')}
-                  className={`p-4 rounded-xl border-2 text-left transition-all ${selectedMethod === 'bank_transfer' ? 'border-[rgb(var(--ctc-primary))] bg-[rgb(var(--ctc-primary))]/5' : 'border-gray-200 hover:border-gray-300'}`}
+                  className={`p-4 rounded-xl border-2 text-left transition-all ${selectedMethod === 'bank_transfer' ? 'border-[rgb(var(--fu-primary))] bg-[rgb(var(--fu-primary))]/5' : 'border-gray-200 hover:border-gray-300'}`}
                 >
                   <div className="text-lg mb-1">🏦</div>
                   <div className="font-medium text-sm text-gray-900">Bank Transfer</div>
@@ -219,7 +219,7 @@ export default function DashboardWithdrawPage() {
               </h2>
               <button
                 onClick={() => refetch()}
-                className="flex items-center gap-1 text-sm text-[rgb(var(--ctc-primary))] hover:text-[rgb(var(--ctc-primary-dark))]"
+                className="flex items-center gap-1 text-sm text-[rgb(var(--fu-primary))] hover:text-[rgb(var(--fu-primary-dark))]"
               >
                 <HiRefresh className="w-4 h-4" /> Refresh
               </button>

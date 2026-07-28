@@ -937,7 +937,7 @@ class BaseCartMixin:
     """
     Abstract base for site-specific cart implementations.
 
-    ctc-research.com: LMS course cart (CourseCartItem model)
+    fusion-cms.com: LMS course cart (CourseCartItem model)
     structa.cloud: Generic e-commerce cart (Product model)
 
     Subclass and implement all abstract methods for your site.
@@ -959,7 +959,7 @@ class BaseDashboardMixin:
     """
     Abstract base for site-specific dashboard implementations.
 
-    ctc-research.com: LMS analytics (enrollment stats, learning streaks)
+    fusion-cms.com: LMS analytics (enrollment stats, learning streaks)
     structa.cloud: Generic workspace dashboard
 
     Subclass and implement get_dashboard_context() for your site.
