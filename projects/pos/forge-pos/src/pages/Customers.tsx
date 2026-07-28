@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Customer } from '../types';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
+import Card from '../components/Card';
 import StatusToast from '../components/StatusToast';
 
 export default function Customers() {
@@ -103,10 +104,10 @@ export default function Customers() {
     : customers;
 
   return (
-    <PageLayout title={t('customers.title')} background="bg-slate-100 dark:bg-slate-900">
+    <PageLayout title={t('customers.title')}>
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('customers.title')}</h1>
+          <h1 className="text-2xl font-bold text-base-content">{t('customers.title')}</h1>
           <motion.button
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
@@ -118,7 +119,7 @@ export default function Customers() {
         </div>
 
         {/* ── Search bar (debounced async UX) ── */}
-        <div className="card--glass rounded-xl p-3">
+        <Card padding="sm">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
               <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -148,19 +149,19 @@ export default function Customers() {
                 </button>
               ) : null}
             </div>
-            <span className="text-xs text-slate-500 dark:text-gray-400 whitespace-nowrap">
+            <span className="text-xs text-base-content/50 whitespace-nowrap">
               {filteredCustomers.length} / {customers.length}
             </span>
           </div>
-        </div>
+        </Card>
 
         {showForm && (
           <motion.form
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
-            className="card--glass rounded-xl p-4 space-y-3"
           >
+            <Card padding="md" className="space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <input
                 type="text"
@@ -200,18 +201,19 @@ export default function Customers() {
                 {t('common.cancel')}
               </button>
             </div>
+            </Card>
           </motion.form>
         )}
 
         {isLoading ? (
-          <div className="card--glass rounded-xl p-8 text-center">
+          <Card padding="2xl" center>
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
             />
-            <p className="text-slate-500 dark:text-gray-400 text-sm">{t('common.loading')}</p>
-          </div>
+            <p className="text-base-content/50 text-sm">{t('common.loading')}</p>
+          </Card>
         ) : filteredCustomers.length === 0 ? (
           <div className="text-center py-12 text-slate-500">
             {debouncedSearch
@@ -225,23 +227,23 @@ export default function Customers() {
                 key={customer.id}
                 initial={{ opacity: 0 }}
                 animate={{ opacity: 1 }}
-                className="card--glass rounded-xl p-4"
               >
-                <div className="flex items-start justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
+                <Card padding="md">
+                  <div className="flex items-start justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 rounded-full bg-primary/10 flex items-center justify-center text-primary">
                       <span className="icon-[tabler--user] w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
-                      <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400">
+                      <h3 className="font-semibold text-base-content">{customer.name}</h3>
+                      <div className="flex items-center gap-1 text-sm text-base-content/50">
                         <span className="icon-[tabler--star] text-amber-500" />
                         <span>{customer.loyalty_points.toFixed(0)} {t('customers.points')}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-teal-600">
+                    <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-primary">
                       <span className="icon-[tabler--pencil]" />
                     </button>
                     <button onClick={() => handleDelete(customer.id)} className="p-2 text-slate-600 hover:text-red-600">
@@ -249,11 +251,12 @@ export default function Customers() {
                     </button>
                   </div>
                 </div>
-                <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
+                <div className="mt-3 space-y-1 text-sm text-base-content/60">
                   {customer.phone && <div className="flex items-center gap-1"><span className="icon-[tabler--phone]" /> {customer.phone}</div>}
                   {customer.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {customer.email}</div>}
                 </div>
-              </motion.div>
+              </Card>
+            </motion.div>
             ))}
           </div>
         )}
@@ -268,3 +271,4 @@ export default function Customers() {
     </PageLayout>
   );
 }
+

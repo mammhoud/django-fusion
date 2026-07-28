@@ -13,11 +13,13 @@ const LanguageContext = createContext<LanguageContextType | undefined>(undefined
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
   const [language, setLanguageState] = useState<Language>(() => {
+    // Try saved preference first
     const saved = localStorage.getItem('language');
     if (saved === 'en' || saved === 'ar' || saved === 'fr' || saved === 'de' || saved === 'es') {
       return saved;
     }
-    return 'en';
+    // Default to Arabic for this POS system
+    return 'ar';
   });
 
   const syncLanguage = (lang: Language) => {

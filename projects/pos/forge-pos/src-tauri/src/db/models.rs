@@ -37,15 +37,16 @@ pub struct Settings {
     pub closing_time: Option<String>,
     pub receipt_footer: Option<String>,
     pub logo: Option<String>,
+    pub invoice_logo: Option<String>,
     pub dine_in_tables: i32,
     pub delivery_fee: f64,
     pub delivery_fee_per_km: f64,
 }
 
-#[derive(Debug, Insertable, AsChangeset, Deserialize)]
+#[derive(Debug, Insertable, AsChangeset, Deserialize, Default)]
+#[serde(default)]
 #[diesel(table_name = crate::db::schema::settings)]
 pub struct UpdateSettings {
-    #[serde(default)]
     pub restaurant_name: Option<String>,
     pub address: Option<String>,
     pub phone: Option<String>,
@@ -59,6 +60,8 @@ pub struct UpdateSettings {
     /// Some(None) = set column to NULL (explicitly clear logo)
     /// Some(Some(data)) = set column to the given value
     pub logo: Option<Option<String>>,
+    /// None = skip field, Some(None) = set to NULL, Some(Some(data)) = set value
+    pub invoice_logo: Option<Option<String>>,
     pub dine_in_tables: Option<i32>,
     pub delivery_fee: Option<f64>,
     pub delivery_fee_per_km: Option<f64>,
@@ -97,7 +100,6 @@ pub struct Product {
     pub category_id: Option<i32>,
     pub image: Option<String>,
     pub product_type: String,
-    pub border_color: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
@@ -111,7 +113,6 @@ pub struct NewProduct {
     pub unit: String,
     pub category_id: Option<i32>,
     pub image: Option<String>,
-    pub border_color: Option<String>,
     /// Defaults to 'product' on the DB side. The frontend sends this
     /// explicitly; serde(default) handles missing field gracefully.
     #[serde(default)]
@@ -126,7 +127,6 @@ pub struct UpdateProduct {
     pub unit: Option<String>,
     pub category_id: Option<Option<i32>>,
     pub image: Option<Option<String>>,
-    pub border_color: Option<Option<String>>,
     pub product_type: Option<String>,
     pub uploaded: Option<bool>,
 }
@@ -144,6 +144,7 @@ pub struct Sale {
     pub status: String,
     pub table_number: Option<i32>,
     pub delivery_type_id: Option<i32>,
+    pub delivery_zone_id: Option<i32>,
     pub delivery_address: Option<String>,
     pub employee_id: Option<i32>,
     pub customer_id: Option<i32>,
@@ -163,6 +164,7 @@ pub struct NewSale {
     pub status: String,
     pub table_number: Option<i32>,
     pub delivery_type_id: Option<i32>,
+    pub delivery_zone_id: Option<i32>,
     pub delivery_address: Option<String>,
     pub employee_id: Option<i32>,
     pub customer_id: Option<i32>,
@@ -175,6 +177,7 @@ pub struct UpdateSale {
     pub status: Option<String>,
     pub table_number: Option<Option<i32>>,
     pub delivery_type_id: Option<Option<i32>>,
+    pub delivery_zone_id: Option<Option<i32>>,
     pub delivery_address: Option<Option<String>>,
     pub employee_id: Option<Option<i32>>,
     pub customer_id: Option<Option<i32>>,
@@ -657,6 +660,39 @@ pub struct UpdatePurchaseOrder {
     pub shipping_fee: Option<f64>,
     pub expected_date: Option<Option<NaiveDateTime>>,
     pub notes: Option<Option<String>>,
+}
+
+// ---- DeliveryZone ----
+#[derive(Debug, Queryable, Selectable, Serialize, Deserialize, Clone)]
+#[diesel(table_name = crate::db::schema::delivery_zones)]
+pub struct DeliveryZone {
+    pub id: i32,
+    pub name: String,
+    pub base_fee: f64,
+    pub fee_per_km: f64,
+    pub max_distance: f64,
+    pub is_active: bool,
+    pub created_at: chrono::NaiveDateTime,
+    pub updated_at: chrono::NaiveDateTime,
+}
+
+#[derive(Debug, Insertable, Deserialize)]
+#[diesel(table_name = crate::db::schema::delivery_zones)]
+pub struct NewDeliveryZone {
+    pub name: String,
+    pub base_fee: f64,
+    pub fee_per_km: f64,
+    pub max_distance: f64,
+}
+
+#[derive(Debug, AsChangeset, Deserialize)]
+#[diesel(table_name = crate::db::schema::delivery_zones)]
+pub struct UpdateDeliveryZone {
+    pub name: Option<String>,
+    pub base_fee: Option<f64>,
+    pub fee_per_km: Option<f64>,
+    pub max_distance: Option<f64>,
+    pub is_active: Option<bool>,
 }
 
 // ---- PurchaseOrderItem ----

@@ -1,9 +1,11 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { useKeyboardTabNav } from '../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
 import { Ingredient, NewIngredient, InventoryTransaction, NewInventoryTransaction, InventoryAdjustment } from '../types';
 import PageLayout from '../components/PageLayout';
 import { SkeletonTable, SkeletonList, SkeletonCard } from '../components/Skeleton';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
@@ -18,7 +20,7 @@ const TRANSACTION_TYPES = [
   { value: 'usage', label: 'Usage', color: 'bg-blue-500' },
   { value: 'waste', label: 'Waste', color: 'bg-red-500' },
   { value: 'adjustment', label: 'Adjustment', color: 'bg-yellow-500' },
-  { value: 'return', label: 'Return', color: 'bg-purple-500' },
+  { value: 'return', label: 'Return', color: 'bg-secondary' },
 ];
 
 export default function Inventory() {
@@ -32,6 +34,10 @@ export default function Inventory() {
     { key: 'transactions' as Tab, label: t('inventory.transactions'), icon: <span className="icon-[tabler--history] w-5 h-5" /> },
     { key: 'adjustments' as Tab, label: t('inventory.adjustments'), icon: <span className="icon-[tabler--alert-triangle] w-5 h-5" /> },
   ];
+
+  // ── Arrow-key tab nav ──
+  const invTabKeys: Tab[] = tabs.map(t => t.key);
+  const { onKeyDown: onInvTabKeyDown } = useKeyboardTabNav(invTabKeys, activeTab, setActiveTab);
 
   // Data states
   const [ingredients, setIngredients] = useState<Ingredient[]>([]);
@@ -234,7 +240,7 @@ export default function Inventory() {
     {
       key: 'type', label: 'Type', colSpan: 2,
       render: (tx) => {
-        const colors: Record<string, string> = { purchase: 'bg-green-500', usage: 'bg-blue-500', waste: 'bg-red-500', adjustment: 'bg-yellow-500', return: 'bg-purple-500' };
+        const colors: Record<string, string> = { purchase: 'bg-green-500', usage: 'bg-blue-500', waste: 'bg-red-500', adjustment: 'bg-yellow-500', return: 'bg-secondary' };
         const ing = ingredients.find(i => i.id === tx.ingredient_id);
         return <div className="flex items-center gap-2"><span className={`w-2 h-2 rounded-full ${colors[tx.transaction_type] || 'bg-gray-500'}`} /><span className="capitalize font-medium">{tx.transaction_type}</span><span className="text-slate-500 text-sm ml-1">— {ing?.name || `#${tx.ingredient_id}`}</span></div>;
       }
@@ -258,7 +264,7 @@ export default function Inventory() {
 
   if (isLoading) {
     return (
-      <PageLayout title={t('inventory.title')} background="bg-slate-100 dark:bg-slate-900">
+      <PageLayout title={t('inventory.title')}>
         <div className="space-y-6">
           <SkeletonCard count={4} />
           <SkeletonList items={5} />
@@ -270,30 +276,34 @@ export default function Inventory() {
 
   return (
     <PageLayout
-      title={<><span className="icon-[tabler--package] text-emerald-500" /> {t('inventory.title')}</>}
-      background="bg-linear-to-br from-slate-100 via-emerald-100 to-slate-100 dark:from-slate-900 dark:via-emerald-950 dark:to-slate-900"
+      title={<><span className="icon-[tabler--package] text-success" /> {t('inventory.title')}</>}
+      background="bg-linear-to-br from-slate-100 via-success/10 to-slate-100 dark:from-slate-900 dark:via-success/10 dark:to-slate-900"
     >
       {/* Tab Navigation — matching Transactions page pattern */}
-      <div className="flex gap-1 sm:gap-2 mb-6 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-xl p-1.5 overflow-x-auto">
+      <nav className="tabs tabs-boxed gap-1 mb-6 overflow-x-auto" aria-label="Inventory tabs" role="tablist" data-tab-prefix="inv-tab" onKeyDown={onInvTabKeyDown}>
         {tabs.map(tab => (
           <button
             key={tab.key}
+            type="button"
+            role="tab"
+            id={`inv-tab-${tab.key}`}
+            aria-controls={`inv-panel-${tab.key}`}
+            aria-selected={activeTab === tab.key}
             onClick={() => setActiveTab(tab.key)}
-            className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 justify-center ${
-              activeTab === tab.key
-                ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/10'
-            }`}
+            className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
           >
             {tab.icon}
-            <span className="font-medium text-sm sm:text-base">{tab.label}</span>
+            <span className="text-sm sm:text-base">{tab.label}</span>
           </button>
         ))}
-      </div>
+      </nav>
 
       {/* Tab Content with staggered animation */}
       <motion.div
         key={activeTab}
+        role="tabpanel"
+        id={`inv-panel-${activeTab}`}
+        aria-labelledby={`inv-tab-${activeTab}`}
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
@@ -303,48 +313,29 @@ export default function Inventory() {
           <div className="space-y-6">
             {/* Tab-specific Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.totalIngredients')}</h2>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{activeIngredients.length}</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.stockValue')}</h2>
-                <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.totalIngredients')}</h2>
+                <p className="text-2xl font-bold text-base-content">{activeIngredients.length}</p>
+              </Card>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.stockValue')}</h2>
+                <p className="text-2xl font-bold text-primary dark:text-primary/80">
                   {totalStockValue.toFixed(2)}
                 </p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.avgCost')}</h2>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{avgCost.toFixed(2)}</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.15 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.lowStockItems')}</h2>
+              </Card>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.avgCost')}</h2>
+                <p className="text-2xl font-bold text-base-content">{avgCost.toFixed(2)}</p>
+              </Card>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.lowStockItems')}</h2>
                 <p className="text-2xl font-bold text-yellow-500">{lowStockCount}</p>
-              </motion.div>
+              </Card>
             </div>
 
             {/* Header row with heading, search + add button */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('inventory.allIngredients')}</h2>
+              <h2 className="text-lg font-semibold text-base-content">{t('inventory.allIngredients')}</h2>
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <div className="relative flex-1 sm:w-56">
                   <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
@@ -377,19 +368,19 @@ export default function Inventory() {
             {/* Ingredient list */}
             {ingredients.length > 0 && filteredIngredients.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <span className="icon-[tabler--search] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
-                <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
+                <span className="icon-[tabler--search] w-12 h-12 text-base-content/40 mb-4" />
+                <p className="text-base-content/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
                 <button
                   onClick={() => setStockSearch('')}
-                  className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
+                  className="text-sm font-medium text-primary dark:text-primary/80 hover:underline transition-colors"
                 >
                   {t('common.clear')}
                 </button>
               </div>
             ) : (
-              <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
+              <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
                 {/* Header */}
-                <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-slate-300 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm">
+                <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-base-300/50 text-base-content font-semibold text-sm">
                   <div className="col-span-3">{t('inventory.name')}</div>
                   <div className="col-span-1 text-center">{t('inventory.unit')}</div>
                   <div className="col-span-2 text-right">{t('inventory.stock')}</div>
@@ -404,17 +395,17 @@ export default function Inventory() {
                     <motion.div
                       key={ing.id}
                       initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                      className={`sm:grid sm:grid-cols-12 gap-4 p-4 border-b border-slate-300 dark:border-white/10 
-                        hover:bg-slate-100 dark:hover:bg-white/5 transition-colors ${!ing.is_active ? 'opacity-50' : ''}`}
+                      className={`sm:grid sm:grid-cols-12 gap-4 p-4 border-b border-base-300/50 
+                        hover:bg-base-200/50 transition-colors ${!ing.is_active ? 'opacity-50' : ''}`}
                     >
                       {/* Mobile */}
                       <div className="sm:hidden flex justify-between items-center mb-2">
-                        <span className="font-semibold text-slate-900 dark:text-white">{ing.name}</span>
+                        <span className="font-semibold text-base-content">{ing.name}</span>
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
                           {status.label}
                         </span>
                       </div>
-                      <div className="sm:hidden text-sm text-slate-600 dark:text-gray-400 space-y-1 mb-2">
+                      <div className="sm:hidden text-sm text-base-content/60 space-y-1 mb-2">
                         <div className="flex justify-between">
                           <span>{t('inventory.stock')}: <strong>{ing.current_quantity} {ing.unit}</strong></span>
                           <span>{t('inventory.costPerUnit')}: {ing.cost_per_unit.toFixed(2)}</span>
@@ -426,18 +417,18 @@ export default function Inventory() {
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
-                        }} className="text-emerald-500 hover:text-emerald-400 p-1"><span className="icon-[tabler--plus]" /></button>
+                        }} className="text-success hover:text-success/80 p-1"><span className="icon-[tabler--plus]" /></button>
                         {ing.is_active && (
                           <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1"><span className="icon-[tabler--trash]" /></button>
                         )}
                       </div>
 
                       {/* Desktop */}
-                      <div className="hidden sm:block col-span-3 text-slate-900 dark:text-white font-medium">{ing.name}</div>
-                      <div className="hidden sm:block col-span-1 text-center text-slate-600 dark:text-gray-400">{ing.unit}</div>
-                      <div className="hidden sm:block col-span-2 text-right text-slate-900 dark:text-white font-medium">{ing.current_quantity}</div>
-                      <div className="hidden sm:block col-span-2 text-right text-slate-600 dark:text-gray-400">{ing.reorder_level}</div>
-                      <div className="hidden sm:block col-span-2 text-right text-slate-600 dark:text-gray-400">{ing.cost_per_unit.toFixed(2)}</div>
+                      <div className="hidden sm:block col-span-3 text-base-content font-medium">{ing.name}</div>
+                      <div className="hidden sm:block col-span-1 text-center text-base-content/60">{ing.unit}</div>
+                      <div className="hidden sm:block col-span-2 text-right text-base-content font-medium">{ing.current_quantity}</div>
+                      <div className="hidden sm:block col-span-2 text-right text-base-content/60">{ing.reorder_level}</div>
+                      <div className="hidden sm:block col-span-2 text-right text-base-content/60">{ing.cost_per_unit.toFixed(2)}</div>
                       <div className="hidden sm:flex col-span-2 items-center justify-center gap-2">
                         <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${status.bg} ${status.color}`}>
                           {status.label}
@@ -447,7 +438,7 @@ export default function Inventory() {
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
-                        }} className="text-emerald-500 hover:text-emerald-400 p-1" title={t('inventory.recordTransaction')}><span className="icon-[tabler--plus]" /></button>
+                        }} className="text-success hover:text-success/80 p-1" title={t('inventory.recordTransaction')}><span className="icon-[tabler--plus]" /></button>
                         {ing.is_active && (
                           <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1" title={t('common.deactivate')}><span className="icon-[tabler--trash]" /></button>
                         )}
@@ -456,7 +447,7 @@ export default function Inventory() {
                   );
                 })}
                 {ingredients.length === 0 && (
-                  <div className="p-8 text-center text-slate-600 dark:text-white/60">{t('inventory.noIngredients')}</div>
+                  <div className="p-8 text-center text-base-content/60">{t('inventory.noIngredients')}</div>
                 )}
               </div>
             )}
@@ -468,37 +459,23 @@ export default function Inventory() {
           <div className="space-y-6">
             {/* Tab-specific Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.totalIngredients')}</h2>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{transactions.length}</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.thisMonthTransactions')}</h2>
-                <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{thisMonthTransactions}</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.thisWeekTransactions')}</h2>
-                <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{thisWeekTransactions}</p>
-              </motion.div>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.totalIngredients')}</h2>
+                <p className="text-2xl font-bold text-base-content">{transactions.length}</p>
+              </Card>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.thisMonthTransactions')}</h2>
+                <p className="text-2xl font-bold text-primary dark:text-primary/80">{thisMonthTransactions}</p>
+              </Card>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.thisWeekTransactions')}</h2>
+                <p className="text-2xl font-bold text-info dark:text-info/80">{thisWeekTransactions}</p>
+              </Card>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
               <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('inventory.transactionLog')}</h2>
+                <h2 className="text-lg font-semibold text-base-content">{t('inventory.transactionLog')}</h2>
                 <select
                   value={ingredientFilter ?? ''}
                   onChange={(e) => setIngredientFilter(e.target.value ? Number(e.target.value) : null)}
@@ -530,7 +507,7 @@ export default function Inventory() {
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-2">
                       <span className={`w-2 h-2 rounded-full ${getTransactionColor(tx.transaction_type)}`} />
-                      <span className="font-medium capitalize text-slate-900 dark:text-white">{tx.transaction_type}</span>
+                      <span className="font-medium capitalize text-base-content">{tx.transaction_type}</span>
                       <span className="text-slate-500 text-sm">— {ing?.name || `ID: ${tx.ingredient_id}`}</span>
                     </div>
                     <div className="flex items-center justify-between">
@@ -552,31 +529,22 @@ export default function Inventory() {
           <div className="space-y-6">
             {/* Tab-specific Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.totalAdjustments')}</h2>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{adjustments.length}</p>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.05 }}
-                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
-              >
-                <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.uniqueIngredients')}</h2>
-                <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.totalAdjustments')}</h2>
+                <p className="text-2xl font-bold text-base-content">{adjustments.length}</p>
+              </Card>
+                <Card>
+                <h2 className="text-base-content/60 text-sm">{t('inventory.uniqueIngredients')}</h2>
+                <p className="text-2xl font-bold text-primary dark:text-primary/80">
                   {new Set(adjustments.map(a => a.ingredient_id)).size}
                 </p>
-              </motion.div>
+              </Card>
             </div>
 
-            <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('inventory.manualAdjustments')}</h2>
+            <h2 className="text-lg font-semibold text-base-content">{t('inventory.manualAdjustments')}</h2>
             <div className="space-y-3">
               {adjustments.length === 0 && (
-                <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+                <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
                   {t('inventory.noAdjustments')}
                 </div>
               )}
@@ -586,15 +554,15 @@ export default function Inventory() {
                   <motion.div
                     key={adj.id}
                     initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                    className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4"
+                    className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4"
                   >
                     <div className="flex justify-between items-start">
                       <div>
-                        <span className="text-slate-900 dark:text-white font-medium">{ing?.name || `ID: ${adj.ingredient_id}`}</span>
-                        <div className="text-sm text-slate-600 dark:text-gray-400 mt-1">
+                        <span className="text-base-content font-medium">{ing?.name || `ID: ${adj.ingredient_id}`}</span>
+                        <div className="text-sm text-base-content/60 mt-1">
                           {adj.previous_quantity} → <strong>{adj.new_quantity}</strong> {ing?.unit || ''}
                         </div>
-                        <p className="text-sm text-slate-500 dark:text-gray-400 mt-1 italic">"{adj.reason}"</p>
+                        <p className="text-sm text-base-content/50 mt-1 italic">"{adj.reason}"</p>
                       </div>
                       <div className="text-right text-xs text-slate-400">
                         <div>{new Date(adj.created_at).toLocaleDateString()}</div>
@@ -614,32 +582,32 @@ export default function Inventory() {
         onClose={() => setShowAddIngredient(false)}
         title={t('inventory.addIngredientTitle')}
         footer={<>
-          <button onClick={() => setShowAddIngredient(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
+          <button onClick={() => setShowAddIngredient(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddIngredient} disabled={!newIngredient.name.trim()}
-            className="flex-1 py-2.5 rounded-lg bg-emerald-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-success text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
             <span className="icon-[tabler--device-floppy]" /> {t('inventory.addIngredient')}
           </button>
         </>}
       >
-        <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Name *</label>
+        <div><label className="block text-base-content/80 mb-1 text-sm">Name *</label>
           <input type="text" value={newIngredient.name} onChange={e => setNewIngredient(p => ({ ...p, name: e.target.value }))}
             className="input input-bordered w-full" /></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Unit *</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">Unit *</label>
             <input type="text" value={newIngredient.unit} onChange={e => setNewIngredient(p => ({ ...p, unit: e.target.value }))}
               className="input input-bordered w-full" /></div>
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Current Quantity</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">Current Quantity</label>
             <input type="number" step="0.1" min="0" value={newIngredient.current_quantity} onChange={e => setNewIngredient(p => ({ ...p, current_quantity: Number(e.target.value) }))}
               className="input input-bordered w-full" /></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Level</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Level</label>
             <input type="number" step="0.1" min="0" value={newIngredient.reorder_level} onChange={e => setNewIngredient(p => ({ ...p, reorder_level: Number(e.target.value) }))}
               className="input input-bordered w-full" /></div>
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Qty</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Qty</label>
             <input type="number" step="0.1" min="0" value={newIngredient.reorder_quantity} onChange={e => setNewIngredient(p => ({ ...p, reorder_quantity: Number(e.target.value) }))}
               className="input input-bordered w-full" /></div>
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Cost/Unit</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">Cost/Unit</label>
             <input type="number" step="0.01" min="0" value={newIngredient.cost_per_unit} onChange={e => setNewIngredient(p => ({ ...p, cost_per_unit: Number(e.target.value) }))}
               className="input input-bordered w-full" /></div>
         </div>
@@ -650,30 +618,30 @@ export default function Inventory() {
         onClose={() => { setShowEditIngredient(null); setEditForm(null); }}
         title={t('inventory.editIngredientTitle')}
         footer={<>
-          <button onClick={() => { setShowEditIngredient(null); setEditForm(null); }} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
+          <button onClick={() => { setShowEditIngredient(null); setEditForm(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editForm && (<>
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Name</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">Name</label>
             <input type="text" value={editForm.name} onChange={e => setEditForm(p => ({ ...p!, name: e.target.value }))}
               className="input input-bordered w-full" /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Unit</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">Unit</label>
               <input type="text" value={editForm.unit} onChange={e => setEditForm(p => ({ ...p!, unit: e.target.value }))}
                 className="input input-bordered w-full" /></div>
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Stock</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">Stock</label>
               <input type="number" step="0.1" value={editForm.current_quantity} onChange={e => setEditForm(p => ({ ...p!, current_quantity: Number(e.target.value) }))}
                 className="input input-bordered w-full" /></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Level</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Level</label>
               <input type="number" step="0.1" value={editForm.reorder_level} onChange={e => setEditForm(p => ({ ...p!, reorder_level: Number(e.target.value) }))}
                 className="input input-bordered w-full" /></div>
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Qty</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">Reorder Qty</label>
               <input type="number" step="0.1" value={editForm.reorder_quantity} onChange={e => setEditForm(p => ({ ...p!, reorder_quantity: Number(e.target.value) }))}
                 className="input input-bordered w-full" /></div>
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Cost/Unit</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">Cost/Unit</label>
               <input type="number" step="0.01" value={editForm.cost_per_unit} onChange={e => setEditForm(p => ({ ...p!, cost_per_unit: Number(e.target.value) }))}
                 className="input input-bordered w-full" /></div>
           </div>
@@ -694,12 +662,12 @@ export default function Inventory() {
         onClose={() => setShowAddTransaction(false)}
         title={t('inventory.recordTitle')}
         footer={<>
-          <button onClick={() => setShowAddTransaction(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
+          <button onClick={() => setShowAddTransaction(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddTransaction} disabled={newTransaction.ingredient_id === 0 || newTransaction.quantity_change === 0}
-            className="flex-1 py-2.5 rounded-lg bg-emerald-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('inventory.recordTransaction')}</button>
+            className="flex-1 py-2.5 rounded-lg bg-success text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('inventory.recordTransaction')}</button>
         </>}
       >
-        <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.ingredient')} *</label>
+        <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.ingredient')} *</label>
           <select value={newTransaction.ingredient_id} onChange={e => setNewTransaction(p => ({ ...p, ingredient_id: Number(e.target.value) }))}
             className="input input-bordered w-full">
             <option value={0}>{t('inventory.selectIngredient')}</option>
@@ -708,28 +676,28 @@ export default function Inventory() {
             ))}
           </select></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.type')} *</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.type')} *</label>
             <select value={newTransaction.transaction_type} onChange={e => setNewTransaction(p => ({ ...p, transaction_type: e.target.value }))}
               className="input input-bordered w-full">
               {TRANSACTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select></div>
-          <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.quantityChange')} *</label>
+          <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.quantityChange')} *</label>
             <input type="number" step="0.1" value={newTransaction.quantity_change}
               onChange={e => setNewTransaction(p => ({ ...p, quantity_change: Number(e.target.value) }))}
               placeholder={t('inventory.quantityPlaceholder')}
               className="input input-bordered w-full" />
-            <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('inventory.positiveHint')}</p>
+            <p className="text-xs text-base-content/50 mt-1">{t('inventory.positiveHint')}</p>
           </div>
         </div>
-        <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.note')}</label>
+        <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.note')}</label>
           <input type="text" value={newTransaction.note || ''} onChange={e => setNewTransaction(p => ({ ...p, note: e.target.value || null }))}
             className="input input-bordered w-full" /></div>
         {newTransaction.transaction_type === 'adjustment' && (
           <>
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.adjustmentReason')} *</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.adjustmentReason')} *</label>
               <input type="text" value={adjustmentReason} onChange={e => setAdjustmentReason(e.target.value)}
                 className="input input-bordered w-full" /></div>
-            <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.createdBy')}</label>
+            <div><label className="block text-base-content/80 mb-1 text-sm">{t('inventory.createdBy')}</label>
               <input type="text" value={createdBy} onChange={e => setCreatedBy(e.target.value)}
                 className="input input-bordered w-full" /></div>
           </>

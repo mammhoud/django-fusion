@@ -20,6 +20,7 @@ import {
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 // ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+import { invoke } from '@tauri-apps/api/core';
 import { createChatWs } from '../api/chat';
 import tickets from '../api/tickets';
 import type { ChatMessage, WsConnState, ChatWsConnection } from '../api/chat';
@@ -49,10 +50,10 @@ interface TicketForm {
 }
 
 const CONN_DOT: Record<WsConnState, { color: string; label: string }> = {
-  open:       { color: 'text-teal-400',  label: 'Connected' },
-  connecting: { color: 'text-amber-400', label: 'Connecting…' },
-  closed:     { color: 'text-slate-400', label: 'Reconnecting…' },
-  error:      { color: 'text-rose-400',  label: 'Connection error' },
+  open:       { color: 'text-primary/80',  label: 'Connected' },
+  connecting: { color: 'text-warning/80', label: 'Connecting…' },
+  closed:     { color: 'text-base-content/40', label: 'Reconnecting…' },
+  error:      { color: 'text-error/80',  label: 'Connection error' },
 };
 
 // ---- Helpers --------------------------------------------------------------
@@ -92,6 +93,9 @@ export default function ChatSupport({
   ]);
   const [draft, setDraft]         = useState('');
   const [isTyping, setIsTyping]   = useState(false);
+
+  // SMTP config from backend
+  const [smtpConfig, setSmtpConfig] = useState<{ configured: boolean; support_email: string | null } | null>(null);
 
   // Ticket fallback form
   const [showTicket, setShowTicket] = useState(false);
@@ -142,6 +146,13 @@ export default function ChatSupport({
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isOpen]);
+
+  // ---- Load SMTP config on mount ------------------------------------------
+  useEffect(() => {
+    invoke<{ configured: boolean; support_email: string | null }>('get_smtp_config')
+      .then(setSmtpConfig)
+      .catch(() => setSmtpConfig({ configured: false, support_email: null }));
+  }, []);
 
   // ---- Send message via persistent WebSocket ------------------------------
   const sendMessage = () => {
@@ -212,8 +223,8 @@ export default function ChatSupport({
 
   // ---- Bubble colours -----------------------------------------------------
   const bubbleClass = (sender: Sender, type: MsgType) => {
-    if (type === 'status') return 'bg-slate-100 dark:bg-slate-800 text-slate-500 text-center text-xs italic rounded-xl px-3 py-1.5 mx-auto max-w-[85%]';
-    if (sender === 'user') return 'bg-teal-600 text-white rounded-2xl rounded-br-sm ml-auto max-w-[82%]';
+    if (type === 'status') return 'bg-base-200/50 text-slate-500 text-center text-xs italic rounded-xl px-3 py-1.5 mx-auto max-w-[85%]';
+    if (sender === 'user') return 'bg-primary text-white rounded-2xl rounded-br-sm ml-auto max-w-[82%]';
     return 'bg-white dark:bg-slate-700 text-slate-800 dark:text-slate-100 rounded-2xl rounded-bl-sm border border-slate-200 dark:border-slate-600 max-w-[82%]';
   };
 
@@ -227,7 +238,7 @@ export default function ChatSupport({
           onClick={() => setIsOpen(o => !o)}
           whileHover={{ scale: 1.08 }}
           whileTap={{ scale: 0.93 }}
-          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-teal-500 to-teal-700 text-white shadow-xl flex items-center justify-center"
+          className="fixed bottom-6 right-6 z-40 w-14 h-14 rounded-full bg-gradient-to-br from-primary to-primary/80 text-white shadow-xl flex items-center justify-center"
         >
           <AnimatePresence mode="wait" initial={false}>
             {isOpen ? (
@@ -241,7 +252,7 @@ export default function ChatSupport({
             )}
           </AnimatePresence>
           {!isOpen && messages.filter(m => m.sender !== 'user' && m.type === 'message').length > 0 && (
-            <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-rose-500 border-2 border-white" />
+            <span className="absolute top-1 right-1 w-3 h-3 rounded-full bg-error border-2 border-white" />
           )}
         </motion.button>
       )}
@@ -261,20 +272,34 @@ export default function ChatSupport({
             style={{ maxHeight: 'min(520px, calc(100vh - 8rem))' }}
           >
             {/* HEADER */}
-            <div className="bg-gradient-to-r from-slate-900 to-teal-900 text-white px-4 py-3 flex items-center gap-3 shrink-0">
+            <div className="bg-gradient-to-r from-slate-900 to-primary/90 text-white px-4 py-3 flex items-center gap-3 shrink-0">
               <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                <span className="icon-[tabler--headset] w-5 h-5 text-teal-300" />
+                <span className="icon-[tabler--headset] w-5 h-5 text-primary/70" />
               </div>
               <div className="flex-1 min-w-0">
-                <p id={titleId} className="font-bold text-sm leading-tight">Structa Cloud Support</p>
-                <div className="flex items-center gap-1.5 mt-0.5">
+                <p id={titleId} className="font-bold text-sm leading-tight">
+                {smtpConfig?.support_email ? 'Support' : 'Structa Cloud Support'}
+              </p>
+                <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                   <span className={`icon-[tabler--circle] w-2.5 h-2.5 ${CONN_DOT[connState].color}`} />
                   <span className="text-[11px] text-white/60">{CONN_DOT[connState].label}</span>
+                  {smtpConfig?.support_email && (
+                    <>
+                      <span className="text-white/30 text-[10px]">·</span>
+                      <a
+                        href={`mailto:${smtpConfig.support_email}`}
+                        className="text-[11px] text-primary/80 hover:text-primary/60 underline underline-offset-2 transition-colors"
+                        onClick={(e) => e.stopPropagation()}
+                      >
+                        {smtpConfig.support_email}
+                      </a>
+                    </>
+                  )}
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 {connState === 'open'
-                  ? <span className="icon-[tabler--wifi] w-4 h-4 text-teal-400" aria-label="Connected" />
+                  ? <span className="icon-[tabler--wifi] w-4 h-4 text-primary/80" aria-label="Connected" />
                   : <span className="icon-[tabler--wifi-off] w-4 h-4 text-slate-400" aria-label="Disconnected" />}
                 <button onClick={() => setIsOpen(false)} aria-label="Close chat" className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
                   <span className="icon-[tabler--x] w-4 h-4" />
@@ -283,14 +308,14 @@ export default function ChatSupport({
             </div>
 
             {/* POWERED BY */}
-            <div className="bg-teal-900/80 px-4 py-1 flex items-center gap-1.5 shrink-0">
+            <div className="bg-primary/80 px-4 py-1 flex items-center gap-1.5 shrink-0">
               <img
                 src="https://structa.cloud/favicon.ico"
                 alt="Structa Cloud"
                 className="w-3.5 h-3.5 opacity-80"
                 onError={e => { (e.currentTarget as HTMLImageElement).style.display = 'none'; }}
               />
-              <span className="text-[10px] text-teal-300/80">
+              <span className="text-[10px] text-primary/70">
                 Powered by POS &mdash; structa.cloud
               </span>
             </div>
@@ -302,7 +327,7 @@ export default function ChatSupport({
                   <div className={`px-3.5 py-2 text-sm leading-relaxed ${bubbleClass(msg.sender, msg.type)}`}>
                     <p>{msg.text}</p>
                     {msg.type !== 'status' && (
-                      <p className={`text-[10px] mt-1 ${msg.sender === 'user' ? 'text-teal-200 text-right' : 'text-slate-400'}`}>
+                      <p className={`text-[10px] mt-1 ${msg.sender === 'user' ? 'text-primary/60 text-right' : 'text-base-content/40'}`}>
                         {fmtTime(msg.ts)}
                       </p>
                     )}
@@ -335,7 +360,7 @@ export default function ChatSupport({
                   initial={{ height: 0, opacity: 0 }}
                   animate={{ height: 'auto', opacity: 1 }}
                   exit={{ height: 0, opacity: 0 }}
-                  className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 overflow-hidden shrink-0"
+                  className="bg-base-100 border-t border-slate-200 dark:border-slate-700 overflow-hidden shrink-0"
                 >
                   <div className="px-4 py-3 space-y-2">
                     <p className="text-xs font-bold text-slate-500 uppercase tracking-wider">Submit a Support Ticket</p>
@@ -347,7 +372,7 @@ export default function ChatSupport({
                         placeholder={field.charAt(0).toUpperCase() + field.slice(1)}
                         value={ticket[field]}
                         onChange={e => setTicket(prev => ({ ...prev, [field]: e.target.value }))}
-                        className="w-full bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-teal-500"
+                        className="w-full bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary"
                       />
                     ))}
                     <textarea
@@ -356,11 +381,11 @@ export default function ChatSupport({
                       placeholder="Describe your issue…"
                       value={ticket.message}
                       onChange={e => setTicket(prev => ({ ...prev, message: e.target.value }))}
-                      className="w-full bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 resize-none"
+                      className="w-full bg-slate-100 dark:bg-slate-700 rounded-lg px-3 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary resize-none"
                     />
                     <div className="flex gap-2">
                       <button type="submit" disabled={ticketStatus === 'sending'}
-                        className="flex-1 py-1.5 rounded-lg bg-teal-600 text-white text-sm font-semibold hover:bg-teal-700 disabled:opacity-60"
+                        className="flex-1 py-1.5 rounded-lg bg-primary text-white text-sm font-semibold hover:bg-primary/80 disabled:opacity-60"
                       >
                         {ticketStatus === 'sending' ? 'Sending…' : 'Submit Ticket'}
                       </button>
@@ -371,7 +396,7 @@ export default function ChatSupport({
                       </button>
                     </div>
                     {ticketStatus === 'error' && (
-                      <p className="text-xs text-rose-500 text-center">Failed to submit. Is the sidecar running?</p>
+                      <p className="text-xs text-error text-center">Failed to submit. Is the sidecar running?</p>
                     )}
                   </div>
                 </motion.form>
@@ -379,13 +404,26 @@ export default function ChatSupport({
             </AnimatePresence>
 
             {/* INPUT BAR */}
-            <div className="bg-white dark:bg-slate-800 border-t border-slate-200 dark:border-slate-700 px-3 py-2.5 flex items-center gap-2 shrink-0">
+            <div className="bg-base-100 border-t border-slate-200 dark:border-slate-700 px-3 py-2.5 flex items-center gap-2 shrink-0">
+              {/* SMTP direct email button — visible when SMTP is configured */}
+              {smtpConfig?.configured && smtpConfig.support_email && (
+                <a
+                  href={`mailto:${smtpConfig.support_email}?subject=Support%20Request`}
+                  className="w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0
+                    bg-amber-100 dark:bg-amber-900/30 text-amber-600 dark:text-amber-400
+                    hover:bg-amber-200 dark:hover:bg-amber-900/50"
+                  title={`Send email to ${smtpConfig.support_email}`}
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <span className="icon-[tabler--mail] w-4 h-4" />
+                </a>
+              )}
               <button
                 onClick={() => setShowTicket(t => !t)}
                 title="Submit a support ticket"
                 className={`w-8 h-8 rounded-full flex items-center justify-center transition-colors shrink-0 ${
                   showTicket
-                    ? 'bg-teal-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200'
                 }`}
               >
@@ -399,7 +437,7 @@ export default function ChatSupport({
                 value={draft}
                 onChange={e => { setDraft(e.target.value); sendTyping(); }}
                 onKeyDown={handleKeyDown}
-                className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full px-4 py-1.5 text-sm outline-none focus:ring-2 focus:ring-teal-500 transition-shadow"
+                className="flex-1 bg-slate-100 dark:bg-slate-700 rounded-full px-4 py-1.5 text-sm outline-none focus:ring-2 focus:ring-primary transition-shadow"
                 aria-label="Chat message"
               />
 
@@ -408,7 +446,7 @@ export default function ChatSupport({
                 onClick={sendMessage}
                 disabled={!draft.trim()}
                 aria-label="Send message"
-                className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
+                className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               >
                 <span className="icon-[tabler--send] w-4 h-4" />
               </motion.button>

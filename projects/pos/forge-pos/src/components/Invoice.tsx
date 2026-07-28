@@ -38,18 +38,28 @@ export interface InvoiceProps {
   footer?: string;
   /** Invoice category ID for categorization badge */
   category?: string;
+  /** Order type for sales receipts (dine-in, takeaway, delivery) */
+  orderType?: string;
+  /** Delivery fee amount */
+  deliveryFee?: number;
+  /** Delivery type name */
+  deliveryTypeName?: string;
+  /** Delivery zone name */
+  deliveryZoneName?: string;
+  /** Delivery distance in km */
+  deliveryDistance?: number;
 }
 
 // ---- Constants -------------------------------------------------------------
 
 const TYPE_ACCENT: Record<string, { badge: string; total: string; border: string }> = {
-  tax:        { badge: 'badge badge-primary',                total: 'badge badge-primary',       border: 'border-teal-200' },
-  commercial: { badge: 'badge badge-secondary',              total: 'badge badge-secondary',     border: 'border-indigo-200' },
-  proforma:   { badge: 'badge badge-warning',                total: 'badge badge-warning',       border: 'border-amber-200' },
-  credit:     { badge: 'badge badge-error',                  total: 'badge badge-error',         border: 'border-rose-200' },
-  receipt:    { badge: 'badge badge-success',                total: 'badge badge-success',       border: 'border-emerald-200' },
-  selling:    { badge: 'badge badge-info',                   total: 'badge badge-info',          border: 'border-sky-200' },
-  goods_transfer: { badge: 'badge badge-accent',             total: 'badge badge-accent',        border: 'border-violet-200' },
+  tax:        { badge: 'badge badge-primary',                total: 'badge badge-primary',       border: 'border-primary/20' },
+  commercial: { badge: 'badge badge-secondary',              total: 'badge badge-secondary',     border: 'border-secondary/20' },
+  proforma:   { badge: 'badge badge-warning',                total: 'badge badge-warning',       border: 'border-warning/20' },
+  credit:     { badge: 'badge badge-error',                  total: 'badge badge-error',         border: 'border-error/20' },
+  receipt:    { badge: 'badge badge-success',                total: 'badge badge-success',       border: 'border-success/20' },
+  selling:    { badge: 'badge badge-info',                   total: 'badge badge-info',          border: 'border-info/20' },
+  goods_transfer: { badge: 'badge badge-accent',             total: 'badge badge-accent',        border: 'border-accent/20' },
 };
 
 const CATEGORY_LABELS: Record<string, string> = {
@@ -79,7 +89,7 @@ function pageClass(design: PageDesign): string {
 function headerClass(design: PageDesign, accent: string): string {
   switch (design) {
     case 'modern':
-      return `flex flex-col md:flex-row justify-between items-start gap-6 mb-8 p-8 -mx-0 bg-gradient-to-br from-slate-900 to-teal-900 text-white rounded-none`;
+      return `flex flex-col md:flex-row justify-between items-start gap-6 mb-8 p-8 -mx-0 bg-gradient-to-br from-slate-900 to-primary/90 text-white rounded-none`;
     case 'classic':
       return `flex flex-col md:flex-row justify-between items-start gap-6 mb-8 pb-6 border-b-4 ${accent}`;
     case 'minimal':
@@ -106,6 +116,11 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
       notes,
       footer,
       category,
+      orderType,
+      deliveryFee,
+      deliveryTypeName,
+      deliveryZoneName,
+      deliveryDistance,
     },
     ref
   ) => {
@@ -113,7 +128,8 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
 
     const subtotal = items.reduce((sum, item) => sum + item.price * item.quantity, 0);
     const taxAmount = (subtotal * taxRate) / 100;
-    const total = subtotal + taxAmount;
+    const deliveryFeeAmount = deliveryFee ?? 0;
+    const total = subtotal + taxAmount + deliveryFeeAmount;
 
     const accent = TYPE_ACCENT[invoiceType] || TYPE_ACCENT['commercial'];
     const catLabel = category ? (CATEGORY_LABELS[category] || category) : null;
@@ -182,6 +198,27 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
 
           {/* Padding wrapper for the body when using modern (header uses negative margins) */}
           <div className={isModern ? 'px-8 pb-8' : 'px-8 pb-8'}>
+
+            {/* Order Type Badge */}
+            {orderType && (
+              <div className="flex items-center gap-2 mb-5">
+                <span className={`inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider flex items-center gap-1 ${
+                  orderType === 'delivery' ? 'bg-warning/10 text-warning' :
+                  orderType === 'dine-in' ? 'bg-info/10 text-info' :
+                  'bg-primary/10 text-primary'
+                }`}>
+                  {orderType === 'delivery' && <span className="icon-[tabler--truck] w-3.5 h-3.5" />}
+                  {orderType === 'dine-in' && <span className="icon-[tabler--building-store] w-3.5 h-3.5" />}
+                  {orderType === 'takeaway' && <span className="icon-[tabler--hand-three-fingers] w-3.5 h-3.5" />}
+                  {orderType.charAt(0).toUpperCase() + orderType.slice(1)}
+                </span>
+                {deliveryTypeName && (
+                  <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold bg-warning/10 text-warning">
+                    {deliveryTypeName}
+                  </span>
+                )}
+              </div>
+            )}
 
             {/* -------------------------------------------------------------- */}
             {/* FROM / TO CARDS                                                 */}
@@ -272,6 +309,22 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
                   <span className="text-slate-500 text-sm">{t('invoice.subtotal')}</span>
                   <span className="font-semibold text-slate-800 text-sm">{currency} {subtotal.toFixed(2)}</span>
                 </div>
+                {deliveryFeeAmount > 0 && (
+                  <div className="flex justify-between px-4 py-2.5 bg-white border-b border-slate-100">
+                    <span className="text-slate-500 text-sm">
+                      {deliveryZoneName || deliveryTypeName
+                        ? `${deliveryZoneName || 'Delivery'}${deliveryTypeName && !deliveryZoneName ? ` (${deliveryTypeName})` : ''}`
+                        : t('sale.deliveryFee', 'Delivery Fee')}
+                    </span>
+                    <span className="font-semibold text-warning text-sm">{currency} {deliveryFeeAmount.toFixed(2)}</span>
+                  </div>
+                )}
+                {deliveryFeeAmount > 0 && deliveryDistance != null && deliveryDistance > 0 && (
+                  <div className="flex justify-between px-4 py-1.5 bg-white border-b border-slate-100">
+                    <span className="text-slate-400 text-xs">{t('sale.distance', 'Distance')}</span>
+                    <span className="text-slate-500 text-xs">{deliveryDistance} km</span>
+                  </div>
+                )}
                 <div className="flex justify-between px-4 py-2.5 bg-white border-b border-slate-100">
                   <span className="text-slate-500 text-sm">{t('invoice.tax')} ({taxRate}%)</span>
                   <span className="font-semibold text-slate-800 text-sm">{currency} {taxAmount.toFixed(2)}</span>
@@ -287,8 +340,8 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
             {/* NOTES                                                           */}
             {/* -------------------------------------------------------------- */}
             {notes && (
-              <div className="mb-8 bg-amber-50 border border-amber-100 rounded-lg p-4">
-                <h3 className="text-[10px] font-bold uppercase tracking-widest text-amber-500 mb-1.5">
+              <div className="mb-8 bg-warning/5 border border-warning/10 rounded-lg p-4">
+                <h3 className="text-[10px] font-bold uppercase tracking-widest text-warning mb-1.5">
                   {t('invoice.notes')}
                 </h3>
                 <p className="text-sm text-slate-600 whitespace-pre-line">{notes}</p>
@@ -306,7 +359,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 {/* Brand */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-teal-500 to-teal-700 flex items-center justify-center shadow-md shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md shrink-0">
                     {/* Inline SVG fallback logo — shows if remote logo fails */}
                     <img
                       src="https://structa.cloud/favicon.ico"

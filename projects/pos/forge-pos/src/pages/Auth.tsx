@@ -61,6 +61,7 @@ export default function Auth() {
   const [success, setSuccess] = useState(() => '');
   const [codeSending, setCodeSending] = useState(() => false);
   const [rememberMe, setRememberMe] = useState(() => true);
+  const [selectedRole, setSelectedRole] = useState<'manager' | 'employee'>('manager');
   // Password visibility toggles — handled by FlyonUI data-toggle-password
   // (React state removed to avoid conflict with FlyonUI's DOM toggle)
 
@@ -218,7 +219,7 @@ export default function Auth() {
   const CardWrapper = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
     <div className={`card bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-white/5 relative overflow-hidden ${className}`}>
       {/* Decorative SVG element */}
-      <div className="absolute -top-24 -right-24 w-72 h-72 opacity-[0.04] pointer-events-none text-teal-400">
+      <div className="absolute -top-24 -right-24 w-72 h-72 opacity-[0.04] pointer-events-none text-primary/80">
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
           <path d="M100 0C155.228 0 200 44.7715 200 100C200 155.228 155.228 200 100 200C44.7715 200 0 155.228 0 100C0 44.7715 44.7715 0 100 0Z" fill="currentColor" />
           <circle cx="100" cy="100" r="60" fill="currentColor" opacity="0.6" />
@@ -235,7 +236,7 @@ export default function Auth() {
   // ── FlyonUI input group with glassmorphism ──
   const InputWrapper = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
     <div className={`input flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/20
-      focus-within:border-teal-400/60 focus-within:ring-2 focus-within:ring-teal-400/20
+      focus-within:border-primary/60 focus-within:ring-2 focus-within:ring-teal-400/20
       transition-all duration-200 ${className}`}>
       {children}
     </div>
@@ -261,7 +262,7 @@ export default function Auth() {
   );
 
   // ── FlyonUI primary button with spring animations ──
-  const PrimaryButton = ({ onClick, disabled, loading, children, gradient = 'from-teal-500 to-emerald-500' }: {
+  const PrimaryButton = ({ onClick, disabled, loading, children, gradient = 'from-primary to-primary/80' }: {
     onClick: () => void; disabled?: boolean; loading?: boolean; children: React.ReactNode; gradient?: string;
   }) => (
     <motion.button
@@ -269,7 +270,7 @@ export default function Auth() {
       disabled={disabled}
       whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
-      className={`btn w-full bg-gradient-to-r ${gradient} hover:from-teal-400 hover:to-emerald-400
+      className={`btn w-full bg-gradient-to-r ${gradient} hover:from-primary/60 hover:to-primary/40
         text-white rounded-xl font-semibold border-0
         flex items-center justify-center gap-2 h-12
         disabled:opacity-50 disabled:cursor-not-allowed`}
@@ -395,9 +396,9 @@ export default function Auth() {
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
-            className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-teal-500/95 backdrop-blur-md text-white
-              px-5 py-3 rounded-2xl shadow-2xl z-50 max-w-md text-center border border-teal-400/30
-              flex items-center gap-3 shadow-teal-500/20"
+            className="fixed bottom-24 left-1/2 -translate-x-1/2 bg-primary/95 backdrop-blur-md text-primary-content
+              px-5 py-3 rounded-2xl shadow-2xl z-50 max-w-md text-center border border-primary/30
+              flex items-center gap-3 shadow-primary/20"
           >
             <span className="icon-[tabler--check] w-4 h-4 shrink-0" />
             <span className="text-sm font-medium">{success}</span>
@@ -432,7 +433,7 @@ export default function Auth() {
     >
       {/* Top-right toggles */}
       <div className="fixed top-4 right-4 flex items-center gap-3 z-50">
-        <LanguageToggle />
+        <LanguageToggle dropdownUp={false} />
         <ThemeToggle />
       </div>
 
@@ -460,12 +461,12 @@ export default function Auth() {
             <div className="text-center">
               <div className="relative w-20 h-20 mx-auto mb-6">
                 <motion.div
-                  className="absolute inset-0 border-4 border-teal-400/30 border-t-teal-400 rounded-full"
+                  className="absolute inset-0 border-4 border-primary/30 border-t-teal-400 rounded-full"
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
                 />
                 <motion.div
-                  className="absolute inset-2 border-4 border-emerald-400/20 border-b-emerald-400 rounded-full"
+                  className="absolute inset-2 border-4 border-success/20 border-b-emerald-400 rounded-full"
                   animate={{ rotate: -360 }}
                   transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
                 />
@@ -503,7 +504,7 @@ export default function Auth() {
                   {/* Name */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--user] inline mr-2 text-teal-400 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--user] inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.fullName')}
                     </label>
                     <InputWrapper>
@@ -522,7 +523,7 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--mail] inline mr-2 text-teal-400 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--mail] inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
@@ -543,7 +544,7 @@ export default function Auth() {
                     onClick={handleSendCode}
                     disabled={codeSending || !email.trim()}
                     loading={codeSending}
-                    gradient="from-teal-500 to-emerald-500"
+                    gradient="from-primary to-primary/80"
                   >
                     <span className="icon-[tabler--key] text-sm" />
                     {t('auth.sendCode')}
@@ -556,7 +557,7 @@ export default function Auth() {
                     {t('auth.alreadyHaveAccount')}{' '}
                     <button
                       onClick={switchToLogin}
-                      className="text-teal-400 hover:text-teal-300 font-medium transition-colors hover:underline"
+                      className="text-primary/80 hover:text-primary/70 font-medium transition-colors hover:underline"
                     >
                       {t('auth.signIn')}
                     </button>
@@ -586,7 +587,7 @@ export default function Auth() {
                   title={t('auth.verifyEmail')}
                   desc={`${t('auth.verifyDesc')} `}
                 />
-                <p className="text-teal-400 text-sm font-medium -mt-4 mb-6 text-center">{email}</p>
+                <p className="text-primary/80 text-sm font-medium -mt-4 mb-6 text-center">{email}</p>
 
                 <div className="space-y-4">
                   {/* Code Input */}
@@ -599,9 +600,9 @@ export default function Auth() {
                           className={`w-10 h-12 sm:w-12 sm:h-14 rounded-xl border-2 flex items-center justify-center
                             text-white text-xl font-bold font-mono transition-all duration-200
                             ${code.length > i
-                              ? 'border-teal-400 bg-teal-500/20 shadow-lg shadow-teal-500/10'
+                              ? 'border-primary bg-primary/20 shadow-lg shadow-teal-500/10'
                               : code.length === i
-                                ? 'border-teal-400/60 bg-white/10 animate-pulse'
+                                ? 'border-primary/60 bg-white/10 animate-pulse'
                                 : 'border-white/10 bg-white/5'
                             }`}
                         >
@@ -624,7 +625,7 @@ export default function Auth() {
                   {/* Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-teal-400 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.password')}
                     </label>
                     <InputWrapper>
@@ -652,7 +653,7 @@ export default function Auth() {
                   {/* Confirm Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-teal-400 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.confirmPassword')}
                     </label>
                     <InputWrapper>
@@ -692,7 +693,7 @@ export default function Auth() {
                     onClick={handleRegister}
                     disabled={isLoading || !code.trim() || !password || !confirmPassword}
                     loading={isLoading}
-                    gradient="from-teal-500 to-emerald-500"
+                    gradient="from-primary to-primary/80"
                   >
                     <span className="icon-[tabler--check] text-sm" />
                     {t('auth.createAccountBtn')}
@@ -703,14 +704,14 @@ export default function Auth() {
                     <button
                       onClick={handleSendCode}
                       disabled={codeSending}
-                      className="text-white/40 hover:text-teal-400 text-sm transition-colors disabled:opacity-40"
+                      className="text-white/40 hover:text-primary/80 text-sm transition-colors disabled:opacity-40"
                     >
                       {codeSending ? (
                         <span className="flex items-center justify-center gap-2">
                           <motion.div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                            className="w-3 h-3 border-2 border-teal-400 border-t-transparent rounded-full inline-block"
+                            className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block"
                           />
                           {t('common.loading')}
                         </span>
@@ -745,34 +746,30 @@ export default function Auth() {
                 {/* FlyonUI-style "Sign in" header */}
                 <AuthHeader title={t('auth.welcomeBack')} desc={t('auth.loginDesc')} />
 
-                {/* Role-based quick-login buttons (FlyonUI-inspired) */}
-                <div className="flex flex-wrap gap-3 mb-6">
-                  <motion.button
-                    onClick={() => handleQuickLogin('manager')}
-                    disabled={isLoading}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 min-w-[130px] px-4 py-2.5 rounded-xl border border-teal-400/30
-                      bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 hover:text-teal-200
-                      transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2
-                      disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span className="icon-[tabler--user-check] w-4 h-4" />
-                    Login as Manager
-                  </motion.button>
-                  <motion.button
-                    onClick={() => handleQuickLogin('employee')}
-                    disabled={isLoading}
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
-                    className="flex-1 min-w-[130px] px-4 py-2.5 rounded-xl border border-white/20
-                      bg-white/5 hover:bg-white/10 text-white/70 hover:text-white/90
-                      transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2
-                      disabled:opacity-50 disabled:cursor-not-allowed"
-                  >
-                    <span className="icon-[tabler--user-circle] w-4 h-4" />
-                    Login as Employee
-                  </motion.button>
+                {/* Role-based quick-login segmented switcher */}
+                <div className="flex p-1 rounded-xl bg-white/5 border border-white/10 mb-6 gap-1">
+                  {(['manager', 'employee'] as const).map((role) => (
+                    <motion.button
+                      key={role}
+                      onClick={() => {
+                        setSelectedRole(role);
+                        handleQuickLogin(role);
+                      }}
+                      disabled={isLoading}
+                      whileHover={{ scale: 1.03 }}
+                      whileTap={{ scale: 0.97 }}
+                      className={`flex-1 min-w-[120px] px-3 py-2.5 rounded-lg text-sm font-medium
+                        flex items-center justify-center gap-2 transition-all duration-200
+                        disabled:opacity-50 disabled:cursor-not-allowed
+                        ${selectedRole === role
+                          ? 'bg-gradient-to-r from-primary/30 to-primary/20 shadow-lg shadow-primary/10 text-white border border-primary/40'
+                          : 'text-white/50 hover:text-white/70 hover:bg-white/5'
+                        }`}
+                    >
+                      <span className={`icon-[tabler--${role === 'manager' ? 'user-check' : 'user-circle'}] w-4 h-4`} />
+                      <span>{role === 'manager' ? 'Manager' : 'Employee'}</span>
+                    </motion.button>
+                  ))}
                 </div>
 
                 {/* Divider */}
@@ -787,7 +784,7 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--mail] inline mr-2 text-teal-400 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--mail] inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
@@ -806,7 +803,7 @@ export default function Auth() {
                   {/* Password */}
                   <div>
                     <label className={labelClass}>
-                      <span className="icon-[tabler--lock] inline mr-2 text-teal-400 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--lock] inline mr-2 text-primary/80 w-3.5 h-3.5" />
                       {t('auth.password')}
                     </label>
                     <InputWrapper>
@@ -835,7 +832,7 @@ export default function Auth() {
                   {/* Remember Me + Forgot Password */}
                   <div className="flex items-center justify-between gap-y-2">
                     <Checkbox checked={rememberMe} onChange={setRememberMe} label={t('auth.rememberMe')} />
-                    <button className="text-teal-400/60 hover:text-teal-300 text-xs font-medium transition-colors hover:underline">
+                    <button className="text-primary/80/60 hover:text-primary/70 text-xs font-medium transition-colors hover:underline">
                       Forgot Password?
                     </button>
                   </div>
@@ -845,7 +842,7 @@ export default function Auth() {
                     onClick={handleLogin}
                     disabled={isLoading || !email.trim() || !password}
                     loading={isLoading}
-                    gradient="from-teal-500 to-cyan-500"
+                    gradient="from-primary to-secondary"
                   >
                     <span className="icon-[tabler--arrow-right] text-sm" />
                     {t('auth.signIn')}
@@ -859,7 +856,7 @@ export default function Auth() {
                       {t('auth.noAccount')}{' '}
                       <button
                         onClick={switchToRegister}
-                        className="text-teal-400 hover:text-teal-300 font-medium transition-colors hover:underline"
+                        className="text-primary/80 hover:text-primary/70 font-medium transition-colors hover:underline"
                       >
                         {t('auth.createOne')}
                       </button>

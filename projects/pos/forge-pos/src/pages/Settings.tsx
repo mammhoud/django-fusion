@@ -2,15 +2,20 @@ import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
+import Card from '../components/Card';
 import { open, save } from '@tauri-apps/plugin-dialog';
 import { readFile, writeFile } from '@tauri-apps/plugin-fs';
-import { Settings as SettingsType, Employee } from '../types';
+import { Settings as SettingsType, Employee, DeliveryZone } from '../types';
 import BackButton from '../components/BackButton';
 import PageLayout from '../components/PageLayout';
 import LanguageToggle from '../components/LanguageToggle';
+import ConfirmDialog from '../components/ConfirmDialog';
 import { useTranslation } from 'react-i18next';
 import { useAuth } from '../contexts/AuthContext';
-import { useTheme, THEME_VARIANTS } from '../contexts/ThemeContext';
+import { useKeyboardTabNav } from '../hooks/useKeyboardTabNav';
+import ThemeToggle from '../components/ThemeToggle';
+import { useTheme, THEME_VARIANTS, THEME_MAP, type ThemeVariant } from '../contexts/ThemeContext';
+import { loadSavedThemes, deleteSavedTheme, type SavedTheme } from '../utils/themeStudio';
 
 interface FormErrors {
   restaurant_name?: string;
@@ -270,16 +275,14 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
         <span className={`icon-[tabler--chevron-down] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </div>
       {isOpen && (
-        <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-gray-600 rounded-lg shadow-xl">
+        <div className="absolute z-50 w-full mt-2 bg-base-100 border border-slate-300 dark:border-gray-600 rounded-lg shadow-xl">
           <div className="p-2">
             <input
               type="text"
               placeholder={t('settings.searchCurrency')}
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="w-full px-3 py-2 bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 
-                rounded-md text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-gray-400
-                focus:outline-none focus:border-teal-400 transition-colors"
+              className="input input-bordered w-full"
               onClick={(e) => e.stopPropagation()}
             />
           </div>
@@ -293,19 +296,19 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
                   setSearchTerm('');
                 }}
                 className={`px-4 py-2 cursor-pointer flex items-center justify-between
-                  ${value === currency.code 
-                    ? 'bg-teal-500/20 text-teal-600 dark:text-teal-400' 
-                    : 'text-slate-900 dark:text-white hover:bg-slate-100 dark:hover:bg-white/5'}
+                  ${value === currency.code
+                    ? 'bg-primary/50/20 text-primary dark:text-primary/80'
+                    : 'text-base-content hover:bg-base-200/50'}
                   transition-colors duration-200`}
               >
                 <span>{currency.name}</span>
-                <span className="text-slate-500 dark:text-gray-400">
+                <span className="text-base-content/50">
                   {currency.code} {currency.symbol}
                 </span>
               </div>
             ))}
             {filteredOptions.length === 0 && (
-              <div className="px-4 py-2 text-slate-500 dark:text-gray-400 text-center">
+              <div className="px-4 py-2 text-base-content/50 text-center">
                 {t('settings.noCurrencies')}
               </div>
             )}
@@ -316,11 +319,149 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
   );
 };
 
+// ── Live Theme Preview ─────────────────────────────────────────────
+function ThemePreview({ variant, previewMode, isActive, onApply, onPreviewModeChange }: {
+  variant: ThemeVariant;
+  previewMode: 'light' | 'dark';
+  isActive: boolean;
+  onApply: () => void;
+  onPreviewModeChange: (mode: 'light' | 'dark') => void;
+}) {
+  const { t } = useTranslation();
+
+  return (
+    <div className="bg-base-100 text-base-content border border-base-300 rounded-2xl p-6 shadow-lg">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-semibold text-sm flex items-center gap-2">
+          <span className="icon-[tabler--eye] w-4 h-4" />
+          {t('settings.appearanceTab.previewTitle') || `${variant} — ${previewMode}`}
+        </h3>
+        <div className="flex items-center gap-3">
+          {/* Light/Dark toggle within preview — does NOT change global mode */}
+          <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5">
+            <button
+              type="button"
+              onClick={() => onPreviewModeChange('light')}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                previewMode === 'light'
+                  ? 'bg-base-100 text-base-content shadow-sm'
+                  : 'text-base-content/50 hover:text-base-content'
+              }`}
+              title={t('settings.appearanceTab.lightMode')}
+            >
+              <span className="icon-[tabler--sun] w-3.5 h-3.5" />
+            </button>
+            <button
+              type="button"
+              onClick={() => onPreviewModeChange('dark')}
+              className={`px-2.5 py-1 rounded-md text-xs font-medium transition-all ${
+                previewMode === 'dark'
+                  ? 'bg-base-100 text-base-content shadow-sm'
+                  : 'text-base-content/50 hover:text-base-content'
+              }`}
+              title={t('settings.appearanceTab.darkMode')}
+            >
+              <span className="icon-[tabler--moon] w-3.5 h-3.5" />
+            </button>
+          </div>
+          <button
+            type="button"
+            onClick={onApply}
+            disabled={isActive}
+            className="btn btn-primary btn-sm gap-2"
+          >
+            {isActive ? (
+              <><span className="icon-[tabler--check] w-4 h-4" /> {t('settings.appearanceTab.activeLabel')}</>
+            ) : (
+              <><span className="icon-[tabler--device-floppy] w-4 h-4" /> {t('settings.appearanceTab.applyTheme') || 'Apply Theme'}</>
+            )}
+          </button>
+        </div>
+      </div>
+
+      {/* Sample Card */}
+      <div className="card bg-base-200 shadow-sm mb-4">
+        <div className="card-body">
+          <h2 className="card-title">
+            <span className="icon-[tabler--shopping-cart] w-5 h-5" />
+            {t('settings.appearanceTab.previewOrder') || 'Sample Order'}
+          </h2>
+          <p className="text-sm">{t('settings.appearanceTab.previewOrderItem1') || 'Classic Burger × 2 — $24.00'}</p>
+          <p className="text-sm">{t('settings.appearanceTab.previewOrderItem2') || 'French Fries × 1 — $6.50'}</p>
+          <hr className="border-base-300 my-1" />
+          <div className="flex justify-between font-semibold">
+            <span>{t('common.total') || 'Total'}</span>
+            <span className="text-primary">$30.50</span>
+          </div>
+          <div className="card-actions mt-3">
+            <button className="btn btn-primary btn-sm">{t('common.pay') || 'Pay Now'}</button>
+            <button className="btn btn-ghost btn-sm">{t('common.cancel') || 'Cancel'}</button>
+          </div>
+        </div>
+      </div>
+
+      {/* Sample Form Controls */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+        <div>
+          <label className="label">
+            <span className="label-text">{t('settings.appearanceTab.previewItemName') || 'Item Name'}</span>
+          </label>
+          <input type="text" className="input input-bordered w-full" placeholder="e.g. Cappuccino" defaultValue="Cappuccino" />
+        </div>
+        <div>
+          <label className="label">
+            <span className="label-text">{t('settings.appearanceTab.previewPrice') || 'Price'}</span>
+          </label>
+          <input type="number" className="input input-bordered w-full" placeholder="0.00" defaultValue="5.50" />
+        </div>
+      </div>
+
+      {/* Sample Tabs */}
+      <div className="tabs tabs-boxed gap-1 mb-4" role="tablist">
+        <button type="button" role="tab" className="tab tab-active">{t('common.all') || 'All Items'}</button>
+        <button type="button" role="tab" className="tab">{t('common.beverages') || 'Beverages'}</button>
+        <button type="button" role="tab" className="tab">{t('common.food') || 'Food'}</button>
+      </div>
+
+      {/* Sample Badges */}
+      <div className="flex flex-wrap gap-2 mb-4">
+        <span className="badge badge-primary">{t('common.new') || 'New'}</span>
+        <span className="badge badge-secondary">{t('common.sale') || 'Sale'}</span>
+        <span className="badge badge-accent">{t('common.popular') || 'Popular'}</span>
+        <span className="badge badge-success">{t('common.paid') || 'Paid'}</span>
+        <span className="badge badge-warning">{t('common.pending') || 'Pending'}</span>
+        <span className="badge badge-error">{t('common.cancelled') || 'Cancelled'}</span>
+        <span className="badge badge-neutral">{t('common.draft') || 'Draft'}</span>
+      </div>
+
+      {/* Sample Alerts */}
+      <div role="alert" className="alert alert-info mb-3">
+        <span className="icon-[tabler--info-circle] w-5 h-5" />
+        <span>{t('settings.appearanceTab.previewAlertInfo') || 'Info alert with theme colors'}</span>
+      </div>
+      <div role="alert" className="alert alert-success mb-3">
+        <span className="icon-[tabler--check] w-5 h-5" />
+        <span>{t('settings.appearanceTab.previewAlertSuccess') || 'Success — order completed'}</span>
+      </div>
+      <div role="alert" className="alert alert-error">
+        <span className="icon-[tabler--alert-triangle] w-5 h-5" />
+        <span>{t('settings.appearanceTab.previewAlertError') || 'Error — payment failed'}</span>
+      </div>
+    </div>
+  );
+}
+
+
 export default function Settings() {
   const { t, i18n } = useTranslation();
-  const { mode, variant, followSystem, setVariant, setMode, setFollowSystem } = useTheme();
+  const { mode, variant, followSystem, setVariant } = useTheme();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = useState<TabId>('general');
+
+  // ── Arrow-key tab nav ──
+  const settingsTabKeys: TabId[] = tabs.map(t => t.id);
+  const { onKeyDown: onSettingsTabKeyDown } = useKeyboardTabNav(settingsTabKeys, activeTab, setActiveTab);
+
   const [settings, setSettings] = useState<SettingsType>({
     restaurant_name: 'Forge POS',
     address: '',
@@ -343,12 +484,31 @@ export default function Settings() {
   const [isSaving, setIsSaving] = useState(false);
   const [isImporting, setIsImporting] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [isResetting, setIsResetting] = useState(false);
+  const [showResetConfirm, setShowResetConfirm] = useState(false);
   const [isUploadingLogo, setIsUploadingLogo] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState('');
   const [employeeCount, setEmployeeCount] = useState(0);
   const [activeEmployeeCount, setActiveEmployeeCount] = useState(0);
+
+  // Delivery zone management
+  const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+  const [zoneFormOpen, setZoneFormOpen] = useState(false);
+  const [editingZone, setEditingZone] = useState<DeliveryZone | null>(null);
+  const [zoneForm, setZoneForm] = useState({ name: '', base_fee: 0, fee_per_km: 0, max_distance: 10 });
+  const [deleteZoneId, setDeleteZoneId] = useState<number | null>(null);
+  const [isSavingZone, setIsSavingZone] = useState(false);
+
+  // Theme preview state (for hover + click-to-pin preview in Appearance tab)
+  const [previewVariant, setPreviewVariant] = useState<ThemeVariant | null>(null);
+  const [savedCustomThemes, setSavedCustomThemes] = useState<SavedTheme[]>(() => loadSavedThemes());
+  const [previewMode, setPreviewMode] = useState<'light' | 'dark'>(mode);
+  const [previewLocked, setPreviewLocked] = useState(false);
+  const activePreviewVariant = previewVariant ?? variant;
+  const activePreviewMode = (previewLocked ? previewMode : mode);
+  const previewThemeValue = THEME_MAP[activePreviewVariant]?.[activePreviewMode] ?? 'light';
 
   // Password change state
   const { user, isAuthRequired, inactivityTimeout, setInactivityTimeout } = useAuth();
@@ -562,6 +722,35 @@ export default function Settings() {
     }
   };
 
+  const handleResetDatabase = async () => {
+    if (isImporting || isExporting) return;
+    setIsResetting(true);
+    setShowResetConfirm(false);
+    setSubmitStatus('idle');
+    setErrorMessage('');
+    try {
+      console.log('[settings] handleResetDatabase: resetting database...');
+      await invoke('reset_database_cmd');
+      console.log('[settings] handleResetDatabase: database reset successful');
+      setSubmitStatus('success');
+      setIsSuccess(true);
+      setTimeout(() => {
+        setIsSuccess(false);
+        setSubmitStatus('idle');
+        // Reload the settings after reset
+        loadSettings();
+      }, 3000);
+    } catch (error) {
+      console.error('[settings] Error resetting database:', error);
+      setSubmitStatus('error');
+      const msg = error instanceof Error ? error.message : t('settings.errorMessage');
+      setErrorMessage(msg);
+      setTimeout(() => { setSubmitStatus('idle'); setErrorMessage(''); }, 5000);
+    } finally {
+      setIsResetting(false);
+    }
+  };
+
   const handleExportDatabase = async () => {
     setIsExporting(true);
     try {
@@ -620,10 +809,60 @@ export default function Settings() {
     }
   }, []);
 
+  const loadZones = useCallback(async () => {
+    try {
+      const zones = await invoke<DeliveryZone[]>('get_delivery_zones', { includeInactive: true });
+      setDeliveryZones(zones);
+    } catch {
+      console.error('[settings] Failed to load delivery zones');
+    }
+  }, []);
+
+  const handleZoneFormOpen = (zone?: DeliveryZone) => {
+    if (zone) {
+      setEditingZone(zone);
+      setZoneForm({ name: zone.name, base_fee: zone.base_fee, fee_per_km: zone.fee_per_km, max_distance: zone.max_distance });
+    } else {
+      setEditingZone(null);
+      setZoneForm({ name: '', base_fee: 0, fee_per_km: 0, max_distance: 10 });
+    }
+    setZoneFormOpen(true);
+  };
+
+  const handleZoneFormSave = async () => {
+    if (!zoneForm.name.trim()) return;
+    setIsSavingZone(true);
+    try {
+      if (editingZone) {
+        await invoke('update_delivery_zone', { id: editingZone.id, update: { name: zoneForm.name, base_fee: zoneForm.base_fee, fee_per_km: zoneForm.fee_per_km, max_distance: zoneForm.max_distance, is_active: editingZone.is_active } });
+      } else {
+        await invoke('add_delivery_zone', { zone: zoneForm });
+      }
+      setZoneFormOpen(false);
+      await loadZones();
+    } catch (error) {
+      console.error('[settings] Error saving zone:', error);
+    } finally {
+      setIsSavingZone(false);
+    }
+  };
+
+  const handleDeleteZone = async () => {
+    if (deleteZoneId === null) return;
+    try {
+      await invoke('soft_delete_delivery_zone', { id: deleteZoneId });
+      setDeleteZoneId(null);
+      await loadZones();
+    } catch (error) {
+      console.error('[settings] Error deleting zone:', error);
+    }
+  };
+
   useEffect(() => {
     loadSettings();
     loadEmployeeStats();
-  }, [loadSettings, loadEmployeeStats]);
+    loadZones();
+  }, [loadSettings, loadEmployeeStats, loadZones]);
 
   // ---- Shared Input Classes (FlyonUI) ----
   const inputClass = (fieldName?: keyof FormErrors) =>
@@ -632,7 +871,7 @@ export default function Settings() {
       ? 'input-error'
       : ''}`;
 
-  const labelClass = 'block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5';
+  const labelClass = 'block text-sm font-medium text-base-content/80 mb-1.5';
   const errorClass = 'mt-1 text-sm text-red-400 flex items-center gap-1.5';
 
   // ---- Tab Content ----
@@ -640,7 +879,7 @@ export default function Settings() {
     <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
       {/* Logo */}
       <div className="md:col-span-2">
-        <label className={labelClass}>{t('settings.restaurantLogo')}</label>
+        <label className={labelClass}>{t('settings.businessLogo') || 'Business Logo (appears on invoices & receipts)'}</label>
         <div className="flex items-center gap-6">
           {logoPreview && (
             <div className="relative w-24 h-24 shrink-0">
@@ -660,14 +899,14 @@ export default function Settings() {
             type="button"
             onClick={handleLogoChange}
             disabled={isUploadingLogo}
-            className="flex flex-col items-center justify-center px-6 py-5 bg-white/30 dark:bg-white/5 
-              text-slate-600 dark:text-gray-300 rounded-lg border-2 border-slate-300 dark:border-gray-600 
-              border-dashed cursor-pointer hover:border-teal-400 hover:bg-teal-500/5 transition-all 
+            className="flex flex-col items-center justify-center px-6 py-5 bg-base-100/30
+              text-base-content/70 rounded-lg border-2 border-slate-300 dark:border-gray-600
+              border-dashed cursor-pointer hover:border-primary hover:bg-primary/50/5 transition-all
               disabled:opacity-50 disabled:cursor-not-allowed flex-1"
           >
             {isUploadingLogo ? (
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-8 h-8 border-2 border-teal-400 border-t-transparent rounded-full"
+                className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
               />
             ) : (
               <>
@@ -680,7 +919,7 @@ export default function Settings() {
             )}
           </button>
         </div>
-        <p className="mt-2 text-xs text-slate-500 dark:text-gray-400">{t('settings.generalTab.logoFormats')}</p>
+        <p className="mt-2 text-xs text-base-content/50">{t('settings.generalTab.logoFormats')}</p>
       </div>
 
       {/* Restaurant Name */}
@@ -694,13 +933,13 @@ export default function Settings() {
       {/* Language */}
       <div>
         <label className={labelClass}>{t('settings.generalTab.languageLabel')}</label>
-        <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600">
-          <span className="text-sm text-slate-900 dark:text-white flex-1">
+        <div className="flex items-center gap-3 px-4 py-2.5 rounded-lg bg-base-100/50 border border-slate-300 dark:border-gray-600">
+          <span className="text-sm text-base-content flex-1">
             {i18n.language === 'ar' ? t('settings.generalTab.languageValueAr') : i18n.language === 'fr' ? t('settings.generalTab.languageValueFr') : i18n.language === 'de' ? t('settings.generalTab.languageValueDe') : i18n.language === 'es' ? t('settings.generalTab.languageValueEs') : t('settings.generalTab.languageValueEn')}
           </span>
           <LanguageToggle />
         </div>
-        <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
+        <p className="mt-1.5 text-xs text-base-content/50">
           {t('settings.generalTab.languageDesc')}
         </p>
       </div>
@@ -709,11 +948,11 @@ export default function Settings() {
       {isAuthRequired && user && (
         <div className="md:col-span-2">
           <div className="border-t border-slate-300/50 dark:border-gray-600/50 pt-6 mt-2">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
-              <span className="icon-[tabler--clock] inline mr-2 text-teal-400" />
+            <h3 className="text-lg font-semibold text-base-content mb-1">
+              <span className="icon-[tabler--clock] inline mr-2 text-primary/80" />
               {t('settings.inactivityTimeout')}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400 mb-4">
+            <p className="text-sm text-base-content/50 mb-4">
               {t('settings.inactivityTimeoutDesc')}
             </p>
             <div className="max-w-xs">
@@ -738,25 +977,25 @@ export default function Settings() {
       {isAuthRequired && user && (
         <div className="md:col-span-2">
           <div className="border-t border-slate-300/50 dark:border-gray-600/50 pt-6 mt-2">
-            <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
-              <span className="icon-[tabler--lock] inline mr-2 text-teal-400" />
+            <h3 className="text-lg font-semibold text-base-content mb-1">
+              <span className="icon-[tabler--lock] inline mr-2 text-primary/80" />
               {t('settings.changePassword')}
             </h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400 mb-4">
+            <p className="text-sm text-base-content/50 mb-4">
               {t('settings.changePasswordDesc')} <strong>{user.email}</strong>
             </p>
 
             {passwordChangeSuccess && (
-              <div className="mb-4 bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-700/40 rounded-xl p-3 flex items-center gap-2">
-                <span className="icon-[tabler--check] w-4 h-4 text-teal-500" />
-                <span className="text-sm text-teal-700 dark:text-teal-300">{t('settings.passwordChangeSuccess')}</span>
+              <div role="alert" className="alert alert-success mb-4">
+                <span className="icon-[tabler--check] w-4 h-4" />
+                <span>{t('settings.passwordChangeSuccess')}</span>
               </div>
             )}
 
             {passwordChangeError && (
-              <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40 rounded-xl p-3 flex items-center gap-2">
-                <span className="icon-[tabler--alert-triangle] w-4 h-4 text-red-500" />
-                <span className="text-sm text-red-700 dark:text-red-300">{passwordChangeError}</span>
+              <div role="alert" className="alert alert-error mb-4">
+                <span className="icon-[tabler--alert-triangle] w-4 h-4" />
+                <span>{passwordChangeError}</span>
               </div>
             )}
 
@@ -865,14 +1104,14 @@ export default function Settings() {
 
   const renderDiningTab = () => (
     <div className="max-w-lg mx-auto">
-      <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-6 mb-8 border border-amber-200 dark:border-amber-700/30">
+      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
             <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.diningTab.title')}</h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.diningTab.description')}</p>
+            <h3 className="font-semibold text-base-content">{t('settings.diningTab.title')}</h3>
+            <p className="text-sm text-base-content/50">{t('settings.diningTab.description')}</p>
           </div>
         </div>
         <div>
@@ -880,7 +1119,7 @@ export default function Settings() {
           <input type="number" name="dine_in_tables" value={settings.dine_in_tables ?? 0}
             onChange={handleChange} min="0"
             className="input input-bordered w-full" />
-          <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
+          <p className="mt-1.5 text-xs text-base-content/50">
             {t('settings.diningTab.zeroToDisable')}
           </p>
         </div>
@@ -889,15 +1128,16 @@ export default function Settings() {
   );
 
   const renderDeliveryTab = () => (
-    <div className="max-w-lg mx-auto">
-      <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl p-6 mb-8 border border-sky-200 dark:border-sky-700/30">
+    <div className="max-w-2xl mx-auto">
+      {/* Delivery Fee Settings */}
+      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
             <span className="icon-[tabler--truck] w-5 h-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.deliveryTab.title')}</h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.deliveryTab.description')}</p>
+            <h3 className="font-semibold text-base-content">{t('settings.deliveryTab.title')}</h3>
+            <p className="text-sm text-base-content/50">{t('settings.deliveryTab.description')}</p>
           </div>
         </div>
         <div className="space-y-6">
@@ -910,11 +1150,150 @@ export default function Settings() {
             <label className={labelClass}>{t('settings.deliveryFeePerKm', { currency: settings.currency || 'USD' })}</label>
             <input type="number" name="delivery_fee_per_km" value={settings.delivery_fee_per_km ?? 0}
               onChange={handleChange} min="0" step="0.1" className={inputClass()} />
-            <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
+            <p className="mt-1.5 text-xs text-base-content/50">
               {t('settings.deliveryTab.perKmDescription')}
             </p>
           </div>
         </div>
+      </div>
+
+      {/* Delivery Zone Management */}
+      <div className="card bg-base-200 border border-base-300 rounded-xl p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div className="flex items-center gap-3">
+            <div className="bg-success/10 dark:bg-emerald-800/30 rounded-full p-2.5">
+              <span className="icon-[tabler--map-pin] w-5 h-5 text-success dark:text-success/80" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-base-content">Delivery Zones</h3>
+              <p className="text-xs text-base-content/50">Manage distance-based delivery pricing by city/zone</p>
+            </div>
+          </div>
+          <button type="button" onClick={() => handleZoneFormOpen()}
+            className="btn btn-primary btn-sm gap-1.5">
+            <span className="icon-[tabler--plus] w-4 h-4" /> Add Zone
+          </button>
+        </div>
+
+        {/* Zone Table */}
+        {deliveryZones.length === 0 ? (
+          <div className="text-center py-8 text-slate-400">
+            <span className="icon-[tabler--map-off] w-10 h-10 mx-auto mb-2 block opacity-50" />
+            <p className="text-sm">No delivery zones configured. Click "Add Zone" to create one.</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="table table-zebra w-full text-sm">
+              <thead>
+                <tr>
+                  <th>Zone</th>
+                  <th>Base Fee</th>
+                  <th>Per KM</th>
+                  <th>Max Dist.</th>
+                  <th>Status</th>
+                  <th className="text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                {deliveryZones.map(zone => (
+                  <tr key={zone.id} className={!zone.is_active ? 'opacity-50' : ''}>
+                    <td className="font-medium">{zone.name}</td>
+                    <td>{settings.currency} {zone.base_fee.toFixed(2)}</td>
+                    <td>{settings.currency} {zone.fee_per_km.toFixed(2)}</td>
+                    <td>{zone.max_distance} km</td>
+                    <td>
+                      <span className={`px-2 py-0.5 rounded-full text-xs font-medium ${zone.is_active ? 'bg-success/10 text-success dark:bg-success/30 dark:text-success/80' : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'}`}>
+                        {zone.is_active ? 'Active' : 'Inactive'}
+                      </span>
+                    </td>
+                    <td className="text-right">
+                      <div className="flex items-center justify-end gap-1">
+                        <button type="button" onClick={() => handleZoneFormOpen(zone)}
+                          className="btn btn-ghost btn-xs btn-square" title="Edit">
+                          <span className="icon-[tabler--pencil] w-4 h-4" />
+                        </button>
+                        <button type="button" onClick={() => setDeleteZoneId(zone.id)}
+                          className="btn btn-ghost btn-xs btn-square text-red-500" title="Deactivate">
+                          <span className="icon-[tabler--trash] w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        )}
+
+        {/* Add/Edit Zone Form Modal */}
+        {zoneFormOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setZoneFormOpen(false)}>
+            <div className="bg-base-100 rounded-2xl p-6 w-full max-w-md shadow-2xl border border-slate-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
+              <h3 className="text-lg font-semibold text-base-content mb-4">
+                {editingZone ? `Edit Zone: ${editingZone.name}` : 'Add Delivery Zone'}
+              </h3>
+              <div className="space-y-4">
+                <div>
+                  <label className={labelClass}>Zone Name *</label>
+                  <input type="text" value={zoneForm.name} onChange={e => setZoneForm(p => ({ ...p, name: e.target.value }))}
+                    className="input input-bordered w-full" placeholder="e.g. Downtown" />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className={labelClass}>Base Fee ({settings.currency})</label>
+                    <input type="number" value={zoneForm.base_fee} onChange={e => setZoneForm(p => ({ ...p, base_fee: Number(e.target.value) }))}
+                      min="0" step="0.5" className="input input-bordered w-full" />
+                  </div>
+                  <div>
+                    <label className={labelClass}>Fee Per KM</label>
+                    <input type="number" value={zoneForm.fee_per_km} onChange={e => setZoneForm(p => ({ ...p, fee_per_km: Number(e.target.value) }))}
+                      min="0" step="0.1" className="input input-bordered w-full" />
+                  </div>
+                </div>
+                <div>
+                  <label className={labelClass}>Max Distance (km)</label>
+                  <input type="number" value={zoneForm.max_distance} onChange={e => setZoneForm(p => ({ ...p, max_distance: Number(e.target.value) }))}
+                    min="0" step="1" className="input input-bordered w-full" />
+                </div>
+              </div>
+              <div className="flex justify-end gap-3 mt-6">
+                <button type="button" onClick={() => setZoneFormOpen(false)}
+                  className="btn btn-ghost">Cancel</button>
+                <button type="button" onClick={handleZoneFormSave} disabled={!zoneForm.name.trim() || isSavingZone}
+                  className="btn btn-primary">
+                  {isSavingZone ? <span className="loading loading-spinner loading-sm" /> : (editingZone ? 'Update Zone' : 'Add Zone')}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Delete Confirmation */}
+        {deleteZoneId !== null && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 backdrop-blur-sm" onClick={() => setDeleteZoneId(null)}>
+            <div className="bg-base-100 rounded-2xl p-6 w-full max-w-sm shadow-2xl border border-slate-200 dark:border-slate-700" onClick={e => e.stopPropagation()}>
+              <div className="text-center">
+                <div className="flex justify-center mb-4">
+                  <div className="bg-red-500/20 rounded-full p-4">
+                    <span className="icon-[tabler--alert-triangle] text-4xl text-red-500" />
+                  </div>
+                </div>
+                <h3 className="text-xl font-bold text-base-content mb-2">Deactivate Zone?</h3>
+                <p className="text-base-content/70 text-sm">
+                  This will disable this delivery zone. You can re-enable it later.
+                </p>
+              </div>
+              <div className="flex gap-3 mt-6">
+                <button type="button" onClick={() => setDeleteZoneId(null)}
+                  className="btn btn-ghost flex-1">Cancel</button>
+                <button type="button" onClick={handleDeleteZone}
+                  className="btn btn-error flex-1">
+                  <span className="icon-[tabler--trash] w-4 h-4" /> Deactivate
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -922,32 +1301,32 @@ export default function Settings() {
   const renderEmployeesTab = () => (
     <div className="max-w-2xl mx-auto">
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8">
-        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-slate-200 dark:border-gray-700">
+        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-base-300/50">
           <div className="flex items-center gap-3">
-            <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--users] w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+            <div className="bg-info/10 dark:bg-info/30 rounded-full p-2.5">
+              <span className="icon-[tabler--users] w-5 h-5 text-info dark:text-indigo-400" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">{employeeCount}</p>
-              <p className="text-xs text-slate-500 dark:text-gray-400">{t('settings.employeesTab.totalEmployees')}</p>
+              <p className="text-2xl font-bold text-base-content">{employeeCount}</p>
+              <p className="text-xs text-base-content/50">{t('settings.employeesTab.totalEmployees')}</p>
             </div>
           </div>
         </div>
-        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-slate-200 dark:border-gray-700">
+        <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-base-300/50">
           <div className="flex items-center gap-3">
-            <div className="bg-emerald-100 dark:bg-emerald-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--check] w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+            <div className="bg-success/10 dark:bg-emerald-800/30 rounded-full p-2.5">
+              <span className="icon-[tabler--check] w-5 h-5 text-success dark:text-success/80" />
             </div>
             <div>
-              <p className="text-2xl font-bold text-slate-900 dark:text-white">{activeEmployeeCount}</p>
-              <p className="text-xs text-slate-500 dark:text-gray-400">{t('settings.employeesTab.activeEmployees')}</p>
+              <p className="text-2xl font-bold text-base-content">{activeEmployeeCount}</p>
+              <p className="text-xs text-base-content/50">{t('settings.employeesTab.activeEmployees')}</p>
             </div>
           </div>
         </div>
       </div>
-      <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-slate-200 dark:border-gray-700">
-        <h3 className="font-semibold text-slate-900 dark:text-white mb-3">{t('settings.employeesTab.managementTitle')}</h3>
-        <p className="text-sm text-slate-600 dark:text-gray-400 mb-4">
+      <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-6 border border-base-300/50">
+        <h3 className="font-semibold text-base-content mb-3">{t('settings.employeesTab.managementTitle')}</h3>
+        <p className="text-sm text-base-content/60 mb-4">
           {t('settings.employeesTab.managementDesc')}
         </p>
         <button
@@ -963,146 +1342,221 @@ export default function Settings() {
 
   const renderAppearanceTab = () => (
     <div className="max-w-2xl mx-auto">
-      {/* Light / Dark / System Mode Toggle */}
-      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 dark:from-indigo-900/20 dark:to-purple-900/20 rounded-xl p-6 mb-6 border border-indigo-200 dark:border-indigo-700/30">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
+      {/* Unified Theme Mode Toggle — Light / Dark / System */}
+      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
             {mode === 'dark' ? (
-              <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+              <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
+                <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+              </div>
             ) : (
-              <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+              <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
+                <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+              </div>
             )}
+            <div>
+              <h3 className="font-semibold text-base-content">
+                {t('settings.appearanceTab.modeTitle') || 'Theme Mode'}
+              </h3>
+              <p className="text-sm text-base-content/60">{t('settings.appearanceTab.modeDescription')}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">
-              {followSystem ? t('settings.appearanceTab.systemMode') : (mode === 'dark' ? t('settings.appearanceTab.darkMode') : t('settings.appearanceTab.lightMode'))}
-            </h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.appearanceTab.modeDescription')}</p>
-          </div>
+          <ThemeToggle />
         </div>
-
-        {/* Mode selector: three choices */}
-        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
-          <button
-            type="button"
-            onClick={() => { setMode('light'); }}
-            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${!followSystem && mode === 'light' ? 'border-amber-400 bg-amber-50 dark:bg-amber-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 hover:border-slate-300'}`}
-          >
-            <span className="text-lg">☀️</span>
-            <span className={`${!followSystem && mode === 'light' ? 'text-amber-700 dark:text-amber-300' : 'text-slate-700 dark:text-slate-300'}`}>Light</span>
-            {!followSystem && mode === 'light' && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-amber-400" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => { setMode('dark'); }}
-            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${!followSystem && mode === 'dark' ? 'border-indigo-400 bg-indigo-50 dark:bg-indigo-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 hover:border-slate-300'}`}
-          >
-            <span className="text-lg">🌙</span>
-            <span className={`${!followSystem && mode === 'dark' ? 'text-indigo-600 dark:text-indigo-300' : 'text-slate-700 dark:text-slate-300'}`}>Dark</span>
-            {!followSystem && mode === 'dark' && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-indigo-400" />
-            )}
-          </button>
-          <button
-            type="button"
-            onClick={() => { setFollowSystem(true); }}
-            className={`relative flex items-center gap-2 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200 border-2 ${followSystem ? 'border-teal-400 bg-teal-50 dark:bg-teal-900/20 shadow-sm' : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 hover:border-slate-300'}`}
-          >
-            <span className="text-lg">🖥️</span>
-            <span className={`${followSystem ? 'text-teal-600 dark:text-teal-300' : 'text-slate-700 dark:text-slate-300'}`}>Auto</span>
-            {followSystem && (
-              <span className="absolute top-1 right-1 w-2 h-2 rounded-full bg-teal-400" />
-            )}
-          </button>
-        </div>
-
-        {/* Current mode indicator */}
-        <div className="mt-3 flex items-center justify-center gap-2">
-          <span className="text-xs text-slate-500 dark:text-gray-400">
-            {followSystem
-              ? t('settings.appearanceTab.systemDescription', 'Current: {{mode}}', { mode: mode === 'dark' ? '🌙 Dark' : '☀️ Light' })
-              : t('settings.appearanceTab.fixedDescription', 'Fixed to {{mode}}', { mode: mode === 'dark' ? '🌙 Dark' : '☀️ Light' })}
-          </span>
-        </div>
+        <p className="mt-3 text-xs text-base-content/40 text-center">
+          {followSystem
+            ? t('settings.appearanceTab.systemControlled') || 'Following system preference'
+            : mode === 'dark'
+              ? t('settings.appearanceTab.darkModeSelected') || 'Dark mode selected'
+              : t('settings.appearanceTab.lightModeSelected') || 'Light mode selected'
+          }
+        </p>
       </div>
 
-      {/* Theme Variant Selector */}
-      <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/30 dark:to-slate-700/20 rounded-xl p-6 border border-slate-200 dark:border-gray-700">
-        <div className="flex items-center gap-3 mb-5">
-          <div className="bg-teal-100 dark:bg-teal-800/30 rounded-full p-2.5">
-            <span className="icon-[tabler--paint] w-5 h-5 text-teal-600 dark:text-teal-400" />
+      {/* Theme Variant Selector — wrap cards + preview in parent */}
+      {/* onMouseLeave only clears hover when not locked (pinned by click) */}
+      <div onMouseLeave={() => { if (!previewLocked) setPreviewVariant(null); }}>
+        <div className="card bg-base-200 border border-base-300 rounded-xl p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
+              <span className="icon-[tabler--paint] w-5 h-5 text-primary dark:text-primary/80" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-base-content">{t('settings.appearanceTab.title')}</h3>
+              <p className="text-sm text-base-content/50">{t('settings.appearanceTab.description')}</p>
+            </div>
           </div>
-          <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.appearanceTab.title')}</h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.appearanceTab.description')}</p>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {THEME_VARIANTS.map((v) => {
+              const isActive = variant === v.id;
+              const descKey = `settings.appearanceTab.${v.id}Desc`;
+              return (
+                <motion.button
+                  key={v.id}
+                  type="button"
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  onClick={() => {
+                    if (previewVariant === v.id && previewLocked) {
+                      // Click again on the pinned variant → unlock
+                      setPreviewLocked(false);
+                      setPreviewVariant(null);
+                    } else {
+                      // Click on a new variant → lock preview open
+                      setPreviewLocked(true);
+                      setPreviewVariant(v.id);
+                      setPreviewMode(mode);
+                    }
+                  }}
+                  onMouseEnter={() => {
+                    if (!previewLocked) setPreviewVariant(v.id);
+                  }}
+                  className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive || previewVariant === v.id ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10' : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600'}`}
+                >
+                  <span className="text-2xl">{v.icon}</span>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-base-content text-sm">
+                        {t(`settings.appearanceTab.theme${v.label}`, v.label)}
+                      </span>
+                      {(isActive || previewVariant === v.id) && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 dark:bg-teal-800/40 text-teal-700 dark:text-primary/70">
+                          {previewVariant === v.id && !isActive ? t('settings.appearanceTab.previewLabel') || 'Preview' : t('settings.appearanceTab.activeLabel')}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-base-content/50 mt-0.5">
+                      {t(descKey, v.description)}
+                    </p>
+                  </div>
+                </motion.button>
+              );
+            })}
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-          {THEME_VARIANTS.map((v) => {
-            const isActive = variant === v.id;
-            const descKey = `settings.appearanceTab.${v.id}Desc`;
-            return (
-              <motion.button
-                key={v.id}
-                type="button"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-                onClick={() => setVariant(v.id)}
-                className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive ? 'border-teal-400 dark:border-teal-500 bg-teal-50 dark:bg-teal-900/20 shadow-md shadow-teal-500/10' : 'border-slate-200 dark:border-gray-700 bg-white/50 dark:bg-white/5 hover:border-slate-300 dark:hover:border-gray-600'}`}
-              >
-                <span className="text-2xl">{v.icon}</span>
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2">
-                    <span className="font-semibold text-slate-900 dark:text-white text-sm">
-                      {t(`settings.appearanceTab.theme${v.label}`, v.label)}
-                    </span>
-                    {isActive && (
-                      <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-teal-100 dark:bg-teal-800/40 text-teal-700 dark:text-teal-300">
-                        {t('settings.appearanceTab.activeLabel')}
-                      </span>
-                    )}
+      {/* ── Saved Custom Themes ── */}
+      {(() => {
+        if (savedCustomThemes.length === 0) return null;
+        return (
+          <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mt-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-secondary/10 dark:bg-secondary/30 rounded-full p-2.5">
+                <span className="icon-[tabler--bookmark] w-5 h-5 text-secondary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-base-content">Saved Custom Themes</h3>
+                <p className="text-sm text-base-content/50">Custom themes created in Theme Studio</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {savedCustomThemes.map(t => {
+                return (
+                  <div
+                    key={t.name}
+                    className="flex items-center gap-3 p-3 rounded-xl border border-base-300/50 bg-base-100/50 hover:bg-base-100 transition-all"
+                  >
+                    <div className="flex -space-x-1.5 shrink-0">
+                      <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.primary.l}% ${t.colors.primary.c} ${t.colors.primary.h})` }} />
+                      <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.secondary.l}% ${t.colors.secondary.c} ${t.colors.secondary.h})` }} />
+                      <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.accent.l}% ${t.colors.accent.c} ${t.colors.accent.h})` }} />
+                    </div>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium text-base-content truncate">{t.name}</p>
+                      <p className="text-[10px] text-base-content/50">
+                        Based on {t.baseThemeKey}
+                      </p>
+                    </div>
+                    <div className="flex gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          const root = document.documentElement;
+                          for (const [key, val] of Object.entries(t.colors)) {
+                            const v = val as { l: number; c: number; h: number };
+                            root.style.setProperty(`--color-${key}`, `oklch(${v.l.toFixed(2)}% ${v.c.toFixed(4)} ${v.h.toFixed(2)})`);
+                          }
+                          localStorage.setItem('theme-studio-custom', JSON.stringify(t.colors));
+                          localStorage.setItem('theme-studio-key', t.baseThemeKey);
+                        }}
+                        className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-primary"
+                        title="Apply this theme"
+                      >
+                        <span className="icon-[tabler--check] w-4 h-4" />
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (window.confirm(`Delete saved theme "${t.name}"?`)) {
+                            setSavedCustomThemes(deleteSavedTheme(t.name));
+                          }
+                        }}
+                        className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error"
+                        title={`Delete "${t.name}"`}
+                      >
+                        <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                      </button>
+                    </div>
                   </div>
-                  <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">
-                    {t(descKey, v.description)}
-                  </p>
-                </div>
-              </motion.button>
-            );
-          })}
-        </div>
+                );
+              })}
+            </div>
+          </div>
+        );
+      })()}
+
+      {/* Live Theme Preview Panel */}
+        <AnimatePresence>
+          {previewVariant && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden mt-6"
+              data-theme={previewThemeValue}
+            >
+              <ThemePreview
+                variant={previewVariant}
+                previewMode={activePreviewMode}
+                isActive={variant === previewVariant}
+                onApply={() => { setVariant(previewVariant); setPreviewVariant(null); setPreviewLocked(false); }}
+                onPreviewModeChange={(m) => { setPreviewMode(m); setPreviewLocked(true); }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </div>
   );
 
   const renderDatabaseTab = () => (
     <div className="max-w-lg mx-auto">
-      <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 mb-8 border border-purple-200 dark:border-purple-700/30">
+      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-purple-100 dark:bg-purple-800/30 rounded-full p-2.5">
             <span className="icon-[tabler--database] w-5 h-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
-            <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.databaseTab.title')}</h3>
-            <p className="text-sm text-slate-500 dark:text-gray-400">{t('settings.databaseTab.description')}</p>
+            <h3 className="font-semibold text-base-content">{t('settings.databaseTab.title')}</h3>
+            <p className="text-sm text-base-content/50">{t('settings.databaseTab.description')}</p>
           </div>
         </div>
 
         {/* Database Info Card */}
-        <div className="bg-white/50 dark:bg-white/5 rounded-lg p-4 mb-6 border border-slate-200 dark:border-gray-700">
+        <div className="bg-base-100/50 rounded-lg p-4 mb-6 border border-base-300/50">
           <div className="flex items-center justify-between mb-2">
-            <span className="text-sm text-slate-600 dark:text-gray-400">{t('settings.databaseTab.status')}</span>
+            <span className="text-sm text-base-content/60">{t('settings.databaseTab.status')}</span>
             <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-medium
-              bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400">
+              bg-success/10 dark:bg-success/30 text-success dark:text-success/80">
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
               {t('settings.databaseTab.connected')}
             </span>
           </div>
           <div className="flex items-center justify-between">
-            <span className="text-sm text-slate-600 dark:text-gray-400">{t('settings.databaseTab.type')}</span>
-            <span className="text-sm font-medium text-slate-900 dark:text-white">{t('settings.databaseTab.sqlite')}</span>
+            <span className="text-sm text-base-content/60">{t('settings.databaseTab.type')}</span>
+            <span className="text-sm font-medium text-base-content">{t('settings.databaseTab.sqlite')}</span>
           </div>
         </div>
 
@@ -1112,7 +1566,7 @@ export default function Settings() {
             type="button"
             onClick={handleImportDatabase}
             disabled={isImporting}
-            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl 
+            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1127,7 +1581,7 @@ export default function Settings() {
             type="button"
             onClick={handleExportDatabase}
             disabled={isExporting}
-            className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl 
+            className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1139,7 +1593,55 @@ export default function Settings() {
             )}
           </button>
         </div>
+
+        {/* Danger Zone — Reset Database */}
+        <div className="mt-8 pt-6 border-t-2 border-red-300 dark:border-red-700/50">
+          <div className="flex items-center gap-3 mb-4">
+            <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-2">
+              <span className="icon-[tabler--alert-triangle] w-5 h-5 text-red-600 dark:text-red-400" />
+            </div>
+            <div>
+              <h4 className="font-semibold text-red-700 dark:text-red-400 text-sm">
+                {t('settings.databaseTab.dangerZone') || 'Danger Zone'}
+              </h4>
+              <p className="text-xs text-base-content/50">
+                {t('settings.databaseTab.resetDescription') || 'This will delete all data and reset to factory settings'}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={() => setShowResetConfirm(true)}
+            disabled={isResetting}
+            className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl
+              font-medium transition-all duration-200 flex items-center justify-center gap-2
+              disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {isResetting ? (
+              <>
+                <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
+                <span>{t('settings.resetting') || 'Resetting...'}</span>
+              </>
+            ) : (
+              <><span className="icon-[tabler--database-off] text-lg" />{t('settings.resetDatabase') || 'Reset Database'}</>
+            )}
+          </button>
+        </div>
       </div>
+
+      {/* Reset Confirmation Dialog */}
+      <ConfirmDialog
+        isOpen={showResetConfirm}
+        onClose={() => setShowResetConfirm(false)}
+        onConfirm={handleResetDatabase}
+        title={t('settings.resetConfirmTitle') || 'Reset Database?'}
+        message={t('settings.resetConfirmMessage') || 'All data will be permanently deleted and the database will be reset to factory settings. This action cannot be undone.'}
+        itemName={t('settings.resetConfirmItemName') || 'the database'}
+        confirmLabel={t('settings.resetConfirmLabel') || 'Yes, Reset Everything'}
+        variant="danger"
+        description={t('settings.resetConfirmDescription') || 'All products, sales, employees, settings, and other data will be lost.'}
+      />
     </div>
   );
 
@@ -1162,7 +1664,7 @@ export default function Settings() {
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-fit mx-auto mb-4"
         >
-          <span className="icon-[tabler--settings] w-12 h-12 md:w-14 md:h-14 text-teal-400" />
+          <span className="icon-[tabler--settings] w-12 h-12 md:w-14 md:h-14 text-primary/80" />
         </motion.div>
         <motion.h1
           className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-purple-400"
@@ -1176,12 +1678,12 @@ export default function Settings() {
 
       {/* Tab Navigation */}
       <motion.div
-        className="bg-white/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-1.5 mb-6 border border-slate-200/50 dark:border-gray-700/50"
+        className="bg-base-100/60 backdrop-blur-md rounded-2xl p-1.5 mb-6 border border-slate-200/50 dark:border-gray-700/50"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
-        <div className="flex overflow-x-auto scrollbar-none gap-1">
+        <nav className="tabs gap-1 overflow-x-auto scrollbar-none" aria-label="Settings tabs" role="tablist" data-tab-prefix="settings-tab" onKeyDown={onSettingsTabKeyDown}>
           {tabs.map((tab) => {
             const Icon = tab.icon;
             const isActive = activeTab === tab.id;
@@ -1190,15 +1692,18 @@ export default function Settings() {
               <button
                 key={tab.id}
                 type="button"
+                role="tab"
+                id={`settings-tab-${tab.id}`}
+                aria-controls={`settings-panel-${tab.id}`}
+                aria-selected={isActive}
                 onClick={() => setActiveTab(tab.id)}
-                className={`relative flex items-center gap-2 px-4 py-2.5 rounded-xl text-sm font-medium 
-                  whitespace-nowrap transition-all duration-200 shrink-0 justify-center
-                  ${isActive
-                    ? 'bg-white dark:bg-white/10 text-teal-600 dark:text-teal-400 shadow-sm'
-                    : 'text-slate-500 dark:text-gray-400 hover:text-slate-700 dark:hover:text-gray-200 hover:bg-white/50 dark:hover:bg-white/5'
-                  }`}
+                className={`tab relative text-sm font-medium whitespace-nowrap shrink-0
+                  ${isActive ? 'tab-active' : ''}
+                  ${hasError ? 'text-red-500' : ''}
+                `}
               >
-                <Icon className={`w-4 h-4 ${isActive ? 'text-teal-500' : ''} ${hasError ? 'text-red-400' : ''}`} />                  <span>{t('settings.tabs.' + tab.id)}</span>
+                <Icon className={`w-4 h-4 ${isActive ? 'text-teal-500' : ''} ${hasError ? 'text-red-400' : ''}`} />
+                <span>{t('settings.tabs.' + tab.id)}</span>
                 {hasError && (
                   <span className="w-2 h-2 rounded-full bg-red-400 flex-shrink-0" title={t('settings.hasValidationErrors')} />
                 )}
@@ -1212,7 +1717,7 @@ export default function Settings() {
               </button>
             );
           })}
-        </div>
+        </nav>
       </motion.div>
 
       {/* Settings Form */}
@@ -1227,8 +1732,7 @@ export default function Settings() {
           <motion.div
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40 
-              rounded-xl p-4 flex items-start gap-3"
+            role="alert" className="alert alert-error mb-6 items-start"
           >
             <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-1.5 flex-shrink-0 mt-0.5">
               <span className="icon-[tabler--alert-triangle] w-4 h-4 text-red-500" />
@@ -1251,10 +1755,13 @@ export default function Settings() {
         )}
 
         {/* Tab Content */}
-        <div className="card--glass rounded-2xl p-6 md:p-8 mb-6 transition-colors duration-300 min-h-[320px]">
+        <Card padding="xl" transitional className="md:p-8 mb-6 min-h-[320px]">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeTab}
+              role="tabpanel"
+              id={`settings-panel-${activeTab}`}
+              aria-labelledby={`settings-tab-${activeTab}`}
               variants={tabVariants}
               initial="enter"
               animate="center"
@@ -1270,7 +1777,7 @@ export default function Settings() {
               {activeTab === 'appearance' && renderAppearanceTab()}
             </motion.div>
           </AnimatePresence>
-        </div>
+        </Card>
 
         {/* Action Buttons */}
         <div className="flex gap-4">
@@ -1280,7 +1787,7 @@ export default function Settings() {
             whileHover={{ scale: isSaving ? 1 : 1.02 }}
             whileTap={{ scale: isSaving ? 1 : 0.98 }}
             disabled={isSaving}
-            className="flex-1 py-3 bg-linear-to-r from-teal-400 to-purple-400 text-white rounded-xl 
+            className="flex-1 py-3 bg-linear-to-r from-teal-400 to-purple-400 text-white rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1301,8 +1808,7 @@ export default function Settings() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-teal-500 text-white px-6 py-3 
-              rounded-xl flex items-center gap-2 shadow-lg z-50"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success shadow-lg"
           >
             <span className="icon-[tabler--check] text-lg" />
             {t('settings.successMessage')}
@@ -1315,8 +1821,7 @@ export default function Settings() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
-            className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 
-              rounded-xl flex items-center gap-2 shadow-lg z-50 max-w-md"
+            className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error shadow-lg max-w-md"
           >
             <span className="icon-[tabler--alert-triangle] text-lg" />
             <span>{errorMessage}</span>
@@ -1325,3 +1830,4 @@ export default function Settings() {
     </PageLayout>
   );
 }
+

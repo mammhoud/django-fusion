@@ -58,11 +58,11 @@ export default function ConfirmDialog({
             <span className="icon-[tabler--alert-triangle] text-4xl" />
           </div>
         </div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h2>
-        <p className="text-slate-600 dark:text-gray-300">{message}</p>
-        <p className="text-slate-900 dark:text-white font-semibold text-lg mt-1 mb-2">{itemName}?</p>
+        <h2 className="text-xl font-bold text-base-content mb-2">{title}</h2>
+        <p className="text-base-content/70">{message}</p>
+        <p className="text-base-content font-semibold text-lg mt-1 mb-2">{itemName}?</p>
         {description && (
-          <p className="text-slate-500 dark:text-gray-400 text-sm mb-2">{description}</p>
+          <p className="text-base-content/50 text-sm mb-2">{description}</p>
         )}
       </div>
     </Modal>

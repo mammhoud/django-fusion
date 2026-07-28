@@ -199,7 +199,9 @@
     "categoryFilter": "Filtrar por categoría",
     "noProductsMatch": "No hay productos que coincidan con su búsqueda.",
     "viewCart": "Ver Carrito",
-    "editCart": "Editar Carrito"
+    "editCart": "Editar Carrito",
+    "zone": "Zona",
+    "distance": "Distancia (km)"
   },
   "analytics": {
     "title": "Panel de Análisis",
@@ -665,6 +667,10 @@
       "lightMode": "Modo Claro",
       "darkMode": "Modo Oscuro",
       "modeDescription": "Alternar entre pantalla clara y oscura",
+      "modeTitle": "Modo del tema",
+      "systemControlled": "Siguiendo la preferencia del sistema",
+      "darkModeSelected": "Modo oscuro seleccionado",
+      "lightModeSelected": "Modo claro seleccionado",
       "systemMode": "Modo del Sistema",
       "systemDescription": "Sigue la configuración de tema de tu dispositivo",
       "fixedDescription": "Elige manualmente el modo claro u oscuro",

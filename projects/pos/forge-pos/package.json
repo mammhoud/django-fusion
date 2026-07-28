@@ -55,6 +55,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "lint:contrast": "node scripts/lint-contrast.mjs",
+    "lint:contrast:fix": "node scripts/lint-contrast.mjs --fix",
     "prebuild": "PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
     "predev": "node ../scripts/dev/kill-port.cjs && PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
     "build:desktop": "pnpm build && pnpm tauri build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",

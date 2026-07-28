@@ -11,7 +11,7 @@ CREATE TABLE IF NOT EXISTS settings (
     phone TEXT,
     email TEXT,
     tax_rate TEXT,
-    currency TEXT NOT NULL DEFAULT 'PKR',
+    currency TEXT NOT NULL DEFAULT 'USD',
     opening_time TEXT,
     closing_time TEXT,
     receipt_footer TEXT,
@@ -29,7 +29,7 @@ CREATE TABLE IF NOT EXISTS categories (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
--- Products (with image + product_type + border_color columns built-in)
+-- Products
 CREATE TABLE IF NOT EXISTS products (
     id INTEGER PRIMARY KEY AUTOINCREMENT,
     name TEXT NOT NULL,
@@ -38,7 +38,6 @@ CREATE TABLE IF NOT EXISTS products (
     category_id INTEGER REFERENCES categories(id) ON DELETE SET NULL,
     image TEXT,
     product_type TEXT NOT NULL DEFAULT 'product',
-    border_color TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     uploaded BOOLEAN NOT NULL DEFAULT 0
@@ -222,7 +221,7 @@ BEGIN UPDATE employees SET updated_at = CURRENT_TIMESTAMP WHERE id = NEW.id; END
 
 -- Insert default settings (singleton row — app always expects this to exist)
 INSERT OR IGNORE INTO settings (id, restaurant_name, currency, receipt_footer)
-VALUES (1, 'Forge POS', 'PKR', 'Thank you for your business!');
+VALUES (1, 'Forge POS', 'USD', 'Thank you for your business!');
 
 -- Insert default delivery types
 INSERT OR IGNORE INTO delivery_types (id, name, description, fee_multiplier) VALUES
