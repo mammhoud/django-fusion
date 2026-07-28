@@ -42,6 +42,7 @@ export default function Roles() {
   // ── Permission catalog loaded from Rust backend ──
   const [permissionCatalog, setPermissionCatalog] = useState<PermissionDef[]>([]);
   const [catalogLoading, setCatalogLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState(false);
 
   const {
     query: search,
@@ -58,21 +59,15 @@ export default function Roles() {
 
   const loadPermissionCatalog = async () => {
     setCatalogLoading(true);
+    setCatalogError(false);
     try {
       const catalog = await invoke<PermissionDef[]>('get_permission_catalog');
       setPermissionCatalog(catalog);
     } catch (error) {
-      console.error('Error loading permission catalog:', error);
-      // Fallback to a minimal built-in catalog if backend call fails
-      setPermissionCatalog([
-        { key: 'manage:products',   label: 'Manage Products',     icon: 'clipboard-list' },
-        { key: 'manage:inventory',  label: 'Manage Inventory',    icon: 'package' },
-        { key: 'manage:employees',  label: 'Manage Employees',    icon: 'users' },
-        { key: 'process:sales',     label: 'Process Sales',       icon: 'shopping-cart' },
-        { key: 'manage:settings',   label: 'Manage Settings',     icon: 'settings' },
-        { key: 'view:reports',      label: 'View Reports',        icon: 'file-text' },
-        { key: 'manage:kitchen',    label: 'Manage Kitchen',      icon: 'tools-kitchen-2' },
-      ]);
+      console.error('Error loading permission catalog from backend:', error);
+      setCatalogError(true);
+      // No fallback — permission system is backend-driven; the UI will show
+      // a hint to use the custom permissions field below
     } finally {
       setCatalogLoading(false);
     }
@@ -179,7 +174,7 @@ export default function Roles() {
     return sorted;
   })();
 
-  const catalogToUse = permissionCatalog.length > 0 ? permissionCatalog : [];
+  const catalogToUse = permissionCatalog;
 
   return (
     <PageLayout title={t('roles.title')} background="bg-base-200/50">
@@ -279,6 +274,13 @@ export default function Roles() {
                   {catalogLoading ? (
                     <div className="col-span-full flex items-center justify-center py-8">
                       <span className="loading loading-spinner loading-md text-primary" />
+                    </div>
+                  ) : catalogError ? (
+                    <div className="col-span-full flex flex-col items-center justify-center py-6 gap-2">
+                      <span className="icon-[tabler--shield-off] w-8 h-8 text-base-content/30" />
+                      <p className="text-sm text-base-content/50 text-center">
+                        Could not load permissions from backend. Use the custom permissions field below.
+                      </p>
                     </div>
                   ) : (
                     catalogToUse.map(p => {
