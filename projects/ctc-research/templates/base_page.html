@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% load i18n wagtailcore_tags %}
+
+{% block title %}{% firstof page.seo_title page_title page.title 'CTC Research' %}{% endblock %}
+
+{% block bodyclass %}page-{{ page.slug|default:"home" }}{% endblock %}
+
+{% block body %}
+    <main id="main-content">
+        {% block content %}
+            {% if template_name and template_name != "base_page.html" and template_name != "base.html" and template_name != "landing/skeleton.html" %}
+                {% include template_name %}
+            {% else %}
+                {% comp "home/main.html" / %}
+            {% endif %}
+        {% endblock content %}
+    </main>
+{% endblock body %}

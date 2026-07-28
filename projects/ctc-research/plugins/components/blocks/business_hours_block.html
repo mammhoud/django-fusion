@@ -1,0 +1,47 @@
+{% load i18n %}
+{% load wagtailcore_tags i18n %}
+{# Business Hours Block Template - Wagtail Bakery Style #}
+
+<div class="business-hours-block">
+    {% if self.title %}
+    <h4 class="business-hours__title">{{ self.title }}</h4>
+    {% endif %}
+
+    {% if self.show_current_status %}
+    <div class="business-hours__status" id="business-status">
+        <span class="status-indicator"></span>
+        <span class="status-text">{% trans "Loading..." %}</span>
+    </div>
+    {% endif %}
+
+    <ul class="business-hours__list">
+        {% for entry in self.hours %}
+        <li class="business-hours__item {% if entry.is_closed %}is-closed{% endif %}">
+            <span class="business-hours__days">{{ entry.days }}</span>
+            <span class="business-hours__time">
+                {% if entry.is_closed %}
+                <span class="text-danger">{% trans "Closed" %}</span>
+                {% else %}
+                {{ entry.hours }}
+                {% endif %}
+            </span>
+            {% if entry.note %}
+            <small class="business-hours__note">{{ entry.note }}</small>
+            {% endif %}
+        </li>
+        {% endfor %}
+    </ul>
+
+    {% if self.timezone %}
+    <p class="business-hours__timezone">
+        <small class="text-muted">{% trans "All times in" %} {{ self.timezone }}</small>
+    </p>
+    {% endif %}
+
+    {% if self.emergency_hours_note %}
+    <div class="business-hours__emergency alert alert-info">
+        <i class="bi bi-exclamation-circle me-2"></i>
+        {{ self.emergency_hours_note }}
+    </div>
+    {% endif %}
+</div>
