@@ -141,17 +141,14 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
 
   return (
     <div ref={containerRef} className="relative">
-      <label className="block text-slate-900 dark:text-white mb-2">{label}</label>
+      <label className="block text-base-content mb-2">{label}</label>
       <div className="relative">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="w-full px-4 py-2 rounded-lg bg-white dark:bg-slate-700 
-            text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 
-            hover:border-teal-400 focus:outline-none focus:border-teal-400 transition-colors
-            text-left flex items-center justify-between"
+          className="input input-bordered w-full cursor-pointer flex items-center justify-between"
         >
-          <span className={value ? 'text-slate-900 dark:text-white' : 'text-gray-500 dark:text-gray-400'}>
+          <span className={value ? 'text-base-content' : 'text-gray-500 dark:text-gray-400'}>
             {formatDate(value)}
           </span>
           <svg className="w-5 h-5 text-gray-500 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -166,8 +163,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="absolute z-50 mt-2 p-4 bg-white dark:bg-slate-800 rounded-lg 
-                border border-slate-300 dark:border-slate-600 shadow-xl w-full min-w-[280px]"
+              className="card bg-base-100 shadow-xl border border-base-300 rounded-xl p-4 absolute z-50 mt-2 w-full min-w-[280px]"
             >
               {/* Month/Year Selectors */}
               <div className="flex gap-2 mb-4">
@@ -180,10 +176,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       setShowYearDropdown(false);
                       setMonthSearch('');
                     }}
-                    className="w-full px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 
-                      text-slate-900 dark:text-white text-sm border border-slate-300 dark:border-slate-600 
-                      hover:border-teal-400 dark:hover:border-teal-500 focus:outline-none 
-                      transition-colors flex items-center justify-between"
+                    className="select select-bordered w-full text-sm flex items-center justify-between"
                   >
                     <span>{months[selectedMonth]}</span>
                     <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
@@ -207,10 +200,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                             value={monthSearch}
                             onChange={(e) => setMonthSearch(e.target.value)}
                             placeholder={t('datePicker.searchMonth')}
-                            className="w-full px-3 py-1.5 text-sm rounded-md bg-slate-50 dark:bg-slate-800 
-                              text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 
-                              focus:outline-none focus:border-teal-400 dark:focus:border-teal-500 
-                              placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            className="input input-bordered input-sm w-full"
                             onClick={(e) => e.stopPropagation()}
                           />
                         </div>
@@ -229,11 +219,11 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                                     setShowMonthDropdown(false);
                                     setMonthSearch('');
                                   }}
-                                  className={`w-full px-3 py-2 text-left text-sm hover:bg-teal-500/20 
-                                    dark:hover:bg-teal-500/30 transition-colors
+                                  className={`w-full px-3 py-2 text-left text-sm hover:bg-primary/20 
+                                    dark:hover:bg-primary/30 transition-colors
                                     ${selectedMonth === originalIdx 
-                                      ? 'bg-teal-500 text-white hover:bg-teal-600' 
-                                      : 'text-slate-900 dark:text-white'
+                                      ? 'bg-primary text-white hover:bg-teal-600' 
+                                      : 'text-base-content'
                                     }`}
                                 >
                                   {month}
@@ -241,7 +231,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                               );
                             })
                           ) : (
-                            <div className="px-3 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
+                            <div className="px-3 py-4 text-sm text-center text-base-content/50">
                               {t('datePicker.noMonths')}
                             </div>
                           )}
@@ -260,10 +250,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       setShowMonthDropdown(false);
                       setYearSearch('');
                     }}
-                    className="px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700 
-                      text-slate-900 dark:text-white text-sm border border-slate-300 dark:border-slate-600 
-                      hover:border-teal-400 dark:hover:border-teal-500 focus:outline-none 
-                      transition-colors flex items-center justify-between gap-2 min-w-[100px]"
+                    className="select select-bordered text-sm flex items-center justify-between gap-2 min-w-[100px]"
                   >
                     <span>{selectedYear}</span>
                     <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
@@ -303,14 +290,11 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                               }
                             }}
                             placeholder={t('datePicker.typeYear')}
-                            className="w-full px-3 py-1.5 text-sm rounded-md bg-slate-50 dark:bg-slate-800 
-                              text-slate-900 dark:text-white border border-slate-300 dark:border-slate-600 
-                              focus:outline-none focus:border-teal-400 dark:focus:border-teal-500 
-                              placeholder:text-slate-400 dark:placeholder:text-slate-500"
+                            className="input input-bordered input-sm w-full"
                             onClick={(e) => e.stopPropagation()}
                           />
                           {yearSearch && (
-                            <div className="mt-1 text-xs text-slate-500 dark:text-slate-400 px-1">
+                            <div className="mt-1 text-xs text-base-content/50 px-1">
                               {t('datePicker.pressEnter')}
                             </div>
                           )}
@@ -328,18 +312,18 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                                   setShowYearDropdown(false);
                                   setYearSearch('');
                                 }}
-                                className={`w-full px-3 py-2 text-left text-sm hover:bg-teal-500/20 
-                                  dark:hover:bg-teal-500/30 transition-colors
+                                className={`w-full px-3 py-2 text-left text-sm hover:bg-primary/20 
+                                  dark:hover:bg-primary/30 transition-colors
                                   ${selectedYear === year 
-                                    ? 'bg-teal-500 text-white hover:bg-teal-600' 
-                                    : 'text-slate-900 dark:text-white'
+                                    ? 'bg-primary text-white hover:bg-teal-600' 
+                                    : 'text-base-content'
                                   }`}
                               >
                                 {year}
                               </button>
                             ))
                           ) : (
-                            <div className="px-3 py-4 text-sm text-center text-slate-500 dark:text-slate-400">
+                            <div className="px-3 py-4 text-sm text-center text-base-content/50">
                               {yearSearch ? t('datePicker.yearHint') : t('datePicker.noYears')}
                             </div>
                           )}
@@ -353,7 +337,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
               {/* Calendar Grid */}
               <div className="grid grid-cols-7 gap-1 mb-3">
                 {(t('datePicker.daysShort', { returnObjects: true }) as string[]).map((day) => (
-                  <div key={day} className="text-center text-xs text-slate-600 dark:text-gray-400 font-medium py-1">
+                  <div key={day} className="text-center text-xs text-base-content/60 font-medium py-1">
                     {day}
                   </div>
                 ))}
@@ -372,10 +356,10 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       type="button"
                       onClick={() => handleDateSelect(day)}
                       className={`
-                        p-2 text-sm rounded hover:bg-teal-500 hover:text-white transition-colors
+                        p-2 text-sm rounded hover:bg-primary hover:text-white transition-colors
                         ${isSelected 
-                          ? 'bg-teal-500 text-white font-semibold' 
-                          : 'text-slate-900 dark:text-white hover:bg-teal-500/20'}
+                          ? 'bg-primary text-white font-semibold' 
+                          : 'text-base-content hover:bg-primary/20'}
                       `}
                     >
                       {day}
@@ -389,16 +373,14 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                 <button
                   type="button"
                   onClick={handleClear}
-                  className="flex-1 px-3 py-1.5 text-sm rounded bg-slate-200 dark:bg-slate-700 
-                    text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+                  className="                  btn btn-ghost btn-sm flex-1"
                 >
                   {t('datePicker.clear')}
                 </button>
                 <button
                   type="button"
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 px-3 py-1.5 text-sm rounded bg-teal-500 text-white 
-                    hover:bg-teal-400 transition-colors"
+                  className="                  btn btn-primary btn-sm flex-1"
                 >
                   {t('datePicker.done')}
                 </button>

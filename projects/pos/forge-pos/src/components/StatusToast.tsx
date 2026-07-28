@@ -12,6 +12,7 @@ export default function StatusToast({ type, message, visible, onDismiss }: Statu
     <AnimatePresence>
       {visible && (
         <motion.div
+          role="alert"
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}

@@ -20,7 +20,7 @@ interface BackButtonProps {
       onClick={onClick}
       disabled={disabled}
       className="flex items-center gap-2 px-4 py-2 rounded-lg min-w-[120px] justify-center
-        bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 font-medium text-sm
+        bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 font-medium text-sm
         disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {disabled ? (

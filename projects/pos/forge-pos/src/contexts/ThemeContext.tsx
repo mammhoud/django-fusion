@@ -16,7 +16,7 @@ export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; de
  * Each variant has separate light and dark themes defined in index.css
  * via @plugin "flyonui/theme" blocks.
  */
-const THEME_MAP: Record<ThemeVariant, Record<Mode, string>> = {
+export const THEME_MAP: Record<ThemeVariant, Record<Mode, string>> = {
   default:   { light: 'light', dark: 'dark' },
   corporate: { light: 'corporate-light', dark: 'corporate-dark' },
   luxury:    { light: 'luxury-light',    dark: 'luxury-dark' },

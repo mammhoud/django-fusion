@@ -6,7 +6,6 @@ export interface Product {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
-  border_color?: string | null;
 }
 
 export interface NewProduct {
@@ -16,7 +15,6 @@ export interface NewProduct {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
-  border_color?: string | null;
 }
 
 export interface UpdateProductPayload {
@@ -26,7 +24,6 @@ export interface UpdateProductPayload {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
-  border_color?: string | null;
 }
 
 // ---- Category ----
@@ -48,10 +45,27 @@ export interface Settings {
   opening_time?: string;
   closing_time?: string;
   receipt_footer?: string;
-  logo?: string;
+  logo?: string | null;
+  invoice_logo?: string | null;
   dine_in_tables?: number;
   delivery_fee?: number;
   delivery_fee_per_km?: number;
+}
+
+export interface DeliveryZone {
+  id: number;
+  name: string;
+  base_fee: number;
+  fee_per_km: number;
+  max_distance: number;
+  is_active: boolean;
+}
+
+export interface NewDeliveryZone {
+  name: string;
+  base_fee: number;
+  fee_per_km: number;
+  max_distance: number;
 }
 
 export interface DeliveryType {
@@ -110,6 +124,7 @@ export interface Sale {
   status: string;
   table_number: number | null;
   delivery_type_id: number | null;
+  delivery_zone_id?: number | null;
   delivery_address: string | null;
   employee_id: number | null;
   customer_id?: number | null;
@@ -124,6 +139,7 @@ export interface NewSaleData {
   status: string;
   table_number?: number | null;
   delivery_type_id?: number | null;
+  delivery_zone_id?: number | null;
   delivery_address?: string | null;
   employee_id?: number | null;
   customer_id?: number | null;
@@ -153,6 +169,9 @@ export interface Transaction {
   time: string;
   order_type: string;
   status: string;
+  table_number?: number | null;
+  delivery_type_id?: number | null;
+  delivery_address?: string | null;
 }
 
 export interface DailyRevenue {

@@ -79,6 +79,25 @@ pub fn delete_sale(db_path: &PathBuf, sale_id: i32) -> Result<(), String> {
     Ok(())
 }
 
+/// Fetch sale items for a given sale_id (used by Kitchen Display for detail modals)
+pub fn get_sale_items_by_sale_id(db_path: &PathBuf, target_sale_id: i32) -> Result<Vec<SaleItem>, String> {
+    let mut conn = open_conn(db_path)?;
+    use crate::db::schema::sale_items::dsl::*;
+    sale_items
+        .filter(sale_id.eq(target_sale_id))
+        .load::<SaleItem>(&mut conn)
+        .map_err(|e| e.to_string())
+}
+
+/// Fetch a single sale by its ID (used by KDS for detail modals)
+pub fn get_sale_by_id(db_path: &PathBuf, target_sale_id: i32) -> Result<Sale, String> {
+    let mut conn = open_conn(db_path)?;
+    use crate::db::schema::sales::dsl::*;
+    sales.find(target_sale_id)
+        .first::<Sale>(&mut conn)
+        .map_err(|e| e.to_string())
+}
+
 pub fn mark_sale_uploaded(db_path: &PathBuf, sale_id: i32) -> Result<(), String> {
     let mut conn = open_conn(db_path)?;
     use crate::db::schema::sales::dsl::*;

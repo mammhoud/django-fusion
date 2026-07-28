@@ -1,4 +1,5 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
 // ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
@@ -232,9 +233,9 @@ export default function DataTable<T>({
   // ── Empty state ──
   if (data.length === 0 && !exportable) {
     return (
-      <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+      <Card padding="2xl" center border="base-200" className="text-base-content/60">
         {emptyMsg}
-      </div>
+      </Card>
     );
   }
 
@@ -255,13 +256,13 @@ export default function DataTable<T>({
     : gridTemplate;
 
   return (
-    <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
+    <Card border="base-200" className="overflow-hidden">
       {/* Toolbar */}
       {(selectable || exportable) && (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-300 dark:border-white/10">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-base-300">
           <div className="flex items-center gap-2">
             {selectable && selectedIds.size > 0 && (
-              <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">
+              <span className="text-xs text-base-content/50 font-medium">
                 {t('common.selected', { count: selectedIds.size })}
               </span>
             )}
@@ -281,7 +282,7 @@ export default function DataTable<T>({
 
       {/* Desktop Header */}
       <div
-        className="hidden sm:grid gap-4 p-4 border-b border-slate-300 dark:border-white/10"
+        className="hidden sm:grid gap-4 p-4 border-b border-base-300"
         style={{ gridTemplateColumns: gridTemplateWithCheckbox }}
       >
         {allColumns.map((item) => {
@@ -295,9 +296,7 @@ export default function DataTable<T>({
                     if (el) el.indeterminate = someSelected;
                   }}
                   onChange={toggleSelectAll}
-                  className="w-4 h-4 rounded border-slate-300 dark:border-gray-600 
-                    text-teal-500 focus:ring-teal-400 cursor-pointer
-                    accent-teal-500"
+                  className="checkbox checkbox-sm checkbox-primary cursor-pointer"
                 />
               </div>
             );
@@ -306,7 +305,7 @@ export default function DataTable<T>({
           return (
             <div
               key={col.key}
-              className={`flex items-center gap-1 text-slate-900 dark:text-white font-semibold text-sm 
+              className={`flex items-center gap-1 text-base-content font-semibold text-sm
                 ${col.className || ''} ${col.hideOnMobile ? 'hidden sm:flex' : ''}`}
             >
               {col.sortable ? (
@@ -332,7 +331,7 @@ export default function DataTable<T>({
 
       {/* Rows */}
       {sortedData.length === 0 ? (
-        <div className="p-8 text-center text-slate-500 dark:text-gray-400 text-sm">
+        <div className="p-8 text-center text-base-content/50 text-sm">
           {emptyMsg}
         </div>
       ) : (
@@ -346,9 +345,9 @@ export default function DataTable<T>({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: _idx * 0.02 }}
-              className={`transition-colors border-b border-slate-300 dark:border-white/10 last:border-b-0
-                ${isSelected ? 'bg-teal-500/10 dark:bg-teal-500/15' : ''}
-                hover:bg-slate-100 dark:hover:bg-white/5`}
+              className={`transition-colors border-b border-base-300 last:border-b-0
+                ${isSelected ? 'bg-primary/10' : ''}
+                hover:bg-base-200`}
             >
               {/* Desktop */}
               <div
@@ -363,9 +362,7 @@ export default function DataTable<T>({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleRow(rowKey)}
-                          className="w-4 h-4 rounded border-slate-300 dark:border-gray-600 
-                            text-teal-500 focus:ring-teal-400 cursor-pointer
-                            accent-teal-500"
+                          className="checkbox checkbox-sm checkbox-primary cursor-pointer"
                         />
                       </div>
                     );
@@ -381,7 +378,7 @@ export default function DataTable<T>({
                   return (
                     <div
                       key={col.key}
-                      className={`text-slate-900 dark:text-white text-sm relative
+                      className={`text-base-content text-sm relative
                         ${col.className || ''}
                         ${col.hideOnMobile ? 'hidden sm:block' : ''}
                         ${col.editable ? 'cursor-pointer group' : ''}`}
@@ -447,8 +444,8 @@ export default function DataTable<T>({
                         <>
                           {col.render(row)}
                           {col.editable && (
-                            <span className="absolute inset-0 rounded border-2 border-transparent 
-                              group-hover:border-teal-400/40 group-hover:bg-teal-400/5 
+                            <span className="absolute inset-0 rounded border-2 border-transparent
+                              group-hover:border-primary/40 group-hover:bg-teal-400/5
                               transition-all pointer-events-none" />
                           )}
                         </>
@@ -467,8 +464,7 @@ export default function DataTable<T>({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleRow(rowKey)}
-                        className="mt-1 w-4 h-4 rounded border-slate-300 dark:border-gray-600 
-                          text-teal-500 focus:ring-teal-400 cursor-pointer accent-teal-500 shrink-0"
+                        className="checkbox checkbox-sm checkbox-primary shrink-0 mt-1"
                       />
                     )}
                     <div className="flex-1">{mobileRender(row)}</div>
@@ -479,6 +475,7 @@ export default function DataTable<T>({
           );
         })
       )}
-    </div>
+    </Card>
   );
 }
+

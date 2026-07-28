@@ -199,7 +199,9 @@
     "categoryFilter": "Nach Kategorie filtern",
     "noProductsMatch": "Keine Produkte entsprechen Ihrer Suche.",
     "viewCart": "Warenkorb anzeigen",
-    "editCart": "Warenkorb bearbeiten"
+    "editCart": "Warenkorb bearbeiten",
+    "zone": "Zone",
+    "distance": "Entfernung (km)"
   },
   "analytics": {
     "title": "Analyse-Dashboard",
@@ -667,6 +669,10 @@
       "lightMode": "Heller Modus",
       "darkMode": "Dunkler Modus",
       "modeDescription": "Zwischen hellem und dunklem Display umschalten",
+      "modeTitle": "Design-Modus",
+      "systemControlled": "Systemeinstellung folgen",
+      "darkModeSelected": "Dunkelmodus ausgewählt",
+      "lightModeSelected": "Hellmodus ausgewählt",
       "systemMode": "Systemmodus",
       "systemDescription": "Folgt dem Design Ihres Geräts",
       "fixedDescription": "Manuell zwischen Hell und Dunkel wählen",

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import { EmployeeSchedule as EmployeeScheduleType, Employee } from '../types';
 
@@ -58,17 +59,18 @@ export default function EmployeeSchedule() {
   const getEmployeeName = (id: number) => employees.find(e => e.id === id)?.name || t('common.unknown');
 
   return (
-    <PageLayout title={t('schedule.title')} background="bg-slate-100 dark:bg-slate-900">
+    <PageLayout title={t('schedule.title')}>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('schedule.title')}</h1>
+          <h1 className="text-2xl font-bold text-base-content">{t('schedule.title')}</h1>
           <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="btn btn-primary gap-2">
             <span className="icon-[tabler--plus]" /> {t('schedule.addShift')}
           </motion.button>
         </div>
 
         {showForm && (
-          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="card--glass rounded-xl p-4 space-y-3">
+          <Card spaceY="3">
+            <form onSubmit={handleSubmit}>
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               <select value={form.employee_id} onChange={e => setForm({ ...form, employee_id: Number(e.target.value) })} required className="select select-bordered w-full">
                 <option value={0}>{t('schedule.selectEmployee')}</option>
@@ -82,7 +84,8 @@ export default function EmployeeSchedule() {
               <button type="submit" className="btn btn-primary">{t('common.save')}</button>
               <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
-          </motion.form>
+            </form>
+          </Card>
         )}
 
         {isLoading ? (
@@ -92,24 +95,24 @@ export default function EmployeeSchedule() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {schedules.map(schedule => (
-              <motion.div key={schedule.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+              <Card key={schedule.id}>
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
                       <span className="icon-[tabler--calendar-clock] w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{getEmployeeName(schedule.employee_id)}</h3>
+                      <h3 className="font-semibold text-base-content">{getEmployeeName(schedule.employee_id)}</h3>
                       <p className="text-sm text-slate-500 capitalize">{schedule.status}</p>
                     </div>
                   </div>
                   <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                 </div>
-                <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
+                <div className="mt-3 text-sm text-base-content/60 space-y-1">
                   <p>{new Date(schedule.shift_start).toLocaleString()} - {new Date(schedule.shift_end).toLocaleTimeString()}</p>
                   {schedule.notes && <p>{schedule.notes}</p>}
                 </div>
-              </motion.div>
+              </Card>
             ))}
           </div>
         )}
@@ -117,3 +120,4 @@ export default function EmployeeSchedule() {
     </PageLayout>
   );
 }
+
