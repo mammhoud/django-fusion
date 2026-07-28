@@ -1,0 +1,214 @@
+{% load i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n static %}
+
+<!-- Featured Courses Section -->
+<section class="featured-courses section section--featured-courses py-5 py-lg-6">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="featured-courses__header row justify-content-center mb-5 mb-lg-6">
+            <div class="featured-courses__title-wrapper col-12 col-lg-10 col-xl-8 text-center">
+                {% if block.value.title %}
+                <h2 class="featured-courses__title display-5 fw-bold mb-4">
+                    {{ block.value.title }}
+                </h2>
+                {% endif %}
+                {% if block.value.description %}
+                <p class="featured-courses__description lead text-muted mb-0">
+                    {{ block.value.description }}
+                </p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Courses Slider -->
+        <div class="featured-courses__slider-wrapper position-relative">
+            <div class="featured-courses__slider swiper" data-swiper='{
+                "slidesPerView": 1,
+                "spaceBetween": 20,
+                "breakpoints": {
+                    "576": {"slidesPerView": 2},
+                    "768": {"slidesPerView": 2},
+                    "992": {"slidesPerView": 3},
+                    "1200": {"slidesPerView": 4}
+                },
+                "pagination": {"el": ".swiper-pagination", "clickable": true},
+                "navigation": {"nextEl": ".swiper-button-next", "prevEl": ".swiper-button-prev"},
+                "autoplay": {"delay": 3000, "disableOnInteraction": false}
+            }'>
+                <div class="featured-courses__slider-track swiper-wrapper">
+                    {% for course in page_items %}
+                    <div class="featured-courses__slide swiper-slide h-auto">
+                        <div class="course-card card border-0 h-100 shadow-sm hover-lift overflow-hidden">
+                            <!-- Course Image Container -->
+                            <div class="course-card__image-container position-relative overflow-hidden" style="height: 220px;">
+                                {% if course.image %}
+                                    {% image course.image fill-400x300 as img %}
+                                    <img src="{{ img.url }}" 
+                                         alt="{{ course.title }}" 
+                                         class="course-card__image img-fluid w-100 h-100 object-fit-cover">
+                                {% else %}
+                                    <img src="{% static 'images/coming-soon.jpg' %}" 
+                                         alt="{% trans 'Default course image' %}" 
+                                         class="course-card__image course-card__image--default img-fluid w-100 h-100 object-fit-cover">
+                                {% endif %}
+                                
+                                <!-- Course Level Badge -->
+                                {% if course.level %}
+                                <div class="course-card__badge course-card__badge--level position-absolute top-3 start-3">
+                                    <span class="badge bg-primary bg-opacity-90 text-white px-3 py-2 rounded-pill">
+                                        {{ course.level }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Course Image Overlay -->
+                                <div class="course-card__overlay position-absolute top-0 start-0 w-100 h-100 bg-dark bg-opacity-0 hover-show"></div>
+                                
+                                <!-- Quick Actions -->
+                                <div class="course-card__actions position-absolute bottom-0 start-0 w-100 p-3 text-center hover-show translate-up">
+                                    <a href="{{ course.url }}" 
+                                       class="course-card__action-button btn btn-primary btn-sm px-4">
+                                        {% trans "View Course" %}
+                                    </a>
+                                </div>
+                            </div>
+
+                            <!-- Course Card Body -->
+                            <div class="course-card__body card-body p-4">
+                                <!-- Category Badge -->
+                                {% if course.category %}
+                                <div class="course-card__category mb-2">
+                                    <span class="course-card__category-badge badge bg-primary bg-opacity-10 text-primary fs-7 px-3 py-1">
+                                        {{ course.category }}
+                                    </span>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Course Title -->
+                                <h3 class="course-card__title fw-bold mb-2 line-clamp-2">
+                                    <a href="{{ course.url }}" 
+                                       class="course-card__title-link text-decoration-none text-dark stretched-link">
+                                        {{ course.title }}
+                                    </a>
+                                </h3>
+                                
+                                <!-- Course Description -->
+                                {% if course.short_description %}
+                                <p class="course-card__description text-muted mb-3 line-clamp-3">
+                                    {{ course.short_description }}
+                                </p>
+                                {% endif %}
+                                
+                                <!-- Instructor Info -->
+                                {% if course.instructor %}
+                                <div class="course-card__instructor d-flex align-items-center mb-3">
+                                    <div class="course-card__instructor-avatar flex-shrink-0 me-2">
+                                        {% if course.instructor_image %}
+                                            {% image course.instructor_image fill-40x40 as instructor_img %}
+                                            <img src="{{ instructor_img.url }}" 
+                                                 alt="{{ course.instructor }}" 
+                                                 class="course-card__instructor-img rounded-circle" 
+                                                 style="width: 30px; height: 30px;">
+                                        {% else %}
+                                            <div class="course-card__instructor-placeholder rounded-circle bg-primary bg-opacity-10 d-flex align-items-center justify-content-center"
+                                                 style="width: 30px; height: 30px;">
+                                                <i class="course-card__instructor-icon fas fa-user text-primary fs-7"></i>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                    <div class="course-card__instructor-info flex-grow-1">
+                                        <span class="course-card__instructor-label small text-muted">
+                                            {% trans "Instructor" %}
+                                        </span>
+                                        <div class="course-card__instructor-name fw-medium">
+                                            {{ course.instructor }}
+                                        </div>
+                                    </div>
+                                </div>
+                                {% endif %}
+                                
+                                <!-- Course Meta Info -->
+                                <div class="course-card__meta d-flex justify-content-between align-items-center border-top pt-3 mt-3">
+                                    <!-- Duration -->
+                                    {% if course.duration %}
+                                    <div class="course-card__meta-item course-card__meta-item--duration d-flex align-items-center">
+                                        <i class="course-card__meta-icon far fa-clock text-primary me-2"></i>
+                                        <span class="course-card__meta-text small">
+                                            {{ course.duration }}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Lessons Count -->
+                                    {% if course.lesson_count %}
+                                    <div class="course-card__meta-item course-card__meta-item--lessons d-flex align-items-center">
+                                        <i class="course-card__meta-icon fas fa-book-open text-primary me-2"></i>
+                                        <span class="course-card__meta-text small">
+                                            {% blocktrans count counter=course.lesson_count %}
+                                                1 lesson
+                                            {% plural %}
+                                                {{ counter }} lessons
+                                            {% endblocktrans %}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                    
+                                    <!-- Price -->
+                                    {% if course.price %}
+                                    <div class="course-card__meta-item course-card__meta-item--price">
+                                        <span class="course-card__price fw-bold text-primary">
+                                            {{ course.price }}
+                                        </span>
+                                    </div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% empty %}
+                    <!-- Empty State -->
+                    <div class="featured-courses__empty-state col-12 text-center py-5">
+                        <div class="featured-courses__empty-card card border-0 bg-transparent">
+                            <div class="featured-courses__empty-body card-body py-5">
+                                <div class="featured-courses__empty-icon display-1 text-muted mb-4">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <h4 class="featured-courses__empty-title fw-bold mb-3">
+                                    {% trans "No Courses Available" %}
+                                </h4>
+                                <p class="featured-courses__empty-message text-muted mb-4">
+                                    {% trans "New courses are being prepared. Check back soon!" %}
+                                </p>
+                                <a href="/courses/" 
+                                   class="featured-courses__empty-action btn btn-outline-primary">
+                                    {% trans "View All Courses" %}
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+                
+                <!-- Slider Pagination -->
+                <div class="featured-courses__pagination swiper-pagination mt-4 position-relative"></div>
+            </div>
+            
+            <!-- Slider Navigation -->
+            <div class="featured-courses__navigation">
+                <div class="featured-courses__navigation-button featured-courses__navigation-button--next swiper-button-next rounded-circle shadow-lg bg-white"></div>
+                <div class="featured-courses__navigation-button featured-courses__navigation-button--prev swiper-button-prev rounded-circle shadow-lg bg-white"></div>
+            </div>
+        </div>
+
+        <!-- View All Button -->
+        {% if block.value.view_all_url %}
+        <div class="featured-courses__footer text-center mt-5 pt-3">
+            <a href="{{ block.value.view_all_url }}" 
+               class="featured-courses__view-all-button btn btn-outline-primary btn-lg px-5">
+                {% trans "View All Courses" %}
+                <i class="featured-courses__view-all-icon fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>
