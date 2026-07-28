@@ -5,6 +5,22 @@ All notable changes to django-fusion are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.4.0] — 2026-07-28
+
+### Added
+
+- **`webpack_loader` optional dependency** — `pip install django-fusion[webpack]`
+  installs `django-webpack-loader>=3.2.3` for webpack bundle integration.
+- **Dual assets URL mount** — assets endpoints now served at both
+  `/fusion/assets/` (original) and `/apis/fusion/assets/` (for Next.js
+  API proxy compatibility).
+
+### Fixed
+
+- Assets endpoints return 200 at `/apis/fusion/assets/*` — previously
+  only mounted at `/fusion/assets/*`, causing 404s when proxied through
+  the Next.js API middleware.
+
 ## [0.3.0] — 2026-07-28
 
 ### Added
