@@ -6,6 +6,7 @@ export interface Product {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
+  prepare_time_minutes?: number;
 }
 
 export interface NewProduct {
@@ -15,6 +16,7 @@ export interface NewProduct {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
+  prepare_time_minutes?: number;
 }
 
 export interface UpdateProductPayload {
@@ -24,6 +26,7 @@ export interface UpdateProductPayload {
   category_id?: number | null;
   image?: string | null;
   product_type?: string;
+  prepare_time_minutes?: number;
 }
 
 // ---- Category ----
@@ -41,6 +44,7 @@ export interface Settings {
   phone?: string;
   email?: string;
   tax_rate?: string;
+  tax_id?: string;
   currency?: string;
   opening_time?: string;
   closing_time?: string;
@@ -376,6 +380,7 @@ export interface KitchenTicket {
   sale_id: number;
   status: string;
   priority: number;
+  prepare_time_minutes: number;
   notes?: string | null;
   created_at: string;
   completed_at?: string | null;

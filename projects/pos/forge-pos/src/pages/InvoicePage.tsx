@@ -579,6 +579,7 @@ export default function InvoicePage() {
                 address: settings?.address ?? '',
                 phone: settings?.phone ?? '',
                 email: settings?.email ?? '',
+                taxId: settings?.tax_id ?? undefined,
                 logo: settings?.invoice_logo ?? undefined,
               }}
               to={toParty}

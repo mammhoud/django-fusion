@@ -26,6 +26,11 @@ try:
         version="1.0.0",
         description="High-performance API for Fusion CMS — serves Next.js frontend",
     )
+
+    # Register FUSION_ASSETS endpoints for OpenAPI schema
+    from django_fusion.plugins.bolt.api import register_fusion_assets_bolt
+    register_fusion_assets_bolt(bolt)
+
     _has_bolt = True
 except ImportError:
     _has_bolt = False

@@ -17,7 +17,7 @@ const MODE_LABELS: Record<ThemeMode, string> = {
 };
 
 export default function ThemeToggle() {
-  const { mode: resolvedMode, toggleMode, setMode, setFollowSystem, followSystem, followSystem: _fs } = useTheme();
+  const { mode: resolvedMode, toggleMode, setMode, setFollowSystem, followSystem } = useTheme();
   const { language } = useLanguage();
   const isRtl = language === 'ar';
 
