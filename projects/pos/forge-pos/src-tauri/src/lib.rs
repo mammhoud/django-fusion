@@ -4,6 +4,7 @@ pub mod email;
 
 use db::{get_db_path, run_migrations};
 use operations::*;
+use operations::delivery_zones;
 use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
 use tauri::{AppHandle, Manager};
 
@@ -96,6 +97,18 @@ fn add_category(app: AppHandle, category: db::models::NewCategory) -> Result<db:
     categories::add_category(&db_path, category)
 }
 
+#[tauri::command]
+fn update_category(app: AppHandle, id: i32, update: db::models::UpdateCategory) -> Result<db::models::Category, String> {
+    let db_path = get_db_path(&app)?;
+    categories::update_category(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_category(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    categories::delete_category(&db_path, id)
+}
+
 // ---- Sale commands ----
 #[tauri::command]
 fn add_sale(
@@ -123,6 +136,18 @@ fn update_sale(app: AppHandle, id: i32, update: db::models::UpdateSale) -> Resul
 fn delete_sale(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     sales::delete_sale(&db_path, id)
+}
+
+#[tauri::command]
+fn get_sale_items_by_sale_id(app: AppHandle, sale_id: i32) -> Result<Vec<db::models::SaleItem>, String> {
+    let db_path = get_db_path(&app)?;
+    sales::get_sale_items_by_sale_id(&db_path, sale_id)
+}
+
+#[tauri::command]
+fn get_sale_by_id(app: AppHandle, id: i32) -> Result<db::models::Sale, String> {
+    let db_path = get_db_path(&app)?;
+    sales::get_sale_by_id(&db_path, id)
 }
 
 #[tauri::command]
@@ -265,6 +290,31 @@ fn soft_delete_delivery_type(app: AppHandle, id: i32) -> Result<(), String> {
     delivery_types::soft_delete_delivery_type(&db_path, id)
 }
 
+// ---- Delivery Zone commands ----
+#[tauri::command]
+fn get_delivery_zones(app: AppHandle, include_inactive: bool) -> Result<Vec<db::models::DeliveryZone>, String> {
+    let db_path = get_db_path(&app)?;
+    delivery_zones::get_delivery_zones(&db_path, include_inactive)
+}
+
+#[tauri::command]
+fn add_delivery_zone(app: AppHandle, zone: db::models::NewDeliveryZone) -> Result<db::models::DeliveryZone, String> {
+    let db_path = get_db_path(&app)?;
+    delivery_zones::add_delivery_zone(&db_path, zone)
+}
+
+#[tauri::command]
+fn update_delivery_zone(app: AppHandle, id: i32, update: db::models::UpdateDeliveryZone) -> Result<db::models::DeliveryZone, String> {
+    let db_path = get_db_path(&app)?;
+    delivery_zones::update_delivery_zone(&db_path, id, update)
+}
+
+#[tauri::command]
+fn soft_delete_delivery_zone(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    delivery_zones::soft_delete_delivery_zone(&db_path, id)
+}
+
 // ---- Employee Type commands ----
 #[tauri::command]
 fn get_employee_types(app: AppHandle, include_inactive: bool) -> Result<Vec<db::models::EmployeeType>, String> {
@@ -372,6 +422,12 @@ fn has_users(app: AppHandle) -> Result<bool, String> {
 }
 
 #[tauri::command]
+fn get_user_count(app: AppHandle) -> Result<i64, String> {
+    let db_path = get_db_path(&app)?;
+    auth::get_user_count(&db_path)
+}
+
+#[tauri::command]
 fn verify_user(app: AppHandle, email: String) -> Result<db::models::User, String> {
     let db_path = get_db_path(&app)?;
     auth::verify_user(&db_path, email)
@@ -418,6 +474,12 @@ fn change_password_cmd(
 ) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     auth::change_password(&db_path, email, old_password, new_password)
+}
+
+// ---- Permission Catalog ----
+#[tauri::command]
+fn get_permission_catalog() -> Vec<roles::PermissionDef> {
+    roles::get_permission_catalog()
 }
 
 // ---- Roles commands ----
@@ -715,7 +777,53 @@ fn send_support_email(
     email::send_support_email(name, email, subject, message)
 }
 
-// ---- Database commands (import/export) ----
+#[tauri::command]
+fn get_smtp_config() -> Result<serde_json::Value, String> {
+    let smtp_configured = std::env::var("SMTP_USERNAME").is_ok()
+        && std::env::var("SMTP_PASSWORD").is_ok();
+    let support_email = std::env::var("SMTP_RECIPIENT").ok();
+    Ok(serde_json::json!({
+        "configured": smtp_configured,
+        "support_email": support_email,
+    }))
+}
+
+// ---- Database commands (import/export/reset) ----
+#[tauri::command]
+fn reset_database_cmd(app: AppHandle) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+
+    eprintln!("[db] reset_database: deleting {}", db_path.display());
+
+    // Delete the existing database file
+    if db_path.exists() {
+        std::fs::remove_file(&db_path)
+            .map_err(|e| format!("Failed to delete database file: {}", e))?;
+        eprintln!("[db] reset_database: deleted {}", db_path.display());
+    }
+
+    // Also delete WAL and SHM files if they exist
+    let wal_path = db_path.with_extension("db-wal");
+    if wal_path.exists() {
+        let _ = std::fs::remove_file(&wal_path);
+    }
+    let shm_path = db_path.with_extension("db-shm");
+    if shm_path.exists() {
+        let _ = std::fs::remove_file(&shm_path);
+    }
+
+    // Re-run migrations to create fresh tables
+    run_migrations(&db_path)?;
+    eprintln!("[db] reset_database: migrations re-applied successfully");
+
+    // Recreate superuser if auth is configured
+    if let Err(e) = auth::ensure_superuser_exists(&db_path) {
+        eprintln!("[db] reset_database: superuser ensure failed (non-fatal): {e}");
+    }
+
+    Ok(())
+}
+
 #[tauri::command]
 fn export_database_cmd(app: AppHandle) -> Result<String, String> {
     let db_path = get_db_path(&app)?;
@@ -835,12 +943,16 @@ pub fn run() {
             // Categories
             get_categories,
             add_category,
+            update_category,
+            delete_category,
             // Sales
             add_sale,
             get_sales,
             update_sale,
             delete_sale,
             mark_sale_uploaded,
+            get_sale_items_by_sale_id,
+            get_sale_by_id,
             // Transactions
             get_transactions,
             delete_transaction,
@@ -884,11 +996,13 @@ pub fn run() {
             // Dump
             dump_database,
             // Database
+            reset_database_cmd,
             export_database_cmd,
             import_database_cmd,
             // Auth
             check_auth_required,
             has_users,
+            get_user_count,
             verify_user,
             start_support_sidecar,
             send_auth_confirmation_code,
@@ -898,6 +1012,9 @@ pub fn run() {
             get_superuser_email,
             // Email
             send_support_email,
+            get_smtp_config,
+            // Permission Catalog
+            get_permission_catalog,
             // Roles
             get_roles,
             add_role,
@@ -953,6 +1070,11 @@ pub fn run() {
             get_report_metadata,
             add_report_metadata,
             delete_report_metadata,
+            // Delivery Zones
+            get_delivery_zones,
+            add_delivery_zone,
+            update_delivery_zone,
+            soft_delete_delivery_zone,
             // Sidecar lifecycle
             start_sidecar,
             stop_sidecar,

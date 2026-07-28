@@ -26,10 +26,10 @@ export default function DashboardEditCoursePage() {
   useEffect(() => {
     if (course) {
       setForm({
-        title: course.title || '',
-        description: course.description || '',
+        title: String(course.title || ''),
+        description: String(course.description || ''),
         price: String(course.price || ''),
-        category: course.category || '',
+        category: String(course.category || ''),
       });
     }
   }, [course]);
@@ -42,9 +42,9 @@ export default function DashboardEditCoursePage() {
         id: Number(id),
         title: form.title,
         description: form.description,
-        price: parseFloat(form.price) || 0,
+        price: Number(form.price) || 0,
         category: form.category,
-      }).unwrap();
+      } as any).unwrap();
       setSaved(true);
       setTimeout(() => setSaved(false), 3000);
     } catch (err: any) {

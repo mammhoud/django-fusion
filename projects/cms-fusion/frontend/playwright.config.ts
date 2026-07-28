@@ -21,7 +21,7 @@ export default defineConfig({
     ["list"],
   ],
   use: {
-    baseURL: "http://localhost:3000",
+    baseURL: process.env.PLAYWRIGHT_DOCKER_URL || "http://localhost:3000",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -31,11 +31,13 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: {
-    command: "npx next dev -p 3000",
-    cwd: __dirname,
-    url: "http://localhost:3000",
-    reuseExistingServer: true,
-    timeout: 60000,
-  },
+  webServer: process.env.PLAYWRIGHT_DOCKER_URL
+    ? undefined
+    : {
+        command: "npx next dev -p 3000",
+        cwd: __dirname,
+        url: "http://localhost:3000",
+        reuseExistingServer: true,
+        timeout: 60000,
+      },
 });

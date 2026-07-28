@@ -7,6 +7,7 @@ import Providers from '../components/Providers';
 import ErrorBoundary from '../components/ErrorBoundary';
 import Header from '../components/Header';
 import Footer from '../components/Footer';
+import FusionAssets from '../components/FusionAssets';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -32,6 +33,7 @@ export default function RootLayout({
               </main>
               <Footer />
             </div>
+            <FusionAssets />
           </ErrorBoundary>
         </Providers>
       </body>

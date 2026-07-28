@@ -5,7 +5,6 @@ import { motion } from 'framer-motion';
 import {
   HiCheckCircle,
   HiExclamationCircle,
-  HiExclamationTriangle,
 } from 'react-icons/hi';
 import LoadingSpinner from './LoadingSpinner';
 
@@ -22,7 +21,7 @@ export interface FormState {
   errors?: FormFieldError[];
 }
 
-interface FormProps {
+export interface FormProps {
   /** Form content (fields) */
   children: ReactNode;
   /** Submit handler - return FormState or throw */
@@ -61,7 +60,7 @@ function FormErrors({ errors }: { errors: FormFieldError[] }) {
       role="alert"
     >
       <div className="flex items-center gap-2 mb-1">
-        <HiExclamationTriangle className="w-4 h-4 text-red-500" />
+        <HiExclamationCircle className="w-4 h-4 text-red-500" />
         <p className="text-sm font-medium text-red-800">
           Please fix the following errors:
         </p>

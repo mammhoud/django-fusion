@@ -26,6 +26,11 @@ export interface InvoicePdfData {
   taxRate?: number;
   notes?: string;
   footer?: string;
+  orderType?: string;
+  deliveryFee?: number;
+  deliveryTypeName?: string;
+  deliveryZoneName?: string;
+  deliveryDistance?: number;
 }
 
 export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
@@ -39,7 +44,8 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   const subtotal = data.items.reduce((sum, item) => sum + item.price * item.quantity, 0);
   const taxRate = data.taxRate ?? 0;
   const taxAmount = (subtotal * taxRate) / 100;
-  const total = subtotal + taxAmount;
+  const deliveryFeeAmount = data.deliveryFee ?? 0;
+  const total = subtotal + taxAmount + deliveryFeeAmount;
 
   // --- Header background accent ---
   pdf.setFillColor(13, 148, 136); // teal-600
@@ -95,6 +101,22 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   pdf.roundedRect(pageWidth - margin - labelWidth, y + 14, labelWidth, 8, 2, 2, 'F');
   pdf.text(label, pageWidth - margin - labelWidth / 2, y + 19, { align: 'center' });
 
+  // --- Order type badge ---
+  if (data.orderType) {
+    pdf.setFillColor(
+      data.orderType === 'delivery' ? 251 :
+      data.orderType === 'dine-in' ? 59 :
+      13, 146, 136
+    );
+    pdf.setTextColor(255, 255, 255);
+    pdf.setFontSize(10);
+    pdf.setFont('helvetica', 'bold');
+    const otLabel = data.orderType.charAt(0).toUpperCase() + data.orderType.slice(1);
+    const otWidth = pdf.getTextWidth(otLabel) + 8;
+    pdf.roundedRect(margin, y + 44, otWidth, 7, 2, 2, 'F');
+    pdf.text(otLabel, margin + otWidth / 2, y + 48, { align: 'center' });
+  }
+
   // --- Invoice meta ---
   pdf.setTextColor(17, 24, 39);
   pdf.setFont('helvetica', 'normal');
@@ -106,6 +128,10 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   }
 
   y = Math.max(infoY, y + 45);
+
+  if (data.orderType) {
+    y += 5;
+  }
 
   // --- Bill To / From boxes ---
   const boxHeight = 35;
@@ -170,6 +196,28 @@ export function generateInvoicePDF(data: InvoicePdfData): jsPDF {
   pdf.text('Subtotal:', totalsX, y + 6);
   pdf.text(`${data.currency} ${subtotal.toFixed(2)}`, pageWidth - margin, y + 6, { align: 'right' });
   y += 7;
+
+  if (deliveryFeeAmount > 0) {
+    pdf.setTextColor(234, 88, 12); // orange-600
+    let delLabel = 'Delivery Fee:';
+    if (data.deliveryZoneName) {
+      delLabel = `${data.deliveryZoneName}:`;
+    } else if (data.deliveryTypeName) {
+      delLabel = `Delivery (${data.deliveryTypeName}):`;
+    }
+    pdf.text(delLabel, totalsX, y + 6);
+    pdf.text(`${data.currency} ${deliveryFeeAmount.toFixed(2)}`, pageWidth - margin, y + 6, { align: 'right' });
+    y += 5;
+    if (data.deliveryDistance != null && data.deliveryDistance > 0) {
+      pdf.setFontSize(8);
+      pdf.setTextColor(148, 163, 184); // slate-400
+      pdf.text(`${data.deliveryDistance} km at zone rate`, totalsX + 2, y + 6);
+      y += 5;
+      pdf.setFontSize(10);
+    }
+    pdf.setTextColor(71, 85, 105);
+  }
+
   pdf.text(`Tax (${taxRate}%):`, totalsX, y + 6);
   pdf.text(`${data.currency} ${taxAmount.toFixed(2)}`, pageWidth - margin, y + 6, { align: 'right' });
   y += 9;

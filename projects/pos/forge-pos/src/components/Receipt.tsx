@@ -14,20 +14,28 @@ interface ReceiptProps {
   time: string;
   settings: Settings;
   receiptNumber: string;
+  orderType?: string;
+  deliveryTypeName?: string;
+  deliveryAddress?: string;
+  deliveryFee?: number;
+  deliveryZoneName?: string;
+  deliveryDistance?: number;
 }
 
 const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
-  ({ products, totalAmount, date, time, settings, receiptNumber }, ref) => {
+  ({ products, totalAmount, date, time, settings, receiptNumber, orderType, deliveryTypeName, deliveryAddress, deliveryFee, deliveryZoneName, deliveryDistance }, ref) => {
     const { t } = useTranslation();
+    const orderLabel = orderType ? orderType.charAt(0).toUpperCase() + orderType.slice(1) : '';
+    const hasDelivery = deliveryFee && deliveryFee > 0;
     return (
       <div ref={ref} className="receipt-container">
         <div className="receipt-content bg-white text-black p-6 max-w-sm mx-auto rounded-lg">
           {/* Header */}
           <div className="text-center mb-4">
-            {settings.logo && (
+            {settings.invoice_logo && (
               <img 
-                src={settings.logo} 
-                alt="Logo" 
+                src={settings.invoice_logo} 
+                alt="Business Logo" 
                 className="mx-auto mb-2 max-w-[100px] max-h-[100px] object-contain"
               />
             )}
@@ -45,6 +53,39 @@ const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
               <span className="ml-4">{t('receipt.time')} {time}</span>
             </div>
             <p className="text-xs text-gray-600">{t('receipt.receiptNumber')} {receiptNumber}</p>
+
+            {/* Order Type Badge */}
+            {orderType && (
+              <div className="mt-2">
+                <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold uppercase tracking-wider ${
+                  orderType === 'delivery' ? 'bg-orange-100 text-orange-700' :
+                  orderType === 'dine-in' ? 'bg-blue-100 text-blue-700' :
+                  'bg-teal-100 text-teal-700'
+                }`}>
+                  {orderLabel}
+                </span>
+                {orderType === 'dine-in' && deliveryTypeName && (
+                  <span className="ml-1 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">
+                    {deliveryTypeName}
+                  </span>
+                )}
+                {orderType === 'delivery' && deliveryTypeName && (
+                  <span className="ml-1 inline-block px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-orange-100 text-orange-700">
+                    {deliveryTypeName}
+                  </span>
+                )}
+              </div>
+            )}
+            {orderType === 'delivery' && deliveryAddress && (
+              <p className="text-[10px] text-gray-500 mt-1">
+                {deliveryAddress}
+              </p>
+            )}
+            {orderType === 'delivery' && deliveryZoneName && (
+              <p className="text-[10px] text-gray-500 mt-0.5">
+                Zone: {deliveryZoneName}{deliveryDistance ? ` — ${deliveryDistance} km` : ''}
+              </p>
+            )}
           </div>
 
           {/* Separator */}
@@ -75,10 +116,22 @@ const Receipt = forwardRef<HTMLDivElement, ReceiptProps>(
           {/* Separator */}
           <div className="border-t-2 border-dashed border-gray-400 my-3" />
 
-          {/* Total */}
-          <div className="flex justify-between items-center font-bold text-base mb-4">
-            <span>{t('receipt.totalLabel')}</span>
-            <span>{settings.currency} {totalAmount.toFixed(2)}</span>
+          {/* Totals with delivery fee breakdown */}
+          <div className="space-y-1 mb-4">
+            <div className="flex justify-between items-center text-xs text-gray-600">
+              <span>{t('receipt.subtotal', 'Subtotal')}</span>
+              <span>{settings.currency} {hasDelivery ? (totalAmount - deliveryFee!).toFixed(2) : totalAmount.toFixed(2)}</span>
+            </div>
+            {hasDelivery && (
+              <div className="flex justify-between items-center text-xs text-orange-600">
+                <span>{t('sale.deliveryFee', 'Delivery Fee')}</span>
+                <span>{settings.currency} {deliveryFee!.toFixed(2)}</span>
+              </div>
+            )}
+            <div className="flex justify-between items-center font-bold text-base border-t border-dashed border-gray-400 pt-1">
+              <span>{t('receipt.totalLabel')}</span>
+              <span>{settings.currency} {hasDelivery ? totalAmount.toFixed(2) : totalAmount.toFixed(2)}</span>
+            </div>
           </div>
 
           {/* Footer */}

@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MdLanguage, MdCheck } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 
 const langOptions = [
@@ -12,7 +11,7 @@ const langOptions = [
   { value: 'ar' as const, label: 'العربية', flag: '🇸🇦' },
 ];
 
-export default function LanguageToggle() {
+export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boolean }) {
   const { language, setLanguage } = useLanguage();
   const { t } = useTranslation();
   const [isOpen, setIsOpen] = useState(false);
@@ -38,12 +37,12 @@ export default function LanguageToggle() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium
           bg-white/80 dark:bg-white/10 text-slate-700 dark:text-slate-300
-          hover:bg-slate-100 dark:hover:bg-white/20
-          border border-slate-200 dark:border-white/20
+          hover:bg-base-200/50
+          border border-base-300/30
           shadow-sm transition-colors min-w-[120px]"
         aria-label={t('language.selectLanguage')}
       >
-        <MdLanguage className="w-4 h-4 shrink-0 opacity-70" />
+        <span className="icon-[tabler--language] w-4 h-4 shrink-0 opacity-70" />
         <span className="flex-1 text-left">{current.flag} {current.label}</span>
         <motion.svg
           animate={{ rotate: isOpen ? 180 : 0 }}
@@ -67,10 +66,10 @@ export default function LanguageToggle() {
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute bottom-full left-0 right-0 mb-2 max-h-[260px] overflow-y-auto
-              bg-white dark:bg-slate-800 rounded-xl shadow-xl
-              border border-slate-200 dark:border-white/20
-              z-50"
+            className={`absolute ${dropdownUp ? 'bottom-full mb-2' : 'top-full mt-2'} left-0 right-0 max-h-[260px] overflow-y-auto
+              bg-base-100 rounded-xl shadow-xl
+              border border-base-300/30
+              z-50`}
           >
             {langOptions.map((opt) => {
               const isActive = language === opt.value;
@@ -90,7 +89,7 @@ export default function LanguageToggle() {
                   <span className="text-base">{opt.flag}</span>
                   <span className="flex-1 text-left">{opt.label}</span>
                   {isActive && (
-                    <MdCheck className="w-4 h-4 text-indigo-500" />
+                    <span className="icon-[tabler--check] w-4 h-4 text-indigo-500" />
                   )}
                 </button>
               );

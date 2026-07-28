@@ -1,10 +1,10 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
-import { FaPlus, FaTrash, FaCheck, FaExclamationTriangle, FaImage, FaTimes, FaEdit, FaSearch } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { Product, NewProduct, UpdateProductPayload, Settings, Category } from '../types';
+import Card from '../components/Card';
 import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../components/ProductCard';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -25,8 +25,7 @@ export default function ProductManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0 });
-  const [borderColor, setBorderColor] = useState('#6366f1');
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product' });
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -219,17 +218,15 @@ export default function ProductManager() {
     setShowAddModal(false);
     setEditingProduct(null);
     setErrors({});
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product' });
     setProductImage(null);
-    setBorderColor('#6366f1');
     setOriginalImage(null);
   };
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product' });
     setProductImage(null);
-    setBorderColor('#6366f1');
     setOriginalImage(null);
     setErrors({});
     setShowAddModal(true);
@@ -242,9 +239,9 @@ export default function ProductManager() {
       price: String(product.price),
       unit: product.unit,
       category_id: product.category_id ?? 0,
+      product_type: product.product_type || 'product',
     });
     setProductImage(product.image ?? null);
-    setBorderColor(product.border_color || '#6366f1');
     setOriginalImage(product.image ?? null);
     setErrors({});
     setShowAddModal(true);
@@ -273,7 +270,7 @@ export default function ProductManager() {
           price: parsedPrice,
           unit: trimmedUnit,
           category_id: nextCategoryId,
-          border_color: borderColor || null,
+          product_type: newProduct.product_type || 'product',
         };
         const imageChanged = nextImage !== (originalImage || null);
         if (imageChanged) {
@@ -292,7 +289,7 @@ export default function ProductManager() {
           unit: trimmedUnit,
           category_id: nextCategoryId,
           image: nextImage,
-          border_color: borderColor || null,
+          product_type: newProduct.product_type || 'product',
         };
         const result = await invoke<Product>('add_product', { product: create });
 
@@ -383,19 +380,21 @@ export default function ProductManager() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="card--glass rounded-xl p-4 sm:p-6 transition-colors duration-300"
         >
-          <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white mb-2">{t('productManager.totalProducts')}</h2>
-          <p className="text-3xl sm:text-4xl font-bold text-teal-600 dark:text-teal-400">{products.length}</p>
+          <Card padding="md" transitional className="sm:p-6">
+            <h2 className="text-lg sm:text-xl text-base-content mb-2">{t('productManager.totalProducts')}</h2>
+            <p className="text-3xl sm:text-4xl font-bold text-primary">{products.length}</p>
+          </Card>
         </motion.div>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.05 }}
-          className="card--glass rounded-xl p-4 sm:p-6 transition-colors duration-300"
         >
-          <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white mb-2">{t('productManager.filteredCount') || 'Visible'}</h2>
-          <p className="text-3xl sm:text-4xl font-bold text-purple-600 dark:text-purple-400">{filteredProducts.length}</p>
+          <Card padding="md" transitional className="sm:p-6">
+            <h2 className="text-lg sm:text-xl text-base-content mb-2">{t('productManager.filteredCount') || 'Visible'}</h2>
+            <p className="text-3xl sm:text-4xl font-bold text-purple-600 dark:text-purple-400">{filteredProducts.length}</p>
+          </Card>
         </motion.div>
       </div>
 
@@ -404,11 +403,11 @@ export default function ProductManager() {
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.05 }}
-        className="card--glass rounded-xl p-3 sm:p-4 mb-4"
       >
+        <Card padding="sm" className="sm:p-4 mb-4">
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
@@ -416,11 +415,7 @@ export default function ProductManager() {
               placeholder={t('productManager.searchPlaceholder') || 'Search products...'}
               aria-label={t('productManager.searchPlaceholder') || 'Search products'}
               data-testid="pm-search-input"
-              className="w-full pl-9 pr-9 py-2.5 rounded-lg bg-white/50 dark:bg-white/5
-                border border-slate-300 dark:border-gray-600
-                text-slate-900 dark:text-white text-sm
-                placeholder:text-slate-400 dark:placeholder:text-gray-500
-                focus:outline-none focus:border-teal-400 transition-colors"
+              className="input input-bordered w-full pl-9"
             />
             {isFiltering && (
               <motion.div
@@ -437,10 +432,7 @@ export default function ProductManager() {
             onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
             data-testid="pm-category-filter"
             aria-label={t('productManager.categoryFilter') || 'Filter by category'}
-            className="px-3 py-2.5 rounded-lg bg-white/50 dark:bg-white/5
-              border border-slate-300 dark:border-gray-600
-              text-slate-900 dark:text-white text-sm focus:outline-none
-              focus:border-teal-400 transition-colors sm:w-48"
+            className="select select-bordered sm:w-48"
           >
             <option value="all">{t('productManager.allCategories') || 'All categories'}</option>
             {categories.map(c => (
@@ -451,10 +443,7 @@ export default function ProductManager() {
             value={sortKey}
             onChange={(e) => setSortKey(e.target.value as SortKey)}
             aria-label={t('productManager.sortBy') || 'Sort by'}
-            className="px-3 py-2.5 rounded-lg bg-white/50 dark:bg-white/5
-              border border-slate-300 dark:border-gray-600
-              text-slate-900 dark:text-white text-sm focus:outline-none
-              focus:border-teal-400 transition-colors sm:w-44"
+            className="select select-bordered sm:w-44"
           >
             <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
             <option value="name-asc">{t('productManager.sortNameAsc') || 'Name (A→Z)'}</option>
@@ -467,13 +456,12 @@ export default function ProductManager() {
             whileTap={{ scale: 0.98 }}
             onClick={openAddModal}
             data-testid="pm-add-button"
-            className="bg-linear-to-r from-teal-400 to-teal-500 dark:from-teal-500 dark:to-teal-600
-              text-white rounded-xl py-2.5 px-4 sm:px-6 flex items-center justify-center gap-2
-              transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
+            className="btn btn-primary gap-2 shadow-lg hover:shadow-xl whitespace-nowrap"
           >
-            <FaPlus /> <span>{t('productManager.addNewProduct')}</span>
+            <span className="icon-[tabler--plus]" /> <span>{t('productManager.addNewProduct')}</span>
           </motion.button>
         </div>
+        </Card>
       </motion.div>
 
       {/* Product Grid */}
@@ -481,7 +469,7 @@ export default function ProductManager() {
         {isLoading ? (
           <motion.div
             key="skeleton"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-3 sm:gap-4"
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
           >
             {Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
               <ProductCardSkeleton key={i} />
@@ -491,7 +479,7 @@ export default function ProductManager() {
           <motion.div
             key="grid"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-3 sm:gap-4"
+            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
           >
             {filteredProducts.map((product, index) => {
               const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
@@ -517,7 +505,7 @@ export default function ProductManager() {
                         hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all shadow-sm"
                       aria-label={t('common.edit')}
                     >
-                      <FaEdit className="w-3 h-3" />
+                      <span className="icon-[tabler--edit] w-3 h-3" />
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -536,7 +524,7 @@ export default function ProductManager() {
                           className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full"
                         />
                       ) : (
-                        <FaTrash className="w-3 h-3" />
+                        <span className="icon-[tabler--trash] w-3 h-3" />
                       )}
                     </motion.button>
                   </div>
@@ -548,20 +536,21 @@ export default function ProductManager() {
           <motion.div
             key="empty"
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="card--glass rounded-xl p-8 text-center"
           >
-            <FaImage className="w-16 h-16 mx-auto mb-4 text-slate-400 dark:text-slate-500" />
-            <p className="text-slate-600 dark:text-white/60 text-lg mb-3">
-              {t('productManager.noProducts')}
-            </p>
-            {(searchQuery || selectedCategory !== 'all') && (
-              <button
-                onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
-                className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
-              >
-                {t('common.clear')}
-              </button>
-            )}
+            <Card padding="2xl" center>
+              <span className="icon-[tabler--photo] w-16 h-16 mx-auto mb-4 text-base-content/40" />
+              <p className="text-base-content/60 text-lg mb-3">
+                {t('productManager.noProducts')}
+              </p>
+              {(searchQuery || selectedCategory !== 'all') && (
+                <button
+                  onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+                  className="text-sm font-medium text-primary hover:underline transition-colors"
+                >
+                  {t('common.clear')}
+                </button>
+              )}
+            </Card>
           </motion.div>
         )}
       </AnimatePresence>
@@ -572,25 +561,24 @@ export default function ProductManager() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-slate-800 rounded-xl p-4 sm:p-6 w-full max-w-md transition-colors duration-300"
+            className="bg-base-100 rounded-xl p-4 sm:p-6 w-full max-w-md transition-colors duration-300"
             data-testid="pm-modal"
           >
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white mb-4 sm:mb-6">
+            <h2 className="text-xl sm:text-2xl font-bold text-base-content mb-4 sm:mb-6">
               {modalTitle}
             </h2>
 
             <div className="space-y-4">
               {/* Product Image */}
               <div>
-                <label className="block text-slate-900 dark:text-white mb-2">{t('productManager.productImageOptional') || 'Product Image (optional)'}</label>
+                <label className="block text-base-content mb-2">{t('productManager.productImageOptional') || 'Product Image (optional)'}</label>
                 <div className="flex items-center gap-3">
                   {productImage ? (
                     <div className="relative w-20 h-20 shrink-0">
                       <img
                         src={productImage}
                         alt="Product preview"
-                        className="w-20 h-20 rounded-lg object-cover border-2"
-                        style={{ borderColor: borderColor }}
+                        className="w-20 h-20 rounded-lg object-cover border-2 border-slate-300 dark:border-gray-600"
                       />
                       <button
                         type="button"
@@ -598,7 +586,7 @@ export default function ProductManager() {
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5
                           hover:bg-red-600 transition-colors shadow-lg"
                       >
-                        <FaTimes className="w-3 h-3" />
+                        <span className="icon-[tabler--x] w-3 h-3" />
                       </button>
                     </div>
                   ) : (
@@ -607,8 +595,8 @@ export default function ProductManager() {
                       onClick={handlePickImage}
                       disabled={isUploadingImage}
                       className="flex flex-col items-center justify-center w-20 h-20 rounded-lg
-                        bg-white/30 dark:bg-white/5 border-2 border-dashed border-slate-300 dark:border-gray-600
-                        text-slate-500 dark:text-gray-400 hover:border-teal-400 hover:bg-teal-500/5
+                        bg-base-100/30 border-2 border-dashed border-slate-300 dark:border-gray-600
+                        text-base-content/50 hover:border-primary hover:bg-primary/5
                         transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isUploadingImage ? (
@@ -618,90 +606,27 @@ export default function ProductManager() {
                           className="w-5 h-5 border-2 border-teal-400 border-t-transparent rounded-full"
                         />
                       ) : (
-                        <FaImage className="w-6 h-6" />
+                        <span className="icon-[tabler--photo] w-6 h-6" />
                       )}
                     </button>
                   )}
-                  <p className="text-xs text-slate-500 dark:text-gray-400">
+                  <p className="text-xs text-base-content/50">
                     PNG, JPG, GIF, WebP<br />Optional product photo
                   </p>
                 </div>
               </div>
 
-              {/* Border Color Picker — enhanced with live preview */}
               <div>
-                <label className="block text-slate-900 dark:text-white mb-2 flex items-center gap-2">
-                  <span className="w-4 h-4 rounded-full border" style={{ backgroundColor: borderColor }} />
-                  {t('productManager.borderColor') || 'Border Color'}
-                </label>
-                <div className="flex items-center gap-3">
-                  <input
-                    type="color"
-                    value={borderColor}
-                    onChange={(e) => setBorderColor(e.target.value)}
-                    className="w-12 h-10 rounded-lg cursor-pointer border-2 border-slate-300 dark:border-gray-600
-                      bg-transparent p-0.5"
-                    title="Choose border color for product card"
-                  />
-                  <input
-                    type="text"
-                    value={borderColor}
-                    onChange={(e) => setBorderColor(e.target.value)}
-                    className="flex-1 px-3 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
-                      text-slate-900 dark:text-white border border-slate-300 dark:border-transparent
-                      focus:outline-none focus:border-teal-400 transition-colors text-sm font-mono"
-                    placeholder="#6366f1"
-                    pattern="^#[0-9a-fA-F]{6}$"
-                  />
-                  <div className="flex flex-wrap gap-1 max-w-[180px]">
-                    {['#6366f1', '#ec4899', '#14b8a6', '#f59e0b', '#ef4444', '#22c55e', '#8b5cf6', '#f97316', '#06b6d4', '#84cc16'].map(c => (
-                      <button
-                        key={c}
-                        type="button"
-                        onClick={() => setBorderColor(c)}
-                        className={`w-7 h-7 rounded-full border-2 transition-all hover:scale-110 ${
-                          borderColor === c ? 'border-slate-900 dark:border-white scale-110 ring-2 ring-offset-1 ring-slate-400' : 'border-transparent'
-                        }`}
-                        style={{ backgroundColor: c }}
-                        title={c}
-                      />
-                    ))}
-                  </div>
-                </div>
-                {/* Live preview card */}
-                <div
-                  className="mt-3 rounded-xl p-3 border-2 bg-white/50 dark:bg-white/5 backdrop-blur-sm flex items-center gap-3"
-                  style={{ borderColor, backgroundColor: `${borderColor}10` }}
-                >
-                  <div
-                    className="w-10 h-10 rounded-lg flex items-center justify-center text-white font-bold text-sm"
-                    style={{ backgroundColor: borderColor }}
-                  >
-                    P
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
-                      {newProduct.name || 'Product Name'}
-                    </p>
-                    <p className="text-xs text-slate-500 dark:text-gray-400">
-                      {currencySymbol} {(Number(newProduct.price) || 0).toFixed(2)} / {newProduct.unit || 'item'}
-                    </p>
-                  </div>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-slate-900 dark:text-white mb-2">{t('productManager.productName')}</label>
+                <label className="block text-base-content mb-2">{t('productManager.productName')}</label>
                 <input
                   type="text"
                   value={newProduct.name}
                   onChange={(e) => handleInputChange('name', e.target.value)}
                   data-testid="pm-name-input"
-                  className={`w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
-                    text-slate-900 dark:text-white border focus:outline-none transition-colors ${
+                  className={`input input-bordered w-full ${
                       errors.name
-                        ? 'border-red-500 focus:border-red-400'
-                        : 'border-slate-300 dark:border-transparent focus:border-teal-400'
+                        ? 'input-error'
+                        : ''
                     }`}
                   placeholder={t('productManager.namePlaceholder')}
                   disabled={isSubmitting}
@@ -711,66 +636,102 @@ export default function ProductManager() {
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              {/* Product Type */}
+              {!editingProduct && (
                 <div>
-                  <label className="block text-slate-900 dark:text-white mb-2">
-                    Price ({currencySymbol} per {newProduct.unit})
+                  <label className="block text-base-content mb-2 flex items-center gap-2">
+                    <span className="icon-[tabler--tag] w-4 h-4 text-teal-500" />
+                    {t('productManager.productType') || 'Product Type'}
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { value: 'product', label: t('productManager.typeProduct') || 'Product', icon: 'package' },
+                      { value: 'service', label: t('productManager.typeService') || 'Service', icon: 'settings' },
+                      { value: 'combo', label: t('productManager.typeCombo') || 'Combo', icon: 'layers-union' },
+                      { value: 'addon', label: t('productManager.typeAddon') || 'Add-on', icon: 'plus' },
+                    ].map(({ value, label, icon }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => handleInputChange('product_type', value)}
+                        disabled={isSubmitting}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all
+                          ${newProduct.product_type === value
+                            ? 'border-teal-500 bg-primary/5 text-primary'
+                            : 'border-slate-200 dark:border-slate-600 bg-base-100/50 text-slate-600 dark:text-slate-400 hover:border-primary/50'
+                          }`}
+                      >
+                        <span className={`icon-[tabler--${icon}] w-5 h-5`} />
+                        <span className="text-xs font-semibold">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Price + Unit in a 2-column row */}
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <label className="block text-base-content mb-1.5 text-xs font-medium">
+                    <span className="icon-[tabler--currency-dollar] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                    Price ({currencySymbol})
                   </label>
                   <input
                     type="number"
                     value={newProduct.price}
                     onChange={(e) => handleInputChange('price', e.target.value)}
                     data-testid="pm-price-input"
-                    className={`w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
-                      text-slate-900 dark:text-white border focus:outline-none transition-colors ${
+                    className={`input input-bordered w-full h-9 text-sm ${
                         errors.price
-                          ? 'border-red-500 focus:border-red-400'
-                          : 'border-slate-300 dark:border-transparent focus:border-teal-400'
+                          ? 'input-error'
+                          : ''
                       }`}
-                    placeholder={t('productManager.pricePlaceholder', { unit: newProduct.unit })}
+                    placeholder="0.00"
                     step="0.01"
                     min="0"
                     disabled={isSubmitting}
                   />
                   {errors.price && (
-                    <p className="text-red-500 dark:text-red-400 text-sm mt-1">{errors.price}</p>
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-0.5">{errors.price}</p>
                   )}
                 </div>
 
                 <div>
-                  <label className="block text-slate-900 dark:text-white mb-2">Unit</label>
+                  <label className="block text-base-content mb-1.5 text-xs font-medium">
+                    <span className="icon-[tabler--cube] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                    Unit
+                  </label>
                   <input
                     type="text"
                     value={newProduct.unit}
                     onChange={(e) => handleInputChange('unit', e.target.value)}
                     data-testid="pm-unit-input"
-                    className={`w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
-                      text-slate-900 dark:text-white border focus:outline-none transition-colors ${
+                    className={`input input-bordered w-full h-9 text-sm ${
                         errors.unit
-                          ? 'border-red-500 focus:border-red-400'
-                          : 'border-slate-300 dark:border-transparent focus:border-teal-400'
+                          ? 'input-error'
+                          : ''
                       }`}
-                    placeholder={t('productManager.unitPlaceholder')}
+                    placeholder="item, kg, pcs"
                     disabled={isSubmitting}
                   />
                   {errors.unit && (
-                    <p className="text-red-500 dark:text-red-400 text-sm mt-1">{errors.unit}</p>
+                    <p className="text-red-500 dark:text-red-400 text-xs mt-0.5">{errors.unit}</p>
                   )}
                 </div>
               </div>
 
+              {/* Category selector */}
               {categories.length > 0 && (
                 <div>
-                  <label className="block text-slate-900 dark:text-white mb-2">
+                  <label className="block text-base-content mb-1.5 text-xs font-medium">
+                    <span className="icon-[tabler--folder] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
                     {t('productManager.category') || 'Category'}
                   </label>
                   <select
                     value={newProduct.category_id ? String(newProduct.category_id) : ''}
                     onChange={(e) => handleInputChange('category_id', e.target.value ? Number(e.target.value) : 0)}
                     disabled={isSubmitting}
-                    className="w-full px-4 py-2 rounded-lg bg-slate-100 dark:bg-slate-700
-                      text-slate-900 dark:text-white border border-slate-300 dark:border-transparent
-                      focus:outline-none focus:border-teal-400 transition-colors"
+                    className="select select-bordered w-full h-9 text-sm"
                   >
                     <option value="">{t('productManager.noCategory') || '— No category —'}</option>
                     {categories.map(c => (
@@ -783,9 +744,7 @@ export default function ProductManager() {
               <div className="flex gap-4 mt-6">
                 <button
                   onClick={closeModal}
-                  className="flex-1 px-4 py-2 rounded-lg bg-slate-200 dark:bg-slate-700
-                    text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600
-                    transition-colors disabled:opacity-50"
+                  className="btn btn-ghost flex-1 disabled:opacity-50"
                   disabled={isSubmitting}
                 >
                   {t('common.cancel')}
@@ -793,8 +752,7 @@ export default function ProductManager() {
                 <button
                   onClick={handleSaveProduct}
                   data-testid="pm-submit"
-                  className="flex-1 px-4 py-2 rounded-lg bg-teal-500 text-white hover:bg-teal-400
-                    transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
+                  className="btn btn-primary flex-1 disabled:opacity-50 gap-2"
                   disabled={isSubmitting}
                 >
                   {isSubmitting ? (
@@ -808,7 +766,7 @@ export default function ProductManager() {
                     </>
                   ) : (
                     <>
-                      {editingProduct ? <FaEdit /> : <FaPlus />}
+                      {editingProduct ? <span className="icon-[tabler--edit]" /> : <span className="icon-[tabler--plus]" />}
                       {editingProduct ? t('common.update') : t('productManager.addProduct')}
                     </>
                   )}
@@ -825,26 +783,26 @@ export default function ProductManager() {
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            className="bg-white dark:bg-slate-800 rounded-xl p-6 w-full max-w-md border-2
+            className="bg-base-100 rounded-xl p-6 w-full max-w-md border-2
               border-red-300 dark:border-red-500/30 transition-colors duration-300"
           >
             <div className="flex justify-center mb-4">
               <div className="bg-red-500/20 rounded-full p-4">
-                <FaExclamationTriangle className="text-red-500 dark:text-red-400 text-4xl" />
+                <span className="icon-[tabler--alert-triangle] text-red-500 dark:text-red-400 text-4xl" />
               </div>
             </div>
 
-            <h2 className="text-xl sm:text-2xl font-bold text-slate-900 dark:text-white text-center mb-3">
+            <h2 className="text-xl sm:text-2xl font-bold text-base-content text-center mb-3">
               {t('productManager.deleteTitle')}
             </h2>
 
-            <p className="text-slate-600 dark:text-gray-300 text-center mb-2">
+            <p className="text-base-content/70 text-center mb-2">
               {t('productManager.deleteConfirm')}
             </p>
-            <p className="text-slate-900 dark:text-white font-semibold text-center text-lg mb-1">
+            <p className="text-base-content font-semibold text-center text-lg mb-1">
               {productToDelete.name}
             </p>
-            <p className="text-slate-500 dark:text-gray-400 text-center text-sm mb-6">
+            <p className="text-base-content/50 text-center text-sm mb-6">
               {t('productManager.deleteWarning')}
             </p>
 
@@ -853,9 +811,7 @@ export default function ProductManager() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={() => { setShowDeleteModal(false); setProductToDelete(null); }}
-                className="flex-1 px-6 py-3 rounded-lg bg-slate-200 dark:bg-slate-700
-                  text-slate-900 dark:text-white hover:bg-slate-300 dark:hover:bg-slate-600
-                  transition-colors font-semibold"
+                className="btn btn-ghost flex-1 font-semibold"
               >
                 {t('productManager.cancelDelete')}
               </motion.button>
@@ -863,10 +819,9 @@ export default function ProductManager() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleDeleteProduct}
-                className="flex-1 px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-600
-                  transition-colors font-semibold flex items-center justify-center gap-2"
+                className="btn btn-error flex-1 font-semibold gap-2"
               >
-                <FaTrash />
+                <span className="icon-[tabler--trash]" />
                 {t('productManager.confirmDelete')}
               </motion.button>
             </div>
@@ -880,10 +835,9 @@ export default function ProductManager() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-teal-500 text-white px-6 py-3
-            rounded-xl flex items-center gap-2 z-50"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success"
         >
-          <FaCheck className="text-xl" />
+          <span className="icon-[tabler--check] text-xl" />
           {statusMessage}
         </motion.div>
       )}
@@ -894,10 +848,9 @@ export default function ProductManager() {
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
-          className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3
-            rounded-xl flex items-center gap-2 max-w-md z-50"
+          className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error max-w-md"
         >
-          <FaExclamationTriangle className="text-xl" />
+          <span className="icon-[tabler--alert-triangle] text-xl" />
           <span>{statusMessage}</span>
         </motion.div>
       )}

@@ -1,13 +1,11 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-import { MdMenu, MdArrowBack, MdLogout, MdWarning, MdKeyboardArrowDown } from 'react-icons/md';
-import { invoke } from '@tauri-apps/api/core';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
 import SideNav from './SideNav';
-import { Settings } from '../types';
 import { useAuth, AuthUser } from '../contexts/AuthContext';
-// Bundled fallback logo (animated POS Crest SVG).
-// settings.logo always takes priority when uploaded.
+// Built-in Forge POS crest logo — always shown in the app chrome.
+// Business logos from settings only appear on invoices/receipts.
 import defaultLogo from '../assets/pos-crest.svg';
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
@@ -29,12 +27,11 @@ function ProfileDropdown({
 
   return (
     <div className="relative">
-      <motion.button
-        whileHover={{ scale: 1.03 }}
-        whileTap={{ scale: 0.97 }}
-        onClick={onToggle}
-        className="flex items-center gap-2 px-3 py-2 rounded-xl card--glass
-          hover:shadow-md transition-shadow"
+      <motion.button              whileHover={{ scale: 1.03 }}
+              whileTap={{ scale: 0.97 }}
+              onClick={onToggle}
+              className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-100/70 backdrop-blur-md border border-base-300/30
+                hover:shadow-md transition-shadow"
         aria-label="User profile"
         aria-expanded={open}
       >
@@ -43,10 +40,10 @@ function ProfileDropdown({
           flex items-center justify-center text-white font-bold shrink-0 shadow-sm`}>
           {initials}
         </div>
-        <span className="hidden sm:block text-xs font-medium text-slate-600 dark:text-slate-300 max-w-[120px] truncate">
+        <span className="hidden sm:block text-xs font-medium text-base-content/70 max-w-[120px] truncate">
           {user.email}
         </span>
-        <MdKeyboardArrowDown className={`w-4 h-4 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
+        <span className={`icon-[tabler--chevron-down] w-4 h-4 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
       </motion.button>
 
       <AnimatePresence>
@@ -56,21 +53,20 @@ function ProfileDropdown({
             animate={{ opacity: 1, y: 4, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 mt-1 w-64 bg-white dark:bg-slate-800 rounded-2xl shadow-xl
-              border border-slate-200 dark:border-slate-700 overflow-hidden z-50"
+            className="absolute right-0 mt-1 w-64 bg-base-100 rounded-2xl shadow-xl
+              border border-base-300/50 overflow-hidden z-50"
           >
-            {/* User info header */}
-            <div className="px-4 py-3 border-b border-slate-100 dark:border-slate-700">
+            {/* User info header */}              <div className="px-4 py-3 border-b border-base-300/30">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-teal-500 to-teal-700
                   flex items-center justify-center text-white font-bold shadow-sm shrink-0">
                   {initials}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-sm font-semibold text-slate-900 dark:text-white truncate">
+                  <p className="text-sm font-semibold text-base-content truncate">
                     {user.name || 'User'}
                   </p>
-                  <p className="text-xs text-slate-500 dark:text-slate-400 truncate">
+                  <p className="text-xs text-base-content/50 truncate">
                     {user.email}
                   </p>
                 </div>
@@ -83,11 +79,9 @@ function ProfileDropdown({
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                  text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
-                  transition-colors text-sm font-medium"
+                className="btn btn-ghost btn-block justify-start text-error hover:bg-error/10 rounded-xl"
               >
-                <MdLogout className="w-4 h-4" />
+                <span className="icon-[tabler--logout] w-4 h-4" />
                 Sign Out
               </motion.button>
             </div>
@@ -113,15 +107,14 @@ export default function PageLayout({
   children,
   showNav = true,
   title,
-  background = 'bg-slate-100 dark:bg-slate-900',
-  containerWidth = 'max-w-7xl xl:max-w-[90rem] 3xl:max-w-[110rem] 4xl:max-w-[130rem]',
-  padding = 'py-4 md:py-6 lg:py-10',
+  background = 'bg-base-200/40',
+  containerWidth = 'max-w-[100rem] xl:max-w-[110rem] 3xl:max-w-[130rem] 4xl:max-w-[150rem]',
+  padding = 'py-12 md:py-16 lg:py-12',
 }: PageLayoutProps) {
   const navigate = useNavigate();
   const location = useLocation();
   const [isNavOpen, setIsNavOpen] = useState(false);
   const [isNavigating, setIsNavigating] = useState(false);
-  const [logo, setLogo] = useState<string | null>(null);
   const [profileOpen, setProfileOpen] = useState(false);
   const profileRef = useRef<HTMLDivElement>(null);
 
@@ -145,35 +138,21 @@ export default function PageLayout({
     logout();
   };
 
-  // ── AJAX: load settings once (cached by browser) ──
-  useEffect(() => {
-    let cancelled = false;
-    const loadSettings = async () => {
-      try {
-        const response = await invoke<Settings>('get_settings');
-        if (!cancelled && response?.logo) setLogo(response.logo);
-      } catch {
-        if (!cancelled) setLogo(null);
-      }
-    };
-    loadSettings();
-    return () => { cancelled = true; };
-  }, []);
+
 
   const handleBackNavigation = () => {
     setIsNavigating(true);
     setTimeout(() => navigate('/'), 300);
   };
 
-  const renderLogo = (size: string) => (
-    <motion.img
+  const renderLogo = (size: string) => (      <motion.img
       initial={{ opacity: 0, scale: 0.8 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{ type: 'spring', stiffness: 240, damping: 20 }}
       whileHover={{ rotate: 6, scale: 1.06 }}
-      src={logo || defaultLogo}
-      alt="Restaurant Logo"
-      className={`${size} object-contain rounded-md shadow-sm bg-white/60 dark:bg-white/10 p-0.5 border border-slate-200 dark:border-white/10 shrink-0`}
+      src={defaultLogo}
+      alt="Forge POS"
+      className={`${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.5'; }}
     />
   );
@@ -196,15 +175,13 @@ export default function PageLayout({
             initial={{ opacity: 0, y: -24 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -24 }}
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 flex items-center gap-3
-              bg-amber-500 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-semibold"
+            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold"
           >
-            <MdWarning className="w-5 h-5 shrink-0" />
-            <span>Session expiring soon — click anywhere to stay logged in</span>
-            <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              onClick={dismissInactivityWarning}
-              className="ml-2 px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition-colors"
+            <span className="icon-[tabler--alert-triangle] w-5 h-5 shrink-0" />
+            <span>Session expiring soon — click anywhere to stay logged in</span>              <motion.button
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                onClick={dismissInactivityWarning}
+                className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
             >
               Stay
             </motion.button>
@@ -221,26 +198,26 @@ export default function PageLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={() => setIsNavOpen(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl card--glass"
+                className="btn btn-square btn-ghost"
                 aria-label="Open navigation"
               >
-                <MdMenu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                <span className="icon-[tabler--menu-2] w-5 h-5" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={handleBackNavigation}
                 disabled={isNavigating}
-                className="w-9 h-9 flex items-center justify-center rounded-xl card--glass disabled:opacity-50"
+                className="btn btn-square btn-ghost disabled:opacity-50"
                 aria-label="Back to home"
               >
-                <MdArrowBack className="w-4 h-4 text-slate-700 dark:text-slate-300 u-rtl-flip" />
+                <span className="icon-[tabler--arrow-back] w-4 h-4 rtl:scale-x-[-1]" />
               </motion.button>
             </div>
             <div className="flex items-center gap-3 flex-1 justify-center min-w-0">
               {renderLogo('h-9 w-9 sm:h-10 sm:w-10')}
               {title && (
-                <h1 className="text-base sm:text-lg md:text-xl font-semibold text-slate-900 dark:text-white transition-colors duration-300 flex items-center gap-2 truncate">
+                <h1 className="text-base sm:text-lg md:text-xl font-semibold text-base-content transition-colors duration-300 flex items-center gap-2 truncate">
                   {title}
                 </h1>
               )}
@@ -280,10 +257,10 @@ export default function PageLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={() => setIsNavOpen(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl card--glass shrink-0"
+                className="btn btn-square btn-ghost shrink-0"
                 aria-label="Open navigation"
               >
-                <MdMenu className="w-5 h-5 text-slate-700 dark:text-slate-300" />
+                <span className="icon-[tabler--menu-2] w-5 h-5" />
               </motion.button>
             </div>
           </div>

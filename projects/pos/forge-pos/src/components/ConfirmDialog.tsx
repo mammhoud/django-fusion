@@ -1,7 +1,5 @@
 import Modal from './Modal';
 import { useTranslation } from 'react-i18next';
-import { FaExclamationTriangle } from 'react-icons/fa';
-import { MdDelete } from 'react-icons/md';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -41,17 +39,15 @@ export default function ConfirmDialog({
         <>
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+            className="btn btn-ghost flex-1"
           >
             {t('confirmDialog.cancel')}
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition-colors ${
-              isDanger ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
-            }`}
+            className={`btn flex-1 ${isDanger ? 'btn-error' : 'btn-warning'}`}
           >
-            <MdDelete className="w-4 h-4" /> {confirmLabel === 'Deactivate' ? t('confirmDialog.deactivate') : confirmLabel}
+            <span className="icon-[tabler--trash] w-4 h-4" /> {confirmLabel === 'Deactivate' ? t('confirmDialog.deactivate') : confirmLabel}
           </button>
         </>
       }
@@ -59,14 +55,14 @@ export default function ConfirmDialog({
       <div className="text-center">
         <div className={`flex justify-center mb-4 ${isDanger ? 'text-red-500' : 'text-yellow-500'}`}>
           <div className={`${isDanger ? 'bg-red-500/20' : 'bg-yellow-500/20'} rounded-full p-4`}>
-            <FaExclamationTriangle className="text-4xl" />
+            <span className="icon-[tabler--alert-triangle] text-4xl" />
           </div>
         </div>
-        <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h2>
-        <p className="text-slate-600 dark:text-gray-300">{message}</p>
-        <p className="text-slate-900 dark:text-white font-semibold text-lg mt-1 mb-2">{itemName}?</p>
+        <h2 className="text-xl font-bold text-base-content mb-2">{title}</h2>
+        <p className="text-base-content/70">{message}</p>
+        <p className="text-base-content font-semibold text-lg mt-1 mb-2">{itemName}?</p>
         {description && (
-          <p className="text-slate-500 dark:text-gray-400 text-sm mb-2">{description}</p>
+          <p className="text-base-content/50 text-sm mb-2">{description}</p>
         )}
       </div>
     </Modal>

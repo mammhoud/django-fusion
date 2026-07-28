@@ -1,0 +1,10 @@
+[
+  {
+    "model": "sites.site",
+    "pk": 101,
+    "fields": {
+      "domain": "fusion-cms.com",
+      "name": "fusion-cms.com dummy site"
+    }
+  }
+]

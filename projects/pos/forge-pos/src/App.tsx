@@ -23,10 +23,22 @@ import TaxReports from './pages/TaxReports';
 import Roles from './pages/Roles';
 import SupportChat from './pages/SupportChat';
 import InvoicePage from './pages/InvoicePage';
+import ThemeShowcase from './pages/ThemeShowcase';
+import ThemeStudio from './pages/ThemeStudio';
+import StaffPage from './pages/StaffPage';
+import ProductsPage from './pages/ProductsPage';
 import ChatSupport from './components/ChatSupport';
 import { useAuth } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
+
+// FlyonUI — reinitialize interactive components after route changes
+// The module is already loaded via static import in main.tsx — this just
+// triggers autoInit on new DOM elements after navigation
+async function reinitFlyonUI() {
+  await import('flyonui/flyonui');
+  setTimeout(() => window.HSStaticMethods?.autoInit(), 100);
+}
 
 // Route ordering for direction-aware transitions
 const routeOrder: Record<string, number> = {
@@ -51,6 +63,10 @@ const routeOrder: Record<string, number> = {
   '/roles': 18,
   '/support-chat': 19,
   '/invoice': 20,
+  '/theme-showcase': 21,
+  '/theme-studio': 22,
+  '/staff': 23,
+  '/products': 24,
 };
 
 function PageWrapper({ children, direction, isFirstRender }: { children: React.ReactNode; direction: number; isFirstRender: boolean }) {
@@ -97,6 +113,9 @@ function AnimatedRoutes() {
   const { isAuthenticated, isAuthRequired } = useAuth();
   const { toggleMode } = useTheme();
   const isFirstRender = useRef(true);
+  // Always show Auth first on every app launch as the landing page
+  // Once the user authenticates, the splash auto-dismisses
+  const [showAuthSplash, setShowAuthSplash] = useState(true);
 
   useEffect(() => {
     isFirstRender.current = false;
@@ -112,6 +131,12 @@ function AnimatedRoutes() {
       setDirection(currIdx > prevIdx ? 1 : -1);
       prevPathRef.current = curr;
     }
+  }, [location.pathname]);
+
+  // FlyonUI — reinitialize interactive components (modals, dropdowns, toggles)
+  // on every route change so new DOM elements get bound properly
+  useEffect(() => {
+    reinitFlyonUI();
   }, [location.pathname]);
 
   // Global keyboard shortcuts — navigate between pages with single keys
@@ -151,6 +176,17 @@ function AnimatedRoutes() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigate, toggleMode]);
 
+  // Auto-dismiss splash when user authenticates (or skips auth)
+  useEffect(() => {
+    if (showAuthSplash && isAuthenticated) {
+      setShowAuthSplash(false);
+    }
+    if (showAuthSplash && isAuthRequired === false) {
+      // Auth not required at all — dismiss splash
+      setShowAuthSplash(false);
+    }
+  }, [showAuthSplash, isAuthenticated, isAuthRequired]);
+
   // If auth is still being checked, show a loading screen
   if (isAuthRequired === null) {
     return (
@@ -161,6 +197,11 @@ function AnimatedRoutes() {
         </div>
       </div>
     );
+  }
+
+  // Always show Auth first as the landing/splash page
+  if (showAuthSplash) {
+    return <Auth />;
   }
 
   // If auth is required but user is not authenticated, show the Auth page
@@ -193,6 +234,10 @@ function AnimatedRoutes() {
           <Route path="/roles" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Roles /></PageWrapper>} />
           <Route path="/support-chat" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><SupportChat /></PageWrapper>} />
           <Route path="/invoice" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><InvoicePage /></PageWrapper>} />
+          <Route path="/theme-showcase" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ThemeShowcase /></PageWrapper>} />
+          <Route path="/theme-studio" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ThemeStudio /></PageWrapper>} />
+          <Route path="/staff" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><StaffPage /></PageWrapper>} />
+          <Route path="/products" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ProductsPage /></PageWrapper>} />
         </Routes>
       </AnimatePresence>
       {/* Global floating chat widget — visible on all authenticated pages */}

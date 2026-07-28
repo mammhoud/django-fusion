@@ -30,7 +30,7 @@ export default function Footer() {
           <div>
             <Link href="/" className="flex items-center gap-2 text-white font-bold text-lg mb-4">
               <HiAcademicCap className="w-7 h-7 text-[rgb(var(--fu-primary))]" />
-              <span>LMS</span>
+              <span>Fusion CMS</span>
             </Link>
             <p className="text-sm text-gray-400 leading-relaxed">
               Empowering learners worldwide with quality education and expert instructors.
@@ -55,7 +55,11 @@ export default function Footer() {
         </div>
 
         <div className="mt-10 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
-          <p>&copy; {new Date().getFullYear()} LMS Platform. All rights reserved.</p>
+          <p>&copy; {new Date().getFullYear()} mammhoud. All rights reserved. {' '}
+            <a href="https://github.com/mammhoud" className="hover:text-white transition-colors" target="_blank" rel="noopener">GitHub</a>
+            {' · '}
+            <a href="https://mammhoud.github.io" className="hover:text-white transition-colors" target="_blank" rel="noopener">Portfolio</a>
+          </p>
         </div>
       </div>
     </footer>

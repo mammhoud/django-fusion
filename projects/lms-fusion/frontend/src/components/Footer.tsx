@@ -8,8 +8,8 @@ import type { FusionBranding } from '@/lib/fusion-types';
 export default function Footer() {
   const [branding, setBranding] = React.useState<FusionBranding>({
     site_name: 'Fusion LMS',
-    company_name: 'Fusion Inc.',
-    creator_name: 'Fusion Team',
+    company_name: 'mammhoud',
+    creator_name: 'Mahmoud Ezzat',
     primary_color: '#00a1b3',
   });
 
@@ -46,7 +46,10 @@ export default function Footer() {
           </div>
         </div>
         <div className="mt-8 pt-8 border-t border-gray-800 text-center text-sm text-gray-500">
-          &copy; {new Date().getFullYear()} {branding.company_name}. All rights reserved.
+          &copy; {new Date().getFullYear()} mammhoud. All rights reserved.{' '}
+          <a href="https://github.com/mammhoud" className="hover:text-white transition-colors" target="_blank" rel="noopener">GitHub</a>
+          {' · '}
+          <a href="https://mammhoud.github.io" className="hover:text-white transition-colors" target="_blank" rel="noopener">Portfolio</a>
         </div>
       </div>
     </footer>

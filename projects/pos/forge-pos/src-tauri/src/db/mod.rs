@@ -2,6 +2,7 @@ use diesel::sqlite::SqliteConnection;
 use diesel::prelude::*;
 use diesel_migrations::{embed_migrations, EmbeddedMigrations, MigrationHarness};
 use std::path::PathBuf;
+use std::sync::OnceLock;
 use tauri::AppHandle;
 use tauri::Manager;
 
@@ -18,10 +19,22 @@ pub fn establish_connection(db_path: &std::path::Path) -> Result<SqliteConnectio
     SqliteConnection::establish(database_url)
 }
 
-/// Resolve the database path from a DATABASE_URL environment variable
-/// (relative paths are resolved against the current working directory).
-/// Falls back to the platform-specific app data directory when unset.
+/// Cached resolved database path — avoids repeated logging and path resolution.
+static CACHED_DB_PATH: OnceLock<PathBuf> = OnceLock::new();
+
+/// Resolve the database path.
+///
+/// Priority:
+/// 1. `DATABASE_URL` env var (development / test overrides)
+/// 2. Platform-specific app data dir (`restaurant.db`)
+///
+/// The resolved path is cached after the first call so the log message
+/// appears only once and subsequent calls are a cheap clone.
 pub fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
+    if let Some(cached) = CACHED_DB_PATH.get() {
+        return Ok(cached.clone());
+    }
+
     // Check for DATABASE_URL env var first (development overrides)
     if let Ok(db_url) = std::env::var("DATABASE_URL") {
         let path = PathBuf::from(&db_url);
@@ -31,6 +44,8 @@ pub fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
                     .map_err(|e| format!("Failed to create database directory: {}", e))?;
             }
         }
+        eprintln!("[db] DATABASE_URL={db_url} → resolved={}", path.display());
+        let _ = CACHED_DB_PATH.set(path.clone());
         return Ok(path);
     }
 
@@ -41,7 +56,10 @@ pub fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
         .map_err(|e| format!("Failed to get app data dir: {}", e))?;
     std::fs::create_dir_all(&app_data_dir)
         .map_err(|e| format!("Failed to create app data directory: {}", e))?;
-    Ok(app_data_dir.join("restaurant.db"))
+    let db_path = app_data_dir.join("restaurant.db");
+    eprintln!("[db] app_data_dir={} → resolved={}", app_data_dir.display(), db_path.display());
+    let _ = CACHED_DB_PATH.set(db_path.clone());
+    Ok(db_path)
 }
 
 /// Resolve the database path from the environment only (no Tauri dependency).

@@ -26,9 +26,9 @@ export default function DashboardNewCoursePage() {
       await createCourse({
         title: form.title,
         description: form.description,
-        price: parseFloat(form.price) || 0,
+        price: Number(form.price) || 0,
         category: form.category,
-      }).unwrap();
+      } as any).unwrap();
       router.push('/dashboard/courses');
     } catch (err: any) {
       setError(err?.data?.message || 'Failed to create course');

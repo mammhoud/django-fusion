@@ -14,6 +14,7 @@ diesel::table! {
         closing_time -> Nullable<Text>,
         receipt_footer -> Nullable<Text>,
         logo -> Nullable<Text>,
+        invoice_logo -> Nullable<Text>,
         dine_in_tables -> Integer,
         delivery_fee -> Double,
         delivery_fee_per_km -> Double,
@@ -38,7 +39,6 @@ diesel::table! {
         category_id -> Nullable<Integer>,
         image -> Nullable<Text>,
         product_type -> Text,
-        border_color -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,
@@ -95,6 +95,7 @@ diesel::table! {
         status -> Text,
         table_number -> Nullable<Integer>,
         delivery_type_id -> Nullable<Integer>,
+        delivery_zone_id -> Nullable<Integer>,
         delivery_address -> Nullable<Text>,
         employee_id -> Nullable<Integer>,
         customer_id -> Nullable<Integer>,
@@ -391,6 +392,19 @@ diesel::table! {
     }
 }
 
+diesel::table! {
+    delivery_zones (id) {
+        id -> Integer,
+        name -> Text,
+        base_fee -> Double,
+        fee_per_km -> Double,
+        max_distance -> Double,
+        is_active -> Bool,
+        created_at -> Timestamp,
+        updated_at -> Timestamp,
+    }
+}
+
 diesel::joinable!(user_roles -> users (user_id));
 diesel::joinable!(user_roles -> roles (role_id));
 diesel::joinable!(report_metadata -> users (generated_by));
@@ -434,4 +448,5 @@ diesel::allow_tables_to_appear_in_same_query!(
     tax_reports,
     employee_schedules,
     payrolls,
+    delivery_zones,
 );

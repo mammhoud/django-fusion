@@ -204,7 +204,7 @@ export default function Carousel({
           <motion.div
             key={activeIndex}
             custom={direction}
-            variants={variants[animation]}
+            variants={variants[animation] as any}
             initial="enter"
             animate="center"
             exit="exit"

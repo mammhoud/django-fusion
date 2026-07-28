@@ -1,21 +1,19 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useKeyboardTabNav } from '../hooks/useKeyboardTabNav';
+import { useDashboardDeltas } from '../hooks/useDashboardDeltas';
 import { useNavigate } from 'react-router-dom';
-import { 
-  MdAttachMoney, MdShoppingCart, 
-  MdPeople, MdInventory, MdMenuBook, MdWarning,
-  MdTrendingUp, MdDateRange, MdStore, MdDashboard,
-  MdReceipt, MdBarChart, MdAccountBalance
-} from 'react-icons/md';
-import { FaFilePdf, FaDownload } from 'react-icons/fa';
 import PageLayout from '../components/PageLayout';
 import { SkeletonTable, SkeletonCard } from '../components/Skeleton';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
+import StatCard from '../components/StatCard';
+import ComparisonTable, { type ComparisonFilter } from '../components/ComparisonTable';
 import { invoke } from '@tauri-apps/api/core';
-import { 
-  Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction, 
-  Recipe, Employee, Product, Transaction, DeliveryType
+import {
+  Sale, Settings, AnalyticsData, Ingredient, InventoryTransaction,
+  Recipe, Employee, Product, Transaction, DeliveryType, DeliveryZone
 } from '../types';
 import jsPDF from 'jspdf';
 import { downloadExcel } from '../utils/export';
@@ -65,7 +63,6 @@ export default function Reports() {
     end: '',
   });
   const [activePreset, setActivePreset] = useState<string | null>(null);
-  const [periodView, setPeriodView] = useState<'week' | 'month'>('week');
 
   // Raw data
   const [sales, setSales] = useState<Sale[]>([]);
@@ -77,6 +74,15 @@ export default function Reports() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [transactions, setTransactions] = useState<Transaction[]>([]);
   const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
+  const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
+  const [zoneFilterId, setZoneFilterId] = useState<number | null>(null);
+  const [orderTypeFilter, setOrderTypeFilter] = useState<string>('');
+  const [comparisonFilter, setComparisonFilter] = useState<ComparisonFilter | null>(null);
+
+  // Clear comparison filter when switching tabs
+  useEffect(() => {
+    setComparisonFilter(null);
+  }, [activeTab]);
 
   useEffect(() => {
     const loadAll = async () => {
@@ -86,7 +92,8 @@ export default function Reports() {
           ingredientsRes, invTxnsRes, recipesRes,
           productsRes,          employeesRes,
           transactionsRes,
-          deliveryTypesRes
+          deliveryTypesRes,
+          deliveryZonesRes
         ] = await Promise.all([
           invoke<Settings>('get_settings'),
           invoke<AnalyticsData>('get_analytics').catch(() => null),
@@ -98,6 +105,7 @@ export default function Reports() {
           invoke<Employee[]>('get_employees', { includeInactive: true }),
           invoke<Transaction[]>('get_transactions'),
           invoke<DeliveryType[]>('get_delivery_types', { includeInactive: true }),
+          invoke<DeliveryZone[]>('get_delivery_zones', { includeInactive: true }),
         ]);
 
         setCurrency(settingsRes?.currency || 'USD');
@@ -111,6 +119,7 @@ export default function Reports() {
         setEmployees(Array.isArray(employeesRes) ? employeesRes : []);
         setTransactions(Array.isArray(transactionsRes) ? transactionsRes : []);
         setDeliveryTypes(Array.isArray(deliveryTypesRes) ? deliveryTypesRes : []);
+        setDeliveryZones(Array.isArray(deliveryZonesRes) ? deliveryZonesRes : []);
       } catch (error) {
         console.error('Error loading report data:', error);
       } finally {
@@ -128,13 +137,22 @@ export default function Reports() {
 
   // Filtered sales for date range
   const filteredSales = useMemo(() => {
-    if (!dateRange.start && !dateRange.end) return sales;
-    return sales.filter(sale => {
-      if (dateRange.start && sale.date < dateRange.start) return false;
-      if (dateRange.end && sale.date > dateRange.end) return false;
-      return true;
-    });
-  }, [sales, dateRange]);
+    let filtered = sales;
+    if (dateRange.start || dateRange.end) {
+      filtered = filtered.filter(sale => {
+        if (dateRange.start && sale.date < dateRange.start) return false;
+        if (dateRange.end && sale.date > dateRange.end) return false;
+        return true;
+      });
+    }
+    if (zoneFilterId != null) {
+      filtered = filtered.filter(sale => sale.delivery_zone_id === zoneFilterId);
+    }
+    if (orderTypeFilter) {
+      filtered = filtered.filter(sale => sale.order_type?.toLowerCase() === orderTypeFilter.toLowerCase());
+    }
+    return filtered;
+  }, [sales, dateRange, zoneFilterId, orderTypeFilter]);
 
   // Quick date presets
   const applyDatePreset = useCallback((preset: string) => {
@@ -285,6 +303,26 @@ export default function Reports() {
     return (totalItems / transactions.length).toFixed(1);
   }, [transactions]);
 
+  // ---- Tab Navigation ----
+  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
+    { key: 'overview' as Tab, label: 'Overview', icon: <span className="icon-[tabler--dashboard] w-5 h-5" /> },
+    { key: 'sales' as Tab, label: 'Sales', icon: <span className="icon-[tabler--moneybag] w-5 h-5" /> },
+    { key: 'productsSales' as Tab, label: 'Products Sales', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" /> },
+    { key: 'invoices' as Tab, label: 'Invoices', icon: <span className="icon-[tabler--receipt] w-5 h-5" /> },
+    { key: 'dailyComparison' as Tab, label: 'Daily Comparison', icon: <span className="icon-[tabler--trending-up] w-5 h-5" /> },
+    { key: 'periodComparison' as Tab, label: 'Period Comparison', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
+    { key: 'deliveryTracking' as Tab, label: 'Delivery Tracking', icon: <span className="icon-[tabler--building-store] w-5 h-5" /> },
+    { key: 'inventory' as Tab, label: 'Inventory', icon: <span className="icon-[tabler--package] w-5 h-5" /> },
+    { key: 'recipes' as Tab, label: 'Recipes', icon: <span className="icon-[tabler--menu-2] w-5 h-5" /> },
+    { key: 'employees' as Tab, label: 'Employees', icon: <span className="icon-[tabler--users] w-5 h-5" /> },
+    { key: 'transactions' as Tab, label: 'Transactions', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
+    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <span className="icon-[tabler--building-bank] w-5 h-5" /> },
+  ];
+
+  // ── Arrow-key tab nav ──
+  const tabKeys: Tab[] = tabs.map(t => t.key).filter(k => k !== 'taxReports');
+  const { onKeyDown: onReportsTabKeyDown } = useKeyboardTabNav(tabKeys, activeTab, setActiveTab);
+
   // ---- Keyboard Shortcuts ----
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -342,137 +380,42 @@ export default function Reports() {
   }, [activeTab, applyDatePreset]);
 
   // ---- Daily Sales Comparison ----
-  const fmt = (d: Date) => d.toISOString().split('T')[0];
-  const todayStr = fmt(new Date());
-  const yesterdayStr = fmt(new Date(Date.now() - 86400000));
-  const lastWeekStr = fmt(new Date(Date.now() - 7 * 86400000));
 
-  // Aggregate sales by date
-  const salesByDate = useMemo(() => {
-    const map = new Map<string, Sale[]>();
-    for (const sale of sales) {
-      const date = sale.date;
-      if (!map.has(date)) map.set(date, []);
-      map.get(date)!.push(sale);
-    }
-    return map;
-  }, [sales]);
-
-  // Today's stats
-  const todayStats = useMemo(() => {
-    const daySales = salesByDate.get(todayStr) || [];
-    const revenue = daySales.reduce((s, sale) => s + sale.total_amount, 0);
-    const orders = daySales.length;
-    const avgOrder = orders > 0 ? revenue / orders : 0;
-    return { revenue, orders, avgOrder };
-  }, [salesByDate]);
-
-  // Yesterday's stats
-  const yesterdayStats = useMemo(() => {
-    const daySales = salesByDate.get(yesterdayStr) || [];
-    const revenue = daySales.reduce((s, sale) => s + sale.total_amount, 0);
-    const orders = daySales.length;
-    const avgOrder = orders > 0 ? revenue / orders : 0;
-    return { revenue, orders, avgOrder };
-  }, [salesByDate]);
-
-  // Same day last week's stats
-  const lastWeekStats = useMemo(() => {
-    const daySales = salesByDate.get(lastWeekStr) || [];
-    const revenue = daySales.reduce((s, sale) => s + sale.total_amount, 0);
-    const orders = daySales.length;
-    const avgOrder = orders > 0 ? revenue / orders : 0;
-    return { revenue, orders, avgOrder };
-  }, [salesByDate]);
-
-  // Daily trend data for last 14 days (for chart)
-  const dailyTrend = useMemo(() => {
-    const days: { date: string; revenue: number; orders: number }[] = [];
-    for (let i = 13; i >= 0; i--) {
-      const d = fmt(new Date(Date.now() - i * 86400000));
-      const daySales = salesByDate.get(d) || [];
-      const revenue = daySales.reduce((s, sale) => s + sale.total_amount, 0);
-      const orders = daySales.length;
-      days.push({ date: d, revenue, orders });
-    }
-    return days;
-  }, [salesByDate]);
-
-  // Delta helper: returns formatted percentage change and direction indicator
-  const delta = (current: number, previous: number): { pct: string; direction: 'up' | 'down' | 'flat'; color: string } => {
-    if (previous === 0 && current === 0) return { pct: '0%', direction: 'flat', color: 'text-slate-400' };
-    if (previous === 0) return { pct: '+100%', direction: 'up', color: 'text-green-500' };
-    const pct = ((current - previous) / previous) * 100;
-    const formatted = `${pct >= 0 ? '+' : ''}${pct.toFixed(1)}%`;
-    if (pct > 0) return { pct: formatted, direction: 'up', color: 'text-green-500' };
-    if (pct < 0) return { pct: formatted, direction: 'down', color: 'text-red-500' };
-    return { pct: '0%', direction: 'flat', color: 'text-slate-400' };
-  };
-
-  const revDelta = delta(todayStats.revenue, yesterdayStats.revenue);
-  const orderDelta = delta(todayStats.orders, yesterdayStats.orders);
-  const wkRevDelta = delta(todayStats.revenue, lastWeekStats.revenue);
-  const wkOrderDelta = delta(todayStats.orders, lastWeekStats.orders);
-
-  // ---- Period Comparison (Week/Month) ----
-  const now = new Date();
-  const currentMonthStart = fmt(new Date(now.getFullYear(), now.getMonth(), 1));
-  const prevMonthStart = fmt(new Date(now.getFullYear(), now.getMonth() - 1, 1));
-  const prevMonthEnd = fmt(new Date(now.getFullYear(), now.getMonth(), 0)); // last day of prev month
-
-  // Compute stats for a date range
-  const periodStats = (start: string, end: string) => {
-    const periodSales = sales.filter(s => s.date >= start && s.date <= end);
-    const revenue = periodSales.reduce((sum, s) => sum + s.total_amount, 0);
-    const orders = periodSales.length;
-    const avgOrder = orders > 0 ? revenue / orders : 0;
-    return { revenue, orders, avgOrder };
-  };
-
-  // Week periods
-  const thisWeekStart = fmt(new Date(Date.now() - 6 * 86400000));
-  const prevWeekStart = fmt(new Date(Date.now() - 13 * 86400000));
-  const prevWeekEnd = fmt(new Date(Date.now() - 7 * 86400000));
-
-  const thisWeekStats = useMemo(() => periodStats(thisWeekStart, todayStr), [sales, thisWeekStart, todayStr]);
-  const prevWeekStats = useMemo(() => periodStats(prevWeekStart, prevWeekEnd), [sales, prevWeekStart, prevWeekEnd]);
-  const thisMonthStats = useMemo(() => periodStats(currentMonthStart, todayStr), [sales, currentMonthStart, todayStr]);
-  const prevMonthStats = useMemo(() => periodStats(prevMonthStart, prevMonthEnd), [sales, prevMonthStart, prevMonthEnd]);
-
-  const currentStats = periodView === 'week' ? thisWeekStats : thisMonthStats;
-  const previousStats = periodView === 'week' ? prevWeekStats : prevMonthStats;
-
-  const periodRevDelta = delta(currentStats.revenue, previousStats.revenue);
-  const periodOrderDelta = delta(currentStats.orders, previousStats.orders);
-
-  // Weekly/monthly trend (last 8 periods)
-  const periodTrend = useMemo(() => {
-    const result: { label: string; revenue: number; orders: number }[] = [];
-    if (periodView === 'week') {
-      // Last 8 weeks
-      for (let i = 7; i >= 0; i--) {
-        const end = fmt(new Date(Date.now() - (i * 7) * 86400000));
-        const start = fmt(new Date(Date.now() - (i * 7 + 6) * 86400000));
-        const stats = periodStats(start, end);
-        result.push({
-          label: `${start.slice(5)}-${end.slice(5)}`,
-          revenue: stats.revenue,
-          orders: stats.orders,
-        });
-      }
-    } else {
-      // Last 8 months
-      for (let i = 7; i >= 0; i--) {
-        const m = new Date(now.getFullYear(), now.getMonth() - i, 1);
-        const label = m.toLocaleDateString(undefined, { month: 'short', year: '2-digit' });
-        const mStart = fmt(m);
-        const mEnd = fmt(new Date(now.getFullYear(), now.getMonth() - i + 1, 0));
-        const stats = periodStats(mStart, mEnd);
-        result.push({ label, revenue: stats.revenue, orders: stats.orders });
-      }
-    }
-    return result;
-  }, [sales, periodView]);
+  // ── Shared delta computations ──
+  const {
+    delta,
+    todayStats,
+    yesterdayStats,
+    lastWeekStats,
+    dailyTrend,
+    revDelta,
+    orderDelta,
+    wkRevDelta,
+    wkOrderDelta,
+    periodView,
+    setPeriodView,
+    currentStats,
+    previousStats,
+    periodRevDelta,
+    periodOrderDelta,
+    salesRevDelta,
+    salesOrderDelta,
+    salesAvgDelta,
+    periodTrend,
+    todayStr,
+    yesterdayStr,
+    thisWeekStart,
+    currentMonthStart,
+    salesByDate,
+    last30Start,
+    last30End,
+    prior30Start,
+    prior30End,
+    prevWeekStart,
+    prevWeekEnd,
+    prevMonthStart,
+    prevMonthEnd,
+  } = useDashboardDeltas(sales);
 
   // ---- Employee Daily Breakdown ----
   const employeeDailyStats = useMemo(() => {
@@ -536,6 +479,13 @@ export default function Reports() {
     for (const dt of deliveryTypes) map.set(dt.id, dt.name);
     return map;
   }, [deliveryTypes]);
+
+  // Delivery zone lookup map
+  const deliveryZoneMap = useMemo(() => {
+    const map = new Map<number, string>();
+    for (const z of deliveryZones) map.set(z.id, z.name);
+    return map;
+  }, [deliveryZones]);
 
   // Filter sales by delivery order_type and optionally by date range
   const deliverySales = useMemo(() => {
@@ -753,13 +703,14 @@ export default function Reports() {
   const handleExportDeliveryCSV = () => {
     downloadCSV(
       `deliveries-${new Date().toISOString().split('T')[0]}.csv`,
-      ['Invoice #', 'Date', 'Time', 'Status', 'Delivery Address', 'Delivery Type', 'Amount', 'Currency', 'Employee'],
+      ['Invoice #', 'Date', 'Time', 'Status', 'Zone', 'Delivery Address', 'Delivery Type', 'Amount', 'Currency', 'Employee'],
       filteredDeliverySales.map(s => {
         const dtName = s.delivery_type_id ? deliveryTypeMap.get(s.delivery_type_id) : null;
+        const zoneName = s.delivery_zone_id ? deliveryZoneMap.get(s.delivery_zone_id) : null;
         const emp = employees.find(e => e.id === s.employee_id);
         return [
           String(s.id), s.date || '', s.time || '', s.status || '',
-          s.delivery_address || '', dtName || '',
+          zoneName || '', s.delivery_address || '', dtName || '',
           s.total_amount.toFixed(2), s.currency || currency, emp?.name || ''
         ];
       })
@@ -839,26 +790,9 @@ export default function Reports() {
   };
 
 
-
-  // ---- Tab Navigation ----
-  const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'overview' as Tab, label: 'Overview', icon: <MdDashboard className="w-5 h-5" /> },
-    { key: 'sales' as Tab, label: 'Sales', icon: <MdAttachMoney className="w-5 h-5" /> },
-    { key: 'productsSales' as Tab, label: 'Products Sales', icon: <MdBarChart className="w-5 h-5" /> },
-    { key: 'invoices' as Tab, label: 'Invoices', icon: <MdReceipt className="w-5 h-5" /> },
-    { key: 'dailyComparison' as Tab, label: 'Daily Comparison', icon: <MdTrendingUp className="w-5 h-5" /> },
-    { key: 'periodComparison' as Tab, label: 'Period Comparison', icon: <MdDateRange className="w-5 h-5" /> },
-    { key: 'deliveryTracking' as Tab, label: 'Delivery Tracking', icon: <MdStore className="w-5 h-5" /> },
-    { key: 'inventory' as Tab, label: 'Inventory', icon: <MdInventory className="w-5 h-5" /> },
-    { key: 'recipes' as Tab, label: 'Recipes', icon: <MdMenuBook className="w-5 h-5" /> },
-    { key: 'employees' as Tab, label: 'Employees', icon: <MdPeople className="w-5 h-5" /> },
-    { key: 'transactions' as Tab, label: 'Transactions', icon: <MdDateRange className="w-5 h-5" /> },
-    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <MdAccountBalance className="w-5 h-5" /> },
-  ];
-
   if (loading) {
     return (
-      <PageLayout title={t('reports.title')} background="bg-slate-100 dark:bg-slate-900">
+      <PageLayout title={t('reports.title')}>
         <div className="space-y-6">
           <SkeletonCard count={4} />
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
@@ -897,7 +831,7 @@ export default function Reports() {
             </>
           ) : (
             <>
-              <FaDownload className="w-5 h-5" />
+              <span className="icon-[tabler--download] w-5 h-5" />
               <span>{t('reports.exportExcel')}</span>
             </>
           )}
@@ -907,7 +841,7 @@ export default function Reports() {
           whileTap={{ scale: 0.95 }}
           onClick={exportPDF}
           disabled={exporting}
-          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400 
+          className="flex items-center gap-2 bg-red-600 hover:bg-red-700 disabled:bg-red-400
             text-white px-4 py-2 rounded-lg transition-colors duration-300"
         >
           {exporting ? (
@@ -921,7 +855,7 @@ export default function Reports() {
             </>
           ) : (
             <>
-              <FaFilePdf className="w-5 h-5" />
+              <span className="icon-[tabler--file-type-pdf] w-5 h-5" />
               <span>{t('reports.exportPDF')}</span>
             </>
           )}
@@ -932,52 +866,103 @@ export default function Reports() {
         {(dateRange.start || dateRange.end) && (
           <div className="text-center mb-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
-              bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
-              <MdDateRange className="w-3.5 h-3.5" />
+              bg-info/10 text-info">
+              <span className="icon-[tabler--calendar] w-3.5 h-3.5" />
               {t('reports.showingDataFrom', { start: dateRange.start || t('reports.dateEarliest'), end: dateRange.end || t('reports.dateLatest') })}
             </span>
           </div>
         )}
 
+        {/* Filter Row: Order Type + Delivery Zone */}
+        <Card className="mb-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center gap-4">
+            {/* Order Type Filter */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="icon-[tabler--building-store] w-5 h-5 text-info" />
+              <span className="text-sm font-semibold text-base-content">{t('reports.orderType', 'Order Type')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={orderTypeFilter}
+                onChange={e => setOrderTypeFilter(e.target.value)}
+                className="select select-bordered text-xs w-36"
+              >
+                <option value="">{t('reports.allTypes', 'All Types')}</option>
+                <option value="dine-in">{t('reports.dineIn', 'Dine-in')}</option>
+                <option value="takeaway">{t('reports.takeaway', 'Takeaway')}</option>
+                <option value="delivery">{t('reports.delivery', 'Delivery')}</option>
+              </select>
+              {orderTypeFilter && (
+                <button onClick={() => setOrderTypeFilter('')}
+                  className="text-xs text-red-500 hover:text-red-400 transition-colors shrink-0">
+                  {t('reports.dateClear', 'Clear')}
+                </button>
+              )}
+            </div>
+
+            <div className="hidden sm:block w-px h-6 bg-base-300/50" />
+
+            {/* Delivery Zone Filter */}
+            <div className="flex items-center gap-2 shrink-0">
+              <span className="icon-[tabler--map-pin-code] w-5 h-5 text-warning" />
+              <span className="text-sm font-semibold text-base-content">{t('reports.zone', 'Delivery Zone')}</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <select
+                value={zoneFilterId ?? ''}
+                onChange={e => setZoneFilterId(e.target.value ? Number(e.target.value) : null)}
+                className="select select-bordered text-xs w-40"
+              >
+                <option value="">{t('reports.allZones', 'All Zones')}</option>
+                {deliveryZones.filter(z => z.is_active).map(z => (
+                  <option key={z.id} value={z.id}>{z.name}</option>
+                ))}
+              </select>
+              {zoneFilterId != null && (
+                <button onClick={() => setZoneFilterId(null)}
+                  className="text-xs text-red-500 hover:text-red-400 transition-colors shrink-0">
+                  {t('reports.dateClear', 'Clear')}
+                </button>
+              )}
+            </div>
+          </div>
+        </Card>
+
         {/* Global Date Range Filter */}
-        <div className="card--glass rounded-xl p-4 mb-6">
+        <Card className="mb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <MdDateRange className="w-5 h-5 text-indigo-500" />
-              <span className="text-sm font-semibold text-slate-900 dark:text-white">{t('common.period')}</span>
+              <span className="icon-[tabler--calendar] w-5 h-5 text-info" />
+              <span className="text-sm font-semibold text-base-content">{t('common.period')}</span>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
               <button onClick={() => applyDatePreset('today')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activePreset === 'today'
-                    ? 'bg-indigo-500 text-white' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/30'
+                    ? 'bg-info text-info-content' : 'bg-base-100/50 text-base-content/70 hover:bg-info/10 dark:hover:bg-info/30'
                 }`}>{t('reports.dateToday')}</button>
               <button onClick={() => applyDatePreset('7d')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activePreset === '7d'
-                    ? 'bg-indigo-500 text-white' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/30'
+                    ? 'bg-info text-info-content' : 'bg-base-100/50 text-base-content/70 hover:bg-info/10 dark:hover:bg-info/30'
                 }`}>{t('reports.date7Days')}</button>
               <button onClick={() => applyDatePreset('30d')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activePreset === '30d'
-                    ? 'bg-indigo-500 text-white' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/30'
+                    ? 'bg-info text-info-content' : 'bg-base-100/50 text-base-content/70 hover:bg-info/10 dark:hover:bg-info/30'
                 }`}>{t('reports.date30Days')}</button>
               <button onClick={() => applyDatePreset('month')}
                 className={`px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
                   activePreset === 'month'
-                    ? 'bg-indigo-500 text-white' : 'bg-white/50 dark:bg-white/5 text-slate-600 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/30'
+                    ? 'bg-info text-info-content' : 'bg-base-100/50 text-base-content/70 hover:bg-info/10 dark:hover:bg-info/30'
                 }`}>{t('reports.dateThisMonth')}</button>
             </div>
             <div className="flex items-center gap-2 flex-1 sm:justify-end">
               <input type="date" value={dateRange.start}
-                onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}
-                className="px-2.5 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 
-                  dark:border-gray-600 text-slate-900 dark:text-white text-xs w-36" />
+                onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}className="select select-bordered text-base-content text-xs w-36" />
               <span className="text-slate-400 text-xs">{t('reports.dateTo')}</span>
               <input type="date" value={dateRange.end}
-                onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}
-                className="px-2.5 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 
-                  dark:border-gray-600 text-slate-900 dark:text-white text-xs w-36" />
+                onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}className="select select-bordered text-base-content text-xs w-36" />
               {(dateRange.start || dateRange.end) && (
                 <button onClick={() => applyDatePreset('clear')}
                   className="text-xs text-red-500 hover:text-red-400 transition-colors shrink-0">
@@ -986,13 +971,18 @@ export default function Reports() {
               )}
             </div>
           </div>
-        </div>
+        </Card>
 
         {/* Tab Navigation */}
-        <div className="flex gap-1 sm:gap-2 mb-8 bg-white/50 dark:bg-white/5 backdrop-blur-sm rounded-xl p-1.5 overflow-x-auto">
+        <nav className="tabs tabs-boxed gap-1 mb-8 overflow-x-auto" aria-label="Report tabs" role="tablist" data-tab-prefix="reports-tab" onKeyDown={onReportsTabKeyDown}>
           {tabs.map(tab => (
             <button
               key={tab.key}
+              type="button"
+              role="tab"
+              id={`reports-tab-${tab.key}`}
+              aria-controls={tab.key !== 'taxReports' ? `reports-panel-${tab.key}` : undefined}
+              aria-selected={activeTab === tab.key}
               onClick={() => {
                 if (tab.key === 'taxReports') {
                   navigate('/tax-reports');
@@ -1000,21 +990,20 @@ export default function Reports() {
                   setActiveTab(tab.key);
                 }
               }}
-              className={`flex items-center gap-2 px-4 py-2.5 rounded-lg transition-all duration-300 whitespace-nowrap shrink-0 justify-center ${
-                activeTab === tab.key
-                  ? 'bg-indigo-600 text-white shadow-lg shadow-indigo-500/25'
-                  : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/10'
-              }`}
+              className={`tab ${activeTab === tab.key ? 'tab-active' : ''}`}
             >
               {tab.icon}
-              <span className="font-medium text-sm sm:text-base">{t('reports.' + tab.key)}</span>
+              <span className="text-sm sm:text-base">{t('reports.' + tab.key)}</span>
             </button>
           ))}
-        </div>
+        </nav>
 
         {/* Tab Content */}
         <motion.div
           key={activeTab}
+          role="tabpanel"
+          id={`reports-panel-${activeTab}`}
+          aria-labelledby={`reports-tab-${activeTab}`}
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -1022,37 +1011,33 @@ export default function Reports() {
           {activeTab === 'overview' && (
             <div className="space-y-6">
               {/* Cross-section KPI Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalOrders')}
                   value={filteredSales.length.toString()}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
-                  icon={<MdInventory className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
-                  icon={<MdMenuBook className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
-                  icon={<MdPeople className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--users] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
 
               {/* Revenue Trend Chart */}
               {analytics?.daily_revenue && analytics.daily_revenue.length > 0 && (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.revenueTrend')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.revenueTrend')}</h3>
                   <div className="w-full h-64" dir="ltr">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics.daily_revenue.slice(-30)}>
@@ -1072,35 +1057,27 @@ export default function Reports() {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
-                </div>
+                </Card>
               )}
 
               {/* Quick Stats Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                {/* Low Stock Alert */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-red-500">
-                  <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.lowStockItems')}</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{lowStockItems.length}</p>
-                  <p className="text-xs text-slate-400 mt-1">{t('reports.needReordering')}</p>
-                </div>
-                {/* Order Types */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-blue-500">
-                  <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.orderTypes')}</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{orderTypeBreakdown.length}</p>
-                  <p className="text-xs text-slate-400 mt-1">{orderTypeBreakdown.map(o => o.type).join(', ') || t('reports.none')}</p>
-                </div>
-                {/* Total Products */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-emerald-500">
-                  <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.products')}</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{products.length}</p>
-                  <p className="text-xs text-slate-400 mt-1">{t('reports.haveRecipes', { count: products.filter(p => recipes.some(r => r.product_id === p.id && r.is_active)).length })}</p>
-                </div>
-                {/* Total Salary */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-amber-500">
-                  <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.monthlySalary')}</p>
-                  <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{currency} {employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0).toFixed(0)}</p>
-                  <p className="text-xs text-slate-400 mt-1">{t('reports.activeEmployeesCount', { count: employees.filter(e => e.is_active).length })}</p>
-                </div>
+                <StatCard title={t('reports.lowStockItems')}
+                  value={lowStockItems.length}
+                  desc={t('reports.needReordering')}
+                  color="error" border animated={false} />
+                <StatCard title={t('reports.orderTypes')}
+                  value={orderTypeBreakdown.length}
+                  desc={orderTypeBreakdown.map(o => o.type).join(', ') || t('reports.none')}
+                  color="info" border animated={false} />
+                <StatCard title={t('reports.products')}
+                  value={products.length}
+                  desc={t('reports.haveRecipes', { count: products.filter(p => recipes.some(r => r.product_id === p.id && r.is_active)).length })}
+                  color="success" border animated={false} />
+                <StatCard title={t('reports.monthlySalary')}
+                  value={`${currency} ${employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0).toFixed(0)}`}
+                  desc={t('reports.activeEmployeesCount', { count: employees.filter(e => e.is_active).length })}
+                  color="warning" border animated={false} />
               </div>
             </div>
           )}
@@ -1108,41 +1085,52 @@ export default function Reports() {
           {activeTab === 'sales' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">                <StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  desc={`${salesRevDelta.direction === 'up' ? '▲' : salesRevDelta.direction === 'down' ? '▼' : '→'} ${salesRevDelta.pct} vs prev 30 days`}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
+                /><StatCard 
                   title={t('reports.totalOrders')}
                   value={(filteredSales.length).toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  desc={`${salesOrderDelta.direction === 'up' ? '▲' : salesOrderDelta.direction === 'down' ? '▼' : '→'} ${salesOrderDelta.pct} vs prev 30 days`}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
+                /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${analytics?.summary.average_order_value.toFixed(2) || '0.00'}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  desc={`${salesAvgDelta.direction === 'up' ? '▲' : salesAvgDelta.direction === 'down' ? '▼' : '→'} Avg ${salesAvgDelta.pct} vs prev 30 days`}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
+                /><StatCard 
                   title={t('reports.orderTypes')}
                   value={orderTypeBreakdown.length.toString()}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
+
+              {comparisonFilter && (
+                <ComparisonTable
+                  sales={sales}
+                  filter={comparisonFilter}
+                  currency={currency}
+                  onDismiss={() => setComparisonFilter(null)}
+                />
+              )}
 
               {/* CSV Export */}
               <div className="flex justify-end">
                 <button
                   onClick={handleExportSalesCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1150,8 +1138,8 @@ export default function Reports() {
               {/* Order Type Breakdown — Cards + Pie Chart */}
               <div className="grid grid-cols-1 xl:grid-cols-2 gap-6">
                 {/* Cards */}
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.ordersByType')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.ordersByType')}</h3>
                   {orderTypeBreakdown.length > 0 ? (
                     <div className="space-y-3">
                       {orderTypeBreakdown.map(ot => {
@@ -1159,17 +1147,17 @@ export default function Reports() {
                           'Dine-in': 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-300 dark:border-green-700',
                           'Takeaway': 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-700',
                         };
-                        const fallbackColor = 'bg-orange-500/20 text-orange-600 dark:text-orange-400 border-orange-300 dark:border-orange-700';
+                        const fallbackColor = 'bg-warning/10 text-warning border-warning/30';
                         const colorClass = colors[ot.type] || fallbackColor;
                         return (
                           <div key={ot.type} className={`flex items-center gap-4 p-4 rounded-lg border ${colorClass}`}>
                             <div className={`p-3 rounded-lg ${colorClass}`}>
-                              <MdStore className="w-5 h-5" />
+                              <span className="icon-[tabler--building-store] w-5 h-5" />
                             </div>
                             <div className="flex-1">
                               <p className="text-sm text-slate-500 dark:text-white/50">{ot.type}</p>
-                              <p className="text-lg font-bold text-slate-900 dark:text-white">{t('reports.ordersCount', { count: ot.count })}</p>
-                              <p className="text-sm text-slate-600 dark:text-white/70">{currency} {ot.revenue.toFixed(2)}</p>
+                              <p className="text-lg font-bold text-base-content">{t('reports.ordersCount', { count: ot.count })}</p>
+                              <p className="text-sm text-base-content/70">{currency} {ot.revenue.toFixed(2)}</p>
                             </div>
                           </div>
                         );
@@ -1178,12 +1166,12 @@ export default function Reports() {
                   ) : (
                     <p className="text-slate-500 dark:text-white/40">{t('reports.noOrderData')}</p>
                   )}
-                </div>
+                </Card>
 
                 {/* Pie Chart */}
                 {orderTypeBreakdown.length > 0 && (
-                  <div className="card--glass rounded-xl p-6">
-                    <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.orderDistribution')}</h3>
+                  <Card padding="xl">
+                    <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.orderDistribution')}</h3>
                     <div className="w-full h-72" dir="ltr">
                       <ResponsiveContainer width="100%" height="100%">
                         <PieChart>
@@ -1210,18 +1198,18 @@ export default function Reports() {
                         </PieChart>
                       </ResponsiveContainer>
                     </div>
-                  </div>
+                  </Card>
                 )}
               </div>
 
               {/* Top Products */}
               {analytics?.top_products && analytics.top_products.length > 0 && (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.topProducts')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.topProducts')}</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">#</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableSold')}</th>
@@ -1232,21 +1220,21 @@ export default function Reports() {
                         {analytics.top_products.map((p, i) => (
                           <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
                             <td className="py-3 px-4 text-slate-500 dark:text-white/50">{i + 1}</td>
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{p.name}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{p.sales}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {p.revenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
                           </tr>
                         ))}
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
               )}
 
               {/* Revenue Trend Chart */}
               {analytics?.daily_revenue && analytics.daily_revenue.length > 0 && (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">Revenue Trend</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">Revenue Trend</h3>
                   <div className="w-full h-72" dir="ltr">
                     <ResponsiveContainer width="100%" height="100%">
                       <LineChart data={analytics.daily_revenue.slice(-30)}>
@@ -1264,7 +1252,7 @@ export default function Reports() {
                       </LineChart>
                     </ResponsiveContainer>
                   </div>
-                </div>
+                </Card>
               )}
             </div>
           )}
@@ -1272,29 +1260,25 @@ export default function Reports() {
           {activeTab === 'productsSales' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalProductsSold')}
                   value={analytics?.summary?.total_orders?.toString() || '0'}
-                  icon={<MdBarChart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.productRevenue')}
                   value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.bestSellingCategory')}
                   value={bestSellingCategory}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.avgItemsPerOrder')}
                   value={avgItemsPerOrder}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -1304,21 +1288,21 @@ export default function Reports() {
                 <button
                   onClick={handleExportProductsSalesCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
 
               {/* Product Performance Table */}
               {analytics?.top_products && analytics.top_products.length > 0 ? (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.productsSalesBreakdown')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.productsSalesBreakdown')}</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">#</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableSold')}</th>
@@ -1333,9 +1317,9 @@ export default function Reports() {
                           return (
                             <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
                               <td className="py-3 px-4 text-slate-500 dark:text-white/50">{i + 1}</td>
-                              <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{p.name}</td>
-                              <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{p.sales}</td>
-                              <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {p.revenue.toFixed(2)}</td>
+                              <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
+                              <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
+                              <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center gap-2">
                                   <div className="w-20 bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
@@ -1353,19 +1337,19 @@ export default function Reports() {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
               ) : (
-                <div className="card--glass rounded-xl p-6 text-center">
-                  <MdBarChart className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noProductSales')}</p>
+                <Card padding="xl" center>
+                  <span className="icon-[tabler--chart-bar] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <p className="text-base-content/70 text-lg mb-2">{t('reports.noProductSales')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noProductSalesHint')}</p>
-                </div>
+                </Card>
               )}
 
               {/* Revenue Distribution Bar Chart */}
               {analytics?.product_distribution && analytics.product_distribution.length > 0 && (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.productDistribution')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.productDistribution')}</h3>
                   <div className="w-full h-72" dir="ltr">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={analytics.product_distribution} margin={{ left: 20, right: 20, top: 10, bottom: 60 }}>
@@ -1380,7 +1364,7 @@ export default function Reports() {
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                </div>
+                </Card>
               )}
             </div>
           )}
@@ -1388,29 +1372,25 @@ export default function Reports() {
           {activeTab === 'invoices' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalInvoices')}
                   value={filteredSales.length.toString()}
-                  icon={<MdReceipt className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${filteredSales.reduce((s, s2) => s + s2.total_amount, 0).toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${filteredSales.length > 0 ? (filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length).toFixed(2) : '0.00'}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.completedOrders')}
                   value={filteredSales.filter(s => s.status === 'completed').length.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-emerald-500 to-teal-600"
                 />
               </div>
@@ -1420,21 +1400,21 @@ export default function Reports() {
                 <button
                   onClick={handleExportInvoicesCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
 
               {/* Invoices Table */}
               {filteredSales.length > 0 ? (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.invoiceList')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.invoiceList')}</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableInvoice')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDate')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableTime')}</th>
@@ -1449,11 +1429,11 @@ export default function Reports() {
                           const emp = employees.find(e => e.id === sale.employee_id);
                           return (
                             <tr key={sale.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                              <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">#{sale.id}</td>
-                              <td className="py-3 px-4 text-slate-600 dark:text-white/70">{sale.date}</td>
-                              <td className="py-3 px-4 text-slate-600 dark:text-white/70">{sale.time}</td>
+                              <td className="py-3 px-4 font-medium text-base-content">#{sale.id}</td>
+                              <td className="py-3 px-4 text-base-content/70">{sale.date}</td>
+                              <td className="py-3 px-4 text-base-content/70">{sale.time}</td>
                               <td className="py-3 px-4">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-indigo-100 text-indigo-700 dark:bg-indigo-900/30 dark:text-indigo-400">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium capitalize bg-info/10 text-info">
                                   {sale.order_type || '-'}
                                 </span>
                               </td>
@@ -1462,21 +1442,21 @@ export default function Reports() {
                                   {sale.status}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-right font-bold text-slate-900 dark:text-white">{sale.currency || currency} {sale.total_amount.toFixed(2)}</td>
-                              <td className="py-3 px-4 text-slate-600 dark:text-white/70">{emp?.name || '-'}</td>
+                              <td className="py-3 px-4 text-right font-bold text-base-content">{sale.currency || currency} {sale.total_amount.toFixed(2)}</td>
+                              <td className="py-3 px-4 text-base-content/70">{emp?.name || '-'}</td>
                             </tr>
                           );
                         })}
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
               ) : (
-                <div className="card--glass rounded-xl p-6 text-center">
-                  <MdReceipt className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noInvoices')}</p>
+                <Card padding="xl" center>
+                  <span className="icon-[tabler--receipt] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <p className="text-base-content/70 text-lg mb-2">{t('reports.noInvoices')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noInvoicesHint')}</p>
-                </div>
+                </Card>
               )}
             </div>
           )}
@@ -1484,93 +1464,94 @@ export default function Reports() {
           {activeTab === 'dailyComparison' && (
             <div className="space-y-6">
               {/* Today's Overview Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.todayRevenue')}
                   value={`${currency} ${todayStats.revenue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs yesterday`}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
+                /><StatCard 
                   title={t('reports.todayOrders')}
                   value={todayStats.orders.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
+                /><StatCard 
                   title={t('reports.todayAvgOrder')}
                   value={`${currency} ${todayStats.avgOrder.toFixed(2)}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} Avg ${revDelta.pct} vs yesterday`}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
+                /><StatCard 
                   title={t('reports.todayItemsSold')}
                   value={todayStats.orders > 0 ? (todayStats.orders * (parseFloat(avgItemsPerOrder) || 1)).toFixed(0) : '0'}
-                  icon={<MdStore className="w-6 h-6" />}
+                  desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
+                  onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                 />
               </div>
+
+              {comparisonFilter && (
+                <ComparisonTable
+                  sales={sales}
+                  filter={comparisonFilter}
+                  currency={currency}
+                  onDismiss={() => setComparisonFilter(null)}
+                />
+              )}
 
               {/* Comparison Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* vs Yesterday */}
-                <div className="card--glass rounded-xl p-5">
+                <Card padding="lg">
                   <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.vsYesterday')}</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayRevenue')}</p>
-                      <p className="text-lg font-bold text-slate-900 dark:text-white">{currency} {todayStats.revenue.toFixed(2)}</p>
-                      <p className={`text-sm font-semibold ${revDelta.color}`}>
-                        {revDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {revDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
-                        {revDelta.pct}
-                      </p>
-                      <p className="text-xs text-slate-400 mt-1">{t('reports.yesterday')}: {currency} {yesterdayStats.revenue.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayOrders')}</p>
-                      <p className="text-lg font-bold text-slate-900 dark:text-white">{todayStats.orders}</p>
-                      <p className={`text-sm font-semibold ${orderDelta.color}`}>
-                        {orderDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {orderDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
-                        {orderDelta.pct}
-                      </p>
-                      <p className="text-xs text-slate-400 mt-1">{t('reports.yesterday')}: {yesterdayStats.orders}</p>
-                    </div>
+                    <StatCard
+                      title={t('reports.todayRevenue')}
+                      value={`${currency} ${todayStats.revenue.toFixed(2)}`}
+                      desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs ${currency} ${yesterdayStats.revenue.toFixed(2)}`}
+                      color={revDelta.direction === 'up' ? 'green-500' : revDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
+                    <StatCard
+                      title={t('reports.todayOrders')}
+                      value={todayStats.orders}
+                      desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs ${yesterdayStats.orders}`}
+                      color={orderDelta.direction === 'up' ? 'green-500' : orderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
                   </div>
-                </div>
+                </Card>
 
                 {/* vs Same Day Last Week */}
-                <div className="card--glass rounded-xl p-5">
+                <Card padding="lg">
                   <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.vsLastWeek')}</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayRevenue')}</p>
-                      <p className="text-lg font-bold text-slate-900 dark:text-white">{currency} {todayStats.revenue.toFixed(2)}</p>
-                      <p className={`text-sm font-semibold ${wkRevDelta.color}`}>
-                        {wkRevDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {wkRevDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
-                        {wkRevDelta.pct}
-                      </p>
-                      <p className="text-xs text-slate-400 mt-1">{lastWeekStr}: {currency} {lastWeekStats.revenue.toFixed(2)}</p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayOrders')}</p>
-                      <p className="text-lg font-bold text-slate-900 dark:text-white">{todayStats.orders}</p>
-                      <p className={`text-sm font-semibold ${wkOrderDelta.color}`}>
-                        {wkOrderDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {wkOrderDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
-                        {wkOrderDelta.pct}
-                      </p>
-                      <p className="text-xs text-slate-400 mt-1">{lastWeekStr}: {lastWeekStats.orders} {t('reports.orders')}</p>
-                    </div>
+                    <StatCard
+                      title={t('reports.todayRevenue')}
+                      value={`${currency} ${todayStats.revenue.toFixed(2)}`}
+                      desc={`${wkRevDelta.direction === 'up' ? '▲' : wkRevDelta.direction === 'down' ? '▼' : '→'} ${wkRevDelta.pct} vs ${currency} ${lastWeekStats.revenue.toFixed(2)}`}
+                      color={wkRevDelta.direction === 'up' ? 'green-500' : wkRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
+                    <StatCard
+                      title={t('reports.todayOrders')}
+                      value={todayStats.orders}
+                      desc={`${wkOrderDelta.direction === 'up' ? '▲' : wkOrderDelta.direction === 'down' ? '▼' : '→'} ${wkOrderDelta.pct} vs ${lastWeekStats.orders}`}
+                      color={wkOrderDelta.direction === 'up' ? 'green-500' : wkOrderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
                   </div>
-                </div>
+                </Card>
               </div>
 
               {/* Comparison Bar Chart */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.dailyTrend14Days')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.dailyTrend14Days')}</h3>
                 <div className="w-full h-72" dir="ltr">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={dailyTrend} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
@@ -1586,15 +1567,15 @@ export default function Reports() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
+              </Card>
 
               {/* Daily Comparison Table */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.dailyBreakdown')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.dailyBreakdown')}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-slate-200 dark:border-white/10">
+                      <tr className="border-b border-base-300/30">
                         <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDate')}</th>
                         <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
                         <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
@@ -1609,12 +1590,12 @@ export default function Reports() {
                         const isToday = day.date === todayStr;
                         return (
                           <tr key={day.date} className={`border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5 ${isToday ? 'bg-indigo-50 dark:bg-indigo-900/10' : ''}`}>
-                            <td className={`py-3 px-4 font-medium ${isToday ? 'text-indigo-600 dark:text-indigo-400' : 'text-slate-900 dark:text-white'}`}>
-                              {day.date} {isToday && <span className="text-xs text-indigo-500 ml-1">({t('reports.today')})</span>}
+                            <td className={`py-3 px-4 font-medium ${isToday ? 'text-info dark:text-info/80' : 'text-base-content'}`}>
+                              {day.date} {isToday && <span className="text-xs text-info ml-1">({t('reports.today')})</span>}
                             </td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {day.revenue.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{day.orders}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {day.orders > 0 ? (day.revenue / day.orders).toFixed(2) : '0.00'}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {day.revenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{day.orders}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {day.orders > 0 ? (day.revenue / day.orders).toFixed(2) : '0.00'}</td>
                             <td className="py-3 px-4 text-slate-500 dark:text-white/50 text-sm">{dayName}</td>
                           </tr>
                         );
@@ -1622,19 +1603,19 @@ export default function Reports() {
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </Card>
 
               {/* Employee Daily Breakdown */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  <MdPeople className="w-5 h-5 text-indigo-500" />
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4 flex items-center gap-2">
+                  <span className="icon-[tabler--users] w-5 h-5 text-info" />
                   {t('reports.employeeDailyBreakdown')}
                 </h3>
                 {employeeDailyStats.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.todayOrders')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.todayRevenue')}</th>
@@ -1647,19 +1628,19 @@ export default function Reports() {
                       <tbody>
                         {employeeDailyStats.map(emp => (
                           <tr key={emp.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{emp.name}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white font-semibold">{emp.todayOrders}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {emp.todayRevenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
+                            <td className="py-3 px-4 text-right text-base-content font-semibold">{emp.todayOrders}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.todayRevenue.toFixed(2)}</td>
                             <td className="py-3 px-4 text-right text-slate-500 dark:text-white/70">{emp.yesterdayOrders}</td>
                             <td className="py-3 px-4 text-right text-slate-500 dark:text-white/70">{currency} {emp.yesterdayRevenue.toFixed(2)}</td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.revColor}`}>
-                              {emp.revDirection === 'up' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5" />}
-                              {emp.revDirection === 'down' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
+                              {emp.revDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
+                              {emp.revDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
                               {emp.revChange}
                             </td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.orderColor}`}>
-                              {emp.orderDirection === 'up' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5" />}
-                              {emp.orderDirection === 'down' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
+                              {emp.orderDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
+                              {emp.orderDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
                               {emp.orderChange}
                             </td>
                           </tr>
@@ -1669,11 +1650,11 @@ export default function Reports() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 text-slate-500 dark:text-white/50">
-                    <MdPeople className="w-5 h-5" />
+                    <span className="icon-[tabler--users] w-5 h-5" />
                     <span>{t('reports.noEmployeeDailyData')}</span>
                   </div>
                 )}
-              </div>
+              </Card>
             </div>
           )}
 
@@ -1681,12 +1662,12 @@ export default function Reports() {
             <div className="space-y-6">
               {/* Period Toggle */}
               <div className="flex items-center gap-2 mb-2">
-                <div className="inline-flex bg-white/50 dark:bg-white/5 rounded-lg p-1">
+                <div className="inline-flex bg-base-100/50 rounded-lg p-1">
                   <button
                     onClick={() => setPeriodView('week')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
                       periodView === 'week'
-                        ? 'bg-indigo-600 text-white shadow-md'
+                        ? 'bg-info text-white shadow-md'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/10'
                     }`}
                   >{t('reports.periodWeek')}</button>
@@ -1694,7 +1675,7 @@ export default function Reports() {
                     onClick={() => setPeriodView('month')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
                       periodView === 'month'
-                        ? 'bg-indigo-600 text-white shadow-md'
+                        ? 'bg-info text-white shadow-md'
                         : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/10'
                     }`}
                   >{t('reports.periodMonth')}</button>
@@ -1708,76 +1689,99 @@ export default function Reports() {
               </div>
 
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.currentPeriodRevenue')}
                   value={`${currency} ${currentStats.revenue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs previous`}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter(periodView === 'week'
+                    ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
+                    : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
+                  )}
+                /><StatCard 
                   title={t('reports.currentPeriodOrders')}
                   value={currentStats.orders.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs previous`}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter(periodView === 'week'
+                    ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
+                    : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
+                  )}
+                /><StatCard 
                   title={t('reports.currentPeriodAvg')}
                   value={`${currency} ${currentStats.avgOrder.toFixed(2)}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} Avg ${periodRevDelta.pct} vs previous`}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
-                />
-                <SummaryCard
+                  onDescClick={() => setComparisonFilter(periodView === 'week'
+                    ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
+                    : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
+                  )}
+                /><StatCard 
                   title={t('reports.previousPeriod')}
                   value={`${currency} ${previousStats.revenue.toFixed(2)}`}
-                  icon={<MdDateRange className="w-6 h-6" />}
+                  desc={`${currentStats.revenue > previousStats.revenue ? '▲ Up' : currentStats.revenue < previousStats.revenue ? '▼ Down' : '→ Flat'} from current`}
+                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="from-slate-400 to-slate-500"
                 />
               </div>
 
+              {comparisonFilter && (
+                <ComparisonTable
+                  sales={sales}
+                  filter={comparisonFilter}
+                  currency={currency}
+                  onDismiss={() => setComparisonFilter(null)}
+                />
+              )}
+
               {/* Comparison Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                <div className="card--glass rounded-xl p-5">
+                <Card padding="lg">
                   <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.revenueComparison')}</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.currentPeriodShort')}</p>
-                      <p className="text-lg font-bold text-slate-900 dark:text-white">{currency} {currentStats.revenue.toFixed(2)}</p>
-                      <p className={`text-sm font-semibold ${periodRevDelta.color}`}>
-                        {periodRevDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {periodRevDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
-                        {periodRevDelta.pct}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.previousPeriodShort')}</p>
-                      <p className="text-lg font-bold text-slate-500 dark:text-white/70">{currency} {previousStats.revenue.toFixed(2)}</p>
-                    </div>
+                    <StatCard
+                      title={t('reports.currentPeriodShort')}
+                      value={`${currency} ${currentStats.revenue.toFixed(2)}`}
+                      desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs ${currency} ${previousStats.revenue.toFixed(2)}`}
+                      color={periodRevDelta.direction === 'up' ? 'green-500' : periodRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
+                    <StatCard
+                      title={t('reports.previousPeriodShort')}
+                      value={`${currency} ${previousStats.revenue.toFixed(2)}`}
+                      desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs current`}
+                      color={periodRevDelta.direction === 'up' ? 'green-500' : periodRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
                   </div>
-                </div>
-                <div className="card--glass rounded-xl p-5">
+                </Card>
+                <Card padding="lg">
                   <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.ordersComparison')}</h3>
                   <div className="grid grid-cols-2 gap-4">
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.currentPeriodShort')}</p>
-                      <p className="text-lg font-bold text-slate-900 dark:text-white">{currentStats.orders}</p>
-                      <p className={`text-sm font-semibold ${periodOrderDelta.color}`}>
-                        {periodOrderDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {periodOrderDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
-                        {periodOrderDelta.pct}
-                      </p>
-                    </div>
-                    <div>
-                      <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.previousPeriodShort')}</p>
-                      <p className="text-lg font-bold text-slate-500 dark:text-white/70">{previousStats.orders}</p>
-                    </div>
+                    <StatCard
+                      title={t('reports.currentPeriodShort')}
+                      value={currentStats.orders}
+                      desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs ${previousStats.orders}`}
+                      color={periodOrderDelta.direction === 'up' ? 'green-500' : periodOrderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
+                    <StatCard
+                      title={t('reports.previousPeriodShort')}
+                      value={previousStats.orders}
+                      desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs current`}
+                      color={periodOrderDelta.direction === 'up' ? 'green-500' : periodOrderDelta.direction === 'down' ? 'red-500' : 'slate-400'}
+                      animated={false}
+                    />
                   </div>
-                </div>
+                </Card>
               </div>
 
               {/* Trend Chart */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.periodTrend')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.periodTrend')}</h3>
                 <div className="w-full h-72" dir="ltr">
                   <ResponsiveContainer width="100%" height="100%">
                     <BarChart data={periodTrend} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
@@ -1793,15 +1797,15 @@ export default function Reports() {
                     </BarChart>
                   </ResponsiveContainer>
                 </div>
-              </div>
+              </Card>
 
               {/* Period Breakdown Table */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.periodBreakdown')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.periodBreakdown')}</h3>
                 <div className="overflow-x-auto">
                   <table className="w-full text-left">
                     <thead>
-                      <tr className="border-b border-slate-200 dark:border-white/10">
+                      <tr className="border-b border-base-300/30">
                         <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{periodView === 'week' ? t('reports.tableWeek') : t('reports.tableMonth')}</th>
                         <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
                         <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
@@ -1811,45 +1815,41 @@ export default function Reports() {
                     <tbody>
                       {periodTrend.map((p, i) => (
                         <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                          <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{p.label}</td>
-                          <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {p.revenue.toFixed(2)}</td>
-                          <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{p.orders}</td>
-                          <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {p.orders > 0 ? (p.revenue / p.orders).toFixed(2) : '0.00'}</td>
+                          <td className="py-3 px-4 font-medium text-base-content">{p.label}</td>
+                          <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
+                          <td className="py-3 px-4 text-right text-base-content">{p.orders}</td>
+                          <td className="py-3 px-4 text-right text-base-content">{currency} {p.orders > 0 ? (p.revenue / p.orders).toFixed(2) : '0.00'}</td>
                         </tr>
                       ))}
                     </tbody>
                   </table>
                 </div>
-              </div>
+              </Card>
             </div>
           )}
 
           {activeTab === 'deliveryTracking' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.deliveryOrders')}
                   value={deliveryStats.totalOrders.toString()}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${deliveryStats.totalRevenue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${deliveryStats.avgOrderValue.toFixed(2)}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.deliveryCompleted')}
                   value={`${deliveryStats.completedOrders} / ${deliveryStats.pendingOrders}`}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -1859,9 +1859,9 @@ export default function Reports() {
                 <button
                   onClick={handleExportDeliveryCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1871,13 +1871,19 @@ export default function Reports() {
                 <div className="space-y-3">
                   {filteredDeliverySales.map(sale => {
                     const dtName = sale.delivery_type_id ? deliveryTypeMap.get(sale.delivery_type_id) : null;
+                    const zoneName = sale.delivery_zone_id ? deliveryZoneMap.get(sale.delivery_zone_id) : null;
                     const emp = employees.find(e => e.id === sale.employee_id);
                     return (
-                      <div key={sale.id} className="card--glass rounded-xl p-5 border-l-4 border-orange-500 hover:shadow-lg transition-shadow duration-300">
+                      <Card padding="lg" hover transitional className="border-l-4 border-warning" key={sale.id}>
                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                           <div className="flex-1 min-w-0">
+                            {zoneName && (
+                              <span className="inline-block px-2 py-0.5 rounded-full text-[10px] font-bold bg-warning/10 text-warning mb-1.5">
+                                {zoneName}
+                              </span>
+                            )}
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
-                              <span className="text-sm font-bold text-slate-900 dark:text-white">{t('reports.tableInvoice')} #{sale.id}</span>
+                              <span className="text-sm font-bold text-base-content">{t('reports.tableInvoice')} #{sale.id}</span>
                               <span className="text-xs text-slate-500 dark:text-white/50">{sale.date} {sale.time}</span>
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
                                 sale.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
@@ -1887,10 +1893,10 @@ export default function Reports() {
                             </div>
                             {/* Delivery Address — map-style card */}
                             <div className="flex items-start gap-2 bg-white/40 dark:bg-white/5 rounded-lg p-3 mb-2 border border-slate-200 dark:border-white/5">
-                              <MdStore className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
+                              <span className="icon-[tabler--building-store] w-4 h-4 text-warning mt-0.5 shrink-0" />
                               <div>
                                 <p className="text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.deliveryAddress')}</p>
-                                <p className="text-sm text-slate-900 dark:text-white font-medium">{sale.delivery_address || t('reports.noAddress')}</p>
+                                <p className="text-sm text-base-content font-medium">{sale.delivery_address || t('reports.noAddress')}</p>
                               </div>
                             </div>
                             {/* Extra info row */}
@@ -1900,19 +1906,19 @@ export default function Reports() {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <p className="text-lg font-bold text-teal-600 dark:text-teal-400">{sale.currency || currency} {sale.total_amount.toFixed(2)}</p>
+                            <p className="text-lg font-bold text-primary">{sale.currency || currency} {sale.total_amount.toFixed(2)}</p>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                     );
                   })}
                 </div>
               ) : (
-                <div className="card--glass rounded-xl p-6 text-center">
-                  <MdStore className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noDeliveries')}</p>
+                <Card padding="xl" center>
+                  <span className="icon-[tabler--building-store] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <p className="text-base-content/70 text-lg mb-2">{t('reports.noDeliveries')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noDeliveriesHint')}</p>
-                </div>
+                </Card>
               )}
             </div>
           )}
@@ -1920,29 +1926,25 @@ export default function Reports() {
           {activeTab === 'inventory' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-emerald-500 to-teal-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.activeIngredients')}
                   value={ingredients.filter(i => i.is_active).length.toString()}
-                  icon={<MdInventory className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.lowStockItems')}
                   value={lowStockItems.length.toString()}
-                  icon={<MdWarning className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--alert-triangle] w-6 h-6" />}
                   color="from-red-500 to-rose-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('transactions.title')}
                   value={inventoryTxns.length.toString()}
-                  icon={<MdDateRange className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -1952,24 +1954,24 @@ export default function Reports() {
                 <button
                   onClick={handleExportInventoryCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
 
               {/* Low Stock Alerts */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  <MdWarning className="w-5 h-5 text-red-500" />
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4 flex items-center gap-2">
+                  <span className="icon-[tabler--alert-triangle] w-5 h-5 text-red-500" />
                   {t('reports.lowStockAlerts')}
                 </h3>
                 {lowStockItems.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableIngredient')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableCurrent')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableMin')}</th>
@@ -1980,11 +1982,11 @@ export default function Reports() {
                       <tbody>
                         {lowStockItems.map((item, i) => (
                           <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{item.name}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{item.name}</td>
                             <td className="py-3 px-4 text-right text-red-600 dark:text-red-400 font-semibold">{item.currentQuantity}</td>
-                            <td className="py-3 px-4 text-right text-slate-600 dark:text-white/70">{item.reorderLevel}</td>
-                            <td className="py-3 px-4 text-right text-orange-600 dark:text-orange-400">{item.shortage}</td>
-                            <td className="py-3 px-4 text-slate-600 dark:text-white/70">{item.unit}</td>
+                            <td className="py-3 px-4 text-right text-base-content/70">{item.reorderLevel}</td>
+                            <td className="py-3 px-4 text-right text-warning">{item.shortage}</td>
+                            <td className="py-3 px-4 text-base-content/70">{item.unit}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1992,20 +1994,20 @@ export default function Reports() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
-                    <MdWarning className="w-5 h-5" />
+                    <span className="icon-[tabler--alert-triangle] w-5 h-5" />
                     <span>{t('reports.allWellStocked')}</span>
                   </div>
                 )}
-              </div>
+              </Card>
 
               {/* Active Ingredients Stock */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.ingredientStockLevels')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.ingredientStockLevels')}</h3>
                 {ingredients.filter(i => i.is_active).length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableIngredient')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableQuantity')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
@@ -2017,11 +2019,11 @@ export default function Reports() {
                       <tbody>
                         {ingredients.filter(i => i.is_active).map(ing => (
                           <tr key={ing.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{ing.name}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{ing.current_quantity}</td>
-                            <td className="py-3 px-4 text-slate-600 dark:text-white/70">{ing.unit}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {ing.cost_per_unit.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {(ing.current_quantity * ing.cost_per_unit).toFixed(2)}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{ing.name}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{ing.current_quantity}</td>
+                            <td className="py-3 px-4 text-base-content/70">{ing.unit}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {ing.cost_per_unit.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {(ing.current_quantity * ing.cost_per_unit).toFixed(2)}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 ing.current_quantity <= ing.reorder_level
@@ -2039,16 +2041,16 @@ export default function Reports() {
                 ) : (
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noIngredients')}</p>
                 )}
-              </div>
+              </Card>
 
               {/* Recent Transactions */}
               {recentInventoryTxns.length > 0 && (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.recentTransactions')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.recentTransactions')}</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDate')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableIngredient')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableChange')}</th>
@@ -2061,21 +2063,21 @@ export default function Reports() {
                           const ing = ingredientMap.get(tx.ingredient_id);
                           return (
                             <tr key={tx.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                              <td className="py-3 px-4 text-slate-600 dark:text-white/70 text-sm">
+                              <td className="py-3 px-4 text-base-content/70 text-sm">
                                 {tx.created_at ? new Date(tx.created_at).toLocaleDateString() : '-'}
                               </td>
-                              <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">
+                              <td className="py-3 px-4 font-medium text-base-content">
                                 {ing?.name || `#${tx.ingredient_id}`}
                               </td>
                               <td className={`py-3 px-4 text-right font-semibold ${
-                                tx.quantity_change > 0 
-                                  ? 'text-green-600 dark:text-green-400' 
+                                tx.quantity_change > 0
+                                  ? 'text-green-600 dark:text-green-400'
                                   : 'text-red-600 dark:text-red-400'
                               }`}>
                                 {tx.quantity_change > 0 ? '+' : ''}{tx.quantity_change}
                               </td>
                               <td className="py-3 px-4">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-slate-100 dark:bg-white/10 text-slate-700 dark:text-white/70 capitalize">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-base-200/50 text-slate-700 dark:text-white/70 capitalize">
                                   {tx.transaction_type.replace('_', ' ')}
                                 </span>
                               </td>
@@ -2086,7 +2088,7 @@ export default function Reports() {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
               )}
             </div>
           )}
@@ -2094,29 +2096,25 @@ export default function Reports() {
           {activeTab === 'recipes' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalRecipes')}
                   value={recipePerformance.length.toString()}
-                  icon={<MdMenuBook className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.activeProducts')}
                   value={products.length.toString()}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-green-500 to-emerald-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.avgProductPrice')}
                   value={`${currency} ${products.length > 0 ? (products.reduce((s, p) => s + p.price, 0) / products.length).toFixed(2) : '0.00'}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -2126,21 +2124,21 @@ export default function Reports() {
                 <button
                   onClick={handleExportRecipesCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
 
               {/* Recipe Performance Table */}
               {recipePerformance.length > 0 ? (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.recipePerformance')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.recipePerformance')}</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tablePrice')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableYield')}</th>
@@ -2150,9 +2148,9 @@ export default function Reports() {
                       <tbody>
                         {recipePerformance.map(rp => (
                           <tr key={rp.recipeId} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{rp.productName}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {rp.productPrice.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{rp.yieldQuantity}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{rp.productName}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {rp.productPrice.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{rp.yieldQuantity}</td>
                             <td className="py-3 px-4 text-center">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 rp.isActive
@@ -2167,23 +2165,23 @@ export default function Reports() {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
               ) : (
-                <div className="card--glass rounded-xl p-6 text-center">
-                  <MdMenuBook className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noRecipes')}</p>
+                <Card padding="xl" center>
+                  <span className="icon-[tabler--menu-2] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <p className="text-base-content/70 text-lg mb-2">{t('reports.noRecipes')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noRecipesHint')}</p>
-                </div>
+                </Card>
               )}
 
               {/* Products List */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.productCatalog')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.productCatalog')}</h3>
                 {products.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tablePrice')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
@@ -2195,9 +2193,9 @@ export default function Reports() {
                           const hasRecipe = recipes.some(r => r.product_id === p.id && r.is_active);
                           return (
                             <tr key={p.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                              <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{p.name}</td>
-                              <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {p.price.toFixed(2)}</td>
-                              <td className="py-3 px-4 text-slate-600 dark:text-white/70">{p.unit}</td>
+                              <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
+                              <td className="py-3 px-4 text-right text-base-content">{currency} {p.price.toFixed(2)}</td>
+                              <td className="py-3 px-4 text-base-content/70">{p.unit}</td>
                               <td className="py-3 px-4">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                   hasRecipe
@@ -2215,36 +2213,32 @@ export default function Reports() {
                 ) : (
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noProducts')}</p>
                 )}
-              </div>
+              </Card>
             </div>
           )}
 
           {activeTab === 'transactions' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${transactions.reduce((s, t) => s + t.total_amount, 0).toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.totalOrders')}
                   value={transactions.length.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${transactions.length > 0 ? (transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length).toFixed(2) : '0.00'}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.transactionItems')}
                   value={transactions.reduce((s, t) => s + t.items.length, 0).toString()}
-                  icon={<MdDateRange className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -2254,28 +2248,28 @@ export default function Reports() {
                 <button
                   onClick={handleExportTransactionsCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
 
               {/* Transaction List */}
               {transactions.length > 0 ? (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.transactionHistory')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.transactionHistory')}</h3>
                   <div className="space-y-3">
                     {transactions.slice(0, 20).map(tx => (
-                      <div key={tx.id} className="flex items-center justify-between bg-white/50 dark:bg-white/5 rounded-lg p-4 border border-slate-200 dark:border-white/5">
+                      <div key={tx.id} className="flex items-center justify-between bg-base-100/50 rounded-lg p-4 border border-slate-200 dark:border-white/5">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
-                            <span className="text-xs text-slate-500 dark:text-gray-400">{tx.date}</span>
-                            <span className="text-xs text-slate-500 dark:text-gray-400">{tx.time}</span>
+                            <span className="text-xs text-base-content/50">{tx.date}</span>
+                            <span className="text-xs text-base-content/50">{tx.time}</span>
                           </div>
                           <div className="flex flex-wrap gap-1">
                             {tx.items.slice(0, 3).map((item, idx) => (
-                              <span key={idx} className="text-xs bg-slate-200 dark:bg-white/10 px-2 py-0.5 rounded-full text-slate-700 dark:text-gray-300">
+                              <span key={idx} className="text-xs bg-slate-200 dark:bg-white/10 px-2 py-0.5 rounded-full text-base-content/80">
                                 {item.name} ×{item.quantity}
                               </span>
                             ))}
@@ -2285,19 +2279,19 @@ export default function Reports() {
                           </div>
                         </div>
                         <div className="text-right shrink-0 ml-4">
-                          <span className="text-lg font-bold text-teal-600 dark:text-teal-400">
+                          <span className="text-lg font-bold text-primary">
                             {tx.currency} {tx.total_amount.toFixed(2)}
                           </span>
                         </div>
                       </div>
                     ))}
                   </div>
-                </div>
+                </Card>
               ) : (
-                <div className="card--glass rounded-xl p-6 text-center">
-                  <MdDateRange className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noTransactions')}</p>
-                </div>
+                <Card padding="xl" center>
+                  <span className="icon-[tabler--calendar] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <p className="text-base-content/70 text-lg mb-2">{t('transactions.noTransactions')}</p>
+                </Card>
               )}
             </div>
           )}
@@ -2305,29 +2299,25 @@ export default function Reports() {
           {activeTab === 'employees' && (
             <div className="space-y-6">
               {/* Summary Cards */}
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
-                <SummaryCard
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
-                  icon={<MdPeople className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--users] w-6 h-6" />}
                   color="from-indigo-500 to-purple-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.employeesWithSales')}
                   value={employeePerformance.length.toString()}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-blue-500 to-cyan-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.totalOrders')}
                   value={employeePerformance.reduce((s, e) => s + e.orderCount, 0).toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-emerald-500 to-teal-600"
-                />
-                <SummaryCard
+                /><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${employeePerformance.reduce((s, e) => s + e.revenue, 0).toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -2337,17 +2327,17 @@ export default function Reports() {
                 <button
                   onClick={handleExportEmployeesCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                    bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
+                    bg-primary/10 text-primary hover:bg-primary/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
 
               {/* Employee Performance Charts */}
               {employeePerformance.length > 0 && (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.revenueByEmployee')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.revenueByEmployee')}</h3>
                   <div className="w-full h-72" dir="ltr">
                     <ResponsiveContainer width="100%" height="100%">
                       <BarChart data={employeePerformance.slice(0, 10)} margin={{ left: 20, right: 20, top: 10, bottom: 10 }}>
@@ -2362,17 +2352,17 @@ export default function Reports() {
                       </BarChart>
                     </ResponsiveContainer>
                   </div>
-                </div>
+                </Card>
               )}
 
               {/* Employee Performance Table */}
               {employeePerformance.length > 0 ? (
-                <div className="card--glass rounded-xl p-6">
-                  <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.employeePerformance')}</h3>
+                <Card padding="xl">
+                  <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.employeePerformance')}</h3>
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
@@ -2383,10 +2373,10 @@ export default function Reports() {
                       <tbody>
                         {employeePerformance.map(emp => (
                           <tr key={emp.employeeId} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{emp.employeeName}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{emp.orderCount}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {emp.revenue.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {emp.averageOrderValue.toFixed(2)}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{emp.employeeName}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{emp.orderCount}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.revenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.averageOrderValue.toFixed(2)}</td>
                             <td className="py-3 px-4">
                               {/* Mini performance bar */}
                               <div className="w-24 bg-slate-200 dark:bg-white/10 rounded-full h-2.5 overflow-hidden">
@@ -2406,23 +2396,23 @@ export default function Reports() {
                       </tbody>
                     </table>
                   </div>
-                </div>
+                </Card>
               ) : (
-                <div className="card--glass rounded-xl p-6 text-center">
-                  <MdPeople className="w-12 h-12 mx-auto mb-4 text-slate-400" />
-                  <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noEmployeeSales')}</p>
+                <Card padding="xl" center>
+                  <span className="icon-[tabler--users] w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <p className="text-base-content/70 text-lg mb-2">{t('reports.noEmployeeSales')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noEmployeeSalesHint')}</p>
-                </div>
+                </Card>
               )}
 
               {/* Employee Directory Summary */}
-              <div className="card--glass rounded-xl p-6">
-                <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4">{t('reports.employeeDirectory')}</h3>
+              <Card padding="xl">
+                <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.employeeDirectory')}</h3>
                 {employees.length > 0 ? (
                   <div className="overflow-x-auto">
                     <table className="w-full text-left">
                       <thead>
-                        <tr className="border-b border-slate-200 dark:border-white/10">
+                        <tr className="border-b border-base-300/30">
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableName')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableSalary')}</th>
                           <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableStatus')}</th>
@@ -2432,8 +2422,8 @@ export default function Reports() {
                       <tbody>
                         {employees.map(emp => (
                           <tr key={emp.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 font-medium text-slate-900 dark:text-white">{emp.name}</td>
-                            <td className="py-3 px-4 text-right text-slate-900 dark:text-white">{currency} {emp.salary.toFixed(2)}</td>
+                            <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.salary.toFixed(2)}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 emp.is_active
@@ -2443,7 +2433,7 @@ export default function Reports() {
                                 {emp.is_active ? t('common.active') : t('common.inactive')}
                               </span>
                             </td>
-                            <td className="py-3 px-4 text-slate-600 dark:text-white/70">{emp.joined_at || '-'}</td>
+                            <td className="py-3 px-4 text-base-content/70">{emp.joined_at || '-'}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -2452,7 +2442,7 @@ export default function Reports() {
                 ) : (
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noEmployees')}</p>
                 )}
-              </div>
+              </Card>
             </div>
           )}
         </motion.div>
@@ -2467,29 +2457,6 @@ const PIE_COLORS = ['#6366f1', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6', '#06b
 
 // ---- Subcomponents ----
 
-interface SummaryCardProps {
-  title: string;
-  value: string;
-  icon: React.ReactNode;
-  color: string;
-}
+// ── Subcomponents (StatCard now imported from ../components/StatCard) ──
 
-function SummaryCard({ title, value, icon, color }: SummaryCardProps) {
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="card--glass card--hover rounded-xl p-5"
-    >
-      <div className="flex items-center gap-4">
-        <div className={`p-3 rounded-lg bg-linear-to-br ${color} text-white shadow-lg`}>
-          {icon}
-        </div>
-        <div>
-          <p className="text-sm text-slate-500 dark:text-white/60">{title}</p>
-          <p className="text-xl font-bold text-slate-900 dark:text-white">{value}</p>
-        </div>
-      </div>
-    </motion.div>
-  );
-}
+

@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MdBusiness, MdPhone, MdEmail, MdLocationOn, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -117,35 +116,32 @@ export default function Suppliers() {
   }
 
   return (
-    <PageLayout title={t('suppliers.title')} background="bg-slate-100 dark:bg-slate-900">
+    <PageLayout title={t('suppliers.title')}>
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-3">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('suppliers.title')}</h1>
+          <h1 className="text-2xl font-bold text-base-content">{t('suppliers.title')}</h1>
           <motion.button
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' }); }}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors shrink-0"
+            className="btn btn-primary gap-2 shrink-0"
           >
-            <MdAdd /> {t('suppliers.addSupplier')}
+            <span className="icon-[tabler--plus]" /> {t('suppliers.addSupplier')}
           </motion.button>
         </div>
 
         {/* ── Search + sort bar (debounced async UX) ── */}
-        <div className="card--glass rounded-xl p-3">
+        <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
-              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('suppliers.searchPlaceholder') || 'Search suppliers...'}
                 aria-label={t('suppliers.searchPlaceholder') || 'Search suppliers'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                  border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                  placeholder:text-slate-400 dark:placeholder:text-gray-500
-                  focus:outline-none focus:border-teal-400 transition-colors text-sm"
+                className="input input-bordered w-full pl-10"
               />
               {isFiltering ? (
                 <motion.div
@@ -161,7 +157,7 @@ export default function Suppliers() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               ) : null}
             </div>
@@ -169,15 +165,13 @@ export default function Suppliers() {
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
               aria-label={t('suppliers.sortBy') || 'Sort by'}
-              className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                text-sm focus:outline-none focus:border-teal-400 transition-colors sm:w-44"
+              className="select select-bordered sm:w-44"
             >
               <option value="newest">{t('suppliers.sortNewest') || 'Newest'}</option>
               <option value="name-asc">{t('suppliers.sortNameAsc') || 'Name (A→Z)'}</option>
               <option value="name-desc">{t('suppliers.sortNameDesc') || 'Name (Z→A)'}</option>
             </select>
-            <span className="text-xs text-slate-500 dark:text-gray-400 whitespace-nowrap px-2">
+            <span className="text-xs text-base-content/50 whitespace-nowrap px-2">
               {sorted.length} / {suppliers.length}
             </span>
           </div>
@@ -188,32 +182,32 @@ export default function Suppliers() {
             initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             onSubmit={handleSubmit}
-            className="card--glass rounded-xl p-4 space-y-3"
+            className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white sm:col-span-2" />
+              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="input input-bordered w-full" />
+              <input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="input input-bordered w-full" />
+              <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="input input-bordered w-full" />
+              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="input input-bordered w-full" />
+              <input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="input input-bordered w-full" />
+              <input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="input input-bordered w-full" />
+              <input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="input input-bordered w-full sm:col-span-2" />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">{editing ? t('common.update') : t('common.save')}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">{t('common.cancel')}</button>
+              <button type="submit" className="btn btn-primary">{editing ? t('common.update') : t('common.save')}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
           </motion.form>
         )}
 
         {isLoading ? (
-          <div className="card--glass rounded-xl p-8 text-center">
+          <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center">
             <motion.div
               animate={{ rotate: 360 }}
               transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
               className="w-6 h-6 border-2 border-teal-400 border-t-transparent rounded-full inline-block mb-2"
             />
-            <p className="text-slate-500 dark:text-gray-400 text-sm">{t('common.loading')}</p>
+            <p className="text-base-content/50 text-sm">{t('common.loading')}</p>
           </div>
         ) : sorted.length === 0 ? (
           <div className="text-center py-12 text-slate-500">
@@ -224,26 +218,26 @@ export default function Suppliers() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {sorted.map(supplier => (
-              <motion.div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+              <motion.div key={supplier.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-blue-100 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400">
-                      <MdBusiness className="w-5 h-5" />
+                      <span className="icon-[tabler--building] w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{supplier.name}</h3>
+                      <h3 className="font-semibold text-base-content">{supplier.name}</h3>
                       {supplier.contact_name && <p className="text-sm text-slate-500">{supplier.contact_name}</p>}
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
-                    <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                    <button onClick={() => handleEdit(supplier)} className="p-2 text-slate-600 hover:text-primary"><span className="icon-[tabler--pencil]" /></button>
+                    <button onClick={() => handleDelete(supplier.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                   </div>
                 </div>
-                <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
-                  {supplier.phone && <div className="flex items-center gap-1"><MdPhone /> {supplier.phone}</div>}
-                  {supplier.email && <div className="flex items-center gap-1"><MdEmail /> {supplier.email}</div>}
-                  {supplier.address && <div className="flex items-center gap-1"><MdLocationOn /> {supplier.address}</div>}
+                <div className="mt-3 space-y-1 text-sm text-base-content/60">
+                  {supplier.phone && <div className="flex items-center gap-1"><span className="icon-[tabler--phone]" /> {supplier.phone}</div>}
+                  {supplier.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {supplier.email}</div>}
+                  {supplier.address && <div className="flex items-center gap-1"><span className="icon-[tabler--map-pin]" /> {supplier.address}</div>}
                 </div>
               </motion.div>
             ))}

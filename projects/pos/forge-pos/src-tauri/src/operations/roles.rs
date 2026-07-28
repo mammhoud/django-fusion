@@ -2,7 +2,38 @@ use crate::db::models::*;
 use crate::db::schema::roles;
 use crate::db::schema::user_roles;
 use diesel::prelude::*;
+use serde::Serialize;
 use std::path::PathBuf;
+
+/// A permission definition returned from the backend.
+/// The frontend uses this to render the permission checklist dynamically.
+#[derive(Debug, Serialize, Clone)]
+pub struct PermissionDef {
+    pub key: String,
+    pub label: String,
+    pub icon: String,
+}
+
+/// Returns the full catalog of available permissions.
+/// This is the single source of truth — adding a new permission key here
+/// will automatically surface it in the frontend Roles UI without any
+/// frontend code changes.
+pub fn get_permission_catalog() -> Vec<PermissionDef> {
+    vec![
+        PermissionDef { key: "manage:products".to_string(),   label: "Manage Products".to_string(),     icon: "clipboard-list".to_string() },
+        PermissionDef { key: "manage:inventory".to_string(),  label: "Manage Inventory".to_string(),    icon: "package".to_string() },
+        PermissionDef { key: "manage:employees".to_string(),  label: "Manage Employees".to_string(),    icon: "users".to_string() },
+        PermissionDef { key: "manage:roles".to_string(),      label: "Manage Roles".to_string(),        icon: "shield".to_string() },
+        PermissionDef { key: "process:sales".to_string(),     label: "Process Sales".to_string(),       icon: "shopping-cart".to_string() },
+        PermissionDef { key: "manage:customers".to_string(),  label: "Manage Customers".to_string(),    icon: "user-circle".to_string() },
+        PermissionDef { key: "manage:settings".to_string(),   label: "Manage Settings".to_string(),     icon: "settings".to_string() },
+        PermissionDef { key: "view:reports".to_string(),      label: "View Reports".to_string(),        icon: "file-text".to_string() },
+        PermissionDef { key: "view:analytics".to_string(),    label: "View Analytics".to_string(),      icon: "chart-bar".to_string() },
+        PermissionDef { key: "view:transactions".to_string(), label: "View Transactions".to_string(),   icon: "history".to_string() },
+        PermissionDef { key: "manage:suppliers".to_string(),  label: "Manage Suppliers".to_string(),    icon: "truck".to_string() },
+        PermissionDef { key: "manage:kitchen".to_string(),    label: "Manage Kitchen".to_string(),      icon: "tools-kitchen-2".to_string() },
+    ]
+}
 
 pub fn get_roles(db_path: &PathBuf) -> Result<Vec<Role>, String> {
     let mut conn = crate::db::open_conn(db_path)?;

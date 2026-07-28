@@ -1,0 +1,10 @@
+[
+  {
+    "model": "wagtailcore.workflow",
+    "pk": 1,
+    "fields": {
+      "name": "Moderators approval",
+      "active": true
+    }
+  }
+]

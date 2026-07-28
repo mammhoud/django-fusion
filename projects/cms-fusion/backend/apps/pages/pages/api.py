@@ -40,14 +40,13 @@ def _get_fusion_render_first_from_request(request) -> bool | None:
 
 
 def _get_wagtail_page(slug: str):
-    """Try to retrieve a Wagtail FusionPage by slug. Returns None if not found."""
+    """Try to retrieve a live Wagtail page by slug. Returns None if not found."""
     normalized = normalize_slug(slug)
     try:
-        from apps.pages.pages.models import FusionContentPage, FusionHomePage
+        from wagtail.models import Page
 
-        if normalized == "home":
-            return FusionHomePage.objects.live().first()
-        return FusionContentPage.objects.live().filter(slug=normalized).first()
+        page = Page.objects.live().filter(slug=normalized).first()
+        return page
     except Exception:
         return None
 
@@ -105,17 +104,21 @@ def _wagtail_page_to_dict(page) -> dict:
 
 @bolt_view
 def page_list(request):
-    """GET /api/pages/ — list all published Fusion pages."""
+    """GET /api/pages/ — list all published pages (Wagtail + static fallback)."""
     try:
-        from apps.pages.pages.models import FusionContentPage, FusionHomePage
+        from wagtail.models import Page
 
         pages = []
-        home = FusionHomePage.objects.live().first()
-        if home:
-            pages.append(_wagtail_page_to_dict(home))
+        for p in Page.objects.live().filter(depth__gt=1).order_by("title"):
+            try:
+                pages.append(_wagtail_page_to_dict(p))
+            except Exception:
+                logger.exception("page_list failed to serialize page pk=%s", p.pk)
 
-        for p in FusionContentPage.objects.live().filter(show_in_nav=True).order_by("title"):
-            pages.append(_wagtail_page_to_dict(p))
+        # Fallback to static pages if the Wagtail tree has no usable pages
+        if not pages:
+            for static_page in STATIC_PAGES.values():
+                pages.append(static_page)
 
         return {"pages": pages, "total": len(pages)}
     except Exception:
@@ -153,14 +156,15 @@ def page_fragment(request, slug):
         # 1. Try Wagtail page
         wagtail_page = _get_wagtail_page(slug)
         if wagtail_page is not None:
-            fragment_name = wagtail_page.effective_fragment_name
+            page_info = _wagtail_page_to_dict(wagtail_page)
+            fragment_name = page_info.get("fragment_name") or f"pages.{normalized.replace('-', '_')}"
             pointer = fusion_response(
                 fragment_name, request,
                 extra={
                     "page_slug": normalized,
-                    "title": wagtail_page.title,
-                    "layout": wagtail_page.effective_layout,
-                    "fusion_render_first": wagtail_page.fusion_render_first,
+                    "title": page_info.get("title", normalized),
+                    "layout": page_info.get("layout", "default"),
+                    "fusion_render_first": page_info.get("fusion_render_first", False),
                 },
             )
             return fusion_json_response(data=pointer, status=200)

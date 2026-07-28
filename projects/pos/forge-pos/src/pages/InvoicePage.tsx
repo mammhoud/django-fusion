@@ -22,19 +22,15 @@ import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 
-import {
-  MdDownload, MdPrint, MdAdd, MdDelete,
-  MdOpenInNew, MdRefresh, MdArrowDropDown,
-  MdSearch,
-} from 'react-icons/md';
-import { FaFileInvoiceDollar } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 
 import PageLayout from '../components/PageLayout';
+import Card from '../components/Card';
 import Invoice, { PageDesign, InvoiceItem } from '../components/Invoice';
 import { Customer, Settings, InvoiceType as AppInvoiceType, INVOICE_TYPE_LABELS, INVOICE_CATEGORIES, InvoiceDirection } from '../types';
-import { sidecar, data } from '../api';
-import type { InvoiceType, InvoiceDesign } from '../api';
+import sidecar from '../api/sidecar';
+import { data } from '../api/data';
+import type { InvoiceType, InvoiceDesign } from '../api/data';
 
 // ---- Constants -------------------------------------------------------------
 
@@ -251,7 +247,7 @@ export default function InvoicePage() {
 
   // ---- Render -----
   return (
-    <PageLayout title={<><FaFileInvoiceDollar className="w-5 h-5 text-teal-500" /> Invoice Builder</>}>
+    <PageLayout title={<><span className="icon-[tabler--file-invoice] w-5 h-5 text-primary" /> Invoice Builder</>}>
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -261,7 +257,7 @@ export default function InvoicePage() {
             exit={{ opacity: 0, y: -16 }}
             className={`fixed top-4 left-1/2 -translate-x-1/2 z-50 px-5 py-2.5 rounded-full text-sm font-semibold shadow-lg ${
               toast.type === 'ok'
-                ? 'bg-teal-600 text-white'
+                ? 'bg-primary text-white'
                 : 'bg-rose-600 text-white'
             }`}
           >
@@ -282,18 +278,18 @@ export default function InvoicePage() {
               onClick={handlePrint}
               className="flex flex-col items-center gap-1 py-3 rounded-xl bg-slate-800 text-white text-xs font-semibold shadow hover:bg-slate-700"
             >
-              <MdPrint className="w-5 h-5" />
+              <span className="icon-[tabler--printer] w-5 h-5" />
               Print
             </motion.button>
             <motion.button
               whileHover={{ scale: 1.03 }} whileTap={{ scale: 0.96 }}
               onClick={handlePdfExport}
               disabled={isExporting}
-              className="flex flex-col items-center gap-1 py-3 rounded-xl bg-teal-600 text-white text-xs font-semibold shadow hover:bg-teal-700 disabled:opacity-60"
+              className="flex flex-col items-center gap-1 py-3 rounded-xl bg-primary text-white text-xs font-semibold shadow hover:bg-teal-700 disabled:opacity-60"
             >
               {isExporting
-                ? <MdRefresh className="w-5 h-5 animate-spin" />
-                : <MdDownload className="w-5 h-5" />}
+                ? <span className="icon-[tabler--refresh] w-5 h-5 animate-spin" />
+                : <span className="icon-[tabler--download] w-5 h-5" />}
               {isExporting ? 'Saving…' : 'PDF'}
             </motion.button>
             <motion.button
@@ -302,11 +298,11 @@ export default function InvoicePage() {
               title={!sidecarRunning ? 'Sidecar not running' : 'Open in browser'}
               className={`flex flex-col items-center gap-1 py-3 rounded-xl text-xs font-semibold shadow ${
                 sidecarRunning
-                  ? 'bg-indigo-600 text-white hover:bg-indigo-700'
+                  ? 'bg-info text-white hover:bg-indigo-700'
                   : 'bg-slate-200 text-slate-400 dark:bg-slate-700 cursor-not-allowed'
               }`}
             >
-              <MdOpenInNew className="w-5 h-5" />
+              <span className="icon-[tabler--external-link] w-5 h-5" />
               Preview
             </motion.button>
           </div>
@@ -314,7 +310,7 @@ export default function InvoicePage() {
           {/* Sidecar status badge */}
           <div className={`flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-medium ${
             sidecarRunning
-              ? 'bg-teal-50 text-teal-700 dark:bg-teal-900/30 dark:text-teal-400'
+              ? 'bg-teal-50 text-primary dark:bg-primary/30 dark:text-primary/80'
               : 'bg-slate-100 text-slate-500 dark:bg-slate-800 dark:text-slate-400'
           }`}>
             <span className={`w-2 h-2 rounded-full ${sidecarRunning ? 'bg-teal-500' : 'bg-slate-400'}`} />
@@ -329,7 +325,7 @@ export default function InvoicePage() {
                 onClick={() => setSidebarTab(tab)}
                 className={`flex-1 py-2 text-xs font-semibold capitalize transition-colors ${
                   sidebarTab === tab
-                    ? 'bg-teal-600 text-white'
+                    ? 'bg-primary text-white'
                     : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50 dark:hover:bg-slate-700'
                 }`}
               >
@@ -340,13 +336,13 @@ export default function InvoicePage() {
 
           {/* TAB: Invoice */}
           {sidebarTab === 'invoice' && (
-            <div className="card--glass rounded-xl p-4 space-y-4">
+            <Card spaceY="4">
               <div>
                 <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1.5">Invoice Type</label>
                 {/* ComboBox: searchable + writable */}
                 <div ref={comboRef} className="relative">
                   <div className="relative">
-                    <MdSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       value={comboOpen ? comboSearch : INVOICE_TYPE_LABELS[invoiceType]}
                       onChange={e => { setComboSearch(e.target.value); setComboOpen(true); }}
@@ -363,7 +359,7 @@ export default function InvoicePage() {
                       className="w-full bg-slate-100 dark:bg-slate-700 border-0 rounded-lg pl-9 pr-8 py-2 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500 outline-none"
                     />
                     <button onClick={() => setComboOpen(!comboOpen)} className="absolute right-2 top-1/2 -translate-y-1/2">
-                      <MdArrowDropDown className={`w-5 h-5 text-slate-400 transition-transform ${comboOpen ? 'rotate-180' : ''}`} />
+                      <span className={`icon-[tabler--chevron-down] w-5 h-5 text-slate-400 transition-transform ${comboOpen ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
                   {comboOpen && (
@@ -385,9 +381,9 @@ export default function InvoicePage() {
                           }}
                           className={`w-full text-left px-3 py-2 text-sm transition-colors ${
                             invoiceType === t
-                              ? 'bg-teal-600 text-white'
+                              ? 'bg-primary text-white'
                               : 'text-slate-700 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-700'
-                          }                          ${t === '__custom__' ? 'border-t border-slate-100 dark:border-slate-700 font-medium text-teal-600 dark:text-teal-400' : ''}`}
+                          }                          ${t === '__custom__' ? 'border-t border-slate-100 dark:border-slate-700 font-medium text-primary dark:text-primary/80' : ''}`}
                         >
                           {t === '__custom__' ? `+ Create "${comboSearch}"` : INVOICE_TYPE_LABELS[t as AppInvoiceType]}
                         </button>
@@ -405,7 +401,7 @@ export default function InvoicePage() {
                   <div className="flex rounded-lg overflow-hidden border border-slate-200 dark:border-slate-700">
                     {(['collection', 'payment'] as InvoiceDirection[]).map(d => (
                       <button key={d} onClick={() => { setInvoiceDirection(d); setInvoiceCategory(filteredCategories[0]?.id || ''); }}
-                        className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${invoiceDirection === d ? 'bg-teal-600 text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'}`}>
+                        className={`flex-1 py-1.5 text-xs font-semibold transition-colors ${invoiceDirection === d ? 'bg-primary text-white' : 'bg-white dark:bg-slate-800 text-slate-600 dark:text-slate-400 hover:bg-slate-50'}`}>
                         {d === 'collection' ? 'Collection' : 'Payment'}
                       </button>
                     ))}
@@ -429,12 +425,12 @@ export default function InvoicePage() {
                       onClick={() => setPageDesign(d.value)}
                       className={`w-full text-left px-3 py-2 rounded-lg transition-all ${
                         pageDesign === d.value
-                          ? 'bg-indigo-600 text-white shadow-sm'
+                          ? 'bg-info text-white shadow-sm'
                           : 'bg-slate-100 dark:bg-slate-700 text-slate-700 dark:text-slate-300 hover:bg-slate-200'
                       }`}
                     >
                       <span className="font-medium text-sm">{d.label}</span>
-                      <span className={`block text-[11px] ${pageDesign === d.value ? 'text-indigo-200' : 'text-slate-400'}`}>
+                      <span className={`block text-[11px] ${pageDesign === d.value ? 'text-info/60' : 'text-slate-400'}`}>
                         {d.desc}
                       </span>
                     </button>
@@ -454,7 +450,7 @@ export default function InvoicePage() {
                     >
                       {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <MdArrowDropDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                    <span className="icon-[tabler--chevron-down] absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
                   </div>
                 </div>
                 <div>
@@ -467,20 +463,20 @@ export default function InvoicePage() {
                 <FormField label="Notes" value={notes} onChange={setNotes} multiline />
                 <FormField label="Footer Message" value={footer} onChange={setFooter} />
               </div>
-            </div>
+            </Card>
           )}
 
           {/* TAB: Items */}
           {sidebarTab === 'items' && (
-            <div className="card--glass rounded-xl p-4 space-y-3">
+            <Card spaceY="3">
               <div className="flex items-center justify-between">
                 <span className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Line Items ({items.length})</span>
                 <motion.button
                   whileHover={{ scale: 1.06 }} whileTap={{ scale: 0.93 }}
                   onClick={addItem}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-primary text-white text-xs font-semibold"
                 >
-                  <MdAdd className="w-4 h-4" /> Add Item
+                  <span className="icon-[tabler--plus] w-4 h-4" /> Add Item
                 </motion.button>
               </div>
               <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
@@ -491,8 +487,8 @@ export default function InvoicePage() {
                   >
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Item {idx + 1}</span>
-                      <button onClick={() => removeItem(item.id)} className="text-rose-400 hover:text-rose-600 transition-colors" aria-label="Remove item">
-                        <MdDelete className="w-4 h-4" />
+                      <button onClick={() => removeItem(item.id)} className="text-error/80 hover:text-error transition-colors" aria-label="Remove item">
+                        <span className="icon-[tabler--trash] w-4 h-4" />
                       </button>
                     </div>
                     <input placeholder="Item name" value={item.name}
@@ -532,19 +528,19 @@ export default function InvoicePage() {
                   return (
                     <div className="flex justify-between items-center">
                       <span className="text-xs text-slate-500">Estimated Total</span>
-                      <span className="font-bold text-teal-600">
+                      <span className="font-bold text-primary">
                         {currency} {(sub + tax).toFixed(2)}
                       </span>
                     </div>
                   );
                 })()}
               </div>
-            </div>
+            </Card>
           )}
 
           {/* TAB: Customer */}
           {sidebarTab === 'customer' && (
-            <div className="card--glass rounded-xl p-4 space-y-3">
+            <Card spaceY="3">
               <label className="block text-xs font-semibold text-slate-500 uppercase tracking-wider mb-1">Select Customer</label>
               <div className="relative">
                 <select value={selectedCustomerId ?? ''}
@@ -556,7 +552,7 @@ export default function InvoicePage() {
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
-                <MdArrowDropDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                <span className="icon-[tabler--chevron-down] absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
               </div>
               <div className="space-y-2.5">
                 <FormField label="Name"    value={toName}    onChange={setToName} />
@@ -564,7 +560,7 @@ export default function InvoicePage() {
                 <FormField label="Phone"   value={toPhone}   onChange={setToPhone} type="tel" />
                 <FormField label="Address" value={toAddress} onChange={setToAddress} multiline />
               </div>
-            </div>
+            </Card>
           )}
         </aside>
 
@@ -583,7 +579,7 @@ export default function InvoicePage() {
                 address: settings?.address ?? '',
                 phone: settings?.phone ?? '',
                 email: settings?.email ?? '',
-                logo: settings?.logo ?? undefined,
+                logo: settings?.invoice_logo ?? undefined,
               }}
               to={toParty}
               items={items}
@@ -628,3 +624,4 @@ function FormField({
     </div>
   );
 }
+

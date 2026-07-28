@@ -11,6 +11,19 @@ export const THEME_VARIANTS: { id: ThemeVariant; label: string; icon: string; de
   { id: 'cyberpunk', label: 'Cyberpunk', icon: '⚡', description: 'Neon futuristic glow' },
 ];
 
+/**
+ * Maps (variant, mode) → FlyonUI data-theme attribute value.
+ * Each variant has separate light and dark themes defined in index.css
+ * via @plugin "flyonui/theme" blocks.
+ */
+export const THEME_MAP: Record<ThemeVariant, Record<Mode, string>> = {
+  default:   { light: 'light', dark: 'dark' },
+  corporate: { light: 'corporate-light', dark: 'corporate-dark' },
+  luxury:    { light: 'luxury-light',    dark: 'luxury-dark' },
+  pastel:    { light: 'pastel-light',    dark: 'pastel-dark' },
+  cyberpunk: { light: 'cyberpunk-light', dark: 'cyberpunk' },
+};
+
 interface ThemeContextType {
   /** The resolved visual mode (always 'light' or 'dark') */
   mode: Mode;
@@ -26,6 +39,8 @@ interface ThemeContextType {
   setVariant: (variant: ThemeVariant) => void;
   /** Enable or disable OS preference following */
   setFollowSystem: (follow: boolean) => void;
+  /** The resolved FlyonUI data-theme value */
+  resolvedTheme: string;
 }
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
@@ -58,6 +73,9 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     return 'default';
   });
 
+  // Resolve the FlyonUI data-theme value
+  const resolvedTheme = THEME_MAP[variant][mode];
+
   // Listen for OS preference changes when followSystem is active
   useEffect(() => {
     if (!followSystem) return;
@@ -76,11 +94,11 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
     const root = window.document.documentElement;
     root.classList.remove('light', 'dark');
     root.classList.add(mode);
-    root.setAttribute('data-theme', variant);
+    root.setAttribute('data-theme', resolvedTheme);
     localStorage.setItem('theme-mode', mode);
     localStorage.setItem('theme-variant', variant);
     localStorage.setItem('theme-follow-system', String(followSystem));
-  }, [mode, variant, followSystem]);
+  }, [mode, variant, followSystem, resolvedTheme]);
 
   const toggleMode = useCallback(() => {
     setFollowSystemState(false);
@@ -104,7 +122,7 @@ export function ThemeProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <ThemeContext.Provider value={{ mode, variant, followSystem, toggleMode, setMode, setVariant, setFollowSystem }}>
+    <ThemeContext.Provider value={{ mode, variant, followSystem, toggleMode, setMode, setVariant, setFollowSystem, resolvedTheme }}>
       {children}
     </ThemeContext.Provider>
   );

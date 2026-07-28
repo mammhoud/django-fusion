@@ -1,15 +1,14 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { MdShoppingCart, MdCheckCircle, MdLocalPrintshop, MdFileDownload, MdSearch, MdClose, MdChevronRight, MdChevronLeft, MdTune } from 'react-icons/md';
-import { FaPlus, FaStore, FaTruck, FaHandPaper, FaUserTie, FaDoorOpen, FaMapMarkerAlt, FaFileInvoiceDollar } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
-import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee } from '../types';
+import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone } from '../types';
 import Receipt from '../components/Receipt';
 import { InvoiceType } from '../types';
 import { downloadInvoicePDF } from '../utils/invoicePdf';
 import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../components/ProductCard';
+import Card from '../components/Card';
 import jsPDF from 'jspdf';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -21,9 +20,9 @@ import StatusToast from '../components/StatusToast';
 type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 
 const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = [
-  { key: 'dine-in', label: 'Dine-in', icon: <FaStore /> },
-  { key: 'takeaway', label: 'Takeaway', icon: <FaHandPaper /> },
-  { key: 'delivery', label: 'Delivery', icon: <FaTruck /> },
+  { key: 'dine-in', label: 'Dine-in', icon: <span className="icon-[tabler--building-store]" /> },
+  { key: 'takeaway', label: 'Takeaway', icon: <span className="icon-[tabler--hand-three-fingers]" /> },
+  { key: 'delivery', label: 'Delivery', icon: <span className="icon-[tabler--truck]" /> },
 ];
 
 export default function Sale() {
@@ -41,6 +40,9 @@ export default function Sale() {
     tableNumber?: number | null;
     deliveryTypeName?: string;
     deliveryAddress?: string;
+    deliveryFee?: number;
+    deliveryZoneName?: string;
+    deliveryDistance?: number;
     employeeName?: string;
   } | null>(null);
   const receiptRef = useRef<HTMLDivElement>(null);
@@ -52,6 +54,7 @@ export default function Sale() {
     receipt_footer: 'Thank you for your business!',
   });
   const [deliveryTypes, setDeliveryTypes] = useState<DeliveryType[]>([]);
+  const [deliveryZones, setDeliveryZones] = useState<DeliveryZone[]>([]);
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isSelling, setIsSelling] = useState(false);
@@ -126,17 +129,24 @@ export default function Sale() {
   const [orderType, setOrderType] = useState<OrderType>('dine-in');
   const [tableNumber, setTableNumber] = useState<number>(1);
   const [deliveryTypeId, setDeliveryTypeId] = useState<number>(0);
+  const [selectedZoneId, setSelectedZoneId] = useState<number>(0);
+  const [deliveryDistance, setDeliveryDistance] = useState<number>(0);
   const [deliveryAddress, setDeliveryAddress] = useState('');
   const [employeeId, setEmployeeId] = useState<number>(0);
+  const [orderNotes, setOrderNotes] = useState('');
+  const [viewMode, setViewMode] = useState<'standard' | 'compact'>('standard');
+  const [productTypeFilter, setProductTypeFilter] = useState<string>('all');
+  const [itemNotes, setItemNotes] = useState<Record<number, string>>({});
 
   const loadData = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
     if (!quiet) setIsLoading(true);
     try {
-      const [productsRes, settingsRes, dtRes, empRes, categoriesRes] = await Promise.all([
+      const [productsRes, settingsRes, dtRes, zonesRes, empRes, categoriesRes] = await Promise.all([
         invoke<Product[]>('get_products'),
         invoke<Settings>('get_settings'),
         invoke<DeliveryType[]>('get_delivery_types', { includeInactive: false }),
+        invoke<DeliveryZone[]>('get_delivery_zones', { includeInactive: true }),
         invoke<Employee[]>('get_employees', { includeInactive: false }),
         invoke<{ id: number; name: string }[]>('get_categories'),
       ]);
@@ -152,9 +162,14 @@ export default function Sale() {
         });
       }
       setDeliveryTypes(dtRes);
+      setDeliveryZones(zonesRes);
       setEmployees(empRes);
       setCategories(categoriesRes || []);
       if (dtRes.length > 0) setDeliveryTypeId(dtRes[0].id);
+      const activeZones = zonesRes.filter(z => z.is_active);
+      if (activeZones.length > 0 && selectedZoneId === 0) {
+        setSelectedZoneId(activeZones[0].id);
+      }
     } catch (error) {
       console.error('Error loading sale data:', error);
       // Even quiet reloads must fail loudly — silent reloads hide backend drift.
@@ -190,6 +205,7 @@ export default function Sale() {
   const updateQuantity = (productId: number, quantity: number, unit: string) => {
     if (quantity < (unit === 'item' || unit === 'items' ? 1 : 0.5)) {
       setCart(prev => prev.filter(item => item.id !== productId));
+      setItemNotes(prev => { const n = { ...prev }; delete n[productId]; return n; });
       return;
     }
     setCart(prev =>
@@ -218,6 +234,7 @@ export default function Sale() {
         status: 'completed',
         table_number: orderType === 'dine-in' ? tableNumber : null,
         delivery_type_id: orderType === 'delivery' ? deliveryTypeId : null,
+        delivery_zone_id: orderType === 'delivery' && selectedZoneId > 0 ? selectedZoneId : null,
         delivery_address: orderType === 'delivery' ? deliveryAddress || null : null,
         employee_id: employeeId > 0 ? employeeId : null,
       };
@@ -254,6 +271,9 @@ export default function Sale() {
         tableNumber: orderType === 'dine-in' ? tableNumber : null,
         deliveryTypeName,
         deliveryAddress: orderType === 'delivery' ? deliveryAddress : undefined,
+        deliveryFee: deliveryFee > 0 ? deliveryFee : undefined,
+        deliveryZoneName: selectedZone?.name,
+        deliveryDistance: orderType === 'delivery' ? deliveryDistance : undefined,
         employeeName,
       });
 
@@ -278,8 +298,11 @@ export default function Sale() {
     setOrderType('dine-in');
     setTableNumber(1);
     setDeliveryTypeId(deliveryTypes.length > 0 ? deliveryTypes[0].id : 0);
-    setDeliveryAddress('');
+    setSelectedZoneId(0);
+    setDeliveryDistance(0);      setDeliveryAddress('');
     setEmployeeId(0);
+    setOrderNotes('');
+    setItemNotes({});
   };
 
   const handlePrint = () => {
@@ -309,7 +332,7 @@ export default function Sale() {
           address: settings.address,
           phone: settings.phone,
           email: settings.email,
-          logo: settings.logo,
+          logo: settings.invoice_logo ?? undefined,
         },
         to: {
           name: 'Walk-in Customer',
@@ -323,6 +346,11 @@ export default function Sale() {
         currency: settings.currency || 'USD',
         taxRate: settings.tax_rate ? parseFloat(settings.tax_rate) : 0,
         notes: settings.receipt_footer,
+        orderType: receiptData.orderType,
+        deliveryFee: receiptData.deliveryFee,
+        deliveryTypeName: receiptData.deliveryTypeName,
+        deliveryZoneName: receiptData.deliveryZoneName,
+        deliveryDistance: receiptData.deliveryDistance,
       });
     } catch (error) {
       console.error('Error generating invoice PDF:', error);
@@ -467,10 +495,18 @@ export default function Sale() {
 
   const totalAmount = cart.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
-  // Calculate estimated delivery fee
-  const deliveryFee = orderType === 'delivery' && settings.delivery_fee ? settings.delivery_fee : 0;
+  // Calculate estimated delivery fee using zone formula: base_fee + (km * fee_per_km)
+  // Show warning and cap fee when distance exceeds the zone's max_distance.
+  const selectedZone = deliveryZones.find(z => z.id === selectedZoneId);
+  const exceedsMaxDistance = !!(selectedZone && deliveryDistance > selectedZone.max_distance);
+  const effectiveDistance = exceedsMaxDistance ? selectedZone!.max_distance : deliveryDistance;
+  const deliveryFee = orderType === 'delivery' && selectedZone
+    ? selectedZone.base_fee + (effectiveDistance * selectedZone.fee_per_km)
+    : orderType === 'delivery' && settings.delivery_fee
+      ? settings.delivery_fee + (deliveryDistance * (settings.delivery_fee_per_km || 0))
+      : 0;
 
-  // Filter products by search query and category
+  // Filter products by search query, category, and product type
   const filteredProducts = useMemo(() => {
     let result = products;
     const query = debouncedSearchQuery.trim().toLowerCase();
@@ -480,8 +516,11 @@ export default function Sale() {
     if (selectedCategory !== 'all') {
       result = result.filter(product => product.category_id === selectedCategory);
     }
+    if (productTypeFilter !== 'all') {
+      result = result.filter(product => (product.product_type || 'product') === productTypeFilter);
+    }
     return result;
-  }, [products, debouncedSearchQuery, selectedCategory]);
+  }, [products, debouncedSearchQuery, selectedCategory, productTypeFilter]);
 
   // Whether any filter is currently applied — drives counter visibility & aria-hidden.
   // Keyed off debouncedSearchQuery so the count is in sync with the actual grid (the
@@ -489,34 +528,30 @@ export default function Sale() {
   // 250ms debounce window).
   const filterActive = debouncedSearchQuery.trim() !== '' || selectedCategory !== 'all';
 
-  return (        <PageLayout title={t('sale.title')} background="bg-slate-100 dark:bg-slate-900">
+  return (        <PageLayout title={t('sale.title')}>
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-full overflow-x-hidden">{/* ── Sidebar Toggle Button (desktop only) ── */}
         <div          className="hidden lg:flex items-start pt-1 -mr-2 z-20">
           <motion.button
             whileHover={{ scale: 1.08 }}
             whileTap={{ scale: 0.92 }}
             onClick={() => { setSidebarOpen(o => !o); setSidebarHovered(false); }}
-            className="sticky top-24 p-2 rounded-xl bg-white/60 dark:bg-slate-800/60 backdrop-blur-sm
-              border border-slate-200 dark:border-gray-700 shadow-sm hover:shadow-md
-              text-slate-500 dark:text-gray-400 hover:text-teal-500 dark:hover:text-teal-400
+            className="sticky top-24 p-2 rounded-xl bg-base-100/60 backdrop-blur-sm
+              border border-base-300/50 shadow-sm hover:shadow-md
+              text-base-content/50 hover:text-primary dark:hover:text-primary/80
               transition-all duration-300 z-10"
             aria-label={sidebarOpen ? 'Hide order panel' : 'Show order panel'}
           >
-            {sidebarOpen ? <MdChevronRight className="w-5 h-5" /> : <MdChevronLeft className="w-5 h-5" />}
+            {sidebarOpen ? <span className="icon-[tabler--chevron-right] w-5 h-5" /> : <span className="icon-[tabler--chevron-left] w-5 h-5" />}
           </motion.button>
         </div>
 
         {/* ── Main Content (products + cart) ── */}
         <div className="flex-1 min-w-0 pb-20 lg:pb-0">{/* Order Type Selector — visible on mobile only */}
           <div className="lg:hidden">
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="card--glass rounded-xl p-4 mb-4"
-            >
+              <Card className="mb-4">
               <div className="flex items-center gap-2 mb-3">
-                <MdShoppingCart className="text-teal-500" />
-                <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
+                <span className="icon-[tabler--shopping-cart] text-primary" />
+                <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {ORDER_TYPES.map(ot => (
@@ -528,10 +563,10 @@ export default function Sale() {
                     disabled={isLoading}
                     className={`flex flex-col items-center gap-1.5 p-3 rounded-xl font-medium text-sm transition-all ${
                       isLoading
-                        ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 dark:text-slate-500 cursor-not-allowed'
+                        ? 'bg-slate-200 dark:bg-slate-700 text-base-content/40 cursor-not-allowed'
                         : orderType === ot.key
-                          ? 'bg-teal-500 text-white shadow-lg'
-                          : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-gray-300 hover:bg-teal-100 dark:hover:bg-teal-800/30'
+                          ? 'bg-primary text-white shadow-lg'
+                          : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10 dark:hover:bg-primary/20'
                     }`}
                   >
                     <span className="text-lg">{ot.icon}</span>
@@ -543,15 +578,15 @@ export default function Sale() {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
+                  className="flex items-center gap-3 mt-3 pt-3 border-t border-base-300/50"
                 >
-                  <FaDoorOpen className="text-slate-400" />
-                  <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.table')}</label>
+                  <span className="icon-[tabler--door-enter] text-slate-400" />
+                  <label className="text-sm text-base-content/80">{t('sale.table')}</label>
                   <select
                     value={tableNumber}
                     onChange={e => setTableNumber(Number(e.target.value))}
                     disabled={isLoading}
-                    className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
                       <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
@@ -563,91 +598,123 @@ export default function Sale() {
                 <motion.div
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
-                  className="space-y-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
+                  className="space-y-3 mt-3 pt-3 border-t border-base-300/50"
                 >
                   <div className="flex items-center gap-3">
-                    <FaTruck className="text-slate-400" />
-                    <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.deliveryType')}</label>
+                    <span className="icon-[tabler--truck] text-slate-400" />
+                    <label className="text-sm text-base-content/80">{t('sale.deliveryType')}</label>
                     <select
                       value={deliveryTypeId}
                       onChange={e => setDeliveryTypeId(Number(e.target.value))}
                       disabled={isLoading}
-                      className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                      className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                     >
                       {deliveryTypes.map(dt => (
                         <option key={dt.id} value={dt.id}>{dt.name} {dt.fee_multiplier > 1 ? `(${dt.fee_multiplier}x fee)` : ''}</option>
                       ))}
                     </select>
                   </div>
+                  {/* Delivery Zone selector */}
+                  {deliveryZones.length > 0 && (
+                    <div className="flex items-center gap-3">
+                      <span className="icon-[tabler--map-pin-code] text-slate-400" />
+                      <label className="text-sm text-base-content/80">{t('sale.zone')}</label>
+                      <select
+                        value={selectedZoneId}
+                        onChange={e => setSelectedZoneId(Number(e.target.value))}
+                        disabled={isLoading}
+                        className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                      >
+                        {deliveryZones.filter(z => z.is_active).map(z => (
+                          <option key={z.id} value={z.id}>{z.name} ({z.base_fee.toFixed(2)} + {z.fee_per_km.toFixed(2)}/km)</option>
+                        ))}
+                      </select>
+                    </div>
+                  )}
+                  {/* Distance input */}
                   <div className="flex items-center gap-3">
-                    <FaMapMarkerAlt className="text-slate-400" />
+                    <span className="icon-[tabler--ruler] text-slate-400" />
+                    <label className="text-sm text-base-content/80">{t('sale.distance')}</label>
+                    <div className="flex items-center gap-1 flex-1">
+                      <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
+                        placeholder="0" min="0" step="0.5" disabled={isLoading}
+                        className="input input-bordered w-full disabled:opacity-60 disabled:cursor-not-allowed" />
+                      <span className="text-xs text-base-content/50">km</span>
+                    </div>
+                  </div>
+                  <div className="flex items-center gap-3">
+                    <span className="icon-[tabler--map-pin] text-slate-400" />
                     <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                       placeholder={t('sale.deliveryAddress')} disabled={isLoading}
-                      className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
+                      className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
                   </div>
-                  {settings.delivery_fee && settings.delivery_fee > 0 && (
-                    <p className="text-xs text-slate-500 dark:text-gray-400 ml-8">
-                      Delivery fee: {settings.currency} {settings.delivery_fee.toFixed(2)}
-                      {settings.delivery_fee_per_km ? ` + ${settings.delivery_fee_per_km.toFixed(2)}/km` : ''}
+                  {selectedZone && deliveryFee > 0 && (
+                    <div className="ml-8">
+                      {exceedsMaxDistance ? (
+                        <>
+                          <p className="text-xs text-warning dark:text-warning/80 font-medium">
+                            <span className="icon-[tabler--alert-triangle] w-3.5 h-3.5 inline-block mr-1" />
+                            Distance exceeds {selectedZone.name} max ({selectedZone.max_distance} km) — fee capped at max distance
+                          </p>
+                          <p className="text-xs text-base-content/50 mt-0.5">
+                            Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {selectedZone.max_distance}km × {selectedZone.fee_per_km.toFixed(2)} = <span className="font-semibold text-primary dark:text-primary/80">{settings.currency} {deliveryFee.toFixed(2)}</span>
+                            <span className="line-through text-slate-400 ml-2">({settings.currency} {(selectedZone.base_fee + (deliveryDistance * selectedZone.fee_per_km)).toFixed(2)})</span>
+                          </p>
+                        </>
+                      ) : (
+                        <p className="text-xs text-base-content/50">
+                          Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {deliveryDistance}km × {selectedZone.fee_per_km.toFixed(2)} = <span className="font-semibold text-primary dark:text-primary/80">{settings.currency} {deliveryFee.toFixed(2)}</span>
+                        </p>
+                      )}
+                    </div>
+                  )}
+                  {!selectedZone && deliveryFee > 0 && (
+                    <p className="text-xs text-base-content/50 ml-8">
+                      Delivery fee: {settings.currency} {deliveryFee.toFixed(2)}
                     </p>
                   )}
                 </motion.div>
               )}
-            </motion.div>
+            </Card>
 
             {/* Employee Assignment — mobile */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.05 }}
-              className="card--glass rounded-xl p-4 mb-4"
-            >
+              <div className="mb-4">
               <div className="flex items-center gap-3">
-                <FaUserTie className="text-slate-400" />
-                <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
+                <span className="icon-[tabler--user-check] text-slate-400" />
+                <label className="text-sm text-base-content/80">{t('sale.assignTo')}</label>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
-                  className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="select select-bordered flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
                 >
                   <option value={0}>{t('sale.noAssignment')}</option>
                   {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
                 </select>
               </div>
-            </motion.div>
+            </div>
 
             {/* Total Amount Card — mobile */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.1 }}
-              className="card--glass rounded-xl p-4 sm:p-6 mb-6 sm:mb-8 transition-colors duration-300"
-            >
+              <Card transitional className="sm:p-6 mb-6 sm:mb-8">
               <div className="flex justify-between items-center">
                 <div>
-                  <h2 className="text-lg sm:text-xl text-slate-900 dark:text-white mb-1">{t('sale.totalAmount')}</h2>
-                  <p className={`text-3xl sm:text-4xl font-bold ${isLoading ? 'text-slate-400 dark:text-slate-500 animate-pulse' : 'text-teal-600 dark:text-teal-400'}`}>
+                  <h2 className="text-lg sm:text-xl text-base-content mb-1">{t('sale.totalAmount')}</h2>
+                  <p className={`text-3xl sm:text-4xl font-bold ${isLoading ? 'text-base-content/40 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
                     {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
                   </p>
                   {deliveryFee > 0 && (
-                    <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">
+                    <p className="text-xs text-base-content/50 mt-1">
                       ({settings.currency} {totalAmount.toFixed(2)} + {settings.currency} {deliveryFee.toFixed(2)} delivery)
                     </p>
                   )}
                 </div>
-                <div className="text-slate-600 dark:text-white/60">{t('sale.itemsSelected', { count: cart.length })}</div>
+                <div className="text-base-content/60">{t('sale.itemsSelected', { count: cart.length })}</div>
               </div>
-            </motion.div>
+            </Card>
            </div>
 
           {/* ── Product Search & Category Filter ── */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.15 }}
-            className="card--glass rounded-xl p-3 sm:p-4 mb-4"
-          >
+            <Card padding="sm" className="sm:p-4 mb-4">
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -655,9 +722,7 @@ export default function Sale() {
                   placeholder={t('sale.searchProducts')}
                   aria-label={t('sale.searchProducts')}
                   disabled={isLoading}
-                  className="w-full pl-10 pr-10 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                    text-slate-900 dark:text-white text-sm placeholder:text-slate-400 dark:placeholder:text-gray-500
-                    focus:outline-none focus:border-teal-400 transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
+                  className="input input-bordered w-full pl-10 disabled:opacity-60 disabled:cursor-not-allowed"
                 />
                 {isSearching ? (
                   <motion.div
@@ -670,10 +735,10 @@ export default function Sale() {
                 ) : searchQuery ? (
                   <button
                     onClick={() => setSearchQuery('')}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                     aria-label={t('common.clear')}
                   >
-                    <MdClose className="w-4 h-4" />
+                    <span className="icon-[tabler--x] w-4 h-4" />
                   </button>
                 ) : null}
               </div>
@@ -682,15 +747,51 @@ export default function Sale() {
                 onChange={e => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
                 disabled={isLoading || categories.length === 0}
                 aria-label={t('sale.categoryFilter')}
-                className="px-3 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                  text-slate-900 dark:text-white text-sm focus:outline-none focus:border-teal-400 transition-colors
-                  disabled:opacity-60 disabled:cursor-not-allowed sm:w-48"
+                className="select select-bordered disabled:opacity-60 disabled:cursor-not-allowed sm:w-44"
               >
                 <option value="all">{t('sale.allCategories')}</option>
                 {categories.map(category => (
                   <option key={category.id} value={category.id}>{category.name}</option>
                 ))}
               </select>
+              <select
+                value={productTypeFilter}
+                onChange={e => setProductTypeFilter(e.target.value)}
+                className="select select-bordered disabled:opacity-60 disabled:cursor-not-allowed sm:w-36"
+                aria-label="Product type"
+              >
+                <option value="all">All Types</option>
+                <option value="product">Products</option>
+                <option value="combo">Combos</option>
+                <option value="addon">Add-ons</option>
+              </select>
+              {/* View mode toggle */}
+              <div className="flex items-center gap-1 bg-base-200/50 rounded-lg p-0.5 shrink-0">
+                <button
+                  type="button"
+                  onClick={() => setViewMode('standard')}
+                  className={`p-1.5 rounded-md transition-all ${
+                    viewMode === 'standard'
+                      ? 'bg-base-100 shadow-sm text-primary'
+                      : 'text-base-content/40 hover:text-base-content'
+                  }`}
+                  title="Standard view"
+                >
+                  <span className="icon-[tabler--layout-grid] w-4 h-4" />
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setViewMode('compact')}
+                  className={`p-1.5 rounded-md transition-all ${
+                    viewMode === 'compact'
+                      ? 'bg-base-100 shadow-sm text-primary'
+                      : 'text-base-content/40 hover:text-base-content'
+                  }`}
+                  title="Compact view"
+                >
+                  <span className="icon-[tabler--layout-list] w-4 h-4" />
+                </button>
+              </div>
             </div>
             {/* Result counter — always rendered; faded to opacity 0 when no filter active so the
                 card height never jumps and the slot never shows blank whitespace. aria-hidden
@@ -700,15 +801,18 @@ export default function Sale() {
                 animate={{ opacity: filterActive ? 1 : 0 }}
                 transition={{ duration: 0.15 }}
                 aria-hidden={!filterActive}
-                className="text-xs text-slate-500 dark:text-gray-400 tabular-nums"
+                className="text-xs text-base-content/50 tabular-nums"
               >
                 {filteredProducts.length} / {products.length}
               </motion.span>
             </div>
-          </motion.div>
+          </Card>
 
           {/* Products Grid */}
-          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-3 sm:gap-4 mb-6 sm:mb-8">
+          <div className={`gap-3 sm:gap-4 mb-6 sm:mb-8 grid ${viewMode === 'compact'
+              ? 'grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-7 xl:grid-cols-8 2xl:grid-cols-10 3xl:grid-cols-12'
+              : 'grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-10 4xl:grid-cols-12'
+          }`}>
             {isLoading ? (
               Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
@@ -735,7 +839,7 @@ export default function Sale() {
                       className={`${color.badge} text-white p-1.5 sm:p-2 rounded-lg hover:brightness-110 transition-all shrink-0 shadow-sm mt-1`}
                       aria-label={t('sale.addToCart', { product: product.name })}
                     >
-                      <FaPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="icon-[tabler--plus] w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </motion.button>
                   )}
 
@@ -760,10 +864,10 @@ export default function Sale() {
                         -
                       </button>
                       <div className="flex flex-col items-center min-w-0 px-1">
-                        <span className="text-slate-900 dark:text-white font-medium text-sm sm:text-base">
+                        <span className="text-base-content font-medium text-sm sm:text-base">
                           {cartItem.quantity}
                         </span>
-                        <span className="text-slate-600 dark:text-white/60 text-[10px] sm:text-xs">
+                        <span className="text-base-content/60 text-[10px] sm:text-xs">
                           {settings.currency} {(cartItem.quantity * product.price).toFixed(2)}
                         </span>
                       </div>
@@ -775,8 +879,8 @@ export default function Sale() {
                             product.unit
                           )
                         }
-                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white bg-teal-400 dark:bg-teal-500/20
-                          hover:bg-teal-500 rounded-lg transition-colors text-sm sm:text-base"
+                        className="w-7 h-7 sm:w-8 sm:h-8 flex items-center justify-center text-white bg-primary/90 hover:bg-primary
+                          rounded-lg transition-colors text-sm sm:text-base"
                         aria-label={t('sale.increaseQuantity')}
                       >
                         +
@@ -788,13 +892,13 @@ export default function Sale() {
             })
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
-                <p className="text-slate-600 dark:text-white/70 text-lg mb-2">
+                <span className="icon-[tabler--search] w-12 h-12 text-base-content/40 mb-4" />
+                <p className="text-base-content/70 text-lg mb-2">
                   {t('sale.noProductsMatch')}
                 </p>
                 <button
                   onClick={() => setSearchQuery('')}
-                  className="text-sm font-medium text-teal-600 dark:text-teal-400 hover:underline transition-colors"
+                  className="text-sm font-medium text-primary dark:text-primary/80 hover:underline transition-colors"
                 >
                   {t('common.clear')}
                 </button>
@@ -804,24 +908,48 @@ export default function Sale() {
 
           {/* Cart Summary */}
           {cart.length > 0 && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="card--glass rounded-xl p-4 mb-6 transition-colors duration-300"
-            >
-              <h3 className="text-slate-900 dark:text-white font-semibold mb-3">{t('sale.cartSummary')}</h3>
+              <Card transitional className="mb-6">
+              <h3 className="text-base-content font-semibold mb-3 flex items-center gap-2">
+                <span className="icon-[tabler--shopping-cart] text-primary w-4 h-4" />
+                {t('sale.cartSummary')}
+              </h3>
               <div className="space-y-2">
-                {cart.map(item => (
-                  <div key={item.id} className="flex justify-between items-center text-slate-700 dark:text-white/80">
-                    <span>
-                      {item.name} × {item.quantity} {item.unit === 'item' ? 'item(s)' : item.unit}
-                    </span>
-                    <span>{settings.currency} {(item.price * item.quantity).toFixed(2)}</span>
-                  </div>
-                ))}
-                <div className="border-t border-slate-300 dark:border-white/10 pt-2 mt-2 flex justify-between items-center">
-                  <span className="text-slate-900 dark:text-white font-semibold">{t('sale.subtotal')}</span>
-                  <span className="text-slate-900 dark:text-white font-semibold">
+                {cart.map(item => {
+                  const note = itemNotes[item.id] || '';
+                  return (
+                    <div key={item.id} className="flex flex-col">
+                      <div className="flex justify-between items-center text-slate-700 dark:text-white/80">
+                        <span>
+                          {item.name} × {item.quantity} {item.unit === 'item' ? 'item(s)' : item.unit}
+                        </span>
+                        <span>{settings.currency} {(item.price * item.quantity).toFixed(2)}</span>
+                      </div>
+                      {/* Item notes customization */}
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <input
+                          type="text"
+                          value={note}
+                          onChange={e => setItemNotes(prev => ({ ...prev, [item.id]: e.target.value }))}
+                          placeholder="Add note..."
+                          className="text-[11px] bg-transparent border-0 border-b border-dashed border-base-300/50
+                            text-base-content/50 placeholder:text-base-content/20
+                            focus:outline-none focus:border-primary/50 w-full py-0.5"
+                        />
+                        {note && (
+                          <button
+                            onClick={() => setItemNotes(prev => { const n = { ...prev }; delete n[item.id]; return n; })}
+                            className="text-base-content/30 hover:text-error transition-colors shrink-0"
+                          >
+                            <span className="icon-[tabler--x] w-3 h-3" />
+                          </button>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+                <div className="border-t border-base-300/50 pt-2 mt-2 flex justify-between items-center">
+                  <span className="text-base-content font-semibold">{t('sale.subtotal')}</span>
+                  <span className="text-base-content font-semibold">
                     {settings.currency} {totalAmount.toFixed(2)}
                   </span>
                 </div>
@@ -831,14 +959,14 @@ export default function Sale() {
                     <span>{settings.currency} {deliveryFee.toFixed(2)}</span>
                   </div>
                 )}
-                <div className="border-t border-slate-300 dark:border-white/10 pt-2 mt-2 flex justify-between items-center">
-                  <span className="text-slate-900 dark:text-white font-bold">{t('sale.total')}</span>
-                  <span className="text-teal-600 dark:text-teal-400 font-bold">
+                <div className="border-t border-base-300/50 pt-2 mt-2 flex justify-between items-center">
+                  <span className="text-base-content font-bold">{t('sale.total')}</span>
+                  <span className="text-primary dark:text-primary/80 font-bold">
                     {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
                   </span>
                 </div>
               </div>
-            </motion.div>
+            </Card>
           )}
 
           {/* Sell Button — desktop only (mobile uses sticky bar below) */}
@@ -849,10 +977,10 @@ export default function Sale() {
               onClick={handleSell}
               disabled={cart.length === 0 || isSelling || isLoading}
               className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-semibold
-                transition-all duration-300 shadow-lg hover:shadow-xl ${
+                transition-all duration-300 shadow-lg hover:shadow-xl btn btn-block ${
                   cart.length === 0 || isSelling || isLoading
-                    ? 'bg-gray-500/50 cursor-not-allowed'
-                    : 'bg-teal-500'
+                    ? 'btn-disabled bg-gray-500/50 cursor-not-allowed'
+                    : 'bg-primary btn-primary'
                 }`}
             >
               {isSelling ? (
@@ -866,7 +994,7 @@ export default function Sale() {
                 </>
               ) : (
                 <>
-                  <MdShoppingCart className="text-xl" />
+                  <span className="icon-[tabler--shopping-cart] text-xl" />
                   {t('sale.completeSale')}
                 </>
               )}
@@ -880,16 +1008,16 @@ export default function Sale() {
           animate={cart.length > 0 ? { y: 0 } : { y: 120 }}
           className="fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none"
         >
-          <div className="pointer-events-auto bg-white/95 dark:bg-slate-900/95 backdrop-blur-xl
+          <div className="pointer-events-auto bg-base-100/95 backdrop-blur-xl
             border-t border-slate-200 dark:border-slate-700
             px-4 py-3 pb-[env(safe-area-inset-bottom,0.75rem)]
             shadow-2xl shadow-black/10 dark:shadow-black/40">
             <div className="flex items-center justify-between gap-3">
               <div className="min-w-0 flex-1">
-                <p className="text-xs text-slate-500 dark:text-gray-400">
+                <p className="text-xs text-base-content/50">
                   {t('sale.itemsSelected', { count: cart.length })}
                 </p>
-                <p className="text-lg font-bold text-teal-600 dark:text-teal-400">
+                <p className="text-lg font-bold text-primary dark:text-primary/80">
                   {settings.currency} {(totalAmount + deliveryFee).toFixed(2)}
                 </p>
                 {deliveryFee > 0 && (
@@ -902,7 +1030,7 @@ export default function Sale() {
                 whileTap={{ scale: 0.95 }}
                 onClick={handleSell}
                 disabled={cart.length === 0 || isSelling || isLoading}
-                className="shrink-0 px-5 py-2.5 rounded-xl bg-teal-500 text-white font-semibold
+                className="shrink-0 px-5 py-2.5 rounded-xl bg-primary text-white font-semibold
                   flex items-center gap-2 shadow-lg shadow-teal-500/30 dark:shadow-teal-500/20
                   transition-all duration-200 active:scale-95
                   disabled:bg-gray-400 disabled:shadow-none disabled:cursor-not-allowed"
@@ -918,7 +1046,7 @@ export default function Sale() {
                   </>
                 ) : (
                   <>
-                    <MdShoppingCart className="text-lg" />
+                    <span className="icon-[tabler--shopping-cart] text-lg" />
                     <span className="text-sm">{t('sale.completeSale')}</span>
                   </>
                 )}
@@ -944,14 +1072,10 @@ export default function Sale() {
           >
             <div className="w-[280px] space-y-4">
               {/* Order Type Card */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                className="card--glass rounded-xl p-4"
-              >
+                <Card>
                 <div className="flex items-center gap-2 mb-3">
-                  <MdTune className="text-teal-500" />
-                  <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
+                  <span className="icon-[tabler--adjustments] text-primary" />
+                  <h2 className="text-sm font-semibold text-base-content">{t('sale.orderType')}</h2>
                 </div>
                 <div className="flex flex-col gap-2">
                   {ORDER_TYPES.map(ot => (
@@ -965,14 +1089,14 @@ export default function Sale() {
                         isLoading
                           ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
                           : orderType === ot.key
-                            ? 'bg-teal-500 text-white shadow-lg shadow-teal-500/20'
-                            : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-gray-300 hover:bg-teal-50 dark:hover:bg-teal-900/20'
+                            ? 'bg-primary text-white shadow-lg shadow-teal-500/20'
+                            : 'bg-base-100/50 text-base-content/80 hover:bg-primary/10'
                       }`}
                     >
-                      <span className={`text-lg ${orderType === ot.key ? '' : 'text-teal-500 dark:text-teal-400'}`}>{ot.icon}</span>
+                      <span className={`text-lg ${orderType === ot.key ? '' : 'text-primary dark:text-primary/80'}`}>{ot.icon}</span>
                       <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
                       {orderType === ot.key && (
-                        <MdCheckCircle className="ml-auto w-4 h-4" />
+                        <span className="icon-[tabler--circle-check] ml-auto w-4 h-4" />
                       )}
                     </motion.button>
                   ))}
@@ -983,11 +1107,11 @@ export default function Sale() {
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-white/10"
+                    className="flex items-center gap-2 mt-3 pt-3 border-t border-base-300/30"
                   >
-                    <FaDoorOpen className="text-slate-400 text-sm" />
+                    <span className="icon-[tabler--door-enter] text-slate-400 text-sm" />
                     <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
-                      className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1"
+                      className="select select-bordered flex-1"
                     >
                       {Array.from({ length: settings.dine_in_tables || 15 }, (_, i) => (
                         <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
@@ -996,88 +1120,133 @@ export default function Sale() {
                   </motion.div>
                 )}
 
-                {/* Delivery: Type + Address */}
+                {/* Delivery: Type + Zone + Address */}
                 {orderType === 'delivery' && (
                   <motion.div
                     initial={{ opacity: 0, height: 0 }}
                     animate={{ opacity: 1, height: 'auto' }}
-                    className="space-y-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-white/10"
+                    className="space-y-2 mt-3 pt-3 border-t border-base-300/30"
                   >
                     <div className="flex items-center gap-2">
-                      <FaTruck className="text-slate-400 text-sm" />
+                      <span className="icon-[tabler--truck] text-slate-400 text-sm" />
                       <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
-                        className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1"
+                        className="select select-bordered flex-1"
                       >
                         {deliveryTypes.map(dt => (
                           <option key={dt.id} value={dt.id}>{dt.name}</option>
                         ))}
                       </select>
                     </div>
+                    {/* Desktop: Delivery Zone selector */}
+                    {deliveryZones.filter(z => z.is_active).length > 0 && (
+                      <div className="flex items-center gap-2">
+                        <span className="icon-[tabler--map-pin-code] text-slate-400 text-sm" />
+                        <select value={selectedZoneId} onChange={e => setSelectedZoneId(Number(e.target.value))} disabled={isLoading}
+                          className="select select-bordered flex-1 text-xs"
+                        >
+                          {deliveryZones.filter(z => z.is_active).map(z => (
+                            <option key={z.id} value={z.id}>{z.name}</option>
+                          ))}
+                        </select>
+                      </div>
+                    )}
+                    {/* Desktop: Distance input */}
                     <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-slate-400 text-sm" />
+                      <span className="icon-[tabler--ruler] text-slate-400 text-sm" />
+                      <input type="number" value={deliveryDistance} onChange={e => setDeliveryDistance(Math.max(0, Number(e.target.value)))}
+                        placeholder="0" min="0" step="0.5" disabled={isLoading}
+                        className="input input-bordered flex-1" />
+                      <span className="text-xs text-base-content/50 w-5">km</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <span className="icon-[tabler--map-pin] text-slate-400 text-sm" />
                       <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                         placeholder={t('sale.deliveryAddress')} disabled={isLoading}
-                        className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1" />
+                        className="input input-bordered flex-1" />
                     </div>
-                    {settings.delivery_fee && settings.delivery_fee > 0 && (
-                      <p className="text-[11px] text-slate-500 dark:text-gray-400">
-                        Fee: {settings.currency} {settings.delivery_fee.toFixed(2)}
-                        {settings.delivery_fee_per_km ? ` + ${settings.delivery_fee_per_km}/km` : ''}
+                    {selectedZone && deliveryFee > 0 && (
+                      <div>
+                        {exceedsMaxDistance ? (
+                          <>
+                            <p className="text-[11px] text-warning dark:text-warning/80 font-medium">
+                              <span className="icon-[tabler--alert-triangle] w-3 h-3 inline-block mr-0.5" />
+                              Exceeds {selectedZone.max_distance} km max — capped
+                            </p>
+                            <p className="text-[11px] text-base-content/50">
+                              Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {selectedZone.max_distance}km × {selectedZone.fee_per_km.toFixed(2)} = {settings.currency} {deliveryFee.toFixed(2)}
+                            </p>
+                          </>
+                        ) : (
+                          <p className="text-[11px] text-base-content/50">
+                            Fee: {settings.currency} {selectedZone.base_fee.toFixed(2)} + {deliveryDistance}km × {selectedZone.fee_per_km.toFixed(2)}
+                          </p>
+                        )}
+                      </div>
+                    )}
+                    {!selectedZone && deliveryFee > 0 && (
+                      <p className="text-[11px] text-base-content/50">
+                        Fee: {settings.currency} {deliveryFee.toFixed(2)}
                       </p>
                     )}
                   </motion.div>
                 )}
-              </motion.div>
+              </Card>
 
               {/* Employee Assignment Card */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.05 }}
-                className="card--glass rounded-xl p-4"
-              >
+                <Card>
                 <div className="flex items-center gap-2 mb-2">
-                  <FaUserTie className="text-slate-400" />
-                  <label className="text-sm font-medium text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
+                  <span className="icon-[tabler--user-check] text-slate-400" />
+                  <label className="text-sm font-medium text-base-content/80">{t('sale.assignTo')}</label>
                 </div>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
-                  className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm"
+                  className="select select-bordered w-full"
                 >
                   <option value={0}>{t('sale.noAssignment')}</option>
                   {employees.map(emp => (<option key={emp.id} value={emp.id}>{emp.name}</option>))}
                 </select>
-              </motion.div>
+              </Card>
+
+              {/* Order Notes Card */}
+                <Card>
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="icon-[tabler--notes] text-slate-400" />
+                  <label className="text-sm font-medium text-base-content/80">Order Notes</label>
+                </div>
+                <textarea
+                  value={orderNotes}
+                  onChange={e => setOrderNotes(e.target.value)}
+                  placeholder="Special instructions, allergies, notes..."
+                  rows={3}
+                  disabled={isLoading}
+                  className="textarea textarea-bordered w-full text-sm resize-none"
+                />
+                {orderNotes && (
+                  <p className="text-[10px] text-primary mt-1">
+                    Notes will appear on the order ticket
+                  </p>
+                )}
+              </Card>
 
               {/* Total Amount Card */}
-              <motion.div
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="card--glass rounded-xl p-4 transition-colors duration-300"
-              >
-                <h2 className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-1">{t('sale.totalAmount')}</h2>
-                <p className={`text-2xl font-bold mb-1 ${isLoading ? 'text-slate-400 animate-pulse' : 'text-teal-600 dark:text-teal-400'}`}>
+                <Card transitional>
+                <h2 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-1">{t('sale.totalAmount')}</h2>
+                <p className={`text-2xl font-bold mb-1 ${isLoading ? 'text-slate-400 animate-pulse' : 'text-primary dark:text-primary/80'}`}>
                   {isLoading ? '—' : `${settings.currency} ${(totalAmount + deliveryFee).toFixed(2)}`}
                 </p>
                 {deliveryFee > 0 && (
-                  <p className="text-[11px] text-slate-500 dark:text-gray-400">
+                  <p className="text-[11px] text-base-content/50">
                     Subtotal: {settings.currency} {totalAmount.toFixed(2)} + Delivery: {settings.currency} {deliveryFee.toFixed(2)}
                   </p>
                 )}
-                <div className="text-xs text-slate-500 dark:text-gray-400 mt-2">
+                <div className="text-xs text-base-content/50 mt-2">
                   {t('sale.itemsSelected', { count: cart.length })}
                 </div>
-              </motion.div>
+              </Card>
 
               {/* Cart mini-summary in sidebar */}
               {cart.length > 0 && (
-                <motion.div
-                  initial={{ opacity: 0, x: 20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.15 }}
-                  className="card--glass rounded-xl p-4 max-h-[200px] overflow-y-auto"
-                >
-                  <h3 className="text-xs font-medium text-slate-500 dark:text-gray-400 uppercase tracking-wider mb-2">{t('sale.cartSummary')}</h3>
+                  <Card className="max-h-[200px] overflow-y-auto">
+                  <h3 className="text-xs font-medium text-base-content/50 uppercase tracking-wider mb-2">{t('sale.cartSummary')}</h3>
                   <div className="space-y-1.5">
                     {cart.map(item => (
                       <div key={item.id} className="flex justify-between text-xs text-slate-700 dark:text-white/70">
@@ -1086,7 +1255,7 @@ export default function Sale() {
                       </div>
                     ))}
                   </div>
-                </motion.div>
+                </Card>
               )}
             </div>
           </motion.div>
@@ -1096,7 +1265,7 @@ export default function Sale() {
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
-              className="absolute right-0 top-24 w-4 h-32 rounded-l-lg bg-teal-400/30 dark:bg-teal-500/20 cursor-pointer hover:bg-teal-400/50 dark:hover:bg-teal-500/40 transition-colors"
+              className="absolute right-0 top-24 w-4 h-32 rounded-l-lg bg-teal-400/30 dark:bg-primary/20 cursor-pointer hover:bg-teal-400/50 dark:hover:bg-primary/40 transition-colors"
               onMouseEnter={() => setSidebarHovered(true)}
             />
           )}
@@ -1124,13 +1293,13 @@ export default function Sale() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
-                <MdCheckCircle className="w-16 h-16 text-teal-500 mx-auto" />
+                <span className="icon-[tabler--circle-check] w-16 h-16 text-primary mx-auto" />
               </motion.div>
 
               <motion.h3
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-bold text-slate-900 dark:text-white mb-6"
+                className="text-2xl font-bold text-base-content mb-6"
               >
                 {t('sale.saleComplete')}
               </motion.h3>
@@ -1142,7 +1311,7 @@ export default function Sale() {
                 transition={{ delay: 0.1 }}
                 className="flex flex-wrap justify-center gap-2 mb-4"
               >
-                <span className="px-3 py-1 bg-teal-100 dark:bg-teal-900/20 text-teal-600 dark:text-teal-400 rounded-full text-xs font-medium">
+                <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 rounded-full text-xs font-medium">
                   {receiptData.orderType.charAt(0).toUpperCase() + receiptData.orderType.slice(1)}
                 </span>
                 {receiptData.tableNumber && (
@@ -1151,12 +1320,12 @@ export default function Sale() {
                   </span>
                 )}
                 {receiptData.deliveryTypeName && (
-                  <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/20 text-orange-600 dark:text-orange-400 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-orange-100 dark:bg-orange-900/20 text-warning dark:text-warning/80 rounded-full text-xs font-medium">
                     {receiptData.deliveryTypeName}
                   </span>
                 )}
                 {receiptData.employeeName && (
-                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/20 text-purple-600 dark:text-purple-400 rounded-full text-xs font-medium">
+                  <span className="px-3 py-1 bg-purple-100 dark:bg-purple-900/20 text-secondary dark:text-purple-400 rounded-full text-xs font-medium">
                     {receiptData.employeeName}
                   </span>
                 )}
@@ -1167,24 +1336,29 @@ export default function Sale() {
                 <Receipt
                   ref={receiptRef}
                   products={receiptData.products}
-                  totalAmount={receiptData.totalAmount}
+                  totalAmount={receiptData.totalAmount + (receiptData.deliveryFee || 0)}
                   date={receiptData.date}
                   time={receiptData.time}
                   settings={settings}
                   receiptNumber={receiptData.receiptNumber}
+                  orderType={receiptData.orderType}
+                  deliveryTypeName={receiptData.deliveryTypeName}
+                  deliveryAddress={receiptData.deliveryAddress}
+                  deliveryFee={receiptData.deliveryFee}
+                  deliveryZoneName={receiptData.deliveryZoneName}
+                  deliveryDistance={receiptData.deliveryDistance}
                 />
               </div>
 
               {/* Invoice Type Selector */}
               <div className="mb-4">
-                <label className="block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5">
+                <label className="block text-sm font-medium text-base-content/80 mb-1.5">
                   {t('invoice.typeLabel')}
                 </label>
                 <select
                   value={invoiceType}
                   onChange={(e) => setInvoiceType(e.target.value as InvoiceType)}
-                  className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600
-                    text-slate-900 dark:text-white text-sm focus:outline-none focus:border-teal-400"
+                  className="select select-bordered w-full"
                 >
                   <option value="tax">{t('invoice.typeTax')}</option>
                   <option value="commercial">{t('invoice.typeCommercial')}</option>
@@ -1217,7 +1391,7 @@ export default function Sale() {
                     </>
                   ) : (
                     <>
-                      <MdFileDownload className="text-xl" />
+                      <span className="icon-[tabler--file-download] text-xl" />
                       {t('sale.pdf')}
                     </>
                   )}
@@ -1244,7 +1418,7 @@ export default function Sale() {
                     </>
                   ) : (
                     <>
-                      <MdLocalPrintshop className="text-xl" />
+                      <span className="icon-[tabler--printer] text-xl" />
                       {t('sale.print')}
                     </>
                   )}
@@ -1267,7 +1441,7 @@ export default function Sale() {
                   />
                 ) : (
                   <>
-                    <FaFileInvoiceDollar className="text-xl" />
+                    <span className="icon-[tabler--file-invoice] text-xl" />
                     {t('invoice.downloadInvoice')}
                   </>
                 )}
@@ -1279,10 +1453,10 @@ export default function Sale() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={handleNewSale}
-                className="w-full py-3 px-4 bg-teal-500 text-white rounded-xl font-semibold
+                className="w-full py-3 px-4 bg-primary text-white rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
-                <MdShoppingCart className="text-xl" />
+                <span className="icon-[tabler--shopping-cart] text-xl" />
                 {t('sale.startNewSale')}
               </motion.button>
             </div>
@@ -1313,13 +1487,13 @@ export default function Sale() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
-                <MdCheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+                <span className="icon-[tabler--circle-check] w-16 h-16 text-green-500 mx-auto" />
               </motion.div>
 
               <motion.h3
                 initial={{ opacity: 0, y: 10 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="text-2xl font-bold text-slate-900 dark:text-white mb-2"
+                className="text-2xl font-bold text-base-content mb-2"
               >
                 {t('sale.pdfSaved')}
               </motion.h3>
@@ -1361,3 +1535,4 @@ export default function Sale() {
     </PageLayout>
   );
 }
+

@@ -23,7 +23,7 @@ services:
       PROJECT_PATH: lms-fusion
       PORT: "5074"
       HOST: "0.0.0.0"
-      SERVER_TYPE: gunicorn
+      SERVER_TYPE: uvicorn
       WORKERS: "4"
       LOG_LEVEL: info
       DEBUG: "false"
@@ -53,6 +53,7 @@ services:
     volumes:
       - ./backend:/app/lms-fusion:rw
       - ./configs:/app/configs:ro
+      - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
       - lms-fusion-static:/app/lms-fusion/static:rw
       - lms-fusion-media:/app/lms-fusion/media:rw
@@ -106,10 +107,12 @@ services:
     container_name: lms-fusion-frontend
     restart: unless-stopped
     environment:
-      PORT: "3001"
+      # Internal port matches the container's exposed port (3002). Host port 3001
+      # is used to avoid colliding with cms-fusion's frontend on the host.
+      PORT: "3002"
       NEXT_PUBLIC_API_URL: ${NEXT_PUBLIC_API_URL:-http://lms-fusion.localhost/api}
     ports:
-      - "3001:3001"
+      - "3001:3002"
     networks:
       - common
       - traefik-net

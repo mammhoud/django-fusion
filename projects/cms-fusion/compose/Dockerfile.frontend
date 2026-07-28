@@ -13,6 +13,9 @@ RUN npm ci --legacy-peer-deps
 COPY frontend/. .
 COPY assets/ ../assets/
 
+# Ensure public directory exists even if the project does not provide one.
+RUN mkdir -p /app/frontend/public
+
 RUN npm run build
 
 FROM node:24-slim AS runner
