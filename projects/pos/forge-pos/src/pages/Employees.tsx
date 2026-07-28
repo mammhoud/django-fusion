@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
-import { MdPeople, MdEdit, MdDelete, MdWork } from 'react-icons/md';
-import { FaUsers, FaUserTag, FaMoneyBillWave, FaPlus, FaSave, FaSearch, FaPhone, FaEnvelope, FaCalendarAlt } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { Employee, NewEmployee, EmployeeType, NewEmployeeType } from '../types';
 import PageLayout from '../components/PageLayout';
@@ -10,6 +8,7 @@ import { useTranslation } from 'react-i18next';
 import Modal from '../components/Modal';
 import ConfirmDialog from '../components/ConfirmDialog';
 import StatusToast from '../components/StatusToast';
+import Card from '../components/Card';
 
 type Tab = 'employees' | 'types';
 
@@ -41,8 +40,8 @@ export default function Employees() {
   const [isLoading, setIsLoading] = useState(true);
 
   const getTabItems = () => [
-    { key: 'employees' as Tab, label: t('employees.employeeList'), icon: <FaUsers /> },
-    { key: 'types' as Tab, label: t('employees.employeeTypes'), icon: <FaUserTag /> },
+    { key: 'employees' as Tab, label: t('employees.employeeList'), icon: <span className="icon-[tabler--users]" /> },
+    { key: 'types' as Tab, label: t('employees.employeeTypes'), icon: <span className="icon-[tabler--user-check]" /> },
   ];
 
   // Data states
@@ -205,7 +204,7 @@ export default function Employees() {
   // ── Loading State ──
   if (isLoading) {
     return (
-      <PageLayout title={t('employees.title')} background="bg-slate-100 dark:bg-slate-900">
+      <PageLayout title={t('employees.title')}>
         <div className="space-y-6">
           <SkeletonList items={6} />
           <SkeletonTable rows={6} columns={5} />
@@ -216,36 +215,32 @@ export default function Employees() {
 
   return (
     <PageLayout
-      title={<><MdPeople className="text-indigo-500" /> Employees</>}
-      background="bg-linear-to-br from-slate-100 via-indigo-100 to-slate-100 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900"
+      title={<><span className="icon-[tabler--users] text-info" /> Employees</>}
+      background="bg-linear-to-br from-slate-100 via-info/10 to-slate-100 dark:from-slate-900 dark:via-info/10 dark:to-slate-900"
     >
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="card--glass card--hover rounded-xl p-4">
-            <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.totalEmployees')}</h2>
-            <p className="text-2xl font-bold text-slate-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="card--glass card--hover rounded-xl p-4">
-            <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.employeeTypes')}</h2>
-            <p className="text-2xl font-bold text-indigo-500">{employeeTypes.filter(t => t.is_active).length}</p>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="card--glass card--hover rounded-xl p-4">
-            <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.monthlySalary')}</h2>
-            <p className="text-2xl font-bold text-emerald-500">{monthlySalaryTotal.toLocaleString()}</p>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="card--glass card--hover rounded-xl p-4">
-            <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.avgSalary')}</h2>
+          <Card>
+            <h2 className="text-base-content/60 text-sm">{t('employees.totalEmployees')}</h2>
+            <p className="text-2xl font-bold text-base-content">{employees.filter(e => e.is_active).length}</p>
+          </Card>
+          <Card>
+            <h2 className="text-base-content/60 text-sm">{t('employees.employeeTypes')}</h2>
+            <p className="text-2xl font-bold text-info">{employeeTypes.filter(t => t.is_active).length}</p>
+          </Card>
+          <Card>
+            <h2 className="text-base-content/60 text-sm">{t('employees.monthlySalary')}</h2>
+            <p className="text-2xl font-bold text-success">{monthlySalaryTotal.toLocaleString()}</p>
+          </Card>
+          <Card>
+            <h2 className="text-base-content/60 text-sm">{t('employees.avgSalary')}</h2>
             <p className="text-2xl font-bold text-blue-500">
               {employees.filter(e => e.is_active).length > 0
                 ? Math.round(monthlySalaryTotal / employees.filter(e => e.is_active).length).toLocaleString()
                 : 0}
             </p>
-          </motion.div>
+          </Card>
         </div>
 
         {/* Tabs */}
@@ -257,8 +252,8 @@ export default function Employees() {
               onClick={() => setActiveTab(tab.key)}
               className={`flex items-center gap-2 px-5 py-3 rounded-xl font-semibold text-sm transition-all duration-200 shrink-0 ${
                 activeTab === tab.key
-                  ? 'bg-indigo-500 text-white shadow-lg'
-                  : 'bg-white/70 dark:bg-white/10 text-slate-700 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/30'
+                  ? 'bg-info text-white shadow-lg'
+                  : 'bg-base-100/70 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
               }`}
             >
               {tab.icon} {tab.label}
@@ -273,19 +268,19 @@ export default function Employees() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative">
-                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     value={searchQuery}
                     onChange={e => setSearchQuery(e.target.value)}
                     placeholder={t('employees.searchPlaceholder')}
-                    className="pl-9 pr-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm w-48"
+                    className="input input-bordered w-48 pl-9"
                   />
                 </div>
                 <select
                   value={typeFilter ?? ''}
                   onChange={e => setTypeFilter(e.target.value ? Number(e.target.value) : null)}
-                  className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm"
+                  className="select select-bordered"
                 >
                   <option value="">{t('employees.allTypes')}</option>
                   {employeeTypes.filter(t => t.is_active).map(t => (
@@ -299,8 +294,8 @@ export default function Employees() {
                       onClick={() => setStatusFilter(s)}
                       className={`px-3 py-1.5 text-xs font-medium ${
                         statusFilter === s
-                          ? 'bg-indigo-500 text-white'
-                          : 'bg-white/50 dark:bg-white/5 text-slate-700 dark:text-gray-300 hover:bg-indigo-100 dark:hover:bg-indigo-800/30'
+                          ? 'bg-info text-white'
+                          : 'bg-base-100/50 text-base-content/80 hover:bg-info/10 dark:hover:bg-info/30'
                       }`}
                     >
                       {s === 'all' ? t('employees.allTypesFilter') : s === 'active' ? t('employees.activeFilter') : t('employees.inactiveFilter')}
@@ -311,9 +306,9 @@ export default function Employees() {
               <motion.button
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={() => setShowAddEmployee(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-xl font-semibold text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm"
               >
-                <FaPlus /> {t('employees.addEmployee')}
+                <span className="icon-[tabler--plus]" /> {t('employees.addEmployee')}
               </motion.button>
             </div>
 
@@ -324,8 +319,8 @@ export default function Employees() {
                   key={emp.id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className={`card--glass rounded-xl p-4 border border-slate-200 dark:border-white/5
-                    ${!emp.is_active ? 'opacity-60' : 'hover:border-indigo-300 dark:hover:border-indigo-500/30'} transition-all`}
+                  className={`bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
+                    ${!emp.is_active ? 'opacity-60' : 'hover:border-info/70 dark:hover:border-info/30'} transition-all`}
                 >
                   <div className="flex items-start justify-between mb-3">
                     <div className="flex items-center gap-3">
@@ -334,44 +329,44 @@ export default function Employees() {
                         {emp.name.charAt(0).toUpperCase()}
                       </div>
                       <div>
-                        <h3 className="font-semibold text-slate-900 dark:text-white">{emp.name}</h3>
-                        <span className="text-xs text-slate-500 dark:text-gray-400">{getTypeName(emp.employee_type_id)}</span>
+                        <h3 className="font-semibold text-base-content">{emp.name}</h3>
+                        <span className="text-xs text-base-content/50">{getTypeName(emp.employee_type_id)}</span>
                       </div>
                     </div>
                     <div className="flex gap-1">
                       <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
                         className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
-                        <MdEdit className="w-4 h-4" />
+                        <span className="icon-[tabler--pencil] w-4 h-4" />
                       </button>
                       {emp.is_active && (
                         <button onClick={() => setShowDeleteEmployee(emp)}
                           className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
-                          <MdDelete className="w-4 h-4" />
+                          <span className="icon-[tabler--trash] w-4 h-4" />
                         </button>
                       )}
                     </div>
                   </div>
 
                   <div className="space-y-1.5 text-sm">
-                    <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                      <FaMoneyBillWave className="text-emerald-500 w-3.5 h-3.5" />
-                      <span>{t('employees.salary')}: <strong className="text-slate-900 dark:text-white">{emp.salary.toLocaleString()}</strong></span>
+                    <div className="flex items-center gap-2 text-base-content/60">
+                      <span className="icon-[tabler--moneybag] text-success w-3.5 h-3.5" />
+                      <span>{t('employees.salary')}: <strong className="text-base-content">{emp.salary.toLocaleString()}</strong></span>
                     </div>
                     {emp.phone && (
-                      <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                        <FaPhone className="text-blue-400 w-3.5 h-3.5" />
+                      <div className="flex items-center gap-2 text-base-content/60">
+                        <span className="icon-[tabler--phone] text-blue-400 w-3.5 h-3.5" />
                         <span>{emp.phone}</span>
                       </div>
                     )}
                     {emp.email && (
-                      <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                        <FaEnvelope className="text-purple-400 w-3.5 h-3.5" />
+                      <div className="flex items-center gap-2 text-base-content/60">
+                        <span className="icon-[tabler--mail] text-secondary/80 w-3.5 h-3.5" />
                         <span className="truncate">{emp.email}</span>
                       </div>
                     )}
                     {emp.joined_at && (
-                      <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                        <FaCalendarAlt className="text-indigo-400 w-3.5 h-3.5" />
+                      <div className="flex items-center gap-2 text-base-content/60">
+                        <span className="icon-[tabler--calendar] text-info/80 w-3.5 h-3.5" />
                         <span>{t('employees.joined')} {emp.joined_at}</span>
                       </div>
                     )}
@@ -385,7 +380,7 @@ export default function Employees() {
                 </motion.div>
               ))}
               {filteredEmployees.length === 0 && (
-                <div className="col-span-full card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+                <div className="col-span-full bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
                   {t('employees.noEmployees')}
                 </div>
               )}
@@ -397,13 +392,13 @@ export default function Employees() {
         {activeTab === 'types' && (
           <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('employees.employeeTypes')}</h2>
+              <h2 className="text-lg font-semibold text-base-content">{t('employees.employeeTypes')}</h2>
               <motion.button
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={() => setShowAddType(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-xl font-semibold text-sm"
+                className="flex items-center gap-2 px-4 py-2 bg-info text-white rounded-xl font-semibold text-sm"
               >
-                <FaPlus /> {t('employees.addType')}
+                <span className="icon-[tabler--plus]" /> {t('employees.addType')}
               </motion.button>
             </div>
 
@@ -415,38 +410,38 @@ export default function Employees() {
                     key={et.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={`card--glass rounded-xl p-4 border border-slate-200 dark:border-white/5
-                      ${!et.is_active ? 'opacity-60' : 'hover:border-indigo-300 dark:hover:border-indigo-500/30'} transition-all`}
+                    className={`bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
+                      ${!et.is_active ? 'opacity-60' : 'hover:border-info/70 dark:hover:border-info/30'} transition-all`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg
                           ${getTypeColor(et.name)}`}>
-                          <MdWork />
+                          <span className="icon-[tabler--briefcase]" />
                         </div>
                         <div>
-                          <h3 className="font-semibold text-slate-900 dark:text-white">{et.name}</h3>
+                          <h3 className="font-semibold text-base-content">{et.name}</h3>
                           {et.description && (
-                            <p className="text-xs text-slate-500 dark:text-gray-400 mt-0.5">{et.description}</p>
+                            <p className="text-xs text-base-content/50 mt-0.5">{et.description}</p>
                           )}
                         </div>
                       </div>
                       <div className="flex gap-1">
                         <button onClick={() => { setShowEditType(et); setEditType({ ...et }); }}
                           className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
-                          <MdEdit className="w-4 h-4" />
+                          <span className="icon-[tabler--pencil] w-4 h-4" />
                         </button>
                         {et.is_active && (
                           <button onClick={() => setShowDeleteType(et)}
                             className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
-                            <MdDelete className="w-4 h-4" />
+                            <span className="icon-[tabler--trash] w-4 h-4" />
                           </button>
                         )}
                       </div>
                     </div>
                     <div className="mt-3 flex items-center gap-2">
                       <span className={`px-2.5 py-1 rounded-full text-xs font-medium
-                        ${count > 0 ? 'bg-indigo-100 dark:bg-indigo-900/20 text-indigo-600 dark:text-indigo-400' : 'bg-slate-100 dark:bg-slate-700/30 text-slate-500 dark:text-gray-400'}`}>
+                        ${count > 0 ? 'bg-info/10 dark:bg-info/20 text-info dark:text-info/80' : 'bg-slate-100 dark:bg-slate-700/30 text-base-content/50'}`}>
                         {t('employees.employeeCount', { count })}
                       </span>
                       {!et.is_active && (
@@ -459,7 +454,7 @@ export default function Employees() {
                 );
               })}
               {employeeTypes.length === 0 && (
-                <div className="col-span-full card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+                <div className="col-span-full bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
                   {t('employees.noTypes')}
                 </div>
               )}
@@ -472,38 +467,38 @@ export default function Employees() {
         onClose={() => setShowAddEmployee(false)}
         title={t('employees.addEmployeeTitle')}
         footer={<>
-          <button onClick={() => setShowAddEmployee(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
+          <button onClick={() => setShowAddEmployee(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddEmployee} disabled={!newEmployee.name.trim() || newEmployee.employee_type_id === 0}
-            className="flex-1 py-2.5 rounded-lg bg-indigo-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('employees.addEmployee')}
+            className="flex-1 py-2.5 rounded-lg bg-info text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+            <span className="icon-[tabler--device-floppy]" /> {t('employees.addEmployee')}
           </button>
         </>}
       >
         <div>
-          <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.fullName')} *</label>
+          <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')} *</label>
           <input type="text" value={newEmployee.name} onChange={e => setNewEmployee(p => ({ ...p, name: e.target.value }))}
             placeholder={t('employees.namePlaceholder') || 'Enter employee name'}
-            className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+            className="input input-bordered w-full" />
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.phone')}</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
             <input type="tel" value={newEmployee.phone || ''} onChange={e => setNewEmployee(p => ({ ...p, phone: e.target.value || null }))}
               placeholder="03XX-XXXXXXX"
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              className="input input-bordered w-full" />
           </div>
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.email')}</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
             <input type="email" value={newEmployee.email || ''} onChange={e => setNewEmployee(p => ({ ...p, email: e.target.value || null }))}
               placeholder={t('employees.email')}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              className="input input-bordered w-full" />
           </div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.employeeType')} *</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')} *</label>
             <select value={newEmployee.employee_type_id} onChange={e => setNewEmployee(p => ({ ...p, employee_type_id: Number(e.target.value) }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white">
+              className="select select-bordered w-full">
               <option value={0}>{t('employees.selectType')}</option>
               {employeeTypes.filter(t => t.is_active).map(t => (
                 <option key={t.id} value={t.id}>{t.name}</option>
@@ -511,10 +506,10 @@ export default function Employees() {
             </select>
           </div>
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.monthlySalary')} *</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')} *</label>
             <input type="number" step="1000" min="0" value={newEmployee.salary} onChange={e => setNewEmployee(p => ({ ...p, salary: Number(e.target.value) }))}
               placeholder="0"
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              className="input input-bordered w-full" />
           </div>
         </div>
       </Modal>
@@ -524,42 +519,42 @@ export default function Employees() {
         onClose={() => { setShowEditEmployee(null); setEditEmployee(null); }}
         title={t('employees.editEmployeeTitle')}
         footer={<>
-          <button onClick={() => { setShowEditEmployee(null); setEditEmployee(null); }} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateEmployee} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><FaSave /> {t('common.update')}</button>
+          <button onClick={() => { setShowEditEmployee(null); setEditEmployee(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
+          <button onClick={handleUpdateEmployee} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editEmployee && (<>
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.fullName')}</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.fullName')}</label>
             <input type="text" value={editEmployee.name} onChange={e => setEditEmployee(p => ({ ...p!, name: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              className="input input-bordered w-full" />
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.phone')}</label>
+              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.phone')}</label>
               <input type="tel" value={editEmployee.phone || ''} onChange={e => setEditEmployee(p => ({ ...p!, phone: e.target.value || undefined }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+                className="input input-bordered w-full" />
             </div>
             <div>
-              <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.email')}</label>
+              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.email')}</label>
               <input type="email" value={editEmployee.email || ''} onChange={e => setEditEmployee(p => ({ ...p!, email: e.target.value || undefined }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+                className="input input-bordered w-full" />
             </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.employeeType')}</label>
+              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.employeeType')}</label>
               <select value={editEmployee.employee_type_id} onChange={e => setEditEmployee(p => ({ ...p!, employee_type_id: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white">
+                className="select select-bordered w-full">
                 {employeeTypes.filter(t => t.is_active || t.id === editEmployee.employee_type_id).map(t => (
                   <option key={t.id} value={t.id}>{t.name}</option>
                 ))}
               </select>
             </div>
             <div>
-              <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.monthlySalary')}</label>
+              <label className="block text-base-content/80 mb-1 text-sm">{t('employees.monthlySalary')}</label>
               <input type="number" step="1000" value={editEmployee.salary} onChange={e => setEditEmployee(p => ({ ...p!, salary: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+                className="input input-bordered w-full" />
             </div>
           </div>
         </>)}
@@ -581,24 +576,24 @@ export default function Employees() {
         title={t('employees.addTypeTitle')}
         size="sm"
         footer={<>
-          <button onClick={() => setShowAddType(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
+          <button onClick={() => setShowAddType(false)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddType} disabled={!newType.name.trim()}
-            className="flex-1 py-2.5 rounded-lg bg-indigo-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('employees.addType')}
+            className="flex-1 py-2.5 rounded-lg bg-info text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+            <span className="icon-[tabler--device-floppy]" /> {t('employees.addType')}
           </button>
         </>}
       >
-        <div>            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.typeName')} *</label>
+        <div>            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')} *</label>
           <input type="text" value={newType.name} onChange={e => setNewType(p => ({ ...p, name: e.target.value }))}
             placeholder={t('employees.typeNamePlaceholder')}
-            className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+            className="input input-bordered w-full" />
         </div>
         <div>
-          <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.descriptionOptional')}</label>
+          <label className="block text-base-content/80 mb-1 text-sm">{t('employees.descriptionOptional')}</label>
           <textarea value={newType.description || ''} onChange={e => setNewType(p => ({ ...p, description: e.target.value || null }))}
             placeholder={t('employees.descPlaceholder')}
             rows={3}
-            className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white resize-none" />
+            className="textarea textarea-bordered w-full resize-none" />
         </div>
       </Modal>
 
@@ -608,21 +603,21 @@ export default function Employees() {
         title={t('employees.editTypeTitle')}
         size="sm"
         footer={<>
-          <button onClick={() => { setShowEditType(null); setEditType(null); }} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateType} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><FaSave /> {t('common.update')}</button>
+          <button onClick={() => { setShowEditType(null); setEditType(null); }} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
+          <button onClick={handleUpdateType} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editType && (<>
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.typeName')}</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeName')}</label>
             <input type="text" value={editType.name} onChange={e => setEditType(p => ({ ...p!, name: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              className="input input-bordered w-full" />
           </div>
           <div>
-            <label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('employees.typeDescription')}</label>
+            <label className="block text-base-content/80 mb-1 text-sm">{t('employees.typeDescription')}</label>
             <textarea value={editType.description || ''}onChange={e => setEditType(p => ({ ...p!, description: e.target.value || undefined }))}
               rows={3}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white resize-none" />
+              className="textarea textarea-bordered w-full resize-none" />
           </div>
         </>)}
       </Modal>

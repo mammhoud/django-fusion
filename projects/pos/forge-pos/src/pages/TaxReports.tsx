@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdAccountBalance, MdAdd, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -94,30 +93,30 @@ export default function TaxReports() {
   })();
 
   return (
-    <PageLayout title={t('taxReports.title')} background="bg-slate-100 dark:bg-slate-900">
+    <PageLayout title={t('taxReports.title')}>
       <div className="space-y-4">
         <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('taxReports.title')}</h1>
-          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
-            <MdAdd /> {t('taxReports.addReport')}
+          <h1 className="text-2xl font-bold text-base-content">{t('taxReports.title')}</h1>
+          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="btn btn-primary gap-2">
+            <span className="icon-[tabler--plus]" /> {t('taxReports.addReport')}
           </motion.button>
         </div>
 
         {/* ── Search + sort bar (debounced async UX) ── */}
-        <div className="card--glass rounded-xl p-3">
+        <div className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
-              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('taxReports.searchPlaceholder') || 'Search by period or amount...'}
                 aria-label={t('taxReports.searchPlaceholder') || 'Search tax reports'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                  border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
+                className="w-full pl-10 pr-9 py-2 rounded-lg bg-base-100/50
+                  border border-slate-300 dark:border-gray-600 text-base-content
                   placeholder:text-slate-400 dark:placeholder:text-gray-500
-                  focus:outline-none focus:border-teal-400 transition-colors text-sm"
+                  focus:outline-none focus:border-primary transition-colors text-sm"
               />
               {isFiltering ? (
                 <motion.div
@@ -125,7 +124,7 @@ export default function TaxReports() {
                   transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                   aria-label="filtering"
                   className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                    border-2 border-teal-400 border-t-transparent rounded-full"
+                    border-2 border-primary border-t-transparent rounded-full"
                 />
               ) : search ? (
                 <button
@@ -133,7 +132,7 @@ export default function TaxReports() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               ) : null}
             </div>
@@ -141,33 +140,33 @@ export default function TaxReports() {
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as 'newest' | 'oldest' | 'sales-desc' | 'sales-asc')}
               aria-label={t('taxReports.sortBy') || 'Sort by'}
-              className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                text-sm focus:outline-none focus:border-teal-400 transition-colors sm:w-48"
+              className="px-3 py-2 rounded-lg bg-base-100/50
+                border border-slate-300 dark:border-gray-600 text-base-content
+                text-sm focus:outline-none focus:border-primary transition-colors sm:w-48"
             >
               <option value="newest">{t('taxReports.sortNewest') || 'Period (newest)'}</option>
               <option value="oldest">{t('taxReports.sortOldest') || 'Period (oldest)'}</option>
               <option value="sales-desc">{t('taxReports.sortSalesDesc') || 'Sales (high → low)'}</option>
               <option value="sales-asc">{t('taxReports.sortSalesAsc') || 'Sales (low → high)'}</option>
             </select>
-            <span className="text-xs text-slate-500 dark:text-gray-400 whitespace-nowrap px-2">
+            <span className="text-xs text-base-content/50 whitespace-nowrap px-2">
               {filteredReports.length} / {reports.length}
             </span>
           </div>
         </div>
 
         {showForm && (
-          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="card--glass rounded-xl p-4 space-y-3">
+          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white sm:col-span-2" />
+              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input input-bordered w-full" />
+              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input input-bordered w-full" />
+              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="input input-bordered w-full" />
+              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="input input-bordered w-full" />
+              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="input input-bordered w-full sm:col-span-2" />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">{t('common.save')}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">{t('common.cancel')}</button>
+              <button type="submit" className="btn btn-primary">{t('common.save')}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
           </motion.form>
         )}
@@ -183,20 +182,20 @@ export default function TaxReports() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {filteredReports.map(report => (
-              <motion.div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+              <motion.div key={report.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-full bg-indigo-100 dark:bg-indigo-900/30 flex items-center justify-center text-indigo-600 dark:text-indigo-400">
-                      <MdAccountBalance className="w-5 h-5" />
+                    <div className="w-10 h-10 rounded-full bg-info/10 flex items-center justify-center text-info">
+                      <span className="icon-[tabler--building-bank] w-5 h-5" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-slate-900 dark:text-white">{report.period_start} - {report.period_end}</h3>
+                      <h3 className="font-semibold text-base-content">{report.period_start} - {report.period_end}</h3>
                       <p className="text-sm text-slate-500">{report.transaction_count} {t('taxReports.transactions')}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                  <button onClick={() => handleDelete(report.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                 </div>
-                <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
+                <div className="mt-3 text-sm text-base-content/60 space-y-1">
                   <p>{t('taxReports.totalSales')}: {report.total_sales.toFixed(2)}</p>
                   <p>{t('taxReports.totalTax')}: {report.total_tax.toFixed(2)}</p>
                 </div>

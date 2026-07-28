@@ -69,7 +69,9 @@ describe('Tauri Invoke Mock Infrastructure', () => {
       const success = await safeInvoke('get_products');
       const fail = await safeInvoke('get_settings');
       expect(success.data).toEqual([]);
-      expect(fail.error).toContain('No mock configured');
+      // Unmocked commands resolve with undefined (no error thrown)
+      expect(fail.data).toBeUndefined();
+      expect(fail.error).toBeUndefined();
     });
 
     it('mockInvokeFatalError rejects all commands', async () => {

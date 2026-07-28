@@ -115,12 +115,12 @@ function SingleReveal({
   className = '',
   as: Tag = 'div',
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once, amount: threshold });
 
   const variants = getVariants(animation, delay, duration);
 
-  const MotionComponent = motion[Tag as keyof typeof motion] ?? motion.div;
+  const MotionComponent = (motion as any)[Tag] ?? motion.div;
 
   return (
     <MotionComponent
@@ -148,11 +148,11 @@ function StaggerReveal({
   className = '',
   as: Tag = 'div',
 }: ScrollRevealProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once, amount: threshold });
 
   const itemVariants = getVariants(animation, delay, duration);
-  const MotionComponent = motion[Tag as keyof typeof motion] ?? motion.div;
+  const MotionComponent = (motion as any)[Tag] ?? motion.div;
 
   return (
     <MotionComponent
@@ -197,7 +197,7 @@ export function AnimatedCounter({
   format = true,
 }: AnimatedCounterProps) {
   const [count, setCount] = useState(from);
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isVisible = useInView(ref, { once: true, amount: threshold });
   const [hasStarted, setHasStarted] = useState(false);
 
@@ -258,7 +258,7 @@ export function AnimatedProgress({
   className = '',
   threshold = 0.3,
 }: AnimatedProgressProps) {
-  const ref = useRef<HTMLElement>(null);
+  const ref = useRef<HTMLDivElement>(null);
   const isInView = useInView(ref, { once: true, amount: threshold });
   const percentage = Math.min(100, Math.max(0, (value / max) * 100));
 

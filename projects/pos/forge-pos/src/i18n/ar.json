@@ -50,6 +50,7 @@
     "invoice": "فاتورة",
     "taxReports": "التقارير الضريبية",
     "roles": "الأدوار",
+    "themeShowcase": "معرض السمات",
     "settings": "الإعدادات",
     "about": "حول",
     "productManagerDesc": "إدارة المنتجات والأسعار",
@@ -60,6 +61,9 @@
     "employeesDesc": "إدارة الموظفين",
     "recipesDesc": "إنشاء وإدارة الوصفات",
     "reportsDesc": "إنشاء التقارير",
+    "themeShowcaseDesc": "معاينة المكونات عبر السمات",
+    "themeStudio": "استوديو السمات",
+    "themeStudioDesc": "تخصيص الألوان مع معاينة حية",
     "settingsDesc": "إعدادات النظام",
     "aboutDesc": "معلومات التطبيق",
     "kitchenDesc": "شاشة عرض طلبات المطبخ",
@@ -79,7 +83,19 @@
     "categoryProducts": "المخزون والمنتجات",
     "categoryStaff": "الموظفون والعملاء",
     "categoryReports": "التقارير والتحليلات",
-    "categorySystem": "الإعدادات والنظام"
+    "categorySystem": "الإعدادات والنظام",
+    "sales": "المبيعات والطلبات",
+    "products": "المنتجات والمخزون",
+    "staff": "إدارة الموظفين",
+    "reports": "التقارير والتحليلات",
+    "system": "النظام",
+    "staffDesc": "الموظفون والجدول والرواتب",
+    "productsMerged": "المنتجات",
+    "productsMergedDesc": "الإدارة والمخزون والوصفات",
+    "salesMerged": "المبيعات",
+    "salesMergedDesc": "الطلبات والمعاملات والفواتير",
+    "reportsMerged": "التقارير",
+    "reportsMergedDesc": "التحليلات والتقارير الضريبية"
   },
   "home": {
     "title": "Forge POS",
@@ -90,7 +106,7 @@
     "title": "حول Forge POS",
     "subtitle": "حل حديث لإدارة عمليات مطعمك",
     "projectTitle": "عن المشروع",
-    "projectDesc1": "POS KO هو نظام نقاط بيع حديث مبني باستخدام Tauri و React و TypeScript. يوفر حلاً شاملاً لإدارة عمليات المطعم بما في ذلك المبيعات والمخزون والتحليلات والمزيد.",
+    "projectDesc1": "Forge POS هو نظام نقاط بيع حديث مبني باستخدام Tauri و React و TypeScript. يوفر حلاً شاملاً لإدارة عمليات المطعم بما في ذلك المبيعات والمخزون والتحليلات والمزيد.",
     "projectDesc2": "تم تصميم هذا التطبيق ليكون سريعاً وآمناً وسهل الاستخدام. تم بناؤه مع مراعاة الأداء، ويستفيد من قوة Rust للعمليات الخلفية و React لواجهة مستخدم جميلة وتفاعلية.",
     "developedBy": "طور بواسطة",
     "supportTitle": "الدعم والاتصال",
@@ -107,7 +123,8 @@
     "successToast": "تم إرسال الرسالة بنجاح! سنعود إليك قريباً.",
     "errorToast": "فشل إرسال الرسالة. حاول مرة أخرى.",
     "copyright": "© {year} Structa Cloud. جميع الحقوق محفوظة.",
-    "versionLabel": "الإصدار"
+    "versionLabel": "الإصدار",
+    "registeredUsers": "المستخدمون المسجلون"
   },
   "productManager": {
     "title": "إدارة المنتجات",
@@ -196,7 +213,11 @@
     "searchProducts": "ابحث عن منتجات...",
     "allCategories": "جميع الفئات",
     "categoryFilter": "تصفية حسب الفئة",
-    "noProductsMatch": "لا توجد منتجات تطابق بحثك."
+    "noProductsMatch": "لا توجد منتجات تطابق بحثك.",
+    "viewCart": "عرض السلة",
+    "editCart": "تعديل السلة",
+    "zone": "المنطقة",
+    "distance": "المسافة (كم)"
   },
   "analytics": {
     "title": "لوحة التحليلات",
@@ -664,6 +685,10 @@
       "lightMode": "الوضع الفاتح",
       "darkMode": "الوضع الداكن",
       "modeDescription": "التبديل بين العرض الفاتح والداكن",
+      "modeTitle": "وضع السمة",
+      "systemControlled": "اتباع إعدادات النظام",
+      "darkModeSelected": "الوضع الداكن محدد",
+      "lightModeSelected": "الوضع الفاتح محدد",
       "systemMode": "وضع النظام",
       "systemDescription": "اتبع إعداد السمة لجهازك",
       "fixedDescription": "اختر الوضع الفاتح أو الداكن يدويًا",
@@ -677,6 +702,8 @@
       "languageValueEn": "English",
       "languageValueAr": "العربية",
       "languageValueFr": "Français",
+      "languageValueDe": "Deutsch",
+      "languageValueEs": "Español",
       "logoFormats": "مدعوم: PNG، JPG، GIF، BMP، WebP (الحد الأقصى 2MB)",
       "restaurantNameRequired": "اسم المطعم"
     },

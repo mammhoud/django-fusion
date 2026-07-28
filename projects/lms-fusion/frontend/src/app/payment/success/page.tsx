@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { Suspense, useEffect, useState } from 'react';
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { HiCheckCircle, HiAcademicCap, HiArrowRight, HiMail, HiExclamation, HiRefresh } from 'react-icons/hi';
@@ -8,7 +8,7 @@ import { useGetProfileQuery } from '@/store/api/endpoints/auth';
 import { useGetStudentEnrollmentsQuery, useVerifyPaymentMutation } from '@/store/api/endpoints/students';
 import LoadingSkeleton from '@/components/ui/LoadingSkeleton';
 
-export default function PaymentSuccessPage() {
+function PaymentSuccessContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const enrollmentId = searchParams?.get('enrollment_id');
@@ -215,5 +215,13 @@ export default function PaymentSuccessPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function PaymentSuccessPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[60vh] flex items-center justify-center"><LoadingSkeleton variant="card" count={1} /></div>}>
+      <PaymentSuccessContent />
+    </Suspense>
   );
 }

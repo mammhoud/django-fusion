@@ -9,6 +9,7 @@ pub mod recipes;
 pub mod inventory_transactions;
 pub mod dump;
 pub mod delivery_types;
+pub mod delivery_zones;
 pub mod employee_types;
 pub mod employees;
 pub mod auth;

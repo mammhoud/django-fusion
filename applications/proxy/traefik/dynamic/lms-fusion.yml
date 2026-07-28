@@ -43,7 +43,7 @@ http:
     lms-fusion-frontend-service:
       loadBalancer:
         servers:
-          - url: 'http://lms-fusion-frontend:3001'
+          - url: 'http://lms-fusion-frontend:3002'
         healthCheck:
           path: /
           interval: 30s

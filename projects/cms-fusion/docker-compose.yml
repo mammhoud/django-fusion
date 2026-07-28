@@ -23,8 +23,10 @@ services:
       PROJECT_PATH: cms-fusion
       PORT: "5075"
       HOST: "0.0.0.0"
-      SERVER_TYPE: gunicorn
+      SERVER_TYPE: uvicorn
       WORKERS: "4"
+      APP_MODULE: server:asgi_application
+      DJANGO_SERVER_TYPE: asgi
       LOG_LEVEL: info
       DEBUG: "false"
       RUN_SETUP: "true"
@@ -37,7 +39,7 @@ services:
       REDIS_URL: redis://default-redis:6379/0
       CELERY_BROKER_URL: redis://default-redis:6379/1
       CELERY_RESULT_BACKEND: redis://default-redis:6379/2
-      ALLOWED_HOSTS: localhost,127.0.0.1,cms-fusion.localhost
+      ALLOWED_HOSTS: localhost,127.0.0.1,cms-fusion.localhost,cms-fusion-backend
       CSRF_TRUSTED_ORIGINS: http://localhost:5075,http://cms-fusion.localhost
       CELERY_TASK_DEFAULT_QUEUE: cms-fusion
     healthcheck:
@@ -51,6 +53,7 @@ services:
     volumes:
       - ./backend:/app/cms-fusion:rw
       - ./configs:/app/configs:ro
+      - ../../libs:/app/libs:rw
       - ../../logs:/app/logs:z
       - cms-fusion-static:/app/cms-fusion/static:rw
       - cms-fusion-media:/app/cms-fusion/media:rw

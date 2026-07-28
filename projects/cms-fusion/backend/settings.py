@@ -167,3 +167,28 @@ FUSION_FEATURES = {
 # Fusion Render-First
 # ═══════════════════════════════════════════════════════════════════
 FUSION_RENDER_FIRST_DEFAULT = True
+
+# ═══════════════════════════════════════════════════════════════════
+# Fusion Assets — top/bottom asset manifest served to Next.js frontend
+# ═══════════════════════════════════════════════════════════════════
+FUSION_ASSETS = {
+    "top": {
+        "css": [
+            "/static/css/fusion.css",
+        ],
+        "fonts": [
+            "/static/fonts/remixicon/remixicon.css",
+            "/static/fonts/fontawesome-free/css/all.min.css",
+        ],
+        "preconnect": [
+            "https://fonts.googleapis.com",
+        ],
+        "inline_css": [],
+    },
+    "bottom": {
+        "js": [
+            "/static/js/fusion-bridge.js",
+        ],
+        "inline_js": [],
+    },
+}

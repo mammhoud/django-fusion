@@ -1,62 +1,93 @@
 import { motion } from 'framer-motion';
-import { MdLightMode, MdDarkMode } from 'react-icons/md';
 import { useTheme } from '../contexts/ThemeContext';
+import { useLanguage } from '../contexts/LanguageContext';
+
+type ThemeMode = 'light' | 'dark' | 'system';
+
+const MODE_ORDER: ThemeMode[] = ['light', 'dark', 'system'];
+const MODE_ICONS: Record<ThemeMode, string> = {
+  light: 'sun',
+  dark: 'moon',
+  system: 'device-desktop',
+};
+const MODE_LABELS: Record<ThemeMode, string> = {
+  light: 'Light',
+  dark: 'Dark',
+  system: 'System',
+};
 
 export default function ThemeToggle() {
-  const { mode, toggleMode } = useTheme();
-  const isDark = mode === 'dark';
+  const { mode: resolvedMode, toggleMode, setMode, setFollowSystem, followSystem, followSystem: _fs } = useTheme();
+  const { language } = useLanguage();
+  const isRtl = language === 'ar';
+
+  // Derive the current mode preference from theme context
+  const currentMode: ThemeMode = followSystem ? 'system' : resolvedMode;
+
+  const cycleMode = () => {
+    const idx = MODE_ORDER.indexOf(currentMode);
+    const nextMode = MODE_ORDER[(idx + 1) % MODE_ORDER.length];
+
+    if (nextMode === 'system') {
+      setFollowSystem(true);
+    } else {
+      setFollowSystem(false);
+      setMode(nextMode);
+    }
+  };
+
+  // Calculate knob position based on mode
+  const modeIndex = MODE_ORDER.indexOf(currentMode);
+  const knobPosition = 28 + (modeIndex * 36); // 28px per segment
 
   return (
     <motion.button
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.92 }}
-      onClick={toggleMode}
-      className="relative w-[72px] h-[36px] rounded-full p-1 flex items-center
-        cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-white/60 focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
-        shadow-md hover:shadow-lg"
+      onClick={cycleMode}
+      className="relative w-[120px] h-[36px] rounded-full p-1 flex items-center
+        cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-white/60
+        focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
+        shadow-md hover:shadow-lg overflow-hidden"
       style={{
-        background: isDark
+        background: resolvedMode === 'dark'
           ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
           : 'linear-gradient(135deg, #fbbf24 0%, #fb923c 100%)',
-        boxShadow: isDark
-          ? '0 2px 8px rgba(15, 23, 42, 0.4)'
-          : '0 2px 8px rgba(251, 191, 36, 0.3)',
       }}
-      aria-label={`Switch to ${isDark ? 'light' : 'dark'} mode`}
+      aria-label={`Theme: ${currentMode}. Click to switch.`}
+      dir="ltr"
     >
-      {/* Subtle inner glow overlay */}
-      <span className="absolute inset-0 rounded-full bg-white/5 pointer-events-none" />
-
-      {/* Background icon hint — logical properties for RTL support */}
-      <span
-        className="absolute text-[10px] pointer-events-none select-none flex items-center z-10"
-        style={{
-          insetInlineStart: isDark ? 'auto' : '10px',
-          insetInlineEnd: isDark ? '10px' : 'auto',
-          color: isDark ? 'rgba(148,163,184,0.7)' : 'rgba(255,255,255,0.9)',
-        }}
-      >
-        {isDark ? (
-          <MdDarkMode className="w-3 h-3" />
-        ) : (
-          <MdLightMode className="w-3 h-3" />
-        )}
-      </span>
-
-      {/* Sliding knob - snaps instantly */}
-      <div
-        className="w-[28px] h-[28px] bg-white rounded-full shadow-lg 
-          flex items-center justify-center z-20"
-        style={{
-          transform: isDark ? 'translateX(36px)' : 'translateX(0)',
-        }}
-      >
-        {isDark ? (
-          <MdDarkMode className="w-3.5 h-3.5 text-indigo-400" />
-        ) : (
-          <MdLightMode className="w-3.5 h-3.5 text-amber-500" />
-        )}
+      {/* Background segments */}
+      <div className="absolute inset-0 flex items-center justify-around px-2 z-10">
+        {MODE_ORDER.map((m, i) => (
+          <span
+            key={m}
+            className={`text-[10px] transition-all duration-200 ${
+              i === modeIndex
+                ? 'text-white'
+                : resolvedMode === 'dark'
+                  ? 'text-base-content/50'
+                  : 'text-amber-700/60'
+            }`}
+          >
+            <span className={`icon-[tabler--${MODE_ICONS[m]}] w-3.5 h-3.5`} />
+          </span>
+        ))}
       </div>
+
+      {/* Sliding knob */}
+      <motion.div
+        className="w-[36px] h-[28px] bg-white rounded-full shadow-lg
+          flex items-center justify-center z-20 absolute"
+        animate={{
+          left: knobPosition,
+        }}
+        transition={{ type: 'spring', stiffness: 400, damping: 30 }}
+      >
+        <span className={`icon-[tabler--${MODE_ICONS[currentMode]}] w-3.5 h-3.5
+          ${resolvedMode === 'dark' ? 'text-indigo-400' : 'text-amber-500'}`}
+        />
+      </motion.div>
     </motion.button>
   );
 }

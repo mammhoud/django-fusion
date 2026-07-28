@@ -55,6 +55,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "tauri": "tauri",
+    "lint:contrast": "node scripts/lint-contrast.mjs",
+    "lint:contrast:fix": "node scripts/lint-contrast.mjs --fix",
     "prebuild": "PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
     "predev": "node ../scripts/dev/kill-port.cjs && PROJECT_ROOT=. node ../scripts/dev/update-year.cjs && PROJECT_ROOT=. node ../scripts/dev/ensure-db.cjs",
     "build:desktop": "pnpm build && pnpm tauri build && PROJECT_ROOT=. node ../scripts/publish/generate-checksums.cjs",
@@ -79,6 +81,7 @@
     "@tauri-apps/plugin-fs": "^2",
     "@tauri-apps/plugin-opener": "^2",
     "date-fns": "^4.1.0",
+    "flyonui": "^2.4.1",
     "framer-motion": "^12.0.5",
     "i18next": "^26.3.6",
     "jspdf": "^2.5.2",
@@ -93,6 +96,8 @@
     "zustand": "^5.0.14"
   },
   "devDependencies": {
+    "@iconify-json/tabler": "^1.2.37",
+    "@iconify/tailwind4": "^1.2.3",
     "@playwright/test": "^1.48.0",
     "@tailwindcss/postcss": "^4.0.0",
     "@tauri-apps/cli": "^2",

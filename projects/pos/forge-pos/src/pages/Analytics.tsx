@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
-import { MdTrendingUp, MdAttachMoney, MdShoppingCart } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
 import {
@@ -102,7 +102,7 @@ export default function Analytics() {
   if (loading) {
     return (
       <div className="min-h-screen bg-slate-100 dark:bg-slate-900 flex items-center justify-center transition-colors duration-300">
-        <div className="text-slate-900 dark:text-white">{t('analytics.title')}...</div>
+        <div className="text-base-content">{t('analytics.title')}...</div>
       </div>
     );
   }  return (
@@ -116,72 +116,76 @@ export default function Analytics() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass card--hover rounded-xl p-6"
           >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-teal-500/20 rounded-lg">
-                <MdAttachMoney className="w-6 h-6 text-teal-600 dark:text-teal-500" />
+            <Card padding="xl" hover>
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-primary/20 rounded-lg">
+                  <span className="icon-[tabler--moneybag] w-6 h-6 text-teal-600 dark:text-teal-500" />
+                </div>
+                <div>
+                  <p className="text-base-content/60">{t('analytics.totalRevenue')}</p>
+                  <p className="text-2xl font-bold text-base-content">
+                    {currency} {data.summary.total_revenue.toFixed(2)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-slate-600 dark:text-white/60">{t('analytics.totalRevenue')}</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {currency} {data.summary.total_revenue.toFixed(2)}
-                </p>
-              </div>
-            </div>
+            </Card>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="card--glass card--hover rounded-xl p-6"
           >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-blue-500/20 rounded-lg">
-                <MdTrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-500" />
+            <Card padding="xl" hover>
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-blue-500/20 rounded-lg">
+                  <span className="icon-[tabler--trending-up] w-6 h-6 text-blue-600 dark:text-blue-500" />
+                </div>
+                <div>
+                  <p className="text-base-content/60">{t('analytics.growthRate')}</p>
+                  <p className="text-2xl font-bold text-base-content">{growthRate}%</p>
+                </div>
               </div>
-              <div>
-                <p className="text-slate-600 dark:text-white/60">{t('analytics.growthRate')}</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{growthRate}%</p>
-              </div>
-            </div>
+            </Card>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="card--glass card--hover rounded-xl p-6"
           >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-purple-500/20 rounded-lg">
-                <MdShoppingCart className="w-6 h-6 text-purple-600 dark:text-purple-500" />
+            <Card padding="xl" hover>
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-purple-500/20 rounded-lg">
+                  <span className="icon-[tabler--shopping-cart] w-6 h-6 text-purple-600 dark:text-purple-500" />
+                </div>
+                <div>
+                  <p className="text-base-content/60">{t('analytics.totalOrders')}</p>
+                  <p className="text-2xl font-bold text-base-content">{data.summary.total_orders}</p>
+                </div>
               </div>
-              <div>
-                <p className="text-slate-600 dark:text-white/60">{t('analytics.totalOrders')}</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">{data.summary.total_orders}</p>
-              </div>
-            </div>
+            </Card>
           </motion.div>
 
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="card--glass card--hover rounded-xl p-6"
           >
-            <div className="flex items-center gap-4">
-              <div className="p-3 bg-orange-500/20 rounded-lg">
-                <MdAttachMoney className="w-6 h-6 text-orange-600 dark:text-orange-500" />
+            <Card padding="xl" hover>
+              <div className="flex items-center gap-4">
+                <div className="p-3 bg-orange-500/20 rounded-lg">
+                  <span className="icon-[tabler--moneybag] w-6 h-6 text-orange-600 dark:text-orange-500" />
+                </div>
+                <div>
+                  <p className="text-base-content/60">{t('analytics.avgOrderValue')}</p>
+                  <p className="text-2xl font-bold text-base-content">
+                    {currency} {data.summary.average_order_value.toFixed(2)}
+                  </p>
+                </div>
               </div>
-              <div>
-                <p className="text-slate-600 dark:text-white/60">{t('analytics.avgOrderValue')}</p>
-                <p className="text-2xl font-bold text-slate-900 dark:text-white">
-                  {currency} {data.summary.average_order_value.toFixed(2)}
-                </p>
-              </div>
-            </div>
+            </Card>
           </motion.div>
         </div>
 
@@ -190,12 +194,13 @@ export default function Analytics() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass rounded-xl p-8 mb-8 text-center transition-colors duration-300"
           >
-            <div className="text-slate-600 dark:text-white/60 text-lg mb-2">{t('analytics.noData')}</div>
-            <div className="text-slate-500 dark:text-white/40">
-              {t('analytics.noDataHint')}
-            </div>
+            <Card padding="2xl" center transitional className="mb-8">
+              <div className="text-base-content/60 text-lg mb-2">{t('analytics.noData')}</div>
+              <div className="text-slate-500 dark:text-white/40">
+                {t('analytics.noDataHint')}
+              </div>
+            </Card>
           </motion.div>
         )}
 
@@ -205,150 +210,154 @@ export default function Analytics() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass rounded-xl p-4 sm:p-6 transition-colors duration-300"
           >
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4">{t('analytics.revenueTrend')}</h2>
-            <div className="h-[250px] sm:h-[300px]" dir="ltr">
-              {data.daily_revenue.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <AreaChart data={data.daily_revenue}>
-                    <defs>
-                      <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="5%" stopColor="#0088FE" stopOpacity={0.8} />
-                        <stop offset="95%" stopColor="#0088FE" stopOpacity={0} />
-                      </linearGradient>
-                    </defs>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                    <XAxis dataKey="date" stroke="#ffffff60" />
-                    <YAxis stroke="#ffffff60" />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1f2937', border: 'none' }}
-                      labelStyle={{ color: '#ffffff' }}
-                    />
-                    <Area
-                      type="monotone"
-                      dataKey="revenue"
-                      stroke="#0088FE"
-                      fillOpacity={1}
-                      fill="url(#colorRevenue)"
-                    />
-                  </AreaChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-slate-500 dark:text-white/40">{t('analytics.noRevenueData')}</p>
-                </div>
-              )}
-            </div>
+            <Card padding="md" transitional className="sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.revenueTrend')}</h2>
+              <div className="h-[250px] sm:h-[300px]" dir="ltr">
+                {data.daily_revenue.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <AreaChart data={data.daily_revenue}>
+                      <defs>
+                        <linearGradient id="colorRevenue" x1="0" y1="0" x2="0" y2="1">
+                          <stop offset="5%" stopColor="#0088FE" stopOpacity={0.8} />
+                          <stop offset="95%" stopColor="#0088FE" stopOpacity={0} />
+                        </linearGradient>
+                      </defs>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
+                      <XAxis dataKey="date" stroke="#ffffff60" />
+                      <YAxis stroke="#ffffff60" />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1f2937', border: 'none' }}
+                        labelStyle={{ color: '#ffffff' }}
+                      />
+                      <Area
+                        type="monotone"
+                        dataKey="revenue"
+                        stroke="#0088FE"
+                        fillOpacity={1}
+                        fill="url(#colorRevenue)"
+                      />
+                    </AreaChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noRevenueData')}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
           </motion.div>
 
           {/* Top Products */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass rounded-xl p-4 sm:p-6 transition-colors duration-300"
           >
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4">{t('analytics.topProducts')}</h2>
-            <div className="h-[250px] sm:h-[300px]" dir="ltr">
-              {data.top_products.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <BarChart data={data.top_products}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                    <XAxis dataKey="name" stroke="#ffffff60" />
-                    <YAxis stroke="#ffffff60" />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1f2937', border: 'none' }}
-                      labelStyle={{ color: '#ffffff' }}
-                    />
-                    <Bar dataKey="sales" fill="#00C49F" />
-                  </BarChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-slate-500 dark:text-white/40">{t('analytics.noProductData')}</p>
-                </div>
-              )}
-            </div>
+            <Card padding="md" transitional className="sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.topProducts')}</h2>
+              <div className="h-[250px] sm:h-[300px]" dir="ltr">
+                {data.top_products.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <BarChart data={data.top_products}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
+                      <XAxis dataKey="name" stroke="#ffffff60" />
+                      <YAxis stroke="#ffffff60" />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1f2937', border: 'none' }}
+                        labelStyle={{ color: '#ffffff' }}
+                      />
+                      <Bar dataKey="sales" fill="#00C49F" />
+                    </BarChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noProductData')}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
           </motion.div>
 
           {/* Product Distribution */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass rounded-xl p-4 sm:p-6 transition-colors duration-300"
           >
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4">{t('analytics.productDistribution')}</h2>
-            <div className="h-[250px] sm:h-[300px]" dir="ltr">
-              {data.product_distribution.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <PieChart>
-                    <Pie
-                      data={data.product_distribution}
-                      cx="50%"
-                      cy="50%"
-                      labelLine={false}
-                      label={({ name, value, percent }) =>
-                        `${name} (${value}) ${(percent * 100).toFixed(0)}%`
-                      }
-                      outerRadius={80}
-                      fill="#8884d8"
-                      dataKey="value"
-                    >
-                      {data.product_distribution.map((_, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
-                      ))}
-                    </Pie>
-                    <Tooltip
-                      contentStyle={{
-                        backgroundColor: '#1f2937',
-                        border: 'none',
-                        color: '#ffffff'
-                      }}
-                      itemStyle={{ color: '#ffffff' }}
-                      labelStyle={{ color: '#ffffff' }}
-                    />
-                  </PieChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-slate-500 dark:text-white/40">{t('analytics.noDistributionData')}</p>
-                </div>
-              )}
-            </div>
+            <Card padding="md" transitional className="sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.productDistribution')}</h2>
+              <div className="h-[250px] sm:h-[300px]" dir="ltr">
+                {data.product_distribution.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <PieChart>
+                      <Pie
+                        data={data.product_distribution}
+                        cx="50%"
+                        cy="50%"
+                        labelLine={false}
+                        label={({ name, value, percent }) =>
+                          `${name} (${value}) ${(percent * 100).toFixed(0)}%`
+                        }
+                        outerRadius={80}
+                        fill="#8884d8"
+                        dataKey="value"
+                      >
+                        {data.product_distribution.map((_, index) => (
+                          <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        ))}
+                      </Pie>
+                      <Tooltip
+                        contentStyle={{
+                          backgroundColor: '#1f2937',
+                          border: 'none',
+                          color: '#ffffff'
+                        }}
+                        itemStyle={{ color: '#ffffff' }}
+                        labelStyle={{ color: '#ffffff' }}
+                      />
+                    </PieChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noDistributionData')}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
           </motion.div>
 
           {/* Daily Orders Trend */}
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass rounded-xl p-4 sm:p-6 transition-colors duration-300"
           >
-            <h2 className="text-lg sm:text-xl font-bold text-slate-900 dark:text-white mb-4">{t('analytics.dailyOrders')}</h2>
-            <div className="h-[250px] sm:h-[300px]" dir="ltr">
-              {data.daily_revenue.length > 0 ? (
-                <ResponsiveContainer width="100%" height="100%">
-                  <LineChart data={data.daily_revenue}>
-                    <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
-                    <XAxis dataKey="date" stroke="#ffffff60" />
-                    <YAxis stroke="#ffffff60" />
-                    <Tooltip
-                      contentStyle={{ backgroundColor: '#1f2937', border: 'none' }}
-                      labelStyle={{ color: '#ffffff' }}
-                    />
-                    <Line
-                      type="monotone"
-                      dataKey="orders"
-                      stroke="#FFBB28"
-                      strokeWidth={2}
-                    />
-                  </LineChart>
-                </ResponsiveContainer>
-              ) : (
-                <div className="flex items-center justify-center h-full">
-                  <p className="text-slate-500 dark:text-white/40">{t('analytics.noOrdersData')}</p>
-                </div>
-              )}
-            </div>
+            <Card padding="md" transitional className="sm:p-6">
+              <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.dailyOrders')}</h2>
+              <div className="h-[250px] sm:h-[300px]" dir="ltr">
+                {data.daily_revenue.length > 0 ? (
+                  <ResponsiveContainer width="100%" height="100%">
+                    <LineChart data={data.daily_revenue}>
+                      <CartesianGrid strokeDasharray="3 3" stroke="#ffffff20" />
+                      <XAxis dataKey="date" stroke="#ffffff60" />
+                      <YAxis stroke="#ffffff60" />
+                      <Tooltip
+                        contentStyle={{ backgroundColor: '#1f2937', border: 'none' }}
+                        labelStyle={{ color: '#ffffff' }}
+                      />
+                      <Line
+                        type="monotone"
+                        dataKey="orders"
+                        stroke="#FFBB28"
+                        strokeWidth={2}
+                      />
+                    </LineChart>
+                  </ResponsiveContainer>
+                ) : (
+                  <div className="flex items-center justify-center h-full">
+                    <p className="text-slate-500 dark:text-white/40">{t('analytics.noOrdersData')}</p>
+                  </div>
+                )}
+              </div>
+            </Card>
           </motion.div>
         </div>
       {/* Keyboard Shortcut Help Modal */}

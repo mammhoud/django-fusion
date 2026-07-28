@@ -1,8 +1,8 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
+import Card from '../components/Card';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
-import { FaDownload, FaCheck, FaTimes } from 'react-icons/fa';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
 
 export interface Column<T> {
   key: string;
@@ -233,9 +233,9 @@ export default function DataTable<T>({
   // ── Empty state ──
   if (data.length === 0 && !exportable) {
     return (
-      <div className="card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+      <Card padding="2xl" center border="base-200" className="text-base-content/60">
         {emptyMsg}
-      </div>
+      </Card>
     );
   }
 
@@ -256,13 +256,13 @@ export default function DataTable<T>({
     : gridTemplate;
 
   return (
-    <div className="card--glass rounded-xl overflow-hidden">
+    <Card border="base-200" className="overflow-hidden">
       {/* Toolbar */}
       {(selectable || exportable) && (
-        <div className="flex items-center justify-between px-4 py-2 border-b border-slate-300 dark:border-white/10">
+        <div className="flex items-center justify-between px-4 py-2 border-b border-base-300">
           <div className="flex items-center gap-2">
             {selectable && selectedIds.size > 0 && (
-              <span className="text-xs text-slate-500 dark:text-gray-400 font-medium">
+              <span className="text-xs text-base-content/50 font-medium">
                 {t('common.selected', { count: selectedIds.size })}
               </span>
             )}
@@ -271,11 +271,9 @@ export default function DataTable<T>({
             <button
               type="button"
               onClick={handleExport}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 
-                transition-colors"
+              className="btn btn-soft btn-sm text-xs gap-1.5"
             >
-              <FaDownload className="w-3 h-3" />
+              <span className="icon-[tabler--download] w-3 h-3" />
               {t('common.csv')}
             </button>
           )}
@@ -284,7 +282,7 @@ export default function DataTable<T>({
 
       {/* Desktop Header */}
       <div
-        className="hidden sm:grid gap-4 p-4 border-b border-slate-300 dark:border-white/10"
+        className="hidden sm:grid gap-4 p-4 border-b border-base-300"
         style={{ gridTemplateColumns: gridTemplateWithCheckbox }}
       >
         {allColumns.map((item) => {
@@ -298,9 +296,7 @@ export default function DataTable<T>({
                     if (el) el.indeterminate = someSelected;
                   }}
                   onChange={toggleSelectAll}
-                  className="w-4 h-4 rounded border-slate-300 dark:border-gray-600 
-                    text-teal-500 focus:ring-teal-400 cursor-pointer
-                    accent-teal-500"
+                  className="checkbox checkbox-sm checkbox-primary cursor-pointer"
                 />
               </div>
             );
@@ -309,7 +305,7 @@ export default function DataTable<T>({
           return (
             <div
               key={col.key}
-              className={`flex items-center gap-1 text-slate-900 dark:text-white font-semibold text-sm 
+              className={`flex items-center gap-1 text-base-content font-semibold text-sm
                 ${col.className || ''} ${col.hideOnMobile ? 'hidden sm:flex' : ''}`}
             >
               {col.sortable ? (
@@ -320,9 +316,9 @@ export default function DataTable<T>({
                   {col.label}
                   {sortKey === col.key &&
                     (sortDir === 'asc' ? (
-                      <MdArrowUpward className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--arrow-up] w-3.5 h-3.5" />
                     ) : (
-                      <MdArrowDownward className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--arrow-down] w-3.5 h-3.5" />
                     ))}
                 </button>
               ) : (
@@ -335,7 +331,7 @@ export default function DataTable<T>({
 
       {/* Rows */}
       {sortedData.length === 0 ? (
-        <div className="p-8 text-center text-slate-500 dark:text-gray-400 text-sm">
+        <div className="p-8 text-center text-base-content/50 text-sm">
           {emptyMsg}
         </div>
       ) : (
@@ -349,9 +345,9 @@ export default function DataTable<T>({
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
               transition={{ delay: _idx * 0.02 }}
-              className={`transition-colors border-b border-slate-300 dark:border-white/10 last:border-b-0
-                ${isSelected ? 'bg-teal-500/10 dark:bg-teal-500/15' : ''}
-                hover:bg-slate-100 dark:hover:bg-white/5`}
+              className={`transition-colors border-b border-base-300 last:border-b-0
+                ${isSelected ? 'bg-primary/10' : ''}
+                hover:bg-base-200`}
             >
               {/* Desktop */}
               <div
@@ -366,9 +362,7 @@ export default function DataTable<T>({
                           type="checkbox"
                           checked={isSelected}
                           onChange={() => toggleRow(rowKey)}
-                          className="w-4 h-4 rounded border-slate-300 dark:border-gray-600 
-                            text-teal-500 focus:ring-teal-400 cursor-pointer
-                            accent-teal-500"
+                          className="checkbox checkbox-sm checkbox-primary cursor-pointer"
                         />
                       </div>
                     );
@@ -384,7 +378,7 @@ export default function DataTable<T>({
                   return (
                     <div
                       key={col.key}
-                      className={`text-slate-900 dark:text-white text-sm relative
+                      className={`text-base-content text-sm relative
                         ${col.className || ''}
                         ${col.hideOnMobile ? 'hidden sm:block' : ''}
                         ${col.editable ? 'cursor-pointer group' : ''}`}
@@ -406,9 +400,7 @@ export default function DataTable<T>({
                               if (e.key === 'Escape') cancelEditing();
                             }}
                             onBlur={confirmEditing}
-                            className="w-full px-2 py-1 rounded border border-teal-400 
-                              bg-white dark:bg-slate-800 text-slate-900 dark:text-white 
-                              text-sm outline-none shadow-sm"
+                            className="input input-bordered input-sm w-full"
                             onClick={(e) => e.stopPropagation()}
                             step={col.editType === 'number' ? 'any' : undefined}
                           />
@@ -433,7 +425,7 @@ export default function DataTable<T>({
                                 }}
                                 className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 transition-colors"
                               >
-                                <FaCheck className="w-3 h-3" />
+                                <span className="icon-[tabler--check] w-3 h-3" />
                               </button>
                               <button
                                 type="button"
@@ -443,7 +435,7 @@ export default function DataTable<T>({
                                 }}
                                 className="p-1 rounded text-red-500 hover:bg-red-500/10 transition-colors"
                               >
-                                <FaTimes className="w-3 h-3" />
+                                <span className="icon-[tabler--x] w-3 h-3" />
                               </button>
                             </div>
                           )}
@@ -452,8 +444,8 @@ export default function DataTable<T>({
                         <>
                           {col.render(row)}
                           {col.editable && (
-                            <span className="absolute inset-0 rounded border-2 border-transparent 
-                              group-hover:border-teal-400/40 group-hover:bg-teal-400/5 
+                            <span className="absolute inset-0 rounded border-2 border-transparent
+                              group-hover:border-primary/40 group-hover:bg-teal-400/5
                               transition-all pointer-events-none" />
                           )}
                         </>
@@ -472,8 +464,7 @@ export default function DataTable<T>({
                         type="checkbox"
                         checked={isSelected}
                         onChange={() => toggleRow(rowKey)}
-                        className="mt-1 w-4 h-4 rounded border-slate-300 dark:border-gray-600 
-                          text-teal-500 focus:ring-teal-400 cursor-pointer accent-teal-500 shrink-0"
+                        className="checkbox checkbox-sm checkbox-primary shrink-0 mt-1"
                       />
                     )}
                     <div className="flex-1">{mobileRender(row)}</div>
@@ -484,6 +475,7 @@ export default function DataTable<T>({
           );
         })
       )}
-    </div>
+    </Card>
   );
 }
+

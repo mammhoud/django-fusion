@@ -8,7 +8,7 @@ interface SkeletonBaseProps {
 function SkeletonBase({ className = '', children }: SkeletonBaseProps) {
   return (
     <div
-      className={`animate-pulse bg-slate-200 dark:bg-slate-700/50 rounded ${className}`}
+      className={`animate-pulse bg-base-300/50/50 rounded ${className}`}
       aria-hidden="true"
     >
       {children}
@@ -43,7 +43,7 @@ export function SkeletonTable({ rows = 5, columns = 4, className = '' }: Skeleto
   return (
     <div className={`w-full overflow-hidden rounded-xl border border-slate-200 dark:border-slate-700/50 ${className}`} aria-hidden="true">
       {/* Header */}
-      <div className={`grid ${gridClass} gap-3 p-4 bg-slate-100/50 dark:bg-slate-800/30 border-b border-slate-200 dark:border-slate-700/50`}>
+      <div className={`grid ${gridClass} gap-3 p-4 bg-base-200/50 border-b border-slate-200 dark:border-slate-700/50`}>
         {Array.from({ length: columns }).map((_, i) => (
           <SkeletonBase key={`header-${i}`} className="h-4 w-3/4" />
         ))}
@@ -72,7 +72,7 @@ export function SkeletonList({ items = 5, className = '' }: SkeletonListProps) {
   return (
     <div className={`space-y-3 ${className}`} aria-hidden="true">
       {Array.from({ length: items }).map((_, i) => (
-        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-slate-100/50 dark:bg-slate-800/30">
+        <div key={i} className="flex items-center gap-3 p-3 rounded-xl bg-base-200/50">
           <SkeletonBase className="w-10 h-10 rounded-lg shrink-0" />
           <div className="flex-1 space-y-2">
             <SkeletonBase className="h-4 w-1/3" />
@@ -93,7 +93,7 @@ export function SkeletonCard({ count = 4, className = '' }: SkeletonCardProps) {
   return (
     <div className={`grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 ${className}`} aria-hidden="true">
       {Array.from({ length: count }).map((_, i) => (
-        <div key={i} className="rounded-xl p-4 bg-slate-100/50 dark:bg-slate-800/30 space-y-3">
+        <div key={i} className="rounded-xl p-4 bg-base-200/50 space-y-3">
           <SkeletonBase className="h-8 w-8 rounded-lg" />
           <SkeletonBase className="h-5 w-3/4" />
           <SkeletonBase className="h-8 w-1/2" />

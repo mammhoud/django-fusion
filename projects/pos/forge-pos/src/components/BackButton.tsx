@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { MdArrowBack } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 
 interface BackButtonProps {
@@ -21,7 +20,7 @@ interface BackButtonProps {
       onClick={onClick}
       disabled={disabled}
       className="flex items-center gap-2 px-4 py-2 rounded-lg min-w-[120px] justify-center
-        card--glass font-medium text-sm
+        bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 font-medium text-sm
         disabled:opacity-50 disabled:cursor-not-allowed"
     >
       {disabled ? (
@@ -35,7 +34,7 @@ interface BackButtonProps {
         </>
       ) : (
         <>
-          <MdArrowBack className="w-4 h-4 u-rtl-flip shrink-0" />
+          <span className="icon-[tabler--arrow-back] w-4 h-4 rtl:scale-x-[-1] shrink-0" />
           <span>{displayText}</span>
         </>
       )}

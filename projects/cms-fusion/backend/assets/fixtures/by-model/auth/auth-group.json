@@ -1,0 +1,60 @@
+[
+  {
+    "model": "auth.group",
+    "pk": 1,
+    "fields": {
+      "name": "Moderators",
+      "permissions": [
+        4,
+        110,
+        111,
+        113,
+        112,
+        1,
+        2,
+        5,
+        3
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 2,
+    "fields": {
+      "name": "Editors",
+      "permissions": [
+        4,
+        110,
+        111,
+        113,
+        112,
+        1,
+        2,
+        5,
+        3
+      ]
+    }
+  },
+  {
+    "model": "auth.group",
+    "pk": 3,
+    "fields": {
+      "name": "Instructors",
+      "permissions": [
+        380,
+        393,
+        394,
+        396,
+        421,
+        422,
+        233,
+        304,
+        302,
+        303,
+        301,
+        232,
+        217
+      ]
+    }
+  }
+]

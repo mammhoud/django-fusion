@@ -1,10 +1,11 @@
 'use client';
 
+import { Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { HiXCircle, HiArrowLeft, HiRefresh } from 'react-icons/hi';
 
-export default function PaymentCancelPage() {
+function PaymentCancelContent() {
   const searchParams = useSearchParams();
   const enrollmentId = searchParams?.get('enrollment_id');
 
@@ -56,5 +57,13 @@ export default function PaymentCancelPage() {
         </p>
       </motion.div>
     </div>
+  );
+}
+
+export default function PaymentCancelPage() {
+  return (
+    <Suspense fallback={<div className="min-h-[70vh] flex items-center justify-center"><div className="w-10 h-10 border-2 border-[rgb(var(--fu-primary))] border-t-transparent rounded-full animate-spin" /></div>}>
+      <PaymentCancelContent />
+    </Suspense>
   );
 }

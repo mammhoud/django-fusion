@@ -123,11 +123,11 @@ const MOCK_COURSES = [
 
 // ── Helper ──
 
-function mockFetchResponse(data: any, ok = true) {
-  return Promise.resolve({
+function mockFetchResponse(data: any, ok = true): Partial<Response> {
+  return {
     ok,
     json: () => Promise.resolve(data),
-  });
+  } as Partial<Response>;
 }
 
 function renderWithProviders(ui: React.ReactElement) {
@@ -145,12 +145,12 @@ describe('CoursesPage (lms-fusion)', () => {
     vi.spyOn(global, 'fetch').mockImplementation((url: string | URL | Request) => {
       const urlStr = typeof url === 'string' ? url : url.toString();
       if (urlStr.includes('/filters')) {
-        return mockFetchResponse(MOCK_FILTERS);
+        return Promise.resolve(mockFetchResponse(MOCK_FILTERS) as Response);
       }
-      return mockFetchResponse({
+      return Promise.resolve(mockFetchResponse({
         data: MOCK_COURSES,
         pagination: { page: 1, total: 4, total_pages: 1 },
-      });
+      }) as Response);
     });
   });
 
@@ -363,12 +363,12 @@ describe('CoursesPage (lms-fusion)', () => {
     vi.spyOn(global, 'fetch').mockImplementation((url: string | URL | Request) => {
       const urlStr = typeof url === 'string' ? url : url.toString();
       if (urlStr.includes('/filters')) {
-        return mockFetchResponse({ languages: [], difficulties: [] });
+      return Promise.resolve(mockFetchResponse({ languages: [], difficulties: [] }) as Response);
       }
-      return mockFetchResponse({
+      return Promise.resolve(mockFetchResponse({
         data: [],
         pagination: { page: 1, total: 0, total_pages: 0 },
-      });
+      }) as Response);
     });
     renderWithProviders(<CoursesPage />);
     await act(() => vi.advanceTimersByTime(100));
@@ -383,12 +383,12 @@ describe('CoursesPage (lms-fusion)', () => {
     vi.spyOn(global, 'fetch').mockImplementation((url: string | URL | Request) => {
       const urlStr = typeof url === 'string' ? url : url.toString();
       if (urlStr.includes('/filters')) {
-        return mockFetchResponse(MOCK_FILTERS);
+      return Promise.resolve(mockFetchResponse(MOCK_FILTERS) as Response);
       }
-      return mockFetchResponse({
+      return Promise.resolve(mockFetchResponse({
         data: MOCK_COURSES,
         pagination: { page: 1, total: 40, total_pages: 4 },
-      });
+      }) as Response);
     });
     renderWithProviders(<CoursesPage />);
     await act(() => vi.advanceTimersByTime(100));

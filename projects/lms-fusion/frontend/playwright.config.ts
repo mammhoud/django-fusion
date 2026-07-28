@@ -9,7 +9,7 @@ export default defineConfig({
   expect: { timeout: 10000 },
   reporter: [["html", { outputFolder: "playwright-report" }], ["list"]],
   use: {
-    baseURL: "http://localhost:3458",
+    baseURL: process.env.PLAYWRIGHT_DOCKER_URL || "http://localhost:3458",
     trace: "on-first-retry",
     screenshot: "only-on-failure",
   },
@@ -19,13 +19,15 @@ export default defineConfig({
       use: { ...devices["Desktop Chrome"] },
     },
   ],
-  webServer: process.env.CI
-    ? {
-        command: "npx next dev -p 3458",
-        cwd: __dirname,
-        url: "http://localhost:3458",
-        reuseExistingServer: false,
-        timeout: 120000,
-      }
-    : undefined,
+  webServer: process.env.PLAYWRIGHT_DOCKER_URL
+    ? undefined
+    : process.env.CI
+      ? {
+          command: "npx next dev -p 3458",
+          cwd: __dirname,
+          url: "http://localhost:3458",
+          reuseExistingServer: false,
+          timeout: 120000,
+        }
+      : undefined,
 });

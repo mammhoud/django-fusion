@@ -22,6 +22,10 @@ __pycache__/
 logs/
 *.log
 test-results/
+playwright-report/
+*.tsbuildinfo
+safe_loaddata.py
+*.png
 
 # ── Docs artifacts & archives ────────────────────────────────────────
 .archives/
@@ -30,3 +34,5 @@ test-results/
 .DS_Store
 
 # ── Project-level patterns are in projects/.gitignore ─────────────────
+libs/django-bolt
+libs/ceptor-ai

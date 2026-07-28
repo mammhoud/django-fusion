@@ -18,7 +18,7 @@ let backendAvailable = false;
 test.beforeAll(async ({ request }) => {
   const apiUrl = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
   try {
-    const res = await request.get(`${apiUrl}/apis/fusion/health`, {
+    const res = await request.get(`${apiUrl}/health/`, {
       timeout: 5000,
     });
     backendAvailable = res.ok();
@@ -36,10 +36,10 @@ test.describe("Homepage — Static", () => {
     await page.goto("/");
   });
 
-  test("page title is 'LMS - Learning Management System'", async ({
+  test("page title is 'Fusion CMS — Content Management System'", async ({
     page,
   }) => {
-    await expect(page).toHaveTitle("LMS - Learning Management System");
+    await expect(page).toHaveTitle("Fusion CMS — Content Management System");
   });
 
   test("header is visible with logo text", async ({ page }) => {
