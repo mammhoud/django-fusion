@@ -107,7 +107,8 @@
     "successToast": "تم إرسال الرسالة بنجاح! سنعود إليك قريباً.",
     "errorToast": "فشل إرسال الرسالة. حاول مرة أخرى.",
     "copyright": "© {year} Structa Cloud. جميع الحقوق محفوظة.",
-    "versionLabel": "الإصدار"
+    "versionLabel": "الإصدار",
+    "registeredUsers": "المستخدمون المسجلون"
   },
   "productManager": {
     "title": "إدارة المنتجات",
@@ -196,7 +197,9 @@
     "searchProducts": "ابحث عن منتجات...",
     "allCategories": "جميع الفئات",
     "categoryFilter": "تصفية حسب الفئة",
-    "noProductsMatch": "لا توجد منتجات تطابق بحثك."
+    "noProductsMatch": "لا توجد منتجات تطابق بحثك.",
+    "viewCart": "عرض السلة",
+    "editCart": "تعديل السلة"
   },
   "analytics": {
     "title": "لوحة التحليلات",
@@ -677,6 +680,8 @@
       "languageValueEn": "English",
       "languageValueAr": "العربية",
       "languageValueFr": "Français",
+      "languageValueDe": "Deutsch",
+      "languageValueEs": "Español",
       "logoFormats": "مدعوم: PNG، JPG، GIF، BMP، WebP (الحد الأقصى 2MB)",
       "restaurantNameRequired": "اسم المطعم"
     },

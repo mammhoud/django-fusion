@@ -1,5 +1,8 @@
-import { FaClipboardList, FaChartBar, FaHistory, FaCog, FaHeart, FaBoxes, FaUsers, FaMortarPestle, FaFileAlt, FaMoneyBillWave, FaComments, FaFileInvoiceDollar } from 'react-icons/fa';
-import { MdPointOfSale, MdPeople, MdLocalShipping, MdKitchen, MdEvent, MdReceiptLong, MdAccountBalance, MdSecurity, MdDashboard } from 'react-icons/md';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+// Helper: wraps a tabler icon class name into a React component type
+function Ic(name: string): React.ComponentType<{ className?: string }> {
+  return ({ className = '' }) => <span className={`icon-[tabler--${name}] ${className}`} />;
+}
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
@@ -26,43 +29,43 @@ interface MenuItem {
 }
 
 const MENU_CATEGORIES: MenuCategory[] = [
-  { id: 'sales', label: 'nav.categorySales', icon: <MdPointOfSale className="w-5 h-5" />, color: 'text-emerald-600 dark:text-emerald-400' },
-  { id: 'products', label: 'nav.categoryProducts', icon: <FaBoxes className="w-5 h-5" />, color: 'text-blue-600 dark:text-blue-400' },
-  { id: 'staff', label: 'nav.categoryStaff', icon: <FaUsers className="w-5 h-5" />, color: 'text-purple-600 dark:text-purple-400' },
-  { id: 'reports', label: 'nav.categoryReports', icon: <FaChartBar className="w-5 h-5" />, color: 'text-rose-600 dark:text-rose-400' },
-  { id: 'system', label: 'nav.categorySystem', icon: <MdDashboard className="w-5 h-5" />, color: 'text-slate-600 dark:text-slate-400' },
+  { id: 'sales', label: 'nav.categorySales', icon: <span className="icon-[tabler--shopping-cart] w-5 h-5" />, color: 'text-emerald-600 dark:text-emerald-400' },
+  { id: 'products', label: 'nav.categoryProducts', icon: <span className="icon-[tabler--package] w-5 h-5" />, color: 'text-blue-600 dark:text-blue-400' },
+  { id: 'staff', label: 'nav.categoryStaff', icon: <span className="icon-[tabler--users] w-5 h-5" />, color: 'text-purple-600 dark:text-purple-400' },
+  { id: 'reports', label: 'nav.categoryReports', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" />, color: 'text-rose-600 dark:text-rose-400' },
+  { id: 'system', label: 'nav.categorySystem', icon: <span className="icon-[tabler--dashboard] w-5 h-5" />, color: 'text-slate-600 dark:text-slate-400' },
 ];
 
 const MENU_ITEMS: Record<string, MenuItem[]> = {
   sales: [
-    { label: 'nav.newSale', route: '/sale', icon: MdPointOfSale, color: 'from-emerald-400 to-emerald-500 dark:from-emerald-500 dark:to-emerald-600', borderColor: 'border-emerald-300 dark:border-emerald-600' },
-    { label: 'nav.kitchen', route: '/kitchen', icon: MdKitchen, color: 'from-teal-400 to-teal-500 dark:from-teal-500 dark:to-teal-600', borderColor: 'border-teal-300 dark:border-teal-600' },
-    { label: 'nav.transactions', route: '/transactions', icon: FaHistory, color: 'from-cyan-400 to-cyan-500 dark:from-cyan-500 dark:to-cyan-600', borderColor: 'border-cyan-300 dark:border-cyan-600' },
-    { label: 'nav.invoice', route: '/invoice', icon: FaFileInvoiceDollar, color: 'from-lime-400 to-lime-500 dark:from-lime-500 dark:to-lime-600', borderColor: 'border-lime-300 dark:border-lime-600' },
+    { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), color: 'from-emerald-400 to-emerald-500 dark:from-emerald-500 dark:to-emerald-600', borderColor: 'border-emerald-300 dark:border-emerald-600' },
+    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), color: 'from-teal-400 to-teal-500 dark:from-teal-500 dark:to-teal-600', borderColor: 'border-teal-300 dark:border-teal-600' },
+    { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), color: 'from-cyan-400 to-cyan-500 dark:from-cyan-500 dark:to-cyan-600', borderColor: 'border-cyan-300 dark:border-cyan-600' },
+    { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), color: 'from-lime-400 to-lime-500 dark:from-lime-500 dark:to-lime-600', borderColor: 'border-lime-300 dark:border-lime-600' },
   ],
   products: [
-    { label: 'nav.productManager', route: '/manager', icon: FaClipboardList, color: 'from-blue-400 to-blue-500 dark:from-blue-500 dark:to-blue-600', borderColor: 'border-blue-300 dark:border-blue-600' },
-    { label: 'nav.inventory', route: '/inventory', icon: FaBoxes, color: 'from-sky-400 to-sky-500 dark:from-sky-500 dark:to-sky-600', borderColor: 'border-sky-300 dark:border-sky-600' },
-    { label: 'nav.recipes', route: '/recipes', icon: FaMortarPestle, color: 'from-indigo-400 to-indigo-500 dark:from-indigo-500 dark:to-indigo-600', borderColor: 'border-indigo-300 dark:border-indigo-600' },
-    { label: 'nav.suppliers', route: '/suppliers', icon: MdLocalShipping, color: 'from-violet-400 to-violet-500 dark:from-violet-500 dark:to-violet-600', borderColor: 'border-violet-300 dark:border-violet-600' },
+    { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), color: 'from-blue-400 to-blue-500 dark:from-blue-500 dark:to-blue-600', borderColor: 'border-blue-300 dark:border-blue-600' },
+    { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), color: 'from-sky-400 to-sky-500 dark:from-sky-500 dark:to-sky-600', borderColor: 'border-sky-300 dark:border-sky-600' },
+    { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), color: 'from-indigo-400 to-indigo-500 dark:from-indigo-500 dark:to-indigo-600', borderColor: 'border-indigo-300 dark:border-indigo-600' },
+    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), color: 'from-violet-400 to-violet-500 dark:from-violet-500 dark:to-violet-600', borderColor: 'border-violet-300 dark:border-violet-600' },
   ],
   staff: [
-    { label: 'nav.employees', route: '/employees', icon: FaUsers, color: 'from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-600', borderColor: 'border-purple-300 dark:border-purple-600' },
-    { label: 'nav.schedule', route: '/schedule', icon: MdEvent, color: 'from-fuchsia-400 to-fuchsia-500 dark:from-fuchsia-500 dark:to-fuchsia-600', borderColor: 'border-fuchsia-300 dark:border-fuchsia-600' },
-    { label: 'nav.payroll', route: '/payroll', icon: FaMoneyBillWave, color: 'from-pink-400 to-pink-500 dark:from-pink-500 dark:to-pink-600', borderColor: 'border-pink-300 dark:border-pink-600' },
-    { label: 'nav.customers', route: '/customers', icon: MdPeople, color: 'from-orange-400 to-orange-500 dark:from-orange-500 dark:to-orange-600', borderColor: 'border-orange-300 dark:border-orange-600' },
-    { label: 'nav.roles', route: '/roles', icon: MdSecurity, color: 'from-red-400 to-red-500 dark:from-red-500 dark:to-red-600', borderColor: 'border-red-300 dark:border-red-600' },
+    { label: 'nav.employees', route: '/employees', icon: Ic('users'), color: 'from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-600', borderColor: 'border-purple-300 dark:border-purple-600' },
+    { label: 'nav.schedule', route: '/schedule', icon: Ic('calendar-event'), color: 'from-fuchsia-400 to-fuchsia-500 dark:from-fuchsia-500 dark:to-fuchsia-600', borderColor: 'border-fuchsia-300 dark:border-fuchsia-600' },
+    { label: 'nav.payroll', route: '/payroll', icon: Ic('moneybag'), color: 'from-pink-400 to-pink-500 dark:from-pink-500 dark:to-pink-600', borderColor: 'border-pink-300 dark:border-pink-600' },
+    { label: 'nav.customers', route: '/customers', icon: Ic('users'), color: 'from-orange-400 to-orange-500 dark:from-orange-500 dark:to-orange-600', borderColor: 'border-orange-300 dark:border-orange-600' },
+    { label: 'nav.roles', route: '/roles', icon: Ic('shield'), color: 'from-red-400 to-red-500 dark:from-red-500 dark:to-red-600', borderColor: 'border-red-300 dark:border-red-600' },
   ],
   reports: [
-    { label: 'nav.analytics', route: '/analytics', icon: FaChartBar, color: 'from-rose-400 to-rose-500 dark:from-rose-500 dark:to-rose-600', borderColor: 'border-rose-300 dark:border-rose-600' },
-    { label: 'nav.reports', route: '/reports', icon: FaFileAlt, color: 'from-amber-400 to-amber-500 dark:from-amber-500 dark:to-amber-600', borderColor: 'border-amber-300 dark:border-amber-600' },
-    { label: 'nav.taxReports', route: '/tax-reports', icon: MdAccountBalance, color: 'from-yellow-400 to-yellow-500 dark:from-yellow-500 dark:to-yellow-600', borderColor: 'border-yellow-300 dark:border-yellow-600' },
+    { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), color: 'from-rose-400 to-rose-500 dark:from-rose-500 dark:to-rose-600', borderColor: 'border-rose-300 dark:border-rose-600' },
+    { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), color: 'from-amber-400 to-amber-500 dark:from-amber-500 dark:to-amber-600', borderColor: 'border-amber-300 dark:border-amber-600' },
+    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), color: 'from-yellow-400 to-yellow-500 dark:from-yellow-500 dark:to-yellow-600', borderColor: 'border-yellow-300 dark:border-yellow-600' },
   ],
   system: [
-    { label: 'nav.settings', route: '/settings', icon: FaCog, color: 'from-slate-400 to-slate-500 dark:from-slate-500 dark:to-slate-600', borderColor: 'border-slate-300 dark:border-slate-600' },
-    { label: 'nav.receiptTemplates', route: '/receipt-templates', icon: MdReceiptLong, color: 'from-stone-400 to-stone-500 dark:from-stone-500 dark:to-stone-600', borderColor: 'border-stone-300 dark:border-stone-600' },
-    { label: 'nav.supportChat', route: '/support-chat', icon: FaComments, color: 'from-green-400 to-green-500 dark:from-green-500 dark:to-green-600', borderColor: 'border-green-300 dark:border-green-600' },
-    { label: 'nav.about', route: '/about', icon: FaHeart, color: 'from-rose-400 to-rose-500 dark:from-rose-500 dark:to-rose-600', borderColor: 'border-rose-300 dark:border-rose-600' },
+    { label: 'nav.settings', route: '/settings', icon: Ic('settings'), color: 'from-slate-400 to-slate-500 dark:from-slate-500 dark:to-slate-600', borderColor: 'border-slate-300 dark:border-slate-600' },
+    { label: 'nav.receiptTemplates', route: '/receipt-templates', icon: Ic('receipt'), color: 'from-stone-400 to-stone-500 dark:from-stone-500 dark:to-stone-600', borderColor: 'border-stone-300 dark:border-stone-600' },
+    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), color: 'from-green-400 to-green-500 dark:from-green-500 dark:to-green-600', borderColor: 'border-green-300 dark:border-green-600' },
+    { label: 'nav.about', route: '/about', icon: Ic('heart'), color: 'from-rose-400 to-rose-500 dark:from-rose-500 dark:to-rose-600', borderColor: 'border-rose-300 dark:border-rose-600' },
   ],
 };
 

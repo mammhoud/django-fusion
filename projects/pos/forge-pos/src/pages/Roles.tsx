@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdSecurity, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -102,7 +101,7 @@ export default function Roles() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('roles.title')}</h1>
           <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', permissions: '[]' }); }} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
-            <MdAdd /> {t('roles.addRole')}
+            <span className="icon-[tabler--plus]" /> {t('roles.addRole')}
           </motion.button>
         </div>
 
@@ -110,7 +109,7 @@ export default function Roles() {
         <div className="card--glass rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
-              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
@@ -136,7 +135,7 @@ export default function Roles() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               ) : null}
             </div>
@@ -184,7 +183,7 @@ export default function Roles() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-400">
-                      <MdSecurity className="w-5 h-5" />
+                      <span className="icon-[tabler--shield] w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white">{role.name}</h3>
@@ -192,8 +191,8 @@ export default function Roles() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleEdit(role)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
-                    <button onClick={() => handleDelete(role.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                    <button onClick={() => handleEdit(role)} className="p-2 text-slate-600 hover:text-teal-600"><span className="icon-[tabler--pencil]" /></button>
+                    <button onClick={() => handleDelete(role.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                   </div>
                 </div>
                 <pre className="mt-3 text-xs text-slate-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{role.permissions}</pre>

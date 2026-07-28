@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdRestaurant, MdCheckCircle, MdAccessTime, MdSearch, MdClose } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -75,7 +74,7 @@ export default function KitchenDisplay() {
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('kitchen.title')}</h1>
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full sm:w-auto">
             <div className="relative flex-1 sm:w-64">
-              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
@@ -101,7 +100,7 @@ export default function KitchenDisplay() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               ) : null}
             </div>
@@ -144,13 +143,13 @@ export default function KitchenDisplay() {
               >
                 <div className="flex items-center justify-between mb-3">
                   <div className="flex items-center gap-2">
-                    <MdRestaurant className="text-slate-600 dark:text-slate-300" />
+                    <span className="icon-[tabler--tools-kitchen-2] text-slate-600 dark:text-slate-300" />
                     <span className="font-bold text-slate-900 dark:text-white">{t('kitchen.ticket')} #{ticket.sale_id}</span>
                   </div>
                   <span className="text-xs font-medium uppercase tracking-wider text-slate-500">{ticket.status}</span>
                 </div>
                 <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400 mb-4">
-                  <MdAccessTime />
+                  <span className="icon-[tabler--clock]" />
                   <span>{new Date(ticket.created_at).toLocaleTimeString()}</span>
                 </div>
                 {ticket.notes && <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{ticket.notes}</p>}
@@ -162,7 +161,7 @@ export default function KitchenDisplay() {
                     <button onClick={() => updateStatus(ticket.id, 'ready')} className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">{t('kitchen.markReady')}</button>
                   )}
                   {ticket.status === 'ready' && (
-                    <button onClick={() => updateStatus(ticket.id, 'delivered')} className="flex-1 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 text-sm flex items-center justify-center gap-1"><MdCheckCircle /> {t('kitchen.deliver')}</button>
+                    <button onClick={() => updateStatus(ticket.id, 'delivered')} className="flex-1 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 text-sm flex items-center justify-center gap-1"><span className="icon-[tabler--circle-check]" /> {t('kitchen.deliver')}</button>
                   )}
                 </div>
               </motion.div>

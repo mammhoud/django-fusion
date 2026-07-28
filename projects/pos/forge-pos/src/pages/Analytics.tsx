@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
-import { MdTrendingUp, MdAttachMoney, MdShoppingCart } from 'react-icons/md';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../components/KeyboardShortcutsModal';
@@ -116,11 +115,11 @@ export default function Analytics() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="card--glass card--hover rounded-xl p-6"
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-6"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-teal-500/20 rounded-lg">
-                <MdAttachMoney className="w-6 h-6 text-teal-600 dark:text-teal-500" />
+                <span className="icon-[tabler--moneybag] w-6 h-6 text-teal-600 dark:text-teal-500" />
               </div>
               <div>
                 <p className="text-slate-600 dark:text-white/60">{t('analytics.totalRevenue')}</p>
@@ -135,11 +134,11 @@ export default function Analytics() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="card--glass card--hover rounded-xl p-6"
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-6"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-blue-500/20 rounded-lg">
-                <MdTrendingUp className="w-6 h-6 text-blue-600 dark:text-blue-500" />
+                <span className="icon-[tabler--trending-up] w-6 h-6 text-blue-600 dark:text-blue-500" />
               </div>
               <div>
                 <p className="text-slate-600 dark:text-white/60">{t('analytics.growthRate')}</p>
@@ -152,11 +151,11 @@ export default function Analytics() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.2 }}
-            className="card--glass card--hover rounded-xl p-6"
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-6"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-purple-500/20 rounded-lg">
-                <MdShoppingCart className="w-6 h-6 text-purple-600 dark:text-purple-500" />
+                <span className="icon-[tabler--shopping-cart] w-6 h-6 text-purple-600 dark:text-purple-500" />
               </div>
               <div>
                 <p className="text-slate-600 dark:text-white/60">{t('analytics.totalOrders')}</p>
@@ -169,11 +168,11 @@ export default function Analytics() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.3 }}
-            className="card--glass card--hover rounded-xl p-6"
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-6"
           >
             <div className="flex items-center gap-4">
               <div className="p-3 bg-orange-500/20 rounded-lg">
-                <MdAttachMoney className="w-6 h-6 text-orange-600 dark:text-orange-500" />
+                <span className="icon-[tabler--moneybag] w-6 h-6 text-orange-600 dark:text-orange-500" />
               </div>
               <div>
                 <p className="text-slate-600 dark:text-white/60">{t('analytics.avgOrderValue')}</p>

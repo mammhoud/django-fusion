@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdSchedule, MdAdd, MdDelete } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -64,7 +63,7 @@ export default function EmployeeSchedule() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('schedule.title')}</h1>
           <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
-            <MdAdd /> {t('schedule.addShift')}
+            <span className="icon-[tabler--plus]" /> {t('schedule.addShift')}
           </motion.button>
         </div>
 
@@ -97,14 +96,14 @@ export default function EmployeeSchedule() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400">
-                      <MdSchedule className="w-5 h-5" />
+                      <span className="icon-[tabler--calendar-clock] w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white">{getEmployeeName(schedule.employee_id)}</h3>
                       <p className="text-sm text-slate-500 capitalize">{schedule.status}</p>
                     </div>
                   </div>
-                  <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                  <button onClick={() => handleDelete(schedule.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                 </div>
                 <div className="mt-3 text-sm text-slate-600 dark:text-gray-400 space-y-1">
                   <p>{new Date(schedule.shift_start).toLocaleString()} - {new Date(schedule.shift_end).toLocaleTimeString()}</p>

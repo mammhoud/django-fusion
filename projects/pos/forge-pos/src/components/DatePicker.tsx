@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdKeyboardArrowDown } from 'react-icons/md';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
 import { useTranslation } from 'react-i18next';
 
 interface DatePickerProps {
@@ -186,7 +186,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       transition-colors flex items-center justify-between"
                   >
                     <span>{months[selectedMonth]}</span>
-                    <MdKeyboardArrowDown className={`w-5 h-5 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
+                    <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showMonthDropdown ? 'rotate-180' : ''}`} />
                   </button>
                   
                   <AnimatePresence>
@@ -216,7 +216,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                         </div>
                         
                         {/* Month List */}
-                        <div className="max-h-[180px] overflow-y-auto u-scrollbar-thin">
+                        <div className="max-h-[180px] overflow-y-auto overflow-y-auto">
                           {filteredMonths.length > 0 ? (
                             filteredMonths.map((month, idx) => {
                               const originalIdx = months.indexOf(month);
@@ -266,7 +266,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                       transition-colors flex items-center justify-between gap-2 min-w-[100px]"
                   >
                     <span>{selectedYear}</span>
-                    <MdKeyboardArrowDown className={`w-5 h-5 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
+                    <span className={`icon-[tabler--chevron-down] w-5 h-5 transition-transform ${showYearDropdown ? 'rotate-180' : ''}`} />
                   </button>
                   
                   <AnimatePresence>
@@ -317,7 +317,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
                         </div>
                         
                         {/* Year List */}
-                        <div className="max-h-[180px] overflow-y-auto u-scrollbar-thin">
+                        <div className="max-h-[180px] overflow-y-auto overflow-y-auto">
                           {filteredYears.length > 0 ? (
                             filteredYears.map((year) => (
                               <button

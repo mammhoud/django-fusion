@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { MdPerson, MdPhone, MdEmail, MdStars, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -114,7 +113,7 @@ export default function Customers() {
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', phone: '', email: '', notes: '' }); }}
             className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors shrink-0"
           >
-            <MdAdd /> {t('customers.addCustomer')}
+            <span className="icon-[tabler--plus]" /> {t('customers.addCustomer')}
           </motion.button>
         </div>
 
@@ -122,7 +121,7 @@ export default function Customers() {
         <div className="card--glass rounded-xl p-3">
           <div className="flex items-center gap-2">
             <div className="relative flex-1">
-              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
@@ -148,7 +147,7 @@ export default function Customers() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               ) : null}
             </div>
@@ -234,28 +233,28 @@ export default function Customers() {
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-teal-100 dark:bg-teal-900/30 flex items-center justify-center text-teal-600 dark:text-teal-400">
-                      <MdPerson className="w-5 h-5" />
+                      <span className="icon-[tabler--user] w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white">{customer.name}</h3>
                       <div className="flex items-center gap-1 text-sm text-slate-500 dark:text-gray-400">
-                        <MdStars className="text-amber-500" />
+                        <span className="icon-[tabler--star] text-amber-500" />
                         <span>{customer.loyalty_points.toFixed(0)} {t('customers.points')}</span>
                       </div>
                     </div>
                   </div>
                   <div className="flex gap-1">
                     <button onClick={() => handleEdit(customer)} className="p-2 text-slate-600 hover:text-teal-600">
-                      <MdEdit />
+                      <span className="icon-[tabler--pencil]" />
                     </button>
                     <button onClick={() => handleDelete(customer.id)} className="p-2 text-slate-600 hover:text-red-600">
-                      <MdDelete />
+                      <span className="icon-[tabler--trash]" />
                     </button>
                   </div>
                 </div>
                 <div className="mt-3 space-y-1 text-sm text-slate-600 dark:text-gray-400">
-                  {customer.phone && <div className="flex items-center gap-1"><MdPhone /> {customer.phone}</div>}
-                  {customer.email && <div className="flex items-center gap-1"><MdEmail /> {customer.email}</div>}
+                  {customer.phone && <div className="flex items-center gap-1"><span className="icon-[tabler--phone]" /> {customer.phone}</div>}
+                  {customer.email && <div className="flex items-center gap-1"><span className="icon-[tabler--mail]" /> {customer.email}</div>}
                 </div>
               </motion.div>
             ))}

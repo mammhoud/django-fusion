@@ -28,6 +28,14 @@ import { useAuth } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
 
+// FlyonUI — reinitialize interactive components after route changes
+// The module is already loaded via static import in main.tsx — this just
+// triggers autoInit on new DOM elements after navigation
+async function reinitFlyonUI() {
+  await import('flyonui/flyonui');
+  setTimeout(() => window.HSStaticMethods?.autoInit(), 100);
+}
+
 // Route ordering for direction-aware transitions
 const routeOrder: Record<string, number> = {
   '/': 0,
@@ -112,6 +120,12 @@ function AnimatedRoutes() {
       setDirection(currIdx > prevIdx ? 1 : -1);
       prevPathRef.current = curr;
     }
+  }, [location.pathname]);
+
+  // FlyonUI — reinitialize interactive components (modals, dropdowns, toggles)
+  // on every route change so new DOM elements get bound properly
+  useEffect(() => {
+    reinitFlyonUI();
   }, [location.pathname]);
 
   // Global keyboard shortcuts — navigate between pages with single keys

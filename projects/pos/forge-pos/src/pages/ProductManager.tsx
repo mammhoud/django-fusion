@@ -1,6 +1,5 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
-import { FaPlus, FaTrash, FaCheck, FaExclamationTriangle, FaImage, FaTimes, FaEdit, FaSearch } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
@@ -408,7 +407,7 @@ export default function ProductManager() {
       >
         <div className="flex flex-col sm:flex-row gap-3">
           <div className="relative flex-1">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+            <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
@@ -471,7 +470,7 @@ export default function ProductManager() {
               text-white rounded-xl py-2.5 px-4 sm:px-6 flex items-center justify-center gap-2
               transition-all duration-300 shadow-lg hover:shadow-xl whitespace-nowrap"
           >
-            <FaPlus /> <span>{t('productManager.addNewProduct')}</span>
+            <span className="icon-[tabler--plus]" /> <span>{t('productManager.addNewProduct')}</span>
           </motion.button>
         </div>
       </motion.div>
@@ -517,7 +516,7 @@ export default function ProductManager() {
                         hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all shadow-sm"
                       aria-label={t('common.edit')}
                     >
-                      <FaEdit className="w-3 h-3" />
+                      <span className="icon-[tabler--edit] w-3 h-3" />
                     </motion.button>
                     <motion.button
                       whileHover={{ scale: 1.1 }}
@@ -536,7 +535,7 @@ export default function ProductManager() {
                           className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full"
                         />
                       ) : (
-                        <FaTrash className="w-3 h-3" />
+                        <span className="icon-[tabler--trash] w-3 h-3" />
                       )}
                     </motion.button>
                   </div>
@@ -550,7 +549,7 @@ export default function ProductManager() {
             initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="card--glass rounded-xl p-8 text-center"
           >
-            <FaImage className="w-16 h-16 mx-auto mb-4 text-slate-400 dark:text-slate-500" />
+            <span className="icon-[tabler--photo] w-16 h-16 mx-auto mb-4 text-slate-400 dark:text-slate-500" />
             <p className="text-slate-600 dark:text-white/60 text-lg mb-3">
               {t('productManager.noProducts')}
             </p>
@@ -598,7 +597,7 @@ export default function ProductManager() {
                         className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5
                           hover:bg-red-600 transition-colors shadow-lg"
                       >
-                        <FaTimes className="w-3 h-3" />
+                        <span className="icon-[tabler--x] w-3 h-3" />
                       </button>
                     </div>
                   ) : (
@@ -618,7 +617,7 @@ export default function ProductManager() {
                           className="w-5 h-5 border-2 border-teal-400 border-t-transparent rounded-full"
                         />
                       ) : (
-                        <FaImage className="w-6 h-6" />
+                        <span className="icon-[tabler--photo] w-6 h-6" />
                       )}
                     </button>
                   )}
@@ -808,7 +807,7 @@ export default function ProductManager() {
                     </>
                   ) : (
                     <>
-                      {editingProduct ? <FaEdit /> : <FaPlus />}
+                      {editingProduct ? <span className="icon-[tabler--edit]" /> : <span className="icon-[tabler--plus]" />}
                       {editingProduct ? t('common.update') : t('productManager.addProduct')}
                     </>
                   )}
@@ -830,7 +829,7 @@ export default function ProductManager() {
           >
             <div className="flex justify-center mb-4">
               <div className="bg-red-500/20 rounded-full p-4">
-                <FaExclamationTriangle className="text-red-500 dark:text-red-400 text-4xl" />
+                <span className="icon-[tabler--alert-triangle] text-red-500 dark:text-red-400 text-4xl" />
               </div>
             </div>
 
@@ -866,7 +865,7 @@ export default function ProductManager() {
                 className="flex-1 px-6 py-3 rounded-lg bg-red-500 text-white hover:bg-red-600
                   transition-colors font-semibold flex items-center justify-center gap-2"
               >
-                <FaTrash />
+                <span className="icon-[tabler--trash]" />
                 {t('productManager.confirmDelete')}
               </motion.button>
             </div>
@@ -883,7 +882,7 @@ export default function ProductManager() {
           className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-teal-500 text-white px-6 py-3
             rounded-xl flex items-center gap-2 z-50"
         >
-          <FaCheck className="text-xl" />
+          <span className="icon-[tabler--check] text-xl" />
           {statusMessage}
         </motion.div>
       )}
@@ -897,7 +896,7 @@ export default function ProductManager() {
           className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3
             rounded-xl flex items-center gap-2 max-w-md z-50"
         >
-          <FaExclamationTriangle className="text-xl" />
+          <span className="icon-[tabler--alert-triangle] text-xl" />
           <span>{statusMessage}</span>
         </motion.div>
       )}

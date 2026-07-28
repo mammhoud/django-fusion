@@ -5,7 +5,7 @@
  * All API modules use this client for typed, error-handled requests.
  *
  * Usage:
- *   import { sidecar } from '../api';
+ *   import sidecar from '../api/sidecar';
  *   const health = await sidecar.get('/health');
  */
 

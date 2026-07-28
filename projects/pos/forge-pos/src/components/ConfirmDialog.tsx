@@ -1,7 +1,5 @@
 import Modal from './Modal';
 import { useTranslation } from 'react-i18next';
-import { FaExclamationTriangle } from 'react-icons/fa';
-import { MdDelete } from 'react-icons/md';
 
 interface ConfirmDialogProps {
   isOpen: boolean;
@@ -51,7 +49,7 @@ export default function ConfirmDialog({
               isDanger ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
             }`}
           >
-            <MdDelete className="w-4 h-4" /> {confirmLabel === 'Deactivate' ? t('confirmDialog.deactivate') : confirmLabel}
+            <span className="icon-[tabler--trash] w-4 h-4" /> {confirmLabel === 'Deactivate' ? t('confirmDialog.deactivate') : confirmLabel}
           </button>
         </>
       }
@@ -59,7 +57,7 @@ export default function ConfirmDialog({
       <div className="text-center">
         <div className={`flex justify-center mb-4 ${isDanger ? 'text-red-500' : 'text-yellow-500'}`}>
           <div className={`${isDanger ? 'bg-red-500/20' : 'bg-yellow-500/20'} rounded-full p-4`}>
-            <FaExclamationTriangle className="text-4xl" />
+            <span className="icon-[tabler--alert-triangle] text-4xl" />
           </div>
         </div>
         <h2 className="text-xl font-bold text-slate-900 dark:text-white mb-2">{title}</h2>

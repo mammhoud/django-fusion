@@ -1,13 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { 
-  MdAttachMoney, MdShoppingCart, 
-  MdPeople, MdInventory, MdMenuBook, MdWarning,
-  MdTrendingUp, MdDateRange, MdStore, MdDashboard,
-  MdReceipt, MdBarChart, MdAccountBalance
-} from 'react-icons/md';
-import { FaFilePdf, FaDownload } from 'react-icons/fa';
 import PageLayout from '../components/PageLayout';
 import { SkeletonTable, SkeletonCard } from '../components/Skeleton';
 import { useTranslation } from 'react-i18next';
@@ -842,18 +835,18 @@ export default function Reports() {
 
   // ---- Tab Navigation ----
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'overview' as Tab, label: 'Overview', icon: <MdDashboard className="w-5 h-5" /> },
-    { key: 'sales' as Tab, label: 'Sales', icon: <MdAttachMoney className="w-5 h-5" /> },
-    { key: 'productsSales' as Tab, label: 'Products Sales', icon: <MdBarChart className="w-5 h-5" /> },
-    { key: 'invoices' as Tab, label: 'Invoices', icon: <MdReceipt className="w-5 h-5" /> },
-    { key: 'dailyComparison' as Tab, label: 'Daily Comparison', icon: <MdTrendingUp className="w-5 h-5" /> },
-    { key: 'periodComparison' as Tab, label: 'Period Comparison', icon: <MdDateRange className="w-5 h-5" /> },
-    { key: 'deliveryTracking' as Tab, label: 'Delivery Tracking', icon: <MdStore className="w-5 h-5" /> },
-    { key: 'inventory' as Tab, label: 'Inventory', icon: <MdInventory className="w-5 h-5" /> },
-    { key: 'recipes' as Tab, label: 'Recipes', icon: <MdMenuBook className="w-5 h-5" /> },
-    { key: 'employees' as Tab, label: 'Employees', icon: <MdPeople className="w-5 h-5" /> },
-    { key: 'transactions' as Tab, label: 'Transactions', icon: <MdDateRange className="w-5 h-5" /> },
-    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <MdAccountBalance className="w-5 h-5" /> },
+    { key: 'overview' as Tab, label: 'Overview', icon: <span className="icon-[tabler--dashboard] w-5 h-5" /> },
+    { key: 'sales' as Tab, label: 'Sales', icon: <span className="icon-[tabler--moneybag] w-5 h-5" /> },
+    { key: 'productsSales' as Tab, label: 'Products Sales', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" /> },
+    { key: 'invoices' as Tab, label: 'Invoices', icon: <span className="icon-[tabler--receipt] w-5 h-5" /> },
+    { key: 'dailyComparison' as Tab, label: 'Daily Comparison', icon: <span className="icon-[tabler--trending-up] w-5 h-5" /> },
+    { key: 'periodComparison' as Tab, label: 'Period Comparison', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
+    { key: 'deliveryTracking' as Tab, label: 'Delivery Tracking', icon: <span className="icon-[tabler--building-store] w-5 h-5" /> },
+    { key: 'inventory' as Tab, label: 'Inventory', icon: <span className="icon-[tabler--package] w-5 h-5" /> },
+    { key: 'recipes' as Tab, label: 'Recipes', icon: <span className="icon-[tabler--menu-2] w-5 h-5" /> },
+    { key: 'employees' as Tab, label: 'Employees', icon: <span className="icon-[tabler--users] w-5 h-5" /> },
+    { key: 'transactions' as Tab, label: 'Transactions', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
+    { key: 'taxReports' as Tab, label: 'Tax Reports', icon: <span className="icon-[tabler--building-bank] w-5 h-5" /> },
   ];
 
   if (loading) {
@@ -897,7 +890,7 @@ export default function Reports() {
             </>
           ) : (
             <>
-              <FaDownload className="w-5 h-5" />
+              <span className="icon-[tabler--download] w-5 h-5" />
               <span>{t('reports.exportExcel')}</span>
             </>
           )}
@@ -921,7 +914,7 @@ export default function Reports() {
             </>
           ) : (
             <>
-              <FaFilePdf className="w-5 h-5" />
+              <span className="icon-[tabler--file-type-pdf] w-5 h-5" />
               <span>{t('reports.exportPDF')}</span>
             </>
           )}
@@ -933,7 +926,7 @@ export default function Reports() {
           <div className="text-center mb-4">
             <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium
               bg-indigo-100 dark:bg-indigo-900/30 text-indigo-700 dark:text-indigo-300">
-              <MdDateRange className="w-3.5 h-3.5" />
+              <span className="icon-[tabler--calendar] w-3.5 h-3.5" />
               {t('reports.showingDataFrom', { start: dateRange.start || t('reports.dateEarliest'), end: dateRange.end || t('reports.dateLatest') })}
             </span>
           </div>
@@ -943,7 +936,7 @@ export default function Reports() {
         <div className="card--glass rounded-xl p-4 mb-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <MdDateRange className="w-5 h-5 text-indigo-500" />
+              <span className="icon-[tabler--calendar] w-5 h-5 text-indigo-500" />
               <span className="text-sm font-semibold text-slate-900 dark:text-white">{t('common.period')}</span>
             </div>
             <div className="flex items-center gap-2 flex-wrap">
@@ -1026,25 +1019,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.totalOrders')}
                   value={filteredSales.length.toString()}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
-                  icon={<MdInventory className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
-                  icon={<MdMenuBook className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
                 <SummaryCard
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
-                  icon={<MdPeople className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--users] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -1078,25 +1071,25 @@ export default function Reports() {
               {/* Quick Stats Grid */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
                 {/* Low Stock Alert */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-red-500">
+                <div className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-5 border-l-4 border-red-500">
                   <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.lowStockItems')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{lowStockItems.length}</p>
                   <p className="text-xs text-slate-400 mt-1">{t('reports.needReordering')}</p>
                 </div>
                 {/* Order Types */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-blue-500">
+                <div className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-5 border-l-4 border-blue-500">
                   <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.orderTypes')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{orderTypeBreakdown.length}</p>
                   <p className="text-xs text-slate-400 mt-1">{orderTypeBreakdown.map(o => o.type).join(', ') || t('reports.none')}</p>
                 </div>
                 {/* Total Products */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-emerald-500">
+                <div className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-5 border-l-4 border-emerald-500">
                   <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.products')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{products.length}</p>
                   <p className="text-xs text-slate-400 mt-1">{t('reports.haveRecipes', { count: products.filter(p => recipes.some(r => r.product_id === p.id && r.is_active)).length })}</p>
                 </div>
                 {/* Total Salary */}
-                <div className="card--glass card--hover rounded-xl p-5 border-l-4 border-amber-500">
+                <div className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-5 border-l-4 border-amber-500">
                   <p className="text-xs text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.monthlySalary')}</p>
                   <p className="text-2xl font-bold text-slate-900 dark:text-white mt-1">{currency} {employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0).toFixed(0)}</p>
                   <p className="text-xs text-slate-400 mt-1">{t('reports.activeEmployeesCount', { count: employees.filter(e => e.is_active).length })}</p>
@@ -1112,25 +1105,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.totalOrders')}
                   value={(filteredSales.length).toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${analytics?.summary.average_order_value.toFixed(2) || '0.00'}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
                 <SummaryCard
                   title={t('reports.orderTypes')}
                   value={orderTypeBreakdown.length.toString()}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -1142,7 +1135,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1164,7 +1157,7 @@ export default function Reports() {
                         return (
                           <div key={ot.type} className={`flex items-center gap-4 p-4 rounded-lg border ${colorClass}`}>
                             <div className={`p-3 rounded-lg ${colorClass}`}>
-                              <MdStore className="w-5 h-5" />
+                              <span className="icon-[tabler--building-store] w-5 h-5" />
                             </div>
                             <div className="flex-1">
                               <p className="text-sm text-slate-500 dark:text-white/50">{ot.type}</p>
@@ -1276,25 +1269,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.totalProductsSold')}
                   value={analytics?.summary?.total_orders?.toString() || '0'}
-                  icon={<MdBarChart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.productRevenue')}
                   value={`${currency} ${analytics?.summary?.total_revenue?.toFixed(2) || '0.00'}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.bestSellingCategory')}
                   value={bestSellingCategory}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
                 <SummaryCard
                   title={t('reports.avgItemsPerOrder')}
                   value={avgItemsPerOrder}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -1306,7 +1299,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1356,7 +1349,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="card--glass rounded-xl p-6 text-center">
-                  <MdBarChart className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--chart-bar] w-12 h-12 mx-auto mb-4 text-slate-400" />
                   <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noProductSales')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noProductSalesHint')}</p>
                 </div>
@@ -1392,25 +1385,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.totalInvoices')}
                   value={filteredSales.length.toString()}
-                  icon={<MdReceipt className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${filteredSales.reduce((s, s2) => s + s2.total_amount, 0).toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${filteredSales.length > 0 ? (filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length).toFixed(2) : '0.00'}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
                 <SummaryCard
                   title={t('reports.completedOrders')}
                   value={filteredSales.filter(s => s.status === 'completed').length.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-emerald-500 to-teal-600"
                 />
               </div>
@@ -1422,7 +1415,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1473,7 +1466,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="card--glass rounded-xl p-6 text-center">
-                  <MdReceipt className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--receipt] w-12 h-12 mx-auto mb-4 text-slate-400" />
                   <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noInvoices')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noInvoicesHint')}</p>
                 </div>
@@ -1488,25 +1481,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.todayRevenue')}
                   value={`${currency} ${todayStats.revenue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.todayOrders')}
                   value={todayStats.orders.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.todayAvgOrder')}
                   value={`${currency} ${todayStats.avgOrder.toFixed(2)}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
                 <SummaryCard
                   title={t('reports.todayItemsSold')}
                   value={todayStats.orders > 0 ? (todayStats.orders * (parseFloat(avgItemsPerOrder) || 1)).toFixed(0) : '0'}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -1521,8 +1514,8 @@ export default function Reports() {
                       <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayRevenue')}</p>
                       <p className="text-lg font-bold text-slate-900 dark:text-white">{currency} {todayStats.revenue.toFixed(2)}</p>
                       <p className={`text-sm font-semibold ${revDelta.color}`}>
-                        {revDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {revDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
+                        {revDelta.direction === 'up' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5" />}
+                        {revDelta.direction === 'down' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5 rotate-180" />}
                         {revDelta.pct}
                       </p>
                       <p className="text-xs text-slate-400 mt-1">{t('reports.yesterday')}: {currency} {yesterdayStats.revenue.toFixed(2)}</p>
@@ -1531,8 +1524,8 @@ export default function Reports() {
                       <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayOrders')}</p>
                       <p className="text-lg font-bold text-slate-900 dark:text-white">{todayStats.orders}</p>
                       <p className={`text-sm font-semibold ${orderDelta.color}`}>
-                        {orderDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {orderDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
+                        {orderDelta.direction === 'up' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5" />}
+                        {orderDelta.direction === 'down' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5 rotate-180" />}
                         {orderDelta.pct}
                       </p>
                       <p className="text-xs text-slate-400 mt-1">{t('reports.yesterday')}: {yesterdayStats.orders}</p>
@@ -1548,8 +1541,8 @@ export default function Reports() {
                       <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayRevenue')}</p>
                       <p className="text-lg font-bold text-slate-900 dark:text-white">{currency} {todayStats.revenue.toFixed(2)}</p>
                       <p className={`text-sm font-semibold ${wkRevDelta.color}`}>
-                        {wkRevDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {wkRevDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
+                        {wkRevDelta.direction === 'up' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5" />}
+                        {wkRevDelta.direction === 'down' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5 rotate-180" />}
                         {wkRevDelta.pct}
                       </p>
                       <p className="text-xs text-slate-400 mt-1">{lastWeekStr}: {currency} {lastWeekStats.revenue.toFixed(2)}</p>
@@ -1558,8 +1551,8 @@ export default function Reports() {
                       <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.todayOrders')}</p>
                       <p className="text-lg font-bold text-slate-900 dark:text-white">{todayStats.orders}</p>
                       <p className={`text-sm font-semibold ${wkOrderDelta.color}`}>
-                        {wkOrderDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {wkOrderDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
+                        {wkOrderDelta.direction === 'up' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5" />}
+                        {wkOrderDelta.direction === 'down' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5 rotate-180" />}
                         {wkOrderDelta.pct}
                       </p>
                       <p className="text-xs text-slate-400 mt-1">{lastWeekStr}: {lastWeekStats.orders} {t('reports.orders')}</p>
@@ -1627,7 +1620,7 @@ export default function Reports() {
               {/* Employee Daily Breakdown */}
               <div className="card--glass rounded-xl p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  <MdPeople className="w-5 h-5 text-indigo-500" />
+                  <span className="icon-[tabler--users] w-5 h-5 text-indigo-500" />
                   {t('reports.employeeDailyBreakdown')}
                 </h3>
                 {employeeDailyStats.length > 0 ? (
@@ -1653,13 +1646,13 @@ export default function Reports() {
                             <td className="py-3 px-4 text-right text-slate-500 dark:text-white/70">{emp.yesterdayOrders}</td>
                             <td className="py-3 px-4 text-right text-slate-500 dark:text-white/70">{currency} {emp.yesterdayRevenue.toFixed(2)}</td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.revColor}`}>
-                              {emp.revDirection === 'up' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5" />}
-                              {emp.revDirection === 'down' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
+                              {emp.revDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
+                              {emp.revDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
                               {emp.revChange}
                             </td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.orderColor}`}>
-                              {emp.orderDirection === 'up' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5" />}
-                              {emp.orderDirection === 'down' && <MdTrendingUp className="inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
+                              {emp.orderDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
+                              {emp.orderDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
                               {emp.orderChange}
                             </td>
                           </tr>
@@ -1669,7 +1662,7 @@ export default function Reports() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 text-slate-500 dark:text-white/50">
-                    <MdPeople className="w-5 h-5" />
+                    <span className="icon-[tabler--users] w-5 h-5" />
                     <span>{t('reports.noEmployeeDailyData')}</span>
                   </div>
                 )}
@@ -1712,25 +1705,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.currentPeriodRevenue')}
                   value={`${currency} ${currentStats.revenue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.currentPeriodOrders')}
                   value={currentStats.orders.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.currentPeriodAvg')}
                   value={`${currency} ${currentStats.avgOrder.toFixed(2)}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
                 <SummaryCard
                   title={t('reports.previousPeriod')}
                   value={`${currency} ${previousStats.revenue.toFixed(2)}`}
-                  icon={<MdDateRange className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="from-slate-400 to-slate-500"
                 />
               </div>
@@ -1744,8 +1737,8 @@ export default function Reports() {
                       <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.currentPeriodShort')}</p>
                       <p className="text-lg font-bold text-slate-900 dark:text-white">{currency} {currentStats.revenue.toFixed(2)}</p>
                       <p className={`text-sm font-semibold ${periodRevDelta.color}`}>
-                        {periodRevDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {periodRevDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
+                        {periodRevDelta.direction === 'up' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5" />}
+                        {periodRevDelta.direction === 'down' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5 rotate-180" />}
                         {periodRevDelta.pct}
                       </p>
                     </div>
@@ -1762,8 +1755,8 @@ export default function Reports() {
                       <p className="text-xs text-slate-400 dark:text-white/40">{t('reports.currentPeriodShort')}</p>
                       <p className="text-lg font-bold text-slate-900 dark:text-white">{currentStats.orders}</p>
                       <p className={`text-sm font-semibold ${periodOrderDelta.color}`}>
-                        {periodOrderDelta.direction === 'up' && <MdTrendingUp className="inline w-4 h-4 mr-0.5" />}
-                        {periodOrderDelta.direction === 'down' && <MdTrendingUp className="inline w-4 h-4 mr-0.5 rotate-180" />}
+                        {periodOrderDelta.direction === 'up' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5" />}
+                        {periodOrderDelta.direction === 'down' && <span className="icon-[tabler--trending-up] inline w-4 h-4 mr-0.5 rotate-180" />}
                         {periodOrderDelta.pct}
                       </p>
                     </div>
@@ -1831,25 +1824,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.deliveryOrders')}
                   value={deliveryStats.totalOrders.toString()}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${deliveryStats.totalRevenue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${deliveryStats.avgOrderValue.toFixed(2)}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
                 <SummaryCard
                   title={t('reports.deliveryCompleted')}
                   value={`${deliveryStats.completedOrders} / ${deliveryStats.pendingOrders}`}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -1861,7 +1854,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1887,7 +1880,7 @@ export default function Reports() {
                             </div>
                             {/* Delivery Address — map-style card */}
                             <div className="flex items-start gap-2 bg-white/40 dark:bg-white/5 rounded-lg p-3 mb-2 border border-slate-200 dark:border-white/5">
-                              <MdStore className="w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
+                              <span className="icon-[tabler--building-store] w-4 h-4 text-orange-500 mt-0.5 shrink-0" />
                               <div>
                                 <p className="text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.deliveryAddress')}</p>
                                 <p className="text-sm text-slate-900 dark:text-white font-medium">{sale.delivery_address || t('reports.noAddress')}</p>
@@ -1909,7 +1902,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="card--glass rounded-xl p-6 text-center">
-                  <MdStore className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--building-store] w-12 h-12 mx-auto mb-4 text-slate-400" />
                   <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noDeliveries')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noDeliveriesHint')}</p>
                 </div>
@@ -1924,25 +1917,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-emerald-500 to-teal-600"
                 />
                 <SummaryCard
                   title={t('reports.activeIngredients')}
                   value={ingredients.filter(i => i.is_active).length.toString()}
-                  icon={<MdInventory className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.lowStockItems')}
                   value={lowStockItems.length.toString()}
-                  icon={<MdWarning className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--alert-triangle] w-6 h-6" />}
                   color="from-red-500 to-rose-600"
                 />
                 <SummaryCard
                   title={t('transactions.title')}
                   value={inventoryTxns.length.toString()}
-                  icon={<MdDateRange className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -1954,7 +1947,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -1962,7 +1955,7 @@ export default function Reports() {
               {/* Low Stock Alerts */}
               <div className="card--glass rounded-xl p-6">
                 <h3 className="text-lg font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
-                  <MdWarning className="w-5 h-5 text-red-500" />
+                  <span className="icon-[tabler--alert-triangle] w-5 h-5 text-red-500" />
                   {t('reports.lowStockAlerts')}
                 </h3>
                 {lowStockItems.length > 0 ? (
@@ -1992,7 +1985,7 @@ export default function Reports() {
                   </div>
                 ) : (
                   <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
-                    <MdWarning className="w-5 h-5" />
+                    <span className="icon-[tabler--alert-triangle] w-5 h-5" />
                     <span>{t('reports.allWellStocked')}</span>
                   </div>
                 )}
@@ -2098,25 +2091,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.totalRecipes')}
                   value={recipePerformance.length.toString()}
-                  icon={<MdMenuBook className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
                 <SummaryCard
                   title={t('reports.activeProducts')}
                   value={products.length.toString()}
-                  icon={<MdStore className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
                   color="from-green-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.avgProductPrice')}
                   value={`${currency} ${products.length > 0 ? (products.reduce((s, p) => s + p.price, 0) / products.length).toFixed(2) : '0.00'}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
               </div>
@@ -2128,7 +2121,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -2170,7 +2163,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="card--glass rounded-xl p-6 text-center">
-                  <MdMenuBook className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--menu-2] w-12 h-12 mx-auto mb-4 text-slate-400" />
                   <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noRecipes')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noRecipesHint')}</p>
                 </div>
@@ -2226,25 +2219,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${transactions.reduce((s, t) => s + t.total_amount, 0).toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-teal-500 to-emerald-600"
                 />
                 <SummaryCard
                   title={t('reports.totalOrders')}
                   value={transactions.length.toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-blue-500 to-indigo-600"
                 />
                 <SummaryCard
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${transactions.length > 0 ? (transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length).toFixed(2) : '0.00'}`}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-purple-500 to-violet-600"
                 />
                 <SummaryCard
                   title={t('reports.transactionItems')}
                   value={transactions.reduce((s, t) => s + t.items.length, 0).toString()}
-                  icon={<MdDateRange className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -2256,7 +2249,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -2295,7 +2288,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="card--glass rounded-xl p-6 text-center">
-                  <MdDateRange className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--calendar] w-12 h-12 mx-auto mb-4 text-slate-400" />
                   <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noTransactions')}</p>
                 </div>
               )}
@@ -2309,25 +2302,25 @@ export default function Reports() {
                 <SummaryCard
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
-                  icon={<MdPeople className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--users] w-6 h-6" />}
                   color="from-indigo-500 to-purple-600"
                 />
                 <SummaryCard
                   title={t('reports.employeesWithSales')}
                   value={employeePerformance.length.toString()}
-                  icon={<MdTrendingUp className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="from-blue-500 to-cyan-600"
                 />
                 <SummaryCard
                   title={t('reports.totalOrders')}
                   value={employeePerformance.reduce((s, e) => s + e.orderCount, 0).toString()}
-                  icon={<MdShoppingCart className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
                   color="from-emerald-500 to-teal-600"
                 />
                 <SummaryCard
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${employeePerformance.reduce((s, e) => s + e.revenue, 0).toFixed(2)}`}
-                  icon={<MdAttachMoney className="w-6 h-6" />}
+                  icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="from-orange-500 to-amber-600"
                 />
               </div>
@@ -2339,7 +2332,7 @@ export default function Reports() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
@@ -2409,7 +2402,7 @@ export default function Reports() {
                 </div>
               ) : (
                 <div className="card--glass rounded-xl p-6 text-center">
-                  <MdPeople className="w-12 h-12 mx-auto mb-4 text-slate-400" />
+                  <span className="icon-[tabler--users] w-12 h-12 mx-auto mb-4 text-slate-400" />
                   <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('reports.noEmployeeSales')}</p>
                   <p className="text-slate-500 dark:text-white/40">{t('reports.noEmployeeSalesHint')}</p>
                 </div>
@@ -2479,7 +2472,7 @@ function SummaryCard({ title, value, icon, color }: SummaryCardProps) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="card--glass card--hover rounded-xl p-5"
+      className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-5"
     >
       <div className="flex items-center gap-4">
         <div className={`p-3 rounded-lg bg-linear-to-br ${color} text-white shadow-lg`}>

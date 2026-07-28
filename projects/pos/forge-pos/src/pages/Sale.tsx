@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
-import { MdShoppingCart, MdCheckCircle, MdLocalPrintshop, MdFileDownload, MdSearch, MdClose, MdChevronRight, MdChevronLeft, MdTune } from 'react-icons/md';
-import { FaPlus, FaStore, FaTruck, FaHandPaper, FaUserTie, FaDoorOpen, FaMapMarkerAlt, FaFileInvoiceDollar } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
@@ -21,9 +19,9 @@ import StatusToast from '../components/StatusToast';
 type OrderType = 'dine-in' | 'takeaway' | 'delivery';
 
 const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = [
-  { key: 'dine-in', label: 'Dine-in', icon: <FaStore /> },
-  { key: 'takeaway', label: 'Takeaway', icon: <FaHandPaper /> },
-  { key: 'delivery', label: 'Delivery', icon: <FaTruck /> },
+  { key: 'dine-in', label: 'Dine-in', icon: <span className="icon-[tabler--building-store]" /> },
+  { key: 'takeaway', label: 'Takeaway', icon: <span className="icon-[tabler--hand-three-fingers]" /> },
+  { key: 'delivery', label: 'Delivery', icon: <span className="icon-[tabler--truck]" /> },
 ];
 
 export default function Sale() {
@@ -502,7 +500,7 @@ export default function Sale() {
               transition-all duration-300 z-10"
             aria-label={sidebarOpen ? 'Hide order panel' : 'Show order panel'}
           >
-            {sidebarOpen ? <MdChevronRight className="w-5 h-5" /> : <MdChevronLeft className="w-5 h-5" />}
+            {sidebarOpen ? <span className="icon-[tabler--chevron-right] w-5 h-5" /> : <span className="icon-[tabler--chevron-left] w-5 h-5" />}
           </motion.button>
         </div>
 
@@ -515,7 +513,7 @@ export default function Sale() {
               className="card--glass rounded-xl p-4 mb-4"
             >
               <div className="flex items-center gap-2 mb-3">
-                <MdShoppingCart className="text-teal-500" />
+                <span className="icon-[tabler--shopping-cart] text-teal-500" />
                 <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
               </div>
               <div className="grid grid-cols-3 gap-3">
@@ -545,7 +543,7 @@ export default function Sale() {
                   animate={{ opacity: 1, height: 'auto' }}
                   className="flex items-center gap-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
                 >
-                  <FaDoorOpen className="text-slate-400" />
+                  <span className="icon-[tabler--door-enter] text-slate-400" />
                   <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.table')}</label>
                   <select
                     value={tableNumber}
@@ -566,7 +564,7 @@ export default function Sale() {
                   className="space-y-3 mt-3 pt-3 border-t border-slate-300 dark:border-white/10"
                 >
                   <div className="flex items-center gap-3">
-                    <FaTruck className="text-slate-400" />
+                    <span className="icon-[tabler--truck] text-slate-400" />
                     <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.deliveryType')}</label>
                     <select
                       value={deliveryTypeId}
@@ -580,7 +578,7 @@ export default function Sale() {
                     </select>
                   </div>
                   <div className="flex items-center gap-3">
-                    <FaMapMarkerAlt className="text-slate-400" />
+                    <span className="icon-[tabler--map-pin] text-slate-400" />
                     <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                       placeholder={t('sale.deliveryAddress')} disabled={isLoading}
                       className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed" />
@@ -603,7 +601,7 @@ export default function Sale() {
               className="card--glass rounded-xl p-4 mb-4"
             >
               <div className="flex items-center gap-3">
-                <FaUserTie className="text-slate-400" />
+                <span className="icon-[tabler--user-check] text-slate-400" />
                 <label className="text-sm text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
                   className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1 disabled:opacity-60 disabled:cursor-not-allowed"
@@ -647,7 +645,7 @@ export default function Sale() {
           >
             <div className="flex flex-col sm:flex-row gap-3">
               <div className="relative flex-1">
-                <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
                 <input
                   type="text"
                   value={searchQuery}
@@ -673,7 +671,7 @@ export default function Sale() {
                     className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
                     aria-label={t('common.clear')}
                   >
-                    <MdClose className="w-4 h-4" />
+                    <span className="icon-[tabler--x] w-4 h-4" />
                   </button>
                 ) : null}
               </div>
@@ -735,7 +733,7 @@ export default function Sale() {
                       className={`${color.badge} text-white p-1.5 sm:p-2 rounded-lg hover:brightness-110 transition-all shrink-0 shadow-sm mt-1`}
                       aria-label={t('sale.addToCart', { product: product.name })}
                     >
-                      <FaPlus className="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+                      <span className="icon-[tabler--plus] w-3.5 h-3.5 sm:w-4 sm:h-4" />
                     </motion.button>
                   )}
 
@@ -788,7 +786,7 @@ export default function Sale() {
             })
             ) : (
               <div className="col-span-full flex flex-col items-center justify-center py-12 text-center">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--search] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">
                   {t('sale.noProductsMatch')}
                 </p>
@@ -849,10 +847,10 @@ export default function Sale() {
               onClick={handleSell}
               disabled={cart.length === 0 || isSelling || isLoading}
               className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-semibold
-                transition-all duration-300 shadow-lg hover:shadow-xl ${
+                transition-all duration-300 shadow-lg hover:shadow-xl btn btn-block ${
                   cart.length === 0 || isSelling || isLoading
-                    ? 'bg-gray-500/50 cursor-not-allowed'
-                    : 'bg-teal-500'
+                    ? 'btn-disabled bg-gray-500/50 cursor-not-allowed'
+                    : 'bg-teal-500 btn-primary'
                 }`}
             >
               {isSelling ? (
@@ -866,7 +864,7 @@ export default function Sale() {
                 </>
               ) : (
                 <>
-                  <MdShoppingCart className="text-xl" />
+                  <span className="icon-[tabler--shopping-cart] text-xl" />
                   {t('sale.completeSale')}
                 </>
               )}
@@ -918,7 +916,7 @@ export default function Sale() {
                   </>
                 ) : (
                   <>
-                    <MdShoppingCart className="text-lg" />
+                    <span className="icon-[tabler--shopping-cart] text-lg" />
                     <span className="text-sm">{t('sale.completeSale')}</span>
                   </>
                 )}
@@ -950,7 +948,7 @@ export default function Sale() {
                 className="card--glass rounded-xl p-4"
               >
                 <div className="flex items-center gap-2 mb-3">
-                  <MdTune className="text-teal-500" />
+                  <span className="icon-[tabler--adjustments] text-teal-500" />
                   <h2 className="text-sm font-semibold text-slate-900 dark:text-white">{t('sale.orderType')}</h2>
                 </div>
                 <div className="flex flex-col gap-2">
@@ -972,7 +970,7 @@ export default function Sale() {
                       <span className={`text-lg ${orderType === ot.key ? '' : 'text-teal-500 dark:text-teal-400'}`}>{ot.icon}</span>
                       <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
                       {orderType === ot.key && (
-                        <MdCheckCircle className="ml-auto w-4 h-4" />
+                        <span className="icon-[tabler--circle-check] ml-auto w-4 h-4" />
                       )}
                     </motion.button>
                   ))}
@@ -985,7 +983,7 @@ export default function Sale() {
                     animate={{ opacity: 1, height: 'auto' }}
                     className="flex items-center gap-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-white/10"
                   >
-                    <FaDoorOpen className="text-slate-400 text-sm" />
+                    <span className="icon-[tabler--door-enter] text-slate-400 text-sm" />
                     <select value={tableNumber} onChange={e => setTableNumber(Number(e.target.value))} disabled={isLoading}
                       className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1"
                     >
@@ -1004,7 +1002,7 @@ export default function Sale() {
                     className="space-y-2 mt-3 pt-3 border-t border-slate-200/50 dark:border-white/10"
                   >
                     <div className="flex items-center gap-2">
-                      <FaTruck className="text-slate-400 text-sm" />
+                      <span className="icon-[tabler--truck] text-slate-400 text-sm" />
                       <select value={deliveryTypeId} onChange={e => setDeliveryTypeId(Number(e.target.value))} disabled={isLoading}
                         className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1"
                       >
@@ -1014,7 +1012,7 @@ export default function Sale() {
                       </select>
                     </div>
                     <div className="flex items-center gap-2">
-                      <FaMapMarkerAlt className="text-slate-400 text-sm" />
+                      <span className="icon-[tabler--map-pin] text-slate-400 text-sm" />
                       <input type="text" value={deliveryAddress} onChange={e => setDeliveryAddress(e.target.value)}
                         placeholder={t('sale.deliveryAddress')} disabled={isLoading}
                         className="px-2 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm flex-1" />
@@ -1037,7 +1035,7 @@ export default function Sale() {
                 className="card--glass rounded-xl p-4"
               >
                 <div className="flex items-center gap-2 mb-2">
-                  <FaUserTie className="text-slate-400" />
+                  <span className="icon-[tabler--user-check] text-slate-400" />
                   <label className="text-sm font-medium text-slate-700 dark:text-gray-300">{t('sale.assignTo')}</label>
                 </div>
                 <select value={employeeId} onChange={e => setEmployeeId(Number(e.target.value))} disabled={isLoading}
@@ -1124,7 +1122,7 @@ export default function Sale() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
-                <MdCheckCircle className="w-16 h-16 text-teal-500 mx-auto" />
+                <span className="icon-[tabler--circle-check] w-16 h-16 text-teal-500 mx-auto" />
               </motion.div>
 
               <motion.h3
@@ -1217,7 +1215,7 @@ export default function Sale() {
                     </>
                   ) : (
                     <>
-                      <MdFileDownload className="text-xl" />
+                      <span className="icon-[tabler--file-download] text-xl" />
                       {t('sale.pdf')}
                     </>
                   )}
@@ -1244,7 +1242,7 @@ export default function Sale() {
                     </>
                   ) : (
                     <>
-                      <MdLocalPrintshop className="text-xl" />
+                      <span className="icon-[tabler--printer] text-xl" />
                       {t('sale.print')}
                     </>
                   )}
@@ -1267,7 +1265,7 @@ export default function Sale() {
                   />
                 ) : (
                   <>
-                    <FaFileInvoiceDollar className="text-xl" />
+                    <span className="icon-[tabler--file-invoice] text-xl" />
                     {t('invoice.downloadInvoice')}
                   </>
                 )}
@@ -1282,7 +1280,7 @@ export default function Sale() {
                 className="w-full py-3 px-4 bg-teal-500 text-white rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
-                <MdShoppingCart className="text-xl" />
+                <span className="icon-[tabler--shopping-cart] text-xl" />
                 {t('sale.startNewSale')}
               </motion.button>
             </div>
@@ -1313,7 +1311,7 @@ export default function Sale() {
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
-                <MdCheckCircle className="w-16 h-16 text-green-500 mx-auto" />
+                <span className="icon-[tabler--circle-check] w-16 h-16 text-green-500 mx-auto" />
               </motion.div>
 
               <motion.h3

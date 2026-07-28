@@ -22,19 +22,14 @@ import { useSearchParams } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 
-import {
-  MdDownload, MdPrint, MdAdd, MdDelete,
-  MdOpenInNew, MdRefresh, MdArrowDropDown,
-  MdSearch,
-} from 'react-icons/md';
-import { FaFileInvoiceDollar } from 'react-icons/fa';
 import jsPDF from 'jspdf';
 
 import PageLayout from '../components/PageLayout';
 import Invoice, { PageDesign, InvoiceItem } from '../components/Invoice';
 import { Customer, Settings, InvoiceType as AppInvoiceType, INVOICE_TYPE_LABELS, INVOICE_CATEGORIES, InvoiceDirection } from '../types';
-import { sidecar, data } from '../api';
-import type { InvoiceType, InvoiceDesign } from '../api';
+import sidecar from '../api/sidecar';
+import { data } from '../api/data';
+import type { InvoiceType, InvoiceDesign } from '../api/data';
 
 // ---- Constants -------------------------------------------------------------
 
@@ -251,7 +246,7 @@ export default function InvoicePage() {
 
   // ---- Render -----
   return (
-    <PageLayout title={<><FaFileInvoiceDollar className="w-5 h-5 text-teal-500" /> Invoice Builder</>}>
+    <PageLayout title={<><span className="icon-[tabler--file-invoice] w-5 h-5 text-teal-500" /> Invoice Builder</>}>
       {/* Toast */}
       <AnimatePresence>
         {toast && (
@@ -282,7 +277,7 @@ export default function InvoicePage() {
               onClick={handlePrint}
               className="flex flex-col items-center gap-1 py-3 rounded-xl bg-slate-800 text-white text-xs font-semibold shadow hover:bg-slate-700"
             >
-              <MdPrint className="w-5 h-5" />
+              <span className="icon-[tabler--printer] w-5 h-5" />
               Print
             </motion.button>
             <motion.button
@@ -292,8 +287,8 @@ export default function InvoicePage() {
               className="flex flex-col items-center gap-1 py-3 rounded-xl bg-teal-600 text-white text-xs font-semibold shadow hover:bg-teal-700 disabled:opacity-60"
             >
               {isExporting
-                ? <MdRefresh className="w-5 h-5 animate-spin" />
-                : <MdDownload className="w-5 h-5" />}
+                ? <span className="icon-[tabler--refresh] w-5 h-5 animate-spin" />
+                : <span className="icon-[tabler--download] w-5 h-5" />}
               {isExporting ? 'Saving…' : 'PDF'}
             </motion.button>
             <motion.button
@@ -306,7 +301,7 @@ export default function InvoicePage() {
                   : 'bg-slate-200 text-slate-400 dark:bg-slate-700 cursor-not-allowed'
               }`}
             >
-              <MdOpenInNew className="w-5 h-5" />
+              <span className="icon-[tabler--external-link] w-5 h-5" />
               Preview
             </motion.button>
           </div>
@@ -346,7 +341,7 @@ export default function InvoicePage() {
                 {/* ComboBox: searchable + writable */}
                 <div ref={comboRef} className="relative">
                   <div className="relative">
-                    <MdSearch className="absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                    <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                     <input
                       value={comboOpen ? comboSearch : INVOICE_TYPE_LABELS[invoiceType]}
                       onChange={e => { setComboSearch(e.target.value); setComboOpen(true); }}
@@ -363,7 +358,7 @@ export default function InvoicePage() {
                       className="w-full bg-slate-100 dark:bg-slate-700 border-0 rounded-lg pl-9 pr-8 py-2 text-sm text-slate-800 dark:text-slate-200 focus:ring-2 focus:ring-teal-500 outline-none"
                     />
                     <button onClick={() => setComboOpen(!comboOpen)} className="absolute right-2 top-1/2 -translate-y-1/2">
-                      <MdArrowDropDown className={`w-5 h-5 text-slate-400 transition-transform ${comboOpen ? 'rotate-180' : ''}`} />
+                      <span className={`icon-[tabler--chevron-down] w-5 h-5 text-slate-400 transition-transform ${comboOpen ? 'rotate-180' : ''}`} />
                     </button>
                   </div>
                   {comboOpen && (
@@ -454,7 +449,7 @@ export default function InvoicePage() {
                     >
                       {CURRENCIES.map(c => <option key={c} value={c}>{c}</option>)}
                     </select>
-                    <MdArrowDropDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                    <span className="icon-[tabler--chevron-down] absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
                   </div>
                 </div>
                 <div>
@@ -480,7 +475,7 @@ export default function InvoicePage() {
                   onClick={addItem}
                   className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-teal-600 text-white text-xs font-semibold"
                 >
-                  <MdAdd className="w-4 h-4" /> Add Item
+                  <span className="icon-[tabler--plus] w-4 h-4" /> Add Item
                 </motion.button>
               </div>
               <div className="space-y-3 max-h-[420px] overflow-y-auto pr-1">
@@ -492,7 +487,7 @@ export default function InvoicePage() {
                     <div className="flex items-center justify-between">
                       <span className="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Item {idx + 1}</span>
                       <button onClick={() => removeItem(item.id)} className="text-rose-400 hover:text-rose-600 transition-colors" aria-label="Remove item">
-                        <MdDelete className="w-4 h-4" />
+                        <span className="icon-[tabler--trash] w-4 h-4" />
                       </button>
                     </div>
                     <input placeholder="Item name" value={item.name}
@@ -556,7 +551,7 @@ export default function InvoicePage() {
                     <option key={c.id} value={c.id}>{c.name}</option>
                   ))}
                 </select>
-                <MdArrowDropDown className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
+                <span className="icon-[tabler--chevron-down] absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 w-5 h-5 pointer-events-none" />
               </div>
               <div className="space-y-2.5">
                 <FormField label="Name"    value={toName}    onChange={setToName} />

@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { MdReceipt, MdAdd, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -103,15 +102,15 @@ export default function ReceiptTemplates() {
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('receiptTemplates.title')}</h1>
           <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', template_body: '', is_default: false }); }} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
-            <MdAdd /> {t('receiptTemplates.addTemplate')}
+            <span className="icon-[tabler--plus]" /> {t('receiptTemplates.addTemplate')}
           </motion.button>
         </div>
 
         {/* ── Search + sort bar (debounced async UX) ── */}
-        <div className="card--glass rounded-xl p-3">
+        <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-3">
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-2">
             <div className="relative flex-1">
-              <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+              <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
               <input
                 type="text"
                 value={search}
@@ -137,7 +136,7 @@ export default function ReceiptTemplates() {
                   aria-label={t('common.clear')}
                   className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white"
                 >
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               ) : null}
             </div>
@@ -161,7 +160,7 @@ export default function ReceiptTemplates() {
         </div>
 
         {showForm && (
-          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="card--glass rounded-xl p-4 space-y-3">
+          <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('receiptTemplates.name')} required className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
             <textarea value={form.template_body} onChange={e => setForm({ ...form, template_body: e.target.value })} placeholder={t('receiptTemplates.body')} rows={8} required className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white font-mono text-sm" />
             <label className="flex items-center gap-2 text-slate-700 dark:text-gray-300">
@@ -186,11 +185,11 @@ export default function ReceiptTemplates() {
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
             {filteredTemplates.map(template => (
-              <motion.div key={template.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="card--glass rounded-xl p-4">
+              <motion.div key={template.id} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4">
                 <div className="flex items-start justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-full bg-orange-100 dark:bg-orange-900/30 flex items-center justify-center text-orange-600 dark:text-orange-400">
-                      <MdReceipt className="w-5 h-5" />
+                      <span className="icon-[tabler--receipt] w-5 h-5" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white">{template.name}</h3>
@@ -198,8 +197,8 @@ export default function ReceiptTemplates() {
                     </div>
                   </div>
                   <div className="flex gap-1">
-                    <button onClick={() => handleEdit(template)} className="p-2 text-slate-600 hover:text-teal-600"><MdEdit /></button>
-                    <button onClick={() => handleDelete(template.id)} className="p-2 text-slate-600 hover:text-red-600"><MdDelete /></button>
+                    <button onClick={() => handleEdit(template)} className="p-2 text-slate-600 hover:text-teal-600"><span className="icon-[tabler--pencil]" /></button>
+                    <button onClick={() => handleDelete(template.id)} className="p-2 text-slate-600 hover:text-red-600"><span className="icon-[tabler--trash]" /></button>
                   </div>
                 </div>
                 <pre className="mt-3 text-xs text-slate-600 dark:text-gray-400 overflow-hidden text-ellipsis whitespace-nowrap">{template.template_body}</pre>

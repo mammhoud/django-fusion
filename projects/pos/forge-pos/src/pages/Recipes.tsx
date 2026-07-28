@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
-import { MdRestaurantMenu, MdEdit, MdDelete, MdAdd, MdRemove } from 'react-icons/md';
-import { FaPlus, FaSave, FaSearch, FaCubes, FaUtensils } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient, Product, Ingredient } from '../types';
 import PageLayout from '../components/PageLayout';
@@ -250,24 +248,24 @@ export default function Recipes() {
 
   return (
     <PageLayout
-      title={<><MdRestaurantMenu className="text-orange-500" /> Recipes</>}
+      title={<><span className="icon-[tabler--menu-2] text-orange-500" /> Recipes</>}
       background="bg-linear-to-br from-slate-100 via-orange-100 to-slate-100 dark:from-slate-900 dark:via-orange-950 dark:to-slate-900"
     >
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('recipes.totalRecipes')}</h2>
             <p className="text-2xl font-bold text-slate-900 dark:text-white">{recipes.filter(r => r.is_active).length}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('recipes.productsUsed')}</h2>
             <p className="text-2xl font-bold text-orange-500">{new Set(recipes.filter(r => r.is_active).map(r => r.product_id)).size}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('recipes.avgCostPerRecipe')}</h2>
             <p className="text-2xl font-bold text-rose-500">
               {recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
@@ -276,7 +274,7 @@ export default function Recipes() {
             </p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('recipes.avgProfitMargin')}</h2>
             <p className="text-2xl font-bold text-emerald-500">
               {recipesWithDetails.filter(r => r.recipe.is_active && r.totalCost > 0).length > 0
@@ -289,7 +287,7 @@ export default function Recipes() {
         {/* Filters & Actions */}
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
           <div className="relative">
-            <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+            <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
@@ -303,7 +301,7 @@ export default function Recipes() {
             onClick={() => setShowAddRecipe(true)}
             className="flex items-center gap-2 px-4 py-2 bg-orange-500 text-white rounded-xl font-semibold text-sm"
           >
-            <FaPlus /> {t('recipes.addRecipe')}
+            <span className="icon-[tabler--plus]" /> {t('recipes.addRecipe')}
           </motion.button>
         </div>
 
@@ -320,7 +318,7 @@ export default function Recipes() {
                 <div className="flex items-start justify-between mb-3">
                   <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg bg-orange-500 flex items-center justify-center text-white text-lg">
-                      <FaUtensils />
+                      <span className="icon-[tabler--tools-kitchen-2]" />
                     </div>
                     <div>
                       <h3 className="font-semibold text-slate-900 dark:text-white">{rd.productName}</h3>
@@ -332,12 +330,12 @@ export default function Recipes() {
                   <div className="flex gap-1">
                     <button onClick={() => handleOpenEdit(rd.recipe.id)}
                       className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
-                      <MdEdit className="w-4 h-4" />
+                      <span className="icon-[tabler--pencil] w-4 h-4" />
                     </button>
                     {rd.recipe.is_active && (
                       <button onClick={() => setShowDeleteRecipe(rd.recipe)}
                         className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
-                        <MdDelete className="w-4 h-4" />
+                        <span className="icon-[tabler--trash] w-4 h-4" />
                       </button>
                     )}
                   </div>
@@ -384,7 +382,7 @@ export default function Recipes() {
                   {rd.ingredients.slice(0, 5).map(ri => (
                     <div key={ri.id} className="flex items-center justify-between text-xs text-slate-600 dark:text-gray-400">
                       <span className="flex items-center gap-1">
-                        <FaCubes className="text-orange-400 w-2.5 h-2.5" />
+                        <span className="icon-[tabler--boxes] text-orange-400 w-2.5 h-2.5" />
                         {getIngredientName(ri.ingredient_id)}
                       </span>
                       <span>
@@ -422,7 +420,7 @@ export default function Recipes() {
           <button onClick={handleCreateRecipe}
             disabled={newRecipe.product_id === 0 || newRecipe.yield_quantity <= 0 || newRecipeIngredients.length === 0}
             className="flex-1 py-2.5 rounded-lg bg-orange-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('recipes.createRecipeTitle')}
+            <span className="icon-[tabler--device-floppy]" /> {t('recipes.createRecipeTitle')}
           </button>
         </>}
       >
@@ -451,7 +449,7 @@ export default function Recipes() {
         </div>
 
         <div className="border-t border-slate-300 dark:border-white/10 pt-4">            <h3 className="text-sm font-semibold text-slate-900 dark:text-white mb-3 flex items-center gap-2">
-              <FaCubes className="text-orange-500" /> {t('recipes.ingredients')} {newRecipeIngredients.length > 0 && `(${newRecipeIngredients.length})`}
+              <span className="icon-[tabler--boxes] text-orange-500" /> {t('recipes.ingredients')} {newRecipeIngredients.length > 0 && `(${newRecipeIngredients.length})`}
             </h3>
 
           <div className="grid grid-cols-12 gap-2 mb-2">
@@ -479,7 +477,7 @@ export default function Recipes() {
             <div className="col-span-2">
               <button onClick={handleAddNewIngredient} disabled={newIngredientInput.ingredient_id === 0 || newIngredientInput.quantity === 0}
                 className="w-full h-full flex items-center justify-center bg-orange-500 text-white rounded-lg disabled:opacity-50 text-xs font-bold">
-                <MdAdd className="w-4 h-4" />
+                <span className="icon-[tabler--plus] w-4 h-4" />
               </button>
             </div>
           </div>
@@ -491,7 +489,7 @@ export default function Recipes() {
                   {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
                 <button onClick={() => handleRemoveNewIngredient(idx)} className="text-red-500 hover:text-red-400 p-0.5">
-                  <MdRemove className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--minus] w-3.5 h-3.5" />
                 </button>
               </div>
             ))}
@@ -513,7 +511,7 @@ export default function Recipes() {
           <button onClick={() => setShowEditRecipe(null)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleSaveEdit} disabled={editYield <= 0}
             className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('common.saveChanges')}
+            <span className="icon-[tabler--device-floppy]" /> {t('common.saveChanges')}
           </button>
         </>}
       >          <div className="text-sm text-slate-600 dark:text-gray-400">
@@ -529,11 +527,11 @@ export default function Recipes() {
         <div className="border-t border-slate-300 dark:border-white/10 pt-4">
           <div className="flex items-center justify-between mb-3">
             <h3 className="text-sm font-semibold text-slate-900 dark:text-white flex items-center gap-2">
-              <FaCubes className="text-orange-500" /> {t('recipes.ingredients')} ({editIngredients.length})
+              <span className="icon-[tabler--boxes] text-orange-500" /> {t('recipes.ingredients')} ({editIngredients.length})
             </h3>
             <button onClick={() => setShowEditAddIngredient(!showEditAddIngredient)}
               className="text-xs text-orange-500 hover:text-orange-400 font-medium flex items-center gap-1">
-              <MdAdd /> {t('recipes.addIngredient')}
+              <span className="icon-[tabler--plus]" /> {t('recipes.addIngredient')}
             </button>
           </div>
 
@@ -563,7 +561,7 @@ export default function Recipes() {
               <div className="col-span-2">
                 <button onClick={handleAddEditIngredient} disabled={editIngredientInput.ingredient_id === 0 || editIngredientInput.quantity === 0}
                   className="w-full h-full flex items-center justify-center bg-orange-500 text-white rounded-lg disabled:opacity-50 text-xs font-bold">
-                  <MdAdd />
+                  <span className="icon-[tabler--plus]" />
                 </button>
               </div>
             </div>
@@ -576,7 +574,7 @@ export default function Recipes() {
                   {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
                 <button onClick={() => handleRemoveEditIngredient(idx)} className="text-red-500 hover:text-red-400 p-0.5">
-                  <MdRemove className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--minus] w-3.5 h-3.5" />
                 </button>
               </div>
             ))}

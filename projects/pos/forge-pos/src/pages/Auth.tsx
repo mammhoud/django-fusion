@@ -1,10 +1,7 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  FaEnvelope, FaLock, FaUser, FaKey, FaCheck, FaArrowRight,
-  FaShieldAlt, FaEye, FaEyeSlash, FaStore, FaChartLine, FaCogs,
-  FaUtensils, FaClipboardList, FaUserTie, FaUserCircle
-} from 'react-icons/fa';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+// react-icons/fa no longer needed — all icons migrated to Tabler
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme, type ThemeVariant } from '../contexts/ThemeContext';
 import { useTranslation } from 'react-i18next';
@@ -16,11 +13,11 @@ type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login';
 
 // ── Floating brand icons for the illustration panel ──
 const BRAND_ICONS = [
-  { Icon: FaStore, delay: 0, x: '15%', y: '15%', size: 'w-10 h-10', color: 'text-white/30' },
-  { Icon: FaChartLine, delay: 0.3, x: '75%', y: '20%', size: 'w-12 h-12', color: 'text-white/20' },
-  { Icon: FaCogs, delay: 0.6, x: '20%', y: '70%', size: 'w-11 h-11', color: 'text-white/25' },
-  { Icon: FaUtensils, delay: 0.9, x: '70%', y: '75%', size: 'w-9 h-9', color: 'text-white/30' },
-  { Icon: FaClipboardList, delay: 1.2, x: '45%', y: '10%', size: 'w-8 h-8', color: 'text-white/20' },
+  { icon: 'building-store', delay: 0, x: '15%', y: '15%', size: 'w-10 h-10', color: 'text-white/30' },
+  { icon: 'chart-line', delay: 0.3, x: '75%', y: '20%', size: 'w-12 h-12', color: 'text-white/20' },
+  { icon: 'tools', delay: 0.6, x: '20%', y: '70%', size: 'w-11 h-11', color: 'text-white/25' },
+  { icon: 'tools-kitchen-2', delay: 0.9, x: '70%', y: '75%', size: 'w-9 h-9', color: 'text-white/30' },
+  { icon: 'clipboard-list', delay: 1.2, x: '45%', y: '10%', size: 'w-8 h-8', color: 'text-white/20' },
 ];
 
 // ── Floating particles for background ──
@@ -54,19 +51,18 @@ export default function Auth() {
   } = useAuth();
 
   const [step, setStep] = useState<AuthStep>('loading');
-  const [hasExistingUsers, setHasExistingUsers] = useState(false);
-  const [email, setEmail] = useState('');
-  const [name, setName] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
-  const [code, setCode] = useState('');
-  const [error, setError] = useState('');
-  const [success, setSuccess] = useState('');
-  const [codeSending, setCodeSending] = useState(false);
-  const [rememberMe, setRememberMe] = useState(true);
-  const [showPassword, setShowPassword] = useState(false);
-  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
-  const [showLoginPassword, setShowLoginPassword] = useState(false);
+  const [hasExistingUsers, setHasExistingUsers] = useState(() => false);
+  const [email, setEmail] = useState(() => '');
+  const [name, setName] = useState(() => '');
+  const [password, setPassword] = useState(() => '');
+  const [confirmPassword, setConfirmPassword] = useState(() => '');
+  const [code, setCode] = useState(() => '');
+  const [error, setError] = useState(() => '');
+  const [success, setSuccess] = useState(() => '');
+  const [codeSending, setCodeSending] = useState(() => false);
+  const [rememberMe, setRememberMe] = useState(() => true);
+  // Password visibility toggles — handled by FlyonUI data-toggle-password
+  // (React state removed to avoid conflict with FlyonUI's DOM toggle)
 
 
   // Determine initial step on mount
@@ -218,9 +214,9 @@ export default function Auth() {
     </svg>
   );
 
-  // ── FlyonUI-style glassmorphism card wrapper ──
+  // ── FlyonUI card with glassmorphism styling ──
   const CardWrapper = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-white/5 relative overflow-hidden ${className}`}>
+    <div className={`card bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-white/5 relative overflow-hidden ${className}`}>
       {/* Decorative SVG element */}
       <div className="absolute -top-24 -right-24 w-72 h-72 opacity-[0.04] pointer-events-none text-teal-400">
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -236,9 +232,9 @@ export default function Auth() {
   // ── Shared form label ──
   const labelClass = 'block text-sm font-medium text-white/70 mb-1.5';
 
-  // ── FlyonUI-style input wrapper ──
+  // ── FlyonUI input group with glassmorphism ──
   const InputWrapper = ({ children, className = '' }: { children: React.ReactNode; className?: string }) => (
-    <div className={`flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/20
+    <div className={`input flex items-center gap-3 w-full px-4 py-3 rounded-xl bg-white/5 border border-white/20
       focus-within:border-teal-400/60 focus-within:ring-2 focus-within:ring-teal-400/20
       transition-all duration-200 ${className}`}>
       {children}
@@ -248,47 +244,38 @@ export default function Auth() {
   // ── FlyonUI checkbox ──
   const Checkbox = ({ checked, onChange, label }: { checked: boolean; onChange: (v: boolean) => void; label: string }) => (
     <label className="flex items-center gap-2.5 cursor-pointer select-none group">
-      <div className="relative">
-        <input
-          type="checkbox"
-          checked={checked}
-          onChange={(e) => onChange(e.target.checked)}
-          className="sr-only"
-        />
-        <div className={`w-5 h-5 rounded-lg border-2 flex items-center justify-center transition-all duration-200
-          ${checked
-            ? 'bg-teal-500 border-teal-500 shadow-lg shadow-teal-500/20'
+      <input
+        type="checkbox"
+        className={`checkbox checkbox-sm border-2 rounded-lg transition-all duration-200 ${
+          checked
+            ? 'checkbox-primary [--checkbox-checked-bg:theme(colors.teal.500)]'
             : 'border-white/20 group-hover:border-white/40'
-          }`}
-        >
-          {checked && <FaCheck className="w-3 h-3 text-white" />}
-        </div>
-      </div>
+        }`}
+        checked={checked}
+        onChange={(e) => onChange(e.target.checked)}
+      />
       <span className="text-sm text-white/60 group-hover:text-white/80 transition-colors">
         {label}
       </span>
     </label>
   );
 
-  // ── Primary button ──
+  // ── FlyonUI primary button with spring animations ──
   const PrimaryButton = ({ onClick, disabled, loading, children, gradient = 'from-teal-500 to-emerald-500' }: {
     onClick: () => void; disabled?: boolean; loading?: boolean; children: React.ReactNode; gradient?: string;
   }) => (
     <motion.button
       onClick={onClick}
       disabled={disabled}
-      whileHover={{ scale: 1.01, boxShadow: '0 0 30px rgba(45, 212, 191, 0.25)' }}
+      whileHover={{ scale: 1.01 }}
       whileTap={{ scale: 0.98 }}
-      className={`w-full py-3 bg-gradient-to-r ${gradient} hover:from-teal-400 hover:to-emerald-400
-        text-white rounded-xl font-semibold flex items-center justify-center gap-2
-        transition-all duration-200 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:shadow-none`}
+      className={`btn w-full bg-gradient-to-r ${gradient} hover:from-teal-400 hover:to-emerald-400
+        text-white rounded-xl font-semibold border-0
+        flex items-center justify-center gap-2 h-12
+        disabled:opacity-50 disabled:cursor-not-allowed`}
     >
       {loading ? (
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
-        />
+        <span className="loading loading-spinner loading-sm" />
       ) : children}
     </motion.button>
   );
@@ -321,7 +308,7 @@ export default function Auth() {
       ))}
 
       {/* Floating brand icons */}
-      {BRAND_ICONS.map(({ Icon, delay, x, y, size, color }) => (
+      {BRAND_ICONS.map(({ icon: iconName, delay, x, y, size, color }) => (
         <motion.div
           key={delay}
           className={`absolute ${size} ${color}`}
@@ -330,7 +317,7 @@ export default function Auth() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay, duration: 0.8, ease: 'easeOut' }}
         >
-          <Icon className="w-full h-full" />
+          <span className={`icon-[tabler--${iconName}] w-full h-full`} />
         </motion.div>
       ))}
 
@@ -346,7 +333,7 @@ export default function Auth() {
           whileHover={{ scale: 1.05, rotate: 2 }}
           transition={{ type: 'spring', stiffness: 300, damping: 15 }}
         >
-          <FaShieldAlt className="w-16 h-16 text-white" />
+          <span className="icon-[tabler--shield] w-16 h-16 text-white" />
         </motion.div>
         <h1 className="text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
           Forge POS
@@ -358,10 +345,10 @@ export default function Auth() {
         {/* Feature highlights */}
         <div className="mt-10 space-y-4 text-left">
           {[
-            { icon: FaStore, text: 'Point of Sale & Order Management' },
-            { icon: FaChartLine, text: 'Real-time Analytics & Reports' },
-            { icon: FaUtensils, text: 'Inventory & Recipe Tracking' },
-          ].map(({ icon: FeatIcon, text }, idx) => (
+            { icon: 'building-store', text: 'Point of Sale & Order Management' },
+            { icon: 'chart-line', text: 'Real-time Analytics & Reports' },
+            { icon: 'tools-kitchen-2', text: 'Inventory & Recipe Tracking' },
+          ].map(({ icon: iconName, text }, idx) => (
             <motion.div
               key={idx}
               className="flex items-center gap-3 text-white/80"
@@ -370,7 +357,7 @@ export default function Auth() {
               transition={{ delay: 0.8 + idx * 0.15, duration: 0.5 }}
             >
               <div className="bg-white/15 rounded-lg p-2">
-                <FeatIcon className="w-4 h-4" />
+                <span className={`icon-[tabler--${iconName}] w-4 h-4`} />
               </div>
               <span className="text-sm font-medium">{text}</span>
             </motion.div>
@@ -412,7 +399,7 @@ export default function Auth() {
               px-5 py-3 rounded-2xl shadow-2xl z-50 max-w-md text-center border border-teal-400/30
               flex items-center gap-3 shadow-teal-500/20"
           >
-            <FaCheck className="w-4 h-4 shrink-0" />
+            <span className="icon-[tabler--check] w-4 h-4 shrink-0" />
             <span className="text-sm font-medium">{success}</span>
           </motion.div>
         )}
@@ -424,7 +411,7 @@ export default function Auth() {
   const BrandLogo = () => (
     <div className="flex items-center gap-2.5 mb-4">
       <div className={`bg-gradient-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-2 shadow-lg`}>
-        <FaShieldAlt className="w-5 h-5 text-white" />
+        <span className="icon-[tabler--shield] w-5 h-5 text-white" />
       </div>
       <span className="text-white/80 text-lg font-bold">Forge POS</span>
     </div>
@@ -516,11 +503,11 @@ export default function Auth() {
                   {/* Name */}
                   <div>
                     <label className={labelClass}>
-                      <FaUser className="inline mr-2 text-teal-400" />
+                      <span className="icon-[tabler--user] inline mr-2 text-teal-400 w-3.5 h-3.5" />
                       {t('auth.fullName')}
                     </label>
                     <InputWrapper>
-                      <FaUser className="w-4 h-4 text-white/40 shrink-0" />
+                      <span className="icon-[tabler--user] w-4 h-4 text-white/40 shrink-0" />
                       <input
                         type="text"
                         value={name}
@@ -535,11 +522,11 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <FaEnvelope className="inline mr-2 text-teal-400" />
+                      <span className="icon-[tabler--mail] inline mr-2 text-teal-400 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
-                      <FaEnvelope className="w-4 h-4 text-white/40 shrink-0" />
+                      <span className="icon-[tabler--mail] w-4 h-4 text-white/40 shrink-0" />
                       <input
                         type="email"
                         value={email}
@@ -558,7 +545,7 @@ export default function Auth() {
                     loading={codeSending}
                     gradient="from-teal-500 to-emerald-500"
                   >
-                    <FaKey className="text-sm" />
+                    <span className="icon-[tabler--key] text-sm" />
                     {t('auth.sendCode')}
                   </PrimaryButton>
                 </div>
@@ -637,13 +624,14 @@ export default function Auth() {
                   {/* Password */}
                   <div>
                     <label className={labelClass}>
-                      <FaLock className="inline mr-2 text-teal-400" />
+                      <span className="icon-[tabler--lock] inline mr-2 text-teal-400 w-3.5 h-3.5" />
                       {t('auth.password')}
                     </label>
                     <InputWrapper>
-                      <FaLock className="w-4 h-4 text-white/40 shrink-0" />
+                      <span className="icon-[tabler--lock] w-4 h-4 text-white/40 shrink-0" />
                       <input
-                        type={showPassword ? 'text' : 'password'}
+                        id="register-password"
+                        type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
@@ -651,11 +639,12 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowPassword(!showPassword)}
+                        data-toggle-password='{ "target": "#register-password" }'
                         className="text-white/40 hover:text-white/80 transition-colors shrink-0"
-                        aria-label={showPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                        aria-label={t('auth.showPassword')}
                       >
-                        {showPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
+                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
                       </button>
                     </InputWrapper>
                   </div>
@@ -663,13 +652,14 @@ export default function Auth() {
                   {/* Confirm Password */}
                   <div>
                     <label className={labelClass}>
-                      <FaLock className="inline mr-2 text-teal-400" />
+                      <span className="icon-[tabler--lock] inline mr-2 text-teal-400 w-3.5 h-3.5" />
                       {t('auth.confirmPassword')}
                     </label>
                     <InputWrapper>
-                      <FaLock className="w-4 h-4 text-white/40 shrink-0" />
+                      <span className="icon-[tabler--lock] w-4 h-4 text-white/40 shrink-0" />
                       <input
-                        type={showConfirmPassword ? 'text' : 'password'}
+                        id="register-confirm-password"
+                        type="password"
                         value={confirmPassword}
                         onChange={(e) => setConfirmPassword(e.target.value)}
                         placeholder="••••••••"
@@ -678,11 +668,12 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        data-toggle-password='{ "target": "#register-confirm-password" }'
                         className="text-white/40 hover:text-white/80 transition-colors shrink-0"
-                        aria-label={showConfirmPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                        aria-label={t('auth.showPassword')}
                       >
-                        {showConfirmPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
+                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
                       </button>
                     </InputWrapper>
                     {confirmPassword && password === confirmPassword && (
@@ -691,7 +682,7 @@ export default function Auth() {
                         animate={{ opacity: 1, y: 0 }}
                         className="text-green-400 text-xs mt-1 flex items-center gap-1"
                       >
-                        <FaCheck className="w-3 h-3" /> Passwords match
+                        <span className="icon-[tabler--check] w-3 h-3" /> Passwords match
                       </motion.p>
                     )}
                   </div>
@@ -703,7 +694,7 @@ export default function Auth() {
                     loading={isLoading}
                     gradient="from-teal-500 to-emerald-500"
                   >
-                    <FaCheck className="text-sm" />
+                    <span className="icon-[tabler--check] text-sm" />
                     {t('auth.createAccountBtn')}
                   </PrimaryButton>
 
@@ -766,7 +757,7 @@ export default function Auth() {
                       transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2
                       disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <FaUserTie className="w-4 h-4" />
+                    <span className="icon-[tabler--user-check] w-4 h-4" />
                     Login as Manager
                   </motion.button>
                   <motion.button
@@ -779,7 +770,7 @@ export default function Auth() {
                       transition-all duration-200 text-sm font-medium flex items-center justify-center gap-2
                       disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    <FaUserCircle className="w-4 h-4" />
+                    <span className="icon-[tabler--user-circle] w-4 h-4" />
                     Login as Employee
                   </motion.button>
                 </div>
@@ -796,11 +787,11 @@ export default function Auth() {
                   {/* Email */}
                   <div>
                     <label className={labelClass}>
-                      <FaEnvelope className="inline mr-2 text-teal-400" />
+                      <span className="icon-[tabler--mail] inline mr-2 text-teal-400 w-3.5 h-3.5" />
                       {t('auth.email')}
                     </label>
                     <InputWrapper>
-                      <FaEnvelope className="w-4 h-4 text-white/40 shrink-0" />
+                      <span className="icon-[tabler--mail] w-4 h-4 text-white/40 shrink-0" />
                       <input
                         type="email"
                         value={email}
@@ -815,13 +806,14 @@ export default function Auth() {
                   {/* Password */}
                   <div>
                     <label className={labelClass}>
-                      <FaLock className="inline mr-2 text-teal-400" />
+                      <span className="icon-[tabler--lock] inline mr-2 text-teal-400 w-3.5 h-3.5" />
                       {t('auth.password')}
                     </label>
                     <InputWrapper>
-                      <FaLock className="w-4 h-4 text-white/40 shrink-0" />
+                      <span className="icon-[tabler--lock] w-4 h-4 text-white/40 shrink-0" />
                       <input
-                        type={showLoginPassword ? 'text' : 'password'}
+                        id="login-password"
+                        type="password"
                         value={password}
                         onChange={(e) => setPassword(e.target.value)}
                         placeholder="••••••••"
@@ -830,11 +822,12 @@ export default function Auth() {
                       />
                       <button
                         type="button"
-                        onClick={() => setShowLoginPassword(!showLoginPassword)}
+                        data-toggle-password='{ "target": "#login-password" }'
                         className="text-white/40 hover:text-white/80 transition-colors shrink-0"
-                        aria-label={showLoginPassword ? t('auth.hidePassword') : t('auth.showPassword')}
+                        aria-label={t('auth.showPassword')}
                       >
-                        {showLoginPassword ? <FaEyeSlash className="w-4 h-4" /> : <FaEye className="w-4 h-4" />}
+                        <span className="icon-[tabler--eye] password-active:block hidden size-4 shrink-0" />
+                        <span className="icon-[tabler--eye-off] password-active:hidden block size-4 shrink-0" />
                       </button>
                     </InputWrapper>
                   </div>
@@ -854,7 +847,7 @@ export default function Auth() {
                     loading={isLoading}
                     gradient="from-teal-500 to-cyan-500"
                   >
-                    <FaArrowRight className="text-sm" />
+                    <span className="icon-[tabler--arrow-right] text-sm" />
                     {t('auth.signIn')}
                   </PrimaryButton>
                 </div>

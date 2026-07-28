@@ -1,5 +1,4 @@
 import { motion } from 'framer-motion';
-import { MdLightMode, MdDarkMode } from 'react-icons/md';
 import { useTheme } from '../contexts/ThemeContext';
 
 export default function ThemeToggle() {
@@ -37,9 +36,9 @@ export default function ThemeToggle() {
         }}
       >
         {isDark ? (
-          <MdDarkMode className="w-3 h-3" />
+          <span className="icon-[tabler--moon] w-3 h-3" />
         ) : (
-          <MdLightMode className="w-3 h-3" />
+          <span className="icon-[tabler--sun] w-3 h-3" />
         )}
       </span>
 
@@ -52,9 +51,9 @@ export default function ThemeToggle() {
         }}
       >
         {isDark ? (
-          <MdDarkMode className="w-3.5 h-3.5 text-indigo-400" />
+          <span className="icon-[tabler--moon] w-3.5 h-3.5 text-indigo-400" />
         ) : (
-          <MdLightMode className="w-3.5 h-3.5 text-amber-500" />
+          <span className="icon-[tabler--sun] w-3.5 h-3.5 text-amber-500" />
         )}
       </div>
     </motion.button>
