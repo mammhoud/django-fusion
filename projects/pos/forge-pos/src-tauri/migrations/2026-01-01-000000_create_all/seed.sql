@@ -840,7 +840,7 @@ UPDATE settings SET logo = 'data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3
 
 -- 1. Settings — rebrand as coffee shop
 UPDATE settings SET
-    restaurant_name  = 'The Daily Grind',
+    restaurant_name  = 'Forge POS',
     address          = '15 Brew Lane, Downtown, Lahore',
     phone            = '+92-300-555-BREW',
     email            = 'hello@thedailygrind.com',

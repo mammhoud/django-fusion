@@ -9,7 +9,7 @@
 //! | all (default)  | Layered: base + gaming + coffee. Branding = gaming (last-write-wins on `settings.restaurant_name`).| "Level Up Gaming Center"       |
 //! | base           | Layered then strips gaming + coffee. Gaming's `down.sql` restores food defaults + rebrand.         | "Forge POS"                    |
 //! | gaming         | Layered then strips coffee.                                                                       | "Level Up Gaming Center"       |
-//! | coffee         | Layered then strips gaming.                                                                       | "The Daily Grind"              |
+//! | coffee         | Layered then strips gaming.                                                                       | "Forge POS"                    |
 //!
 //! # Usage
 //!
@@ -71,7 +71,7 @@ fn print_preset_help(bad: &str) {
     eprintln!("  all     — layered (base + gaming + coffee); brand = 'Level Up Gaming Center'");
     eprintln!("  base    — layered then strips gaming + coffee; brand = 'Forge POS'");
     eprintln!("  gaming  — layered then strips coffee; brand = 'Level Up Gaming Center'");
-    eprintln!("  coffee  — layered then strips gaming; brand = 'The Daily Grind'");
+    eprintln!("  coffee  — layered then strips gaming; brand = 'Forge POS'");
     eprintln!("\nNotes:");
     eprintln!("  • Strip is a no-op when a referenced preset's `down.sql` is absent from");
     eprintln!("    this branch's `src-tauri/migrations/` folder (e.g. forks shipping only");
@@ -102,7 +102,7 @@ fn brand_for_preset(preset: &str) -> &str {
         "all"    => "Level Up Gaming Center",
         "base"   => "Forge POS",
         "gaming" => "Level Up Gaming Center",
-        "coffee" => "The Daily Grind",
+        "coffee" => "Forge POS",
         _        => unreachable!(),
     }
 }
@@ -322,7 +322,7 @@ mod tests {
 
     #[test]
     fn test_brand_for_coffee_preset() {
-        assert_eq!(brand_for_preset("coffee"), "The Daily Grind");
+        assert_eq!(brand_for_preset("coffee"), "Forge POS");
     }
 
     // ── parse_sections ───────────────────────────────────────────────────────
