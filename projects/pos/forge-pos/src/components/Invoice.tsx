@@ -43,13 +43,13 @@ export interface InvoiceProps {
 // ---- Constants -------------------------------------------------------------
 
 const TYPE_ACCENT: Record<string, { badge: string; total: string; border: string }> = {
-  tax:        { badge: 'bg-teal-700 text-white',         total: 'bg-teal-700 text-white',       border: 'border-teal-200' },
-  commercial: { badge: 'bg-indigo-700 text-white',       total: 'bg-indigo-700 text-white',     border: 'border-indigo-200' },
-  proforma:   { badge: 'bg-amber-600 text-white',        total: 'bg-amber-600 text-white',      border: 'border-amber-200' },
-  credit:     { badge: 'bg-rose-600 text-white',         total: 'bg-rose-600 text-white',       border: 'border-rose-200' },
-  receipt:    { badge: 'bg-emerald-600 text-white',      total: 'bg-emerald-600 text-white',    border: 'border-emerald-200' },
-  selling:    { badge: 'bg-sky-600 text-white',          total: 'bg-sky-600 text-white',        border: 'border-sky-200' },
-  goods_transfer: { badge: 'bg-violet-600 text-white',   total: 'bg-violet-600 text-white',     border: 'border-violet-200' },
+  tax:        { badge: 'badge badge-primary',                total: 'badge badge-primary',       border: 'border-teal-200' },
+  commercial: { badge: 'badge badge-secondary',              total: 'badge badge-secondary',     border: 'border-indigo-200' },
+  proforma:   { badge: 'badge badge-warning',                total: 'badge badge-warning',       border: 'border-amber-200' },
+  credit:     { badge: 'badge badge-error',                  total: 'badge badge-error',         border: 'border-rose-200' },
+  receipt:    { badge: 'badge badge-success',                total: 'badge badge-success',       border: 'border-emerald-200' },
+  selling:    { badge: 'badge badge-info',                   total: 'badge badge-info',          border: 'border-sky-200' },
+  goods_transfer: { badge: 'badge badge-accent',             total: 'badge badge-accent',        border: 'border-violet-200' },
 };
 
 const CATEGORY_LABELS: Record<string, string> = {

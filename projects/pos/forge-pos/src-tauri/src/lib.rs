@@ -372,6 +372,12 @@ fn has_users(app: AppHandle) -> Result<bool, String> {
 }
 
 #[tauri::command]
+fn get_user_count(app: AppHandle) -> Result<i64, String> {
+    let db_path = get_db_path(&app)?;
+    auth::get_user_count(&db_path)
+}
+
+#[tauri::command]
 fn verify_user(app: AppHandle, email: String) -> Result<db::models::User, String> {
     let db_path = get_db_path(&app)?;
     auth::verify_user(&db_path, email)
@@ -889,6 +895,7 @@ pub fn run() {
             // Auth
             check_auth_required,
             has_users,
+            get_user_count,
             verify_user,
             start_support_sidecar,
             send_auth_confirmation_code,

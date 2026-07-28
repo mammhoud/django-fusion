@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
-import { MdPeople, MdEdit, MdDelete, MdWork } from 'react-icons/md';
-import { FaUsers, FaUserTag, FaMoneyBillWave, FaPlus, FaSave, FaSearch, FaPhone, FaEnvelope, FaCalendarAlt } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { Employee, NewEmployee, EmployeeType, NewEmployeeType } from '../types';
 import PageLayout from '../components/PageLayout';
@@ -41,8 +39,8 @@ export default function Employees() {
   const [isLoading, setIsLoading] = useState(true);
 
   const getTabItems = () => [
-    { key: 'employees' as Tab, label: t('employees.employeeList'), icon: <FaUsers /> },
-    { key: 'types' as Tab, label: t('employees.employeeTypes'), icon: <FaUserTag /> },
+    { key: 'employees' as Tab, label: t('employees.employeeList'), icon: <span className="icon-[tabler--users]" /> },
+    { key: 'types' as Tab, label: t('employees.employeeTypes'), icon: <span className="icon-[tabler--user-tag]" /> },
   ];
 
   // Data states
@@ -216,29 +214,29 @@ export default function Employees() {
 
   return (
     <PageLayout
-      title={<><MdPeople className="text-indigo-500" /> Employees</>}
+      title={<><span className="icon-[tabler--users] text-indigo-500" /> Employees</>}
       background="bg-linear-to-br from-slate-100 via-indigo-100 to-slate-100 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900"
     >
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.totalEmployees')}</h2>
             <p className="text-2xl font-bold text-slate-900 dark:text-white">{employees.filter(e => e.is_active).length}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.employeeTypes')}</h2>
             <p className="text-2xl font-bold text-indigo-500">{employeeTypes.filter(t => t.is_active).length}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.monthlySalary')}</h2>
             <p className="text-2xl font-bold text-emerald-500">{monthlySalaryTotal.toLocaleString()}</p>
           </motion.div>
           <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}
-            className="card--glass card--hover rounded-xl p-4">
+            className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4">
             <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('employees.avgSalary')}</h2>
             <p className="text-2xl font-bold text-blue-500">
               {employees.filter(e => e.is_active).length > 0
@@ -273,7 +271,7 @@ export default function Employees() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div className="flex flex-wrap items-center gap-2">
                 <div className="relative">
-                  <FaSearch className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     value={searchQuery}
@@ -313,7 +311,7 @@ export default function Employees() {
                 onClick={() => setShowAddEmployee(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-xl font-semibold text-sm"
               >
-                <FaPlus /> {t('employees.addEmployee')}
+                <span className="icon-[tabler--plus]" /> {t('employees.addEmployee')}
               </motion.button>
             </div>
 
@@ -324,7 +322,7 @@ export default function Employees() {
                   key={emp.id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
-                  className={`card--glass rounded-xl p-4 border border-slate-200 dark:border-white/5
+                  className={`bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
                     ${!emp.is_active ? 'opacity-60' : 'hover:border-indigo-300 dark:hover:border-indigo-500/30'} transition-all`}
                 >
                   <div className="flex items-start justify-between mb-3">
@@ -341,12 +339,12 @@ export default function Employees() {
                     <div className="flex gap-1">
                       <button onClick={() => { setShowEditEmployee(emp); setEditEmployee({ ...emp }); }}
                         className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
-                        <MdEdit className="w-4 h-4" />
+                        <span className="icon-[tabler--pencil] w-4 h-4" />
                       </button>
                       {emp.is_active && (
                         <button onClick={() => setShowDeleteEmployee(emp)}
                           className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
-                          <MdDelete className="w-4 h-4" />
+                          <span className="icon-[tabler--trash] w-4 h-4" />
                         </button>
                       )}
                     </div>
@@ -354,24 +352,24 @@ export default function Employees() {
 
                   <div className="space-y-1.5 text-sm">
                     <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                      <FaMoneyBillWave className="text-emerald-500 w-3.5 h-3.5" />
+                      <span className="icon-[tabler--moneybag] text-emerald-500 w-3.5 h-3.5" />
                       <span>{t('employees.salary')}: <strong className="text-slate-900 dark:text-white">{emp.salary.toLocaleString()}</strong></span>
                     </div>
                     {emp.phone && (
                       <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                        <FaPhone className="text-blue-400 w-3.5 h-3.5" />
+                        <span className="icon-[tabler--phone] text-blue-400 w-3.5 h-3.5" />
                         <span>{emp.phone}</span>
                       </div>
                     )}
                     {emp.email && (
                       <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                        <FaEnvelope className="text-purple-400 w-3.5 h-3.5" />
+                        <span className="icon-[tabler--mail] text-purple-400 w-3.5 h-3.5" />
                         <span className="truncate">{emp.email}</span>
                       </div>
                     )}
                     {emp.joined_at && (
                       <div className="flex items-center gap-2 text-slate-600 dark:text-gray-400">
-                        <FaCalendarAlt className="text-indigo-400 w-3.5 h-3.5" />
+                        <span className="icon-[tabler--calendar] text-indigo-400 w-3.5 h-3.5" />
                         <span>{t('employees.joined')} {emp.joined_at}</span>
                       </div>
                     )}
@@ -385,7 +383,7 @@ export default function Employees() {
                 </motion.div>
               ))}
               {filteredEmployees.length === 0 && (
-                <div className="col-span-full card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+                <div className="col-span-full bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
                   {t('employees.noEmployees')}
                 </div>
               )}
@@ -403,7 +401,7 @@ export default function Employees() {
                 onClick={() => setShowAddType(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-indigo-500 text-white rounded-xl font-semibold text-sm"
               >
-                <FaPlus /> {t('employees.addType')}
+                <span className="icon-[tabler--plus]" /> {t('employees.addType')}
               </motion.button>
             </div>
 
@@ -415,14 +413,14 @@ export default function Employees() {
                     key={et.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
-                    className={`card--glass rounded-xl p-4 border border-slate-200 dark:border-white/5
+                    className={`bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 border border-slate-200 dark:border-white/5
                       ${!et.is_active ? 'opacity-60' : 'hover:border-indigo-300 dark:hover:border-indigo-500/30'} transition-all`}
                   >
                     <div className="flex items-start justify-between">
                       <div className="flex items-center gap-3">
                         <div className={`w-10 h-10 rounded-lg flex items-center justify-center text-white text-lg
                           ${getTypeColor(et.name)}`}>
-                          <MdWork />
+                          <span className="icon-[tabler--briefcase]" />
                         </div>
                         <div>
                           <h3 className="font-semibold text-slate-900 dark:text-white">{et.name}</h3>
@@ -434,12 +432,12 @@ export default function Employees() {
                       <div className="flex gap-1">
                         <button onClick={() => { setShowEditType(et); setEditType({ ...et }); }}
                           className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
-                          <MdEdit className="w-4 h-4" />
+                          <span className="icon-[tabler--pencil] w-4 h-4" />
                         </button>
                         {et.is_active && (
                           <button onClick={() => setShowDeleteType(et)}
                             className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
-                            <MdDelete className="w-4 h-4" />
+                            <span className="icon-[tabler--trash] w-4 h-4" />
                           </button>
                         )}
                       </div>
@@ -459,7 +457,7 @@ export default function Employees() {
                 );
               })}
               {employeeTypes.length === 0 && (
-                <div className="col-span-full card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+                <div className="col-span-full bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
                   {t('employees.noTypes')}
                 </div>
               )}
@@ -475,7 +473,7 @@ export default function Employees() {
           <button onClick={() => setShowAddEmployee(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddEmployee} disabled={!newEmployee.name.trim() || newEmployee.employee_type_id === 0}
             className="flex-1 py-2.5 rounded-lg bg-indigo-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('employees.addEmployee')}
+            <span className="icon-[tabler--device-floppy]" /> {t('employees.addEmployee')}
           </button>
         </>}
       >
@@ -525,7 +523,7 @@ export default function Employees() {
         title={t('employees.editEmployeeTitle')}
         footer={<>
           <button onClick={() => { setShowEditEmployee(null); setEditEmployee(null); }} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateEmployee} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><FaSave /> {t('common.update')}</button>
+          <button onClick={handleUpdateEmployee} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editEmployee && (<>
@@ -584,7 +582,7 @@ export default function Employees() {
           <button onClick={() => setShowAddType(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddType} disabled={!newType.name.trim()}
             className="flex-1 py-2.5 rounded-lg bg-indigo-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('employees.addType')}
+            <span className="icon-[tabler--device-floppy]" /> {t('employees.addType')}
           </button>
         </>}
       >
@@ -609,7 +607,7 @@ export default function Employees() {
         size="sm"
         footer={<>
           <button onClick={() => { setShowEditType(null); setEditType(null); }} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateType} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><FaSave /> {t('common.update')}</button>
+          <button onClick={handleUpdateType} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editType && (<>

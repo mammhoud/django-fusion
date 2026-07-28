@@ -1,7 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
-import { MdInventory, MdEdit, MdDelete, MdSearch, MdClose } from 'react-icons/md';
-import { FaBoxes, FaHistory, FaExclamationTriangle, FaPlus, FaSave } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { Ingredient, NewIngredient, InventoryTransaction, NewInventoryTransaction, InventoryAdjustment } from '../types';
 import PageLayout from '../components/PageLayout';
@@ -30,9 +28,9 @@ export default function Inventory() {
 
   // Tab definition matching Transactions page pattern
   const tabs: { key: Tab; label: string; icon: React.ReactNode }[] = [
-    { key: 'stock' as Tab, label: t('inventory.stockLevels'), icon: <FaBoxes className="w-5 h-5" /> },
-    { key: 'transactions' as Tab, label: t('inventory.transactions'), icon: <FaHistory className="w-5 h-5" /> },
-    { key: 'adjustments' as Tab, label: t('inventory.adjustments'), icon: <FaExclamationTriangle className="w-5 h-5" /> },
+    { key: 'stock' as Tab, label: t('inventory.stockLevels'), icon: <span className="icon-[tabler--package] w-5 h-5" /> },
+    { key: 'transactions' as Tab, label: t('inventory.transactions'), icon: <span className="icon-[tabler--history] w-5 h-5" /> },
+    { key: 'adjustments' as Tab, label: t('inventory.adjustments'), icon: <span className="icon-[tabler--alert-triangle] w-5 h-5" /> },
   ];
 
   // Data states
@@ -272,7 +270,7 @@ export default function Inventory() {
 
   return (
     <PageLayout
-      title={<><MdInventory className="text-emerald-500" /> {t('inventory.title')}</>}
+      title={<><span className="icon-[tabler--package] text-emerald-500" /> {t('inventory.title')}</>}
       background="bg-linear-to-br from-slate-100 via-emerald-100 to-slate-100 dark:from-slate-900 dark:via-emerald-950 dark:to-slate-900"
     >
       {/* Tab Navigation — matching Transactions page pattern */}
@@ -308,7 +306,7 @@ export default function Inventory() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.totalIngredients')}</h2>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{activeIngredients.length}</p>
@@ -317,7 +315,7 @@ export default function Inventory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.stockValue')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -328,7 +326,7 @@ export default function Inventory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.avgCost')}</h2>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{avgCost.toFixed(2)}</p>
@@ -337,7 +335,7 @@ export default function Inventory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.15 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.lowStockItems')}</h2>
                 <p className="text-2xl font-bold text-yellow-500">{lowStockCount}</p>
@@ -349,7 +347,7 @@ export default function Inventory() {
               <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('inventory.allIngredients')}</h2>
               <div className="flex items-center gap-3 w-full sm:w-auto">
                 <div className="relative flex-1 sm:w-56">
-                  <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={stockSearch}
@@ -365,7 +363,7 @@ export default function Inventory() {
                       onClick={() => setStockSearch('')}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
                     >
-                      <MdClose className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--x] w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
@@ -374,7 +372,7 @@ export default function Inventory() {
                   onClick={() => setShowAddIngredient(true)}
                   className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl font-semibold text-sm shrink-0"
                 >
-                  <FaPlus /> {t('inventory.addIngredient')}
+                  <span className="icon-[tabler--plus]" /> {t('inventory.addIngredient')}
                 </motion.button>
               </div>
             </div>
@@ -382,7 +380,7 @@ export default function Inventory() {
             {/* Ingredient list */}
             {ingredients.length > 0 && filteredIngredients.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--search] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('inventory.noStockMatch')}</p>
                 <button
                   onClick={() => setStockSearch('')}
@@ -392,7 +390,7 @@ export default function Inventory() {
                 </button>
               </div>
             ) : (
-              <div className="card--glass rounded-xl overflow-hidden">
+              <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
                 {/* Header */}
                 <div className="hidden sm:grid grid-cols-12 gap-4 p-4 border-b border-slate-300 dark:border-white/10 text-slate-900 dark:text-white font-semibold text-sm">
                   <div className="col-span-3">{t('inventory.name')}</div>
@@ -427,13 +425,13 @@ export default function Inventory() {
                       </div>
                       <div className="sm:hidden flex gap-2 mb-1">
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
-                          className="text-blue-500 hover:text-blue-400 p-1"><MdEdit /></button>
+                          className="text-blue-500 hover:text-blue-400 p-1"><span className="icon-[tabler--pencil]" /></button>
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
-                        }} className="text-emerald-500 hover:text-emerald-400 p-1"><FaPlus /></button>
+                        }} className="text-emerald-500 hover:text-emerald-400 p-1"><span className="icon-[tabler--plus]" /></button>
                         {ing.is_active && (
-                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1"><MdDelete /></button>
+                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1"><span className="icon-[tabler--trash]" /></button>
                         )}
                       </div>
 
@@ -448,13 +446,13 @@ export default function Inventory() {
                           {status.label}
                         </span>
                         <button onClick={() => { setShowEditIngredient(ing); setEditForm({ ...ing }); }}
-                          className="text-blue-500 hover:text-blue-400 p-1" title={t('common.edit')}><MdEdit /></button>
+                          className="text-blue-500 hover:text-blue-400 p-1" title={t('common.edit')}><span className="icon-[tabler--pencil]" /></button>
                         <button onClick={() => {
                           setNewTransaction(prev => ({ ...prev, ingredient_id: ing.id }));
                           setShowAddTransaction(true);
-                        }} className="text-emerald-500 hover:text-emerald-400 p-1" title={t('inventory.recordTransaction')}><FaPlus /></button>
+                        }} className="text-emerald-500 hover:text-emerald-400 p-1" title={t('inventory.recordTransaction')}><span className="icon-[tabler--plus]" /></button>
                         {ing.is_active && (
-                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1" title={t('common.deactivate')}><MdDelete /></button>
+                          <button onClick={() => setShowDeleteConfirm(ing)} className="text-red-500 hover:text-red-400 p-1" title={t('common.deactivate')}><span className="icon-[tabler--trash]" /></button>
                         )}
                       </div>
                     </motion.div>
@@ -476,7 +474,7 @@ export default function Inventory() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.totalIngredients')}</h2>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{transactions.length}</p>
@@ -485,7 +483,7 @@ export default function Inventory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.thisMonthTransactions')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">{thisMonthTransactions}</p>
@@ -494,7 +492,7 @@ export default function Inventory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.1 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.thisWeekTransactions')}</h2>
                 <p className="text-2xl font-bold text-indigo-600 dark:text-indigo-400">{thisWeekTransactions}</p>
@@ -520,7 +518,7 @@ export default function Inventory() {
                 onClick={() => setShowAddTransaction(true)}
                 className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl font-semibold text-sm"
               >
-                <FaPlus /> {t('inventory.recordTransaction')}
+                <span className="icon-[tabler--plus]" /> {t('inventory.recordTransaction')}
               </motion.button>
             </div>
 
@@ -560,7 +558,7 @@ export default function Inventory() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.totalAdjustments')}</h2>
                 <p className="text-2xl font-bold text-slate-900 dark:text-white">{adjustments.length}</p>
@@ -569,7 +567,7 @@ export default function Inventory() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.05 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 card--hover rounded-xl p-4"
               >
                 <h2 className="text-slate-600 dark:text-white/60 text-sm">{t('inventory.uniqueIngredients')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -581,7 +579,7 @@ export default function Inventory() {
             <h2 className="text-lg font-semibold text-slate-900 dark:text-white">{t('inventory.manualAdjustments')}</h2>
             <div className="space-y-3">
               {adjustments.length === 0 && (
-                <div className="card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+                <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
                   {t('inventory.noAdjustments')}
                 </div>
               )}
@@ -591,7 +589,7 @@ export default function Inventory() {
                   <motion.div
                     key={adj.id}
                     initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
-                    className="card--glass rounded-xl p-4"
+                    className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4"
                   >
                     <div className="flex justify-between items-start">
                       <div>
@@ -622,7 +620,7 @@ export default function Inventory() {
           <button onClick={() => setShowAddIngredient(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddIngredient} disabled={!newIngredient.name.trim()}
             className="flex-1 py-2.5 rounded-lg bg-emerald-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
-            <FaSave /> {t('inventory.addIngredient')}
+            <span className="icon-[tabler--device-floppy]" /> {t('inventory.addIngredient')}
           </button>
         </>}
       >
@@ -656,7 +654,7 @@ export default function Inventory() {
         title={t('inventory.editIngredientTitle')}
         footer={<>
           <button onClick={() => { setShowEditIngredient(null); setEditForm(null); }} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
-          <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><FaSave /> {t('common.update')}</button>
+          <button onClick={handleUpdateIngredient} className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('common.update')}</button>
         </>}
       >
         {editForm && (<>
@@ -701,7 +699,7 @@ export default function Inventory() {
         footer={<>
           <button onClick={() => setShowAddTransaction(false)} className="flex-1 py-2.5 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleAddTransaction} disabled={newTransaction.ingredient_id === 0 || newTransaction.quantity_change === 0}
-            className="flex-1 py-2.5 rounded-lg bg-emerald-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><FaSave /> {t('inventory.recordTransaction')}</button>
+            className="flex-1 py-2.5 rounded-lg bg-emerald-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2"><span className="icon-[tabler--device-floppy]" /> {t('inventory.recordTransaction')}</button>
         </>}
       >
         <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.ingredient')} *</label>

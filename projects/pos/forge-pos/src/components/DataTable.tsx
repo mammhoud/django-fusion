@@ -1,8 +1,7 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { motion } from 'framer-motion';
-import { MdArrowUpward, MdArrowDownward } from 'react-icons/md';
-import { FaDownload, FaCheck, FaTimes } from 'react-icons/fa';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
 
 export interface Column<T> {
   key: string;
@@ -233,7 +232,7 @@ export default function DataTable<T>({
   // ── Empty state ──
   if (data.length === 0 && !exportable) {
     return (
-      <div className="card--glass rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
+      <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-slate-600 dark:text-white/60">
         {emptyMsg}
       </div>
     );
@@ -256,7 +255,7 @@ export default function DataTable<T>({
     : gridTemplate;
 
   return (
-    <div className="card--glass rounded-xl overflow-hidden">
+    <div className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl overflow-hidden">
       {/* Toolbar */}
       {(selectable || exportable) && (
         <div className="flex items-center justify-between px-4 py-2 border-b border-slate-300 dark:border-white/10">
@@ -275,7 +274,7 @@ export default function DataTable<T>({
                 bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 
                 transition-colors"
             >
-              <FaDownload className="w-3 h-3" />
+              <span className="icon-[tabler--download] w-3 h-3" />
               {t('common.csv')}
             </button>
           )}
@@ -320,9 +319,9 @@ export default function DataTable<T>({
                   {col.label}
                   {sortKey === col.key &&
                     (sortDir === 'asc' ? (
-                      <MdArrowUpward className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--arrow-up] w-3.5 h-3.5" />
                     ) : (
-                      <MdArrowDownward className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--arrow-down] w-3.5 h-3.5" />
                     ))}
                 </button>
               ) : (
@@ -433,7 +432,7 @@ export default function DataTable<T>({
                                 }}
                                 className="p-1 rounded text-emerald-500 hover:bg-emerald-500/10 transition-colors"
                               >
-                                <FaCheck className="w-3 h-3" />
+                                <span className="icon-[tabler--check] w-3 h-3" />
                               </button>
                               <button
                                 type="button"
@@ -443,7 +442,7 @@ export default function DataTable<T>({
                                 }}
                                 className="p-1 rounded text-red-500 hover:bg-red-500/10 transition-colors"
                               >
-                                <FaTimes className="w-3 h-3" />
+                                <span className="icon-[tabler--x] w-3 h-3" />
                               </button>
                             </div>
                           )}

@@ -1,8 +1,5 @@
 import { useState, useRef, useEffect, useCallback } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { FaCog, FaSave, FaCheck, FaFileImport, FaFileExport, FaChevronDown,
-  FaExclamationTriangle, FaGlobe, FaBriefcase, FaUtensils, FaTruck,
-  FaUsers, FaDatabase, FaLock, FaClock, FaPaintBrush } from 'react-icons/fa';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { open, save } from '@tauri-apps/plugin-dialog';
@@ -48,14 +45,19 @@ const fieldToTab: Record<string, TabId> = {
   closing_time: 'business',
 };
 
+// ── Helper: wraps a Tabler icon class into a React component type ──
+function Ic(name: string): React.ComponentType<{ className?: string }> {
+  return ({ className = '' }) => <span className={`icon-[tabler--${name}] ${className}`} />;
+}
+
 const tabs: TabDefinition[] = [
-  { id: 'general', label: 'General', icon: FaGlobe },
-  { id: 'business', label: 'Business', icon: FaBriefcase },
-  { id: 'dining', label: 'Dining', icon: FaUtensils },
-  { id: 'delivery', label: 'Delivery', icon: FaTruck },
-  { id: 'employees', label: 'Employees', icon: FaUsers },
-  { id: 'database', label: 'Database', icon: FaDatabase },
-  { id: 'appearance', label: 'Appearance', icon: FaPaintBrush },
+  { id: 'general', label: 'General', icon: Ic('globe') },
+  { id: 'business', label: 'Business', icon: Ic('briefcase') },
+  { id: 'dining', label: 'Dining', icon: Ic('tools-kitchen-2') },
+  { id: 'delivery', label: 'Delivery', icon: Ic('truck') },
+  { id: 'employees', label: 'Employees', icon: Ic('users') },
+  { id: 'database', label: 'Database', icon: Ic('database') },
+  { id: 'appearance', label: 'Appearance', icon: Ic('paint') },
 ];
 
 const tabVariants = {
@@ -268,7 +270,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
             `${selectedCurrency.name} (${selectedCurrency.code} ${selectedCurrency.symbol})`
           ) : t('settings.selectCurrency')}
         </span>
-        <FaChevronDown className={`transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
+        <span className={`icon-[tabler--chevron-down] transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </div>
       {isOpen && (
         <div className="absolute z-50 w-full mt-2 bg-white dark:bg-slate-800 border border-slate-300 dark:border-gray-600 rounded-lg shadow-xl">
@@ -284,7 +286,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
               onClick={(e) => e.stopPropagation()}
             />
           </div>
-          <div className="max-h-60 overflow-y-auto u-scrollbar-thin scrollbar-thumb-gray-600 scrollbar-track-transparent">
+          <div className="max-h-60 overflow-y-auto overflow-y-auto scrollbar-thumb-gray-600 scrollbar-track-transparent">
             {filteredOptions.map((currency) => (
               <div
                 key={currency.code}
@@ -674,7 +676,7 @@ export default function Settings() {
         <label className={labelClass}>{t('settings.restaurantName')} <span className="text-red-400">*</span></label>
         <input type="text" name="restaurant_name" value={settings.restaurant_name} onChange={handleChange}
           className={inputClass('restaurant_name')} />
-        {errors.restaurant_name && <p className={errorClass}><FaExclamationTriangle className="text-xs" />{errors.restaurant_name}</p>}
+        {errors.restaurant_name && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.restaurant_name}</p>}
       </div>
 
       {/* Language */}
@@ -696,7 +698,7 @@ export default function Settings() {
         <div className="md:col-span-2">
           <div className="border-t border-slate-300/50 dark:border-gray-600/50 pt-6 mt-2">
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
-              <FaClock className="inline mr-2 text-teal-400" />
+              <span className="icon-[tabler--clock] inline mr-2 text-teal-400" />
               {t('settings.inactivityTimeout')}
             </h3>
             <p className="text-sm text-slate-500 dark:text-gray-400 mb-4">
@@ -725,7 +727,7 @@ export default function Settings() {
         <div className="md:col-span-2">
           <div className="border-t border-slate-300/50 dark:border-gray-600/50 pt-6 mt-2">
             <h3 className="text-lg font-semibold text-slate-900 dark:text-white mb-1">
-              <FaLock className="inline mr-2 text-teal-400" />
+              <span className="icon-[tabler--lock] inline mr-2 text-teal-400" />
               {t('settings.changePassword')}
             </h3>
             <p className="text-sm text-slate-500 dark:text-gray-400 mb-4">
@@ -734,14 +736,14 @@ export default function Settings() {
 
             {passwordChangeSuccess && (
               <div className="mb-4 bg-teal-50 dark:bg-teal-900/20 border border-teal-200 dark:border-teal-700/40 rounded-xl p-3 flex items-center gap-2">
-                <FaCheck className="w-4 h-4 text-teal-500" />
+                <span className="icon-[tabler--check] w-4 h-4 text-teal-500" />
                 <span className="text-sm text-teal-700 dark:text-teal-300">{t('settings.passwordChangeSuccess')}</span>
               </div>
             )}
 
             {passwordChangeError && (
               <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700/40 rounded-xl p-3 flex items-center gap-2">
-                <FaExclamationTriangle className="w-4 h-4 text-red-500" />
+                <span className="icon-[tabler--alert-triangle] w-4 h-4 text-red-500" />
                 <span className="text-sm text-red-700 dark:text-red-300">{passwordChangeError}</span>
               </div>
             )}
@@ -781,7 +783,7 @@ export default function Settings() {
                   {isChangingPassword ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
                   ) : (
-                    <><FaLock className="text-sm" /> {t('settings.updatePassword')}</>
+                    <><span className="icon-[tabler--lock] text-sm" /> {t('settings.updatePassword')}</>
                   )}
                 </motion.button>
               </div>
@@ -794,14 +796,14 @@ export default function Settings() {
       <div>
         <label className={labelClass}>{t('settings.phone')}</label>
         <input type="tel" name="phone" value={settings.phone} onChange={handleChange} className={inputClass('phone')} />
-        {errors.phone && <p className={errorClass}><FaExclamationTriangle className="text-xs" />{errors.phone}</p>}
+        {errors.phone && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.phone}</p>}
       </div>
 
       {/* Email */}
       <div>
         <label className={labelClass}>{t('settings.email')}</label>
         <input type="email" name="email" value={settings.email} onChange={handleChange} className={inputClass('email')} />
-        {errors.email && <p className={errorClass}><FaExclamationTriangle className="text-xs" />{errors.email}</p>}
+        {errors.email && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.email}</p>}
       </div>
 
       {/* Address */}
@@ -819,7 +821,7 @@ export default function Settings() {
         <label className={labelClass}>{t('settings.taxRate')}</label>
         <input type="number" name="tax_rate" value={settings.tax_rate} onChange={handleChange}
           step="0.01" min="0" max="100" className={inputClass('tax_rate')} />
-        {errors.tax_rate && <p className={errorClass}><FaExclamationTriangle className="text-xs" />{errors.tax_rate}</p>}
+        {errors.tax_rate && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.tax_rate}</p>}
       </div>
 
       {/* Currency */}
@@ -832,14 +834,14 @@ export default function Settings() {
       <div>
         <label className={labelClass}>{t('settings.openingTime')}</label>
         <input type="time" name="opening_time" value={settings.opening_time} onChange={handleChange} className={inputClass('opening_time')} />
-        {errors.opening_time && <p className={errorClass}><FaExclamationTriangle className="text-xs" />{errors.opening_time}</p>}
+        {errors.opening_time && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.opening_time}</p>}
       </div>
 
       {/* Closing Time */}
       <div>
         <label className={labelClass}>{t('settings.closingTime')}</label>
         <input type="time" name="closing_time" value={settings.closing_time} onChange={handleChange} className={inputClass('closing_time')} />
-        {errors.closing_time && <p className={errorClass}><FaExclamationTriangle className="text-xs" />{errors.closing_time}</p>}
+        {errors.closing_time && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.closing_time}</p>}
       </div>
 
       {/* Receipt Footer */}
@@ -857,7 +859,7 @@ export default function Settings() {
       <div className="bg-gradient-to-br from-amber-50 to-orange-50 dark:from-amber-900/20 dark:to-orange-900/20 rounded-xl p-6 mb-8 border border-amber-200 dark:border-amber-700/30">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
-            <FaUtensils className="w-5 h-5 text-amber-600 dark:text-amber-400" />
+            <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-amber-600 dark:text-amber-400" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.diningTab.title')}</h3>
@@ -882,7 +884,7 @@ export default function Settings() {
       <div className="bg-gradient-to-br from-sky-50 to-blue-50 dark:from-sky-900/20 dark:to-blue-900/20 rounded-xl p-6 mb-8 border border-sky-200 dark:border-sky-700/30">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
-            <FaTruck className="w-5 h-5 text-sky-600 dark:text-sky-400" />
+            <span className="icon-[tabler--truck] w-5 h-5 text-sky-600 dark:text-sky-400" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.deliveryTab.title')}</h3>
@@ -914,7 +916,7 @@ export default function Settings() {
         <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-slate-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
-              <FaUsers className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+              <span className="icon-[tabler--users] w-5 h-5 text-indigo-600 dark:text-indigo-400" />
             </div>
             <div>
               <p className="text-2xl font-bold text-slate-900 dark:text-white">{employeeCount}</p>
@@ -925,7 +927,7 @@ export default function Settings() {
         <div className="bg-white/40 dark:bg-white/5 backdrop-blur-sm rounded-xl p-5 border border-slate-200 dark:border-gray-700">
           <div className="flex items-center gap-3">
             <div className="bg-emerald-100 dark:bg-emerald-800/30 rounded-full p-2.5">
-              <FaCheck className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+              <span className="icon-[tabler--check] w-5 h-5 text-emerald-600 dark:text-emerald-400" />
             </div>
             <div>
               <p className="text-2xl font-bold text-slate-900 dark:text-white">{activeEmployeeCount}</p>
@@ -945,7 +947,7 @@ export default function Settings() {
           className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 
             text-white rounded-lg text-sm font-medium transition-colors"
         >
-          <FaUsers className="w-4 h-4" />
+          <span className="icon-[tabler--users] w-4 h-4" />
           {t('settings.employeesTab.goToEmployees')}
         </button>
       </div>
@@ -1023,7 +1025,7 @@ export default function Settings() {
       <div className="bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-800/30 dark:to-slate-700/20 rounded-xl p-6 border border-slate-200 dark:border-gray-700">
         <div className="flex items-center gap-3 mb-5">
           <div className="bg-teal-100 dark:bg-teal-800/30 rounded-full p-2.5">
-            <FaPaintBrush className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+            <span className="icon-[tabler--paint] w-5 h-5 text-teal-600 dark:text-teal-400" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.appearanceTab.title')}</h3>
@@ -1073,7 +1075,7 @@ export default function Settings() {
       <div className="bg-gradient-to-br from-purple-50 to-pink-50 dark:from-purple-900/20 dark:to-pink-900/20 rounded-xl p-6 mb-8 border border-purple-200 dark:border-purple-700/30">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-purple-100 dark:bg-purple-800/30 rounded-full p-2.5">
-            <FaDatabase className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+            <span className="icon-[tabler--database] w-5 h-5 text-purple-600 dark:text-purple-400" />
           </div>
           <div>
             <h3 className="font-semibold text-slate-900 dark:text-white">{t('settings.databaseTab.title')}</h3>
@@ -1111,7 +1113,7 @@ export default function Settings() {
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
             ) : (
-              <><FaFileImport className="text-lg" />{t('settings.importDatabase')}</>
+              <><span className="icon-[tabler--file-import] text-lg" />{t('settings.importDatabase')}</>
             )}
           </button>
           <button
@@ -1126,7 +1128,7 @@ export default function Settings() {
               <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-5 h-5 border-2 border-white border-t-transparent rounded-full" />
             ) : (
-              <><FaFileExport className="text-lg" />{t('settings.exportDatabase')}</>
+              <><span className="icon-[tabler--file-export] text-lg" />{t('settings.exportDatabase')}</>
             )}
           </button>
         </div>
@@ -1153,7 +1155,7 @@ export default function Settings() {
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-fit mx-auto mb-4"
         >
-          <FaCog className="w-12 h-12 md:w-14 md:h-14 text-teal-400" />
+          <span className="icon-[tabler--settings] w-12 h-12 md:w-14 md:h-14 text-teal-400" />
         </motion.div>
         <motion.h1
           className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-purple-400"
@@ -1222,7 +1224,7 @@ export default function Settings() {
               rounded-xl p-4 flex items-start gap-3"
           >
             <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-1.5 flex-shrink-0 mt-0.5">
-              <FaExclamationTriangle className="w-4 h-4 text-red-500" />
+              <span className="icon-[tabler--alert-triangle] w-4 h-4 text-red-500" />
             </div>
             <div className="flex-1 min-w-0">
               <p className="font-medium text-red-700 dark:text-red-300 text-sm">
@@ -1282,7 +1284,7 @@ export default function Settings() {
                 <span>{t('settings.saving')}</span>
               </>
             ) : (
-              <><FaSave className="text-lg" /> {t('settings.saveSettings')}</>
+              <><span className="icon-[tabler--device-floppy] text-lg" /> {t('settings.saveSettings')}</>
             )}
           </motion.button>
         </div>
@@ -1295,7 +1297,7 @@ export default function Settings() {
             className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-teal-500 text-white px-6 py-3 
               rounded-xl flex items-center gap-2 shadow-lg z-50"
           >
-            <FaCheck className="text-lg" />
+            <span className="icon-[tabler--check] text-lg" />
             {t('settings.successMessage')}
           </motion.div>
         )}
@@ -1309,7 +1311,7 @@ export default function Settings() {
             className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-red-500 text-white px-6 py-3 
               rounded-xl flex items-center gap-2 shadow-lg z-50 max-w-md"
           >
-            <FaExclamationTriangle className="text-lg" />
+            <span className="icon-[tabler--alert-triangle] text-lg" />
             <span>{errorMessage}</span>
           </motion.div>
         )}

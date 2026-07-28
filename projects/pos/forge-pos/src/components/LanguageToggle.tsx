@@ -1,7 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../contexts/LanguageContext';
-import { MdLanguage, MdCheck } from 'react-icons/md';
 import { useTranslation } from 'react-i18next';
 
 const langOptions = [
@@ -43,7 +42,7 @@ export default function LanguageToggle() {
           shadow-sm transition-colors min-w-[120px]"
         aria-label={t('language.selectLanguage')}
       >
-        <MdLanguage className="w-4 h-4 shrink-0 opacity-70" />
+        <span className="icon-[tabler--language] w-4 h-4 shrink-0 opacity-70" />
         <span className="flex-1 text-left">{current.flag} {current.label}</span>
         <motion.svg
           animate={{ rotate: isOpen ? 180 : 0 }}
@@ -90,7 +89,7 @@ export default function LanguageToggle() {
                   <span className="text-base">{opt.flag}</span>
                   <span className="flex-1 text-left">{opt.label}</span>
                   {isActive && (
-                    <MdCheck className="w-4 h-4 text-indigo-500" />
+                    <span className="icon-[tabler--check] w-4 h-4 text-indigo-500" />
                   )}
                 </button>
               );

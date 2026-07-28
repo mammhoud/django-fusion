@@ -107,7 +107,8 @@
     "successToast": "Message envoyé avec succès ! Nous vous répondrons bientôt.",
     "errorToast": "Échec de l'envoi du message. Veuillez réessayer.",
     "copyright": "© {year} Structa Cloud. Tous droits réservés.",
-    "versionLabel": "Version"
+    "versionLabel": "Version",
+    "registeredUsers": "Utilisateurs Enregistrés"
   },
   "productManager": {
     "title": "Gestion des produits",
@@ -196,7 +197,9 @@
     "searchProducts": "Rechercher des produits...",
     "allCategories": "Toutes les catégories",
     "categoryFilter": "Filtrer par catégorie",
-    "noProductsMatch": "Aucun produit ne correspond à votre recherche."
+    "noProductsMatch": "Aucun produit ne correspond à votre recherche.",
+    "viewCart": "Voir le panier",
+    "editCart": "Modifier le panier"
   },
   "analytics": {
     "title": "Tableau de bord analytique",
@@ -675,6 +678,8 @@
       "languageValueEn": "English",
       "languageValueAr": "العربية",
       "languageValueFr": "Français",
+      "languageValueDe": "Deutsch",
+      "languageValueEs": "Español",
       "logoFormats": "Supporté : PNG, JPG, GIF, BMP, WebP (max 2 Mo)",
       "restaurantNameRequired": "Nom du restaurant"
     },

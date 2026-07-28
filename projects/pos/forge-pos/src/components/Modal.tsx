@@ -1,5 +1,4 @@
 import { motion, AnimatePresence } from 'framer-motion';
-import { MdClose } from 'react-icons/md';
 
 interface ModalProps {
   isOpen: boolean;
@@ -49,7 +48,7 @@ export default function Modal({
                 onClick={onClose}
                 className="text-slate-500 hover:text-slate-700 dark:hover:text-white transition-colors rounded-lg p-1"
               >
-                <MdClose className="w-6 h-6" />
+                <span className="icon-[tabler--x] w-6 h-6" />
               </button>
             </div>
             <div className="space-y-4">{children}</div>

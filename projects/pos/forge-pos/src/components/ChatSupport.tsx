@@ -19,12 +19,10 @@ import {
   KeyboardEvent, FormEvent,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import {
-  MdChat, MdClose, MdSend, MdWifi, MdWifiOff,
-  MdSupportAgent, MdCircle,
-} from 'react-icons/md';
-import { createChatWs, tickets } from '../api';
-import type { ChatMessage, WsConnState, ChatWsConnection } from '../api';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+import { createChatWs } from '../api/chat';
+import tickets from '../api/tickets';
+import type { ChatMessage, WsConnState, ChatWsConnection } from '../api/chat';
 
 // ---- Constants ------------------------------------------------------------
 
@@ -234,11 +232,11 @@ export default function ChatSupport({
           <AnimatePresence mode="wait" initial={false}>
             {isOpen ? (
               <motion.span key="close" initial={{ rotate: -90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: 90, opacity: 0 }}>
-                <MdClose className="w-6 h-6" />
+                <span className="icon-[tabler--x] w-6 h-6" />
               </motion.span>
             ) : (
               <motion.span key="open" initial={{ rotate: 90, opacity: 0 }} animate={{ rotate: 0, opacity: 1 }} exit={{ rotate: -90, opacity: 0 }}>
-                <MdChat className="w-6 h-6" />
+                <span className="icon-[tabler--message] w-6 h-6" />
               </motion.span>
             )}
           </AnimatePresence>
@@ -265,21 +263,21 @@ export default function ChatSupport({
             {/* HEADER */}
             <div className="bg-gradient-to-r from-slate-900 to-teal-900 text-white px-4 py-3 flex items-center gap-3 shrink-0">
               <div className="w-9 h-9 rounded-full bg-white/10 flex items-center justify-center shrink-0">
-                <MdSupportAgent className="w-5 h-5 text-teal-300" />
+                <span className="icon-[tabler--headset] w-5 h-5 text-teal-300" />
               </div>
               <div className="flex-1 min-w-0">
                 <p id={titleId} className="font-bold text-sm leading-tight">Structa Cloud Support</p>
                 <div className="flex items-center gap-1.5 mt-0.5">
-                  <MdCircle className={`w-2.5 h-2.5 ${CONN_DOT[connState].color}`} />
+                  <span className={`icon-[tabler--circle] w-2.5 h-2.5 ${CONN_DOT[connState].color}`} />
                   <span className="text-[11px] text-white/60">{CONN_DOT[connState].label}</span>
                 </div>
               </div>
               <div className="flex items-center gap-1.5 shrink-0">
                 {connState === 'open'
-                  ? <MdWifi    className="w-4 h-4 text-teal-400" aria-label="Connected" />
-                  : <MdWifiOff className="w-4 h-4 text-slate-400" aria-label="Disconnected" />}
+                  ? <span className="icon-[tabler--wifi] w-4 h-4 text-teal-400" aria-label="Connected" />
+                  : <span className="icon-[tabler--wifi-off] w-4 h-4 text-slate-400" aria-label="Disconnected" />}
                 <button onClick={() => setIsOpen(false)} aria-label="Close chat" className="w-7 h-7 rounded-full flex items-center justify-center hover:bg-white/10 transition-colors">
-                  <MdClose className="w-4 h-4" />
+                  <span className="icon-[tabler--x] w-4 h-4" />
                 </button>
               </div>
             </div>
@@ -391,7 +389,7 @@ export default function ChatSupport({
                     : 'bg-slate-100 dark:bg-slate-700 text-slate-500 hover:bg-slate-200'
                 }`}
               >
-                <MdSupportAgent className="w-4 h-4" />
+                <span className="icon-[tabler--headset] w-4 h-4" />
               </button>
 
               <input
@@ -412,7 +410,7 @@ export default function ChatSupport({
                 aria-label="Send message"
                 className="w-8 h-8 rounded-full bg-teal-600 text-white flex items-center justify-center disabled:opacity-40 disabled:cursor-not-allowed shrink-0"
               >
-                <MdSend className="w-4 h-4" />
+                <span className="icon-[tabler--send] w-4 h-4" />
               </motion.button>
             </div>
           </motion.div>

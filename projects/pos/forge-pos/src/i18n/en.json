@@ -107,7 +107,8 @@
     "successToast": "Message sent successfully! We'll get back to you soon.",
     "errorToast": "Failed to send message. Please try again.",
     "copyright": "© {year} Structa Cloud. All rights reserved.",
-    "versionLabel": "Version"
+    "versionLabel": "Version",
+    "registeredUsers": "Registered Users"
   },
   "productManager": {
     "title": "Product Manager",
@@ -196,7 +197,9 @@
     "searchProducts": "Search products...",
     "allCategories": "All Categories",
     "categoryFilter": "Filter by category",
-    "noProductsMatch": "No products match your search."
+    "noProductsMatch": "No products match your search.",
+    "viewCart": "View Cart",
+    "editCart": "Edit Cart"
   },
   "analytics": {
     "title": "Analytics Dashboard",
@@ -680,6 +683,8 @@
       "languageValueEn": "English",
       "languageValueAr": "العربية",
       "languageValueFr": "Français",
+      "languageValueDe": "Deutsch",
+      "languageValueEs": "Español",
       "logoFormats": "Supported: PNG, JPG, GIF, BMP, WebP (max 2MB)",
       "restaurantNameRequired": "Restaurant Name"
     },
@@ -787,6 +792,10 @@
     "switchToAr": "التبديل إلى العربية",
     "fr": "Français",
     "switchToFr": "Switch to French",
+    "de": "Deutsch",
+    "switchToDe": "Switch to German",
+    "es": "Español",
+    "switchToEs": "Switch to Spanish",
     "selectLanguage": "Language"
   },
   "datePicker": {

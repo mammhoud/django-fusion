@@ -1,11 +1,5 @@
 import { motion } from 'framer-motion';
 import { useState, useMemo, useEffect, useRef } from 'react';
-import { 
-  MdDelete, MdFilterList, MdLocalPrintshop, MdFileDownload, MdClose,
-  MdBarChart, MdReceipt, MdDateRange, MdSearch,
-  MdArrowUpward, MdArrowDownward, MdHelpOutline
-} from 'react-icons/md';
-import { FaFileInvoiceDollar, FaDownload } from 'react-icons/fa';
 import { invoke } from '@tauri-apps/api/core';
 import { Transaction, Settings } from '../types';
 import DatePicker from '../components/DatePicker';
@@ -650,10 +644,10 @@ export default function Transactions() {
 
   // ---- Tab Definition ----
   const tabs: { key: TabId; label: string; icon: React.ReactNode }[] = [
-    { key: 'timeTotal', label: 'Time Total', icon: <MdDateRange className="w-5 h-5" /> },
-    { key: 'productStats', label: 'Product Statistics', icon: <MdBarChart className="w-5 h-5" /> },
-    { key: 'relatedProducts', label: 'Related Products', icon: <FaFileInvoiceDollar className="w-5 h-5" /> },
-    { key: 'invoices', label: 'Invoices', icon: <MdReceipt className="w-5 h-5" /> },
+    { key: 'timeTotal', label: 'Time Total', icon: <span className="icon-[tabler--calendar] w-5 h-5" /> },
+    { key: 'productStats', label: 'Product Statistics', icon: <span className="icon-[tabler--chart-bar] w-5 h-5" /> },
+    { key: 'relatedProducts', label: 'Related Products', icon: <span className="icon-[tabler--file-invoice] w-5 h-5" /> },
+    { key: 'invoices', label: 'Invoices', icon: <span className="icon-[tabler--receipt] w-5 h-5" /> },
   ];
 
   if (loading) {
@@ -692,7 +686,7 @@ export default function Transactions() {
             bg-purple-200 dark:bg-purple-600/30 px-4 py-2 rounded-lg
             transition-colors duration-300"
         >
-          <MdFilterList className="w-5 h-5" />
+          <span className="icon-[tabler--filter] w-5 h-5" />
           <span>{t('transactions.filters')}</span>
         </motion.button>
       </div>
@@ -765,7 +759,7 @@ export default function Transactions() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
               >
                 <h2 className="text-lg text-slate-900 dark:text-white mb-2">{t('transactions.allTimeTotal')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -776,7 +770,7 @@ export default function Transactions() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
               >
                 <h2 className="text-lg text-slate-900 dark:text-white mb-2">{t('transactions.filteredTotal')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -787,7 +781,7 @@ export default function Transactions() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
               >
                 <h2 className="text-lg text-slate-900 dark:text-white mb-2">{t('transactions.filteredTransactions')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -808,7 +802,7 @@ export default function Transactions() {
                   >
                     <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-white/10">
                       <div className="flex items-center gap-2">
-                        <MdDateRange className="w-5 h-5 text-indigo-500" />
+                        <span className="icon-[tabler--calendar] w-5 h-5 text-indigo-500" />
                         <h3 className="font-bold text-slate-900 dark:text-white">
                           {new Date(group.date + 'T00:00:00').toLocaleDateString('en-US', {
                             weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
@@ -841,7 +835,7 @@ export default function Transactions() {
                               onClick={() => setShowReceiptDialog(tx)}
                               className="text-white p-1.5 bg-teal-600 dark:bg-teal-500/30 hover:bg-teal-700 dark:hover:bg-teal-500/50 rounded-lg transition-colors"
                             >
-                              <MdLocalPrintshop className="w-4 h-4" />
+                              <span className="icon-[tabler--printer] w-4 h-4" />
                             </motion.button>
                             <motion.button
                               whileHover={{ scale: 1.1 }}
@@ -849,7 +843,7 @@ export default function Transactions() {
                               onClick={() => handleDeleteTransaction(tx.id)}
                               className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-1.5"
                             >
-                              <MdDelete className="w-4 h-4" />
+                              <span className="icon-[tabler--trash] w-4 h-4" />
                             </motion.button>
                           </div>
                         </div>
@@ -860,7 +854,7 @@ export default function Transactions() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdDateRange className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--calendar] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noTimeTotalData')}</p>
               </div>
             )}
@@ -875,7 +869,7 @@ export default function Transactions() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
               >
                 <h2 className="text-lg text-slate-900 dark:text-white mb-2">{t('reports.totalProductsSold')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -885,7 +879,7 @@ export default function Transactions() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
               >
                 <h2 className="text-lg text-slate-900 dark:text-white mb-2">{t('transactions.revenue')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -895,7 +889,7 @@ export default function Transactions() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="card--glass card--hover rounded-xl p-4"
+                className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
               >
                 <h2 className="text-lg text-slate-900 dark:text-white mb-2">{t('transactions.uniqueProducts')}</h2>
                 <p className="text-2xl font-bold text-teal-600 dark:text-teal-400">
@@ -908,7 +902,7 @@ export default function Transactions() {
             {productStats.length > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
                 <div className="relative flex-1 max-w-xs">
-                  <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={productSearch}
@@ -924,7 +918,7 @@ export default function Transactions() {
                       onClick={() => { setProductPage(1); setProductSearch(''); }}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
                     >
-                      <MdClose className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--x] w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
@@ -976,8 +970,8 @@ export default function Transactions() {
                         {isInChain && criterion && (
                           <>
                             {criterion.order === 'asc'
-                              ? <MdArrowUpward className="w-3 h-3" />
-                              : <MdArrowDownward className="w-3 h-3" />
+                              ? <span className="icon-[tabler--arrow-up] w-3 h-3" />
+                              : <span className="icon-[tabler--arrow-down] w-3 h-3" />
                             }
                             <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 ml-0.5">
                               {chainIdx + 1}
@@ -995,21 +989,21 @@ export default function Transactions() {
                     hover:bg-slate-300/80 dark:hover:bg-white/20 transition-colors"
                   title={t('transactions.shortcutHelp')}
                 >
-                  <MdHelpOutline className="w-4 h-4" />
+                  <span className="icon-[tabler--help-circle] w-4 h-4" />
                 </button>
                 <button
                   onClick={handleExportProductStatsCSV}
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
             )}
             {productStats.length > 0 && sortedProductStats.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--search] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noSearchMatch')}</p>
                 <button
                   onClick={() => setProductSearch('')}
@@ -1111,7 +1105,7 @@ export default function Transactions() {
               </div>
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdBarChart className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--chart-bar] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noProductStatsData')}</p>
               </div>
             )}
@@ -1124,7 +1118,7 @@ export default function Transactions() {
             {productInvoices.length > 0 && (
               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-2">
                 <div className="relative flex-1 max-w-xs">
-                  <MdSearch className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                   <input
                     type="text"
                     value={relatedSearch}
@@ -1140,7 +1134,7 @@ export default function Transactions() {
                       onClick={() => setRelatedSearch('')}
                       className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
                     >
-                      <MdClose className="w-3.5 h-3.5" />
+                      <span className="icon-[tabler--x] w-3.5 h-3.5" />
                     </button>
                   )}
                 </div>
@@ -1190,8 +1184,8 @@ export default function Transactions() {
                         {isInChain && criterion && (
                           <>
                             {criterion.order === 'asc'
-                              ? <MdArrowUpward className="w-3 h-3" />
-                              : <MdArrowDownward className="w-3 h-3" />
+                              ? <span className="icon-[tabler--arrow-up] w-3 h-3" />
+                              : <span className="icon-[tabler--arrow-down] w-3 h-3" />
                             }
                             <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 ml-0.5">
                               {chainIdx + 1}
@@ -1207,14 +1201,14 @@ export default function Transactions() {
                   className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium shrink-0
                     bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 transition-colors"
                 >
-                  <FaDownload className="w-3.5 h-3.5" />
+                  <span className="icon-[tabler--download] w-3.5 h-3.5" />
                   {t('reports.exportCSV')}
                 </button>
               </div>
             )}
             {productInvoices.length > 0 && filteredRelatedProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdSearch className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--search] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noSearchMatch')}</p>
                 <button
                   onClick={() => setRelatedSearch('')}
@@ -1233,7 +1227,7 @@ export default function Transactions() {
                 >
                   <div className="flex items-center justify-between mb-3 pb-2 border-b border-slate-200 dark:border-white/10">
                     <div className="flex items-center gap-2">
-                      <MdBarChart className="w-5 h-5 text-indigo-500" />
+                      <span className="icon-[tabler--chart-bar] w-5 h-5 text-indigo-500" />
                       <div>
                         <div className="flex items-center gap-1.5">
                           <h3 className="font-bold text-slate-900 dark:text-white">{product.productName}</h3>
@@ -1243,7 +1237,7 @@ export default function Transactions() {
                             const crit = relatedSortChain[idx];
                             return (
                               <span className="inline-flex items-center gap-0.5 text-teal-600 dark:text-teal-400 text-xs">
-                                {crit.order === 'asc' ? <MdArrowUpward className="w-3 h-3" /> : <MdArrowDownward className="w-3 h-3" />}
+                                {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
                                 {relatedSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                               </span>
                             );
@@ -1278,7 +1272,7 @@ export default function Transactions() {
                                 const crit = relatedSortChain[idx];
                                 return (
                                   <span className="inline-flex items-center gap-0.5 text-teal-600 dark:text-teal-400">
-                                    {crit.order === 'asc' ? <MdArrowUpward className="w-3 h-3" /> : <MdArrowDownward className="w-3 h-3" />}
+                                    {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
                                     {relatedSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                                   </span>
                                 );
@@ -1295,7 +1289,7 @@ export default function Transactions() {
                                 const crit = relatedSortChain[idx];
                                 return (
                                   <span className="inline-flex items-center gap-0.5 text-teal-600 dark:text-teal-400">
-                                    {crit.order === 'asc' ? <MdArrowUpward className="w-3 h-3" /> : <MdArrowDownward className="w-3 h-3" />}
+                                    {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
                                     {relatedSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                                   </span>
                                 );
@@ -1322,7 +1316,7 @@ export default function Transactions() {
               ))
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <FaFileInvoiceDollar className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--file-invoice] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noRelatedProductsData')}</p>
               </div>
             )}
@@ -1379,8 +1373,8 @@ export default function Transactions() {
                       {isInChain && criterion && (
                         <>
                           {criterion.order === 'asc'
-                            ? <MdArrowUpward className="w-3 h-3" />
-                            : <MdArrowDownward className="w-3 h-3" />
+                            ? <span className="icon-[tabler--arrow-up] w-3 h-3" />
+                            : <span className="icon-[tabler--arrow-down] w-3 h-3" />
                           }
                           <span className="text-[10px] font-bold text-indigo-500 dark:text-indigo-400 ml-0.5">
                             {chainIdx + 1}
@@ -1399,12 +1393,12 @@ export default function Transactions() {
                   initial={{ opacity: 0, x: -20 }}
                   animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
-                  className="card--glass card--hover rounded-xl p-4"
+                  className="card--glass hover:-translate-y-0.5 hover:shadow-lg transition-all duration-300 rounded-xl p-4"
                 >
                   <div className="flex justify-between items-start mb-4">
                     <div>
                       <div className="flex items-center gap-2">
-                        <MdReceipt className="w-5 h-5 text-indigo-500" />
+                        <span className="icon-[tabler--receipt] w-5 h-5 text-indigo-500" />
                         <span className="font-bold text-slate-900 dark:text-white">#{transaction.id}</span>
                         {(() => {
                           const idx = invoiceSortChain.findIndex(c => c.field === 'type');
@@ -1412,7 +1406,7 @@ export default function Transactions() {
                           const crit = invoiceSortChain[idx];
                           return (
                             <span className="inline-flex items-center gap-0.5 text-teal-600 dark:text-teal-400 text-xs">
-                              {crit.order === 'asc' ? <MdArrowUpward className="w-3 h-3" /> : <MdArrowDownward className="w-3 h-3" />}
+                              {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
                               {invoiceSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                             </span>
                           );
@@ -1430,7 +1424,7 @@ export default function Transactions() {
                           const crit = invoiceSortChain[idx];
                           return (
                             <span className="inline-flex items-center gap-0.5 text-teal-600 dark:text-teal-400">
-                              {crit.order === 'asc' ? <MdArrowUpward className="w-3 h-3" /> : <MdArrowDownward className="w-3 h-3" />}
+                              {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-3 h-3" /> : <span className="icon-[tabler--arrow-down] w-3 h-3" />}
                               {invoiceSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                             </span>
                           );
@@ -1445,7 +1439,7 @@ export default function Transactions() {
                         onClick={() => setShowReceiptDialog(transaction)}
                         className="text-white p-2 bg-teal-600 dark:bg-teal-500/30 hover:bg-teal-700 dark:hover:bg-teal-500/50 rounded-lg transition-colors"
                       >
-                        <MdLocalPrintshop className="w-5 h-5" />
+                        <span className="icon-[tabler--printer] w-5 h-5" />
                       </motion.button>
                       <motion.button
                         whileHover={{ scale: 1.1 }}
@@ -1453,7 +1447,7 @@ export default function Transactions() {
                         onClick={() => handleDeleteTransaction(transaction.id)}
                         className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2"
                       >
-                        <MdDelete className="w-5 h-5" />
+                        <span className="icon-[tabler--trash] w-5 h-5" />
                       </motion.button>
                     </div>
                   </div>
@@ -1484,7 +1478,7 @@ export default function Transactions() {
                         const crit = invoiceSortChain[idx];
                         return (
                           <span className="inline-flex items-center gap-0.5 text-teal-600 dark:text-teal-400">
-                            {crit.order === 'asc' ? <MdArrowUpward className="w-4 h-4" /> : <MdArrowDownward className="w-4 h-4" />}
+                            {crit.order === 'asc' ? <span className="icon-[tabler--arrow-up] w-4 h-4" /> : <span className="icon-[tabler--arrow-down] w-4 h-4" />}
                             {invoiceSortChain.length > 1 && <span className="text-[10px] font-bold">{idx + 1}</span>}
                           </span>
                         );
@@ -1495,7 +1489,7 @@ export default function Transactions() {
               ))
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
-                <MdReceipt className="w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
+                <span className="icon-[tabler--receipt] w-12 h-12 text-slate-400 dark:text-slate-500 mb-4" />
                 <p className="text-slate-600 dark:text-white/70 text-lg mb-2">{t('transactions.noInvoicesData')}</p>
               </div>
             )}
@@ -1527,7 +1521,7 @@ export default function Transactions() {
                 onClick={() => setShowReceiptDialog(null)}
                 className="text-slate-600 dark:text-white/60 hover:text-slate-900 dark:hover:text-white p-2"
               >
-                <MdClose className="w-6 h-6" />
+                <span className="icon-[tabler--x] w-6 h-6" />
               </motion.button>
             </div>
 
@@ -1575,7 +1569,7 @@ export default function Transactions() {
                 className="py-3 px-4 bg-blue-500 text-white rounded-xl font-semibold 
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
-                <MdFileDownload className="text-xl" />
+                <span className="icon-[tabler--file-download] text-xl" />
                 {t('transactions.receiptPDF')}
               </motion.button>
 
@@ -1586,7 +1580,7 @@ export default function Transactions() {
                 className="py-3 px-4 bg-purple-500 text-white rounded-xl font-semibold 
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
-                <MdLocalPrintshop className="text-xl" />
+                <span className="icon-[tabler--printer] text-xl" />
                 {t('transactions.print')}
               </motion.button>
             </div>
@@ -1607,7 +1601,7 @@ export default function Transactions() {
                 />
               ) : (
                 <>
-                  <FaFileInvoiceDollar className="text-xl" />
+                  <span className="icon-[tabler--file-invoice] text-xl" />
                   {t('invoice.downloadInvoice')}
                 </>
               )}

@@ -251,6 +251,7 @@ UPDATE settings SET
     opening_time = '09:00',
     closing_time = '23:00',
     receipt_footer = 'Thank you for dining with us! Follow us @pos_app',
+    logo = NULL,
     dine_in_tables = 15,
     delivery_fee = 50.0,
     delivery_fee_per_km = 15.0
@@ -1376,6 +1377,7 @@ UPDATE settings SET
     opening_time = '09:00',
     closing_time = '23:00',
     receipt_footer = 'Thank you for dining with us! Follow us @pos_app',
+    logo = NULL,
     dine_in_tables = 15,
     delivery_fee = 50.0,
     delivery_fee_per_km = 15.0

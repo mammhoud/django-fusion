@@ -14,6 +14,33 @@ const { mockTicketsList, mockHealthCheck, mockCreateChatWs } = vi.hoisted(() => 
   mockCreateChatWs: vi.fn().mockReturnValue({ close: vi.fn(), send: vi.fn() }),
 }));
 
+vi.mock('../../api/sidecar', () => ({
+  default: {
+    healthCheck: mockHealthCheck,
+    get: vi.fn(),
+    post: vi.fn(),
+    patch: vi.fn(),
+    base: 'http://127.0.0.1:8765',
+    wsBase: 'ws://127.0.0.1:8765',
+  },
+}));
+
+vi.mock('../../api/tickets', () => ({
+  default: {
+    list: mockTicketsList,
+    create: vi.fn(),
+    update: vi.fn(),
+  },
+}));
+
+vi.mock('../../api/chat', () => ({
+  createChatWs: mockCreateChatWs,
+  chat: {
+    getHistory: vi.fn().mockResolvedValue({ data: [], ok: true }),
+    postMessage: vi.fn(),
+  },
+}));
+
 vi.mock('../../api', () => ({
   sidecar: {
     healthCheck: mockHealthCheck,
@@ -35,9 +62,6 @@ vi.mock('../../api', () => ({
     getSale: vi.fn(),
     getInvoiceUrl: vi.fn(),
   },
-  // ChatSupport.tsx imports `createChatWs` directly as a named export
-  // from '../../api'. If the module system requires it at the top level,
-  // export it both nested (for other imports) and at the top level:
   createChatWs: mockCreateChatWs,
 }));
 

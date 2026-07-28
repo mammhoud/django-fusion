@@ -1,12 +1,11 @@
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
-import { MdClose, MdPointOfSale, MdLogout, MdHelpOutline, MdPeople, MdLocalShipping, MdKitchen, MdEvent, MdReceiptLong, MdAccountBalance, MdSecurity, MdPushPin } from 'react-icons/md';
-import {
-  FaClipboardList, FaChartBar, FaHistory, FaBoxes, FaUsers,
-  FaMortarPestle, FaFileAlt, FaCog, FaHeart, FaHome, FaMoneyBillWave,
-  FaComments, FaFileInvoiceDollar
-} from 'react-icons/fa';
+// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+// Helper: wraps a tabler icon class name into a React component type
+function Ic(name: string): React.ComponentType<{ className?: string }> {
+  return ({ className = '' }) => <span className={`icon-[tabler--${name}] ${className}`} />;
+}
 import ThemeToggle from './ThemeToggle';
 import LanguageToggle from './LanguageToggle';
 import KeyboardShortcutsModal from './KeyboardShortcutsModal';
@@ -22,27 +21,27 @@ interface NavItem {
 }
 
 const navItems: NavItem[] = [
-  { label: 'nav.home', route: '/', icon: FaHome, gradient: 'from-teal-400 to-teal-500' },
-  { label: 'nav.productManager', route: '/manager', icon: FaClipboardList, gradient: 'from-blue-400 to-blue-500' },
-  { label: 'nav.newSale', route: '/sale', icon: MdPointOfSale, gradient: 'from-green-400 to-green-500' },
-  { label: 'nav.analytics', route: '/analytics', icon: FaChartBar, gradient: 'from-purple-400 to-purple-500' },
-  { label: 'nav.transactions', route: '/transactions', icon: FaHistory, gradient: 'from-orange-400 to-orange-500' },
-  { label: 'nav.inventory', route: '/inventory', icon: FaBoxes, gradient: 'from-emerald-400 to-emerald-500' },
-  { label: 'nav.employees', route: '/employees', icon: FaUsers, gradient: 'from-indigo-400 to-indigo-500' },
-  { label: 'nav.recipes', route: '/recipes', icon: FaMortarPestle, gradient: 'from-orange-400 to-orange-500' },
-  { label: 'nav.reports', route: '/reports', icon: FaFileAlt, gradient: 'from-rose-400 to-rose-500' },
-  { label: 'nav.customers', route: '/customers', icon: MdPeople, gradient: 'from-cyan-400 to-cyan-500' },
-  { label: 'nav.suppliers', route: '/suppliers', icon: MdLocalShipping, gradient: 'from-amber-400 to-amber-500' },
-  { label: 'nav.kitchen', route: '/kitchen', icon: MdKitchen, gradient: 'from-orange-400 to-orange-500' },
-  { label: 'nav.schedule', route: '/schedule', icon: MdEvent, gradient: 'from-violet-400 to-violet-500' },
-  { label: 'nav.payroll', route: '/payroll', icon: FaMoneyBillWave, gradient: 'from-emerald-400 to-emerald-500' },
-  { label: 'nav.receiptTemplates', route: '/receipt-templates', icon: MdReceiptLong, gradient: 'from-lime-400 to-lime-500' },
-  { label: 'nav.invoice', route: '/invoice', icon: FaFileInvoiceDollar, gradient: 'from-teal-400 to-teal-500' },
-  { label: 'nav.taxReports', route: '/tax-reports', icon: MdAccountBalance, gradient: 'from-indigo-400 to-indigo-500' },
-  { label: 'nav.roles', route: '/roles', icon: MdSecurity, gradient: 'from-red-400 to-red-500' },
-  { label: 'nav.supportChat', route: '/support-chat', icon: FaComments, gradient: 'from-cyan-400 to-cyan-500' },
-  { label: 'nav.settings', route: '/settings', icon: FaCog, gradient: 'from-gray-400 to-gray-500' },
-  { label: 'nav.about', route: '/about', icon: FaHeart, gradient: 'from-pink-400 to-pink-500' },
+  { label: 'nav.home', route: '/', icon: Ic('home'), gradient: 'from-teal-400 to-teal-500' },
+  { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), gradient: 'from-blue-400 to-blue-500' },
+  { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), gradient: 'from-green-400 to-green-500' },
+  { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), gradient: 'from-purple-400 to-purple-500' },
+  { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), gradient: 'from-orange-400 to-orange-500' },
+  { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), gradient: 'from-emerald-400 to-emerald-500' },
+  { label: 'nav.employees', route: '/employees', icon: Ic('users'), gradient: 'from-indigo-400 to-indigo-500' },
+  { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), gradient: 'from-orange-400 to-orange-500' },
+  { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), gradient: 'from-rose-400 to-rose-500' },
+  { label: 'nav.customers', route: '/customers', icon: Ic('users'), gradient: 'from-cyan-400 to-cyan-500' },
+  { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), gradient: 'from-amber-400 to-amber-500' },
+  { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), gradient: 'from-orange-400 to-orange-500' },
+  { label: 'nav.schedule', route: '/schedule', icon: Ic('calendar-event'), gradient: 'from-violet-400 to-violet-500' },
+  { label: 'nav.payroll', route: '/payroll', icon: Ic('moneybag'), gradient: 'from-emerald-400 to-emerald-500' },
+  { label: 'nav.receiptTemplates', route: '/receipt-templates', icon: Ic('receipt'), gradient: 'from-lime-400 to-lime-500' },
+  { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), gradient: 'from-teal-400 to-teal-500' },
+  { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), gradient: 'from-indigo-400 to-indigo-500' },
+  { label: 'nav.roles', route: '/roles', icon: Ic('shield'), gradient: 'from-red-400 to-red-500' },
+  { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), gradient: 'from-cyan-400 to-cyan-500' },
+  { label: 'nav.settings', route: '/settings', icon: Ic('settings'), gradient: 'from-gray-400 to-gray-500' },
+  { label: 'nav.about', route: '/about', icon: Ic('heart'), gradient: 'from-pink-400 to-pink-500' },
 ];
 
 interface SideNavProps {
@@ -103,7 +102,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
             title={isPinned ? 'Unpin sidebar' : 'Pin sidebar'}
           >
-            <MdPushPin className={`w-4 h-4 transition-transform duration-200 ${isPinned ? 'rotate-45 text-teal-500' : ''}`} />
+            <span className={`icon-[tabler--pin] w-4 h-4 transition-transform duration-200 ${isPinned ? 'rotate-45 text-teal-500' : ''}`} />
           </motion.button>
         </div>
 
@@ -165,7 +164,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
                 rounded-xl text-sm font-medium transition-colors"
               title={!expanded ? t('auth.signOut') : undefined}
             >
-              <MdLogout className="w-4 h-4 shrink-0" />
+              <span className="icon-[tabler--logout] w-4 h-4 shrink-0" />
               <motion.span
                 animate={{ opacity: expanded ? 1 : 0 }}
                 transition={{ duration: 0.12 }}
@@ -186,7 +185,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
               text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium transition-colors"
             title={!expanded ? t('transactions.shortcutHelp') : undefined}
           >
-            <MdHelpOutline className="w-4 h-4 shrink-0" />
+            <span className="icon-[tabler--help-circle] w-4 h-4 shrink-0" />
             <motion.span
               animate={{ opacity: expanded ? 1 : 0 }}
               transition={{ duration: 0.12 }}
@@ -278,7 +277,7 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
                 className="p-1.5 rounded-lg text-slate-500 dark:text-white/60 hover:text-slate-900 dark:hover:text-white
                   hover:bg-slate-100 dark:hover:bg-white/10 transition-colors"
               >
-                <MdClose className="w-5 h-5" />
+                <span className="icon-[tabler--x] w-5 h-5" />
               </motion.button>
             </div>
 
@@ -335,7 +334,7 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
                     rounded-xl text-sm font-medium transition-colors 
                     border border-red-200 dark:border-red-800/30"
                 >
-                  <MdLogout className="w-4 h-4" />
+                  <span className="icon-[tabler--logout] w-4 h-4" />
                   {t('auth.signOut')}
                 </motion.button>
               )}
@@ -349,7 +348,7 @@ export default function SideNav({ isOpen = false, onClose = () => {}, currentRou
                   text-slate-600 dark:text-slate-300 rounded-xl text-sm font-medium transition-colors
                   border border-slate-200 dark:border-white/10"
               >
-                <MdHelpOutline className="w-4 h-4" />
+                <span className="icon-[tabler--help-circle] w-4 h-4" />
                 <span>{t('transactions.shortcutHelp')}</span>
                 <kbd className="ml-1 px-1.5 py-0.5 text-[10px] font-mono rounded
                   bg-slate-200 dark:bg-white/10 text-slate-500 dark:text-slate-400">
