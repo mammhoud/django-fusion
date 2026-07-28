@@ -46,7 +46,7 @@ export default function Modal({
               )}
               <button
                 onClick={onClose}
-                className="text-slate-500 hover:text-slate-700 dark:hover:text-white transition-colors rounded-lg p-1"
+                className="btn btn-ghost btn-sm btn-square"
               >
                 <span className="icon-[tabler--x] w-6 h-6" />
               </button>

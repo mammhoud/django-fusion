@@ -74,7 +74,7 @@
     "suppliersDesc": "Manage suppliers",
     "home": "Home",
     "navigation": "Navigation",
-    "footer": "POS KO Restaurant Management",
+    "footer": "Forge POS Restaurant Management",
     "categorySales": "Sales & Operations",
     "categoryProducts": "Inventory & Products",
     "categoryStaff": "Staff & Customers",
@@ -82,15 +82,15 @@
     "categorySystem": "Settings & System"
   },
   "home": {
-    "title": "POS KO",
+    "title": "Forge POS",
     "loading": "Loading...",
     "dashboard": "Dashboard"
   },
   "about": {
-    "title": "About POS KO",
+    "title": "About Forge POS",
     "subtitle": "A modern solution for managing your restaurant operations",
     "projectTitle": "About the Project",
-    "projectDesc1": "POS KO is a modern point-of-sale system built with Tauri, React, and TypeScript. It provides a comprehensive solution for managing restaurant operations including sales, inventory, analytics, and more.",
+    "projectDesc1": "Forge POS is a modern point-of-sale system built with Tauri, React, and TypeScript. It provides a comprehensive solution for managing restaurant operations including sales, inventory, analytics, and more.",
     "projectDesc2": "This application is designed to be fast, secure, and easy to use. Built with performance in mind, it leverages the power of Rust for backend operations and React for a beautiful, responsive user interface.",
     "developedBy": "Developed by",
     "supportTitle": "Support & Contact",

@@ -18,7 +18,7 @@ describe('About Page', () => {
     renderWithRouter(<About />);
 
     await waitFor(() => {
-      expect(screen.getByText(/about\.title|About POS KO/)).toBeInTheDocument();
+      expect(screen.getByText(/about\.title|About Forge POS/)).toBeInTheDocument();
     });
   });
 

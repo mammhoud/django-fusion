@@ -14,6 +14,7 @@ Forge POS is a lightweight, offline-first Point of Sale desktop application buil
 | Document | Description |
 |----------|-------------|
 | **[Architecture](architecture.md)** | System design, data flow diagrams, FlyonUI integration, theme system |
+| **[Styling & UI Packages](styling.md)** | Full styling catalog — Tailwind v4, FlyonUI, Iconify, Framer Motion, themes, bundle analysis |
 | **[Database Schema](database.md)** | ERD, table reference, migration guide, seed presets |
 | **[Invoke Methods](invoke-methods.md)** | Complete Tauri `invoke()` catalog — frontend calls & Rust handlers |
 | **[File Structure](file-structure.md)** | Full project tree with descriptions |

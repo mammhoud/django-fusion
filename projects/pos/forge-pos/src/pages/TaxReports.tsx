@@ -97,7 +97,7 @@ export default function TaxReports() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('taxReports.title')}</h1>
-          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
+          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="btn btn-primary gap-2">
             <span className="icon-[tabler--plus]" /> {t('taxReports.addReport')}
           </motion.button>
         </div>
@@ -158,15 +158,15 @@ export default function TaxReports() {
         {showForm && (
           <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3">
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white sm:col-span-2" />
+              <input type="date" value={form.period_start} onChange={e => setForm({ ...form, period_start: e.target.value })} required className="input input-bordered w-full" />
+              <input type="date" value={form.period_end} onChange={e => setForm({ ...form, period_end: e.target.value })} required className="input input-bordered w-full" />
+              <input type="number" step="0.01" value={form.total_sales} onChange={e => setForm({ ...form, total_sales: Number(e.target.value) })} placeholder={t('taxReports.totalSales')} required className="input input-bordered w-full" />
+              <input type="number" step="0.01" value={form.total_tax} onChange={e => setForm({ ...form, total_tax: Number(e.target.value) })} placeholder={t('taxReports.totalTax')} required className="input input-bordered w-full" />
+              <input type="number" value={form.transaction_count} onChange={e => setForm({ ...form, transaction_count: Number(e.target.value) })} placeholder={t('taxReports.transactionCount')} required className="input input-bordered w-full sm:col-span-2" />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">{t('common.save')}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">{t('common.cancel')}</button>
+              <button type="submit" className="btn btn-primary">{t('common.save')}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
           </motion.form>
         )}

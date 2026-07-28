@@ -83,9 +83,7 @@ function ProfileDropdown({
                 whileHover={{ scale: 1.01 }}
                 whileTap={{ scale: 0.98 }}
                 onClick={onLogout}
-                className="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl
-                  text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20
-                  transition-colors text-sm font-medium"
+                className="btn btn-ghost btn-block justify-start text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-xl"
               >
                 <span className="icon-[tabler--logout] w-4 h-4" />
                 Sign Out
@@ -200,11 +198,10 @@ export default function PageLayout({
               bg-amber-500 text-white px-5 py-3 rounded-xl shadow-2xl text-sm font-semibold"
           >
             <span className="icon-[tabler--alert-triangle] w-5 h-5 shrink-0" />
-            <span>Session expiring soon — click anywhere to stay logged in</span>
-            <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
-              onClick={dismissInactivityWarning}
-              className="ml-2 px-3 py-1 rounded-lg bg-white/20 hover:bg-white/30 text-white text-xs font-bold transition-colors"
+            <span>Session expiring soon — click anywhere to stay logged in</span>              <motion.button
+                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+                onClick={dismissInactivityWarning}
+                className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
             >
               Stay
             </motion.button>
@@ -221,20 +218,20 @@ export default function PageLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={() => setIsNavOpen(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10"
+                className="btn btn-square btn-ghost"
                 aria-label="Open navigation"
               >
-                <span className="icon-[tabler--menu-2] w-5 h-5 text-slate-700 dark:text-slate-300" />
+                <span className="icon-[tabler--menu-2] w-5 h-5" />
               </motion.button>
               <motion.button
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={handleBackNavigation}
                 disabled={isNavigating}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 disabled:opacity-50"
+                className="btn btn-square btn-ghost disabled:opacity-50"
                 aria-label="Back to home"
               >
-                <span className="icon-[tabler--arrow-back] w-4 h-4 text-slate-700 dark:text-slate-300 rtl:scale-x-[-1]" />
+                <span className="icon-[tabler--arrow-back] w-4 h-4 rtl:scale-x-[-1]" />
               </motion.button>
             </div>
             <div className="flex items-center gap-3 flex-1 justify-center min-w-0">
@@ -280,10 +277,10 @@ export default function PageLayout({
                 whileHover={{ scale: 1.05 }}
                 whileTap={{ scale: 0.92 }}
                 onClick={() => setIsNavOpen(true)}
-                className="w-9 h-9 flex items-center justify-center rounded-xl bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 shrink-0"
+                className="btn btn-square btn-ghost shrink-0"
                 aria-label="Open navigation"
               >
-                <span className="icon-[tabler--menu-2] w-5 h-5 text-slate-700 dark:text-slate-300" />
+                <span className="icon-[tabler--menu-2] w-5 h-5" />
               </motion.button>
             </div>
           </div>

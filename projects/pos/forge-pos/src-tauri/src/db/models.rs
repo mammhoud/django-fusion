@@ -45,6 +45,7 @@ pub struct Settings {
 #[derive(Debug, Insertable, AsChangeset, Deserialize)]
 #[diesel(table_name = crate::db::schema::settings)]
 pub struct UpdateSettings {
+    #[serde(default)]
     pub restaurant_name: Option<String>,
     pub address: Option<String>,
     pub phone: Option<String>,
@@ -54,7 +55,10 @@ pub struct UpdateSettings {
     pub opening_time: Option<String>,
     pub closing_time: Option<String>,
     pub receipt_footer: Option<String>,
-    pub logo: Option<String>,
+    /// None = skip field (no change to DB column)
+    /// Some(None) = set column to NULL (explicitly clear logo)
+    /// Some(Some(data)) = set column to the given value
+    pub logo: Option<Option<String>>,
     pub dine_in_tables: Option<i32>,
     pub delivery_fee: Option<f64>,
     pub delivery_fee_per_km: Option<f64>,
@@ -108,6 +112,10 @@ pub struct NewProduct {
     pub category_id: Option<i32>,
     pub image: Option<String>,
     pub border_color: Option<String>,
+    /// Defaults to 'product' on the DB side. The frontend sends this
+    /// explicitly; serde(default) handles missing field gracefully.
+    #[serde(default)]
+    pub product_type: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]

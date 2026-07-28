@@ -111,7 +111,7 @@ export default function Customers() {
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', phone: '', email: '', notes: '' }); }}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors shrink-0"
+            className="btn btn-primary gap-2 shrink-0"
           >
             <span className="icon-[tabler--plus]" /> {t('customers.addCustomer')}
           </motion.button>
@@ -128,10 +128,7 @@ export default function Customers() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('customers.searchPlaceholder') || 'Search customers...'}
                 aria-label={t('customers.searchPlaceholder') || 'Search customers'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                  border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                  placeholder:text-slate-400 dark:placeholder:text-gray-500
-                  focus:outline-none focus:border-teal-400 transition-colors text-sm"
+                className="input input-bordered w-full pl-10"
               />
               {isFiltering ? (
                 <motion.div
@@ -171,35 +168,35 @@ export default function Customers() {
                 onChange={e => setForm({ ...form, name: e.target.value })}
                 placeholder={t('customers.name')}
                 required
-                className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white"
+                className="input input-bordered w-full"
               />
               <input
                 type="text"
                 value={form.phone}
                 onChange={e => setForm({ ...form, phone: e.target.value })}
                 placeholder={t('customers.phone')}
-                className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white"
+                className="input input-bordered w-full"
               />
               <input
                 type="email"
                 value={form.email}
                 onChange={e => setForm({ ...form, email: e.target.value })}
                 placeholder={t('customers.email')}
-                className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white"
+                className="input input-bordered w-full"
               />
               <input
                 type="text"
                 value={form.notes}
                 onChange={e => setForm({ ...form, notes: e.target.value })}
                 placeholder={t('customers.notes')}
-                className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white"
+                className="input input-bordered w-full"
               />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
+              <button type="submit" className="btn btn-primary">
                 {editing ? t('common.update') : t('common.save')}
               </button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">
                 {t('common.cancel')}
               </button>
             </div>

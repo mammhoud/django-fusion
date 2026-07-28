@@ -38,7 +38,7 @@ test.describe('Auth Page — Visual Regression', () => {
       await expect(page.getByText('auth.createAccount')).toBeVisible();
 
       // ── Illustration panel ──
-      await expect(page.getByText('POS KO')).toBeVisible();
+      await expect(page.getByText('Forge POS')).toBeVisible();
       await expect(page.getByText('Point of Sale & Order Management')).toBeVisible();
       await expect(page.getByText('Real-time Analytics & Reports')).toBeVisible();
       await expect(page.getByText('Inventory & Recipe Tracking')).toBeVisible();

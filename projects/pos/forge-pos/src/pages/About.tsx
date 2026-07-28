@@ -178,11 +178,10 @@ export default function About() {
                     name="name"
                     value={supportForm.name}
                     onChange={handleSupportChange}
-                    className={`w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border 
-                      text-slate-900 dark:text-white focus:outline-none transition-colors ${
+                    className={`input input-bordered w-full ${
                         formErrors.name 
-                          ? 'border-red-500 focus:border-red-400' 
-                          : 'border-slate-300 dark:border-gray-600 focus:border-teal-400'
+                          ? 'input-error' 
+                          : ''
                       }`}
                     disabled={isSubmitting}
                     placeholder={t('support.namePlaceholder')}
@@ -196,11 +195,10 @@ export default function About() {
                     name="email"
                     value={supportForm.email}
                     onChange={handleSupportChange}
-                    className={`w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border 
-                      text-slate-900 dark:text-white focus:outline-none transition-colors ${
+                    className={`input input-bordered w-full ${
                         formErrors.email 
-                          ? 'border-red-500 focus:border-red-400' 
-                          : 'border-slate-300 dark:border-gray-600 focus:border-teal-400'
+                          ? 'input-error' 
+                          : ''
                       }`}
                     disabled={isSubmitting}
                     placeholder={t('support.emailPlaceholder')}
@@ -215,13 +213,11 @@ export default function About() {
                   type="text"
                   name="subject"
                   value={supportForm.subject}
-                  onChange={handleSupportChange}
-                  className={`w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border 
-                    text-slate-900 dark:text-white focus:outline-none transition-colors ${
-                      formErrors.subject 
-                        ? 'border-red-500 focus:border-red-400' 
-                        : 'border-slate-300 dark:border-gray-600 focus:border-teal-400'
-                    }`}
+                  onChange={handleSupportChange}                    className={`input input-bordered w-full ${
+                        formErrors.subject 
+                          ? 'input-error' 
+                          : ''
+                      }`}
                   disabled={isSubmitting}
                   placeholder={t('support.subjectPlaceholder')}
                 />
@@ -234,13 +230,10 @@ export default function About() {
                   name="message"
                   value={supportForm.message}
                   onChange={handleSupportChange}
-                  rows={6}
-                  className={`w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border 
-                    text-slate-900 dark:text-white focus:outline-none transition-colors resize-none 
-                    placeholder:text-slate-400 dark:placeholder:text-gray-400 ${
-                      formErrors.message 
-                        ? 'border-red-500 focus:border-red-400' 
-                        : 'border-slate-300 dark:border-gray-600 focus:border-teal-400'
+                  rows={6}                    className={`textarea textarea-bordered w-full resize-none ${
+                        formErrors.message 
+                          ? 'textarea-error' 
+                          : ''
                     }`}
                   disabled={isSubmitting}
                   placeholder={t('support.messagePlaceholder')}
@@ -250,9 +243,7 @@ export default function About() {
 
               <motion.button
                 type="submit"
-                className="w-full py-3 bg-linear-to-r from-teal-400 to-purple-400 text-white rounded-xl 
-                  font-semibold transition-all duration-200 flex items-center justify-center gap-2
-                  disabled:opacity-50 disabled:cursor-not-allowed"
+                className="btn btn-primary w-full bg-linear-to-r from-teal-400 to-purple-400 border-0 gap-2"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (

@@ -9,9 +9,9 @@ import { mockInvokeSuccess, resetInvokeMocks } from '../mocks/tauri';
 import ProductManager from '../../pages/ProductManager';
 
 const mockProducts = [
-  { id: 1, name: 'Chicken Burger', price: 350, unit: 'item',  category_id: 1 },
-  { id: 2, name: 'French Fries',  price: 150, unit: 'plate', category_id: 2 },
-  { id: 3, name: 'Beef Burger',   price: 450, unit: 'item',  category_id: 1 },
+  { id: 1, name: 'Chicken Burger', price: 350, unit: 'item',  category_id: 1, product_type: 'product' },
+  { id: 2, name: 'French Fries',  price: 150, unit: 'plate', category_id: 2, product_type: 'product' },
+  { id: 3, name: 'Beef Burger',   price: 450, unit: 'item',  category_id: 1, product_type: 'product' },
 ];
 
 const mockCategories = [

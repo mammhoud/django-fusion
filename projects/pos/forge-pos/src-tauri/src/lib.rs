@@ -96,6 +96,18 @@ fn add_category(app: AppHandle, category: db::models::NewCategory) -> Result<db:
     categories::add_category(&db_path, category)
 }
 
+#[tauri::command]
+fn update_category(app: AppHandle, id: i32, update: db::models::UpdateCategory) -> Result<db::models::Category, String> {
+    let db_path = get_db_path(&app)?;
+    categories::update_category(&db_path, id, update)
+}
+
+#[tauri::command]
+fn delete_category(app: AppHandle, id: i32) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    categories::delete_category(&db_path, id)
+}
+
 // ---- Sale commands ----
 #[tauri::command]
 fn add_sale(
@@ -841,6 +853,8 @@ pub fn run() {
             // Categories
             get_categories,
             add_category,
+            update_category,
+            delete_category,
             // Sales
             add_sale,
             get_sales,

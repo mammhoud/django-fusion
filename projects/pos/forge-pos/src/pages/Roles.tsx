@@ -100,7 +100,7 @@ export default function Roles() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-slate-900 dark:text-white">{t('roles.title')}</h1>
-          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', permissions: '[]' }); }} className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">
+          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', permissions: '[]' }); }} className="btn btn-primary gap-2">
             <span className="icon-[tabler--plus]" /> {t('roles.addRole')}
           </motion.button>
         </div>
@@ -159,11 +159,11 @@ export default function Roles() {
 
         {showForm && (
           <motion.form initial={{ opacity: 0, y: -10 }} animate={{ opacity: 1, y: 0 }} onSubmit={handleSubmit} className="card--glass rounded-xl p-4 space-y-3">
-            <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('roles.name')} required className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-            <textarea value={form.permissions} onChange={e => setForm({ ...form, permissions: e.target.value })} placeholder={t('roles.permissions')} rows={4} required className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white font-mono text-sm" />
+            <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('roles.name')} required className="input input-bordered w-full" />
+            <textarea value={form.permissions} onChange={e => setForm({ ...form, permissions: e.target.value })} placeholder={t('roles.permissions')} rows={4} required className="textarea textarea-bordered w-full font-mono text-sm" />
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">{editing ? t('common.update') : t('common.save')}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">{t('common.cancel')}</button>
+              <button type="submit" className="btn btn-primary">{editing ? t('common.update') : t('common.save')}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
           </motion.form>
         )}

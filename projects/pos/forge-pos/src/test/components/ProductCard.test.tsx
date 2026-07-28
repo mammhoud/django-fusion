@@ -11,6 +11,7 @@ const mockProduct: Product = {
   unit: 'item',
   category_id: 1,
   image: null,
+  product_type: 'product',
 };
 
 const mockProductWithImage: Product = {
@@ -20,6 +21,7 @@ const mockProductWithImage: Product = {
   unit: 'plate',
   category_id: 2,
   image: 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==',
+  product_type: 'product',
 };
 
 describe('ProductCard', () => {

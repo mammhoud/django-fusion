@@ -30,9 +30,9 @@ pub fn send_confirmation_email(recipient: &str, code: &str) -> Result<(), String
     );
 
     let email_message = lettre::Message::builder()
-        .from(format!("POS KO <{}>", smtp_username).parse().map_err(|e| format!("{}", e))?)
+        .from(format!("Forge POS <{}>", smtp_username).parse().map_err(|e| format!("{}", e))?)
         .to(recipient.parse().map_err(|e| format!("{}", e))?)
-        .subject("POS KO: Email Confirmation Code")
+        .subject("Forge POS: Email Confirmation Code")
         .header(lettre::message::header::ContentType::TEXT_HTML)
         .body(email_body)
         .map_err(|e| format!("Failed to build email: {}", e))?;

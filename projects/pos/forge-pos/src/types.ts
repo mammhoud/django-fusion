@@ -5,6 +5,7 @@ export interface Product {
   unit: string;
   category_id?: number | null;
   image?: string | null;
+  product_type?: string;
   border_color?: string | null;
 }
 
@@ -14,6 +15,7 @@ export interface NewProduct {
   unit: string;
   category_id?: number | null;
   image?: string | null;
+  product_type?: string;
   border_color?: string | null;
 }
 
@@ -23,6 +25,7 @@ export interface UpdateProductPayload {
   unit?: string;
   category_id?: number | null;
   image?: string | null;
+  product_type?: string;
   border_color?: string | null;
 }
 
