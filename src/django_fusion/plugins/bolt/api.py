@@ -44,7 +44,8 @@ class FusionBoltAPI(BoltAPI):
 
     Features:
     - Auto-discovers ``RoutableComponent`` subclasses and registers bolt endpoints
-    - Exposes ``/fusion/health``, ``/fusion/layouts``, ``/fusion/branding``
+    - Exposes ``/fusion/health``, ``/fusion/layouts``, ``/fusion/branding``,
+      ``/fusion/assets/manifest``, ``/fusion/assets/top``, ``/fusion/assets/bottom``
     - Respects ``fusion_render_first`` per-component setting
     - Generates OpenAPI schemas from component metadata
 
@@ -86,7 +87,7 @@ class FusionBoltAPI(BoltAPI):
     # ------------------------------------------------------------------
 
     def _register_fusion_endpoints(self) -> None:
-        """Register standard fusion health, layout, and branding endpoints."""
+        """Register standard fusion health, layout, branding, and assets endpoints."""
 
         @self.get("/fusion/health", guards=[AllowAny()], auth=[])
         def fusion_health(request) -> dict:
@@ -140,6 +141,45 @@ class FusionBoltAPI(BoltAPI):
                 "secondary_color": os.environ.get(
                     "FUSION_SECONDARY_COLOR", "#008080"
                 ),
+            }
+
+        @self.get("/fusion/assets/manifest", guards=[AllowAny()], auth=[])
+        def fusion_assets_manifest(request) -> dict:
+            """GET /fusion/assets/manifest — top/bottom asset manifest."""
+            from django_fusion.core.assets.views import _get_assets_config
+
+            config = _get_assets_config()
+            return {
+                "status": 200,
+                "message": "Success",
+                "data": {
+                    "top": config["top"],
+                    "bottom": config["bottom"],
+                },
+            }
+
+        @self.get("/fusion/assets/top", guards=[AllowAny()], auth=[])
+        def fusion_assets_top(request) -> dict:
+            """GET /fusion/assets/top — CSS, fonts, preconnect hints."""
+            from django_fusion.core.assets.views import _get_assets_config
+
+            config = _get_assets_config()
+            return {
+                "status": 200,
+                "message": "Success",
+                "data": config["top"],
+            }
+
+        @self.get("/fusion/assets/bottom", guards=[AllowAny()], auth=[])
+        def fusion_assets_bottom(request) -> dict:
+            """GET /fusion/assets/bottom — JS scripts for </body>."""
+            from django_fusion.core.assets.views import _get_assets_config
+
+            config = _get_assets_config()
+            return {
+                "status": 200,
+                "message": "Success",
+                "data": config["bottom"],
             }
 
     # ------------------------------------------------------------------

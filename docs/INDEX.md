@@ -24,6 +24,7 @@
 | DF-013 | [`docs/13-troubleshooting.md`](./13-troubleshooting.md) | Symptom → cause → fix entries | ✅ Exists |
 | DF-014 | [`docs/14-faq.md`](./14-faq.md) | FAQ mined from real test edge cases | ✅ Exists |
 | DF-015 | [`docs/15-viewflow-mapping.md`](./15-viewflow-mapping.md) | django-material → django-fusion mapping (renamed from VIEWFLOW_MAPPING.md) | ✅ Exists |
+| DF-016 | [`docs/16-assets.md`](./16-assets.md) | Assets pipeline — API endpoints, template tags, Next.js integration | ✅ Exists |
 
 ## Auxiliary files (unchanged or supporting)
 

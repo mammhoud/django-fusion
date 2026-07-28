@@ -30,12 +30,14 @@ django_fusion.core           Foundational layer — models, managers, services, 
   .models                   Base models, auth, email, interaction models.
   .services                 Service layer: CRUD base, cart, person.
   .utils                    Utilities: data, formatting, security.
-django_fusion.core.health  Lightweight health-check endpoint).
+django_fusion.core.health  Lightweight health-check endpoint.
+django_fusion.core.assets   Asset manifest API for dynamic CSS/JS/font pipelines.
 django_fusion.core           Core layer — models, managers, services, utils, views, handlers, health, middlewares, templatetags.
   .cache                    Pluggable cache manager base classes.
   .filters                  Queryset filters: token, revision, cache-aware.
   .handlers                 View handler base classes and HTMX fragment mixins.
   .health                   Health-check endpoints (views, urls).
+  .assets                   Asset manifest API — top/bottom assets views, URLs, Next.js integration.
   .managers                 Model managers: role hierarchy, group access, tags, user.
   .middlewares              Request/response middleware (error tracking, language, freeze, service, site, component error).
   .models                   Base models, auth, email, interaction models.
@@ -67,6 +69,7 @@ Generic CBVs:      from django_fusion.fragments.generic import ListModelView, ..
 Forms/Tables:      from django_fusion.fragments.forms import FormMixin
                    from django_fusion.fragments.tables import TableMixin
 Health:            from django_fusion.core.health import HealthCheckView, DatabaseHealthView
+Assets:            from django_fusion.core.assets import AssetsTopView, AssetsBottomView, AssetsManifestView
 Middlewares:       from django_fusion.core.middlewares import ErrorTrackerMiddleware, DefaultLanguageMiddleware
 Handlers:          from django_fusion.core.handlers import ...
 Managers:          from django_fusion.core.managers import ...

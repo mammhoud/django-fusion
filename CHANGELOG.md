@@ -5,6 +5,22 @@ All notable changes to django-fusion are documented in this file.
 The format follows [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and the project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [0.3.0] — 2026-07-28
+
+### Added
+
+- **Assets pipeline** (`django_fusion.core.assets`) — API endpoints and
+  template tags for dynamic asset manifests. Provides
+  `GET /fusion/assets/top/`, `/bottom/`, and `/manifest/` endpoints
+  that describe which CSS, font, and JS assets the frontend should load.
+- **`fusion_assets` template tags** — `{% fusion_top_assets %}`,
+  `{% fusion_bottom_assets %}`, `{% fusion_assets_manifest %}` for
+  server-side asset injection in Django/Wagtail templates.
+- **`FUSION_ASSETS` Django setting** — per-project configuration for
+  top (CSS, fonts, preconnect) and bottom (JS, inline JS) assets.
+- **`docs/16-assets.md` (DF-016)** — full documentation covering views,
+  wiring, config, response shapes, template tags, and Next.js integration.
+
 ## [0.2.0] — 2025-07-11
 
 ### Added
