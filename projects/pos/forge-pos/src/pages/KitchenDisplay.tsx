@@ -20,8 +20,8 @@ interface SaleItemData {
 
 // ── Order type icon/label mapping ──
 const ORDER_TYPE_MAP: Record<number, { icon: string; label: string; color: string }> = {
-  1: { icon: 'sofa', label: 'Dine-in', color: 'text-primary bg-primary/10' },
-  2: { icon: 'shopping-bag', label: 'Takeaway', color: 'text-warning bg-warning/10' },
+  1: { icon: 'sofa', label: 'Dine-in / Extra', color: 'text-primary bg-primary/10' },
+  2: { icon: 'shopping-bag', label: 'Takeaway / Dated', color: 'text-warning bg-warning/10' },
   3: { icon: 'truck-delivery', label: 'Delivery', color: 'text-success bg-success/10' },
 };
 
@@ -298,8 +298,8 @@ export default function KitchenDisplay() {
             </p>
             <div className="flex flex-wrap gap-2">
               {[
-                { priority: 1, label: 'Dine-in', icon: 'tabler--sofa' },
-                { priority: 2, label: 'Takeaway', icon: 'tabler--shopping-bag' },
+                { priority: 1, label: 'Dine-in / Extra', icon: 'tabler--sofa' },
+                { priority: 2, label: 'Takeaway / Dated', icon: 'tabler--shopping-bag' },
                 { priority: 3, label: 'Delivery', icon: 'tabler--truck-delivery' },
               ].map(({ priority, label, icon }) => (
                 <label key={priority} className="flex items-center gap-1.5 px-2 py-1 rounded-md bg-base-200/50 cursor-pointer hover:bg-base-200 transition-colors">
@@ -377,8 +377,18 @@ export default function KitchenDisplay() {
                 {ticket.notes && (
                   <p className="text-[10px] text-base-content/60 line-clamp-1 mb-1.5">{ticket.notes}</p>
                 )}
+                {/* Prep time + status row */}
+                <div className="flex items-center justify-between mt-auto mb-1">
+                  {ticket.prepare_time_minutes > 0 && (
+                    <span className="flex items-center gap-1 text-[9px] text-base-content/50">
+                      <span className="icon-[tabler--clock-play] w-3 h-3" />
+                      {ticket.prepare_time_minutes}min
+                      <span className="text-base-content/30">Est.</span>
+                    </span>
+                  )}
+                </div>
                 {/* Quick status badge */}
-                <div className="flex gap-1 mt-auto">
+                <div className="flex gap-1">
                   {ticket.status === 'pending' && (
                     <span className="text-[9px] px-2 py-0.5 rounded bg-warning/20 text-warning font-medium">Awaiting</span>
                   )}
@@ -420,6 +430,15 @@ export default function KitchenDisplay() {
                         <span>{timeAgo(selectedTicket.created_at)}</span>
                         <span>·</span>
                         <span>{new Date(selectedTicket.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
+                        {selectedTicket.prepare_time_minutes > 0 && (
+                          <>
+                            <span>·</span>
+                            <span className="flex items-center gap-0.5 text-primary/70">
+                              <span className="icon-[tabler--clock-play] w-3 h-3" />
+                              Est. {selectedTicket.prepare_time_minutes}min
+                            </span>
+                          </>
+                        )}
                         {selectedTicket.completed_at && (
                           <>
                             <span>·</span>

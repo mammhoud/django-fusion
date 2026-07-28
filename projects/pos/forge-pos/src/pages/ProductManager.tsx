@@ -25,7 +25,7 @@ export default function ProductManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product' });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0 });
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -218,14 +218,14 @@ export default function ProductManager() {
     setShowAddModal(false);
     setEditingProduct(null);
     setErrors({});
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product' });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0 });
     setProductImage(null);
     setOriginalImage(null);
   };
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product' });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0 });
     setProductImage(null);
     setOriginalImage(null);
     setErrors({});
@@ -240,6 +240,7 @@ export default function ProductManager() {
       unit: product.unit,
       category_id: product.category_id ?? 0,
       product_type: product.product_type || 'product',
+      prepare_time_minutes: product.prepare_time_minutes || 0,
     });
     setProductImage(product.image ?? null);
     setOriginalImage(product.image ?? null);
@@ -271,6 +272,7 @@ export default function ProductManager() {
           unit: trimmedUnit,
           category_id: nextCategoryId,
           product_type: newProduct.product_type || 'product',
+          prepare_time_minutes: newProduct.prepare_time_minutes,
         };
         const imageChanged = nextImage !== (originalImage || null);
         if (imageChanged) {
@@ -290,6 +292,7 @@ export default function ProductManager() {
           category_id: nextCategoryId,
           image: nextImage,
           product_type: newProduct.product_type || 'product',
+          prepare_time_minutes: newProduct.prepare_time_minutes,
         };
         const result = await invoke<Product>('add_product', { product: create });
 
@@ -717,6 +720,27 @@ export default function ProductManager() {
                   {errors.unit && (
                     <p className="text-red-500 dark:text-red-400 text-xs mt-0.5">{errors.unit}</p>
                   )}
+                </div>
+              </div>
+
+              {/* Prepare time */}
+              <div>
+                <label className="block text-base-content mb-1.5 text-xs font-medium">
+                  <span className="icon-[tabler--clock-play] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                  Prep Time (min)
+                </label>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="number"
+                    value={newProduct.prepare_time_minutes}
+                    onChange={(e) => handleInputChange('prepare_time_minutes', Math.max(0, parseInt(e.target.value) || 0))}
+                    className="input input-bordered w-24 h-9 text-sm"
+                    placeholder="0"
+                    min="0"
+                    step="1"
+                    disabled={isSubmitting}
+                  />
+                  <span className="text-xs text-base-content/50">Default preparation time for KDS display</span>
                 </div>
               </div>
 

@@ -338,6 +338,7 @@ function ThemePreview({ variant, previewMode, isActive, onApply, onPreviewModeCh
         </h3>
         <div className="flex items-center gap-3">
           {/* Light/Dark toggle within preview — does NOT change global mode */}
+          <span className="text-[10px] text-base-content/40 font-medium mr-1" title="Preview mode only — does not change app theme">{t('settings.appearanceTab.previewModeLabel') || 'Preview'}</span>
           <div className="flex items-center gap-1 bg-base-300/50 rounded-lg p-0.5">
             <button
               type="button"
@@ -1070,6 +1071,13 @@ export default function Settings() {
         <input type="number" name="tax_rate" value={settings.tax_rate} onChange={handleChange}
           step="0.01" min="0" max="100" className={inputClass('tax_rate')} />
         {errors.tax_rate && <p className={errorClass}><span className="icon-[tabler--alert-triangle] text-xs" />{errors.tax_rate}</p>}
+      </div>
+
+      {/* Tax ID */}
+      <div>
+        <label className={labelClass}>{t('settings.taxId') || 'Tax ID'}</label>
+        <input type="text" name="tax_id" value={settings.tax_id || ''} onChange={handleChange}
+          placeholder="e.g. NTN-1234567" className="input input-bordered w-full" />
       </div>
 
       {/* Currency */}

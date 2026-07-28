@@ -17,12 +17,14 @@ import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
 import { useStatusToast } from '../hooks/useStatusToast';
 import StatusToast from '../components/StatusToast';
 
-type OrderType = 'dine-in' | 'takeaway' | 'delivery';
+type OrderType = 'dine-in' | 'takeaway' | 'delivery' | 'extra-order' | 'dated-order';
 
 const ORDER_TYPES: { key: OrderType; label: string; icon: React.ReactNode }[] = [
   { key: 'dine-in', label: 'Dine-in', icon: <span className="icon-[tabler--building-store]" /> },
   { key: 'takeaway', label: 'Takeaway', icon: <span className="icon-[tabler--hand-three-fingers]" /> },
   { key: 'delivery', label: 'Delivery', icon: <span className="icon-[tabler--truck]" /> },
+  { key: 'extra-order', label: 'Extra Order', icon: <span className="icon-[tabler--plus]" /> },
+  { key: 'dated-order', label: 'Dated Order', icon: <span className="icon-[tabler--calendar-clock]" /> },
 ];
 
 export default function Sale() {
@@ -332,6 +334,7 @@ export default function Sale() {
           address: settings.address,
           phone: settings.phone,
           email: settings.email,
+          taxId: settings.tax_id ?? undefined,
           logo: settings.invoice_logo ?? undefined,
         },
         to: {

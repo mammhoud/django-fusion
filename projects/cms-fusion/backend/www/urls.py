@@ -104,6 +104,7 @@ urlpatterns = [
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
     path("fusion/assets/", include(assets_urls)),
     path("apis/fusion/assets/", include(assets_urls)),
+    path("api/fusion/assets/", include(assets_urls)),
     path("accounts/", include("allauth.urls")),
 ]
 

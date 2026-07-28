@@ -32,6 +32,7 @@ pub struct Settings {
     pub phone: Option<String>,
     pub email: Option<String>,
     pub tax_rate: Option<String>,
+    pub tax_id: Option<String>,
     pub currency: String,
     pub opening_time: Option<String>,
     pub closing_time: Option<String>,
@@ -63,6 +64,7 @@ pub struct UpdateSettings {
     /// None = skip field, Some(None) = set to NULL, Some(Some(data)) = set value
     pub invoice_logo: Option<Option<String>>,
     pub dine_in_tables: Option<i32>,
+    pub tax_id: Option<Option<String>>,
     pub delivery_fee: Option<f64>,
     pub delivery_fee_per_km: Option<f64>,
 }
@@ -100,6 +102,7 @@ pub struct Product {
     pub category_id: Option<i32>,
     pub image: Option<String>,
     pub product_type: String,
+    pub prepare_time_minutes: i32,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
@@ -117,6 +120,8 @@ pub struct NewProduct {
     /// explicitly; serde(default) handles missing field gracefully.
     #[serde(default)]
     pub product_type: Option<String>,
+    #[serde(default)]
+    pub prepare_time_minutes: Option<i32>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -128,6 +133,7 @@ pub struct UpdateProduct {
     pub category_id: Option<Option<i32>>,
     pub image: Option<Option<String>>,
     pub product_type: Option<String>,
+    pub prepare_time_minutes: Option<i32>,
     pub uploaded: Option<bool>,
 }
 
@@ -733,6 +739,7 @@ pub struct KitchenTicket {
     pub sale_id: i32,
     pub status: String,
     pub priority: i32,
+    pub prepare_time_minutes: i32,
     pub notes: Option<String>,
     pub created_at: NaiveDateTime,
     pub completed_at: Option<NaiveDateTime>,
@@ -744,6 +751,7 @@ pub struct NewKitchenTicket {
     pub sale_id: i32,
     pub status: String,
     pub priority: i32,
+    pub prepare_time_minutes: i32,
     pub notes: Option<String>,
 }
 
@@ -752,6 +760,7 @@ pub struct NewKitchenTicket {
 pub struct UpdateKitchenTicket {
     pub status: Option<String>,
     pub priority: Option<i32>,
+    pub prepare_time_minutes: Option<i32>,
     pub notes: Option<Option<String>>,
     pub completed_at: Option<Option<NaiveDateTime>>,
 }

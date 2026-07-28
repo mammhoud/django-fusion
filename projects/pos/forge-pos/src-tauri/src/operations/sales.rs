@@ -22,14 +22,23 @@ pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -
         // treated as lower priority but still tracked.
         let priority = match sale.order_type.as_str() {
             "dine-in" => 1,
+            "extra-order" => 1,
             "takeaway" => 2,
+            "dated-order" => 2,
             "delivery" => 3,
             _ => 2,
         };
+        // Default preparation time based on order priority
+        // Dine-in / extra-order: 15 min, takeaway / dated-order: 20 min, delivery: 25 min
         let ticket = NewKitchenTicket {
             sale_id: sale.id,
             status: "pending".to_string(),
             priority,
+            prepare_time_minutes: match priority {
+                1 => 15,
+                2 => 20,
+                _ => 25,
+            },
             notes: None,
         };
         diesel::insert_into(crate::db::schema::kitchen_tickets::table)

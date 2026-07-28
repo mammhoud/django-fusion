@@ -17,9 +17,27 @@ const CODE_EXPIRY_SECS: u64 = 300; // 5 minutes
 
 /// Check if authentication is required.
 /// Auth is required when any of the following is true:
-/// 1. SMTP_USERNAME env var is set AND settings has a manager email configured
+/// 1. USE_AUTH env var is set to "true" (overrides all other checks)
 /// 2. SUPERUSER_EMAIL + SUPERUSER_PASSWORD env vars are both set
+/// 3. SMTP_USERNAME env var is set AND settings has a manager email configured
+///
+/// If USE_AUTH is set to "false", auth is explicitly disabled regardless of
+/// any other configuration (e.g., even if SUPERUSER_EMAIL is set).
 pub fn check_auth_required(db_path: &PathBuf) -> Result<bool, String> {
+    // Explicit USE_AUTH env var — overrides all other checks
+    let use_auth = env::var("USE_AUTH");
+    if let Ok(val) = &use_auth {
+        let trimmed = val.trim().to_lowercase();
+        if trimmed == "true" {
+            return Ok(true);
+        }
+        if trimmed == "false" {
+            return Ok(false);
+        }
+        // If set to an unrecognized value, fall through to other checks
+        eprintln!("[auth] WARNING: USE_AUTH has unrecognized value '{val}'. Expected 'true' or 'false'. Falling through to default checks.");
+    }
+
     // First check: superuser env vars
     let superuser_configured = env::var("SUPERUSER_EMAIL").is_ok()
         && !env::var("SUPERUSER_EMAIL").unwrap_or_default().is_empty()
@@ -305,6 +323,7 @@ mod tests {
 
     /// Remove auth-related env vars that might leak between tests.
     fn clear_auth_env_vars() {
+        env::remove_var("USE_AUTH");
         env::remove_var("SUPERUSER_EMAIL");
         env::remove_var("SUPERUSER_PASSWORD");
         env::remove_var("SUPERUSER_NAME");
@@ -482,6 +501,83 @@ mod tests {
         // Superuser check doesn't touch DB — even nonexistent path returns true
         let result = check_auth_required(&PathBuf::from("/nonexistent/path.db")).unwrap();
         assert!(result);
+    }
+
+    // ========================================================================
+    // check_auth_required — USE_AUTH env var
+    // ========================================================================
+
+    #[test]
+    fn check_auth_required_use_auth_true() {
+        let _lock = ENV_MUTEX.lock().unwrap();
+        clear_auth_env_vars();
+        env::set_var("USE_AUTH", "true");
+        let db = setup_test_db("cau_true");
+
+        let result = check_auth_required(&db).unwrap();
+        assert!(result, "USE_AUTH=true should force auth required");
+    }
+
+    #[test]
+    fn check_auth_required_use_auth_false() {
+        let _lock = ENV_MUTEX.lock().unwrap();
+        clear_auth_env_vars();
+        env::set_var("USE_AUTH", "false");
+        // Even with superuser configured, USE_AUTH=false should disable auth
+        env::set_var("SUPERUSER_EMAIL", "admin@test.com");
+        env::set_var("SUPERUSER_PASSWORD", "secret123");
+        let db = setup_test_db("cau_false");
+
+        let result = check_auth_required(&db).unwrap();
+        assert!(!result, "USE_AUTH=false should disable auth even with superuser configured");
+    }
+
+    #[test]
+    fn check_auth_required_use_auth_true_overrides_smtp() {
+        let _lock = ENV_MUTEX.lock().unwrap();
+        clear_auth_env_vars();
+        env::set_var("USE_AUTH", "true");
+        // No superuser, no SMTP, no manager email — but USE_AUTH=true should still win
+        let db = setup_test_db("cau_override");
+
+        let result = check_auth_required(&db).unwrap();
+        assert!(result, "USE_AUTH=true should force auth even when nothing else is configured");
+    }
+
+    #[test]
+    fn check_auth_required_use_auth_case_insensitive() {
+        let _lock = ENV_MUTEX.lock().unwrap();
+        clear_auth_env_vars();
+        env::set_var("USE_AUTH", "True");
+        let db = setup_test_db("cau_case");
+
+        let result = check_auth_required(&db).unwrap();
+        assert!(result, "USE_AUTH=True (capitalized) should work");
+    }
+
+    #[test]
+    fn check_auth_required_use_auth_invalid_value_falls_through() {
+        let _lock = ENV_MUTEX.lock().unwrap();
+        clear_auth_env_vars();
+        env::set_var("USE_AUTH", "maybe"); // Invalid — should fall through
+        // No superuser, no SMTP — should return false
+        let db = setup_test_db("cau_invalid");
+
+        let result = check_auth_required(&db).unwrap();
+        assert!(!result, "USE_AUTH=maybe should fall through to default false");
+    }
+
+    #[test]
+    fn check_auth_required_use_auth_invalid_with_superuser() {
+        let _lock = ENV_MUTEX.lock().unwrap();
+        clear_auth_env_vars();
+        env::set_var("USE_AUTH", "yes"); // Invalid — should fall through
+        env::set_var("SUPERUSER_EMAIL", "admin@test.com");
+        env::set_var("SUPERUSER_PASSWORD", "secret123");
+        let db = setup_test_db("cau_invalid_su");
+
+        let result = check_auth_required(&db).unwrap();
+        assert!(result, "USE_AUTH=yes should fall through to superuser check");
     }
 
     // ========================================================================
