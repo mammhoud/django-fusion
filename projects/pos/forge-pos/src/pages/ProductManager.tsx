@@ -24,7 +24,7 @@ export default function ProductManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0 });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product' });
   const [borderColor, setBorderColor] = useState('#6366f1');
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
@@ -218,7 +218,7 @@ export default function ProductManager() {
     setShowAddModal(false);
     setEditingProduct(null);
     setErrors({});
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product' });
     setProductImage(null);
     setBorderColor('#6366f1');
     setOriginalImage(null);
@@ -226,7 +226,7 @@ export default function ProductManager() {
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0 });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product' });
     setProductImage(null);
     setBorderColor('#6366f1');
     setOriginalImage(null);
@@ -241,6 +241,7 @@ export default function ProductManager() {
       price: String(product.price),
       unit: product.unit,
       category_id: product.category_id ?? 0,
+      product_type: product.product_type || 'product',
     });
     setProductImage(product.image ?? null);
     setBorderColor(product.border_color || '#6366f1');
@@ -272,6 +273,7 @@ export default function ProductManager() {
           price: parsedPrice,
           unit: trimmedUnit,
           category_id: nextCategoryId,
+          product_type: newProduct.product_type || 'product',
           border_color: borderColor || null,
         };
         const imageChanged = nextImage !== (originalImage || null);
@@ -291,6 +293,7 @@ export default function ProductManager() {
           unit: trimmedUnit,
           category_id: nextCategoryId,
           image: nextImage,
+          product_type: newProduct.product_type || 'product',
           border_color: borderColor || null,
         };
         const result = await invoke<Product>('add_product', { product: create });
@@ -709,6 +712,39 @@ export default function ProductManager() {
                   <p className="text-red-500 dark:text-red-400 text-sm mt-1">{errors.name}</p>
                 )}
               </div>
+
+              {/* Product Type */}
+              {!editingProduct && (
+                <div>
+                  <label className="block text-slate-900 dark:text-white mb-2 flex items-center gap-2">
+                    <span className="icon-[tabler--tag] w-4 h-4 text-teal-500" />
+                    {t('productManager.productType') || 'Product Type'}
+                  </label>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                    {[
+                      { value: 'product', label: t('productManager.typeProduct') || 'Product', icon: 'package' },
+                      { value: 'service', label: t('productManager.typeService') || 'Service', icon: 'settings' },
+                      { value: 'combo', label: t('productManager.typeCombo') || 'Combo', icon: 'layers-union' },
+                      { value: 'addon', label: t('productManager.typeAddon') || 'Add-on', icon: 'plus' },
+                    ].map(({ value, label, icon }) => (
+                      <button
+                        key={value}
+                        type="button"
+                        onClick={() => handleInputChange('product_type', value)}
+                        disabled={isSubmitting}
+                        className={`flex flex-col items-center gap-1.5 p-3 rounded-xl border-2 transition-all
+                          ${newProduct.product_type === value
+                            ? 'border-teal-500 bg-teal-50 dark:bg-teal-500/10 text-teal-700 dark:text-teal-300'
+                            : 'border-slate-200 dark:border-slate-600 bg-white/50 dark:bg-white/5 text-slate-600 dark:text-slate-400 hover:border-teal-300 dark:hover:border-teal-500/50'
+                          }`}
+                      >
+                        <span className={`icon-[tabler--${icon}] w-5 h-5`} />
+                        <span className="text-xs font-semibold">{label}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>

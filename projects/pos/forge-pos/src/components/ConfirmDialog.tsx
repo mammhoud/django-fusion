@@ -39,15 +39,13 @@ export default function ConfirmDialog({
         <>
           <button
             onClick={onClose}
-            className="flex-1 py-3 rounded-lg bg-slate-200 dark:bg-slate-700 text-slate-900 dark:text-white font-semibold hover:bg-slate-300 dark:hover:bg-slate-600 transition-colors"
+            className="btn btn-ghost flex-1"
           >
             {t('confirmDialog.cancel')}
           </button>
           <button
             onClick={onConfirm}
-            className={`flex-1 py-3 rounded-lg text-white font-semibold flex items-center justify-center gap-2 transition-colors ${
-              isDanger ? 'bg-red-500 hover:bg-red-600' : 'bg-yellow-500 hover:bg-yellow-600'
-            }`}
+            className={`btn flex-1 ${isDanger ? 'btn-error' : 'btn-warning'}`}
           >
             <span className="icon-[tabler--trash] w-4 h-4" /> {confirmLabel === 'Deactivate' ? t('confirmDialog.deactivate') : confirmLabel}
           </button>

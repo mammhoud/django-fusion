@@ -18,9 +18,13 @@ pub fn establish_connection(db_path: &std::path::Path) -> Result<SqliteConnectio
     SqliteConnection::establish(database_url)
 }
 
-/// Resolve the database path from a DATABASE_URL environment variable
-/// (relative paths are resolved against the current working directory).
-/// Falls back to the platform-specific app data directory when unset.
+/// Resolve the database path.
+///
+/// Priority:
+/// 1. `DATABASE_URL` env var (development / test overrides)
+/// 2. Platform-specific app data dir (`restaurant.db`)
+///
+/// Logs the resolved path to stderr so you can confirm which file is in use.
 pub fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
     // Check for DATABASE_URL env var first (development overrides)
     if let Ok(db_url) = std::env::var("DATABASE_URL") {
@@ -31,6 +35,7 @@ pub fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
                     .map_err(|e| format!("Failed to create database directory: {}", e))?;
             }
         }
+        eprintln!("[db] DATABASE_URL={db_url} → resolved={}", path.display());
         return Ok(path);
     }
 
@@ -41,7 +46,9 @@ pub fn get_db_path(app: &AppHandle) -> Result<PathBuf, String> {
         .map_err(|e| format!("Failed to get app data dir: {}", e))?;
     std::fs::create_dir_all(&app_data_dir)
         .map_err(|e| format!("Failed to create app data directory: {}", e))?;
-    Ok(app_data_dir.join("restaurant.db"))
+    let db_path = app_data_dir.join("restaurant.db");
+    eprintln!("[db] app_data_dir={} → resolved={}", app_data_dir.display(), db_path.display());
+    Ok(db_path)
 }
 
 /// Resolve the database path from the environment only (no Tauri dependency).

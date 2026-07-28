@@ -4,14 +4,301 @@
 /* ── FlyonUI theme variants ────────────────────────────────────── */
 @import "../node_modules/flyonui/variants.css";
 
-/* ── Theme System ─────────────────────────────────────────────── */
-@import "./styles/themes.css";
-@import "./styles/theme-overrides.css";
+/* ── Base Design Tokens ──────────────────────────────────────── */
 @import "./styles/base/_variables.css";
 @import "./styles/base/_reset.css";
 
 /* ── FlyonUI Component Library ───────────────────────────────── */
-@plugin "flyonui";
+/* Theme configuration: enable specific themes with defaults.
+ *   light --default        → default light mode theme
+ *   dark --prefersdark     → default dark mode (system preference)
+ *   corporate-light/dark   → blue professional variant
+ *   luxury-light/dark      → rich gold/warm variant
+ *   pastel-light/dark      → soft candy colors variant
+ *   cyberpunk-light/dark   → neon futuristic variant
+ */
+@plugin "flyonui" {
+  themes: light --default, dark --prefersdark,
+          corporate-light, corporate-dark,
+          luxury-light, luxury-dark,
+          pastel-light, pastel-dark,
+          cyberpunk-light, cyberpunk;
+}
+
+/* ── Corporate Light — clean, professional, blue-toned ────────── */
+@plugin "flyonui/theme" {
+  name: "corporate-light";
+  color-scheme: light;
+  --color-base-100: oklch(98.42% 0.0034 247.86);
+  --color-base-200: oklch(96.83% 0.0069 247.90);
+  --color-base-300: oklch(55.44% 0.0407 257.42);
+  --color-base-content: oklch(27.95% 0.0368 260.03);
+  --color-primary: oklch(54.61% 0.2152 262.88);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(62.31% 0.1880 259.81);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(71.48% 0.1257 215.22);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(55.44% 0.0407 257.42);
+  --color-neutral-content: oklch(100% 0 0);
+  --color-info: oklch(68.47% 0.1479 237.32);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(69.59% 0.1491 162.48);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(76.86% 0.1647 70.08);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(63.68% 0.2078 25.33);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Corporate Dark — dark mode blue professional ─────────────── */
+@plugin "flyonui/theme" {
+  name: "corporate-dark";
+  color-scheme: dark;
+  --color-base-100: oklch(20.77% 0.0398 265.75);
+  --color-base-200: oklch(27.95% 0.0368 260.03);
+  --color-base-300: oklch(35.00% 0.0350 260.00);
+  --color-base-content: oklch(92.88% 0.0126 255.51);
+  --color-primary: oklch(62.31% 0.1880 259.81);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(58.54% 0.2041 277.12);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(79.71% 0.1339 211.53);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(45.00% 0.0300 260.00);
+  --color-neutral-content: oklch(92.88% 0.0126 255.51);
+  --color-info: oklch(75.35% 0.1390 232.66);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(77.29% 0.1535 163.22);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(83.69% 0.1644 84.43);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(71.06% 0.1661 22.22);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Luxury Light — rich gold/warm, premium feel ──────────────── */
+@plugin "flyonui/theme" {
+  name: "luxury-light";
+  color-scheme: light;
+  --color-base-100: oklch(98.48% 0.0013 106.42);
+  --color-base-200: oklch(95.00% 0.0050 90.00);
+  --color-base-300: oklch(50.00% 0.0400 70.00);
+  --color-base-content: oklch(26.85% 0.0063 34.30);
+  --color-primary: oklch(68.06% 0.1423 75.83);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(55.53% 0.1455 49.00);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(66.58% 0.1574 58.32);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(50.00% 0.0200 60.00);
+  --color-neutral-content: oklch(100% 0 0);
+  --color-info: oklch(60.00% 0.1000 230.00);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(52.73% 0.1371 150.07);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(70.00% 0.1600 70.00);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(50.54% 0.1905 27.52);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.1875rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5625rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Luxury Dark — dark gold/black, rich and warm ─────────────── */
+@plugin "flyonui/theme" {
+  name: "luxury-dark";
+  color-scheme: dark;
+  --color-base-100: oklch(21.61% 0.0061 56.04);
+  --color-base-200: oklch(26.00% 0.0080 55.00);
+  --color-base-300: oklch(15.00% 0.0100 60.00);
+  --color-base-content: oklch(98.48% 0.0013 106.42);
+  --color-primary: oklch(79.52% 0.1617 86.05);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(55.34% 0.1739 38.40);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(70.49% 0.1867 47.60);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(40.00% 0.0200 55.00);
+  --color-neutral-content: oklch(98.48% 0.0013 106.42);
+  --color-info: oklch(55.00% 0.0700 235.00);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(72.27% 0.1920 149.58);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(76.00% 0.1500 85.00);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(63.68% 0.2078 25.33);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.1875rem;
+  --radius-field: 0.375rem;
+  --radius-box: 0.5625rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Pastel Light — soft candy colors, playful ────────────────── */
+@plugin "flyonui/theme" {
+  name: "pastel-light";
+  color-scheme: light;
+  --color-base-100: oklch(97.14% 0.0141 343.20);
+  --color-base-200: oklch(94.00% 0.0200 340.00);
+  --color-base-300: oklch(60.00% 0.0800 310.00);
+  --color-base-content: oklch(29.32% 0.1309 325.66);
+  --color-primary: oklch(59.16% 0.2180 0.58);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(54.13% 0.2466 293.01);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(71.48% 0.1257 215.22);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(50.00% 0.0600 310.00);
+  --color-neutral-content: oklch(100% 0 0);
+  --color-info: oklch(65.00% 0.1200 230.00);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(59.60% 0.1274 163.23);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(75.00% 0.1600 75.00);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(57.71% 0.2152 27.33);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 2rem;
+  --radius-field: 2rem;
+  --radius-box: 2rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Pastel Dark — dark candy colors, moody and soft ──────────── */
+@plugin "flyonui/theme" {
+  name: "pastel-dark";
+  color-scheme: dark;
+  --color-base-100: oklch(25.39% 0.0432 324.94);
+  --color-base-200: oklch(30.00% 0.0350 320.00);
+  --color-base-300: oklch(35.00% 0.0300 315.00);
+  --color-base-content: oklch(94.82% 0.0276 342.26);
+  --color-primary: oklch(72.53% 0.1752 349.76);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(70.90% 0.1592 293.54);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(86.51% 0.1153 207.08);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(50.00% 0.0400 320.00);
+  --color-neutral-content: oklch(94.82% 0.0276 342.26);
+  --color-info: oklch(65.00% 0.1200 230.00);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(77.29% 0.1535 163.22);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(80.00% 0.1500 85.00);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(80.77% 0.1035 19.57);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 2rem;
+  --radius-field: 2rem;
+  --radius-box: 2rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── Cyberpunk — neon on dark, high-contrast futuristic ──────────── */
+/* (Dark variant is the primary cyberpunk experience) */
+@plugin "flyonui/theme" {
+  name: "cyberpunk";
+  color-scheme: dark;
+  --color-base-100: oklch(14.48% 0.0000 89.88);
+  --color-base-200: oklch(20.00% 0.0100 90.00);
+  --color-base-300: oklch(25.00% 0.0150 90.00);
+  --color-base-content: oklch(86.86% 0.2776 144.47);
+  --color-primary: oklch(70.17% 0.3225 328.36);
+  --color-primary-content: oklch(0% 0 0);
+  --color-secondary: oklch(90.54% 0.1546 194.77);
+  --color-secondary-content: oklch(0% 0 0);
+  --color-accent: oklch(96.80% 0.2110 109.77);
+  --color-accent-content: oklch(0% 0 0);
+  --color-neutral: oklch(30.00% 0.0100 90.00);
+  --color-neutral-content: oklch(86.86% 0.2776 144.47);
+  --color-info: oklch(70.00% 0.1500 230.00);
+  --color-info-content: oklch(0% 0 0);
+  --color-success: oklch(86.86% 0.2776 144.47);
+  --color-success-content: oklch(0% 0 0);
+  --color-warning: oklch(96.80% 0.2110 109.77);
+  --color-warning-content: oklch(0% 0 0);
+  --color-error: oklch(63.22% 0.2542 20.85);
+  --color-error-content: oklch(0% 0 0);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.375rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 1;
+}
+
+/* ── Cyberpunk Light — neon on white, accessible variant ──────── */
+@plugin "flyonui/theme" {
+  name: "cyberpunk-light";
+  color-scheme: light;
+  --color-base-100: oklch(96.00% 0.0050 90.00);
+  --color-base-200: oklch(93.00% 0.0080 90.00);
+  --color-base-300: oklch(50.00% 0.0150 90.00);
+  --color-base-content: oklch(20.00% 0.0100 90.00);
+  --color-primary: oklch(58.00% 0.2700 328.36);
+  --color-primary-content: oklch(100% 0 0);
+  --color-secondary: oklch(60.00% 0.1200 194.77);
+  --color-secondary-content: oklch(100% 0 0);
+  --color-accent: oklch(70.00% 0.1800 109.77);
+  --color-accent-content: oklch(100% 0 0);
+  --color-neutral: oklch(45.00% 0.0100 90.00);
+  --color-neutral-content: oklch(100% 0 0);
+  --color-info: oklch(60.00% 0.1200 230.00);
+  --color-info-content: oklch(100% 0 0);
+  --color-success: oklch(55.00% 0.1500 144.47);
+  --color-success-content: oklch(100% 0 0);
+  --color-warning: oklch(70.00% 0.1800 109.77);
+  --color-warning-content: oklch(100% 0 0);
+  --color-error: oklch(55.00% 0.2200 20.85);
+  --color-error-content: oklch(100% 0 0);
+  --radius-selector: 0.25rem;
+  --radius-field: 0.25rem;
+  --radius-box: 0.375rem;
+  --size-selector: 0.25rem;
+  --size-field: 0.25rem;
+  --border: 1px;
+  --depth: 1;
+  --noise: 0;
+}
+
+/* ── FlyonUI source scanning ──────────────────────────────────── */
 @source "../node_modules/flyonui/dist/index.js";
 
 /* ── Iconify / Tabler Icons for FlyonUI ──────────────────────── */
@@ -21,9 +308,17 @@
 @custom-variant rtl (&:where([dir="rtl"] &));
 
 /*
- * Styles are organized using a BEM-inspired architecture.
- * Import order: base → components → utilities → theme, so theme can
- * override component and utility styles when a variant is active.
- * theme-overrides.css redefines Tailwind color tokens per [data-theme]
- * so that all components immediately reflect the selected variant.
+ * Theme Variants set data-theme via ThemeContext:
+ *   default + light → data-theme="light"
+ *   default + dark  → data-theme="dark"
+ *   corporate + light → data-theme="corporate-light"
+ *   corporate + dark  → data-theme="corporate-dark"
+ *   luxury + light → data-theme="luxury-light"
+ *   luxury + dark  → data-theme="luxury-dark"
+ *   pastel + light → data-theme="pastel-light"
+ *   pastel + dark  → data-theme="pastel-dark"
+ *   cyberpunk + light → data-theme="cyberpunk-light"
+ *   cyberpunk + dark  → data-theme="cyberpunk"
+ *
+ * The .dark / .light class on <html> controls Tailwind's dark: variant.
  */

@@ -16,8 +16,8 @@ export default function StatusToast({ type, message, visible, onDismiss }: Statu
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
           onClick={onDismiss}
-          className={`fixed bottom-8 left-1/2 -translate-x-1/2 px-6 py-3 rounded-xl flex items-center gap-2 shadow-lg z-50 cursor-pointer
-            ${type === 'success' ? 'bg-emerald-500 text-white' : 'bg-red-500 text-white'}`}
+          className={`fixed bottom-8 left-1/2 -translate-x-1/2 z-50 cursor-pointer
+            ${type === 'success' ? 'alert alert-success' : 'alert alert-error'}`}
         >
           {type === 'success' 
             ? <span className="icon-[tabler--check] text-xl" /> 

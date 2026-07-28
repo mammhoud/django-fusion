@@ -260,10 +260,7 @@ const CurrencyDropdown = ({ value, onChange }: CurrencyDropdownProps) => {
   return (
     <div className="relative" ref={dropdownRef}>
       <div
-        onClick={() => setIsOpen(!isOpen)}
-        className="w-full px-4 py-2 rounded-lg bg-white/50 dark:bg-white/5 border 
-          border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white 
-          cursor-pointer hover:border-teal-400 transition-all duration-200 flex items-center justify-between"
+        onClick={() => setIsOpen(!isOpen)}              className="select select-bordered w-full cursor-pointer flex items-center justify-between"
       >
         <span>
           {selectedCurrency ? (
@@ -453,11 +450,14 @@ export default function Settings() {
         else if (extension === 'webp') mimeType = 'image/webp';
         else if (extension === 'bmp') mimeType = 'image/bmp';
         const dataUrl = `data:${mimeType};base64,${base64}`;
+        console.log(`[settings] handleLogoChange: logo loaded (${dataUrl.length} chars from ${file})`);
         setLogoPreview(dataUrl);
         setSettings(prev => ({ ...prev, logo: dataUrl }));
+      } else {
+        console.log('[settings] handleLogoChange: no file selected');
       }
     } catch (error) {
-      console.error('Error selecting logo:', error);
+      console.error('[settings] Error selecting logo:', error);
     } finally {
       setIsUploadingLogo(false);
     }
@@ -487,13 +487,17 @@ export default function Settings() {
     setSubmitStatus('idle');
     setErrorMessage('');
     try {
+      const logoInfo = settings.logo
+        ? `logo present (${settings.logo.length} chars)`
+        : 'logo is undefined/null';
+      console.log(`[settings] handleSubmit: saving — ${logoInfo}, name="${settings.restaurant_name}"`);
       await invoke('save_settings', { settings });
       setSubmitStatus('success');
       setIsSuccess(true);
       setErrors({});
       setTimeout(() => { setIsSuccess(false); setSubmitStatus('idle'); }, 3000);
     } catch (error) {
-      console.error('Error saving settings:', error);
+      console.error('[settings] Error saving settings:', error);
       setSubmitStatus('error');
       const msg = error instanceof Error ? error.message : t('settings.errorMessage');
       setErrorMessage(msg);
@@ -588,11 +592,21 @@ export default function Settings() {
     try {
       const loadedSettings = await invoke<SettingsType>('get_settings');
       if (loadedSettings) {
+        const logoInfo = loadedSettings.logo
+          ? `logo present (${loadedSettings.logo.length} chars)`
+          : 'logo is NULL';
+        console.log(`[settings] loadSettings: loaded — ${logoInfo}, name="${loadedSettings.restaurant_name}"`);
         setSettings(prev => ({ ...prev, ...loadedSettings }));
-        if (loadedSettings.logo) setLogoPreview(loadedSettings.logo);
+        if (loadedSettings.logo) {
+          setLogoPreview(loadedSettings.logo);
+        } else {
+          setLogoPreview(undefined);
+        }
+      } else {
+        console.log('[settings] loadSettings: returned null/undefined');
       }
     } catch (error) {
-      console.error('Error loading settings:', error);
+      console.error('[settings] Error loading settings:', error);
     }
   }, []);
 
@@ -611,14 +625,12 @@ export default function Settings() {
     loadEmployeeStats();
   }, [loadSettings, loadEmployeeStats]);
 
-  // ---- Shared Input Classes ----
+  // ---- Shared Input Classes (FlyonUI) ----
   const inputClass = (fieldName?: keyof FormErrors) =>
-    `w-full px-4 py-2.5 rounded-lg bg-white/50 dark:bg-white/5 border 
-    text-slate-900 dark:text-white focus:outline-none transition-all duration-200
+    `input input-bordered w-full
     ${fieldName && errors[fieldName]
-      ? 'border-red-500 focus:border-red-500 ring-1 ring-red-500/30'
-      : 'border-slate-300 dark:border-gray-600 focus:border-teal-400 focus:ring-1 focus:ring-teal-400/30'}
-    placeholder:text-slate-400 dark:placeholder:text-gray-500`;
+      ? 'input-error'
+      : ''}`;
 
   const labelClass = 'block text-sm font-medium text-slate-700 dark:text-gray-300 mb-1.5';
   const errorClass = 'mt-1 text-sm text-red-400 flex items-center gap-1.5';
@@ -635,8 +647,8 @@ export default function Settings() {
               <img src={logoPreview} alt={t('settings.logoPreviewAlt')} className="rounded-lg object-contain w-full h-full bg-white/20" />
               <button
                 type="button"
-                onClick={() => { setLogoPreview(undefined); setSettings(prev => ({ ...prev, logo: undefined })); }}
-                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600 transition-colors shadow-lg"
+                onClick={() => { setLogoPreview(undefined); setSettings(prev => ({ ...prev, logo: null })); }}
+                className="btn btn-circle btn-error btn-xs absolute -top-2 -right-2 shadow-lg"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor">
                   <path fillRule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clipRule="evenodd" />
@@ -708,7 +720,7 @@ export default function Settings() {
               <select
                 value={inactivityTimeout}
                 onChange={(e) => setInactivityTimeout(e.target.value)}
-                className={inputClass()}
+                className="select select-bordered w-full"
               >
                 <option value="never">{t('settings.timeoutNever')}</option>
                 <option value="5">{t('settings.timeout5min')}</option>
@@ -751,23 +763,23 @@ export default function Settings() {
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className={labelClass}>{t('settings.currentPassword')}</label>
-                <input
-                  type="password"
-                  value={passwordOld}
-                  onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
-                  placeholder="••••••••"
-                  className={inputClass()}
-                />
+            <input
+              type="password"
+              value={passwordOld}
+              onChange={(e) => { setPasswordOld(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
+              placeholder="••••••••"
+              className="input input-bordered w-full"
+            />
               </div>
               <div>
                 <label className={labelClass}>{t('settings.newPassword')}</label>
-                <input
-                  type="password"
-                  value={passwordNew}
-                  onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
-                  placeholder="••••••••"
-                  className={inputClass()}
-                />
+            <input
+              type="password"
+              value={passwordNew}
+              onChange={(e) => { setPasswordNew(e.target.value); setPasswordChangeSuccess(false); setPasswordChangeError(''); }}
+              placeholder="••••••••"
+              className="input input-bordered w-full"
+            />
               </div>
               <div className="flex items-end">
                 <motion.button
@@ -776,9 +788,7 @@ export default function Settings() {
                   disabled={isChangingPassword || !passwordOld || !passwordNew}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className="w-full py-2.5 bg-teal-500 hover:bg-teal-600 text-white rounded-lg 
-                    font-medium transition-all duration-200 flex items-center justify-center gap-2
-                    disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="btn btn-primary w-full"
                 >
                   {isChangingPassword ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -808,8 +818,7 @@ export default function Settings() {
 
       {/* Address */}
       <div>
-        <label className={labelClass}>{t('settings.address')}</label>
-        <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className={inputClass()} />
+        <label className={labelClass}>{t('settings.address')}</label>              <textarea name="address" value={settings.address} onChange={handleChange} rows={3} className="textarea textarea-bordered w-full" />
       </div>
     </div>
   );
@@ -848,7 +857,7 @@ export default function Settings() {
       <div className="md:col-span-2">
         <label className={labelClass}>{t('settings.receiptFooter')}</label>
         <textarea name="receipt_footer" value={settings.receipt_footer} onChange={handleChange}
-          rows={3} className={inputClass()}
+          rows={3} className="textarea textarea-bordered w-full"
           placeholder={t('settings.receiptFooterPlaceholder')} />
       </div>
     </div>
@@ -870,7 +879,7 @@ export default function Settings() {
           <label className={labelClass}>{t('settings.numberOfTables')}</label>
           <input type="number" name="dine_in_tables" value={settings.dine_in_tables ?? 0}
             onChange={handleChange} min="0"
-            className={inputClass()} />
+            className="input input-bordered w-full" />
           <p className="mt-1.5 text-xs text-slate-500 dark:text-gray-400">
             {t('settings.diningTab.zeroToDisable')}
           </p>
@@ -943,9 +952,7 @@ export default function Settings() {
         </p>
         <button
           type="button"
-          onClick={() => navigate('/employees')}
-          className="inline-flex items-center gap-2 px-4 py-2 bg-indigo-500 hover:bg-indigo-600 
-            text-white rounded-lg text-sm font-medium transition-colors"
+          onClick={() => navigate('/employees')}            className="btn btn-info gap-2"
         >
           <span className="icon-[tabler--users] w-4 h-4" />
           {t('settings.employeesTab.goToEmployees')}

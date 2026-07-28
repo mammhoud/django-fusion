@@ -353,10 +353,7 @@ export default function Inventory() {
                     value={stockSearch}
                     onChange={e => setStockSearch(e.target.value)}
                     placeholder={t('inventory.searchIngredient')}
-                    className="w-full pl-9 pr-3 py-1.5 rounded-lg text-xs bg-white/50 dark:bg-white/5 
-                      border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white 
-                      placeholder:text-slate-400 dark:placeholder:text-gray-500
-                      focus:outline-none focus:border-teal-400 transition-colors"
+                    className="input input-bordered w-full text-xs pl-9"
                   />
                   {stockSearch && (
                     <button
@@ -370,7 +367,7 @@ export default function Inventory() {
                 <motion.button
                   whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                   onClick={() => setShowAddIngredient(true)}
-                  className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl font-semibold text-sm shrink-0"
+                  className="btn btn-success gap-2 shrink-0"
                 >
                   <span className="icon-[tabler--plus]" /> {t('inventory.addIngredient')}
                 </motion.button>
@@ -505,7 +502,7 @@ export default function Inventory() {
                 <select
                   value={ingredientFilter ?? ''}
                   onChange={(e) => setIngredientFilter(e.target.value ? Number(e.target.value) : null)}
-                  className="px-3 py-1.5 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white text-sm"
+                  className="select select-bordered"
                 >
                   <option value="">{t('inventory.allIngredientsFilter')}</option>
                   {ingredients.map(ing => (
@@ -516,7 +513,7 @@ export default function Inventory() {
               <motion.button
                 whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
                 onClick={() => setShowAddTransaction(true)}
-                className="flex items-center gap-2 px-4 py-2 bg-emerald-500 text-white rounded-xl font-semibold text-sm"
+                className="btn btn-success gap-2"
               >
                 <span className="icon-[tabler--plus]" /> {t('inventory.recordTransaction')}
               </motion.button>
@@ -626,25 +623,25 @@ export default function Inventory() {
       >
         <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Name *</label>
           <input type="text" value={newIngredient.name} onChange={e => setNewIngredient(p => ({ ...p, name: e.target.value }))}
-            className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+            className="input input-bordered w-full" /></div>
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Unit *</label>
             <input type="text" value={newIngredient.unit} onChange={e => setNewIngredient(p => ({ ...p, unit: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+              className="input input-bordered w-full" /></div>
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Current Quantity</label>
             <input type="number" step="0.1" min="0" value={newIngredient.current_quantity} onChange={e => setNewIngredient(p => ({ ...p, current_quantity: Number(e.target.value) }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+              className="input input-bordered w-full" /></div>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Level</label>
             <input type="number" step="0.1" min="0" value={newIngredient.reorder_level} onChange={e => setNewIngredient(p => ({ ...p, reorder_level: Number(e.target.value) }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+              className="input input-bordered w-full" /></div>
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Qty</label>
             <input type="number" step="0.1" min="0" value={newIngredient.reorder_quantity} onChange={e => setNewIngredient(p => ({ ...p, reorder_quantity: Number(e.target.value) }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+              className="input input-bordered w-full" /></div>
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Cost/Unit</label>
             <input type="number" step="0.01" min="0" value={newIngredient.cost_per_unit} onChange={e => setNewIngredient(p => ({ ...p, cost_per_unit: Number(e.target.value) }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+              className="input input-bordered w-full" /></div>
         </div>
       </Modal>
 
@@ -660,25 +657,25 @@ export default function Inventory() {
         {editForm && (<>
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Name</label>
             <input type="text" value={editForm.name} onChange={e => setEditForm(p => ({ ...p!, name: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+              className="input input-bordered w-full" /></div>
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Unit</label>
               <input type="text" value={editForm.unit} onChange={e => setEditForm(p => ({ ...p!, unit: e.target.value }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Stock</label>
               <input type="number" step="0.1" value={editForm.current_quantity} onChange={e => setEditForm(p => ({ ...p!, current_quantity: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Level</label>
               <input type="number" step="0.1" value={editForm.reorder_level} onChange={e => setEditForm(p => ({ ...p!, reorder_level: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Reorder Qty</label>
               <input type="number" step="0.1" value={editForm.reorder_quantity} onChange={e => setEditForm(p => ({ ...p!, reorder_quantity: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">Cost/Unit</label>
               <input type="number" step="0.01" value={editForm.cost_per_unit} onChange={e => setEditForm(p => ({ ...p!, cost_per_unit: Number(e.target.value) }))}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
           </div>
         </>)}
       </Modal>
@@ -704,7 +701,7 @@ export default function Inventory() {
       >
         <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.ingredient')} *</label>
           <select value={newTransaction.ingredient_id} onChange={e => setNewTransaction(p => ({ ...p, ingredient_id: Number(e.target.value) }))}
-            className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white">
+            className="input input-bordered w-full">
             <option value={0}>{t('inventory.selectIngredient')}</option>
             {ingredients.filter(i => i.is_active).map(ing => (
               <option key={ing.id} value={ing.id}>{ing.name} ({ing.current_quantity} {ing.unit})</option>
@@ -713,28 +710,28 @@ export default function Inventory() {
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.type')} *</label>
             <select value={newTransaction.transaction_type} onChange={e => setNewTransaction(p => ({ ...p, transaction_type: e.target.value }))}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white">
+              className="input input-bordered w-full">
               {TRANSACTION_TYPES.map(t => <option key={t.value} value={t.value}>{t.label}</option>)}
             </select></div>
           <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.quantityChange')} *</label>
             <input type="number" step="0.1" value={newTransaction.quantity_change}
               onChange={e => setNewTransaction(p => ({ ...p, quantity_change: Number(e.target.value) }))}
               placeholder={t('inventory.quantityPlaceholder')}
-              className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
+              className="input input-bordered w-full" />
             <p className="text-xs text-slate-500 dark:text-gray-400 mt-1">{t('inventory.positiveHint')}</p>
           </div>
         </div>
         <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.note')}</label>
           <input type="text" value={newTransaction.note || ''} onChange={e => setNewTransaction(p => ({ ...p, note: e.target.value || null }))}
-            className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+            className="input input-bordered w-full" /></div>
         {newTransaction.transaction_type === 'adjustment' && (
           <>
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.adjustmentReason')} *</label>
               <input type="text" value={adjustmentReason} onChange={e => setAdjustmentReason(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
             <div><label className="block text-slate-700 dark:text-gray-300 mb-1 text-sm">{t('inventory.createdBy')}</label>
               <input type="text" value={createdBy} onChange={e => setCreatedBy(e.target.value)}
-                className="w-full px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" /></div>
+                className="input input-bordered w-full" /></div>
           </>
         )}
       </Modal>

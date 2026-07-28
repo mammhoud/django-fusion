@@ -124,7 +124,7 @@ export default function Suppliers() {
             whileHover={{ y: -2 }}
             whileTap={{ scale: 0.98 }}
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' }); }}
-            className="flex items-center gap-2 px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600 transition-colors shrink-0"
+            className="btn btn-primary gap-2 shrink-0"
           >
             <span className="icon-[tabler--plus]" /> {t('suppliers.addSupplier')}
           </motion.button>
@@ -141,10 +141,7 @@ export default function Suppliers() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('suppliers.searchPlaceholder') || 'Search suppliers...'}
                 aria-label={t('suppliers.searchPlaceholder') || 'Search suppliers'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                  border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                  placeholder:text-slate-400 dark:placeholder:text-gray-500
-                  focus:outline-none focus:border-teal-400 transition-colors text-sm"
+                className="input input-bordered w-full pl-10"
               />
               {isFiltering ? (
                 <motion.div
@@ -168,9 +165,7 @@ export default function Suppliers() {
               value={sortKey}
               onChange={(e) => setSortKey(e.target.value as SortKey)}
               aria-label={t('suppliers.sortBy') || 'Sort by'}
-              className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                text-sm focus:outline-none focus:border-teal-400 transition-colors sm:w-44"
+              className="select select-bordered sm:w-44"
             >
               <option value="newest">{t('suppliers.sortNewest') || 'Newest'}</option>
               <option value="name-asc">{t('suppliers.sortNameAsc') || 'Name (A→Z)'}</option>
@@ -190,17 +185,17 @@ export default function Suppliers() {
             className="bg-white/70 dark:bg-white/10 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-4 space-y-3"
           >
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white" />
-              <input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white sm:col-span-2" />
+              <input type="text" value={form.name} onChange={e => setForm({ ...form, name: e.target.value })} placeholder={t('suppliers.name')} required className="input input-bordered w-full" />
+              <input type="text" value={form.contact_name} onChange={e => setForm({ ...form, contact_name: e.target.value })} placeholder={t('suppliers.contactName')} className="input input-bordered w-full" />
+              <input type="text" value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })} placeholder={t('suppliers.phone')} className="input input-bordered w-full" />
+              <input type="email" value={form.email} onChange={e => setForm({ ...form, email: e.target.value })} placeholder={t('suppliers.email')} className="input input-bordered w-full" />
+              <input type="text" value={form.address} onChange={e => setForm({ ...form, address: e.target.value })} placeholder={t('suppliers.address')} className="input input-bordered w-full" />
+              <input type="text" value={form.tax_id} onChange={e => setForm({ ...form, tax_id: e.target.value })} placeholder={t('suppliers.taxId')} className="input input-bordered w-full" />
+              <input type="text" value={form.payment_terms} onChange={e => setForm({ ...form, payment_terms: e.target.value })} placeholder={t('suppliers.paymentTerms')} className="input input-bordered w-full sm:col-span-2" />
             </div>
             <div className="flex gap-2">
-              <button type="submit" className="px-4 py-2 bg-teal-500 text-white rounded-lg hover:bg-teal-600">{editing ? t('common.update') : t('common.save')}</button>
-              <button type="button" onClick={() => setShowForm(false)} className="px-4 py-2 bg-slate-300 dark:bg-slate-700 rounded-lg">{t('common.cancel')}</button>
+              <button type="submit" className="btn btn-primary">{editing ? t('common.update') : t('common.save')}</button>
+              <button type="button" onClick={() => setShowForm(false)} className="btn btn-ghost">{t('common.cancel')}</button>
             </div>
           </motion.form>
         )}

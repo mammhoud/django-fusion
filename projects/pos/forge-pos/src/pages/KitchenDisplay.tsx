@@ -81,10 +81,7 @@ export default function KitchenDisplay() {
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t('kitchen.searchPlaceholder') || 'Search by ticket or notes...'}
                 aria-label={t('kitchen.searchPlaceholder') || 'Search kitchen tickets'}
-                className="w-full pl-10 pr-9 py-2 rounded-lg bg-white/50 dark:bg-white/5
-                  border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white
-                  placeholder:text-slate-400 dark:placeholder:text-gray-500
-                  focus:outline-none focus:border-teal-400 transition-colors text-sm"
+                className="input input-bordered w-full pl-10"
               />
               {isFiltering ? (
                 <motion.div
@@ -108,7 +105,7 @@ export default function KitchenDisplay() {
               value={filter}
               onChange={e => setFilter(e.target.value)}
               aria-label={t('kitchen.statusFilter') || 'Filter by status'}
-              className="px-3 py-2 rounded-lg bg-white/50 dark:bg-white/5 border border-slate-300 dark:border-gray-600 text-slate-900 dark:text-white"
+              className="select select-bordered w-full"
             >
               <option value="all">{t('kitchen.allTickets')}</option>
               <option value="pending">{t('kitchen.pending')}</option>
@@ -155,13 +152,13 @@ export default function KitchenDisplay() {
                 {ticket.notes && <p className="text-sm text-slate-600 dark:text-gray-300 mb-3">{ticket.notes}</p>}
                 <div className="flex gap-2">
                   {ticket.status === 'pending' && (
-                    <button onClick={() => updateStatus(ticket.id, 'preparing')} className="flex-1 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 text-sm">{t('kitchen.startPreparing')}</button>
+                    <button onClick={() => updateStatus(ticket.id, 'preparing')} className="flex-1 btn btn-info btn-sm">{t('kitchen.startPreparing')}</button>
                   )}
                   {ticket.status === 'preparing' && (
-                    <button onClick={() => updateStatus(ticket.id, 'ready')} className="flex-1 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 text-sm">{t('kitchen.markReady')}</button>
+                    <button onClick={() => updateStatus(ticket.id, 'ready')} className="flex-1 btn btn-success btn-sm">{t('kitchen.markReady')}</button>
                   )}
                   {ticket.status === 'ready' && (
-                    <button onClick={() => updateStatus(ticket.id, 'delivered')} className="flex-1 py-2 bg-slate-500 text-white rounded-lg hover:bg-slate-600 text-sm flex items-center justify-center gap-1"><span className="icon-[tabler--circle-check]" /> {t('kitchen.deliver')}</button>
+                    <button onClick={() => updateStatus(ticket.id, 'delivered')} className="flex-1 btn btn-ghost btn-sm gap-1"><span className="icon-[tabler--circle-check]" /> {t('kitchen.deliver')}</button>
                   )}
                 </div>
               </motion.div>

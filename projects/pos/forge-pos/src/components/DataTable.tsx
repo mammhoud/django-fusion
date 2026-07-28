@@ -270,9 +270,7 @@ export default function DataTable<T>({
             <button
               type="button"
               onClick={handleExport}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium
-                bg-teal-500/10 text-teal-600 dark:text-teal-400 hover:bg-teal-500/20 
-                transition-colors"
+              className="btn btn-soft btn-sm text-xs gap-1.5"
             >
               <span className="icon-[tabler--download] w-3 h-3" />
               {t('common.csv')}
@@ -405,9 +403,7 @@ export default function DataTable<T>({
                               if (e.key === 'Escape') cancelEditing();
                             }}
                             onBlur={confirmEditing}
-                            className="w-full px-2 py-1 rounded border border-teal-400 
-                              bg-white dark:bg-slate-800 text-slate-900 dark:text-white 
-                              text-sm outline-none shadow-sm"
+                            className="input input-bordered input-sm w-full"
                             onClick={(e) => e.stopPropagation()}
                             step={col.editType === 'number' ? 'any' : undefined}
                           />

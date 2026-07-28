@@ -258,10 +258,94 @@ Migrations are managed via Diesel in `src-tauri/migrations/`.
 
 ```
 src-tauri/migrations/
-└── 2026-01-01-000000_create_all/
-    ├── up.sql      # Full schema + seed data
-    └── down.sql    # DROP TABLE statements
+├── 2026-01-01-000000_create_all/
+│   ├── up.sql      # Schema only — CREATE TABLE, TRIGGER, essential defaults
+│   ├── down.sql    # DROP TABLE statements
+│   └── seed.sql    # Unified seed data with section markers
+├── 2026-07-17-000000_gaming_center_seed/
+│   ├── up.sql      # Gaming center preset data (categories 11-16, products 51-76, …)
+│   └── down.sql    # Reverts gaming data + resets settings to defaults
+└── 2026-08-01-000000_coffee_shop_seed/
+    ├── up.sql      # Coffee shop preset data (categories 17-21, products 77-108, …)
+    └── down.sql    # Reverts coffee data + resets settings to defaults
 ```
+
+### Schema vs Seed Separation
+
+As of July 2026, the schema and seed data have been **separated**:
+
+- **`up.sql`** — Contains ONLY schema definitions (CREATE TABLE, CREATE TRIGGER, ALTER TABLE) plus essential reference defaults (delivery_types, employee_types, recipe_types, roles, receipt_template). No demo data.
+- **`seed.sql`** — Contains ALL demo/seed data in a **unified file** with **section markers** that the seed binary parses to select preset-specific data.
+
+### Unified Seed Architecture
+
+The `seed.sql` file uses section markers to organize data by preset:
+
+```sql
+-- [SECTION:shared]   — Data for ALL presets (suppliers, customers, tax_reports)
+-- [SECTION:base]     — Restaurant demo data (categories 1-10, products 1-47, …)
+-- [SECTION:gaming]   — Gaming center data (categories 11-16, products 51-76, …)
+-- [SECTION:coffee]   — Coffee shop data (categories 17-21, products 77-108, …)
+```
+
+### How Presets Work
+
+The seed binary (`src-tauri/src/bin/seed.rs`) parses the section markers and runs only the relevant sections based on the requested preset:
+
+| Preset | Sections Seeded | Data |
+|--------|-----------------|------|
+| `all` | shared + gaming + coffee | Gaming center + coffee shop (comprehensive demo) |
+| `base` | shared + base | Restaurant demo (47 products, 12 employees) |
+| `gaming` | shared + gaming | Gaming center (26 products, 7 employees, USD) |
+| `coffee` | shared + base + coffee | Restaurant + coffee shop (55 products total) |
+
+### Seed Presets
+
+```bash
+make seed                  # PRESET=all (default — gaming + coffee)
+make seed PRESET=base      # Base restaurant only
+make seed PRESET=gaming    # Gaming lounge only
+make seed PRESET=coffee    # Coffee shop only
+```
+
+### Seed Data by Preset
+
+#### Section: shared (all presets)
+- Suppliers (6), Customers (10), Tax Reports (3)
+
+#### Section: base (restaurant)
+- **Settings:** Restaurant defaults (Forge POS, PKR, Lahore address)
+- **Categories:** 10 (Burgers, Pizza, BBQ, Biryani, Karahi, Fast Food, Beverages, Desserts, Chinese, Breakfast)
+- **Products:** 47 menu items with prices ($1–$22)
+- **Ingredients:** 55 stock items with levels and costs
+- **Recipes:** 41 recipe mappings with 200+ ingredient lines
+- **Employees:** 12 staff (Manager, Chefs, Waiters, Cashier, Drivers, Cleaner)
+- **Sales:** 12 sample transactions with items (PKR)
+- **Inventory Transactions:** 31 stock movements (purchase, usage, waste, adjustment)
+- **Employee Schedules:** 12 shifts
+- **Payrolls:** 8 bi-weekly records
+- **Purchase Orders:** 6 orders with 22 line items
+
+#### Section: gaming
+- **Settings:** Level Up Gaming Center, USD currency, 10AM-2AM hours
+- **Categories:** 6 (PS5, PS4, VR, Game Modes, Accessories, Snacks)
+- **Products:** 26 (gaming sessions & snacks, $1–$45)
+- **Employee Types:** 5 (Manager, Attendant, Cashier, Technician, Security)
+- **Employees:** 7 ($2,600–$4,500/month)
+- **Delivery Types:** 2 (Walk-in, Pre-booked)
+- **Sales:** 20 transactions (USD)
+- **Logo:** Gaming-themed SVG
+
+#### Section: coffee
+- **Settings:** The Daily Grind, PKR, 7AM-11PM hours
+- **Categories:** 5 (Espresso, Teas, Pastries, Cold Brews, Signature)
+- **Products:** 32 (coffee drinks & pastries, PKR 120–520)
+- **Employee Types:** 3 (Barista, Pastry Chef, Shift Manager)
+- **Employees:** 5
+- **Sales:** 8 transactions (PKR)
+- **Ingredients:** 14 (coffee-specific: espresso beans, matcha, syrups)
+- **Inventory Transactions:** 10
+- **Logo:** Coffee-themed SVG
 
 ### Running Migrations
 
@@ -277,28 +361,30 @@ diesel migration revert
 diesel migration redo
 ```
 
-### Seed Data
+### Seed Binary (`seed.rs`)
 
-The `up.sql` migration includes comprehensive seed data with:
-
-- **Settings:** Restaurant defaults (name, address, tax rate, etc.)
-- **Categories:** 10 menu categories (Burgers, Pizza, BBQ, Biryani, etc.)
-- **Products:** 47 menu items with prices
-- **Ingredients:** 55 ingredients with stock levels and costs
-- **Recipes:** 41 recipes with ingredient mappings
-- **Employees:** 12 sample staff members
-- **Sales:** 12 sample transactions with sale items
-- **Inventory Transactions:** 30+ stock movements
-
-### Seed Presets
+The standalone seed binary (`src-tauri/src/bin/seed.rs`) handles seeding:
 
 ```bash
-make seed                  # Full seed (all data)
-make seed PRESET=base      # Base restaurant preset (47 products)
-make seed PRESET=gaming    # Gaming lounge preset
-make seed PRESET=coffee    # Coffee shop preset
+# Via Make
+make seed
+make seed PRESET=coffee
+
+# Direct
+cargo run --manifest-path src-tauri/Cargo.toml --bin seed
+PRESET=coffee cargo run --manifest-path src-tauri/Cargo.toml --bin seed
 ```
 
+**Flow:**
+1. Deletes existing database
+2. Runs all Diesel migrations (creates schema)
+3. Parses `seed.sql` section markers
+4. Executes only the relevant sections for the chosen preset
+5. Forces the correct `settings.restaurant_name` brand
+
+### Additive Design
+
+The seed binary always **deletes + recreates** the database before seeding, so fresh runs are always clean. As an additional safety net, most sections use `INSERT OR IGNORE` and `UPDATE ... WHERE`, making it safe to re-run specific sections on an already-seeded database without data duplication or constraint errors.
 ---
 
 ## Database Maintenance

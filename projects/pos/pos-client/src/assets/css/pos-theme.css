@@ -1,0 +1,138 @@
+/* ============================================================
+   POS Design System — Shared Theme
+   ============================================================
+   Used by: pos-minimal, pos-solo, pos-full, CRM
+   ============================================================ */
+
+:root {
+  /* ── Color Palette ─────────────────────────────────────── */
+  --pos-primary: #2563eb;          /* Blue-600 */
+  --pos-primary-dark: #1d4ed8;     /* Blue-700 */
+  --pos-primary-light: #60a5fa;    /* Blue-400 */
+  --pos-secondary: #059669;        /* Emerald-600 */
+  --pos-secondary-dark: #047857;   /* Emerald-700 */
+  --pos-accent: #f59e0b;           /* Amber-500 */
+  --pos-accent-dark: #d97706;      /* Amber-600 */
+  --pos-danger: #dc2626;           /* Red-600 */
+  --pos-warning: #f97316;          /* Orange-500 */
+
+  /* ── Neutral ───────────────────────────────────────────── */
+  --pos-bg: #f8fafc;               /* Slate-50 */
+  --pos-bg-alt: #f1f5f9;           /* Slate-100 */
+  --pos-surface: #ffffff;
+  --pos-border: #e2e8f0;           /* Slate-200 */
+  --pos-text: #1e293b;             /* Slate-800 */
+  --pos-text-secondary: #64748b;   /* Slate-500 */
+  --pos-text-muted: #94a3b8;       /* Slate-400 */
+
+  /* ── Typography ────────────────────────────────────────── */
+  --pos-font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --pos-font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --pos-radius: 8px;
+  --pos-radius-sm: 4px;
+  --pos-radius-lg: 12px;
+
+  /* ── Spacing ───────────────────────────────────────────── */
+  --pos-space-xs: 4px;
+  --pos-space-sm: 8px;
+  --pos-space-md: 16px;
+  --pos-space-lg: 24px;
+  --pos-space-xl: 32px;
+
+  /* ── Shadows ───────────────────────────────────────────── */
+  --pos-shadow-sm: 0 1px 2px rgba(0, 0, 0, 0.05);
+  --pos-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.07);
+  --pos-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* ── Typography ──────────────────────────────────────────── */
+.pos-body { font-family: var(--pos-font); color: var(--pos-text); line-height: 1.6; }
+.pos-heading { font-weight: 600; letter-spacing: -0.02em; }
+.pos-mono { font-family: var(--pos-font-mono); }
+
+/* ── Buttons ─────────────────────────────────────────────── */
+.pos-btn {
+  display: inline-flex; align-items: center; gap: var(--pos-space-sm);
+  padding: 8px 16px; border-radius: var(--pos-radius); border: none;
+  font-family: var(--pos-font); font-size: 14px; font-weight: 500;
+  cursor: pointer; transition: all 0.15s ease;
+}
+.pos-btn:active { transform: scale(0.97); }
+.pos-btn-primary { background: var(--pos-primary); color: white; }
+.pos-btn-primary:hover { background: var(--pos-primary-dark); box-shadow: var(--pos-shadow-md); }
+.pos-btn-secondary { background: var(--pos-secondary); color: white; }
+.pos-btn-secondary:hover { background: var(--pos-secondary-dark); }
+.pos-btn-ghost { background: transparent; color: var(--pos-text); border: 1px solid var(--pos-border); }
+.pos-btn-ghost:hover { background: var(--pos-bg-alt); }
+.pos-btn-danger { background: var(--pos-danger); color: white; }
+.pos-btn-sm { padding: 4px 10px; font-size: 12px; }
+.pos-btn-lg { padding: 12px 24px; font-size: 16px; }
+
+/* ── Cards ───────────────────────────────────────────────── */
+.pos-card {
+  background: var(--pos-surface); border-radius: var(--pos-radius-lg);
+  border: 1px solid var(--pos-border); padding: var(--pos-space-lg);
+  box-shadow: var(--pos-shadow-sm);
+}
+.pos-card:hover { box-shadow: var(--pos-shadow-md); }
+
+/* ── Forms ───────────────────────────────────────────────── */
+.pos-input {
+  width: 100%; padding: 8px 12px; border: 1px solid var(--pos-border);
+  border-radius: var(--pos-radius); font-family: var(--pos-font);
+  font-size: 14px; color: var(--pos-text); background: var(--pos-surface);
+  transition: border-color 0.15s ease;
+}
+.pos-input:focus { outline: none; border-color: var(--pos-primary); box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1); }
+.pos-label { display: block; font-size: 13px; font-weight: 500; color: var(--pos-text-secondary); margin-bottom: 4px; }
+
+/* ── Tables ──────────────────────────────────────────────── */
+.pos-table { width: 100%; border-collapse: collapse; }
+.pos-table th {
+  text-align: left; padding: 10px 12px; font-size: 12px; font-weight: 600;
+  color: var(--pos-text-secondary); text-transform: uppercase; letter-spacing: 0.05em;
+  border-bottom: 2px solid var(--pos-border); background: var(--pos-bg-alt);
+}
+.pos-table td { padding: 10px 12px; border-bottom: 1px solid var(--pos-border); font-size: 14px; }
+.pos-table tr:hover td { background: var(--pos-bg); }
+
+/* ── Badges ──────────────────────────────────────────────── */
+.pos-badge {
+  display: inline-flex; align-items: center; padding: 2px 8px;
+  border-radius: 999px; font-size: 12px; font-weight: 500;
+}
+.pos-badge-primary { background: rgba(37, 99, 235, 0.1); color: var(--pos-primary); }
+.pos-badge-success { background: rgba(5, 150, 105, 0.1); color: var(--pos-secondary); }
+.pos-badge-warning { background: rgba(245, 158, 11, 0.1); color: var(--pos-accent); }
+.pos-badge-danger { background: rgba(220, 38, 38, 0.1); color: var(--pos-danger); }
+
+/* ── Layout ──────────────────────────────────────────────── */
+.pos-layout { display: flex; min-height: 100vh; background: var(--pos-bg); }
+.pos-sidebar { width: 240px; background: var(--pos-surface); border-right: 1px solid var(--pos-border); padding: var(--pos-space-md); }
+.pos-main { flex: 1; padding: var(--pos-space-xl); overflow-y: auto; }
+.pos-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--pos-space-xl); }
+.pos-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: var(--pos-space-md); }
+
+/* ── Sidebar Navigation ──────────────────────────────────── */
+.pos-nav-item {
+  display: flex; align-items: center; gap: var(--pos-space-sm);
+  padding: 10px 12px; border-radius: var(--pos-radius); color: var(--pos-text-secondary);
+  text-decoration: none; font-size: 14px; transition: all 0.15s ease;
+}
+.pos-nav-item:hover { background: var(--pos-bg-alt); color: var(--pos-text); }
+.pos-nav-item.active { background: rgba(37, 99, 235, 0.1); color: var(--pos-primary); font-weight: 500; }
+
+/* ── Utilities ───────────────────────────────────────────── */
+.pos-flex { display: flex; }
+.pos-flex-center { align-items: center; justify-content: center; }
+.pos-flex-between { display: flex; align-items: center; justify-content: space-between; }
+.pos-gap-xs { gap: var(--pos-space-xs); }
+.pos-gap-sm { gap: var(--pos-space-sm); }
+.pos-gap-md { gap: var(--pos-space-md); }
+.pos-mt-sm { margin-top: var(--pos-space-sm); }
+.pos-mt-md { margin-top: var(--pos-space-md); }
+.pos-mt-lg { margin-top: var(--pos-space-lg); }
+.pos-text-center { text-align: center; }
+.pos-text-right { text-align: right; }
+.pos-text-muted { color: var(--pos-text-muted); }
+.pos-truncate { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }

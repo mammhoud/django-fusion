@@ -76,12 +76,20 @@ loadData({ quiet: true })  // background refresh
 
 ---
 
-## FlyonUI Integration
+## Styling & UI Packages
 
-FlyonUI is integrated as a **Tailwind CSS v4 plugin** providing semantic component classes.
+Forge POS uses a modern styling stack. See the dedicated **[Styling & UI Package Reference](styling.md)** document for the complete catalog of packages, installation details, and usage examples.
 
-### CSS Setup (`src/index.css`)
+| Package | Purpose |
+|---------|---------|
+| **Tailwind CSS v4** | Utility-first CSS framework with CSS-first configuration |
+| **FlyonUI v2.4.1** | Semantic component classes (badge, btn) via Tailwind plugin |
+| **Iconify + Tabler** | 2000+ icons via `icon-[tabler--name]` utility class syntax |
+| **Framer Motion v12** | Page transitions and micro-interactions |
 
+### Quick Integration Summary
+
+**CSS Setup** (`src/index.css`):
 ```css
 @import "tailwindcss";
 @plugin "flyonui";
@@ -90,8 +98,7 @@ FlyonUI is integrated as a **Tailwind CSS v4 plugin** providing semantic compone
 @plugin "@iconify/tailwind4";
 ```
 
-### JS Setup (`src/main.tsx`)
-
+**JS Setup** (`src/main.tsx`):
 ```tsx
 import "flyonui/flyonui";
 ```
@@ -109,17 +116,7 @@ import "flyonui/flyonui";
 | **Button Modifiers** | `glass`, `btn-wide`, `btn-block`, `btn-circle`, `btn-square` | Shape/layout modifiers |
 | **Icons** | `icon-[tabler--icon-name]` | Tabler icons via Iconify |
 
-### Data Attributes (Interactive Components)
-
-FlyonUI provides JavaScript-enhanced components via `data-*` attributes:
-
-| Data Attribute | Component | React Integration |
-|---------------|-----------|-------------------|
-| `data-toggle="modal"` | Modal dialogs | Via `import "flyonui/flyonui"` |
-| `data-hs-overlay` | Overlay/off-canvas | Direct JS import handles DOM events |
-| `data-hs-collapse` | Collapse/accordion | Works with JS-managed state |
-
-> **Note:** Forge POS primarily uses **React state** for interactivity rather than FlyonUI's data-attribute-driven JS. FlyonUI's CSS classes (badge, btn) are used via semantic class names, while complex interactive components (modals, toasts) use React components.
+> **Note:** Forge POS primarily uses **React state** for interactivity rather than FlyonUI's data-attribute-driven JS. FlyonUI's CSS classes (badge, btn) are used via semantic class names, while complex interactive components (modals, toasts) use React components. See [Styling & UI Package Reference](styling.md) for the full details including icon catalog, Framer Motion patterns, and bundle size analysis.
 
 ---
 
@@ -127,41 +124,42 @@ FlyonUI provides JavaScript-enhanced components via `data-*` attributes:
 
 ### Architecture
 
+Forge POS uses **FlyonUI's native theme system** via `@plugin "flyonui/theme"` blocks in `src/index.css`. Light and dark variants are separate FlyonUI themes (e.g., `corporate-light`, `corporate-dark`), eliminating the dual-theme conflict of the old custom CSS approach.
+
 ```
-data-theme="default|corporate|luxury|pastel|cyberpunk"
-    │
-    ▼
-themes.css ───> CSS custom properties (--theme-primary, etc.)
-    │
-    ▼
-theme-overrides.css ───> Tailwind color token overrides (--color-teal-*, etc.)
-    │
-    ▼
-All components using Tailwind classes (bg-teal-500, text-slate-900)
-automatically pick up the variant's palette
+ThemeContext (variant + mode)
+    ↓
+THEME_MAP → "corporate-light" | "corporate-dark"
+    ↓
+data-theme attribute on <html>
+    ↓
+FlyonUI CSS resolves OKLCH semantic tokens
+    ↓
+FlyonUI component classes (badge-primary, btn-primary) match the palette
 ```
 
 ### Theme Context (React)
 
 ```tsx
 // ThemeContext provides:
-{ theme, setTheme, mode, toggleMode }
-// theme = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk'
+{ mode, variant, followSystem, resolvedTheme, setVariant, setMode, setFollowSystem }
 // mode = 'light' | 'dark'
+// variant = 'default' | 'corporate' | 'luxury' | 'pastel' | 'cyberpunk'
+// resolvedTheme = 'dark' | 'corporate-light' | 'corporate-dark' | ...
 
 // Applied to <html>:
-<html data-theme="corporate" class="dark"> ... </html>
+<html data-theme="corporate-dark" class="dark"> ... </html>
 ```
 
 ### Theme Variants
 
-| Variant | Light Primary | Dark Primary | Best For |
-|---------|--------------|--------------|----------|
-| **Default** | Indigo (#6366f1) | Indigo | General use |
-| **Corporate** | Blue (#2563eb) | Royal Blue | Business environments |
-| **Luxury** | Gold (#ca8a04) | Amber (#eab308) | Premium restaurants |
-| **Pastel** | Pink (#db2777) | Light Pink (#f472b6) | Cafes, bakeries |
-| **Cyberpunk** | Magenta (#cc00cc) | Neon Pink (#ff00ff) | Gaming centers, tech spots |
+| Variant | Light Theme ID | Dark Theme ID | Light Primary | Dark Primary | Best For |
+|---------|---------------|---------------|--------------|--------------|----------|
+| **Default** | `light` | `dark` | Indigo (#6366f1) | Indigo | General use |
+| **Corporate** | `corporate-light` | `corporate-dark` | Blue (#2563eb) | Royal Blue (#3b82f6) | Business |
+| **Luxury** | `luxury-light` | `luxury-dark` | Gold (#ca8a04) | Amber (#eab308) | Premium restaurants |
+| **Pastel** | `pastel-light` | `pastel-dark` | Pink (#db2777) | Light Pink (#f472b6) | Cafes, bakeries |
+| **Cyberpunk** | `cyberpunk-light` | `cyberpunk` | Magenta (#cc00cc) | Neon Pink (#ff00ff) | Gaming centers |
 
 ---
 
