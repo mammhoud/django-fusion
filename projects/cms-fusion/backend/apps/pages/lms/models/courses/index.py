@@ -11,7 +11,6 @@ from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 
 logger = logging.getLogger(__name__)
 from apps.core.content.models.pages.base import BaseIndexPage
-
 from apps.pages.lms.models.courses.detail import Specialization
 from apps.pages.lms.models.courses.info import Course
 from apps.pages.lms.models.courses.tag import CourseTag
@@ -328,7 +327,7 @@ class CoursesPage(BaseIndexPage):
         """
         Return paginated courses with pagination metadata for templates.
         """
-        from django.core.paginator import Paginator, EmptyPage, PageNotAnInteger
+        from django.core.paginator import EmptyPage, PageNotAnInteger, Paginator
 
         page = request.GET.get('page', 1)
         paginator = Paginator(courses, per_page)
@@ -355,7 +354,7 @@ class CoursesPage(BaseIndexPage):
         Get available filter options for template rendering.
         Returns all difficulty levels, tags, price ranges.
         """
-        from django.db.models import Min, Max, Count
+        from django.db.models import Count, Max, Min
 
         courses = Course.objects.filter(is_active=True, is_published=True)
 

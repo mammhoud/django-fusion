@@ -1,0 +1,1 @@
+export class BackgroundImages{constructor(){}init(){const t=document.querySelectorAll(".bg-image");0!==t.length&&(t.forEach(t=>{const e=t.getAttribute("data-bg-src");e&&(t.style.backgroundImage=`url("${e}")`)}),console.log(`✅ ${t.length} background images initialized`))}}

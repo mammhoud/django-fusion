@@ -1,0 +1,15 @@
+# Dynamic TLS certificates — all sites now use Let's Encrypt via HTTP-01.
+# The self-signed .crt/.key files in proxy/certs/ are kept on disk for
+# emergency rollback. Uncomment the block below and restart Traefik to
+# revert a site to self-signed:
+#
+# tls:
+#   certificates:
+#     - certFile: /etc/traefik/certs/ctc-research.crt
+#       keyFile:  /etc/traefik/certs/ctc-research.key
+#     - certFile: /etc/traefik/certs/structa-cloud.crt
+#       keyFile:  /etc/traefik/certs/structa-cloud.key
+#     - certFile: /etc/traefik/certs/vresume.crt
+#       keyFile:  /etc/traefik/certs/vresume.key
+#     - certFile: /etc/traefik/certs/crm.crt
+#       keyFile:  /etc/traefik/certs/crm.key

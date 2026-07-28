@@ -7,8 +7,8 @@ from django.utils.translation import gettext_lazy as _
 from django.views import View
 from django_fusion.site.interface.notifications import NotificationMixin
 from django_fusion.site.interface.page_handler import PageHandler
-from apps.core.domain.models.users.users import Person
 
+from apps.core.domain.models.users.users import Person
 from apps.pages.accounts.management.services import PersonService
 
 from ..forms import (
@@ -19,7 +19,6 @@ from ..forms import (
     PrivacySettingsForm,
     SecuritySettingsForm,
 )
-
 
 # Lazy loader for Person model (deferred to avoid domain import conflicts)
 _Person_cache = None

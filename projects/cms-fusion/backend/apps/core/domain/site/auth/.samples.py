@@ -2,7 +2,6 @@
 import json
 from typing import Any, Dict, Optional
 
-from apps import logger
 from django.conf import settings
 from django.contrib.auth import authenticate, get_user_model, login, logout
 from django.contrib.auth.models import Group
@@ -10,8 +9,10 @@ from django.http import HttpRequest, HttpResponse
 from django.shortcuts import redirect
 from django.urls import reverse_lazy
 from django.utils.translation import gettext as _
-from django_fusion.site.interface.page_handler import ComponentViews
 from django_fusion.site.interface.notifications import NotificationMixin
+from django_fusion.site.interface.page_handler import ComponentViews
+
+from apps import logger
 
 # ===============================================
 # AUTH API ENDPOINTS (FOR AJAX/SPA)

@@ -1,0 +1,20 @@
+{% load i18n laces %}
+{# blog/fragments/post_create_form.html — uses shared form.html component #}
+<div id="post-create-form" data-fragment>
+
+  {# Success message placeholder (hidden by default, shown via OOB swap) #}
+  <div id="post-create-success" class="alert alert-success" style="display: none;">
+    Post created successfully!
+  </div>
+
+  {# Build cancel URL once so we can pass it to the {% comp %} tag #}
+  {% url 'blog:post-list-fragment' as cancel_url %}
+
+  {% comp "components/form/form.html" form=form hx_post=request.path hx_target="#post-create-form" hx_swap="outerHTML" hx_indicator=".htmx-indicator" submit_label="Create Post" show_cancel=True cancel_label="Cancel" cancel_hx_get=cancel_url cancel_hx_target="#post-create-form" cancel_hx_swap="outerHTML" / %}
+
+  <style>
+  .htmx-indicator { display: none; }
+  .htmx-request .htmx-indicator { display: inline; }
+  .htmx-request.htmx-indicator { display: inline; }
+  </style>
+</div>

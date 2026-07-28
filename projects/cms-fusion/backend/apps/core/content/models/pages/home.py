@@ -1,12 +1,13 @@
 from django.utils.translation import gettext_lazy as _
-from apps.core.domain.blocks.contact.contact_card import ContactCardBlock
-from apps.core.domain.blocks.partials.button import PageLinkBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.blocks import PageChooserBlock
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.snippets.blocks import SnippetChooserBlock
+
+from apps.core.domain.blocks.contact.contact_card import ContactCardBlock
+from apps.core.domain.blocks.partials.button import PageLinkBlock
 
 from .base import BaseFormPage
 

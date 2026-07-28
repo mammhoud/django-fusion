@@ -73,7 +73,7 @@ class PayPalGateway(PaymentGateway):
 
         return {
             "order_id": "mock_paypal_order_id",
-            "approval_url": f"https://www.paypal.com/checkoutnow?token=mock_order_id"
+            "approval_url": "https://www.paypal.com/checkoutnow?token=mock_order_id"
         }
 
     def capture_payment(self, order_id):

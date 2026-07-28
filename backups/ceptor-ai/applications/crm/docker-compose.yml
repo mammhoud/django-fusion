@@ -1,0 +1,147 @@
+# ============================================================
+# CRM Website + Worker
+# ============================================================
+x-site-infra-env: &site-infra-env
+  DB_TYPE: ${DB_TYPE:-postgres}
+  DB_HOST: ${DB_HOST:-postgres}
+  DB_PORT: ${DB_PORT:-5432}
+  DB_NAME: ${DB_NAME_CRM:-db_crm}
+  POSTGRES_USER: ${POSTGRES_USER:-admin}
+
+services:
+  crm-website:
+    build:
+      context: ../..
+      dockerfile: compose/Dockerfile
+      args:
+        PROJECT_PATH: crm
+    image: crm-website:latest
+    container_name: crm-website
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      RUNNING_ENV: docker
+      APP_MODULE: ${APP_MODULE:-server:application}
+      SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+      SERVER_ENV: ${SERVER_ENV:-production}
+      DEBUG: ${DEBUG:-False}
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+      RUN_SETUP: ${RUN_SETUP:-true}
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CRM:-db_crm}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_URL: redis://default-redis:6379/0
+      CELERY_BROKER_URL: redis://default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      LOG_DIR: /app/logs/crm
+      USE_X_FORWARDED_HOST: "true"
+      SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
+      WEBSITE: crm
+      DJANGO_SITE: crm
+      DJANGO_WEBSITE: crm
+      PROJECT_PATH: crm
+      WEBSITE_HOST: ${CRM_HOST:-crm.structa.cloud}
+      ALLOWED_HOSTS: crm.structa.cloud,www.crm.structa.cloud,localhost,127.0.0.1
+      CSRF_TRUSTED_ORIGINS: https://crm.structa.cloud,https://www.crm.structa.cloud
+      PORT: "5074"
+      CELERY_TASK_DEFAULT_QUEUE: crm
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5074/health/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 60s
+    ports:
+      - "5074:5074"
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../tasks:/app/tasks:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../crm:/app/crm:z
+      - ../pyproject.toml:/app/pyproject.toml:z
+      - ../uv.lock:/app/uv.lock:z
+      - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+  crm-worker:
+    build:
+      context: ../..
+      dockerfile: compose/Dockerfile
+      args:
+        PROJECT_PATH: crm
+    image: crm-worker:latest
+    container_name: crm-worker
+    restart: unless-stopped
+    working_dir: /app
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      # Full environment block (same as web, minus PORT and healthcheck specific vars)
+      RUNNING_ENV: docker
+      SERVER_TYPE: ${SERVER_TYPE:-gunicorn}
+      SERVER_ENV: ${SERVER_ENV:-production}
+      DEBUG: ${DEBUG:-False}
+      DJANGO_SETTINGS_MODULE: ${DJANGO_SETTINGS_MODULE:-settings}
+      DB_TYPE: ${DB_TYPE:-postgres}
+      DB_HOST: ${DB_HOST:-postgres}
+      DB_PORT: ${DB_PORT:-5432}
+      DB_NAME: ${DB_NAME_CRM:-db_crm}
+      DB_USER: ${POSTGRES_USER:-admin}
+      DB_PASSWORD: ${POSTGRES_PASSWORD:-postgres}
+      REDIS_URL: redis://default-redis:6379/0
+      CELERY_BROKER_URL: redis://default-redis:6379/1
+      CELERY_RESULT_BACKEND: redis://default-redis:6379/2
+      LOG_DIR: /app/logs/crm
+      USE_X_FORWARDED_HOST: "true"
+      SECURE_PROXY_SSL_HEADER: HTTP_X_FORWARDED_PROTO,https
+      WEBSITE: crm
+      DJANGO_SITE: crm
+      DJANGO_WEBSITE: crm
+      PROJECT_PATH: crm
+      WEBSITE_HOST: ${CRM_HOST:-crm.structa.cloud}
+      CELERY_TASK_DEFAULT_QUEUE: crm
+    command: celery -A tasks.celery:app worker --loglevel=info --queues=crm
+    volumes:
+      - ../configs:/app/configs:z
+      - ../assets:/app/assets:z
+      - ../webpack:/app/webpack:z
+      - ../libs:/app/libs:z
+      - ../scripts:/app/scripts:z
+      - ../tasks:/app/tasks:z
+      - ../manage.py:/app/manage.py:z
+      - ../cli.py:/app/cli.py:z
+      - ../__main__.py:/app/__main__.py:z
+      - ../__about__.py:/app/__about__.py:z
+      - ../crm:/app/crm:z
+      - ../../logs:/app/logs:z
+      - ../../tests:/app/tests:z
+    networks:
+      - common
+      - warehouse-net
+      - traefik-net
+
+networks:
+  common:
+    external: true
+  warehouse-net:
+    external: true
+  traefik-net:
+    external: true

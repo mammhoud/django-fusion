@@ -1,0 +1,8 @@
+# Submodules
+# (libs are now independent repos - see https://github.com/mammhoud/django-fusion and https://github.com/mammhoud/ceptor-ai)
+[submodule "applications/libs/ceptor-ai"]
+	path = applications/libs/ceptor-ai
+	url = https://github.com/mammhoud/ceptor-ai.git
+[submodule "applications/libs/django-fusion"]
+	path = applications/libs/django-fusion
+	url = https://github.com/mammhoud/django-fusion.git

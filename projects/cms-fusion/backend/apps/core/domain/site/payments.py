@@ -1,7 +1,6 @@
 import json
 import logging
 
-from core.CI.services.cart_service import CartService
 from django.http import JsonResponse
 from django.shortcuts import get_object_or_404
 from django.utils import timezone
@@ -10,6 +9,7 @@ from django.views import View
 from django.views.decorators.csrf import csrf_exempt
 
 from apps.core.domain.services.commerce.payments import PayPalGateway, StripeGateway
+from core.CI.services.cart_service import CartService
 
 logger = logging.getLogger(__name__)
 

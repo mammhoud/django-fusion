@@ -1,0 +1,400 @@
+/**
+ * VResume Design System — Sidebar Styles (BEM)
+ * Avatar, name, title, contacts, social links, toggle
+ */
+
+.sidebar {
+  position: relative;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-xl);
+  padding: var(--space-6);
+  box-shadow: var(--shadow-md);
+  margin-bottom: var(--space-6);
+  max-height: 180px;
+  overflow: hidden;
+  transition: max-height var(--transition-base);
+
+  &--active {
+    max-height: 800px;
+  }
+}
+
+/* ── Sidebar Logo ── */
+.sidebar__logo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.sidebar__logo-image {
+  max-width: 100%;
+  height: auto;
+  max-height: 120px;
+  object-fit: contain;
+  transition: transform var(--transition-fast);
+
+  &:hover {
+    transform: scale(1.05);
+  }
+}
+
+.sidebar__info {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+}
+
+.sidebar__avatar-box {
+  position: relative;
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  overflow: hidden;
+  margin: 0;
+  flex-shrink: 0;
+
+  img, .sidebar__avatar-image {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    cursor: pointer;
+    transition: transform var(--transition-fast);
+
+    &:hover {
+      transform: scale(1.1);
+    }
+  }
+
+  .sidebar__avatar-placeholder {
+    width: 100%;
+    height: 100%;
+    background: var(--color-accent);
+    color: var(--bg-canvas);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: var(--fs-2xl);
+    font-weight: var(--fw-700);
+  }
+}
+
+.sidebar__info-content {
+  flex: 1;
+}
+
+.sidebar__name {
+  font-size: var(--fs-xl);
+  font-weight: var(--fw-600);
+  color: var(--text-primary);
+  margin: 0;
+}
+
+.sidebar__title {
+  font-size: var(--fs-sm);
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+.sidebar__toggle-btn {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border-radius: var(--radius-lg);
+  font-size: 12px;
+  color: var(--color-accent);
+  background: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  padding: 10px 12px;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--transition-1);
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  cursor: pointer;
+  white-space: nowrap;
+  font-weight: var(--fw-600);
+
+  &__text {
+    display: none;
+    font-size: 12px;
+
+    @media (min-width: 480px) {
+      display: inline;
+    }
+
+    @media (min-width: 768px) {
+      display: inline;
+    }
+  }
+
+  &:hover,
+  &:focus {
+    color: var(--bg-surface);
+    background: var(--color-accent);
+    border-color: var(--color-accent);
+    transform: translateY(-2px);
+    box-shadow: var(--shadow-md);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  /* Mobile optimizations */
+  @media (max-width: 479px) {
+    top: 6px;
+    right: 6px;
+    padding: 8px 10px;
+    font-size: 11px;
+    gap: 4px;
+
+    &__text {
+      display: none;
+    }
+  }
+
+  .sidebar--active & i {
+    transform: rotate(180deg);
+  }
+
+  &[aria-expanded="true"] {
+    background: var(--color-accent);
+    color: var(--bg-surface);
+  }
+}
+
+.sidebar__toggle-icon {
+  font-size: 18px;
+  transition: transform var(--transition-fast);
+  flex-shrink: 0;
+
+  @media (max-width: 479px) {
+    font-size: 16px;
+  }
+}
+
+.sidebar__more {
+  display: block;
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  padding: 0;
+  visibility: hidden;
+  transition: max-height var(--transition-base), opacity var(--transition-base), padding var(--transition-base), visibility var(--transition-base);
+  animation: none;
+
+  &.open {
+    max-height: 1200px;
+    opacity: 1;
+    padding: var(--space-4) 0;
+    visibility: visible;
+    animation: slideDown 0.28s ease both;
+  }
+
+  /* When contacts are visible, show toggle text for clarity */
+  .sidebar__toggle-btn__text {
+    display: inline-block;
+
+    @media (max-width: 479px) {
+      display: none;
+    }
+  }
+
+  /* Improved spacing for mobile */
+  @media (max-width: 767px) {
+    padding: 0;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sidebar__separator {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: var(--space-6) 0;
+}
+
+.sidebar__contacts-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.sidebar__contact-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-6);
+  margin-bottom: var(--space-6);
+
+  &:last-child {
+    margin-bottom: 0;
+  }
+}
+
+.sidebar__contact-icon-box {
+  width: 30px;
+  height: 30px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: all var(--transition-fast);
+
+  i {
+    font-size: 16px;
+    color: var(--bg-canvas);
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover {
+    background-color: var(--color-accent-hover);
+    transform: scale(1.1);
+
+    i {
+      transform: scale(1.15);
+    }
+  }
+}
+
+.sidebar__contact-info {
+  flex: 1;
+}
+
+.sidebar__contact-title {
+  font-size: var(--fs-xs);
+  color: var(--text-secondary);
+  margin: 0 0 5px 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.sidebar__contact-link {
+  color: var(--text-primary);
+  text-decoration: none;
+  transition: color var(--transition-fast);
+
+  &:hover {
+    color: var(--color-accent);
+  }
+}
+
+.sidebar__social-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.sidebar__social-item {
+  /* no extra styles */
+}
+
+.sidebar__social-link {
+  width: 40px;
+  height: 40px;
+  background-color: var(--color-accent);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--bg-canvas);
+  text-decoration: none;
+  transition: all var(--transition-fast);
+  font-size: 0;
+
+  i {
+    font-size: 20px;
+    transition: transform var(--transition-fast);
+  }
+
+  &:hover {
+    background-color: var(--color-accent-hover);
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: var(--shadow-md);
+
+    i {
+      transform: scale(1.15);
+    }
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--border-focus);
+    outline-offset: 2px;
+  }
+}
+
+/* ── Desktop Sidebar (768px+) ── */
+@media (min-width: 768px) {
+  .sidebar {
+    position: fixed;
+    left: 15px;
+    top: 15px;
+    width: 300px;
+    max-height: none;
+    overflow-y: auto;
+    margin-bottom: 0;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background-color: var(--bg-canvas);
+      border-radius: var(--radius-lg);
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: var(--border-subtle);
+      border-radius: var(--radius-lg);
+
+      &:hover {
+        background-color: var(--text-secondary);
+      }
+    }
+  }
+
+  .sidebar__toggle-btn {
+    display: none;
+  }
+
+  .sidebar__more {
+    display: block !important;
+    max-height: none;
+    opacity: 1;
+    visibility: visible;
+    padding: var(--space-4) 0;
+  }
+}
+
+@media (min-width: 1024px) {
+  .sidebar {
+    width: 350px;
+    left: 20px;
+    top: 20px;
+  }
+}
+
+@media (min-width: 1250px) {
+  .sidebar {
+    width: 320px;
+    left: 30px;
+    top: 30px;
+  }
+}

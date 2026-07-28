@@ -1,0 +1,71 @@
+{% load i18n static wagtailimages_tags %}
+{% with post_list=page_obj.object_list|default:posts %}
+{% for post in post_list %}
+  <li class="post__item post__item--active"
+      data-blog-filter-item
+      data-title="{{ post.title|lower }}">
+
+    <button class="post__card post__card--grid"
+            data-blog-card="grid"
+            data-title="{{ post.title }}"
+            hx-get="{% url 'pages:blog_detail' post.pk %}"
+            hx-target="#unified-modal-container"
+            hx-swap="innerHTML"
+            aria-label="{{ post.title }}">
+      <figure class="content__banner">
+        {% if post.featured_image %}
+          {% image post.featured_image fill-400x250 as blog_img %}
+          <img src="{{ blog_img.url }}" alt="{{ post.title }}" loading="lazy" class="content__banner-img">
+        {% else %}
+          <div class="content__placeholder"><i class="ri-article-line"></i></div>
+        {% endif %}
+      </figure>
+      <div class="content__body">
+        <div class="content__meta">
+          {% if post.published_date %}
+          <time class="content__date" datetime="{{ post.published_date|date:'Y-m-d' }}">{{ post.published_date|date:"M d, Y" }}</time>
+          {% endif %}
+        </div>
+        <h3 class="content__title">{{ post.title }}</h3>
+        {% if post.introduction %}<p class="content__text">{{ post.introduction|truncatewords:20 }}</p>{% endif %}
+      </div>
+    </button>
+
+    <button class="post__card post__card--list"
+            data-blog-card="list"
+            data-title="{{ post.title }}"
+            hx-get="{% url 'pages:blog_detail' post.pk %}"
+            hx-target="#unified-modal-container"
+            hx-swap="innerHTML"
+            aria-label="{{ post.title }}">
+      <div class="content__thumb">
+        {% if post.featured_image %}
+          {% image post.featured_image fill-80x60 as blog_thumb %}
+          <img src="{{ blog_thumb.url }}" alt="" loading="lazy">
+        {% else %}
+          <div class="content__placeholder content__placeholder--sm"><i class="ri-article-line"></i></div>
+        {% endif %}
+      </div>
+      <div class="content__body">
+        <div class="content__meta">
+          {% if post.published_date %}
+          <time class="content__date" datetime="{{ post.published_date|date:'Y-m-d' }}">{{ post.published_date|date:"M d, Y" }}</time>
+          {% endif %}
+        </div>
+        <h3 class="content__title">{{ post.title }}</h3>
+        {% if post.introduction %}<p class="content__text">{{ post.introduction|truncatewords:15 }}</p>{% endif %}
+      </div>
+      <div class="content__action" aria-hidden="true"><i class="ri-arrow-right-line"></i></div>
+    </button>
+  </li>
+{% endfor %}
+{% if page_obj.has_next %}
+<li class="post__infinite-trigger"
+    hx-get="{{ request.path }}?q={{ current_q|urlencode }}&tags={{ current_tags|urlencode }}&page={{ page_obj.next_page_number }}&append=1"
+    hx-trigger="revealed"
+    hx-swap="outerHTML"
+    hx-target="this">
+  <span class="htmx-indicator">{% trans "Loading more..." %}</span>
+</li>
+{% endif %}
+{% endwith %}

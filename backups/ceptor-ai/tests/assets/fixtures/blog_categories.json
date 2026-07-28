@@ -1,0 +1,38 @@
+[
+    {
+        "model": "blog.blogcategory",
+        "pk": 1,
+        "fields": {
+            "name": "Technology",
+            "slug": "technology",
+            "description": "Posts about technology and software development"
+        }
+    },
+    {
+        "model": "blog.blogcategory",
+        "pk": 2,
+        "fields": {
+            "name": "Research",
+            "slug": "research",
+            "description": "Academic and scientific research posts"
+        }
+    },
+    {
+        "model": "blog.blogcategory",
+        "pk": 3,
+        "fields": {
+            "name": "News",
+            "slug": "news",
+            "description": "Latest news and announcements"
+        }
+    },
+    {
+        "model": "blog.blogcategory",
+        "pk": 4,
+        "fields": {
+            "name": "Tutorial",
+            "slug": "tutorial",
+            "description": "Step-by-step guides and tutorials"
+        }
+    }
+]

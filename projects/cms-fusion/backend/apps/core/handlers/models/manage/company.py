@@ -7,7 +7,6 @@ from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models.base import BaseModel as DefaultBase
 from modelcluster.models import ClusterableModel
-from apps.core.handlers.models.manage.service import Service
 from wagtail.admin.panels import (
     FieldPanel,
     FieldRowPanel,
@@ -17,6 +16,8 @@ from wagtail.admin.panels import (
 )
 from wagtail.search import index
 from wagtail.snippets.models import register_snippet
+
+from apps.core.handlers.models.manage.service import Service
 
 
 # -------------------------------------------------------------------

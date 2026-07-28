@@ -11,5 +11,7 @@ class PagesConfig(AppConfig):
     label = "fusion_pages"
 
     def ready(self):
-        from apps.pages.pages import models  # noqa: F401
-        from apps.pages.pages import wagtail_hooks  # noqa: F401
+        from apps.pages.pages import (
+            models,  # noqa: F401
+            wagtail_hooks,  # noqa: F401
+        )

@@ -1,0 +1,12 @@
+{% extends "layout/apps/profile.html" %}
+{% load i18n static laces laces %}
+{#
+  CRM app-shell skeleton.
+  All CRM page templates extend this instead of layout/apps/profile.html directly
+  so the CRM side-nav is injected automatically.
+  Usage: {% extends "crm/layout/skeleton.html" %}
+#}
+
+{% block side_nav %}
+  {% comp "crm/partials/side_nav.html" /%}
+{% endblock side_nav %}

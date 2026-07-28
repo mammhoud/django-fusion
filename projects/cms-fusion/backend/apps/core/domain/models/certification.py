@@ -12,12 +12,11 @@ Used by both Structa and CTC-Research via shared django-grep.
 """
 import os
 
+from colorfield.fields import ColorField
 from django.conf import settings
 from django.db import models
 from django.template.loader import render_to_string
 from django.utils.translation import gettext_lazy as _
-
-from colorfield.fields import ColorField
 from wagtail.fields import RichTextField
 
 
@@ -195,7 +194,7 @@ class CertificationTemplate(models.Model):
         if template_path and self.custom_template:
             # Custom uploaded template — read and render manually
             with open(template_path, "r") as f:
-                from django.template import Template, Context
+                from django.template import Context, Template
                 tpl = Template(f.read())
                 return tpl.render(Context(context))
 

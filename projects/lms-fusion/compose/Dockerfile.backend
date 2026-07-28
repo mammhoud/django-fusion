@@ -1,0 +1,85 @@
+# =============================================================================
+# Backend container for lms-fusion (Fusion LMS)
+# Build context: repository root
+# =============================================================================
+
+FROM python:3.11-slim
+
+ARG PROJECT_PATH=lms-fusion
+ARG APP_HOME=/app
+
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    UV_COMPILE_BYTECODE=1 \
+    UV_LINK_MODE=copy \
+    UV_NO_CACHE=1 \
+    NODE_ENV=production \
+    DEBIAN_FRONTEND=noninteractive \
+    PATH="/opt/venv/bin:/root/.local/bin:$PATH" \
+    PYTHONPATH="/app" \
+    VIRTUAL_ENV="/opt/venv" \
+    UV_PROJECT_ENVIRONMENT="/opt/venv" \
+    PROJECT_PATH=${PROJECT_PATH} \
+    DJANGO_SITE=${PROJECT_PATH} \
+    WEBSITE=${PROJECT_PATH} \
+    APP_MODULE=server:application \
+    APP_HOME=${APP_HOME}
+
+WORKDIR ${APP_HOME}
+
+# ── System packages + Node.js + uv ──────────────────────────────────────────
+RUN apt-get update && apt-get install --no-install-recommends -y \
+        bash-completion build-essential ca-certificates cron curl gettext git \
+        libpq-dev make nano ssh sudo wget \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN curl -fsSL https://deb.nodesource.com/setup_24.x | bash - \
+    && apt-get install --no-install-recommends -y nodejs \
+    && npm install -g npm@latest \
+    && npm cache clean --force \
+    && rm -rf /var/lib/apt/lists/*
+
+RUN python -m pip install --no-cache-dir --upgrade pip uv \
+    && uv venv /opt/venv
+
+# ── Python dependencies ─────────────────────────────────────────────────────
+COPY projects/pyproject.toml projects/uv.lock ${APP_HOME}/
+
+# ── Shared workspace code ───────────────────────────────────────────────────
+COPY projects/Makefile \
+     projects/manage.py \
+     projects/__about__.py \
+     projects/__main__.py \
+     projects/cli.py \
+     ${APP_HOME}/
+
+COPY libs    ${APP_HOME}/libs
+
+# Symlink so uv resolves "../libs/django-fusion" from pyproject.toml
+RUN ln -sf ${APP_HOME}/libs /libs
+
+RUN uv sync --no-install-project
+
+RUN cd ${APP_HOME}/libs/django-fusion && uv pip install -e . --no-build-isolation 2>&1 \
+    || echo "[WARN] django-fusion install failed"
+
+# ── Project-specific code ───────────────────────────────────────────────────
+COPY projects/${PROJECT_PATH} ${APP_HOME}/${PROJECT_PATH}
+
+# Install as editable if pyproject.toml exists
+RUN if [ -f "${APP_HOME}/${PROJECT_PATH}/pyproject.toml" ]; then \
+      uv pip install --editable /app/${PROJECT_PATH}; \
+    fi
+
+# ── Entrypoint and helper scripts ───────────────────────────────────────────
+COPY projects/lms-fusion/compose/entrypoint     /entrypoint
+COPY projects/lms-fusion/compose/start          /start
+COPY projects/lms-fusion/compose/rqworker-start /rqworker-start
+COPY projects/lms-fusion/compose/flower         /flower
+
+RUN mkdir -p ${APP_HOME}/logs \
+    && sed -i 's/\r$//g' /entrypoint /start /rqworker-start /flower \
+    && chmod +x /entrypoint /start /rqworker-start /flower
+
+ENTRYPOINT ["/entrypoint"]
+CMD ["server"]

@@ -1,0 +1,55 @@
+{% load i18n %}
+{% load fusion_form_field_adapter %}
+
+
+{# ============================================================
+   Flat per-field → canonical form-field adapter.
+
+   Historically this partial rendered a single text/select/checkbox
+   /radio/file/hidden input using BEM class names
+   ``contact-form__*`` and a flat `field` plus a few top-level
+   flags (``show_labels``, ``show_icons``, ``icon_style``).
+
+   After harmonization, the canonical
+   ``components/form/form_field.html`` is the single dispatcher
+   for input-type rendering and BEM class emission. To preserve
+   the legacy ``contact-form__*`` CSS hooks, the canonical is
+   invoked with per-call ``class_xxx`` overrides. The
+   ``as_form_block`` simple-tag from
+   ``django_fusion/comp/templatetags/fusion_form_field_adapter``
+   synthesizes the Wagtail block shape that the canonical expects,
+   so older callers can keep passing a flat ``field``.
+
+   Feature gaps:
+   - ``field.error_message`` (server-side pre-rendered error string)
+     is NOT emitted here — the canonical only emits an empty
+     container for client-side hydration. Track via followup if
+     consuming pages regress visibly.
+   - ``block.id`` uniqueness across multiple forms on the same page:
+     the default ``legacy-{name}`` prefix is deterministic per
+     field name but NOT unique per form. Pages that render more
+     than one form using this adapter should pass a caller-scoped
+     ``block_id`` prefix (e.g. ``block_id="contact-form-{{ form.id }}-"``)
+     so element ids (used by label-for and inline error hydration)
+     stay unique. The ``block_id`` kwarg is exposed by
+     ``as_form_block`` for this purpose.
+   ============================================================ #}
+
+{% as_form_block field
+   show_icons=show_icons|default:False
+   show_labels=show_labels|default:True
+   show_placeholders=show_placeholders|default:True
+   icon_style=icon_style|default:'inside'
+   as synthetic_block %}
+
+<div {% if field.conditional_field %}data-conditional-field="{{ field.conditional_field }}" data-conditional-value="{{ field.conditional_value }}"{% endif %}
+     style="display: contents;">
+    {# Canonical owns the form-* taxonomy. No per-class `class_xxx`
+       overrides for input variants, but the ROOT class still needs
+       a `form-field--{full|half|quarter}` modifier so the layout
+       distinction (preserved by `field.field_width` in
+       `as_form_block`) actually renders. The canonical's
+       `{% firstof class_field 'form-field' %}` emits the modifier
+       directly here. #}
+    {% comp "components/form/form_field.html" block=synthetic_block field_config=field class_field="form-field form-field--{{ field.field_width|default:'full' }}" / %}
+</div>

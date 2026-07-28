@@ -8,8 +8,8 @@ from django.utils import timezone
 logger = logging.getLogger(__name__)
 from django_fusion.site.interface.page_handler import PageHandler
 
-from ..models import Course, Lesson
 from ..management.services.courses import CourseService
+from ..models import Course, Lesson
 
 
 class CourseWatchView(LoginRequiredMixin, PageHandler):

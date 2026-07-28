@@ -1,0 +1,69 @@
+# ============================================================
+# Tinker (Template Customizer) – Service Definition
+# ============================================================
+# Runs alongside the main sites on port 5073.
+# Uses SQLite (no Postgres dependency) and has its own
+# self-contained Dockerfile.
+# ============================================================
+
+services:
+  tinker:
+    build:
+      context: ..
+      dockerfile: tinker/Dockerfile
+      args:
+        TINKER_PORT: "5073"
+    image: tinker:latest
+    container_name: tinker
+    restart: unless-stopped
+    working_dir: /app/tinker
+    env_file:
+      - path: ../../.env
+        required: false
+    environment:
+      TINKER_SECRET_KEY: ${TINKER_SECRET_KEY:-django-insecure-tinker-dev}
+      TINKER_DEBUG: ${TINKER_DEBUG:-0}
+      TINKER_ALLOWED_HOSTS: ${TINKER_ALLOWED_HOSTS:-localhost,127.0.0.1,tinker.localhost}
+      TINKER_PORT: "5073"
+      DJANGO_SETTINGS_MODULE: settings
+      PORT: "5073"
+      WORKERS: ${TINKER_WORKERS:-2}
+      OLLAMA_BASE_URL: ${OLLAMA_BASE_URL:-http://host.docker.internal:11434}
+      OLLAMA_MODEL: ${OLLAMA_MODEL:-gemma3:4b}
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://127.0.0.1:5073/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 20s
+    ports:
+      - "5073:5073"
+    volumes:
+      # Data subdirectory — keeps SQLite DB + uploaded media persistent
+      # without overwriting the app source code mounted at /app/tinker/
+      - tinker-data:/app/tinker/data:rw
+      - tinker-static:/app/tinker/staticfiles:rw
+      - tinker-media:/app/tinker/assets/media:rw
+      - ../../logs:/app/logs:z
+    networks:
+      - common
+      - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.tinker.rule=Host(`${TINKER_HOSTNAME:-tinker.localhost}`)"
+      - "traefik.http.routers.tinker.entrypoints=web"
+      - "traefik.http.services.tinker.loadbalancer.server.port=5073"
+
+networks:
+  common:
+    external: true
+  traefik-net:
+    external: true
+
+volumes:
+  tinker-data:
+    name: tinker-data
+  tinker-static:
+    name: tinker-static
+  tinker-media:
+    name: tinker-media

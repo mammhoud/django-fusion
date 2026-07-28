@@ -1,7 +1,0 @@
-# ReadTheDocs / MkDocs dependencies
-mkdocs>=1.6
-mkdocs-material>=9.5
-mkdocs-awesome-pages>=2.9
-mkdocs-git-revision-date-localized-plugin>=1.2
-mkdocs-minify-plugin>=0.8
-pymdown-extensions>=10.7

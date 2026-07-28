@@ -10,8 +10,9 @@ from django.contrib.auth.decorators import login_required
 from django.http import JsonResponse
 from django.shortcuts import render
 from django.views.decorators.http import require_http_methods
-from apps.pages.accounts.models.profiles.note import Note
+
 from apps.pages.accounts.management.services.notes_service import NotesService
+from apps.pages.accounts.models.profiles.note import Note
 
 
 @login_required

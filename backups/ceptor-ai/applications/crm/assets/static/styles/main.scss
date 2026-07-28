@@ -1,0 +1,83 @@
+/*!
+ * CRM – Sales and Inventory Management
+ * Shared styles via ~shared/styles/ (webpack alias → assets/static/)
+ * CRM-specific overrides below.
+ */
+
+/* BASE — shared */
+@import '~shared/styles/base/base';
+@import '~shared/styles/base/buttons';
+@import '~shared/styles/base/forms';
+@import '~shared/styles/base/typography';
+
+/* COMPONENTS — shared */
+@import '~shared/styles/components/header';
+@import '~shared/styles/components/dropdowns';
+@import '~shared/styles/components/accordions';
+
+/* ── CRM-specific ─────────────────────────────────────────── */
+
+/* Side nav */
+.side-nav {
+  width: 240px;
+  min-height: 100vh;
+  background: var(--bs-dark, #1a1d23);
+  color: #ccc;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+
+  &__brand { padding: 1rem 1.25rem; }
+
+  &__link {
+    color: #adb5bd;
+    text-decoration: none;
+    font-size: .875rem;
+    transition: background .15s, color .15s;
+
+    &:hover, &.active {
+      background: rgba(255,255,255,.08);
+      color: #fff;
+    }
+  }
+
+  &__label {
+    display: block;
+    font-size: .7rem;
+    letter-spacing: .08em;
+  }
+}
+
+/* App shell */
+.wrapper { min-height: 100vh; }
+
+.page-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-x: hidden;
+}
+
+.top-nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  background: var(--bs-body-bg, #fff);
+  border-bottom: 1px solid var(--bs-border-color, #dee2e6);
+  padding: .5rem 1.5rem;
+}
+
+.page-layout__main {
+  flex: 1;
+  padding: 1.5rem;
+}
+
+/* Stat cards */
+.stat-card-icon {
+  width: 3rem;
+  height: 3rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}

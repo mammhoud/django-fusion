@@ -1,0 +1,139 @@
+{% load i18n components.navigation routable_components %}
+{#
+  Project Detail Fragment — rendered by ProjectDetailComponent (/fusion/projects/<slug>/)
+  ──────────────────────────────────────────────────────────────────────────────
+  Supports Unpoly (up-follow/up-target) and HTMX (hx-get/hx-target) fallback.
+  Handles modal vs detail display modes (is_modal context variable).
+
+  Context (from RoutableComponent):
+    project       — Project instance (slug-matched, is_active=True)
+    breadcrumbs   — list of {title, url} dicts
+    title, page_title, icon, component
+    is_modal      — True when DisplayModeMixin.display_mode == "modal"
+    request       — current HttpRequest
+#}
+
+<article class="project-detail" data-fragment="project-detail"
+         {% if is_modal %}data-modal="true"{% endif %}>
+
+  {# ── Back navigation ───────────────────────────────────────────────────── #}
+  <div class="mb-3">
+    {% nav_link url="/fusion/projects/list/" label=_("Back to portfolio") icon="bi-arrow-left" target="#panel-content" css_class="text-decoration-none text-muted small" %}
+  </div>
+
+  {# ── Breadcrumbs ────────────────────────────────────────────────────────── #}
+  {% if breadcrumbs %}
+    {% breadcrumbs component %}
+  {% endif %}
+
+  {# ── Featured image ─────────────────────────────────────────────────────── #}
+  {% if project.image %}
+    <div class="mb-4 rounded overflow-hidden position-relative">
+      <img src="{{ project.image.url }}"
+           class="w-100"
+           style="max-height:450px;object-fit:cover;"
+           alt="{{ project.title }}"
+           loading="lazy">
+      {% if project.category %}
+        <span class="badge bg-dark position-absolute bottom-0 start-0 m-3 rounded-pill fs-6 px-3 py-2">
+          {{ project.category }}
+        </span>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# ── Title & meta ───────────────────────────────────────────────────────── #}
+  <header class="mb-4">
+    <h1 class="mb-2">{{ project.title }}</h1>
+    <div class="d-flex flex-wrap gap-3 text-muted small">
+      {% if project.date_completed %}
+        <span><i class="bi bi-calendar-check me-1"></i>{{ project.date_completed|date:"F Y" }}</span>
+      {% endif %}
+      {% if project.category %}
+        <span><i class="bi bi-folder me-1"></i>{{ project.category }}</span>
+      {% endif %}
+    </div>
+  </header>
+
+  {# ── Tags ───────────────────────────────────────────────────────────────── #}
+  {% if project.tags.exists %}
+    <div class="mb-3 d-flex flex-wrap gap-2">
+      {% for tag in project.tags.all %}
+        <span class="badge rounded-pill bg-light text-dark"
+              style="border-left:3px solid {{ tag.color|default:'#ee9b00' }};">
+          {% if tag.icon %}<i class="{{ tag.icon }} me-1"></i>{% endif %}
+          {{ tag.name }}
+        </span>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  {# ── Description / lead ─────────────────────────────────────────────────── #}
+  {% if project.description %}
+    <p class="lead mb-4">{{ project.description }}</p>
+  {% endif %}
+
+  {# ── Action buttons ─────────────────────────────────────────────────────── #}
+  {% if project.project_url or project.video_url %}
+    <div class="d-flex gap-2 mb-4">
+      {% if project.project_url %}
+        <a href="{{ project.project_url }}" class="btn btn-primary rounded-pill" target="_blank" rel="noopener">
+          <i class="bi bi-box-arrow-up-right me-2"></i>{% trans "Visit project" %}
+        </a>
+      {% endif %}
+      {% if project.video_url %}
+        <a href="{{ project.video_url }}" class="btn btn-outline-danger rounded-pill" target="_blank" rel="noopener">
+          <i class="bi bi-play-circle me-2"></i>{% trans "Watch video" %}
+        </a>
+      {% endif %}
+    </div>
+  {% endif %}
+
+  {# ── Body ───────────────────────────────────────────────────────────────── #}
+  {% if project.body %}
+    <div class="project-body mb-4">
+      {{ project.body|safe }}
+    </div>
+  {% endif %}
+
+  {# ── Tools & technologies ───────────────────────────────────────────────── #}
+  {% if project.tools %}
+    <hr class="my-4">
+    <section class="tools-section">
+      <h5 class="mb-3"><i class="bi bi-tools me-2"></i>{% trans "Tools & technologies" %}</h5>
+      <div class="d-flex flex-wrap gap-2">
+        {% for tool in project.get_tools_list %}
+          <span class="badge bg-light text-dark border px-3 py-2 rounded-pill">{{ tool }}</span>
+        {% endfor %}
+      </div>
+    </section>
+  {% endif %}
+
+  <hr class="my-4">
+
+  {# ── Related projects ───────────────────────────────────────────────────── #}
+  {% if project.tags.exists %}
+    <section class="related-projects mt-4">
+      <h5 class="mb-3">{% trans "Related projects" %}</h5>
+      <div class="row g-3" id="related-projects">
+        {# Related projects are loaded via OOB or can be passed from the view #}
+        <div class="col-12">
+          <p class="text-muted small">
+            <i class="bi bi-info-circle me-1"></i>
+            {% trans "Projects with similar tags will appear here." %}
+          </p>
+        </div>
+      </div>
+    </section>
+  {% endif %}
+
+  {# ── Footer navigation ──────────────────────────────────────────────────── #}
+  <div class="d-flex justify-content-between align-items-center mt-4 pt-3 border-top">
+    <div>
+      {% nav_link url="/fusion/projects/list/" label=_("Back to portfolio") icon="bi-arrow-left" target="#panel-content" css_class="btn btn-outline-secondary rounded-pill" %}
+    </div>
+    <div class="text-muted small">
+      <i class="bi bi-clock-history me-1"></i>{{ project.created_at|date:"M d, Y" }}
+    </div>
+  </div>
+</article>

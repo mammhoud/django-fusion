@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block content %}
+<article class="event-detail">
+    <header class="event-detail__header">
+        <p class="event-detail__eyebrow">{% trans "Event" %}</p>
+        <h1 class="event-detail__title">{{ event.title }}</h1>
+        <p class="event-detail__meta">
+            {% if event.start_date %}{{ event.start_date|date:"M d, Y H:i" }}{% endif %}
+            {% if event.location %}<span> · {{ event.location }}</span>{% endif %}
+        </p>
+        {% if event.description %}<p class="event-detail__summary">{{ event.description }}</p>{% endif %}
+    </header>
+
+    {% if event.content %}
+        <div class="event-detail__content">{{ event.content }}</div>
+    {% endif %}
+</article>
+{% endblock content %}

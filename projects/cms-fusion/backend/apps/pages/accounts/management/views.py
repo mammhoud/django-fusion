@@ -7,9 +7,9 @@ not need to load the full site view package and its Wagtail model graph.
 import json
 import logging
 
+from django.contrib.auth.models import Group
 from django.core.cache import cache
 from django.http import HttpResponse
-from django.contrib.auth.models import Group
 from django.utils import timezone
 
 logger = logging.getLogger("apps.registration")

@@ -121,7 +121,11 @@ function makePendingWithdrawal(overrides: Partial<Withdrawal> = {}): Withdrawal 
 // ═══════════════════════════════════════════════════════════════════
 
 async function mockAdminSession(page: import("@playwright/test").Page) {
-  await page.route("**/apis/auth/profile/", (route) =>
+  // Set localStorage token so AuthGuard and RTK Query baseApi see it
+  await page.addInitScript(() => {
+    localStorage.setItem('lms_token', 'test-mock-admin-token');
+  });
+  await page.route("**/apis/auth/profile", (route) =>
     route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(ADMIN_PROFILE) })
   );
 }
@@ -174,7 +178,10 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
     });
 
     test("instructor is denied access to admin withdrawals page", async ({ page }) => {
-      await page.route("**/apis/auth/profile/", (route) =>
+      await page.addInitScript(() => {
+        localStorage.setItem('lms_token', 'test-mock-instructor-token');
+      });
+      await page.route("**/apis/auth/profile", (route) =>
         route.fulfill({ status: 200, contentType: "application/json", body: JSON.stringify(INSTRUCTOR_PROFILE) })
       );
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });
@@ -184,7 +191,7 @@ test.describe("Admin Withdrawal Approvals — E2E", () => {
     });
 
     test("unauthenticated user is denied access", async ({ page }) => {
-      await page.route("**/apis/auth/profile/", (route) =>
+      await page.route("**/apis/auth/profile", (route) =>
         route.fulfill({ status: 401, contentType: "application/json", body: "{}" })
       );
       await page.goto("/dashboard/admin/withdrawals", { waitUntil: "networkidle", timeout: 15000 });

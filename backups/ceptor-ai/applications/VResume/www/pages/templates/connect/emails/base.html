@@ -1,0 +1,33 @@
+{% load i18n %}
+<!DOCTYPE html>
+<html lang="{{ LANGUAGE_CODE|default:'en' }}" dir="{{ LANGUAGE_BIDI|yesno:'rtl,ltr' }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style>
+        body { font-family: 'Inter', -apple-system, sans-serif; line-height: 1.7; color: #1a202c; background: #f0f4f8; margin: 0; padding: 0; direction: {{ LANGUAGE_BIDI|yesno:'rtl,ltr' }}; }
+        .container { max-width: 640px; margin: 32px auto; background: #fff; border-radius: 16px; overflow: hidden; box-shadow: 0 10px 40px rgba(0,0,0,0.08); }
+        .header { background: linear-gradient(135deg, #1e2d3d, #2d3748, #1a365d); color: #fff; padding: 36px 32px; text-align: center; }
+        .header h1 { margin: 0; font-size: 22px; font-weight: 700; }
+        .header__accent { display: block; width: 48px; height: 3px; background: linear-gradient(90deg, #e8651a, #f59e0b); border-radius: 2px; margin: 14px auto 0; }
+        .content { padding: 36px 32px; font-size: 16px; }
+        .content a { color: #e8651a; text-decoration: none; font-weight: 500; }
+        .data-table { width: 100%; border-collapse: separate; border-spacing: 0; margin: 24px 0; border-radius: 8px; overflow: hidden; border: 1px solid #e2e8f0; }
+        .data-table th { text-align: {{ LANGUAGE_BIDI|yesno:'right,left' }}; padding: 12px 16px; background: #f7fafc; border-bottom: 1px solid #e2e8f0; font-size: 13px; font-weight: 600; color: #4a5568; width: 35%; }
+        .data-table td { padding: 12px 16px; border-bottom: 1px solid #edf2f7; }
+        .button { display: inline-block; padding: 14px 28px; background: linear-gradient(135deg, #e8651a, #d4580f); color: #fff !important; text-decoration: none; border-radius: 8px; font-weight: 700; box-shadow: 0 4px 12px rgba(232,101,26,0.3); }
+        .cta-wrapper { text-align: center; margin-top: 32px; }
+        .footer { background: #f7fafc; padding: 24px 32px; text-align: center; font-size: 13px; color: #718096; border-top: 1px solid #edf2f7; }
+        .footer a { color: #e8651a; text-decoration: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        {% block content %}{% endblock %}
+        <div class="footer">
+            <p>&copy; {% now "Y" %} {{ site_name|default:"VResume" }}. {% trans "All rights reserved." %}</p>
+            <p style="font-size:11px;color:#a0aec0;margin-top:8px;">{% trans "Powered by" %} <a href="https://structa.cloud">structa.cloud</a></p>
+        </div>
+    </div>
+</body>
+</html>

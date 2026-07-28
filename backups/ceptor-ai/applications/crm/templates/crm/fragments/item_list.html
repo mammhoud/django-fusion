@@ -1,0 +1,31 @@
+{% load i18n laces %}
+{# Fragment: crm.fragments.item_list
+   HTMX target: #item-list-container
+   Rendered by: plugins.inventory.components.ItemListFragment
+#}
+<div class="mb-3 d-flex gap-2 flex-wrap">
+  <form class="d-flex gap-2 align-items-center"
+        hx-get="{{ request.path }}"
+        hx-target="#item-list-container"
+        hx-push-url="false">
+    <input type="text" name="q" class="form-control form-control-sm"
+           placeholder="{% trans 'Search items…' %}"
+           value="{{ search_query }}"
+           style="max-width:220px">
+    <select name="category" class="form-select form-select-sm" style="max-width:180px">
+      <option value="">{% trans "All categories" %}</option>
+      {% for cat in categories %}
+      <option value="{{ cat.slug }}" {% if selected_category == cat.slug %}selected{% endif %}>
+        {{ cat.name }}
+      </option>
+      {% endfor %}
+    </select>
+    <button type="submit" class="btn btn-sm btn-outline-primary">
+      <i class="bi bi-search"></i>
+    </button>
+  </form>
+</div>
+
+{% comp "components/table.html" headers=headers rows=rows hx_target="#item-list-container" / %}
+
+{% comp "components/pagination.html" page_obj=page_obj / %}

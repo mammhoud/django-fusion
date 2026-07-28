@@ -1,0 +1,7 @@
+{% extends "base.html" %}
+{% load laces %}
+{% block title %}{{ website.name }} pages{% endblock %}
+{% block content %}
+<h1 class="mb-3">{{ website.name }} pages</h1>
+{% comp "fragments/page_card_grid.html" website=website pages=pages /%}
+{% endblock %}

@@ -1,11 +1,11 @@
 """Views for CTC Research application."""
 from .courses import (
     course_catalog,
-    course_search,
-    course_filter,
     course_detail,
-    course_enrollment_form,
     course_enrollment_create,
+    course_enrollment_form,
+    course_filter,
+    course_search,
     course_wishlist_toggle,
 )
 

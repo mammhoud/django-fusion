@@ -1,0 +1,8 @@
+include:
+  - ./docker-compose.traefik.yml
+  - ./docker-compose.nginx.yml
+  # - ./docker-compose.caddy.yml   # uncomment if needed
+
+networks:
+  proxy:
+    external: true

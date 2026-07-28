@@ -2,6 +2,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django_fusion.models.default import DefaultBase
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import (
     FieldPanel,
@@ -22,7 +23,6 @@ from wagtail.models import (
 from wagtail.search import index
 
 from apps.core.domain.blocks.content.overview import OverviewBlock
-from django_fusion.models.default import DefaultBase
 
 
 class Newsletter(

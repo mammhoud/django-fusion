@@ -4,6 +4,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django_fusion.models.tags import BaseTag, BaseTagCategory
 from modelcluster.fields import ParentalKey
 from taggit.models import ItemBase
 from wagtail.admin.panels import (
@@ -14,8 +15,6 @@ from wagtail.admin.panels import (
 )
 from wagtail.models import Orderable
 from wagtail.search import index
-
-from django_fusion.models.tags import BaseTag, BaseTagCategory
 
 
 # ---------------------------------------------------------------------

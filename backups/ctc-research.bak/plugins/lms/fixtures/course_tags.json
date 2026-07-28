@@ -1,0 +1,98 @@
+[
+  {
+    "model": "lms.coursetag",
+    "pk": 1,
+    "fields": {
+      "name": "Python",
+      "slug": "python"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 2,
+    "fields": {
+      "name": "Django",
+      "slug": "django"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 3,
+    "fields": {
+      "name": "JavaScript",
+      "slug": "javascript"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 4,
+    "fields": {
+      "name": "React",
+      "slug": "react"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 5,
+    "fields": {
+      "name": "Web Development",
+      "slug": "web-development"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 6,
+    "fields": {
+      "name": "Data Science",
+      "slug": "data-science"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 7,
+    "fields": {
+      "name": "Mobile",
+      "slug": "mobile"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 8,
+    "fields": {
+      "name": "Backend",
+      "slug": "backend"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 9,
+    "fields": {
+      "name": "Frontend",
+      "slug": "frontend"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 10,
+    "fields": {
+      "name": "Full-Stack",
+      "slug": "full-stack"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 11,
+    "fields": {
+      "name": "Machine Learning",
+      "slug": "machine-learning"
+    }
+  },
+  {
+    "model": "lms.coursetag",
+    "pk": 12,
+    "fields": {
+      "name": "API Development",
+      "slug": "api-development"
+    }
+  }
+]

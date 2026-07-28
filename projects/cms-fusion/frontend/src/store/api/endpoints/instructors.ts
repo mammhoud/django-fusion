@@ -75,6 +75,6 @@ export const {
   useGetInstructorDashboardQuery,
   useGetInstructorCoursesQuery,
   useGetInstructorReviewsQuery,
-  useDeleteCourseMutation as useDeleteInstructorCourseMutation,
+  useDeleteCourseMutation: useDeleteInstructorCourseMutation,
   useUpdateInstructorProfileMutation,
 } = instructorsApi;

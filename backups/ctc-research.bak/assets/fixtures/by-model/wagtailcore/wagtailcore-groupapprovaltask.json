@@ -1,0 +1,11 @@
+[
+  {
+    "model": "wagtailcore.groupapprovaltask",
+    "pk": 1,
+    "fields": {
+      "groups": [
+        1
+      ]
+    }
+  }
+]

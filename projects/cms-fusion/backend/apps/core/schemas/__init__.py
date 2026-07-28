@@ -12,71 +12,63 @@ Import pattern:
     )
 """
 
-from apps.core.schemas.core import (  # noqa: F401
-    HealthResponse,
-    ErrorResponse,
-    PaginationMeta,
-    PaginatedResponse,
-    SingleResponse,
-)
-
-from apps.core.schemas.courses import (  # noqa: F401
-    CourseResponse,
-    CategoryResponse,
-)
-
-from apps.core.schemas.research import (  # noqa: F401
-    PublicationResponse,
-    TeamMemberResponse,
-)
-
 from apps.core.schemas.auth import (  # noqa: F401
+    AuthRefreshRequest,
+    AuthRefreshResponse,
+    AuthTokenResponse,
     LoginRequest,
     RegisterRequest,
     UserResponse,
-    AuthTokenResponse,
-    AuthRefreshRequest,
-    AuthRefreshResponse,
 )
-
-from apps.core.schemas.contact import (  # noqa: F401
-    ContactRequest,
-    ContactResponse,
-)
-
-from apps.core.schemas.site_settings import (  # noqa: F401
-    SocialLinkResponse,
-    FooterLinkItem,
-    FooterLinkGroupResponse,
-    SiteIdentityResponse,
-    FooterDataResponse,
-    SiteSettingsResponse,
-)
-
 from apps.core.schemas.blog import (  # noqa: F401
     BlogPostResponse,
     EventResponse,
     TestimonialResponse,
 )
-
+from apps.core.schemas.contact import (  # noqa: F401
+    ContactRequest,
+    ContactResponse,
+)
+from apps.core.schemas.core import (  # noqa: F401
+    ErrorResponse,
+    HealthResponse,
+    PaginatedResponse,
+    PaginationMeta,
+    SingleResponse,
+)
+from apps.core.schemas.courses import (  # noqa: F401
+    CategoryResponse,
+    CourseResponse,
+)
 from apps.core.schemas.enrollment import (  # noqa: F401
-    EnrollmentResponse,
     CreateEnrollmentRequest,
-    MyEnrollmentsResponse,
-    ProgressEntryResponse,
-    ProgressUpdateRequest,
     DashboardDataResponse,
+    EnrollmentResponse,
+    MyEnrollmentsResponse,
     PaymentInitRequest,
     PaymentInitResponse,
     PaymentVerifyRequest,
     PaymentVerifyResponse,
+    ProgressEntryResponse,
+    ProgressUpdateRequest,
 )
-
 from apps.core.schemas.lms import (  # noqa: F401
-    FeatureResponse,
-    InstructorResponse,
-    FaqItem,
     DashboardCounter,
     DashboardResponse,
+    FaqItem,
+    FeatureResponse,
+    InstructorResponse,
     ProductResponse,
+)
+from apps.core.schemas.research import (  # noqa: F401
+    PublicationResponse,
+    TeamMemberResponse,
+)
+from apps.core.schemas.site_settings import (  # noqa: F401
+    FooterDataResponse,
+    FooterLinkGroupResponse,
+    FooterLinkItem,
+    SiteIdentityResponse,
+    SiteSettingsResponse,
+    SocialLinkResponse,
 )

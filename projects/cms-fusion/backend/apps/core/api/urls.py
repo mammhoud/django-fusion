@@ -6,6 +6,7 @@ from apps.pages.blog import api as blog
 from apps.pages.lms.api import courses
 from apps.pages.pages import api as pages
 from apps.pages.products import api as products
+
 from . import fusion_health
 
 app_name = "api"

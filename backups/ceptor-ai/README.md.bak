@@ -1,0 +1,499 @@
+# Structa Cloud – Monorepo
+
+A comprehensive Django monorepo with multiple sites, shared assets, local libraries, and centralized deployment orchestration.
+
+## 🏗️ Project Structure
+
+```
+structa.cloud/
+├── applications/              # Main Django monorepo
+│   ├── Makefile              # Master dispatcher for Django work
+│   ├── configs/              # Shared Django configuration
+│   │   ├── base/             # Base settings modules
+│   │   ├── settings/         # Environment-specific settings
+│   │   └── tests/            # Test configuration
+│   ├── assets/               # Shared frontend assets
+│   │   ├── templates/        # Shared template components
+│   │   ├── static/           # Shared static files (CSS, JS, images)
+│   │   ├── locale/           # Shared translations
+│   │   └── scripts/          # Frontend build scripts
+│   ├── www/                  # Shared Django application code
+│   ├── libs/                 # Local reusable libraries
+│   │   ├── django-fusion/    # Component system + framework tools
+│   │   └── ceptor-ai/        # AI/ML integration library
+│   ├── scripts/              # Shared automation scripts
+│   ├── ctc-research/         # CTC Research site
+│   │   ├── plugins/          # Site-specific plugins
+│   │   ├── assets/           # Site-specific assets
+│   │   └── www/              # Site-specific Django apps
+│   ├── lms-demo/             # LMS Demo site
+│   ├── VResume/              # VResume portfolio site
+│   └── crm/                  # CRM site (optional)
+├── proxy/                    # Traefik reverse proxy + SSL
+│   ├── traefik/              # Traefik configuration
+│   ├── certs/                # SSL certificates
+│   └── Makefile              # Proxy deployment commands
+├── databases/                # PostgreSQL + Redis
+│   ├── docker-compose.yml
+│   └── Makefile              # Database deployment commands
+├── services/                 # Supporting services (media, monitoring)
+│   ├── docker-compose.media.yml
+│   └── Makefile              # Service commands
+├── compose/                  # Central orchestration
+│   ├── docker-compose.applications.yml
+│   ├── docker-compose.docs.yml
+│   └── docker-compose.tasks.yml
+├── docs/                     # Documentation
+│   ├── infrastructure/
+│   ├── deployment/
+│   ├── websites/
+│   └── index.html            # Docsify documentation site
+├── docker-compose.yml        # Root composition file (includes all)
+├── Makefile                  # Root deployment dispatcher
+├── DEPLOYMENT_GUIDE.md       # Complete deployment guide
+├── AGENTS.md                 # AI agent instructions + architecture
+└── PROMPTS.md                # AI prompt templates
+
+# Canonical sites
+applications/ctc-research/   → https://ctc-research.com
+applications/lms-demo/       → https://structa-demo.com
+applications/VResume/        → https://vresume.structa.cloud
+```
+
+## 🚀 Quick Start – Deployment
+
+### Prerequisites
+
+- Docker & Docker Compose
+- Python 3.11+ (for local development)
+- uv (Python package manager) – optional for versioning
+
+### Deploy Everything
+
+```bash
+# Full deployment with validation (postgres-first order)
+make deploy
+
+# Or: deploy specific components
+make deploy-databases        # PostgreSQL + Redis
+make deploy-app              # All Django applications
+make deploy-proxy            # Traefik reverse proxy
+make deploy-media            # Nginx media server
+```
+
+### Monitor Deployment
+
+```bash
+# Check status of all services
+make status
+
+# View logs from all services
+make logs
+
+# Follow Coolify logs (streaming)
+make logs-common
+```
+
+## 📋 Make Commands Reference
+
+### Commands Tree
+
+```
+make
+├── deploy                   # Full deployment (postgres-first order)
+│   ├── deploy-databases     # PostgreSQL + Redis
+│   ├── deploy-media         # Nginx media server
+│   ├── deploy-app           # All Django applications
+│   ├── deploy-tasks         # Celery background workers
+│   ├── deploy-docs          # Documentation site
+│   └── deploy-proxy         # Traefik reverse proxy
+├── deploy-ci                # CI validation (no deploy)
+├── deploy-preflight         # Smoke-test compose files
+├── preflight-network        # Validate Docker network names
+├── create-networks          # Create required Docker networks
+├── status                   # Show deployment status
+├── logs                     # Show logs from all services
+├── stop                     # Stop all services
+├── restart                  # Restart all services (= stop + deploy)
+├── prune                    # Remove stopped containers, volumes, and images
+├── clean                    # Aggressive teardown (containers, volumes, images)
+├── build                    # Build all component images
+├── build-app                # Build Django application images
+├── push                     # Push repo + lib submodules to origin
+├── pull                     # Fetch + smart-merge origin into current branch
+├── sync                     # Pull then push in one step
+├── ctc-research             # Delegate to applications/Makefile (WEBSITE=ctc-research)
+├── lms-demo                 # Delegate to applications/Makefile (WEBSITE=lms-demo)
+├── vresume                  # Delegate to applications/Makefile (WEBSITE=vresume)
+├── help                     # Show main command reference
+└── help-all                 # Show extended + component-specific help
+```
+
+See **[AGENTS.md](./AGENTS.md#Deployment--Make-Commands)** for the full commands reference.
+
+### Main Deployment
+
+```bash
+make deploy                  # Full deployment (databases → apps → proxy)
+make deploy-ci              # CI validation (no deploy)
+make deploy-preflight       # Smoke-test compose files
+make preflight-network      # Validate network configuration
+
+# Component deployments
+make deploy-app             # Django applications (all sites)
+make deploy-proxy           # Traefik reverse proxy
+make deploy-media           # Nginx media server
+make deploy-tasks           # Celery background workers
+make deploy-docs            # Documentation site
+make deploy-databases       # PostgreSQL + Redis
+make deploy-coder           # Coder IDE platform
+make deploy-customizer      # Template customizer
+```
+
+### Management
+
+```bash
+make status                 # Show deployment status
+make logs                   # Show service logs
+make stop                   # Stop all services
+make restart                # Restart all services
+make create-networks        # Create Docker networks
+```
+
+### Cleanup
+
+```bash
+make prune                  # Remove containers + volumes + images
+make prune-containers       # Remove stopped containers
+make prune-volumes          # Remove unused volumes
+make prune-images           # Remove unused images
+make clean                  # Aggressive teardown
+```
+
+### Per-Site Shortcuts
+
+```bash
+make ctc-research          # CTC Research site commands
+make lms-demo              # LMS Demo site commands
+make vresume               # VResume site commands
+```
+
+### Git & Versioning
+
+```bash
+make push                  # Push to origin + submodules
+make pull                  # Pull from origin
+make sync                  # Pull then push
+make bump-app-patch        # Bump applications version
+```
+
+See **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** and **[AGENTS.md](./AGENTS.md)** for complete command reference.
+
+## 🏢 Sites & Applications
+
+### CTC Research – `applications/ctc-research/`
+
+- **URL**: https://ctc-research.com
+- **Port (local)**: 5070
+- **Type**: Django + Wagtail CMS
+- **Key Features**: Blog, LMS, Learning paths
+
+### LMS Demo – `applications/lms-demo/`
+
+- **URL**: https://structa-demo.com
+- **Port (local)**: 5071
+- **Type**: Django + Wagtail CMS
+- **Key Features**: Learning management, courses, payments
+
+### VResume – `applications/VResume/`
+
+- **URL**: https://vresume.structa.cloud
+- **Port (local)**: 5072
+- **Type**: Django + Portfolio builder
+- **Key Features**: Portfolio, resume builder, AI-powered
+
+## 📚 Shared Libraries
+
+### django-fusion (`applications/libs/django-fusion/`)
+
+**Import**: `from django_fusion import ...`
+
+Unified component system + framework tools:
+- `{% comp %}` template tag for reusable components
+- Model viewsets, routing, generic CBVs
+- Form handling, tables, pagination
+- Site layer abstractions
+
+**Documentation**: See `/applications/libs/django-fusion/docs/`
+
+### ceptor-ai (`applications/libs/ceptor-ai/`)
+
+**Import**: `from ceptor_ai import ...`
+
+AI/ML integration and utilities:
+- Contact, team, organization management
+- Email & CRM integration
+- Tag system and analytics
+
+**Documentation**: See `/applications/libs/ceptor-ai/` README
+
+## 🔧 Configuration
+
+### Shared Settings
+
+All sites inherit from `applications/configs/`:
+
+```python
+# Base configuration (inherited by all sites)
+from applications.configs.base.templates import TEMPLATES
+from applications.configs.base.auth import AUTH_SETTINGS
+from applications.configs.base.cache import CACHE_CONFIG
+
+# Site-specific overrides in applications/<site>/settings.py
+```
+
+### Template Resolution Order
+
+1. Site templates: `applications/<site>/templates/`
+2. Site plugins: `applications/<site>/plugins/templates/`
+3. Shared templates: `applications/assets/templates/`
+4. Site-specific plugins: `applications/<site>/plugins/`
+
+## 🌐 Infrastructure
+
+### Networks
+
+```
+common          # Default service network
+traefik-net     # Proxy network
+internal        # Internal-only services
+utilities-net   # Monitoring
+warehouse-net   # Data warehouse
+ollama-net      # AI/ML services
+```
+
+### Services
+
+```
+Proxy           → localhost:443 (Traefik, HTTPS)
+CTC Research    → localhost:5070
+LMS Demo        → localhost:5071
+VResume         → localhost:5072
+Media Server    → localhost:8080 (Nginx)
+PostgreSQL      → localhost:5432
+Redis           → localhost:6379
+```
+
+## 📖 Documentation
+
+- **[DEPLOYMENT_GUIDE.md](./DEPLOYMENT_GUIDE.md)** – Complete deployment commands reference
+- **[AGENTS.md](./AGENTS.md)** – AI agent instructions + architecture guide
+- **[docs/README.md](./docs/README.md)** – Full documentation index
+- **Local Docs**: `make docs-serve` → http://localhost:3000
+
+## 🛠️ Common Workflows
+
+### Deploy CTC Research After Changes
+
+```bash
+# 1. Option A: Redeploy via Make
+make ctc-research docker-up
+
+# 2. Option B: Full redeploy via root Make
+make deploy-app
+
+# 3. Option C: Full deployment with preflight
+make deploy
+```
+
+### View Site Logs
+
+```bash
+# CTC Research logs
+docker logs ctc-research-website --tail 50 -f
+
+# LMS Demo logs
+docker logs lms-demo-website --tail 50 -f
+
+# VResume logs
+docker logs vresume-website --tail 50 -f
+
+# Or use Make
+make logs
+```
+
+### Add a New Django Model to CTC Research
+
+```bash
+# 1. Add model to applications/ctc-research/plugins/blog/models.py
+# 2. Create migration
+make ctc-research makemigrations
+
+# 3. Run migration
+make ctc-research migrate
+
+# 4. Create or update templates/serializers as needed
+# 5. Update tests if applicable
+```
+
+### Add a Shared Template Component
+
+```bash
+# 1. Create in applications/assets/templates/components/
+#    e.g., applications/assets/templates/components/cards/contact_card.html
+
+# 2. Use in templates:
+#    {% load components %}
+#    {% comp "components/cards/contact_card.html" contact=contact / %}
+
+# 3. Document in applications/assets/templates/components/AGENTS.md
+```
+
+## 🧪 Testing
+
+```bash
+# Run all tests
+make -C applications test
+
+# Run tests for specific site
+make ctc-research test WEBSITE=ctc-research
+
+# Run specific test file
+make -C applications test-file WEBSITE=ctc-research TEST_FILE=path/to/test.py
+```
+
+## 🔐 Environment Variables
+
+Copy `.env.example` to `.env` and fill in:
+
+```bash
+# Django
+DEBUG=False
+SECRET_KEY=your-secret-key-here
+
+# Databases
+POSTGRES_DB=structa
+POSTGRES_USER=postgres
+POSTGRES_PASSWORD=your-postgres-password
+
+# Email
+EMAIL_HOST=smtp.gmail.com
+EMAIL_PORT=587
+EMAIL_HOST_USER=your-email@example.com
+EMAIL_HOST_PASSWORD=your-email-password
+
+# AWS S3 (optional)
+AWS_ACCESS_KEY_ID=your-access-key
+AWS_SECRET_ACCESS_KEY=your-secret-key
+
+# GitHub (for `make push`)
+github=ghp_xxxxxxxxxxxxx  # Or: export GITHUB_TOKEN=
+```
+
+## 🤝 Contributing
+
+1. **Fork** the repository
+2. **Create** a feature branch (`git checkout -b feature/new-feature`)
+3. **Commit** changes (`git commit -m 'Add new feature'`)
+4. **Push** to the branch (`git push origin feature/new-feature`)
+5. **Create** a Pull Request
+
+## 📝 Architecture & Design
+
+See **[AGENTS.md](./AGENTS.md)** for:
+
+- Canonical site paths
+- Shared settings location
+- Component system (`django-fusion`)
+- Routing & viewsets
+- Template conventions
+- Fragment naming
+- Deployment strategies
+
+## 🆘 Troubleshooting
+
+### Deployment Fails
+
+```bash
+# Validate configuration before deploying
+make deploy-ci
+
+# Check specific component
+make deploy-preflight
+make preflight-network
+```
+
+### Service Won't Start
+
+```bash
+# Check logs
+make logs
+
+# Check status
+make status
+
+# Try specific component deploy
+make deploy-databases
+make deploy-app
+make deploy-proxy
+```
+
+### Out of Disk Space
+
+```bash
+make prune           # Safe cleanup
+# or
+make clean           # Aggressive cleanup (resets everything)
+```
+
+### Need to Rebuild
+
+```bash
+make build           # Rebuild all
+make build-app       # Rebuild apps only
+```
+
+## 📞 Support
+
+- **Documentation**: See [docs/](./docs/)
+- **Issues**: GitHub Issues
+- **Discussions**: GitHub Discussions
+
+## 📄 License
+
+See [LICENSE](./LICENSE) file for details.
+
+---
+
+## Project Tree
+
+```
+structa.cloud/
+├── applications/              # Django monorepo
+│   ├── Makefile              # master dispatcher
+│   ├── configs/              # shared Django configuration
+│   ├── assets/               # shared frontend assets & templates
+│   ├── libs/                 # local reusable libraries
+│   ├── scripts/              # shared automation
+│   ├── tasks/                # shared Celery/task code
+│   ├── www/                  # shared Django application code
+│   ├── ctc-research/         # CTC Research site
+│   ├── lms-demo/             # LMS Demo site
+│   ├── VResume/              # VResume site
+│   └── crm/                  # CRM site
+├── proxy/                    # Traefik reverse proxy + SSL
+├── databases/                # PostgreSQL + Redis
+├── services/                 # supporting services (media, monitoring)
+├── compose/                  # central orchestration compose files
+├── docs/                     # documentation
+├── docker-compose.yml        # root orchestrator
+├── Makefile                  # root deployment dispatcher
+├── DEPLOYMENT_GUIDE.md       # complete deployment guide
+├── AGENTS.md                 # AI agent instructions
+└── PROMPTS.md                # AI prompt catalog
+```
+
+---
+
+**Last Updated**: July 2026  
+**Maintained By**: Structa Cloud Team

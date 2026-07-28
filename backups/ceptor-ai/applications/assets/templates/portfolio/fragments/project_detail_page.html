@@ -1,0 +1,16 @@
+{# portfolio/fragments/project_detail_page.html — full-page container.
+   Extends ui/base_page.html, includes the project_detail fragment + a
+   related-projects sidebar. Used for the non-HTMX (direct GET) path;
+   the view (`ProjectDetailComponent`) picks this template when the
+   request does NOT have the HX-Request header. #}
+{% extends "ui/base_page.html" %}
+
+{% block content %}
+  <div class="project-detail-container" data-container="portfolio.project_detail">
+    {% include "portfolio/fragments/project_detail.html" %}
+    <aside class="project-related" aria-label="Related projects">
+      <h2>More projects</h2>
+      {% include "portfolio/fragments/project_list.html" with paginate_by=None %}
+    </aside>
+  </div>
+{% endblock %}

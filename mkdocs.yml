@@ -2,6 +2,7 @@
 # MkDocs configuration for Structa Cloud documentation site
 # Served at: https://structa-cloud.readthedocs.io/
 
+site_dir: .archives/site
 site_name: Structa Cloud Documentation
 site_description: Documentation for Structa Cloud - Django monorepo with POS, LMS, AI, and more
 site_author: Structa Cloud Team
@@ -98,6 +99,7 @@ nav:
     - Customize: guides/05-customize.md
     - Clone Site: guides/06-clone-site.md
     - Best Practices: guides/07-best-practices.md
+    - Fixture Loading: guides/fixture-loading.md
   - Repo Overview: repo-overview.md
   - Projects:
     - Overview: projects/README.md

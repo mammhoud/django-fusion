@@ -1,0 +1,16 @@
+{# applications/customizer/components/customizer/nav_item.html
+   Sidebar nav item for website selection. Adapts to both dark sidebar and light card layouts.
+   Context: website, slug, name
+   Optional: hx_target (default: '#customizer-page-grid') #}
+<button class="list-group-item list-group-item-action nav-item-customizer d-flex flex-column align-items-start"
+        type="button"
+        hx-get="{% url 'fragment_page_card_grid' slug %}"
+        hx-target="{{ hx_target|default:'#customizer-page-grid' }}"
+        hx-swap="innerHTML"
+        hx-push-url="{% url 'customizer_pages' slug %}">
+  <span class="fw-semibold d-flex align-items-center gap-2">
+    <i class="fas fa-globe me-1" style="font-size: 12px;"></i>
+    {{ name }}
+  </span>
+  <code class="d-block small text-muted">{{ slug }}</code>
+</button>

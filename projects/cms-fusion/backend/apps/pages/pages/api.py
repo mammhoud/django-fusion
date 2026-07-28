@@ -5,10 +5,10 @@ from pathlib import Path
 
 from django.http import HttpResponse
 from django.template import engines
+from django_fusion.routes import FusionCodec, fusion_json_response
 
-from apps.pages.pages.content import STATIC_PAGES, normalize_slug
 from apps.core.api.data_adapter import bolt_view, fusion_response
-from django_fusion.routes import fusion_json_response, FusionCodec
+from apps.pages.pages.content import STATIC_PAGES, normalize_slug
 
 logger = logging.getLogger(__name__)
 
@@ -24,7 +24,7 @@ def _get_fusion_render_first_from_request(request) -> bool | None:
 def _get_wagtail_page(slug: str):
     normalized = normalize_slug(slug)
     try:
-        from apps.pages.pages.models import FusionHomePage, FusionContentPage
+        from apps.pages.pages.models import FusionContentPage, FusionHomePage
         if normalized == "home":
             return FusionHomePage.objects.live().first()
         return FusionContentPage.objects.live().filter(slug=normalized).first()
@@ -68,7 +68,7 @@ def _wagtail_page_to_dict(page) -> dict:
 @bolt_view
 def page_list(request):
     try:
-        from apps.pages.pages.models import FusionHomePage, FusionContentPage
+        from apps.pages.pages.models import FusionContentPage, FusionHomePage
         pages = []
         home = FusionHomePage.objects.live().first()
         if home: pages.append(_wagtail_page_to_dict(home))

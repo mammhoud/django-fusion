@@ -1,4 +1,5 @@
 from django.utils.translation import gettext_lazy as _
+
 from apps.pages.accounts.models import Event
 
 from ..base import BaseSnippetViewSet

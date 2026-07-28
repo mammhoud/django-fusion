@@ -1,0 +1,44 @@
+# Composite Action that runs the project-level preflight gate
+# (`make deploy-ci` by default) as a CI lint step. Exits non-zero
+# on any preflight failure so misconfig surfaces as a failed lint
+# step rather than a mid-deploy abort.
+#
+# Designed to be called as a CI lint step BEFORE any `make deploy`
+# job in *any* repo that follows the same Makefile-driven preflight
+# convention (default target = `deploy-ci`).
+name: 'Deploy Preflight'
+
+description: 'Runs `make deploy-ci` (or caller-specified Make target) inside the checked-out repo. Exits non-zero on any preflight failure so misconfig surfaces as a CI lint failure rather than a mid-deploy abort.'
+
+inputs:
+  make-target:
+    description: 'Make target to invoke (must include the project-level preflight gates).'
+    required: false
+    default: 'deploy-ci'
+
+  working-directory:
+    description: 'Path (relative to repo root) where the Makefile lives. Defaults to `.` (repo root) — useful for monorepo callers whose Makefile lives in `infra/`, `apps/`, etc.'
+    required: false
+    default: '.'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: Verify Docker is available
+      # Self-hosted runners without Docker will fail here with a
+      # explicit error rather than producing a confusing
+      # "preflight-network: daemon probe failed" inside the
+      # Makefile's `check-docker` probe.
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: docker version
+
+    - name: 'Run `make ${{ inputs.make-target }}`'
+      # Pre-prereqs (deploy-preflight -> preflight-network ->
+      # check-docker + validate-deploy-order + create-networks) all
+      # run with `${{ inputs.make-target }}`'s exit code as the
+      # action's exit code, so any preflight failure surfaces here
+      # and turns the calling job red BEFORE any `make deploy`.
+      shell: bash
+      working-directory: ${{ inputs.working-directory }}
+      run: make ${{ inputs.make-target }}

@@ -4,10 +4,10 @@ from django.db import models
 from django.db.models.aggregates import Count
 from django.http import HttpRequest
 from django.utils import timezone
-from django_fusion.site.interface.page_handler import PageHandler
 from django_fusion.models.tags import (
     PersonTag,
 )
+from django_fusion.site.interface.page_handler import PageHandler
 
 from apps.pages.lms.models import Course, Enrollment
 from apps.pages.lms.models.courses.progress import LessonProgress

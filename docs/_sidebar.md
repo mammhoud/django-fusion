@@ -8,6 +8,7 @@
   - [05 — Customize](guides/05-customize.md)
   - [06 — Clone Site](guides/06-clone-site.md)
   - [07 — Best Practices](guides/07-best-practices.md)
+  - [08 — Fixture Loading](guides/fixture-loading.md)
 - [🏠 Repo Overview](repo-overview.md)
 - [ℹ️ Recent Changes](recent-changes.md)
 - [🏢 Projects](projects/)

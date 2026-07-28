@@ -4,10 +4,10 @@ from django.core.validators import MaxLengthValidator, URLValidator
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 
-from apps.core.domain.contrib.models import Corporate
-
 # Project-specific imports removed
 from django_fusion.models.default import DefaultBase
+
+from apps.core.domain.contrib.models import Corporate
 
 
 class Workspace(DefaultBase):

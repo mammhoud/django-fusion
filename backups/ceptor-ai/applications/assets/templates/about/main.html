@@ -1,0 +1,20 @@
+{% load laces %}
+{% load wagtailcore_tags wagtailimages_tags %}
+
+
+{% for block in page.head %}
+{% if block.block_type == 'page_title' %}
+{% comp "content/page_title.html" /%}
+{% endif %}
+{% endfor %}
+
+
+{% for block in page.facts %}
+{% if block.block_type == 'about' %}
+{% comp "about/sections/about.html" /%}
+{% elif block.block_type == 'testimonials' %}
+{% comp "about/sections/testimonials.html" /%}
+{% elif block.block_type == 'clients' %}
+{% comp "about/sections/clients.html" /%}
+{% endif %}
+{% endfor %}

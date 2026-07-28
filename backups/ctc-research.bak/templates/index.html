@@ -1,0 +1,14 @@
+{% comment %} {% extends "layouts/base.html" %} {% endcomment %}
+
+{% block extrastyle %}{{ block.super }}{% endblock %}
+{% block extrascripts %}{{ block.super }}{% endblock %}
+<div id="main-content">
+      {% block content %}
+
+      {% if htmx_page %}
+      {% include htmx_page %}
+      {% else %}
+      {% comp 'base_fragment' / %}
+      {% endif %}
+      {% endblock content %}
+</div>

@@ -1,13 +1,13 @@
 from .certificate import Certificate
 from .classes import Classes, Schedule
 from .courses import *
-from .courses.detail import Module, Specialization, CourseCategory
+from .courses.detail import CourseCategory, Module, Specialization
 from .courses.enrollment_lead import CourseEnrollmentLead
 from .courses.progress import LessonProgress, ModuleProgress
 from .courses.specification import Lesson, LessonResource
 from .courses.tag import CourseTag
 from .enrollment import *
-from .payments import PaymentTransaction, PaymentRefund, PaymentWebhookLog
+from .payments import PaymentRefund, PaymentTransaction, PaymentWebhookLog
 from .quiz import Quiz, QuizAnswer, QuizAttempt, QuizChoice, QuizQuestion
 from .review import *
 from .wishlist import Wishlist

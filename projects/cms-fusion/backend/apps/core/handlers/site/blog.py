@@ -8,6 +8,7 @@ from django.shortcuts import get_object_or_404, render
 from django.utils.translation import gettext_lazy as _
 from django_fusion.site.interface.notifications import NotificationMixin
 from django_fusion.site.interface.page_handler import PageHandler
+
 from apps.pages.blog.forms import BlogPostFilterForm, BlogPostForm
 from apps.pages.blog.models import BlogCategory, BlogPost, BlogTag
 from apps.pages.blog.services import PostFilterService

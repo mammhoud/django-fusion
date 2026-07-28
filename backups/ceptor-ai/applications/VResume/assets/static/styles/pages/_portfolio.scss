@@ -1,0 +1,14 @@
+/**
+ * VResume Design System — Portfolio Aliases (DEPRECATED)
+ * This file is kept for backward compatibility.
+ * All portfolio styles are now unified in _content.scss
+ * 
+ * Imports the unified content styles which support:
+ * - .portfolio__* classes (aliases)
+ * - .project__* classes  
+ * - .box__* classes
+ * - .grid-section__listing class
+ * - .content__* classes (new unified naming)
+ */
+@use 'content-cards' as *;
+@use 'content' as *;

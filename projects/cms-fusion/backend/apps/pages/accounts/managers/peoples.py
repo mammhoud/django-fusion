@@ -7,6 +7,7 @@ from django.core.cache import cache
 from django.db.models import Count, Q, QuerySet
 from django.utils import timezone
 from django_fusion.core.managers import CachedManager
+
 try:
     from www.ci.services import *  # noqa: F401, F403
 except ImportError:

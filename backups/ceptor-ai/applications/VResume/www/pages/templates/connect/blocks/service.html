@@ -1,0 +1,18 @@
+{% load i18n static wagtailimages_tags %}
+
+<li class="services__item">
+  <div class="services__icon-box">
+    {% if self.icon %}
+      {% image self.icon width-40 as svc_icon %}
+      <img src="{{ svc_icon.url }}" alt="{{ self.title }}" width="40">
+    {% elif self.icon_class %}
+        <i class="{{ self.icon_class }}"></i>
+    {% else %}
+      <i class="ri ri-code-line"></i>
+    {% endif %}
+  </div>
+  <div class="services__content">
+    <h4 class="h4 services__name">{{ self.title }}</h4>
+    <p class="services__text">{{ self.description }}</p>
+  </div>
+</li>

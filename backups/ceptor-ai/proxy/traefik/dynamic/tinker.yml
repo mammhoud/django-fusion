@@ -1,0 +1,37 @@
+# =============================================================================
+# Tinker — Traefik router config
+# =============================================================================
+# Future-proofs the tinker.structa.cloud domain. The `tinker` container
+# is defined in applications/tinker/docker-compose.yml (port 5073) but
+# is not currently running on this host, so the router will respond with
+# 502 Bad Gateway until the container is started. Once started, traffic
+# flows immediately — no further Traefik changes are needed.
+#
+# NOTE: applications/tinker/docker-compose.yml also defines per-container
+# Traefik labels (Host(`tinker.localhost`) by default). Those labels and
+# this file coexist as separate Traefik providers; they do not conflict
+# because the hostnames differ. Cleaning up the docker labels is left for
+# a separate change so the file-based config becomes the single source
+# of truth.
+# =============================================================================
+
+http:
+  routers:
+    tinker-site-http:
+      rule: 'Host(`tinker.structa.cloud`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: tinker-site-service
+      priority: 10
+    tinker-site-https:
+      rule: 'Host(`tinker.structa.cloud`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: tinker-site-service
+      tls:
+        certResolver: letsencrypt-http
+  services:
+    tinker-site-service:
+      loadBalancer:
+        servers:
+          - url: 'http://tinker:5073'

@@ -1,0 +1,137 @@
+{% load i18n %}
+{% load static %}
+<section class="fragment--form">
+
+  <!-- Register Card -->
+  <section class="auth__card card card--form">
+  <header class="auth__form-header">
+    <h2 class="auth__form-title">{% trans "Create Account" %}</h2>
+    <p class="auth__form-subtitle mb-4">
+      {% trans "Fill in the form below to get started" %}
+    </p>
+  </header>
+
+  <!-- Form Errors Container -->
+  <div id="form-errors"
+       class="mb-3">
+    {% if form.errors %}
+      <div class="alert alert-danger">
+        <strong>{% trans "Please correct the errors below:" %}</strong>
+        {{ form.non_field_errors }}
+      </div>
+    {% endif %}
+  </div>
+  <!-- re-use register-form ID so existing JS keeps working -->
+  <form id="register-form"
+        class="auth__form"
+        action="{% url 'plugins:register' %}"
+        method="post"
+        hx-post="{% url 'plugins:register' %}"
+        hx-target=".auth__form">
+    {% csrf_token %}
+
+    <!-- Username (mapped to login-style ID) -->
+    <div class="form__group mb-4">
+      <label class="form__label" for="id_email_username">{% trans "Username" %}</label>
+      <div class="form__input-wrapper input-group input-group-lg">
+        <span class="form__icon rounded-start border-0 px-3"><i class="fas fa-user"></i></span>
+        <input id="id_email_username"
+                name="username"
+                type="text"
+                class="form__input form-control border-0 rounded-end ps-1"
+                placeholder="{% trans 'Choose a username' %}"
+                required
+                minlength="3"
+                maxlength="150" />
+      </div>
+      <p class="invalid-feedback">{% trans "Please enter a valid username (at least 3 characters)." %}</p>
+    </div>
+
+    <!-- Email (kept as id_email for JS compatibility) -->
+    <div class="form__group mb-4">
+      <label class="form__label" for="id_email">{% trans "Email" %}</label>
+      <div class="form__input-wrapper input-group input-group-lg">
+        <span class="form__icon rounded-start border-0 px-3"><i class="fas fa-envelope"></i></span>
+        <input id="id_email"
+                name="email"
+                type="email"
+                class="form__input form-control border-0 rounded-end ps-1"
+                placeholder="{% trans 'you@example.com' %}"
+                required />
+      </div>
+      <p class="invalid-feedback">{% trans "Please enter a valid email address." %}</p>
+    </div>
+
+    <!-- Password (id_password for JS) -->
+    <div class="form__group mb-4">
+      <label class="form__label" for="id_password">{% trans "Password" %}</label>
+      <div class="form__input-wrapper input-group input-group-lg">
+        <span class="form__icon rounded-start border-0 px-3"><i class="fas fa-lock"></i></span>
+        <input id="id_password"
+                name="password1"
+                type="password"
+                class="form__input form-control border-0 rounded-end ps-1"
+                placeholder="{% trans 'Enter password' %}"
+                required
+                minlength="6" />
+      </div>
+      <p class="invalid-feedback">{% trans "Password must be at least 6 characters long." %}</p>
+    </div>
+
+    <!-- Confirm Password (id_password_confirm for JS) -->
+    <div class="form__group mb-4">
+      <label class="form__label" for="id_password_confirm">{% trans "Confirm Password" %}</label>
+      <div class="form__input-wrapper input-group input-group-lg">
+        <span class="form__icon rounded-start border-0 px-3"><i class="fas fa-lock"></i></span>
+        <input id="id_password_confirm"
+                name="password2"
+                type="password"
+                class="form__input form-control border-0 rounded-end ps-1"
+                placeholder="{% trans 'Re-enter password' %}"
+                required />
+
+      </div>
+      <p class="invalid-feedback">{% trans "Passwords do not match." %}</p>
+    </div>
+
+    <!-- Terms (same checkbox ID) -->
+    <div class="form__group mb-4">
+      <label class="form__checkbox form-check">
+        <input type="checkbox"
+                id="terms-conditions"
+                name="terms"
+                class="form-check-input"
+                required />
+        <span>
+          {% trans "I agree to the" %}
+          <a href="{% url 'plugins:privacy_modal' %}" class="auth__link">{% trans "privacy policy & terms" %}</a>
+        </span>
+      </label>
+      <p class="invalid-feedback">{% trans "You must agree before submitting." %}</p>
+    </div>
+
+    <!-- Submit -->
+    <div class="d-grid">
+      <button class="btn btn-primary btn--primary auth__submit mb-0 gap-4" type="submit">
+        <span class="btn__text">{% trans "Sign Up" %}</span>
+        <i class="fas fa-arrow-right ms-2"></i>
+      </button>
+    </div>
+
+  </form>
+
+  <footer class="auth__footer mt-4 text-center">
+    <p>
+      {% trans "Already have an account?" %}
+      <a  href="{% url 'plugins:login' %}"
+                      class="auth__link"
+                      hx-get="{% url 'plugins:login' %}"
+                      hx-target=".fragment--form"
+                      hx-swap="innerHTML"
+                      hx-push-url="{% url 'plugins:login' %}">
+                      <u>{% trans "Sign in here" %}</u>
+                    </a>
+    </p>
+  </footer>
+  </section>
+</section>

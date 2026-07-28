@@ -39,8 +39,9 @@ class Command(BaseCommand):
         )
 
     def handle(self, *args: Any, **options: Any) -> None:
-        from apps.core.domain.models.settings.settings import GlobalSettings
         from wagtail.images.models import Image
+
+        from apps.core.domain.models.settings.settings import GlobalSettings
 
         logo_path = Path(options["logo_path"])
         social_json: str | None = options["social_json"]

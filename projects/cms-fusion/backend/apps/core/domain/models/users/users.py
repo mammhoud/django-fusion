@@ -9,6 +9,8 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
+from django_fusion.models.default import DefaultBase
+from django_fusion.models.tags import TaggedPerson
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
     FieldPanel,
@@ -22,8 +24,6 @@ from wagtail.fields import StreamField
 from wagtail.search import index
 
 from apps.core.domain.blocks.profile.stream_blocks import ProfileStreamBlock
-from django_fusion.models.default import DefaultBase
-from django_fusion.models.tags import TaggedPerson
 
 # Validators
 EMAIL_VALIDATOR = RegexValidator(

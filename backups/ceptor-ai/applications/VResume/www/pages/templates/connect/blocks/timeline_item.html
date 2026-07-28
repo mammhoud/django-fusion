@@ -1,0 +1,10 @@
+{% load i18n %}
+
+<li class="timeline__item">
+  <h4 class="h4 timeline__title">{{ self.title }}</h4>
+  <p class="timeline__subtitle">{{ self.subtitle }}</p>
+  <span class="timeline__date">{{ self.date }}</span>
+  {% if self.description %}
+    <p class="timeline__text">{{ self.description }}</p>
+  {% endif %}
+</li>

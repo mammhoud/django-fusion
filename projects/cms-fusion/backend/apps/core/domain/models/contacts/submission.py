@@ -1,10 +1,10 @@
 from django.db import models
+from django.db.models import JSONField
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from wagtail.models import Page
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel
-from django.db.models import JSONField
+from wagtail.models import Page
 
 
 class FormSubmission(ClusterableModel):

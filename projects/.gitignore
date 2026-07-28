@@ -1,79 +1,72 @@
-# Python
+# ── Node.js ──────────────────────────────────────────────────────────
+node_modules/
+.npm
+.eslintcache
+.next
+
+# ── Rust (Tauri) ─────────────────────────────────────────────────────
+**/target/
+**/*.rs.bk
+cargo-lock.toml
+
+# ── Python ───────────────────────────────────────────────────────────
 __pycache__/
-*.pyc
-*.pyo
+*.py[cod]
+*.egg-info/
 .venv/
 .pytest_cache/
-.hypothesis/
 .ruff_cache/
+.hypothesis/
 .import_linter_cache/
-*.egg-info/
 
-# Test artifacts
-test_db.sqlite3
-*.sqlite3
-
-# Secrets
-*.env
-*.env.backup*
-*.env.local
-*.env.*.local
+# ── Environment & Secrets ────────────────────────────────────────────
+.env
+.env.*
+!.env.example
 secret.key.txt
 secrets.yml
-compose/config/secrets.yml
-
-# SSL/TLS private keys and certificates
 *.pem
 *.key
 *.crt
 *.p12
 *.pfx
-assets/media
-# Node / frontend build artifacts
-node_modules/
-assets/node_modules/
-*/node_modules/
-assets/bundles/
-*/assets/bundles/
-*/assets/staticfiles/
 
-# Django/webpack generated artifacts
-bundles/
-staticfiles/
-**/bundles/
+# ── Django media (uploaded at runtime) ───────────────────────────────
+projects/*/assets/media/images/
+projects/*/assets/media/avatar_images/
+projects/*/assets/media/documents/
+projects/*/backend/media/
+projects/lms/assets/media/
+
+# ── Django generated artifacts ───────────────────────────────────────
 **/staticfiles/
-**/assets/bundles/
-**/assets/staticfiles/
+**/bundles/
+dist/
 
-# Workspace generated website media/static/database artifacts
-ctc-research/assets/media/uploads/
-ctc-research/assets/media/original_images/
-ctc-research/assets/staticfiles/
-ctc-research/assets/bundles/
-lms/assets/media/uploads/
-lms/assets/media/original_images/
-lms/assets/staticfiles/
-lms/assets/bundles/
-VResume/assets/media/uploads/
-VResume/assets/media/original_images/
-VResume/assets/staticfiles/
-VResume/assets/bundles/
-compose/postgres/postgres_data/
-compose/postgres/backups/
-compose/data/
+# ── Database artifacts ───────────────────────────────────────────────
 *.sqlite3
 *.dump
 *.sql.gz
-# Workspace webpack mirror output
-dist/
+tests/test_db.sqlite3
+.freebuff/desktop.db*
 
-# Runtime logs and generated diagnostics
-compose/logs/*.log
-logs/*
+# ── Logs ─────────────────────────────────────────────────────────────
+logs/
+*.log
 gunicorn-error.log
-docs/*.log
 
-# Local virtual environments in nested workspaces
-../libs/.venv/
+# ── Backups & temp ───────────────────────────────────────────────────
+backups/
+applications/tmp/
+applications/proxy/backups/
+compose/data/
+compose/postgres/postgres_data/
+compose/postgres/backups/
+
+# ── Transient / generated ────────────────────────────────────────────
+**/sync_state.json
 /media/email_templates/
-**/media/email_templates/
+../libs/.venv/
+
+# ── macOS ────────────────────────────────────────────────────────────
+.DS_Store

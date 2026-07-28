@@ -128,6 +128,7 @@ def blog_categories(request):
     try:
         from django.db import models
         from django.db.models import Count
+
         from apps.pages.blog.models.category import BlogCategory
 
         cats = BlogCategory.objects.annotate(
@@ -145,6 +146,7 @@ def blog_tags(request):
     try:
         from django.db import models
         from django.db.models import Count
+
         from apps.pages.blog.models.tag import BlogTag
 
         tags = BlogTag.objects.annotate(

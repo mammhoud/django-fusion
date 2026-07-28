@@ -11,8 +11,8 @@ Options:
 """
 
 from django.core.management.base import BaseCommand
-from django_fusion.site.management.commands.base import BaseCommand
 from django.db import transaction
+from django_fusion.site.management.commands.base import BaseCommand
 
 
 class Command(BaseCommand):

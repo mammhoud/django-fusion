@@ -1,6 +1,7 @@
 """Course Enrollment Lead Model - Track enrollment prospects."""
 from django.db import models
 from django.utils.translation import gettext_lazy as _
+
 from .info import Course
 
 

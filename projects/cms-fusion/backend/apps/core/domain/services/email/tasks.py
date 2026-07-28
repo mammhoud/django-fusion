@@ -37,8 +37,8 @@ def send_email_task(self, log_id: int, recipient: str, subject: str,
     Returns:
         EmailLog ID
     """
-    from apps.core.domain.services.email.models import EmailLog
     from apps.core.domain.services.email.email_service import EmailService
+    from apps.core.domain.services.email.models import EmailLog
 
     try:
         log = EmailLog.objects.get(id=log_id)
@@ -72,8 +72,8 @@ def process_queued_emails():
 
     Sends all emails with status QUEUED.
     """
-    from apps.core.domain.services.email.models import EmailLog
     from apps.core.domain.services.email.email_service import EmailService
+    from apps.core.domain.services.email.models import EmailLog
 
     queued_logs = EmailLog.objects.filter(status=EmailLog.Status.QUEUED)
     service = EmailService()
@@ -100,8 +100,8 @@ def retry_failed_emails():
 
     Retries emails with status FAILED up to max retries.
     """
-    from apps.core.domain.services.email.models import EmailLog
     from apps.core.domain.services.email.email_service import EmailService
+    from apps.core.domain.services.email.models import EmailLog
 
     max_retries = getattr(settings, 'EMAIL_MAX_RETRIES', 3)
     failed_logs = EmailLog.objects.filter(

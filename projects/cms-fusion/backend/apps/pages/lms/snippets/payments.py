@@ -8,10 +8,10 @@ All list_display entries reference actual model fields or @property methods
 decorated with admin_order_field — NOT ViewSet instance methods.
 """
 from django.utils.translation import gettext_lazy as _
-from wagtail.snippets.views.snippets import SnippetViewSet
 from wagtail.admin.panels import FieldPanel
+from wagtail.snippets.views.snippets import SnippetViewSet
 
-from apps.pages.lms.models import PaymentTransaction, PaymentRefund, PaymentWebhookLog
+from apps.pages.lms.models import PaymentRefund, PaymentTransaction, PaymentWebhookLog
 
 
 class PaymentTransactionViewSet(SnippetViewSet):

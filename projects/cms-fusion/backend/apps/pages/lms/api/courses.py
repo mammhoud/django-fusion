@@ -27,6 +27,7 @@ def list_courses(request):
     """GET /api/courses — Course catalog with search, filters, pagination."""
     try:
         from django.db import models
+
         from apps.pages.lms.models import Course
 
         qs = Course.objects.filter(is_published=True, is_active=True).order_by(

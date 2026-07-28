@@ -1,10 +1,10 @@
 from .detail import *
+from .enrollment_lead import CourseEnrollmentLead
 from .index import *
 from .info import *
 from .progress import *
 from .specification import *
 from .tag import CourseTag
-from .enrollment_lead import CourseEnrollmentLead
 
 __all__ = [
     "Course",

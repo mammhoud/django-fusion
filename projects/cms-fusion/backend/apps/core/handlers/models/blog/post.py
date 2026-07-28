@@ -2,8 +2,6 @@ from django.db import models
 from django.template.defaultfilters import truncatewords
 from django.utils.functional import cached_property
 from django.utils.translation import gettext_lazy as _
-from apps.core.domain.blocks.stream_blocks import BaseStreamBlock
-from apps.core.domain.models.users.users import Person
 from modelcluster.contrib.taggit import ClusterTaggableManager
 from modelcluster.fields import ParentalKey
 from wagtail.admin.panels import (
@@ -16,6 +14,9 @@ from wagtail.api import APIField
 from wagtail.fields import RichTextField, StreamField
 from wagtail.models import DraftStateMixin, Orderable, Page
 from wagtail.search import index
+
+from apps.core.domain.blocks.stream_blocks import BaseStreamBlock
+from apps.core.domain.models.users.users import Person
 
 
 # ---------------------------------------------------------------------

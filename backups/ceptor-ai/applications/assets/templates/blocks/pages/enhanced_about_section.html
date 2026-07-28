@@ -1,0 +1,165 @@
+{% load i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n laces %}
+{# Enhanced About Section Block Template - Wagtail Bakery Style #}
+
+<section class="about-section about-section--{{ self.layout_style|default:'standard' }} {% if self.content_alignment == 'center' %}text-center{% elif self.content_alignment == 'right' %}text-end{% endif %}">
+
+    {# Background #}
+    {% if self.background_image %}
+    <div class="about-section__bg">
+        {% image self.background_image fill-1920x1080 as bg_img %}
+        <img src="{{ bg_img.url }}" alt="" class="about-section__bg-image" loading="lazy">
+        {% if self.background_overlay %}
+        <div class="about-section__overlay"></div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    <div class="container py-5">
+        {# Header Content #}
+        <div class="about-section__header mb-5">
+            {% if self.welcome_text %}
+            <div class="about-section__welcome text-primary fw-semibold text-uppercase mb-2">
+                {{ self.welcome_text }}
+            </div>
+            {% endif %}
+
+            {% if self.main_title %}
+            <h2 class="about-section__title display-5 fw-bold mb-3">{{ self.main_title }}</h2>
+            {% endif %}
+
+            {% if self.tagline %}
+            <p class="about-section__tagline lead text-muted">{{ self.tagline }}</p>
+            {% endif %}
+
+            {% if self.description %}
+            <div class="about-section__description">
+                {{ self.description|richtext }}
+            </div>
+            {% endif %}
+        </div>
+
+        {# Video Section #}
+        {% if self.show_video and self.video_link %}
+        <div class="about-section__video mb-5">
+            {% if self.video_title %}
+            <h3 class="video-title h4 mb-3">{{ self.video_title }}</h3>
+            {% endif %}
+
+            <div class="video-container ratio ratio-16x9">
+                {% if self.video_thumbnail %}
+                <div class="video-thumbnail" data-video-url="{{ self.video_link }}">
+                    {% image self.video_thumbnail fill-800x450 class="img-fluid" %}
+                    <button class="video-play-btn" type="button" aria-label="{% trans 'Play video' %}">
+                        <i class="bi bi-play-circle-fill"></i>
+                    </button>
+                </div>
+                {% else %}
+                <iframe src="{{ self.video_link }}" frameborder="0" allowfullscreen loading="lazy"></iframe>
+                {% endif %}
+            </div>
+
+            {% if self.video_description %}
+            <div class="video-description mt-3">
+                {{ self.video_description|richtext }}
+            </div>
+            {% endif %}
+        </div>
+        {% endif %}
+
+        {# Statistics Counters #}
+        {% if self.show_counters and self.counters %}
+        <div class="about-section__counters mb-5">
+            {% if self.counters_title %}
+            <h3 class="counters-title h4 mb-4 text-center">{{ self.counters_title }}</h3>
+            {% endif %}
+
+            <div class="row g-4">
+                {% for counter in self.counters %}
+                <div class="col-6 col-md-3">
+                    <div class="counter-item text-center p-4 bg-light rounded-3">
+                        {% if counter.value.icon %}
+                        <div class="counter-item__icon mb-3" style="{% if counter.value.icon_background %}background-color: {{ counter.value.icon_background }};{% endif %} {% if counter.value.icon_color %}color: {{ counter.value.icon_color }};{% endif %}">
+                            <i class="{{ counter.value.icon }}"></i>
+                        </div>
+                        {% endif %}
+
+                        <div class="counter-item__number h2 mb-1"
+                             {% if counter.value.animation %}
+                             data-counter-value="{{ counter.value.number }}"
+                             data-counter-duration="{{ counter.value.animation_duration|default:2000 }}"
+                             {% endif %}>
+                            {{ counter.value.number_prefix }}{{ counter.value.number }}{{ counter.value.number_suffix }}
+                        </div>
+
+                        <div class="counter-item__label text-muted fw-semibold">{{ counter.value.label }}</div>
+
+                        {% if counter.value.description %}
+                        <p class="counter-item__description text-muted small mt-2">{{ counter.value.description }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Team Section #}
+        {% if self.show_team and self.team_members %}
+        <div class="about-section__team mb-5">
+            {% if self.team_title %}
+            <h3 class="team-title h4 mb-3">{{ self.team_title }}</h3>
+            {% endif %}
+
+            {% if self.team_description %}
+            <div class="team-description mb-4">
+                {{ self.team_description|richtext }}
+            </div>
+            {% endif %}
+
+            <div class="row g-4">
+                {% for member in self.team_members %}
+                {% comp "blocks/pages/enhanced_team_member.html" value=member.value / %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Gallery Section #}
+        {% if self.show_gallery and self.gallery_items %}
+        <div class="about-section__gallery mb-5">
+            {% if self.gallery_title %}
+            <h3 class="gallery-title h4 mb-3">{{ self.gallery_title }}</h3>
+            {% endif %}
+
+            <div class="row g-3">
+                {% for item in self.gallery_items %}
+                {% comp "blocks/media_gallery_item.html" value=item.value / %}
+                {% endfor %}
+            </div>
+        </div>
+        {% endif %}
+
+        {# Call to Action #}
+        {% if self.show_cta %}
+        <div class="about-section__cta text-center py-5 bg-primary text-white rounded-3">
+            {% if self.cta_title %}
+            <h3 class="cta-title h3 mb-3">{{ self.cta_title }}</h3>
+            {% endif %}
+
+            {% if self.cta_description %}
+            <div class="cta-description mb-4">
+                {{ self.cta_description|richtext }}
+            </div>
+            {% endif %}
+
+            {% if self.cta_button_text and self.cta_button_url %}
+            <a href="{{ self.cta_button_url }}" class="btn btn-light btn-lg">
+                {{ self.cta_button_text }}
+            </a>
+            {% endif %}
+        </div>
+        {% endif %}
+
+    </div>
+</section>

@@ -1,0 +1,43 @@
+{% load wagtailcore_tags wagtailimages_tags i18n components %}
+{% prop block %}
+
+{% if block.block_type == "page_title" %}
+
+  {% if block.value.page_title_background %}
+    {% image block.value.page_title_background fill-1920x600 as bg %}
+  {% endif %}
+
+  <section
+    class="section-xl page-title
+      {% if bg %}bg-overlay bg-image parallax{% endif %}"
+    {% if bg %}
+      data-bg-src="{{ bg.url }}"
+    {% endif %}
+  >
+    <div class="{% if bg %}bg-dark-05{% endif %}">
+      <div class="container text-center z-index-1">
+
+        {% if block.value.show_breadcrumb %}
+          <div class="page__title-breadcrumb mb-3">
+            <nav aria-label="breadcrumb">
+              <ol class="breadcrumb justify-content-center">
+                <li class="breadcrumb-item">
+                  <a href="/">{{ block.value.breadcrumb_home_text|default:_("Home") }}</a>
+                </li>
+                <li class="breadcrumb-item active" aria-current="page">
+                  {{ page.title }}
+                </li>
+              </ol>
+            </nav>
+          </div>
+        {% endif %}
+
+        <h1 class="fw-bold uppercase letter-spacing-1 m-0">
+          {{ block.value.page_title|default:page.title }}
+        </h1>
+
+      </div>
+    </div>
+  </section>
+
+{% endif %}

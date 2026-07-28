@@ -1,0 +1,75 @@
+{% load i18n %}
+<!-- Stats bar -->
+<div class="d-flex gap-3 mb-4 flex-wrap">
+    <span class="badge bg-secondary fs-6 px-3 py-2">
+        {% trans "Total" %}: {{ post_counts.total }}
+    </span>
+    <span class="badge bg-success fs-6 px-3 py-2">
+        {% trans "Published" %}: {{ post_counts.published }}
+    </span>
+    <span class="badge bg-warning text-dark fs-6 px-3 py-2">
+        {% trans "Draft" %}: {{ post_counts.draft }}
+    </span>
+</div>
+
+<!-- Post list -->
+{% if blog_posts %}
+<div class="list-group" id="blog-post-list">
+    {% for post in blog_posts %}
+    <div class="list-group-item list-group-item-action d-flex justify-content-between align-items-start gap-3 py-3"
+         id="blog-post-{{ post.id }}">
+        <div class="flex-grow-1 min-w-0">
+            <div class="d-flex align-items-center gap-2 mb-1 flex-wrap">
+                <span class="badge {% if post.status == 'published' %}bg-success{% elif post.status == 'draft' %}bg-warning text-dark{% else %}bg-secondary{% endif %}">
+                    {{ post.get_status_display }}
+                </span>
+                <small class="text-muted">{{ post.created_at|date:"M j, Y" }}</small>
+            </div>
+            <h6 class="mb-1 text-truncate">{{ post.title }}</h6>
+            {% if post.excerpt %}
+            <p class="mb-0 text-muted small text-truncate">{{ post.excerpt }}</p>
+            {% endif %}
+            {% if post.tags.exists %}
+            <div class="mt-1">
+                {% for tag in post.tags.all %}
+                <span class="badge bg-light text-dark border me-1">{{ tag.name }}</span>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+        <div class="d-flex gap-2 flex-shrink-0">
+            {% if post.status == 'published' %}
+            <a href="{% url 'blog:detail' slug=post.slug %}"
+               class="btn btn-sm btn-outline-secondary"
+               target="_blank"
+               title="{% trans 'View post' %}">
+                <i class="bi bi-eye"></i>
+            </a>
+            {% endif %}
+            <button class="btn btn-sm btn-outline-primary"
+                    hx-get="{% url 'handlers:blog-post-edit' post_id=post.id %}"
+                    hx-target="#panel-content"
+                    hx-swap="innerHTML"
+                    hx-push-url="true"
+                    title="{% trans 'Edit' %}">
+                <i class="bi bi-pencil"></i>
+            </button>
+            <button class="btn btn-sm btn-outline-danger"
+                    hx-post="{% url 'handlers:blog-post-delete' post_id=post.id %}"
+                    hx-target="#blog-post-list"
+                    hx-swap="outerHTML"
+                    hx-confirm="{% trans 'Delete this post?' %}"
+                    hx-headers='{"X-CSRFToken": "{{ csrf_token }}"}'
+                    title="{% trans 'Delete' %}">
+                <i class="bi bi-trash"></i>
+            </button>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% else %}
+<div class="text-center py-5 text-muted">
+    <i class="bi bi-file-earmark-text fs-1 d-block mb-3"></i>
+    <p class="mb-0">{% trans "No blog posts yet. Create your first post!" %}</p>
+</div>
+{% endif %}

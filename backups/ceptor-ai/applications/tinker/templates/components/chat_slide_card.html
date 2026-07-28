@@ -1,0 +1,39 @@
+{% load laces %}
+{# applications/customizer/templates/components/chat_slide_card.html
+   Slide card containing a user+assistant message pair.
+   Context variables:
+     - user_message: dict with 'content', 'timestamp' (optional)
+     - assistant_message: dict with 'content', 'timestamp', 'is_code_editor' (optional)
+     - editor_id: unique DOM id for the code editor (required if is_code_editor) #}
+
+<div class="slide-card">
+  {% if user_message %}
+    {% comp "components/message_bubble.html"
+       role="user"
+       content=user_message.content
+       timestamp=user_message.timestamp
+    /%}
+  {% endif %}
+
+  {% if assistant_message %}
+    {% if assistant_message.is_code_editor %}
+      {# Render code editor with the template content #}
+      {% comp "components/code_editor.html"
+         editor_id=editor_id
+         code_content=assistant_message.content
+         template_path=assistant_message.template_path|default:""
+         language=assistant_message.language|default:"html"
+      /%}
+      <div class="message__meta" style="padding: 0 18px;">
+        <i class="far fa-clock"></i> {{ assistant_message.timestamp|default:"" }}
+        <i class="fas fa-robot" style="margin-left:8px;"></i>
+      </div>
+    {% else %}
+      {% comp "components/message_bubble.html"
+         role="assistant"
+         content=assistant_message.content
+         timestamp=assistant_message.timestamp
+      /%}
+    {% endif %}
+  {% endif %}
+</div>

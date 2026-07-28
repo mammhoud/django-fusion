@@ -1,0 +1,13 @@
+{
+    "version": "1.0",
+    "devtools": {
+        "enabled": true,
+        "multilingual": true,
+        "supported_languages": [
+            "en",
+            "es",
+            "fr",
+            "de"
+        ]
+    }
+}

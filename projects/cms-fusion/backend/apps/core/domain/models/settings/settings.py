@@ -420,7 +420,7 @@ class GlobalSettings(
         verbose_name_plural = _("Global Settings")
 
     def __str__(self):
-        return f"Global Brand & Contact Settings"
+        return "Global Brand & Contact Settings"
 
     def clean(self):
         super().clean()

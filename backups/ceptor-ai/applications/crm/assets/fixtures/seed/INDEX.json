@@ -1,0 +1,21 @@
+{
+  "description": "CRM seed data — load in order",
+  "order": [
+    "crm_auth.json",
+    "crm_categories.json",
+    "crm_vendors.json",
+    "crm_customers.json",
+    "crm_items.json",
+    "crm_bills.json",
+    "crm_invoices.json"
+  ],
+  "notes": {
+    "crm_auth.json": "Groups for CRM Staff and Manager",
+    "crm_categories.json": "5 inventory categories",
+    "crm_vendors.json": "3 supplier vendors",
+    "crm_customers.json": "5 demo customers",
+    "crm_items.json": "8 inventory items (depends on categories + vendors)",
+    "crm_bills.json": "3 outstanding/paid bills",
+    "crm_invoices.json": "3 sample invoices (depends on items)"
+  }
+}

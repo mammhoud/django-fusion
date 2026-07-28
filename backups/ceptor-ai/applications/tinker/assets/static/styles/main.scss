@@ -1,0 +1,49 @@
+// ================================================================
+//   MAIN – Import all partials
+// ================================================================
+
+// 0. Override Bootstrap variables before importing
+$enable-negative-margins: true;
+
+// 1. Bootstrap (must come early so our variables override defaults)
+@import 'bootstrap/scss/bootstrap';
+
+// 2. Bootstrap icon font (base64-encoded woff2 bundled into the CSS)
+$bootstrap-icons-font-dir: '~bootstrap-icons/font/fonts';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+
+// 3. Variables (must come after Bootstrap to override)
+@import 'variables';
+
+// 4. Reset & base
+@import 'reset';
+
+// 5. Layout
+@import 'layout';
+
+// 6. Sidebar
+@import 'sidebar';
+
+// 7. Chat (slide cards, messages, markdown)
+@import 'chat';
+
+// 8. Code Editor
+@import 'editor';
+
+// 9. Input area
+@import 'input';
+
+// 10. Slide navigation
+@import 'navigation';
+
+// 11. Animations
+@import 'animations';
+
+// 12. Bootstrap BEM utilities
+@import 'bootstrap-bem';
+
+// 13. Responsive tweaks
+@import 'responsive';
+
+// 14. Template sidebar, accordion scroll, app cards
+@import 'enhancements';

@@ -1,0 +1,123 @@
+{% extends "crm/layout/skeleton.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "CRM Dashboard" %}{% endblock %}
+
+{% block content %}
+{# ── Stats row ───────────────────────────────────────────── #}
+<div class="row g-4 mb-5">
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-2 text-primary"><i class="bi bi-boxes"></i></span>
+        <div>
+          <div class="text-muted small text-uppercase">{% trans "Total Stock" %}</div>
+          <div class="h3 mb-0 fw-bold">{{ total_items|default:0 }}</div>
+          <div class="small text-muted">{{ items_count }} {% trans "SKUs" %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-2 text-success"><i class="bi bi-cart-check"></i></span>
+        <div>
+          <div class="text-muted small text-uppercase">{% trans "Sales" %}</div>
+          <div class="h3 mb-0 fw-bold">{{ sales_count|default:0 }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-2 text-warning"><i class="bi bi-truck"></i></span>
+        <div>
+          <div class="text-muted small text-uppercase">{% trans "Pending Deliveries" %}</div>
+          <div class="h3 mb-0 fw-bold">{{ delivery_count|default:0 }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-xl-3 col-sm-6">
+    <div class="card border-0 shadow-sm h-100">
+      <div class="card-body d-flex align-items-center gap-3">
+        <span class="fs-2 text-info"><i class="bi bi-people"></i></span>
+        <div>
+          <div class="text-muted small text-uppercase">{% trans "Staff" %}</div>
+          <div class="h3 mb-0 fw-bold">{{ profiles_count|default:0 }}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+{# ── Charts row ─────────────────────────────────────────── #}
+<div class="row g-4">
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-transparent fw-semibold">
+        {% trans "Items by Category" %}
+      </div>
+      <div class="card-body">
+        <canvas id="categoryChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+
+  <div class="col-lg-6">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header bg-transparent fw-semibold">
+        {% trans "Sales Over Time" %}
+      </div>
+      <div class="card-body">
+        <canvas id="salesChart" height="220"></canvas>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+(function () {
+  const categoryLabels = {{ categories|safe }};
+  const categoryCounts = {{ category_counts|safe }};
+  const salesLabels    = {{ sale_dates_labels|safe }};
+  const salesValues    = {{ sale_dates_values|safe }};
+
+  new Chart(document.getElementById("categoryChart"), {
+    type: "doughnut",
+    data: {
+      labels: categoryLabels,
+      datasets: [{ data: categoryCounts, borderWidth: 2 }]
+    },
+    options: { plugins: { legend: { position: "bottom" } } }
+  });
+
+  new Chart(document.getElementById("salesChart"), {
+    type: "line",
+    data: {
+      labels: salesLabels,
+      datasets: [{
+        label: "{% trans 'Revenue' %}",
+        data: salesValues,
+        fill: true,
+        tension: 0.3
+      }]
+    },
+    options: {
+      scales: { y: { beginAtZero: true } },
+      plugins: { legend: { display: false } }
+    }
+  });
+})();
+</script>
+{% endblock extra_scripts %}

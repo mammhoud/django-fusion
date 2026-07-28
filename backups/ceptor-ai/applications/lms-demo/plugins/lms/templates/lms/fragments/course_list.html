@@ -1,0 +1,40 @@
+{# lms/fragments/course_list.html — HTMX fragment for course list #}
+<div id="course-list" data-fragment>
+  {% if search_query %}
+    <p class="search-info">
+      Results for <strong>{{ search_query }}</strong>
+      <a hx-get="{{ request.path }}"
+         hx-target="#course-list"
+         hx-swap="innerHTML"
+         href="#">Clear</a>
+    </p>
+  {% endif %}
+
+  {% for course in object_list %}
+    <article class="course-card">
+      <h3 class="course-card__title">
+        <a href="{{ course.get_absolute_url }}">{{ course.title }}</a>
+      </h3>
+      {% if course.instructor %}
+        <p class="course-card__instructor">{{ course.instructor }}</p>
+      {% endif %}
+      {% if course.description %}
+        <p class="course-card__description">{{ course.description|truncatewords:25 }}</p>
+      {% endif %}
+      <div class="course-card__meta">
+        {% if course.category %}
+          <span class="badge">{{ course.category }}</span>
+        {% endif %}
+        {% if course.level %}
+          <span class="badge badge--level">{{ course.get_level_display }}</span>
+        {% endif %}
+      </div>
+    </article>
+  {% empty %}
+    <p class="empty-state">No courses found.</p>
+  {% endfor %}
+
+  {# Pagination #}
+  {% load routable_components %}
+  {% fragment_pagination page_obj url=request.path %}
+</div>

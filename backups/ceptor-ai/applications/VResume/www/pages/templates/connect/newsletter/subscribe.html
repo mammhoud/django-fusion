@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<section class="newsletter-subscribe">
+    <div class="newsletter-subscribe__container">
+        <div class="newsletter-subscribe__wrapper">
+            <div class="newsletter-subscribe__card">
+                <div class="newsletter-subscribe__body">
+                    <h2 class="newsletter-subscribe__title">{% trans "Subscribe to Our Newsletter" %}</h2>
+                    <p class="newsletter-subscribe__subtitle">
+                        {% trans "Stay updated with our latest news and updates." %}
+                    </p>
+                    
+                    <form method="post"
+                          class="newsletter-subscribe__form"
+                          hx-post="{% url 'comm:subscribe' %}"
+                          hx-target="#form-response"
+                          hx-swap="innerHTML">
+                        {% csrf_token %}
+                        
+                        <div class="newsletter-subscribe__field">
+                            <label for="id_email" class="newsletter-subscribe__label">{% trans "Email Address" %} *</label>
+                            {{ form.email }}
+                            {% if form.email.errors %}
+                            <div class="newsletter-subscribe__error">{{ form.email.errors.0 }}</div>
+                            {% endif %}
+                        </div>
+                        
+                        <div class="newsletter-subscribe__field">
+                            <label for="id_name" class="newsletter-subscribe__label">{% trans "Name" %}</label>
+                            {{ form.name }}
+                        </div>
+                        
+                        <div id="form-response"></div>
+                        
+                        <button type="submit" class="newsletter-subscribe__btn">
+                            {% trans "Subscribe" %}
+                        </button>
+                    </form>
+                    
+                    <p class="newsletter-subscribe__note">
+                        {% trans "We respect your privacy. Unsubscribe at any time." %}
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

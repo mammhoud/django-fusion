@@ -1,0 +1,14 @@
+/**
+ * VResume Design System — Blog Aliases (DEPRECATED)
+ * This file is kept for backward compatibility.
+ * All blog styles are now unified in _content.scss
+ * 
+ * Imports the unified content styles which support:
+ * - .blog__* classes (aliases)
+ * - .post__* classes  
+ * - .box__* classes
+ * - .grid-section__listing class
+ * - .content__* classes (new unified naming)
+ */
+@use 'content-cards' as *;
+@use 'content' as *;

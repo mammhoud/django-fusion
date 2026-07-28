@@ -1,0 +1,22 @@
+/* Consolidated Font Imports — only includes fonts whose files actually exist */
+
+/* FontAwesome (font files: fa-brands-400.*, fa-regular-400.*, fa-solid-900.*) */
+@import './fontawesome/all.min.css';
+
+/* Bootstrap Icons */
+@import './bootstrap-icons/index.css';
+
+/* Material Symbols */
+@import './material-symbols/index.css';
+
+/* Remix Icon */
+@import './remixicon/remixicon.css';
+
+/* Inter Font */
+@import './inter/styles.css';
+
+/* Roboto Font */
+@import './roboto/fonts.css';
+
+/* Ming Cute Icons */
+@import './ming-cute/icons.css';

@@ -1,0 +1,27 @@
+{% load i18n %}
+{# Pricing section block #}
+<section class="pricing-section py-5">
+    <div class="container">
+        <div class="row g-4 justify-content-center">
+            {% for plan in block.value.plans %}
+            <div class="col-md-6 col-lg-4">
+                <div class="pricing-card h-100 p-4 border rounded shadow-sm text-center
+                            {% if plan.is_featured %}border-primary{% endif %}">
+                    <h3 class="pricing-card__name h5">{{ plan.name }}</h3>
+                    <div class="pricing-card__price display-5 fw-bold my-3">
+                        {{ plan.price }}
+                    </div>
+                    {% if plan.description %}
+                    <p class="text-muted">{{ plan.description }}</p>
+                    {% endif %}
+                    {% if plan.cta_url %}
+                    <a href="{{ plan.cta_url }}" class="btn btn-{% if plan.is_featured %}primary{% else %}outline-primary{% endif %} mt-3">
+                        {{ plan.cta_text|default:"Get Started" }}
+                    </a>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>

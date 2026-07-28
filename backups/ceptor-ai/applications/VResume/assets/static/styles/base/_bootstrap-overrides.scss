@@ -1,0 +1,321 @@
+/**
+ * VResume Design System — Bootstrap Utility Overrides
+ * Fully theme‑compatible using CSS variables from the legacy‑based themes
+ */
+
+/* ── Text Color Utilities ── */
+.text-primary { color: var(--text-primary) !important; }
+.text-secondary { color: var(--text-secondary) !important; }
+.text-tertiary { color: var(--text-tertiary) !important; }
+.text-muted { color: var(--text-secondary) !important; }
+.text-white, .text-dark, .text-body { color: var(--text-primary) !important; }
+.text-body-emphasis { color: var(--text-primary) !important; font-weight: var(--fw-600); }
+.text-body-secondary { color: var(--text-secondary) !important; }
+
+.text-success { color: var(--color-success) !important; }
+.text-warning { color: var(--color-warning) !important; }
+.text-danger { color: var(--color-danger) !important; }
+.text-info { color: var(--color-info) !important; }
+
+/* ── Background Color Utilities ── */
+.bg-primary { background-color: var(--bg-canvas) !important; }
+.bg-secondary { background-color: var(--color-secondary) !important; }
+.bg-tertiary { background-color: var(--bg-surface-elevated) !important; }
+.bg-light { background-color: var(--bg-surface) !important; }
+.bg-white, .bg-dark, .bg-body { background-color: var(--bg-canvas) !important; }
+.bg-body-secondary { background-color: var(--bg-surface) !important; }
+.bg-body-tertiary { background-color: var(--bg-surface-elevated) !important; }
+
+.bg-success { background-color: var(--color-success) !important; }
+.bg-warning { background-color: var(--color-warning) !important; }
+.bg-danger { background-color: var(--color-danger) !important; }
+.bg-info { background-color: var(--color-info) !important; }
+
+/* ── Border Color Utilities ── */
+.border { border-color: var(--border-subtle) !important; }
+.border-primary { border-color: var(--color-accent) !important; }
+.border-secondary { border-color: var(--border-subtle) !important; }
+.border-light { border-color: var(--border-subtle) !important; }
+.border-dark { border-color: var(--text-primary) !important; }
+.border-success { border-color: var(--color-success) !important; }
+.border-warning { border-color: var(--color-warning) !important; }
+.border-danger { border-color: var(--color-danger) !important; }
+.border-info { border-color: var(--color-info) !important; }
+
+/* ── Subtle Background Utilities (using rgba with theme RGB vars) ── */
+.bg-primary-subtle { background-color: rgba(var(--color-accent-rgb), 0.1) !important; }
+.bg-secondary-subtle { background-color: rgba(var(--color-accent-rgb), 0.1) !important; }
+.bg-success-subtle { background-color: rgba(var(--color-success-rgb), 0.1) !important; }
+.bg-warning-subtle { background-color: rgba(var(--color-warning-rgb), 0.1) !important; }
+.bg-danger-subtle { background-color: rgba(var(--color-danger-rgb), 0.1) !important; }
+.bg-info-subtle { background-color: rgba(var(--color-info-rgb), 0.1) !important; }
+
+/* ── Subtle Border Utilities ── */
+.border-primary-subtle { border-color: rgba(var(--color-accent-rgb), 0.5) !important; }
+.border-secondary-subtle { border-color: rgba(var(--color-accent-rgb), 0.5) !important; }
+.border-success-subtle { border-color: rgba(var(--color-success-rgb), 0.5) !important; }
+.border-warning-subtle { border-color: rgba(var(--color-warning-rgb), 0.5) !important; }
+.border-danger-subtle { border-color: rgba(var(--color-danger-rgb), 0.5) !important; }
+.border-info-subtle { border-color: rgba(var(--color-info-rgb), 0.5) !important; }
+
+/* ── Button Utilities ── */
+.btn-primary {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--text-inverse) !important;
+}
+.btn-primary:hover {
+  background-color: var(--color-accent-hover) !important;
+  border-color: var(--color-accent-hover) !important;
+}
+.btn-primary:active,
+.btn-primary.active {
+  background-color: var(--color-accent-active) !important;
+  border-color: var(--color-accent-active) !important;
+}
+
+.btn-secondary {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+.btn-secondary:hover {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.btn-secondary:active,
+.btn-secondary.active {
+  background-color: var(--bg-surface-elevated) !important;
+}
+
+.btn-outline-primary {
+  color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+}
+.btn-outline-primary:hover {
+  background-color: var(--color-accent) !important;
+  color: var(--text-inverse) !important;
+}
+.btn-outline-primary:active,
+.btn-outline-primary.active {
+  background-color: var(--color-accent-active) !important;
+  border-color: var(--color-accent-active) !important;
+  color: var(--text-inverse) !important;
+}
+
+.btn-outline-secondary {
+  color: var(--text-secondary) !important;
+  border-color: var(--border-subtle) !important;
+}
+.btn-outline-secondary:hover {
+  background-color: var(--bg-surface) !important;
+  color: var(--text-primary) !important;
+}
+.btn-outline-secondary:active,
+.btn-outline-secondary.active {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--text-inverse) !important;
+}
+
+.btn-link {
+  color: var(--color-accent) !important;
+}
+.btn-link:hover {
+  color: var(--color-accent-hover) !important;
+}
+.btn-link:active,
+.btn-link.active {
+  color: var(--color-accent-active) !important;
+}
+
+/* ── Badge Utilities ── */
+.badge {
+  background-color: var(--color-accent) !important;
+  color: var(--text-inverse) !important;
+}
+.badge.bg-success { background-color: var(--color-success) !important; }
+.badge.bg-warning { background-color: var(--color-warning) !important; }
+.badge.bg-danger { background-color: var(--color-danger) !important; }
+.badge.bg-info { background-color: var(--color-info) !important; }
+
+/* ── Card Utilities ── */
+.card,
+.card-header,
+.card-footer {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+.card-header,
+.card-footer {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.card-title { color: var(--text-primary) !important; }
+.card-text { color: var(--text-secondary) !important; }
+
+/* ── Form Utilities ── */
+.form-control,
+.form-select {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+.form-control::placeholder,
+.form-select::placeholder {
+  color: var(--text-secondary) !important;
+}
+.form-control:focus,
+.form-select:focus {
+  background-color: var(--bg-surface-elevated) !important;
+  border-color: var(--color-accent) !important;
+  box-shadow: 0 0 0 0.25rem rgba(var(--color-accent-rgb), 0.25) !important;
+}
+.form-label { color: var(--text-primary) !important; }
+
+/* ── Dropdown Utilities ── */
+.dropdown-menu {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+}
+.dropdown-item {
+  color: var(--text-primary) !important;
+}
+.dropdown-item:hover,
+.dropdown-item:focus {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.dropdown-item.active {
+  background-color: var(--color-accent) !important;
+  color: var(--text-inverse) !important;
+}
+
+/* ── Modal Utilities ── */
+.modal-content {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+}
+.modal-header,
+.modal-footer {
+  background-color: var(--bg-surface-elevated) !important;
+  border-color: var(--border-subtle) !important;
+}
+.modal-title { color: var(--text-primary) !important; }
+
+/* ── Alert Utilities ── */
+.alert-primary {
+  background-color: rgba(var(--color-accent-rgb), 0.1) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--color-accent) !important;
+}
+.alert-success {
+  background-color: rgba(var(--color-success-rgb), 0.1) !important;
+  border-color: var(--color-success) !important;
+  color: var(--color-success) !important;
+}
+.alert-warning {
+  background-color: rgba(var(--color-warning-rgb), 0.1) !important;
+  border-color: var(--color-warning) !important;
+  color: var(--color-warning) !important;
+}
+.alert-danger {
+  background-color: rgba(var(--color-danger-rgb), 0.1) !important;
+  border-color: var(--color-danger) !important;
+  color: var(--color-danger) !important;
+}
+.alert-info {
+  background-color: rgba(var(--color-info-rgb), 0.1) !important;
+  border-color: var(--color-info) !important;
+  color: var(--color-info) !important;
+}
+
+/* ── Table Utilities ── */
+.table {
+  color: var(--text-primary) !important;
+  border-color: var(--border-subtle) !important;
+}
+.table-striped > tbody > tr:nth-of-type(odd) {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.table-hover > tbody > tr:hover {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.table-active {
+  background-color: var(--bg-surface-elevated) !important;
+}
+
+/* ── Pagination Utilities ── */
+.pagination .page-link {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+.pagination .page-link:hover {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.pagination .page-item.active .page-link {
+  background-color: var(--color-accent) !important;
+  border-color: var(--color-accent) !important;
+  color: var(--text-inverse) !important;
+}
+
+/* ── Breadcrumb Utilities ── */
+.breadcrumb {
+  background-color: var(--bg-surface) !important;
+}
+.breadcrumb-item {
+  color: var(--text-secondary) !important;
+}
+.breadcrumb-item.active {
+  color: var(--text-primary) !important;
+}
+.breadcrumb-item a {
+  color: var(--color-accent) !important;
+}
+.breadcrumb-item a:hover {
+  color: var(--color-accent-hover) !important;
+}
+
+/* ── Progress Utilities ── */
+.progress {
+  background-color: var(--bg-surface-elevated) !important;
+}
+.progress-bar {
+  background-color: var(--color-accent) !important;
+}
+
+/* ── Spinner Utilities ── */
+.spinner-border {
+  border-color: var(--border-subtle) !important;
+  border-right-color: var(--color-accent) !important;
+}
+.spinner-grow {
+  background-color: var(--color-accent) !important;
+}
+
+/* ── Tooltip & Popover Utilities ── */
+.tooltip-inner {
+  background-color: var(--bg-surface-inverse) !important;
+  color: var(--text-inverse) !important;
+}
+.popover {
+  background-color: var(--bg-surface) !important;
+  border-color: var(--border-subtle) !important;
+}
+.popover-header {
+  background-color: var(--bg-surface-elevated) !important;
+  border-color: var(--border-subtle) !important;
+  color: var(--text-primary) !important;
+}
+.popover-body {
+  color: var(--text-primary) !important;
+}
+
+/* ── Hover Utilities ── */
+.hover\:text-secondary:hover { color: var(--text-secondary) !important; }
+.hover\:text-primary:hover { color: var(--text-primary) !important; }
+.hover\:bg-secondary:hover { background-color: var(--bg-surface-elevated) !important; }
+
+/* ── Opacity Utilities ── */
+.opacity-50 { opacity: 0.5; }
+.opacity-75 { opacity: 0.75; }
+.opacity-100 { opacity: 1; }

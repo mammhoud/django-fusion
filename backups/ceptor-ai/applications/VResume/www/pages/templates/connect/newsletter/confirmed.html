@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% load static i18n %}
+
+{% block content %}
+<section class="newsletter-confirmed">
+    <div class="newsletter-confirmed__container">
+        <div class="newsletter-confirmed__wrapper">
+            <div class="newsletter-confirmed__card">
+                <div class="newsletter-confirmed__body">
+                    <i class="ri ri-check-circle-line newsletter-confirmed__icon"></i>
+                    <h2 class="newsletter-confirmed__title">{% trans "Subscription Confirmed!" %}</h2>
+                    <p class="newsletter-confirmed__text">
+                        {% trans "Thank you for confirming your subscription." %}
+                        {% trans "You will now receive our newsletter updates." %}
+                    </p>
+                    <a href="/" class="newsletter-confirmed__btn">{% trans "Go to Homepage" %}</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}

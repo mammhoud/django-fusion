@@ -11,12 +11,11 @@ Served via: GET /apis/site/settings
 
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from wagtail.admin.panels import FieldPanel, MultiFieldPanel, InlinePanel
-from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
-from wagtail.snippets.models import register_snippet
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
-
+from wagtail.admin.panels import FieldPanel, InlinePanel, MultiFieldPanel
+from wagtail.contrib.settings.models import BaseSiteSetting, register_setting
+from wagtail.snippets.models import register_snippet
 
 # ═══════════════════════════════════════════════════════════════════
 # Social Links (Wagtail snippet)

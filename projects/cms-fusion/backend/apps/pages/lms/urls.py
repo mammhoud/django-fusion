@@ -1,36 +1,36 @@
 from django.urls import path
 
+from .views.cart import EnrollView, PaymentHistoryView
+
 # Import specific views without importing cart.py which depends on domain site views
 from .views.courses import (
-    FrontCourseDetailView,
     CourseSearchAPIView,
-    course_wishlist_toggle,
-    course_enrollment_form,
+    FrontCourseDetailView,
     course_enrollment_create,
-)
-from .views.lessons import (
-    CourseWatchView,
-    CourseContinueView,
-    LessonNavigationView,
+    course_enrollment_form,
+    course_wishlist_toggle,
 )
 from .views.enrollment import (
     EnrollmentCreateAjaxView,
     enrollment_create_modal,
-    enrollment_list,
-    enrollment_status_update,
     enrollment_export_csv,
     enrollment_import_csv,
+    enrollment_list,
+    enrollment_status_update,
+)
+from .views.lessons import (
+    CourseContinueView,
+    CourseWatchView,
+    LessonNavigationView,
 )
 from .views.payments import (
     initialize_payment,
-    verify_payment,
     payment_status,
-    webhook_stripe,
-    webhook_paypal,
+    verify_payment,
     webhook_paymo,
+    webhook_paypal,
+    webhook_stripe,
 )
-from .views.cart import PaymentHistoryView
-from .views.cart import EnrollView
 
 
 # Lazy load payment views to avoid import conflicts

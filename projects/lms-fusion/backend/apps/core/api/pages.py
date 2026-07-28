@@ -35,14 +35,29 @@ def _get_fusion_render_first_from_request(request) -> bool | None:
 
 
 def _get_wagtail_page(slug: str):
-    """Try to retrieve a Wagtail FusionPage by slug. Returns None if not found."""
+    """Try to retrieve a Wagtail page by slug.
+
+    Priority:
+    1. Fusion-specific page models (FusionHomePage, FusionContentPage)
+    2. Base wagtailcore.Page (fallback for fixture data using the base type)
+    """
     normalized = normalize_slug(slug)
     try:
         from apps.pages.pages.models import FusionHomePage, FusionContentPage
+        from wagtail.models import Page
 
+        # 1. Try Fusion-specific page models
         if normalized == "home":
-            return FusionHomePage.objects.live().first()
-        return FusionContentPage.objects.live().filter(slug=normalized).first()
+            fusion_page = FusionHomePage.objects.live().first()
+            if fusion_page is not None:
+                return fusion_page
+        else:
+            fusion_page = FusionContentPage.objects.live().filter(slug=normalized).first()
+            if fusion_page is not None:
+                return fusion_page
+
+        # 2. Fall back to base wagtailcore.Page by slug
+        return Page.objects.live().filter(slug=normalized).first()
     except Exception:
         return None
 
@@ -103,8 +118,11 @@ def page_list(request):
     """GET /api/pages/ — list all published Fusion pages."""
     try:
         from apps.pages.pages.models import FusionHomePage, FusionContentPage
+        from wagtail.models import Page
 
         pages = []
+
+        # 1. Try Fusion-specific page models first
         home = FusionHomePage.objects.live().first()
         if home:
             pages.append(_wagtail_page_to_dict(home))
@@ -112,8 +130,22 @@ def page_list(request):
         for p in FusionContentPage.objects.live().filter(show_in_nav=True).order_by("title"):
             pages.append(_wagtail_page_to_dict(p))
 
+        # 2. Fall back to base wagtailcore.Page when no Fusion pages exist
+        #    (e.g., when fixtures use the base Page type rather than Fusion subtypes)
+        if not pages:
+            root = Page.objects.filter(depth=1).first()
+            if root:
+                live_children = root.get_children().live()
+                for child in live_children:
+                    pages.append(_wagtail_page_to_dict(child))
+                # Also grab grand-children shown in menus for deeper navigation
+                for child in live_children:
+                    for grandchild in child.get_children().live().filter(show_in_menus=True):
+                        pages.append(_wagtail_page_to_dict(grandchild))
+
         return {"pages": pages, "total": len(pages)}
     except Exception:
+        logger.exception("page_list error")
         return {"pages": [], "total": 0}
 
 
@@ -148,14 +180,21 @@ def page_fragment(request, slug):
         # 1. Try Wagtail page
         wagtail_page = _get_wagtail_page(slug)
         if wagtail_page is not None:
-            fragment_name = wagtail_page.effective_fragment_name
+            # Use getattr for fusion-specific fields — base wagtailcore.Page
+            # objects (e.g., from fixtures) don't have these attributes.
+            fragment_name = getattr(
+                wagtail_page, "effective_fragment_name",
+                f"pages.{normalized}",
+            )
             pointer = fusion_response(
                 fragment_name, request,
                 extra={
                     "page_slug": normalized,
                     "title": wagtail_page.title,
-                    "layout": wagtail_page.effective_layout,
-                    "fusion_render_first": wagtail_page.fusion_render_first,
+                    "layout": getattr(wagtail_page, "effective_layout", "default"),
+                    "fusion_render_first": bool(
+                        getattr(wagtail_page, "fusion_render_first", False)
+                    ),
                 },
             )
             return fusion_json_response(data=pointer, status=200)
@@ -220,12 +259,33 @@ def page_data(request, slug):
 
 
 def _render_wagtail_html(page, request) -> HttpResponse:
-    """Render a Wagtail FusionPage as HTML via its template."""
+    """Render a Wagtail FusionPage as HTML via its template.
+
+    Falls back to a simple JSON response for base ``wagtailcore.Page``
+    objects that don't have Fusion-specific view classes.
+    """
     try:
         from apps.pages.pages.components import FusionContentPageView, FusionHomePageView
 
         is_home = page.__class__.__name__ == "FusionHomePage"
-        view_cls = FusionHomePageView if is_home else FusionContentPageView
+        if is_home:
+            view_cls = FusionHomePageView
+        elif page.__class__.__name__ == "FusionContentPage":
+            view_cls = FusionContentPageView
+        else:
+            # Base wagtailcore.Page — no Fusion view available.
+            # Return a simple JSON response instead of crashing.
+            data = _wagtail_page_to_dict(page)
+            encoded = FusionCodec.encode(data)
+            return fusion_json_response(
+                data={
+                    "slug": page.slug,
+                    "title": page.title,
+                    "encoded": encoded,
+                },
+                status=200,
+            )
+
         view_instance = view_cls()
         view_instance.request = request
         view_instance.args = ()

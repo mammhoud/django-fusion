@@ -1,0 +1,107 @@
+{% load i18n components.navigation routable_components %}
+{#
+  Blog Post List Fragment — rendered by BlogListComponent (/fusion/blog/list/)
+  ──────────────────────────────────────────────────────────────────────────────
+  Supports Unpoly (up-follow/up-target) and HTMX (hx-get/hx-target) fallback
+  via {% nav_link %} tags.  Includes tag filter bar and Load More pagination.
+
+  Context (from FragmentComponent):
+    object_list  — paginated BlogPost queryset
+    page_obj     — Django Page object
+    tags         — BlogTag queryset (all active, ordered)
+    paginator, is_paginated, has_next, has_previous
+    request      — current HttpRequest
+#}
+
+{# ── Tag filter bar ──────────────────────────────────────────────────────── #}
+{% if tags %}
+<div class="mb-4" data-fragment="blog-tags">
+  <div class="d-flex flex-wrap gap-2">
+    {% nav_link url=request.path label=_("All") icon="" target="#blog-content" css_class="badge rounded-pill text-decoration-none bg-secondary" %}
+    {% for tag in tags %}
+      {% nav_link url=request.path|add:"?tag="|add:tag.slug label=tag.name icon=tag.icon target="#blog-content" css_class="badge rounded-pill text-decoration-none" %}
+    {% endfor %}
+  </div>
+</div>
+{% endif %}
+
+{# ── Post list ──────────────────────────────────────────────────────────── #}
+<div id="blog-content" data-fragment="blog-list">
+  {% if object_list %}
+    <div class="row g-4">
+      {% for post in object_list %}
+        <div class="col-md-6 col-lg-4">
+          <article class="card h-100 shadow-sm border-0 overflow-hidden">
+            {% if post.featured_image %}
+              <div class="card-img-top-wrapper" style="height:200px;overflow:hidden;">
+                <img src="{{ post.featured_image.url }}"
+                     class="w-100 h-100"
+                     style="object-fit:cover;"
+                     alt="{{ post.title }}"
+                     loading="lazy">
+              </div>
+            {% endif %}
+            <div class="card-body d-flex flex-column">
+              <div class="mb-2">
+                {% for tag in post.tags.all|slice:":3" %}
+                  <span class="badge rounded-pill bg-light text-dark me-1 small"
+                        style="border-left:3px solid {{ tag.color|default:'#ee9b00' }};">
+                    {% if tag.icon %}<i class="{{ tag.icon }} me-1"></i>{% endif %}
+                    {{ tag.name }}
+                  </span>
+                {% endfor %}
+              </div>
+              <h5 class="card-title mb-2">
+                {% nav_link url="/fusion/blog/"|add:post.slug|add:"/" label=post.title icon="" target="#panel-content" css_class="text-decoration-none stretched-link" %}
+              </h5>
+              <p class="card-text text-muted small flex-grow-1">
+                {{ post.short_description|default:post.introduction|truncatewords:25 }}
+              </p>
+              <div class="d-flex justify-content-between align-items-center mt-2">
+                <small class="text-muted">
+                  {% if post.published_date %}
+                    <i class="bi bi-calendar3 me-1"></i>{{ post.published_date|date:"M d, Y" }}
+                  {% endif %}
+                  {% if post.reading_time %}
+                    <span class="ms-2"><i class="bi bi-clock me-1"></i>{{ post.reading_time }} min</span>
+                  {% endif %}
+                </small>
+                {% if post.primary_author %}
+                  <small class="text-muted">
+                    <i class="bi bi-person-circle me-1"></i>{{ post.primary_author.get_full_name|default:post.primary_author.username }}
+                  </small>
+                {% endif %}
+              </div>
+            </div>
+          </article>
+        </div>
+      {% endfor %}
+    </div>
+
+    {# ── Load More button (infinite scroll style) ────────────────────── #}
+    {% if page_obj.has_next %}
+      <div class="text-center mt-4" data-fragment="blog-load-more">
+        <button class="btn btn-outline-primary rounded-pill px-4"
+                hx-get="{{ request.path }}?page={{ page_obj.next_page_number }}"
+                hx-target="#blog-content"
+                hx-swap="beforeend"
+                up-follow up-target="#blog-content"
+                aria-label="{% trans 'Load more posts' %}">
+          <i class="bi bi-arrow-repeat me-2"></i>{% trans "Load more" %}
+        </button>
+      </div>
+    {% endif %}
+
+    {# ── Pagination ──────────────────────────────────────────────────── #}
+    {% if is_paginated %}
+      {% fragment_pagination page_obj url=request.path %}
+    {% endif %}
+
+  {% else %}
+    <div class="text-center py-5" data-fragment="blog-empty">
+      <i class="bi bi-journal-x display-1 text-muted mb-3 d-block"></i>
+      <h4 class="text-muted">{% trans "No posts found" %}</h4>
+      <p class="text-muted">{% trans "Check back soon for new content." %}</p>
+    </div>
+  {% endif %}
+</div>
