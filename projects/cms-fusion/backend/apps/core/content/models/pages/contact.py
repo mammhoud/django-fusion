@@ -1,10 +1,11 @@
 from django.utils.translation import gettext_lazy as _
-from apps.core.domain.blocks.contact.contact_methods import ContactMethodBlock
-from apps.core.domain.blocks.partials.faq import FAQSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
+
+from apps.core.domain.blocks.contact.contact_methods import ContactMethodBlock
+from apps.core.domain.blocks.partials.faq import FAQSectionBlock
 
 from .base import BaseFormPage
 

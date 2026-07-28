@@ -4,7 +4,6 @@ from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models.base import BaseModel as DefaultBase
-from apps.core.domain.blocks.stream_blocks import BaseStreamBlock
 from django_fusion.models.default import ContentBase
 from wagtail.admin.panels import (
     FieldPanel,
@@ -15,6 +14,8 @@ from wagtail.admin.panels import (
 )
 from wagtail.fields import StreamField
 from wagtail.search import index
+
+from apps.core.domain.blocks.stream_blocks import BaseStreamBlock
 
 
 # -------------------------------------------------------------------

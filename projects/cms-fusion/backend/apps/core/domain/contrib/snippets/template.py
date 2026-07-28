@@ -1,5 +1,6 @@
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter
+
 # EmailTemplate now in apps.core.domain.services.email.models - import at call site
 from wagtail.admin.filters import WagtailFilterSet
 

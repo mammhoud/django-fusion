@@ -1,0 +1,78 @@
+# ============================================================
+# Proxy – Traefik (default-proxy)
+# ============================================================
+# Static config: ./traefik/dynamic.yml
+# Dynamic routers: ./traefik/dynamic/*.yml
+# ============================================================
+
+x-proxy-common: &proxy-common
+  restart: unless-stopped
+  networks:
+    - traefik-net
+    - common
+
+services:
+  default-proxy:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    # image: default-proxy:latest
+    <<: *proxy-common
+    container_name: default-proxy
+    security_opt:
+      - no-new-privileges:true
+    # The base repo .env (one level up) is now the canonical source of
+    # truth for DNS provider, Cloudflare API key, and the Let's Encrypt
+    # account email. The legacy `proxy/.env` is still loaded as a
+    # fallback for existing deployments that haven't migrated yet.
+    # To use the new path, run `docker compose` from this directory
+    # (e.g. `cd proxy && docker compose -f docker-compose.traefik.yml up`).
+    env_file:
+      - path: ../.env
+        required: false
+      - path: ./.env
+        required: false
+    ports:
+      # Ensure host firewall/security groups allow inbound TCP 80 and 443.
+      - "80:80"
+      - "443:443"
+      # Enable only when HTTP/3 or explicit UDP routing is configured.
+      - "443:443/udp"
+      - "8080:8080"
+    extra_hosts:
+      - 'host.docker.internal:host-gateway'
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+      - ./traefik/dynamic.yml:/etc/traefik/dynamic.yml:ro
+      - ./traefik/dynamic:/etc/traefik/dynamic:ro
+      - ./certs:/etc/traefik/certs:ro
+      # ACME storage for Let's Encrypt (DNS-01). The file MUST exist with
+      # mode 0600 before the container starts — run `./scripts/manage-certs.sh
+      # bootstrap-acme` to create it. See proxy/LETSENCRYPT.md.
+      - ./acme:/etc/traefik/acme:rw
+    environment:
+      - TRAEFIK_LOG_LEVEL=INFO
+      # Cloudflare DNS-01 credentials are loaded from proxy/.env via env_file above.
+      # Traefik Cloudflare provider reads: CF_DNS_API_TOKEN (or CF_API_EMAIL+CF_API_KEY).
+      - LETSENCRYPT_EMAIL=${LETSENCRYPT_EMAIL:-admin@structa.cloud}
+    command:
+      - "--configFile=/etc/traefik/dynamic.yml"   # matches the copy in Dockerfile
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/ping"]
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M
+
+networks:
+  traefik-net:
+    external: true
+  common:
+    external: true

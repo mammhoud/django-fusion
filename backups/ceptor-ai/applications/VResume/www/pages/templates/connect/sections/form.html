@@ -1,0 +1,49 @@
+{# Contact Form Section #}
+{# Displays beautified contact form with HTMX submission #}
+{% load i18n static %}
+
+<section class="contact-form vresume-section">
+  <div class="contact-form__container">
+    <div class="contact-form__pic js-tilt" data-tilt>
+      <img src="{% static 'images/contact-illustration.png' %}" alt="Contact Illustration" onerror="this.src='https://cdn-icons-png.flaticon.com/512/3135/3135715.png'">
+    </div>
+
+    <form class="contact-form__form" 
+          hx-post="{% url 'pages:contact_submit' %}"
+          hx-target="#contact-response"
+          hx-swap="innerHTML"
+          hx-indicator="#contact-loading"
+          hx-on::after-request="if(event.detail.successful) this.reset()">
+      {% csrf_token %}
+
+      <h3 class="vresume-section-title">{% trans "Get in touch" %}</h3>
+
+      <div class="contact-form__wrap-input">
+        <input class="contact-form__input" type="text" name="fullname" placeholder="{% trans 'Full Name' %}" required>
+      </div>
+
+      <div class="contact-form__wrap-input">
+        <input class="contact-form__input" type="email" name="email" placeholder="{% trans 'Email' %}" required>
+      </div>
+
+      <div class="contact-form__wrap-input">
+        <input class="contact-form__input" type="text" name="subject" placeholder="{% trans 'Subject' %}" required>
+      </div>
+
+      <div class="contact-form__wrap-input">
+        <textarea class="contact-form__input" name="message" placeholder="{% trans 'Message' %}" required></textarea>
+      </div>
+
+      <div class="contact-form__btn-container">
+        <button class="contact-form__btn" type="submit">
+          <span>
+            {% trans "Send Message" %}
+            <i class="ri ri-arrow-right-line" id="contact-loading"></i>
+          </span>
+        </button>
+      </div>
+      
+      <div id="contact-response" class="contact-form__response"></div>
+    </form>
+  </div>
+</section>

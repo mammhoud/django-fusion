@@ -20,9 +20,9 @@ from typing import Dict, List
 from django.conf import settings
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
-from django_fusion.site.management.commands.base import BaseCommand
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
+from django_fusion.site.management.commands.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 

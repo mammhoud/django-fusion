@@ -1,0 +1,20 @@
+.form-stack,
+[data-usecase~='forms'] {
+  --form-gap: 1rem;
+  display: grid;
+  gap: var(--form-gap);
+
+  .form-stack__field,
+  .form-group,
+  .field-wrapper {
+    min-width: 0;
+  }
+
+  .form-stack__actions,
+  .form-actions {
+    align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: .75rem;
+  }
+}

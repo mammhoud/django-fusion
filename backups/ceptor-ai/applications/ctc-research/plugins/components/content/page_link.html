@@ -1,0 +1,12 @@
+{% load wagtailcore_tags %}
+
+{% with url=page.url text=link_text|default:page.title %}
+<a href="{{ url }}"
+   class="button button-lg button-rounded button-font-2 button-white button-shadow button-hover-float"
+   {% if open_in_new_tab %}target="_blank" rel="noopener noreferrer"{% endif %}>
+    {% if icon %}
+        <i class="{{ icon }} me-2"></i>
+    {% endif %}
+    {{ text }}
+</a>
+{% endwith %}

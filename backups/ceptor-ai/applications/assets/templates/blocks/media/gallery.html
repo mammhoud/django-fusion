@@ -1,0 +1,31 @@
+{% load wagtailcore_tags wagtailimages_tags i18n laces %}
+{# Simplified Media Gallery Block Template #}
+
+<div class="media-gallery">
+
+    {# Gallery Header #}
+    {% if self.gallery_title or self.gallery_description %}
+    <div class="media-gallery__header mb-4">
+        {% if self.gallery_title %}
+        <h3 class="media-gallery__title h4">{{ self.gallery_title }}</h3>
+        {% endif %}
+        {% if self.gallery_description %}
+        <div class="media-gallery__description text-muted small">
+            {{ self.gallery_description|richtext }}
+        </div>
+        {% endif %}
+    </div>
+    {% endif %}
+
+    {# Gallery Grid #}
+    <div class="media-gallery__grid row g-3 row-cols-1 row-cols-md-2 row-cols-lg-3">
+        {% for item in self.media_items %}
+        <div class="media-gallery__col col"
+             data-media-type="{{ item.media_type|default:'image' }}"
+             data-category="{{ item.category|slugify|default:'uncategorized' }}">
+            {% comp "blocks.media.gallery_item" value=item / %}
+        </div>
+        {% endfor %}
+    </div>
+
+</div>

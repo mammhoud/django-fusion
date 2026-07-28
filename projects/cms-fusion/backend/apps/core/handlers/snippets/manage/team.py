@@ -1,6 +1,7 @@
 from django.contrib import messages
 from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
+
 from apps.pages.accounts.models import Team, TeamMembership
 
 from ..base import BaseSnippetViewSet

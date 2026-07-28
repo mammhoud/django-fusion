@@ -7,7 +7,8 @@ All schemas use Pydantic BaseModel per django-bolt conventions.
 
 from __future__ import annotations
 
-from typing import Generic, TypeVar, Any
+from typing import Any, Generic, TypeVar
+
 from pydantic import BaseModel
 
 T = TypeVar("T")

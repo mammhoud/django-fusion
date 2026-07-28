@@ -1,0 +1,244 @@
+{% load i18n %}
+{% load laces %}
+{% load static i18n wagtailcore_tags wagtailimages_tags  %}
+
+<!-- About Section -->
+<section class="about-section position-relative py-5 py-lg-6 overflow-hidden">
+    <!-- Background Elements -->
+    {% if block.value.background_image %}
+        {% image block.value.background_image fill-1920x1080 as bg_img %}
+        <div class="position-absolute top-0 start-0 w-100 h-100 bg-image"
+             style="background-image: url('{{ bg_img.url }}'); opacity: 0.08; background-size: cover; background-position: center;">
+        </div>
+    {% endif %}
+
+    <!-- Background decoration -->
+    <div class="position-absolute top-0 end-0 w-50 h-100 z-0 opacity-10">
+        <div class="w-100 h-100" style="background: radial-gradient(circle, #e6f0ff8c 0%, #ffffff00 90%);"></div>
+    </div>
+
+    <div class="container position-relative z-1">
+        <!-- Main Content Row -->
+        <div class="row g-4 g-lg-5 align-items-center" data-aos="fade-up">
+
+            <!-- Left Column: Gallery/Image Section -->
+            <div class="col-12 col-lg-6">
+                <div class="position-relative" data-aos="fade-right">
+                    {% if block.value.gallery %}
+                        {% comp "content.media.gallery" with block=block.value.gallery / %}
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Column: Content Section -->
+            <div class="col-12 col-lg-6" data-aos="fade-left" data-aos-delay="100">
+                <div class="ps-lg-4">
+                    {% if block.value.welcome_text %}
+                        <div class="mb-3" data-aos="fade-up" data-aos-delay="150">
+                            <span class="badge bg-primary bg-opacity-10 text-primary fs-6 fw-semibold px-4 py-2 rounded-pill">
+                                {{ block.value.welcome_text }}
+                            </span>
+                        </div>
+                    {% endif %}
+
+                    {% if block.value.main_title %}
+                        <h2 class="display-5 fw-bold mb-4" data-aos="fade-up" data-aos-delay="200">
+                            {{ block.value.main_title }}
+                        </h2>
+                    {% endif %}
+
+                    {% if block.value.description %}
+                        <div class="mb-4 text-muted fs-5 lh-lg" data-aos="fade-up" data-aos-delay="250">
+                            {{ block.value.description|richtext }}
+                        </div>
+                    {% endif %}
+
+                    {% if block.value.experience_description %}
+                        <div class="mb-4 text-muted fs-6 lh-lg" data-aos="fade-up" data-aos-delay="300">
+                            {{ block.value.experience_description|richtext }}
+                        </div>
+                    {% endif %}
+
+                    {% if block.value.years_experience and block.value.gallery %}
+                        <p class="fw-bold text-primary mb-4" data-aos="fade-up" data-aos-delay="350">
+                            <i class="fas fa-award me-2"></i>
+                            {{ block.value.years_experience }}+ {% trans "Years of Experience" %}
+                        </p>
+                    {% endif %}
+
+                    <!-- Stats Section -->
+                    {% if block.value.stat1_value or block.value.counters %}
+                    <div class="row g-3 mt-4">
+                        <!-- Home Page Stats -->
+                        {% if block.value.stat1_value %}
+                        <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="400">
+                            <div class="text-center p-3 bg-white shadow-sm rounded-3 border">
+                                <div class="display-6 fw-bold text-primary">{{ block.value.stat1_value }}</div>
+                                <div class="small text-muted">{{ block.value.stat1_label }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if block.value.stat2_value %}
+                        <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="450">
+                            <div class="text-center p-3 bg-white shadow-sm rounded-3 border">
+                                <div class="display-6 fw-bold text-primary">{{ block.value.stat2_value }}</div>
+                                <div class="small text-muted">{{ block.value.stat2_label }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        {% if block.value.stat3_value %}
+                        <div class="col-6 col-md-4" data-aos="fade-up" data-aos-delay="500">
+                            <div class="text-center p-3 bg-white shadow-sm rounded-3 border">
+                                <div class="display-6 fw-bold text-primary">{{ block.value.stat3_value }}</div>
+                                <div class="small text-muted">{{ block.value.stat3_label }}</div>
+                            </div>
+                        </div>
+                        {% endif %}
+
+                        <!-- About Page Counters (Progress Bars) -->
+                        {% if block.value.counters %}
+                            {% for counter in block.value.counters %}
+                            <div class="col-12 col-sm-6" data-aos="fade-up" data-aos-delay="{% widthratio forloop.counter|add:5 1 100 %}">
+                                <div class="progress-box">
+                                    <div class="d-flex justify-content-between mb-2">
+                                        <h6 class="font-small fw-medium mb-0">{{ counter.value.label }}</h6>
+                                        <span class="text-primary fw-bold">{{ counter.value.number }}%</span>
+                                    </div>
+                                    <div class="progress" style="height: 8px;">
+                                        <div class="progress-bar bg-primary"
+                                             role="progressbar"
+                                             style="width: {{ counter.value.number }}%"
+                                             aria-valuenow="{{ counter.value.number }}"
+                                             aria-valuemin="0"
+                                             aria-valuemax="100"
+                                             data-aos="slide-right"
+                                             data-aos-delay="{% widthratio forloop.counter|add:6 1 100 %}">
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        {% endif %}
+                    </div>
+                    {% endif %}
+
+                    <!-- CTA Buttons (Optional) -->
+                    {% if block.value.cta_text or block.value.secondary_cta_text %}
+                    <div class="d-flex flex-wrap gap-3 mt-5" data-aos="fade-up" data-aos-delay="600">
+                        {% if block.value.cta_text %}
+                        <a href="{{ block.value.cta_url|default:'#' }}"
+                           class="btn btn-primary btn-lg px-5 py-3">
+                            {{ block.value.cta_text }}
+                            <i class="fas fa-arrow-right ms-2"></i>
+                        </a>
+                        {% endif %}
+
+                        {% if block.value.secondary_cta_text %}
+                        <a href="{{ block.value.secondary_cta_url|default:'#' }}"
+                           class="btn btn-outline-primary btn-lg px-5 py-3">
+                            {{ block.value.secondary_cta_text }}
+                        </a>
+                        {% endif %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div><!-- end main row -->
+
+        <!-- Services Section (Optional) -->
+        {% if block.value.service_items %}
+        <div class="row mt-5 mt-lg-6 pt-5 border-top">
+            <div class="col-12">
+                <!-- Services Header -->
+                <div class="text-center mb-5" data-aos="fade-up">
+                    <h3 class="display-6 fw-bold mb-3">{% trans "Our Services" %}</h3>
+                    <p class="text-muted lead mb-0">{% trans "Professional solutions for your needs" %}</p>
+                </div>
+
+                <!-- Services Grid -->
+                <div class="row g-4 g-lg-5">
+                    {% for service_block in block.value.service_items %}
+                        {% with service=service_block.value %}
+                        <div class="col-12 col-md-6 col-lg-4"
+                             data-aos="fade-up"
+                             data-aos-delay="{% widthratio forloop.counter0 1 100 %}">
+                            <div class="card border-0 h-100 p-4 p-lg-5 rounded-4 hover-lift bg-white shadow-sm">
+                                <div class="d-flex">
+                                    <div class="flex-shrink-0 me-4">
+                                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 d-flex align-items-center justify-content-center"
+                                             style="width: 70px; height: 70px;">
+                                            <i class="{{ service.icon_class|default:'fas fa-cog' }} fs-3"></i>
+                                        </div>
+                                    </div>
+                                    <div class="flex-grow-1">
+                                        <h5 class="fw-bold mb-2">{{ service.title }}</h5>
+                                        <p class="text-muted mb-0">{{ service.description }}</p>
+
+                                        {% if service.link_text %}
+                                        <a href="{{ service.link_url|default:'#' }}"
+                                           class="btn btn-link text-primary text-decoration-none p-0 mt-3 d-inline-flex align-items-center gap-2">
+                                            <span>{{ service.link_text }}</span>
+                                            <i class="fas fa-arrow-right fs-6 transition-all"></i>
+                                        </a>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endwith %}
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+    </div><!-- end container -->
+</section>
+
+<script>
+// Initialize progress bar animations when in viewport
+document.addEventListener('DOMContentLoaded', function() {
+    const progressBars = document.querySelectorAll('.progress-bar[data-aos="slide-right"]');
+
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const progressBar = entry.target;
+                const width = progressBar.getAttribute('aria-valuenow') + '%';
+
+                // Animate progress bar width
+                progressBar.style.width = width;
+                observer.unobserve(progressBar);
+            }
+        });
+    }, {
+        threshold: 0.5,
+        rootMargin: '0px 0px -100px 0px'
+    });
+
+    progressBars.forEach(bar => {
+        observer.observe(bar);
+    });
+
+    // Initialize GLightbox for video
+    if (typeof GLightbox !== 'undefined') {
+        const lightbox = GLightbox({
+            selector: '.glightbox',
+            touchNavigation: true,
+            loop: true,
+            autoplayVideos: true
+        });
+    }
+
+    // Initialize AOS if available
+    if (typeof AOS !== 'undefined') {
+        AOS.init({
+            duration: 800,
+            once: true,
+            offset: 100
+        });
+    }
+});
+</script>

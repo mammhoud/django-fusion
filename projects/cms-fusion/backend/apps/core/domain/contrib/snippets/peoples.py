@@ -8,12 +8,13 @@ Projects should subclass these and inject their models.
 
 from django.utils.translation import gettext_lazy as _
 from django_filters import BooleanFilter, CharFilter, ChoiceFilter
-from apps.core.domain.models.users.team import Team
-from apps.core.domain.models.users.users import Person
-from apps.core.domain.models.workspace import Workspace
 from wagtail.admin.filters import WagtailFilterSet
 from wagtail.admin.panels import FieldPanel
 from wagtail.snippets.views.snippets import SnippetViewSet
+
+from apps.core.domain.models.users.team import Team
+from apps.core.domain.models.users.users import Person
+from apps.core.domain.models.workspace import Workspace
 
 # =============================================================================
 # FILTERSET CLASSES

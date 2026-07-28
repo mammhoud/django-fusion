@@ -4,10 +4,11 @@ from django.utils.translation import gettext_lazy as _
 
 # Base and reusable block imports
 from django_fusion.models.base import BaseModel as DefaultBase
-from apps.core.domain.blocks.pages.event import EventSectionBlock
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel
 from wagtail.fields import StreamField
+
+from apps.core.domain.blocks.pages.event import EventSectionBlock
 
 # ===================================================================
 # 🗓️ EVENT MODEL

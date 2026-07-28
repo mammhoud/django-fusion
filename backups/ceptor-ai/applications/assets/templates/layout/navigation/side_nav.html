@@ -1,0 +1,59 @@
+{% load i18n static %}
+{# layout/navigation/side_nav.html
+   ─────────────────────────────────────────────────────────────
+   Side navigation for profile / app-internal pages
+   (consumed by layout/apps/profile.html and
+   layout/learning/navigations.html).
+
+   Restored from the partials/header/ backup so it picks up the
+   SCSS classes defined in
+       applications/assets/static/styles/components/_header.scss
+   and theme/theme/header/*.scss.
+
+   The .header-menu wrapper comes from the header SCSS — the
+   sidebar-close / nav / mobile / desktop branches mirror the
+   structure in partials/header_links.html.
+
+   No Unpoly attributes — uses plain href + data-bs-toggle.
+#}
+{# Note: auth + language buttons intentionally NOT included here.
+   They already live in the right-rail of layout/navigation/top_nav.html,
+   and the two templates are always rendered together on the same page
+   (consumed by layout/apps/profile.html and layout/learning/navigations.html).
+   Including them again would render them twice. #}
+<aside id="side-nav" class="side-nav" aria-label="{% trans 'Side navigation' %}">
+
+  {# Mobile close button — shown when the sidebar is open on small screens. #}
+  <button class="sidebar-close d-lg-none" aria-label="{% trans 'Close menu' %}">
+    <i class="fa-solid fa-times" aria-hidden="true"></i>
+  </button>
+
+  <div class="side-nav__inner">
+    <nav class="side-nav__menu">
+      <ul class="side-nav__list list-unstyled mb-0 nav">
+
+        <li class="side-nav__item nav-item">
+          <a href="{% url 'profile:dashboard' %}" class="side-nav__link nav-link">
+            <i class="bi bi-speedometer2 me-2" aria-hidden="true"></i>
+            {% trans "Dashboard" %}
+          </a>
+        </li>
+
+        <li class="side-nav__item nav-item">
+          <a href="{% url 'profile:courses' %}" class="side-nav__link nav-link">
+            <i class="bi bi-book me-2" aria-hidden="true"></i>
+            {% trans "My Courses" %}
+          </a>
+        </li>
+
+        <li class="side-nav__item nav-item">
+          <a href="{% url 'profile:settings' %}" class="side-nav__link nav-link">
+            <i class="bi bi-gear me-2" aria-hidden="true"></i>
+            {% trans "Settings" %}
+          </a>
+        </li>
+
+      </ul>
+    </nav>
+  </div>
+</aside>

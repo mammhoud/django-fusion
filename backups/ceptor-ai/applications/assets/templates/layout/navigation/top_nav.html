@@ -1,0 +1,81 @@
+{% load i18n static %}
+{# layout/navigation/top_nav.html
+   ─────────────────────────────────────────────────────────────
+   Top navigation HEADER bar (site-wide, above main content).
+
+   Restored from the partials/header/ backup so it picks up the
+   SCSS classes defined in
+       applications/assets/static/styles/components/_header.scss
+   and the related theme/theme/header/*.scss files:
+       .header             – outer wrapper
+       .header-logo        – logo block (composed)
+       .header-menu        – main nav (composed)
+       .header-menu-extra  – right-rail cluster (composed)
+       .header-toggle      – hamburger button (composed)
+
+   Composes the canonical partials (logo, header_links, auth_buttons,
+   language_selector, header_toggle).  No Unpoly attributes — uses
+   plain href / data-bs-toggle / standard form submission.
+
+   NOTE: Social links render only when a `global_settings` context
+   variable is present. Sites must register a context processor that
+   provides `global_settings.get_social_links` for the social block
+   to appear; otherwise the right-rail falls back to auth + language
+   + hamburger only.
+#}
+<header class="header">
+  <div class="container-fluid d-flex align-items-center">
+
+    {# ── Logo (left) ──────────────────────────────────────── #}
+    {% comp "partials/logo.html" /%}
+
+    {# ── Main nav (desktop + mobile branches are inside) ──── #}
+    {% comp "partials/header_links.html" /%}
+
+    {# ── Right-rail cluster (header-menu-extra) ───────────── #}
+    <div class="header-menu-extra ms-auto d-flex align-items-center gap-3">
+
+      {# Social links — large screens only. Mirrors
+         partials/header/hyperLinks.html but kept inline so we
+         only render on sites that have global_settings. #}
+      {% if global_settings %}
+      <ul class="list-inline-sm d-none d-xl-inline-flex mb-0 align-items-center">
+        {% for social_link in global_settings.get_social_links %}
+          {% if social_link.platform == "facebook" %}
+          <li class="list-inline-item">
+            <a href="{{ social_link.url }}" target="_blank"
+               rel="noopener noreferrer" class="nav-link p-1"
+               title="{% trans 'Facebook' %}">
+              <i class="bi bi-facebook" aria-hidden="true"></i>
+            </a>
+          </li>
+          {% elif social_link.platform == "twitter" %}
+          <li class="list-inline-item">
+            <a href="{{ social_link.url }}" target="_blank"
+               rel="noopener noreferrer" class="nav-link p-1"
+               title="{% trans 'Twitter' %}">
+              <i class="bi bi-twitter-x" aria-hidden="true"></i>
+            </a>
+          </li>
+          {% elif social_link.platform == "linkedin" %}
+          <li class="list-inline-item">
+            <a href="{{ social_link.url }}" target="_blank"
+               rel="noopener noreferrer" class="nav-link p-1"
+               title="{% trans 'LinkedIn' %}">
+              <i class="bi bi-linkedin" aria-hidden="true"></i>
+            </a>
+          </li>
+          {% endif %}
+        {% endfor %}
+      </ul>
+      {% endif %}
+
+      {# Canonical action cluster — auth + language + toggle.
+         Mirrors partials/header/userActions.html. #}
+      {% comp "partials/auth_buttons.html" /%}
+      {% comp "partials/language_selector.html" /%}
+      {% comp "partials/header_toggle.html" /%}
+
+    </div>
+  </div>
+</header>

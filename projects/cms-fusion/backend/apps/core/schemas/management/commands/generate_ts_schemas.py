@@ -85,11 +85,19 @@ def generate_ts_schemas(output_path: Path) -> str:
     """Generate TypeScript interfaces for all schemas/ Pydantic models."""
 
     from apps.core.schemas import (
-        HealthResponse, ErrorResponse, PaginationMeta,
-        CourseResponse, CategoryResponse,
-        PublicationResponse, TeamMemberResponse,
-        LoginRequest, RegisterRequest, UserResponse, AuthTokenResponse,
-        ContactRequest, ContactResponse,
+        AuthTokenResponse,
+        CategoryResponse,
+        ContactRequest,
+        ContactResponse,
+        CourseResponse,
+        ErrorResponse,
+        HealthResponse,
+        LoginRequest,
+        PaginationMeta,
+        PublicationResponse,
+        RegisterRequest,
+        TeamMemberResponse,
+        UserResponse,
     )
 
     schemas = [

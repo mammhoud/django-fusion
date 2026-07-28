@@ -1,0 +1,799 @@
+// Contact Component Styles
+// Uses master color variables from _master.scss
+//
+// ============================================================
+//   CSS-name taxonomy ownership flipped (see CHANGELOG.md):
+//   * Canonical BEM names `form-*` (defined in this file under
+//     "Form Block (canonical — primary)") are the SOLE source of
+//     truth for form-field styling.
+//   * The legacy BEM cascade `contact-form__*` is preserved ONLY
+//     as a deprecated alias — third-party plugins or un-migrated
+//     callers still resolve correctly while the migration rolls out.
+//   * `form-field` adapter bodies in plugin/ partials do NOT pass
+//     `class_xxx` overrides for input variants, but DO pass the
+//     root modifier `class_field="form-field form-field--{full|...}"`
+//     so layout distinctions (preserved by `field.field_width`)
+//     render correctly.
+// ============================================================
+//
+//   `.form-control` naming convention: this file uses `.form-control`
+//   as the FIELD WRAPPER (flex column container around the actual
+//   input element). It is NOT Bootstrap's `.form-control` Bootstrap
+//   class. Sites that load Bootstrap must either namespace its
+//   `.form-control` (e.g. `.bs-form-control`) or accept that the
+//   canonical wrapper `.form-control` here fully overrides Bootstrap's
+//   `display: block; padding: 0.375rem` defaults.
+
+// ----------------------------------------------------------------
+// Form Block (canonical — primary).
+// Single source of truth for `form-field`, `form-label`,
+// `form-input-group`, `form-input`, `form-textarea`, `form-select`,
+// `form-checkbox-group`, `form-checkbox`, `form-radio-group`,
+// `form-radio-item`, `form-radio`, `form-file`, `form-help-text`,
+// `form-error`, `form-icon`. Each rule also re-published as the
+// deprecated `contact-form__*` cascade below via direct copy — see
+// the Alias section.
+// ----------------------------------------------------------------
+
+%contact-form-shared-base {
+  width: 100%;
+  padding: 0.75rem;
+  border: 1px solid var(--color-input-border);
+  border-radius: 0.375rem;
+  background-color: var(--color-input-bg);
+  color: var(--color-input-text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+
+  &:focus {
+    outline: none;
+    border-color: var(--color-input-border-focus);
+    box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.1);
+  }
+
+  &:disabled {
+    background-color: var(--color-input-disabled-bg);
+    color: var(--color-input-disabled-text);
+    cursor: not-allowed;
+  }
+}
+
+%contact-form-button-shared {
+  background-color: var(--color-button-primary-bg);
+  color: var(--color-button-primary-text);
+  border: 1px solid var(--color-button-primary-border);
+  padding: 0.75rem 1.5rem;
+  border-radius: 0.375rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: var(--color-button-primary-hover);
+  }
+
+  &:active {
+    background-color: var(--color-button-primary-active);
+  }
+}
+
+%contact-form-field-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+
+  // BEM modifiers (`form-field--full` / `--half` / `--quarter`) are
+  // declared at top-level below — NOT nested inside this placeholder.
+  // When the placeholder is `@extend`-ed by both `.form-field` and
+  // `.contact-form__field`, nested `&.form-field--x` selectors compile
+  // to dead `.contact-form__field.form-field--x` rules that never
+  // match (a `.contact-form__field` element never carries a
+  // `.form-field--*` modifier). Top-level modifiers have a single
+  // canonical name and the deprecated cascade aliases via `@extend`.
+}
+
+.form-field {
+  @extend %contact-form-field-shell;
+  margin-bottom: 1.5rem;
+
+  .required {
+    color: var(--color-error);
+    margin-left: 0.25rem;
+  }
+}
+
+// Canonical layout modifiers — declared at top-level so they
+// compile cleanly without dead `.contact-form__field.form-field--x`
+// rules. The adapter body passes `class_field="form-field
+// form-field--{{ field.field_width|default:'full' }}"` so the
+// rendered HTML carries one of the three modifiers here.
+.form-field--full {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.form-field--half {
+  flex: 0 0 50%;
+  max-width: 50%;
+}
+
+.form-field--quarter {
+  flex: 0 0 25%;
+  max-width: 25%;
+}
+
+.form-input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &.has-icon {
+    position: relative;
+
+    .form-icon {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+.form-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: var(--theme-primary);
+    font-size: 1rem;
+  }
+}
+
+.form-label {
+  display: block;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  margin-bottom: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.form-control {
+  display: flex;
+  flex-direction: column;
+}
+
+.form-input {
+  @extend %contact-form-shared-base;
+}
+
+.form-textarea {
+  @extend %contact-form-shared-base;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.form-select {
+  @extend %contact-form-shared-base;
+  appearance: none;
+  background-image: linear-gradient(
+    45deg,
+    transparent 50%,
+    var(--color-text-secondary) 50%
+  ),
+  linear-gradient(
+    135deg,
+    var(--color-text-secondary) 50%,
+    transparent 50%
+  );
+  background-position: calc(100% - 18px) 50%, calc(100% - 13px) 50%;
+  background-size: 5px 5px, 5px 5px;
+  background-repeat: no-repeat;
+  padding-right: 2.25rem;
+}
+
+.form-file {
+  @extend %contact-form-shared-base;
+  padding: 0.5rem;
+  background-color: var(--color-bg-secondary);
+}
+
+.form-checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--theme-primary);
+}
+
+.form-checkbox-label {
+  font-weight: 500;
+  color: var(--color-text-body);
+  cursor: pointer;
+  margin: 0;
+}
+
+.form-radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.form-radio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.form-radio {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--theme-primary);
+}
+
+.form-radio-label {
+  font-weight: 500;
+  color: var(--color-text-body);
+  cursor: pointer;
+  margin: 0;
+}
+
+.form-help-text {
+  font-size: 0.8125rem;
+  color: var(--color-text-secondary);
+  margin-top: 0.25rem;
+}
+
+.form-error {
+  font-size: 0.8125rem;
+  color: var(--color-error);
+  margin-top: 0.25rem;
+  min-height: 1.25rem;
+}
+
+// ----------------------------------------------------------------
+// DEPRECATED alias cascade (`contact-form__*`).
+// Each selector mirrors a `.form-*` block via direct rule copy so
+// any un-migrated caller (third-party plugin, template snippet,
+// older Wagtail block) still resolves. The grep-monorepo rule
+// `grep -rEn "contact-form__" applications/` is expected to
+// shrink over time; once it equals zero, this section can be
+// deleted in the next major.
+// ----------------------------------------------------------------
+
+.contact-form__field {
+  @extend %contact-form-field-shell;
+  margin-bottom: 1.5rem;
+
+  .required {
+    color: var(--color-error);
+    margin-left: 0.25rem;
+  }
+}
+
+.contact-form__field--full {
+  flex: 0 0 100%;
+  max-width: 100%;
+}
+
+.contact-form__field--half {
+  @extend .form-field--half;
+}
+
+.contact-form__field--quarter {
+  @extend .form-field--quarter;
+}
+
+.contact-form__input-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+
+  &.has-icon {
+    position: relative;
+
+    .contact-form__icon {
+      position: absolute;
+      top: 50%;
+      left: 0.75rem;
+      transform: translateY(-50%);
+      pointer-events: none;
+      color: var(--color-text-secondary);
+    }
+  }
+}
+
+.contact-form__icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    color: var(--theme-primary);
+    font-size: 1rem;
+  }
+}
+
+.contact-form__label {
+  @extend .form-label;
+}
+
+.contact-form__input {
+  @extend %contact-form-shared-base;
+}
+
+.contact-form__textarea {
+  @extend %contact-form-shared-base;
+  resize: vertical;
+  min-height: 150px;
+}
+
+.contact-form__select {
+  @extend .form-select;
+}
+
+.contact-form__file {
+  @extend .form-file;
+}
+
+.contact-form__checkbox-group {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-form__checkbox {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--theme-primary);
+}
+
+.contact-form__checkbox-label {
+  font-weight: 500;
+  color: var(--color-text-body);
+  cursor: pointer;
+}
+
+.contact-form__radio-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.contact-form__radio-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.contact-form__radio {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--theme-primary);
+}
+
+.contact-form__radio-label {
+  font-weight: 500;
+  color: var(--color-text-body);
+  cursor: pointer;
+}
+
+.contact-form__help-text {
+  @extend .form-help-text;
+}
+
+.contact-form__error {
+  @extend .form-error;
+}
+
+// ----------------------------------------------------------------
+// Site-level Contact layout (unchanged — these names don't
+// collide with canonical `form-*` taxonomy).
+// ----------------------------------------------------------------
+
+// Contact Map Area
+.contact__map-area {
+  width: 100%;
+  padding: 0;
+  margin: 0;
+
+  .container-fluid {
+    padding: 0;
+  }
+
+  .row {
+    margin: 0;
+  }
+
+  .col-xl-12 {
+    padding: 0;
+  }
+}
+
+// Contact Map
+.contact__map {
+  width: 100%;
+  height: auto;
+  overflow: hidden;
+  border-radius: 0.5rem;
+  box-shadow: var(--theme-shadow-md);
+
+  iframe {
+    width: 100%;
+    height: 500px;
+    border: none;
+    display: block;
+  }
+
+  // Responsive heights
+  @media (max-width: 768px) {
+    iframe {
+      height: 350px;
+    }
+  }
+
+  @media (max-width: 576px) {
+    iframe {
+      height: 250px;
+    }
+  }
+}
+
+// Contact Card Section
+.contact-card-section {
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+  padding: 4rem 0;
+  position: relative;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(var(--theme-bg-primary-rgb), 0.95);
+    z-index: 1;
+  }
+
+  .container {
+    position: relative;
+    z-index: 2;
+  }
+}
+
+// Contact Card Wrapper
+.contact-card-wrapper {
+  display: flex;
+  gap: 3rem;
+  align-items: stretch;
+
+  &.stack {
+    flex-direction: column;
+    gap: 2rem;
+  }
+
+  &.row {
+    flex-direction: row;
+  }
+}
+
+// Contact Info Column
+.contact-info-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  .subtitle {
+    display: block;
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--theme-primary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.5rem;
+  }
+
+  .title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-heading);
+    margin-bottom: 1rem;
+    line-height: 1.2;
+  }
+
+  .description {
+    font-size: 1rem;
+    color: var(--color-text-body);
+    line-height: 1.6;
+    margin-bottom: 1.5rem;
+
+    p {
+      margin-bottom: 1rem;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+}
+
+// Contact Form Column
+.contact-form-col {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  h3 {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--color-text-heading);
+    margin-bottom: 1.5rem;
+  }
+}
+
+// Contact Methods
+.contact-methods {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+// Contact Method Item
+.contact-method {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+
+  &__icon {
+    flex-shrink: 0;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: rgba(var(--theme-primary-rgb), 0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--theme-primary);
+    font-size: 1.25rem;
+  }
+
+  &__content {
+    flex: 1;
+  }
+
+  &__label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--color-text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 0.25rem;
+  }
+
+  &__value {
+    font-size: 1rem;
+    color: var(--color-text-primary);
+    margin: 0;
+  }
+}
+
+// Contact Section
+.contact-section {
+  padding: 6rem 0;
+  background-color: var(--color-bg-primary);
+
+  &__form {
+    background-color: var(--color-card-bg);
+    border: 1px solid var(--color-card-border);
+    border-radius: 0.5rem;
+    padding: 2rem;
+    box-shadow: var(--color-card-shadow);
+
+    form {
+      display: flex;
+      flex-direction: column;
+      gap: 1.5rem;
+    }
+
+    // Defensive tag-selector fallback for any form control rendered
+    // WITHOUT a `.form-*` class (third-party widget fragments).
+    // Specificity is zeroed via `:where()` so this rule resolves at
+    // (0,0,2) — strictly BELOW the canonical `.form-input` /
+    // `.form-textarea` / `.form-select` rules at (0,1,0). Without
+    // `:where()`, the unscoped selector `.contact-section__form form
+    // input` would have specificity (0,1,2), PREEMPT the canonical
+    // cascade, and silently block any new canonical style addition.
+    :where(.contact-section__form form) input,
+    :where(.contact-section__form form) textarea,
+    :where(.contact-section__form form) select {
+      @extend %contact-form-shared-base;
+    }
+
+    textarea {
+      resize: vertical;
+      min-height: 150px;
+    }
+
+    .btn-primary,
+    button[type="submit"] {
+      @extend %contact-form-button-shared;
+    }
+  }
+}
+
+// Contact Info
+.contact-info {
+  background-color: var(--color-bg-secondary);
+  border: 1px solid var(--color-card-border);
+  border-radius: 0.5rem;
+  padding: 1.5rem;
+
+  h4 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    color: var(--color-text-heading);
+    margin-bottom: 1.5rem;
+  }
+}
+
+.contact-info__container {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+.contact-info__item {
+  display: flex;
+  gap: 1rem;
+  align-items: flex-start;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid var(--color-card-border);
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.contact-info__icon {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background-color: rgba(var(--theme-primary-rgb), 0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--theme-primary);
+  font-size: 1.25rem;
+}
+
+.contact-info__content {
+  flex: 1;
+}
+
+.contact-info__label {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: 0.5rem;
+}
+
+.contact-info__value {
+  font-size: 0.95rem;
+  color: var(--color-text-secondary);
+  margin: 0;
+  line-height: 1.5;
+}
+
+.contact-info__hours {
+  margin-top: 2rem;
+  padding-top: 1.5rem;
+  border-top: 1px solid var(--color-card-border);
+
+  &-title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: var(--color-text-heading);
+    margin-bottom: 1rem;
+  }
+
+  &-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+  }
+
+  &-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.875rem;
+    color: var(--color-text-secondary);
+    padding: 0.5rem 0;
+  }
+
+  &-day {
+    font-weight: 500;
+    color: var(--color-text-primary);
+  }
+
+  &-time {
+    color: var(--color-text-secondary);
+  }
+}
+
+// Form Placeholder
+.form-placeholder {
+  background-color: var(--color-bg-secondary);
+  border: 2px dashed var(--color-card-border);
+  border-radius: 0.5rem;
+  padding: 2rem;
+  text-align: center;
+  color: var(--color-text-muted);
+
+  p {
+    margin: 0;
+  }
+}
+
+// Responsive Design
+@media (max-width: 992px) {
+  .contact-card-wrapper {
+    gap: 2rem;
+
+    &.row {
+      flex-direction: column;
+    }
+  }
+
+  .contact-info-col .title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .contact-section {
+    padding: 3rem 0;
+  }
+
+  .contact-section__form {
+    padding: 1.5rem;
+  }
+
+  .contact-info-col .title {
+    font-size: 1.5rem;
+  }
+
+  .contact-card-section {
+    padding: 2rem 0;
+  }
+}
+
+@media (max-width: 576px) {
+  .contact-info-col .title {
+    font-size: 1.25rem;
+  }
+
+  .contact-methods {
+    gap: 1rem;
+  }
+
+  .contact-info__item {
+    gap: 0.75rem;
+  }
+}

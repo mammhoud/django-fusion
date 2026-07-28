@@ -14,8 +14,8 @@ import os
 
 from django.conf import settings
 from django.core.management.base import BaseCommand
-from django_fusion.site.management.commands.base import BaseCommand
 from django.db import transaction
+from django_fusion.site.management.commands.base import BaseCommand
 
 
 class Command(BaseCommand):
@@ -100,6 +100,7 @@ class Command(BaseCommand):
         If no suitable HomePage exists, create one under the root page.
         """
         from wagtail.models import Page
+
         from apps.core.content.models.pages.home import HomePage
 
         WAGTAIL_DEFAULT_TITLE = "Welcome to your new Wagtail site!"

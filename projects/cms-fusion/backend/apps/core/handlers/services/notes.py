@@ -9,6 +9,7 @@ from typing import List
 from django.contrib.auth import get_user_model
 from django.contrib.contenttypes.models import ContentType
 from django.utils import timezone
+
 from apps.pages.accounts.models.profiles.note import Note, SharedNote
 
 User = get_user_model()

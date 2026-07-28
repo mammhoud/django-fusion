@@ -1,0 +1,56 @@
+{# FAQ Section #}
+{# Displays frequently asked questions from Wagtail or static fallback #}
+{% load i18n %}
+
+{% if page.faq_items or not page %}
+<section class="faq">
+  <h3 class="h3">{% trans "Frequently Asked Questions" %}</h3>
+
+  <dl class="faq__list">
+    {% if page.faq_items %}
+      {% for faq in page.faq_items %}
+        <div class="faq__item">
+          <dt class="faq__question" data-faq-question-toggle>
+            {{ faq.value.question }}
+            <i class="ri ri-arrow-down-s-line"></i>
+          </dt>
+          <dd class="faq__answer">
+            {{ faq.value.answer }}
+          </dd>
+        </div>
+      {% endfor %}
+    {% else %}
+      {# Fallback: Static FAQ items #}
+      <div class="faq__item">
+        <dt class="faq__question" data-faq-question-toggle>
+          {% trans "What services do you offer?" %}
+          <i class="ri ri-arrow-down-s-line"></i>
+        </dt>
+        <dd class="faq__answer">
+          {% trans "I offer web design, development, mobile app development, and photography services." %}
+        </dd>
+      </div>
+
+      <div class="faq__item">
+        <dt class="faq__question" data-faq-question-toggle>
+          {% trans "How can I start a project?" %}
+          <i class="ri ri-arrow-down-s-line"></i>
+        </dt>
+        <dd class="faq__answer">
+          {% trans "Simply fill out the contact form above or reach out via email. I'll get back to you within 24 hours." %}
+        </dd>
+      </div>
+
+      <div class="faq__item">
+        <dt class="faq__question" data-faq-question-toggle>
+          {% trans "What is your typical turnaround time?" %}
+          <i class="ri ri-arrow-down-s-line"></i>
+        </dt>
+        <dd class="faq__answer">
+          {% trans "Project timelines vary depending on scope and complexity. Most projects are completed within 2-6 weeks." %}
+        </dd>
+      </div>
+    {% endif %}
+  </dl>
+</section>
+{% endif %}

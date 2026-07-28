@@ -1,0 +1,227 @@
+{% extends "crm/layout/skeleton.html" %}
+{% load i18n static %}
+
+{% block title %}{% trans "New Sale" %}{% endblock %}
+
+{% block content %}
+{# ── Alpine.js POS cart ──────────────────────────────────── #}
+<div x-data="saleCart()" class="row g-4">
+
+  {# ── Left: cart items ─────────────────────────────────── #}
+  <div class="col-lg-8">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">{% trans "Sale Items" %}</span>
+        <button type="button" class="btn btn-sm btn-outline-danger" @click="clearAll">
+          <i class="bi bi-trash me-1"></i>{% trans "Clear All" %}
+        </button>
+      </div>
+      <div class="card-body">
+        {# Item search ─ HTMX POST → fragment response #}
+        <div class="mb-3 position-relative">
+          <label class="form-label fw-semibold">{% trans "Search Item" %}</label>
+          <input type="text"
+                 class="form-control"
+                 placeholder="{% trans 'Type item name…' %}"
+                 hx-post="{% url 'plugins:crm_accounts:get_items' %}"
+                 hx-trigger="keyup changed delay:300ms"
+                 hx-target="#item-results"
+                 hx-swap="innerHTML"
+                 hx-include="[name='csrfmiddlewaretoken']"
+                 name="term"
+                 autocomplete="off">
+          {# CSRF for HTMX POST #}
+          <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+          <div id="item-results" class="position-absolute w-100" style="z-index:10"></div>
+        </div>
+
+        {# Cart table #}
+        <div class="table-responsive">
+          <table class="table table-sm align-middle">
+            <thead class="table-light">
+              <tr>
+                <th>#</th>
+                <th>{% trans "Item" %}</th>
+                <th>{% trans "Price" %}</th>
+                <th style="width:120px">{% trans "Qty" %}</th>
+                <th>{% trans "Subtotal" %}</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              <template x-for="(line, idx) in lines" :key="idx">
+                <tr>
+                  <td x-text="idx + 1"></td>
+                  <td x-text="line.name"></td>
+                  <td x-text="line.price.toFixed(2)"></td>
+                  <td>
+                    <input type="number" class="form-control form-control-sm"
+                           min="1" x-model.number="line.quantity"
+                           @change="recalc">
+                  </td>
+                  <td x-text="(line.price * line.quantity).toFixed(2)"></td>
+                  <td>
+                    <button type="button" class="btn btn-sm btn-ghost text-danger"
+                            @click="remove(idx)">
+                      <i class="bi bi-trash"></i>
+                    </button>
+                  </td>
+                </tr>
+              </template>
+              <tr x-show="lines.length === 0">
+                <td colspan="6" class="text-center text-muted py-4">
+                  <i class="bi bi-cart-x fs-3 d-block mb-1"></i>
+                  {% trans "No items added yet." %}
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# ── Right: totals + customer ─────────────────────────── #}
+  <div class="col-lg-4">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header fw-semibold">{% trans "Sale Summary" %}</div>
+      <div class="card-body">
+        <form id="saleForm" @submit.prevent="submitSale">
+          {% csrf_token %}
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{% trans "Customer" %}</label>
+            <select class="form-select" x-model="customer" required>
+              <option value="" disabled selected>{% trans "Select customer…" %}</option>
+              {% for c in customers %}
+              <option value="{{ c.value }}">{{ c.label }}</option>
+              {% endfor %}
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">{% trans "Tax %" %}</label>
+            <input type="number" class="form-control" min="0" max="100" step="0.01"
+                   x-model.number="taxPct" @input="recalc">
+          </div>
+
+          <hr>
+
+          <div class="d-flex justify-content-between mb-1">
+            <span>{% trans "Subtotal" %}</span>
+            <strong x-text="subTotal.toFixed(2)"></strong>
+          </div>
+          <div class="d-flex justify-content-between mb-1 text-muted small">
+            <span>{% trans "Tax" %}</span>
+            <span x-text="taxAmount.toFixed(2)"></span>
+          </div>
+          <div class="d-flex justify-content-between mb-3 fs-5 fw-bold">
+            <span>{% trans "Grand Total" %}</span>
+            <span x-text="grandTotal.toFixed(2)"></span>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label fw-semibold">{% trans "Amount Paid" %}</label>
+            <input type="number" class="form-control" step="0.01" min="0"
+                   x-model.number="amountPaid" @input="recalc">
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label text-muted">{% trans "Change" %}</label>
+            <input type="text" class="form-control bg-light" readonly
+                   :value="change.toFixed(2)">
+          </div>
+
+          <button type="submit" class="btn btn-success w-100"
+                  :disabled="lines.length === 0 || !customer">
+            <i class="bi bi-check-circle me-2"></i>{% trans "Complete Sale" %}
+          </button>
+        </form>
+
+        {# HTMX feedback swap target #}
+        <div id="sale-feedback" class="mt-3"></div>
+      </div>
+    </div>
+  </div>
+
+</div>
+{% endblock content %}
+
+{% block extra_scripts %}
+<script>
+function saleCart() {
+  return {
+    lines: [],
+    customer: "",
+    taxPct: 0,
+    amountPaid: 0,
+    subTotal: 0,
+    taxAmount: 0,
+    grandTotal: 0,
+    change: 0,
+
+    addItem(item) {
+      const existing = this.lines.find(l => l.id === item.id);
+      if (existing) {
+        existing.quantity += 1;
+      } else {
+        this.lines.push({ id: item.id, name: item.text, price: parseFloat(item.price), quantity: 1 });
+      }
+      this.recalc();
+    },
+
+    remove(idx) {
+      this.lines.splice(idx, 1);
+      this.recalc();
+    },
+
+    clearAll() {
+      if (!confirm("{% trans 'Clear all items from the cart?' %}")) return;
+      this.lines = [];
+      this.recalc();
+    },
+
+    recalc() {
+      this.subTotal = this.lines.reduce((s, l) => s + l.price * l.quantity, 0);
+      this.taxAmount = parseFloat((this.subTotal * (this.taxPct / 100)).toFixed(2));
+      this.grandTotal = parseFloat((this.subTotal + this.taxAmount).toFixed(2));
+      this.change = parseFloat((this.amountPaid - this.grandTotal).toFixed(2));
+    },
+
+    async submitSale() {
+      const payload = {
+        customer: this.customer,
+        sub_total: this.subTotal,
+        grand_total: this.grandTotal,
+        tax_amount: this.taxAmount,
+        tax_percentage: this.taxPct,
+        amount_paid: this.amountPaid,
+        amount_change: this.change,
+        items: this.lines.map(l => ({
+          id: l.id,
+          price: l.price,
+          quantity: l.quantity,
+          total_item: parseFloat((l.price * l.quantity).toFixed(2))
+        }))
+      };
+
+      const csrf = document.querySelector("[name=csrfmiddlewaretoken]").value;
+      const resp = await fetch(window.location.pathname, {
+        method: "POST",
+        headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
+        body: JSON.stringify(payload)
+      });
+      const data = await resp.json();
+      const fb = document.getElementById("sale-feedback");
+      if (resp.ok && data.status === "success") {
+        fb.innerHTML = `<div class="alert alert-success">${data.message}</div>`;
+        this.lines = []; this.amountPaid = 0; this.customer = ""; this.recalc();
+        if (data.redirect) setTimeout(() => window.location = data.redirect, 1200);
+      } else {
+        fb.innerHTML = `<div class="alert alert-danger">${data.message || "{% trans 'Error processing sale.' %}"}</div>`;
+      }
+    }
+  };
+}
+</script>
+{% endblock extra_scripts %}

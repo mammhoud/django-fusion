@@ -1,0 +1,13 @@
+{% extends "base_auth.html" %}
+{% load i18n static %}
+
+{% block auth_content %}
+<section class="fragment--form">
+  <section class="auth__card card card--form text-center">
+    <div class="auth__logo mb-4"><a href="/"><img src="{% static 'images/logo.png' %}" style="max-height:60px" alt="Logo"></a></div>
+    <h2 class="auth__form-title">{% trans "Verify Your Email Address" %}</h2>
+    <p>{% trans "You must verify your email address before accessing this page." %}</p>
+    <a href="{% url 'account_email' %}" class="btn btn-primary" hx-get="{% url 'account_email' %}" hx-target=".fragment--form" hx-swap="innerHTML">{% trans "Manage Emails" %}</a>
+  </section>
+</section>
+{% endblock auth_content %}

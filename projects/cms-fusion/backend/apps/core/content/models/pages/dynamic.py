@@ -15,8 +15,7 @@ from wagtail.fields import StreamField
 from wagtail.models import Page
 from wagtail.rich_text import RichText
 
-from apps.core.content.models.blocks.cms import PAGE_CONTENT_BLOCKS, DASHBOARD_CONTENT_BLOCKS
-
+from apps.core.content.models.blocks.cms import DASHBOARD_CONTENT_BLOCKS, PAGE_CONTENT_BLOCKS
 
 # ═══════════════════════════════════════════════════════════════════
 # Page mixin — shared fields for SEO and content blocks

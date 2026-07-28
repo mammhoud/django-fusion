@@ -1,0 +1,88 @@
+{# Project Detail Partial — Loaded into bootbox modal via HTMX #}
+{% load i18n wagtailimages_tags wagtailcore_tags %}
+
+<div class="preview-modal__content">
+
+  {# Featured Image #}
+  {% if project.image %}
+    <div class="preview-modal__image">
+      {% image project.image width-800 as img %}
+      <img src="{{ img.url }}" alt="{{ project.title }}" loading="lazy">
+    </div>
+  {% endif %}
+
+  <div class="preview-modal__body">
+
+    {# Meta row #}
+    <div class="preview-modal__meta">
+      <span class="preview-modal__badge">{{ project.category }}</span>
+      {% if project.date_completed %}
+        <span class="preview-modal__date text-muted ms-2">
+          <i class="ri-calendar-line"></i> {{ project.date_completed|date:"F Y" }}
+        </span>
+      {% endif %}
+    </div>
+
+    {# Title #}
+    <h2 class="preview-modal__title">{{ project.title }}</h2>
+
+    {# Description #}
+    {% if project.description %}
+      <p class="preview-modal__intro lead">{{ project.description }}</p>
+    {% endif %}
+
+    {# Rich Content #}
+    {% if project.body %}
+      <div class="preview-modal__rich-body">
+        {{ project.body|richtext }}
+      </div>
+    {% endif %}
+
+    {# Tools & Technologies #}
+    {% if project.get_tools_list %}
+      <div class="preview-modal__tools mt-4">
+        <h6 class="preview-modal__section-label text-uppercase small fw-bold text-muted mb-2">{% trans "Tools & Technologies" %}</h6>
+        <div class="preview-modal__tags">
+          {% for tool in project.get_tools_list %}
+            <span class="preview-modal__tag preview-modal__tag--tool">{{ tool }}</span>
+          {% endfor %}
+        </div>
+      </div>
+    {% endif %}
+
+    {# Tags #}
+    {% if project.tags.exists %}
+      <div class="preview-modal__tags mt-3">
+        {% for tag in project.tags.all %}
+          <span class="preview-modal__tag"
+                {% if tag.color %}style="border-left: 3px solid {{ tag.color }}"{% endif %}>
+            {% if tag.icon %}<i class="{{ tag.icon }} me-1"></i>{% endif %}
+            {{ tag.name }}
+          </span>
+        {% endfor %}
+      </div>
+    {% endif %}
+
+    {# Video #}
+    {% if project.video_url %}
+      <div class="preview-modal__video mt-4">
+        <div class="ratio ratio-16x9 rounded overflow-hidden shadow-sm">
+          <iframe src="{{ project.video_url }}"
+                  title="{% trans 'Project Video' %}"
+                  allowfullscreen
+                  loading="lazy"></iframe>
+        </div>
+      </div>
+    {% endif %}
+
+    {% if project.project_url %}
+      <div class="preview-modal__references mt-4">
+        <h6 class="preview-modal__section-label text-uppercase small fw-bold text-muted mb-2">{% trans "References" %}</h6>
+        <a href="{{ project.project_url }}" class="preview-modal__link" target="_blank" rel="noopener noreferrer">
+          <i class="ri-external-link-line me-1"></i>{{ project.project_url }}
+        </a>
+      </div>
+    {% endif %}
+
+  </div>{# /.preview-modal__body #}
+</div>{# /.preview-modal__content #}

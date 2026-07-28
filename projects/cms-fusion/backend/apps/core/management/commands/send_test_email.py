@@ -9,6 +9,7 @@ import sys
 
 from django.core.management.base import BaseCommand
 from django_fusion.site.management.commands.base import BaseCommand
+
 from apps.pages.accounts.emails import (
     _get_sender_accounts,
     _send_via_smtp,

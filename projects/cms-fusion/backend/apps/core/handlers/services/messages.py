@@ -225,6 +225,7 @@ class MessageService:
         """
         from django.db.models import Count
         from django.db.models.functions import TruncDate
+
         from apps.pages.accounts.models import Message
 
         end_date = timezone.now()

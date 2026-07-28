@@ -1,10 +1,10 @@
 # type: ignore NOQA
-from . import views
 from django.urls import path
 
-from .views.auth import AllauthLoginView, AllauthSignupView
+from . import views
 from .apps import AccountsConfig
 from .views.allauth import AllauthLoginView, AllauthSignupView
+from .views.auth import AllauthLoginView, AllauthSignupView
 
 app_name = AccountsConfig.label
 

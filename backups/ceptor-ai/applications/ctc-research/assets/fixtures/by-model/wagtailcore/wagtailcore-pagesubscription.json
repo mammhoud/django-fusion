@@ -1,0 +1,92 @@
+[
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 1,
+    "fields": {
+      "user": 1,
+      "page": 3,
+      "comment_notifications": true
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 2,
+    "fields": {
+      "user": 1,
+      "page": 4,
+      "comment_notifications": true
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 3,
+    "fields": {
+      "user": 1,
+      "page": 5,
+      "comment_notifications": true
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 4,
+    "fields": {
+      "user": 1,
+      "page": 6,
+      "comment_notifications": true
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 5,
+    "fields": {
+      "user": 1,
+      "page": 7,
+      "comment_notifications": true
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 6,
+    "fields": {
+      "user": 1,
+      "page": 23,
+      "comment_notifications": false
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 7,
+    "fields": {
+      "user": 1,
+      "page": 8,
+      "comment_notifications": false
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 8,
+    "fields": {
+      "user": 1,
+      "page": 9,
+      "comment_notifications": false
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 9,
+    "fields": {
+      "user": 1,
+      "page": 11,
+      "comment_notifications": false
+    }
+  },
+  {
+    "model": "wagtailcore.pagesubscription",
+    "pk": 10,
+    "fields": {
+      "user": 1,
+      "page": 10,
+      "comment_notifications": false
+    }
+  }
+]

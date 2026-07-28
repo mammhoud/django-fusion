@@ -1,0 +1,719 @@
+.notification-system {
+    /* Enhanced notification colors using master.css palette */
+    --notification-success-bg: rgba(var(--color-alert-success-bg-rgb), 0.98);
+    --notification-success-text: var(--color-alert-success-text);
+    --notification-success-border: rgba(var(--color-alert-success-text-rgb), 0.4);
+    --notification-success-gradient: linear-gradient(135deg, 
+        rgba(var(--color-success-rgb), 0.9) 0%, 
+        rgba(var(--color-success-dark-rgb), 0.9) 100%);
+    --notification-success-glow: 0 0 20px rgba(var(--color-success-rgb), 0.3);
+    
+    --notification-error-bg: rgba(var(--color-alert-error-bg-rgb), 0.98);
+    --notification-error-text: var(--color-alert-error-text);
+    --notification-error-border: rgba(var(--color-alert-error-text-rgb), 0.4);
+    --notification-error-gradient: linear-gradient(135deg, 
+        rgba(var(--color-error-rgb), 0.9) 0%, 
+        rgba(var(--color-error-dark-rgb), 0.9) 100%);
+    --notification-error-glow: 0 0 20px rgba(var(--color-error-rgb), 0.3);
+    
+    --notification-warning-bg: rgba(var(--color-alert-warning-bg-rgb), 0.98);
+    --notification-warning-text: var(--color-alert-warning-text);
+    --notification-warning-border: rgba(var(--color-alert-warning-text-rgb), 0.4);
+    --notification-warning-gradient: linear-gradient(135deg, 
+        rgba(var(--color-warning-rgb), 0.9) 0%, 
+        rgba(var(--color-warning-light-rgb), 0.9) 100%);
+    --notification-warning-glow: 0 0 20px rgba(var(--color-warning-rgb), 0.3);
+    
+    --notification-info-bg: rgba(var(--color-alert-info-bg-rgb), 0.98);
+    --notification-info-text: var(--color-alert-info-text);
+    --notification-info-border: rgba(var(--color-alert-info-text-rgb), 0.4);
+    --notification-info-gradient: linear-gradient(135deg, 
+        rgba(var(--color-info-rgb), 0.9) 0%, 
+        rgba(var(--color-info-light-rgb), 0.9) 100%);
+    --notification-info-glow: 0 0 20px rgba(var(--color-info-rgb), 0.3);
+    
+    /* Default notification styling */
+    --notification-default-bg: rgba(var(--theme-surface-elevated-rgb), 0.98);
+    --notification-default-text: var(--theme-text-primary);
+    --notification-default-border: rgba(var(--theme-border-accent-rgb), 0.3);
+    --notification-default-gradient: linear-gradient(135deg, 
+        rgba(var(--theme-primary-rgb), 0.1) 0%, 
+        rgba(var(--theme-surface-rgb), 0.95) 100%);
+    --notification-default-glow: 0 0 15px rgba(var(--theme-primary-rgb), 0.2);
+}
+
+/* Toast Styling - Enhanced */
+.notification-system__toast .toast {
+    border: 1px solid rgba(var(--theme-border-accent-rgb), 0.2);
+    border-left-width: 6px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 
+        var(--theme-shadow-xl),
+        0 8px 32px rgba(0, 0, 0, 0.1),
+        var(--notification-default-glow);
+    backdrop-filter: blur(16px) saturate(200%);
+    -webkit-backdrop-filter: blur(16px) saturate(200%);
+    max-width: 420px;
+    min-width: 320px;
+    background: var(--notification-default-gradient);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    transform-origin: top right;
+    animation: toastSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes toastSlideIn {
+    from {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(0) scale(1);
+    }
+}
+
+.notification-system__toast .toast:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        var(--theme-shadow-2xl),
+        0 12px 40px rgba(0, 0, 0, 0.15),
+        var(--notification-default-glow);
+    border-color: rgba(var(--theme-border-accent-rgb), 0.4);
+}
+
+.notification-system__toast .toast__header {
+    border-bottom: 1px solid rgba(var(--theme-border-primary-rgb), 0.15);
+    padding: 1rem 1.5rem;
+    background: linear-gradient(135deg, 
+        rgba(var(--theme-primary-rgb), 0.95) 0%,
+        rgba(var(--theme-primary-dark-rgb), 0.95) 100%);
+    position: relative;
+    overflow: hidden;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+}
+
+.notification-system__toast .toast__header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.2) 0%,
+        rgba(255, 255, 255, 0.05) 50%,
+        rgba(0, 0, 0, 0.05) 100%
+    );
+    pointer-events: none;
+}
+
+/* Header variants */
+.notification-system__toast .toast__header.bg-success {
+    background: var(--notification-success-gradient);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notification-system__toast .toast__header.bg-error,
+.notification-system__toast .toast__header.bg-danger {
+    background: var(--notification-error-gradient);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notification-system__toast .toast__header.bg-warning {
+    background: var(--notification-warning-gradient);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notification-system__toast .toast__header.bg-info {
+    background: var(--notification-info-gradient);
+    box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2);
+}
+
+.notification-system__toast .toast__body {
+    padding: 1.5rem;
+    color: var(--theme-text-primary);
+    background: transparent;
+    line-height: 1.6;
+}
+
+.notification-system__toast .toast__message {
+    font-size: 0.9375rem;
+    margin-bottom: 0.5rem;
+    color: var(--theme-text-secondary);
+}
+
+.notification-system__toast .toast__timestamp {
+    font-size: 0.8125rem;
+    color: var(--theme-text-tertiary);
+    opacity: 0.8;
+}
+
+.notification-system__toast .toast__actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+    margin-top: 1.25rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--theme-border-primary);
+}
+
+.notification-system__toast .btn {
+    padding: 0.5rem 1.25rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Alert Styling - Enhanced */
+.notification-system__alert.alert {
+    border: 2px solid;
+    border-left-width: 6px;
+    border-radius: 12px;
+    padding: 1.25rem 1.5rem;
+    background: var(--notification-default-gradient);
+    backdrop-filter: blur(12px) saturate(180%);
+    -webkit-backdrop-filter: blur(12px) saturate(180%);
+    box-shadow: var(--theme-shadow-lg);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    margin-bottom: 1rem;
+    animation: alertPulse 0.6s ease;
+}
+
+@keyframes alertPulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.02); }
+}
+
+.notification-system__alert.alert:hover {
+    transform: translateX(6px) translateY(-2px);
+    box-shadow: 
+        var(--theme-shadow-xl),
+        0 8px 25px rgba(0, 0, 0, 0.1);
+}
+
+/* Alert variants */
+.notification-system__alert.alert-success {
+    background: var(--notification-success-bg);
+    color: var(--notification-success-text);
+    border-color: rgba(var(--color-alert-success-text-rgb), 0.5);
+    box-shadow: var(--theme-shadow-lg), var(--notification-success-glow);
+}
+
+.notification-system__alert.alert-error,
+.notification-system__alert.alert-danger {
+    background: var(--notification-error-bg);
+    color: var(--notification-error-text);
+    border-color: rgba(var(--color-alert-error-text-rgb), 0.5);
+    box-shadow: var(--theme-shadow-lg), var(--notification-error-glow);
+}
+
+.notification-system__alert.alert-warning {
+    background: var(--notification-warning-bg);
+    color: var(--notification-warning-text);
+    border-color: rgba(var(--color-alert-warning-text-rgb), 0.5);
+    box-shadow: var(--theme-shadow-lg), var(--notification-warning-glow);
+}
+
+.notification-system__alert.alert-info {
+    background: var(--notification-info-bg);
+    color: var(--notification-info-text);
+    border-color: rgba(var(--color-alert-info-text-rgb), 0.5);
+    box-shadow: var(--theme-shadow-lg), var(--notification-info-glow);
+}
+
+.notification-system__alert .alert__icon {
+    font-size: 1.5rem;
+    margin-right: 0.75rem;
+    opacity: 0.95;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.notification-system__alert .alert__badge {
+    font-size: 0.6875rem;
+    padding: 0.25em 0.75em;
+    background: rgba(255, 255, 255, 0.25);
+    color: inherit;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 12px;
+    backdrop-filter: blur(4px);
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+.notification-system__alert .alert__details-summary {
+    font-size: 0.875rem;
+    text-decoration: none;
+    color: inherit;
+    opacity: 0.9;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    padding: 0.375rem 0.875rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    font-weight: 500;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    margin-top: 0.75rem;
+}
+
+.notification-system__alert .alert__details-summary:hover {
+    opacity: 1;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-1px);
+}
+
+/* SSE Indicator - Enhanced */
+.notification-system__sse-indicator {
+    position: fixed;
+    bottom: 28px;
+    right: 28px;
+    z-index: 1050;
+    display: flex;
+    align-items: center;
+    gap: 0.875rem;
+    padding: 0.875rem 1.5rem;
+    background: linear-gradient(135deg, 
+        rgba(var(--theme-surface-elevated-rgb), 0.95) 0%,
+        rgba(var(--theme-surface-rgb), 0.9) 100%);
+    border: 1px solid rgba(var(--theme-border-accent-rgb), 0.3);
+    border-radius: 50px;
+    box-shadow: 
+        var(--theme-shadow-lg),
+        0 8px 25px rgba(0, 0, 0, 0.1);
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: var(--theme-text-primary);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    cursor: pointer;
+    min-width: 180px;
+}
+
+.notification-system__sse-indicator:hover {
+    transform: translateY(-3px) scale(1.05);
+    box-shadow: 
+        var(--theme-shadow-xl),
+        0 12px 35px rgba(0, 0, 0, 0.15);
+    border-color: rgba(var(--theme-border-accent-rgb), 0.5);
+    background: linear-gradient(135deg, 
+        rgba(var(--theme-surface-elevated-rgb), 0.98) 0%,
+        rgba(var(--theme-surface-rgb), 0.95) 100%);
+}
+
+.notification-system__sse-indicator .sse-indicator__dot {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, var(--color-success), var(--color-success-light));
+    animation: pulseEnhanced 2s infinite cubic-bezier(0.4, 0, 0.6, 1);
+    box-shadow: 
+        0 0 0 3px rgba(var(--color-success-rgb), 0.25),
+        0 0 15px rgba(var(--color-success-rgb), 0.5);
+    position: relative;
+}
+
+.notification-system__sse-indicator .sse-indicator__dot::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 4px;
+    height: 4px;
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 50%;
+    filter: blur(1px);
+}
+
+@keyframes pulseEnhanced {
+    0% { 
+        opacity: 0.8;
+        transform: scale(0.95);
+        box-shadow: 
+            0 0 0 3px rgba(var(--color-success-rgb), 0.25),
+            0 0 10px rgba(var(--color-success-rgb), 0.4);
+    }
+    50% { 
+        opacity: 1;
+        transform: scale(1.1);
+        box-shadow: 
+            0 0 0 6px rgba(var(--color-success-rgb), 0.4),
+            0 0 25px rgba(var(--color-success-rgb), 0.7);
+    }
+    100% { 
+        opacity: 0.8;
+        transform: scale(0.95);
+        box-shadow: 
+            0 0 0 3px rgba(var(--color-success-rgb), 0.25),
+            0 0 10px rgba(var(--color-success-rgb), 0.4);
+    }
+}
+
+/* Django Messages - Enhanced */
+.notification-system__django-messages {
+    position: fixed;
+    top: 28px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1060;
+    min-width: 380px;
+    max-width: 580px;
+    animation: messagesSlideDown 0.5s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes messagesSlideDown {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0);
+    }
+}
+
+.notification-system__message.django-message {
+    margin-bottom: 1rem;
+    padding: 1.25rem 1.5rem;
+    border-radius: 12px;
+    border: 2px solid;
+    border-left-width: 6px;
+    animation: messageSlideIn 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    backdrop-filter: blur(16px) saturate(200%);
+    -webkit-backdrop-filter: blur(16px) saturate(200%);
+    box-shadow: 
+        var(--theme-shadow-lg),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    transition: all 0.3s ease;
+}
+
+.notification-system__message.django-message:hover {
+    transform: translateY(-2px);
+    box-shadow: 
+        var(--theme-shadow-xl),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+}
+
+/* Django message variants */
+.notification-system__message.django-message--success {
+    background: var(--notification-success-bg);
+    color: var(--notification-success-text);
+    border-color: rgba(var(--color-alert-success-text-rgb), 0.5);
+    box-shadow: 
+        var(--theme-shadow-lg),
+        var(--notification-success-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.notification-system__message.django-message--error {
+    background: var(--notification-error-bg);
+    color: var(--notification-error-text);
+    border-color: rgba(var(--color-alert-error-text-rgb), 0.5);
+    box-shadow: 
+        var(--theme-shadow-lg),
+        var(--notification-error-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.notification-system__message.django-message--warning {
+    background: var(--notification-warning-bg);
+    color: var(--notification-warning-text);
+    border-color: rgba(var(--color-alert-warning-text-rgb), 0.5);
+    box-shadow: 
+        var(--theme-shadow-lg),
+        var(--notification-warning-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.notification-system__message.django-message--info {
+    background: var(--notification-info-bg);
+    color: var(--notification-info-text);
+    border-color: rgba(var(--color-alert-info-text-rgb), 0.5);
+    box-shadow: 
+        var(--theme-shadow-lg),
+        var(--notification-info-glow),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+}
+
+.django-message__content {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.django-message__icon {
+    flex-shrink: 0;
+    font-size: 1.5rem;
+    opacity: 0.95;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.1));
+}
+
+.django-message__text {
+    flex: 1;
+    line-height: 1.6;
+    font-size: 0.9375rem;
+}
+
+/* Enhanced Glass Morphism Effect */
+.notification-system__toast .toast,
+.notification-system__alert.alert,
+.notification-system__message.django-message,
+.notification-system__sse-indicator {
+    background: linear-gradient(
+        135deg,
+        rgba(var(--theme-surface-elevated-rgb), 0.95) 0%,
+        rgba(var(--theme-surface-rgb), 0.92) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    box-shadow: 
+        var(--theme-shadow-xl),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.08);
+}
+
+/* Dark theme adjustments - Enhanced */
+[data-theme="dark"] .notification-system__toast .toast,
+[data-theme="dark"] .notification-system__alert.alert,
+[data-theme="dark"] .notification-system__message.django-message,
+[data-theme="dark"] .notification-system__sse-indicator,
+.dark-theme .notification-system__toast .toast,
+.dark-theme .notification-system__alert.alert,
+.dark-theme .notification-system__message.django-message,
+.dark-theme .notification-system__sse-indicator {
+    background: linear-gradient(
+        135deg,
+        rgba(var(--theme-surface-elevated-rgb), 0.95) 0%,
+        rgba(var(--theme-surface-rgb), 0.92) 100%
+    );
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 
+        var(--theme-shadow-xl),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08),
+        inset 0 -1px 0 rgba(0, 0, 0, 0.12);
+}
+
+[data-theme="dark"] .notification-system__toast .toast:hover,
+[data-theme="dark"] .notification-system__alert.alert:hover,
+[data-theme="dark"] .notification-system__message.django-message:hover,
+[data-theme="dark"] .notification-system__sse-indicator:hover,
+.dark-theme .notification-system__toast .toast:hover,
+.dark-theme .notification-system__alert.alert:hover,
+.dark-theme .notification-system__message.django-message:hover,
+.dark-theme .notification-system__sse-indicator:hover {
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 
+        var(--theme-shadow-2xl),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1),
+        0 0 30px rgba(var(--theme-primary-rgb), 0.2);
+}
+
+/* Enhanced close buttons */
+.notification-system__alert .btn-close,
+.notification-system__toast .btn-close {
+    opacity: 0.7;
+    transition: all 0.3s ease;
+    filter: brightness(0.8);
+    width: 1.5rem;
+    height: 1.5rem;
+    background-size: 0.75rem;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    padding: 0.375rem;
+}
+
+.notification-system__alert .btn-close:hover,
+.notification-system__toast .btn-close:hover {
+    opacity: 1;
+    filter: brightness(1);
+    background-color: rgba(255, 255, 255, 0.2);
+    transform: rotate(90deg);
+}
+
+[data-theme="dark"] .notification-system__alert .btn-close,
+[data-theme="dark"] .notification-system__toast .btn-close,
+.dark-theme .notification-system__alert .btn-close,
+.dark-theme .notification-system__toast .btn-close {
+    filter: invert(1) brightness(1.2);
+    background-color: rgba(255, 255, 255, 0.15);
+}
+
+[data-theme="dark"] .notification-system__alert .btn-close:hover,
+[data-theme="dark"] .notification-system__toast .btn-close:hover,
+.dark-theme .notification-system__alert .btn-close:hover,
+.dark-theme .notification-system__toast .btn-close:hover {
+    background-color: rgba(255, 255, 255, 0.25);
+}
+
+/* Progress bar for timed notifications */
+.notification-timer {
+    height: 3px;
+    background: linear-gradient(90deg, 
+        var(--theme-primary) 0%, 
+        var(--theme-accent) 100%);
+    border-radius: 0 0 3px 3px;
+    animation: timerProgress linear forwards;
+    transform-origin: left;
+}
+
+@keyframes timerProgress {
+    from { transform: scaleX(1); }
+    to { transform: scaleX(0); }
+}
+
+/* Stacking animations */
+.notification-stack {
+    animation: stackSlide 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes stackSlide {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Exit animations */
+.notification-exit {
+    animation: exitSlide 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes exitSlide {
+    to {
+        opacity: 0;
+        transform: translateX(100%) scale(0.9);
+    }
+}
+
+/* Responsive adjustments - Enhanced */
+@media (max-width: 768px) {
+    .notification-system__toasts {
+        top: 16px !important;
+        right: 16px !important;
+        left: 16px !important;
+        max-width: none !important;
+        padding: 0.75rem !important;
+    }
+    
+    .notification-system__toast .toast {
+        max-width: 100%;
+        border-radius: 10px;
+        min-width: auto;
+        margin-bottom: 0.75rem;
+    }
+    
+    .notification-system__django-messages {
+        left: 16px;
+        right: 16px;
+        transform: none;
+        max-width: none;
+        min-width: auto;
+        top: 16px;
+    }
+    
+    .notification-system__message.django-message {
+        padding: 1rem 1.25rem;
+        border-radius: 10px;
+    }
+    
+    .notification-system__sse-indicator {
+        bottom: 16px;
+        right: 16px;
+        padding: 0.75rem 1.25rem;
+        font-size: 0.8125rem;
+        min-width: 160px;
+    }
+    
+    .django-message__content {
+        gap: 0.75rem;
+    }
+    
+    .django-message__icon {
+        font-size: 1.25rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .notification-system__toast .toast__actions {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .notification-system__toast .btn {
+        width: 100%;
+        justify-content: center;
+    }
+    
+    .notification-system__sse-indicator {
+        width: calc(100% - 32px);
+        justify-content: center;
+        border-radius: 12px;
+    }
+}
+
+/* High contrast mode support - Enhanced */
+@media (prefers-contrast: high) {
+    .notification-system__toast .toast,
+    .notification-system__alert.alert,
+    .notification-system__message.django-message,
+    .notification-system__sse-indicator {
+        background: var(--theme-surface) !important;
+        border: 2px solid var(--theme-border-primary) !important;
+        backdrop-filter: none !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+    }
+    
+    .notification-system__alert .alert__icon,
+    .django-message__icon {
+        filter: none !important;
+    }
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
+    .notification-system__toast .toast,
+    .notification-system__alert.alert,
+    .notification-system__message.django-message,
+    .notification-system__sse-indicator,
+    .notification-system__sse-indicator .sse-indicator__dot,
+    .notification-timer,
+    .btn-close {
+        transition: none !important;
+        animation: none !important;
+    }
+    
+    .notification-system__toast .toast:hover,
+    .notification-system__alert.alert:hover,
+    .notification-system__message.django-message:hover,
+    .notification-system__sse-indicator:hover {
+        transform: none !important;
+    }
+}
+
+/* Accessibility improvements */
+.notification-system__alert .alert__details-summary:focus,
+.notification-system__toast .btn:focus,
+.btn-close:focus {
+    outline: 2px solid var(--theme-primary);
+    outline-offset: 2px;
+    box-shadow: 0 0 0 3px rgba(var(--theme-primary-rgb), 0.3);
+}
+
+/* Print styles */
+@media print {
+    .notification-system__toasts,
+    .notification-system__django-messages,
+    .notification-system__sse-indicator {
+        display: none !important;
+    }
+}

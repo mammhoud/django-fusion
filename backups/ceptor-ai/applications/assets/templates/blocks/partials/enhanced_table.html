@@ -1,0 +1,85 @@
+{% load i18n %}
+{% load wagtailcore_tags wagtailimages_tags i18n components_field %}
+{# Enhanced Table Block Template - Wagtail Bakery Style #}
+
+<div id="{{ block_id }}" class="enhanced-table {{ block_classes }} {% if self.table_style == 'responsive' %}table-responsive{% endif %}"
+     {% if self.data_attributes %}{{ self.data_attributes|safe }}{% endif %}
+     data-table-config='{{ self|get_table_config|default:"{}" }}'>
+
+    {% render_unhandled_fields unhandled_fields %}
+
+
+    {# Caption #}
+    {% if self.caption and self.caption_position == 'top' %}
+    <caption class="enhanced-table__caption text-muted mb-2">{{ self.caption }}</caption>
+    {% endif %}
+
+    {# Search Bar (if enabled) #}
+    {% if self.searchable %}
+    <div class="enhanced-table__search mb-3">
+        <div class="input-group">
+            <span class="input-group-text"><i class="bi bi-search"></i></span>
+            <input type="text"
+                   class="form-control"
+                   placeholder="{% trans 'Search table...' %}"
+                   data-table-search>
+        </div>
+    </div>
+    {% endif %}
+
+    {# Export Buttons (if enabled) #}
+    {% if self.exportable and self.export_formats %}
+    <div class="enhanced-table__export mb-3">
+        <div class="btn-group" role="group">
+            {% for format in self.export_formats %}
+            <button type="button" class="btn btn-sm btn-outline-secondary" data-export="{{ format }}">
+                {% if format == 'csv' %}
+                <i class="bi bi-filetype-csv me-1"></i>CSV
+                {% elif format == 'excel' %}
+                <i class="bi bi-file-earmark-excel me-1"></i>Excel
+                {% elif format == 'pdf' %}
+                <i class="bi bi-filetype-pdf me-1"></i>PDF
+                {% elif format == 'print' %}
+                <i class="bi bi-printer me-1"></i>Print
+                {% endif %}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Table #}
+    <table class="table {{ self|get_table_classes|default:'table' }} {% if self.fixed_header %}table-fixed-header{% endif %}">
+        {{ self.table }}
+    </table>
+
+    {# Pagination (if enabled) #}
+    {% if self.pagination %}
+    <div class="enhanced-table__pagination mt-3">
+        <nav aria-label="{% trans 'Table pagination' %}">
+            <ul class="pagination justify-content-center mb-0" data-table-pagination>
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" data-page="prev">
+                        <i class="bi bi-chevron-left"></i>
+                    </a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#" data-page="1">1</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#" data-page="next">
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                </li>
+            </ul>
+        </nav>
+        <div class="text-center text-muted small mt-2">
+            {% trans "Showing" %} <span data-table-showing>1-{{ self.rows_per_page }}</span> {% trans "of" %} <span data-table-total>0</span> {% trans "entries" %}
+        </div>
+    </div>
+    {% endif %}
+
+    {# Bottom Caption #}
+    {% if self.caption and self.caption_position == 'bottom' %}
+    <caption class="enhanced-table__caption text-muted mt-2">{{ self.caption }}</caption>
+    {% endif %}
+
+</div>

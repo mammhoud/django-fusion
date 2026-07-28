@@ -1,0 +1,20 @@
+{% load i18n laces laces %}
+<main>
+    <!-- Page Title Section -->
+    {% comp "services/includes/page_title.html" /%}
+    
+    <!-- Main Content Sections -->
+    {% for block in page.body %}
+        {% if block.block_type == 'services_section' %}
+            {% comp "services/includes/services_section.html" /%}
+        {% elif block.block_type == 'counter_section' %}
+            {% comp "services/includes/counter_section.html" /%}
+        {% elif block.block_type == 'testimonial_section' %}
+            {% comp "services/includes/testimonial_section.html" /%}
+        {% elif block.block_type == 'pricing_section' %}
+            {% comp "services/includes/pricing_section.html" /%}
+        {% elif block.block_type == 'clients' %}
+            {% comp "services/includes/clients_section.html" /%}
+        {% endif %}
+    {% endfor %}
+</main>

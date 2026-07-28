@@ -100,8 +100,9 @@ class Command(BaseCommand):
 
     def _get_or_create_courses_page(self, options):
         """Find the existing CoursesPage or create one under the HomePage."""
-        from apps.pages.lms.models.courses.index import CoursesPage
         from wagtail.models import Page
+
+        from apps.pages.lms.models.courses.index import CoursesPage
 
         page = CoursesPage.objects.live().first()
         if page:

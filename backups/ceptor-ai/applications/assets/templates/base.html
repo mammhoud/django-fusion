@@ -1,0 +1,44 @@
+{% load static unfold i18n wagtailcore_tags wagtailimages_tags wagtailsettings_tags %}
+{% load webpack_loader laces components %}
+{% get_current_language as current_language %}
+<!DOCTYPE html>
+<html lang="{{ current_language }}" {% block html_attr %}{% endblock %}>
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    
+    {% block meta %}{% endblock %}
+    
+    <title>{% block title %}Structa Cloud{% endblock %}</title>
+    
+    {% block styles %}
+        {% render_bundle 'static' 'css' %}
+    {% endblock %}
+    
+    {% block extrastyle %}{% endblock %}
+    {% block css %}{% endblock %}
+    {% block extra_head %}{% endblock %}
+</head>
+<body {% block body_attr %}{% endblock %} class="{% block bodyclass %}{% endblock %}">
+    {% block loader %}{% endblock %}
+    
+    {% block header %}{% endblock %}
+    
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+    
+    {% block footer %}{% endblock %}
+    
+    {% block extra_body %}{% endblock %}
+    
+    {% block scripts %}
+        {% render_bundle 'static' 'js' %}
+    {% endblock %}
+    
+    {% block extra_scripts %}{% endblock %}
+    
+    {% block extra_assets %}{% endblock %}
+</body>
+</html>

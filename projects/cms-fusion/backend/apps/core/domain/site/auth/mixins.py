@@ -18,12 +18,12 @@ from django.conf import settings
 from django.http import HttpRequest
 from django.urls import reverse_lazy
 from django.utils.translation import gettext_lazy as _
-from django_fusion.site.interface.page_handler import PageHandler
 from django_fusion.site.interface.auth.mixins import (
     AuthBaseMixin,
     AuthConfig,
     AuthProcessorMixin,
 )
+from django_fusion.site.interface.page_handler import PageHandler
 
 logger = logging.getLogger(__name__)
 

@@ -7,19 +7,23 @@ import hashlib
 import hmac
 import json
 import logging
-from django.shortcuts import render, get_object_or_404, redirect
-from django.http import JsonResponse
-from django.views.decorators.http import require_http_methods
-from django.views.decorators.csrf import csrf_exempt
-from django.contrib.auth.decorators import login_required
-from django.db import transaction
-from django.core.mail import send_mail
-from django.template.loader import render_to_string
-from django.conf import settings
 
-from apps.pages.lms.models import CourseEnrollmentLead, PaymentTransaction
-from apps.pages.lms.management.services.payment_providers import PaymentProviderRegistry, PaymentException
+from django.conf import settings
+from django.contrib.auth.decorators import login_required
+from django.core.mail import send_mail
+from django.db import transaction
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404, redirect, render
+from django.template.loader import render_to_string
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
+
 from apps.pages.lms.forms.enrollment import CourseEnrollmentForm
+from apps.pages.lms.management.services.payment_providers import (
+    PaymentException,
+    PaymentProviderRegistry,
+)
+from apps.pages.lms.models import CourseEnrollmentLead, PaymentTransaction
 
 logger = logging.getLogger(__name__)
 

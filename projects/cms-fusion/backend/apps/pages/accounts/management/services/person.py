@@ -13,6 +13,7 @@ from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import transaction
 from django.utils import timezone
+
 from apps.core.domain.models.users.users import Person
 
 logger = logging.getLogger(__name__)

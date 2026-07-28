@@ -1,0 +1,22 @@
+{% load i18n %}
+{# Skills Section #}
+{% if page.skills %}
+<section class="skills">
+    <h3 class="h3 skills__title">{% trans "My Skills" %}</h3>
+    <ul class="skills__list">
+        {% for block in page.skills %}
+            {% with s=block.value %}
+            <li class="skills__item">
+                <div class="skills__header">
+                    <h5 class="h5 skills__name">{{ s.name }}</h5>
+                    <data class="skills__level" value="{{ s.proficiency }}">{{ s.proficiency }}%</data>
+                </div>
+                <div class="skills__progress-bg">
+                    <div class="skills__progress-fill" style="width: {{ s.proficiency }}%;"></div>
+                </div>
+            </li>
+            {% endwith %}
+        {% endfor %}
+    </ul>
+</section>
+{% endif %}

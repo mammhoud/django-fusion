@@ -4,9 +4,10 @@ from django.core.exceptions import ValidationError
 from django.core.validators import RegexValidator, URLValidator, validate_email
 from django.db import models
 from django.utils.translation import gettext_lazy as _
-from apps.core.domain.blocks.contact.stream_blocks import ContactMethodsStreamBlock
 from modelcluster.models import ClusterableModel
 from wagtail.fields import StreamField
+
+from apps.core.domain.blocks.contact.stream_blocks import ContactMethodsStreamBlock
 
 logger = logging.getLogger(__name__)
 

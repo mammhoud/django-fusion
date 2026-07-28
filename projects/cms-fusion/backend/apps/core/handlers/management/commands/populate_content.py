@@ -403,14 +403,13 @@ class Command(BaseCommand):
         # Deferred Wagtail imports — must be inside handle() so the module can
         # be imported and patched in tests before the app registry is ready.
 
-        from apps.pages.lms.models.courses.index import CoursesPage
-
         from apps.core.content.models.pages.about import AboutPage
         from apps.core.content.models.pages.contact import ContactPage
         from apps.core.content.models.pages.events import EventPage
         from apps.core.content.models.pages.home import HomePage
         from apps.core.content.models.pages.services import ServicesPage
         from apps.core.content.models.pages.team import TeamPage
+        from apps.pages.lms.models.courses.index import CoursesPage
 
         MODEL_MAP = {
             "HomePage": HomePage,

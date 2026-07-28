@@ -8,8 +8,8 @@ served via django-bolt API endpoints in apis.py.
 from django.db import models
 from django.utils.translation import gettext_lazy as _
 from wagtail.admin.panels import FieldPanel
-from wagtail.snippets.models import register_snippet
 from wagtail.images import get_image_model_string
+from wagtail.snippets.models import register_snippet
 
 
 @register_snippet

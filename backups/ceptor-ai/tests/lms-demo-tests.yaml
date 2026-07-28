@@ -1,0 +1,12 @@
+site: lms-demo
+aliases: [structa, structa.cloud, lms]
+base_url: http://lms-demo.local
+port: 5071
+commands:
+  check: python manage.py --site structa check
+  build: npm --prefix assets run build -- --site structa
+routes:
+  - path: /health/
+    status: 200
+  - path: /health/assets/
+    status: 200

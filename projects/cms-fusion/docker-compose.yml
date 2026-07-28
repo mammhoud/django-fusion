@@ -6,7 +6,7 @@ services:
   backend:
     build:
       context: ../../
-      dockerfile: projects/compose/Dockerfile
+      dockerfile: projects/cms-fusion/compose/Dockerfile.backend
       args:
         PROJECT_PATH: cms-fusion
     image: cms-fusion-backend:latest
@@ -50,17 +50,26 @@ services:
       - "5075:5075"
     volumes:
       - ./backend:/app/cms-fusion:rw
+      - ./configs:/app/configs:ro
       - ../../logs:/app/logs:z
       - cms-fusion-static:/app/cms-fusion/static:rw
       - cms-fusion-media:/app/cms-fusion/media:rw
     networks:
       - common
       - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.cms-fusion-api-docker.rule=(Host(`cms-fusion.localhost`) || Host(`cms-fusion.com`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.cms-fusion-api-docker.entrypoints=web,web-secure"
+      - "traefik.http.routers.cms-fusion-api-docker.tls=true"
+      - "traefik.http.services.cms-fusion-api-docker.loadbalancer.server.port=5075"
+      - "traefik.http.services.cms-fusion-api-docker.loadbalancer.healthcheck.path=/health/"
 
   worker:
     build:
       context: ../../
-      dockerfile: projects/compose/Dockerfile
+      dockerfile: projects/cms-fusion/compose/Dockerfile.backend
       args:
         PROJECT_PATH: cms-fusion
     image: cms-fusion-backend:latest
@@ -80,6 +89,7 @@ services:
     command: celery -A www.worker.celery:app worker --loglevel=info --queues=cms-fusion
     volumes:
       - ./backend:/app/cms-fusion:rw
+      - ./configs:/app/configs:ro
       - ../../logs:/app/logs:z
     networks:
       - common
@@ -89,7 +99,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: compose/frontend/Dockerfile
+      dockerfile: compose/Dockerfile.frontend
     image: cms-fusion-frontend:latest
     container_name: cms-fusion-frontend
     restart: unless-stopped

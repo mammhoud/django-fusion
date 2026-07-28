@@ -75,8 +75,14 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: make cms-fusion migrate
 
-      - name: Run tests
-        run: make test WEBSITE=cms-fusion
+      - name: Validate fixture files
+        run: uv run python cms-fusion/backend/manage.py load_fusion_fixtures --full --dry-run
+
+      - name: Run fixture content tests
+        run: uv run python -m pytest cms-fusion/backend/tests/test_fixture_content.py -v --tb=short
+
+      - name: Run remaining tests
+        run: uv run python -m pytest cms-fusion/backend/tests/ --ignore=cms-fusion/backend/tests/test_fixture_content.py -q
 
   # ── CMS-Fusion Frontend (Next.js) ────────────────────────────────────
 
@@ -195,8 +201,14 @@ jobs:
         working-directory: ${{ github.workspace }}
         run: make lms-fusion migrate
 
-      - name: Run tests
-        run: make test WEBSITE=lms-fusion
+      - name: Validate fixture files
+        run: uv run python lms-fusion/backend/manage.py load_fusion_fixtures --full --dry-run
+
+      - name: Run fixture content tests
+        run: uv run python -m pytest lms-fusion/backend/tests/test_fixture_content.py -v --tb=short
+
+      - name: Run remaining tests
+        run: uv run python -m pytest lms-fusion/backend/tests/ --ignore=lms-fusion/backend/tests/test_fixture_content.py -q
 
   # ── LMS-Fusion Frontend (Next.js) ────────────────────────────────────
 

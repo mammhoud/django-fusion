@@ -1,0 +1,126 @@
+{% load i18n %}
+{% load static %}
+<!-- SSE Connection for Real-time Notifications -->
+<section class="fragment--form">
+  <!-- Login Card -->
+  <section class="auth__card card card--form">
+    <header class="auth__form-header">
+      <h2 class="auth__form-title">{% trans "Sign In" %}</h2>
+      <p class="auth__form-subtitle mb-4">
+        {% trans "Enter your credentials to access your account" %}
+      </p>
+    </header>
+
+
+    <!-- Form Errors Container -->
+    <div id="form-errors" class="mb-3">
+      {% if form.errors %}
+      <div class="alert alert-danger">
+        <strong>{% trans "Please correct the errors below:" %}</strong>
+        {{ form.non_field_errors }}
+      </div>
+      {% endif %}
+    </div>
+
+    <form id="login-form" class="auth__form" action="{% url 'plugins:login' %}" method="post" novalidate
+      hx-post="{% url 'plugins:login' %}" hx-target=".auth__form" hx-swap="innerHTML" hx-trigger="submit"
+      hx-indicator="#login-spinner" hx-headers='{"X-Requested-With": "XMLHttpRequest", "HX-Request": "true"}'>
+      {% csrf_token %}
+
+      <!-- Hidden fields for SSE/HTMX context -->
+      <input type="hidden" name="strategy" value="{% if request.htmx %}htmx{% else %}document{% endif %}">
+      <input type="hidden" name="supports_sse" value="{{ request.supports_sse|yesno:'true,false' }}">
+
+      {% if request.GET.next %}
+      <input type="hidden" name="next" value="{{ request.GET.next }}">
+      {% endif %}
+
+      <!-- Email -->
+      <div class="form__group mb-4">
+        <label class="form__label" for="id_email_username">{% trans "Email" %}</label>
+        <div class="form__input-wrapper input-group input-group-lg">
+          <span class="form__icon rounded-start border-0 px-3">
+            <i class="fas fa-envelope"></i>
+          </span>
+          <input id="id_email_username" name="login" type="text" maxlength="150"
+            class="form__input form-control border-0 rounded-end ps-1 {% if form.login.errors %}is-invalid{% endif %}"
+            placeholder="{% trans 'you@example.com' %}"  required
+            value="{{ form.login.value|default:'' }}" autocomplete="username" />
+        </div>
+
+        <!-- Email Validation Feedback -->
+        <div id="email-validation" class="form-text"></div>
+
+        {% if form.login.errors %}
+        <div class="invalid-feedback d-block">
+          {% for error in form.login.errors %}
+          {{ error }}
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="invalid-feedback">{% trans "Please enter a valid email address." %}</p>
+        {% endif %}
+      </div>
+
+      <!-- Password -->
+      <div class="form__group mb-4">
+        <label class="form__label" for="id_password">{% trans "Password" %}</label>
+        <div class="form__input-wrapper input-group input-group-lg">
+          <span class="form__icon rounded-start border-0 px-3">
+            <i class="fas fa-lock"></i>
+          </span>
+          <input id="id_password" name="password" type="password"
+            class="form__input form-control border-0 rounded-end ps-1 {% if form.password.errors %}is-invalid{% endif %}"
+            maxlength="40" placeholder="{% trans 'Your password' %}" required minlength="6" />
+
+        </div>
+
+        <!-- Password Strength Indicator -->
+        <div id="password-strength" class="form-text"></div>
+
+        {% if form.password.errors %}
+        <div class="invalid-feedback d-block">
+          {% for error in form.password.errors %}
+          {{ error }}
+          {% endfor %}
+        </div>
+        {% else %}
+        <p class="invalid-feedback">{% trans "Password must be at least 6 characters." %}</p>
+        {% endif %}
+      </div>
+
+      <!-- Remember + Forgot -->
+      <div class="auth__links mb-4 d-flex justify-content-between">
+        <label class="form__checkbox form-check">
+          <input type="checkbox" name="remember" class="form-check-input" />
+          <span>{% trans "Remember me" %}</span>
+        </label>
+        <a href="{% url 'plugins:password_forgot' %}" class="auth__link" hx-get="{% url 'plugins:password_forgot' %}"
+          hx-target=".fragment--form" hx-swap="innerHTML" hx-push-url="{% url 'plugins:password_forgot' %}">
+          <u>{% trans "Forgot Password?" %}</u>
+        </a>
+      </div>
+
+      <!-- Submit -->
+      <div class="d-grid">
+        <button class="btn btn-primary btn--primary auth__submit mb-0 gap-4" type="submit" id="login-button">
+          <span class="btn__text">{% trans "Sign In" %}</span>
+          <i class="fas fa-arrow-right ms-2"></i>
+          <span id="login-spinner" class="spinner-border spinner-border-sm ms-2 htmx-indicator"></span>
+        </button>
+      </div>
+
+    </form>
+
+    <footer class="auth__footer mt-4 text-center">
+      <p>
+        {% trans "New on our platform?" %}
+        <a href="{% url 'plugins:register' %}" class="auth__link" hx-get="{% url 'plugins:register' %}"
+          hx-target=".fragment--form" hx-swap="innerHTML" hx-push-url="{% url 'plugins:register' %}">
+          <u>{% trans "Create an account" %}</u>
+        </a>
+      </p>
+    </footer>
+  </section>
+
+</section>

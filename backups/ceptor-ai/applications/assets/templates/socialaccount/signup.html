@@ -1,0 +1,17 @@
+{% extends "base_auth.html" %}
+{% load i18n static laces laces %}
+
+{% block auth_content %}
+<section class="fragment--form">
+  <section class="auth__card card card--form">
+    <header class="auth__form-header"><h2 class="auth__form-title">{% trans "Complete Registration" %}</h2><p class="auth__form-subtitle">{% trans "Please provide the following information" %}</p></header>
+    {% comp "account/snippets/messages.html" /%}
+    <form method="post" action="{% url 'socialaccount_signup' %}" hx-post="{% url 'socialaccount_signup' %}" hx-target=".fragment--form" hx-swap="innerHTML">
+      {% csrf_token %}
+      {% if form.email %}<div class="mb-3"><label for="id_email">{% trans "Email" %}</label><input id="id_email" name="email" type="email" class="form-control" required value="{{ form.email.value|default:'' }}"></div>{% endif %}
+      {% if form.username %}<div class="mb-3"><label for="id_username">{% trans "Username" %}</label><input id="id_username" name="username" type="text" class="form-control" required value="{{ form.username.value|default:'' }}"></div>{% endif %}
+      <button class="btn btn-gradient radius-round w-100" type="submit">{% trans "Complete Registration" %}</button>
+    </form>
+  </section>
+</section>
+{% endblock auth_content %}

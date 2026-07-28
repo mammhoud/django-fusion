@@ -1,0 +1,14 @@
+{
+  "name": "structa-cloud-assets",
+  "version": "0.0.0",
+  "private": true,
+  "scripts": {
+    "build": "echo 'noop build'"
+  },
+  "description": "",
+  "main": "index.js",
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs"
+}

@@ -1,0 +1,29 @@
+{# Contact Form Success Message #}
+{# Returned after successful HTMX form submission #}
+{% load i18n %}
+
+<div class="contact-success content-card">
+    <div class="success-icon">
+        <i class="ri ri-checkbox-circle-line-fill"></i>
+    </div>
+    <h3 class="h3">{% trans "Message Sent!" %}</h3>
+    <p class="text">{% trans "Thank you for reaching out. I'll get back to you as soon as possible." %}</p>
+</div>
+
+<style>
+.contact-success {
+    text-align: center;
+    padding: 40px 20px;
+}
+.success-icon ion-icon {
+    font-size: 64px;
+    color: var(--orange-yellow-crayola);
+    margin-bottom: 20px;
+}
+.contact-success h3 {
+    margin-bottom: 10px;
+}
+.contact-success .text {
+    color: var(--light-gray);
+}
+</style>

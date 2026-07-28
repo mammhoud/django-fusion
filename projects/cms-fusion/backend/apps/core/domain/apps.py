@@ -1,5 +1,6 @@
 from django.apps import AppConfig
 
+
 class DomainConfig(AppConfig):
     name = "apps.core.domain"
     label = "shared"

@@ -124,7 +124,8 @@ class Token(models.Model):
         Returns a (Token, raw_token) tuple so the caller can return the raw
         token to the client while storing only the hash.
         """
-        import secrets, hashlib
+        import hashlib
+        import secrets
         raw = secrets.token_hex(20)
         token_obj = cls.objects.create(
             user=user,

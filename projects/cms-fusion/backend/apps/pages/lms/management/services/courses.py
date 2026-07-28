@@ -16,7 +16,6 @@ logger = logging.getLogger(__name__)
 from django_fusion.services.infrastructure.base import BaseService
 
 from apps.pages.lms.models.courses import Course, Lesson, Module
-
 from apps.pages.lms.models.enrollment import Enrollment
 
 User = get_user_model()

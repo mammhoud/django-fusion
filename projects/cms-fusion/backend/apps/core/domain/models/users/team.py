@@ -5,13 +5,13 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
+from django_fusion.models.default import DefaultBase
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
 from wagtail.search import index
 
 from apps.core.domain.handlers.models.manage_company import Department
-from django_fusion.models.default import DefaultBase
 
 
 # -------------------------------------------------------------------

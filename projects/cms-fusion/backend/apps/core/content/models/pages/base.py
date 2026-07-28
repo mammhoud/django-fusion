@@ -10,7 +10,6 @@ from django.utils import timezone
 from django.utils.html import strip_tags
 from django.utils.translation import gettext_lazy as _
 from django_fusion.site.interface._context_mixins import WagtailPageMixin
-from apps.core.handlers.models.manage.service import Service
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel, MultiFieldPanel, ObjectList, TabbedInterface
 from wagtail.fields import RichTextField, StreamField
@@ -18,10 +17,11 @@ from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Page
 from wagtail.search import index
 
+from apps.core.content.models.contact import ContactSubmission
 from apps.core.domain.blocks.contact.contact_methods import ContactMethodBlock
 from apps.core.domain.blocks.partials.faq import FAQSectionBlock
 from apps.core.domain.handlers.models.manage_company import Organization
-from apps.core.content.models.contact import ContactSubmission
+from apps.core.handlers.models.manage.service import Service
 
 from ..blocks.form import MinimalContactFormBlock
 

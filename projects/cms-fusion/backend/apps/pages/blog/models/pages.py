@@ -12,6 +12,7 @@ from wagtail.contrib.routable_page.models import RoutablePageMixin, route
 from wagtail.fields import RichTextField, StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.search import index
+
 from apps.core.content.models.pages.base import BasePage
 
 

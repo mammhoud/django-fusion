@@ -13,6 +13,7 @@ except ImportError:
 
 from django.core.exceptions import FieldError
 from django.db.models import Q
+
 from apps.core.domain.contrib.models import Corporate as Company
 
 logger = logging.getLogger(__name__)

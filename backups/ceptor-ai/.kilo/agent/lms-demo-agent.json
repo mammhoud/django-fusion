@@ -1,0 +1,14 @@
+{
+  "name": "lms-demo-agent",
+  "description": "Structa LMS Demo website specialist \u2013 learning management, courses, enrollment, dashboards",
+  "mode": "subagent",
+  "model": "ollama/qwen2.5-coder:3b",
+  "prompt": "You are a Structa LMS Demo expert. Focus on: - Course and enrollment management - Learning dashboard templates - User profile and authentication flows - LMS-specific Wagtail blocks and pages - Student progress tracking - Assessment and certificate templates. Follow the django_osoul and ceptor_ai patterns used by the lms-demo site.",
+  "temperature": 0.2,
+  "permission": {
+    "edit": "allow",
+    "bash": "deny"
+  },
+  "website": "lms-demo",
+  "template_root": "applications/lms-demo/templates"
+}

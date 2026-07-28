@@ -1,0 +1,38 @@
+{% extends "crm/layout/skeleton.html" %}
+{% load i18n %}
+
+{% block title %}{{ object.name }}{% endblock %}
+
+{% block content %}
+<div class="row">
+  <div class="col-lg-7">
+    <div class="card border-0 shadow-sm">
+      <div class="card-header d-flex justify-content-between align-items-center">
+        <span class="fw-semibold">{{ object.name }}</span>
+        <div class="d-flex gap-2">
+          <a href="{% url 'inventory:item:change' object.pk %}"
+             class="btn btn-sm btn-outline-primary">
+            <i class="bi bi-pencil me-1"></i>{% trans "Edit" %}
+          </a>
+        </div>
+      </div>
+      <div class="card-body">
+        <dl class="row mb-0">
+          <dt class="col-sm-4 text-muted">{% trans "Category" %}</dt>
+          <dd class="col-sm-8">{{ object.category }}</dd>
+          <dt class="col-sm-4 text-muted">{% trans "Quantity" %}</dt>
+          <dd class="col-sm-8">{{ object.quantity }}</dd>
+          <dt class="col-sm-4 text-muted">{% trans "Price" %}</dt>
+          <dd class="col-sm-8">{{ object.price }}</dd>
+          <dt class="col-sm-4 text-muted">{% trans "Vendor" %}</dt>
+          <dd class="col-sm-8">{{ object.vendor|default:"—" }}</dd>
+          <dt class="col-sm-4 text-muted">{% trans "Expires" %}</dt>
+          <dd class="col-sm-8">{{ object.expiring_date|date:"Y-m-d H:i"|default:"—" }}</dd>
+          <dt class="col-sm-4 text-muted">{% trans "Description" %}</dt>
+          <dd class="col-sm-8">{{ object.description }}</dd>
+        </dl>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock content %}

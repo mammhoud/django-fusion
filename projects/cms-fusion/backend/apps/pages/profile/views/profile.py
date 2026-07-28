@@ -29,6 +29,7 @@ def _profile_bases():
     """Return (PageHandler, ProfileContextMixin, ProfileOperationsMixin) lazily."""
     if not _BASES_CACHE:
         from django_fusion.site.interface.page_handler import PageHandler
+
         from apps.core.domain.site.mixins import ProfileContextMixin, ProfileOperationsMixin
         _BASES_CACHE["PageHandler"] = PageHandler
         _BASES_CACHE["ProfileContextMixin"] = ProfileContextMixin

@@ -1,0 +1,34 @@
+# Bumpver config for the deploy-preflight Composite Action.
+#
+# The source-of-truth is the sibling VERSION file (a plain text file
+# containing just the current MAJOR.MINOR.PATCH). bumpver reads it on
+# invocation, replaces it on bump, and creates a `v{new_version}` git
+# tag when `tag = true`.
+#
+# Components-scoped (not root-level) so this action can release on its
+# own cadence without dragging the `applications/` workspace (current
+# 1.0.3, separately tracked in applications/pyproject.toml [tool.bumpver]).
+#
+# Starting at 1.0.1 deliberately matches the latest git tag already
+# pushed to origin — the next `bumpver update --patch` will advance to
+# v1.0.2 cleanly without colliding with the existing v1.0.0 / v1.0.1
+# remote tags.
+#
+# Why no file_patterns entry for `action.yml`? That file has no inline
+# version field; the public version surface IS the git tag. The
+# CHANGELOG.md headers are manual (per the documented hygiene vs
+# SemVer policy in README.md) so bumpver doesn't touch them either.
+# Versioning touches ONLY the VERSION file + tag.
+
+[tool.bumpver]
+current_version = "1.0.1"
+version_pattern = "MAJOR.MINOR.PATCH"
+commit_message = "bump(actions): {old_version} -> {new_version}"
+commit = true
+tag = true
+push = true
+
+[tool.bumpver.file_patterns]
+"VERSION" = [
+    "^{version}$",
+]

@@ -10,22 +10,24 @@ from django.utils.module_loading import autodiscover_modules
 def ready():
     """Register all page models with Wagtail."""
     # Import the models to ensure they're registered with Wagtail
-    from apps.core.content.models.pages.home import HomePage  # noqa: F401
     from apps.core.content.models.pages.about import AboutPage  # noqa: F401
     from apps.core.content.models.pages.contact import ContactPage  # noqa: F401
-    from apps.core.content.models.pages.events import EventPage  # noqa: F401 (EventPage not EventsPage)
-    from apps.core.content.models.pages.services import ServicesPage  # noqa: F401
-    from apps.core.content.models.pages.team import TeamPage  # noqa: F401
 
     # ── Dynamic CMS pages (from merged cms www.content.models) ──
     from apps.core.content.models.pages.dynamic import (  # noqa: F401
-        DynamicHomePage,
         DynamicAboutPage,
-        DynamicFaqPage,
-        DynamicPrivacyPage,
         DynamicContactPage,
         DynamicDashboardPage,
+        DynamicFaqPage,
+        DynamicHomePage,
+        DynamicPrivacyPage,
     )
+    from apps.core.content.models.pages.events import (
+        EventPage,  # noqa: F401 (EventPage not EventsPage)
+    )
+    from apps.core.content.models.pages.home import HomePage  # noqa: F401
+    from apps.core.content.models.pages.services import ServicesPage  # noqa: F401
+    from apps.core.content.models.pages.team import TeamPage  # noqa: F401
 
 
 # Call ready() when the app is ready

@@ -1,0 +1,7 @@
+[
+  {"model": "crm_inventory.category", "pk": "00000000-0000-0000-0001-000000000001", "fields": {"name": "Electronics", "slug": "electronics", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-01T00:00:00.000000Z"}},
+  {"model": "crm_inventory.category", "pk": "00000000-0000-0000-0001-000000000002", "fields": {"name": "Office Supplies", "slug": "office-supplies", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-01T00:00:00.000000Z"}},
+  {"model": "crm_inventory.category", "pk": "00000000-0000-0000-0001-000000000003", "fields": {"name": "Furniture", "slug": "furniture", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-01T00:00:00.000000Z"}},
+  {"model": "crm_inventory.category", "pk": "00000000-0000-0000-0001-000000000004", "fields": {"name": "Software", "slug": "software", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-01T00:00:00.000000Z"}},
+  {"model": "crm_inventory.category", "pk": "00000000-0000-0000-0001-000000000005", "fields": {"name": "Networking", "slug": "networking", "created_at": "2026-01-01T00:00:00.000000Z", "updated_at": "2026-01-01T00:00:00.000000Z"}}
+]

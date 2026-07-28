@@ -1,0 +1,126 @@
+/* ============================================================
+ * CTC-RESEARCH.COM — Site Palette
+ * Theme 1 (Blue/Teal) light + dark
+ *
+ * Defines only --theme-* tokens. All semantic/component tokens
+ * are inherited from the shared file via _master.scss import.
+ * ============================================================ */
+
+/* ── Theme 1 – Blue/Teal (Light) ────────────────────────────  */
+[data-theme="theme1"] {
+  --theme-primary:         #00a1b3;
+  --theme-primary-dark:    #007a88;
+  --theme-primary-light:   #1a7fd4;
+  --theme-primary-lighter: #cce0ff;
+  --theme-primary-darker:  #002a59;
+
+  --theme-secondary:         #008080;
+  --theme-secondary-dark:    #006D6D;
+  --theme-secondary-light:   #4DB3B3;
+  --theme-secondary-lighter: #E6F7F7;
+
+  --theme-accent:       #6C63FF;
+  --theme-accent-dark:  #5A52D4;
+  --theme-accent-light: #8B84FF;
+  --theme-accent-alt:   #FF6B8B;
+
+  --theme-bg-primary:   #FFFFFF;
+  --theme-bg-secondary: #F5F7FA;
+  --theme-bg-tertiary:  #EBEFF5;
+  --theme-bg-inverse:   #1A1D23;
+  --theme-bg-overlay:   rgba(255, 255, 255, 0.96);
+
+  --theme-surface:         #FFFFFF;
+  --theme-surface-elevated:#FFFFFF;
+  --theme-surface-overlay: rgba(255, 255, 255, 0.95);
+
+  --theme-text-primary:  #1a1a1a;
+  --theme-text-secondary:#3d3d3d;
+  --theme-text-tertiary: #5c5c5c;
+  --theme-text-inverse:  #FFFFFF;
+  --theme-text-accent:   #0056b3;
+  --theme-text-muted:    #767676;
+  --theme-text-disabled: #a0a0a0;
+
+  --theme-border-primary:  #d0d7de;
+  --theme-border-secondary:#b0bac5;
+  --theme-border-tertiary: #8a96a3;
+  --theme-border-accent:   #0056b3;
+  --theme-border-inverse:  #1a1a1a;
+
+  --theme-shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.05);
+  --theme-shadow:       0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+  --theme-shadow-md:    0 6px 12px -2px rgba(0, 0, 0, 0.1), 0 3px 6px -1px rgba(0, 0, 0, 0.08);
+  --theme-shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+  --theme-shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  --theme-shadow-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.25);
+  --theme-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.06);
+
+  --theme-primary-rgb:      0, 161, 179;
+  --theme-secondary-rgb:    0, 128, 128;
+  --theme-accent-rgb:       108, 99, 255;
+  --theme-bg-primary-rgb:   255, 255, 255;
+  --theme-bg-secondary-rgb: 245, 247, 250;
+  --theme-bg-tertiary-rgb:  235, 239, 245;
+  --theme-surface-rgb:      255, 255, 255;
+}
+
+/* ── Theme 1 – Blue/Teal (Dark) ─────────────────────────────  */
+[data-theme="dark"],
+.dark-theme {
+  --theme-primary:         #5FA8D4;
+  --theme-primary-dark:    #3A7CA5;
+  --theme-primary-light:   #8BC8F0;
+  --theme-primary-lighter: #BAE6FF;
+  --theme-primary-darker:  #1A4D63;
+
+  --theme-secondary:         #00A3A3;
+  --theme-secondary-dark:    #008080;
+  --theme-secondary-light:   #4DB3B3;
+  --theme-secondary-lighter: #E6F7F7;
+
+  --theme-accent:       #8B8BFF;
+  --theme-accent-dark:  #6C63FF;
+  --theme-accent-light: #A8A4FF;
+  --theme-accent-alt:   #FF8BA7;
+
+  --theme-bg-primary:   #0F172A;
+  --theme-bg-secondary: #1E293B;
+  --theme-bg-tertiary:  #2D3748;
+  --theme-bg-inverse:   #F8FAFC;
+  --theme-bg-overlay:   rgba(15, 23, 42, 0.96);
+
+  --theme-surface:         #1E293B;
+  --theme-surface-elevated:#2D3748;
+  --theme-surface-overlay: rgba(15, 23, 42, 0.95);
+
+  --theme-text-primary:  #F1F5F9;
+  --theme-text-secondary:#E2E8F0;
+  --theme-text-tertiary: #A0AEC0;
+  --theme-text-inverse:  #0F172A;
+  --theme-text-accent:   #8BC8F0;
+  --theme-text-muted:    #94A3B8;
+  --theme-text-disabled: #64748B;
+
+  --theme-border-primary:  #374151;
+  --theme-border-secondary:#4B5563;
+  --theme-border-tertiary: #6B7280;
+  --theme-border-accent:   #5FA8D4;
+  --theme-border-inverse:  #F1F5F9;
+
+  --theme-shadow-sm:    0 1px 2px rgba(0, 0, 0, 0.3);
+  --theme-shadow:       0 4px 6px -1px rgba(0, 0, 0, 0.4), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+  --theme-shadow-md:    0 6px 12px -2px rgba(0, 0, 0, 0.4), 0 3px 6px -1px rgba(0, 0, 0, 0.2);
+  --theme-shadow-lg:    0 10px 15px -3px rgba(0, 0, 0, 0.5), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
+  --theme-shadow-xl:    0 20px 25px -5px rgba(0, 0, 0, 0.5), 0 10px 10px -5px rgba(0, 0, 0, 0.3);
+  --theme-shadow-2xl:   0 25px 50px -12px rgba(0, 0, 0, 0.5);
+  --theme-shadow-inner: inset 0 2px 4px 0 rgba(0, 0, 0, 0.3);
+
+  --theme-primary-rgb:      95, 168, 212;
+  --theme-secondary-rgb:    0, 163, 163;
+  --theme-accent-rgb:       139, 139, 255;
+  --theme-bg-primary-rgb:   15, 23, 42;
+  --theme-bg-secondary-rgb: 30, 41, 59;
+  --theme-bg-tertiary-rgb:  45, 55, 72;
+  --theme-surface-rgb:      30, 41, 59;
+}

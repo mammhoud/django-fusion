@@ -1,0 +1,10 @@
+[
+  {
+    "model": "auth.group",
+    "pk": 101,
+    "fields": {
+      "name": "Dummy Members",
+      "permissions": []
+    }
+  }
+]

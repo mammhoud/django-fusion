@@ -1,0 +1,17 @@
+{% load i18n components.navigation %}
+{#
+  Profile Navigation Panel
+  Uses shared django-fusion nav_link tags that generate Unpoly (up-follow/up-target)
+  attributes with automatic HTMX fallback.
+
+  Set UNPOLY_ENABLED = True (default) for Unpoly mode, or
+  UNPOLY_ENABLED = False in Django settings for HTMX-only mode.
+#}
+<nav class="card" aria-label="{% trans 'Profile navigation' %}">
+  <div class="card-body">
+    {% nav_link url="plugins:profile:dashboard" label="Dashboard" icon="bi-speedometer2" target="#panel-content" css_class="d-block mb-2" %}
+    {% nav_link url="plugins:profile:profile" label="Profile" icon="bi-person" target="#panel-content" css_class="d-block mb-2" %}
+    {% nav_link url="plugins:profile:courses" label="Courses" icon="bi-book" target="#panel-content" css_class="d-block mb-2" %}
+    {% nav_link url="plugins:profile:settings" label="Settings" icon="bi-gear" target="#panel-content" css_class="d-block mb-2" %}
+  </div>
+</nav>

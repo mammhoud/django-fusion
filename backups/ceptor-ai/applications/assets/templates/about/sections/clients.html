@@ -1,0 +1,128 @@
+{% load i18n %}
+{% load static wagtailcore_tags wagtailimages_tags i18n %}
+
+<!-- Clients Section -->
+<section class="clients-section py-5 py-lg-6">
+    <div class="container">
+        <!-- Section Header -->
+        <div class="row justify-content-center mb-5 mb-lg-6">
+            <div class="col-12 col-lg-10 col-xl-8 text-center">
+                {% if block.value.title %}
+                <h2 class="display-5 fw-bold mb-4">{{ block.value.title }}</h2>
+                {% else %}
+                <h2 class="display-5 fw-bold mb-4">{% trans "Our Key Partners" %}</h2>
+                {% endif %}
+                {% if block.value.description %}
+                <p class="lead text-muted mb-0">{{ block.value.description }}</p>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Client Logos Carousel -->
+        <div class="position-relative px-4 px-md-0">
+            <div class="owl-carousel clients-carousel"
+                 data-owl-nav="false"
+                 data-owl-dots="false"
+                 data-owl-margin="24"
+                 data-owl-autoplay="true"
+                 data-owl-autoplay-timeout="3000"
+                 data-owl-loop="true"
+                 data-owl-xs="2"
+                 data-owl-sm="3"
+                 data-owl-md="4"
+                 data-owl-lg="5"
+                 data-owl-xl="6">
+
+                {% for item in block.value %}
+                <div class="client-item">
+                    <div class="client-logo-wrapper">
+                        {% if item.value.organization.logo %}
+                            {% image item.value.organization.logo max-225x157 as logo %}
+                            <div class="client-logo bg-white rounded-3 shadow-sm border">
+                                {% if item.value.organization.website %}
+                                <a href="{{ item.value.organization.website }}" target="_blank" rel="noopener noreferrer" class="d-block p-4 p-lg-5">
+                                    <img src="{{ logo.url }}"
+                                         alt="{{ item.value.organization.name|default:item.value.organization.logo.title }}"
+                                         class="img-fluid w-100 client-img grayscale transition-all"
+                                         loading="lazy"
+                                         style="height: 80px; object-fit: contain;">
+                                </a>
+                                {% else %}
+                                <div class="p-4 p-lg-5">
+                                    <img src="{{ logo.url }}"
+                                         alt="{{ item.value.organization.name|default:item.value.organization.logo.title }}"
+                                         class="img-fluid w-100 client-img grayscale transition-all"
+                                         loading="lazy"
+                                         style="height: 80px; object-fit: contain;">
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <div class="client-logo bg-white rounded-3 shadow-sm border d-flex align-items-center justify-content-center p-4 p-lg-5">
+                                {% if item.value.organization.website %}
+                                <a href="{{ item.value.organization.website }}" target="_blank" rel="noopener noreferrer" class="text-decoration-none w-100">
+                                    <div class="placeholder-content text-center w-100">
+                                        <div class="text-muted mb-2" style="font-size: 2rem;">
+                                            <i class="fas fa-building"></i>
+                                        </div>
+                                        {% if item.value.organization.name %}
+                                        <h6 class="fw-bold text-dark mb-0">{{ item.value.organization.name }}</h6>
+                                        {% endif %}
+                                    </div>
+                                </a>
+                                {% else %}
+                                <div class="placeholder-content text-center w-100">
+                                    <div class="text-muted mb-2" style="font-size: 2rem;">
+                                        <i class="fas fa-building"></i>
+                                    </div>
+                                    {% if item.value.organization.name %}
+                                    <h6 class="fw-bold text-dark mb-0">{{ item.value.organization.name }}</h6>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+
+                {% empty %}
+                <!-- Empty State -->
+                <div class="col-12 text-center py-5">
+                    <div class="empty-state">
+                        <div class="text-muted mb-4" style="font-size: 4rem;">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <h4 class="fw-bold mb-3">{% trans "Our Clients" %}</h4>
+                        <p class="text-muted mb-4">{% trans "We work with amazing companies from around the world." %}</p>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            {% comment %}
+            <!-- Custom Navigation Arrows -->
+            <div class="clients-nav d-none d-lg-block">
+                <div class="owl-prev clients-prev position-absolute top-50 start-0 translate-middle-y bg-white rounded-circle shadow-lg border-0"
+                     style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;">
+                    <i class="fas fa-chevron-left text-dark"></i>
+                </div>
+                <div class="owl-next clients-next position-absolute top-50 end-0 translate-middle-y bg-white rounded-circle shadow-lg border-0"
+                     style="width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 10;">
+                    <i class="fas fa-chevron-right text-dark"></i>
+                </div>
+            </div>
+            {% endcomment %}
+        </div>
+
+        <!-- Additional Content (Optional) -->
+        {% if block.value.cta_text %}
+        <div class="text-center mt-5 mt-lg-6 pt-4">
+            <p class="lead mb-4">{% trans "Join our growing list of satisfied clients" %}</p>
+            <a href="{{ block.value.cta_url|default:'#' }}"
+               class="btn btn-primary btn-lg px-5 py-3">
+                {{ block.value.cta_text }}
+                <i class="fas fa-arrow-right ms-2"></i>
+            </a>
+        </div>
+        {% endif %}
+    </div>
+</section>

@@ -1,59 +1,32 @@
-# Node.js dependencies
+# ── Node.js ──────────────────────────────────────────────────────────
 node_modules/
 .npm
 .eslintcache
 .next
-# Rust build artifacts (Tauri)
-**/target/
-**/*.rs.bk
-cargo-lock.toml
 
-# Python
+# ── Python ───────────────────────────────────────────────────────────
 __pycache__/
 *.py[cod]
 *.egg-info/
 .venv/
 .pytest_cache/
+.ruff_cache/
+.mypy_cache/
 
-# Environment & Secrets
+# ── Environment & Secrets ────────────────────────────────────────────
 .env
 .env.*
 !.env.example
 
-# Django media (uploaded by users at runtime)
-# Project asset media (Wagtail uploads)
-projects/cms-fusion/assets/media/images/
-projects/cms-fusion/assets/media/avatar_images/
-projects/cms-fusion/assets/media/documents/
-projects/lms-fusion/assets/media/images/
-projects/lms-fusion/assets/media/avatar_images/
-projects/lms-fusion/assets/media/documents/
-# Legacy backend media directories
-projects/cms-fusion/backend/media/
-projects/lms-fusion/backend/media/
-projects/lms/assets/media/
-# Legacy website-specific media
-projects/cms-fusion/websites/lms/assets/media/
-projects/lms-fusion/websites/lms/assets/media/
-
-# Logs
+# ── Generated / runtime ──────────────────────────────────────────────
 logs/
 *.log
+test-results/
 
-# Backups & temp
-backups/
-applications/tmp/
-applications/proxy/backups/
+# ── Docs artifacts & archives ────────────────────────────────────────
+.archives/
 
-# Pre-restructure artifacts (stale build snapshots)
-docs/dev/pre-restructure/
-site/dev/pre-restructure/
-
-# Transient sync state (constantly updated by running process)
-**/sync_state.json
-
-# Test database
-tests/test_db.sqlite3
-
-# macOS system files
+# ── macOS ────────────────────────────────────────────────────────────
 .DS_Store
+
+# ── Project-level patterns are in projects/.gitignore ─────────────────

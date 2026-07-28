@@ -1,11 +1,12 @@
 from django.utils.translation import gettext_lazy as _
-from apps.core.domain.blocks.media.gallery import MediaGalleryBlock
 from wagtail import blocks
 from wagtail.admin.panels import FieldPanel
 from wagtail.fields import StreamField
 from wagtail.images.blocks import ImageChooserBlock as SimpleImageBlock
 from wagtail.models import Page
 from wagtail.snippets.blocks import SnippetChooserBlock
+
+from apps.core.domain.blocks.media.gallery import MediaGalleryBlock
 
 from .base import BasePage
 

@@ -147,7 +147,7 @@ if _has_bolt and bolt is not None:
     def page_list(request):
         """GET /api/pages — List all published pages for navigation."""
         try:
-            from apps.pages.pages.models import FusionHomePage, FusionContentPage
+            from apps.pages.pages.models import FusionContentPage, FusionHomePage
             pages = []
             home = FusionHomePage.objects.live().first()
             if home:
@@ -187,9 +187,10 @@ if _has_bolt and bolt is not None:
     @bolt.get("/pages/<slug>/fragment")
     def page_fragment_pointer(request, slug):
         """GET /api/pages/<slug>/fragment — Fragment pointer for fusion rendering."""
-        from apps.pages.pages.content import STATIC_PAGES, normalize_slug
-        from apps.core.api.data_adapter import fusion_response
         from django_fusion.routes import fusion_json_response
+
+        from apps.core.api.data_adapter import fusion_response
+        from apps.pages.pages.content import STATIC_PAGES, normalize_slug
 
         normalized = normalize_slug(slug)
 
@@ -349,6 +350,7 @@ if _has_bolt and bolt is not None:
         try:
             from django.db import models
             from django.db.models import Count
+
             from apps.pages.blog.models.category import BlogCategory
 
             cats = BlogCategory.objects.annotate(
@@ -370,6 +372,7 @@ if _has_bolt and bolt is not None:
         try:
             from django.db import models
             from django.db.models import Count
+
             from apps.pages.blog.models.tag import BlogTag
 
             tags = BlogTag.objects.annotate(
@@ -394,6 +397,7 @@ if _has_bolt and bolt is not None:
         """GET /api/courses — Course catalog with search, filters, pagination."""
         try:
             from django.db import models
+
             from apps.pages.lms.models import Course
 
             qs = Course.objects.filter(is_published=True, is_active=True).order_by(
@@ -523,8 +527,9 @@ if _has_bolt and bolt is not None:
     def course_filters(request):
         """GET /api/courses/filters — Available filter options for the course catalog."""
         try:
-            from apps.pages.lms.models import Course
             from django.db.models import Count
+
+            from apps.pages.lms.models import Course
 
             languages = list(
                 Course.objects.filter(is_published=True, is_active=True)
@@ -620,7 +625,7 @@ def _get_wagtail_page(slug: str):
 
     normalized = normalize_slug(slug)
     try:
-        from apps.pages.pages.models import FusionHomePage, FusionContentPage
+        from apps.pages.pages.models import FusionContentPage, FusionHomePage
         if normalized == "home":
             return FusionHomePage.objects.live().first()
         return FusionContentPage.objects.live().filter(slug=normalized).first()

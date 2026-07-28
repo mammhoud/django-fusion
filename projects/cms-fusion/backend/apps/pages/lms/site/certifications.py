@@ -7,6 +7,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpRequest, JsonResponse
 from django.utils import timezone
 from django.views.decorators.http import require_POST
+
 from apps.pages.accounts.management.services import CertificateService
 
 logger = logging.getLogger(__name__)

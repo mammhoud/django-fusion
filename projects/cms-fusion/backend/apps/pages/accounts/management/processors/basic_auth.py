@@ -7,8 +7,8 @@ from django.contrib.auth import get_user_model
 from django.utils.timezone import now
 from ninja.errors import AuthenticationError
 from ninja.security import HttpBasicAuth
-from apps.core.auth_app.models.token import Token
 
+from apps.core.auth_app.models.token import Token
 from config import logger
 
 

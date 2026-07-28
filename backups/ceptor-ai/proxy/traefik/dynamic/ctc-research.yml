@@ -1,0 +1,50 @@
+# =============================================================================
+# CTC Research — Traefik router config
+# =============================================================================
+# Serving Let's Encrypt certs via HTTP-01 challenge (certResolver: letsencrypt-http).
+# Self-signed fallback certs in proxy/certs/ are kept on disk for rollback.
+# =============================================================================
+
+http:
+  routers:
+    ctc-site-http:
+      rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
+      entryPoints: [web]
+      middlewares: [redirect-to-https]
+      service: ctc-site-service
+      priority: 10
+    ctc-site-https:
+      rule: 'Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)'
+      entryPoints: [web-secure]
+      middlewares: [compress, csrf-headers, security-headers]
+      service: ctc-site-service
+      tls:
+        certResolver: letsencrypt-http
+    ctc-site-media-http:
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`) || PathPrefix(`/bundles/`))'
+      entryPoints: [web]
+      middlewares: [compress, redirect-to-https]
+      service: ctc-site-media-service
+      priority: 100
+    ctc-site-media-https:
+      rule: '(Host(`ctc-research.com`) || Host(`www.ctc-research.com`) || Host(`arch.ctc-research.com`)) && (PathPrefix(`/static/`) || PathPrefix(`/media/`) || PathPrefix(`/sites/`) || PathPrefix(`/bundles/`))'
+      entryPoints: [web-secure]
+      middlewares: [compress, security-headers]
+      service: ctc-site-media-service
+      priority: 100
+      tls:
+        certResolver: letsencrypt-http
+  services:
+    ctc-site-service:
+      loadBalancer:
+        servers:
+          - url: 'http://ctc-research-website:5070'
+        healthCheck:
+          path: /health/
+          hostname: ctc-research.com
+          interval: 30s
+          timeout: 10s
+    ctc-site-media-service:
+      loadBalancer:
+        servers:
+          - url: 'http://shared-media:80'

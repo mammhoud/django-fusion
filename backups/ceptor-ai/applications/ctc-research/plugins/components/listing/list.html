@@ -1,0 +1,57 @@
+{% load laces %}
+<!-- products/list.html -->
+{% extends "base.html" %}
+
+{% block content %}
+<div id="product-grid" class="row">
+    {% for product in listed_data %}
+        <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ product.image.url }}" class="card-img-top" alt="{{ product.name }}">
+                <div class="card-body">
+                    <h5 class="card-title">{{ product.name }}</h5>
+                    <p class="card-text">{{ product.description|truncatewords:20 }}</p>
+                    <p class="card-text"><strong>${{ product.price }}</strong></p>
+                </div>
+            </div>
+        </div>
+    {% empty %}
+        <div class="col-12">
+            <div class="alert alert-info">
+                No products found.
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+<!-- Pagination Controls -->
+<div id="pagination-container">
+    {% comp "components/pagination/numbers.html" / %}
+</div>
+
+<!-- Load More (alternative) -->
+{# {% comp "components/pagination/load_more.html" / %} #}
+
+<!-- Infinite Scroll (alternative) -->
+{# {% comp "components/pagination/infinite.html" / %} #}
+{% endblock %}
+
+{% block extra_js %}
+<script>
+// Initialize HTMX pagination
+if (window.htmx) {
+    // Add loading indicators
+    htmx.on('htmx:beforeRequest', function(evt) {
+        if (evt.detail.target.id === 'product-grid') {
+            document.getElementById('loading').classList.remove('d-none');
+        }
+    });
+    
+    htmx.on('htmx:afterRequest', function(evt) {
+        if (evt.detail.target.id === 'product-grid') {
+            document.getElementById('loading').classList.add('d-none');
+        }
+    });
+}
+</script>
+{% endblock %}

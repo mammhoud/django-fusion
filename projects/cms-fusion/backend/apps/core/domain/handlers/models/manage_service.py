@@ -2,7 +2,6 @@ from django.db import models
 from django.urls import reverse
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models.base import BaseModel as DefaultBase
-from apps.core.domain.blocks.pages.services import ServicesSectionBlock
 from wagtail import blocks
 from wagtail.admin.panels import (
     FieldPanel,
@@ -11,6 +10,8 @@ from wagtail.admin.panels import (
     TabbedInterface,
 )
 from wagtail.fields import StreamField
+
+from apps.core.domain.blocks.pages.services import ServicesSectionBlock
 
 
 # ---------------------------------------------------------------------

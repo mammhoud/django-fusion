@@ -1,0 +1,22 @@
+{# About Intro / Bio Section #}
+{# Renders bio from HomePage.bio StreamField or static fallback #}
+{% load i18n wagtailcore_tags %}
+
+<section class="about-intro vresume-section">
+  {% if page.bio %}
+    {% for block in page.bio %}
+      {% if block.block_type == 'bio_text' %}
+        <div class="about-intro__content">{{ block.value|richtext }}</div>
+      {% endif %}
+    {% endfor %}
+  {% else %}
+    <div class="about-intro__content">
+      <p>
+        {% trans "I'm a Creative Director and UI/UX Designer, working in web development and print media. I enjoy turning complex problems into simple, beautiful and intuitive designs." %}
+      </p>
+      <p>
+        {% trans "My job is to build your website so that it is functional and user-friendly but at the same time attractive. Moreover, I add personal touch to your product and make sure that it is eye-catching and easy to use. My aim is to bring across your message and identity in the most creative way." %}
+      </p>
+    </div>
+  {% endif %}
+</section>

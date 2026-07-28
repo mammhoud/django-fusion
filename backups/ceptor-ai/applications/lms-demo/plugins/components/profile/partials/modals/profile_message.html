@@ -1,0 +1,78 @@
+{% extends "base_modal.html" %}
+{% load static i18n %}
+
+{# Message User Modal #}
+{% block modal_icon_block %}<i class="bi bi-envelope-fill text-primary"></i>{% endblock %}
+{% block modal_title_block %}{% trans "Send Message" %}{% endblock %}
+
+{# Full body override to include form wrapper #}
+{% block modal_full_body %}
+<form class="message-form">
+    {# Modal Body #}
+    <div class="modal-body p-4">
+        {# Recipient #}
+        <div class="mb-4">
+            <label class="form-label fw-medium mb-2">{% trans "To" %}</label>
+            <div class="d-flex align-items-center gap-2 p-3 bg-light rounded">
+                <div class="avatar-sm rounded-circle overflow-hidden bg-primary bg-gradient text-white d-flex align-items-center justify-content-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-person fs-5"></i>
+                </div>
+                <div>
+                    <div class="fw-medium" id="message-receiver-name"></div>
+                    <small class="text-muted">{% trans "Will receive your message" %}</small>
+                </div>
+            </div>
+            <input type="hidden" id="receiver-id">
+        </div>
+
+        {# Subject #}
+        <div class="mb-4">
+            <label class="form-label fw-medium mb-2">
+                <i class="bi bi-card-heading me-1"></i>
+                {% trans "Subject" %}
+            </label>
+            <input type="text"
+                   class="form-control form-control-lg"
+                   id="message-subject"
+                   placeholder="{% trans 'What is this about?' %}"
+                   required>
+        </div>
+
+        {# Message #}
+        <div class="mb-4">
+            <label class="form-label fw-medium mb-2">
+                <i class="bi bi-chat-left-text me-1"></i>
+                {% trans "Message" %}
+            </label>
+            <textarea class="form-control"
+                      id="message-content"
+                      rows="6"
+                      placeholder="{% trans 'Type your message here...' %}"
+                      required></textarea>
+        </div>
+
+        {# Quick Actions #}
+        <div class="d-flex gap-2">
+            <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+                <i class="bi bi-paperclip"></i>
+                {% trans "Attach" %}
+            </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm d-flex align-items-center gap-1">
+                <i class="bi bi-emoji-smile"></i>
+                {% trans "Emoji" %}
+            </button>
+        </div>
+    </div>
+
+    {# Modal Footer #}
+    <div class="modal-footer border-top">
+        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+            {% trans "Cancel" %}
+        </button>
+        <button type="submit" class="btn btn-primary">
+            <i class="bi bi-send me-2"></i>
+            {% trans "Send Message" %}
+        </button>
+    </div>
+</form>
+{% endblock %}

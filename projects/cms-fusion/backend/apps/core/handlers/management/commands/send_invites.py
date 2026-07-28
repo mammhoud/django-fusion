@@ -5,10 +5,10 @@ from pathlib import Path
 
 from django.core.mail import send_mail
 from django.core.management.base import BaseCommand, CommandError
-from django_fusion.site.management.commands.base import BaseCommand
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.crypto import get_random_string
+from django_fusion.site.management.commands.base import BaseCommand
 
 logger = logging.getLogger(__name__)
 

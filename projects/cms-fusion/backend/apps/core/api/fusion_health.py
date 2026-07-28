@@ -14,7 +14,6 @@ from __future__ import annotations
 import logging
 
 from django.http import HttpRequest, JsonResponse
-
 from django_fusion.routes import FusionSessionChecker, fusion_json_response
 
 logger = logging.getLogger(__name__)

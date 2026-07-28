@@ -1,0 +1,32 @@
+# ============================================================
+# LMS Demo legacy domain redirect
+# ============================================================
+# The LMS site is now served from lms.structa.cloud.
+# Requests to the old lms-demo.com domain are permanently
+# redirected to the new canonical domain.
+
+http:
+  routers:
+    lms-demo-redirect-http:
+      rule: "Host(`lms-demo.com`) || Host(`www.lms-demo.com`)"
+      entryPoints:
+        - web
+      middlewares:
+        - lms-demo-redirect
+      service: noop@internal
+
+    lms-demo-redirect-https:
+      rule: "Host(`lms-demo.com`) || Host(`www.lms-demo.com`)"
+      entryPoints:
+        - web-secure
+      middlewares:
+        - lms-demo-redirect
+      service: noop@internal
+      tls: {}
+
+  middlewares:
+    lms-demo-redirect:
+      redirectRegex:
+        regex: "^https?://(?:www\\.)?lms-demo\\.com(.*)$"
+        replacement: "https://lms.structa.cloud${1}"
+        permanent: true

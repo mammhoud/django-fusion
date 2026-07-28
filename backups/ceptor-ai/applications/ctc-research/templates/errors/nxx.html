@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{{ error_title|default:"Error" }} — {{ status_code|default:500 }}</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #f8f9fa;
+      color: #343a40;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      padding: 2rem;
+    }
+    .error-card {
+      max-width: 520px;
+      width: 100%;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 24px rgba(0,0,0,.08);
+      padding: 3rem 2rem;
+      text-align: center;
+    }
+    .error-code {
+      font-size: 5rem;
+      font-weight: 800;
+      line-height: 1;
+      color: #dc3545;
+      margin-bottom: .5rem;
+    }
+    .error-code.is-4xx { color: #fd7e14; }
+    .error-title { font-size: 1.3rem; font-weight: 600; margin-bottom: .75rem; }
+    .error-message { color: #6c757d; font-size: .95rem; margin-bottom: 2rem; line-height: 1.5; }
+    .error-actions { display: flex; gap: .75rem; justify-content: center; flex-wrap: wrap; }
+    .btn {
+      display: inline-flex; align-items: center; gap: .4rem;
+      padding: .6rem 1.4rem; border-radius: 8px; font-size: .9rem;
+      text-decoration: none; font-weight: 500; border: 1px solid transparent;
+      transition: background .15s, color .15s, border-color .15s;
+    }
+    .btn-primary { background: #0d6efd; color: #fff; }
+    .btn-primary:hover { background: #0b5ed7; }
+    .btn-outline { background: #fff; color: #495057; border-color: #ced4da; }
+    .btn-outline:hover { background: #f8f9fa; }
+    .exception-info {
+      margin-top: 2rem; padding-top: 1rem;
+      border-top: 1px solid #e9ecef;
+      text-align: left;
+    }
+    .exception-info summary { cursor: pointer; font-size: .8rem; color: #adb5bd; }
+    .exception-info pre {
+      margin-top: .5rem; font-size: .75rem; color: #6c757d;
+      white-space: pre-wrap; word-break: break-word;
+      max-height: 200px; overflow-y: auto;
+      background: #f8f9fa; padding: .75rem; border-radius: 6px;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-card">
+    <div class="error-code {% if status_code < 500 %}is-4xx{% endif %}">
+      {{ status_code|default:500 }}
+    </div>
+    <h1 class="error-title">{{ error_title|default:"Internal Server Error" }}</h1>
+    <p class="error-message">{{ error_message|default:"An unexpected error occurred." }}</p>
+    <div class="error-actions">
+      <a href="/" class="btn btn-primary">&#8592; Go Home</a>
+      <a href="javascript:history.back()" class="btn btn-outline">Go Back</a>
+      <a href="javascript:location.reload()" class="btn btn-outline">Retry</a>
+    </div>
+    {% if exception %}
+    <details class="exception-info">
+      <summary>Technical details</summary>
+      <pre>{{ exception }}</pre>
+    </details>
+    {% endif %}
+  </div>
+</body>
+</html>

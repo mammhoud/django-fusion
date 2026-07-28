@@ -1,7 +1,7 @@
 """Course enrollment views."""
 
-import logging
 import csv
+import logging
 from io import StringIO
 
 from django.conf import settings
@@ -9,14 +9,18 @@ from django.contrib.auth.decorators import login_required
 from django.core.mail import send_mail
 from django.db import transaction
 from django.http import HttpResponse, JsonResponse
-from django.shortcuts import render, get_object_or_404, redirect
+from django.shortcuts import get_object_or_404, redirect, render
 from django.template.loader import render_to_string
 from django.urls import reverse
 from django.utils.translation import gettext as _
 from django.views.decorators.http import require_http_methods, require_POST
-from django.views.generic import CreateView, ListView, DetailView, UpdateView
+from django.views.generic import CreateView, DetailView, ListView, UpdateView
 
-from apps.pages.lms.forms import CourseEnrollmentForm, EnrollmentLeadFilterForm, CourseEnrollmentBulkForm
+from apps.pages.lms.forms import (
+    CourseEnrollmentBulkForm,
+    CourseEnrollmentForm,
+    EnrollmentLeadFilterForm,
+)
 from apps.pages.lms.models import Course, CourseEnrollmentLead
 
 logger = logging.getLogger(__name__)

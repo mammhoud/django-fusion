@@ -1,0 +1,165 @@
+// ================================================================
+//   CODE EDITOR – Toolbar, Wrapper, Output, Version Controls
+// ================================================================
+
+.code-editor {
+    width: 100%;
+    background: $editor-bg;
+    border-radius: $radius;
+    overflow: hidden;
+    border: 1px solid $editor-border;
+    position: relative;
+
+    &__toolbar {
+        background: $editor-toolbar-bg;
+        padding: 6px 14px;
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        border-bottom: 1px solid #313244;
+        flex-shrink: 0;
+        flex-wrap: wrap;
+
+        .toolbar-label {
+            color: $editor-text;
+            font-size: 12px;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .toolbar-actions {
+            margin-left: auto;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            flex-wrap: wrap;
+        }
+
+        .toolbar-btn {
+            background: transparent;
+            border: none;
+            color: $editor-muted;
+            cursor: pointer;
+            font-size: 13px;
+            padding: 2px 8px;
+            border-radius: 4px;
+            transition: $transition;
+            display: flex;
+            align-items: center;
+            gap: 4px;
+
+            &:hover:not(:disabled) {
+                background: #313244;
+                color: $editor-text;
+            }
+
+            &:disabled {
+                opacity: 0.3;
+                cursor: not-allowed;
+            }
+
+            &--run {
+                color: $editor-run;
+                &:hover:not(:disabled) {
+                    background: #1e3b2a;
+                    color: #b4f0a0;
+                }
+            }
+
+            &--apply {
+                color: $editor-accent;
+                &:hover:not(:disabled) {
+                    background: #1e3a5f;
+                    color: #b4cffa;
+                }
+            }
+
+            &--copy {
+                // default style
+            }
+
+            &--format {
+                // default style
+            }
+        }
+
+        .version-info {
+            color: $editor-muted;
+            font-size: 12px;
+            padding: 0 6px;
+            font-weight: 500;
+            min-width: 40px;
+            text-align: center;
+        }
+    }
+
+    &__wrapper {
+        width: 100%;
+        height: 480px;
+        min-height: 380px;
+        background: $editor-bg;
+    }
+
+    &__output {
+        background: #0d0d1a;
+        color: $editor-text;
+        padding: 10px 14px;
+        font-family: 'JetBrains Mono', monospace;
+        font-size: 13px;
+        border-top: 1px solid #313244;
+        max-height: 120px;
+        overflow-y: auto;
+        white-space: pre-wrap;
+        word-break: break-all;
+        display: none;
+
+        &--visible {
+            display: block;
+        }
+
+        .output-label {
+            color: #6c7086;
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+    }
+
+    &__loading-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: rgba(30, 30, 46, 0.85);
+        display: none;
+        align-items: center;
+        justify-content: center;
+        flex-direction: column;
+        gap: 12px;
+        color: $editor-text;
+        font-size: 16px;
+        font-weight: 500;
+        z-index: 20;
+        backdrop-filter: blur(2px);
+        border-radius: $radius;
+
+        &--visible {
+            display: flex;
+        }
+
+        .loading-icon {
+            font-size: 32px;
+            color: $editor-accent;
+        }
+
+        .loading-sub {
+            font-size: 13px;
+            color: $editor-muted;
+            font-weight: 400;
+        }
+    }
+}

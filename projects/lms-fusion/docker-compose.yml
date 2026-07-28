@@ -6,7 +6,7 @@ services:
   backend:
     build:
       context: ../../
-      dockerfile: projects/compose/Dockerfile
+      dockerfile: projects/lms-fusion/compose/Dockerfile.backend
       args:
         PROJECT_PATH: lms-fusion
     image: lms-fusion-backend:latest
@@ -27,6 +27,8 @@ services:
       WORKERS: "4"
       LOG_LEVEL: info
       DEBUG: "false"
+      APP_MODULE: server:asgi_application
+      DJANGO_SERVER_TYPE: asgi
       RUN_SETUP: "true"
       DB_TYPE: ${DB_TYPE:-postgres}
       DB_HOST: ${DB_HOST:-postgres}
@@ -37,7 +39,7 @@ services:
       REDIS_URL: redis://default-redis:6379/0
       CELERY_BROKER_URL: redis://default-redis:6379/1
       CELERY_RESULT_BACKEND: redis://default-redis:6379/2
-      ALLOWED_HOSTS: localhost,127.0.0.1,lms-fusion.localhost
+      ALLOWED_HOSTS: localhost,127.0.0.1,lms-fusion.localhost,lms-fusion-backend
       CSRF_TRUSTED_ORIGINS: http://localhost:5074,http://lms-fusion.localhost
       CELERY_TASK_DEFAULT_QUEUE: lms-fusion
     healthcheck:
@@ -50,17 +52,26 @@ services:
       - "5074:5074"
     volumes:
       - ./backend:/app/lms-fusion:rw
+      - ./configs:/app/configs:ro
       - ../../logs:/app/logs:z
       - lms-fusion-static:/app/lms-fusion/static:rw
       - lms-fusion-media:/app/lms-fusion/media:rw
     networks:
       - common
       - traefik-net
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik-net"
+      - "traefik.http.routers.lms-fusion-api-docker.rule=(Host(`lms-fusion.localhost`) || Host(`lms-fusion.com`)) && PathPrefix(`/api`)"
+      - "traefik.http.routers.lms-fusion-api-docker.entrypoints=web,web-secure"
+      - "traefik.http.routers.lms-fusion-api-docker.tls=true"
+      - "traefik.http.services.lms-fusion-api-docker.loadbalancer.server.port=5074"
+      - "traefik.http.services.lms-fusion-api-docker.loadbalancer.healthcheck.path=/health/"
 
   worker:
     build:
       context: ../../
-      dockerfile: projects/compose/Dockerfile
+      dockerfile: projects/lms-fusion/compose/Dockerfile.backend
       args:
         PROJECT_PATH: lms-fusion
     image: lms-fusion-backend:latest
@@ -80,6 +91,7 @@ services:
     command: celery -A www.worker.celery:app worker --loglevel=info --queues=lms-fusion
     volumes:
       - ./backend:/app/lms-fusion:rw
+      - ./configs:/app/configs:ro
       - ../../logs:/app/logs:z
     networks:
       - common
@@ -89,7 +101,7 @@ services:
   frontend:
     build:
       context: .
-      dockerfile: compose/frontend/Dockerfile
+      dockerfile: compose/Dockerfile.frontend
     image: lms-fusion-frontend:latest
     container_name: lms-fusion-frontend
     restart: unless-stopped

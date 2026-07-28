@@ -1,0 +1,124 @@
+"""Website-local Django settings for ctc-research."""
+import os
+import sys
+from pathlib import Path
+
+# ============================================================
+# Path Configuration
+# ============================================================
+_SITE_DIR = Path(__file__).resolve().parent
+_WORKSPACE_DIR = _SITE_DIR.parent
+_SITE_APP_DIR = _SITE_DIR / "www"
+
+# Ensure correct import paths
+for _path in (str(_WORKSPACE_DIR), str(_SITE_APP_DIR), str(_SITE_DIR)):
+    if _path in sys.path:
+        sys.path.remove(_path)
+    sys.path.insert(0, _path)
+
+# ============================================================
+# Site Configuration
+# ============================================================
+from configs.site import configure_site_environment
+
+configure_site_environment("ctc-research", module="LMS", default_port=5070)
+
+# ============================================================
+# Internal Dependency Handling
+# ============================================================
+# django_fusion and ceptor_ai are real workspace dependencies. Do not install
+# fake sys.modules shims here; dependency failures should surface during checks.
+
+# ============================================================
+# Webpack loader dict-chunk compatibility (runs before shared settings
+# import so the unified patch in webpack_compat.py can wrap it).
+# ============================================================
+def _patch_webpack_loader():
+    from webpack_loader.loaders import WebpackLoader
+    def _patched_filter_chunks(self, chunks):
+        filtered_chunks = []
+        for chunk in (chunks or []):
+            chunk_name = chunk["name"] if isinstance(chunk, dict) else chunk
+            ignore = any(regex.match(chunk_name) for regex in self.config["ignores"])
+            if not ignore:
+                filtered_chunks.append(chunk)
+        return filtered_chunks
+    def _patched_get_bundle(self, bundle_name):
+        assets = self.get_assets()
+        chunks = assets.get("chunks", {}).get(bundle_name, [])
+        bundle_dir = self.config.get("BUNDLE_DIR_NAME", "") or ""
+        result = []
+        for c in (chunks or []):
+            if isinstance(c, str):
+                result.append({"name": c, "url": f"{bundle_dir}{c}", "path": c})
+            else:
+                c2 = dict(c)
+                c2["url"] = f'{bundle_dir}{c2.get("name", "")}'
+                result.append(c2)
+        return self.filter_chunks(result)
+    WebpackLoader.filter_chunks = _patched_filter_chunks
+    WebpackLoader.get_bundle = _patched_get_bundle
+
+_patch_webpack_loader()
+
+# ============================================================
+# Import Shared Django Settings
+# ============================================================
+from configs.settings import *  # noqa: E402,F401,F403
+
+# ============================================================
+# URL and Application Configuration
+# ============================================================
+ROOT_URLCONF = "www.urls"
+
+# ASGI/WSGI applications live in the site-local server.py.
+# The start script places this site directory on PYTHONPATH and launches
+# server:application, so Django can keep the same import path.
+ASGI_APPLICATION = "server.application"
+WSGI_APPLICATION = "server.application"
+
+# ============================================================
+# Website-Specific Settings
+# ============================================================
+WEBSITE_NAME = "ctc-research"
+WEBSITE_IDENTIFIER = "ctc-research"
+SITE_ID = 1
+
+# ── Local apps (site-specific plugins, www packages, and page apps) ──
+LOCAL_APPS = [
+    # Per-site www/ packages kept site-specific (models, content, handlers)
+    "www.core",
+    "www.core.content.apps.ContentConfig",
+    "www.core.handlers.apps.AccountsConfig",
+    "plugins.accounts.apps.AccountsConfig",
+    "plugins.lms.apps.LmsConfig",
+    "plugins.blog.apps.BlogConfig",
+    "plugins.products.apps.ProductsConfig",
+    "plugins.profile.apps.ProfileConfig",
+    "ceptor_ai",
+    "django_fusion.comp.analyzer.apps.AnalyzerAppConfig",
+]
+INSTALLED_APPS += LOCAL_APPS
+
+# ============================================================
+# ceptor_ai required settings
+# ============================================================
+# PROFILE_MODEL is a required ForeignKey target in ceptor_ai models.
+# Point it to Django's built-in User model since this project
+# does not have a separate profile model.
+PROFILE_MODEL = "auth.User"
+
+# ============================================================
+# Silenced system checks
+# ============================================================
+# Keep only legacy duplicated app/model checks silenced; the previous
+# TeamMembership ordering check is fixed in ceptor_ai.
+SILENCED_SYSTEM_CHECKS = [
+    "models.E028",  # legacy accounts/handlers shared service table during migration
+    "models.E030",  # legacy accounts/handlers shared indexes during migration
+    "models.E032",  # legacy accounts/handlers shared constraints during migration
+    "fields.E304",  # legacy duplicated profile reverse accessors
+    "fields.E305",  # legacy duplicated profile reverse query names
+    "fields.E340",  # legacy duplicated many-to-many intermediary tables
+]
+WAGTAIL_WORKFLOW_ENABLED = False
