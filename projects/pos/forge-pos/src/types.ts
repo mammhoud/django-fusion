@@ -7,6 +7,8 @@ export interface Product {
   image?: string | null;
   product_type?: string;
   prepare_time_minutes?: number;
+  barcode?: string | null;
+  description?: string | null;
 }
 
 export interface NewProduct {
@@ -17,6 +19,8 @@ export interface NewProduct {
   image?: string | null;
   product_type?: string;
   prepare_time_minutes?: number;
+  barcode?: string | null;
+  description?: string | null;
 }
 
 export interface UpdateProductPayload {
@@ -27,6 +31,8 @@ export interface UpdateProductPayload {
   image?: string | null;
   product_type?: string;
   prepare_time_minutes?: number;
+  barcode?: string | null;
+  description?: string | null;
 }
 
 // ---- Category ----

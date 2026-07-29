@@ -31,15 +31,13 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
 
   return (
     <div ref={dropdownRef} className="relative">
-      <motion.button
-        whileHover={{ scale: 1.05 }}
-        whileTap={{ scale: 0.95 }}
+      <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex items-center gap-2 px-3 py-2 rounded-xl text-sm font-medium
           bg-white/80 dark:bg-white/10 text-slate-700 dark:text-slate-300
           hover:bg-base-200/50
           border border-base-300/30
-          shadow-sm transition-colors min-w-[120px]"
+          shadow-sm transition-all active:scale-[0.95] min-w-[120px]"
         aria-label={t('language.selectLanguage')}
       >
         <span className="icon-[tabler--language] w-4 h-4 shrink-0 opacity-70" />
@@ -57,7 +55,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
         >
           <polyline points="6 9 12 15 18 9" />
         </motion.svg>
-      </motion.button>
+      </button>
 
       <AnimatePresence>
         {isOpen && (

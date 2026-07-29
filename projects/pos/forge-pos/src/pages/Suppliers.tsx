@@ -120,14 +120,12 @@ export default function Suppliers() {
       <div className="space-y-4">
         <div className="flex justify-between items-center gap-3">
           <h1 className="text-2xl font-bold text-base-content">{t('suppliers.title')}</h1>
-          <motion.button
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             onClick={() => { setShowForm(true); setEditing(null); setForm({ name: '', contact_name: '', email: '', phone: '', address: '', tax_id: '', payment_terms: '' }); }}
-            className="btn btn-primary gap-2 shrink-0"
+            className="btn btn-primary gap-2 shrink-0 active:scale-[0.98] transition-all"
           >
             <span className="icon-[tabler--plus]" /> {t('suppliers.addSupplier')}
-          </motion.button>
+          </button>
         </div>
 
         {/* ── Search + sort bar (debounced async UX) ── */}

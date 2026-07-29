@@ -2,7 +2,7 @@ use diesel::prelude::*;
 use crate::db::{models::*, open_conn};
 use std::path::PathBuf;
 
-pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -> Result<Sale, String> {
+pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -> Result<(Sale, KitchenTicket), String> {
     let mut conn = open_conn(db_path)?;
     conn.transaction(|conn| {
         use crate::db::schema::sales::dsl::*;
@@ -30,6 +30,7 @@ pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -
         };
         // Default preparation time based on order priority
         // Dine-in / extra-order: 15 min, takeaway / dated-order: 20 min, delivery: 25 min
+        use crate::db::schema::kitchen_tickets::dsl as kt;
         let ticket = NewKitchenTicket {
             sale_id: sale.id,
             status: "pending".to_string(),
@@ -45,7 +46,11 @@ pub fn add_sale(db_path: &PathBuf, new_sale: NewSale, items: Vec<NewSaleItem>) -
             .values(&ticket)
             .execute(conn)?;
 
-        Ok(sale)
+        let created: KitchenTicket = kt::kitchen_tickets
+            .order(kt::id.desc())
+            .first(conn)?;
+
+        Ok((sale, created))
     }).map_err(|e: diesel::result::Error| e.to_string())
 }
 

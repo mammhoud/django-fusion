@@ -322,3 +322,52 @@
  *
  * The .dark / .light class on <html> controls Tailwind's dark: variant.
  */
+
+/* ── Page Entry Animations (CSS replaces framer-motion in PageWrapper) ── */
+/* These trigger on route change via key={location.pathname} on <Routes>.
+ * The Suspense loading screen guarantees the chunk is loaded before the
+ * animation fires, so there's no flash of empty content. */
+@keyframes page-slide-right {
+  from { opacity: 0; transform: translateX(40px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes page-slide-left {
+  from { opacity: 0; transform: translateX(-40px) scale(0.97); }
+  to   { opacity: 1; transform: translateX(0) scale(1); }
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes slide-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes scale-in {
+  from { opacity: 0; transform: scale(0.95); }
+  to   { opacity: 1; transform: scale(1); }
+}
+
+.animate-page-slide-right {
+  animation: page-slide-right 0.35s ease-out both;
+}
+
+.animate-page-slide-left {
+  animation: page-slide-left 0.35s ease-out both;
+}
+
+.animate-fade-in {
+  animation: fade-in 0.3s ease-out both;
+}
+
+.animate-slide-up {
+  animation: slide-up 0.4s ease-out both;
+}
+
+.animate-scale-in {
+  animation: scale-in 0.3s ease-out both;
+}

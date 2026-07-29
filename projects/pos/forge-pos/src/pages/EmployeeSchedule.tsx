@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
 import Card from '../components/Card';
@@ -63,9 +62,9 @@ export default function EmployeeSchedule() {
       <div className="space-y-4">
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-base-content">{t('schedule.title')}</h1>
-          <motion.button whileHover={{ y: -2 }} whileTap={{ scale: 0.98 }} onClick={() => setShowForm(true)} className="btn btn-primary gap-2">
+          <button onClick={() => setShowForm(true)} className="btn btn-primary gap-2 active:scale-[0.98] transition-all">
             <span className="icon-[tabler--plus]" /> {t('schedule.addShift')}
-          </motion.button>
+          </button>
         </div>
 
         {showForm && (

@@ -89,15 +89,14 @@ export default function SupportChat() {
             <h2 className="text-sm font-bold uppercase tracking-wider text-slate-500 flex items-center gap-2">
               <span className="icon-[tabler--inbox] w-4 h-4" /> Support Tickets
             </h2>
-            <motion.button
-              whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            <button
               onClick={fetchTickets}
               disabled={loadingTickets}
               className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 text-xs font-medium hover:bg-base-300/80 disabled:opacity-50"
             >
               <span className={`icon-[tabler--refresh] w-3.5 h-3.5 ${loadingTickets ? 'animate-spin' : ''}`} />
               Refresh
-            </motion.button>
+            </button>
           </div>
 
           {sidecarOk === false ? (

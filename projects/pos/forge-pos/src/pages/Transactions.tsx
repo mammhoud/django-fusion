@@ -686,17 +686,15 @@ export default function Transactions() {
     >
       {/* Filters Button */}
       <div className="flex justify-end mb-4">
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
+        <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center text-base-content gap-2
             bg-purple-200 dark:bg-secondary/30 px-4 py-2 rounded-lg
-            transition-colors duration-300"
+            transition-all duration-300 active:scale-[0.95]"
         >
           <span className="icon-[tabler--filter] w-5 h-5" />
           <span>{t('transactions.filters')}</span>
-        </motion.button>
+        </button>
       </div>
 
       {/* Tab Navigation */}
@@ -721,8 +719,6 @@ export default function Transactions() {
       {/* Filters */}
       {showFilters && (
         <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -10 }}
           transition={{ duration: 0.2 }}
         >
@@ -760,8 +756,6 @@ export default function Transactions() {
         role="tabpanel"
         id={`tx-panel-${activeTab}`}
         aria-labelledby={`tx-tab-${activeTab}`}
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3 }}
       >
         {/* ========== TIME TOTAL TAB ========== */}
@@ -769,9 +763,7 @@ export default function Transactions() {
           <div className="space-y-6">
             {/* Summary Cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              <div
               >
                 <Card padding="md" hover>
                   <h2 className="text-lg text-base-content mb-2">{t('transactions.allTimeTotal')}</h2>
@@ -779,11 +771,9 @@ export default function Transactions() {
                     {transactions[0]?.currency || ''} {totalAllTime.toFixed(2)}
                   </p>
                 </Card>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              <div
               >
                 <Card padding="md" hover>
                   <h2 className="text-lg text-base-content mb-2">{t('transactions.filteredTotal')}</h2>
@@ -791,11 +781,9 @@ export default function Transactions() {
                     {transactions[0]?.currency || ''} {totalFiltered.toFixed(2)}
                   </p>
                 </Card>
-              </motion.div>
+              </div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              <div
               >
                 <Card padding="md" hover>
                   <h2 className="text-lg text-base-content mb-2">{t('transactions.filteredTransactions')}</h2>
@@ -803,17 +791,15 @@ export default function Transactions() {
                     {filteredTransactions.length}
                   </p>
                 </Card>
-              </motion.div>
+              </div>
             </div>
 
             {/* Time-based Groups */}
             {timeGrouped.length > 0 ? (
               <div className="space-y-4">
                 {timeGrouped.map(group => (
-                  <motion.div
+                  <div
                     key={group.date}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
                   >
                     <Card padding="md">
                       <div className="flex items-center justify-between mb-3 pb-2 border-b border-base-300/30">
@@ -845,28 +831,24 @@ export default function Transactions() {
                             <span className="font-bold text-base-content">
                               {tx.currency} {tx.total_amount.toFixed(2)}
                             </span>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                            <button
                               onClick={() => setShowReceiptDialog(tx)}
-                              className="text-white p-1.5 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-colors"
+                              className="text-white p-1.5 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-all active:scale-[0.9]"
                             >
                               <span className="icon-[tabler--printer] w-4 h-4" />
-                            </motion.button>
-                            <motion.button
-                              whileHover={{ scale: 1.1 }}
-                              whileTap={{ scale: 0.9 }}
+                            </button>
+                            <button
                               onClick={() => handleDeleteTransaction(tx.id)}
-                              className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-1.5"
+                              className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-1.5 transition-all active:scale-[0.9]"
                             >
                               <span className="icon-[tabler--trash] w-4 h-4" />
-                            </motion.button>
+                            </button>
                           </div>
                         </div>
                       ))}
                     </div>
                   </Card>
-                </motion.div>
+                </div>
                 ))}
               </div>
             ) : (
@@ -883,9 +865,7 @@ export default function Transactions() {
           <div className="space-y-6">
             {/* Summary cards */}
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              <div
               >
                 <Card padding="md" hover>
                   <h2 className="text-lg text-base-content mb-2">{t('reports.totalProductsSold')}</h2>
@@ -893,10 +873,8 @@ export default function Transactions() {
                     {productStats.reduce((s, p) => s + p.count, 0)}
                   </p>
                 </Card>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              </div>
+              <div
               >
                 <Card padding="md" hover>
                   <h2 className="text-lg text-base-content mb-2">{t('transactions.revenue')}</h2>
@@ -904,10 +882,8 @@ export default function Transactions() {
                     {transactions[0]?.currency || ''} {productStats.reduce((s, p) => s + p.totalAmount, 0).toFixed(2)}
                   </p>
                 </Card>
-              </motion.div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
+              </div>
+              <div
               >
                 <Card padding="md" hover>
                   <h2 className="text-lg text-base-content mb-2">{t('transactions.uniqueProducts')}</h2>
@@ -915,7 +891,7 @@ export default function Transactions() {
                     {productStats.length}
                   </p>
               </Card>
-              </motion.div>
+              </div>
             </div>
 
             {/* Search + CSV Export */}
@@ -1233,10 +1209,8 @@ export default function Transactions() {
               </div>
             ) : filteredRelatedProducts.length > 0 ? (
               sortedRelatedProducts.map(product => (
-                <motion.div
+                <div
                   key={product.productName}
-                  initial={{ opacity: 0, y: 10 }}
-                  animate={{ opacity: 1, y: 0 }}
                 >
                   <Card padding="md">
                     <div className="flex items-center justify-between mb-3 pb-2 border-b border-base-300/30">
@@ -1327,7 +1301,7 @@ export default function Transactions() {
                     </table>
                   </div>
                 </Card>
-                </motion.div>
+                </div>
               ))
             ) : (
               <div className="flex flex-col items-center justify-center text-center py-12">
@@ -1405,8 +1379,6 @@ export default function Transactions() {
               sortedInvoices.map((transaction) => (
                 <motion.div
                   key={transaction.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
                   exit={{ opacity: 0, x: 20 }}
                 >
                   <Card padding="md" hover>
@@ -1448,22 +1420,18 @@ export default function Transactions() {
                       <div className="text-base-content/60 text-sm">{transaction.time}</div>
                     </div>
                     <div className="flex gap-2">
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                      <button
                         onClick={() => setShowReceiptDialog(transaction)}
                         className="text-white p-2 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-colors"
                       >
                         <span className="icon-[tabler--printer] w-5 h-5" />
-                      </motion.button>
-                      <motion.button
-                        whileHover={{ scale: 1.1 }}
-                        whileTap={{ scale: 0.9 }}
+                      </button>
+                      <button
                         onClick={() => handleDeleteTransaction(transaction.id)}
                         className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2"
                       >
                         <span className="icon-[tabler--trash] w-5 h-5" />
-                      </motion.button>
+                      </button>
                     </div>
                   </div>
 
@@ -1531,14 +1499,12 @@ export default function Transactions() {
           >
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-xl font-bold text-base-content">{t('transactions.receipt')}</h3>
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
+              <button
                 onClick={() => setShowReceiptDialog(null)}
                 className="text-base-content/60 hover:text-slate-900 dark:hover:text-white p-2"
               >
                 <span className="icon-[tabler--x] w-6 h-6" />
-              </motion.button>
+              </button>
             </div>
 
             {/* Invoice Type Selector */}
@@ -1577,42 +1543,34 @@ export default function Transactions() {
             </div>
 
             <div className="grid grid-cols-2 gap-3 mb-3">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={handleDownloadPDF}
                 className="py-3 px-4 bg-blue-500 text-white rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <span className="icon-[tabler--file-download] text-xl" />
                 {t('transactions.receiptPDF')}
-              </motion.button>
+              </button>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={handlePrint}
                 className="py-3 px-4 bg-purple-500 text-white rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <span className="icon-[tabler--printer] text-xl" />
                 {t('transactions.print')}
-              </motion.button>
+              </button>
             </div>
 
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={handleDownloadInvoice}
               disabled={isInvoiceDownloading}
               className="w-full py-3 px-4 bg-primary hover:bg-primary text-white rounded-xl font-semibold
                 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isInvoiceDownloading ? (
-                <motion.div
-                  animate={{ rotate: 360 }}
-                  transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                <div
+                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                 />
               ) : (
                 <>
@@ -1620,7 +1578,7 @@ export default function Transactions() {
                   {t('invoice.downloadInvoice')}
                 </>
               )}
-            </motion.button>
+            </button>
           </motion.div>
         </motion.div>
       )}

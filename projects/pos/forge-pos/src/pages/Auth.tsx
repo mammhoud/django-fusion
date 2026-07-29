@@ -68,6 +68,15 @@ export default function Auth() {
 
   // Determine initial step on mount
   useEffect(() => {
+    const isBrowserMode = typeof window !== 'undefined' && !('__TAURI_INTERNALS__' in window);
+
+    if (isBrowserMode) {
+      // Running in a browser without Tauri backend — skip auth gracefully
+      console.log('Auth: browser mode detected, skipping auth');
+      try { skipAuth(); } catch { /* ignore */ }
+      return;
+    }
+
     const init = async () => {
       setStep('checking');
       try {
@@ -87,13 +96,13 @@ export default function Auth() {
           setStep('login');
         }
       } catch (err) {
-        console.error('Auth init error:', err);
-        setError('Failed to initialize authentication. Please restart the app.');
-        setStep('login');
+        console.error('Auth init error (Tauri backend unavailable):', err);
+        // Tauri backend unavailable — fall back to skip mode
+        try { skipAuth(); } catch { /* ignore */ }
       }
     };
     init();
-  }, []);
+  }, [skipAuth]);
 
   // Auto-dismiss errors after 6 seconds
   useEffect(() => {
@@ -217,7 +226,7 @@ export default function Auth() {
 
   // ── FlyonUI card with glassmorphism styling ──
   const CardWrapper = ({ children, className = '' }: { children: ReactNode; className?: string }) => (
-    <div className={`card bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 shadow-2xl shadow-white/5 relative overflow-hidden ${className}`}>
+    <div className={`card bg-white/10 backdrop-blur-xl border border-white/10 shadow-2xl shadow-white/5 relative overflow-hidden ${className}`}>
       {/* Decorative SVG element */}
       <div className="absolute -top-24 -right-24 w-72 h-72 opacity-[0.04] pointer-events-none text-primary/80">
         <svg viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg" className="w-full h-full">
@@ -265,20 +274,18 @@ export default function Auth() {
   const PrimaryButton = ({ onClick, disabled, loading, children, gradient = 'from-primary to-primary/80' }: {
     onClick: () => void; disabled?: boolean; loading?: boolean; children: React.ReactNode; gradient?: string;
   }) => (
-    <motion.button
+    <button
       onClick={onClick}
       disabled={disabled}
-      whileHover={{ scale: 1.01 }}
-      whileTap={{ scale: 0.98 }}
       className={`btn w-full bg-gradient-to-r ${gradient} hover:from-primary/60 hover:to-primary/40
         text-white rounded-xl font-semibold border-0
         flex items-center justify-center gap-2 h-12
-        disabled:opacity-50 disabled:cursor-not-allowed`}
+        disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.98] transition-all`}
     >
       {loading ? (
         <span className="loading loading-spinner loading-sm" />
       ) : children}
-    </motion.button>
+    </button>
   );
 
   // ── Illustration Panel ──
@@ -318,7 +325,7 @@ export default function Auth() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay, duration: 0.8, ease: 'easeOut' }}
         >
-          <span className={`icon-[tabler--${iconName}] w-full h-full`} />
+          <span className={'icon-[tabler--' + iconName + '] w-full h-full'} />
         </motion.div>
       ))}
 
@@ -358,7 +365,7 @@ export default function Auth() {
               transition={{ delay: 0.8 + idx * 0.15, duration: 0.5 }}
             >
               <div className="bg-white/15 rounded-lg p-2">
-                <span className={`icon-[tabler--${iconName}] w-4 h-4`} />
+                <span className={'icon-[tabler--' + iconName + '] w-4 h-4'} />
               </div>
               <span className="text-sm font-medium">{text}</span>
             </motion.div>
@@ -749,26 +756,24 @@ export default function Auth() {
                 {/* Role-based quick-login segmented switcher */}
                 <div className="flex p-1 rounded-xl bg-white/5 border border-white/10 mb-6 gap-1">
                   {(['manager', 'employee'] as const).map((role) => (
-                    <motion.button
+                    <button
                       key={role}
                       onClick={() => {
                         setSelectedRole(role);
                         handleQuickLogin(role);
                       }}
                       disabled={isLoading}
-                      whileHover={{ scale: 1.03 }}
-                      whileTap={{ scale: 0.97 }}
                       className={`flex-1 min-w-[120px] px-3 py-2.5 rounded-lg text-sm font-medium
                         flex items-center justify-center gap-2 transition-all duration-200
-                        disabled:opacity-50 disabled:cursor-not-allowed
+                        disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]
                         ${selectedRole === role
                           ? 'bg-gradient-to-r from-primary/30 to-primary/20 shadow-lg shadow-primary/10 text-white border border-primary/40'
                           : 'text-white/50 hover:text-white/70 hover:bg-white/5'
                         }`}
                     >
-                      <span className={`icon-[tabler--${role === 'manager' ? 'user-check' : 'user-circle'}] w-4 h-4`} />
+                      <span className={'icon-[tabler--' + (role === 'manager' ? 'user-check' : 'user-circle') + '] w-4 h-4'} />
                       <span>{role === 'manager' ? 'Manager' : 'Employee'}</span>
-                    </motion.button>
+                    </button>
                   ))}
                 </div>
 
