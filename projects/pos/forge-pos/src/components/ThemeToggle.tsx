@@ -41,14 +41,12 @@ export default function ThemeToggle() {
   const knobPosition = 28 + (modeIndex * 36); // 28px per segment
 
   return (
-    <motion.button
-      whileHover={{ scale: 1.05 }}
-      whileTap={{ scale: 0.92 }}
+    <button
       onClick={cycleMode}
       className="relative w-[120px] h-[36px] rounded-full p-1 flex items-center
         cursor-pointer select-none focus-visible:ring-2 focus-visible:ring-white/60
         focus-visible:ring-offset-2 focus-visible:ring-offset-transparent
-        shadow-md hover:shadow-lg overflow-hidden"
+        shadow-md hover:shadow-lg active:scale-[0.92] transition-transform overflow-hidden"
       style={{
         background: resolvedMode === 'dark'
           ? 'linear-gradient(135deg, #0f172a 0%, #1e293b 100%)'
@@ -70,7 +68,7 @@ export default function ThemeToggle() {
                   : 'text-amber-700/60'
             }`}
           >
-            <span className={`icon-[tabler--${MODE_ICONS[m]}] w-3.5 h-3.5`} />
+            <span className={'icon-[tabler--' + MODE_ICONS[m] + '] w-3.5 h-3.5'} />
           </span>
         ))}
       </div>
@@ -84,10 +82,10 @@ export default function ThemeToggle() {
         }}
         transition={{ type: 'spring', stiffness: 400, damping: 30 }}
       >
-        <span className={`icon-[tabler--${MODE_ICONS[currentMode]}] w-3.5 h-3.5
-          ${resolvedMode === 'dark' ? 'text-indigo-400' : 'text-amber-500'}`}
+        <span className={'icon-[tabler--' + MODE_ICONS[currentMode] + '] w-3.5 h-3.5 ' +
+          (resolvedMode === 'dark' ? 'text-indigo-400' : 'text-amber-500')}
         />
       </motion.div>
-    </motion.button>
+    </button>
   );
 }

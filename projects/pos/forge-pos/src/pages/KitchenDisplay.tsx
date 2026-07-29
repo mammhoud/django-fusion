@@ -1,10 +1,11 @@
 import { useState, useEffect, useCallback, useRef } from 'react';
-import { motion } from 'framer-motion';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
 import { KitchenTicket, Sale } from '../types';
 import { useDebouncedSearch } from '../hooks/useDebouncedSearch';
+import { useKDSNotification } from '../hooks/useKDSNotification';
 
 // Type from the Rust SaleItem model (mirrored here for the ticket detail modal)
 interface SaleItemData {
@@ -36,6 +37,18 @@ function timeAgo(dateStr: string): string {
   if (hours < 24) return `${hours}h ${mins % 60}m ago`;
   const days = Math.floor(hours / 24);
   return `${days}d ago`;
+}
+
+/**
+ * Check if a ticket has been pending/preparing longer than its estimated
+ * prep time. Returns `true` if the elapsed time exceeds the estimate.
+ */
+function isOverdue(ticket: KitchenTicket): boolean {
+  if (ticket.status === 'delivered' || ticket.status === 'ready') return false;
+  if (ticket.prepare_time_minutes <= 0) return false;
+  const elapsed = Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime();
+  const estMs = ticket.prepare_time_minutes * 60 * 1000;
+  return elapsed > estMs;
 }
 
 // ── Click tracking entries stored in localStorage ──
@@ -98,10 +111,29 @@ export default function KitchenDisplay() {
     isPending: isFiltering,
   } = useDebouncedSearch();
 
+  // ── Sound + tab-title flash for new pending tickets ──
+  useKDSNotification(tickets);
+
   useEffect(() => {
     loadTickets({ quiet: false });
-    const interval = setInterval(() => loadTickets({ quiet: true }), 10000);
-    return () => clearInterval(interval);
+  }, [filter]);
+
+  // ── Sync tray badge on mount only (not on filter changes) ──
+  useEffect(() => {
+    invoke('sync_tray_badge').catch(() => {});
+  }, []);
+
+  // ── Real-time event listener — replaces the old 10s polling ──
+  useEffect(() => {
+    const unlisten = listen<{ type: string; ticket: KitchenTicket }>(
+      'kitchen-ticket-update',
+      () => {
+        loadTickets({ quiet: true });
+      },
+    );
+    return () => {
+      unlisten.then(fn => fn());
+    };
   }, [filter]);
 
   const loadTickets = async (opts: { quiet?: boolean } = {}) => {
@@ -341,66 +373,78 @@ export default function KitchenDisplay() {
           </div>
         ) : (
           <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 gap-2">
-            {filteredTickets.map(ticket => (
-              <motion.button
-                key={ticket.id}
-                type="button"
-                onClick={() => openDetail(ticket)}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                whileHover={{ y: -2 }}
-                whileTap={{ scale: 0.97 }}
-                className={`rounded-lg border-2 p-2.5 text-left cursor-pointer transition-all
-                  hover:shadow-md ${statusColors[ticket.status] || 'border-base-300 bg-base-100'}`}
-              >
-                {/* Ticket header - order type icon + order number + status */}
-                <div className="flex items-center justify-between mb-1">
-                  <div className="flex items-center gap-1 min-w-0">
-                    <span className={`icon-[tabler--${ORDER_TYPE_MAP[ticket.priority]?.icon || 'tools-kitchen-2'}] w-3.5 h-3.5 shrink-0 ${ORDER_TYPE_MAP[ticket.priority]?.color.split(' ')[0] || 'text-base-content/60'}`} />
-                    <span className="font-bold text-sm text-base-content truncate">#{ticket.sale_id}</span>
+            {filteredTickets.map(ticket => {
+              const overdue = isOverdue(ticket);
+              return (
+                <button
+                  key={ticket.id}
+                  type="button"
+                  onClick={() => openDetail(ticket)}
+                  className={`rounded-lg border-2 p-2.5 text-left cursor-pointer transition-all
+                    hover:shadow-md hover:-translate-y-0.5 active:scale-[0.97] ${overdue ? 'bg-error/5' : statusColors[ticket.status] || 'border-base-300 bg-base-100'}
+                    ${overdue ? 'shadow-[0_0_12px_rgba(239,68,68,0.15)]' : ''}`}
+                  style={overdue ? { borderColor: 'rgba(239, 68, 68, 1)' } : undefined}
+                >
+                  {/* Ticket header - order type icon + order number + overdue badge */}
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="flex items-center gap-1 min-w-0">
+                      <span className={'icon-[tabler--' + (ORDER_TYPE_MAP[ticket.priority]?.icon || 'tools-kitchen-2') + '] w-3.5 h-3.5 shrink-0 ' + (ORDER_TYPE_MAP[ticket.priority]?.color.split(' ')[0] || 'text-base-content/60')} />
+                      <span className="font-bold text-sm text-base-content truncate">#{ticket.sale_id}</span>
+                    </div>
+                    {overdue ? (
+                      <span className="badge badge-sm badge-error gap-1 shrink-0 ml-1 animate-pulse">
+                        <span className="text-[10px]">🔴</span> Overdue
+                      </span>
+                    ) : (
+                      <span className={`${statusBadges[ticket.status] || 'badge badge-soft'} shrink-0 ml-1`}>{ticket.status}</span>
+                    )}
                   </div>
-                  <span className={`${statusBadges[ticket.status] || 'badge badge-soft'} shrink-0 ml-1`}>{ticket.status}</span>
-                </div>
-                {/* Order type + elapsed time row */}
-                <div className="flex items-center justify-between gap-1 mb-1">
-                  {ORDER_TYPE_MAP[ticket.priority] && (
-                    <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${ORDER_TYPE_MAP[ticket.priority].color}`}>
-                      {ORDER_TYPE_MAP[ticket.priority].label}
+                  {/* Order type + elapsed time row */}
+                  <div className="flex items-center justify-between gap-1 mb-1">
+                    {ORDER_TYPE_MAP[ticket.priority] && (
+                      <span className={`text-[9px] px-1.5 py-0.5 rounded-full font-medium ${ORDER_TYPE_MAP[ticket.priority].color}`}>
+                        {ORDER_TYPE_MAP[ticket.priority].label}
+                      </span>
+                    )}
+                    <span className={`text-[9px] flex items-center gap-1 ${overdue ? 'text-error font-semibold' : 'text-base-content/40'}`}>
+                      <span className="icon-[tabler--clock] w-3 h-3" />
+                      {timeAgo(ticket.created_at)}
                     </span>
+                  </div>
+                  {/* Notes (truncated) */}
+                  {ticket.notes && (
+                    <p className="text-[10px] text-base-content/60 line-clamp-1 mb-1.5">{ticket.notes}</p>
                   )}
-                  <span className="text-[9px] text-base-content/40 flex items-center gap-1">
-                    <span className="icon-[tabler--clock] w-3 h-3" />
-                    {timeAgo(ticket.created_at)}
-                  </span>
-                </div>
-                {/* Notes (truncated) */}
-                {ticket.notes && (
-                  <p className="text-[10px] text-base-content/60 line-clamp-1 mb-1.5">{ticket.notes}</p>
-                )}
-                {/* Prep time + status row */}
-                <div className="flex items-center justify-between mt-auto mb-1">
-                  {ticket.prepare_time_minutes > 0 && (
-                    <span className="flex items-center gap-1 text-[9px] text-base-content/50">
-                      <span className="icon-[tabler--clock-play] w-3 h-3" />
-                      {ticket.prepare_time_minutes}min
-                      <span className="text-base-content/30">Est.</span>
-                    </span>
-                  )}
-                </div>
-                {/* Quick status badge */}
-                <div className="flex gap-1">
-                  {ticket.status === 'pending' && (
-                    <span className="text-[9px] px-2 py-0.5 rounded bg-warning/20 text-warning font-medium">Awaiting</span>
-                  )}
-                  {ticket.status === 'preparing' && (
-                    <span className="text-[9px] px-2 py-0.5 rounded bg-info/20 text-info font-medium">In Progress</span>
-                  )}
-                  {ticket.status === 'ready' && (
-                    <span className="text-[9px] px-2 py-0.5 rounded bg-success/20 text-success font-medium">Ready ✓</span>
-                  )}
-                </div>
-              </motion.button>
-            ))}
+                  {/* Prep time + status row */}
+                  <div className="flex items-center justify-between mt-auto mb-1">
+                    {ticket.prepare_time_minutes > 0 && (
+                      <span className={`flex items-center gap-1 text-[9px] ${overdue ? 'text-error' : 'text-base-content/50'}`}>
+                        <span className="icon-[tabler--clock-play] w-3 h-3" />
+                        {ticket.prepare_time_minutes}min
+                        <span className="text-base-content/30">Est.</span>
+                      </span>
+                    )}
+                    {overdue && (
+                      <span className="text-[9px] text-error font-bold">
+                        +{Math.floor((Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime()) / 60000) - ticket.prepare_time_minutes}min overdue
+                      </span>
+                    )}
+                  </div>
+                  {/* Quick status badge */}
+                  <div className="flex gap-1">
+                    {ticket.status === 'pending' && !overdue && (
+                      <span className="text-[9px] px-2 py-0.5 rounded bg-warning/20 text-warning font-medium">Awaiting</span>
+                    )}
+                    {ticket.status === 'preparing' && !overdue && (
+                      <span className="text-[9px] px-2 py-0.5 rounded bg-info/20 text-info font-medium">In Progress</span>
+                    )}
+                    {ticket.status === 'ready' && (
+                      <span className="text-[9px] px-2 py-0.5 rounded bg-success/20 text-success font-medium">Ready ✓</span>
+                    )}
+                  </div>
+                </button>
+              );
+            })}
           </div>
         )}
 
@@ -414,7 +458,7 @@ export default function KitchenDisplay() {
                   <div className="flex items-center gap-2">
                     {ORDER_TYPE_MAP[selectedTicket.priority] ? (
                       <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${ORDER_TYPE_MAP[selectedTicket.priority].color}`}>
-                        <span className={`icon-[tabler--${ORDER_TYPE_MAP[selectedTicket.priority].icon}] w-4 h-4`} />
+                        <span className={'icon-[tabler--' + ORDER_TYPE_MAP[selectedTicket.priority].icon + '] w-4 h-4'} />
                       </div>
                     ) : (
                       <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-primary" />

@@ -26,6 +26,16 @@ pub fn get_recipe_with_ingredients(db_path: &PathBuf, recipe_id: i32) -> Result<
     Ok((recipe, ingredients_list))
 }
 
+pub fn add_recipe(db_path: &PathBuf, new_recipe: NewRecipe) -> Result<Recipe, String> {
+    let mut conn = open_conn(db_path)?;
+    use crate::db::schema::recipes::dsl::*;
+    diesel::insert_into(recipes)
+        .values(&new_recipe)
+        .returning(Recipe::as_returning())
+        .get_result(&mut conn)
+        .map_err(|e| e.to_string())
+}
+
 pub fn create_recipe(
     db_path: &PathBuf,
     new_recipe: NewRecipe,

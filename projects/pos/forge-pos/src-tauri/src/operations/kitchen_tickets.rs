@@ -37,3 +37,14 @@ pub fn delete_kitchen_ticket(db_path: &PathBuf, id: i32) -> Result<(), String> {
         .map_err(|e| e.to_string())?;
     Ok(())
 }
+
+/// Count all kitchen tickets with status = 'pending'
+pub fn count_pending_tickets(db_path: &PathBuf) -> Result<i64, String> {
+    let mut conn = crate::db::open_conn(db_path)?;
+    use diesel::dsl::count;
+    kitchen_tickets::table
+        .filter(kitchen_tickets::status.eq("pending"))
+        .select(count(kitchen_tickets::id))
+        .first::<i64>(&mut conn)
+        .map_err(|e| e.to_string())
+}

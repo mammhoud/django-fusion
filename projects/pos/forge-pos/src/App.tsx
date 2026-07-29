@@ -1,36 +1,42 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
-import { useState, useEffect, useRef } from 'react';
-import Home from './pages/Home';
-import ProductManager from './pages/ProductManager';
-import Sale from './pages/Sale';
-import Analytics from './pages/Analytics';
-import Transactions from './pages/Transactions';
-import Inventory from './pages/Inventory';
-import Employees from './pages/Employees';
-import Recipes from './pages/Recipes';
-import Reports from './pages/Reports';
-import Settings from './pages/Settings';
-import About from './pages/About';
+import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
+import { useEffect, Suspense, lazy, useState } from 'react';
 import Auth from './pages/Auth';
-import Customers from './pages/Customers';
-import Suppliers from './pages/Suppliers';
-import KitchenDisplay from './pages/KitchenDisplay';
-import EmployeeSchedule from './pages/EmployeeSchedule';
-import Payroll from './pages/Payroll';
-import ReceiptTemplates from './pages/ReceiptTemplates';
-import TaxReports from './pages/TaxReports';
-import Roles from './pages/Roles';
-import SupportChat from './pages/SupportChat';
-import InvoicePage from './pages/InvoicePage';
-import ThemeShowcase from './pages/ThemeShowcase';
-import ThemeStudio from './pages/ThemeStudio';
-import StaffPage from './pages/StaffPage';
-import ProductsPage from './pages/ProductsPage';
 import ChatSupport from './components/ChatSupport';
 import { useAuth } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
+import { useNavigationPredictor } from './hooks/useNavigationPredictor';
+
+// ── Lazy-loaded pages (code-split by route) ──
+// These chunks load on first navigation, not on initial page load.
+// The largest pages (Reports: 2438 lines, Settings: 1841, Transactions: 1642,
+// Sale: 1551) are the biggest beneficiaries — they bundle heavy deps like
+// Recharts, jsPDF, and Excel export utilities only when visited.
+const Home = lazy(() => import('./pages/Home'));
+const ProductManager = lazy(() => import('./pages/ProductManager'));
+const Sale = lazy(() => import('./pages/Sale'));
+const Analytics = lazy(() => import('./pages/Analytics'));
+const Transactions = lazy(() => import('./pages/Transactions'));
+const Inventory = lazy(() => import('./pages/Inventory'));
+const Employees = lazy(() => import('./pages/Employees'));
+const Recipes = lazy(() => import('./pages/Recipes'));
+const Reports = lazy(() => import('./pages/Reports'));
+const Settings = lazy(() => import('./pages/Settings'));
+const About = lazy(() => import('./pages/About'));
+const Customers = lazy(() => import('./pages/Customers'));
+const Suppliers = lazy(() => import('./pages/Suppliers'));
+const KitchenDisplay = lazy(() => import('./pages/KitchenDisplay'));
+const EmployeeSchedule = lazy(() => import('./pages/EmployeeSchedule'));
+const Payroll = lazy(() => import('./pages/Payroll'));
+const ReceiptTemplates = lazy(() => import('./pages/ReceiptTemplates'));
+const TaxReports = lazy(() => import('./pages/TaxReports'));
+const Roles = lazy(() => import('./pages/Roles'));
+const SupportChat = lazy(() => import('./pages/SupportChat'));
+const InvoicePage = lazy(() => import('./pages/InvoicePage'));
+const ThemeShowcase = lazy(() => import('./pages/ThemeShowcase'));
+const ThemeStudio = lazy(() => import('./pages/ThemeStudio'));
+const StaffPage = lazy(() => import('./pages/StaffPage'));
+const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 
 // FlyonUI — reinitialize interactive components after route changes
 // The module is already loaded via static import in main.tsx — this just
@@ -40,98 +46,19 @@ async function reinitFlyonUI() {
   setTimeout(() => window.HSStaticMethods?.autoInit(), 100);
 }
 
-// Route ordering for direction-aware transitions
-const routeOrder: Record<string, number> = {
-  '/': 0,
-  '/manager': 1,
-  '/sale': 2,
-  '/analytics': 3,
-  '/transactions': 4,
-  '/inventory': 5,
-  '/employees': 6,
-  '/recipes': 7,
-  '/reports': 8,
-  '/settings': 9,
-  '/about': 10,
-  '/customers': 11,
-  '/suppliers': 12,
-  '/kitchen': 13,
-  '/schedule': 14,
-  '/payroll': 15,
-  '/receipt-templates': 16,
-  '/tax-reports': 17,
-  '/roles': 18,
-  '/support-chat': 19,
-  '/invoice': 20,
-  '/theme-showcase': 21,
-  '/theme-studio': 22,
-  '/staff': 23,
-  '/products': 24,
-};
-
-function PageWrapper({ children, direction, isFirstRender }: { children: React.ReactNode; direction: number; isFirstRender: boolean }) {
-  return (
-    <motion.div
-      custom={direction}
-      variants={{
-        initial: (dir: number) => ({
-          opacity: isFirstRender ? 1 : 0,
-          x: isFirstRender ? 0 : dir > 0 ? 40 : -40,
-          scale: isFirstRender ? 1 : 0.97,
-        }),
-        animate: {
-          opacity: 1,
-          x: 0,
-          scale: 1,
-        },
-        exit: (dir: number) => ({
-          opacity: 0,
-          x: dir > 0 ? -40 : 40,
-          scale: 0.97,
-        }),
-      }}
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      transition={{
-        x: { type: 'spring', stiffness: 300, damping: 30 },
-        opacity: { duration: 0.25 },
-        scale: { duration: 0.25 },
-      }}
-      style={{ position: 'absolute', inset: 0, overflowY: 'auto' }}
-    >
-      {children}
-    </motion.div>
-  );
-}
+// Route transitions are handled by the AnimatePresence + motion.div
+// inside PageLayout. Each page inherits a consistent fade+slide-up entrance
+// via the shared pageSlideUp variant from utils/pageTransitions.ts.
 
 function AnimatedRoutes() {
   const location = useLocation();
   const navigate = useNavigate();
-  const [direction, setDirection] = useState(1);
-  const prevPathRef = useRef(location.pathname);
   const { isAuthenticated, isAuthRequired } = useAuth();
   const { toggleMode } = useTheme();
-  const isFirstRender = useRef(true);
-  // Always show Auth first on every app launch as the landing page
-  // Once the user authenticates, the splash auto-dismisses
-  const [showAuthSplash, setShowAuthSplash] = useState(true);
 
-  useEffect(() => {
-    isFirstRender.current = false;
-  }, []);
-
-  // Track direction for page transitions (MUST be before early returns per React hooks rules)
-  useEffect(() => {
-    const prev = prevPathRef.current;
-    const curr = location.pathname;
-    if (prev !== curr) {
-      const prevIdx = routeOrder[prev] ?? 0;
-      const currIdx = routeOrder[curr] ?? 0;
-      setDirection(currIdx > prevIdx ? 1 : -1);
-      prevPathRef.current = curr;
-    }
-  }, [location.pathname]);
+  // ── Predictive route preloading — preload the most-likely next page chunk
+  //     based on the user's navigation history patterns ──
+  useNavigationPredictor(location.pathname);
 
   // FlyonUI — reinitialize interactive components (modals, dropdowns, toggles)
   // on every route change so new DOM elements get bound properly
@@ -149,7 +76,7 @@ function AnimatedRoutes() {
       switch (e.key.toLowerCase()) {
         case 'g':
           e.preventDefault();
-          navigate('/');
+          navigate('/dashboard');
           break;
         case 's':
           if (!e.shiftKey) {
@@ -176,16 +103,26 @@ function AnimatedRoutes() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [navigate, toggleMode]);
 
-  // Auto-dismiss splash when user authenticates (or skips auth)
-  useEffect(() => {
-    if (showAuthSplash && isAuthenticated) {
-      setShowAuthSplash(false);
-    }
-    if (showAuthSplash && isAuthRequired === false) {
-      // Auth not required at all — dismiss splash
-      setShowAuthSplash(false);
-    }
-  }, [showAuthSplash, isAuthenticated, isAuthRequired]);
+
+
+  // ── Suspense fallback shown while lazy chunks load ──
+  const PageFallback = (
+    <div className="min-h-screen flex items-center justify-center bg-base-100">
+      <div className="text-center">
+        <span className="loading loading-spinner loading-lg text-primary" />
+        <p className="text-sm text-base-content/50 mt-3">Loading...</p>
+        <div className="flex items-center justify-center gap-1 mt-6">
+          {[0, 1, 2].map(i => (
+            <div
+              key={i}
+              className="w-2 h-2 rounded-full bg-primary/60 animate-bounce"
+              style={{ animationDelay: `${i * 0.15}s` }}
+            />
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 
   // If auth is still being checked, show a loading screen
   if (isAuthRequired === null) {
@@ -199,47 +136,46 @@ function AnimatedRoutes() {
     );
   }
 
-  // Always show Auth first as the landing/splash page
-  if (showAuthSplash) {
-    return <Auth />;
-  }
-
-  // If auth is required but user is not authenticated, show the Auth page
+  // Auth guard: if auth is required and user is not authenticated, show Auth
   if (isAuthRequired && !isAuthenticated) {
     return <Auth />;
   }
 
   return (
-    <div className="relative min-h-screen bg-slate-50 dark:bg-slate-900">
-      <AnimatePresence mode="popLayout" initial={false}>
+    <div className="relative min-h-screen bg-base-100">
+      <Suspense fallback={PageFallback}>
         <Routes location={location} key={location.pathname}>
-          <Route path="/" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Home /></PageWrapper>} />
-          <Route path="/manager" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ProductManager /></PageWrapper>} />
-          <Route path="/sale" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Sale /></PageWrapper>} />
-          <Route path="/analytics" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Analytics /></PageWrapper>} />
-          <Route path="/transactions" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Transactions /></PageWrapper>} />
-          <Route path="/inventory" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Inventory /></PageWrapper>} />
-          <Route path="/employees" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Employees /></PageWrapper>} />
-          <Route path="/recipes" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Recipes /></PageWrapper>} />
-          <Route path="/reports" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Reports /></PageWrapper>} />
-          <Route path="/settings" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Settings /></PageWrapper>} />
-          <Route path="/about" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><About /></PageWrapper>} />
-          <Route path="/customers" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Customers /></PageWrapper>} />
-          <Route path="/suppliers" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Suppliers /></PageWrapper>} />
-          <Route path="/kitchen" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><KitchenDisplay /></PageWrapper>} />
-          <Route path="/schedule" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><EmployeeSchedule /></PageWrapper>} />
-          <Route path="/payroll" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Payroll /></PageWrapper>} />
-          <Route path="/receipt-templates" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ReceiptTemplates /></PageWrapper>} />
-          <Route path="/tax-reports" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><TaxReports /></PageWrapper>} />
-          <Route path="/roles" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><Roles /></PageWrapper>} />
-          <Route path="/support-chat" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><SupportChat /></PageWrapper>} />
-          <Route path="/invoice" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><InvoicePage /></PageWrapper>} />
-          <Route path="/theme-showcase" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ThemeShowcase /></PageWrapper>} />
-          <Route path="/theme-studio" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ThemeStudio /></PageWrapper>} />
-          <Route path="/staff" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><StaffPage /></PageWrapper>} />
-          <Route path="/products" element={<PageWrapper direction={direction} isFirstRender={isFirstRender.current}><ProductsPage /></PageWrapper>} />
+          {/* Root route: show Auth if not authenticated, otherwise redirect to dashboard */}
+          <Route path="/" element={
+            !isAuthenticated ? <Auth /> : <Navigate to="/dashboard" replace />
+          } />
+          <Route path="/dashboard" element={<Home />} />
+          <Route path="/manager" element={<ProductManager />} />
+          <Route path="/sale" element={<Sale />} />
+          <Route path="/analytics" element={<Analytics />} />
+          <Route path="/transactions" element={<Transactions />} />
+          <Route path="/inventory" element={<Inventory />} />
+          <Route path="/employees" element={<Employees />} />
+          <Route path="/recipes" element={<Recipes />} />
+          <Route path="/reports" element={<Reports />} />
+          <Route path="/settings" element={<Settings />} />
+          <Route path="/about" element={<About />} />
+          <Route path="/customers" element={<Customers />} />
+          <Route path="/suppliers" element={<Suppliers />} />
+          <Route path="/kitchen" element={<KitchenDisplay />} />
+          <Route path="/schedule" element={<EmployeeSchedule />} />
+          <Route path="/payroll" element={<Payroll />} />
+          <Route path="/receipt-templates" element={<ReceiptTemplates />} />
+          <Route path="/tax-reports" element={<TaxReports />} />
+          <Route path="/roles" element={<Roles />} />
+          <Route path="/support-chat" element={<SupportChat />} />
+          <Route path="/invoice" element={<InvoicePage />} />
+          <Route path="/theme-showcase" element={<ThemeShowcase />} />
+          <Route path="/theme-studio" element={<ThemeStudio />} />
+          <Route path="/staff" element={<StaffPage />} />
+          <Route path="/products" element={<ProductsPage />} />
         </Routes>
-      </AnimatePresence>
+      </Suspense>
       {/* Global floating chat widget — visible on all authenticated pages */}
       <ChatSupport />
     </div>

@@ -1,6 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { save } from '@tauri-apps/plugin-dialog';
 import { writeFile } from '@tauri-apps/plugin-fs';
 import { Product, Settings, CartItem, NewSaleData, NewSaleItemData, DeliveryType, Employee, DeliveryZone } from '../types';
@@ -69,6 +70,9 @@ export default function Sale() {
   const [showShortcutHelp, setShowShortcutHelp] = useState(false);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [sidebarHovered, setSidebarHovered] = useState(false);
+  // ── Live-update indicator — briefly pulses green when product-updated event fires ──
+  const [showLiveBadge, setShowLiveBadge] = useState(false);
+  const liveBadgeTimer = useRef<ReturnType<typeof setTimeout>>();
   // AJAX-style debounced search: 250 ms idle window with isSearching flag for
   // the spinner. Shared hook — see src/hooks/useDebouncedSearch.ts.
   // We rename-destructure so the rest of this file keeps using the original
@@ -187,6 +191,21 @@ export default function Sale() {
     // without reactive captures); listing it as a dep would only re-run on
     // every render. Empty deps here intentionally mirror the established
     // mount-once pattern from other POS pages.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // ── Real-time product updates from other windows ──
+  useEffect(() => {
+    const unlisten = listen('product-updated', () => {
+      loadData({ quiet: true });
+      setShowLiveBadge(true);
+      clearTimeout(liveBadgeTimer.current);
+      liveBadgeTimer.current = setTimeout(() => setShowLiveBadge(false), 2000);
+    });
+    return () => {
+      unlisten.then(fn => fn());
+      clearTimeout(liveBadgeTimer.current);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -534,18 +553,16 @@ export default function Sale() {
   return (        <PageLayout title={t('sale.title')}>
       <div className="flex flex-col lg:flex-row gap-4 lg:gap-6 max-w-full overflow-x-hidden">{/* ── Sidebar Toggle Button (desktop only) ── */}
         <div          className="hidden lg:flex items-start pt-1 -mr-2 z-20">
-          <motion.button
-            whileHover={{ scale: 1.08 }}
-            whileTap={{ scale: 0.92 }}
+          <button
             onClick={() => { setSidebarOpen(o => !o); setSidebarHovered(false); }}
             className="sticky top-24 p-2 rounded-xl bg-base-100/60 backdrop-blur-sm
               border border-base-300/50 shadow-sm hover:shadow-md
               text-base-content/50 hover:text-primary dark:hover:text-primary/80
-              transition-all duration-300 z-10"
+              transition-all duration-300 z-10 active:scale-[0.92]"
             aria-label={sidebarOpen ? 'Hide order panel' : 'Show order panel'}
           >
             {sidebarOpen ? <span className="icon-[tabler--chevron-right] w-5 h-5" /> : <span className="icon-[tabler--chevron-left] w-5 h-5" />}
-          </motion.button>
+          </button>
         </div>
 
         {/* ── Main Content (products + cart) ── */}
@@ -558,13 +575,11 @@ export default function Sale() {
               </div>
               <div className="grid grid-cols-3 gap-3">
                 {ORDER_TYPES.map(ot => (
-                  <motion.button
+                  <button
                     key={ot.key}
-                    whileHover={{ scale: isLoading ? 1 : 1.02 }}
-                    whileTap={{ scale: isLoading ? 1 : 0.98 }}
                     onClick={() => setOrderType(ot.key)}
                     disabled={isLoading}
-                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl font-medium text-sm transition-all ${
+                    className={`flex flex-col items-center gap-1.5 p-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98] ${
                       isLoading
                         ? 'bg-slate-200 dark:bg-slate-700 text-base-content/40 cursor-not-allowed'
                         : orderType === ot.key
@@ -574,13 +589,11 @@ export default function Sale() {
                   >
                     <span className="text-lg">{ot.icon}</span>
                     <span>{ot.key === 'dine-in' ? t('sale.dineIn') : t('sale.' + ot.key)}</span>
-                  </motion.button>
+                  </button>
                 ))}
               </div>
               {orderType === 'dine-in' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                <div
                   className="flex items-center gap-3 mt-3 pt-3 border-t border-base-300/50"
                 >
                   <span className="icon-[tabler--door-enter] text-slate-400" />
@@ -595,12 +608,10 @@ export default function Sale() {
                       <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
                     ))}
                   </select>
-                </motion.div>
+                </div>
               )}
               {orderType === 'delivery' && (
-                <motion.div
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
+                <div
                   className="space-y-3 mt-3 pt-3 border-t border-base-300/50"
                 >
                   <div className="flex items-center gap-3">
@@ -676,7 +687,7 @@ export default function Sale() {
                       Delivery fee: {settings.currency} {deliveryFee.toFixed(2)}
                     </p>
                   )}
-                </motion.div>
+                </div>
               )}
             </Card>
 
@@ -728,12 +739,10 @@ export default function Sale() {
                   className="input input-bordered w-full pl-10 disabled:opacity-60 disabled:cursor-not-allowed"
                 />
                 {isSearching ? (
-                  <motion.div
+                  <div
                     aria-label="searching"
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                     className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                      border-2 border-teal-400 border-t-transparent rounded-full pointer-events-none"
+                      border-2 border-teal-400 border-t-transparent rounded-full pointer-events-none animate-spin"
                   />
                 ) : searchQuery ? (
                   <button
@@ -768,6 +777,17 @@ export default function Sale() {
                 <option value="combo">Combos</option>
                 <option value="addon">Add-ons</option>
               </select>
+              {/* Live-update indicator badge */}
+              <span
+                className={`w-2 h-2 rounded-full shrink-0 transition-all duration-300 ${
+                  showLiveBadge
+                    ? 'bg-success scale-125 opacity-100 animate-pulse'
+                    : 'bg-success/20 scale-100 opacity-0'
+                }`}
+                title={showLiveBadge ? 'Products updated live' : undefined}
+                aria-hidden={!showLiveBadge}
+              />
+
               {/* View mode toggle */}
               <div className="flex items-center gap-1 bg-base-200/50 rounded-lg p-0.5 shrink-0">
                 <button
@@ -800,14 +820,12 @@ export default function Sale() {
                 card height never jumps and the slot never shows blank whitespace. aria-hidden
                 mirrors visibility so screen readers ignore the stale count while it's hidden. */}
             <div className="mt-2 min-h-[1.25rem] flex items-center justify-end">
-              <motion.span
-                animate={{ opacity: filterActive ? 1 : 0 }}
-                transition={{ duration: 0.15 }}
+              <span
                 aria-hidden={!filterActive}
-                className="text-xs text-base-content/50 tabular-nums"
+                className="text-xs text-base-content/50 tabular-nums transition-opacity duration-150"
               >
                 {filteredProducts.length} / {products.length}
-              </motion.span>
+              </span>
             </div>
           </Card>
 
@@ -835,21 +853,17 @@ export default function Sale() {
                 >
                   {/* Add Button */}
                   {!cartItem && (
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
+                    <button
                       onClick={() => addToCart(product)}
-                      className={`${color.badge} text-white p-1.5 sm:p-2 rounded-lg hover:brightness-110 transition-all shrink-0 shadow-sm mt-1`}
+                      className={`${color.badge} text-white p-1.5 sm:p-2 rounded-lg hover:brightness-110 transition-all active:scale-[0.9] shrink-0 shadow-sm mt-1`}
                       aria-label={t('sale.addToCart', { product: product.name })}
                     >
                       <span className="icon-[tabler--plus] w-3.5 h-3.5 sm:w-4 sm:h-4" />
-                    </motion.button>
+                    </button>
                   )}
 
                   {cartItem && (
-                    <motion.div
-                      initial={{ opacity: 0, y: 10 }}
-                      animate={{ opacity: 1, y: 0 }}
+                    <div
                       className="flex items-center justify-between bg-white/50 dark:bg-white/10 rounded-lg p-1.5 sm:p-2 backdrop-blur-sm w-full mt-1"
                     >
                       <button
@@ -888,7 +902,7 @@ export default function Sale() {
                       >
                         +
                       </button>
-                    </motion.div>
+                    </div>
                   )}
                 </ProductCard>
               );
@@ -974,9 +988,7 @@ export default function Sale() {
 
           {/* Sell Button — desktop only (mobile uses sticky bar below) */}
           <div className="hidden lg:block">
-            <motion.button
-              whileHover={{ scale: 1.02 }}
-              whileTap={{ scale: 0.98 }}
+            <button
               onClick={handleSell}
               disabled={cart.length === 0 || isSelling || isLoading}
               className={`w-full py-4 rounded-xl flex items-center justify-center gap-3 text-white font-semibold
@@ -988,10 +1000,8 @@ export default function Sale() {
             >
               {isSelling ? (
                 <>
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                  <div
+                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                   />
                   <span>{t('sale.processing')}</span>
                 </>
@@ -1001,7 +1011,7 @@ export default function Sale() {
                   {t('sale.completeSale')}
                 </>
               )}
-            </motion.button>
+            </button>
           </div>
         </div>{/* end main-content */}
 
@@ -1029,8 +1039,7 @@ export default function Sale() {
                   </p>
                 )}
               </div>
-              <motion.button
-                whileTap={{ scale: 0.95 }}
+              <button
                 onClick={handleSell}
                 disabled={cart.length === 0 || isSelling || isLoading}
                 className="shrink-0 px-5 py-2.5 rounded-xl bg-primary text-white font-semibold
@@ -1040,10 +1049,8 @@ export default function Sale() {
               >
                 {isSelling ? (
                   <>
-                    <motion.div
-                      animate={{ rotate: 360 }}
-                      transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                      className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
+                    <div
+                      className="w-4 h-4 border-2 border-white border-t-transparent rounded-full animate-spin"
                     />
                     <span className="text-sm">{t('sale.processing')}</span>
                   </>
@@ -1053,7 +1060,7 @@ export default function Sale() {
                     <span className="text-sm">{t('sale.completeSale')}</span>
                   </>
                 )}
-              </motion.button>
+              </button>
             </div>
           </div>
         </motion.div>
@@ -1066,7 +1073,6 @@ export default function Sale() {
         >
           <motion.div
             initial={false}
-            animate={{
               width: (sidebarOpen || sidebarHovered) ? 280 : 0,
               opacity: (sidebarOpen || sidebarHovered) ? 1 : 0,
             }}
@@ -1082,13 +1088,11 @@ export default function Sale() {
                 </div>
                 <div className="flex flex-col gap-2">
                   {ORDER_TYPES.map(ot => (
-                    <motion.button
+                    <button
                       key={ot.key}
-                      whileHover={{ scale: isLoading ? 1 : 1.02, x: 4 }}
-                      whileTap={{ scale: isLoading ? 1 : 0.98 }}
                       onClick={() => setOrderType(ot.key)}
                       disabled={isLoading}
-                      className={`flex items-center gap-3 p-3 rounded-xl font-medium text-sm transition-all ${
+                      className={`flex items-center gap-3 p-3 rounded-xl font-medium text-sm transition-all active:scale-[0.98] ${
                         isLoading
                           ? 'bg-slate-200 dark:bg-slate-700 text-slate-400 cursor-not-allowed'
                           : orderType === ot.key
@@ -1101,15 +1105,13 @@ export default function Sale() {
                       {orderType === ot.key && (
                         <span className="icon-[tabler--circle-check] ml-auto w-4 h-4" />
                       )}
-                    </motion.button>
+                    </button>
                   ))}
                 </div>
 
                 {/* Dine-in: Table Selector */}
                 {orderType === 'dine-in' && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                  <div
                     className="flex items-center gap-2 mt-3 pt-3 border-t border-base-300/30"
                   >
                     <span className="icon-[tabler--door-enter] text-slate-400 text-sm" />
@@ -1120,14 +1122,12 @@ export default function Sale() {
                         <option key={i + 1} value={i + 1}>{t('sale.tableOption', { number: i + 1 })}</option>
                       ))}
                     </select>
-                  </motion.div>
+                  </div>
                 )}
 
                 {/* Delivery: Type + Zone + Address */}
                 {orderType === 'delivery' && (
-                  <motion.div
-                    initial={{ opacity: 0, height: 0 }}
-                    animate={{ opacity: 1, height: 'auto' }}
+                  <div
                     className="space-y-2 mt-3 pt-3 border-t border-base-300/30"
                   >
                     <div className="flex items-center gap-2">
@@ -1191,7 +1191,7 @@ export default function Sale() {
                         Fee: {settings.currency} {deliveryFee.toFixed(2)}
                       </p>
                     )}
-                  </motion.div>
+                  </div>
                 )}
               </Card>
 
@@ -1265,9 +1265,7 @@ export default function Sale() {
 
           {/* Collapsed peek tab — visible on hover when sidebar is closed */}
           {!sidebarOpen && !sidebarHovered && (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
+            <div
               className="absolute right-0 top-24 w-4 h-32 rounded-l-lg bg-teal-400/30 dark:bg-primary/20 cursor-pointer hover:bg-teal-400/50 dark:hover:bg-primary/40 transition-colors"
               onMouseEnter={() => setSidebarHovered(true)}
             />
@@ -1278,40 +1276,29 @@ export default function Sale() {
       {/* Success Dialog */}
       {showSuccessDialog && receiptData && (
         <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
         >
           <motion.div
-            initial={{ scale: 0.8, opacity: 0 }}
-            animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
             className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full my-8 transition-colors duration-300"
           >
             <div className="text-center">
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
                 <span className="icon-[tabler--circle-check] w-16 h-16 text-primary mx-auto" />
               </motion.div>
 
-              <motion.h3
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+              <h3
                 className="text-2xl font-bold text-base-content mb-6"
               >
                 {t('sale.saleComplete')}
-              </motion.h3>
+              </h3>
 
               {/* Order Details Badge */}
-              <motion.div
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: 0.1 }}
+              <div
                 className="flex flex-wrap justify-center gap-2 mb-4"
               >
                 <span className="px-3 py-1 bg-primary/10 dark:bg-primary/20 text-primary dark:text-primary/80 rounded-full text-xs font-medium">
@@ -1332,7 +1319,7 @@ export default function Sale() {
                     {receiptData.employeeName}
                   </span>
                 )}
-              </motion.div>
+              </div>
 
               {/* Receipt Preview */}
               <div className="mb-6">
@@ -1373,9 +1360,7 @@ export default function Sale() {
 
               {/* Action Buttons */}
               <div className="grid grid-cols-2 gap-3 mb-4">
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={handleDownloadPDF}
                   disabled={isDownloadingPDF}
                   className={`py-3 px-4 text-white rounded-xl font-semibold
@@ -1385,10 +1370,8 @@ export default function Sale() {
                 >
                   {isDownloadingPDF ? (
                     <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      <div
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                       />
                       <span>{t('sale.saving')}</span>
                     </>
@@ -1398,11 +1381,9 @@ export default function Sale() {
                       {t('sale.pdf')}
                     </>
                   )}
-                </motion.button>
+                </button>
 
-                <motion.button
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
+                <button
                   onClick={handlePrint}
                   disabled={isPrinting}
                   className={`py-3 px-4 text-white rounded-xl font-semibold
@@ -1412,10 +1393,8 @@ export default function Sale() {
                 >
                   {isPrinting ? (
                     <>
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                      <div
+                        className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                       />
                       <span>{t('sale.printing')}</span>
                     </>
@@ -1425,22 +1404,18 @@ export default function Sale() {
                       {t('sale.print')}
                     </>
                   )}
-                </motion.button>
+                </button>
               </div>
 
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={handleDownloadInvoice}
                 disabled={isInvoiceDownloading}
                 className="w-full py-3 px-4 bg-teal-600 hover:bg-teal-700 text-white rounded-xl font-semibold 
                   transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed mb-4"
               >
                 {isInvoiceDownloading ? (
-                  <motion.div
-                    animate={{ rotate: 360 }}
-                    transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
+                  <div
+                    className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
                   />
                 ) : (
                   <>
@@ -1448,20 +1423,16 @@ export default function Sale() {
                     {t('invoice.downloadInvoice')}
                   </>
                 )}
-              </motion.button>
+              </button>
 
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={handleNewSale}
                 className="w-full py-3 px-4 bg-primary text-white rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <span className="icon-[tabler--shopping-cart] text-xl" />
                 {t('sale.startNewSale')}
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         </motion.div>
@@ -1485,43 +1456,31 @@ export default function Sale() {
           >
             <div className="text-center">
               <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
                 <span className="icon-[tabler--circle-check] w-16 h-16 text-green-500 mx-auto" />
               </motion.div>
 
-              <motion.h3
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
+              <h3
                 className="text-2xl font-bold text-base-content mb-2"
               >
                 {t('sale.pdfSaved')}
-              </motion.h3>
+              </h3>
 
-              <motion.p
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.1 }}
+              <p
                 className="text-slate-600 dark:text-slate-300 mb-6 break-all text-sm"
               >
                 {savedPDFPath}
-              </motion.p>
+              </p>
 
-              <motion.button
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 }}
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => setShowPDFSuccessDialog(false)}
                 className="w-full py-3 px-4 bg-green-500 text-white rounded-xl font-semibold
                   transition-all duration-300 hover:bg-green-600"
               >
                 {t('common.close')}
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         </motion.div>

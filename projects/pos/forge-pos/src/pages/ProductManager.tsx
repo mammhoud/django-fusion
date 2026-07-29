@@ -5,6 +5,7 @@ import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
 import { Product, NewProduct, UpdateProductPayload, Settings, Category } from '../types';
 import Card from '../components/Card';
+import DataTable, { type Column } from '../components/DataTable';
 import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../components/ProductCard';
 import PageLayout from '../components/PageLayout';
 import { useTranslation } from 'react-i18next';
@@ -25,7 +26,7 @@ export default function ProductManager() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [showAddModal, setShowAddModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
-  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0 });
+  const [newProduct, setNewProduct] = useState({ name: '', price: '', unit: 'item', category_id: 0 as number | 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '' });
   const [productImage, setProductImage] = useState<string | null>(null);
   // Snapshot of the original image when editing so we don't accidentally
   // re-clear or re-write the image on every save.
@@ -52,6 +53,7 @@ export default function ProductManager() {
   } = useDebouncedSearch();
   const [selectedCategory, setSelectedCategory] = useState<number | 'all'>('all');
   const [sortKey, setSortKey] = useState<SortKey>('newest');
+  const [viewMode, setViewMode] = useState<'grid' | 'table'>('grid');
 
   // Keyboard shortcuts
   useEffect(() => {
@@ -218,14 +220,14 @@ export default function ProductManager() {
     setShowAddModal(false);
     setEditingProduct(null);
     setErrors({});
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0 });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '' });
     setProductImage(null);
     setOriginalImage(null);
   };
 
   const openAddModal = () => {
     setEditingProduct(null);
-    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0 });
+    setNewProduct({ name: '', price: '', unit: 'item', category_id: 0, product_type: 'product', prepare_time_minutes: 0, barcode: '', description: '' });
     setProductImage(null);
     setOriginalImage(null);
     setErrors({});
@@ -241,6 +243,8 @@ export default function ProductManager() {
       category_id: product.category_id ?? 0,
       product_type: product.product_type || 'product',
       prepare_time_minutes: product.prepare_time_minutes || 0,
+      barcode: product.barcode || '',
+      description: product.description || '',
     });
     setProductImage(product.image ?? null);
     setOriginalImage(product.image ?? null);
@@ -273,6 +277,8 @@ export default function ProductManager() {
           category_id: nextCategoryId,
           product_type: newProduct.product_type || 'product',
           prepare_time_minutes: newProduct.prepare_time_minutes,
+          barcode: newProduct.barcode || null,
+          description: newProduct.description || null,
         };
         const imageChanged = nextImage !== (originalImage || null);
         if (imageChanged) {
@@ -293,6 +299,8 @@ export default function ProductManager() {
           image: nextImage,
           product_type: newProduct.product_type || 'product',
           prepare_time_minutes: newProduct.prepare_time_minutes,
+          barcode: newProduct.barcode || null,
+          description: newProduct.description || null,
         };
         const result = await invoke<Product>('add_product', { product: create });
 
@@ -366,6 +374,217 @@ export default function ProductManager() {
 
   const modalTitle = editingProduct ? t('productManager.editProduct') : t('productManager.addProduct');
 
+  // ── Category → name map for table column ──
+  const categoryMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    categories.forEach(c => { map[c.id] = c.name; });
+    return map;
+  }, [categories]);
+
+  // ── Inline edit handler for DataTable ──
+  const handleInlineEdit = async (product: Product, key: string, value: string) => {
+    const update: UpdateProductPayload = {};
+    if (key === 'name') update.name = value;
+    else if (key === 'price') update.price = parseFloat(value) || 0;
+    else if (key === 'barcode') update.barcode = value || null;
+    else return;
+
+    try {
+      const updated = await invoke<Product>('update_product', { id: product.id, update });
+      setProducts(prev => prev.map(p => (p.id === updated.id ? updated : p)));
+    } catch (error) {
+      console.error('Inline edit failed:', error);
+      throw error;
+    }
+  };
+
+  // ── Table columns for product list ──
+  const tableColumns: Column<Product>[] = [
+    {
+      key: 'name',
+      label: t('productManager.productName') || 'Name',
+      sortable: true,
+      editable: true,
+      render: (p: Product) => (
+        <div className="flex items-center gap-2">
+          <div className="w-7 h-7 rounded-md overflow-hidden shrink-0 bg-base-200 flex items-center justify-center">
+            {p.image ? (
+              <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
+            ) : (
+              <span className="text-[10px] font-bold text-base-content/40">
+                {p.name.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <span className="font-medium truncate max-w-32" title={p.name}>
+            {p.name}
+          </span>
+        </div>
+      ),
+    },        {
+          key: 'barcode',
+          label: t('productManager.barcode') || 'Barcode',
+          sortable: true,
+          editable: true,
+          hideOnMobile: true,
+          render: (p: Product) => (
+        <span className="font-mono text-xs text-base-content/70">
+          {p.barcode || (
+            <span className="text-base-content/30 italic">—</span>
+          )}
+        </span>
+      ),
+    },
+    {
+      key: 'price',
+      label: `Price (${currencySymbol})`,
+      sortable: true,
+      editable: true,
+      editType: 'number',
+      render: (p: Product) => (
+        <span className="font-semibold text-primary">
+          {currencySymbol} {p.price.toFixed(2)}
+        </span>
+      ),
+    },
+    {          key: 'category_id',
+          label: t('productManager.category') || 'Category',
+          sortable: true,
+          hideOnMobile: true,
+          render: (p: Product) => (
+        <span className="text-sm">
+          {p.category_id && categoryMap[p.category_id] ? (
+            <span className="badge badge-sm badge-ghost font-normal">
+              {categoryMap[p.category_id]}
+            </span>
+          ) : (
+            <span className="text-base-content/30 italic">—</span>
+          )}
+        </span>
+      ),
+    },
+    {          key: 'unit',
+          label: t('productManager.unit') || 'Unit',
+          sortable: true,
+          render: (p: Product) => (
+        <span className="text-xs text-base-content/60 uppercase tracking-wider">
+          {p.unit}
+        </span>
+      ),
+    },
+    {          key: '_stock',
+          label: t('productManager.stock') || 'Stock',
+          sortable: false,
+          render: (_p: Product) => (
+        <span className="text-xs text-base-content/50">
+          <span className="badge badge-sm badge-ghost gap-1 font-normal">
+            <span className="icon-[tabler--package] w-3 h-3" />
+            {t('productManager.viaIngredients') || 'Ingredients'}
+          </span>
+        </span>
+      ),
+    },
+    {          key: 'product_type',
+          label: t('productManager.type') || 'Type',
+          sortable: true,
+          hideOnMobile: true,
+          render: (p: Product) => {
+        const typeStyles: Record<string, string> = {
+          product: 'badge-ghost',
+          service: 'badge-info badge-soft',
+          combo: 'badge-warning badge-soft',
+          addon: 'badge-accent badge-soft',
+        };
+        return (
+          <span className={`badge badge-sm ${typeStyles[p.product_type || 'product'] || 'badge-ghost'} capitalize`}>
+            {p.product_type || 'product'}
+          </span>
+        );
+      },
+    },
+    {
+      key: '_actions',
+      label: '',
+      render: (p: Product) => (
+        <div className="flex items-center gap-1 justify-end">
+          <button
+            onClick={(e) => { e.stopPropagation(); openEditModal(p); }}
+            className="p-1.5 rounded-md text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all"
+            aria-label={t('common.edit')}
+          >
+            <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+          </button>
+          <button
+            onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(p); }}
+            className="p-1.5 rounded-md text-base-content/40 hover:text-error hover:bg-error/10 transition-all"
+            disabled={deletingId === p.id}
+            aria-label={t('productManager.deleteTitle')}
+          >
+            {deletingId === p.id ? (
+              <motion.div
+                animate={{ rotate: 360 }}
+                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                className="w-3.5 h-3.5 border-2 border-error border-t-transparent rounded-full"
+              />
+            ) : (
+              <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+            )}
+          </button>
+        </div>
+      ),
+    },
+  ];
+
+  // ── Mobile card render for table rows ──
+  const mobileTableRender = (p: Product) => (
+    <div className="flex items-center gap-3 py-1">
+      <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 bg-base-200 flex items-center justify-center">
+        {p.image ? (
+          <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
+        ) : (
+          <span className="text-sm font-bold text-base-content/40">
+            {p.name.charAt(0).toUpperCase()}
+          </span>
+        )}
+      </div>
+      <div className="flex-1 min-w-0">
+        <div className="flex items-center gap-2">
+          <span className="font-semibold text-sm truncate">{p.name}</span>
+          {p.barcode && (
+            <span className="font-mono text-[10px] text-base-content/40 truncate max-w-20">
+              {p.barcode}
+            </span>
+          )}
+        </div>
+        <div className="flex items-center gap-2 text-xs text-base-content/50">
+          <span className="text-primary font-semibold">{currencySymbol} {p.price.toFixed(2)}</span>
+          {p.category_id && categoryMap[p.category_id] && (
+            <>
+              <span>·</span>
+              <span>{categoryMap[p.category_id]}</span>
+            </>
+          )}
+          <span>·</span>
+          <span className="uppercase">{p.unit}</span>
+        </div>
+      </div>
+      <div className="flex gap-0.5 shrink-0">
+        <button
+          onClick={() => openEditModal(p)}
+          className="p-1.5 rounded-md text-base-content/40 hover:text-primary"
+        >
+          <span className="icon-[tabler--pencil] w-3.5 h-3.5" />
+        </button>
+        <button
+          onClick={() => openDeleteConfirmation(p)}
+          className="p-1.5 rounded-md text-base-content/40 hover:text-error"
+        >
+          <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+        </button>
+      </div>
+    </div>
+  );
+
   return (
     <PageLayout
       title={
@@ -379,184 +598,214 @@ export default function ProductManager() {
       background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
     >
 
-      {/* Stats Cards Row */}          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 2xl:grid-cols-6 gap-4 mb-6 sm:mb-8">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-        >
-          <Card padding="md" transitional className="sm:p-6">
-            <h2 className="text-lg sm:text-xl text-base-content mb-2">{t('productManager.totalProducts')}</h2>
-            <p className="text-3xl sm:text-4xl font-bold text-primary">{products.length}</p>
-          </Card>
-        </motion.div>
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.05 }}
-        >
-          <Card padding="md" transitional className="sm:p-6">
-            <h2 className="text-lg sm:text-xl text-base-content mb-2">{t('productManager.filteredCount') || 'Visible'}</h2>
-            <p className="text-3xl sm:text-4xl font-bold text-purple-600 dark:text-purple-400">{filteredProducts.length}</p>
-          </Card>
-        </motion.div>
+      {/* Compact Stats Row */}
+      <div className="grid grid-cols-2 gap-3 mb-4">
+        <Card padding="sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-base-content/60">{t('productManager.totalProducts')}</span>
+            <span className="text-lg font-bold text-primary">{products.length}</span>
+          </div>
+        </Card>
+        <Card padding="sm">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-base-content/60">{t('productManager.filteredCount') || 'Visible'}</span>
+            <span className="text-lg font-bold text-purple-600 dark:text-purple-400">{filteredProducts.length}</span>
+          </div>
+        </Card>
       </div>
 
-      {/* ── Filter bar (AJAX-style with debounce) ── */}
-      <motion.div
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.05 }}
-      >
-        <Card padding="sm" className="sm:p-4 mb-4">
-        <div className="flex flex-col sm:flex-row gap-3">
-          <div className="relative flex-1">
-            <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
+      {/* ── Compact filter bar with tag-based category pills ── */}
+      <div className="flex flex-col gap-3 mb-4">
+        {/* Search + sort + add — single row */}
+        <div className="flex items-center gap-2">
+          <div className="relative flex-1 max-w-xs">
+            <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
             <input
               type="text"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder={t('productManager.searchPlaceholder') || 'Search products...'}
+              placeholder={t('productManager.searchPlaceholder') || 'Search...'}
               aria-label={t('productManager.searchPlaceholder') || 'Search products'}
               data-testid="pm-search-input"
-              className="input input-bordered w-full pl-9"
+              className="input input-bordered w-full pl-8 h-9 text-xs"
             />
             {isFiltering && (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                aria-label="filtering"
-                className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4
-                  border-2 border-teal-400 border-t-transparent rounded-full"
-              />
+              <div className="absolute right-2.5 top-1/2 -translate-y-1/2 w-3 h-3 border-2 border-primary border-t-transparent rounded-full animate-spin" />
             )}
           </div>
-          <select
-            value={selectedCategory === 'all' ? 'all' : String(selectedCategory)}
-            onChange={(e) => setSelectedCategory(e.target.value === 'all' ? 'all' : Number(e.target.value))}
-            data-testid="pm-category-filter"
-            aria-label={t('productManager.categoryFilter') || 'Filter by category'}
-            className="select select-bordered sm:w-48"
+          {viewMode === 'grid' && (
+            <select
+              value={sortKey}
+              onChange={(e) => setSortKey(e.target.value as SortKey)}
+              aria-label={t('productManager.sortBy') || 'Sort by'}
+              className="select select-bordered h-9 text-xs w-36"
+            >
+              <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
+              <option value="name-asc">A→Z</option>
+              <option value="name-desc">Z→A</option>
+              <option value="price-asc">$↑</option>
+              <option value="price-desc">$↓</option>
+            </select>
+          )}
+          {/* View toggle: grid vs table */}
+          <button
+            onClick={() => setViewMode(prev => prev === 'grid' ? 'table' : 'grid')}
+            className="btn btn-ghost btn-sm btn-square text-base-content/50 hover:text-base-content"
+            aria-label={viewMode === 'grid' ? 'Switch to table view' : 'Switch to grid view'}
+            title={viewMode === 'grid' ? 'Table view' : 'Grid view'}
           >
-            <option value="all">{t('productManager.allCategories') || 'All categories'}</option>
-            {categories.map(c => (
-              <option key={c.id} value={c.id}>{c.name}</option>
-            ))}
-          </select>
-          <select
-            value={sortKey}
-            onChange={(e) => setSortKey(e.target.value as SortKey)}
-            aria-label={t('productManager.sortBy') || 'Sort by'}
-            className="select select-bordered sm:w-44"
-          >
-            <option value="newest">{t('productManager.sortNewest') || 'Newest'}</option>
-            <option value="name-asc">{t('productManager.sortNameAsc') || 'Name (A→Z)'}</option>
-            <option value="name-desc">{t('productManager.sortNameDesc') || 'Name (Z→A)'}</option>
-            <option value="price-asc">{t('productManager.sortPriceAsc') || 'Price (low→high)'}</option>
-            <option value="price-desc">{t('productManager.sortPriceDesc') || 'Price (high→low)'}</option>
-          </select>
-          <motion.button
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
+            {viewMode === 'grid' ? (
+              <span className="icon-[tabler--list] w-4 h-4" />
+            ) : (
+              <span className="icon-[tabler--grid-dots] w-4 h-4" />
+            )}
+          </button>
+          <button
             onClick={openAddModal}
             data-testid="pm-add-button"
-            className="btn btn-primary gap-2 shadow-lg hover:shadow-xl whitespace-nowrap"
+            className="btn btn-primary btn-sm gap-1.5 shrink-0"
           >
-            <span className="icon-[tabler--plus]" /> <span>{t('productManager.addNewProduct')}</span>
-          </motion.button>
+            <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+            <span className="hidden sm:inline text-xs">{t('productManager.addNewProduct')}</span>
+          </button>
         </div>
-        </Card>
-      </motion.div>
 
-      {/* Product Grid */}
-      <AnimatePresence mode="wait">
-        {isLoading ? (
-          <motion.div
-            key="skeleton"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
+        {/* Category filter as clickable tag pills */}
+        <div className="flex flex-wrap items-center gap-1.5">
+          <button
+            onClick={() => setSelectedCategory('all')}
+            className={`badge badge-sm cursor-pointer transition-all ${
+              selectedCategory === 'all'
+                ? 'badge-primary badge-soft'
+                : 'badge-ghost hover:badge-soft hover:badge-primary'
+            }`}
           >
-            {Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
-              <ProductCardSkeleton key={i} />
-            ))}
-          </motion.div>
-        ) : filteredProducts.length > 0 ? (
-          <motion.div
-            key="grid"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-            className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
-          >
-            {filteredProducts.map((product, index) => {
-              const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
-              return (
-                <ProductCard
-                  key={product.id}
-                  product={product}
-                  color={color}
-                  currency={currencySymbol}
-                  index={index}
-                >
-                  {/* Column index badge — shows the product's position in the filtered grid */}
-                  <span className="index-pill group-hover:scale-110 transition-transform duration-200">
-                    {index + 1}
-                  </span>
-                  <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => { e.stopPropagation(); openEditModal(product); }}
-                      className="w-7 h-7 flex items-center justify-center rounded-full
-                        bg-white/90 dark:bg-slate-700/90 text-blue-500 hover:text-blue-400
-                        hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all shadow-sm"
-                      aria-label={t('common.edit')}
-                    >
-                      <span className="icon-[tabler--edit] w-3 h-3" />
-                    </motion.button>
-                    <motion.button
-                      whileHover={{ scale: 1.1 }}
-                      whileTap={{ scale: 0.9 }}
-                      onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(product); }}
-                      className="w-7 h-7 flex items-center justify-center rounded-full
-                        bg-white/90 dark:bg-slate-700/90 text-red-400 hover:text-red-300
-                        hover:bg-red-50 dark:hover:bg-red-900/30 transition-all shadow-sm disabled:opacity-50"
-                      disabled={deletingId === product.id}
-                      aria-label={t('productManager.deleteTitle')}
-                    >
-                      {deletingId === product.id ? (
-                        <motion.div
-                          animate={{ rotate: 360 }}
-                          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                          className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full"
-                        />
-                      ) : (
-                        <span className="icon-[tabler--trash] w-3 h-3" />
-                      )}
-                    </motion.button>
-                  </div>
-                </ProductCard>
-              );
-            })}
-          </motion.div>
-        ) : (
-          <motion.div
-            key="empty"
-            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
-          >
-            <Card padding="2xl" center>
-              <span className="icon-[tabler--photo] w-16 h-16 mx-auto mb-4 text-base-content/40" />
-              <p className="text-base-content/60 text-lg mb-3">
-                {t('productManager.noProducts')}
-              </p>
-              {(searchQuery || selectedCategory !== 'all') && (
-                <button
-                  onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
-                  className="text-sm font-medium text-primary hover:underline transition-colors"
-                >
-                  {t('common.clear')}
-                </button>
-              )}
-            </Card>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            {t('productManager.allCategories') || 'All'}
+          </button>
+          {categories.map(cat => (
+            <button
+              key={cat.id}
+              onClick={() => setSelectedCategory(selectedCategory === cat.id ? 'all' : cat.id)}
+              className={`badge badge-sm cursor-pointer transition-all ${
+                selectedCategory === cat.id
+                  ? 'badge-primary badge-soft'
+                  : 'badge-ghost hover:badge-soft hover:badge-primary'
+              }`}
+            >
+              {cat.name}
+            </button>
+          ))}
+          {selectedCategory !== 'all' && (
+            <button
+              onClick={() => setSelectedCategory('all')}
+              className="badge badge-sm badge-ghost text-base-content/40 hover:text-error transition-colors"
+              title="Clear filter"
+            >
+              <span className="icon-[tabler--x] w-3 h-3" />
+            </button>
+          )}
+        </div>
+      </div>
+
+      {/* ── Product Grid / Table ── */}
+      {viewMode === 'grid' ? (
+        <AnimatePresence mode="wait">
+          {isLoading ? (
+            <motion.div
+              key="skeleton"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
+            >
+              {Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
+                <ProductCardSkeleton key={i} />
+              ))}
+            </motion.div>
+          ) : filteredProducts.length > 0 ? (
+            <motion.div
+              key="grid"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
+            >
+              {filteredProducts.map((product, index) => {
+                const color = PRODUCT_CARD_COLORS[index % PRODUCT_CARD_COLORS.length];
+                return (
+                  <ProductCard
+                    key={product.id}
+                    product={product}
+                    color={color}
+                    currency={currencySymbol}
+                    index={index}
+                  >
+                    <span className="index-pill group-hover:scale-110 transition-transform duration-200">
+                      {index + 1}
+                    </span>
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-all duration-300">
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openEditModal(product); }}
+                        className="w-7 h-7 flex items-center justify-center rounded-full
+                          bg-white/90 dark:bg-slate-700/90 text-blue-500 hover:text-blue-400
+                          hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:scale-[0.9] shadow-sm"
+                        aria-label={t('common.edit')}
+                      >
+                        <span className="icon-[tabler--edit] w-3 h-3" />
+                      </button>
+                      <button
+                        onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(product); }}
+                        className="w-7 h-7 flex items-center justify-center rounded-full
+                          bg-white/90 dark:bg-slate-700/90 text-red-400 hover:text-red-300
+                          hover:bg-red-50 dark:hover:bg-red-900/30 transition-all active:scale-[0.9] shadow-sm disabled:opacity-50"
+                        disabled={deletingId === product.id}
+                        aria-label={t('productManager.deleteTitle')}
+                      >
+                        {deletingId === product.id ? (
+                          <motion.div
+                            animate={{ rotate: 360 }}
+                            transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                            className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full"
+                          />
+                        ) : (
+                          <span className="icon-[tabler--trash] w-3 h-3" />
+                        )}
+                      </button>
+                    </div>
+                  </ProductCard>
+                );
+              })}
+            </motion.div>
+          ) : (
+            <motion.div
+              key="empty"
+              initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+            >
+              <Card padding="2xl" center>
+                <span className="icon-[tabler--photo] w-16 h-16 mx-auto mb-4 text-base-content/40" />
+                <p className="text-base-content/60 text-lg mb-3">
+                  {t('productManager.noProducts')}
+                </p>
+                {(searchQuery || selectedCategory !== 'all') && (
+                  <button
+                    onClick={() => { setSearchQuery(''); setSelectedCategory('all'); }}
+                    className="text-sm font-medium text-primary hover:underline transition-colors"
+                  >
+                    {t('common.clear')}
+                  </button>
+                )}
+              </Card>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      ) : (
+        <DataTable<Product>
+          columns={tableColumns}
+          data={filteredProducts}
+          keyExtractor={(p) => p.id}
+          emptyMessage={t('productManager.noProducts')}
+          onEditSave={handleInlineEdit}
+          exportable
+          fileName="products"
+          mobileRender={mobileTableRender}
+        />
+      )}
 
       {/* Add / Edit Modal (unified) */}
       {showAddModal && (
@@ -664,7 +913,7 @@ export default function ProductManager() {
                             : 'border-slate-200 dark:border-slate-600 bg-base-100/50 text-slate-600 dark:text-slate-400 hover:border-primary/50'
                           }`}
                       >
-                        <span className={`icon-[tabler--${icon}] w-5 h-5`} />
+                        <span className={'icon-[tabler--' + icon + '] w-5 h-5'} />
                         <span className="text-xs font-semibold">{label}</span>
                       </button>
                     ))}
@@ -742,6 +991,37 @@ export default function ProductManager() {
                   />
                   <span className="text-xs text-base-content/50">Default preparation time for KDS display</span>
                 </div>
+              </div>
+
+              {/* Barcode + Description */}
+              <div>
+                <label className="block text-base-content mb-1.5 text-xs font-medium">
+                  <span className="icon-[tabler--barcode] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                  SKU / Barcode
+                </label>
+                <input
+                  type="text"
+                  value={newProduct.barcode}
+                  onChange={(e) => handleInputChange('barcode', e.target.value)}
+                  className="input input-bordered w-full h-9 text-sm"
+                  placeholder="e.g. 8901234567890"
+                  disabled={isSubmitting}
+                />
+              </div>
+
+              <div>
+                <label className="block text-base-content mb-1.5 text-xs font-medium">
+                  <span className="icon-[tabler--align-left] w-3.5 h-3.5 inline-block mr-1 text-primary/70" />
+                  Description
+                </label>
+                <textarea
+                  value={newProduct.description}
+                  onChange={(e) => handleInputChange('description', e.target.value)}
+                  className="textarea textarea-bordered w-full text-sm resize-none"
+                  placeholder="Product description for menu & tickets..."
+                  rows={2}
+                  disabled={isSubmitting}
+                />
               </div>
 
               {/* Category selector */}
@@ -831,23 +1111,19 @@ export default function ProductManager() {
             </p>
 
             <div className="flex gap-4">
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => { setShowDeleteModal(false); setProductToDelete(null); }}
                 className="btn btn-ghost flex-1 font-semibold"
               >
                 {t('productManager.cancelDelete')}
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
+              </button>
+              <button
                 onClick={handleDeleteProduct}
                 className="btn btn-error flex-1 font-semibold gap-2"
               >
                 <span className="icon-[tabler--trash]" />
                 {t('productManager.confirmDelete')}
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         </div>

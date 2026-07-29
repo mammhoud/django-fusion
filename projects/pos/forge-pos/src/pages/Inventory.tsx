@@ -2,6 +2,7 @@ import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useKeyboardTabNav } from '../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
 import { Ingredient, NewIngredient, InventoryTransaction, NewInventoryTransaction, InventoryAdjustment } from '../types';
 import PageLayout from '../components/PageLayout';
 import { SkeletonTable, SkeletonList, SkeletonCard } from '../components/Skeleton';
@@ -119,6 +120,14 @@ export default function Inventory() {
   }, []);
 
   useEffect(() => { loadData(); }, [loadData]);
+
+  // ── Real-time inventory updates from other windows ──
+  useEffect(() => {
+    const unlisten = listen('inventory-changed', () => {
+      loadData({ quiet: true });
+    });
+    return () => { unlisten.then(fn => fn()); };
+  }, [loadData]);
 
   const showStatus = (type: 'success' | 'error', msg: string) => {
     setToast({ type, message: msg });
@@ -311,58 +320,64 @@ export default function Inventory() {
         {/* ========== TAB 1: STOCK LEVELS ========== */}
         {activeTab === 'stock' && (
           <div className="space-y-6">
-            {/* Tab-specific Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 lg:grid-cols-5 2xl:grid-cols-6 gap-4">
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.totalIngredients')}</h2>
-                <p className="text-2xl font-bold text-base-content">{activeIngredients.length}</p>
+            {/* Compact Summary Cards */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.totalIngredients')}</span>
+                  <span className="text-lg font-bold text-base-content">{activeIngredients.length}</span>
+                </div>
               </Card>
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.stockValue')}</h2>
-                <p className="text-2xl font-bold text-primary dark:text-primary/80">
-                  {totalStockValue.toFixed(2)}
-                </p>
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.stockValue')}</span>
+                  <span className="text-lg font-bold text-primary">
+                    {totalStockValue.toFixed(2)}
+                  </span>
+                </div>
               </Card>
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.avgCost')}</h2>
-                <p className="text-2xl font-bold text-base-content">{avgCost.toFixed(2)}</p>
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.avgCost')}</span>
+                  <span className="text-lg font-bold text-base-content">{avgCost.toFixed(2)}</span>
+                </div>
               </Card>
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.lowStockItems')}</h2>
-                <p className="text-2xl font-bold text-yellow-500">{lowStockCount}</p>
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.lowStockItems')}</span>
+                  <span className="text-lg font-bold text-yellow-500">{lowStockCount}</span>
+                </div>
               </Card>
             </div>
 
-            {/* Header row with heading, search + add button */}
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-              <h2 className="text-lg font-semibold text-base-content">{t('inventory.allIngredients')}</h2>
-              <div className="flex items-center gap-3 w-full sm:w-auto">
-                <div className="relative flex-1 sm:w-56">
-                  <span className="icon-[tabler--search] absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-                  <input
-                    type="text"
-                    value={stockSearch}
-                    onChange={e => setStockSearch(e.target.value)}
-                    placeholder={t('inventory.searchIngredient')}
-                    className="input input-bordered w-full text-xs pl-9"
-                  />
-                  {stockSearch && (
-                    <button
-                      onClick={() => setStockSearch('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
-                    >
-                      <span className="icon-[tabler--x] w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
-                  onClick={() => setShowAddIngredient(true)}
-                  className="btn btn-success gap-2 shrink-0"
-                >
-                  <span className="icon-[tabler--plus]" /> {t('inventory.addIngredient')}
-                </motion.button>
+            {/* Inline heading + search + add button */}
+            <div className="flex items-center gap-2">
+              <h2 className="text-sm font-semibold text-base-content shrink-0">{t('inventory.allIngredients')}</h2>
+              <div className="relative flex-1 max-w-56">
+                <span className="icon-[tabler--search] absolute left-2.5 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-slate-400" />
+                <input
+                  type="text"
+                  value={stockSearch}
+                  onChange={e => setStockSearch(e.target.value)}
+                  placeholder={t('inventory.searchIngredient')}
+                  className="input input-bordered w-full h-8 text-xs pl-8"
+                />
+                {stockSearch && (
+                  <button
+                    onClick={() => setStockSearch('')}
+                    className="absolute right-1.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                  >
+                    <span className="icon-[tabler--x] w-3 h-3" />
+                  </button>
+                )}
               </div>
+              <button
+                onClick={() => setShowAddIngredient(true)}
+                className="btn btn-success btn-sm gap-1 shrink-0"
+              >
+                <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+                <span className="text-xs">{t('inventory.addIngredient')}</span>
+              </button>
             </div>
 
             {/* Ingredient list */}
@@ -457,43 +472,57 @@ export default function Inventory() {
         {/* ========== TAB 2: TRANSACTIONS ========== */}
         {activeTab === 'transactions' && (
           <div className="space-y-6">
-            {/* Tab-specific Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.totalIngredients')}</h2>
-                <p className="text-2xl font-bold text-base-content">{transactions.length}</p>
+            {/* Compact Summary Cards */}
+            <div className="grid grid-cols-3 gap-3">
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.totalIngredients')}</span>
+                  <span className="text-lg font-bold text-base-content">{transactions.length}</span>
+                </div>
               </Card>
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.thisMonthTransactions')}</h2>
-                <p className="text-2xl font-bold text-primary dark:text-primary/80">{thisMonthTransactions}</p>
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.thisMonthTransactions')}</span>
+                  <span className="text-lg font-bold text-primary">{thisMonthTransactions}</span>
+                </div>
               </Card>
-                <Card>
-                <h2 className="text-base-content/60 text-sm">{t('inventory.thisWeekTransactions')}</h2>
-                <p className="text-2xl font-bold text-info dark:text-info/80">{thisWeekTransactions}</p>
+              <Card padding="xs">
+                <div className="flex items-center justify-between">
+                  <span className="text-xs text-base-content/60">{t('inventory.thisWeekTransactions')}</span>
+                  <span className="text-lg font-bold text-info">{thisWeekTransactions}</span>
+                </div>
               </Card>
             </div>
 
-            <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
-              <div className="flex items-center gap-3">
-                <h2 className="text-lg font-semibold text-base-content">{t('inventory.transactionLog')}</h2>
-                <select
-                  value={ingredientFilter ?? ''}
-                  onChange={(e) => setIngredientFilter(e.target.value ? Number(e.target.value) : null)}
-                  className="select select-bordered"
+            <div className="flex items-center gap-3 mb-4">
+              <h2 className="text-sm font-semibold text-base-content shrink-0">{t('inventory.transactionLog')}</h2>
+              <div className="flex flex-wrap items-center gap-1.5 flex-1">
+                <button
+                  onClick={() => setIngredientFilter(null)}
+                  className={`badge badge-sm cursor-pointer transition-all ${ingredientFilter === null ? 'badge-primary badge-soft' : 'badge-ghost hover:badge-soft hover:badge-primary'}`}
                 >
-                  <option value="">{t('inventory.allIngredientsFilter')}</option>
-                  {ingredients.map(ing => (
-                    <option key={ing.id} value={ing.id}>{ing.name}</option>
-                  ))}
-                </select>
+                  {t('inventory.allIngredientsFilter') || 'All'}
+                </button>
+                {ingredients.slice(0, 12).map(ing => (
+                  <button
+                    key={ing.id}
+                    onClick={() => setIngredientFilter(ingredientFilter === ing.id ? null : ing.id)}
+                    className={`badge badge-sm cursor-pointer transition-all ${ingredientFilter === ing.id ? 'badge-primary badge-soft' : 'badge-ghost hover:badge-soft hover:badge-primary'}`}
+                  >
+                    {ing.name}
+                  </button>
+                ))}
+                {ingredients.length > 12 && (
+                  <span className="text-[10px] text-base-content/30">+{ingredients.length - 12} more</span>
+                )}
               </div>
-              <motion.button
-                whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+              <button
                 onClick={() => setShowAddTransaction(true)}
-                className="btn btn-success gap-2"
+                className="btn btn-success btn-sm gap-1 shrink-0"
               >
-                <span className="icon-[tabler--plus]" /> {t('inventory.recordTransaction')}
-              </motion.button>
+                <span className="icon-[tabler--plus] w-3.5 h-3.5" />
+                <span className="text-xs">{t('inventory.recordTransaction')}</span>
+              </button>
             </div>
 
             <DataTable

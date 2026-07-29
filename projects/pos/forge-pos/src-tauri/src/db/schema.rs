@@ -41,6 +41,8 @@ diesel::table! {
         image -> Nullable<Text>,
         product_type -> Text,
         prepare_time_minutes -> Integer,
+        barcode -> Nullable<Text>,
+        description -> Nullable<Text>,
         created_at -> Timestamp,
         updated_at -> Timestamp,
         uploaded -> Bool,

@@ -301,13 +301,12 @@ export default function Recipes() {
               className="input input-bordered w-64 pl-9"
             />
           </div>
-          <motion.button
-            whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}
+          <button
             onClick={() => setShowAddRecipe(true)}
-            className="flex items-center gap-2 px-4 py-2 bg-warning text-white rounded-xl font-semibold text-sm"
+            className="flex items-center gap-2 px-4 py-2 bg-warning text-white rounded-xl font-semibold text-sm active:scale-[0.98] transition-all"
           >
             <span className="icon-[tabler--plus]" /> {t('recipes.addRecipe')}
-          </motion.button>
+          </button>
         </div>
 
         {/* Recipe Cards */}          <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 3xl:grid-cols-5 gap-4">

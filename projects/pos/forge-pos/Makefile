@@ -17,7 +17,7 @@
 .PHONY: build build-frontend build-desktop build-android build-ios build-all clean-build
 .PHONY: screenshots
 .PHONY: check typecheck cargo-check cargo-test cargo-clippy
-.PHONY: lint format clean clean-db install install-tauri-cli info seed db-seed
+.PHONY: lint format clean clean-db full-clean install install-tauri-cli info seed db-seed
 .PHONY: test test-watch i18n-audit i18n-check i18n-fix i18n-fix-check port-kill
 
 # ── Default ────────────────────────────────────────────────────────────────
@@ -60,6 +60,7 @@ help:                 ## Show this help menu
 	@echo '  make format           Format code (rustfmt only)'
 	@echo '  make clean            Remove all build artifacts'
 	@echo '  make clean-db         Delete the database file only (preserves build artifacts)'
+	@echo '  make full-clean       Clean everything — db, artifacts, node_modules, target (fresh start)'
 	@echo '  make clean-build      Clean everything, reinstall, rebuild the app from scratch'
 	@echo '  make screenshots      Capture 6 polished screenshots into docs/screenshots/'
 	@echo '  make seed             Reset DB + apply preset; PRESET=all (default)'
@@ -220,8 +221,15 @@ clean-db:             ## Delete the database file and reset to factory defaults
 	@DB=$$(grep -E '^DATABASE_URL=' .env 2>/dev/null | cut -d= -f2- | sed -E 's/\r$$//;s/^[ \t]+//;s/[ \t]+$$//'); \
 	if [ -z "$$DB" ]; then DB=restaurant.db; fi; \
 	rm -f "$$DB"; \
-	echo "✓ Deleted database: $$DB"; \
+	rm -f src-tauri/"$$DB"; \
+	echo "✓ Deleted database: $$DB (also in src-tauri/)"; \
 	echo 'Run `make seed` to create a fresh database with seed data.'
+
+full-clean:           ## Clean everything — db, build artifacts, node_modules — for a fresh start
+	@echo '── Full clean ──'
+	@$(MAKE) clean-db
+	@$(MAKE) clean
+	@echo '── ✓ Full clean complete ──'
 
 # ── Database ───────────────────────────────────────────────────────────────
 

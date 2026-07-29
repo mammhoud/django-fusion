@@ -1,5 +1,5 @@
 import { motion } from 'framer-motion';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { Product } from '../types';
 
 export interface ProductCardColor {
@@ -36,7 +36,7 @@ interface ProductCardProps {
   index?: number;
 }
 
-export default function ProductCard({
+const ProductCard = memo(function ProductCard({
   product,
   color,
   currency,
@@ -91,15 +91,35 @@ export default function ProductCard({
       </div>
 
       {/* Product Info — compact */}
-      <h3 className="text-xs font-bold text-base-content leading-tight line-clamp-1 w-full">
+      <h3
+        className="text-xs font-bold text-base-content leading-tight line-clamp-1 w-full"
+        title={product.description || product.name}
+      >
         {product.name}
       </h3>
+
+      {/* Price row */}
       <div className={`font-semibold text-xs ${isSelected ? 'text-primary dark:text-primary/80' : color.initial}`}>
         {currency} {product.price.toFixed(2)}
       </div>
+
+      {/* Unit label */}
       <span className={`text-[9px] ${isSelected ? 'text-primary/70 dark:text-primary/70' : (color.icon || color.initial)} opacity-50 uppercase tracking-wider`}>
         / {product.unit}
       </span>
+
+      {/* Barcode badge — shown on hover */}
+      {product.barcode && (
+        <span
+          title={`SKU: ${product.barcode}`}
+          className="text-[8px] mt-0.5 px-1.5 py-[1px] rounded-full
+            bg-base-content/10 text-base-content/40
+            group-hover:opacity-100 opacity-0 transition-opacity duration-200
+            font-mono tracking-wider truncate max-w-full"
+        >
+          {product.barcode}
+        </span>
+      )}
 
       {children}
     </motion.div>

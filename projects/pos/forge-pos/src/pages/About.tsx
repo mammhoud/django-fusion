@@ -58,7 +58,7 @@ export default function About() {
   const handleBackNavigation = () => {
     setIsNavigating(true);
     setTimeout(() => {
-      navigate('/');
+      navigate('/dashboard');
     }, 300);
   };
 
@@ -349,9 +349,9 @@ export default function About() {
                 )}
               </div>
 
-              <motion.button
+              <button
                 type="submit"
-                className="btn btn-primary w-full bg-linear-to-r from-teal-400 to-purple-400 border-0 gap-2"
+                className="btn btn-primary w-full bg-linear-to-r from-teal-400 to-purple-400 border-0 gap-2 active:scale-[0.98] transition-all"
                 disabled={isSubmitting}
               >
                 {isSubmitting ? (
@@ -369,7 +369,7 @@ export default function About() {
                     {t('about.sendMessage')}
                   </>
                 )}
-              </motion.button>
+              </button>
             </form>
 
             <div className="mt-6 pt-6 border-t border-base-300/30">

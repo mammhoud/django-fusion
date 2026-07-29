@@ -163,7 +163,7 @@ export default function DatePicker({ value, onChange, label }: DatePickerProps) 
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -10 }}
               transition={{ duration: 0.15 }}
-              className="card bg-base-100 shadow-xl border border-base-300 rounded-xl p-4 absolute z-50 mt-2 w-full min-w-[280px]"
+              className="card bg-base-100 shadow-xl border border-base-300 p-4 absolute z-50 mt-2 w-full min-w-[280px]"
             >
               {/* Month/Year Selectors */}
               <div className="flex gap-2 mb-4">

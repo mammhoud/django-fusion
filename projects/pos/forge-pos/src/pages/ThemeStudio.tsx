@@ -761,7 +761,7 @@ export default function ThemeStudio() {
                 className="text-sm font-semibold text-base-content/70 uppercase tracking-wider mb-3 flex items-center gap-2 w-full text-left"
               >
                 <span className={`icon-[tabler--chevron-right] w-4 h-4 transition-transform ${showSurfaces ? 'rotate-90' : ''}`} />
-                <span className="icon-[tabler--layers] w-4 h-4" />
+                <span className="icon-[tabler--stack-2] w-4 h-4" />
                 Surface Colors
               </button>
               {showSurfaces && (
