@@ -239,6 +239,8 @@ def _render_wagtail_html(page, request) -> HttpResponse:
         view_instance.request = request
         view_instance.args = ()
         view_instance.kwargs = {"slug": page.slug if hasattr(page, "slug") else "home"}
+        # Set model_class to the page's actual model so _get_page() can look it up
+        view_instance.model_class = page.__class__
         context = view_instance.get_context_data()
         return view_instance.render_to_response(context)
     except Exception:

@@ -32,6 +32,7 @@ dependencies = [
     "django-tables2",
     "django-webpack-loader",
     # API
+    "django-cors-headers",
     "django-ninja",
     "ninja",
     # Payments
