@@ -945,7 +945,7 @@ wheels = [
 
 [[package]]
 name = "django-fusion"
-version = "0.2.0"
+version = "0.4.0"
 source = { editable = "libs/django-fusion" }
 dependencies = [
     { name = "attrs" },
@@ -964,6 +964,7 @@ requires-dist = [
     { name = "build", marker = "extra == 'dev'" },
     { name = "colorama", specifier = ">=0.4.6" },
     { name = "django", specifier = ">=4.2" },
+    { name = "django-webpack-loader", marker = "extra == 'webpack'", specifier = ">=3.2.3" },
     { name = "hypothesis", marker = "extra == 'dev'" },
     { name = "hypothesis", marker = "extra == 'test'" },
     { name = "pluggy", specifier = ">=1.6.0" },
@@ -978,7 +979,7 @@ requires-dist = [
     { name = "twine", marker = "extra == 'dev'" },
     { name = "wagtail" },
 ]
-provides-extras = ["test", "dev"]
+provides-extras = ["test", "dev", "webpack"]
 
 [[package]]
 name = "django-heroicons"

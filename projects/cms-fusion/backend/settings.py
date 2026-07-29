@@ -123,7 +123,9 @@ FUSION_BOLT = {
     "auth_backends": ["jwt"],
     "serializer_format": "dict",
     "cors_origins": [
+        "http://localhost:3001",
         "http://localhost:3002",
+        "http://127.0.0.1:3001",
         "http://127.0.0.1:3002",
     ],
     "component_auto_register": True,
@@ -192,3 +194,23 @@ FUSION_ASSETS = {
         "inline_js": [],
     },
 }
+
+# ═══════════════════════════════════════════════════════════════════
+# CORS — allow frontend origins to access the API
+# ═══════════════════════════════════════════════════════════════════
+CORS_ALLOWED_ORIGINS = [
+    "http://localhost:3001",
+    "http://localhost:3002",
+    "http://127.0.0.1:3001",
+    "http://127.0.0.1:3002",
+]
+CORS_ALLOW_CREDENTIALS = True
+
+# ═══════════════════════════════════════════════════════════════════
+# CORS — force-enable cortheaders since configs/base may be read-only
+# ═══════════════════════════════════════════════════════════════════
+if "corsheaders" not in INSTALLED_APPS:
+    INSTALLED_APPS.append("corsheaders")
+if "corsheaders.middleware.CorsMiddleware" not in MIDDLEWARE:
+    idx = next((i for i, m in enumerate(MIDDLEWARE) if m.startswith("django.middleware.security")), 0) + 1
+    MIDDLEWARE.insert(idx, "corsheaders.middleware.CorsMiddleware")
