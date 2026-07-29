@@ -85,6 +85,18 @@ INSTALLED_APPS += LOCAL_APPS
 # through django-fusion / ceptor-ai and do not need the legacy shared worker.
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
 
+# Register fusion_layout template tag library as both a builtin and library.
+# - builtin:  allows {% fusion_layout %} and {% fusion_render_first_flag %} without {% load %}
+# - library:  allows {% load fusion_layout %} in templates like base.html
+# The shared configs/base/templates.py already has both, but /app/configs/ is
+# read-only in the container, so we duplicate the registration here.
+TEMPLATES[0]["OPTIONS"]["builtins"].append(
+    "django_fusion.comp.templatetags.fusion_layout"
+)
+TEMPLATES[0]["OPTIONS"]["libraries"]["fusion_layout"] = (
+    "django_fusion.comp.templatetags.fusion_layout"
+)
+
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
     "apps.pages.branding.context_processors.fusion_branding_context"

@@ -25,7 +25,24 @@ for _path in (str(_WORKSPACE_DIR), str(_SITE_DIR), str(_SITE_APP_DIR), str(_APPS
 # ============================================================
 # Site Configuration
 # ============================================================
-from configs.site import configure_site_environment
+from configs.site import configure_site_environment, WORKSPACE_DIR
+
+# Force the correct WEBSITE_DIR and WEBSITE before importing shared settings.
+# The cms-fusion name isn't in sites.yml, so configure_site_environment
+# would fall back to the default 'lms' site, resolving BASE_DIR to
+# /app/websites/lms instead of /app/cms-fusion. Explicitly set them here
+# to keep all env vars consistent.
+_cms_site_dir = str(WORKSPACE_DIR / "cms-fusion")
+if "WEBSITE_DIR" not in os.environ:
+    os.environ["WEBSITE_DIR"] = _cms_site_dir
+if "DJANGO_WEBSITE_DIR" not in os.environ:
+    os.environ["DJANGO_WEBSITE_DIR"] = _cms_site_dir
+if "WEBSITE" not in os.environ:
+    os.environ["WEBSITE"] = "cms-fusion"
+if "WEBSITE_NAME" not in os.environ:
+    os.environ["WEBSITE_NAME"] = "cms-fusion"
+if "DJANGO_WEBSITE" not in os.environ:
+    os.environ["DJANGO_WEBSITE"] = "cms-fusion"
 
 configure_site_environment("cms-fusion", module="FUSION", default_port=5070)
 
@@ -88,6 +105,18 @@ INSTALLED_APPS += LOCAL_APPS
 # the fusion app registry; the fusion sites run their own task/worker stack
 # through django-fusion / ceptor-ai and do not need the legacy shared worker.
 INSTALLED_APPS = [app for app in INSTALLED_APPS if app != "www.worker"]
+
+# Register fusion_layout template tag library as both a builtin and library.
+# - builtin:  allows {% fusion_layout %} and {% fusion_render_first_flag %} without {% load %}
+# - library:  allows {% load fusion_layout %} in templates like base.html
+# The shared configs/base/templates.py should have both, but /app/configs/ is
+# read-only in the container, so we duplicate the registration here.
+TEMPLATES[0]["OPTIONS"]["builtins"].append(
+    "django_fusion.comp.templatetags.fusion_layout"
+)
+TEMPLATES[0]["OPTIONS"]["libraries"]["fusion_layout"] = (
+    "django_fusion.comp.templatetags.fusion_layout"
+)
 
 # Dynamic branding context processor
 TEMPLATES[0]["OPTIONS"]["context_processors"].append(
