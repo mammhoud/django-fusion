@@ -39,9 +39,10 @@ class FusionPageView(RoutableComponent):
 
     def get_fragment_name(self) -> str:
         page = self._get_page()
-        if page and page.fragment_name:
-            return page.fragment_name
         if page:
+            fragment = getattr(page, "fragment_name", None)
+            if fragment:
+                return fragment
             return f"pages.{page.slug.replace('-', '_')}"
         return super().get_fragment_name() or f"pages.{self.route_name}"
 

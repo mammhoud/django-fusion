@@ -1,0 +1,75 @@
+// ============================================================================
+// django-fusion — Color Design Tokens
+// ============================================================================
+// Default color palette exposed as CSS custom properties on the
+// ``.fusion-components`` scope.  Sites can override these by setting
+// custom properties on their own ``:root`` before the fusion components
+// load — no recompilation needed.
+//
+// Usage:
+//   color: var(--fu-color-primary);
+//   background: var(--fu-color-surface);
+// ============================================================================
+
+.fusion-components {
+  // ── Primary palette ─────────────────────────────────────────────────────
+  --fu-color-primary:          #7c3aed;   // Violet-600
+  --fu-color-primary-light:    #a78bfa;   // Violet-400
+  --fu-color-primary-dark:     #5b21b6;   // Violet-800
+  --fu-color-primary-bg:       #f5f3ff;   // Violet-50
+  --fu-color-primary-contrast: #ffffff;
+
+  // ── Secondary / accent ──────────────────────────────────────────────────
+  --fu-color-secondary:        #f59e0b;   // Amber-500
+  --fu-color-secondary-light:  #fbbf24;   // Amber-400
+  --fu-color-secondary-dark:   #d97706;   // Amber-600
+  --fu-color-secondary-bg:     #fffbeb;   // Amber-50
+
+  // ── Neutral / gray scale ────────────────────────────────────────────────
+  --fu-color-gray-50:   #f9fafb;
+  --fu-color-gray-100:  #f3f4f6;
+  --fu-color-gray-200:  #e5e7eb;
+  --fu-color-gray-300:  #d1d5db;
+  --fu-color-gray-400:  #9ca3af;
+  --fu-color-gray-500:  #6b7280;
+  --fu-color-gray-600:  #4b5563;
+  --fu-color-gray-700:  #374151;
+  --fu-color-gray-800:  #1f2937;
+  --fu-color-gray-900:  #111827;
+
+  // ── Semantic colors ────────────────────────────────────────────────────
+  --fu-color-success:         #10b981;   // Emerald-500
+  --fu-color-success-bg:      #ecfdf5;   // Emerald-50
+  --fu-color-warning:         #f59e0b;   // Amber-500
+  --fu-color-warning-bg:      #fffbeb;   // Amber-50
+  --fu-color-error:           #ef4444;   // Red-500
+  --fu-color-error-bg:        #fef2f2;   // Red-50
+  --fu-color-info:            #3b82f6;   // Blue-500
+  --fu-color-info-bg:         #eff6ff;   // Blue-50
+
+  // ── Surfaces ────────────────────────────────────────────────────────────
+  --fu-color-surface:         #ffffff;
+  --fu-color-surface-raised:  #f9fafb;
+  --fu-color-surface-overlay: rgba(0, 0, 0, 0.5);
+  --fu-color-border:          #e5e7eb;
+  --fu-color-border-strong:   #d1d5db;
+
+  // ── Text ────────────────────────────────────────────────────────────────
+  --fu-color-text-primary:   #111827;
+  --fu-color-text-secondary: #6b7280;
+  --fu-color-text-disabled:  #9ca3af;
+  --fu-color-text-inverse:   #ffffff;
+
+  // ── Shadows ─────────────────────────────────────────────────────────────
+  --fu-shadow-sm:   0 1px 2px rgba(0, 0, 0, 0.05);
+  --fu-shadow-md:   0 4px 6px -1px rgba(0, 0, 0, 0.1);
+  --fu-shadow-lg:   0 10px 15px -3px rgba(0, 0, 0, 0.1);
+  --fu-shadow-xl:   0 20px 25px -5px rgba(0, 0, 0, 0.1);
+
+  // ── Border radius ───────────────────────────────────────────────────────
+  --fu-radius-sm:   0.25rem;   // 4px
+  --fu-radius-md:   0.375rem;  // 6px
+  --fu-radius-lg:   0.5rem;    // 8px
+  --fu-radius-xl:   0.75rem;   // 12px
+  --fu-radius-full: 9999px;
+}

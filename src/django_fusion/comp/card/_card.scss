@@ -1,0 +1,103 @@
+// ============================================================================
+// django-fusion — Card Component
+// ============================================================================
+// Styles for ``{% comp \"card\" %}`` — a container component with optional
+// header, body, and footer sections.
+//
+// BEM block: .fu-card
+// ============================================================================
+
+.fu-card {
+  // ── Base ────────────────────────────────────────────────────────────────
+  display: flex;
+  flex-direction: column;
+  background-color: var(--fu-color-surface);
+  border: 1px solid var(--fu-color-border);
+  border-radius: var(--fu-radius-lg);
+  box-shadow: var(--fu-shadow-sm);
+  overflow: hidden;
+  transition:
+    box-shadow 0.2s ease,
+    border-color 0.2s ease;
+
+  // ── Variants ────────────────────────────────────────────────────────────
+  &--raised {
+    box-shadow: var(--fu-shadow-md);
+  }
+
+  &--bordered {
+    border-color: var(--fu-color-border-strong);
+  }
+
+  &--flat {
+    box-shadow: none;
+    border-color: transparent;
+    background-color: var(--fu-color-surface-raised);
+  }
+
+  // ── Interactive (clickable card) ────────────────────────────────────────
+  &--interactive {
+    cursor: pointer;
+
+    &:hover {
+      box-shadow: var(--fu-shadow-lg);
+      border-color: var(--fu-color-primary-light);
+    }
+  }
+
+  // ── Sections ────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--fu-space-3);
+    padding: var(--fu-space-4) var(--fu-space-5);
+    border-bottom: 1px solid var(--fu-color-border);
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  &__title {
+    font-size: var(--fu-font-size-lg);
+    font-weight: var(--fu-font-weight-semibold);
+    color: var(--fu-color-text-primary);
+    margin: 0;
+  }
+
+  &__subtitle {
+    font-size: var(--fu-font-size-sm);
+    color: var(--fu-color-text-secondary);
+    margin-top: var(--fu-space-1);
+  }
+
+  &__body {
+    flex: 1;
+    padding: var(--fu-space-5);
+
+    &:only-child {
+      padding: var(--fu-space-5);
+    }
+  }
+
+  &__footer {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-space-3);
+    padding: var(--fu-space-3) var(--fu-space-5);
+    border-top: 1px solid var(--fu-color-border);
+    background-color: var(--fu-color-surface-raised);
+
+    &:empty {
+      display: none;
+    }
+  }
+
+  // ── Image / media ───────────────────────────────────────────────────────
+  &__media {
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    object-fit: cover;
+  }
+}

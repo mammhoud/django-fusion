@@ -1,0 +1,22 @@
+{
+  "name": "django-fusion-assets",
+  "version": "0.4.0",
+  "private": true,
+  "description": "Webpack bundle config for django-fusion component assets (CSS, JS, fonts)",
+  "scripts": {
+    "build": "webpack --mode production",
+    "watch": "webpack --mode development --watch",
+    "dev": "webpack --mode development",
+    "clean": "rm -rf static/bundles/*.js static/bundles/*.css static/bundles/*.map static/bundles/fonts/ static/bundles/images/ webpack-stats.json && mkdir -p static/bundles && touch static/bundles/.gitkeep"
+  },
+  "devDependencies": {
+    "css-loader": "^7.1.0",
+    "mini-css-extract-plugin": "^2.9.0",
+    "sass": "^1.77.0",
+    "sass-loader": "^14.2.0",
+    "style-loader": "^4.0.0",
+    "webpack": "^5.93.0",
+    "webpack-bundle-tracker": "^3.1.0",
+    "webpack-cli": "^5.1.0"
+  }
+}

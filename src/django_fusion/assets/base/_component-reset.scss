@@ -1,0 +1,54 @@
+// ============================================================================
+// django-fusion — Component Reset
+// ============================================================================
+// Minimal CSS reset scoped to the ``.fusion-components`` wrapper.
+// Not a full browser reset — only normalises properties that commonly
+// cause layout issues inside fusion component containers.
+// ============================================================================
+
+.fusion-components *,
+.fusion-components *::before,
+.fusion-components *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+.fusion-components {
+  // Baseline font smoothing
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
+
+  // Inherit line-height from tokens
+  line-height: var(--fu-line-height-normal, 1.5);
+  color: var(--fu-color-text-primary, #111827);
+
+  // Images are responsive by default
+  img,
+  svg {
+    display: block;
+    max-width: 100%;
+    height: auto;
+  }
+
+  // Links reset
+  a {
+    color: inherit;
+    text-decoration: none;
+  }
+
+  // Buttons reset
+  button {
+    font: inherit;
+    cursor: pointer;
+    border: none;
+    background: none;
+    color: inherit;
+  }
+
+  // Lists reset
+  ul, ol {
+    list-style: none;
+  }
+}

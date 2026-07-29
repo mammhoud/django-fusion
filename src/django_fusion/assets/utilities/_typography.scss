@@ -1,0 +1,65 @@
+// ============================================================================
+// django-fusion — Typography Utilities
+// ============================================================================
+// Utility classes for text alignment, size, weight, and decoration.
+// ============================================================================
+
+// ── Font size ──────────────────────────────────────────────────────────────
+.fu-text-xs  { font-size: var(--fu-font-size-xs); }
+.fu-text-sm  { font-size: var(--fu-font-size-sm); }
+.fu-text-base { font-size: var(--fu-font-size-base); }
+.fu-text-lg  { font-size: var(--fu-font-size-lg); }
+.fu-text-xl  { font-size: var(--fu-font-size-xl); }
+.fu-text-2xl { font-size: var(--fu-font-size-2xl); }
+.fu-text-3xl { font-size: var(--fu-font-size-3xl); }
+.fu-text-4xl { font-size: var(--fu-font-size-4xl); }
+
+// ── Font weight ────────────────────────────────────────────────────────────
+.fu-font-normal    { font-weight: var(--fu-font-weight-normal); }
+.fu-font-medium    { font-weight: var(--fu-font-weight-medium); }
+.fu-font-semibold  { font-weight: var(--fu-font-weight-semibold); }
+.fu-font-bold      { font-weight: var(--fu-font-weight-bold); }
+
+// ── Text alignment ─────────────────────────────────────────────────────────
+.fu-text-left    { text-align: left; }
+.fu-text-center  { text-align: center; }
+.fu-text-right   { text-align: right; }
+
+// ── Text color ─────────────────────────────────────────────────────────────
+.fu-text-primary    { color: var(--fu-color-text-primary); }
+.fu-text-secondary  { color: var(--fu-color-text-secondary); }
+.fu-text-disabled   { color: var(--fu-color-text-disabled); }
+.fu-text-inverse    { color: var(--fu-color-text-inverse); }
+
+// ── Text decoration ────────────────────────────────────────────────────────
+.fu-text-truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fu-text-mono {
+  font-family: var(--fu-font-mono);
+}
+
+// ── Line clamp ─────────────────────────────────────────────────────────────
+.fu-line-clamp-1 {
+  display: -webkit-box;
+  -webkit-line-clamp: 1;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fu-line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.fu-line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}

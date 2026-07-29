@@ -1,0 +1,143 @@
+// ============================================================================
+// django-fusion — Table Component
+// ============================================================================
+// Styles for ``{% comp \"table\" %}`` — a responsive data table with
+// optional header, footer, sorting, and striped rows.
+//
+// BEM block: .fu-table
+// ============================================================================
+
+.fu-table {
+  // ── Base ────────────────────────────────────────────────────────────────
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--fu-font-size-sm);
+  line-height: var(--fu-line-height-normal);
+
+  // ── Header ──────────────────────────────────────────────────────────────
+  thead {
+    border-bottom: 2px solid var(--fu-color-border);
+  }
+
+  th {
+    font-weight: var(--fu-font-weight-semibold);
+    color: var(--fu-color-text-primary);
+    text-align: left;
+    padding: var(--fu-space-3) var(--fu-space-4);
+    white-space: nowrap;
+    user-select: none;
+
+    // Sorting indicator
+    &[aria-sort] {
+      cursor: pointer;
+      transition: color 0.15s ease;
+
+      &:hover {
+        color: var(--fu-color-primary);
+      }
+    }
+
+    &[aria-sort='ascending']::after {
+      content: ' ▲';
+      font-size: 0.625rem;
+    }
+
+    &[aria-sort='descending']::after {
+      content: ' ▼';
+      font-size: 0.625rem;
+    }
+  }
+
+  // ── Body ────────────────────────────────────────────────────────────────
+  td {
+    padding: var(--fu-space-3) var(--fu-space-4);
+    color: var(--fu-color-text-primary);
+    border-bottom: 1px solid var(--fu-color-border);
+    vertical-align: middle;
+  }
+
+  tbody tr {
+    transition: background-color 0.15s ease;
+
+    &:hover {
+      background-color: var(--fu-color-gray-50);
+    }
+
+    &:last-child td {
+      border-bottom: none;
+    }
+  }
+
+  // ── Variants ────────────────────────────────────────────────────────────
+  &--striped tbody tr:nth-child(even) {
+    background-color: var(--fu-color-gray-50);
+  }
+
+  &--bordered {
+    th, td {
+      border: 1px solid var(--fu-color-border);
+    }
+
+    thead {
+      border-bottom: none;
+    }
+  }
+
+  &--compact {
+    th, td {
+      padding: var(--fu-space-2) var(--fu-space-3);
+    }
+  }
+
+  // ── Responsive ──────────────────────────────────────────────────────────
+  &--responsive {
+    @media (max-width: 768px) {
+      display: block;
+
+      thead {
+        display: none;
+      }
+
+      tbody, tr, td {
+        display: block;
+      }
+
+      tr {
+        padding: var(--fu-space-3);
+        border-bottom: 2px solid var(--fu-color-border);
+      }
+
+      td {
+        padding: var(--fu-space-1) 0;
+        border-bottom: none;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &::before {
+          content: attr(data-label);
+          font-weight: var(--fu-font-weight-semibold);
+          color: var(--fu-color-text-secondary);
+          font-size: var(--fu-font-size-xs);
+        }
+      }
+    }
+  }
+
+  // ── Empty state ─────────────────────────────────────────────────────────
+  &__empty {
+    text-align: center;
+    padding: var(--fu-space-8) var(--fu-space-4);
+    color: var(--fu-color-text-secondary);
+  }
+
+  // ── Footer ──────────────────────────────────────────────────────────────
+  tfoot {
+    border-top: 2px solid var(--fu-color-border);
+
+    td {
+      font-weight: var(--fu-font-weight-medium);
+      color: var(--fu-color-text-primary);
+    }
+  }
+}

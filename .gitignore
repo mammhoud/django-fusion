@@ -83,3 +83,13 @@ Thumbs.db
 
 # Ignore CTC Research docs - separate project
 ctc-research/
+
+# ── Webpack / Django-Webpack-Loader ────────────────────────────────────────
+node_modules/
+webpack-stats.json
+static/bundles/*.js
+static/bundles/*.css
+static/bundles/*.map
+static/bundles/fonts/
+static/bundles/images/
+!static/bundles/.gitkeep

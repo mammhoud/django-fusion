@@ -1,0 +1,144 @@
+// ============================================================================
+// django-fusion — Navigation Component
+// ============================================================================
+// Styles for ``{% comp \"navigation\" %}`` — horizontal navigation bar,
+// vertical sidebar menu, and breadcrumb variants.
+//
+// BEM blocks: .fu-nav, .fu-breadcrumb
+// ============================================================================
+
+// ── Navigation ─────────────────────────────────────────────────────────────
+.fu-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-space-1);
+
+  // ── Variants ────────────────────────────────────────────────────────────
+  &--horizontal {
+    flex-direction: row;
+    flex-wrap: wrap;
+  }
+
+  &--vertical {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  &--pills &__link {
+    border-radius: var(--fu-radius-full);
+  }
+
+  &--tabs {
+    border-bottom: 1px solid var(--fu-color-border);
+  }
+
+  &--tabs &__link {
+    border-radius: var(--fu-radius-md) var(--fu-radius-md) 0 0;
+    border: 1px solid transparent;
+    border-bottom: none;
+    margin-bottom: -1px;
+
+    &--active {
+      background-color: var(--fu-color-surface);
+      border-color: var(--fu-color-border);
+      color: var(--fu-color-primary);
+    }
+  }
+
+  // ── Link ────────────────────────────────────────────────────────────────
+  &__link {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fu-space-2);
+    padding: var(--fu-space-2) var(--fu-space-4);
+    font-size: var(--fu-font-size-sm);
+    font-weight: var(--fu-font-weight-medium);
+    color: var(--fu-color-text-secondary);
+    border-radius: var(--fu-radius-md);
+    text-decoration: none;
+    white-space: nowrap;
+    transition:
+      color 0.15s ease,
+      background-color 0.15s ease;
+
+    &:hover {
+      color: var(--fu-color-text-primary);
+      background-color: var(--fu-color-gray-100);
+    }
+
+    &--active {
+      color: var(--fu-color-primary);
+      background-color: var(--fu-color-primary-bg);
+
+      &:hover {
+        color: var(--fu-color-primary-dark);
+        background-color: var(--fu-color-primary-bg);
+      }
+    }
+
+    &--disabled {
+      opacity: 0.5;
+      pointer-events: none;
+    }
+  }
+
+  // ── Icon ────────────────────────────────────────────────────────────────
+  &__icon {
+    width: 1.125rem;
+    height: 1.125rem;
+    flex-shrink: 0;
+  }
+
+  // ── Badge ───────────────────────────────────────────────────────────────
+  &__badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 1.25rem;
+    height: 1.25rem;
+    padding: 0 var(--fu-space-1);
+    font-size: 0.625rem;
+    font-weight: var(--fu-font-weight-bold);
+    border-radius: var(--fu-radius-full);
+    background-color: var(--fu-color-primary);
+    color: var(--fu-color-primary-contrast);
+    margin-left: auto;
+  }
+}
+
+// ── Breadcrumb ─────────────────────────────────────────────────────────────
+.fu-breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--fu-space-2);
+  font-size: var(--fu-font-size-sm);
+  color: var(--fu-color-text-secondary);
+  flex-wrap: wrap;
+
+  &__item {
+    display: inline-flex;
+    align-items: center;
+    gap: var(--fu-space-2);
+    color: inherit;
+    text-decoration: none;
+
+    &:hover {
+      color: var(--fu-color-primary);
+    }
+
+    &--active {
+      color: var(--fu-color-text-primary);
+      font-weight: var(--fu-font-weight-medium);
+
+      &:hover {
+        color: var(--fu-color-text-primary);
+      }
+    }
+
+    // Separator
+    & + &::before {
+      content: '/';
+      color: var(--fu-color-text-disabled);
+    }
+  }
+}

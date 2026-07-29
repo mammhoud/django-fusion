@@ -1,0 +1,153 @@
+// ============================================================================
+// django-fusion — Layout Styles
+// ============================================================================
+// Styles for the fusion base templates (``base.html``, ``base_fragment.html``).
+// Provides the structural grid: header, sidebar, main content, footer.
+//
+// BEM blocks: .fu-layout, .fu-header, .fu-sidebar, .fu-main, .fu-footer
+// ============================================================================
+
+// ── Layout wrapper ─────────────────────────────────────────────────────────
+.fu-layout {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  font-family: var(--fu-font-body);
+  color: var(--fu-color-text-primary);
+  background-color: var(--fu-color-surface);
+
+  // ── Two-column variant ──────────────────────────────────────────────────
+  &--sidebar {
+    display: grid;
+    grid-template-columns: 280px 1fr;
+    grid-template-rows: auto 1fr auto;
+    grid-template-areas:
+      'sidebar header'
+      'sidebar main'
+      'sidebar footer';
+
+    @media (max-width: 768px) {
+      grid-template-columns: 1fr;
+      grid-template-areas:
+        'header'
+        'main'
+        'footer';
+    }
+  }
+}
+
+// ── Header ─────────────────────────────────────────────────────────────────
+.fu-header {
+  grid-area: header;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fu-space-4);
+  padding: var(--fu-space-3) var(--fu-space-5);
+  border-bottom: 1px solid var(--fu-color-border);
+  background-color: var(--fu-color-surface);
+  z-index: 100;
+
+  &__brand {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-space-3);
+    font-size: var(--fu-font-size-lg);
+    font-weight: var(--fu-font-weight-semibold);
+    text-decoration: none;
+    color: var(--fu-color-text-primary);
+  }
+
+  &__logo {
+    height: 2rem;
+    width: auto;
+  }
+
+  &__nav {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-space-2);
+  }
+}
+
+// ── Sidebar ────────────────────────────────────────────────────────────────
+.fu-sidebar {
+  grid-area: sidebar;
+  display: flex;
+  flex-direction: column;
+  gap: var(--fu-space-2);
+  padding: var(--fu-space-4);
+  border-right: 1px solid var(--fu-color-border);
+  background-color: var(--fu-color-surface-raised);
+  overflow-y: auto;
+
+  @media (max-width: 768px) {
+    display: none;
+
+    &--open {
+      display: flex;
+      position: fixed;
+      inset: 0;
+      z-index: 200;
+    }
+  }
+}
+
+// ── Main content ───────────────────────────────────────────────────────────
+.fu-main {
+  grid-area: main;
+  padding: var(--fu-space-6);
+  overflow-y: auto;
+
+  // ── Page sections ───────────────────────────────────────────────────────
+  &__section {
+    margin-bottom: var(--fu-space-6);
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  &__title {
+    font-size: var(--fu-font-size-2xl);
+    font-weight: var(--fu-font-weight-bold);
+    margin-bottom: var(--fu-space-2);
+  }
+
+  &__description {
+    font-size: var(--fu-font-size-base);
+    color: var(--fu-color-text-secondary);
+    margin-bottom: var(--fu-space-6);
+  }
+}
+
+// ── Footer ─────────────────────────────────────────────────────────────────
+.fu-footer {
+  grid-area: footer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--fu-space-4);
+  padding: var(--fu-space-3) var(--fu-space-5);
+  border-top: 1px solid var(--fu-color-border);
+  font-size: var(--fu-font-size-xs);
+  color: var(--fu-color-text-secondary);
+}
+
+// ── Fragment wrapper (for HTMX / partial loads) ────────────────────────────
+.fu-fragment {
+  &__loading {
+    opacity: 0.6;
+    pointer-events: none;
+    transition: opacity 0.2s ease;
+  }
+
+  &__error {
+    padding: var(--fu-space-4);
+    border: 1px solid var(--fu-color-error);
+    border-radius: var(--fu-radius-md);
+    background-color: var(--fu-color-error-bg);
+    color: var(--fu-color-error);
+    font-size: var(--fu-font-size-sm);
+  }
+}

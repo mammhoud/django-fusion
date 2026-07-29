@@ -6,8 +6,8 @@ Declarative, class-based URL routing for Django projects — moved from
 ``django_fusion.comp.routes`` to ``django_fusion.routes``.
 
 Provides Viewset, BaseViewset, Route, route(), menu_path(), and IndexViewMixin.
-Also includes model viewsets, site/application routing, and routable components
-with HTMX fragment support.
+Also includes model viewsets, site/application routing, routable components
+with HTMX fragment support, and URL path converters.
 
 Import from::
 
@@ -16,6 +16,7 @@ Import from::
         Application, Site, AppMenuMixin,
         RoutableComponent, FragmentComponent,
         ModelViewset, ReadonlyModelViewset,
+        UnicodeSlugConverter,
     )
 """
 from .base import (
@@ -70,6 +71,7 @@ from .session import (  # noqa: F401
     session_checker,
 )
 from .sites import Application, AppMenuMixin, Site  # noqa: F401
+from .converters import UnicodeSlugConverter  # noqa: F401
 
 __all__ = [
     # Base routing
@@ -118,6 +120,8 @@ __all__ = [
     "fusion_json_response",
     "FusionFragmentSchema",
     "FusionFragmentPointer",
+    # URL converters
+    "UnicodeSlugConverter",
     # Session / codec
     "SESSION_KEY",
     "CODEC_VERSION",

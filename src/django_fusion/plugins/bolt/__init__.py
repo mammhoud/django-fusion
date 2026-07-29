@@ -27,13 +27,14 @@ except ImportError:
 
 
 if _HAS_BOLT:
-    from django_fusion.plugins.bolt.api import FusionBoltAPI
+    from django_fusion.plugins.bolt.api import FusionBoltAPI, register_fusion_assets_bolt
     from django_fusion.plugins.bolt.decorators import fusion_endpoint
     from django_fusion.plugins.bolt.serializers import component_serializer
     from django_fusion.plugins.bolt.auth import FusionBoltAuthBackend
 
     __all__ = [
         "FusionBoltAPI",
+        "register_fusion_assets_bolt",
         "fusion_endpoint",
         "component_serializer",
         "FusionBoltAuthBackend",

@@ -1,0 +1,163 @@
+// ============================================================================
+// django-fusion — Form Component
+// ============================================================================
+// Styles for ``{% comp \"form\" %}`` — form controls: inputs, selects,
+// textareas, checkboxes, radio buttons, labels, and validation states.
+//
+// BEM block: .fu-form
+// ============================================================================
+
+.fu-form {
+  // ── Layout ──────────────────────────────────────────────────────────────
+  display: flex;
+  flex-direction: column;
+  gap: var(--fu-space-5);
+
+  &--inline {
+    flex-direction: row;
+    align-items: flex-end;
+    flex-wrap: wrap;
+  }
+
+  &--horizontal {
+    .fu-form__group {
+      display: grid;
+      grid-template-columns: 180px 1fr;
+      gap: var(--fu-space-3);
+      align-items: baseline;
+    }
+  }
+
+  // ── Field group ─────────────────────────────────────────────────────────
+  &__group {
+    display: flex;
+    flex-direction: column;
+    gap: var(--fu-space-1);
+  }
+
+  // ── Label ───────────────────────────────────────────────────────────────
+  &__label {
+    font-size: var(--fu-font-size-sm);
+    font-weight: var(--fu-font-weight-medium);
+    color: var(--fu-color-text-primary);
+
+    &--required::after {
+      content: ' *';
+      color: var(--fu-color-error);
+    }
+  }
+
+  // ── Help / hint text ────────────────────────────────────────────────────
+  &__hint {
+    font-size: var(--fu-font-size-xs);
+    color: var(--fu-color-text-secondary);
+    margin-top: var(--fu-space-1);
+  }
+
+  // ── Error message ───────────────────────────────────────────────────────
+  &__error {
+    font-size: var(--fu-font-size-xs);
+    color: var(--fu-color-error);
+    display: flex;
+    align-items: center;
+    gap: var(--fu-space-1);
+    margin-top: var(--fu-space-1);
+  }
+
+  // ── Input ───────────────────────────────────────────────────────────────
+  &__input {
+    display: block;
+    width: 100%;
+    padding: var(--fu-space-2) var(--fu-space-3);
+    font-size: var(--fu-font-size-sm);
+    font-family: var(--fu-font-body);
+    line-height: var(--fu-line-height-normal);
+    color: var(--fu-color-text-primary);
+    background-color: var(--fu-color-surface);
+    border: 1px solid var(--fu-color-border);
+    border-radius: var(--fu-radius-md);
+    transition:
+      border-color 0.15s ease,
+      box-shadow 0.15s ease;
+
+    &::placeholder {
+      color: var(--fu-color-text-disabled);
+    }
+
+    &:hover {
+      border-color: var(--fu-color-border-strong);
+    }
+
+    &:focus {
+      outline: none;
+      border-color: var(--fu-color-primary);
+      box-shadow: 0 0 0 3px var(--fu-color-primary-bg);
+    }
+
+    &:disabled {
+      background-color: var(--fu-color-gray-100);
+      color: var(--fu-color-text-disabled);
+      cursor: not-allowed;
+    }
+
+    // Validation states
+    &--error {
+      border-color: var(--fu-color-error);
+      &:focus {
+        box-shadow: 0 0 0 3px var(--fu-color-error-bg);
+      }
+    }
+
+    &--success {
+      border-color: var(--fu-color-success);
+      &:focus {
+        box-shadow: 0 0 0 3px var(--fu-color-success-bg);
+      }
+    }
+  }
+
+  // ── Select ──────────────────────────────────────────────────────────────
+  &__select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='%236b7280' viewBox='0 0 16 16'%3E%3Cpath d='M4.646 5.646a.5.5 0 0 1 .708 0L8 8.293l2.646-2.647a.5.5 0 0 1 .708.708l-3 3a.5.5 0 0 1-.708 0l-3-3a.5.5 0 0 1 0-.708z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right var(--fu-space-3) center;
+    padding-right: var(--fu-space-8);
+    cursor: pointer;
+
+    &[multiple] {
+      background-image: none;
+      padding-right: var(--fu-space-3);
+    }
+  }
+
+  // ── Textarea ────────────────────────────────────────────────────────────
+  &__textarea {
+    min-height: 6rem;
+    resize: vertical;
+  }
+
+  // ── Checkbox / Radio ────────────────────────────────────────────────────
+  &__check-group {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-space-2);
+    cursor: pointer;
+  }
+
+  &__checkbox,
+  &__radio {
+    width: 1.125rem;
+    height: 1.125rem;
+    accent-color: var(--fu-color-primary);
+    cursor: pointer;
+  }
+
+  // ── Actions ─────────────────────────────────────────────────────────────
+  &__actions {
+    display: flex;
+    align-items: center;
+    gap: var(--fu-space-3);
+    padding-top: var(--fu-space-3);
+  }
+}

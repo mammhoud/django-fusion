@@ -83,6 +83,101 @@ git add projects/libs/django-fusion
 git commit -m "chore: bump django-fusion submodule"
 ```
 
+## Building Component Assets (Webpack)
+
+`django-fusion` ships a **Webpack 5 build pipeline** for its component SCSS
+and JS assets. The pipeline produces a single `fusion` bundle consumed by
+django-webpack-loader (`{% render_bundle 'fusion' %}`).
+
+### Quick start
+
+```bash
+cd libs/django-fusion
+make build              # Full production build (install + webpack --mode production)
+```
+
+This outputs:
+
+```
+static/bundles/fusion.<hash>.css   # Compiled component styles (~28 KB)
+static/bundles/fusion.<hash>.js    # Component JS entry (empty for now)
+webpack-stats.json                 # Read by django-webpack-loader
+```
+
+### Available targets (`make`)
+
+| Target | Description |
+|--------|-------------|
+| `make build` | Production build (content-hashed filenames, minified) |
+| `make dev` | Dev build (fast, no minification, source maps) |
+| `make watch` | Dev + file watcher for live reload |
+| `make clean` | Remove all generated assets |
+| `make info` | Show pipeline info and file listing |
+| `make reinstall` | Force reinstall npm dependencies |
+
+### Manual (without Makefile)
+
+```bash
+npm install
+npm run build       # Production
+npm run dev         # Development
+npm run watch       # Dev + watcher
+npm run clean       # Remove generated files
+```
+
+### What gets bundled
+
+The entry point (`src/django_fusion/assets/entry.js`) imports
+`fusion.scss`, which in turn imports:
+
+```
+assets/variables/    → Design tokens (colors, typography, spacing)
+assets/base/         → Component reset + print styles
+comp/*/              → Per-component SCSS (button, card, modal, form, table, nav)
+assets/utilities/    → Spacing & typography utility classes
+templates/fusion/    → Layout grid for base.html / base_fragment.html
+```
+
+### Django integration
+
+Install with webpack support:
+
+```bash
+pip install django-fusion[webpack]
+```
+
+Then in your Django template:
+
+```django
+{% load render_bundle from webpack_loader %}
+{% render_bundle 'fusion' 'css' %}
+{% render_bundle 'fusion' 'js' %}
+```
+
+For Next.js projects, use the `FUSION_ASSETS` endpoint instead:
+
+```tsx
+// FusionAssets component calls /api/fusion/assets/manifest/
+<FusionAssets />
+```
+
+### Pipeline files
+
+| File | Purpose |
+|------|---------|
+| `webpack.config.js` | Webpack 5 config (137 lines) |
+| `package.json` | Dependencies & scripts |
+| `Makefile` | Build targets |
+| `src/django_fusion/assets/entry.js` | JS entry point |
+| `src/django_fusion/assets/fusion.scss` | SCSS entry point |
+| `src/django_fusion/assets/variables/` | Design token SCSS partials |
+| `src/django_fusion/assets/base/` | Reset & print SCSS partials |
+| `src/django_fusion/assets/utilities/` | Utility class SCSS partials |
+| `src/django_fusion/comp/*/_*.scss` | Per-component SCSS partials |
+| `src/django_fusion/templates/fusion/_layout.scss` | Layout styles |
+
+---
+
 ## Documentation
 
 The complete library documentation lives under [`docs/`](./docs/INDEX.md) and
@@ -105,6 +200,7 @@ is numbered with stable `DF-0NN` IDs.
 | [DF-013](./docs/13-troubleshooting.md) | Troubleshooting | `docs/13-troubleshooting.md` |
 | [DF-014](./docs/14-faq.md) | FAQ | `docs/14-faq.md` |
 | [DF-015](./docs/15-viewflow-mapping.md) | Viewflow / django-material mapping | `docs/15-viewflow-mapping.md` |
+| [DF-016](./docs/16-assets.md) | Asset pipeline & webpack | `docs/16-assets.md` |
 
 ## Citation
 

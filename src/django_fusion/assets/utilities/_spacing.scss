@@ -1,0 +1,76 @@
+// ============================================================================
+// django-fusion — Spacing Utilities
+// ============================================================================
+// Utility classes for margin, padding, and gap using the spacing token scale.
+//
+// Generated patterns:
+//   .fu-m-{n}    → margin: var(--fu-space-{n})
+//   .fu-p-{n}    → padding: var(--fu-space-{n})
+//   .fu-gap-{n}  → gap: var(--fu-space-{n})
+//   .fu-mt-{n}   → margin-top
+//   .fu-pb-{n}   → padding-bottom
+//   etc.
+// ============================================================================
+
+$spacing-keys: (
+  0, 1, 2, 3, 4, 5, 6, 8, 10, 12, 16, 20
+);
+
+$sides: (
+  t:  margin-top,
+  b:  margin-bottom,
+  l:  margin-left,
+  r:  margin-right,
+  x:  (margin-left margin-right),
+  y:  (margin-top margin-bottom),
+);
+
+$p-sides: (
+  t:  padding-top,
+  b:  padding-bottom,
+  l:  padding-left,
+  r:  padding-right,
+  x:  (padding-left padding-right),
+  y:  (padding-top padding-bottom),
+);
+
+// ── Margin utilities ──────────────────────────────────────────────────────
+@each $key in $spacing-keys {
+  .fu-m-#{$key} {
+    margin: var(--fu-space-#{$key});
+  }
+}
+
+@each $side, $props in $sides {
+  @each $key in $spacing-keys {
+    .fu-m#{$side}-#{$key} {
+      @each $prop in $props {
+        #{$prop}: var(--fu-space-#{$key});
+      }
+    }
+  }
+}
+
+// ── Padding utilities ─────────────────────────────────────────────────────
+@each $key in $spacing-keys {
+  .fu-p-#{$key} {
+    padding: var(--fu-space-#{$key});
+  }
+}
+
+@each $side, $props in $p-sides {
+  @each $key in $spacing-keys {
+    .fu-p#{$side}-#{$key} {
+      @each $prop in $props {
+        #{$prop}: var(--fu-space-#{$key});
+      }
+    }
+  }
+}
+
+// ── Gap utilities ─────────────────────────────────────────────────────────
+@each $key in $spacing-keys {
+  .fu-gap-#{$key} {
+    gap: var(--fu-space-#{$key});
+  }
+}

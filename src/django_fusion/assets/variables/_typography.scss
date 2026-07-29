@@ -1,0 +1,46 @@
+// ============================================================================
+// django-fusion — Typography Design Tokens
+// ============================================================================
+// Typography scale and font-family configuration for fusion components.
+// All values are CSS custom properties scoped to ``.fusion-components``.
+//
+// Usage:
+//   font-size: var(--fu-font-size-lg);
+//   font-family: var(--fu-font-body);
+// ============================================================================
+
+.fusion-components {
+  // ── Font families ───────────────────────────────────────────────────────
+  --fu-font-body:    system-ui, -apple-system, 'Segoe UI', Roboto,
+                     'Helvetica Neue', Arial, sans-serif;
+  --fu-font-heading: system-ui, -apple-system, 'Segoe UI', Roboto,
+                     'Helvetica Neue', Arial, sans-serif;
+  --fu-font-mono:    'SF Mono', 'Fira Code', 'Fira Mono', 'Roboto Mono',
+                     'Courier New', monospace;
+
+  // ── Font sizes (fluid scale) ────────────────────────────────────────────
+  --fu-font-size-xs:    0.75rem;    // 12px
+  --fu-font-size-sm:    0.875rem;   // 14px
+  --fu-font-size-base:  1rem;       // 16px
+  --fu-font-size-lg:    1.125rem;   // 18px
+  --fu-font-size-xl:    1.25rem;    // 20px
+  --fu-font-size-2xl:   1.5rem;     // 24px
+  --fu-font-size-3xl:   1.875rem;   // 30px
+  --fu-font-size-4xl:   2.25rem;    // 36px
+
+  // ── Font weights ────────────────────────────────────────────────────────
+  --fu-font-weight-normal:  400;
+  --fu-font-weight-medium:  500;
+  --fu-font-weight-semibold: 600;
+  --fu-font-weight-bold:    700;
+
+  // ── Line heights ────────────────────────────────────────────────────────
+  --fu-line-height-tight:    1.15;
+  --fu-line-height-normal:   1.5;
+  --fu-line-height-relaxed:  1.75;
+
+  // ── Letter spacing ──────────────────────────────────────────────────────
+  --fu-tracking-tight:  -0.025em;
+  --fu-tracking-normal:  0;
+  --fu-tracking-wide:    0.025em;
+}

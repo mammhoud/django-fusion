@@ -1,0 +1,126 @@
+// ============================================================================
+// django-fusion — Modal Component
+// ============================================================================
+// Styles for ``{% comp \"modal\" %}`` — an overlay dialog with backdrop,
+// header, body, and footer sections.
+//
+// BEM block: .fu-modal
+// ============================================================================
+
+.fu-modal {
+  // ── Overlay ─────────────────────────────────────────────────────────────
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: var(--fu-space-4);
+  opacity: 0;
+  visibility: hidden;
+  transition:
+    opacity 0.2s ease,
+    visibility 0.2s ease;
+
+  &--open {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  &__backdrop {
+    position: absolute;
+    inset: 0;
+    background-color: var(--fu-color-surface-overlay);
+  }
+
+  // ── Dialog ──────────────────────────────────────────────────────────────
+  &__dialog {
+    position: relative;
+    width: 100%;
+    max-width: var(--fu-container-md);
+    max-height: 85vh;
+    background-color: var(--fu-color-surface);
+    border-radius: var(--fu-radius-xl);
+    box-shadow: var(--fu-shadow-xl);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform: scale(0.95) translateY(10px);
+    transition: transform 0.2s ease;
+
+    .fu-modal--open & {
+      transform: scale(1) translateY(0);
+    }
+  }
+
+  // ── Header ──────────────────────────────────────────────────────────────
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--fu-space-3);
+    padding: var(--fu-space-4) var(--fu-space-5);
+    border-bottom: 1px solid var(--fu-color-border);
+  }
+
+  &__title {
+    font-size: var(--fu-font-size-lg);
+    font-weight: var(--fu-font-weight-semibold);
+    color: var(--fu-color-text-primary);
+    margin: 0;
+  }
+
+  &__close {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    border-radius: var(--fu-radius-full);
+    color: var(--fu-color-text-secondary);
+    cursor: pointer;
+    transition:
+      background-color 0.15s ease,
+      color 0.15s ease;
+
+    &:hover {
+      background-color: var(--fu-color-gray-100);
+      color: var(--fu-color-text-primary);
+    }
+  }
+
+  // ── Body ────────────────────────────────────────────────────────────────
+  &__body {
+    flex: 1;
+    overflow-y: auto;
+    padding: var(--fu-space-5);
+  }
+
+  // ── Footer ──────────────────────────────────────────────────────────────
+  &__footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: var(--fu-space-3);
+    padding: var(--fu-space-3) var(--fu-space-5);
+    border-top: 1px solid var(--fu-color-border);
+    background-color: var(--fu-color-surface-raised);
+  }
+
+  // ── Sizes ───────────────────────────────────────────────────────────────
+  &--sm &__dialog {
+    max-width: var(--fu-container-sm);
+  }
+
+  &--lg &__dialog {
+    max-width: var(--fu-container-lg);
+  }
+
+  &--fullscreen &__dialog {
+    max-width: none;
+    max-height: none;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+  }
+}

@@ -1,0 +1,34 @@
+// ============================================================================
+// django-fusion — Print Styles
+// ============================================================================
+// Minimal print overrides for fusion components.
+// Included via ``@media print`` in the entry point so they only apply
+// when the user prints the page.
+// ============================================================================
+
+.fusion-components {
+  // Hide interactive elements
+  .fu-button,
+  .fu-modal__close,
+  .fu-nav__toggle,
+  .fu-form__actions {
+    display: none !important;
+  }
+
+  // Expand collapsed content
+  .fu-modal,
+  .fu-dropdown {
+    position: static !important;
+    opacity: 1 !important;
+    visibility: visible !important;
+    box-shadow: none !important;
+  }
+
+  // Ensure backgrounds print
+  * {
+    background-color: transparent !important;
+    color: #000 !important;
+    box-shadow: none !important;
+    text-shadow: none !important;
+  }
+}

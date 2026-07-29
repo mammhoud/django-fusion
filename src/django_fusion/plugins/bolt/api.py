@@ -143,44 +143,8 @@ class FusionBoltAPI(BoltAPI):
                 ),
             }
 
-        @self.get("/fusion/assets/manifest", guards=[AllowAny()], auth=[])
-        def fusion_assets_manifest(request) -> dict:
-            """GET /fusion/assets/manifest — top/bottom asset manifest."""
-            from django_fusion.core.assets.views import _get_assets_config
-
-            config = _get_assets_config()
-            return {
-                "status": 200,
-                "message": "Success",
-                "data": {
-                    "top": config["top"],
-                    "bottom": config["bottom"],
-                },
-            }
-
-        @self.get("/fusion/assets/top", guards=[AllowAny()], auth=[])
-        def fusion_assets_top(request) -> dict:
-            """GET /fusion/assets/top — CSS, fonts, preconnect hints."""
-            from django_fusion.core.assets.views import _get_assets_config
-
-            config = _get_assets_config()
-            return {
-                "status": 200,
-                "message": "Success",
-                "data": config["top"],
-            }
-
-        @self.get("/fusion/assets/bottom", guards=[AllowAny()], auth=[])
-        def fusion_assets_bottom(request) -> dict:
-            """GET /fusion/assets/bottom — JS scripts for </body>."""
-            from django_fusion.core.assets.views import _get_assets_config
-
-            config = _get_assets_config()
-            return {
-                "status": 200,
-                "message": "Success",
-                "data": config["bottom"],
-            }
+        # FUSION_ASSETS endpoints — delegate to shared registrar
+        register_fusion_assets_bolt(self)
 
     # ------------------------------------------------------------------
     # Component registration
@@ -315,6 +279,75 @@ class FusionBoltAPI(BoltAPI):
 
         logger.info("Auto-discovered %d fusion components", count)
         return count
+
+
+# ------------------------------------------------------------------
+# Standalone FUSION_ASSETS registrar
+# ------------------------------------------------------------------
+
+
+def register_fusion_assets_bolt(api: BoltAPI) -> None:
+    """Register FUSION_ASSETS endpoints (*manifest*, *top*, *bottom*) on a
+    ``BoltAPI`` instance.
+
+    These endpoints return the CSS, font, and JS asset manifest configured
+    via the ``FUSION_ASSETS`` Django setting.  They are consumed by the
+    Next.js ``<FusionAssets />`` component.
+
+    Call this after constructing a ``BoltAPI`` instance to ensure the
+    three endpoints appear in the generated OpenAPI schema::
+
+        from django_bolt import BoltAPI
+        from django_fusion.plugins.bolt import register_fusion_assets_bolt
+
+        api = BoltAPI(prefix="/api")
+        register_fusion_assets_bolt(api)
+
+    Registered endpoints:
+
+    * ``GET /fusion/assets/manifest`` — full top + bottom manifest
+    * ``GET /fusion/assets/top`` — CSS, fonts, preconnect hints
+    * ``GET /fusion/assets/bottom`` — JS scripts for ``</body>``
+    """
+
+    @api.get("/fusion/assets/manifest", guards=[AllowAny()], auth=[])
+    def fusion_assets_manifest(request) -> dict:
+        """GET /fusion/assets/manifest — top/bottom asset manifest."""
+        from django_fusion.core.assets.views import _get_assets_config
+
+        config = _get_assets_config()
+        return {
+            "status": 200,
+            "message": "Success",
+            "data": {
+                "top": config["top"],
+                "bottom": config["bottom"],
+            },
+        }
+
+    @api.get("/fusion/assets/top", guards=[AllowAny()], auth=[])
+    def fusion_assets_top(request) -> dict:
+        """GET /fusion/assets/top — CSS, fonts, preconnect hints."""
+        from django_fusion.core.assets.views import _get_assets_config
+
+        config = _get_assets_config()
+        return {
+            "status": 200,
+            "message": "Success",
+            "data": config["top"],
+        }
+
+    @api.get("/fusion/assets/bottom", guards=[AllowAny()], auth=[])
+    def fusion_assets_bottom(request) -> dict:
+        """GET /fusion/assets/bottom — JS scripts for </body>."""
+        from django_fusion.core.assets.views import _get_assets_config
+
+        config = _get_assets_config()
+        return {
+            "status": 200,
+            "message": "Success",
+            "data": config["bottom"],
+        }
 
 
 # ------------------------------------------------------------------

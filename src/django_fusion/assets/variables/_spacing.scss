@@ -1,0 +1,31 @@
+// ============================================================================
+// django-fusion — Spacing Design Tokens
+// ============================================================================
+// Consistent spacing scale used across all fusion components.
+// Follows a 4px base unit (0.25rem) modular scale.
+//
+// Usage:
+//   padding: var(--fu-space-4);   // 16px
+//   gap: var(--fu-space-3);       // 12px
+// ============================================================================
+
+.fusion-components {
+  --fu-space-0:   0;
+  --fu-space-1:   0.25rem;   // 4px
+  --fu-space-2:   0.5rem;    // 8px
+  --fu-space-3:   0.75rem;   // 12px
+  --fu-space-4:   1rem;      // 16px
+  --fu-space-5:   1.25rem;   // 20px
+  --fu-space-6:   1.5rem;    // 24px
+  --fu-space-8:   2rem;      // 32px
+  --fu-space-10:  2.5rem;    // 40px
+  --fu-space-12:  3rem;      // 48px
+  --fu-space-16:  4rem;      // 64px
+  --fu-space-20:  5rem;      // 80px
+
+  // ── Container max-widths ────────────────────────────────────────────────
+  --fu-container-sm:  640px;
+  --fu-container-md:  768px;
+  --fu-container-lg:  1024px;
+  --fu-container-xl:  1280px;
+}

@@ -1,0 +1,122 @@
+// ============================================================================
+// django-fusion — Button Component
+// ============================================================================
+// Styles for ``{% comp \"button\" %}`` — a reusable button component with
+// size, colour, and variant modifiers.
+//
+// BEM block: .fu-button
+// ============================================================================
+
+.fu-button {
+  // ── Base ────────────────────────────────────────────────────────────────
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--fu-space-2);
+  font-family: var(--fu-font-body);
+  font-weight: var(--fu-font-weight-medium);
+  font-size: var(--fu-font-size-sm);
+  line-height: var(--fu-line-height-normal);
+  padding: var(--fu-space-2) var(--fu-space-4);
+  border-radius: var(--fu-radius-md);
+  border: 1px solid transparent;
+  cursor: pointer;
+  user-select: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.15s ease,
+    color 0.15s ease,
+    border-color 0.15s ease,
+    box-shadow 0.15s ease;
+
+  &:focus-visible {
+    outline: 2px solid var(--fu-color-primary);
+    outline-offset: 2px;
+  }
+
+  &:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+    pointer-events: none;
+  }
+
+  // ── Variants ────────────────────────────────────────────────────────────
+  &--primary {
+    background-color: var(--fu-color-primary);
+    color: var(--fu-color-primary-contrast);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-color-primary-dark);
+    }
+  }
+
+  &--secondary {
+    background-color: var(--fu-color-secondary);
+    color: var(--fu-color-primary-contrast);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-color-secondary-dark);
+    }
+  }
+
+  &--outline {
+    background-color: transparent;
+    color: var(--fu-color-primary);
+    border-color: var(--fu-color-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-color-primary-bg);
+    }
+  }
+
+  &--ghost {
+    background-color: transparent;
+    color: var(--fu-color-text-primary);
+
+    &:hover:not(:disabled) {
+      background-color: var(--fu-color-gray-100);
+    }
+  }
+
+  // ── Sizes ───────────────────────────────────────────────────────────────
+  &--sm {
+    font-size: var(--fu-font-size-xs);
+    padding: var(--fu-space-1) var(--fu-space-3);
+    border-radius: var(--fu-radius-sm);
+  }
+
+  &--lg {
+    font-size: var(--fu-font-size-base);
+    padding: var(--fu-space-3) var(--fu-space-6);
+    border-radius: var(--fu-radius-lg);
+  }
+
+  // ── Icon support ────────────────────────────────────────────────────────
+  &__icon {
+    width: 1em;
+    height: 1em;
+    flex-shrink: 0;
+  }
+
+  // ── Loading state ───────────────────────────────────────────────────────
+  &--loading {
+    position: relative;
+    color: transparent !important;
+    pointer-events: none;
+
+    &::after {
+      content: '';
+      position: absolute;
+      width: 1em;
+      height: 1em;
+      border: 2px solid currentColor;
+      border-top-color: transparent;
+      border-radius: var(--fu-radius-full);
+      animation: fu-spin 0.6s linear infinite;
+    }
+  }
+}
+
+@keyframes fu-spin {
+  to { transform: rotate(360deg); }
+}

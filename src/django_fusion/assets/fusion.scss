@@ -1,0 +1,52 @@
+// ============================================================================
+// django-fusion — Component Styles Entry Point
+// ============================================================================
+// This is the main SCSS entry point for the ``fusion`` webpack bundle.
+// It imports every component SCSS partial so webpack can compile them
+// into a single `fusion.<contenthash>.css` file.
+//
+// Conventions:
+//   - Component styles live next to their Python/template counterparts
+//     in the ``django_fusion/comp/`` package tree.
+//   - Variables, mixins, and design tokens are imported first so every
+//     component partial can reference them.
+//   - Each component's SCSS is self-contained and uses BEM naming.
+//     The wrapping class (e.g. ``.fusion-component--name``) prevents
+//     collisions with host-site styles.
+// ============================================================================
+
+// ── Design Tokens & Variables ───────────────────────────────────────────────
+// These are the default design tokens.  Sites can override them by setting
+// CSS custom properties on ``:root`` or by importing a theme file before
+// this SCSS entry.
+@import 'variables/colors';
+@import 'variables/typography';
+@import 'variables/spacing';
+
+// ── Base / Reset ────────────────────────────────────────────────────────────
+// Minimal reset scoped to fusion components.  Not a full CSS reset — just
+// ensures component styles don't leak.
+@import 'base/component-reset';
+
+// ── Component Styles ────────────────────────────────────────────────────────
+// Each component's SCSS partial is imported below.  The import path mirrors
+// the component's Python module location under ``django_fusion/comp/``.
+@import '../comp/button/button';
+@import '../comp/card/card';
+@import '../comp/modal/modal';
+@import '../comp/form/form';
+@import '../comp/table/table';
+@import '../comp/navigation/nav';
+
+// ── Utility classes ─────────────────────────────────────────────────────────
+// Shared utility classes used across fusion components.
+@import 'utilities/spacing';
+@import 'utilities/typography';
+
+// ── Fusion layout styles (base.html / base_fragment.html) ───────────────────
+@import '../templates/fusion/layout';
+
+// ── Print styles ────────────────────────────────────────────────────────────
+@media print {
+  @import 'base/print';
+}
