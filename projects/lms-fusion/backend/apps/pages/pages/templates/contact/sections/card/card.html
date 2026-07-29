@@ -1,0 +1,71 @@
+{% load i18n wagtailcore_tags wagtailimages_tags static %}
+
+{# ── Contact Section: Card ───────────────────────────────────── #}
+{% prop block %}
+
+<section class="contact-card-section py-5 py-lg-6 position-relative overflow-hidden"
+         {% if block.value.background_style == 'image' and block.value.background_image %}
+             {% image block.value.background_image fill-1920x600 as bg_img %}
+             style="background-image: url('{{ bg_img.url }}'); background-size: cover; background-position: center;"
+         {% elif block.value.background_style == 'gradient' %}
+             style="background: linear-gradient(135deg, var(--bs-primary, #0d6efd) 0%, #6610f2 100%);"
+         {% endif %}>
+    <div class="container">
+        <div class="row g-5 align-items-start">
+            <!-- Left Column: Contact Info -->
+            <div class="col-12 col-lg-6">
+                <div class="contact-card-section__info">
+                    {% if block.value.subtitle %}
+                    <span class="contact-card-section__subtitle badge bg-primary bg-opacity-10 text-primary px-3 py-2 mb-3">
+                        {{ block.value.subtitle }}
+                    </span>
+                    {% endif %}
+
+                    {% if block.value.title %}
+                    <h2 class="contact-card-section__title display-6 fw-bold mb-4">
+                        {{ block.value.title }}
+                    </h2>
+                    {% endif %}
+
+                    {% if block.value.description %}
+                    <div class="contact-card-section__description mb-4">
+                        {{ block.value.description|richtext }}
+                    </div>
+                    {% endif %}
+
+                    {% if block.value.contact_methods %}
+                    <div class="contact-card-section__methods mt-4">
+                        {% for method_block in block.value.contact_methods %}
+                            {% include_block method_block %}
+                        {% endfor %}
+                    </div>
+                    {% endif %}
+                </div>
+            </div>
+
+            <!-- Right Column: Contact Form -->
+            <div class="col-12 col-lg-6">
+                {% if block.value.show_contact_form %}
+                <div class="contact-card-section__form card border-0 shadow-lg p-4 p-lg-5 bg-white">
+                    {% if block.value.form_title %}
+                    <h3 class="contact-card-section__form-title h4 fw-bold mb-4">
+                        {{ block.value.form_title }}
+                    </h3>
+                    {% endif %}
+                    {# Render the actual form via the page's form rendering #}
+                    {% if page.contact_form %}
+                        {% for form_block in page.contact_form %}
+                            {% include_block form_block %}
+                        {% endfor %}
+                    {% else %}
+                    <div class="contact-card-section__form-placeholder text-center text-muted py-4">
+                        <i class="fas fa-envelope display-4 mb-3 d-block"></i>
+                        <p>{% trans "Contact form will be displayed here." %}</p>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</section>
