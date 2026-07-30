@@ -22,7 +22,7 @@ from wagtail.fields import StreamField
 from wagtail.search import index
 
 from apps.core.domain.blocks.profile.stream_blocks import ProfileStreamBlock
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 from django_fusion.models.tags import TaggedPerson
 
 # Validators

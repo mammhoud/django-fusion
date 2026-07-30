@@ -57,7 +57,7 @@ export const authApi = api.injectEndpoints({
   endpoints: (builder) => ({
     login: builder.mutation<AuthResponse, LoginRequest>({
       query: (credentials) => ({
-        url: '/apis/auth/login',
+        url: '/auth/login',
         method: 'POST',
         body: credentials,
       }),
@@ -65,36 +65,36 @@ export const authApi = api.injectEndpoints({
     }),
     register: builder.mutation<AuthResponse, RegisterRequest>({
       query: (data) => ({
-        url: '/apis/auth/register',
+        url: '/auth/register',
         method: 'POST',
         body: data,
       }),
       invalidatesTags: [{ type: 'Auth', id: 'CURRENT' }, { type: 'User', id: 'LIST' }],
     }),
     logout: builder.mutation<void, void>({
-      query: () => ({ url: '/apis/auth/logout', method: 'POST' }),
+      query: () => ({ url: '/auth/logout', method: 'POST' }),
       invalidatesTags: [{ type: 'Auth', id: 'CURRENT' }],
     }),
     refreshToken: builder.mutation<AuthResponse, RefreshRequest>({
       query: (data) => ({
-        url: '/apis/auth/refresh',
+        url: '/auth/refresh',
         method: 'POST',
         body: data,
       }),
     }),
     getProfile: builder.query<UserProfile, void>({
-      query: () => '/apis/auth/profile',
+      query: () => '/auth/profile',
       providesTags: [{ type: 'Auth', id: 'CURRENT' }],
     }),
     updateProfile: builder.mutation<UserProfile, Partial<UserProfile>>({
-      query: (data) => ({ url: '/apis/auth/profile', method: 'PATCH', body: data }),
+      query: (data) => ({ url: '/auth/profile', method: 'PATCH', body: data }),
       invalidatesTags: [{ type: 'Auth', id: 'CURRENT' }, { type: 'User', id: 'LIST' }],
     }),
     resetPassword: builder.mutation<void, { email: string }>({
-      query: (data) => ({ url: '/apis/auth/password-reset', method: 'POST', body: data }),
+      query: (data) => ({ url: '/auth/password-reset', method: 'POST', body: data }),
     }),
     changePassword: builder.mutation<void, { old_password: string; new_password: string }>({
-      query: (data) => ({ url: '/apis/auth/change-password', method: 'POST', body: data }),
+      query: (data) => ({ url: '/auth/change-password', method: 'POST', body: data }),
     }),
   }),
 });

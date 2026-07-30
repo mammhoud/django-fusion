@@ -10,7 +10,7 @@ export interface DashboardContent {
 export const dashboardApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getDashboardContent: builder.query<DashboardContent, void>({
-      query: () => '/apis/dashboard/content/',
+      query: () => '/dashboard/content/',
       providesTags: [{ type: 'Dashboard' as const, id: 'CMS' }],
     }),
   }),

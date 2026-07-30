@@ -279,6 +279,7 @@ test.describe('Content Section', () => {
 // ═══════════════════════════════════════════════════════════════════════════════
 
 test.describe('Full Page Content', () => {
+  test.describe.configure({ mode: 'serial' });
   test('page returns HTTP 200', async ({ page }) => {
     const response = await page.goto('/', { waitUntil: 'domcontentloaded', timeout: 15000 });
     expect(response?.status(), 'Homepage should return HTTP 200').toBe(200);

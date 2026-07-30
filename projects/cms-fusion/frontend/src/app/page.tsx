@@ -27,18 +27,19 @@ function HomePageContent({ page }: { page: CmsPage | undefined }) {
   const { data: featuredCourses, isLoading: coursesLoading } = useGetFeaturedCoursesQuery();
   const { data: coursesData } = useGetCoursesQuery({ page: 1 });
   const { data: instructorsData } = useGetInstructorsQuery({ page: 1 });
-  const toast = useToast();
+  const { success: toastSuccess } = useToast();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      toast.success(
+      toastSuccess(
         'Welcome to LMS',
         'Discover expert-led courses and start learning today.',
         4000,
       );
     }, 1500);
     return () => clearTimeout(timer);
-  }, [toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const pageStats = page?.blocks.find((block) => block.type === 'stats')?.items || [];
   const hero = page?.blocks.find((block) => block.type === 'hero');

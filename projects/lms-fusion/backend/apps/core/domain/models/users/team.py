@@ -11,7 +11,7 @@ from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFi
 from wagtail.search import index
 
 from apps.core.domain.handlers.models.manage_company import Department
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 
 
 # -------------------------------------------------------------------
@@ -458,7 +458,7 @@ class Team(DefaultBase, ClusterableModel):
             models.Index(fields=["department"]),
             models.Index(fields=["team_type"]),
             models.Index(fields=["status"]),
-            models.Index(fields=["is_active"]),
+            # models.Index(fields=["is_active"]),
             models.Index(fields=["display_order"]),
             models.Index(fields=["active_since"]),
         ]
@@ -471,7 +471,7 @@ class Team(DefaultBase, ClusterableModel):
         index.FilterField("department"),
         index.FilterField("team_type"),
         index.FilterField("status"),
-        index.FilterField("is_active"),
+        # index.FilterField("is_active"),
         index.RelatedFields(
             "memberships__person",
             [

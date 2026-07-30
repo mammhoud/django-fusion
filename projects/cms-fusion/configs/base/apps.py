@@ -89,6 +89,7 @@ THIRD_PARTY_APPS = [
 # when a library is not installed in a given environment.
 LOCAL_LIBRARY_APPS = [
     "django_fusion",
+    "ceptor_ai",
 ]
 
 # ── LOCAL_APPS ──────────────────────────────────────────────────────

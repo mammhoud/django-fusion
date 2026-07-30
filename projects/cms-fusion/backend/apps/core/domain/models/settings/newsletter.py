@@ -2,7 +2,7 @@ from django.contrib.contenttypes.fields import GenericRelation
 from django.db import models
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import (
     FieldPanel,

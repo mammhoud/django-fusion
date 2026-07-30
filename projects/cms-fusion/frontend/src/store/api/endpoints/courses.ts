@@ -36,10 +36,11 @@ export interface Lesson {
 }
 
 export const coursesApi = api.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     getCourses: builder.query<PaginatedResponse<Course>, { page?: number; search?: string; category?: string; level?: string }>({
       query: (params) => ({
-        url: '/apis/courses/',
+        url: '/courses/',
         params: { page: params.page || 1, search: params.search, category: params.category, level: params.level },
       }),
       providesTags: (result) =>
@@ -48,27 +49,27 @@ export const coursesApi = api.injectEndpoints({
           : [{ type: 'Course', id: 'LIST' }],
     }),
     getCourse: builder.query<Course, number>({
-      query: (id) => `/apis/courses/${id}/`,
+      query: (id) => `/courses/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Course', id }],
     }),
     createCourse: builder.mutation<Course, Partial<Course>>({
-      query: (body) => ({ url: '/apis/courses/', method: 'POST', body }),
+      query: (body) => ({ url: '/courses/', method: 'POST', body }),
       invalidatesTags: [{ type: 'Course', id: 'LIST' }],
     }),
     updateCourse: builder.mutation<Course, { id: number; data: Partial<Course> }>({
-      query: ({ id, data }) => ({ url: `/apis/courses/${id}/`, method: 'PATCH', body: data }),
+      query: ({ id, data }) => ({ url: `/courses/${id}/`, method: 'PATCH', body: data }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Course', id }, { type: 'Course', id: 'LIST' }],
     }),
     deleteCourse: builder.mutation<void, number>({
-      query: (id) => ({ url: `/apis/courses/${id}/`, method: 'DELETE' }),
+      query: (id) => ({ url: `/courses/${id}/`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Course', id: 'LIST' }],
     }),
     getCategories: builder.query<{ id: number; name: string; slug: string }[], void>({
-      query: () => '/apis/categories/',
+      query: () => '/categories/',
       providesTags: [{ type: 'Category', id: 'LIST' }],
     }),
     getFeaturedCourses: builder.query<Course[], void>({
-      query: () => '/apis/courses/featured/',
+      query: () => '/courses/featured/',
       providesTags: [{ type: 'Course', id: 'LIST' }],
     }),
   }),

@@ -42,7 +42,7 @@ export const notificationsApi = api.injectEndpoints({
       { unread_only?: boolean; limit?: number; offset?: number }
     >({
       query: (params) => ({
-        url: '/apis/notifications/',
+        url: '/notifications/',
         params: {
           unread_only: params.unread_only ? 'true' : undefined,
           limit: params.limit || 20,
@@ -54,14 +54,14 @@ export const notificationsApi = api.injectEndpoints({
 
     // ── Unread count ──
     getUnreadCount: builder.query<UnreadCountResponse, void>({
-      query: () => '/apis/notifications/unread-count/',
+      query: () => '/notifications/unread-count/',
       providesTags: ['Notification'],
     }),
 
     // ── Mark single as read ──
     markNotificationRead: builder.mutation<Notification, number>({
       query: (id) => ({
-        url: `/apis/notifications/${id}/read/`,
+        url: `/notifications/${id}/read/`,
         method: 'PATCH',
       }),
       invalidatesTags: ['Notification'],
@@ -70,7 +70,7 @@ export const notificationsApi = api.injectEndpoints({
     // ── Mark all as read ──
     markAllNotificationsRead: builder.mutation<{ marked_read: number }, void>({
       query: () => ({
-        url: '/apis/notifications/mark-all-read/',
+        url: '/notifications/mark-all-read/',
         method: 'POST',
       }),
       invalidatesTags: ['Notification'],
@@ -79,7 +79,7 @@ export const notificationsApi = api.injectEndpoints({
     // ── Dismiss notification ──
     dismissNotification: builder.mutation<void, number>({
       query: (id) => ({
-        url: `/apis/notifications/${id}/`,
+        url: `/notifications/${id}/`,
         method: 'DELETE',
       }),
       invalidatesTags: ['Notification'],
@@ -90,7 +90,7 @@ export const notificationsApi = api.injectEndpoints({
       { status: string; data: NotificationPreference },
       void
     >({
-      query: () => '/apis/notifications/preferences/',
+      query: () => '/notifications/preferences/',
       providesTags: ['NotificationPrefs'],
     }),
 
@@ -100,7 +100,7 @@ export const notificationsApi = api.injectEndpoints({
       Partial<NotificationPreference>
     >({
       query: (data) => ({
-        url: '/apis/notifications/preferences/update/',
+        url: '/notifications/preferences/update/',
         method: 'PATCH',
         body: data,
       }),

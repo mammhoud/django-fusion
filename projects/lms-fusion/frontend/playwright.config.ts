@@ -23,7 +23,7 @@ export default defineConfig({
     ? undefined
     : process.env.CI
       ? {
-          command: "npx next dev -p 3458",
+          command: `${process.env.NVM_BIN || '/Users/mammhoud/.nvm/versions/node/v22.18.0/bin'}/node ${__dirname}/node_modules/next/dist/bin/next dev -p 3458`,
           cwd: __dirname,
           url: "http://localhost:3458",
           reuseExistingServer: false,

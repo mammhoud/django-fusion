@@ -81,6 +81,7 @@ class EmailLog(models.Model):
     class Meta:
         app_label = 'shared'
         db_table = 'ca_email_log'
+        managed = False
         ordering = ['-timestamp']
         indexes = [
             models.Index(fields=['status', 'timestamp']),
@@ -418,6 +419,7 @@ class EmailTemplate(models.Model):
     class Meta:
         app_label = 'shared'
         db_table = 'ca_email_template'
+        managed = False
         ordering = ['template_type', 'name', 'version']
         indexes = [
             models.Index(fields=['template_type', 'is_active']),
@@ -1204,6 +1206,7 @@ class UserRole(models.Model):
     class Meta:
         app_label = 'shared'
         db_table = 'ca_user_role'
+        managed = False
         unique_together = [['user', 'role']]
         ordering = ['user', '-role']
 

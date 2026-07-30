@@ -30,7 +30,7 @@ export interface CmsPage {
   blocks: PageBlock[];
 }
 
-/** Response from the unified ``/apis/pages/<slug>/data/`` endpoint (data mode). */
+/** Response from the unified ``/pages/<slug>/data/`` endpoint (data mode). */
 export interface PageDataResponse {
   /** Page slug. */
   slug: string;
@@ -40,7 +40,7 @@ export interface PageDataResponse {
   encoded: string;
 }
 
-/** Fragment pointer returned by ``/apis/pages/<slug>/fragment/``. */
+/** Fragment pointer returned by ``/pages/<slug>/fragment/``. */
 export interface FragmentPointer {
   /** Human-readable component identifier. */
   component: string;
@@ -59,12 +59,12 @@ export interface FragmentPointer {
 export const pagesApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getPage: builder.query<CmsPage, string>({
-      query: (slug) => `/apis/pages/${slug}/`,
+      query: (slug) => `/pages/${slug}/`,
       providesTags: (_result, _error, slug) => [{ type: 'Page' as const, id: slug }],
     }),
 
     getPageFragment: builder.query<FragmentPointer, string>({
-      query: (slug) => `/apis/pages/${slug}/fragment/`,
+      query: (slug) => `/pages/${slug}/fragment/`,
       // The backend now returns the enhanced ``{status, message, data}`` envelope.
       // Unwrap ``data`` so the rest of the app sees the flat FragmentPointer.
       transformResponse: (raw: { status: number; message: string; data: FragmentPointer }) =>
@@ -75,7 +75,7 @@ export const pagesApi = api.injectEndpoints({
     }),
 
     /**
-     * Fetch page data via the unified ``/apis/pages/<slug>/data/`` endpoint.
+     * Fetch page data via the unified ``/pages/<slug>/data/`` endpoint.
      *
      * Returns the codec-encoded JSON form (data mode = ``fusion_render_first=false``).
      * The ``encoded`` field can be decoded with ``FusionDecoder.decode()`` to
@@ -87,7 +87,7 @@ export const pagesApi = api.injectEndpoints({
      *     const page = fusionDecoder.decodeAs<CmsPage>(data?.encoded ?? '');
      */
     getPageData: builder.query<PageDataResponse, string>({
-      query: (slug) => `/apis/pages/${slug}/data/`,
+      query: (slug) => `/pages/${slug}/data/`,
       transformResponse: (raw: { status: number; message: string; data: PageDataResponse }) =>
         raw.data,
       providesTags: (_result, _error, slug) => [{ type: 'Page' as const, id: slug }],
@@ -104,7 +104,7 @@ export const pagesApi = api.injectEndpoints({
      */
     getPageHtml: builder.query<string, string>({
       query: (slug) => ({
-        url: `/apis/pages/${slug}/data/`,
+        url: `/pages/${slug}/data/`,
         params: { fusion_render_first: 'true' },
         responseHandler: 'text' as const,
       }),

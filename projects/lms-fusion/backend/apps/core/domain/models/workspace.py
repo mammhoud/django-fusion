@@ -7,7 +7,7 @@ from django.utils.translation import gettext_lazy as _
 from apps.core.domain.contrib.models import Corporate
 
 # Project-specific imports removed
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 
 
 class Workspace(DefaultBase):

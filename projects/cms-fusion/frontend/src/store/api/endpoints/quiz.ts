@@ -84,25 +84,25 @@ export const quizApi = api.injectEndpoints({
     // ── Quiz CRUD ──
     getQuizzes: builder.query<PaginatedResponse<Quiz>, { search?: string; course_id?: number }>({
       query: (params) => ({
-        url: '/apis/quizzes/',
+        url: '/quizzes/',
         params: { search: params.search, course_id: params.course_id },
       }),
       providesTags: ['Quiz'],
     }),
     getQuiz: builder.query<{ status: string; data: Quiz }, number>({
-      query: (id) => `/apis/quizzes/${id}/`,
+      query: (id) => `/quizzes/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Quiz', id }],
     }),
     createQuiz: builder.mutation<{ status: string; data: Quiz }, Partial<Quiz>>({
-      query: (body) => ({ url: '/apis/quizzes/create/', method: 'POST', body }),
+      query: (body) => ({ url: '/quizzes/create/', method: 'POST', body }),
       invalidatesTags: ['Quiz'],
     }),
     updateQuiz: builder.mutation<{ status: string; data: Quiz }, { id: number; data: Partial<Quiz> }>({
-      query: ({ id, data }) => ({ url: `/apis/quizzes/${id}/update/`, method: 'PATCH', body: data }),
+      query: ({ id, data }) => ({ url: `/quizzes/${id}/update/`, method: 'PATCH', body: data }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Quiz', id }, 'Quiz'],
     }),
     deleteQuiz: builder.mutation<void, number>({
-      query: (id) => ({ url: `/apis/quizzes/${id}/delete/`, method: 'DELETE' }),
+      query: (id) => ({ url: `/quizzes/${id}/delete/`, method: 'DELETE' }),
       invalidatesTags: ['Quiz'],
     }),
 
@@ -112,18 +112,18 @@ export const quizApi = api.injectEndpoints({
       { quiz_id: number; data: Partial<QuizQuestion> & { choices?: { text: string; is_correct: boolean }[] } }
     >({
       query: ({ quiz_id, data }) => ({
-        url: `/apis/quizzes/${quiz_id}/questions/`,
+        url: `/quizzes/${quiz_id}/questions/`,
         method: 'POST',
         body: data,
       }),
       invalidatesTags: (result, error, { quiz_id }) => [{ type: 'Quiz', id: quiz_id }, 'Quiz'],
     }),
     updateQuestion: builder.mutation<{ status: string; data: QuizQuestion }, { id: number; data: Partial<QuizQuestion> }>({
-      query: ({ id, data }) => ({ url: `/apis/quizzes/questions/${id}/update/`, method: 'PATCH', body: data }),
+      query: ({ id, data }) => ({ url: `/quizzes/questions/${id}/update/`, method: 'PATCH', body: data }),
       invalidatesTags: ['Quiz'],
     }),
     deleteQuestion: builder.mutation<void, number>({
-      query: (id) => ({ url: `/apis/quizzes/questions/${id}/delete/`, method: 'DELETE' }),
+      query: (id) => ({ url: `/quizzes/questions/${id}/delete/`, method: 'DELETE' }),
       invalidatesTags: ['Quiz'],
     }),
     reorderQuestions: builder.mutation<
@@ -131,7 +131,7 @@ export const quizApi = api.injectEndpoints({
       { quiz_id: number; questions: { id: number; order: number }[] }
     >({
       query: ({ quiz_id, questions }) => ({
-        url: `/apis/quizzes/${quiz_id}/questions/reorder/`,
+        url: `/quizzes/${quiz_id}/questions/reorder/`,
         method: 'POST',
         body: { questions },
       }),
@@ -141,7 +141,7 @@ export const quizApi = api.injectEndpoints({
     // ── Attempts ──
     startAttempt: builder.mutation<{ status: string; data: QuizAttempt }, number>({
       query: (quizId) => ({
-        url: `/apis/quizzes/${quizId}/attempts/start/`,
+        url: `/quizzes/${quizId}/attempts/start/`,
         method: 'POST',
       }),
       invalidatesTags: ['Attempt'],
@@ -151,7 +151,7 @@ export const quizApi = api.injectEndpoints({
       FormData
     >({
       query: (formData) => ({
-        url: '/apis/quizzes/upload/',
+        url: '/quizzes/upload/',
         method: 'POST',
         body: formData,
       }),
@@ -161,22 +161,22 @@ export const quizApi = api.injectEndpoints({
       { attempt_id: number; answers: { question_id: number; selected_choice_id?: number; selected_choice_ids?: number[]; text_answer?: string; file_url?: string; file_name?: string }[] }
     >({
       query: ({ attempt_id, answers }) => ({
-        url: `/apis/attempts/${attempt_id}/submit/`,
+        url: `/attempts/${attempt_id}/submit/`,
         method: 'POST',
         body: { answers },
       }),
       invalidatesTags: ['Attempt', 'Quiz'],
     }),
     getAttempts: builder.query<PaginatedResponse<QuizAttempt>, void>({
-      query: () => '/apis/attempts/',
+      query: () => '/attempts/',
       providesTags: ['Attempt'],
     }),
     getAttempt: builder.query<{ status: string; data: QuizAttempt }, number>({
-      query: (id) => `/apis/attempts/${id}/`,
+      query: (id) => `/attempts/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Attempt', id }],
     }),
     getQuizAttempts: builder.query<PaginatedResponse<QuizAttempt>, number>({
-      query: (quizId) => `/apis/quizzes/${quizId}/attempts/`,
+      query: (quizId) => `/quizzes/${quizId}/attempts/`,
       providesTags: ['Attempt'],
     }),
     gradeAttempt: builder.mutation<
@@ -184,7 +184,7 @@ export const quizApi = api.injectEndpoints({
       { attempt_id: number; graded_answers: { answer_id: number; is_correct: boolean; points_awarded: number }[] }
     >({
       query: ({ attempt_id, graded_answers }) => ({
-        url: `/apis/attempts/${attempt_id}/grade/`,
+        url: `/attempts/${attempt_id}/grade/`,
         method: 'PATCH',
         body: { graded_answers },
       }),

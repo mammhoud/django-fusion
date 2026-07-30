@@ -20,16 +20,16 @@ export interface ContactRequest {
 export const contactApi = api.injectEndpoints({
   endpoints: (builder) => ({
     submitContact: builder.mutation<Inquiry, ContactRequest>({
-      query: (body) => ({ url: '/apis/contact/', method: 'POST', body }),
+      query: (body) => ({ url: '/contact/', method: 'POST', body }),
       invalidatesTags: [{ type: 'Contact', id: 'LIST' }],
     }),
     getInquiries: builder.query<PaginatedResponse<Inquiry>, { page?: number }>({
-      query: (params) => ({ url: '/apis/contact/inquiries/', params: { page: params.page || 1 } }),
+      query: (params) => ({ url: '/contact/inquiries/', params: { page: params.page || 1 } }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Contact' as const, id })), { type: 'Contact', id: 'LIST' }] : [{ type: 'Contact', id: 'LIST' }],
     }),
     markInquiryRead: builder.mutation<void, number>({
-      query: (id) => ({ url: `/apis/contact/${id}/mark-read/`, method: 'POST' }),
+      query: (id) => ({ url: `/contact/${id}/mark-read/`, method: 'POST' }),
       invalidatesTags: (result, error, id) => [{ type: 'Contact', id }],
     }),
   }),

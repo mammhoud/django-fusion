@@ -8,7 +8,7 @@ from django.utils.translation import gettext_lazy as _
 logger = logging.getLogger(__name__)
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 
 
 class NewsletterSubscription(DefaultBase):

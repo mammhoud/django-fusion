@@ -9,7 +9,7 @@ from django.urls import reverse
 from django.utils import timezone
 from django.utils.text import slugify
 from django.utils.translation import gettext_lazy as _
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 from django_fusion.models.tags import TaggedPerson
 from taggit.managers import TaggableManager
 from wagtail.admin.panels import (
@@ -672,6 +672,7 @@ class Person(DefaultBase):
         verbose_name_plural = _("Profiles")
         ordering = ["-created_at", "full_name"]
         db_table = "profiles"
+        managed = False
         app_label = "shared"
         indexes = [
             models.Index(fields=["user"]),
