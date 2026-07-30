@@ -1,17 +1,19 @@
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 function Ic(name: string): React.ComponentType<{ className?: string }> {
-  return ({ className = '' }) => <span className={`icon-[tabler--${name}] ${className}`} />;
+  const iconClass = 'icon-[tabler--' + name + ']';
+  return ({ className = '' }) => <span className={iconClass + ' ' + className} />;
 }
 import { motion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import { invoke } from '@tauri-apps/api/core';
+import { useMemo, useState } from 'react';
 import { Settings, Sale, Ingredient, Employee, KitchenTicket } from '../types';
 import PageLayout from '../components/PageLayout';
 import StatCard from '../components/StatCard';
 import Card from '../components/Card';
 import { useDashboardDeltas } from '../hooks/useDashboardDeltas';
+import { useApiQueries } from '../hooks/useApi';
 import { useTranslation } from 'react-i18next';
+import { staggerContainer, iconSpring } from '../utils/pageTransitions';
 import defaultLogo from '../assets/pos-crest.svg';
 
 interface MenuCategory {
@@ -79,91 +81,67 @@ const QUICK_ACCESS = [
 ];
 
 export default function Home() {
-  const container = {
-    hidden: { opacity: 0 },
-    show: { opacity: 1, transition: { staggerChildren: 0.06 } },
-  };
-
-  const item = {
-    hidden: { opacity: 0, y: 20 },
-    show: {
-      opacity: 1,
-      y: 0,
-      transition: { type: 'spring' as const, stiffness: 120, damping: 14 },
-    },
-  };
-
-  const iconAnimation = {
-    initial: { scale: 0 },
-    animate: { scale: 1, transition: { type: 'spring' as const, stiffness: 260, damping: 20 } },
-  };
-
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const [restaurantName, setRestaurantName] = useState('Forge POS');
-  const [currency, setCurrency] = useState('$');
   const [loadingRoute, setLoadingRoute] = useState<string | null>(null);
-  const [sales, setSales] = useState<Sale[]>([]);
-  const [kpis, setKpis] = useState<{ openTables: number; lowStockCount: number; activeEmployees: number; activeKitchenTickets: number } | null>(null);
-  const [kpisLoading, setKpisLoading] = useState(true);
-  const [sparklines, setSparklines] = useState<{
-    revenue: { value: number }[];
-    orders: { value: number }[];
-  } | null>(null);
-
-  const { todayStats, revDelta, orderDelta } = useDashboardDeltas(sales);
 
   const handleNavigation = (route: string) => {
     setLoadingRoute(route);
     setTimeout(() => navigate(route), 250);
   };
 
-  useEffect(() => {
-    const loadDashboard = async () => {
-      try {
-        const [settingsRes, salesRes, ingredientsRes, employeesRes, kitchenTicketsRes] = await Promise.all([
-          invoke<Settings>('get_settings'),
-          invoke<Sale[]>('get_sales'),
-          invoke<Ingredient[]>('get_ingredients', { includeInactive: false }),
-          invoke<Employee[]>('get_employees', { includeInactive: true }),
-          invoke<KitchenTicket[]>('get_kitchen_tickets', { status: null }),
-        ]);
+  // ── Data fetching via shared useApiQueries hook ──
+  const {
+    data: [settingsRes, salesRes, ingredientsRes, employeesRes, kitchenTicketsRes],
+    isLoading: kpisLoading,
+  } = useApiQueries([
+    { command: 'get_settings' },
+    { command: 'get_sales' },
+    { command: 'get_ingredients', params: { includeInactive: false } },
+    { command: 'get_employees', params: { includeInactive: true } },
+    { command: 'get_kitchen_tickets', params: { status: null } },
+  ]);
 
-        if (settingsRes) {
-          if (settingsRes.restaurant_name) setRestaurantName(settingsRes.restaurant_name);
-          if (settingsRes.currency) setCurrency(settingsRes.currency);
-        }
-        setSales(Array.isArray(salesRes) ? salesRes : []);
+  const settings = (settingsRes as Settings | undefined) ?? null;
+  const restaurantName = settings?.restaurant_name || 'Forge POS';
+  const currency = settings?.currency || '$';
+  const sales = (Array.isArray(salesRes) ? (salesRes as Sale[]) : []) as Sale[];
 
-        const pendingStatuses = ['pending', 'active', 'in-progress'];
-        const openTables = salesRes.filter(s => s.order_type === 'dine-in' && pendingStatuses.includes(s.status)).length;
-        const lowStockCount = ingredientsRes.filter(i => i.current_quantity <= i.reorder_level).length;
-        const activeEmployees = employeesRes.filter(e => e.is_active).length;
-        const activeKitchenTickets = kitchenTicketsRes.filter(t => pendingStatuses.includes(t.status)).length;
+  const { todayStats, revDelta, orderDelta } = useDashboardDeltas(sales);
 
-        const dayKeys: string[] = [];
-        for (let i = 6; i >= 0; i--) {
-          const d = new Date(Date.now() - i * 86400000);
-          dayKeys.push(d.toISOString().slice(0, 10));
-        }
-        const revenue: { value: number }[] = [];
-        const orders: { value: number }[] = [];
-        for (const date of dayKeys) {
-          const daySales = salesRes.filter(s => s.date === date);
-          revenue.push({ value: daySales.reduce((sum, s) => sum + s.total_amount, 0) });
-          orders.push({ value: daySales.length });
-        }
-        setSparklines({ revenue, orders });
-
-        setKpis({ openTables, lowStockCount, activeEmployees, activeKitchenTickets });
-      } catch {
-        setKpis({ openTables: 0, lowStockCount: 0, activeEmployees: 0, activeKitchenTickets: 0 });
-      } finally {
-        setKpisLoading(false);
-      }
+  // ── Derived KPIs from fetched data (useMemo for stability) ──
+  const kpis = useMemo(() => {
+    if (!salesRes || !ingredientsRes || !employeesRes || !kitchenTicketsRes) return null;
+    const s = salesRes as Sale[];
+    const i = ingredientsRes as Ingredient[];
+    const e = employeesRes as Employee[];
+    const k = kitchenTicketsRes as KitchenTicket[];
+    const pendingStatuses = ['pending', 'active', 'in-progress'];
+    return {
+      openTables: s.filter(sale => sale.order_type === 'dine-in' && pendingStatuses.includes(sale.status)).length,
+      lowStockCount: i.filter(ing => ing.current_quantity <= ing.reorder_level).length,
+      activeEmployees: e.filter(emp => emp.is_active).length,
+      activeKitchenTickets: k.filter(t => pendingStatuses.includes(t.status)).length,
     };
-    loadDashboard();
-  }, []);
+  }, [salesRes, ingredientsRes, employeesRes, kitchenTicketsRes]);
+
+  // ── Sparkline data for StatCard charts ──
+  const sparklines = useMemo(() => {
+    if (!salesRes) return null;
+    const s = salesRes as Sale[];
+    const dayKeys: string[] = [];
+    for (let i = 6; i >= 0; i--) {
+      dayKeys.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10));
+    }
+    const revenue: { value: number }[] = [];
+    const orders: { value: number }[] = [];
+    for (const date of dayKeys) {
+      const daySales = s.filter(sale => sale.date === date);
+      revenue.push({ value: daySales.reduce((sum, sale) => sum + sale.total_amount, 0) });
+      orders.push({ value: daySales.length });
+    }
+    return { revenue, orders };
+  }, [salesRes]);
 
   return (
     <PageLayout
@@ -171,19 +149,18 @@ export default function Home() {
       background="bg-linear-to-br from-slate-50 via-info/5 to-slate-50 dark:from-slate-950 dark:via-info/10 dark:to-slate-950"
       padding="py-12 md:py-16 lg:py-12"
     >
-      {/* ── Header ── */}
-      <motion.div
-        className="text-center mb-10 md:mb-12"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5 }}
-      >
+      {/* ── Header — CSS animated section entry ── */}
+      {/* PageWrapper handles the page-level slide-in. This section's
+          animate-slide-up provides a gentle entrance for the header content
+          without duplicating framer-motion entry animations. */}
+      <div className="text-center mb-10 md:mb-12 animate-slide-up">
         <motion.div
-          initial={iconAnimation.initial}
-          animate={iconAnimation.animate}
+          variants={iconSpring}
+          initial="initial"
+          animate="animate"
           whileHover={{ rotate: 360 }}
           transition={{ duration: 0.6 }}
-          className="bg-white/40 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-white/20 dark:border-white/5"
+          className="bg-base-100/60 dark:bg-white/10 backdrop-blur-md rounded-2xl p-5 w-fit mx-auto mb-5 shadow-xl border border-base-300/30 dark:border-white/5"
         >
           <img
             src={defaultLogo}
@@ -192,67 +169,61 @@ export default function Home() {
             onError={(e) => { e.currentTarget.style.display = 'none'; }}
           />
         </motion.div>
-        <motion.h1
+        <h1
           className="text-3xl md:text-4xl lg:text-5xl font-bold text-transparent bg-clip-text
             bg-linear-to-r from-indigo-600 via-purple-600 to-pink-600
-            dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 py-2"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
+            dark:from-indigo-400 dark:via-purple-400 dark:to-pink-400 py-2 animate-fade-in"
+          style={{ animationDelay: '0.15s' }}
         >
           {restaurantName}
-        </motion.h1>
-        <motion.p
-          className="text-base-content/50 mt-2 text-sm"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.4 }}
+        </h1>
+        <p
+          className="text-base-content/50 mt-2 text-sm animate-fade-in"
+          style={{ animationDelay: '0.25s' }}
         >
           {t('home.dashboard') || 'Dashboard'}
-        </motion.p>
-      </motion.div>
+        </p>
+      </div>
 
-      {/* ── Quick Access Cards ── */}
-      <motion.div
-        className="max-w-6xl mx-auto px-2 mb-8"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
+      {/* ── Quick Access Cards — FlyonUI card grid ── */}
+      <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
+        style={{ animationDelay: '0.1s' }}
       >
-        <Card padding="md" className="shadow-sm border border-white/20 dark:border-white/10">
-          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-            {QUICK_ACCESS.map(qa => (
-              <motion.button
+        <Card padding="sm" className="shadow-sm border border-base-300/30">
+          <div className="grid grid-cols-4 gap-2">
+            {QUICK_ACCESS.map((qa, i) => (
+              <button
                 key={qa.route}
                 onClick={() => handleNavigation(qa.route)}
-                whileHover={{ y: -3, scale: 1.03 }}
-                whileTap={{ scale: 0.97 }}
                 disabled={loadingRoute !== null}
-                className="relative flex flex-col items-center p-4 rounded-xl bg-base-200/50 hover:bg-base-200
-                  dark:bg-white/5 dark:hover:bg-white/10 border border-base-300/30
-                  transition-all duration-200 group disabled:opacity-60"
+                style={{ animationDelay: `${0.2 + i * 0.06}s` }}
+                className="relative card bg-base-200/50 hover:bg-base-200 dark:bg-white/5 dark:hover:bg-white/10
+                  border border-base-300/20 p-3 rounded-xl
+                  transition-all duration-200 group disabled:opacity-60 animate-fade-in"
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center mb-2
-                  bg-linear-to-br ${qa.gradient} text-white shadow-lg shadow-${qa.gradient.replace('from-', '').split(' ')[0]}/20
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-2
+                  bg-linear-to-br ${qa.gradient} text-white shadow-lg
                   group-hover:scale-110 transition-transform duration-200`}
                 >
-                  <span className={`icon-[tabler--${qa.icon}] w-5 h-5`} />
+                  <span className={'icon-[tabler--' + qa.icon + '] w-4 h-4'} />
                 </div>
-                <span className="text-xs font-semibold text-base-content text-center">{t(qa.label)}</span>
-                <span className="text-[9px] text-base-content/40 text-center mt-0.5 leading-tight">{t(qa.desc)}</span>
-              </motion.button>
+                <span className="text-xs font-semibold text-base-content text-center leading-tight">{t(qa.label)}</span>
+                <span className="text-[9px] text-base-content/40 text-center mt-0.5 leading-tight line-clamp-1">{t(qa.desc)}</span>
+              </button>
             ))}
           </div>
         </Card>
-      </motion.div>
+      </div>
 
       {/* ── Live KPI Dashboard ── */}
-      <div className="max-w-6xl mx-auto px-2 mb-8">
+      <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
+        style={{ animationDelay: '0.2s' }}
+      >
         <div className="grid grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
           {kpisLoading ? (
             <>
               {[1, 2, 3, 4, 5, 6].map(i => (
-                <div key={i} className="stat rounded-xl bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 animate-pulse">
+                <div key={i} className="stat bg-white/40 dark:bg-white/5 backdrop-blur-sm border border-white/20 animate-pulse">
                   <div className="stat-title"><div className="h-3 w-16 rounded bg-base-300/50" /></div>
                   <div className="stat-value"><div className="h-7 w-20 rounded bg-base-300/50 mt-1" /></div>
                   <div className="stat-desc"><div className="h-2.5 w-24 rounded bg-base-300/50 mt-1" /></div>
@@ -318,15 +289,15 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ── Categorized Menu Grid ── */}
-      <div className="max-w-6xl mx-auto px-2 space-y-8">
-        {MENU_CATEGORIES.map((cat, catIdx) => (
-          <motion.section
-            key={cat.id}
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: catIdx * 0.08 }}
-          >
+      {/* ── Categorized Menu Grid — single stagger animation ── */}
+      <motion.div
+        className="max-w-6xl mx-auto px-2 space-y-8"
+        variants={staggerContainer}
+        initial="hidden"
+        animate="visible"
+      >
+        {MENU_CATEGORIES.map((cat) => (
+          <div key={cat.id}>
             {/* Category Header */}
             <div className="flex items-center gap-2.5 mb-3 pl-1">
               <span className={`${cat.color}`}>{cat.icon}</span>
@@ -336,10 +307,13 @@ export default function Home() {
               <div className={`flex-1 h-px bg-gradient-to-r ${cat.color.replace('text-', 'from-').replace('dark:', '')} to-transparent opacity-30`} />
             </div>
 
-            {/* Category Items */}
+            {/* Category Items — staggered children */}
             <motion.div
-              className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 gap-3 md:gap-4"
-              variants={container}
+              className="grid grid-cols-3 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-7 3xl:grid-cols-8 gap-3 md:gap-4"
+              variants={{
+                hidden: { opacity: 0 },
+                show: { opacity: 1, transition: { staggerChildren: 0.035 } },
+              }}
               initial="hidden"
               animate="show"
             >
@@ -348,48 +322,49 @@ export default function Home() {
                 const isLoading = loadingRoute === menuItem.route;
 
                 return (
-                  <motion.button
+                  <button
                     key={menuItem.route}
-                    variants={item}
                     onClick={() => handleNavigation(menuItem.route)}
-                    whileHover={{ y: -4, scale: 1.02 }}
-                    whileTap={{ scale: 0.97 }}
                     disabled={loadingRoute !== null}
-                    className={`relative flex flex-col items-center p-4 rounded-2xl transition-all duration-300
-                      bg-white/80 dark:bg-white/5 backdrop-blur-sm
-                      border-2 ${menuItem.borderColor}
-                      hover:shadow-xl hover:border-opacity-100
-                      group disabled:opacity-60`}
+                    className="relative card bg-base-100/80 dark:bg-white/5 backdrop-blur-sm
+                      border-2 border-base-300/40 hover:border-base-300
+                      dark:border-white/10 dark:hover:border-white/30
+                      p-3 rounded-2xl transition-all duration-300
+                      hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]
+                      group disabled:opacity-60"
                   >
-                    <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-xl bg-gradient-to-r ${menuItem.color} opacity-80`} />
+                    {/* Category color accent strip */}
+                    <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${menuItem.color} opacity-80`} />
                     {isLoading ? (
-                      <motion.div
-                        animate={{ rotate: 360 }}
-                        transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                        className="w-8 h-8 mb-1.5 border-3 border-slate-300 border-t-slate-600 rounded-full"
-                      />
+                      <div className="w-full flex items-center justify-center py-4">
+                        <motion.div
+                          animate={{ rotate: 360 }}
+                          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
+                          className="w-7 h-7 border-3 border-base-300 border-t-primary rounded-full"
+                        />
+                      </div>
                     ) : (
-                      <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-2
-                        bg-gradient-to-br ${menuItem.color} text-white shadow-md
+                      <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-2
+                        bg-gradient-to-br ${menuItem.color} text-white shadow-md mx-auto
                         group-hover:scale-110 transition-transform duration-300`}
                       >
-                        <Icon className="w-6 h-6" />
+                        <Icon className="w-5 h-5" />
                       </div>
                     )}
 
                     <span className="text-sm font-semibold text-base-content text-center leading-tight">
                       {t(menuItem.label)}
                     </span>
-                    <span className="text-[10px] text-base-content/50 mt-0.5 text-center leading-tight max-w-[110px]">
+                    <span className="text-[10px] text-base-content/50 mt-0.5 text-center leading-tight max-w-[100px]">
                       {t(menuItem.label + 'Desc')}
                     </span>
-                  </motion.button>
+                  </button>
                 );
               })}
             </motion.div>
-          </motion.section>
+          </div>
         ))}
-      </div>
+      </motion.div>
     </PageLayout>
   );
 }

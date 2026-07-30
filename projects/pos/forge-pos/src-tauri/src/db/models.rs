@@ -103,6 +103,8 @@ pub struct Product {
     pub image: Option<String>,
     pub product_type: String,
     pub prepare_time_minutes: i32,
+    pub barcode: Option<String>,
+    pub description: Option<String>,
     pub created_at: NaiveDateTime,
     pub updated_at: NaiveDateTime,
     pub uploaded: bool,
@@ -122,6 +124,10 @@ pub struct NewProduct {
     pub product_type: Option<String>,
     #[serde(default)]
     pub prepare_time_minutes: Option<i32>,
+    #[serde(default)]
+    pub barcode: Option<String>,
+    #[serde(default)]
+    pub description: Option<String>,
 }
 
 #[derive(Debug, AsChangeset, Deserialize)]
@@ -134,6 +140,8 @@ pub struct UpdateProduct {
     pub image: Option<Option<String>>,
     pub product_type: Option<String>,
     pub prepare_time_minutes: Option<i32>,
+    pub barcode: Option<Option<String>>,
+    pub description: Option<Option<String>>,
     pub uploaded: Option<bool>,
 }
 

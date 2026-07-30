@@ -52,7 +52,8 @@ const fieldToTab: Record<string, TabId> = {
 
 // ── Helper: wraps a Tabler icon class into a React component type ──
 function Ic(name: string): React.ComponentType<{ className?: string }> {
-  return ({ className = '' }) => <span className={`icon-[tabler--${name}] ${className}`} />;
+  const iconClass = 'icon-[tabler--' + name + ']';
+  return ({ className = '' }) => <span className={iconClass + ' ' + className} />;
 }
 
 const tabs: TabDefinition[] = [
@@ -65,11 +66,7 @@ const tabs: TabDefinition[] = [
   { id: 'appearance', label: 'Appearance', icon: Ic('paint') },
 ];
 
-const tabVariants = {
-  enter: { opacity: 0, x: 20 },
-  center: { opacity: 1, x: 0 },
-  exit: { opacity: 0, x: -20 },
-};
+import { pageSlideRight } from '../utils/pageTransitions';
 
 const currencyOptions = [
   { code: 'AED', name: 'UAE Dirham', symbol: 'د.إ' },
@@ -514,7 +511,7 @@ export default function Settings() {
   const handleBackNavigation = () => {
     setIsNavigating(true);
     setTimeout(() => {
-      navigate('/');
+      navigate('/dashboard');
     }, 300);
   };
 
@@ -878,8 +875,7 @@ export default function Settings() {
               disabled:opacity-50 disabled:cursor-not-allowed flex-1"
           >
             {isUploadingLogo ? (
-              <motion.div animate={{ rotate: 360 }} transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-                className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full"
+              <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin"
               />
             ) : (
               <>
@@ -994,12 +990,10 @@ export default function Settings() {
             />
               </div>
               <div className="flex items-end">
-                <motion.button
+                <button
                   type="button"
                   onClick={handlePasswordChange}
                   disabled={isChangingPassword || !passwordOld || !passwordNew}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   className="btn btn-primary w-full"
                 >
                   {isChangingPassword ? (
@@ -1007,7 +1001,7 @@ export default function Settings() {
                   ) : (
                     <><span className="icon-[tabler--lock] text-sm" /> {t('settings.updatePassword')}</>
                   )}
-                </motion.button>
+                </button>
               </div>
             </div>
           </div>
@@ -1084,7 +1078,7 @@ export default function Settings() {
 
   const renderDiningTab = () => (
     <div className="max-w-lg mx-auto">
-      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-8">
+      <div className="card bg-base-200 border border-base-300 p-6 mb-8">
         <div className="flex items-center gap-3 mb-4">
           <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
             <span className="icon-[tabler--tools-kitchen-2] w-5 h-5 text-amber-600 dark:text-amber-400" />
@@ -1110,7 +1104,7 @@ export default function Settings() {
   const renderDeliveryTab = () => (
     <div className="max-w-2xl mx-auto">
       {/* Delivery Fee Settings */}
-      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-8">
+      <div className="card bg-base-200 border border-base-300 p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-sky-100 dark:bg-sky-800/30 rounded-full p-2.5">
             <span className="icon-[tabler--truck] w-5 h-5 text-sky-600 dark:text-sky-400" />
@@ -1138,7 +1132,7 @@ export default function Settings() {
       </div>
 
       {/* Delivery Zone Management */}
-      <div className="card bg-base-200 border border-base-300 rounded-xl p-6">
+      <div className="card bg-base-200 border border-base-300 p-6">
         <div className="flex items-center justify-between mb-6">
           <div className="flex items-center gap-3">
             <div className="bg-success/10 dark:bg-emerald-800/30 rounded-full p-2.5">
@@ -1323,7 +1317,7 @@ export default function Settings() {
   const renderAppearanceTab = () => (
     <div className="max-w-2xl mx-auto">
       {/* Unified Theme Mode Toggle — Light / Dark / System */}
-      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-6">
+      <div className="card bg-base-200 border border-base-300 p-6 mb-6">
         <div className="flex items-center justify-between gap-4">
           <div className="flex items-center gap-3">
             {mode === 'dark' ? (
@@ -1357,7 +1351,7 @@ export default function Settings() {
       {/* Theme Variant Selector — wrap cards + preview in parent */}
       {/* onMouseLeave only clears hover when not locked (pinned by click) */}
       <div onMouseLeave={() => setPreviewVariant(null)}>
-        <div className="card bg-base-200 border border-base-300 rounded-xl p-6">
+        <div className="card bg-base-200 border border-base-300 p-6">
           <div className="flex items-center gap-3 mb-5">
             <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
               <span className="icon-[tabler--paint] w-5 h-5 text-primary dark:text-primary/80" />
@@ -1373,11 +1367,9 @@ export default function Settings() {
               const isActive = variant === v.id;
               const descKey = `settings.appearanceTab.${v.id}Desc`;
               return (
-                <motion.button
+                <button
                   key={v.id}
                   type="button"
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
                   onClick={() => {
                     // Toggle: click again on active variant to close, otherwise select
                     if (activePreviewVariant === v.id) {
@@ -1410,7 +1402,7 @@ export default function Settings() {
                       {t(descKey, v.description)}
                     </p>
                   </div>
-                </motion.button>
+                </button>
               );
             })}
           </div>
@@ -1420,7 +1412,7 @@ export default function Settings() {
       {(() => {
         if (savedCustomThemes.length === 0) return null;
         return (
-          <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mt-4">
+          <div className="card bg-base-200 border border-base-300 p-6 mt-4">
             <div className="flex items-center gap-3 mb-4">
               <div className="bg-secondary/10 dark:bg-secondary/30 rounded-full p-2.5">
                 <span className="icon-[tabler--bookmark] w-5 h-5 text-secondary" />
@@ -1490,8 +1482,6 @@ export default function Settings() {
         <AnimatePresence>
           {previewVariant && (
             <motion.div
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: 'auto' }}
               exit={{ opacity: 0, height: 0 }}
               className="overflow-hidden mt-6"
               data-theme={previewThemeValue}
@@ -1510,7 +1500,7 @@ export default function Settings() {
 
   const renderDatabaseTab = () => (
     <div className="max-w-lg mx-auto">
-      <div className="card bg-base-200 border border-base-300 rounded-xl p-6 mb-8">
+      <div className="card bg-base-200 border border-base-300 p-6 mb-8">
         <div className="flex items-center gap-3 mb-6">
           <div className="bg-purple-100 dark:bg-purple-800/30 rounded-full p-2.5">
             <span className="icon-[tabler--database] w-5 h-5 text-purple-600 dark:text-purple-400" />
@@ -1631,13 +1621,9 @@ export default function Settings() {
       {/* Header */}
       <motion.div
         className="text-center mb-10"
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
       >
         <motion.div
-          initial={{ scale: 0 }}
-          animate={{ scale: 1 }}
           transition={{ type: 'spring', stiffness: 260, damping: 20 }}
           className="bg-white/10 backdrop-blur-sm rounded-full p-4 w-fit mx-auto mb-4"
         >
@@ -1645,8 +1631,6 @@ export default function Settings() {
         </motion.div>
         <motion.h1
           className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-purple-400"
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
           transition={{ delay: 0.3 }}
         >
           {t('settings.title')}
@@ -1656,8 +1640,6 @@ export default function Settings() {
       {/* Tab Navigation */}
       <motion.div
         className="bg-base-100/60 backdrop-blur-md rounded-2xl p-1.5 mb-6 border border-slate-200/50 dark:border-gray-700/50"
-        initial={{ opacity: 0, y: 10 }}
-        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
       >
         <nav className="tabs gap-1 overflow-x-auto scrollbar-none" aria-label="Settings tabs" role="tablist" data-tab-prefix="settings-tab" onKeyDown={onSettingsTabKeyDown}>
@@ -1700,15 +1682,11 @@ export default function Settings() {
       {/* Settings Form */}
       <motion.form
         onSubmit={handleSubmit}
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.2 }}
       >
         {/* Persistent Error Banner — shows when there are inline validation errors */}
         {Object.keys(errors).length > 0 && (
           <motion.div
-            initial={{ opacity: 0, y: -10 }}
-            animate={{ opacity: 1, y: 0 }}
             role="alert" className="alert alert-error mb-6 items-start"
           >
             <div className="bg-red-100 dark:bg-red-800/30 rounded-full p-1.5 flex-shrink-0 mt-0.5">
@@ -1739,7 +1717,7 @@ export default function Settings() {
               role="tabpanel"
               id={`settings-panel-${activeTab}`}
               aria-labelledby={`settings-tab-${activeTab}`}
-              variants={tabVariants}
+              variants={pageSlideRight}
               initial="enter"
               animate="center"
               exit="exit"
@@ -1759,10 +1737,8 @@ export default function Settings() {
         {/* Action Buttons */}
         <div className="flex gap-4">
           <BackButton onClick={handleBackNavigation} disabled={isNavigating} />
-          <motion.button
+          <button
             type="submit"
-            whileHover={{ scale: isSaving ? 1 : 1.02 }}
-            whileTap={{ scale: isSaving ? 1 : 0.98 }}
             disabled={isSaving}
             className="flex-1 py-3 bg-linear-to-r from-teal-400 to-purple-400 text-white rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
@@ -1777,13 +1753,11 @@ export default function Settings() {
             ) : (
               <><span className="icon-[tabler--device-floppy] text-lg" /> {t('settings.saveSettings')}</>
             )}
-          </motion.button>
+          </button>
         </div>
       </motion.form>        {/* Success Toast */}
         {submitStatus === 'success' && isSuccess && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-success shadow-lg"
           >
@@ -1795,8 +1769,6 @@ export default function Settings() {
         {/* Error Toast — only for API/save errors, not for validation errors (shown inline) */}
         {submitStatus === 'error' && errorMessage && Object.keys(errors).length === 0 && (
           <motion.div
-            initial={{ opacity: 0, y: 50 }}
-            animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: 50 }}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 z-50 alert alert-error shadow-lg max-w-md"
           >

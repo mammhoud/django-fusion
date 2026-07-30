@@ -1,5 +1,4 @@
 import { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import Card from '../components/Card';
 import { invoke } from '@tauri-apps/api/core';
 import PageLayout from '../components/PageLayout';
@@ -182,14 +181,12 @@ export default function Roles() {
         {/* ── Header ── */}
         <div className="flex justify-between items-center">
           <h1 className="text-2xl font-bold text-base-content">{t('roles.title')}</h1>
-          <motion.button
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             onClick={openAddForm}
-            className="btn btn-primary gap-2"
+            className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
           >
             <span className="icon-[tabler--plus] w-4 h-4" /> {t('roles.addRole')}
-          </motion.button>
+          </button>
         </div>
 
         {/* ── Search + sort ── */}
@@ -300,7 +297,7 @@ export default function Roles() {
                             checked={checked}
                             onChange={() => togglePermission(p.key)}
                           />
-                          <span className={`icon-[tabler--${p.icon}] w-3.5 h-3.5 text-base-content/60 shrink-0`} />
+                          <span className={'icon-[tabler--' + p.icon + '] w-3.5 h-3.5 text-base-content/60 shrink-0'} />
                           <span className="text-xs font-medium text-base-content leading-tight">{p.label}</span>
                         </label>
                       );
@@ -397,7 +394,7 @@ export default function Roles() {
                     <div className="flex flex-wrap gap-1.5">
                       {catalogToUse.filter(p => perms.has(p.key)).map(p => (
                         <span key={p.key} className="badge badge-soft badge-primary badge-sm gap-1">
-                          <span className={`icon-[tabler--${p.icon}] w-3 h-3`} />
+                          <span className={'icon-[tabler--' + p.icon + '] w-3 h-3'} />
                           {p.label}
                         </span>
                       ))}

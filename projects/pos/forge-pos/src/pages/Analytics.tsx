@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import PageLayout from '../components/PageLayout';
 import Card from '../components/Card';
@@ -113,10 +112,7 @@ export default function Analytics() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4 sm:gap-6 mb-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div className="animate-fade-in">
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-primary/20 rounded-lg">
@@ -130,13 +126,9 @@ export default function Analytics() {
                 </div>
               </div>
             </Card>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.1 }}
-          >
+          <div className="animate-fade-in" style={{ animationDelay: '0.1s' }}>
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-blue-500/20 rounded-lg">
@@ -148,13 +140,9 @@ export default function Analytics() {
                 </div>
               </div>
             </Card>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-          >
+          <div className="animate-fade-in" style={{ animationDelay: '0.2s' }}>
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-purple-500/20 rounded-lg">
@@ -166,13 +154,9 @@ export default function Analytics() {
                 </div>
               </div>
             </Card>
-          </motion.div>
+          </div>
 
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-          >
+          <div className="animate-fade-in" style={{ animationDelay: '0.3s' }}>
             <Card padding="xl" hover>
               <div className="flex items-center gap-4">
                 <div className="p-3 bg-orange-500/20 rounded-lg">
@@ -186,31 +170,25 @@ export default function Analytics() {
                 </div>
               </div>
             </Card>
-          </motion.div>
+          </div>
         </div>
 
         {/* Empty State Message */}
         {data.summary.total_orders === 0 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div className="animate-fade-in">
             <Card padding="2xl" center transitional className="mb-8">
               <div className="text-base-content/60 text-lg mb-2">{t('analytics.noData')}</div>
               <div className="text-slate-500 dark:text-white/40">
                 {t('analytics.noDataHint')}
               </div>
             </Card>
-          </motion.div>
+          </div>
         )}
 
         {/* Charts Grid */}
         <div className="grid grid-cols-1 lg:grid-cols-2 2xl:grid-cols-3 3xl:grid-cols-4 gap-5 md:gap-6">
           {/* Revenue Trend */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div className="animate-fade-in">
             <Card padding="md" transitional className="sm:p-6">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.revenueTrend')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
@@ -246,13 +224,10 @@ export default function Analytics() {
                 )}
               </div>
             </Card>
-          </motion.div>
+          </div>
 
           {/* Top Products */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div className="animate-fade-in">
             <Card padding="md" transitional className="sm:p-6">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.topProducts')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
@@ -276,13 +251,10 @@ export default function Analytics() {
                 )}
               </div>
             </Card>
-          </motion.div>
+          </div>
 
           {/* Product Distribution */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div className="animate-fade-in">
             <Card padding="md" transitional className="sm:p-6">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.productDistribution')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
@@ -323,13 +295,10 @@ export default function Analytics() {
                 )}
               </div>
             </Card>
-          </motion.div>
+          </div>
 
           {/* Daily Orders Trend */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-          >
+          <div className="animate-fade-in">
             <Card padding="md" transitional className="sm:p-6">
               <h2 className="text-lg sm:text-xl font-bold text-base-content mb-4">{t('analytics.dailyOrders')}</h2>
               <div className="h-[250px] sm:h-[300px]" dir="ltr">
@@ -358,7 +327,7 @@ export default function Analytics() {
                 )}
               </div>
             </Card>
-          </motion.div>
+          </div>
         </div>
       {/* Keyboard Shortcut Help Modal */}
       <KeyboardShortcutsModal

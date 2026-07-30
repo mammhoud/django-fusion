@@ -246,15 +246,13 @@ export default function ReceiptTemplates() {
               {pinnedCount > 0 && ` · ${pinnedCount} pinned`}
             </p>
           </div>
-          <motion.button
-            whileHover={{ y: -2 }}
-            whileTap={{ scale: 0.98 }}
+          <button
             onClick={() => { setEditing(null); setForm({ name: '', template_body: '', category: '', is_default: false }); setShowForm(true); }}
-            className="btn btn-primary gap-2"
+            className="btn btn-primary gap-2 active:scale-[0.98] transition-all"
           >
             <span className="icon-[tabler--plus]" />
             {t('receiptTemplates.addTemplate') || 'New Note'}
-          </motion.button>
+          </button>
         </div>
 
         {/* ── Search + Sort + Category Filter Bar ── */}

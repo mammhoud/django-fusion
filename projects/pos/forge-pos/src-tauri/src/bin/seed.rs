@@ -141,6 +141,51 @@ pub fn parse_sections(seed_sql: &str) -> Vec<(String, Vec<String>)> {
     sections
 }
 
+/// Split SQL text into individual statements, respecting single-quoted string
+/// literals so semicolons inside data URIs or other string content are not
+/// treated as statement boundaries.
+fn split_sql_statements(sql: &str) -> Vec<&str> {
+    let mut statements: Vec<&str> = Vec::new();
+    let mut start = 0usize; // byte offset (NOT char index)
+    let mut in_string = false;
+
+    // Use char_indices to get byte offsets alongside each character
+    let pairs: Vec<(usize, char)> = sql.char_indices().collect();
+    let mut i = 0;
+
+    while i < pairs.len() {
+        let (_byte_pos, ch) = pairs[i];
+        match ch {
+            '\'' if !in_string => {
+                in_string = true;
+            }
+            '\'' if in_string => {
+                // Escaped single-quote (SQL: '' ) or end of string
+                if i + 1 < pairs.len() && pairs[i + 1].1 == '\'' {
+                    i += 1; // skip the escaped quote
+                } else {
+                    in_string = false;
+                }
+            }
+            ';' if !in_string => {
+                // The byte after this semicolon is the start of the next statement
+                let next_start = _byte_pos + ch.len_utf8();
+                statements.push(&sql[start.._byte_pos]);
+                start = next_start;
+            }
+            _ => {}
+        }
+        i += 1;
+    }
+
+    // Push the remaining text after the last semicolon
+    if start < sql.len() {
+        statements.push(&sql[start..]);
+    }
+
+    statements
+}
+
 /// Collect lines from active sections (in order).
 pub fn collect_active_lines(
     sections: &[(String, Vec<String>)],
@@ -232,8 +277,11 @@ fn seed_with_preset(db_path: &Path, preset: &str) -> Result<(), String> {
     }
 
     // 7. Join and execute all statements from the active lines.
+    //    Uses a string-literal-aware splitter so semicolons inside
+    //    single-quoted strings (e.g. data:image/svg+xml;base64,...)
+    //    don't break the statement boundary.
     let joined = active_lines.join("\n");
-    for statement in joined.split(';') {
+    for statement in split_sql_statements(&joined) {
         let trimmed = statement.trim();
         if !trimmed.is_empty() {
             // Skip pure comment lines

@@ -5,6 +5,7 @@ export interface AuthUser {
   id: number;
   email: string;
   name: string;
+  role?: string;
 }
 
 /** Timeout options in minutes — 'never' means disabled */
@@ -22,7 +23,7 @@ interface AuthContextType {
   isAuthRequired: boolean | null; // null = still checking
   user: AuthUser | null;
   isLoading: boolean;
-  login: (email: string, password: string, rememberMe?: boolean) => Promise<void>;
+  login: (email: string, password: string, rememberMe?: boolean, roleOverride?: string) => Promise<void>;
   logout: () => void;
   skipAuth: () => void;
   setupAccount: (email: string, code: string, password: string, name: string, rememberMe?: boolean) => Promise<void>;
@@ -169,10 +170,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     checkAuthStatus();
   }, [checkAuthStatus]);
 
-  const login = useCallback(async (email: string, password: string, rememberMe?: boolean) => {
+  const login = useCallback(async (email: string, password: string, rememberMe?: boolean, roleOverride?: string) => {
     setIsLoading(true);
     try {
-      const result = await invoke<{ id: number; email: string; name: string }>('login_user', {
+      const result = await invoke<{ id: number; email: string; name: string; role?: string }>('login_user', {
         email,
         password,
       });
@@ -180,6 +181,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         id: result.id,
         email: result.email,
         name: result.name,
+        role: roleOverride || result.role || 'manager',
       };
       saveUserToStorage(authUser, rememberMe !== false);
       setUser(authUser);

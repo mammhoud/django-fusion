@@ -37,7 +37,7 @@ export default function ProductsPage() {
                 aria-selected={activeTab === tab.key}
                 aria-controls={`products-panel-${tab.key}`}
               >
-                <span className={`icon-[tabler--${tab.icon}] w-4 h-4`} />
+                <span className={'icon-[tabler--' + tab.icon + '] w-4 h-4'} />
                 <span className="hidden sm:inline">{t(tab.labelKey)}</span>
               </button>
             ))}

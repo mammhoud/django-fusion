@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 import SideNav from './SideNav';
 import { useAuth, AuthUser } from '../contexts/AuthContext';
+import { pageSlideUp, dropdownMenu, toastSlideIn, iconSpring } from '../utils/pageTransitions';
 // Built-in Forge POS crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
 import defaultLogo from '../assets/pos-crest.svg';
@@ -27,11 +28,9 @@ function ProfileDropdown({
 
   return (
     <div className="relative">
-      <motion.button              whileHover={{ scale: 1.03 }}
-              whileTap={{ scale: 0.97 }}
-              onClick={onToggle}
+      <button              onClick={onToggle}
               className="flex items-center gap-2 px-3 py-2 rounded-xl bg-base-100/70 backdrop-blur-md border border-base-300/30
-                hover:shadow-md transition-shadow"
+                hover:shadow-md transition-all active:scale-[0.97]"
         aria-label="User profile"
         aria-expanded={open}
       >
@@ -44,15 +43,15 @@ function ProfileDropdown({
           {user.email}
         </span>
         <span className={`icon-[tabler--chevron-down] w-4 h-4 text-slate-400 transition-transform duration-200 ${open ? 'rotate-180' : ''}`} />
-      </motion.button>
+      </button>
 
       <AnimatePresence>
         {open && (
           <motion.div
-            initial={{ opacity: 0, y: -8, scale: 0.95 }}
-            animate={{ opacity: 1, y: 4, scale: 1 }}
-            exit={{ opacity: 0, y: -8, scale: 0.95 }}
-            transition={{ duration: 0.15 }}
+            variants={dropdownMenu}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="absolute right-0 mt-1 w-64 bg-base-100 rounded-2xl shadow-xl
               border border-base-300/50 overflow-hidden z-50"
           >
@@ -75,15 +74,13 @@ function ProfileDropdown({
 
             {/* Logout action */}
             <div className="p-2">
-              <motion.button
-                whileHover={{ scale: 1.01 }}
-                whileTap={{ scale: 0.98 }}
+              <button
                 onClick={onLogout}
                 className="btn btn-ghost btn-block justify-start text-error hover:bg-error/10 rounded-xl"
               >
                 <span className="icon-[tabler--logout] w-4 h-4" />
                 Sign Out
-              </motion.button>
+              </button>
             </div>
           </motion.div>
         )}
@@ -142,13 +139,13 @@ export default function PageLayout({
 
   const handleBackNavigation = () => {
     setIsNavigating(true);
-    setTimeout(() => navigate('/'), 300);
+    setTimeout(() => navigate('/dashboard'), 300);
   };
 
   const renderLogo = (size: string) => (      <motion.img
-      initial={{ opacity: 0, scale: 0.8 }}
-      animate={{ opacity: 1, scale: 1 }}
-      transition={{ type: 'spring', stiffness: 240, damping: 20 }}
+      variants={iconSpring}
+      initial="initial"
+      animate="animate"
       whileHover={{ rotate: 6, scale: 1.06 }}
       src={defaultLogo}
       alt="Forge POS"
@@ -161,7 +158,7 @@ export default function PageLayout({
   const showProfile = isAuthRequired && user;
 
   return (
-    <div className={`min-h-screen transition-colors duration-300 ${background}`}>
+    <div className={`min-h-screen overflow-y-auto transition-colors duration-300 ${background}`}>
       {/* Overlay SideNav (mobile/tablet) */}
       <SideNav isOpen={isNavOpen} onClose={() => setIsNavOpen(false)} currentRoute={location.pathname} />
 
@@ -172,19 +169,19 @@ export default function PageLayout({
       <AnimatePresence>
         {inactivityWarning && (
           <motion.div
-            initial={{ opacity: 0, y: -24 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -24 }}
+            variants={toastSlideIn}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
             className="fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold"
           >
             <span className="icon-[tabler--alert-triangle] w-5 h-5 shrink-0" />
-            <span>Session expiring soon — click anywhere to stay logged in</span>              <motion.button
-                whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}
+            <span>Session expiring soon — click anywhere to stay logged in</span>              <button
                 onClick={dismissInactivityWarning}
                 className="btn btn-ghost btn-xs ml-2 text-white bg-white/20"
             >
               Stay
-            </motion.button>
+            </button>
           </motion.div>
         )}
       </AnimatePresence>
@@ -194,25 +191,21 @@ export default function PageLayout({
           /* Full TopBar: [Menu] [Back] [Logo + Title] [Profile] */
           <div className="flex items-center justify-between mb-6 gap-3">
             <div className="flex items-center gap-2 shrink-0">
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.92 }}
+              <button
                 onClick={() => setIsNavOpen(true)}
                 className="btn btn-square btn-ghost"
                 aria-label="Open navigation"
               >
                 <span className="icon-[tabler--menu-2] w-5 h-5" />
-              </motion.button>
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.92 }}
+              </button>
+              <button
                 onClick={handleBackNavigation}
                 disabled={isNavigating}
                 className="btn btn-square btn-ghost disabled:opacity-50"
                 aria-label="Back to home"
               >
                 <span className="icon-[tabler--arrow-back] w-4 h-4 rtl:scale-x-[-1]" />
-              </motion.button>
+              </button>
             </div>
             <div className="flex items-center gap-3 flex-1 justify-center min-w-0">
               {renderLogo('h-9 w-9 sm:h-10 sm:w-10')}
@@ -253,20 +246,28 @@ export default function PageLayout({
                   compact
                 />
               )}
-              <motion.button
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.92 }}
+              <button
                 onClick={() => setIsNavOpen(true)}
                 className="btn btn-square btn-ghost shrink-0"
                 aria-label="Open navigation"
               >
                 <span className="icon-[tabler--menu-2] w-5 h-5" />
-              </motion.button>
+              </button>
             </div>
           </div>
         )}
 
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            variants={pageSlideUp}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </div>
     </div>
   );

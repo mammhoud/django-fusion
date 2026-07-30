@@ -1,12 +1,15 @@
 pub mod db;
 pub mod operations;
 pub mod email;
+pub mod macros;
 
 use db::{get_db_path, run_migrations};
 use operations::*;
 use operations::delivery_zones;
 use operations::sidecar::{start_sidecar, stop_sidecar, sidecar_status};
-use tauri::{AppHandle, Manager};
+use tauri::{AppHandle, Emitter, Manager};
+use tauri::tray::{MouseButton, MouseButtonState, TrayIconBuilder, TrayIconEvent};
+use tauri::menu::{MenuBuilder, MenuItemBuilder};
 
 // Load environment variables at startup.
 // dotenvy::dotenv() looks in cwd, but Tauri runs from src-tauri/ or the
@@ -53,60 +56,20 @@ fn load_env() {
     }
 }
 
-// ---- Product commands ----
-#[tauri::command]
-fn get_products(app: AppHandle) -> Result<Vec<db::models::Product>, String> {
-    let db_path = get_db_path(&app)?;
-    products::get_products(&db_path)
-}
+// ---- CRUD: products, categories, ingredients, recipes (via macro) ----
+register_crud!(products => product, db::models::Product, db::models::NewProduct, db::models::UpdateProduct,
+    emit "product-updated");
+register_crud!(categories => category, db::models::Category, db::models::NewCategory, db::models::UpdateCategory);
+register_crud!(ingredients => ingredient, db::models::Ingredient, db::models::NewIngredient, db::models::UpdateIngredient,
+    emit "inventory-changed", filter include_inactive: bool, soft);
+register_crud!(recipes => recipe, db::models::Recipe, db::models::NewRecipe, db::models::UpdateRecipe,
+    filter include_inactive: bool, soft);
 
-#[tauri::command]
-fn add_product(app: AppHandle, product: db::models::NewProduct) -> Result<db::models::Product, String> {
-    let db_path = get_db_path(&app)?;
-    products::add_product(&db_path, product)
-}
-
-#[tauri::command]
-fn update_product(app: AppHandle, id: i32, update: db::models::UpdateProduct) -> Result<db::models::Product, String> {
-    let db_path = get_db_path(&app)?;
-    products::update_product(&db_path, id, update)
-}
-
-#[tauri::command]
-fn delete_product(app: AppHandle, id: i32) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    products::delete_product(&db_path, id)
-}
-
+// ---- Custom product commands (beyond standard CRUD) ----
 #[tauri::command]
 fn mark_product_uploaded(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
     products::mark_product_uploaded(&db_path, id)
-}
-
-// ---- Category commands ----
-#[tauri::command]
-fn get_categories(app: AppHandle) -> Result<Vec<db::models::Category>, String> {
-    let db_path = get_db_path(&app)?;
-    categories::get_categories(&db_path)
-}
-
-#[tauri::command]
-fn add_category(app: AppHandle, category: db::models::NewCategory) -> Result<db::models::Category, String> {
-    let db_path = get_db_path(&app)?;
-    categories::add_category(&db_path, category)
-}
-
-#[tauri::command]
-fn update_category(app: AppHandle, id: i32, update: db::models::UpdateCategory) -> Result<db::models::Category, String> {
-    let db_path = get_db_path(&app)?;
-    categories::update_category(&db_path, id, update)
-}
-
-#[tauri::command]
-fn delete_category(app: AppHandle, id: i32) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    categories::delete_category(&db_path, id)
 }
 
 // ---- Sale commands ----
@@ -117,7 +80,17 @@ fn add_sale(
     items: Vec<db::models::NewSaleItem>,
 ) -> Result<db::models::Sale, String> {
     let db_path = get_db_path(&app)?;
-    sales::add_sale(&db_path, sale, items)
+    let (sale, ticket) = sales::add_sale(&db_path, sale, items)?;
+    // Emit a real-time event so all open KDS windows update instantly
+    if let Err(e) = app.emit("kitchen-ticket-update", serde_json::json!({
+        "type": "new",
+        "ticket": ticket,
+    })) {
+        eprintln!("[events] failed to emit kitchen-ticket-update: {e}");
+    }
+    // Update tray badge with latest pending count
+    update_tray_badge(&app, &db_path);
+    Ok(sale)
 }
 
 #[tauri::command]
@@ -189,38 +162,7 @@ fn get_analytics(app: AppHandle) -> Result<analytics::AnalyticsData, String> {
     analytics::get_analytics(&db_path)
 }
 
-// ---- Ingredient commands ----
-#[tauri::command]
-fn get_ingredients(app: AppHandle, include_inactive: bool) -> Result<Vec<db::models::Ingredient>, String> {
-    let db_path = get_db_path(&app)?;
-    ingredients::get_ingredients(&db_path, include_inactive)
-}
-
-#[tauri::command]
-fn add_ingredient(app: AppHandle, ingredient: db::models::NewIngredient) -> Result<db::models::Ingredient, String> {
-    let db_path = get_db_path(&app)?;
-    ingredients::add_ingredient(&db_path, ingredient)
-}
-
-#[tauri::command]
-fn update_ingredient(app: AppHandle, id: i32, update: db::models::UpdateIngredient) -> Result<db::models::Ingredient, String> {
-    let db_path = get_db_path(&app)?;
-    ingredients::update_ingredient(&db_path, id, update)
-}
-
-#[tauri::command]
-fn soft_delete_ingredient(app: AppHandle, id: i32) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    ingredients::soft_delete_ingredient(&db_path, id)
-}
-
-// ---- Recipe commands ----
-#[tauri::command]
-fn get_recipes(app: AppHandle, include_inactive: bool) -> Result<Vec<db::models::Recipe>, String> {
-    let db_path = get_db_path(&app)?;
-    recipes::get_recipes(&db_path, include_inactive)
-}
-
+// ---- Recipe child-entity commands (stay manual — complex signatures) ----
 #[tauri::command]
 fn create_recipe(
     app: AppHandle,
@@ -229,18 +171,6 @@ fn create_recipe(
 ) -> Result<db::models::Recipe, String> {
     let db_path = get_db_path(&app)?;
     recipes::create_recipe(&db_path, recipe, ingredients)
-}
-
-#[tauri::command]
-fn update_recipe(app: AppHandle, id: i32, update: db::models::UpdateRecipe) -> Result<db::models::Recipe, String> {
-    let db_path = get_db_path(&app)?;
-    recipes::update_recipe(&db_path, id, update)
-}
-
-#[tauri::command]
-fn soft_delete_recipe(app: AppHandle, id: i32) -> Result<(), String> {
-    let db_path = get_db_path(&app)?;
-    recipes::soft_delete_recipe(&db_path, id)
 }
 
 #[tauri::command]
@@ -350,19 +280,31 @@ fn get_employees(app: AppHandle, include_inactive: bool) -> Result<Vec<db::model
 #[tauri::command]
 fn add_employee(app: AppHandle, employee: db::models::NewEmployee) -> Result<db::models::Employee, String> {
     let db_path = get_db_path(&app)?;
-    employees::add_employee(&db_path, employee)
+    let result = employees::add_employee(&db_path, employee)?;
+    if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "added"})) {
+        eprintln!("[events] failed to emit employees-updated: {e}");
+    }
+    Ok(result)
 }
 
 #[tauri::command]
 fn update_employee(app: AppHandle, id: i32, update: db::models::UpdateEmployee) -> Result<db::models::Employee, String> {
     let db_path = get_db_path(&app)?;
-    employees::update_employee(&db_path, id, update)
+    let result = employees::update_employee(&db_path, id, update)?;
+    if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "updated"})) {
+        eprintln!("[events] failed to emit employees-updated: {e}");
+    }
+    Ok(result)
 }
 
 #[tauri::command]
 fn soft_delete_employee(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
-    employees::soft_delete_employee(&db_path, id)
+    employees::soft_delete_employee(&db_path, id)?;
+    if let Err(e) = app.emit("employees-updated", serde_json::json!({"type": "deleted"})) {
+        eprintln!("[events] failed to emit employees-updated: {e}");
+    }
+    Ok(())
 }
 
 // ---- Inventory Transaction commands ----
@@ -392,7 +334,11 @@ fn add_inventory_transaction(
     created_by: Option<String>,
 ) -> Result<db::models::InventoryTransaction, String> {
     let db_path = get_db_path(&app)?;
-    inventory_transactions::add_inventory_transaction(&db_path, transaction, adjustment_reason, created_by)
+    let result = inventory_transactions::add_inventory_transaction(&db_path, transaction, adjustment_reason, created_by)?;
+    if let Err(e) = app.emit("inventory-changed", serde_json::json!({"type": "transaction"})) {
+        eprintln!("[events] failed to emit inventory-changed: {e}");
+    }
+    Ok(result)
 }
 
 // ---- Dump commands ----
@@ -601,13 +547,26 @@ fn add_kitchen_ticket(app: AppHandle, ticket: db::models::NewKitchenTicket) -> R
 #[tauri::command]
 fn update_kitchen_ticket(app: AppHandle, id: i32, update: db::models::UpdateKitchenTicket) -> Result<db::models::KitchenTicket, String> {
     let db_path = get_db_path(&app)?;
-    kitchen_tickets::update_kitchen_ticket(&db_path, id, update)
+    let ticket = kitchen_tickets::update_kitchen_ticket(&db_path, id, update)?;
+    // Emit a real-time event so other KDS windows update instantly
+    if let Err(e) = app.emit("kitchen-ticket-update", serde_json::json!({
+        "type": "updated",
+        "ticket": ticket,
+    })) {
+        eprintln!("[events] failed to emit kitchen-ticket-update: {e}");
+    }
+    // Update tray badge with latest pending count
+    update_tray_badge(&app, &db_path);
+    Ok(ticket)
 }
 
 #[tauri::command]
 fn delete_kitchen_ticket(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
-    kitchen_tickets::delete_kitchen_ticket(&db_path, id)
+    kitchen_tickets::delete_kitchen_ticket(&db_path, id)?;
+    // Update tray badge — a deleted ticket may reduce the pending count
+    update_tray_badge(&app, &db_path);
+    Ok(())
 }
 
 // ---- Customers commands ----
@@ -620,19 +579,31 @@ fn get_customers(app: AppHandle) -> Result<Vec<db::models::Customer>, String> {
 #[tauri::command]
 fn add_customer(app: AppHandle, customer: db::models::NewCustomer) -> Result<db::models::Customer, String> {
     let db_path = get_db_path(&app)?;
-    customers::add_customer(&db_path, customer)
+    let result = customers::add_customer(&db_path, customer)?;
+    if let Err(e) = app.emit("customers-updated", serde_json::json!({"type": "added"})) {
+        eprintln!("[events] failed to emit customers-updated: {e}");
+    }
+    Ok(result)
 }
 
 #[tauri::command]
 fn update_customer(app: AppHandle, id: i32, update: db::models::UpdateCustomer) -> Result<db::models::Customer, String> {
     let db_path = get_db_path(&app)?;
-    customers::update_customer(&db_path, id, update)
+    let result = customers::update_customer(&db_path, id, update)?;
+    if let Err(e) = app.emit("customers-updated", serde_json::json!({"type": "updated"})) {
+        eprintln!("[events] failed to emit customers-updated: {e}");
+    }
+    Ok(result)
 }
 
 #[tauri::command]
 fn delete_customer(app: AppHandle, id: i32) -> Result<(), String> {
     let db_path = get_db_path(&app)?;
-    customers::delete_customer(&db_path, id)
+    customers::delete_customer(&db_path, id)?;
+    if let Err(e) = app.emit("customers-updated", serde_json::json!({"type": "deleted"})) {
+        eprintln!("[events] failed to emit customers-updated: {e}");
+    }
+    Ok(())
 }
 
 #[tauri::command]
@@ -852,8 +823,38 @@ fn import_database_cmd(app: AppHandle, data: String) -> Result<(), String> {
     Ok(())
 }
 
+/// Update the system tray tooltip to show the current pending ticket count.
+/// Safe to call even if the tray doesn't exist (e.g. on mobile).
+fn update_tray_badge(app: &AppHandle, db_path: &std::path::PathBuf) {
+    #[cfg(not(any(target_os = "android", target_os = "ios")))]
+    {
+        if let Some(tray) = app.tray_by_id("main") {
+            match kitchen_tickets::count_pending_tickets(db_path) {
+                Ok(count) => {
+                    let tip = if count > 0 {
+                        format!("Forge POS — {} pending", count)
+                    } else {
+                        "Forge POS".to_string()
+                    };
+                    let _ = tray.set_tooltip(Some(&tip));
+                }
+                Err(e) => eprintln!("[tray] failed to count pending tickets: {e}"),
+            }
+        }
+    }
+}
+
+/// Tauri command — lets the frontend trigger a tray badge refresh on page load
+#[tauri::command]
+fn sync_tray_badge(app: AppHandle) -> Result<(), String> {
+    let db_path = get_db_path(&app)?;
+    update_tray_badge(&app, &db_path);
+    Ok(())
+}
+
 // Helper function to get window state file path (desktop only)
 fn get_window_state_path(app: &AppHandle) -> Result<std::path::PathBuf, String> {
+
     let app_dir = app.path().app_data_dir().map_err(|e| e.to_string())?;
     std::fs::create_dir_all(&app_dir).map_err(|e| e.to_string())?;
     Ok(app_dir.join("window_state.json"))
@@ -905,6 +906,72 @@ pub fn run() {
             {
                 if let Err(e) = start_sidecar(app.handle().clone()) {
                     eprintln!("[setup] sidecar start failed (non-fatal): {e}");
+                }
+            }
+
+            // ── System tray icon ──
+            #[cfg(not(any(target_os = "android", target_os = "ios")))]
+            {
+                let show_item = MenuItemBuilder::with_id("show", "Show Forge POS")
+                    .build(app)?;
+                let quit_item = MenuItemBuilder::with_id("quit", "Quit")
+                    .build(app)?;
+
+                let menu = MenuBuilder::new(app)
+                    .item(&show_item)
+                    .separator()
+                    .item(&quit_item)
+                    .build()?;
+
+                let img_data = include_bytes!("../icons/icon.png");
+                let img = image::load_from_memory(img_data)
+                    .expect("Failed to decode tray icon PNG");
+                let rgba = img.to_rgba8();
+                let (w, h) = rgba.dimensions();
+                let icon = tauri::image::Image::new_owned(rgba.into_raw(), w, h);
+
+                let tray = TrayIconBuilder::new()
+                    .icon(icon)
+                    .tooltip("Forge POS")
+                    .menu(&menu)
+                    .on_menu_event(|app, event| {
+                        match event.id().as_ref() {
+                            "show" => {
+                                if let Some(window) = app.get_webview_window("main") {
+                                    let _ = window.show();
+                                    let _ = window.set_focus();
+                                }
+                            }
+                            "quit" => {
+                                app.exit(0);
+                            }
+                            _ => {}
+                        }
+                    })
+                    .on_tray_icon_event(|tray, event| {
+                        if let TrayIconEvent::Click {
+                            button: MouseButton::Left,
+                            button_state: MouseButtonState::Up,
+                            ..
+                        } = event
+                        {
+                            let app = tray.app_handle();
+                            if let Some(window) = app.get_webview_window("main") {
+                                let _ = window.show();
+                                let _ = window.set_focus();
+                            }
+                        }
+                    })
+                    .build(app)?;
+
+                // Compute initial pending count and update the tray tooltip
+                if let Ok(count) = kitchen_tickets::count_pending_tickets(&db_path) {
+                    let tip = if count > 0 {
+                        format!("Forge POS — {} pending", count)
+                    } else {
+                        "Forge POS".to_string()
+                    };
+                    let _ = tray.set_tooltip(Some(&tip));
                 }
             }
 
@@ -1079,6 +1146,8 @@ pub fn run() {
             start_sidecar,
             stop_sidecar,
             sidecar_status,
+            // Tray badge
+            sync_tray_badge,
         ])
         .run(tauri::generate_context!())
         .expect("error while running tauri application");
