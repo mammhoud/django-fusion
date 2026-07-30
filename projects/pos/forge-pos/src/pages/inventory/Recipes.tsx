@@ -333,12 +333,12 @@ export default function Recipes() {
                   </div>
                   <div className="flex gap-1">
                     <button onClick={() => handleOpenEdit(rd.recipe.id)}
-                      className="text-blue-500 hover:text-blue-400 p-1.5 rounded-lg hover:bg-blue-500/10" title={t('common.edit')}>
+                      className="text-primary hover:text-primary/70 p-1.5 rounded-lg hover:bg-primary/10" title={t('common.edit')}>
                       <span className="icon-[tabler--pencil] w-4 h-4" />
                     </button>
                     {rd.recipe.is_active && (
                       <button onClick={() => setShowDeleteRecipe(rd.recipe)}
-                        className="text-red-500 hover:text-red-400 p-1.5 rounded-lg hover:bg-red-500/10" title={t('common.deactivate')}>
+                        className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
                         <span className="icon-[tabler--trash] w-4 h-4" />
                       </button>
                     )}
@@ -492,7 +492,7 @@ export default function Recipes() {
                 <span className="text-xs text-base-content/80">
                   {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
-                <button onClick={() => handleRemoveNewIngredient(idx)} className="text-red-500 hover:text-red-400 p-0.5">
+                <button onClick={() => handleRemoveNewIngredient(idx)} className="text-error hover:text-error/70 p-0.5">
                   <span className="icon-[tabler--minus] w-3.5 h-3.5" />
                 </button>
               </div>
@@ -514,7 +514,7 @@ export default function Recipes() {
         footer={<>
           <button onClick={() => setShowEditRecipe(null)} className="flex-1 py-2.5 rounded-lg bg-base-300/50 text-base-content font-semibold hover:bg-base-300/80 transition-colors">{t('common.cancel')}</button>
           <button onClick={handleSaveEdit} disabled={editYield <= 0}
-            className="flex-1 py-2.5 rounded-lg bg-blue-500 text-white font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
+            className="flex-1 py-2.5 rounded-lg bg-primary text-primary-content font-semibold disabled:opacity-50 flex items-center justify-center gap-2">
             <span className="icon-[tabler--device-floppy]" /> {t('common.saveChanges')}
           </button>
         </>}
@@ -577,7 +577,7 @@ export default function Recipes() {
                 <span className="text-xs text-base-content/80">
                   {getIngredientName(ri.ingredient_id)} — {ri.quantity} {ri.unit || getIngredientUnit(ri.ingredient_id)}
                 </span>
-                <button onClick={() => handleRemoveEditIngredient(idx)} className="text-red-500 hover:text-red-400 p-0.5">
+                <button onClick={() => handleRemoveEditIngredient(idx)} className="text-error hover:text-error/70 p-0.5">
                   <span className="icon-[tabler--minus] w-3.5 h-3.5" />
                 </button>
               </div>

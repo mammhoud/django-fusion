@@ -744,8 +744,8 @@ export default function ProductManager() {
                       <button
                         onClick={(e) => { e.stopPropagation(); openEditModal(product); }}
                         className="w-7 h-7 flex items-center justify-center rounded-full
-                          bg-white/90 dark:bg-slate-700/90 text-blue-500 hover:text-blue-400
-                          hover:bg-blue-50 dark:hover:bg-blue-900/30 transition-all active:scale-[0.9] shadow-sm"
+                          bg-white/90 dark:bg-slate-700/90 text-primary hover:text-primary/70
+                          hover:bg-primary/10 dark:hover:bg-primary/10 transition-all active:scale-[0.9] shadow-sm"
                         aria-label={t('common.edit')}
                       >
                         <span className="icon-[tabler--edit] w-3 h-3" />
@@ -753,8 +753,8 @@ export default function ProductManager() {
                       <button
                         onClick={(e) => { e.stopPropagation(); openDeleteConfirmation(product); }}
                         className="w-7 h-7 flex items-center justify-center rounded-full
-                          bg-white/90 dark:bg-slate-700/90 text-red-400 hover:text-red-300
-                          hover:bg-red-50 dark:hover:bg-red-900/30 transition-all active:scale-[0.9] shadow-sm disabled:opacity-50"
+                          bg-white/90 dark:bg-slate-700/90 text-error hover:text-error/70
+                          hover:bg-error/10 dark:hover:bg-error/10 transition-all active:scale-[0.9] shadow-sm disabled:opacity-50"
                         disabled={deletingId === product.id}
                         aria-label={t('productManager.deleteTitle')}
                       >
@@ -836,8 +836,8 @@ export default function ProductManager() {
                       <button
                         type="button"
                         onClick={() => setProductImage(null)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-0.5
-                          hover:bg-red-600 transition-colors shadow-lg"
+                        className="absolute -top-2 -right-2 bg-error text-error-content rounded-full p-0.5
+                          hover:brightness-90 transition-all shadow-lg"
                       >
                         <span className="icon-[tabler--x] w-3 h-3" />
                       </button>

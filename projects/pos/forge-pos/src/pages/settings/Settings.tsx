@@ -1691,7 +1691,7 @@ export default function Settings() {
             type="button"
             onClick={handleImportDatabase}
             disabled={isImporting}
-            className="w-full py-3 bg-blue-500 hover:bg-blue-600 text-white rounded-xl
+            className="w-full py-3 bg-primary hover:brightness-90 text-primary-content rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1706,7 +1706,7 @@ export default function Settings() {
             type="button"
             onClick={handleExportDatabase}
             disabled={isExporting}
-            className="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white rounded-xl
+            className="w-full py-3 bg-primary hover:brightness-90 text-primary-content rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
@@ -1738,7 +1738,7 @@ export default function Settings() {
             type="button"
             onClick={() => setShowResetConfirm(true)}
             disabled={isResetting}
-            className="w-full py-3 bg-red-500 hover:bg-red-600 text-white rounded-xl
+            className="w-full py-3 bg-error hover:brightness-90 text-error-content rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >
