@@ -12,6 +12,7 @@ const CATEGORY_COLORS: Record<string, string> = {
   idea: 'badge-primary',
   task: 'badge-warning',
   recipe: 'badge-success',
+  receipt: 'badge-accent',
   preparation: 'badge-info',
   'chef-tips': 'badge-warning',
   allergen: 'badge-error',
@@ -27,6 +28,7 @@ const NOTE_CATEGORIES = [
   { value: '', label: 'General', color: 'badge-ghost' },
   { value: 'idea', label: 'Idea', color: 'badge-primary' },
   { value: 'task', label: 'Task', color: 'badge-warning' },
+  { value: 'receipt', label: 'Receipt Template', color: 'badge-accent' },
   { value: 'recipe', label: 'Recipe', color: 'badge-success' },
   { value: 'preparation', label: 'Preparation Steps', color: 'badge-info' },
   { value: 'chef-tips', label: 'Chef Tips', color: 'badge-warning' },
@@ -52,6 +54,7 @@ function getCategoryBorder(cat: string | null | undefined): string {
     idea: 'border-l-primary',
     task: 'border-l-warning',
     recipe: 'border-l-success',
+    receipt: 'border-l-accent',
     preparation: 'border-l-info',
     'chef-tips': 'border-l-warning',
     allergen: 'border-l-error',
@@ -102,6 +105,7 @@ function getNoteIconClass(cat: string | null | undefined): string {
     case 'idea': return 'icon-[tabler--bulb] w-3 h-3';
     case 'task': return 'icon-[tabler--checkbox] w-3 h-3';
     case 'recipe': return 'icon-[tabler--chef-hat] w-3 h-3';
+    case 'receipt': return 'icon-[tabler--receipt] w-3 h-3';
     case 'preparation': return 'icon-[tabler--list-check] w-3 h-3';
     case 'chef-tips': return 'icon-[tabler--bulb] w-3 h-3';
     case 'allergen': return 'icon-[tabler--alert-triangle] w-3 h-3';
