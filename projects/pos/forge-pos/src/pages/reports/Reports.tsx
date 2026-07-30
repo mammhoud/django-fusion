@@ -786,7 +786,7 @@ export default function Reports() {
   return (
     <PageLayout
       title={t('reports.title')}
-      background="bg-linear-to-br from-slate-100 via-indigo-50 to-slate-100 dark:from-slate-900 dark:via-indigo-950 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-primary/10 to-base-200"
       padding="py-10"
     >
       {/* Export Buttons — FlyonUI btn variants */}
@@ -849,7 +849,7 @@ export default function Reports() {
               </select>
               {orderTypeFilter && (
                 <button onClick={() => setOrderTypeFilter('')}
-                  className="text-xs text-red-500 hover:text-red-400 transition-colors shrink-0">
+                  className="text-xs text-error hover:text-error/70 transition-colors shrink-0">
                   {t('reports.dateClear', 'Clear')}
                 </button>
               )}
@@ -875,7 +875,7 @@ export default function Reports() {
               </select>
               {zoneFilterId != null && (
                 <button onClick={() => setZoneFilterId(null)}
-                  className="text-xs text-red-500 hover:text-red-400 transition-colors shrink-0">
+                  className="text-xs text-error hover:text-error/70 transition-colors shrink-0">
                   {t('reports.dateClear', 'Clear')}
                 </button>
               )}
@@ -915,12 +915,12 @@ export default function Reports() {
             <div className="flex items-center gap-2 flex-1 sm:justify-end">
               <input type="date" value={dateRange.start}
                 onChange={e => setDateRange(prev => ({ ...prev, start: e.target.value }))}className="select select-bordered text-base-content text-xs w-36" />
-              <span className="text-slate-400 text-xs">{t('reports.dateTo')}</span>
+              <span className="text-base-content/40 text-xs">{t('reports.dateTo')}</span>
               <input type="date" value={dateRange.end}
                 onChange={e => setDateRange(prev => ({ ...prev, end: e.target.value }))}className="select select-bordered text-base-content text-xs w-36" />
               {(dateRange.start || dateRange.end) && (
                 <button onClick={() => applyDatePreset('clear')}
-                  className="text-xs text-red-500 hover:text-red-400 transition-colors shrink-0">
+                  className="text-xs text-error hover:text-error/70 transition-colors shrink-0">
                   {t('reports.dateClear')}
                 </button>
               )}
@@ -1099,8 +1099,8 @@ export default function Reports() {
                     <div className="space-y-3">
                       {orderTypeBreakdown.map(ot => {
                         const colors: Record<string, string> = {
-                          'Dine-in': 'bg-green-500/20 text-green-600 dark:text-green-400 border-green-300 dark:border-green-700',
-                          'Takeaway': 'bg-blue-500/20 text-blue-600 dark:text-blue-400 border-blue-300 dark:border-blue-700',
+                          'Dine-in': 'bg-success/20 text-success border-success/30',
+                          'Takeaway': 'bg-info/20 text-info border-info/30',
                         };
                         const fallbackColor = 'bg-warning/10 text-warning border-warning/30';
                         const colorClass = colors[ot.type] || fallbackColor;
@@ -1110,7 +1110,7 @@ export default function Reports() {
                               <span className="icon-[tabler--building-store] w-5 h-5" />
                             </div>
                             <div className="flex-1">
-                              <p className="text-sm text-slate-500 dark:text-white/50">{ot.type}</p>
+                              <p className="text-sm text-base-content/50">{ot.type}</p>
                               <p className="text-lg font-bold text-base-content">{t('reports.ordersCount', { count: ot.count })}</p>
                               <p className="text-sm text-base-content/70">{currency} {ot.revenue.toFixed(2)}</p>
                             </div>
@@ -1119,7 +1119,7 @@ export default function Reports() {
                       })}
                     </div>
                   ) : (
-                    <p className="text-slate-500 dark:text-white/40">{t('reports.noOrderData')}</p>
+                    <p className="text-base-content/50">{t('reports.noOrderData')}</p>
                   )}
                 </Card>
 
@@ -1165,16 +1165,16 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">#</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableSold')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">#</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableProduct')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableSold')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {analytics.top_products.map((p, i) => (
-                          <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                            <td className="py-3 px-4 text-slate-500 dark:text-white/50">{i + 1}</td>
+                          <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
+                            <td className="py-3 px-4 text-base-content/50">{i + 1}</td>
                             <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
                             <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
@@ -1258,11 +1258,11 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">#</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableSold')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableShare')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">#</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableProduct')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableSold')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableShare')}</th>
                         </tr>
                       </thead>
                       <tbody>
@@ -1270,20 +1270,20 @@ export default function Reports() {
                           const maxRevenue = Math.max(...analytics.top_products.map(x => x.revenue));
                           const share = maxRevenue > 0 ? (p.revenue / maxRevenue) * 100 : 0;
                           return (
-                            <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
-                              <td className="py-3 px-4 text-slate-500 dark:text-white/50">{i + 1}</td>
+                            <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
+                              <td className="py-3 px-4 text-base-content/50">{i + 1}</td>
                               <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
                               <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
                               <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center gap-2">
-                                  <div className="w-20 bg-slate-200 dark:bg-white/10 rounded-full h-2 overflow-hidden">
+                                  <div className="w-20 bg-base-300 rounded-full h-2 overflow-hidden">
                                     <div
-                                      className="h-full rounded-full bg-linear-to-r from-indigo-500 to-purple-500"
+                                      className="h-full rounded-full bg-linear-to-r from-primary to-secondary"
                                       style={{ width: `${Math.min(share, 100)}%` }}
                                     />
                                   </div>
-                                  <span className="text-xs text-slate-500 dark:text-white/50">{p.revenue > 0 ? `${((p.revenue / (analytics?.summary?.total_revenue || 1)) * 100).toFixed(1)}%` : '0%'}</span>
+                                  <span className="text-xs text-base-content/50">{p.revenue > 0 ? `${((p.revenue / (analytics?.summary?.total_revenue || 1)) * 100).toFixed(1)}%` : '0%'}</span>
                                 </div>
                               </td>
                             </tr>
@@ -1297,7 +1297,7 @@ export default function Reports() {
                 <Card padding="xl" center>
                   <span className="icon-[tabler--chart-bar] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noProductSales')}</p>
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noProductSalesHint')}</p>
+                  <p className="text-base-content/50">{t('reports.noProductSalesHint')}</p>
                 </Card>
               )}
 
@@ -1370,20 +1370,20 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableInvoice')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDate')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableTime')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableOrderType')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableStatus')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableAmount')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableInvoice')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableDate')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableTime')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableOrderType')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableStatus')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableAmount')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {filteredSales.map(sale => {
                           const emp = employees.find(e => e.id === sale.employee_id);
                           return (
-                            <tr key={sale.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                            <tr key={sale.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                               <td className="py-3 px-4 font-medium text-base-content">#{sale.id}</td>
                               <td className="py-3 px-4 text-base-content/70">{sale.date}</td>
                               <td className="py-3 px-4 text-base-content/70">{sale.time}</td>
@@ -1393,7 +1393,7 @@ export default function Reports() {
                                 </span>
                               </td>
                               <td className="py-3 px-4">
-                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${sale.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400' : sale.status === 'cancelled' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400' : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'}`}>
+                                <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${sale.status === 'completed' ? 'bg-success/20 text-success' : sale.status === 'cancelled' ? 'bg-error/20 text-error' : 'bg-warning/20 text-warning'}`}>
                                   {sale.status}
                                 </span>
                               </td>
@@ -1410,7 +1410,7 @@ export default function Reports() {
                 <Card padding="xl" center>
                   <span className="icon-[tabler--receipt] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noInvoices')}</p>
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noInvoicesHint')}</p>
+                  <p className="text-base-content/50">{t('reports.noInvoicesHint')}</p>
                 </Card>
               )}
             </div>
@@ -1463,7 +1463,7 @@ export default function Reports() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 {/* vs Yesterday */}
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.vsYesterday')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.vsYesterday')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.todayRevenue')}
@@ -1484,7 +1484,7 @@ export default function Reports() {
 
                 {/* vs Same Day Last Week */}
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.vsLastWeek')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.vsLastWeek')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.todayRevenue')}
@@ -1531,11 +1531,11 @@ export default function Reports() {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="border-b border-base-300/30">
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDate')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableAvgOrder')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDayLabel')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableDate')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableAvgOrder')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableDayLabel')}</th>
                       </tr>
                     </thead>
                     <tbody>
@@ -1544,14 +1544,14 @@ export default function Reports() {
                         const dayName = dateObj.toLocaleDateString(undefined, { weekday: 'short' });
                         const isToday = day.date === todayStr;
                         return (
-                          <tr key={day.date} className={`border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5 ${isToday ? 'bg-indigo-50 dark:bg-indigo-900/10' : ''}`}>
+                          <tr key={day.date} className={`border-b border-base-300/50 hover:bg-base-100/50 ${isToday ? 'bg-primary/10' : ''}`}>
                             <td className={`py-3 px-4 font-medium ${isToday ? 'text-info dark:text-info/80' : 'text-base-content'}`}>
                               {day.date} {isToday && <span className="text-xs text-info ml-1">({t('reports.today')})</span>}
                             </td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {day.revenue.toFixed(2)}</td>
                             <td className="py-3 px-4 text-right text-base-content">{day.orders}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {day.orders > 0 ? (day.revenue / day.orders).toFixed(2) : '0.00'}</td>
-                            <td className="py-3 px-4 text-slate-500 dark:text-white/50 text-sm">{dayName}</td>
+                            <td className="py-3 px-4 text-base-content/50 text-sm">{dayName}</td>
                           </tr>
                         );
                       })}
@@ -1571,23 +1571,23 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.todayOrders')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.todayRevenue')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.yesterdayOrders')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.yesterdayRevenue')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.revenueChange')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.orderChange')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.todayOrders')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.todayRevenue')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.yesterdayOrders')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.yesterdayRevenue')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.revenueChange')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.orderChange')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employeeDailyStats.map(emp => (
-                          <tr key={emp.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={emp.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
                             <td className="py-3 px-4 text-right text-base-content font-semibold">{emp.todayOrders}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {emp.todayRevenue.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-slate-500 dark:text-white/70">{emp.yesterdayOrders}</td>
-                            <td className="py-3 px-4 text-right text-slate-500 dark:text-white/70">{currency} {emp.yesterdayRevenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content/70">{emp.yesterdayOrders}</td>
+                            <td className="py-3 px-4 text-right text-base-content/70">{currency} {emp.yesterdayRevenue.toFixed(2)}</td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.revColor}`}>
                               {emp.revDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
                               {emp.revDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
@@ -1604,7 +1604,7 @@ export default function Reports() {
                     </table>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 text-slate-500 dark:text-white/50">
+                  <div className="flex items-center gap-3 text-base-content/50">
                     <span className="icon-[tabler--users] w-5 h-5" />
                     <span>{t('reports.noEmployeeDailyData')}</span>
                   </div>
@@ -1622,20 +1622,20 @@ export default function Reports() {
                     onClick={() => setPeriodView('week')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
                       periodView === 'week'
-                        ? 'bg-info text-white shadow-md'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/10'
+                        ? 'bg-info text-info-content shadow-md'
+                        : 'text-base-content/60 hover:bg-base-100/50'
                     }`}
                   >{t('reports.periodWeek')}</button>
                   <button
                     onClick={() => setPeriodView('month')}
                     className={`px-4 py-2 rounded-md text-sm font-medium transition-all duration-300 ${
                       periodView === 'month'
-                        ? 'bg-info text-white shadow-md'
-                        : 'text-slate-600 dark:text-slate-300 hover:bg-white/50 dark:hover:bg-white/10'
+                        ? 'bg-info text-info-content shadow-md'
+                        : 'text-base-content/60 hover:bg-base-100/50'
                     }`}
                   >{t('reports.periodMonth')}</button>
                 </div>
-                <span className="text-xs text-slate-500 dark:text-white/50 ml-2">
+                <span className="text-xs text-base-content/50 ml-2">
                   {periodView === 'week'
                     ? `${thisWeekStart} — ${todayStr}`
                     : `${currentMonthStart} — ${todayStr}`
@@ -1695,7 +1695,7 @@ export default function Reports() {
               {/* Comparison Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.revenueComparison')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.revenueComparison')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.currentPeriodShort')}
@@ -1714,7 +1714,7 @@ export default function Reports() {
                   </div>
                 </Card>
                 <Card padding="lg">
-                  <h3 className="text-sm font-semibold text-slate-500 dark:text-white/50 uppercase tracking-wider mb-4">{t('reports.ordersComparison')}</h3>
+                  <h3 className="text-sm font-semibold text-base-content/50 uppercase tracking-wider mb-4">{t('reports.ordersComparison')}</h3>
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.currentPeriodShort')}
@@ -1761,15 +1761,15 @@ export default function Reports() {
                   <table className="w-full text-left">
                     <thead>
                       <tr className="border-b border-base-300/30">
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{periodView === 'week' ? t('reports.tableWeek') : t('reports.tableMonth')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
-                        <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableAvgOrder')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{periodView === 'week' ? t('reports.tableWeek') : t('reports.tableMonth')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
+                        <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableAvgOrder')}</th>
                       </tr>
                     </thead>
                     <tbody>
                       {periodTrend.map((p, i) => (
-                        <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                        <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
                           <td className="py-3 px-4 font-medium text-base-content">{p.label}</td>
                           <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
                           <td className="py-3 px-4 text-right text-base-content">{p.orders}</td>
@@ -1839,23 +1839,23 @@ export default function Reports() {
                             )}
                             <div className="flex items-center gap-2 mb-2 flex-wrap">
                               <span className="text-sm font-bold text-base-content">{t('reports.tableInvoice')} #{sale.id}</span>
-                              <span className="text-xs text-slate-500 dark:text-white/50">{sale.date} {sale.time}</span>
+                              <span className="text-xs text-base-content/50">{sale.date} {sale.time}</span>
                               <span className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium ${
-                                sale.status === 'completed' ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                : sale.status === 'cancelled' ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                : 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400'
+                                sale.status === 'completed' ? 'bg-success/20 text-success'
+                                : sale.status === 'cancelled' ? 'bg-error/20 text-error'
+                                : 'bg-warning/20 text-warning'
                               }`}>{sale.status}</span>
                             </div>
                             {/* Delivery Address — map-style card */}
-                            <div className="flex items-start gap-2 bg-white/40 dark:bg-white/5 rounded-lg p-3 mb-2 border border-slate-200 dark:border-white/5">
+                            <div className="flex items-start gap-2 bg-base-100/40 rounded-lg p-3 mb-2 border border-base-300/50">
                               <span className="icon-[tabler--building-store] w-4 h-4 text-warning mt-0.5 shrink-0" />
                               <div>
-                                <p className="text-xs font-medium text-slate-500 dark:text-white/50 uppercase tracking-wider">{t('reports.deliveryAddress')}</p>
+                                <p className="text-xs font-medium text-base-content/50 uppercase tracking-wider">{t('reports.deliveryAddress')}</p>
                                 <p className="text-sm text-base-content font-medium">{sale.delivery_address || t('reports.noAddress')}</p>
                               </div>
                             </div>
                             {/* Extra info row */}
-                            <div className="flex items-center gap-3 text-xs text-slate-500 dark:text-white/50">
+                            <div className="flex items-center gap-3 text-xs text-base-content/50">
                               {dtName && <span>{dtName}</span>}
                               {emp && <span>{emp.name}</span>}
                             </div>
@@ -1872,7 +1872,7 @@ export default function Reports() {
                 <Card padding="xl" center>
                   <span className="icon-[tabler--building-store] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noDeliveries')}</p>
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noDeliveriesHint')}</p>
+                  <p className="text-base-content/50">{t('reports.noDeliveriesHint')}</p>
                 </Card>
               )}
             </div>
@@ -1919,7 +1919,7 @@ export default function Reports() {
               {/* Low Stock Alerts */}
               <Card padding="xl">
                 <h3 className="text-lg font-bold text-base-content mb-4 flex items-center gap-2">
-                  <span className="icon-[tabler--alert-triangle] w-5 h-5 text-red-500" />
+                  <span className="icon-[tabler--alert-triangle] w-5 h-5 text-error" />
                   {t('reports.lowStockAlerts')}
                 </h3>
                 {lowStockItems.length > 0 ? (
@@ -1927,18 +1927,18 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableIngredient')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableCurrent')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableMin')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableShortage')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableIngredient')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableCurrent')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableMin')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableShortage')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {lowStockItems.map((item, i) => (
-                          <tr key={i} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{item.name}</td>
-                            <td className="py-3 px-4 text-right text-red-600 dark:text-red-400 font-semibold">{item.currentQuantity}</td>
+                            <td className="py-3 px-4 text-right text-error font-semibold">{item.currentQuantity}</td>
                             <td className="py-3 px-4 text-right text-base-content/70">{item.reorderLevel}</td>
                             <td className="py-3 px-4 text-right text-warning">{item.shortage}</td>
                             <td className="py-3 px-4 text-base-content/70">{item.unit}</td>
@@ -1948,7 +1948,7 @@ export default function Reports() {
                     </table>
                   </div>
                 ) : (
-                  <div className="flex items-center gap-3 text-green-600 dark:text-green-400">
+                  <div className="flex items-center gap-3 text-success">
                     <span className="icon-[tabler--alert-triangle] w-5 h-5" />
                     <span>{t('reports.allWellStocked')}</span>
                   </div>
@@ -1963,17 +1963,17 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableIngredient')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableQuantity')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableCostPerUnit')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableValue')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableStatus')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableIngredient')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableQuantity')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableCostPerUnit')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableValue')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableStatus')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {ingredients.filter(i => i.is_active).map(ing => (
-                          <tr key={ing.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={ing.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{ing.name}</td>
                             <td className="py-3 px-4 text-right text-base-content">{ing.current_quantity}</td>
                             <td className="py-3 px-4 text-base-content/70">{ing.unit}</td>
@@ -1982,8 +1982,8 @@ export default function Reports() {
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 ing.current_quantity <= ing.reorder_level
-                                  ? 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
-                                  : 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
+                                  ? 'bg-error/20 text-error'
+                                  : 'bg-success/20 text-success'
                               }`}>
                                 {ing.current_quantity <= ing.reorder_level ? t('inventory.lowStock') : t('inventory.inStock')}
                               </span>
@@ -1994,7 +1994,7 @@ export default function Reports() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noIngredients')}</p>
+                  <p className="text-base-content/50">{t('reports.noIngredients')}</p>
                 )}
               </Card>
 
@@ -2006,18 +2006,18 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableDate')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableIngredient')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableChange')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableType')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableNote')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableDate')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableIngredient')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableChange')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableType')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableNote')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {recentInventoryTxns.map(tx => {
                           const ing = ingredientMap.get(tx.ingredient_id);
                           return (
-                            <tr key={tx.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                            <tr key={tx.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                               <td className="py-3 px-4 text-base-content/70 text-sm">
                                 {tx.created_at ? new Date(tx.created_at).toLocaleDateString() : '-'}
                               </td>
@@ -2026,17 +2026,17 @@ export default function Reports() {
                               </td>
                               <td className={`py-3 px-4 text-right font-semibold ${
                                 tx.quantity_change > 0
-                                  ? 'text-green-600 dark:text-green-400'
-                                  : 'text-red-600 dark:text-red-400'
+                                  ? 'text-success'
+                                  : 'text-error'
                               }`}>
                                 {tx.quantity_change > 0 ? '+' : ''}{tx.quantity_change}
                               </td>
                               <td className="py-3 px-4">
-                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-base-200/50 text-slate-700 dark:text-white/70 capitalize">
+                                <span className="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-base-200/50 text-base-content/70 capitalize">
                                   {tx.transaction_type.replace('_', ' ')}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-slate-500 dark:text-white/50 text-sm">{tx.note || '-'}</td>
+                              <td className="py-3 px-4 text-base-content/50 text-sm">{tx.note || '-'}</td>
                             </tr>
                           );
                         })}
@@ -2094,23 +2094,23 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tablePrice')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableYield')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-center">{t('reports.tableStatus')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableProduct')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tablePrice')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableYield')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-center">{t('reports.tableStatus')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {recipePerformance.map(rp => (
-                          <tr key={rp.recipeId} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={rp.recipeId} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{rp.productName}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {rp.productPrice.toFixed(2)}</td>
                             <td className="py-3 px-4 text-right text-base-content">{rp.yieldQuantity}</td>
                             <td className="py-3 px-4 text-center">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 rp.isActive
-                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                  : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-white/40'
+                                  ? 'bg-success/20 text-success'
+                                  : 'bg-base-200/50 text-base-content/50'
                               }`}>
                                 {rp.isActive ? t('common.active') : t('common.inactive')}
                               </span>
@@ -2125,7 +2125,7 @@ export default function Reports() {
                 <Card padding="xl" center>
                   <span className="icon-[tabler--menu-2] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noRecipes')}</p>
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noRecipesHint')}</p>
+                  <p className="text-base-content/50">{t('reports.noRecipesHint')}</p>
                 </Card>
               )}
 
@@ -2137,25 +2137,25 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableProduct')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tablePrice')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.hasRecipe')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableProduct')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tablePrice')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableUnit')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.hasRecipe')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {products.map(p => {
                           const hasRecipe = recipes.some(r => r.product_id === p.id && r.is_active);
                           return (
-                            <tr key={p.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                            <tr key={p.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                               <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
                               <td className="py-3 px-4 text-right text-base-content">{currency} {p.price.toFixed(2)}</td>
                               <td className="py-3 px-4 text-base-content/70">{p.unit}</td>
                               <td className="py-3 px-4">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                   hasRecipe
-                                    ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                    : 'bg-slate-100 text-slate-500 dark:bg-white/5 dark:text-white/40'
+                                    ? 'bg-success/20 text-success'
+                                    : 'bg-base-200/50 text-base-content/50'
                                 }`}>                                  {hasRecipe ? t('common.yes') : t('common.no')}
                               </span>
                               </td>
@@ -2166,7 +2166,7 @@ export default function Reports() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noProducts')}</p>
+                  <p className="text-base-content/50">{t('reports.noProducts')}</p>
                 )}
               </Card>
             </div>
@@ -2216,7 +2216,7 @@ export default function Reports() {
                   <h3 className="text-lg font-bold text-base-content mb-4">{t('reports.transactionHistory')}</h3>
                   <div className="space-y-3">
                     {transactions.slice(0, 20).map(tx => (
-                      <div key={tx.id} className="flex items-center justify-between bg-base-100/50 rounded-lg p-4 border border-slate-200 dark:border-white/5">
+                      <div key={tx.id} className="flex items-center justify-between bg-base-100/50 rounded-lg p-4 border border-base-300/50">
                         <div className="flex-1 min-w-0">
                           <div className="flex items-center gap-2 mb-1">
                             <span className="text-xs text-base-content/50">{tx.date}</span>
@@ -2224,12 +2224,12 @@ export default function Reports() {
                           </div>
                           <div className="flex flex-wrap gap-1">
                             {tx.items.slice(0, 3).map((item, idx) => (
-                              <span key={idx} className="text-xs bg-slate-200 dark:bg-white/10 px-2 py-0.5 rounded-full text-base-content/80">
+                              <span key={idx} className="text-xs bg-base-300 px-2 py-0.5 rounded-full text-base-content/80">
                                 {item.name} ×{item.quantity}
                               </span>
                             ))}
                             {tx.items.length > 3 && (
-                              <span className="text-xs text-slate-400">+{tx.items.length - 3} more</span>
+                              <span className="text-xs text-base-content/40">+{tx.items.length - 3} more</span>
                             )}
                           </div>
                         </div>
@@ -2318,25 +2318,25 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableAvgOrder')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tablePerformance')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableEmployee')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableOrders')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableRevenue')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableAvgOrder')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tablePerformance')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employeePerformance.map(emp => (
-                          <tr key={emp.employeeId} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={emp.employeeId} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.employeeName}</td>
                             <td className="py-3 px-4 text-right text-base-content">{emp.orderCount}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {emp.revenue.toFixed(2)}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {emp.averageOrderValue.toFixed(2)}</td>
                             <td className="py-3 px-4">
                               {/* Mini performance bar */}
-                              <div className="w-24 bg-slate-200 dark:bg-white/10 rounded-full h-2.5 overflow-hidden">
+                              <div className="w-24 bg-base-300 rounded-full h-2.5 overflow-hidden">
                                 <div
-                                  className="h-full rounded-full bg-linear-to-r from-indigo-500 to-purple-500"
+                                  className="h-full rounded-full bg-linear-to-r from-primary to-secondary"
                                   style={{
                                     width: `${Math.min(
                                       (emp.revenue / Math.max(...employeePerformance.map(e => e.revenue))) * 100,
@@ -2356,7 +2356,7 @@ export default function Reports() {
                 <Card padding="xl" center>
                   <span className="icon-[tabler--users] w-12 h-12 mx-auto mb-4 text-base-content/50" />
                   <p className="text-base-content/70 text-lg mb-2">{t('reports.noEmployeeSales')}</p>
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noEmployeeSalesHint')}</p>
+                  <p className="text-base-content/50">{t('reports.noEmployeeSalesHint')}</p>
                 </Card>
               )}
 
@@ -2368,22 +2368,22 @@ export default function Reports() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm">{t('reports.tableName')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-right">{t('reports.tableSalary')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableStatus')}</th>
-                          <th className="py-3 px-4 text-slate-500 dark:text-white/50 font-medium text-sm text-left">{t('reports.tableJoined')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm">{t('reports.tableName')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-right">{t('reports.tableSalary')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableStatus')}</th>
+                          <th className="py-3 px-4 text-base-content/50 font-medium text-sm text-left">{t('reports.tableJoined')}</th>
                         </tr>
                       </thead>
                       <tbody>
                         {employees.map(emp => (
-                          <tr key={emp.id} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={emp.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
                             <td className="py-3 px-4 text-right text-base-content">{currency} {emp.salary.toFixed(2)}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 emp.is_active
-                                  ? 'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400'
-                                  : 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400'
+                                  ? 'bg-success/20 text-success'
+                                  : 'bg-error/20 text-error'
                               }`}>
                                 {emp.is_active ? t('common.active') : t('common.inactive')}
                               </span>
@@ -2395,7 +2395,7 @@ export default function Reports() {
                     </table>
                   </div>
                 ) : (
-                  <p className="text-slate-500 dark:text-white/40">{t('reports.noEmployees')}</p>
+                  <p className="text-base-content/50">{t('reports.noEmployees')}</p>
                 )}
               </Card>
             </div>

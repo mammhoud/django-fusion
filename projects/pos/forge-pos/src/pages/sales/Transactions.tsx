@@ -682,14 +682,14 @@ export default function Transactions() {
   return (
     <PageLayout
       title={t('transactions.title')}
-      background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-secondary/15 to-base-200"
     >
       {/* Filters Button */}
       <div className="flex justify-end mb-4">
         <button
           onClick={() => setShowFilters(!showFilters)}
           className="flex items-center text-base-content gap-2
-            bg-purple-200 dark:bg-secondary/30 px-4 py-2 rounded-lg
+            bg-secondary/20 px-4 py-2 rounded-lg
             transition-all duration-300 active:scale-[0.95]"
         >
           <span className="icon-[tabler--filter] w-5 h-5" />
@@ -739,8 +739,8 @@ export default function Transactions() {
               <div className="mt-4 flex justify-end">
                 <button
                   onClick={clearFilters}
-                  className="px-4 py-2 text-red-600 dark:text-red-400 hover:text-red-500 dark:hover:text-red-300
-                    hover:bg-red-400/10 rounded-lg transition-colors"
+                  className="px-4 py-2 text-error hover:text-error
+                    hover:bg-error/10 rounded-lg transition-colors"
                 >
                   {t('transactions.clearFilters')}
                 </button>
@@ -812,7 +812,7 @@ export default function Transactions() {
                           </h3>
                       </div>
                       <div className="text-right">
-                        <p className="text-sm text-slate-500 dark:text-white/50">{group.orderCount} {t('transactions.orders')}</p>
+                        <p className="text-sm text-base-content/50">{group.orderCount} {t('transactions.orders')}</p>
                         <p className="text-lg font-bold text-primary">
                           {transactions[0]?.currency || ''} {group.totalRevenue.toFixed(2)}
                         </p>
@@ -821,11 +821,11 @@ export default function Transactions() {
 
                     <div className="space-y-2">
                       {group.transactions.map(tx => (
-                        <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-white/40 dark:bg-white/5">
+                        <div key={tx.id} className="flex items-center justify-between p-2 rounded-lg bg-base-100/40">
                           <div className="flex items-center gap-3">
-                            <span className="text-xs font-mono text-slate-500 dark:text-white/50">{tx.time}</span>
+                            <span className="text-xs font-mono text-base-content/50">{tx.time}</span>
                             <span className="text-sm text-base-content font-medium">#{tx.id}</span>
-                            <span className="text-xs text-slate-500 dark:text-white/50">{tx.items.length} {t('transactions.transactionItems')}</span>
+                            <span className="text-xs text-base-content/50">{tx.items.length} {t('transactions.transactionItems')}</span>
                           </div>
                           <div className="flex items-center gap-2">
                             <span className="font-bold text-base-content">
@@ -833,13 +833,13 @@ export default function Transactions() {
                             </span>
                             <button
                               onClick={() => setShowReceiptDialog(tx)}
-                              className="text-white p-1.5 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-all active:scale-[0.9]"
+                              className="text-primary-content p-1.5 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-all active:scale-[0.9]"
                             >
                               <span className="icon-[tabler--printer] w-4 h-4" />
                             </button>
                             <button
                               onClick={() => handleDeleteTransaction(tx.id)}
-                              className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-1.5 transition-all active:scale-[0.9]"
+                              className="text-error hover:text-error p-1.5 transition-all active:scale-[0.9]"
                             >
                               <span className="icon-[tabler--trash] w-4 h-4" />
                             </button>
@@ -909,7 +909,7 @@ export default function Transactions() {
                   {productSearch && (
                     <button
                       onClick={() => { setProductPage(1); setProductSearch(''); }}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                     >
                       <span className="icon-[tabler--x] w-3.5 h-3.5" />
                     </button>
@@ -952,7 +952,7 @@ export default function Transactions() {
                         className={`flex items-center gap-0.5 px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                           isInChain
                             ? 'bg-info/10 dark:bg-info/40 text-info dark:text-info/70'
-                            : 'text-base-content/50 hover:bg-white/50 dark:hover:bg-white/10'
+                            : 'text-base-content/50 hover:bg-base-100/50'
                         }`}
                         title={`${opt.label} (${opt.key === 'name' ? 'N' : opt.key === 'quantity' ? 'Q' : 'R'})${isInChain ? ` — #${chainIdx + 1} (shift-click to toggle)` : ' — shift-click to add to chain'}`}
                       >
@@ -978,8 +978,8 @@ export default function Transactions() {
                 <button
                   onClick={() => setShowShortcutHelp(true)}
                   className="flex items-center justify-center w-7 h-7 rounded-lg text-xs font-medium shrink-0
-                    bg-slate-200/60 dark:bg-white/10 text-base-content/50
-                    hover:bg-slate-300/80 dark:hover:bg-white/20 transition-colors"
+                    bg-base-300/50 text-base-content/50
+                    hover:bg-base-300/80 transition-colors"
                   title={t('transactions.shortcutHelp')}
                 >
                   <span className="icon-[tabler--help-circle] w-4 h-4" />
@@ -1010,7 +1010,7 @@ export default function Transactions() {
                 <h2 className="text-xl text-base-content mb-4">
                   {t('transactions.statsBreakdown')}
                   {productSearch && sortedProductStats.length !== productStats.length && (
-                    <span className="text-sm font-normal text-slate-500 dark:text-white/50 ml-2">
+                    <span className="text-sm font-normal text-base-content/50 ml-2">
                       ({sortedProductStats.length} / {productStats.length})
                     </span>
                   )}
@@ -1041,7 +1041,7 @@ export default function Transactions() {
                 {/* Pagination */}
                 {sortedProductStats.length > PRODUCTS_PER_PAGE && (
                   <div className="flex items-center justify-between pt-4 mt-4 border-t border-base-300/30">
-                    <span className="text-xs text-slate-500 dark:text-white/50">
+                    <span className="text-xs text-base-content/50">
                       {t('transactions.showingPage', { page: productPage, total: totalProductPages })}
                     </span>
                     <div className="flex items-center gap-1.5">
@@ -1050,8 +1050,8 @@ export default function Transactions() {
                         disabled={productPage <= 1}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
                           disabled:opacity-30 disabled:cursor-not-allowed
-                          bg-base-200/50 text-slate-700 dark:text-slate-300
-                          hover:bg-slate-200 dark:hover:bg-white/20"
+                          bg-base-200/50 text-base-content/70
+                          hover:bg-base-300"
                       >
                         {t('common.previous') || '‹'}
                       </button>
@@ -1073,8 +1073,8 @@ export default function Transactions() {
                               onClick={() => setProductPage(pageNum)}
                               className={`w-7 h-7 rounded-lg text-xs font-medium transition-colors ${
                                 pageNum === productPage
-                                  ? 'bg-indigo-600 text-white'
-                                  : 'text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-white/10'
+                                  ? 'bg-primary text-primary-content'
+                                  : 'text-base-content/60 hover:bg-base-200/50'
                               }`}
                             >
                               {pageNum}
@@ -1087,8 +1087,8 @@ export default function Transactions() {
                         disabled={productPage >= totalProductPages}
                         className="px-3 py-1.5 rounded-lg text-xs font-medium transition-colors
                           disabled:opacity-30 disabled:cursor-not-allowed
-                          bg-base-200/50 text-slate-700 dark:text-slate-300
-                          hover:bg-slate-200 dark:hover:bg-white/20"
+                          bg-base-200/50 text-base-content/70
+                          hover:bg-base-300"
                       >
                         {t('common.next') || '›'}
                       </button>
@@ -1122,7 +1122,7 @@ export default function Transactions() {
                   {relatedSearch && (
                     <button
                       onClick={() => setRelatedSearch('')}
-                      className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 dark:hover:text-white transition-colors"
+                      className="absolute right-2 top-1/2 -translate-y-1/2 text-base-content/40 hover:text-base-content transition-colors"
                     >
                       <span className="icon-[tabler--x] w-3.5 h-3.5" />
                     </button>
@@ -1163,7 +1163,7 @@ export default function Transactions() {
                         className={`flex items-center gap-0.5 px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                           isInChain
                             ? 'bg-info/10 dark:bg-info/40 text-info dark:text-info/70'
-                            : 'text-base-content/50 hover:bg-white/50 dark:hover:bg-white/10'
+                            : 'text-base-content/50 hover:bg-base-100/50'
                         }`}
                         title={`${opt.label} (${opt.key === 'name' ? 'N' : opt.key === 'units' ? 'U' : 'R'})${isInChain ? ` — #${chainIdx + 1} (shift-click to toggle)` : ' — shift-click to add to chain'}`}
                       >
@@ -1231,7 +1231,7 @@ export default function Transactions() {
                             );
                           })()}
                         </div>
-                        <p className="text-xs text-slate-500 dark:text-white/50">
+                        <p className="text-xs text-base-content/50">
                           {product.totalQty} {t('transactions.units')} sold across {product.invoices.length} {t('transactions.invoices')}
                         </p>
                       </div>
@@ -1248,10 +1248,10 @@ export default function Transactions() {
                     <table className="w-full text-left">
                       <thead>
                         <tr className="border-b border-base-300/30">
-                          <th className="py-2 px-3 text-slate-500 dark:text-white/50 font-medium text-xs">{t('reports.tableInvoice')}</th>
-                          <th className="py-2 px-3 text-slate-500 dark:text-white/50 font-medium text-xs">{t('reports.tableDate')}</th>
-                          <th className="py-2 px-3 text-slate-500 dark:text-white/50 font-medium text-xs">{t('reports.tableTime')}</th>
-                          <th className="py-2 px-3 text-slate-500 dark:text-white/50 font-medium text-xs text-right">
+                          <th className="py-2 px-3 text-base-content/50 font-medium text-xs">{t('reports.tableInvoice')}</th>
+                          <th className="py-2 px-3 text-base-content/50 font-medium text-xs">{t('reports.tableDate')}</th>
+                          <th className="py-2 px-3 text-base-content/50 font-medium text-xs">{t('reports.tableTime')}</th>
+                          <th className="py-2 px-3 text-base-content/50 font-medium text-xs text-right">
                             <span className="inline-flex items-center gap-1">
                               {t('transactions.qty')}
                               {(() => {
@@ -1267,8 +1267,8 @@ export default function Transactions() {
                               })()}
                             </span>
                           </th>
-                          <th className="py-2 px-3 text-slate-500 dark:text-white/50 font-medium text-xs text-right">{t('transactions.unitPrice')}</th>
-                          <th className="py-2 px-3 text-slate-500 dark:text-white/50 font-medium text-xs text-right">
+                          <th className="py-2 px-3 text-base-content/50 font-medium text-xs text-right">{t('transactions.unitPrice')}</th>
+                          <th className="py-2 px-3 text-base-content/50 font-medium text-xs text-right">
                             <span className="inline-flex items-center gap-1">
                               {t('reports.tableAmount')}
                               {(() => {
@@ -1288,7 +1288,7 @@ export default function Transactions() {
                       </thead>
                       <tbody>
                         {product.invoices.map(inv => (
-                          <tr key={`${inv.id}-${product.productName}`} className="border-b border-slate-100 dark:border-white/5 hover:bg-white/50 dark:hover:bg-white/5">
+                          <tr key={`${inv.id}-${product.productName}`} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-2 px-3 text-sm font-medium text-base-content">#{inv.id}</td>
                             <td className="py-2 px-3 text-sm text-base-content/70">{inv.date}</td>
                             <td className="py-2 px-3 text-sm text-base-content/70">{inv.time}</td>
@@ -1351,7 +1351,7 @@ export default function Transactions() {
                       className={`flex items-center gap-0.5 px-2 py-1 rounded text-[11px] font-medium transition-colors ${
                         isInChain
                           ? 'bg-info/10 dark:bg-info/40 text-info dark:text-info/70'
-                          : 'text-base-content/50 hover:bg-white/50 dark:hover:bg-white/10'
+                          : 'text-base-content/50 hover:bg-base-100/50'
                       }`}
                       title={`${opt.label} (${opt.key === 'date' ? 'D' : opt.key === 'amount' ? 'A' : 'O'})${isInChain ? ` — #${chainIdx + 1} (shift-click to toggle)` : ' — shift-click to add to chain'}`}
                     >
@@ -1422,13 +1422,13 @@ export default function Transactions() {
                     <div className="flex gap-2">
                       <button
                         onClick={() => setShowReceiptDialog(transaction)}
-                        className="text-white p-2 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-colors"
+                        className="text-primary-content p-2 bg-primary dark:bg-primary/30 hover:bg-primary dark:hover:bg-primary/50 rounded-lg transition-colors"
                       >
                         <span className="icon-[tabler--printer] w-5 h-5" />
                       </button>
                       <button
                         onClick={() => handleDeleteTransaction(transaction.id)}
-                        className="text-red-500 dark:text-red-400 hover:text-red-600 dark:hover:text-red-300 p-2"
+                        className="text-error hover:text-error p-2"
                       >
                         <span className="icon-[tabler--trash] w-5 h-5" />
                       </button>
@@ -1487,7 +1487,7 @@ export default function Transactions() {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
+          className="fixed inset-0 bg-neutral/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
           onClick={() => setShowReceiptDialog(null)}
         >
           <motion.div
@@ -1501,7 +1501,7 @@ export default function Transactions() {
               <h3 className="text-xl font-bold text-base-content">{t('transactions.receipt')}</h3>
               <button
                 onClick={() => setShowReceiptDialog(null)}
-                className="text-base-content/60 hover:text-slate-900 dark:hover:text-white p-2"
+                className="text-base-content/60 hover:text-base-content p-2"
               >
                 <span className="icon-[tabler--x] w-6 h-6" />
               </button>
@@ -1545,7 +1545,7 @@ export default function Transactions() {
             <div className="grid grid-cols-2 gap-3 mb-3">
               <button
                 onClick={handleDownloadPDF}
-                className="py-3 px-4 bg-blue-500 text-white rounded-xl font-semibold
+                className="py-3 px-4 bg-info text-info-content rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <span className="icon-[tabler--file-download] text-xl" />
@@ -1554,7 +1554,7 @@ export default function Transactions() {
 
               <button
                 onClick={handlePrint}
-                className="py-3 px-4 bg-purple-500 text-white rounded-xl font-semibold
+                className="py-3 px-4 bg-secondary text-secondary-content rounded-xl font-semibold
                   transition-all duration-300 flex items-center justify-center gap-2"
               >
                 <span className="icon-[tabler--printer] text-xl" />
@@ -1565,12 +1565,12 @@ export default function Transactions() {
             <button
               onClick={handleDownloadInvoice}
               disabled={isInvoiceDownloading}
-              className="w-full py-3 px-4 bg-primary hover:bg-primary text-white rounded-xl font-semibold
+              className="w-full py-3 px-4 bg-primary hover:bg-primary/80 text-primary-content rounded-xl font-semibold
                 transition-all duration-300 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isInvoiceDownloading ? (
                 <div
-                  className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"
+                  className="w-5 h-5 border-2 border-primary-content/30 border-t-primary-content rounded-full animate-spin"
                 />
               ) : (
                 <>
