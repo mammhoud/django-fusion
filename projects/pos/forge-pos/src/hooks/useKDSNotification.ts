@@ -81,8 +81,9 @@ function showNativeNotification(ticket: KitchenTicket) {
  * after 15 seconds, whichever comes first.
  *
  * @param tickets - Current array of kitchen tickets from the backend poll.
+ * @param mutedUntil - Timestamp (ms) until which notifications are muted.
  */
-export function useKDSNotification(tickets: KitchenTicket[]) {
+export function useKDSNotification(tickets: KitchenTicket[], mutedUntil: number | null = null) {
   // Keep a set of all known ticket IDs across renders
   const knownIdsRef = useRef<Set<number>>(new Set());
   // Interval handle for the title flash
@@ -141,7 +142,9 @@ export function useKDSNotification(tickets: KitchenTicket[]) {
     // Trigger notification only if:
     //   - A genuinely new pending ticket arrived
     //   - This is NOT the very first load (prevIds was empty → initial render)
-    if (foundNew && !wasEmpty) {
+    //   - Notifications are not muted
+    const isMuted = mutedUntil && mutedUntil > Date.now();
+    if (foundNew && !wasEmpty && !isMuted) {
       playChime();
       startFlash();
       // If the window is minimized or in the background, fire a native OS
