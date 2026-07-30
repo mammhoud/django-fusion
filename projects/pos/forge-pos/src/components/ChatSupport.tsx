@@ -19,7 +19,7 @@ import {
   KeyboardEvent, FormEvent,
 } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 import { invoke } from '@tauri-apps/api/core';
 import { createChatWs } from '../api/chat';
 import tickets from '../api/tickets';

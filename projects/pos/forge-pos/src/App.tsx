@@ -1,11 +1,12 @@
 import { BrowserRouter as Router, Routes, Route, useLocation, Navigate } from 'react-router-dom';
-import { useEffect, Suspense, lazy, useState } from 'react';
+import { useEffect, Suspense, lazy } from 'react';
 import Auth from './pages/Auth';
 import ChatSupport from './components/ChatSupport';
 import { useAuth } from './contexts/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { useTheme } from './contexts/ThemeContext';
 import { useNavigationPredictor } from './hooks/useNavigationPredictor';
+import { ROLE_ROUTES } from './components/SideNav';
 
 // ── Lazy-loaded pages (code-split by route) ──
 // These chunks load on first navigation, not on initial page load.
@@ -38,6 +39,9 @@ const ThemeStudio = lazy(() => import('./pages/ThemeStudio'));
 const StaffPage = lazy(() => import('./pages/StaffPage'));
 const ProductsPage = lazy(() => import('./pages/ProductsPage'));
 
+// ── Employee-accessible routes (shared with SideNav filtering) ──
+const EMPLOYEE_ROUTES = ROLE_ROUTES.employee;
+
 // FlyonUI — reinitialize interactive components after route changes
 // The module is already loaded via static import in main.tsx — this just
 // triggers autoInit on new DOM elements after navigation
@@ -53,7 +57,7 @@ async function reinitFlyonUI() {
 function AnimatedRoutes() {
   const location = useLocation();
   const navigate = useNavigate();
-  const { isAuthenticated, isAuthRequired } = useAuth();
+  const { isAuthenticated, isAuthRequired, user } = useAuth();
   const { toggleMode } = useTheme();
 
   // ── Predictive route preloading — preload the most-likely next page chunk
@@ -139,6 +143,11 @@ function AnimatedRoutes() {
   // Auth guard: if auth is required and user is not authenticated, show Auth
   if (isAuthRequired && !isAuthenticated) {
     return <Auth />;
+  }
+
+  // Route guard: restrict employee access to certain pages
+  if (user?.role === 'employee' && !EMPLOYEE_ROUTES.has(location.pathname)) {
+    return <Navigate to="/dashboard" replace />;
   }
 
   return (

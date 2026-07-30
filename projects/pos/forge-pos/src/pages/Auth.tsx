@@ -1,6 +1,6 @@
 import { useState, useEffect, type ReactNode } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 // react-icons/fa no longer needed — all icons migrated to Tabler
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme, type ThemeVariant } from '../contexts/ThemeContext';
@@ -185,7 +185,7 @@ export default function Auth() {
     setPassword(loginPassword);
 
     try {
-      await login(loginEmail, loginPassword, true);
+      await login(loginEmail, loginPassword, true, role);
     } catch (err) {
       // If quick login fails, just show the form with pre-filled credentials
       setError(err instanceof Error ? err.message : String(err));

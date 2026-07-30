@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-// ── Icons use Tabler icon CSS classes via icon-[tabler--*] ──
+
 import { useTranslation } from 'react-i18next';
 
 interface DatePickerProps {

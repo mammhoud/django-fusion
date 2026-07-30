@@ -322,13 +322,13 @@ export default function Inventory() {
           <div className="space-y-6">
             {/* Compact Summary Cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.totalIngredients')}</span>
                   <span className="text-lg font-bold text-base-content">{activeIngredients.length}</span>
                 </div>
               </Card>
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.stockValue')}</span>
                   <span className="text-lg font-bold text-primary">
@@ -336,13 +336,13 @@ export default function Inventory() {
                   </span>
                 </div>
               </Card>
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.avgCost')}</span>
                   <span className="text-lg font-bold text-base-content">{avgCost.toFixed(2)}</span>
                 </div>
               </Card>
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.lowStockItems')}</span>
                   <span className="text-lg font-bold text-yellow-500">{lowStockCount}</span>
@@ -474,19 +474,19 @@ export default function Inventory() {
           <div className="space-y-6">
             {/* Compact Summary Cards */}
             <div className="grid grid-cols-3 gap-3">
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.totalIngredients')}</span>
                   <span className="text-lg font-bold text-base-content">{transactions.length}</span>
                 </div>
               </Card>
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.thisMonthTransactions')}</span>
                   <span className="text-lg font-bold text-primary">{thisMonthTransactions}</span>
                 </div>
               </Card>
-              <Card padding="xs">
+              <Card padding="sm">
                 <div className="flex items-center justify-between">
                   <span className="text-xs text-base-content/60">{t('inventory.thisWeekTransactions')}</span>
                   <span className="text-lg font-bold text-info">{thisWeekTransactions}</span>

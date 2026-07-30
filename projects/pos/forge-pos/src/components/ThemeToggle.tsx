@@ -1,6 +1,5 @@
 import { motion } from 'framer-motion';
 import { useTheme } from '../contexts/ThemeContext';
-import { useLanguage } from '../contexts/LanguageContext';
 
 type ThemeMode = 'light' | 'dark' | 'system';
 
@@ -10,16 +9,9 @@ const MODE_ICONS: Record<ThemeMode, string> = {
   dark: 'moon',
   system: 'device-desktop',
 };
-const MODE_LABELS: Record<ThemeMode, string> = {
-  light: 'Light',
-  dark: 'Dark',
-  system: 'System',
-};
 
 export default function ThemeToggle() {
-  const { mode: resolvedMode, toggleMode, setMode, setFollowSystem, followSystem } = useTheme();
-  const { language } = useLanguage();
-  const isRtl = language === 'ar';
+  const { mode: resolvedMode, setMode, setFollowSystem, followSystem } = useTheme();
 
   // Derive the current mode preference from theme context
   const currentMode: ThemeMode = followSystem ? 'system' : resolvedMode;

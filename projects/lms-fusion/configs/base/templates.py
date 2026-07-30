@@ -74,6 +74,8 @@ if importlib.util.find_spec("heroicons") is not None:
 if importlib.util.find_spec("django_fusion") is not None:
     # Component tags (table, pagination, search, form, modal, etc.)
     _TEMPLATE_BUILTINS.append("django_fusion.comp.templatetags.components")
+    # Fusion layout tags (fusion_layout, fusion_render_first_flag, etc.)
+    _TEMPLATE_BUILTINS.append("django_fusion.comp.templatetags.fusion_layout")
 
 TEMPLATES = [
     {
@@ -86,6 +88,8 @@ TEMPLATES = [
                 # Register component tags for {% load components %} compatibility.
                 # It's also registered as a builtin, but {% load %} needs the library entry.
                 "components": "django_fusion.comp.templatetags.components",
+                # Register fusion_layout for {% load fusion_layout %} compatibility.
+                "fusion_layout": "django_fusion.comp.templatetags.fusion_layout",
             },
             "builtins": _TEMPLATE_BUILTINS,
         },
