@@ -164,7 +164,7 @@ export default function Sale() {
       ]);
 
       setProducts(productsRes);
-      setTemplateNotes((notesRes || []).filter(n => n.use_as_template));
+      setTemplateNotes((notesRes || []).filter(n => n.use_as_template || n.category === 'receipt'));
       if (settingsRes) {
         setSettings({
           restaurant_name: settingsRes.restaurant_name || 'Forge POS',
@@ -1249,12 +1249,12 @@ export default function Sale() {
                 )}
               </Card>
 
-              {/* Receipt Template Notes Selector */}
+              {/* Receipt Template Notes Selector — pulls from notes with category=receipt or use_as_template flag */}
               {templateNotes.length > 0 && (
                 <Card>
                   <div className="flex items-center gap-2 mb-2">
                     <span className={iconClass('lucide:receipt', 'text-base-content/50')} />
-                    <label className="text-sm font-medium text-base-content/80">Receipt Template</label>
+                    <label className="text-sm font-medium text-base-content/80">{t('notes.receiptTemplate') || 'Receipt Template'}</label>
                   </div>
                   <select
                     value={selectedTemplateId}
