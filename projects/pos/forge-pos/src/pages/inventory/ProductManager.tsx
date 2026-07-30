@@ -3,7 +3,7 @@ import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
 import { readFile } from '@tauri-apps/plugin-fs';
-import { Product, NewProduct, UpdateProductPayload, Settings, Category } from '../../types';
+import { Product, NewProduct, UpdateProductPayload, Category } from '../../types';
 import Card from '../../components/layout/Card';
 import DataTable, { type Column } from '../../components/data/DataTable';
 import ProductCard, { PRODUCT_CARD_COLORS, ProductCardSkeleton, PRODUCT_SKELETON_COUNT } from '../../components/data/ProductCard';
@@ -12,6 +12,7 @@ import { iconClass } from '../../lib/icons';
 import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
+import { useCurrency } from '../../contexts/CurrencyContext';
 
 interface FormErrors {
   name?: string;
@@ -33,7 +34,7 @@ export default function ProductManager() {
   // re-clear or re-write the image on every save.
   const [originalImage, setOriginalImage] = useState<string | null>(null);
   const [isUploadingImage, setIsUploadingImage] = useState(false);
-  const [currencySymbol, setCurrencySymbol] = useState('USD');
+  const { formatPrice, currencySymbol } = useCurrency();
   const [errors, setErrors] = useState<FormErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
@@ -90,20 +91,6 @@ export default function ProductManager() {
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [showAddModal, showDeleteModal]);
 
-  useEffect(() => {
-    const loadSettings = async () => {
-      try {
-        const response = await invoke<Settings>('get_settings');
-        if (response?.currency) {
-          setCurrencySymbol(response.currency || 'USD');
-        }
-      } catch (error) {
-        console.error('Error loading currency:', error);
-      }
-    };
-
-    loadSettings();
-  }, []);
 
   const loadProducts = async (opts: { quiet?: boolean } = {}) => {
     const { quiet = false } = opts;
@@ -444,7 +431,7 @@ export default function ProductManager() {
       editType: 'number',
       render: (p: Product) => (
         <span className="font-semibold text-primary">
-          {currencySymbol} {p.price.toFixed(2)}
+          {formatPrice(p.price)}
         </span>
       ),
     },
@@ -558,7 +545,7 @@ export default function ProductManager() {
           )}
         </div>
         <div className="flex items-center gap-2 text-xs text-base-content/50">
-          <span className="text-primary font-semibold">{currencySymbol} {p.price.toFixed(2)}</span>
+          <span className="text-primary font-semibold">{formatPrice(p.price)}</span>
           {p.category_id && categoryMap[p.category_id] && (
             <>
               <span>·</span>
