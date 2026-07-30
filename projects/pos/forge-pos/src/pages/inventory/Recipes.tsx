@@ -1,7 +1,7 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
-import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient, Product, Ingredient } from '../../types';
+import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient, Product, Ingredient, Note } from '../../types';
 import PageLayout from '../../components/layout/PageLayout';
 import { SkeletonCard, SkeletonList } from '../../components/layout/Skeleton';
 import { useTranslation } from 'react-i18next';
@@ -50,6 +50,81 @@ export default function Recipes() {
   const [showEditAddIngredient, setShowEditAddIngredient] = useState(false);
 
   const [toast, setToast] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+  // ── Recipe Notes state ──
+  const [showNotesModal, setShowNotesModal] = useState<RecipeWithDetails | null>(null);
+  const [recipeNotes, setRecipeNotes] = useState<Note[]>([]);
+  const [notesLoading, setNotesLoading] = useState(false);
+  const [newNoteForm, setNewNoteForm] = useState({ name: '', category: 'preparation' as string, template_body: '' });
+
+  // Note category definitions with color coding
+  const NOTE_CATEGORIES: { id: string; label: string; badge: string }[] = [
+    { id: 'preparation', label: 'Preparation Steps', badge: 'badge-info badge-soft' },
+    { id: 'chef-tips', label: 'Chef Tips', badge: 'badge-warning badge-soft' },
+    { id: 'allergen', label: 'Allergen Info', badge: 'badge-error badge-soft' },
+    { id: 'plating', label: 'Plating Guide', badge: 'badge-success badge-soft' },
+    { id: 'general', label: 'General', badge: 'badge-ghost' },
+  ];
+
+  const getNoteCategoryBadge = (category: string | null | undefined) => {
+    const cat = NOTE_CATEGORIES.find(c => c.id === category);
+    return cat?.badge || 'badge-ghost';
+  };
+
+  const getNoteCategoryLabel = (category: string | null | undefined) => {
+    const cat = NOTE_CATEGORIES.find(c => c.id === category);
+    return cat?.label || category || 'General';
+  };
+
+  const fetchRecipeNotes = async (recipeId: number) => {
+    setNotesLoading(true);
+    try {
+      const notes = await invoke<Note[]>('get_recipe_notes', { recipeId });
+      setRecipeNotes(notes);
+    } catch (e) { 
+      setRecipeNotes([]); 
+      console.error('Error loading recipe notes:', e);
+    } finally {
+      setNotesLoading(false);
+    }
+  };
+
+  const handleAddNote = async () => {
+    if (!showNotesModal || !newNoteForm.name.trim() || !newNoteForm.template_body.trim()) return;
+    try {
+      await invoke<Note>('add_note', {
+        template: {
+          name: newNoteForm.name,
+          template_body: newNoteForm.template_body,
+          category: newNoteForm.category || null,
+          recipe_id: showNotesModal.recipe.id,
+          use_as_template: false,
+        }
+      });
+      setNewNoteForm({ name: '', category: 'preparation', template_body: '' });
+      await fetchRecipeNotes(showNotesModal.recipe.id);
+      showStatus('success', 'Note added!');
+    } catch (e) { 
+      console.error('Error adding note:', e);
+      showStatus('error', String(e));
+    }
+  };
+
+  const handleDeleteNote = async (noteId: number) => {
+    if (!showNotesModal) return;
+    try {
+      await invoke('delete_note', { id: noteId });
+      await fetchRecipeNotes(showNotesModal.recipe.id);
+    } catch (e) { 
+      console.error('Error deleting note:', e);
+      showStatus('error', String(e));
+    }
+  };
+
+  const openNotesModal = async (rd: RecipeWithDetails) => {
+    setShowNotesModal(rd);
+    await fetchRecipeNotes(rd.recipe.id);
+  };
 
   const getIngredientName = (id: number) => ingredients.find(i => i.id === id)?.name || `Ingredient #${id}`;
   const getIngredientUnit = (id: number) => ingredients.find(i => i.id === id)?.unit || '';
@@ -336,6 +411,10 @@ export default function Recipes() {
                       className="text-primary hover:text-primary/70 p-1.5 rounded-lg hover:bg-primary/10" title={t('common.edit')}>
                       <span className="icon-[tabler--pencil] w-4 h-4" />
                     </button>
+                    <button onClick={() => openNotesModal(rd)}
+                      className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title="Notes">
+                      <span className="icon-[tabler--notes] w-4 h-4" />
+                    </button>
                     {rd.recipe.is_active && (
                       <button onClick={() => setShowDeleteRecipe(rd.recipe)}
                         className="text-error hover:text-error/70 p-1.5 rounded-lg hover:bg-error/10" title={t('common.deactivate')}>
@@ -600,6 +679,145 @@ export default function Recipes() {
         message={t('recipes.deactivateConfirm')}
         itemName={getProductName(showDeleteRecipe?.product_id || 0)}
       />
+
+      {/* ── Recipe Notes Modal ── */}
+      {showNotesModal && (
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
+          <motion.div
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-base-100 rounded-xl p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-9 h-9 rounded-lg bg-info/10 text-info flex items-center justify-center">
+                  <span className="icon-[tabler--notes] w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="text-lg font-bold text-base-content">Notes for {showNotesModal.productName}</h3>
+                  <p className="text-xs text-base-content/50">Recipe #{showNotesModal.recipe.id} — {showNotesModal.recipe.yield_quantity} {showNotesModal.productUnit}</p>
+                </div>
+              </div>
+              <button onClick={() => setShowNotesModal(null)} className="btn btn-ghost btn-sm btn-square">
+                <span className="icon-[tabler--x] w-5 h-5" />
+              </button>
+            </div>
+
+            {/* Add Note Form */}
+            <div className="bg-base-200 rounded-xl p-4 mb-4">
+              <div className="flex items-center gap-2 mb-3">
+                <span className="icon-[tabler--plus] w-4 h-4 text-success" />
+                <span className="text-sm font-semibold text-base-content">{t('recipes.addNote') || 'Add Note'}</span>
+              </div>
+              <div className="flex flex-col gap-2">
+                <input
+                  type="text"
+                  value={newNoteForm.name}
+                  onChange={e => setNewNoteForm(f => ({ ...f, name: e.target.value }))}
+                  placeholder={t('recipes.noteTitlePlaceholder') || 'Note title...'}
+                  className="input input-bordered input-sm w-full"
+                />
+                <div className="flex gap-2">
+                  <select
+                    value={newNoteForm.category}
+                    onChange={e => setNewNoteForm(f => ({ ...f, category: e.target.value }))}
+                    className="select select-bordered select-sm w-44"
+                  >
+                    {NOTE_CATEGORIES.map(cat => (
+                      <option key={cat.id} value={cat.id}>{cat.label}</option>
+                    ))}
+                  </select>
+                  <button
+                    onClick={() => {
+                      const templates: Record<string, string> = {
+                        preparation: `1. Gather all ingredients listed in the recipe.
+2. Prep and measure each ingredient.
+3. Follow cooking sequence as described.`,
+                        'chef-tips': `Chef recommendation: For best results, use fresh ingredients.
+
+Tip: Prep time can be reduced by pre-chopping vegetables the day before.`,
+                        allergen: `⚠️ Allergens: May contain dairy, gluten, nuts.
+
+Cross-contamination warning: Prepared in a kitchen that also processes shellfish and soy.`,
+                        plating: `Plate presentation steps:
+1. Base layer: sauce or puree
+2. Main element: protein or centerpiece
+3. Garnish: herbs, microgreens, edible flowers
+4. Final drizzle: oil or reduction`,
+                        general: '',
+                      };
+                      const template = templates[newNoteForm.category] || '';
+                      if (template) setNewNoteForm(f => ({ ...f, template_body: template }));
+                    }}
+                    className="btn btn-ghost btn-sm gap-1 text-xs"
+                    title={t('recipes.insertTemplate') || 'Template'}
+                  >
+                    <span className="icon-[tabler--template] w-3.5 h-3.5" />
+                    {t('recipes.insertTemplate') || 'Template'}
+                  </button>
+                </div>
+                <textarea
+                  value={newNoteForm.template_body}
+                  onChange={e => setNewNoteForm(f => ({ ...f, template_body: e.target.value }))}
+                  placeholder={t('recipes.noteBodyPlaceholder') || 'Write your notes here...'}
+                  rows={3}
+                  className="textarea textarea-bordered textarea-sm w-full"
+                />
+                <button
+                  onClick={handleAddNote}
+                  disabled={!newNoteForm.name.trim() || !newNoteForm.template_body.trim()}
+                  className="btn btn-primary btn-sm w-full gap-1"
+                >
+                  <span className="icon-[tabler--plus] w-4 h-4" />
+                  Add Note
+                </button>
+              </div>
+            </div>
+
+            {/* Notes List */}
+            {notesLoading ? (
+              <div className="text-center py-6 text-base-content/50">
+                <span className="loading loading-spinner loading-md" />
+                <p className="text-sm mt-2">{t('recipes.loadingNotes') || 'Loading notes...'}</p>
+              </div>
+            ) : recipeNotes.length === 0 ? (
+              <div className="text-center py-6 text-base-content/40">
+                <span className="icon-[tabler--notes] w-10 h-10 mx-auto mb-2 opacity-30" />
+                <p className="text-sm">{t('recipes.noNotes') || 'No notes yet. Add your first note above!'}</p>
+              </div>
+            ) : (
+              <div className="space-y-2">
+                {recipeNotes.map(note => (
+                  <div key={note.id} className="bg-base-200/50 rounded-lg p-3">
+                    <div className="flex items-start justify-between mb-1.5">
+                      <div className="flex items-center gap-2">
+                        <span className="icon-[tabler--note] w-4 h-4 text-info" />
+                        <h4 className="text-sm font-semibold text-base-content">{note.name}</h4>
+                        <span className={`badge badge-xs ${getNoteCategoryBadge(note.category)}`}>
+                          {getNoteCategoryLabel(note.category)}
+                        </span>
+                      </div>
+                      <button
+                        onClick={() => handleDeleteNote(note.id)}
+                        className="text-error/60 hover:text-error p-0.5 rounded hover:bg-error/10 transition-colors"
+                        title="Delete note"
+                      >
+                        <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                      </button>
+                    </div>
+                    <p className="text-xs text-base-content/70 whitespace-pre-wrap leading-relaxed">
+                      {note.template_body}
+                    </p>
+                    <p className="text-[10px] text-base-content/30 mt-1.5">
+                      {new Date(note.created_at).toLocaleDateString()} · {new Date(note.created_at).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </p>
+                  </div>
+                ))}
+              </div>
+            )}
+          </motion.div>
+        </div>
+      )}
 
       <StatusToast type={toast?.type || 'success'} message={toast?.message || ''} visible={!!toast} onDismiss={() => setToast(null)} />
     </PageLayout>

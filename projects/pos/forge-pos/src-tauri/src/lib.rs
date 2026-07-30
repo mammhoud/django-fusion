@@ -666,6 +666,19 @@ fn delete_note(app: AppHandle, id: i32) -> Result<(), String> {
     notes::delete_note(&db_path, id)
 }
 
+// ---- Recipe Notes commands ----
+#[tauri::command]
+fn get_recipe_notes(app: AppHandle, recipe_id: i32) -> Result<Vec<db::models::Note>, String> {
+    let db_path = get_db_path(&app)?;
+    notes::get_recipe_notes(&db_path, recipe_id)
+}
+
+#[tauri::command]
+fn add_recipe_note(app: AppHandle, template: db::models::NewNote) -> Result<db::models::Note, String> {
+    let db_path = get_db_path(&app)?;
+    notes::add_recipe_note(&db_path, template)
+}
+
 // ---- Tax Reports commands ----
 #[tauri::command]
 fn get_tax_reports(app: AppHandle) -> Result<Vec<db::models::TaxReport>, String> {
@@ -1137,6 +1150,8 @@ pub fn run() {
             get_default_note,
             add_note,
             update_note,
+            add_recipe_note,
+            get_recipe_notes,
             delete_note,
             // Tax Reports
             get_tax_reports,

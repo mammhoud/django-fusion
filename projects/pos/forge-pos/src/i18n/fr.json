@@ -471,7 +471,20 @@
     "standard": "Standard",
     "successCreated": "Recette créée avec succès !",
     "successUpdated": "Recette mise à jour !",
-    "successDeleted": "Recette désactivée."
+    "successDeleted": "Recette désactivée.",
+    "notesTitle": "Notes",
+    "addNote": "Ajouter une note",
+    "noteTitlePlaceholder": "Titre de la note...",
+    "noteBodyPlaceholder": "Écrivez vos notes ici...",
+    "noNotes": "Aucune note. Ajoutez votre première note !",
+    "loadingNotes": "Chargement des notes...",
+    "deleteNote": "Supprimer la note",
+    "insertTemplate": "Modèle",
+    "noteCategoryPreperation": "Étapes de préparation",
+    "noteCategoryChefTips": "Conseils du chef",
+    "noteCategoryAllergen": "Info allergènes",
+    "noteCategoryPlating": "Guide de dressage",
+    "noteCategoryGeneral": "Général"
   },
   "reports": {
     "title": "Rapports",

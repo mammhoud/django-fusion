@@ -471,7 +471,20 @@
     "standard": "Standard",
     "successCreated": "Rezept erfolgreich erstellt!",
     "successUpdated": "Rezept aktualisiert!",
-    "successDeleted": "Rezept deaktiviert."
+    "successDeleted": "Rezept deaktiviert.",
+    "notesTitle": "Notizen",
+    "addNote": "Notiz hinzufügen",
+    "noteTitlePlaceholder": "Notiztitel...",
+    "noteBodyPlaceholder": "Schreiben Sie Ihre Notizen hier...",
+    "noNotes": "Noch keine Notizen. Fügen Sie Ihre erste Notiz hinzu!",
+    "loadingNotes": "Notizen werden geladen...",
+    "deleteNote": "Notiz löschen",
+    "insertTemplate": "Vorlage",
+    "noteCategoryPreperation": "Zubereitungsschritte",
+    "noteCategoryChefTips": "Küchenchef-Tipps",
+    "noteCategoryAllergen": "Allergen-Info",
+    "noteCategoryPlating": "Anrichte-Guide",
+    "noteCategoryGeneral": "Allgemein"
   },
   "reports": {
     "title": "Berichte",

@@ -457,6 +457,7 @@ export interface Note {
   name: string;
   template_body: string;
   category?: string | null;
+  recipe_id?: number | null;
   is_default: boolean;
   use_as_template: boolean;
   created_at: string;
