@@ -31,7 +31,7 @@ interface FormErrors {
   delivery_fee_per_km?: string;
 }
 
-type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database' | 'appearance' | 'theme';
+type TabId = 'general' | 'business' | 'dining' | 'delivery' | 'employees' | 'database' | 'theme';
 
 interface TabDefinition {
   id: TabId;
@@ -60,7 +60,6 @@ const tabs: TabDefinition[] = [
   { id: 'delivery', label: 'Delivery', icon: Ic('truck') },
   { id: 'employees', label: 'Employees', icon: Ic('users') },
   { id: 'database', label: 'Database', icon: Ic('database') },
-  { id: 'appearance', label: 'Appearance', icon: Ic('paint') },
   { id: 'theme', label: 'Theme', icon: Ic('palette') },
 ];
 
@@ -902,6 +901,176 @@ export default function Settings() {
         <span className="text-base-content/30">/</span>
         <span className="text-base-content/70 font-medium">{t('settings.themeTab.title') || 'Theme'}</span>
       </nav>
+      {/* ── Theme Mode Toggle ── */}
+      <div className="card bg-base-200 border border-base-300 p-6">
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            {mode === 'dark' ? (
+              <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
+                <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
+              </div>
+            ) : (
+              <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
+                <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
+              </div>
+            )}
+            <div>
+              <h3 className="font-semibold text-base-content">
+                {t('settings.appearanceTab.modeTitle') || 'Theme Mode'}
+              </h3>
+              <p className="text-sm text-base-content/60">{t('settings.appearanceTab.modeDescription')}</p>
+            </div>
+          </div>
+          <ThemeToggle />
+        </div>
+        <p className="mt-3 text-xs text-base-content/40 text-center">
+          {followSystem
+            ? t('settings.appearanceTab.systemControlled') || 'Following system preference'
+            : mode === 'dark'
+              ? t('settings.appearanceTab.darkModeSelected') || 'Dark mode selected'
+              : t('settings.appearanceTab.lightModeSelected') || 'Light mode selected'
+          }
+        </p>
+      </div>
+
+      {/* ── Theme Variant Selector ── */}
+      <div onMouseLeave={() => setPreviewVariant(null)}>
+        <div className="card bg-base-200 border border-base-300 p-6">
+          <div className="flex items-center gap-3 mb-5">
+            <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
+              <span className="icon-[tabler--paint] w-5 h-5 text-primary dark:text-primary/80" />
+            </div>
+            <div>
+              <h3 className="font-semibold text-base-content">{t('settings.appearanceTab.title')}</h3>
+              <p className="text-sm text-base-content/50">{t('settings.appearanceTab.description')}</p>
+            </div>
+          </div>
+
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            {THEME_VARIANTS.map((v) => {
+              const isActive = variant === v.id;
+              const descKey = `settings.appearanceTab.${v.id}Desc`;
+              return (
+                <button
+                  key={v.id}
+                  type="button"
+                  onClick={() => {
+                    if (activePreviewVariant === v.id) {
+                      setPreviewVariant(null);
+                    } else {
+                      setPreviewVariant(v.id);
+                    }
+                  }}
+                  onMouseEnter={() => {
+                    if (previewVariant === null || previewVariant === v.id) {
+                      setPreviewVariant(v.id);
+                    }
+                  }}
+                  className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive || previewVariant === v.id ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10' : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600'}`}
+                >
+                  <span className={`icon-[${v.icon}] w-5 h-5`} />
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2">
+                      <span className="font-semibold text-base-content text-sm">
+                        {t(`settings.appearanceTab.theme${v.label}`, v.label)}
+                      </span>
+                      {(isActive || previewVariant === v.id) && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 dark:bg-teal-800/40 text-teal-700 dark:text-primary/70">
+                          {previewVariant === v.id && !isActive ? t('settings.appearanceTab.previewLabel') || 'Preview' : t('settings.appearanceTab.activeLabel')}
+                        </span>
+                      )}
+                    </div>
+                    <p className="text-xs text-base-content/50 mt-0.5">
+                      {t(descKey, v.description)}
+                    </p>
+                  </div>
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
+        {/* ── Saved Custom Themes ── */}
+        {savedCustomThemes.length > 0 && (
+          <div className="card bg-base-200 border border-base-300 p-6 mt-4">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="bg-secondary/10 dark:bg-secondary/30 rounded-full p-2.5">
+                <span className="icon-[tabler--bookmark] w-5 h-5 text-secondary" />
+              </div>
+              <div>
+                <h3 className="font-semibold text-base-content">Saved Custom Themes</h3>
+                <p className="text-sm text-base-content/50">Custom themes created in Theme Studio</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+              {savedCustomThemes.map(t => (
+                <div
+                  key={t.name}
+                  className="flex items-center gap-3 p-3 rounded-xl border border-base-300/50 bg-base-100/50 hover:bg-base-100 transition-all"
+                >
+                  <div className="flex -space-x-1.5 shrink-0">
+                    <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.primary.l}% ${t.colors.primary.c} ${t.colors.primary.h})` }} />
+                    <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.secondary.l}% ${t.colors.secondary.c} ${t.colors.secondary.h})` }} />
+                    <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.accent.l}% ${t.colors.accent.c} ${t.colors.accent.h})` }} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-base-content truncate">{t.name}</p>
+                    <p className="text-[10px] text-base-content/50">Based on {t.baseThemeKey}</p>
+                  </div>
+                  <div className="flex gap-1">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        const root = document.documentElement;
+                        for (const [key, val] of Object.entries(t.colors)) {
+                          const v = val as { l: number; c: number; h: number };
+                          root.style.setProperty(`--color-${key}`, `oklch(${v.l.toFixed(2)}% ${v.c.toFixed(4)} ${v.h.toFixed(2)})`);
+                        }
+                        localStorage.setItem('theme-studio-custom', JSON.stringify(t.colors));
+                        localStorage.setItem('theme-studio-key', t.baseThemeKey);
+                      }}
+                      className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-primary"
+                      title="Apply this theme"
+                    >
+                      <span className="icon-[tabler--check] w-4 h-4" />
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        if (window.confirm(`Delete saved theme "${t.name}"?`)) {
+                          setSavedCustomThemes(deleteSavedTheme(t.name));
+                        }
+                      }}
+                      className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error"
+                      title={`Delete "${t.name}"`}
+                    >
+                      <span className="icon-[tabler--trash] w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {/* ── Live Theme Preview ── */}
+        <AnimatePresence>
+          {previewVariant && (
+            <motion.div
+              exit={{ opacity: 0, height: 0 }}
+              className="overflow-hidden mt-6"
+              data-theme={previewThemeValue}
+            >
+              <ThemePreview
+                variant={previewVariant}
+                isActive={variant === previewVariant}
+                onApply={() => { setVariant(previewVariant); setPreviewVariant(null); }}
+              />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
+
 
       {/* Theme Studio Card */}
       <div className="card bg-base-200 border border-base-300 p-6">
@@ -1472,190 +1641,6 @@ export default function Settings() {
     </div>
   );
 
-  const renderAppearanceTab = () => (
-    <div className="max-w-2xl mx-auto">
-      {/* Unified Theme Mode Toggle — Light / Dark / System */}
-      <div className="card bg-base-200 border border-base-300 p-6 mb-6">
-        <div className="flex items-center justify-between gap-4">
-          <div className="flex items-center gap-3">
-            {mode === 'dark' ? (
-              <div className="bg-indigo-100 dark:bg-indigo-800/30 rounded-full p-2.5">
-                <svg className="w-5 h-5 text-indigo-500" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z" /></svg>
-              </div>
-            ) : (
-              <div className="bg-amber-100 dark:bg-amber-800/30 rounded-full p-2.5">
-                <svg className="w-5 h-5 text-amber-500" fill="currentColor" viewBox="0 0 20 20"><path fillRule="evenodd" d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" clipRule="evenodd" /></svg>
-              </div>
-            )}
-            <div>
-              <h3 className="font-semibold text-base-content">
-                {t('settings.appearanceTab.modeTitle') || 'Theme Mode'}
-              </h3>
-              <p className="text-sm text-base-content/60">{t('settings.appearanceTab.modeDescription')}</p>
-            </div>
-          </div>
-          <ThemeToggle />
-        </div>
-        <p className="mt-3 text-xs text-base-content/40 text-center">
-          {followSystem
-            ? t('settings.appearanceTab.systemControlled') || 'Following system preference'
-            : mode === 'dark'
-              ? t('settings.appearanceTab.darkModeSelected') || 'Dark mode selected'
-              : t('settings.appearanceTab.lightModeSelected') || 'Light mode selected'
-          }
-        </p>
-      </div>
-
-      {/* Theme Variant Selector — wrap cards + preview in parent */}
-      {/* onMouseLeave only clears hover when not locked (pinned by click) */}
-      <div onMouseLeave={() => setPreviewVariant(null)}>
-        <div className="card bg-base-200 border border-base-300 p-6">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="bg-primary/10 dark:bg-teal-800/30 rounded-full p-2.5">
-              <span className="icon-[tabler--paint] w-5 h-5 text-primary dark:text-primary/80" />
-            </div>
-            <div>
-              <h3 className="font-semibold text-base-content">{t('settings.appearanceTab.title')}</h3>
-              <p className="text-sm text-base-content/50">{t('settings.appearanceTab.description')}</p>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            {THEME_VARIANTS.map((v) => {
-              const isActive = variant === v.id;
-              const descKey = `settings.appearanceTab.${v.id}Desc`;
-              return (
-                <button
-                  key={v.id}
-                  type="button"
-                  onClick={() => {
-                    // Toggle: click again on active variant to close, otherwise select
-                    if (activePreviewVariant === v.id) {
-                      setPreviewVariant(null);
-                    } else {
-                      setPreviewVariant(v.id);
-                    }
-                  }}
-                  onMouseEnter={() => {
-                    // Hover preview only when no variant is actively selected
-                    if (previewVariant === null || previewVariant === v.id) {
-                      setPreviewVariant(v.id);
-                    }
-                  }}
-                  className={`relative flex items-start gap-3 p-4 rounded-xl text-left transition-all duration-200 border-2 ${isActive || previewVariant === v.id ? 'border-primary dark:border-teal-500 bg-primary/5 dark:bg-primary/20 shadow-md shadow-teal-500/10' : 'border-base-300/50 bg-base-100/50 hover:border-slate-300 dark:hover:border-gray-600'}`}
-                >
-                  <span className={`icon-[${v.icon}] w-5 h-5`} />
-                  <div className="flex-1 min-w-0">
-                    <div className="flex items-center gap-2">
-                      <span className="font-semibold text-base-content text-sm">
-                        {t(`settings.appearanceTab.theme${v.label}`, v.label)}
-                      </span>
-                      {(isActive || previewVariant === v.id) && (
-                        <span className="inline-flex items-center px-1.5 py-0.5 rounded-full text-[10px] font-medium bg-primary/10 dark:bg-teal-800/40 text-teal-700 dark:text-primary/70">
-                          {previewVariant === v.id && !isActive ? t('settings.appearanceTab.previewLabel') || 'Preview' : t('settings.appearanceTab.activeLabel')}
-                        </span>
-                      )}
-                    </div>
-                    <p className="text-xs text-base-content/50 mt-0.5">
-                      {t(descKey, v.description)}
-                    </p>
-                  </div>
-                </button>
-              );
-            })}
-          </div>
-        </div>
-
-      {/* ── Saved Custom Themes ── */}
-      {(() => {
-        if (savedCustomThemes.length === 0) return null;
-        return (
-          <div className="card bg-base-200 border border-base-300 p-6 mt-4">
-            <div className="flex items-center gap-3 mb-4">
-              <div className="bg-secondary/10 dark:bg-secondary/30 rounded-full p-2.5">
-                <span className="icon-[tabler--bookmark] w-5 h-5 text-secondary" />
-              </div>
-              <div>
-                <h3 className="font-semibold text-base-content">Saved Custom Themes</h3>
-                <p className="text-sm text-base-content/50">Custom themes created in Theme Studio</p>
-              </div>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-              {savedCustomThemes.map(t => {
-                return (
-                  <div
-                    key={t.name}
-                    className="flex items-center gap-3 p-3 rounded-xl border border-base-300/50 bg-base-100/50 hover:bg-base-100 transition-all"
-                  >
-                    <div className="flex -space-x-1.5 shrink-0">
-                      <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.primary.l}% ${t.colors.primary.c} ${t.colors.primary.h})` }} />
-                      <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.secondary.l}% ${t.colors.secondary.c} ${t.colors.secondary.h})` }} />
-                      <div className="w-5 h-5 rounded-full border border-base-300 shadow-sm" style={{ backgroundColor: `oklch(${t.colors.accent.l}% ${t.colors.accent.c} ${t.colors.accent.h})` }} />
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium text-base-content truncate">{t.name}</p>
-                      <p className="text-[10px] text-base-content/50">
-                        Based on {t.baseThemeKey}
-                      </p>
-                    </div>
-                    <div className="flex gap-1">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          const root = document.documentElement;
-                          for (const [key, val] of Object.entries(t.colors)) {
-                            const v = val as { l: number; c: number; h: number };
-                            root.style.setProperty(`--color-${key}`, `oklch(${v.l.toFixed(2)}% ${v.c.toFixed(4)} ${v.h.toFixed(2)})`);
-                          }
-                          localStorage.setItem('theme-studio-custom', JSON.stringify(t.colors));
-                          localStorage.setItem('theme-studio-key', t.baseThemeKey);
-                        }}
-                        className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-primary"
-                        title="Apply this theme"
-                      >
-                        <span className="icon-[tabler--check] w-4 h-4" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => {
-                          if (window.confirm(`Delete saved theme "${t.name}"?`)) {
-                            setSavedCustomThemes(deleteSavedTheme(t.name));
-                          }
-                        }}
-                        className="btn btn-ghost btn-xs btn-square text-base-content/40 hover:text-error"
-                        title={`Delete "${t.name}"`}
-                      >
-                        <span className="icon-[tabler--trash] w-3.5 h-3.5" />
-                      </button>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </div>
-        );
-      })()}
-
-      {/* Live Theme Preview Panel */}
-        <AnimatePresence>
-          {previewVariant && (
-            <motion.div
-              exit={{ opacity: 0, height: 0 }}
-              className="overflow-hidden mt-6"
-              data-theme={previewThemeValue}
-            >
-              <ThemePreview
-                variant={previewVariant}
-                isActive={variant === previewVariant}
-                onApply={() => { setVariant(previewVariant); setPreviewVariant(null); }}
-              />
-            </motion.div>
-          )}
-        </AnimatePresence>
-      </div>
-    </div>
-  );
-
   const renderDatabaseTab = () => (
     <div className="max-w-lg mx-auto">
       <div className="card bg-base-200 border border-base-300 p-6 mb-8">
@@ -1890,7 +1875,6 @@ export default function Settings() {
               {activeTab === 'delivery' && renderDeliveryTab()}
               {activeTab === 'employees' && renderEmployeesTab()}
               {activeTab === 'database' && renderDatabaseTab()}
-              {activeTab === 'appearance' && renderAppearanceTab()}
               {activeTab === 'theme' && renderThemeTab()}
             </motion.div>
           </AnimatePresence>
