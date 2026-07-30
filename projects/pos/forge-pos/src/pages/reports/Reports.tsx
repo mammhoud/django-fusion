@@ -544,7 +544,7 @@ export default function Reports() {
       // Order Type Breakdown
       addSection('Orders by Type');
       orderTypeBreakdown.forEach(ot => {
-        addText(ot.type, `${ot.count} orders — ${currency} ${ot.revenue.toFixed(2)}`);
+        addText(ot.type, `${ot.count} orders — ${formatPrice(ot.revenue)}`);
       });
       y += 5;
 
@@ -553,7 +553,7 @@ export default function Reports() {
         addSection('Top Products');
         const topSlice = analytics.top_products.slice(0, 5);
         topSlice.forEach((p, i) => {
-          addText(`#${i + 1} ${p.name}`, `${p.sales} sold — ${currency} ${p.revenue.toFixed(2)}`);
+          addText(`#${i + 1} ${p.name}`, `${p.sales} sold — ${formatPrice(p.revenue)}`);
         });
         y += 5;
       }
@@ -572,7 +572,7 @@ export default function Reports() {
 
       // Inventory Summary
       addSection('Inventory Summary');
-      addText('Total Stock Value', `${currency} ${stockValue.toFixed(2)}`);
+      addText('Total Stock Value', `${formatPrice(stockValue)}`);
       addText('Active Ingredients', ingredients.filter(i => i.is_active).length.toString());
       addText('Low Stock Items', lowStockItems.length.toString());
       y += 5;
@@ -583,7 +583,7 @@ export default function Reports() {
         employeePerformance.slice(0, 5).forEach((emp, i) => {
           addText(
             `#${i + 1} ${emp.employeeName}`,
-            `${emp.orderCount} orders — ${currency} ${emp.revenue.toFixed(2)}`
+            `${emp.orderCount} orders — ${formatPrice(emp.revenue)}`
           );
         });
         y += 5;
@@ -973,7 +973,7 @@ export default function Reports() {
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.stockValueLabel')}
-                  value={`${currency} ${stockValue.toFixed(2)}`}
+                  value={`${formatPrice(stockValue)}`}
                   icon={<span className="icon-[tabler--package] w-6 h-6" />}
                   color="info"
                  compact/><StatCard 
@@ -1031,7 +1031,7 @@ export default function Reports() {
                   desc={t('reports.haveRecipes', { count: products.filter(p => recipes.some(r => r.product_id === p.id && r.is_active)).length })}
                   color="success" border animated={false} compact />
                 <StatCard title={t('reports.monthlySalary')}
-                  value={`${currency} ${employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0).toFixed(0)}`}
+                  value={`${formatPrice(employees.filter(e => e.is_active).reduce((s, e) => s + e.salary, 0))}`}
                   desc={t('reports.activeEmployeesCount', { count: employees.filter(e => e.is_active).length })}
                   color="warning" border animated={false} compact />
               </div>
@@ -1057,7 +1057,7 @@ export default function Reports() {
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
-                  value={`${currency} ${analytics?.summary.average_order_value.toFixed(2) || '0.00'}`}
+                  value={`${formatPrice(analytics?.summary.average_order_value || 0)}`}
                   desc={`${salesAvgDelta.direction === 'up' ? '▲' : salesAvgDelta.direction === 'down' ? '▼' : '→'} Avg ${salesAvgDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
@@ -1114,7 +1114,7 @@ export default function Reports() {
                             <div className="flex-1">
                               <p className="text-sm text-base-content/50">{ot.type}</p>
                               <p className="text-lg font-bold text-base-content">{t('reports.ordersCount', { count: ot.count })}</p>
-                              <p className="text-sm text-base-content/70">{currency} {ot.revenue.toFixed(2)}</p>
+                              <p className="text-sm text-base-content/70">{formatPrice(ot.revenue)}</p>
                             </div>
                           </div>
                         );
@@ -1179,7 +1179,7 @@ export default function Reports() {
                             <td className="py-3 px-4 text-base-content/50">{i + 1}</td>
                             <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
                             <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.revenue)}</td>
                           </tr>
                         ))}
                       </tbody>
@@ -1277,7 +1277,7 @@ export default function Reports() {
                               <td className="py-3 px-4 text-base-content/50">{i + 1}</td>
                               <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
                               <td className="py-3 px-4 text-right text-base-content">{p.sales}</td>
-                              <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
+                              <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.revenue)}</td>
                               <td className="py-3 px-4">
                                 <div className="flex items-center gap-2">
                                   <div className="w-20 bg-base-300 rounded-full h-2 overflow-hidden">
@@ -1401,7 +1401,7 @@ export default function Reports() {
                                   {sale.status}
                                 </span>
                               </td>
-                              <td className="py-3 px-4 text-right font-bold text-base-content">{sale.currency || currency} {sale.total_amount.toFixed(2)}</td>
+                              <td className="py-3 px-4 text-right font-bold text-base-content">{formatPrice(sale.total_amount)}</td>
                               <td className="py-3 px-4 text-base-content/70">{emp?.name || '-'}</td>
                             </tr>
                           );
@@ -1425,7 +1425,7 @@ export default function Reports() {
               {/* Today's Overview Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.todayRevenue')}
-                  value={`${currency} ${todayStats.revenue.toFixed(2)}`}
+                  value={`${formatPrice(todayStats.revenue)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
@@ -1439,7 +1439,7 @@ export default function Reports() {
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                  compact/><StatCard 
                   title={t('reports.todayAvgOrder')}
-                  value={`${currency} ${todayStats.avgOrder.toFixed(2)}`}
+                  value={`${formatPrice(todayStats.avgOrder)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} Avg ${revDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
@@ -1471,8 +1471,8 @@ export default function Reports() {
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.todayRevenue')}
-                      value={`${currency} ${todayStats.revenue.toFixed(2)}`}
-                      desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs ${currency} ${yesterdayStats.revenue.toFixed(2)}`}
+                      value={`${formatPrice(todayStats.revenue)}`}
+                      desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs ${formatPrice(yesterdayStats.revenue)}`}
                       color={revDelta.direction === 'up' ? 'green-500' : revDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
                     compact
@@ -1494,8 +1494,8 @@ export default function Reports() {
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.todayRevenue')}
-                      value={`${currency} ${todayStats.revenue.toFixed(2)}`}
-                      desc={`${wkRevDelta.direction === 'up' ? '▲' : wkRevDelta.direction === 'down' ? '▼' : '→'} ${wkRevDelta.pct} vs ${currency} ${lastWeekStats.revenue.toFixed(2)}`}
+                      value={`${formatPrice(todayStats.revenue)}`}
+                      desc={`${wkRevDelta.direction === 'up' ? '▲' : wkRevDelta.direction === 'down' ? '▼' : '→'} ${wkRevDelta.pct} vs ${formatPrice(lastWeekStats.revenue)}`}
                       color={wkRevDelta.direction === 'up' ? 'green-500' : wkRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
                     compact
@@ -1556,9 +1556,9 @@ export default function Reports() {
                             <td className={`py-3 px-4 font-medium ${isToday ? 'text-info dark:text-info/80' : 'text-base-content'}`}>
                               {day.date} {isToday && <span className="text-xs text-info ml-1">({t('reports.today')})</span>}
                             </td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {day.revenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(day.revenue)}</td>
                             <td className="py-3 px-4 text-right text-base-content">{day.orders}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {day.orders > 0 ? (day.revenue / day.orders).toFixed(2) : '0.00'}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(day.orders > 0 ? day.revenue / day.orders : 0)}</td>
                             <td className="py-3 px-4 text-base-content/50 text-sm">{dayName}</td>
                           </tr>
                         );
@@ -1593,9 +1593,9 @@ export default function Reports() {
                           <tr key={emp.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
                             <td className="py-3 px-4 text-right text-base-content font-semibold">{emp.todayOrders}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.todayRevenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(emp.todayRevenue)}</td>
                             <td className="py-3 px-4 text-right text-base-content/70">{emp.yesterdayOrders}</td>
-                            <td className="py-3 px-4 text-right text-base-content/70">{currency} {emp.yesterdayRevenue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content/70">{formatPrice(emp.yesterdayRevenue)}</td>
                             <td className={`py-3 px-4 text-right font-semibold ${emp.revColor}`}>
                               {emp.revDirection === 'up' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5" />}
                               {emp.revDirection === 'down' && <span className="icon-[tabler--trending-up] inline w-3.5 h-3.5 mr-0.5 rotate-180" />}
@@ -1654,7 +1654,7 @@ export default function Reports() {
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.currentPeriodRevenue')}
-                  value={`${currency} ${currentStats.revenue.toFixed(2)}`}
+                  value={`${formatPrice(currentStats.revenue)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs previous`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
@@ -1674,7 +1674,7 @@ export default function Reports() {
                   )}
                  compact/><StatCard 
                   title={t('reports.currentPeriodAvg')}
-                  value={`${currency} ${currentStats.avgOrder.toFixed(2)}`}
+                  value={`${formatPrice(currentStats.avgOrder)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} Avg ${periodRevDelta.pct} vs previous`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
@@ -1684,7 +1684,7 @@ export default function Reports() {
                   )}
                  compact/><StatCard 
                   title={t('reports.previousPeriod')}
-                  value={`${currency} ${previousStats.revenue.toFixed(2)}`}
+                  value={`${formatPrice(previousStats.revenue)}`}
                   desc={`${currentStats.revenue > previousStats.revenue ? '▲ Up' : currentStats.revenue < previousStats.revenue ? '▼ Down' : '→ Flat'} from current`}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                   color="neutral"
@@ -1708,15 +1708,15 @@ export default function Reports() {
                   <div className="grid grid-cols-2 gap-4">
                     <StatCard
                       title={t('reports.currentPeriodShort')}
-                      value={`${currency} ${currentStats.revenue.toFixed(2)}`}
-                      desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs ${currency} ${previousStats.revenue.toFixed(2)}`}
+                      value={`${formatPrice(currentStats.revenue)}`}
+                      desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs ${formatPrice(previousStats.revenue)}`}
                       color={periodRevDelta.direction === 'up' ? 'green-500' : periodRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
                     compact
                     />
                     <StatCard
                       title={t('reports.previousPeriodShort')}
-                      value={`${currency} ${previousStats.revenue.toFixed(2)}`}
+                      value={`${formatPrice(previousStats.revenue)}`}
                       desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs current`}
                       color={periodRevDelta.direction === 'up' ? 'green-500' : periodRevDelta.direction === 'down' ? 'red-500' : 'slate-400'}
                       animated={false}
@@ -1784,9 +1784,9 @@ export default function Reports() {
                       {periodTrend.map((p, i) => (
                         <tr key={i} className="border-b border-base-300/50 hover:bg-base-100/50">
                           <td className="py-3 px-4 font-medium text-base-content">{p.label}</td>
-                          <td className="py-3 px-4 text-right text-base-content">{currency} {p.revenue.toFixed(2)}</td>
+                          <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.revenue)}</td>
                           <td className="py-3 px-4 text-right text-base-content">{p.orders}</td>
-                          <td className="py-3 px-4 text-right text-base-content">{currency} {p.orders > 0 ? (p.revenue / p.orders).toFixed(2) : '0.00'}</td>
+                          <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.orders > 0 ? p.revenue / p.orders : 0)}</td>
                         </tr>
                       ))}
                     </tbody>
@@ -1806,12 +1806,12 @@ export default function Reports() {
                   color="primary"
                  compact/><StatCard 
                   title={t('reports.totalRevenue')}
-                  value={`${currency} ${deliveryStats.totalRevenue.toFixed(2)}`}
+                  value={`${formatPrice(deliveryStats.totalRevenue)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="info"
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
-                  value={`${currency} ${deliveryStats.avgOrderValue.toFixed(2)}`}
+                  value={`${formatPrice(deliveryStats.avgOrderValue)}`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
                  compact/><StatCard 
@@ -1875,7 +1875,7 @@ export default function Reports() {
                             </div>
                           </div>
                           <div className="text-right shrink-0">
-                            <p className="text-lg font-bold text-primary">{sale.currency || currency} {sale.total_amount.toFixed(2)}</p>
+                            <p className="text-lg font-bold text-primary">{formatPrice(sale.total_amount)}</p>
                           </div>
                         </div>
                       </Card>
@@ -1897,7 +1897,7 @@ export default function Reports() {
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.stockValueLabel')}
-                  value={`${currency} ${stockValue.toFixed(2)}`}
+                  value={`${formatPrice(stockValue)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="success"
                  compact/><StatCard 
@@ -1992,8 +1992,8 @@ export default function Reports() {
                             <td className="py-3 px-4 font-medium text-base-content">{ing.name}</td>
                             <td className="py-3 px-4 text-right text-base-content">{ing.current_quantity}</td>
                             <td className="py-3 px-4 text-base-content/70">{ing.unit}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {ing.cost_per_unit.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {(ing.current_quantity * ing.cost_per_unit).toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(ing.cost_per_unit)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice((ing.current_quantity * ing.cost_per_unit))}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 ing.current_quantity <= ing.reorder_level
@@ -2078,7 +2078,7 @@ export default function Reports() {
                   color="success"
                  compact/><StatCard 
                   title={t('reports.avgProductPrice')}
-                  value={`${currency} ${products.length > 0 ? (products.reduce((s, p) => s + p.price, 0) / products.length).toFixed(2) : '0.00'}`}
+                  value={`${formatPrice(products.length > 0 ? products.reduce((s, p) => s + p.price, 0) / products.length : 0)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="info"
                  compact/><StatCard 
@@ -2120,7 +2120,7 @@ export default function Reports() {
                         {recipePerformance.map(rp => (
                           <tr key={rp.recipeId} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{rp.productName}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {rp.productPrice.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(rp.productPrice)}</td>
                             <td className="py-3 px-4 text-right text-base-content">{rp.yieldQuantity}</td>
                             <td className="py-3 px-4 text-center">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -2165,7 +2165,7 @@ export default function Reports() {
                           return (
                             <tr key={p.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                               <td className="py-3 px-4 font-medium text-base-content">{p.name}</td>
-                              <td className="py-3 px-4 text-right text-base-content">{currency} {p.price.toFixed(2)}</td>
+                              <td className="py-3 px-4 text-right text-base-content">{formatPrice(p.price)}</td>
                               <td className="py-3 px-4 text-base-content/70">{p.unit}</td>
                               <td className="py-3 px-4">
                                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
@@ -2193,7 +2193,7 @@ export default function Reports() {
               {/* Summary Cards */}
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4"><StatCard 
                   title={t('reports.totalRevenue')}
-                  value={`${currency} ${transactions.reduce((s, t) => s + t.total_amount, 0).toFixed(2)}`}
+                  value={`${formatPrice(transactions.reduce((s, t) => s + t.total_amount, 0))}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="primary"
                  compact/><StatCard 
@@ -2203,7 +2203,7 @@ export default function Reports() {
                   color="info"
                  compact/><StatCard 
                   title={t('reports.avgOrderValue')}
-                  value={`${currency} ${transactions.length > 0 ? (transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length).toFixed(2) : '0.00'}`}
+                  value={`${formatPrice(transactions.length > 0 ? transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length : 0)}`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
                   color="secondary"
                  compact/><StatCard 
@@ -2288,7 +2288,7 @@ export default function Reports() {
                   color="success"
                  compact/><StatCard 
                   title={t('reports.totalRevenue')}
-                  value={`${currency} ${employeePerformance.reduce((s, e) => s + e.revenue, 0).toFixed(2)}`}
+                  value={`${formatPrice(employeePerformance.reduce((s, e) => s + e.revenue, 0))}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
                   color="warning"
                 compact
@@ -2319,7 +2319,7 @@ export default function Reports() {
                         <YAxis tick={{ fontSize: 10 }} stroke="rgba(100,100,100,0.4)" />
                         <Tooltip
                           contentStyle={{ background: 'rgba(15,23,42,0.9)', border: 'none', borderRadius: '8px', color: '#fff' }}
-                          formatter={(value: number) => [`${currency} ${value.toFixed(2)}`, 'Revenue']}
+                          formatter={(value: number) => [`${formatPrice(value)}`, 'Revenue']}
                         />
                         <Bar dataKey="revenue" fill="#6366f1" radius={[4, 4, 0, 0]} maxBarSize={40} />
                       </BarChart>
@@ -2348,8 +2348,8 @@ export default function Reports() {
                           <tr key={emp.employeeId} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.employeeName}</td>
                             <td className="py-3 px-4 text-right text-base-content">{emp.orderCount}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.revenue.toFixed(2)}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.averageOrderValue.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(emp.revenue)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(emp.averageOrderValue)}</td>
                             <td className="py-3 px-4">
                               {/* Mini performance bar */}
                               <div className="w-24 bg-base-300 rounded-full h-2.5 overflow-hidden">
@@ -2396,7 +2396,7 @@ export default function Reports() {
                         {employees.map(emp => (
                           <tr key={emp.id} className="border-b border-base-300/50 hover:bg-base-100/50">
                             <td className="py-3 px-4 font-medium text-base-content">{emp.name}</td>
-                            <td className="py-3 px-4 text-right text-base-content">{currency} {emp.salary.toFixed(2)}</td>
+                            <td className="py-3 px-4 text-right text-base-content">{formatPrice(emp.salary)}</td>
                             <td className="py-3 px-4">
                               <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
                                 emp.is_active
