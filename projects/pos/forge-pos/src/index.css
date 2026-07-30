@@ -477,3 +477,81 @@
 [dir="rtl"] input::placeholder,
 [dir="rtl"] textarea::placeholder { text-align: right; }
 [dir="rtl"] input[type="number"] { text-align: left; direction: ltr; }
+
+/* ═══════════════════════════════════════════════════════════════
+   Background Texture System — leather/surface grain
+   Uses bg-texture.svg with currentColor fed via ::before pseudo-element.
+   The pseudo-element prevents color inheritance into child content.
+   ═══════════════════════════════════════════════════════════════ */
+
+.bg-texture {
+  position: relative;
+}
+
+.bg-texture::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-image: url('/bg-texture.svg');
+  background-size: 400px 400px;
+  background-repeat: repeat;
+}
+
+/* Light mode — warm cream/beige base */
+@media (prefers-color-scheme: light) {
+  .bg-texture::before {
+    background-color: oklch(97% 0.006 85);
+  }
+}
+
+/* Dark mode — deep warm espresso base */
+@media (prefers-color-scheme: dark) {
+  .bg-texture::before {
+    background-color: oklch(16% 0.012 60);
+  }
+}
+
+/* Theme toggle overrides — FlyonUI sets data-theme on <html> */
+[data-theme*="light"] .bg-texture::before {
+  background-color: oklch(97% 0.006 85);
+}
+
+[data-theme*="dark"] .bg-texture::before,
+[data-theme="cyberpunk"] .bg-texture::before {
+  background-color: oklch(16% 0.012 60);
+}
+
+/* Explicit utility classes for manual light/dark use */
+.bg-texture-light {
+  position: relative;
+}
+.bg-texture-light::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: oklch(97% 0.008 85);
+  background-image: url('/bg-texture.svg');
+  background-size: 400px 400px;
+  background-repeat: repeat;
+  color: oklch(35% 0.04 60);
+}
+
+.bg-texture-dark {
+  position: relative;
+}
+.bg-texture-dark::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: oklch(18% 0.015 60);
+  background-image: url('/bg-texture.svg');
+  background-size: 400px 400px;
+  background-repeat: repeat;
+  color: oklch(65% 0.04 70);
+}
