@@ -1787,7 +1787,7 @@ export default function Settings() {
 
   return (
     <PageLayout
-      background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-primary/10 to-base-200"
       containerWidth="max-w-5xl"
       padding="py-10 md:py-16"
     >
@@ -1803,7 +1803,7 @@ export default function Settings() {
           <span className="icon-[tabler--settings] w-12 h-12 md:w-14 md:h-14 text-primary/80" />
         </div>
         <h1
-          className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-teal-400 to-purple-400"
+          className="text-3xl md:text-4xl font-bold text-transparent bg-clip-text bg-linear-to-r from-primary to-secondary"
           transition={{ delay: 0.3 }}
         >
           {t('settings.title')}
@@ -1928,7 +1928,7 @@ export default function Settings() {
           <button
             type="submit"
             disabled={isSaving || !hasUnsavedChanges}
-            className="flex-1 py-3 bg-linear-to-r from-teal-400 to-purple-400 text-white rounded-xl
+            className="flex-1 py-3 bg-linear-to-r from-primary to-secondary text-white rounded-xl
               font-medium transition-all duration-200 flex items-center justify-center gap-2
               disabled:opacity-50 disabled:cursor-not-allowed"
           >

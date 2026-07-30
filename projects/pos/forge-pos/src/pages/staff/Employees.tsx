@@ -227,7 +227,7 @@ export default function Employees() {
   return (
     <PageLayout
       title={<><span className="icon-[tabler--users] text-info" /> Employees</>}
-      background="bg-linear-to-br from-slate-100 via-info/10 to-slate-100 dark:from-slate-900 dark:via-info/10 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-info/10 to-base-200"
     >
 
         {/* Summary Cards */}

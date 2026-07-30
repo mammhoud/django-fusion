@@ -32,11 +32,11 @@ const PARTICLES = Array.from({ length: 20 }, (_, i) => ({
 
 // ── Per-variant illustration panel gradients ──
 const ILLUSTRATION_GRADIENTS: Record<ThemeVariant, string> = {
-  default:   'from-teal-600 via-emerald-700 to-teal-800',
-  corporate: 'from-blue-600 via-indigo-700 to-blue-900',
-  luxury:    'from-amber-700 via-yellow-800 to-amber-900',
-  pastel:    'from-pink-300 via-purple-400 to-pink-500',
-  cyberpunk: 'from-fuchsia-700 via-violet-800 to-fuchsia-900',
+  default:   'from-primary via-primary/80 to-primary/70',
+  corporate: 'from-info via-primary to-info/80',
+  luxury:    'from-warning via-warning/80 to-warning/70',
+  pastel:    'from-secondary via-accent to-primary',
+  cyberpunk: 'from-secondary via-accent to-primary/80',
 };
 
 export default function Auth() {
@@ -339,7 +339,7 @@ export default function Auth() {
 
   // ── Illustration Panel ──
   const renderIllustration = () => (
-    <div className={`relative hidden lg:flex lg:w-1/2 bg-gradient-to-br ${ILLUSTRATION_GRADIENTS[variant]} p-8 xl:p-12 items-center justify-center overflow-hidden`}>
+    <div className={`relative hidden lg:flex lg:w-1/2 bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} p-8 xl:p-12 items-center justify-center overflow-hidden`}>
       {/* Animated background particles */}
       {PARTICLES.map(p => (
         <div
@@ -470,7 +470,7 @@ export default function Auth() {
   // ── Brand Logo chip ──
   const BrandLogo = () => (
     <div className="flex items-center gap-2.5 mb-4">
-      <div className={`bg-gradient-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-2 shadow-lg`}>
+      <div className={`bg-linear-to-br ${ILLUSTRATION_GRADIENTS[variant]} rounded-lg p-2 shadow-lg`}>
         <span className="icon-[tabler--shield] w-5 h-5 text-white" />
       </div>
       <span className={`text-lg font-bold ${isDark ? 'text-white/80' : 'text-slate-800'}`}>Forge POS</span>
@@ -482,8 +482,8 @@ export default function Auth() {
   const textMuted = isDark ? 'text-white/50' : 'text-slate-400';
   const textLink = isDark ? 'text-primary/80 hover:text-primary/70' : 'text-primary hover:text-primary/600';
   const formPanelOverlay = isDark
-    ? 'bg-gradient-to-br from-teal-900/20 via-slate-900/50 to-teal-900/20'
-    : 'bg-gradient-to-br from-teal-50 via-slate-50 to-teal-50';
+    ? 'bg-linear-to-br from-primary/20 via-base-200 to-primary/20'
+    : 'bg-linear-to-br from-primary/5 via-base-200 to-primary/5';
 
   // ── Auth header ──
   const AuthHeader = ({ title, desc }: { title: string; desc: string }) => (
@@ -827,7 +827,7 @@ export default function Auth() {
                         flex items-center justify-center gap-2 transition-all duration-200
                         disabled:opacity-50 disabled:cursor-not-allowed active:scale-[0.97]
                         ${selectedRole === role
-                          ? 'bg-gradient-to-r from-primary/30 to-primary/20 shadow-lg shadow-primary/10 text-white border border-primary/40'
+                          ? 'bg-linear-to-r from-primary/30 to-primary/20 shadow-lg shadow-primary/10 text-white border border-primary/40'
                           : isDark
                             ? 'text-white/50 hover:text-white/70 hover:bg-white/5'
                             : 'text-slate-500 hover:text-slate-700 hover:bg-white'

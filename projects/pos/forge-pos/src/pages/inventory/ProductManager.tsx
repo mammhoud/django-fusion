@@ -583,7 +583,7 @@ export default function ProductManager() {
           </span>
         </div>
       }
-      background="bg-linear-to-br from-slate-100 via-purple-100 to-slate-100 dark:from-slate-900 dark:via-purple-900 dark:to-slate-900"
+      background="bg-linear-to-br from-base-200 via-primary/10 to-base-200"
     >
 
       {/* Compact Stats Row */}

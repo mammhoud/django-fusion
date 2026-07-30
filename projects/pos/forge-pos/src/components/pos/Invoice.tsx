@@ -89,7 +89,7 @@ function pageClass(design: PageDesign): string {
 function headerClass(design: PageDesign, accent: string): string {
   switch (design) {
     case 'modern':
-      return `flex flex-col md:flex-row justify-between items-start gap-6 mb-8 p-8 -mx-0 bg-gradient-to-br from-slate-900 to-primary/90 text-white rounded-none`;
+      return `flex flex-col md:flex-row justify-between items-start gap-6 mb-8 p-8 -mx-0 bg-linear-to-br from-base-300 to-primary/90 text-white rounded-none`;
     case 'classic':
       return `flex flex-col md:flex-row justify-between items-start gap-6 mb-8 pb-6 border-b-4 ${accent}`;
     case 'minimal':
@@ -359,7 +359,7 @@ const Invoice = forwardRef<HTMLDivElement, InvoiceProps>(
               <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
                 {/* Brand */}
                 <div className="flex items-center gap-3">
-                  <div className="w-10 h-10 rounded-lg bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-md shrink-0">
+                  <div className="w-10 h-10 rounded-lg bg-linear-to-br from-primary to-primary/70 flex items-center justify-center shadow-md shrink-0">
                     {/* Inline SVG fallback logo — shows if remote logo fails */}
                     <img
                       src="https://structa.cloud/favicon.ico"
