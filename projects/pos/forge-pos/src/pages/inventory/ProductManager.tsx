@@ -526,7 +526,7 @@ export default function ProductManager() {
   // ── Mobile card render for table rows ──
   const mobileTableRender = (p: Product) => (
     <div className="flex items-center gap-3 py-1">
-      <div className="w-9 h-9 rounded-lg overflow-hidden shrink-0 bg-base-200 flex items-center justify-center">
+      <div className="w-9 h-9 rounded-full overflow-hidden shrink-0 bg-base-200 flex items-center justify-center">
         {p.image ? (
           <img src={p.image} alt={p.name} className="w-full h-full object-contain" />
         ) : (
@@ -818,7 +818,7 @@ export default function ProductManager() {
                       <img
                         src={productImage}
                         alt="Product preview"
-                        className="w-20 h-20 rounded-lg object-cover border-2 border-slate-300 dark:border-gray-600"
+                        className="w-20 h-20 rounded-full object-cover border-2 border-slate-300 dark:border-gray-600"
                       />
                       <button
                         type="button"
@@ -834,7 +834,7 @@ export default function ProductManager() {
                       type="button"
                       onClick={handlePickImage}
                       disabled={isUploadingImage}
-                      className="flex flex-col items-center justify-center w-20 h-20 rounded-lg
+                      className="flex flex-col items-center justify-center w-20 h-20 rounded-full
                         bg-base-100/30 border-2 border-dashed border-slate-300 dark:border-gray-600
                         text-base-content/50 hover:border-primary hover:bg-primary/5
                         transition-all cursor-pointer disabled:opacity-50"
