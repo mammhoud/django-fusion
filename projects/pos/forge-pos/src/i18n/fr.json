@@ -52,7 +52,7 @@
     "kitchen": "Affichage Cuisine",
     "schedule": "Planning",
     "payroll": "Paie",
-    "notes": "Modèles de Reçus",
+    "notes": "Notes",
     "invoice": "Facture",
     "taxReports": "Rapports Fiscaux",
     "roles": "Rôles",
@@ -1048,7 +1048,7 @@
     "noPayrolls": "Aucun bulletin de paie."
   },
   "notes": {
-    "title": "Modèles de Reçus",
+    "title": "Notes",
     "addTemplate": "Ajouter un Modèle",
     "name": "Nom du Modèle",
     "body": "Corps du Modèle",

@@ -52,7 +52,7 @@
     "kitchen": "Kitchen Display",
     "schedule": "Schedule",
     "payroll": "Payroll",
-    "notes": "Receipt Templates",
+    "notes": "Notes",
     "invoice": "Invoice",
     "taxReports": "Tax Reports",
     "roles": "Roles",
@@ -1034,7 +1034,7 @@
     "noPayrolls": "No payroll records."
   },
   "notes": {
-    "title": "Receipt Templates",
+    "title": "Notes",
     "addTemplate": "Add Template",
     "name": "Template Name",
     "body": "Template Body",
