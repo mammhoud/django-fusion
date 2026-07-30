@@ -395,3 +395,85 @@
 .animate-scale-out{animation:scale-out .15s ease-in both}
 .animate-dialog-out{animation:scale-out .12s ease-in both}
 .anim-delay-1{animation-delay:.05s}.anim-delay-2{animation-delay:.1s}.anim-delay-3{animation-delay:.15s}.anim-delay-4{animation-delay:.2s}.anim-delay-5{animation-delay:.25s}.anim-delay-6{animation-delay:.3s}.anim-delay-7{animation-delay:.35s}.anim-delay-8{animation-delay:.4s}.anim-delay-9{animation-delay:.45s}.anim-delay-10{animation-delay:.5s}
+
+/* ═══════════════════════════════════════════════════════════════
+   Forge POS — Compact Design System & Enhanced Utilities
+   ═══════════════════════════════════════════════════════════════ */
+
+/* ── Compact design tokens (activated via .forge-compact class) ── */
+:root {
+  --forge-card-padding: 1rem;
+  --forge-card-gap: 0.75rem;
+  --forge-grid-gap: 1rem;
+  --forge-section-gap: 1.5rem;
+  --forge-input-height: 2.5rem;
+  --forge-btn-height: 2.25rem;
+  --forge-radius-card: 0.75rem;
+  --forge-radius-btn: 0.5rem;
+  --forge-shadow-card: 0 1px 3px oklch(0 0 0 / 0.06);
+  --forge-shadow-hover: 0 4px 12px oklch(0 0 0 / 0.08);
+  --forge-shadow-elevated: 0 8px 24px oklch(0 0 0 / 0.1);
+  --forge-transition-fast: 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  --forge-transition-smooth: 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* ── Compact mode (reduced spacing, tighter layouts) ── */
+.forge-compact {
+  --forge-card-padding: 0.75rem;
+  --forge-card-gap: 0.5rem;
+  --forge-grid-gap: 0.75rem;
+  --forge-section-gap: 1rem;
+  --forge-input-height: 2rem;
+  --forge-btn-height: 1.75rem;
+}
+
+/* ── Stable FlyonUI color opacity extension ──────────────────── */
+/* Provides consistent bg-X/5, bg-X/10, text-X/70 etc. opacity
+   variants that adapt to every theme via CSS variables. */
+
+/* Primary opacity variants */
+.bg-primary-glass { background: oklch(var(--color-primary) / 0.08); backdrop-filter: blur(8px); }
+.bg-secondary-glass { background: oklch(var(--color-secondary) / 0.08); backdrop-filter: blur(8px); }
+.bg-accent-glass { background: oklch(var(--color-accent) / 0.08); backdrop-filter: blur(8px); }
+.bg-success-glass { background: oklch(var(--color-success) / 0.08); backdrop-filter: blur(8px); }
+.bg-warning-glass { background: oklch(var(--color-warning) / 0.08); backdrop-filter: blur(8px); }
+.bg-error-glass { background: oklch(var(--color-error) / 0.08); backdrop-filter: blur(8px); }
+.bg-info-glass { background: oklch(var(--color-info) / 0.08); backdrop-filter: blur(8px); }
+
+/* ── Clean border styles ── */
+.border-subtle { border-color: oklch(var(--color-base-content) / 0.1); }
+.border-emphasis { border-color: oklch(var(--color-base-content) / 0.2); }
+.border-card { border: 1px solid oklch(var(--color-base-content) / 0.08); }
+
+/* ── Clean shadow utilities ── */
+.shadow-card { box-shadow: var(--forge-shadow-card); }
+.shadow-card-hover { box-shadow: var(--forge-shadow-hover); }
+.shadow-card-elevated { box-shadow: var(--forge-shadow-elevated); }
+
+/* ── Smooth transition presets ── */
+.transition-fast { transition: all var(--forge-transition-fast); }
+.transition-smooth { transition: all var(--forge-transition-smooth); }
+.transition-colors-fast { transition: color, background-color, border-color var(--forge-transition-fast); }
+
+/* ── Compact card/layout utilities ── */
+.card-compact { padding: var(--forge-card-padding); border-radius: var(--forge-radius-card); }
+.gap-compact { gap: var(--forge-card-gap); }
+.section-compact { margin-bottom: var(--forge-section-gap); }
+.input-compact { height: var(--forge-input-height); }
+
+/* ── Focus ring — stable, accessible, theme-aware ── */
+.focus-ring:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px oklch(var(--color-base-100)), 0 0 0 4px oklch(var(--color-primary) / 0.4);
+}
+
+/* ── RTL-aware utilities ── */
+[dir="rtl"] .forge-rtl-flip { transform: scaleX(-1); }
+[dir="rtl"] input[type="text"],
+[dir="rtl"] input[type="email"],
+[dir="rtl"] input[type="tel"],
+[dir="rtl"] textarea,
+[dir="rtl"] select { text-align: right; }
+[dir="rtl"] input::placeholder,
+[dir="rtl"] textarea::placeholder { text-align: right; }
+[dir="rtl"] input[type="number"] { text-align: left; direction: ltr; }
