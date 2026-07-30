@@ -12,9 +12,7 @@ services:
     image: cms-fusion-backend:latest
     container_name: cms-fusion-backend
     restart: unless-stopped
-    env_file:
-      - path: ../../.env
-        required: false
+    env_file: ../../.env
     environment:
       RUNNING_ENV: docker
       DJANGO_SETTINGS_MODULE: settings
@@ -78,9 +76,7 @@ services:
     image: cms-fusion-backend:latest
     container_name: cms-fusion-worker
     restart: unless-stopped
-    env_file:
-      - path: ../../.env
-        required: false
+    env_file: ../../.env
     environment:
       DJANGO_SETTINGS_MODULE: settings
       WEBSITE: cms-fusion

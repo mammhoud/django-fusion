@@ -5,7 +5,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 from django_fusion.models.base import BaseModel as DefaultBase
 from apps.core.domain.blocks.stream_blocks import BaseStreamBlock
-from django_fusion.models.default import ContentBase
+from .base import ContentBase
 from wagtail.admin.panels import (
     FieldPanel,
     FieldRowPanel,

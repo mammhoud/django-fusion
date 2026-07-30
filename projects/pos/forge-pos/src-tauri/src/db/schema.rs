@@ -351,6 +351,7 @@ diesel::table! {
         name -> Text,
         template_body -> Text,
         category -> Nullable<Text>,
+        recipe_id -> Nullable<Integer>,
         is_default -> Bool,
         use_as_template -> Bool,
         created_at -> Timestamp,

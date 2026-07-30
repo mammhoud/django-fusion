@@ -30,26 +30,26 @@ export const blogApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getBlogPosts: builder.query<PaginatedResponse<BlogPost>, { page?: number; category?: string; search?: string }>({
       query: (params) => ({
-        url: '/apis/blog/',
+        url: '/blog/',
         params: { page: params.page || 1, category: params.category, search: params.search },
       }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Blog' as const, id })), { type: 'Blog', id: 'LIST' }] : [{ type: 'Blog', id: 'LIST' }],
     }),
     getBlogPost: builder.query<BlogPost, number>({
-      query: (id) => `/apis/blog/${id}/`,
+      query: (id) => `/blog/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Blog', id }],
     }),
     getBlogCategories: builder.query<BlogCategory[], void>({
-      query: () => '/apis/blog/categories/',
+      query: () => '/blog/categories/',
       providesTags: [{ type: 'BlogCategory', id: 'LIST' }],
     }),
     getFeaturedPosts: builder.query<BlogPost[], void>({
-      query: () => '/apis/blog/featured/',
+      query: () => '/blog/featured/',
       providesTags: [{ type: 'Blog', id: 'LIST' }],
     }),
     getRelatedPosts: builder.query<BlogPost[], number>({
-      query: (id) => `/apis/blog/${id}/related/`,
+      query: (id) => `/blog/${id}/related/`,
       providesTags: [{ type: 'Blog', id: 'LIST' }],
     }),
   }),

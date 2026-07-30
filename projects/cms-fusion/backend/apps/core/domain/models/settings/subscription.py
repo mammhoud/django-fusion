@@ -6,7 +6,7 @@ from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
 
 logger = logging.getLogger(__name__)
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, MultiFieldPanel
 
 

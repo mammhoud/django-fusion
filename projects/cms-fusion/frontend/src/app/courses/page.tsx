@@ -18,17 +18,18 @@ export default function CoursesPage() {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState('');
   const [level, setLevel] = useState('');
-  const toast = useToast();
+  const { info: toastInfo } = useToast();
 
   const { data, isLoading, error } = useGetCoursesQuery({ page, search, category, level });
   const { data: categories } = useGetCategoriesQuery();
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      toast.info('Explore Courses', 'Discover courses from expert instructors.', 4000);
+      toastInfo('Explore Courses', 'Discover courses from expert instructors.', 4000);
     }, 1500);
     return () => clearTimeout(timer);
-  }, [toast]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // Build carousel slides from top courses
   const courseSlides: CarouselSlide[] = (data?.results ?? []).slice(0, 6).map((course) => ({

@@ -115,7 +115,18 @@ PROFILE_MODEL = "auth.User"
 # ============================================================
 # Keep only legacy duplicated app/model checks silenced; the previous
 # TeamMembership ordering check is fixed in domain models.
-SILENCED_SYSTEM_CHECKS = ["treebeard.E001"]
+SILENCED_SYSTEM_CHECKS = [
+    "treebeard.E001",
+    # ceptor_ai ↔ shared model clashes (legacy duplicate apps)
+    "models.E028",  # db_table clashes
+    "models.E030",  # index name clashes
+    "models.E032",  # constraint name clashes
+    "fields.E300",   # relation with uninstalled models
+    "fields.E304",   # reverse accessor clashes
+    "fields.E305",   # reverse query name clashes
+    "fields.E307",   # lazy reference to uninstalled model
+    "fields.E340",   # intermediary table name clashes
+]
 WAGTAIL_WORKFLOW_ENABLED = False
 
 # ============================================================

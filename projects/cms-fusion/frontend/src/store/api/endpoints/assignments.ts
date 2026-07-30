@@ -70,14 +70,14 @@ export const assignmentsApi = api.injectEndpoints({
       { course?: number } | void
     >({
       query: (params) => ({
-        url: '/apis/assignments/',
+        url: '/assignments/',
         params: params || undefined,
       }),
       providesTags: [{ type: 'Assignment', id: 'LIST' }],
     }),
 
     getAssignment: builder.query<Assignment, number>({
-      query: (id) => `/apis/assignments/${id}/`,
+      query: (id) => `/assignments/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Assignment', id }],
     }),
 
@@ -86,7 +86,7 @@ export const assignmentsApi = api.injectEndpoints({
       AssignmentCreatePayload
     >({
       query: (body) => ({
-        url: '/apis/assignments/create/',
+        url: '/assignments/create/',
         method: 'POST',
         body,
       }),
@@ -98,7 +98,7 @@ export const assignmentsApi = api.injectEndpoints({
       { id: number; data: Partial<AssignmentCreatePayload> }
     >({
       query: ({ id, data }) => ({
-        url: `/apis/assignments/${id}/update/`,
+        url: `/assignments/${id}/update/`,
         method: 'PATCH',
         body: data,
       }),
@@ -110,7 +110,7 @@ export const assignmentsApi = api.injectEndpoints({
 
     deleteAssignment: builder.mutation<void, number>({
       query: (id) => ({
-        url: `/apis/assignments/${id}/delete/`,
+        url: `/assignments/${id}/delete/`,
         method: 'DELETE',
       }),
       invalidatesTags: [{ type: 'Assignment', id: 'LIST' }],
@@ -122,7 +122,7 @@ export const assignmentsApi = api.injectEndpoints({
         const formData = new FormData();
         formData.append('file', file);
         return {
-          url: '/apis/assignments/upload/',
+          url: '/assignments/upload/',
           method: 'POST',
           body: formData,
         };
@@ -135,7 +135,7 @@ export const assignmentsApi = api.injectEndpoints({
       { assignmentId: number; data: AssignmentSubmitPayload }
     >({
       query: ({ assignmentId, data }) => ({
-        url: `/apis/assignments/${assignmentId}/submit/`,
+        url: `/assignments/${assignmentId}/submit/`,
         method: 'POST',
         body: data,
       }),
@@ -150,7 +150,7 @@ export const assignmentsApi = api.injectEndpoints({
       number
     >({
       query: (assignmentId) =>
-        `/apis/assignments/${assignmentId}/submissions/`,
+        `/assignments/${assignmentId}/submissions/`,
       providesTags: (result, error, id) => [
         { type: 'Submission', id: `assignment-${id}` },
       ],
@@ -160,7 +160,7 @@ export const assignmentsApi = api.injectEndpoints({
       PaginatedResponse<AssignmentSubmission>,
       void
     >({
-      query: () => '/apis/submissions/',
+      query: () => '/submissions/',
       providesTags: [{ type: 'Submission', id: 'MY' }],
     }),
 
@@ -169,7 +169,7 @@ export const assignmentsApi = api.injectEndpoints({
       { submissionId: number; data: GradePayload }
     >({
       query: ({ submissionId, data }) => ({
-        url: `/apis/submissions/${submissionId}/grade/`,
+        url: `/submissions/${submissionId}/grade/`,
         method: 'PATCH',
         body: data,
       }),

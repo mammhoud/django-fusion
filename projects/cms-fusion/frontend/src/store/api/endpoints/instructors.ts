@@ -38,32 +38,32 @@ export interface InstructorDashboard {
 export const instructorsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getInstructors: builder.query<PaginatedResponse<Instructor>, { page?: number }>({
-      query: (params) => ({ url: '/apis/instructors/', params: { page: params.page || 1 } }),
+      query: (params) => ({ url: '/instructors/', params: { page: params.page || 1 } }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Instructor' as const, id })), { type: 'Instructor', id: 'LIST' }] : [{ type: 'Instructor', id: 'LIST' }],
     }),
     getInstructor: builder.query<Instructor, number>({
-      query: (id) => `/apis/instructors/${id}/`,
+      query: (id) => `/instructors/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Instructor', id }],
     }),
     getInstructorDashboard: builder.query<InstructorDashboard, number>({
-      query: (id) => `/apis/instructors/${id}/dashboard/`,
+      query: (id) => `/instructors/${id}/dashboard/`,
       providesTags: [{ type: 'Dashboard', id: 'LIST' }],
     }),
     getInstructorCourses: builder.query<Course[], number>({
-      query: (id) => `/apis/instructors/${id}/courses/`,
+      query: (id) => `/instructors/${id}/courses/`,
       providesTags: [{ type: 'Course', id: 'LIST' }],
     }),
     getInstructorReviews: builder.query<any[], number>({
-      query: (id) => `/apis/instructors/${id}/reviews/`,
+      query: (id) => `/instructors/${id}/reviews/`,
       providesTags: [{ type: 'Review', id: 'LIST' }],
     }),
-    deleteCourse: builder.mutation<void, number>({
-      query: (id) => ({ url: `/apis/instructors/courses/${id}/`, method: 'DELETE' }),
+    deleteInstructorCourse: builder.mutation<void, number>({
+      query: (id) => ({ url: `/instructors/courses/${id}/`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Course', id: 'LIST' }],
     }),
     updateInstructorProfile: builder.mutation<Instructor, { id: number; data: Partial<Instructor> }>({
-      query: ({ id, data }) => ({ url: `/apis/instructors/${id}/`, method: 'PATCH', body: data }),
+      query: ({ id, data }) => ({ url: `/instructors/${id}/`, method: 'PATCH', body: data }),
       invalidatesTags: (result, error, { id }) => [{ type: 'Instructor', id }, { type: 'Instructor', id: 'LIST' }],
     }),
   }),
@@ -75,6 +75,6 @@ export const {
   useGetInstructorDashboardQuery,
   useGetInstructorCoursesQuery,
   useGetInstructorReviewsQuery,
-  useDeleteCourseMutation: useDeleteInstructorCourseMutation,
+  useDeleteInstructorCourseMutation,
   useUpdateInstructorProfileMutation,
 } = instructorsApi;

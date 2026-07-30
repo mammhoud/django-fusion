@@ -38,14 +38,14 @@ export const announcementsApi = api.injectEndpoints({
       { audience?: string; page?: number } | void
     >({
       query: (params) => ({
-        url: '/apis/announcements/',
+        url: '/announcements/',
         params: params || undefined,
       }),
       providesTags: [{ type: 'Announcement', id: 'LIST' }],
     }),
 
     getAnnouncement: builder.query<Announcement, number>({
-      query: (id) => `/apis/announcements/${id}/`,
+      query: (id) => `/announcements/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Announcement', id }],
     }),
 
@@ -54,7 +54,7 @@ export const announcementsApi = api.injectEndpoints({
       AnnouncementCreatePayload
     >({
       query: (body) => ({
-        url: '/apis/announcements/create/',
+        url: '/announcements/create/',
         method: 'POST',
         body,
       }),
@@ -66,7 +66,7 @@ export const announcementsApi = api.injectEndpoints({
       { id: number; data: AnnouncementUpdatePayload }
     >({
       query: ({ id, data }) => ({
-        url: `/apis/announcements/${id}/update/`,
+        url: `/announcements/${id}/update/`,
         method: 'PATCH',
         body: data,
       }),
@@ -78,7 +78,7 @@ export const announcementsApi = api.injectEndpoints({
 
     deleteAnnouncement: builder.mutation<void, number>({
       query: (id) => ({
-        url: `/apis/announcements/${id}/delete/`,
+        url: `/announcements/${id}/delete/`,
         method: 'DELETE',
       }),
       invalidatesTags: [{ type: 'Announcement', id: 'LIST' }],

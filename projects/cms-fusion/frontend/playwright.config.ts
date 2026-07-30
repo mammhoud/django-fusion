@@ -34,7 +34,7 @@ export default defineConfig({
   webServer: process.env.PLAYWRIGHT_DOCKER_URL
     ? undefined
     : {
-        command: "npx next dev -p 3000",
+        command: `${process.env.NVM_BIN || '/Users/mammhoud/.nvm/versions/node/v22.18.0/bin'}/node ${__dirname}/node_modules/next/dist/bin/next dev -p 3000`,
         cwd: __dirname,
         url: "http://localhost:3000",
         reuseExistingServer: true,

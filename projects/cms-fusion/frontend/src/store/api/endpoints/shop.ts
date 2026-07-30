@@ -39,38 +39,38 @@ export const shopApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getProducts: builder.query<PaginatedResponse<Product>, { page?: number; category?: string; search?: string }>({
       query: (params) => ({
-        url: '/apis/shop/products/',
+        url: '/shop/products/',
         params: { page: params.page || 1, category: params.category, search: params.search },
       }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Product' as const, id })), { type: 'Product', id: 'LIST' }] : [{ type: 'Product', id: 'LIST' }],
     }),
     getProduct: builder.query<Product, number>({
-      query: (id) => `/apis/shop/products/${id}/`,
+      query: (id) => `/shop/products/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Product', id }],
     }),
     getCart: builder.query<CartItem[], void>({
-      query: () => '/apis/shop/cart/',
+      query: () => '/shop/cart/',
       providesTags: [{ type: 'Cart', id: 'LIST' }],
     }),
     addToCart: builder.mutation<CartItem, { product_id: number; quantity: number }>({
-      query: (body) => ({ url: '/apis/shop/cart/add/', method: 'POST', body }),
+      query: (body) => ({ url: '/shop/cart/add/', method: 'POST', body }),
       invalidatesTags: [{ type: 'Cart', id: 'LIST' }],
     }),
     updateCartItem: builder.mutation<CartItem, { item_id: number; quantity: number }>({
-      query: ({ item_id, ...body }) => ({ url: `/apis/shop/cart/${item_id}/`, method: 'PATCH', body }),
+      query: ({ item_id, ...body }) => ({ url: `/shop/cart/${item_id}/`, method: 'PATCH', body }),
       invalidatesTags: [{ type: 'Cart', id: 'LIST' }],
     }),
     removeFromCart: builder.mutation<void, number>({
-      query: (itemId) => ({ url: `/apis/shop/cart/${itemId}/`, method: 'DELETE' }),
+      query: (itemId) => ({ url: `/shop/cart/${itemId}/`, method: 'DELETE' }),
       invalidatesTags: [{ type: 'Cart', id: 'LIST' }],
     }),
     createOrder: builder.mutation<Order, { shipping_address: string; payment_method: string }>({
-      query: (body) => ({ url: '/apis/shop/orders/', method: 'POST', body }),
+      query: (body) => ({ url: '/shop/orders/', method: 'POST', body }),
       invalidatesTags: [{ type: 'Order', id: 'LIST' }, { type: 'Cart', id: 'LIST' }],
     }),
     getOrders: builder.query<PaginatedResponse<Order>, { page?: number }>({
-      query: (params) => ({ url: '/apis/shop/orders/', params: { page: params.page || 1 } }),
+      query: (params) => ({ url: '/shop/orders/', params: { page: params.page || 1 } }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Order' as const, id })), { type: 'Order', id: 'LIST' }] : [{ type: 'Order', id: 'LIST' }],
     }),

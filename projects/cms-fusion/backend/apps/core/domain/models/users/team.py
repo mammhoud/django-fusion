@@ -5,7 +5,7 @@ from django.db import models
 from django.urls import reverse
 from django.utils import timezone
 from django.utils.translation import gettext_lazy as _
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 from modelcluster.fields import ParentalKey
 from modelcluster.models import ClusterableModel
 from wagtail.admin.panels import FieldPanel, FieldRowPanel, InlinePanel, MultiFieldPanel
@@ -458,7 +458,7 @@ class Team(DefaultBase, ClusterableModel):
             models.Index(fields=["department"]),
             models.Index(fields=["team_type"]),
             models.Index(fields=["status"]),
-            models.Index(fields=["is_active"]),
+            # models.Index(fields=["is_active"]),
             models.Index(fields=["display_order"]),
             models.Index(fields=["active_since"]),
         ]
@@ -471,7 +471,7 @@ class Team(DefaultBase, ClusterableModel):
         index.FilterField("department"),
         index.FilterField("team_type"),
         index.FilterField("status"),
-        index.FilterField("is_active"),
+        # index.FilterField("is_active"),
         index.RelatedFields(
             "memberships__person",
             [

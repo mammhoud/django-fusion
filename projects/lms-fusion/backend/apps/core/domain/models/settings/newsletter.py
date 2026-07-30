@@ -22,7 +22,7 @@ from wagtail.models import (
 from wagtail.search import index
 
 from apps.core.domain.blocks.content.overview import OverviewBlock
-from django_fusion.models.default import DefaultBase
+from django_fusion.models import DefaultBase
 
 
 class Newsletter(

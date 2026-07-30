@@ -745,9 +745,9 @@ resolution-markers = [
     "python_full_version < '3.12'",
 ]
 dependencies = [
-    { name = "asgiref" },
-    { name = "sqlparse" },
-    { name = "tzdata", marker = "sys_platform == 'win32'" },
+    { name = "asgiref", marker = "python_full_version < '3.12'" },
+    { name = "sqlparse", marker = "python_full_version < '3.12'" },
+    { name = "tzdata", marker = "python_full_version < '3.12' and sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a9/26/889449d521ae508b26de715954faecd8bcf3f740affb81b2d146a83b42a5/django-5.2.16.tar.gz", hash = "sha256:59ea02020c3136fce14bef0bbece21a10a4febef5eed1c51c22ae468efa22200", size = 10890894, upload-time = "2026-07-07T13:52:17.005Z" }
 wheels = [
@@ -765,9 +765,9 @@ resolution-markers = [
     "python_full_version >= '3.12' and python_full_version < '3.14' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "asgiref" },
-    { name = "sqlparse" },
-    { name = "tzdata", marker = "sys_platform == 'win32'" },
+    { name = "asgiref", marker = "python_full_version >= '3.12'" },
+    { name = "sqlparse", marker = "python_full_version >= '3.12'" },
+    { name = "tzdata", marker = "python_full_version >= '3.12' and sys_platform == 'win32'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/89/55/664f24ff81c9ea19cb7dfc851afeae1f3c2390c7aee01d4ded68b5c1580d/django-6.0.7.tar.gz", hash = "sha256:2998503fc083124fb58037084bfa00de323c7c743f05f1b4284e77bff0ab8890", size = 10921299, upload-time = "2026-07-07T13:51:26.485Z" }
 wheels = [
@@ -959,7 +959,7 @@ wheels = [
 
 [[package]]
 name = "django-fusion"
-version = "0.4.0"
+version = "0.2.0"
 source = { editable = "libs/django-fusion" }
 dependencies = [
     { name = "attrs" },
@@ -978,7 +978,6 @@ requires-dist = [
     { name = "build", marker = "extra == 'dev'" },
     { name = "colorama", specifier = ">=0.4.6" },
     { name = "django", specifier = ">=4.2" },
-    { name = "django-webpack-loader", marker = "extra == 'webpack'", specifier = ">=3.2.3" },
     { name = "hypothesis", marker = "extra == 'dev'" },
     { name = "hypothesis", marker = "extra == 'test'" },
     { name = "pluggy", specifier = ">=1.6.0" },
@@ -993,7 +992,7 @@ requires-dist = [
     { name = "twine", marker = "extra == 'dev'" },
     { name = "wagtail" },
 ]
-provides-extras = ["test", "dev", "webpack"]
+provides-extras = ["test", "dev"]
 
 [[package]]
 name = "django-heroicons"
@@ -1294,7 +1293,7 @@ resolution-markers = [
     "python_full_version < '3.12'",
 ]
 dependencies = [
-    { name = "django", version = "5.2.16", source = { registry = "https://pypi.org/simple" } },
+    { name = "django", version = "5.2.16", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version < '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/a4/cd/a2fdc41f2eed90242338982e2afadccdab4db7043a829b41a9ec54baaa35/django_unfold-0.91.0.tar.gz", hash = "sha256:98543cf149f9b363ad83c77747ff7e9e89323324b10e6afa4d3a672cb0c4f86d", size = 1121543, upload-time = "2026-04-27T13:25:30.417Z" }
 wheels = [
@@ -1312,7 +1311,7 @@ resolution-markers = [
     "python_full_version >= '3.12' and python_full_version < '3.14' and sys_platform != 'win32'",
 ]
 dependencies = [
-    { name = "django", version = "6.0.7", source = { registry = "https://pypi.org/simple" } },
+    { name = "django", version = "6.0.7", source = { registry = "https://pypi.org/simple" }, marker = "python_full_version >= '3.12'" },
 ]
 sdist = { url = "https://files.pythonhosted.org/packages/df/51/89e55379f81a99efa9305d03fe84c97dfa0a25ead4e1d364de45970d3020/django_unfold-0.101.0.tar.gz", hash = "sha256:4b80bbd22e5d2f90568dd5c0a98f3579e748401ece4b63414dc3c8f625abf4a8", size = 1126108, upload-time = "2026-07-17T08:02:29.067Z" }
 wheels = [

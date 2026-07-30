@@ -36,22 +36,22 @@ export const eventsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     getEvents: builder.query<PaginatedResponse<Event>, { page?: number; status?: string }>({
       query: (params) => ({
-        url: '/apis/events/',
+        url: '/events/',
         params: { page: params.page || 1, status: params.status },
       }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Event' as const, id })), { type: 'Event', id: 'LIST' }] : [{ type: 'Event', id: 'LIST' }],
     }),
     getEvent: builder.query<Event, number>({
-      query: (id) => `/apis/events/${id}/`,
+      query: (id) => `/events/${id}/`,
       providesTags: (result, error, id) => [{ type: 'Event', id }],
     }),
     registerForEvent: builder.mutation<EventRegistration, { event_id: number; full_name: string; email: string; phone?: string }>({
-      query: (body) => ({ url: '/apis/events/register/', method: 'POST', body }),
+      query: (body) => ({ url: '/events/register/', method: 'POST', body }),
       invalidatesTags: [{ type: 'EventRegistration', id: 'LIST' }],
     }),
     getUpcomingEvents: builder.query<Event[], void>({
-      query: () => '/apis/events/upcoming/',
+      query: () => '/events/upcoming/',
       providesTags: [{ type: 'Event', id: 'LIST' }],
     }),
   }),

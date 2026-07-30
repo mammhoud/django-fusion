@@ -83,39 +83,39 @@ export const studentsApi = api.injectEndpoints({
   endpoints: (builder) => ({
     // ── Students ──
     getStudents: builder.query<PaginatedResponse<Student>, { page?: number }>({
-      query: (params) => ({ url: '/apis/students', params: { page: params.page || 1 } }),
+      query: (params) => ({ url: '/students', params: { page: params.page || 1 } }),
       providesTags: (result) =>
         result ? [...result.results.map(({ id }) => ({ type: 'Student' as const, id })), { type: 'Student', id: 'LIST' }] : [{ type: 'Student', id: 'LIST' }],
     }),
     getStudent: builder.query<Student, number>({
-      query: (id) => `/apis/students/${id}`,
+      query: (id) => `/students/${id}`,
       providesTags: (result, error, id) => [{ type: 'Student', id }],
     }),
 
     // ── Dashboard ──
     getDashboard: builder.query<DashboardData, number>({
-      query: (studentId) => `/apis/students/${studentId}/dashboard`,
+      query: (studentId) => `/students/${studentId}/dashboard`,
       providesTags: [{ type: 'Dashboard', id: 'LIST' }],
     }),
 
     // ── Enrollments ──
     getStudentEnrollments: builder.query<Enrollment[], number>({
-      query: (studentId) => `/apis/students/${studentId}/enrollments`,
+      query: (studentId) => `/students/${studentId}/enrollments`,
       providesTags: [{ type: 'Enrollment', id: 'LIST' }],
     }),
     enrollInCourse: builder.mutation<Enrollment, { course_id: number }>({
-      query: (body) => ({ url: '/apis/enrollments', method: 'POST', body }),
+      query: (body) => ({ url: '/enrollments', method: 'POST', body }),
       invalidatesTags: [{ type: 'Enrollment', id: 'LIST' }, { type: 'Course', id: 'LIST' }],
     }),
 
     // ── Progress ──
     getEnrollmentProgress: builder.query<ProgressEntry[], number>({
-      query: (enrollmentId) => `/apis/enrollments/${enrollmentId}/progress`,
+      query: (enrollmentId) => `/enrollments/${enrollmentId}/progress`,
       providesTags: (result, error, id) => [{ type: 'Progress', id }],
     }),
     updateProgress: builder.mutation<{ data: ProgressEntry; created: boolean }, { enrollment_id: number; lesson_id: number; time_spent?: number }>({
       query: ({ enrollment_id, ...body }) => ({
-        url: `/apis/enrollments/${enrollment_id}/progress`,
+        url: `/enrollments/${enrollment_id}/progress`,
         method: 'POST',
         body,
       }),
@@ -125,7 +125,7 @@ export const studentsApi = api.injectEndpoints({
     // ── Payment ──
     initializePayment: builder.mutation<{ data: PaymentInitResponse }, { enrollment_id: number; data: PaymentInitRequest }>({
       query: ({ enrollment_id, data }) => ({
-        url: `/apis/enrollments/${enrollment_id}/payment/init`,
+        url: `/enrollments/${enrollment_id}/payment/init`,
         method: 'POST',
         body: data,
       }),
@@ -133,7 +133,7 @@ export const studentsApi = api.injectEndpoints({
     }),
     verifyPayment: builder.mutation<{ data: PaymentVerifyResponse }, { transaction_id: number }>({
       query: ({ transaction_id }) => ({
-        url: `/apis/payments/${transaction_id}/verify`,
+        url: `/payments/${transaction_id}/verify`,
         method: 'POST',
       }),
     }),

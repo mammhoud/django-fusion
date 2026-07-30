@@ -17,15 +17,19 @@ from django.views.generic.base import RedirectView
 from django.views.static import serve
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
-from django_fusion.core.assets import urls as assets_urls
+try:
+    from django_fusion.core.assets import urls as assets_urls
+except ImportError:
+    assets_urls = None
 from django_fusion.core.health import AssetsHealthView, DatabaseHealthView, HealthCheckView
 from django_fusion.site.interface.utils import get_root_redirect_pattern
+
 from apps.core.routes import site
 
 # ── Optional tooling ────────────────────────────────────────────────────────
 try:
     from django_fusion.contrib.debug_tools.common_urls import configure_common_urls
-except Exception:
+except ImportError:
     def configure_common_urls(urlpatterns):
         return urlpatterns
 
@@ -36,7 +40,7 @@ try:
         handler404,
         handler500,
     )
-except Exception:
+except ImportError:
     handler400 = handler403 = handler404 = handler500 = None
 
 if handler400 is None:
@@ -94,7 +98,7 @@ try:
     from wagtail import urls as wagtail_urls
     from wagtail.admin import urls as wagtailadmin_urls
     from wagtail.documents import urls as wagtaildocs_urls
-except Exception:
+except ImportError:
     wagtail_urls = wagtailadmin_urls = wagtaildocs_urls = None
 
 # ── Health & admin ───────────────────────────────────────────────────────────
@@ -102,11 +106,15 @@ urlpatterns = [
     path("health/", HealthCheckView.as_view(), name="health"),
     path("assets/health/", AssetsHealthView.as_view(), name="assets-health"),
     path("health/database/", DatabaseHealthView.as_view(), name="health-database"),
-    path("fusion/assets/", include(assets_urls)),
-    path("apis/fusion/assets/", include(assets_urls)),
-    path("api/fusion/assets/", include(assets_urls)),
     path("accounts/", include("allauth.urls")),
 ]
+
+if assets_urls is not None:
+    urlpatterns += [
+        path("fusion/assets/", include(assets_urls)),
+        path("apis/fusion/assets/", include(assets_urls)),
+        path("api/fusion/assets/", include(assets_urls)),
+    ]
 
 if apps.is_installed("django.contrib.admin"):
     from django.contrib import admin
