@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
 import { Recipe, NewRecipe, RecipeIngredient, NewRecipeIngredient, Product, Ingredient, Note } from '../../types';
 import PageLayout from '../../components/layout/PageLayout';
@@ -22,6 +23,7 @@ interface RecipeWithDetails {
 
 export default function Recipes() {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(true);
 
   // Data states
@@ -79,7 +81,9 @@ export default function Recipes() {
   const fetchRecipeNotes = async (recipeId: number) => {
     setNotesLoading(true);
     try {
-      const notes = await invoke<Note[]>('get_recipe_notes', { recipeId });
+      const allNotes = await invoke<Note[]>('get_notes');
+      // Filter to only notes linked to this recipe
+      const notes = allNotes.filter(n => n.recipe_id === recipeId);
       setRecipeNotes(notes);
     } catch (e) { 
       setRecipeNotes([]); 
@@ -115,6 +119,7 @@ export default function Recipes() {
     try {
       await invoke('delete_note', { id: noteId });
       await fetchRecipeNotes(showNotesModal.recipe.id);
+      showStatus('success', 'Note deleted');
     } catch (e) { 
       console.error('Error deleting note:', e);
       showStatus('error', String(e));
@@ -412,7 +417,7 @@ export default function Recipes() {
                       <span className="icon-[tabler--pencil] w-4 h-4" />
                     </button>
                     <button onClick={() => openNotesModal(rd)}
-                      className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10" title="Notes">
+                      className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10 relative group/notesbtn" title="Notes">
                       <span className="icon-[tabler--notes] w-4 h-4" />
                     </button>
                     {rd.recipe.is_active && (
@@ -695,7 +700,13 @@ export default function Recipes() {
                 </div>
                 <div>
                   <h3 className="text-lg font-bold text-base-content">Notes for {showNotesModal.productName}</h3>
-                  <p className="text-xs text-base-content/50">Recipe #{showNotesModal.recipe.id} — {showNotesModal.recipe.yield_quantity} {showNotesModal.productUnit}</p>
+                  <p className="text-xs text-base-content/50">
+                    Recipe #{showNotesModal.recipe.id} — {showNotesModal.recipe.yield_quantity} {showNotesModal.productUnit}
+                    {' · '}
+                    <span className="text-info underline cursor-pointer hover:text-info/80" onClick={() => { setShowNotesModal(null); navigate('/notes'); }}>
+                      Open Notes app
+                    </span>
+                  </p>
                 </div>
               </div>
               <button onClick={() => setShowNotesModal(null)} className="btn btn-ghost btn-sm btn-square">

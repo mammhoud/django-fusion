@@ -40,7 +40,7 @@ const MENU_ITEMS: Record<string, MenuItem[]> = {
     { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success text-white' },
     { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-info text-white' },
     { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-info/70 text-white' },
-    { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), colorClass: 'bg-success/70 text-white' },
+    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral/70 text-neutral-content' },
   ],
   products: [
     { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-info text-white' },

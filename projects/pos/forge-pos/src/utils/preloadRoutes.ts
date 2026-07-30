@@ -38,7 +38,6 @@ const preloadRegistry: Record<string, () => Promise<unknown>> = {
   '/tax-reports': () => import('../pages/reports/TaxReports'),
   '/roles': () => import('../pages/staff/Roles'),
   '/support-chat': () => import('../pages/settings/SupportChat'),
-  '/invoice': () => import('../pages/sales/InvoicePage'),
   '/theme-studio': () => import('../pages/settings/ThemeStudio'),
   '/staff': () => import('../pages/staff/StaffPage'),
   '/products': () => import('../pages/inventory/ProductsPage'),
