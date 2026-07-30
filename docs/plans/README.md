@@ -29,9 +29,9 @@ This directory consolidates all implementation plans for the Structa Cloud monor
 | **cms-fusion frontend-improvements** | ⬜ Not Started | 0% | Frontend improvements plan |
 | **cms-fusion dashboard-migration** | ⬜ Not Started | 0% | Dashboard migration to fusion |
 | **cms-fusion fragment-redux-integration** | ⬜ Not Started | 0% | Fragment Redux integration |
-| **forge-pos plan** | 🟡 In Progress | 30% | Recent commits show branding, Roles.tsx work |
-| **forge-pos enhancement** | 🟡 In Progress | 20% | Enhancement tasks in progress |
-| **forge-pos UI-enhancement-master** | ⬜ Not Started | 0% | UI enhancement master plan |
+| **forge-pos plan** | 🟡 In Progress | 60% | P0-P1 complete; P2 KDS + P3 pending |
+| **forge-pos enhancement** | 🟡 In Progress | 20% | Component reorg / Rust / SQL migration pending |
+| **forge-pos UI-enhancement-master** | 🟡 In Progress | 35% | Sections 1, 3, 4, 5, 7, 9, 12 done; 2, 6, 8, 10, 11 pending |
 | **pos-solo enhancement** | ⬜ Not Started | 0% | Solo edition enhancement |
 | **pos cloud plan** | ⬜ Not Started | 0% | Cloud CRM architecture plan |
 | **pos django-fusion-enhancements** | ⬜ Not Started | 0% | Django fusion enhancements |

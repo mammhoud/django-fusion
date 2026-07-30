@@ -24,8 +24,7 @@ interface MenuItem {
   label: string;
   route: string;
   icon: React.ComponentType<{ className?: string }>;
-  color: string;
-  borderColor: string;
+  colorClass: string;
 }
 
 const MENU_CATEGORIES: MenuCategory[] = [
@@ -38,33 +37,33 @@ const MENU_CATEGORIES: MenuCategory[] = [
 
 const MENU_ITEMS: Record<string, MenuItem[]> = {
   sales: [
-    { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), color: 'from-emerald-400 to-emerald-500 dark:from-emerald-500 dark:to-emerald-600', borderColor: 'border-emerald-300 dark:border-emerald-600' },
-    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), color: 'from-teal-400 to-teal-500 dark:from-teal-500 dark:to-teal-600', borderColor: 'border-teal-300 dark:border-teal-600' },
-    { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), color: 'from-cyan-400 to-cyan-500 dark:from-cyan-500 dark:to-cyan-600', borderColor: 'border-cyan-300 dark:border-cyan-600' },
-    { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), color: 'from-lime-400 to-lime-500 dark:from-lime-500 dark:to-lime-600', borderColor: 'border-lime-300 dark:border-lime-600' },
+    { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success text-white' },
+    { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-info text-white' },
+    { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-info/70 text-white' },
+    { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), colorClass: 'bg-success/70 text-white' },
   ],
   products: [
-    { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), color: 'from-blue-400 to-blue-500 dark:from-blue-500 dark:to-blue-600', borderColor: 'border-blue-300 dark:border-blue-600' },
-    { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), color: 'from-sky-400 to-sky-500 dark:from-sky-500 dark:to-sky-600', borderColor: 'border-sky-300 dark:border-sky-600' },
-    { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), color: 'from-indigo-400 to-indigo-500 dark:from-indigo-500 dark:to-indigo-600', borderColor: 'border-indigo-300 dark:border-indigo-600' },
-    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), color: 'from-violet-400 to-violet-500 dark:from-violet-500 dark:to-violet-600', borderColor: 'border-violet-300 dark:border-violet-600' },
+    { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-info text-white' },
+    { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), colorClass: 'bg-accent text-white' },
+    { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-secondary/70 text-white' },
   ],
   staff: [
-    { label: 'nav.staff', route: '/staff', icon: Ic('users'), color: 'from-fuchsia-400 to-fuchsia-500 dark:from-fuchsia-500 dark:to-fuchsia-600', borderColor: 'border-fuchsia-300 dark:border-fuchsia-600' },
-    { label: 'nav.customers', route: '/customers', icon: Ic('users'), color: 'from-orange-400 to-orange-500 dark:from-orange-500 dark:to-orange-600', borderColor: 'border-orange-300 dark:border-orange-600' },
-    { label: 'nav.roles', route: '/roles', icon: Ic('shield'), color: 'from-red-400 to-red-500 dark:from-red-500 dark:to-red-600', borderColor: 'border-red-300 dark:border-red-600' },
+    { label: 'nav.staff', route: '/staff', icon: Ic('users'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.customers', route: '/customers', icon: Ic('users'), colorClass: 'bg-warning text-white' },
+    { label: 'nav.roles', route: '/roles', icon: Ic('shield'), colorClass: 'bg-error text-white' },
   ],
   reports: [
-    { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), color: 'from-rose-400 to-rose-500 dark:from-rose-500 dark:to-rose-600', borderColor: 'border-rose-300 dark:border-rose-600' },
-    { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), color: 'from-amber-400 to-amber-500 dark:from-amber-500 dark:to-amber-600', borderColor: 'border-amber-300 dark:border-amber-600' },
-    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), color: 'from-yellow-400 to-yellow-500 dark:from-yellow-500 dark:to-yellow-600', borderColor: 'border-yellow-300 dark:border-yellow-600' },
+    { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), colorClass: 'bg-error text-white' },
+    { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), colorClass: 'bg-warning text-white' },
+    { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), colorClass: 'bg-warning/70 text-white' },
   ],
   system: [
-    { label: 'nav.settings', route: '/settings', icon: Ic('settings'), color: 'from-slate-400 to-slate-500 dark:from-slate-500 dark:to-slate-600', borderColor: 'border-slate-300 dark:border-slate-600' },
-    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), color: 'from-stone-400 to-stone-500 dark:from-stone-500 dark:to-stone-600', borderColor: 'border-stone-300 dark:border-stone-600' },
-    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), color: 'from-green-400 to-green-500 dark:from-green-500 dark:to-green-600', borderColor: 'border-green-300 dark:border-green-600' },
-    { label: 'nav.themeStudio', route: '/theme-studio', icon: Ic('paint'), color: 'from-purple-400 to-purple-500 dark:from-purple-500 dark:to-purple-600', borderColor: 'border-purple-300 dark:border-purple-600' },
-    { label: 'nav.about', route: '/about', icon: Ic('heart'), color: 'from-rose-400 to-rose-500 dark:from-rose-500 dark:to-rose-600', borderColor: 'border-rose-300 dark:border-rose-600' },
+    { label: 'nav.settings', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral text-neutral-content' },
+    { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral/70 text-neutral-content' },
+    { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-success text-white' },
+    { label: 'nav.themeStudio', route: '/theme-studio', icon: Ic('paint'), colorClass: 'bg-secondary text-white' },
+    { label: 'nav.about', route: '/about', icon: Ic('heart'), colorClass: 'bg-error text-white' },
   ],
 };
 
@@ -330,7 +329,7 @@ export default function Home() {
                       group disabled:opacity-60"
                   >
               {/* Category Color accent strip */}
-                    <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl bg-gradient-to-r ${menuItem.color} opacity-60`} />
+                    <div className={`absolute top-0 left-0 right-0 h-1 rounded-t-2xl ${menuItem.colorClass.split(' ')[0]} opacity-60`} />
                     {isLoading ? (
                       <div className="w-full flex items-center justify-center py-4">
                         <motion.div
@@ -341,7 +340,7 @@ export default function Home() {
                       </div>
                     ) : (
                       <div className={`w-11 h-11 rounded-xl flex items-center justify-center mb-2
-                        bg-gradient-to-br ${menuItem.color} text-white shadow-md mx-auto
+                        ${menuItem.colorClass} shadow-md mx-auto
                         group-hover:scale-110 transition-transform duration-300`}
                       >
                         <Icon className="w-5 h-5" />

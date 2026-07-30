@@ -41,7 +41,7 @@ interface NavItem {
   label: string;
   route: string;
   icon: React.ComponentType<{ className?: string }>;
-  gradient: string;
+  colorClass: string;
 }
 
 interface NavCategory {
@@ -57,21 +57,21 @@ const navCategories: NavCategory[] = [
     label: 'nav.sales',
     icon: 'shopping-cart',
     items: [
-      { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), gradient: 'from-emerald-400 to-emerald-500' },
-      { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), gradient: 'from-teal-400 to-teal-500' },
-      { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), gradient: 'from-cyan-400 to-cyan-500' },
-      { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), gradient: 'from-sky-400 to-sky-500' },
+      { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success' },
+      { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-info' },
+      { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-info/70' },
+      { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), colorClass: 'bg-success/70' },
     ],
   },    {
     id: 'products',
     label: 'nav.products',
     icon: 'package',
     items: [
-      { label: 'nav.productsMerged', route: '/products', icon: Ic('apps'), gradient: 'from-blue-400 to-blue-500' },
-      { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), gradient: 'from-indigo-400 to-indigo-500' },
-      { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), gradient: 'from-violet-400 to-violet-500' },
-      { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), gradient: 'from-purple-400 to-purple-500' },
-      { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), gradient: 'from-pink-400 to-pink-500' },
+      { label: 'nav.productsMerged', route: '/products', icon: Ic('apps'), colorClass: 'bg-info' },
+      { label: 'nav.productManager', route: '/manager', icon: Ic('clipboard-list'), colorClass: 'bg-accent' },
+      { label: 'nav.inventory', route: '/inventory', icon: Ic('package'), colorClass: 'bg-secondary' },
+      { label: 'nav.recipes', route: '/recipes', icon: Ic('flask'), colorClass: 'bg-secondary/70' },
+      { label: 'nav.suppliers', route: '/suppliers', icon: Ic('truck'), colorClass: 'bg-info/70' },
     ],
   },
   {
@@ -79,11 +79,11 @@ const navCategories: NavCategory[] = [
     label: 'nav.staff',
     icon: 'users',
     items: [
-      { label: 'nav.employees', route: '/employees', icon: Ic('users'), gradient: 'from-fuchsia-400 to-fuchsia-500' },
-      { label: 'nav.schedule', route: '/schedule', icon: Ic('calendar-event'), gradient: 'from-pink-400 to-pink-500' },
-      { label: 'nav.payroll', route: '/payroll', icon: Ic('moneybag'), gradient: 'from-rose-400 to-rose-500' },
-      { label: 'nav.customers', route: '/customers', icon: Ic('users'), gradient: 'from-orange-400 to-orange-500' },
-      { label: 'nav.roles', route: '/roles', icon: Ic('shield'), gradient: 'from-red-400 to-red-500' },
+      { label: 'nav.employees', route: '/employees', icon: Ic('users'), colorClass: 'bg-secondary' },
+      { label: 'nav.schedule', route: '/schedule', icon: Ic('calendar-event'), colorClass: 'bg-secondary/70' },
+      { label: 'nav.payroll', route: '/payroll', icon: Ic('moneybag'), colorClass: 'bg-error' },
+      { label: 'nav.customers', route: '/customers', icon: Ic('users'), colorClass: 'bg-warning' },
+      { label: 'nav.roles', route: '/roles', icon: Ic('shield'), colorClass: 'bg-error/70' },
     ],
   },
   {
@@ -91,9 +91,9 @@ const navCategories: NavCategory[] = [
     label: 'nav.reports',
     icon: 'chart-bar',
     items: [
-      { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), gradient: 'from-amber-400 to-amber-500' },
-      { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), gradient: 'from-yellow-400 to-yellow-500' },
-      { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), gradient: 'from-lime-400 to-lime-500' },
+      { label: 'nav.analytics', route: '/analytics', icon: Ic('chart-bar'), colorClass: 'bg-error' },
+      { label: 'nav.reports', route: '/reports', icon: Ic('file-text'), colorClass: 'bg-warning' },
+      { label: 'nav.taxReports', route: '/tax-reports', icon: Ic('building-bank'), colorClass: 'bg-warning/70' },
     ],
   },
   {
@@ -101,11 +101,11 @@ const navCategories: NavCategory[] = [
     label: 'nav.system',
     icon: 'dashboard',
     items: [
-      { label: 'nav.settings', route: '/settings', icon: Ic('settings'), gradient: 'from-slate-400 to-slate-500' },
-      { label: 'nav.notes', route: '/notes', icon: Ic('notes'), gradient: 'from-stone-400 to-stone-500' },
-      { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), gradient: 'from-green-400 to-green-500' },
-      { label: 'nav.themeStudio', route: '/theme-studio', icon: Ic('paint'), gradient: 'from-purple-400 to-purple-500' },
-      { label: 'nav.about', route: '/about', icon: Ic('heart'), gradient: 'from-rose-400 to-rose-500' },
+      { label: 'nav.settings', route: '/settings', icon: Ic('settings'), colorClass: 'bg-neutral' },
+      { label: 'nav.notes', route: '/notes', icon: Ic('notes'), colorClass: 'bg-neutral/70' },
+      { label: 'nav.supportChat', route: '/support-chat', icon: Ic('messages'), colorClass: 'bg-success' },
+      { label: 'nav.themeStudio', route: '/theme-studio', icon: Ic('paint'), colorClass: 'bg-secondary' },
+      { label: 'nav.about', route: '/about', icon: Ic('heart'), colorClass: 'bg-error' },
     ],
   },
 ];
@@ -182,7 +182,7 @@ function NavItemButton({
       title={!isExpanded ? item.label : undefined}
     >
       <div className={`w-7 h-7 min-w-[1.75rem] rounded-lg flex items-center justify-center text-white text-xs
-        bg-linear-to-br ${item.gradient} shadow-sm
+        ${item.colorClass} shadow-sm
         ${isActive ? 'scale-110' : 'group-hover:scale-105'} transition-transform shrink-0`}
       >
         <Icon className="w-3.5 h-3.5" />
@@ -315,7 +315,7 @@ function PersistentSidebar({ currentRoute }: { currentRoute: string }) {
         {/* Home button always visible */}
         <div className="px-3 pt-2 pb-1">
           <NavItemButton
-            item={{ label: 'nav.home', route: '/dashboard', icon: Ic('dashboard'), gradient: 'from-teal-400 to-teal-500' }}
+            item={{ label: 'nav.home', route: '/dashboard', icon: Ic('dashboard'), colorClass: 'bg-info' }}
             isActive={currentRoute === '/dashboard'}
             isExpanded={expanded}
             onClick={() => handleNavigate('/dashboard')}
@@ -490,7 +490,7 @@ const SideNav = memo(function SideNav({ isOpen = false, onClose = () => {}, curr
                 }`}
               >
                 <div className="w-8 h-8 rounded-lg flex items-center justify-center text-white text-sm
-                  bg-linear-to-br from-teal-400 to-teal-500 shadow-sm shrink-0
+                  bg-info shadow-sm shrink-0
                   group-hover:scale-105 transition-transform">
                   <span className="icon-[tabler--dashboard] w-4 h-4" />
                 </div>

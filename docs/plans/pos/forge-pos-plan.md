@@ -4,11 +4,11 @@
 ## Priority Order (Expected Risk Reduction × Effort)
 
 ### P0 — Must fix before using pageTransition changes
-- [ ] Remove unused `staggerItem` import from Home.tsx
+- [x] Remove unused `staggerItem` import from Home.tsx
 
 ### P1 — High-impact, low-effort
-- [ ] React.memo on SideNav.tsx and ProductCard.tsx
-- [ ] hover:scale-[1.02] active:scale-[0.97] CSS on 14 converted buttons
+- [x] React.memo on SideNav.tsx and ProductCard.tsx
+- [x] hover:scale-[1.02] active:scale-[0.97] CSS on 14 converted buttons
 
 ### P2 — High-impact, moderate-effort
 - [ ] UseApiMutation hook (matches backend CRUD pattern, removes boilerplate)
@@ -38,12 +38,12 @@
 
 ## Execution Order
 
-Phase 1 — Stabilization (P0):
-1. Remove unused staggerItem import
+Phase 1 — Stabilization (P0): ✅ Complete
+1. Remove unused staggerItem import — ✅
 
-Phase 2 — Performance wins (P1):
-3. SideNav.memo + ProductCard.memo
-4. CSS hover/tap on converted buttons
+Phase 2 — Performance wins (P1): ✅ Complete
+3. SideNav.memo + ProductCard.memo — ✅ Both already use React.memo()
+4. CSS hover/tap on converted buttons — ✅ ProductCard uses whileHover/whileTap, menu items use active:scale
 
 Phase 3 — KDS enhancements (P2):
 5. Time-elapsed progress bar
