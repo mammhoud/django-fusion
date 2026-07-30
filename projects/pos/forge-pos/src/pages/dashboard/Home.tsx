@@ -179,7 +179,7 @@ export default function Home() {
         </p>
       </div>
 
-      {/* ── Quick Access Cards — FlyonUI card grid ── */}
+      {/* ── Quick Access Cards — hover gradient animation + keyboard accessible ── */}
       <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
         style={{ animationDelay: '0.1s' }}
       >
@@ -189,20 +189,30 @@ export default function Home() {
               <button
                 key={qa.route}
                 onClick={() => handleNavigation(qa.route)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleNavigation(qa.route); } }}
                 disabled={loadingRoute !== null}
+                tabIndex={0}
+                role="button"
+                aria-label={t(qa.label)}
                 style={{ animationDelay: `${0.2 + i * 0.06}s` }}
-                className="relative card bg-base-200/50 hover:bg-base-200 dark:bg-white/5 dark:hover:bg-white/10
+                className="relative card bg-base-200/50 dark:bg-white/5
                   border border-base-300/20 p-3 rounded-xl
-                  transition-all duration-200 group disabled:opacity-60 animate-fade-in"
+                  transition-all duration-200 group disabled:opacity-60 animate-fade-in
+                  hover:shadow-card-hover hover:-translate-y-0.5
+                  focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none
+                  overflow-hidden"
               >
-                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-2
+                {/* Hover gradient sweep animation */}
+                <div className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300
+                  bg-linear-to-br ${qa.gradient}`} />
+                <div className={`w-9 h-9 rounded-xl flex items-center justify-center mb-2 relative z-10
                   bg-linear-to-br ${qa.gradient} text-white shadow-lg
                   group-hover:scale-110 transition-transform duration-200`}
                 >
                   <span className={iconClass(qa.icon, 'w-4 h-4')} />
                 </div>
-                <span className="text-xs font-semibold text-base-content/80 text-center leading-tight">{t(qa.label)}</span>
-                <span className="text-[10px] text-base-content/50 text-center mt-0.5 leading-tight line-clamp-1">{t(qa.desc)}</span>
+                <span className="text-xs font-semibold text-base-content/80 text-center leading-tight relative z-10">{t(qa.label)}</span>
+                <span className="text-[10px] text-base-content/50 text-center mt-0.5 leading-tight line-clamp-1 relative z-10">{t(qa.desc)}</span>
               </button>
             ))}
           </div>
@@ -213,7 +223,10 @@ export default function Home() {
       <div className="max-w-6xl mx-auto px-2 mb-8 animate-slide-up"
         style={{ animationDelay: '0.2s' }}
       >
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 md:gap-4">
+        <h2 className="text-sm font-semibold uppercase tracking-wider text-base-content/50 mb-3 pl-1">
+          {t('home.liveDashboard', 'Live Dashboard')}
+        </h2>
+        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3 md:gap-4">
           {kpisLoading ? (
             <>
               {[1, 2, 3, 4, 5, 6].map(i => (
@@ -314,14 +327,23 @@ export default function Home() {
                   <button
                     key={menuItem.route}
                     onClick={() => handleNavigation(menuItem.route)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleNavigation(menuItem.route); } }}
                     disabled={loadingRoute !== null}
+                    tabIndex={0}
+                    role="button"
+                    aria-label={t(menuItem.label)}
                     className="relative card bg-base-100/80 dark:bg-white/5 backdrop-blur-sm
-                      border-2 border-base-300/40 hover:border-base-300
-                      dark:border-white/10 dark:hover:border-white/30
+                      border-2 border-base-300/40
+                      dark:border-white/10
                       p-3 rounded-2xl transition-all duration-300
-                      hover:shadow-xl hover:-translate-y-0.5 active:scale-[0.98]
-                      group disabled:opacity-60"
+                      hover:shadow-card-hover hover:-translate-y-0.5 active:scale-[0.98]
+                      focus-visible:ring-2 focus-visible:ring-primary/40 focus-visible:outline-none
+                      group disabled:opacity-60 overflow-hidden"
                   >
+                    {/* Hover glow effect */}
+                    <div className="absolute inset-0 rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500
+                      bg-radial-[at_50%_0%] from-white/10 via-transparent to-transparent
+                      dark:from-white/5" />
 
                     {isLoading ? (
                       <div className="w-full flex items-center justify-center py-4">
