@@ -15,7 +15,7 @@ import { Ic, iconClass } from '../../lib/icons';
 // 'employee' sees only operational pages — no settings, reports, or admin.
 export const ROLE_ROUTES: Record<string, Set<string>> = {
   manager: new Set([
-    '/dashboard', '/sale', '/kitchen', '/transactions', '/invoice',
+    '/dashboard', '/sale', '/kitchen', '/transactions',
     '/products', '/manager', '/inventory', '/recipes', '/suppliers',
     '/employees', '/schedule', '/payroll', '/customers', '/roles',
     '/analytics', '/reports', '/tax-reports',
@@ -60,7 +60,7 @@ const navCategories: NavCategory[] = [
       { label: 'nav.newSale', route: '/sale', icon: Ic('shopping-cart'), colorClass: 'bg-success' },
       { label: 'nav.kitchen', route: '/kitchen', icon: Ic('tools-kitchen-2'), colorClass: 'bg-info' },
       { label: 'nav.transactions', route: '/transactions', icon: Ic('history'), colorClass: 'bg-info/70' },
-      { label: 'nav.invoice', route: '/invoice', icon: Ic('file-invoice'), colorClass: 'bg-success/70' },
+
     ],
   },    {
     id: 'products',
