@@ -181,8 +181,29 @@ export default function Transactions() {
     return Array.from(map.values()).sort((a, b) => b.totalRev - a.totalRev);
   }, [filteredTransactions]);
 
-  const totalAllTime = transactions.reduce((sum, t) => sum + t.total_amount, 0);
-  const totalFiltered = filteredTransactions.reduce((sum, t) => sum + t.total_amount, 0);
+  // ── Time-bucketed KPIs (Today / This Week / This Month / Outstanding) ──
+  // Uses full transactions (unfiltered) so KPIs always show true calendar periods
+  const todayKpis = useMemo(() => {
+    const now = new Date();
+    const todayStr = now.toISOString().slice(0, 10);
+    const weekStart = new Date(now); weekStart.setDate(now.getDate() - now.getDay() + (now.getDay() === 0 ? -6 : 1));
+    const monthStart = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, '0')}-01`;
+
+    const todayTx = transactions.filter(t => t.date === todayStr);
+    const weekTx = transactions.filter(t => t.date >= weekStart.toISOString().slice(0, 10));
+    const monthTx = transactions.filter(t => t.date >= monthStart);
+    const outstandingTx = transactions.filter(t => t.status !== 'completed');
+
+    return {
+      todayRevenue: todayTx.reduce((s, t) => s + t.total_amount, 0),
+      todayOrders: todayTx.length,
+      weekRevenue: weekTx.reduce((s, t) => s + t.total_amount, 0),
+      weekOrders: weekTx.length,
+      monthRevenue: monthTx.reduce((s, t) => s + t.total_amount, 0),
+      monthOrders: monthTx.length,
+      outstanding: outstandingTx.length,
+    };
+  }, [transactions]);
 
   const handleDeleteTransaction = async (id: number) => {
     if (!confirm(t('transactions.deleteConfirm'))) return;
@@ -762,24 +783,34 @@ export default function Transactions() {
         {activeTab === 'timeTotal' && (
           <div className="space-y-6">
             {/* Summary Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
               <StatCard
-                title={t('transactions.allTimeTotal')}
-                value={`${transactions[0]?.currency || ''} ${totalAllTime.toFixed(2)}`}
-                icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
+                title={t('transactions.today') || 'Today'}
+                value={`${transactions[0]?.currency || ''} ${todayKpis.todayRevenue.toFixed(2)}`}
+                desc={todayKpis.todayOrders === 1 ? '1 order' : `${todayKpis.todayOrders} orders`}
+                icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
                 color="primary"
               />
               <StatCard
-                title={t('transactions.filteredTotal')}
-                value={`${transactions[0]?.currency || ''} ${totalFiltered.toFixed(2)}`}
-                icon={<span className="icon-[tabler--filter] w-6 h-6" />}
+                title={t('transactions.thisWeek') || 'This Week'}
+                value={`${transactions[0]?.currency || ''} ${todayKpis.weekRevenue.toFixed(2)}`}
+                desc={todayKpis.weekOrders === 1 ? '1 order' : `${todayKpis.weekOrders} orders`}
+                icon={<span className="icon-[tabler--calendar-week] w-6 h-6" />}
                 color="info"
               />
               <StatCard
-                title={t('transactions.filteredTransactions')}
-                value={filteredTransactions.length}
-                icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
+                title={t('transactions.thisMonth') || 'This Month'}
+                value={`${transactions[0]?.currency || ''} ${todayKpis.monthRevenue.toFixed(2)}`}
+                desc={todayKpis.monthOrders === 1 ? '1 order' : `${todayKpis.monthOrders} orders`}
+                icon={<span className="icon-[tabler--calendar-month] w-6 h-6" />}
                 color="secondary"
+              />
+              <StatCard
+                title={t('transactions.outstanding') || 'Outstanding'}
+                value={todayKpis.outstanding}
+                desc={todayKpis.outstanding === 0 ? 'All settled' : `${todayKpis.outstanding} pending`}
+                icon={<span className="icon-[tabler--clock-exclamation] w-6 h-6" />}
+                color={todayKpis.outstanding > 0 ? 'warning' : 'success'}
               />
             </div>
 
