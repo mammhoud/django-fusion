@@ -1,4 +1,4 @@
-import { useState, useEffect, useCallback, useRef } from 'react';
+import { useState, useEffect, useCallback, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import PageLayout from '../../components/layout/PageLayout';
@@ -85,6 +85,28 @@ export default function KitchenDisplay() {
   const [isLoading, setIsLoading] = useState(true);
   const [filter, setFilter] = useState<string>('pending');
 
+  // ── P2 KDS enhancements: sort, mute, overdue tracking ──
+  const [sortOrder, setSortOrder] = useState<'newest' | 'overdue-first'>(() => {
+    try { return (localStorage.getItem('kds-sort-order') as 'newest' | 'overdue-first') || 'newest'; }
+    catch { return 'newest'; }
+  });
+  const [mutedUntil, setMutedUntil] = useState<number | null>(() => {
+    try {
+      const saved = localStorage.getItem('kds-muted-until');
+      if (saved) {
+        const ts = parseInt(saved, 10);
+        return ts > Date.now() ? ts : null;
+      }
+    } catch {}
+    return null;
+  });
+  // Calculate mutedUntil directly from state for the countdown display
+  const muteRemaining = useMemo(() => {
+    if (!mutedUntil || mutedUntil <= Date.now()) return null;
+    const remaining = Math.ceil((mutedUntil - Date.now()) / 60000);
+    return remaining > 0 ? `${remaining}m` : '<1m';
+  }, [mutedUntil]);
+
   // Ticket detail modal state
   const [selectedTicket, setSelectedTicket] = useState<KitchenTicket | null>(null);
   const [saleItems, setSaleItems] = useState<SaleItemData[]>([]);
@@ -113,7 +135,7 @@ export default function KitchenDisplay() {
   } = useDebouncedSearch();
 
   // ── Sound + tab-title flash for new pending tickets ──
-  useKDSNotification(tickets);
+  useKDSNotification(tickets, mutedUntil);
 
   useEffect(() => {
     loadTickets({ quiet: false });
@@ -211,10 +233,29 @@ export default function KitchenDisplay() {
   // Filter — text search + order-type preference (via priority: 1=dine-in, 2=takeaway, 3=delivery)
   const q = debouncedSearch.trim().toLowerCase();
   const showAllPriorities = preferredPriorities.length === 0;
-  const filteredTickets = tickets.filter(t => {
+  const rawFiltered = tickets.filter(t => {
     if (q && !String(t.sale_id || '').includes(q) && !(t.notes || '').toLowerCase().includes(q)) return false;
     return showAllPriorities || preferredPriorities.includes(t.priority);
   });
+
+  // ── Sort: overdue-first or newest first ──
+  const filteredTickets = useMemo(() => {
+    const sorted = [...rawFiltered];
+    if (sortOrder === 'overdue-first') {
+      sorted.sort((a, b) => {
+        const aOverdue = isOverdue(a);
+        const bOverdue = isOverdue(b);
+        if (aOverdue && !bOverdue) return -1;
+        if (!aOverdue && bOverdue) return 1;
+        // Both overdue or both not overdue — sort by newest first
+        return new Date(b.created_at).getTime() - new Date(a.created_at).getTime();
+      });
+    } else {
+      // Newest first (default)
+      sorted.sort((a, b) => new Date(b.created_at).getTime() - new Date(a.created_at).getTime());
+    }
+    return sorted;
+  }, [rawFiltered, sortOrder]);
 
   const statusColors: Record<string, string> = {
     pending: 'border-warning/50 bg-warning/5',
@@ -307,6 +348,39 @@ export default function KitchenDisplay() {
             >
               <span className="icon-[tabler--adjustments] w-3.5 h-3.5" />
             </button>
+            {/* Sort toggle */}
+            <button
+              type="button"
+              onClick={() => {
+                const next = sortOrder === 'newest' ? 'overdue-first' : 'newest';
+                setSortOrder(next);
+                localStorage.setItem('kds-sort-order', next);
+              }}
+              className={`btn btn-ghost btn-sm gap-1 text-xs ${sortOrder === 'overdue-first' ? 'btn-active text-error' : ''}`}
+              title={sortOrder === 'overdue-first' ? 'Sorting: Overdue first' : 'Sorting: Newest first'}
+            >
+              <span className={iconClass('lucide:alert-triangle', `w-3.5 h-3.5 ${sortOrder === 'overdue-first' ? 'text-error' : ''}`)} />
+              <span className="hidden sm:inline">{sortOrder === 'overdue-first' ? 'Overdue' : 'Newest'}</span>
+            </button>
+            {/* Mute 30min button */}
+            <button
+              type="button"
+              onClick={() => {
+                if (mutedUntil && mutedUntil > Date.now()) {
+                  setMutedUntil(null);
+                  localStorage.removeItem('kds-muted-until');
+                } else {
+                  const ts = Date.now() + 30 * 60 * 1000;
+                  setMutedUntil(ts);
+                  localStorage.setItem('kds-muted-until', String(ts));
+                }
+              }}
+              className={`btn btn-ghost btn-sm gap-1 text-xs ${mutedUntil && mutedUntil > Date.now() ? 'btn-active text-error' : ''}`}
+              title={mutedUntil && mutedUntil > Date.now() ? `Muted for ${muteRemaining}` : 'Mute notifications for 30 min'}
+            >
+              <span className={iconClass(mutedUntil && mutedUntil > Date.now() ? 'lucide:bell-off' : 'lucide:bell', 'w-3.5 h-3.5')} />
+              <span className="hidden sm:inline">{mutedUntil && mutedUntil > Date.now() ? muteRemaining : 'Mute'}</span>
+            </button>
           </div>
         </div>
 
@@ -358,8 +432,14 @@ export default function KitchenDisplay() {
 
         {/* ── Ticket count ── */}
         {filteredTickets.length > 0 && (
-          <div className="text-[10px] text-base-content/40 text-right -mt-1">
-            {filteredTickets.length} / {tickets.length}
+          <div className="flex items-center justify-end gap-2 text-[10px] text-base-content/40 -mt-1">
+            <span>{filteredTickets.length} / {tickets.length}</span>
+            {filteredTickets.filter(t => isOverdue(t)).length > 0 && (
+              <span className="badge badge-xs badge-error gap-1 animate-pulse">
+                <span className="icon-[tabler--alert-triangle] w-2.5 h-2.5" />
+                {filteredTickets.filter(t => isOverdue(t)).length} overdue
+              </span>
+            )}
           </div>
         )}
 
@@ -443,6 +523,27 @@ export default function KitchenDisplay() {
                       <span className="text-[9px] px-2 py-0.5 rounded bg-success/20 text-success font-medium">Ready ✓</span>
                     )}
                   </div>
+                  {/* ── Time-elapsed progress bar (green→yellow→red) ── */}
+                  {ticket.prepare_time_minutes > 0 && ticket.status !== 'delivered' && ticket.status !== 'ready' && (() => {
+                    const elapsed = Date.now() - new Date(ticket.created_at.replace(' ', 'T')).getTime();
+                    const estimate = ticket.prepare_time_minutes * 60 * 1000;
+                    const pct = Math.min(100, Math.round((elapsed / estimate) * 100));
+                    const barColor = pct < 50 ? 'bg-success' : pct < 90 ? 'bg-warning' : 'bg-error';
+                    return (
+                      <div className="mt-1.5 w-full">
+                        <div className="flex items-center justify-between text-[8px] text-base-content/30 mb-0.5">
+                          <span>{pct}%</span>
+                          <span>{Math.round(elapsed / 60000)}m / {ticket.prepare_time_minutes}m</span>
+                        </div>
+                        <div className="w-full h-1 rounded-full bg-base-300/50 overflow-hidden">
+                          <div
+                            className={`h-full rounded-full transition-all duration-1000 ${barColor} ${overdue ? 'animate-pulse' : ''}`}
+                            style={{ width: `${pct}%`, minWidth: pct > 0 ? '4px' : '0px' }}
+                          />
+                        </div>
+                      </div>
+                    );
+                  })()}
                 </button>
               );
             })}
