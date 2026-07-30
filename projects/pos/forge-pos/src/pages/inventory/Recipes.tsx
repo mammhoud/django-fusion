@@ -64,6 +64,7 @@ export default function Recipes() {
   const [notesLoading, setNotesLoading] = useState(false);
   const [newNoteForm, setNewNoteForm] = useState({ name: '', category: 'preparation' as string, template_body: '' });
   const [editingNote, setEditingNote] = useState<Note | null>(null);
+  const [noteCounts, setNoteCounts] = useState<Record<number, number>>({});
 
   // Note category definitions with color coding
   const NOTE_CATEGORIES: { id: string; label: string; badge: string }[] = [
@@ -119,6 +120,7 @@ export default function Recipes() {
       setNewNoteForm({ name: '', category: 'preparation', template_body: '' });
       notesCache = null; // invalidate cache after mutation
       await fetchRecipeNotes(showNotesModal.recipe.id);
+      refreshNoteCounts();
       showStatus('success', 'Note added!');
     } catch (e) { 
       console.error('Error adding note:', e);
@@ -132,6 +134,7 @@ export default function Recipes() {
       await invoke('delete_note', { id: noteId });
       notesCache = null; // invalidate cache after mutation
       await fetchRecipeNotes(showNotesModal.recipe.id);
+      refreshNoteCounts();
       showStatus('success', 'Note deleted');
     } catch (e) { 
       console.error('Error deleting note:', e);
@@ -153,11 +156,26 @@ export default function Recipes() {
       setEditingNote(null);
       notesCache = null; // invalidate cache after mutation
       await fetchRecipeNotes(showNotesModal.recipe.id);
+      refreshNoteCounts();
       showStatus('success', 'Note updated!');
     } catch (e) {
       console.error('Error updating note:', e);
       showStatus('error', String(e));
     }
+  };
+
+  const refreshNoteCounts = async () => {
+    try {
+      const allNotes = notesCache || await invoke<Note[]>('get_notes');
+      if (!notesCache) { notesCache = allNotes; notesCacheTimestamp = Date.now(); }
+      const counts: Record<number, number> = {};
+      for (const n of allNotes) {
+        if (n.recipe_id != null) {
+          counts[n.recipe_id] = (counts[n.recipe_id] || 0) + 1;
+        }
+      }
+      setNoteCounts(counts);
+    } catch { /* non-critical */ }
   };
 
   const openNotesModal = async (rd: RecipeWithDetails) => {
@@ -200,6 +218,20 @@ export default function Recipes() {
         } catch { ingredientsMap[r.id] = []; }
       }));
       setRecipeIngredientsMap(ingredientsMap);
+
+      // Compute note counts grouped by recipe_id (reuses module-level cache)
+      try {
+        const allNotes = await invoke<Note[]>('get_notes');
+        notesCache = allNotes;
+        notesCacheTimestamp = Date.now();
+        const counts: Record<number, number> = {};
+        for (const n of allNotes) {
+          if (n.recipe_id != null) {
+            counts[n.recipe_id] = (counts[n.recipe_id] || 0) + 1;
+          }
+        }
+        setNoteCounts(counts);
+      } catch { /* note count fetch is non-critical */ }
     } catch (error) {
       console.error('Error loading data:', error);
     } finally {
@@ -454,6 +486,11 @@ export default function Recipes() {
                     <button onClick={() => openNotesModal(rd)}
                       className="text-info hover:text-info/70 p-1.5 rounded-lg hover:bg-info/10 relative group/notesbtn" title="Notes">
                       <span className="icon-[tabler--notes] w-4 h-4" />
+                      {(noteCounts[rd.recipe.id] || 0) > 0 && (
+                        <span className="absolute -top-1 -right-1 min-w-4 h-4 px-0.5 flex items-center justify-center rounded-full bg-info text-info-content text-[10px] font-bold leading-none">
+                          {noteCounts[rd.recipe.id]}
+                        </span>
+                      )}
                     </button>
                     {rd.recipe.is_active && (
                       <button onClick={() => setShowDeleteRecipe(rd.recipe)}
