@@ -1,7 +1,7 @@
 import { useState, useRef, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useLanguage } from '../../contexts/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 const langOptions = [
   { value: 'en' as const, label: 'English', flag: '🇬🇧' },
@@ -42,7 +42,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
       >
         <span className="icon-[tabler--language] w-4 h-4 shrink-0 opacity-70" />
         <span className="flex-1 text-left">{current.flag} {current.label}</span>
-        <motion.svg
+        <svg
           animate={{ rotate: isOpen ? 180 : 0 }}
           transition={{ duration: 0.2 }}
           className="w-3.5 h-3.5 opacity-50"
@@ -54,12 +54,12 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
           strokeLinejoin="round"
         >
           <polyline points="6 9 12 15 18 9" />
-        </motion.svg>
+        </svg>
       </button>
 
       <AnimatePresence>
         {isOpen && (
-          <motion.div
+          <div
             initial={{ opacity: 0, y: -8, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: -8, scale: 0.95 }}
@@ -92,7 +92,7 @@ export default function LanguageToggle({ dropdownUp = true }: { dropdownUp?: boo
                 </button>
               );
             })}
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>

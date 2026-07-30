@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useTranslation } from 'react-i18next';
 
 interface BackButtonProps {
@@ -23,7 +22,7 @@ interface BackButtonProps {
     >
       {disabled ? (
         <>
-          <motion.div
+          <div
             animate={{ rotate: 360 }}
             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
             className="w-4 h-4 border-2 border-slate-500 dark:border-slate-300 border-t-transparent rounded-full shrink-0"

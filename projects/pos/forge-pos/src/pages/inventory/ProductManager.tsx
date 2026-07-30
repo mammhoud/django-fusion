@@ -1,4 +1,3 @@
-import { motion, AnimatePresence } from 'framer-motion';
 import { useState, useEffect, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { open } from '@tauri-apps/plugin-dialog';
@@ -13,6 +12,7 @@ import { useTranslation } from 'react-i18next';
 import KeyboardShortcutsModal from '../../components/shared/KeyboardShortcutsModal';
 import { useDebouncedSearch } from '../../hooks/useDebouncedSearch';
 import { useCurrency } from '../../contexts/CurrencyContext';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 interface FormErrors {
   name?: string;
@@ -509,7 +509,7 @@ export default function ProductManager() {
             aria-label={t('productManager.deleteTitle')}
           >
             {deletingId === p.id ? (
-              <motion.div
+              <div
                 animate={{ rotate: 360 }}
                 transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                 className="w-3.5 h-3.5 border-2 border-error border-t-transparent rounded-full"
@@ -699,7 +699,7 @@ export default function ProductManager() {
       {viewMode === 'grid' ? (
         <AnimatePresence mode="wait">
           {isLoading ? (
-            <motion.div
+            <div
               key="skeleton"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
@@ -707,9 +707,9 @@ export default function ProductManager() {
               {Array.from({ length: PRODUCT_SKELETON_COUNT }).map((_, i) => (
                 <ProductCardSkeleton key={i} />
               ))}
-            </motion.div>
+            </div>
           ) : filteredProducts.length > 0 ? (
-            <motion.div
+            <div
               key="grid"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
               className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 2xl:grid-cols-8 3xl:grid-cols-9 4xl:grid-cols-10 gap-2"
@@ -746,7 +746,7 @@ export default function ProductManager() {
                         aria-label={t('productManager.deleteTitle')}
                       >
                         {deletingId === product.id ? (
-                          <motion.div
+                          <div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             className="w-3.5 h-3.5 border-2 border-red-400 border-t-transparent rounded-full"
@@ -759,9 +759,9 @@ export default function ProductManager() {
                   </ProductCard>
                 );
               })}
-            </motion.div>
+            </div>
           ) : (
-            <motion.div
+            <div
               key="empty"
               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             >
@@ -779,7 +779,7 @@ export default function ProductManager() {
                   </button>
                 )}
               </Card>
-            </motion.div>
+            </div>
           )}
         </AnimatePresence>
       ) : (
@@ -798,7 +798,7 @@ export default function ProductManager() {
       {/* Add / Edit Modal (unified) */}
       {showAddModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <motion.div
+          <div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-base-100 rounded-xl p-4 sm:p-6 w-full max-w-md transition-colors duration-300"
@@ -840,7 +840,7 @@ export default function ProductManager() {
                         transition-all cursor-pointer disabled:opacity-50"
                     >
                       {isUploadingImage ? (
-                        <motion.div
+                        <div
                           animate={{ rotate: 360 }}
                           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                           className="w-5 h-5 border-2 border-teal-400 border-t-transparent rounded-full"
@@ -1049,7 +1049,7 @@ export default function ProductManager() {
                 >
                   {isSubmitting ? (
                     <>
-                      <motion.div
+                      <div
                         animate={{ rotate: 360 }}
                         transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
                         className="w-5 h-5 border-2 border-white border-t-transparent rounded-full"
@@ -1065,14 +1065,14 @@ export default function ProductManager() {
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Delete Confirmation Modal */}
       {showDeleteModal && productToDelete && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <motion.div
+          <div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-base-100 rounded-xl p-6 w-full max-w-md border-2
@@ -1113,13 +1113,13 @@ export default function ProductManager() {
                 {t('productManager.confirmDelete')}
               </button>
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Success Message */}
       {submitStatus === 'success' && (
-        <motion.div
+        <div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
@@ -1127,12 +1127,12 @@ export default function ProductManager() {
         >
           <span className="icon-[tabler--check] text-xl" />
           {statusMessage}
-        </motion.div>
+        </div>
       )}
 
       {/* Error Message */}
       {submitStatus === 'error' && (
-        <motion.div
+        <div
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: 50 }}
@@ -1140,7 +1140,7 @@ export default function ProductManager() {
         >
           <span className="icon-[tabler--alert-triangle] text-xl" />
           <span>{statusMessage}</span>
-        </motion.div>
+        </div>
       )}
 
       {/* Keyboard Shortcut Help Modal */}

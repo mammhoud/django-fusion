@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
@@ -274,7 +273,7 @@ export default function Employees() {
 
         {/* ── TAB 1: EMPLOYEE LIST ── */}
         {activeTab === 'employees' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             {/* Filters & Actions */}
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3 mb-4">
               <div className="flex flex-wrap items-center gap-2">
@@ -325,7 +324,7 @@ export default function Employees() {
             {/* Employee Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 gap-4">
               {filteredEmployees.map(emp => (
-                <motion.div
+                <div
                   key={emp.id}
                   initial={{ opacity: 0, scale: 0.95 }}
                   animate={{ opacity: 1, scale: 1 }}
@@ -387,7 +386,7 @@ export default function Employees() {
                       {t('employees.inactive')}
                     </div>
                   )}
-                </motion.div>
+                </div>
               ))}
               {filteredEmployees.length === 0 && (
                 <div className="col-span-full bg-base-100/70 backdrop-blur-md border border-white/20 dark:border-white/10 rounded-xl p-8 text-center text-base-content/60">
@@ -395,12 +394,12 @@ export default function Employees() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* ── TAB 2: EMPLOYEE TYPES ── */}
         {activeTab === 'types' && (
-          <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
+          <div initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-lg font-semibold text-base-content">{t('employees.employeeTypes')}</h2>
               <button
@@ -415,7 +414,7 @@ export default function Employees() {
               {employeeTypes.map(et => {
                 const count = employees.filter(e => e.employee_type_id === et.id).length;
                 return (
-                  <motion.div
+                  <div
                     key={et.id}
                     initial={{ opacity: 0, scale: 0.95 }}
                     animate={{ opacity: 1, scale: 1 }}
@@ -459,7 +458,7 @@ export default function Employees() {
                         </span>
                       )}
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
               {employeeTypes.length === 0 && (
@@ -468,7 +467,7 @@ export default function Employees() {
                 </div>
               )}
             </div>
-          </motion.div>
+          </div>
         )}
 
       <Modal

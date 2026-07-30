@@ -1,6 +1,4 @@
 import { useState, useEffect, type ReactNode } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
-
 // react-icons/fa no longer needed — all icons migrated to Tabler
 import { useAuth } from '../../contexts/AuthContext';
 import { useTheme, type ThemeVariant } from '../../contexts/ThemeContext';
@@ -9,6 +7,7 @@ import LanguageToggle from '../../components/display/LanguageToggle';
 import ThemeToggle from '../../components/display/ThemeToggle';
 import { invoke } from '@tauri-apps/api/core';
 import { iconClass } from '../../lib/icons';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 type AuthStep = 'loading' | 'checking' | 'register' | 'verify' | 'login' | 'forgotPassword' | 'resetPassword';
 
@@ -343,7 +342,7 @@ export default function Auth() {
     <div className={`relative hidden lg:flex lg:w-1/2 bg-gradient-to-br ${ILLUSTRATION_GRADIENTS[variant]} p-8 xl:p-12 items-center justify-center overflow-hidden`}>
       {/* Animated background particles */}
       {PARTICLES.map(p => (
-        <motion.div
+        <div
           key={p.id}
           className="absolute rounded-full bg-white/10"
           style={{
@@ -367,7 +366,7 @@ export default function Auth() {
 
       {/* Floating brand icons */}
       {BRAND_ICONS.map(({ icon: iconName, delay, x, y, size, color }) => (
-        <motion.div
+        <div
           key={delay}
           className={`absolute ${size} ${color}`}
           style={{ left: x, top: y }}
@@ -376,23 +375,23 @@ export default function Auth() {
           transition={{ delay, duration: 0.8, ease: 'easeOut' }}
         >
           <span className={iconClass(iconName, 'w-full h-full')} />
-        </motion.div>
+        </div>
       ))}
 
       {/* Central Branding */}
-      <motion.div
+      <div
         className="relative z-10 text-center max-w-md"
         initial={{ opacity: 0, y: 30 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8, ease: 'easeOut' }}
       >
-        <motion.div
+        <div
           className="bg-white/15 backdrop-blur-xl rounded-3xl p-6 w-fit mx-auto mb-8 border border-white/20 shadow-2xl"
           whileHover={{ scale: 1.05, rotate: 2 }}
           transition={{ type: 'spring', stiffness: 300, damping: 15 }}
         >
           <span className="icon-[tabler--shield] w-16 h-16 text-white" />
-        </motion.div>
+        </div>
         <h1 className="text-4xl xl:text-5xl font-bold text-white mb-4 leading-tight">
           Forge POS
         </h1>
@@ -407,7 +406,7 @@ export default function Auth() {
             { icon: 'chart-line', text: 'Real-time Analytics & Reports' },
             { icon: 'tools-kitchen-2', text: 'Inventory & Recipe Tracking' },
           ].map(({ icon: iconName, text }, idx) => (
-            <motion.div
+            <div
               key={idx}
               className="flex items-center gap-3 text-white/80"
               initial={{ opacity: 0, x: -20 }}
@@ -418,10 +417,10 @@ export default function Auth() {
                 <span className={iconClass(iconName, 'w-4 h-4')} />
               </div>
               <span className="text-sm font-medium">{text}</span>
-            </motion.div>
+            </div>
           ))}
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 
@@ -436,7 +435,7 @@ export default function Auth() {
     <>
       <AnimatePresence>
         {error && (
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -446,13 +445,13 @@ export default function Auth() {
           >
             <div className="w-2 h-2 rounded-full bg-white animate-pulse shrink-0" />
             <span className="text-sm font-medium">{error}</span>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
       <AnimatePresence>
         {success && (
-          <motion.div
+          <div
             initial={{ opacity: 0, y: 20, scale: 0.95 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 20, scale: 0.95 }}
@@ -462,7 +461,7 @@ export default function Auth() {
           >
             <span className="icon-[tabler--check] w-4 h-4 shrink-0" />
             <span className="text-sm font-medium">{success}</span>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </>
@@ -506,19 +505,19 @@ export default function Auth() {
       </div>
 
       {/* Illustration Panel */}
-      <motion.div
+      <div
         className="hidden lg:flex lg:w-1/2"
         initial={{ opacity: 0, x: -50 }}
         animate={{ opacity: 1, x: 0 }}
         transition={{ duration: 0.6, ease: 'easeOut' }}
       >
         {renderIllustration()}
-      </motion.div>
+      </div>
 
       {/* Form Panel */}
       <AnimatePresence mode="wait">
         {step === 'checking' && (
-          <motion.div
+          <div
             key="checking"
             className="w-full lg:w-1/2 flex items-center justify-center p-4 sm:p-6 md:p-8 xl:p-12 min-h-screen lg:min-h-0"
             initial={{ opacity: 0 }}
@@ -528,30 +527,30 @@ export default function Auth() {
           >
             <div className="text-center">
               <div className="relative w-20 h-20 mx-auto mb-6">
-                <motion.div
+                <div
                   className="absolute inset-0 border-4 border-primary/30 border-t-teal-400 rounded-full"
                   animate={{ rotate: 360 }}
                   transition={{ duration: 1.2, repeat: Infinity, ease: 'linear' }}
                 />
-                <motion.div
+                <div
                   className="absolute inset-2 border-4 border-success/20 border-b-emerald-400 rounded-full"
                   animate={{ rotate: -360 }}
                   transition={{ duration: 1.8, repeat: Infinity, ease: 'linear' }}
                 />
               </div>
-              <motion.p
+              <p
                 className={`text-lg ${isDark ? 'text-white/60' : 'text-slate-500'}`}
                 animate={{ opacity: [0.4, 1, 0.4] }}
                 transition={{ duration: 2, repeat: Infinity }}
               >
                 {t('auth.checking')}
-              </motion.p>
+              </p>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {step === 'register' && (
-          <motion.div
+          <div
             key="register"
             className={FORM_PANEL_CLASS}
             initial={{ opacity: 0, y: 30 }}
@@ -633,11 +632,11 @@ export default function Auth() {
                 </div>
               </CardWrapper>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {step === 'verify' && (
-          <motion.div
+          <div
             key="verify"
             className={FORM_PANEL_CLASS}
             initial={{ opacity: 0, y: 30 }}
@@ -746,13 +745,13 @@ export default function Auth() {
                       </button>
                     </InputWrapper>
                     {confirmPassword && password === confirmPassword && (
-                      <motion.p
+                      <p
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className={`text-xs mt-1 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}
                       >
                         <span className="icon-[tabler--check] w-3 h-3" /> Passwords match
-                      </motion.p>
+                      </p>
                     )}
                   </div>
 
@@ -776,7 +775,7 @@ export default function Auth() {
                     >
                       {codeSending ? (
                         <span className="flex items-center justify-center gap-2">
-                          <motion.div
+                          <div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block"
@@ -791,11 +790,11 @@ export default function Auth() {
                 </div>
               </CardWrapper>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {step === 'login' && (
-          <motion.div
+          <div
             key="login"
             className={FORM_PANEL_CLASS}
             initial={{ opacity: 0, y: 30 }}
@@ -946,11 +945,11 @@ export default function Auth() {
                 )}
               </CardWrapper>
             </div>
-          </motion.div>
+          </div>
         )}
         {/* ── Forgot Password: Enter Email ── */}
         {step === 'forgotPassword' && (
-          <motion.div
+          <div
             key="forgotPassword"
             className={FORM_PANEL_CLASS}
             initial={{ opacity: 0, y: 30 }}
@@ -1009,12 +1008,12 @@ export default function Auth() {
                 </div>
               </CardWrapper>
             </div>
-          </motion.div>
+          </div>
         )}
 
         {/* ── Reset Password: Enter Code + New Password ── */}
         {step === 'resetPassword' && (
-          <motion.div
+          <div
             key="resetPassword"
             className={FORM_PANEL_CLASS}
             initial={{ opacity: 0, y: 30 }}
@@ -1118,13 +1117,13 @@ export default function Auth() {
                       </button>
                     </InputWrapper>
                     {resetConfirmPassword && resetPassword === resetConfirmPassword && (
-                      <motion.p
+                      <p
                         initial={{ opacity: 0, y: -5 }}
                         animate={{ opacity: 1, y: 0 }}
                         className={`text-xs mt-1 flex items-center gap-1 ${isDark ? 'text-green-400' : 'text-green-600'}`}
                       >
                         <span className="icon-[tabler--check] w-3 h-3" /> Passwords match
-                      </motion.p>
+                      </p>
                     )}
                   </div>
 
@@ -1148,7 +1147,7 @@ export default function Auth() {
                     >
                       {codeSending ? (
                         <span className="flex items-center justify-center gap-2">
-                          <motion.div
+                          <div
                             animate={{ rotate: 360 }}
                             transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
                             className="w-3 h-3 border-2 border-primary border-t-transparent rounded-full inline-block"
@@ -1173,7 +1172,7 @@ export default function Auth() {
                 </div>
               </CardWrapper>
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 

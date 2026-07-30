@@ -1,9 +1,6 @@
 import { useState, useMemo, useCallback, useRef, useEffect } from 'react';
 import Card from '../layout/Card';
 import { useTranslation } from 'react-i18next';
-import { motion } from 'framer-motion';
-
-
 export interface Column<T> {
   key: string;
   label: string;
@@ -340,7 +337,7 @@ export default function DataTable<T>({
           const isSelected = selectedIds.has(rowKey);
 
           return (
-            <motion.div
+            <div
               key={rowKey}
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
@@ -405,7 +402,7 @@ export default function DataTable<T>({
                             step={col.editType === 'number' ? 'any' : undefined}
                           />
                           {isSavingEdit && (
-                            <motion.div
+                            <div
                               animate={{ rotate: 360 }}
                               transition={{
                                 duration: 0.8,
@@ -471,7 +468,7 @@ export default function DataTable<T>({
                   </div>
                 </div>
               )}
-            </motion.div>
+            </div>
           );
         })
       )}

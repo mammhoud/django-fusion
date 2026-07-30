@@ -1,5 +1,4 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 
@@ -9,6 +8,7 @@ import { pageSlideUp, dropdownMenu, toastSlideIn, iconSpring } from '../../utils
 // Built-in Forge POS crest logo — always shown in the app chrome.
 // Business logos from settings only appear on invoices/receipts.
 import defaultLogo from '../../assets/pos-crest.svg';
+import AnimatePresence from '../../components/utils/AnimatePresence';
 
 // ── Local helper: Profile dropdown ──────────────────────────────────────────
 
@@ -49,13 +49,13 @@ function ProfileDropdown({
 
       <AnimatePresence>
         {open && (
-          <motion.div
-            variants={dropdownMenu}
+          <div
+            className={`${dropdownMenu} absolute right-0 mt-1 w-64 bg-base-100 rounded-2xl shadow-xl
+              border border-base-300/50 overflow-hidden z-50 rtl:right-auto rtl:left-0`}
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="absolute right-0 mt-1 w-64 bg-base-100 rounded-2xl shadow-xl
-              border border-base-300/50 overflow-hidden z-50 rtl:right-auto rtl:left-0"
+
           >
             {/* User info header */}              <div className="px-4 py-3 border-b border-base-300/30">
               <div className="flex items-center gap-3">
@@ -84,7 +84,7 @@ function ProfileDropdown({
                 Sign Out
               </button>
             </div>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </div>
@@ -145,14 +145,13 @@ export default function PageLayout({
     setTimeout(() => navigate('/dashboard'), 300);
   };
 
-  const renderLogo = (size: string) => (      <motion.img
-      variants={iconSpring}
+  const renderLogo = (size: string) => (      <img
       initial="initial"
       animate="animate"
       whileHover={{ rotate: 6, scale: 1.06 }}
       src={defaultLogo}
       alt="Forge POS"
-      className={`${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
+      className={`${iconSpring} ${size} object-contain rounded-md shadow-sm bg-base-100/80 p-0.5 border border-base-300/50 shrink-0`}
       onError={(e) => { (e.currentTarget as HTMLImageElement).style.opacity = '0.5'; }}
     />
   );
@@ -171,12 +170,8 @@ export default function PageLayout({
       {/* Inactivity warning toast */}
       <AnimatePresence>
         {inactivityWarning && (
-          <motion.div
-            variants={toastSlideIn}
-            initial="hidden"
-            animate="visible"
-            exit="exit"
-            className="fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold"
+          <div
+            className={`${toastSlideIn} fixed top-4 left-1/2 -translate-x-1/2 z-50 alert alert-warning shadow-2xl text-sm font-semibold`}
           >
             <span className="icon-[tabler--alert-triangle] w-5 h-5 shrink-0" />
             <span>Session expiring soon — click anywhere to stay logged in</span>              <button
@@ -185,7 +180,7 @@ export default function PageLayout({
             >
               Stay
             </button>
-          </motion.div>
+          </div>
         )}
       </AnimatePresence>
 
@@ -261,15 +256,15 @@ export default function PageLayout({
         )}
 
         <AnimatePresence mode="wait">
-          <motion.div
+          <div
             key={location.pathname}
-            variants={pageSlideUp}
+            className={pageSlideUp}
             initial="hidden"
             animate="visible"
             exit="exit"
           >
             {children}
-          </motion.div>
+          </div>
         </AnimatePresence>
       </div>
     </div>

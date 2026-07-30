@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { type HTMLAttributes } from 'react';
 import { Area, AreaChart, ResponsiveContainer } from 'recharts';
 
@@ -130,12 +129,12 @@ export default function StatCard({
 
     if (animated) {
       return (
-        <motion.div
+        <div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
           {skeleton}
-        </motion.div>
+        </div>
       );
     }
     return skeleton;
@@ -227,7 +226,7 @@ export default function StatCard({
 
   if (animated) {
     return (
-      <motion.div
+      <div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className={classes}
@@ -235,7 +234,7 @@ export default function StatCard({
         onClick={onClick}
       >
         {content}
-      </motion.div>
+      </div>
     );
   }
 

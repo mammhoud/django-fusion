@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { invoke } from '@tauri-apps/api/core';
@@ -310,7 +309,7 @@ export default function Inventory() {
       </nav>
 
       {/* Tab Content with staggered animation */}
-      <motion.div
+      <div
         key={activeTab}
         role="tabpanel"
         id={`inv-panel-${activeTab}`}
@@ -409,7 +408,7 @@ export default function Inventory() {
                 {filteredIngredients.map((ing) => {
                   const status = getStockStatus(ing);
                   return (
-                    <motion.div
+                    <div
                       key={ing.id}
                       initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                       className={`sm:grid sm:grid-cols-12 gap-4 p-4 border-b border-base-300/50 
@@ -460,7 +459,7 @@ export default function Inventory() {
                           <button onClick={() => setShowDeleteConfirm(ing)} className="text-error hover:text-error/70 p-1" title={t('common.deactivate')}><span className="icon-[tabler--trash]" /></button>
                         )}
                       </div>
-                    </motion.div>
+                    </div>
                   );
                 })}
                 {ingredients.length === 0 && (
@@ -582,7 +581,7 @@ export default function Inventory() {
               {adjustments.map((adj) => {
                 const ing = ingredients.find(i => i.id === adj.ingredient_id);
                 return (
-                  <motion.div
+                  <div
                     key={adj.id}
                     initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}
                     className="bg-base-100/70 backdrop-blur-md border border-base-content/10 rounded-xl p-4"
@@ -600,13 +599,13 @@ export default function Inventory() {
                         {adj.created_by && <div className="mt-1 text-base-content/50">by {adj.created_by}</div>}
                       </div>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })}
             </div>
           </div>
         )}
-      </motion.div>
+      </div>
 
       <Modal
         isOpen={showAddIngredient}

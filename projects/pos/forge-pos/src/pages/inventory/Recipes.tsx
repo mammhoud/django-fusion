@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { invoke } from '@tauri-apps/api/core';
@@ -402,19 +401,19 @@ export default function Recipes() {
 
         {/* Summary Cards */}
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 mb-6">
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
             <Card padding="md" hover>
               <h2 className="text-base-content/60 text-sm">{t('recipes.totalRecipes')}</h2>
               <p className="text-2xl font-bold text-base-content">{recipes.filter(r => r.is_active).length}</p>
             </Card>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          </div>
+          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
             <Card padding="md" hover>
               <h2 className="text-base-content/60 text-sm">{t('recipes.productsUsed')}</h2>
               <p className="text-2xl font-bold text-warning">{new Set(recipes.filter(r => r.is_active).map(r => r.product_id)).size}</p>
             </Card>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
+          </div>
+          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.2 }}>
             <Card padding="md" hover>
               <h2 className="text-base-content/60 text-sm">{t('recipes.avgCostPerRecipe')}</h2>
               <p className="text-2xl font-bold text-error">
@@ -423,8 +422,8 @@ export default function Recipes() {
                 : 0}
             </p>
             </Card>
-          </motion.div>
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
+          </div>
+          <div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.3 }}>
             <Card padding="md" hover>
               <h2 className="text-base-content/60 text-sm">{t('recipes.avgProfitMargin')}</h2>
               <p className="text-2xl font-bold text-success">
@@ -433,7 +432,7 @@ export default function Recipes() {
                 : 'N/A'}
             </p>
             </Card>
-          </motion.div>
+          </div>
         </div>
 
         {/* Filters & Actions */}
@@ -458,7 +457,7 @@ export default function Recipes() {
 
         {/* Recipe Cards */}          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5 3xl:grid-cols-6 gap-4">
           {filteredRecipes.map(rd => (
-            <motion.div
+            <div
               key={rd.recipe.id}
               initial={{ opacity: 0, scale: 0.95 }}
               animate={{ opacity: 1, scale: 1 }}
@@ -529,7 +528,7 @@ export default function Recipes() {
                       </span>
                     </div>
                     <div className="w-full bg-base-300/50 rounded-full h-2 overflow-hidden">
-                      <motion.div
+                      <div
                         initial={{ width: 0 }} animate={{ width: `${Math.min((rd.totalCost / rd.productPrice) * 100, 100)}%` }}
                         className={`h-full rounded-full ${rd.totalCost <= rd.productPrice ? 'bg-success' : 'bg-error'}`}
                       />
@@ -562,7 +561,7 @@ export default function Recipes() {
                   </div>
                 )}
             </Card>
-            </motion.div>
+            </div>
           ))}
           {filteredRecipes.length === 0 && (
             <Card padding="2xl" center className="col-span-full text-base-content/60">
@@ -760,7 +759,7 @@ export default function Recipes() {
       {/* ── Recipe Notes Modal ── */}
       {showNotesModal && (
         <div className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50">
-          <motion.div
+          <div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             className="bg-base-100 rounded-xl p-6 w-full max-w-2xl max-h-[85vh] overflow-y-auto"
@@ -942,7 +941,7 @@ Cross-contamination warning: Prepared in a kitchen that also processes shellfish
                 ))}
               </div>
             )}
-          </motion.div>
+          </div>
         </div>
       )}
 

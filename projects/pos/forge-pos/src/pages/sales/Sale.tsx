@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useRef, useMemo } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
@@ -1035,7 +1034,7 @@ export default function Sale() {
         </div>{/* end main-content */}
 
         {/* ── Sticky Mobile Checkout Bar ── */}
-        <motion.div
+        <div
           initial={false}
           animate={cart.length > 0 ? { y: 0 } : { y: 120 }}
           className="fixed bottom-0 left-0 right-0 lg:hidden z-40 pointer-events-none"
@@ -1082,7 +1081,7 @@ export default function Sale() {
               </button>
             </div>
           </div>
-        </motion.div>
+        </div>
 
         {/* ── Desktop Sidebar — Order Details Panel ── */}
         <div
@@ -1090,7 +1089,7 @@ export default function Sale() {
           onMouseLeave={() => setSidebarHovered(false)}
           className="hidden lg:block relative"
         >
-          <motion.div
+          <div
             initial={false}
             animate={{
               width: (sidebarOpen || sidebarHovered) ? 280 : 0,
@@ -1309,7 +1308,7 @@ export default function Sale() {
                 </Card>
               )}
             </div>
-          </motion.div>
+          </div>
 
           {/* Collapsed peek tab — visible on hover when sidebar is closed */}
           {!sidebarOpen && !sidebarHovered && (
@@ -1323,21 +1322,21 @@ export default function Sale() {
 
       {/* Success Dialog */}
       {showSuccessDialog && receiptData && (
-        <motion.div
+        <div
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50 overflow-y-auto"
         >
-          <motion.div
+          <div
             exit={{ scale: 0.8, opacity: 0 }}
             className="bg-white dark:bg-slate-800 rounded-2xl p-6 max-w-md w-full my-8 transition-colors duration-300"
           >
             <div className="text-center">
-              <motion.div
+              <div
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
                 <span className="iconClass('lucide:circle-check', 'w-16 h-16 text-primary mx-auto')" />
-              </motion.div>
+              </div>
 
               <h3
                 className="text-2xl font-bold text-base-content mb-6"
@@ -1482,20 +1481,20 @@ export default function Sale() {
                 {t('sale.startNewSale')}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       {/* PDF Success Dialog */}
       {showPDFSuccessDialog && (
-        <motion.div
+        <div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
           className="fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4 z-50"
           onClick={() => setShowPDFSuccessDialog(false)}
         >
-          <motion.div
+          <div
             initial={{ scale: 0.8, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.8, opacity: 0 }}
@@ -1503,12 +1502,12 @@ export default function Sale() {
             onClick={e => e.stopPropagation()}
           >
             <div className="text-center">
-              <motion.div
+              <div
                 transition={{ type: 'spring', stiffness: 300, damping: 20 }}
                 className="mx-auto mb-4"
               >
                 <span className="iconClass('lucide:circle-check', 'w-16 h-16 text-green-500 mx-auto')" />
-              </motion.div>
+              </div>
 
               <h3
                 className="text-2xl font-bold text-base-content mb-2"
@@ -1530,8 +1529,8 @@ export default function Sale() {
                 {t('common.close')}
               </button>
             </div>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       )}
 
       <KeyboardShortcutsModal isOpen={showShortcutHelp} onClose={() => setShowShortcutHelp(false)} />

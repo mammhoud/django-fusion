@@ -12,66 +12,7 @@ import { ThemeProvider } from '../contexts/ThemeContext';
 import { LanguageProvider } from '../contexts/LanguageContext';
 import { AuthProvider } from '../contexts/AuthContext';
 
-// ---------------------------------------------------------------------------
-// Framer Motion – silently render children without animation
-// ---------------------------------------------------------------------------
-vi.mock('framer-motion', async () => {
-  const actual = await vi.importActual('framer-motion');
-  return {
-    ...actual,
-    motion: {
-      div: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        // Strip animation-only props so they don't generate console noise
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, layout, layoutId, ...rest } = props as Record<string, unknown>;
-        return <div {...rest}>{children}</div>;
-      },
-      button: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, layout, layoutId, ...rest } = props as Record<string, unknown>;
-        return <button {...rest}>{children}</button>;
-      },
-      span: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <span {...rest}>{children}</span>;
-      },
-      p: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <p {...rest}>{children}</p>;
-      },
-      h1: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <h1 {...rest}>{children}</h1>;
-      },
-      h2: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <h2 {...rest}>{children}</h2>;
-      },
-      h3: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <h3 {...rest}>{children}</h3>;
-      },
-      form: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <form {...rest}>{children}</form>;
-      },
-      aside: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <aside {...rest}>{children}</aside>;
-      },
-      section: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, ...rest } = props as Record<string, unknown>;
-        return <section {...rest}>{children}</section>;
-      },
-      img: (props: Record<string, unknown>) => <img {...props} />,
-      svg: ({ children, ...props }: { children?: ReactNode; [key: string]: unknown }) => {
-        const { initial, animate, exit, whileHover, whileTap, variants, transition, layout, layoutId, ...rest } = props as Record<string, unknown>;
-        return <svg {...rest}>{children}</svg>;
-      },
-    },
-    AnimatePresence: ({ children }: { children?: ReactNode }) => <>{children}</>,
-    useAnimation: () => ({}),
-  };
-});
-
+// CSS animations are no-ops in jsdom — components render children directly
 // ---------------------------------------------------------------------------
 // i18n – mock the whole module so components & contexts don't trigger
 // react-i18next dependency resolution during tests

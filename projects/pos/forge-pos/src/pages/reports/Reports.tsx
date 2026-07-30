@@ -1,4 +1,3 @@
-import { motion } from 'framer-motion';
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useKeyboardTabNav } from '../../hooks/useKeyboardTabNav';
 import { useDashboardDeltas } from '../../hooks/useDashboardDeltas';
@@ -955,7 +954,7 @@ export default function Reports() {
         </nav>
 
         {/* Tab Content */}
-        <motion.div
+        <div
           key={activeTab}
           role="tabpanel"
           id={`reports-panel-${activeTab}`}
@@ -2419,7 +2418,7 @@ export default function Reports() {
               </Card>
             </div>
           )}
-        </motion.div>
+        </div>
 
       <KeyboardShortcutsModal isOpen={showShortcutHelp} onClose={() => setShowShortcutHelp(false)} />
     </PageLayout>
