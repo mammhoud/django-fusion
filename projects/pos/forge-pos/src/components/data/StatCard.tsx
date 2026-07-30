@@ -12,6 +12,11 @@ const GRADIENT_TO_SEMANTIC: Record<string, string> = {
   'from-orange-500 to-amber-600': 'text-warning',
   'from-purple-500 to-violet-600': 'text-secondary',
   'from-slate-400 to-slate-500': 'text-neutral',
+  'from-red-500 to-rose-600': 'text-error',
+  'from-emerald-500 to-teal-600': 'text-success',
+  'from-green-500 to-emerald-600': 'text-success',
+  'from-indigo-500 to-purple-600': 'text-secondary',
+  'from-blue-500 to-cyan-600': 'text-info',
 };
 
 /** Recognized FlyonUI semantic color tokens — used for sparkline + border CSS var resolution. */

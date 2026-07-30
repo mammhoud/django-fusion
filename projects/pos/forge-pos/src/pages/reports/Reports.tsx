@@ -971,22 +971,22 @@ export default function Reports() {
                   title={t('reports.totalOrders')}
                   value={filteredSales.length.toString()}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                 /><StatCard 
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--package] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
                   icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 /><StatCard 
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
                   icon={<span className="icon-[tabler--users] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 />
               </div>
 
@@ -1046,27 +1046,27 @@ export default function Reports() {
                   value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   desc={`${salesRevDelta.direction === 'up' ? '▲' : salesRevDelta.direction === 'down' ? '▼' : '→'} ${salesRevDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                 /><StatCard 
                   title={t('reports.totalOrders')}
                   value={(filteredSales.length).toString()}
                   desc={`${salesOrderDelta.direction === 'up' ? '▲' : salesOrderDelta.direction === 'down' ? '▼' : '→'} ${salesOrderDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                 /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${analytics?.summary.average_order_value.toFixed(2) || '0.00'}`}
                   desc={`${salesAvgDelta.direction === 'up' ? '▲' : salesAvgDelta.direction === 'down' ? '▼' : '→'} Avg ${salesAvgDelta.pct} vs prev 30 days`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                   onDescClick={() => setComparisonFilter({ label: 'Last 30 Days vs Previous 30', periodALabel: 'Last 30 Days', periodBLabel: 'Previous 30', startA: last30Start, endA: last30End, startB: prior30Start, endB: prior30End })}
                 /><StatCard 
                   title={t('reports.orderTypes')}
                   value={orderTypeBreakdown.length.toString()}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 />
               </div>
 
@@ -1220,22 +1220,22 @@ export default function Reports() {
                   title={t('reports.totalProductsSold')}
                   value={analytics?.summary?.total_orders?.toString() || '0'}
                   icon={<span className="icon-[tabler--chart-bar] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.productRevenue')}
                   value={formatPrice(analytics?.summary?.total_revenue || 0)}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                 /><StatCard 
                   title={t('reports.bestSellingCategory')}
                   value={bestSellingCategory}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 /><StatCard 
                   title={t('reports.avgItemsPerOrder')}
                   value={avgItemsPerOrder}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 />
               </div>
 
@@ -1332,22 +1332,22 @@ export default function Reports() {
                   title={t('reports.totalInvoices')}
                   value={filteredSales.length.toString()}
                   icon={<span className="icon-[tabler--receipt] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.totalRevenue')}
                   value={formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0))}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                 /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={filteredSales.length > 0 ? formatPrice(filteredSales.reduce((s, s2) => s + s2.total_amount, 0) / filteredSales.length) : formatPrice(0)}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 /><StatCard 
                   title={t('reports.completedOrders')}
                   value={filteredSales.filter(s => s.status === 'completed').length.toString()}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-emerald-500 to-teal-600"
+                  color="success"
                 />
               </div>
 
@@ -1425,28 +1425,28 @@ export default function Reports() {
                   value={`${currency} ${todayStats.revenue.toFixed(2)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} ${revDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                 /><StatCard 
                   title={t('reports.todayOrders')}
                   value={todayStats.orders.toString()}
                   desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                 /><StatCard 
                   title={t('reports.todayAvgOrder')}
                   value={`${currency} ${todayStats.avgOrder.toFixed(2)}`}
                   desc={`${revDelta.direction === 'up' ? '▲' : revDelta.direction === 'down' ? '▼' : '→'} Avg ${revDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                 /><StatCard 
                   title={t('reports.todayItemsSold')}
                   value={todayStats.orders > 0 ? (todayStats.orders * (parseFloat(avgItemsPerOrder) || 1)).toFixed(0) : '0'}
                   desc={`${orderDelta.direction === 'up' ? '▲' : orderDelta.direction === 'down' ? '▼' : '→'} ${orderDelta.pct} vs yesterday`}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                   onDescClick={() => setComparisonFilter({ label: 'Today vs Yesterday', periodALabel: 'Today', periodBLabel: 'Yesterday', startA: todayStr, endA: todayStr, startB: yesterdayStr, endB: yesterdayStr })}
                 />
               </div>
@@ -1650,7 +1650,7 @@ export default function Reports() {
                   value={`${currency} ${currentStats.revenue.toFixed(2)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} ${periodRevDelta.pct} vs previous`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                   onDescClick={() => setComparisonFilter(periodView === 'week'
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
                     : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
@@ -1660,7 +1660,7 @@ export default function Reports() {
                   value={currentStats.orders.toString()}
                   desc={`${periodOrderDelta.direction === 'up' ? '▲' : periodOrderDelta.direction === 'down' ? '▼' : '→'} ${periodOrderDelta.pct} vs previous`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                   onDescClick={() => setComparisonFilter(periodView === 'week'
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
                     : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
@@ -1670,7 +1670,7 @@ export default function Reports() {
                   value={`${currency} ${currentStats.avgOrder.toFixed(2)}`}
                   desc={`${periodRevDelta.direction === 'up' ? '▲' : periodRevDelta.direction === 'down' ? '▼' : '→'} Avg ${periodRevDelta.pct} vs previous`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                   onDescClick={() => setComparisonFilter(periodView === 'week'
                     ? { label: 'This Week vs Last Week', periodALabel: 'This Week', periodBLabel: 'Last Week', startA: thisWeekStart, endA: todayStr, startB: prevWeekStart, endB: prevWeekEnd }
                     : { label: 'This Month vs Last Month', periodALabel: 'This Month', periodBLabel: 'Last Month', startA: currentMonthStart, endA: todayStr, startB: prevMonthStart, endB: prevMonthEnd }
@@ -1680,7 +1680,7 @@ export default function Reports() {
                   value={`${currency} ${previousStats.revenue.toFixed(2)}`}
                   desc={`${currentStats.revenue > previousStats.revenue ? '▲ Up' : currentStats.revenue < previousStats.revenue ? '▼ Down' : '→ Flat'} from current`}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
-                  color="from-slate-400 to-slate-500"
+                  color="neutral"
                 />
               </div>
 
@@ -1791,22 +1791,22 @@ export default function Reports() {
                   title={t('reports.deliveryOrders')}
                   value={deliveryStats.totalOrders.toString()}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                 /><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${deliveryStats.totalRevenue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${deliveryStats.avgOrderValue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 /><StatCard 
                   title={t('reports.deliveryCompleted')}
                   value={`${deliveryStats.completedOrders} / ${deliveryStats.pendingOrders}`}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 />
               </div>
 
@@ -1886,22 +1886,22 @@ export default function Reports() {
                   title={t('reports.stockValueLabel')}
                   value={`${currency} ${stockValue.toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-emerald-500 to-teal-600"
+                  color="success"
                 /><StatCard 
                   title={t('reports.activeIngredients')}
                   value={ingredients.filter(i => i.is_active).length.toString()}
                   icon={<span className="icon-[tabler--package] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.lowStockItems')}
                   value={lowStockItems.length.toString()}
                   icon={<span className="icon-[tabler--alert-triangle] w-6 h-6" />}
-                  color="from-red-500 to-rose-600"
+                  color="error"
                 /><StatCard 
                   title={t('transactions.title')}
                   value={inventoryTxns.length.toString()}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 />
               </div>
 
@@ -2056,22 +2056,22 @@ export default function Reports() {
                   title={t('reports.totalRecipes')}
                   value={recipePerformance.length.toString()}
                   icon={<span className="icon-[tabler--menu-2] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 /><StatCard 
                   title={t('reports.activeProducts')}
                   value={products.length.toString()}
                   icon={<span className="icon-[tabler--building-store] w-6 h-6" />}
-                  color="from-green-500 to-emerald-600"
+                  color="success"
                 /><StatCard 
                   title={t('reports.avgProductPrice')}
                   value={`${currency} ${products.length > 0 ? (products.reduce((s, p) => s + p.price, 0) / products.length).toFixed(2) : '0.00'}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.activeRecipes')}
                   value={recipes.filter(r => r.is_active).length.toString()}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 />
               </div>
 
@@ -2180,22 +2180,22 @@ export default function Reports() {
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${transactions.reduce((s, t) => s + t.total_amount, 0).toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-teal-500 to-emerald-600"
+                  color="primary"
                 /><StatCard 
                   title={t('reports.totalOrders')}
                   value={transactions.length.toString()}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-blue-500 to-indigo-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.avgOrderValue')}
                   value={`${currency} ${transactions.length > 0 ? (transactions.reduce((s, t) => s + t.total_amount, 0) / transactions.length).toFixed(2) : '0.00'}`}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-purple-500 to-violet-600"
+                  color="secondary"
                 /><StatCard 
                   title={t('reports.transactionItems')}
                   value={transactions.reduce((s, t) => s + t.items.length, 0).toString()}
                   icon={<span className="icon-[tabler--calendar] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 />
               </div>
 
@@ -2259,22 +2259,22 @@ export default function Reports() {
                   title={t('reports.activeEmployees')}
                   value={employees.filter(e => e.is_active).length.toString()}
                   icon={<span className="icon-[tabler--users] w-6 h-6" />}
-                  color="from-indigo-500 to-purple-600"
+                  color="secondary"
                 /><StatCard 
                   title={t('reports.employeesWithSales')}
                   value={employeePerformance.length.toString()}
                   icon={<span className="icon-[tabler--trending-up] w-6 h-6" />}
-                  color="from-blue-500 to-cyan-600"
+                  color="info"
                 /><StatCard 
                   title={t('reports.totalOrders')}
                   value={employeePerformance.reduce((s, e) => s + e.orderCount, 0).toString()}
                   icon={<span className="icon-[tabler--shopping-cart] w-6 h-6" />}
-                  color="from-emerald-500 to-teal-600"
+                  color="success"
                 /><StatCard 
                   title={t('reports.totalRevenue')}
                   value={`${currency} ${employeePerformance.reduce((s, e) => s + e.revenue, 0).toFixed(2)}`}
                   icon={<span className="icon-[tabler--moneybag] w-6 h-6" />}
-                  color="from-orange-500 to-amber-600"
+                  color="warning"
                 />
               </div>
 
